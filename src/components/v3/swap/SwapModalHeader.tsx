@@ -4,7 +4,6 @@ import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
 import { useState } from 'react';
 import { AlertTriangle, ArrowDown } from 'react-feather';
-import { Text } from 'rebass';
 import { FiatValue } from '../CurrencyInputPanel/FiatValue';
 
 import { AdvancedSwapDetails } from './AdvancedSwapDetails';
@@ -15,7 +14,7 @@ import { shortenAddress } from 'utils';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { WrappedCurrency } from 'models/types';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { useTranslation } from 'react-i18next';
 import 'components/styles/v3/swap.scss';
 
@@ -45,20 +44,15 @@ export default function SwapModalHeader({
 
   return (
     <div>
-      <Box
-        className='bg-secondary1'
-        borderRadius='6px'
-        padding={2}
-        paddingTop={2}
-      >
+      <Box className='bg-secondary1' borderRadius='6px' padding='16px'>
         <Box className='flex justify-between'>
           <small>{t('from')}</small>
           <FiatValue fiatValue={fiatValueInput} />
         </Box>
 
-        <Box mt={1} className='flex justify-between'>
+        <Box margin='8px 0 0' className='flex justify-between'>
           <Box className='flex'>
-            <Box mr='6px'>
+            <Box margin='0 6px 0 0'>
               <CurrencyLogo
                 currency={trade.inputAmount.currency as WrappedCurrency}
                 size={'24px'}
@@ -80,8 +74,8 @@ export default function SwapModalHeader({
       <Box className='swapModalHeaderArrowWrapper'>
         <ArrowDown size='1rem' />
       </Box>
-      <Box className='bg-secondary1' borderRadius='6px' marginTop={1}>
-        <Box padding={2}>
+      <Box className='bg-secondary1' borderRadius='6px' margin='8px 0 0'>
+        <Box padding='16px'>
           <Box className='flex justify-between'>
             <small>{t('to')}</small>
             <FiatValue
@@ -93,9 +87,9 @@ export default function SwapModalHeader({
             />
           </Box>
 
-          <Box mt={1} className='flex justify-between'>
+          <Box margin='8px 0 0' className='flex justify-between'>
             <Box className='flex'>
-              <Box mr='6px'>
+              <Box margin='0 6px 0 0'>
                 <CurrencyLogo
                   currency={trade.outputAmount.currency as WrappedCurrency}
                   size='24px'
@@ -110,7 +104,7 @@ export default function SwapModalHeader({
         </Box>
       </Box>
 
-      <Box my={2} px={1} className='flex justify-between'>
+      <Box margin='16px 0' padding='0 8px' className='flex justify-between'>
         <small>{t('price')}</small>
         <TradePrice
           price={trade.executionPrice}
@@ -119,14 +113,19 @@ export default function SwapModalHeader({
         />
       </Box>
 
-      <Box className='bg-secondary1' borderRadius='6px' padding={1} mb={2}>
+      <Box
+        className='bg-secondary1'
+        borderRadius='6px'
+        padding='8px'
+        margin='0 0 16px'
+      >
         <AdvancedSwapDetails trade={trade} allowedSlippage={allowedSlippage} />
       </Box>
 
       {showAcceptChanges ? (
         <Box
-          mb={2}
-          p={1}
+          margin='0 0 16px'
+          padding='8px'
           borderRadius='6px'
           className='flex items-center bg-primaryLight justify-between'
         >

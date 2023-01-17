@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Divider } from '@material-ui/core';
+import { Box, Divider, Skeleton } from 'theme/components';
 import { ButtonSwitch } from 'components';
 import dayjs, { ManipulateType } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import Skeleton from '@material-ui/lab/Skeleton';
 import { formatCompact, formatNumber } from 'utils';
 import { useTranslation } from 'react-i18next';
 dayjs.extend(utc);
@@ -48,7 +47,7 @@ const SwapInfoTx: React.FC<{
           {filteredTxs ? (
             <small>{filteredTxs.length}</small>
           ) : (
-            <Skeleton width={60} height={14} />
+            <Skeleton width='60px' height='14px' />
           )}
         </Box>
         <Divider />
@@ -58,7 +57,7 @@ const SwapInfoTx: React.FC<{
             {filteredBuyTxs ? (
               filteredBuyTxs.length
             ) : (
-              <Skeleton width={60} height={14} />
+              <Skeleton width='60px' height='14px' />
             )}
           </small>
         </Box>
@@ -69,7 +68,7 @@ const SwapInfoTx: React.FC<{
             {filteredSellTxs ? (
               filteredSellTxs.length
             ) : (
-              <Skeleton width={60} height={14} />
+              <Skeleton width='60px' height='14px' />
             )}
           </small>
         </Box>
@@ -84,7 +83,7 @@ const SwapInfoTx: React.FC<{
                 formatNumber(volume)
               )
             ) : (
-              <Skeleton width={60} height={14} />
+              <Skeleton width='60px' height='14px' />
             )}
           </small>
         </Box>

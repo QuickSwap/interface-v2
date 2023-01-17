@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useActivePopups } from 'state/application/hooks';
 import { useURLWarningVisible } from 'state/user/hooks';
 import PopupItem from './PopupItem';
@@ -27,8 +27,8 @@ const Popups: React.FC = () => {
       </Box>
       <Box
         className='mobilePopupWrapper'
-        height={activePopups?.length > 0 ? 'fit-content' : 0}
-        margin={activePopups?.length > 0 ? '0 auto 20px' : 0}
+        height={activePopups?.length > 0 ? 'fit-content' : '0px'}
+        margin={activePopups?.length > 0 ? '0 auto 20px' : '0px'}
       >
         <Box className='mobilePopupInner'>
           {activePopups // reverse so new items up front

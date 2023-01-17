@@ -18,10 +18,9 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GlobalData, GlobalValue } from 'constants/index';
-import { toToken } from 'constants/v3/routing';
-import { Box } from '@material-ui/core';
-import { ReportProblemOutlined } from '@material-ui/icons';
+import { GlobalData } from 'constants/index';
+import { Box } from 'theme/components';
+import { AlertTriangle } from 'react-feather';
 import { getEternalFarmFromTokens } from 'utils';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -258,7 +257,7 @@ export function SelectRange({
   return (
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
-      <Box my={1}>
+      <Box margin='8px 0'>
         <PresetRanges
           mintInfo={mintInfo}
           baseCurrency={currencyA}
@@ -286,7 +285,7 @@ export function SelectRange({
           </span>
         </Box>
       )}
-      <Box my={2}>
+      <Box margin='16px 0'>
         <RangeSelector
           priceLower={priceLower}
           priceUpper={priceUpper}
@@ -307,13 +306,13 @@ export function SelectRange({
       </Box>
       {activePreset === Presets.FULL && fullRangeWarningShown && (
         <Box className='pool-range-chart-warning border-yellow5'>
-          <Box width={1} className='flex items-center'>
+          <Box width='100%' className='flex items-center'>
             <Box className='pool-range-chart-warning-icon'>
-              <ReportProblemOutlined />
+              <AlertTriangle />
             </Box>
             <small>{t('efficiencyComparison')}</small>
           </Box>
-          <Box width={1} mt={1} mb={1.5}>
+          <Box width='100%' margin='8px 0 12px'>
             <span>
               <Trans
                 i18nKey='fullRangePositionsEarnLessFeeLearnMore'
@@ -340,7 +339,7 @@ export function SelectRange({
         rightPricePercent - leftPricePercent < minRangeLength && (
           <Box className='pool-range-chart-warning'>
             <Box className='pool-range-chart-warning-icon'>
-              <ReportProblemOutlined />
+              <AlertTriangle />
             </Box>
             <span>
               {t('minPriceRangeWarning', { rangeLength: minRangeLength })}
@@ -350,7 +349,7 @@ export function SelectRange({
       {mintInfo.outOfRange && (
         <Box className='pool-range-chart-warning'>
           <Box className='pool-range-chart-warning-icon'>
-            <ReportProblemOutlined />
+            <AlertTriangle />
           </Box>
           <span>{t('priceRangeNotElligibleWraning')}</span>
         </Box>
@@ -358,7 +357,7 @@ export function SelectRange({
       {mintInfo.invalidRange && (
         <Box className='pool-range-chart-warning'>
           <Box className='pool-range-chart-warning-icon'>
-            <ReportProblemOutlined />
+            <AlertTriangle />
           </Box>
           <span>{t('invalidRange')}</span>
         </Box>

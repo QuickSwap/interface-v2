@@ -1,9 +1,9 @@
 import React, { ReactChild } from 'react';
-import { Box, useMediaQuery, TableRow, TableCell } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import { ArrowUpward, ArrowDownward } from '@material-ui/icons';
+import { Box } from 'theme/components';
+import { ArrowUp, ArrowDown } from 'react-feather';
 import { DataTable } from 'components';
 import 'components/styles/CustomTable.scss';
+import { isMobile } from 'react-device-detect';
 
 export interface CustomTableProps<T> {
   emptyMessage?: string;
@@ -33,12 +33,9 @@ const CustomTable: React.FC<CustomTableProps<any>> = ({
   mobileHTML,
   desktopHTML,
 }) => {
-  const theme = useTheme();
-  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
-
   return (
     <Box className='tableContainer'>
-      {mobileWindowSize ? (
+      {isMobile ? (
         <>
           {data.map((item: any, index: number) => (
             <Box key={index}>{mobileHTML(item, index)}</Box>
@@ -53,23 +50,23 @@ const CustomTable: React.FC<CustomTableProps<any>> = ({
           headCells={headCells}
           data={data}
           rowPerPage={rowsPerPage}
-          sortUpIcon={<ArrowUpward />}
-          sortDownIcon={<ArrowDownward />}
+          sortUpIcon={<ArrowUp />}
+          sortDownIcon={<ArrowDown />}
           showEmptyRows={false}
           renderRow={(item, index, page, rowsPerPage) => {
             return (
-              <TableRow key={index}>
+              <tr key={index}>
                 {desktopHTML(item, index, page, rowsPerPage).map(
                   (cellItem: any, ind: number) => (
-                    <TableCell
+                    <td
                       key={ind}
                       className={cellItem.button ? 'buttonCell' : ''}
                     >
                       {cellItem.html}
-                    </TableCell>
+                    </td>
                   ),
                 )}
-              </TableRow>
+              </tr>
             );
           }}
         />

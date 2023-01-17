@@ -7,7 +7,7 @@ import { computeRealizedLPFeePercent } from 'utils/v3/prices';
 import FormattedPriceImpact from './FormattedPriceImpact';
 import SwapRoute from './SwapRoute';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 
 interface AdvancedSwapDetailsProps {
   trade?:
@@ -33,7 +33,7 @@ export function AdvancedSwapDetails({
 
   return !trade ? null : (
     <Box>
-      <Box className='flex justify-between' mb={0.5}>
+      <Box className='flex justify-between' margin='0 0 4px'>
         <p className='caption'>{t('liquidityProviderFee')}</p>
         <p className='caption weight-600'>
           {realizedLPFee
@@ -44,21 +44,21 @@ export function AdvancedSwapDetails({
         </p>
       </Box>
 
-      <Box className='flex justify-between' mb={0.5}>
+      <Box className='flex justify-between' margin='0 0 4px'>
         <p className='caption'>{t('route')}</p>
         <p className='caption weight-600'>
           <SwapRoute trade={trade} />
         </p>
       </Box>
 
-      <Box className='flex justify-between' mb={0.5}>
+      <Box className='flex justify-between' margin='0 0 4px'>
         <p className='caption'>{t('priceimpact')}</p>
         <p className='caption weight-600'>
           <FormattedPriceImpact priceImpact={priceImpact} />
         </p>
       </Box>
 
-      <Box className='flex justify-between' mb={0.5}>
+      <Box className='flex justify-between' margin='0 0 4px'>
         <p className='caption'>
           {trade.tradeType === TradeType.EXACT_INPUT
             ? t('minReceived')

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { useV3Positions } from 'hooks/v3/useV3Positions';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import Loader from 'components/Loader';
@@ -92,10 +92,10 @@ export default function MyLiquidityPoolsV3() {
     <Box>
       <p className='weight-600'>{t('myLiquidityPools')}</p>
       {account && (
-        <Box mt={2} className='flex justify-between items-center'>
+        <Box margin='16px 0 0' className='flex justify-between items-center'>
           <Box className='flex'>
             {filters.map((item, key) => (
-              <Box mr={1} key={key}>
+              <Box margin='0 8px 0 0' key={key}>
                 <FilterPanelItem item={item} />
               </Box>
             ))}
@@ -110,7 +110,7 @@ export default function MyLiquidityPoolsV3() {
           )} */}
         </Box>
       )}
-      <Box mt={2}>
+      <Box margin='16px 0 0'>
         {positionsLoading ? (
           <Box className='flex justify-center'>
             <Loader stroke='white' size={'2rem'} />
@@ -126,8 +126,8 @@ export default function MyLiquidityPoolsV3() {
           <Box textAlign='center'>
             <p>{t('noLiquidityPositions')}.</p>
             {showConnectAWallet && (
-              <Box maxWidth={250} margin='20px auto 0'>
-                <Button fullWidth onClick={toggleWalletModal}>
+              <Box maxWidth='250px' margin='20px auto 0'>
+                <Button width='100%' onClick={toggleWalletModal}>
                   {t('connectWallet')}
                 </Button>
               </Box>

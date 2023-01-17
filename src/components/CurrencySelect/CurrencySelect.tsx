@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
 import 'components/styles/CurrencyInput.scss';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
   }, []);
 
   return (
-    <Box>
+    <>
       <Box
         className={
           !bgClass
@@ -60,7 +60,7 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
           otherSelectedCurrency={otherCurrency}
         />
       )}
-    </Box>
+    </>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import {
   CurrencyInput,
   TransactionErrorContent,
@@ -379,14 +379,14 @@ const AddLiquidity: React.FC<{
   const modalHeader = () => {
     return (
       <Box>
-        <Box mt={10} mb={3} className='flex justify-center'>
+        <Box margin='80px 0 24px' className='flex justify-center'>
           <DoubleCurrencyLogo
             currency0={currencies[Field.CURRENCY_A]}
             currency1={currencies[Field.CURRENCY_B]}
             size={48}
           />
         </Box>
-        <Box mb={6} textAlign='center'>
+        <Box margin='0 0 48px' textAlign='center'>
           <h6>
             {t('supplyingTokens', liquidityTokenData)}
             <br />
@@ -397,13 +397,13 @@ const AddLiquidity: React.FC<{
             })}
           </h6>
         </Box>
-        <Box mb={3} textAlign='center'>
+        <Box margin='0 0 24px' textAlign='center'>
           <small className='text-secondary'>
             {t('outputEstimated', { slippage: allowedSlippage / 100 })}
           </small>
         </Box>
         <Box className='swapButtonWrapper'>
-          <Button fullWidth onClick={onAddLiquidity}>
+          <Button width='100%' onClick={onAddLiquidity}>
             {t('confirmSupply')}
           </Button>
         </Box>
@@ -491,7 +491,7 @@ const AddLiquidity: React.FC<{
         currencies[Field.CURRENCY_B] &&
         pairState !== PairState.INVALID &&
         price && (
-          <Box my={2}>
+          <Box margin='0 16px'>
             <Box className='swapPrice'>
               <small>
                 1 {currencies[Field.CURRENCY_A]?.symbol} ={' '}
@@ -525,13 +525,13 @@ const AddLiquidity: React.FC<{
           approvalB === ApprovalState.NOT_APPROVED ||
           approvalB === ApprovalState.PENDING) &&
           !error && (
-            <Box className='flex fullWidth justify-between' mb={2}>
+            <Box className='flex fullWidth justify-between' margin='0 0 16px'>
               {approvalA !== ApprovalState.APPROVED && (
                 <Box
                   width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
-                    fullWidth
+                    width='100%'
                     onClick={async () => {
                       setApprovingA(true);
                       try {
@@ -558,7 +558,7 @@ const AddLiquidity: React.FC<{
                   width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
-                    fullWidth
+                    width='100%'
                     onClick={async () => {
                       setApprovingB(true);
                       try {
@@ -583,7 +583,7 @@ const AddLiquidity: React.FC<{
             </Box>
           )}
         <Button
-          fullWidth
+          width='100%'
           disabled={
             Boolean(account) &&
             (Boolean(error) ||

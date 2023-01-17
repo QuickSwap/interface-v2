@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useLocation } from 'react-router-dom';
 import HeroBkg from 'assets/images/heroBkg.png';
 import defaultHeroBkg from 'assets/images/heroBkg.svg';

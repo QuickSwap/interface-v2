@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { useTheme } from '@material-ui/core/styles';
 import { ArrowUp, ArrowDown } from 'react-feather';
-import { Box, Divider, useMediaQuery } from '@material-ui/core';
+import { Box, Divider } from 'theme/components';
 import {
   useFilteredSyrupInfo,
   useOldSyrupInfo,
@@ -24,10 +23,11 @@ import {
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from 'theme/components';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
+import { isMobile } from 'react-device-detect';
 
 const LOADSYRUP_COUNT = 10;
 const TOKEN_COLUMN = 1;
@@ -37,8 +37,6 @@ const EARNED_COLUMN = 4;
 
 const DragonsSyrup: React.FC = () => {
   const { t } = useTranslation();
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isEndedSyrup, setIsEndedSyrup] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const [sortBy, setSortBy] = useState(0);
@@ -233,13 +231,16 @@ const DragonsSyrup: React.FC = () => {
 
   return (
     <>
-      <Box className='flex flex-wrap items-center' mb={3.5}>
+      <Box className='flex flex-wrap items-center' margin='0 0 28px'>
         <Box
           className='flex justify-between'
           width={returnFullWidthMobile(isMobile)}
           flex={isMobile ? 'unset' : 1}
         >
-          <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
+          <Box
+            width={isMobile ? 'calc(100% - 150px)' : '100%'}
+            margin='16px 16px 16px 0'
+          >
             <SearchInput
               placeholder={isMobile ? t('search') : t('searchPlaceHolder')}
               value={syrupSearchInput}
@@ -252,15 +253,15 @@ const DragonsSyrup: React.FC = () => {
           width={returnFullWidthMobile(isMobile)}
           className='flex flex-wrap items-center'
         >
-          <Box mr={2}>
+          <Box margin='0 16px 0 0'>
             <CustomSwitch width={160} height={40} items={syrupStatusItems} />
           </Box>
           {isMobile ? (
             <>
-              <Box height={40} flex={1}>
+              <Box height='40px' flex={1}>
                 <CustomMenu title={t('sortBy')} menuItems={sortByMobileItems} />
               </Box>
-              <Box mt={2} width={1} className='flex items-center'>
+              <Box margin='16px 0 0' width='100%' className='flex items-center'>
                 <small className='text-disabled' style={{ marginRight: 8 }}>
                   {sortDesc ? t('sortdesc') : t('sortasc')}
                 </small>
@@ -277,11 +278,11 @@ const DragonsSyrup: React.FC = () => {
       </Box>
       <Divider />
       {!isMobile && (
-        <Box mt={2.5} display='flex' paddingX={2}>
+        <Box margin='20px' className='flex' padding='0 16px'>
           {sortByDesktopItems.map((item) => (
             <Box
               key={item.index}
-              width={item.width}
+              width={`${item.width}px`}
               justifyContent={item.justify}
               onClick={item.onClick}
               className={`flex items-center cursor-pointer ${
@@ -289,7 +290,7 @@ const DragonsSyrup: React.FC = () => {
               }`}
             >
               <small>{item.text}</small>
-              <Box display='flex' ml={0.5}>
+              <Box className='flex' margin='0 0 0 4px'>
                 {sortBy === item.index && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
@@ -306,11 +307,11 @@ const DragonsSyrup: React.FC = () => {
         ))
       ) : (
         <>
-          <Skeleton width='100%' height={120} />
-          <Skeleton width='100%' height={120} />
-          <Skeleton width='100%' height={120} />
-          <Skeleton width='100%' height={120} />
-          <Skeleton width='100%' height={120} />
+          <Skeleton width='100%' height='120px' />
+          <Skeleton width='100%' height='120px' />
+          <Skeleton width='100%' height='120px' />
+          <Skeleton width='100%' height='120px' />
+          <Skeleton width='100%' height='120px' />
         </>
       )}
       <div ref={loadMoreRef} />

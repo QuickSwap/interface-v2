@@ -1,6 +1,6 @@
 import React from 'react';
 import './index.scss';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { MouseoverTooltip } from '../Tooltip';
 
 export enum BadgeVariant {
@@ -33,7 +33,7 @@ export default function Badge({ variant, icon, text, tooltip }: BadgeProps) {
       }`}
     >
       {icon && (
-        <Box className='flex' mr='5px'>
+        <Box className='flex' margin='0 5px 0 0'>
           {icon}
         </Box>
       )}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { Pair, JSBI, Percent } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -81,7 +81,7 @@ const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           </Box>
         </Box>
 
-        <Box className='cardRow' mb={3}>
+        <Box className='cardRow' margin='0 0 24px'>
           <small>{t('yourPoolShare')}:</small>
           <small>
             {poolTokenPercentage

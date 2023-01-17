@@ -1,7 +1,6 @@
 import React, { ReactNode, useCallback, useState } from 'react';
 import Popover, { PopoverProps } from '../Popover';
 import 'components/styles/v3/tooltip.scss';
-import { Box } from '@material-ui/core';
 
 interface TooltipProps extends Omit<PopoverProps, 'content'> {
   text: ReactNode;
@@ -14,7 +13,7 @@ interface TooltipContentProps extends Omit<PopoverProps, 'content'> {
 export default function Tooltip({ text, ...rest }: TooltipProps) {
   return (
     <Popover
-      content={<Box className='tooltipContainer'>{text}</Box>}
+      content={<div className='tooltipContainer'>{text}</div>}
       {...rest}
     />
   );
@@ -23,7 +22,7 @@ export default function Tooltip({ text, ...rest }: TooltipProps) {
 function TooltipContent({ content, ...rest }: TooltipContentProps) {
   return (
     <Popover
-      content={<Box className='tooltipContainer'>{content}</Box>}
+      content={<div className='tooltipContainer'>{content}</div>}
       {...rest}
     />
   );

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Skeleton } from 'theme/components';
 import { StakeQuickModal } from 'components';
 import { useNewLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 import { formatCompact, useLairDQUICKAPY } from 'utils';
@@ -35,13 +34,13 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
             ).toLocaleString('us')}
           </h3>
         ) : (
-          <Skeleton variant='rect' width={100} height={45} />
+          <Skeleton width='100px' height='45px' />
         )}
         <p className='text-uppercase'>{t('24hTxs')}</p>
       </Box>
       <Box className='tradingSection'>
         {globalData && v3GlobalData ? (
-          <Box display='flex'>
+          <Box className='flex'>
             <h6>$</h6>
             <h3>
               {formatCompact(
@@ -51,18 +50,18 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
             </h3>
           </Box>
         ) : (
-          <Skeleton variant='rect' width={100} height={45} />
+          <Skeleton width='100px' height='45px' />
         )}
         <p>{t('24hTradingVol')}</p>
       </Box>
       <Box className='tradingSection'>
         {totalRewardsUSD ? (
-          <Box display='flex'>
+          <Box className='flex'>
             <h6>$</h6>
             <h3>{totalRewardsUSD.toLocaleString('us')}</h3>
           </Box>
         ) : (
-          <Skeleton variant='rect' width={100} height={45} />
+          <Skeleton width='100px' height='45px' />
         )}
         <p>{t('24hRewardsDistributed')}</p>
       </Box>
@@ -76,15 +75,15 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
             })}
           </h3>
         ) : (
-          <Skeleton variant='rect' width={100} height={45} />
+          <Skeleton width='100px' height='45px' />
         )}
         <p>{t('totalTradingPairs')}</p>
       </Box>
-      <Box className='tradingSection' pt='20px'>
+      <Box className='tradingSection' padding='20px 0 0'>
         {dQUICKAPY ? (
           <h3>{dQUICKAPY}%</h3>
         ) : (
-          <Skeleton variant='rect' width={100} height={45} />
+          <Skeleton width='100px' height='45px' />
         )}
         <p>dQUICK {t('apy')}</p>
         <h4 onClick={() => setOpenStakeModal(true)}>

@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect } from 'react';
-import { Box } from '@material-ui/core';
 import { PopupContent } from 'state/application/actions';
 import { useRemovePopup } from 'state/application/hooks';
 import TransactionPopup from './TransactionPopup';
@@ -47,7 +46,7 @@ const PopupItem: React.FC<PopupItemProps> = ({
     );
   }
 
-  return <Box className='popupItem'>{popupContent}</Box>;
+  return <div className='popupItem'>{popupContent}</div>;
 };
 
 export default PopupItem;

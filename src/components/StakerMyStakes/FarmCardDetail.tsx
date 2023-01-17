@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
+import React from 'react';
+import { Box, Button } from 'theme/components';
 import { CurrencyLogo } from 'components';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import { FarmingType } from 'models/enums';
@@ -11,6 +11,7 @@ import { useActiveWeb3React } from 'hooks';
 import { getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useTranslation } from 'react-i18next';
+import { isMobile } from 'react-device-detect';
 
 interface FarmCardDetailProps {
   el: any;
@@ -31,9 +32,6 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
 
   const { eternalCollectRewardHandler, withdrawHandler, claimRewardsHandler } =
     useFarmingHandlers() || {};
-
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const tokenMap = useSelectedTokenList();
   const farmRewardToken =
@@ -79,11 +77,11 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
 
   return (
     <Box
-      mt={1}
+      margin='8px 0 0'
       borderRadius='12px'
       className='flex bg-palette justify-evenly items-center flex-wrap'
     >
-      <Box padding={1.5} width={1}>
+      <Box padding='12px' width='100%'>
         <Box>
           <p>{t('eternalFarming')}</p>
         </Box>
@@ -94,7 +92,7 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
             </Box>
             <Box width='100%'>
               <Button
-                fullWidth
+                width='100%'
                 disabled={
                   selectedTokenId === el.id &&
                   txType === 'withdraw' &&
@@ -111,7 +109,7 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                 !txError ? (
                   <>
                     <Loader size={'1rem'} stroke={'var(--white)'} />
-                    <Box ml='5px'>
+                    <Box margin='0 0 0 5px'>
                       <small>{t('withdrawing')}</small>
                     </Box>
                   </>
@@ -126,16 +124,16 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
         )}
         {el.eternalFarming && (
           <>
-            <Box className='flex flex-wrap' mt={2} p={2}>
-              <Box width={!isMobile && bonusRewardToken ? 0.5 : 1}>
+            <Box className='flex flex-wrap' margin='16px 0 0' padding='16px'>
+              <Box width={!isMobile && bonusRewardToken ? '50%' : '100%'}>
                 <small className='text-secondary'>{t('earnedRewards')}</small>
-                <Box mt={1}>
+                <Box margin='8px 0 0'>
                   <Box className='flex items-center'>
                     {farmRewardToken && (
                       <CurrencyLogo size={'24px'} currency={farmRewardToken} />
                     )}
 
-                    <Box ml='6px'>
+                    <Box margin='0 0 0 6px'>
                       <p>{`${formatReward(earned)} ${rewardToken.symbol}`}</p>
                     </Box>
                   </Box>
@@ -143,13 +141,13 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
               </Box>
               {farmBonusRewardToken && (
                 <Box
-                  mt={isMobile ? 2 : 0}
-                  width={!isMobile ? 0.5 : 1}
+                  margin={isMobile ? '16px 0 0' : '0'}
+                  width={!isMobile ? '50%' : '100%'}
                   textAlign={isMobile ? 'left' : 'right'}
                 >
                   <small className='text-secondary'>{t('earnedBonus')}</small>
                   <Box
-                    mt={1}
+                    margin='8px 0 0'
                     className={`flex items-center ${
                       isMobile ? '' : 'justify-end'
                     }`}
@@ -158,7 +156,7 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                       size={'24px'}
                       currency={farmBonusRewardToken}
                     />
-                    <Box ml='6px'>
+                    <Box margin='0 0 0 6px'>
                       <p>{`${formatReward(bonusEarned)} ${
                         farmBonusRewardToken.symbol
                       }`}</p>
@@ -169,12 +167,12 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
             </Box>
 
             <Box
-              marginTop={2}
+              margin='16px 0 0'
               className='flex justify-between items-center flex-wrap'
             >
               <Box width={isMobile ? '100%' : '49%'}>
                 <Button
-                  fullWidth
+                  width='100%'
                   disabled={
                     (selectedTokenId === el.id &&
                       txType === 'eternalCollectReward' &&
@@ -192,7 +190,7 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                   !txError ? (
                     <>
                       <Loader size={'18px'} stroke={'var(--white)'} />
-                      <Box ml='5px'>
+                      <Box margin='0 0 0 5px'>
                         <small>{t('claiming')}</small>
                       </Box>
                     </>
@@ -203,7 +201,7 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
               </Box>
               <Box width={isMobile ? '100%' : '49%'}>
                 <Button
-                  fullWidth
+                  width='100%'
                   style={{ marginTop: isMobile ? '16px' : 0 }}
                   disabled={
                     selectedTokenId === el.id &&
@@ -223,7 +221,7 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
                   !txError ? (
                     <>
                       <Loader size={'18px'} stroke={'var(--white)'} />
-                      <Box ml='5px'>
+                      <Box margin='0 0 0 5px'>
                         <small>{t('undepositing')}</small>
                       </Box>
                     </>

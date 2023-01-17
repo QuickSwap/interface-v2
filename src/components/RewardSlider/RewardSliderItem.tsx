@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { useHistory } from 'react-router-dom';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { DoubleCurrencyLogo } from 'components';
@@ -46,7 +46,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
 
   return (
     <Box className='rewardsSliderItem bg-palette'>
-      <Box mb={4}>
+      <Box margin='0 0 32px'>
         <Box className='rewardIcon'>
           <DoubleCurrencyLogo
             currency0={info.tokens[0]}
@@ -83,9 +83,9 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
           <p className='text-success'>{apyWithFee}%</p>
         </Box>
       </Box>
-      <Box mt='30px'>
+      <Box margin='30px 0 0'>
         <Button
-          fullWidth
+          width='100%'
           onClick={() => {
             history.push(
               `/pools?currency0=${info.tokens[0].address}&currency1=${info.tokens[1].address}`,

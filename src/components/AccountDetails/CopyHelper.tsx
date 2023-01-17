@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { CheckCircle } from 'react-feather';
 import { useTranslation } from 'react-i18next';

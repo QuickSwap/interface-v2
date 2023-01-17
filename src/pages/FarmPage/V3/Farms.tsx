@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useTranslation } from 'react-i18next';
@@ -54,8 +54,8 @@ export default function Farms() {
   }, [currentTabQueried, v3FarmCategories]);
 
   return (
-    <Box className='bg-palette' borderRadius={10}>
-      <Box width='100%' mt={2}>
+    <Box className='bg-palette' borderRadius='10px'>
+      <Box width='100%' margin='16px 0 0'>
         <Box className='v3-farm-tabs-wrapper'>
           <CustomTabSwitch
             width={300}
@@ -66,7 +66,7 @@ export default function Farms() {
           />
         </Box>
 
-        <Box mt={2}>
+        <Box margin='16px 0 0'>
           {selectedTab?.id === 0 && <FarmingMyFarms />}
           {selectedTab?.id === 1 && <EternalFarmsPage />}
         </Box>

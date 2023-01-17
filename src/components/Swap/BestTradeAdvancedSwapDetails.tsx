@@ -1,6 +1,6 @@
 import { Currency, Fraction, Percent } from '@uniswap/sdk';
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useTranslation } from 'react-i18next';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { computePriceImpact } from 'utils/prices';
@@ -43,7 +43,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
         .quotient;
 
   return (
-    <Box mt={1.5}>
+    <Box margin='12px 0 0'>
       {openSettingsModal && (
         <SettingsModal
           open={openSettingsModal}

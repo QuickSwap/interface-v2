@@ -18,10 +18,10 @@ import { Position } from 'v3lib/entities/position';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useHistory } from 'react-router-dom';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import Badge, { BadgeVariant } from 'components/v3/Badge';
+import { ChevronDown, ChevronUp } from 'react-feather';
+import Badge from 'components/v3/Badge';
 import PositionListItemDetails from '../PositionListItemDetails';
 import { useTranslation } from 'react-i18next';
 
@@ -205,9 +205,9 @@ export default function PositionListItem({
           <span>{positionDetails.tokenId.toString()}</span>
         </Box>
         <Box flex={1}>
-          <Box className='flex items-center flex-wrap' my={-0.5}>
-            <Box className='flex items-center' mr={1} my={0.5}>
-              <Box className='flex' mr={1}>
+          <Box className='flex items-center flex-wrap' margin='-4px 0'>
+            <Box className='flex items-center' margin='4px 8px 4px 0'>
+              <Box className='flex' margin='0 8px 0 0'>
                 <DoubleCurrencyLogo
                   currency0={currencyQuote}
                   currency1={currencyBase}
@@ -224,21 +224,20 @@ export default function PositionListItem({
                 padding='0 5px'
                 height='24px'
                 borderRadius='8px'
-                mr={1}
-                my={0.5}
+                margin='4px 8px 4px 0'
                 onClick={() => history.push(farmingLink)}
                 color='white'
               >
                 <p className='span'>{t('farming')}</p>
-                <Box className='flex' ml='3px'>
+                <Box className='flex' margin='0 0 0 3px'>
                   <ArrowRight size={12} />
                 </Box>
               </Box>
             )}
-            <Box mr={1} my={0.5}>
+            <Box margin='4px 8px 4px 0'>
               <RangeBadge removed={removed} inRange={!outOfRange} />
             </Box>
-            <Box my={0.5}>
+            <Box margin='4px 0'>
               <Badge
                 text={`${new Percent(
                   pool?.fee || 100,
@@ -250,9 +249,9 @@ export default function PositionListItem({
           </Box>
 
           {!expanded && (
-            <Box width={1} mt={1}>
+            <Box width='100%' margin='8px 0 0'>
               {_poolState === PoolState.LOADING && (
-                <Box width={1} className='flex justify-center'>
+                <Box width='100%' className='flex justify-center'>
                   <Loader size={'1rem'} stroke={'var(--white)'} />
                 </Box>
               )}
@@ -276,14 +275,14 @@ export default function PositionListItem({
               className='v3-pool-liquidity-item-expand'
               onClick={() => setExpanded(!expanded)}
             >
-              {expanded ? <ExpandLess /> : <ExpandMore />}
+              {expanded ? <ChevronUp /> : <ChevronDown />}
             </Box>
           )}
         </Box>
       </Box>
 
       {expanded && (
-        <Box mt={3}>
+        <Box margin='24px 0 0'>
           <PositionListItemDetails
             positionDetails={positionDetails}
             ownsNFT={ownsNFT}

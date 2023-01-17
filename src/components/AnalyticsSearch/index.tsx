@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { clientV2, clientV3 } from 'apollo/client';
 import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
@@ -271,7 +271,7 @@ const AnalyticsSearch: React.FC = () => {
           onFocus={() => setMenuOpen(true)}
           onChange={(evt) => setSearchValInput(evt.target.value)}
         />
-        <Box display='flex'>
+        <Box className='flex'>
           <SearchIcon />
         </Box>
       </Box>

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box } from '@material-ui/core';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { ChevronDown, ChevronUp } from 'react-feather';
 import 'components/styles/CustomMenu.scss';
 
 interface CustomMenuItem {
@@ -29,17 +28,17 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
     }
   }, [selectedValue, menuItems]);
   return (
-    <Box className='customMenuWrapper'>
-      <Box className='customMenuHeader' onClick={() => setOpenMenu(!openMenu)}>
+    <div className='customMenuWrapper'>
+      <div className='customMenuHeader' onClick={() => setOpenMenu(!openMenu)}>
         <small>
           {title} {menuItem?.text}
         </small>
-        {openMenu ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-      </Box>
+        {openMenu ? <ChevronUp /> : <ChevronDown />}
+      </div>
       {openMenu && (
-        <Box className='customMenuContent'>
+        <div className='customMenuContent'>
           {menuItems.map((item, index) => (
-            <Box
+            <div
               key={index}
               onClick={() => {
                 item.onClick();
@@ -48,11 +47,11 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
               }}
             >
               <small className='text-secondary'>{item.text}</small>
-            </Box>
+            </div>
           ))}
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch, Link } from 'react-router-dom';
-import { Box, Grid } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Grid, Skeleton } from 'theme/components';
 import { ChainId, Token } from '@uniswap/sdk';
 import {
   shortenAddress,
@@ -28,7 +27,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { CallMade } from '@material-ui/icons';
+import { ArrowUpRight } from 'react-feather';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -205,13 +204,18 @@ const AnalyticsPairDetails: React.FC = () => {
   }, [pairData, pairTransactions, isV2, dispatch]);
 
   const PairInfo = () => (
-    <Box width={1} mt={4}>
+    <Box width='100%' margin='32px 0 0'>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={3}>
           <Box className='panel analyticsDetailsInfoV3'>
             <Box>
               <span className='text-disabled'>{t('totalTokensLocked')}</span>
-              <Box mt={1.5} className='bg-gray2' borderRadius={8} padding={1.5}>
+              <Box
+                margin='12px 0 0'
+                className='bg-gray2'
+                borderRadius='8px'
+                padding='12px'
+              >
                 <Box
                   className='flex items-center justify-between cursor-pointer'
                   onClick={() => {
@@ -229,7 +233,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   <span>{formatNumber(pairData.reserve0)}</span>
                 </Box>
                 <Box
-                  mt={1}
+                  margin='8px 0 0'
                   className='flex items-center justify-between cursor-pointer'
                   onClick={() => {
                     history.push(
@@ -247,7 +251,7 @@ const AnalyticsPairDetails: React.FC = () => {
                 </Box>
               </Box>
             </Box>
-            <Box width={140}>
+            <Box width='140px'>
               <span className='text-disabled'>{t('totalLiquidity')}</span>
               <h6>
                 $
@@ -258,15 +262,15 @@ const AnalyticsPairDetails: React.FC = () => {
                 )}
               </h6>
             </Box>
-            <Box mt={4}>
+            <Box margin='32px 0 0'>
               <span className='text-disabled'>{t('24hTradingVol1')}</span>
               <h6>${formatNumber(pairData.oneDayVolumeUSD)}</h6>
             </Box>
-            <Box mt={4}>
+            <Box margin='32px 0 0'>
               <span className='text-disabled'>{t('24hFees')}</span>
               <h6>${fees}</h6>
             </Box>
-            <Box mt={4}>
+            <Box margin='32px 0 0'>
               <span className='text-disabled'>{t('contractAddress')}</span>
               <h6>
                 {chainId ? (
@@ -278,7 +282,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   >
                     <Box className='flex items-center'>
                       {shortenAddress(pairData.id)}
-                      <CallMade />
+                      <ArrowUpRight />
                     </Box>
                   </a>
                 ) : (
@@ -289,7 +293,7 @@ const AnalyticsPairDetails: React.FC = () => {
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={9}>
-          <Box className='panel' mt={2} mb={2} height={'100%'}>
+          <Box className='panel' margin='16px 0' height={'100%'}>
             <AnalyticsPairChart
               pairData={pairData}
               token0Rate={token0Rate}
@@ -306,7 +310,7 @@ const AnalyticsPairDetails: React.FC = () => {
       <AnalyticsHeader type='pair' data={pairData} address={pairAddress} />
       {pairData ? (
         <>
-          <Box width={1} className='flex flex-wrap justify-between'>
+          <Box width='100%' className='flex flex-wrap justify-between'>
             <Box>
               <Box className='flex items-center'>
                 <DoubleCurrencyLogo
@@ -314,7 +318,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   currency1={currency1}
                   size={32}
                 />
-                <Box ml={1}>
+                <Box margin='0 0 0 8px'>
                   <p className='heading1'>
                     <Link
                       to={`/analytics/${version}/token/${pairData.token0.id}`}
@@ -331,17 +335,16 @@ const AnalyticsPairDetails: React.FC = () => {
                 </Box>
                 {!isV2 && (
                   <Box
-                    ml={2}
-                    paddingY={0.5}
-                    paddingX={1}
-                    borderRadius={6}
+                    margin='0 0 0 16px'
+                    padding='4px 8px'
+                    borderRadius='6px'
                     className='text-primaryText bg-gray30'
                   >
                     {pairData.fee / 10000}% Fee
                   </Box>
                 )}
               </Box>
-              <Box mt={2} display='flex'>
+              <Box margin='16px 0 0' className='flex'>
                 <Box
                   className='analyticsPairRate'
                   onClick={() => {
@@ -357,7 +360,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   </small>
                 </Box>
                 <Box
-                  ml={1}
+                  margin='0 0 0 8px'
                   className='analyticsPairRate'
                   onClick={() => {
                     history.push(
@@ -373,10 +376,10 @@ const AnalyticsPairDetails: React.FC = () => {
                 </Box>
               </Box>
             </Box>
-            <Box my={2} display='flex'>
+            <Box margin='16px 0' className='flex'>
               <Box
                 className='button border-primary'
-                mr={1.5}
+                margin='0 12px 0 0'
                 onClick={() => {
                   history.push(
                     `/pools${isV2 ? '/v2' : '/v3'}?currency0=${
@@ -402,21 +405,21 @@ const AnalyticsPairDetails: React.FC = () => {
             </Box>
           </Box>
           <PairInfo />
-          <Box width={1} mt={5}>
+          <Box width='100%' margin='40px 0 0'>
             <p>{t('transactions')}</p>
           </Box>
-          <Box width={1} className='panel' mt={4}>
+          <Box width='100%' className='panel' margin='32px 0 0'>
             {pairTransactionsList ? (
               <TransactionsTable data={pairTransactionsList} />
             ) : (
-              <Skeleton variant='rect' width='100%' height={150} />
+              <Skeleton variant='rect' width='100%' height='150px' />
             )}
           </Box>
         </>
       ) : dataLoading ? (
-        <Skeleton width='100%' height={100} />
+        <Skeleton width='100%' height='100px' />
       ) : (
-        <Box py={4}>
+        <Box padding='32px 0'>
           <h5>{t('pairNotExist')}</h5>
         </Box>
       )}

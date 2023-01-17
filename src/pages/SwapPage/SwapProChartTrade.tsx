@@ -1,8 +1,8 @@
 import React from 'react';
 import SwapProChart from './SwapProChart';
 import { Token } from '@uniswap/sdk';
-import { Box } from '@material-ui/core';
-import { Height } from '@material-ui/icons';
+import { Box } from 'theme/components';
+import { ArrowDown, ArrowUp } from 'react-feather';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
 import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
@@ -127,11 +127,12 @@ const SwapProChartTrade: React.FC<{
       {showChart && showTrades && pairAddress && (
         <ReflexSplitter>
           <Box
-            width={1}
+            width='100%'
             height='2px'
             className='flex justify-center items-center'
           >
-            <Height />
+            <ArrowDown />
+            <ArrowUp />
           </Box>
         </ReflexSplitter>
       )}

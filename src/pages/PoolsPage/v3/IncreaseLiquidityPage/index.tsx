@@ -3,7 +3,6 @@ import { useParams, useHistory } from 'react-router-dom';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
 import IncreaseLiquidityV3 from 'components/v3/IncreaseLiquidityV3';
-import { Box } from '@material-ui/core';
 
 export default function IncreaseLiquidityV3Page() {
   const params: any = useParams();
@@ -25,8 +24,8 @@ export default function IncreaseLiquidityV3Page() {
   }
 
   return (
-    <Box className='wrapper'>
+    <div className='wrapper'>
       <IncreaseLiquidityV3 positionDetails={position} />
-    </Box>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Grid, Skeleton } from 'theme/components';
 import { SearchInput, CustomMenu, CurrencyLogo } from 'components';
 import { useHistory } from 'react-router-dom';
 import { useActiveWeb3React } from 'hooks';
@@ -14,13 +13,12 @@ import { GlobalValue } from 'constants/index';
 import LendAlertBox from './LendAlertBox';
 import { usePoolsData } from 'hooks/marketxyz/usePoolData';
 import AdsSlider from 'components/AdsSlider';
+import { isMobile } from 'react-device-detect';
 
 const LendPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const { chainId } = useActiveWeb3React();
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const [lendSortBy, setLendSortBy] = useState('');
   const lendSortItems = [t('highestSupply'), t('highestBorrow')];
@@ -112,8 +110,8 @@ const LendPage: React.FC = () => {
   return (
     <Box width={'100%'}>
       <Box
-        mb={'40px'}
-        sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}
+        margin={'0 0 40px'}
+        // sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}
       >
         <h4 className='text-bold'>{t('lend')}</h4>
       </Box>
@@ -121,9 +119,9 @@ const LendPage: React.FC = () => {
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='16px auto 24px'>
         <AdsSlider sort='lend' />
       </Box>
-      <Box mb={3} textAlign='center'>
+      <Box margin='0 0 24px' textAlign='center'>
         <h4 className='text-bold'>{t('lendPageTitle')}</h4>
-        <Box mt={'16px'} maxWidth={'520px'} marginX='auto'>
+        <Box margin={'16px auto 0'} maxWidth={'520px'}>
           <p>{t('lendPageSubTitle')}</p>
         </Box>
       </Box>
@@ -135,7 +133,7 @@ const LendPage: React.FC = () => {
               {item.data ? (
                 <h4>{item.data}</h4>
               ) : (
-                <Skeleton variant='rect' height={40} />
+                <Skeleton variant='rect' height='40px' />
               )}
             </Box>
           </Grid>
@@ -143,16 +141,17 @@ const LendPage: React.FC = () => {
       </Grid>
 
       <Box
-        my={'32px'}
-        display={'flex'}
-        alignItems={'center'}
-        sx={{
-          justifyContent: { xs: 'center', sm: 'center', md: 'space-between' },
-        }}
-        gridGap={'24px'}
-        flexWrap={'wrap'}
+        margin='32px 0'
+        className='flex items-center flex-wrap'
+        // sx={{
+        //   justifyContent: { xs: 'center', sm: 'center', md: 'space-between' },
+        // }}
+        // gridGap={'24px'}
       >
-        <Box display={'flex'} gridGap={'24px'}>
+        <Box
+          className='flex'
+          // gridGap={'24px'}
+        >
           <h6
             className={`text-bold ${
               isMyPools ? 'text-secondary' : 'text-primary'
@@ -171,19 +170,22 @@ const LendPage: React.FC = () => {
           </h6>
         </Box>
         <Box
-          display={'flex'}
-          sx={{
-            flexDirection: { xs: 'column', sm: 'row' },
-            width: { xs: '100%', sm: 'unset' },
-          }}
-          gridGap={'16px'}
+          className={'flex'}
+          // sx={{
+          //   flexDirection: { xs: 'column', sm: 'row' },
+          //   width: { xs: '100%', sm: 'unset' },
+          // }}
+          // gridGap={'16px'}
         >
           <SearchInput
             placeholder={t('search')}
             value={searchInput}
             setValue={setSearchInput}
           />
-          <Box sx={{ minWidth: { xs: '100%', sm: '230px' } }} height={40}>
+          <Box
+            // sx={{ minWidth: { xs: '100%', sm: '230px' } }
+            height='40px'
+          >
             <CustomMenu
               title={`${t('sortBy')}: `}
               menuItems={lendSortItems.map((item) => {
@@ -223,7 +225,11 @@ const LendPage: React.FC = () => {
                     <Box className='lendCard'>
                       <Box className='lendCardTop'>
                         <h5>{pool.name}</h5>
-                        <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
+                        <Box
+                          margin={'14px 0 0'}
+                          className={'flex'}
+                          // gridGap={'4px'}
+                        >
                           {poolTokens.map((token: Token) => (
                             <CurrencyLogo
                               key={token.address}
@@ -252,7 +258,7 @@ const LendPage: React.FC = () => {
                           <p>{midUsdFormatter(totalBorrowedUSD)}</p>
                         </Box>
                       </Box>
-                      <Box py={'22px'} textAlign={'center'}>
+                      <Box padding='22px 0' textAlign={'center'}>
                         <p>{t('viewDetails')}</p>
                       </Box>
                     </Box>
@@ -261,13 +267,13 @@ const LendPage: React.FC = () => {
               })}
             </Grid>
           ) : (
-            <Box mt='64px' mb='32px' textAlign='center'>
+            <Box margin='64px 0 32px' textAlign='center'>
               <h3>{t('nopoolFound')}</h3>
             </Box>
           )}
         </>
       ) : (
-        <Skeleton width='100%' height={200} />
+        <Skeleton width='100%' height='200px' />
       )}
     </Box>
   );

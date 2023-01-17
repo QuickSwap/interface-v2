@@ -1,4 +1,4 @@
-import { Box, Divider } from '@material-ui/core';
+import { Box, Divider } from 'theme/components';
 import BillPay from 'assets/images/featured/BillPay.png';
 import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
 import SpritzIcon from 'assets/images/SpritzIcon.png';
@@ -13,17 +13,17 @@ export const SwapBuySellWidget: React.FC = ({}) => {
 
   return (
     <Box className='wrapper buySellWidgetContainer'>
-      <Box mb={2} className='row'>
+      <Box margin='0 0 16px 0' className='row'>
         <Box>
           <img className='wallet' src={BuyWithFiat} alt='buy with fiat' />
         </Box>
         <Box className='heading'>{t('buyOrSellCryptoFiat')}</Box>
-        <Box sx={{ marginTop: 'auto', marginBottom: 'auto' }}>
+        <Box margin='auto 0'>
           <BuyFiatButton />
         </Box>
       </Box>
       <Divider />
-      <Box mt={2} className='row'>
+      <Box margin='16px 0 0' className='row'>
         <Box>
           <img className='bill' src={BillPay} alt='bill pay' />
         </Box>
@@ -34,7 +34,7 @@ export const SwapBuySellWidget: React.FC = ({}) => {
             <img className='spritz' src={SpritzIcon} alt='spritz finance' />
           </Box>
         </Box>
-        <Box sx={{ marginTop: 'auto', marginBottom: 'auto' }}>
+        <Box margin='auto 0'>
           <a className='rounded button' target='blank' href={SPRITZ_LINK}>
             <small>{t('payWithCrypto')}</small>
           </a>

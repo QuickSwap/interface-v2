@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
@@ -68,12 +68,17 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   }, [dispatch, chainId]);
 
   return (
-    <Box paddingX={3} paddingY={4}>
+    <Box padding='32px 24px'>
       <Box className='flex justify-between'>
         <h5 className='text-bold'>{t('account')}</h5>
         <Close className='cursor-pointer' onClick={toggleWalletModal} />
       </Box>
-      <Box mt={2} padding={2} borderRadius={10} className='bg-secondary2'>
+      <Box
+        margin='16px 0 0'
+        padding='16px'
+        borderRadius='10px'
+        className='bg-secondary2'
+      >
         <Box className='flex justify-between items-center'>
           {formatConnectorName()}
           <Box className='flex items-center'>
@@ -106,7 +111,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             )}
           </Box>
         </Box>
-        <Box className='flex items-center' my={1.5}>
+        <Box className='flex items-center' margin='12px 0'>
           <StatusIcon />
           <h5 style={{ marginLeft: 8 }} id='web3-account-identifier-row'>
             {udDomain
@@ -147,9 +152,8 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <>
           <Box
             className='flex justify-between items-center'
-            px={2}
-            pt={2}
-            mb={1}
+            padding='16px 16px 0'
+            margin='0 0 8px'
           >
             <small>{t('recentTransactions')}</small>
             <small
@@ -159,13 +163,13 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               {t('clearAll')}
             </small>
           </Box>
-          <Box paddingX={2} flex={1} overflow='auto'>
+          <Box padding='0 16px' flex={1} overflow='auto'>
             {renderTransactions(pendingTransactions)}
             {renderTransactions(confirmedTransactions)}
           </Box>
         </>
       ) : (
-        <Box paddingX={2} pt={2}>
+        <Box padding='16px 16px 0'>
           <p>{t('transactionsWillAppear')}...</p>
         </Box>
       )}

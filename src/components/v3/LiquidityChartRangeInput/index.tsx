@@ -7,7 +7,7 @@ import { useDensityChartData } from './hooks';
 import { useInitialTokenPrice, useInitialUSDPrices } from 'state/mint/v3/hooks';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { ZoomLevels } from './types';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { format } from 'd3';
 import { Chart } from './Chart';
@@ -240,7 +240,7 @@ export default function LiquidityChartRangeInput({
 
   return (
     <Box
-      width={1}
+      width='100%'
       minHeight='260px'
       className='flex justify-center items-center'
     >

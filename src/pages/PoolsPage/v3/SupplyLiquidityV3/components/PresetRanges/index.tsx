@@ -3,7 +3,7 @@ import { Currency } from '@uniswap/sdk-core';
 import { PoolStats } from '../PoolStats';
 import { IDerivedMintInfo } from 'state/mint/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
-import { Box, Grid } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { PoolState } from 'hooks/usePools';
 import Loader from 'components/Loader';
 import { fetchPoolsAPR } from 'utils/api';
@@ -178,7 +178,7 @@ export function PresetRanges({
 
   return (
     <Box>
-      <Box mb='10px' className='preset-buttons'>
+      <Box margin='0 0 10px' className='preset-buttons'>
         {ranges.map((range, i) => (
           <button
             className={`${activePreset === range.type ? 'active-preset' : ''}`}
@@ -199,7 +199,7 @@ export function PresetRanges({
       <Box className='flex justify-between'>
         {_risk && !mintInfo.invalidRange && !isStablecoinPair && (
           <Box className='preset-range-info'>
-            <Box px='12px' className='flex items-center justify-between'>
+            <Box padding='0 12px' className='flex items-center justify-between'>
               <span>{t('risk')}:</span>
               <Box className='flex items-center'>
                 {[1, 2, 3, 4, 5].map((_, i) => (
@@ -214,8 +214,8 @@ export function PresetRanges({
               </Box>
             </Box>
             <Box
-              mt={1}
-              px='12px'
+              margin='8px 0 0'
+              padding='0 12px'
               className='flex  items-center justify-between'
             >
               <span>{t('profit')}:</span>

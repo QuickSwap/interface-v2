@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk-core';
-import { Box } from '@material-ui/core';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
 import 'components/styles/CurrencyInput.scss';
 import { useTranslation } from 'react-i18next';
@@ -29,8 +28,8 @@ const V3CurrencySelect: React.FC<CurrencySelectProps> = ({
   }, [setModalOpen]);
 
   return (
-    <Box>
-      <Box
+    <>
+      <div
         className={
           !bgClass
             ? `currencyButton ${currency ? 'currencySelected' : 'noCurrency'}`
@@ -39,15 +38,15 @@ const V3CurrencySelect: React.FC<CurrencySelectProps> = ({
         onClick={handleOpenModal}
       >
         {currency ? (
-          <Box className='flex items-center'>
+          <div className='flex items-center'>
             <CurrencyLogo currency={currency} size={'28px'} />
             <p className='token-symbol-container'>{currency?.symbol}</p>
-          </Box>
+          </div>
         ) : (
           <p>{t('selectToken')}</p>
         )}
         {children}
-      </Box>
+      </div>
       {modalOpen && (
         <CurrencySearchModal
           isOpen={modalOpen}
@@ -60,7 +59,7 @@ const V3CurrencySelect: React.FC<CurrencySelectProps> = ({
           otherSelectedCurrency={otherCurrency}
         />
       )}
-    </Box>
+    </>
   );
 };
 

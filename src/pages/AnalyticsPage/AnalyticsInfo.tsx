@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useIsV2 } from 'state/application/hooks';
@@ -69,14 +69,14 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
         <Box
           className='flex items-center'
           key={i}
-          mr={i === arr.length - 1 ? 0 : 5}
+          margin={i === arr.length - 1 ? '0' : '0 40px 0 0'}
         >
           <small>
             {item.title}: {item.value}
           </small>
           {item.percentChange !== null ? (
             <Box
-              ml={2}
+              margin='0 0 0 16px'
               className={`priceChangeWrapper ${getPriceClass(
                 Number(item.percentChange),
               )}`}

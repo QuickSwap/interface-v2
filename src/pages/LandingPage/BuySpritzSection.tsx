@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import FiatMask from 'assets/images/FiatMask.svg';
 import BillPay from 'assets/images/featured/BillPay.png';
 import SpritzIcon from 'assets/images/SpritzIcon.png';

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Box, Skeleton } from 'theme/components';
 import { useGlobalData, useIsV2 } from 'state/application/hooks';
 import {
   formatCompact,
@@ -188,9 +187,9 @@ const AnalyticsVolumeChart: React.FC = () => {
             setChartType={setVolumeIndex}
           />
         </Box>
-        <Box mt={0.5} className='flex items-start'>
+        <Box margin='4px 0 0' className='flex items-start'>
           {globalChartData && globalData ? (
-            <Box flex={1} mr={2}>
+            <Box flex={1} margin='0 16px 0 0'>
               <Box className='flex items-center'>
                 <h5>
                   $
@@ -207,10 +206,10 @@ const AnalyticsVolumeChart: React.FC = () => {
                   )}
                 </h5>
                 <Box
-                  ml={1}
-                  height={23}
-                  px={1}
-                  borderRadius={40}
+                  margin='0 0 0 8px'
+                  height='23px'
+                  padding='0 8px'
+                  borderRadius='40px'
                   className={volumePercentClass}
                 >
                   <span>
@@ -224,13 +223,13 @@ const AnalyticsVolumeChart: React.FC = () => {
                   </span>
                 </Box>
               </Box>
-              <Box height={21}>
+              <Box height='21px'>
                 <span className='text-disabled'>{volumeDates}</span>
               </Box>
             </Box>
           ) : (
-            <Box mr={2} flex={1}>
-              <Skeleton variant='rect' width='100%' height={24} />
+            <Box margin='0 16px 0 0' flex={1}>
+              <Skeleton variant='rect' width='100%' height='24px' />
             </Box>
           )}
           <ChartType
@@ -241,7 +240,7 @@ const AnalyticsVolumeChart: React.FC = () => {
           />
         </Box>
       </Box>
-      <Box mt={2}>
+      <Box margin='16px 0 0'>
         {globalChartData && isV2 !== undefined ? (
           <BarChart
             height={200}
@@ -258,7 +257,7 @@ const AnalyticsVolumeChart: React.FC = () => {
             }}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={250} />
+          <Skeleton variant='rect' width='100%' height='250px' />
         )}
       </Box>
     </>

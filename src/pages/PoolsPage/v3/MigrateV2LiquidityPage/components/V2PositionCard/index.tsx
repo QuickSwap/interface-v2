@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -15,9 +14,9 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const [showMore, setShowMore] = useState(false);
 
   return (
-    <Box className='migratev2PositionCard bg-secondary1'>
-      <Box className='migratev2PositionCardTop'>
-        <Box className='flex items-center'>
+    <div className='migratev2PositionCard bg-secondary1'>
+      <div className='migratev2PositionCardTop'>
+        <div className='flex items-center'>
           <DoubleCurrencyLogo
             currency0={currency0}
             currency1={currency1}
@@ -28,19 +27,19 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
               ? t('loading')
               : `${currency0.symbol}/${currency1.symbol}`}
           </p>
-        </Box>
+        </div>
 
-        <Box
+        <div
           className='flex items-center text-primary cursor-pointer'
           onClick={() => setShowMore(!showMore)}
         >
           {!showMore && <p style={{ marginRight: 8 }}>{t('manage')}</p>}
           {showMore ? <ChevronUp size='20' /> : <ChevronDown size='20' />}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {showMore && <V2PositionCardDetails pair={pair} />}
-    </Box>
+    </div>
   );
 };
 

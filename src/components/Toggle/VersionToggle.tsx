@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
@@ -40,21 +39,21 @@ const VersionToggle: React.FC = () => {
   };
 
   return (
-    <Box className='version-toggle-container'>
-      <Box
+    <div className='version-toggle-container'>
+      <div
         className={isV2 ? 'version-toggle-active' : ''}
         onClick={() => redirectWithVersion('v2')}
       >
         <small>{t('V2')}</small>
-      </Box>
+      </div>
 
-      <Box
+      <div
         className={!isV2 ? 'version-toggle-active' : ''}
         onClick={() => redirectWithVersion('v3')}
       >
         <small>{t('V3')}</small>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

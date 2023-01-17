@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Divider } from '@material-ui/core';
+import { Box, Divider } from 'theme/components';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
@@ -89,11 +89,11 @@ const TokensTable: React.FC<TokensTableProps> = ({
     );
     const priceClass = getPriceClass(Number(token.priceChangeUSD));
     return (
-      <Box mt={index === 0 ? 0 : 3}>
-        <Box className='flex items-center' mb={1}>
+      <Box margin={index === 0 ? '0' : '24px 0 0'}>
+        <Box className='flex items-center' margin='0 0 8px'>
           <Box
-            display='flex'
-            mr={1}
+            className='flex'
+            margin='0 8px 0 0'
             onClick={() => {
               const tokenIndex = bookmarkTokens.indexOf(token.id);
               if (tokenIndex === -1) {
@@ -115,7 +115,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
           >
             <Box className='flex items-center'>
               <CurrencyLogo currency={tokenCurrency} size='28px' />
-              <Box ml={1}>
+              <Box margin='0 0 0 8px'>
                 <p className='text-gray25'>
                   {token.name}{' '}
                   <span className='text-hint'>({token.symbol})</span>
@@ -169,8 +169,8 @@ const TokensTable: React.FC<TokensTableProps> = ({
         html: (
           <Box className='flex items-center'>
             <Box
-              display='flex'
-              mr={1}
+              className='flex'
+              margin='0 8px 0 0'
               onClick={() => {
                 const tokenIndex = bookmarkTokens.indexOf(token.id);
                 if (tokenIndex === -1) {
@@ -192,7 +192,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
             >
               <Box className='flex items-center'>
                 <CurrencyLogo currency={tokenCurrency} size='28px' />
-                <Box ml={1}>
+                <Box margin='0 0 0 8px'>
                   <p className='text-gray25'>
                     {token.name}{' '}
                     <span className='text-hint'>({token.symbol})</span>
@@ -212,7 +212,10 @@ const TokensTable: React.FC<TokensTableProps> = ({
       },
       {
         html: (
-          <Box className={`priceChangeWrapper ${priceClass}`} mr={2}>
+          <Box
+            className={`priceChangeWrapper ${priceClass}`}
+            margin='0 16px 0 0'
+          >
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         ),

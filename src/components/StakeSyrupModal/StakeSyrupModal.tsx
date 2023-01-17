@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
@@ -167,7 +167,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
 
   return (
     <CustomModal open={open} onClose={onClose}>
-      <Box paddingX={3} paddingY={4}>
+      <Box padding='32px 24px'>
         <Box className='flex justify-between items-center'>
           <h5>
             {t('stake')} {syrup.stakingToken.symbol}
@@ -175,7 +175,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
-          mt={3}
+          margin='24px 0 0'
           className='bg-default border-gray14'
           borderRadius='10px'
           padding='16px'
@@ -186,7 +186,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
               {t('balance')}: {formatTokenAmount(maxAmountInput)}
             </small>
           </Box>
-          <Box mt={2} className='flex items-center'>
+          <Box margin='16px 0 0' className='flex items-center'>
             <NumericalInput
               placeholder='0'
               value={typedValue}
@@ -220,7 +220,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             </span>
           </Box>
           <Box className='flex items-center'>
-            <Box flex={1} mr={2} mt={0.5}>
+            <Box flex={1} margin='4px 16px 0 0'>
               <ColoredSlider
                 min={1}
                 max={100}
@@ -236,7 +236,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             <small>{Math.min(stakePercent, 100).toLocaleString('us')}%</small>
           </Box>
         </Box>
-        <Box mt={2} className='flex items-center justify-between'>
+        <Box margin='16px 0 0' className='flex items-center justify-between'>
           <p>{t('dailyRewards')}</p>
           <p>
             {hypotheticalRewardRate
@@ -248,7 +248,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             {syrup.token.symbol} / {t('day')}
           </p>
         </Box>
-        <Box mt={3} className='flex justify-between items-center'>
+        <Box margin='24px 0 0' className='flex justify-between items-center'>
           <Box width='48%'>
             <Button
               className='stakeButton'

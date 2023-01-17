@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import ReactGA from 'react-ga';
-import { Box, Divider } from '@material-ui/core';
+import { Box, Divider } from 'theme/components';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';

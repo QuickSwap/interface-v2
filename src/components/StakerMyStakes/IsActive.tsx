@@ -3,7 +3,7 @@ import { useToken } from 'hooks/TokensV3';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import './index.scss';
 import { usePool } from 'hooks/usePools';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
 import { useTranslation } from 'react-i18next';
 
@@ -35,7 +35,7 @@ export function IsActive({ el }: { el: any }) {
   return (
     <Box className='flex items-center'>
       <Box
-        mr='6px'
+        margin='0 6px 0 0'
         className={`v3-stake-active-dot ${
           outOfRange ? 'bg-error' : 'bg-success'
         }`}

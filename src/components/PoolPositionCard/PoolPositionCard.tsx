@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { ChainId, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';

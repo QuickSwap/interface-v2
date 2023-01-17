@@ -1,6 +1,6 @@
 import { JSBI, Pair, Percent } from '@uniswap/sdk';
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useTotalSupply } from 'data/TotalSupply';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenBalance } from 'state/wallet/hooks';

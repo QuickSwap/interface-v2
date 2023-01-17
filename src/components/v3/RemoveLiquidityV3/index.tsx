@@ -5,7 +5,7 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
-import { Box, Button, Divider } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { PositionPool } from 'models/interfaces';
 import { useTranslation } from 'react-i18next';
 import {
@@ -257,13 +257,13 @@ export default function RemoveLiquidityV3({
   function modalHeader() {
     return (
       <Box>
-        <Box mt={3} className='flex justify-between'>
+        <Box margin='24px 0 0' className='flex justify-between'>
           <p>
             {t('pooled')} {liquidityValue0?.currency?.symbol}
           </p>
           <Box className='flex items-center'>
             <p>{liquidityValue0?.toSignificant()}</p>
-            <Box className='flex' ml={1}>
+            <Box className='flex' margin='0 0 0 8px'>
               <CurrencyLogo
                 size='24px'
                 currency={liquidityValue0?.currency as WrappedCurrency}
@@ -271,13 +271,13 @@ export default function RemoveLiquidityV3({
             </Box>
           </Box>
         </Box>
-        <Box mt={2} className='flex justify-between'>
+        <Box margin='16px 0 0' className='flex justify-between'>
           <p>
             {t('pooled')} {liquidityValue1?.currency?.symbol}
           </p>
           <Box className='flex items-center'>
             <p>{liquidityValue1?.toSignificant()}</p>
-            <Box className='flex' ml={1}>
+            <Box className='flex' margin='0 0 0 8px'>
               <CurrencyLogo
                 size='24px'
                 currency={liquidityValue1?.currency as WrappedCurrency}
@@ -286,15 +286,15 @@ export default function RemoveLiquidityV3({
           </Box>
         </Box>
         {(feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) && (
-          <Box mt={2}>
+          <Box margin='16px 0 0'>
             <p>{t('collectFeeFromThisPosition')}.</p>
-            <Box mt={2} className='flex justify-between'>
+            <Box margin='16px 0 0' className='flex justify-between'>
               <p>
                 {feeValue0?.currency?.symbol} {t('feeEarned')}:
               </p>
               <Box className='flex items-center'>
                 <p>{feeValue0?.toSignificant()}</p>
-                <Box className='flex' ml={1}>
+                <Box className='flex' margin='0 0 0 8px'>
                   <CurrencyLogo
                     size='24px'
                     currency={feeValue0?.currency as WrappedCurrency}
@@ -302,13 +302,13 @@ export default function RemoveLiquidityV3({
                 </Box>
               </Box>
             </Box>
-            <Box mt={2} className='flex justify-between'>
+            <Box margin='16px 0 0' className='flex justify-between'>
               <p>
                 {feeValue1?.currency?.symbol} {t('feeEarned')}:
               </p>
               <Box className='flex items-center'>
                 <p>{feeValue1?.toSignificant()}</p>
-                <Box className='flex' ml={1}>
+                <Box className='flex' margin='0 0 0 8px'>
                   <CurrencyLogo
                     size='24px'
                     currency={feeValue1?.currency as WrappedCurrency}
@@ -318,7 +318,7 @@ export default function RemoveLiquidityV3({
             </Box>
           </Box>
         )}
-        <Box mt={2}>
+        <Box margin='16px 0 0'>
           <Button className='v3-remove-liquidity-button' onClick={burn}>
             {t('confirm')}
           </Button>
@@ -374,7 +374,7 @@ export default function RemoveLiquidityV3({
       )}
       <Box className='flex justify-between'>
         <Box className='flex items-center'>
-          <Box className='flex' mr={1}>
+          <Box className='flex' margin='0 8px 0 0'>
             <DoubleCurrencyLogo
               currency0={feeValue0?.currency}
               currency1={feeValue1?.currency}
@@ -387,13 +387,16 @@ export default function RemoveLiquidityV3({
         </Box>
         <RangeBadge removed={removed} inRange={!outOfRange} />
       </Box>
-      <Box mt={2} className='v3-remove-liquidity-input-wrapper'>
-        <Box mb={2} className='flex justify-between'>
+      <Box margin='16px 0 0' className='v3-remove-liquidity-input-wrapper'>
+        <Box margin='0 0 16px' className='flex justify-between'>
           <small className='text-secondary'>{t('amount')}</small>
         </Box>
-        <Box mb={2} className='flex items-center justify-between'>
+        <Box margin='0 0 16px' className='flex items-center justify-between'>
           <h3>{percentForSlider}%</h3>
-          <Box ml={1} className='v3-remove-liquidity-percent-buttons'>
+          <Box
+            margin='0 0 0 8px'
+            className='v3-remove-liquidity-percent-buttons'
+          >
             <Button onClick={() => onPercentSelectForSlider(25)}>25%</Button>
             <Button onClick={() => onPercentSelectForSlider(50)}>50%</Button>
             <Button onClick={() => onPercentSelectForSlider(75)}>75%</Button>
@@ -410,7 +413,7 @@ export default function RemoveLiquidityV3({
           }}
         />
       </Box>
-      <Box my={2} className='v3-remove-liquidity-info-wrapper'>
+      <Box margin='16px 0' className='v3-remove-liquidity-info-wrapper'>
         <Box>
           <p>
             {t('pooled')} {liquidityValue0?.currency?.symbol}
@@ -420,7 +423,7 @@ export default function RemoveLiquidityV3({
             <CurrencyLogo currency={liquidityValue0?.currency} size='20px' />
           </Box>
         </Box>
-        <Box mt={2}>
+        <Box margin='16px 0 0'>
           <p>
             {t('pooled')} {liquidityValue1?.currency?.symbol}
           </p>
@@ -431,8 +434,13 @@ export default function RemoveLiquidityV3({
         </Box>
         {(feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) && (
           <>
-            <Box mt={2} width='100%' height='1px' className='border' />
-            <Box my={2}>
+            <Box
+              margin='16px 0 0'
+              width='100%'
+              height='1px'
+              className='border'
+            />
+            <Box margin='16px 0'>
               <p>
                 {feeValue0?.currency?.symbol} {t('feeEarned')}:
               </p>
@@ -454,8 +462,8 @@ export default function RemoveLiquidityV3({
         )}
       </Box>
       {showCollectAsWeth && (
-        <Box mb={2} className='flex items-center'>
-          <Box mr={1}>
+        <Box margin='0 0 16px' className='flex items-center'>
+          <Box margin='0 8px 0 0'>
             <p>{t('collectAsWmatic')}</p>
           </Box>
           <ToggleSwitch

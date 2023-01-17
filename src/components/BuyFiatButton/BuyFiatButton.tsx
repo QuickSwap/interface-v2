@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core';
+import { Button } from 'theme/components';
 import { BinanceModal, BuyFiatModal, MoonpayModal } from 'components';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';

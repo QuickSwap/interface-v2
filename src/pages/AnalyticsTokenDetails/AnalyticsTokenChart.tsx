@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { Box } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Skeleton } from 'theme/components';
 import dayjs from 'dayjs';
 import {
   formatCompact,
@@ -115,9 +114,9 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
   return (
     <>
       <Box className='flex flex-wrap justify-between'>
-        <Box mt={1.5}>
+        <Box margin='12px 0 0'>
           <span>{chartIndexTexts[chartIndex]}</span>
-          <Box mt={1}>
+          <Box margin='8px 0 0'>
             {(currentData || currentData === 0) &&
             (currentPercent || currentPercent === 0) ? (
               <>
@@ -130,7 +129,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
                   </h4>
                   <Box
                     className={`priceChangeWrapper ${currentPercentClass}`}
-                    ml={1}
+                    margin='0 0 0 8px'
                   >
                     <small>{getFormattedPrice(Number(currentPercent))}%</small>
                   </Box>
@@ -145,7 +144,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
           </Box>
         </Box>
         <Box className='flex flex-col items-end'>
-          <Box mt={1.5}>
+          <Box margin='12px 0 0'>
             <ChartType
               chartTypes={chartIndexes}
               typeTexts={chartIndexTexts}
@@ -153,7 +152,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
               setChartType={setChartIndex}
             />
           </Box>
-          <Box mt={1.5}>
+          <Box margin='12px 0 0'>
             <ChartType
               chartTypes={GlobalData.analytics.CHART_DURATIONS}
               typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
@@ -163,7 +162,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
           </Box>
         </Box>
       </Box>
-      <Box mt={2} width={1}>
+      <Box margin='16px 0 0' width='100%'>
         {tokenChartData ? (
           <AreaChart
             data={chartData}
@@ -176,7 +175,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
             categories={getChartDates(tokenChartData, durationIndex)}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={217} />
+          <Skeleton variant='rect' width='100%' height='217px' />
         )}
       </Box>
     </>

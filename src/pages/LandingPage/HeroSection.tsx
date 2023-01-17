@@ -1,7 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Box } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Button, Box, Skeleton } from 'theme/components';
 import { isSupportedNetwork, addMaticToMetamask } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
@@ -21,7 +20,7 @@ export const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
     <Box className='heroSection'>
       <small className='text-bold'>{t('totalValueLocked')}</small>
       {globalData && v3GlobalData ? (
-        <Box display='flex' pt='5px'>
+        <Box className='flex' padding='5px 0 0'>
           <h3>$</h3>
           <h1>
             {(
@@ -33,14 +32,14 @@ export const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
           </h1>
         </Box>
       ) : (
-        <Box my={1}>
-          <Skeleton variant='rect' width={400} height={72} />
+        <Box margin='8px 0'>
+          <Skeleton width='400px' height='72px' />
         </Box>
       )}
       <h5>{t('topAssetExchange')}</h5>
-      <Box mt={2} width={200} height={48}>
+      <Box margin='16px 0 0' width='200px' height='48px'>
         <Button
-          fullWidth
+          width='100%'
           className='bg-blue1 p'
           style={{
             borderRadius: '30px',

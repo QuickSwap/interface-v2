@@ -2,15 +2,14 @@ import React from 'react';
 import { Pair } from '@uniswap/v2-sdk';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
-import { LockOutlined } from '@material-ui/icons';
-
+import { Lock } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { WrappedCurrency } from 'models/types/Currency';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'react-i18next';
 import JSBI from 'jsbi';
@@ -144,7 +143,7 @@ export default function CurrencyInputPanel({
     <Box className='v3-currency-input-panel'>
       {locked && (
         <Box className='v3-currency-input-lock-wrapper'>
-          <LockOutlined />
+          <Lock />
           <small>
             Price is outside specified price range. Single-asset deposit only.
           </small>
@@ -152,7 +151,7 @@ export default function CurrencyInputPanel({
       )}
 
       <Box id={id} className='bg-secondary2 swapBox'>
-        <Box mb={2}>
+        <Box margin='0 0 16px'>
           <Box>
             <Box
               className={`currencyButton  ${'token-select-background-v3'}  ${
@@ -193,7 +192,7 @@ export default function CurrencyInputPanel({
           </Box>
         </Box>
         <Box className='flex justify-between'>
-          <Box display='flex'>
+          <Box className='flex'>
             <small className='text-secondary'>
               {t('balance')}: {balance?.toSignificant(5)}
             </small>

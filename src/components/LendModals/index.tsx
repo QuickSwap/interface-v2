@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Button } from '@material-ui/core';
-import { ArrowForward } from '@material-ui/icons';
+import { Box, Button } from 'theme/components';
+import { ArrowRight } from 'react-feather';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 import JumpRateModel from 'utils/marketxyz/interestRateModel';
 import { midUsdFormatter } from 'utils/bigUtils';
@@ -526,7 +526,10 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
       )}
       <CustomModal open={open} onClose={onClose}>
         <Box className='lendModalWrapper'>
-          <Box mt={1} mb={2.5} className='flex items-center justify-between'>
+          <Box
+            margin='8px 0 20px'
+            className='flex items-center justify-between'
+          >
             <Box className='flex items-center'>
               <CurrencyLogo
                 currency={getPoolAssetToken(asset, chainId)}
@@ -537,7 +540,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 }
                 size='36px'
               />
-              <Box className='flex' ml='6px'>
+              <Box className='flex' margin='0 0 0 6px'>
                 <p className='weight-600'>
                   {asset.underlyingSymbol +
                     (asset.underlyingName.includes('LP') ? ' LP' : '')}
@@ -562,7 +565,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               },
             ]}
           />
-          <Box mt={'24px'} className='flex justify-between items-center'>
+          <Box margin='24px 0 0' className='flex justify-between items-center'>
             <span className='text-secondary text-uppercase'>
               {!borrow ? t('supplyAmount') : t('borrowAmount')}
             </span>
@@ -578,7 +581,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             )}
           </Box>
           <Box
-            mt={2}
+            margin='16px 0 0'
             className={`lendModalInput ${inputFocused ? 'focused' : ''}`}
           >
             <Box>
@@ -604,7 +607,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               {t('max')}
             </Box>
           </Box>
-          <Box my={3} className='lendModalContentWrapper'>
+          <Box margin='24px 0' className='lendModalContentWrapper'>
             {lendModalRows
               .filter((row) => !!row)
               .map((row, ind) => (
@@ -614,7 +617,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                     {row?.html}
                     {row?.showArrow && (
                       <>
-                        <ArrowForward fontSize='small' />
+                        <ArrowRight size='12px' />
                         {row?.htmlAfterArrow}
                       </>
                     )}
@@ -637,9 +640,9 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               </Box>
             </Box>
           )}
-          <Box mt={'24px'}>
+          <Box margin='24px 0 0'>
             <Button
-              fullWidth
+              width='100%'
               disabled={buttonDisabled}
               onClick={async () => {
                 if (!account || !sdk) return;
@@ -746,7 +749,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               {buttonText}
             </Button>
             {asset.underlyingName.includes('LP') && pairData && (
-              <Box mt={2} textAlign='center'>
+              <Box margin='16px 0 0' textAlign='center'>
                 <Link
                   className='assetLPLink'
                   to={`/pools?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`}

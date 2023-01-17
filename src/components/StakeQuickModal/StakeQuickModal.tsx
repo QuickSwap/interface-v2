@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedLairInfo } from 'state/stake/hooks';
@@ -102,13 +102,13 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
 
   return (
     <CustomModal open={open} onClose={onClose}>
-      <Box paddingX={3} paddingY={4}>
+      <Box padding='32px 24px'>
         <Box className='flex items-center justify-between'>
           <h5>{t('stake')} QUICK</h5>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
-          mt={3}
+          margin='24px 0 0'
           className='bg-default border-gray14'
           borderRadius='10px'
           padding='16px'
@@ -119,7 +119,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
               {t('balance')}: {formatTokenAmount(quickBalance)}
             </small>
           </Box>
-          <Box mt={2} className='flex items-center'>
+          <Box margin='16px 0 0' className='flex items-center'>
             <NumericalInput
               placeholder='0'
               value={typedValue}
@@ -145,7 +145,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
             </span>
           </Box>
           <Box className='flex items-center'>
-            <Box flex={1} mr={2} mt={0.5}>
+            <Box flex={1} margin='4px 16px 0 0'>
               <ColoredSlider
                 min={1}
                 max={100}
@@ -169,7 +169,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
             <small>{Math.min(stakePercent, 100).toLocaleString('us')}%</small>
           </Box>
         </Box>
-        <Box mt={3} className='flex items-center justify-between'>
+        <Box margin='24px 0 0' className='flex items-center justify-between'>
           <Box width='48%'>
             <Button
               className='stakeButton'

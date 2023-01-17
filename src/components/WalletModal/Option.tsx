@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useTranslation } from 'react-i18next';
 
 interface OptionProps {
@@ -29,7 +29,7 @@ const Option: React.FC<OptionProps> = ({
   const { t } = useTranslation();
   const content = (
     <Box className='optionCardClickable' id={id} onClick={onClick}>
-      <Box className='flex items-center' my={0.5}>
+      <Box className='flex items-center' margin='4px 0'>
         <img src={icon} alt={'Icon'} width={24} />
         <p style={{ marginLeft: 8 }}>{header}</p>
       </Box>
@@ -45,7 +45,7 @@ const Option: React.FC<OptionProps> = ({
         </Box>
       )}
       {subheader && (
-        <Box my={0.5} width={1}>
+        <Box margin='4px 0' width='100%'>
           <span>{subheader}</span>
         </Box>
       )}

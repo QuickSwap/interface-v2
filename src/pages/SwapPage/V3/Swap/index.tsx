@@ -65,7 +65,7 @@ import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
 import { useExpertModeManager } from 'state/user/hooks';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { ETHER } from '@uniswap/sdk';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
@@ -568,7 +568,7 @@ const SwapV3Page: React.FC = () => {
             onDismiss={handleConfirmDismiss}
           />
 
-          <Box mt={1.5} mb={1}>
+          <Box margin='12px 0 8px'>
             <CurrencyInputPanel
               label={
                 independentField === Field.OUTPUT && !showWrap
@@ -605,7 +605,7 @@ const SwapV3Page: React.FC = () => {
               }}
             />
           </Box>
-          <Box mt={1} mb={1.5}>
+          <Box margin='8px 0 12px'>
             <CurrencyInputPanel
               value={formattedAmounts[Field.OUTPUT]}
               onUserInput={handleTypeOutput}
@@ -634,7 +634,7 @@ const SwapV3Page: React.FC = () => {
             />
           </Box>
           {!showWrap && isExpertMode ? (
-            <Box className='recipientInput' mb={1.5}>
+            <Box className='recipientInput' margin='0 0 12px'>
               <Box className='recipientInputHeader'>
                 {recipient !== null ? (
                   <ArrowDown size='16' color='white' />
@@ -692,12 +692,12 @@ const SwapV3Page: React.FC = () => {
 
           <Box className='swapButtonWrapper'>
             {!account ? (
-              <Button fullWidth onClick={toggleWalletModal}>
+              <Button width='100%' onClick={toggleWalletModal}>
                 {t('connectWallet')}
               </Button>
             ) : showWrap ? (
               <Button
-                fullWidth
+                width='100%'
                 disabled={Boolean(wrapInputError)}
                 onClick={onWrap}
               >
@@ -710,7 +710,7 @@ const SwapV3Page: React.FC = () => {
               </Button>
             ) : routeNotFound && userHasSpecifiedInputOutput ? (
               <Button
-                fullWidth
+                width='100%'
                 disabled={routeNotFound && userHasSpecifiedInputOutput}
               >
                 {isLoadingRoute ? (
@@ -725,7 +725,7 @@ const SwapV3Page: React.FC = () => {
               <>
                 <Box width='48%'>
                   <Button
-                    fullWidth
+                    width='100%'
                     onClick={handleApprove}
                     disabled={
                       approvalState !== ApprovalState.NOT_APPROVED ||
@@ -785,7 +785,7 @@ const SwapV3Page: React.FC = () => {
                 </Box>
                 <Box width='48%'>
                   <Button
-                    fullWidth
+                    width='100%'
                     onClick={() => {
                       if (isExpertMode) {
                         handleSwap();
@@ -819,7 +819,7 @@ const SwapV3Page: React.FC = () => {
               </>
             ) : (
               <Button
-                fullWidth
+                width='100%'
                 onClick={() => {
                   if (isExpertMode) {
                     handleSwap();
@@ -849,7 +849,7 @@ const SwapV3Page: React.FC = () => {
             )}
           </Box>
           {isExpertMode && swapErrorMessage ? (
-            <Box mt={2}>
+            <Box margin='16px 0 0'>
               <SwapCallbackError error={swapErrorMessage} />
             </Box>
           ) : null}

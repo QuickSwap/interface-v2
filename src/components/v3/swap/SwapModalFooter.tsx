@@ -4,7 +4,7 @@ import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
 import SwapCallbackError from './SwapCallbackError';
 import { useTranslation } from 'react-i18next';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 
 export default function SwapModalFooter({
   onConfirm,
@@ -20,8 +20,8 @@ export default function SwapModalFooter({
 }) {
   const { t } = useTranslation();
   return (
-    <Box mt={2} className='swapButtonWrapper'>
-      <Button onClick={onConfirm} disabled={disabledConfirm} fullWidth>
+    <Box margin='16px 0 0' className='swapButtonWrapper'>
+      <Button onClick={onConfirm} disabled={disabledConfirm} width='100%'>
         {t('confirmSwap')}
       </Button>
       {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}

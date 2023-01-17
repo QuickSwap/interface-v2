@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { useTranslation } from 'react-i18next';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { network } from 'connectors';
 import { useEagerConnect, useInactiveListener } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import 'components/styles/Web3ReactManager.scss';
+import Loader from 'components/Loader';
 
 const Web3ReactManager: React.FC<{ children: JSX.Element }> = ({
   children,
@@ -61,7 +62,7 @@ const Web3ReactManager: React.FC<{ children: JSX.Element }> = ({
   if (!active && !networkActive) {
     return showLoader ? (
       <Box className='messageWrapper'>
-        <CircularProgress />
+        <Loader size='16px' />
       </Box>
     ) : null;
   }

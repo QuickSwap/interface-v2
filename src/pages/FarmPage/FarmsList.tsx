@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTheme } from '@material-ui/core/styles';
-import { Box, Divider, useMediaQuery } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Divider, Skeleton } from 'theme/components';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import {
   useStakingInfo,
@@ -37,6 +35,7 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
+import { isMobile } from 'react-device-detect';
 
 const LOADFARM_COUNT = 10;
 const POOL_COLUMN = '1';
@@ -51,7 +50,6 @@ interface FarmsListProps {
 
 const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
   const { t } = useTranslation();
-  const { breakpoints } = useTheme();
   const history = useHistory();
   const parsedQuery = useParsedQueryString();
   const currentTab =
@@ -70,7 +68,6 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
       : false;
   const sortBy = parsedQuery && parsedQuery.sortBy ? parsedQuery.sortBy : false;
 
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { chainId } = useActiveWeb3React();
   const [pageIndex, setPageIndex] = useState(0);
   const [farmSearch, setFarmSearch] = useState('');
@@ -410,19 +407,24 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
   const { loadMoreRef } = useInfiniteLoading(loadNext);
 
   const sortColumns = [
-    { text: t('pool'), index: POOL_COLUMN, width: 0.3, justify: 'flex-start' },
-    { text: t('tvl'), index: TVL_COLUMN, width: 0.2, justify: 'center' },
+    {
+      text: t('pool'),
+      index: POOL_COLUMN,
+      width: '30%',
+      justify: 'flex-start',
+    },
+    { text: t('tvl'), index: TVL_COLUMN, width: '20%', justify: 'center' },
     {
       text: t('rewards'),
       index: REWARDS_COLUMN,
-      width: 0.25,
+      width: '25%',
       justify: 'center',
     },
-    { text: t('apy'), index: APY_COLUMN, width: 0.15, justify: 'center' },
+    { text: t('apy'), index: APY_COLUMN, width: '15%', justify: 'center' },
     {
       text: t('earned'),
       index: EARNED_COLUMN,
-      width: 0.2,
+      width: '20%',
       justify: 'flex-end',
     },
   ];
@@ -517,7 +519,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
             className='flex justify-between'
             width={returnFullWidthMobile(isMobile)}
           >
-            <Box width={isMobile ? 'calc(100% - 150px)' : 1} mr={2} my={2}>
+            <Box
+              width={isMobile ? 'calc(100% - 150px)' : '100%'}
+              margin='16px 16px 16px 0'
+            >
               <SearchInput
                 placeholder={isMobile ? t('search') : t('searchPlaceHolder')}
                 value={farmSearchInput}
@@ -530,18 +535,22 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
             width={returnFullWidthMobile(isMobile)}
             className='flex flex-wrap items-center'
           >
-            <Box mr={2}>
+            <Box margin='0 16px 0 0'>
               <CustomSwitch width={160} height={40} items={farmStatusItems} />
             </Box>
             {isMobile ? (
               <>
-                <Box height={40} flex={1}>
+                <Box height='40px' flex={1}>
                   <CustomMenu
                     title={t('sortBy')}
                     menuItems={sortByMobileItems}
                   />
                 </Box>
-                <Box mt={2} width={1} className='flex items-center'>
+                <Box
+                  margin='16px 0 0'
+                  width='100%'
+                  className='flex items-center'
+                >
                   <small className='text-disabled' style={{ marginRight: 8 }}>
                     {sortDesc ? t('sortdesc') : t('sortasc')}
                   </small>
@@ -561,7 +570,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
       </Box>
       <Divider />
       {!isMobile && (
-        <Box mt={2.5} display='flex' paddingX={2}>
+        <Box margin='20px 0 0' className='flex' padding='0 16px'>
           {sortByDesktopItems.map((item) => (
             <Box
               key={item.index}
@@ -573,7 +582,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
               onClick={item.onClick}
             >
               <small>{item.text}</small>
-              <Box display='flex' ml={0.5}>
+              <Box className='flex' margin='0 0 0 4px'>
                 {sortBy === item.index && sortDesc ? (
                   <ArrowDown size={20} />
                 ) : (
@@ -587,11 +596,11 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
       {(currentTab === GlobalConst.v2FarmTab.LPFARM && !stakingInfos) ||
         (currentTab === GlobalConst.v2FarmTab.DUALFARM && !stakingDualInfos && (
           <>
-            <Skeleton width='100%' height={100} />
-            <Skeleton width='100%' height={100} />
-            <Skeleton width='100%' height={100} />
-            <Skeleton width='100%' height={100} />
-            <Skeleton width='100%' height={100} />
+            <Skeleton width='100%' height='100px' />
+            <Skeleton width='100%' height='100px' />
+            <Skeleton width='100%' height='100px' />
+            <Skeleton width='100%' height='100px' />
+            <Skeleton width='100%' height='100px' />
           </>
         ))}
       {currentTab === GlobalConst.v2FarmTab.LPFARM &&

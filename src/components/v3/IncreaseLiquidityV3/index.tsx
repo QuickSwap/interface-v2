@@ -36,7 +36,7 @@ import { JSBI } from '@uniswap/sdk';
 import { PositionPool } from 'models/interfaces';
 import { useTranslation } from 'react-i18next';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
@@ -308,14 +308,14 @@ export default function IncreaseLiquidityV3({
 
   const modalHeader = () => (
     <>
-      <Box className='flex justify-center' mt={4} mb={2}>
+      <Box className='flex justify-center' margin='32px 0 16px'>
         <DoubleCurrencyLogo
           currency0={currencies[Field.CURRENCY_A]}
           currency1={currencies[Field.CURRENCY_B]}
           size={48}
         />
       </Box>
-      <Box mb={4} textAlign='center'>
+      <Box margin='0 0 32px' textAlign='center'>
         <p>
           {t('addLiquidityTokens', {
             amountA: formattedAmounts[Field.CURRENCY_A],
@@ -372,7 +372,7 @@ export default function IncreaseLiquidityV3({
 
       <Box className='flex justify-between'>
         <Box className='flex items-center'>
-          <Box className='flex' mr={1}>
+          <Box className='flex' margin='0 8px 0 0'>
             <DoubleCurrencyLogo
               currency0={baseCurrency ?? undefined}
               currency1={quoteCurrency ?? undefined}
@@ -385,7 +385,7 @@ export default function IncreaseLiquidityV3({
         </Box>
         <RangeBadge removed={removed} inRange={!outOfRange} />
       </Box>
-      <Box my={2} className='v3-increase-liquidity-info-wrapper'>
+      <Box margin='16px 0' className='v3-increase-liquidity-info-wrapper'>
         <Box>
           <Box className='flex items-center'>
             <CurrencyLogo currency={baseCurrency ?? undefined} size='20px' />
@@ -393,7 +393,7 @@ export default function IncreaseLiquidityV3({
           </Box>
           <p>{existingPosition?.amount0?.toSignificant()}</p>
         </Box>
-        <Box mt={2}>
+        <Box margin='16px 0 0'>
           <Box className='flex items-center'>
             <CurrencyLogo currency={quoteCurrency ?? undefined} size='20px' />
             <p>{quoteCurrency?.symbol}</p>
@@ -401,13 +401,13 @@ export default function IncreaseLiquidityV3({
           <p>{existingPosition?.amount1?.toSignificant()}</p>
         </Box>
         {existingPosition?.pool.fee && (
-          <Box mt={2}>
+          <Box margin='16px 0 0'>
             <p>{t('fee')}</p>
             <p>{existingPosition?.pool?.fee / 10000}%</p>
           </Box>
         )}
       </Box>
-      <Box mt={2} className='flex justify-between'>
+      <Box margin='16px 0 0' className='flex justify-between'>
         <p>{t('selectRange')}</p>
         {currencyBase && currencyQuote && (
           <RateToggle
@@ -417,7 +417,7 @@ export default function IncreaseLiquidityV3({
           />
         )}
       </Box>
-      <Box width={1} mt={2} className='flex justify-between'>
+      <Box width='100%' margin='16px 0 0' className='flex justify-between'>
         {priceLower && (
           <Box
             className='v3-increase-liquidity-price-wrapper'
@@ -454,7 +454,7 @@ export default function IncreaseLiquidityV3({
         )}
       </Box>
       {currentPrice && (
-        <Box mt={2} className='v3-increase-liquidity-price-wrapper'>
+        <Box margin='16px 0 0' className='v3-increase-liquidity-price-wrapper'>
           <p>{t('currentPrice')}</p>
           <h6>{currentPrice.toSignificant()}</h6>
           <p>
@@ -462,10 +462,10 @@ export default function IncreaseLiquidityV3({
           </p>
         </Box>
       )}
-      <Box mt={2}>
+      <Box margin='16px 0 0'>
         <p>{t('addMoreLiquidity')}</p>
       </Box>
-      <Box mt={2}>
+      <Box margin='16px 0 0'>
         <CurrencyInputPanel
           value={formattedAmounts[Field.CURRENCY_A]}
           onUserInput={onFieldAInput}
@@ -486,7 +486,7 @@ export default function IncreaseLiquidityV3({
           swap={false}
         />
       </Box>
-      <Box mt={2}>
+      <Box margin='16px 0 0'>
         <CurrencyInputPanel
           value={formattedAmounts[Field.CURRENCY_B]}
           onUserInput={onFieldBInput}
@@ -513,7 +513,7 @@ export default function IncreaseLiquidityV3({
         approvalB === ApprovalState.NOT_APPROVED ||
         approvalB === ApprovalState.PENDING) &&
         isValid && (
-          <Box mt={2} className='flex justify-between'>
+          <Box margin='16px 0 0' className='flex justify-between'>
             {showApprovalA && (
               <Box width={showApprovalB ? '48%' : '100%'}>
                 <Button
@@ -554,7 +554,7 @@ export default function IncreaseLiquidityV3({
             )}
           </Box>
         )}
-      <Box mt={2}>
+      <Box margin='16px 0 0'>
         <Button
           className='v3-increase-liquidity-button'
           disabled={

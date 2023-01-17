@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from 'theme/components';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
@@ -16,9 +15,10 @@ import {
   formatTokenAmount,
   formatAPY,
 } from 'utils';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { ChevronDown, ChevronUp } from 'react-feather';
 import 'components/styles/FarmCard.scss';
 import { Trans, useTranslation } from 'react-i18next';
+import { isMobile } from 'react-device-detect';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -26,8 +26,6 @@ const FarmCard: React.FC<{
   isLPFarm?: boolean;
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const { t } = useTranslation();
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [isExpandCard, setExpandCard] = useState(false);
 
   const lpStakingInfo = stakingInfo as StakingInfo;
@@ -77,14 +75,14 @@ const FarmCard: React.FC<{
     dualStakingInfo.rateA * dualStakingInfo.rewardTokenAPrice +
     dualStakingInfo.rateB * dualStakingInfo.rewardTokenBPrice;
 
-  const renderPool = (width: number) => (
+  const renderPool = (width: string) => (
     <Box className='flex items-center' width={width}>
       <DoubleCurrencyLogo
         currency0={currency0}
         currency1={currency1}
         size={28}
       />
-      <Box ml={1.5}>
+      <Box margin='0 0 0 12px'>
         <small>
           {currency0.symbol} / {currency1.symbol} LP
         </small>
@@ -107,31 +105,31 @@ const FarmCard: React.FC<{
       >
         {isMobile ? (
           <>
-            {renderPool(isExpandCard ? 0.95 : 0.7)}
+            {renderPool(isExpandCard ? '95%' : '70%')}
             {!isExpandCard && (
-              <Box width={0.25}>
+              <Box width='25%'>
                 <Box className='flex items-center'>
                   <span className='text-secondary'>{t('apy')}</span>
-                  <Box ml={0.5} height={16}>
+                  <Box margin='0 0 0 4px' height='16px'>
                     <img src={CircleInfoIcon} alt={'arrow up'} />
                   </Box>
                 </Box>
-                <Box mt={0.5}>
+                <Box margin='4px 0 0'>
                   <small className='text-success'>{apyWithFee}%</small>
                 </Box>
               </Box>
             )}
-            <Box width={0.05} className='flex justify-end text-primary'>
-              {isExpandCard ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+            <Box width='5%' className='flex justify-end text-primary'>
+              {isExpandCard ? <ChevronUp /> : <ChevronDown />}
             </Box>
           </>
         ) : (
           <>
-            {renderPool(0.3)}
-            <Box width={0.2} textAlign='center'>
+            {renderPool('30%')}
+            <Box width='20%' textAlign='center'>
               <small>{tvl}</small>
             </Box>
-            <Box width={0.25} textAlign='center'>
+            <Box width='25%' textAlign='center'>
               <p className='small'>
                 ${(isLPFarm ? lpRewards : dualRewards).toLocaleString('us')} /{' '}
                 {t('day')}
@@ -145,13 +143,13 @@ const FarmCard: React.FC<{
                 </>
               )}
             </Box>
-            <Box width={0.15} className='flex justify-center items-center'>
+            <Box width='15%' className='flex justify-center items-center'>
               <small className='text-success'>{apyWithFee}%</small>
-              <Box ml={0.5} height={16}>
+              <Box margin='0 0 0 4px' height='16px'>
                 <img src={CircleInfoIcon} alt={'arrow up'} />
               </Box>
             </Box>
-            <Box width={0.2} textAlign='right'>
+            <Box width='20%' textAlign='right'>
               <small>{earnedUSDStr}</small>
               {isLPFarm ? (
                 <Box className='flex items-center justify-end'>

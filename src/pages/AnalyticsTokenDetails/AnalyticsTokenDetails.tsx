@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { Box, Grid } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Grid, Skeleton } from 'theme/components';
 import { ChainId, Token } from '@uniswap/sdk';
 import {
   shortenAddress,
@@ -209,7 +208,7 @@ const AnalyticsTokenDetails: React.FC = () => {
   const V2TokenInfo = ({ token, tokenPairs }: any) => {
     return (
       <>
-        <Box width={1} className='panel' mt={4}>
+        <Box width='100%' className='panel' margin='32px 0 0'>
           <Grid container>
             <Grid item xs={12} sm={12} md={6}>
               <AnalyticsTokenChart token={token} />
@@ -266,16 +265,16 @@ const AnalyticsTokenDetails: React.FC = () => {
             </Grid>
           </Grid>
         </Box>
-        <Box width={1} mt={5}>
+        <Box width='100%' margin='40px 0 0'>
           <p>
             {token.symbol} {t('pools')}
           </p>
         </Box>
-        <Box width={1} className='panel' mt={4}>
+        <Box width='100%' margin='32px 0 0' className='panel'>
           {tokenPairs ? (
             <PairTable data={tokenPairs} />
           ) : (
-            <Skeleton variant='rect' width='100%' height={150} />
+            <Skeleton variant='rect' width='100%' height='150px' />
           )}
         </Box>
       </>
@@ -284,7 +283,7 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   const V3TokenInfo = ({ token, tokenTransactions }: any) => (
     <>
-      <Box width={1}>
+      <Box width='100%'>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={12} md={3}>
             <Box className='panel analyticsDetailsInfoV3'>
@@ -317,34 +316,34 @@ const AnalyticsTokenDetails: React.FC = () => {
             </Box>
           </Grid>
           <Grid item xs={12} sm={12} md={9}>
-            <Box className='panel' mt={2} mb={2} height={'100%'}>
+            <Box className='panel' margin='16px 0' height={'100%'}>
               <AnalyticsTokenChart token={token} />
             </Box>
           </Grid>
         </Grid>
       </Box>
-      <Box width={1} mt={5}>
+      <Box width='100%' margin='40px 0 0'>
         <p>
           {token.symbol} {t('pools')}
         </p>
       </Box>
-      <Box width={1} className='panel' mt={4}>
+      <Box width='100%' margin='32px 0 0' className='panel'>
         {tokenPairs ? (
           <PairTable data={tokenPairs} />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <Skeleton variant='rect' width='100%' height='150px' />
         )}
       </Box>
-      <Box width={1} mt={5}>
+      <Box width='100%' margin='40px 0 0'>
         <p>
           {token.symbol} {t('transactions')}
         </p>
       </Box>
-      <Box width={1} className='panel' mt={4}>
+      <Box width='100%' margin='32px 0 0' className='panel'>
         {tokenTransactions ? (
           <TransactionsTable data={tokenTransactions} />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <Skeleton variant='rect' width='100%' height='150px' />
         )}
       </Box>
     </>
@@ -355,12 +354,12 @@ const AnalyticsTokenDetails: React.FC = () => {
       <AnalyticsHeader type='token' data={token} address={tokenAddress} />
       {token ? (
         <>
-          <Box width={1} className='flex flex-wrap justify-between'>
-            <Box display='flex'>
+          <Box width='100%' className='flex flex-wrap justify-between'>
+            <Box className='flex'>
               <CurrencyLogo currency={currency} size='32px' />
-              <Box ml={1.5}>
+              <Box margin='0 0 0 12px'>
                 <Box className='flex items-center'>
-                  <Box className='flex items-end' mr={0.5}>
+                  <Box className='flex items-end' margin='0 4px 0 0'>
                     <p className='heading1'>{token.name} </p>
                     <p className='heading2'>({token.symbol})</p>
                   </Box>
@@ -372,11 +371,11 @@ const AnalyticsTokenDetails: React.FC = () => {
                     <StarUnchecked onClick={() => addBookmarkToken(token.id)} />
                   )}
                 </Box>
-                <Box mt={1.25} className='flex items-center'>
+                <Box margin='12px 0 0' className='flex items-center'>
                   <h5>${formatNumber(token.priceUSD)}</h5>
                   <Box
                     className={`priceChangeWrapper ${tokenPercentClass}`}
-                    ml={2}
+                    margin='0 0 0 16px'
                   >
                     <small>
                       {getFormattedPrice(Number(token.priceChangeUSD))}%
@@ -385,10 +384,10 @@ const AnalyticsTokenDetails: React.FC = () => {
                 </Box>
               </Box>
             </Box>
-            <Box my={2} display='flex'>
+            <Box margin='16px 0' className='flex'>
               <Box
                 className='button border-primary'
-                mr={1.5}
+                margin='0 12px 0 0'
                 onClick={() => {
                   history.push(
                     `/pools${isV2 ? '/v2' : '/v3'}?currency0=${
@@ -423,9 +422,9 @@ const AnalyticsTokenDetails: React.FC = () => {
           )}
         </>
       ) : loadingData ? (
-        <Skeleton width='100%' height={100} />
+        <Skeleton width='100%' height='100px' />
       ) : (
-        <Box py={4}>
+        <Box padding='32px 0'>
           <h5>{t('tokenNotExist')}</h5>
         </Box>
       )}

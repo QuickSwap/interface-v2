@@ -1,18 +1,16 @@
 import React from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from 'theme/components';
 import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo } from 'components';
 import { formatCompact, getDaysCurrentYear } from 'utils';
 import { useCurrency } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
+import { isMobile } from 'react-device-detect';
 
 const LiquidityPoolRow: React.FC<{
   pair: any;
 }> = ({ pair }) => {
-  const { breakpoints } = useTheme();
   const daysCurrentYear = getDaysCurrentYear();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
 
   const dayVolumeUSD =
@@ -39,7 +37,7 @@ const LiquidityPoolRow: React.FC<{
   const token1 = useCurrency(pair.token1.id);
   return (
     <Box className='liquidityContent'>
-      <Box className='flex items-center' width={isMobile ? 1 : 0.5}>
+      <Box className='flex items-center' width={isMobile ? '100%' : '50%'}>
         <DoubleCurrencyLogo
           currency0={token0 ?? undefined}
           currency1={token1 ?? undefined}
@@ -51,24 +49,24 @@ const LiquidityPoolRow: React.FC<{
         </small>
       </Box>
       <Box
-        width={isMobile ? 1 : 0.2}
-        mt={isMobile ? 2.5 : 0}
+        width={isMobile ? '100%' : '20%'}
+        margin={isMobile ? '20px 0 0' : '0'}
         className='flex justify-between'
       >
         {isMobile && <small className='text-secondary'>{t('tvl')}</small>}
         <small>${formatCompact(liquidity)}</small>
       </Box>
       <Box
-        width={isMobile ? 1 : 0.15}
-        mt={isMobile ? 1 : 0}
+        width={isMobile ? '100%' : '15%'}
+        margin={isMobile ? '8px 0 0' : '0'}
         className='flex justify-between'
       >
         {isMobile && <small className='text-secondary'>{t('24hVol')}</small>}
         <small>${formatCompact(volume)}</small>
       </Box>
       <Box
-        width={isMobile ? 1 : 0.15}
-        mt={isMobile ? 1 : 0}
+        width={isMobile ? '100%' : '15%'}
+        margin={isMobile ? '8px 0 0' : '0'}
         className={`flex ${isMobile ? 'justify-between' : 'justify-end'}`}
       >
         {isMobile && <small className='text-secondary'>{t('apy')}</small>}

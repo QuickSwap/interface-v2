@@ -4,7 +4,7 @@ import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import MetamaskIcon from 'assets/images/metamask.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { fortmatic, injected, portis, safeApp, trustconnect } from 'connectors';
@@ -364,17 +364,17 @@ const WalletModal: React.FC<WalletModalProps> = ({
     if (error) {
       return (
         <Box position='relative'>
-          <Box position='absolute' top='16px' right='16px' display='flex'>
+          <Box position='absolute' top='16px' right='16px' className='flex'>
             <Close className='cursor-pointer' onClick={toggleWalletModal} />
           </Box>
-          <Box mt={2} textAlign='center'>
+          <Box margin='16px 0 0' textAlign='center'>
             <h6>
               {error instanceof UnsupportedChainIdError
                 ? t('wrongNetwork')
                 : t('errorConnect')}
             </h6>
           </Box>
-          <Box mt={3} mb={2} textAlign='center'>
+          <Box margin='24px 0 16px' textAlign='center'>
             <small>
               {error instanceof UnsupportedChainIdError
                 ? t('connectPolygonNetwork')
@@ -396,12 +396,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
       );
     }
     return (
-      <Box paddingX={3} paddingY={4}>
+      <Box padding='32px 24px'>
         <Box className='flex justify-between'>
           <h5>{t('connectWallet')}</h5>
           <Close className='cursor-pointer' onClick={toggleWalletModal} />
         </Box>
-        <Box mt={4}>
+        <Box margin='32px 0 0'>
           {walletView === WALLET_VIEWS.PENDING ? (
             <PendingView
               connector={pendingWallet}

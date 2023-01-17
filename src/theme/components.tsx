@@ -8,6 +8,7 @@ import {
 import { Link } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
 import { anonymizeLink } from 'utils/v3/anonymizeLink';
+import Circle from 'assets/images/blue-loader.svg';
 
 export const ButtonText = styled.button`
   outline: none;
@@ -96,26 +97,6 @@ export const StyledInternalLink = styled(Link)`
     :active {
         text-decoration: none;
     }
-`;
-
-const StyledLink = styled.a`
-  text-decoration: none;
-  cursor: pointer;
-  color: ${({ theme }) => theme.winterMainButton};
-  font-weight: 500;
-
-  :hover {
-    // text-decoration: underline;
-  }
-
-  :focus {
-    outline: none;
-    // text-decoration: underline;
-  }
-
-  :active {
-    text-decoration: none;
-  }
 `;
 
 const LinkIconWrapper = styled.a`
@@ -311,4 +292,109 @@ export const ExtraSmallOnly = styled.span`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     display: block;
   `};
+`;
+
+export const Box = styled.div<{
+  padding?: string;
+  margin?: string;
+  textAlign?: string;
+  width?: string;
+  height?: string;
+  borderRadius?: string;
+  flex?: number | string;
+  overflow?: string;
+  position?: string;
+  top?: string;
+  left?: string;
+  right?: string;
+  bottom?: string;
+  border?: string;
+  minWidth?: string;
+  maxWidth?: string;
+  zIndex?: number;
+  minHeight?: string;
+  maxHeight?: string;
+  justifyContent?: string;
+}>`
+  padding: ${({ padding }) => padding};
+  margin: ${({ margin }) => margin};
+  text-align: ${({ textAlign }) => textAlign};
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+  border-radius: ${({ borderRadius }) => borderRadius};
+  flex: ${({ flex }) => flex};
+  overflow: ${({ overflow }) => overflow};
+  position: ${({ position }) => position};
+  top: ${({ top }) => top};
+  left: ${({ left }) => left};
+  right: ${({ right }) => right};
+  bottom: ${({ bottom }) => bottom};
+  border: ${({ border }) => border};
+  min-width: ${({ minWidth }) => minWidth};
+  max-width: ${({ maxWidth }) => maxWidth};
+  min-height: ${({ minHeight }) => minHeight};
+  max-height: ${({ maxHeight }) => maxHeight};
+  z-index: ${({ zIndex }) => zIndex};
+  justify-content: ${({ justifyContent }) => justifyContent};
+`;
+
+export const Button = styled.button<{ width?: string }>`
+  width: ${({ width }) => width};
+`;
+
+export const Divider = styled.div`
+  border: 1px solid $divider;
+`;
+
+export const skeletonAnimation = keyframes`
+  100% {
+    transform: translateX(100%);
+  }
+`;
+export const Skeleton = styled.div<{
+  variant?: string;
+  width?: string;
+  height: string;
+}>`
+  position: relative;
+  overflow: hidden;
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+  border-radius: ${({ variant, width }) =>
+    variant === 'circle' ? width : '5px'};
+  &::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      var(--dark-ebony-clay) 0,
+      var(--primary-hover) 25%,
+      var(--primary-weak) 60%,
+      var(--dark-ebony-clay)
+    );
+    animation-name: ${skeletonAnimation};
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+    content: '';
+  }
+`;
+
+export const Grid = styled.div<{
+  container?: boolean;
+  justifyContent?: string;
+  alignItems?: string;
+  item?: boolean;
+  spacing?: number;
+  xs?: number;
+  sm?: number;
+  md?: number;
+  lg?: number;
+}>`
+  display: ${({ container }) => (container ? 'flex' : 'unset')};
+  justify-content: ${({ justifyContent }) => justifyContent};
+  align-items: ${({ alignItems }) => alignItems};
 `;

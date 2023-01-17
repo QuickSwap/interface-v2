@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowRight, CheckCircle, Frown, X } from 'react-feather';
+import { ArrowRight, CheckCircle, Frown, X, Check } from 'react-feather';
 import { useFarmingSubgraph } from '../../hooks/useIncentiveSubgraph';
 import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
 import { useChunkedRows } from '../../utils/chunkForRows';
@@ -21,9 +21,7 @@ import { Token } from '@uniswap/sdk-core';
 import { formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { ChainId } from '@uniswap/sdk';
-import { Box, Button } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
-import { Check } from '@material-ui/icons';
+import { Box, Button, Skeleton } from 'theme/components';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useTranslation } from 'react-i18next';
 
@@ -376,7 +374,7 @@ export function FarmModal({
         </Box>
       ) : (
         <div className='v3-farm-stake-modal-wrapper'>
-          <Box mb={1} className='flex justify-between'>
+          <Box margin='0 0 8px' className='flex justify-between'>
             <h6 className='weight-600'>{t('selectNFTFarm')}</h6>
             <Box className='cursor-pointer' onClick={closeHandler}>
               <X size={18} />
@@ -403,15 +401,18 @@ export function FarmModal({
               <b style={{ fontSize: '18px' }}>{`2. ${t('selectPosition')}`}</b>
             </Box>
           )}
-          <Box mt={2}>
+          <Box margin='16px 0 0'>
             {chunkedPositions && chunkedPositions.length === 0 ? (
               <Box textAlign='center'>
                 <Frown size={32} />
-                <Box mt={2} mb={1}>
+                <Box margin='16px 0 8px'>
                   <p>{t('noNFTForPool')}</p>
                 </Box>
                 <p>{t('takePartinFarmNeedTo')}</p>
-                <Box mt={1} className='flex justify-center items-center'>
+                <Box
+                  margin='8px 0 0'
+                  className='flex justify-center items-center'
+                >
                   <NavLink
                     className='v3-stake-liquidity-link'
                     to={linkToProviding}
@@ -456,11 +457,11 @@ export function FarmModal({
                       }}
                     >
                       <Box className='flex items-center'>
-                        <Box className='v3-tokenId-wrapper' mr={2}>
+                        <Box className='v3-tokenId-wrapper' margin='0 16px 0 0'>
                           <span>{el.id}</span>
                         </Box>
-                        <Box className='flex-col' ml={0.5}>
-                          <Box mb='4px'>
+                        <Box className='flex-col' margin='0 0 0 4px'>
+                          <Box margin='0 0 4px'>
                             <IsActive el={el} />
                           </Box>
 
@@ -491,16 +492,16 @@ export function FarmModal({
                 {[0, 1, 2].map((el, i) => (
                   <Box
                     padding='8px'
-                    borderRadius={12}
-                    mr={1}
+                    borderRadius='12px'
+                    margin='0 8px 0 0'
                     position='relative'
                     className='flex items-center border'
                     key={i}
                   >
                     <Skeleton variant='circle' width='40px' height='40px' />
-                    <Box ml={1}>
-                      <Skeleton width={50} height={16} />
-                      <Skeleton width={60} height={20} />
+                    <Box margin='0 0 0 8px'>
+                      <Skeleton width='50px' height='16px' />
+                      <Skeleton width='60px' height='20px' />
                     </Box>
                   </Box>
                 ))}

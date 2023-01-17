@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Divider, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Divider } from 'theme/components';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTranslation } from 'react-i18next';
 import { SyrupInfo } from 'types';
@@ -24,17 +23,14 @@ import SyrupTimerLabel from './SyrupTimerLabel';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
-import { GlobalConst } from 'constants/index';
-import { formatUnits } from 'ethers/lib/utils';
+import { isMobile } from 'react-device-detect';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
 }) => {
   const syrupCurrency = unwrappedToken(syrup.token);
-  const { breakpoints } = useTheme();
   const { t } = useTranslation();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [attemptingClaim, setAttemptingClaim] = useState(false);
   const [attemptingUnstake, setAttemptingUnstake] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
@@ -155,16 +151,16 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
       {syrup && (
         <>
           <Divider />
-          <Box padding={isMobile ? 2 : 3}>
+          <Box padding={isMobile ? '16px' : '24px'}>
             {isMobile && (
-              <Box mb={2}>
-                <Box className='flex justify-between' mb={1.5}>
+              <Box margin='0 0 16px'>
+                <Box className='flex justify-between' margin='0 0 12px'>
                   <small className='text-secondary'>
                     {syrup.stakingToken.symbol} {t('deposits')}:
                   </small>
                   <small>{depositAmount}</small>
                 </Box>
-                <Box className='flex justify-between' mb={1.5}>
+                <Box className='flex justify-between' margin='0 0 12px'>
                   <small className='text-secondary'>{t('dailyRewards')}:</small>
                   <small>
                     {syrup.rate >= 1000000
@@ -174,13 +170,13 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                     <span className='text-secondary'> / {t('day')}</span>
                   </small>
                 </Box>
-                <Box mb={1.5}>
+                <Box margin='0 0 12px'>
                   <SyrupTimerLabel exactEnd={exactEnd} isEnded={syrup?.ended} />
                 </Box>
-                <Box className='flex justify-between' mb={2}>
+                <Box className='flex justify-between' margin='0 0 16px'>
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apr')}:</small>
-                    <Box ml={0.5} height={16}>
+                    <Box margin='0 0 0 4px' height='16px'>
                       <img src={CircleInfoIcon} alt={'arrow up'} />
                     </Box>
                   </Box>
@@ -223,7 +219,10 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 </small>
               </small>
             </Box>
-            <Box className='flex items-center justify-between' mb={2}>
+            <Box
+              className='flex items-center justify-between'
+              margin='0 0 16px'
+            >
               <small className='text-secondary'>
                 {t('earned')} {currency?.symbol}
               </small>
@@ -244,13 +243,17 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               {isMobile ? (
                 <>
                   {syrup.earnedAmount && syrup.earnedAmount.greaterThan('0') && (
-                    <Box width={1} mb={1.5} className='flex justify-end'>
+                    <Box
+                      width='100%'
+                      margin='0 0 12px'
+                      className='flex justify-end'
+                    >
                       <ClaimButton />
                     </Box>
                   )}
                   <Box
-                    width={1}
-                    mb={1.5}
+                    width='100%'
+                    margin='0 0 12px'
                     className={`flex ${
                       syrup.stakedAmount && syrup.stakedAmount.greaterThan('0')
                         ? 'justify-between'
@@ -263,15 +266,15 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   </Box>
                 </>
               ) : (
-                <Box className='flex flex-wrap' my={1}>
+                <Box className='flex flex-wrap' margin='8px 0'>
                   {!syrup.ended && <StakeButton />}
                   {syrup.stakedAmount && syrup.stakedAmount.greaterThan('0') && (
-                    <Box ml={1}>
+                    <Box margin='0 0 0 8px'>
                       <UnstakeButton />
                     </Box>
                   )}
                   {syrup.earnedAmount && syrup.earnedAmount.greaterThan('0') && (
-                    <Box ml={1}>
+                    <Box margin='0 0 0 8px'>
                       <ClaimButton />
                     </Box>
                   )}
@@ -281,7 +284,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
             {syrup.rewardRate?.greaterThan('0') && (
               <Box className='dailyRateWrapper'>
                 <Box>
-                  <Box display='flex' mr={1}>
+                  <Box className='flex' margin='0 8px 0 0'>
                     <small className='text-secondary'>{t('yourRate')}:</small>
                   </Box>
                   <small>

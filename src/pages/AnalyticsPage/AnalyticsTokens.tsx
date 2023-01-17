@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Skeleton } from 'theme/components';
 import { TopMovers, TokensTable } from 'components';
 import {
   useBookmarkTokens,
@@ -8,7 +8,6 @@ import {
   useIsV2,
 } from 'state/application/hooks';
 import { getTopTokens } from 'utils';
-import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
 import { getTopTokensV3 } from 'utils/v3-graph';
@@ -93,9 +92,13 @@ const AnalyticsTokens: React.FC = () => {
   }, [isV2]);
 
   return (
-    <Box width='100%' mb={3}>
+    <Box width='100%' margin='0 0 24px'>
       <TopMovers hideArrow={true} />
-      <Box my={4} px={2} className='flex flex-wrap items-center'>
+      <Box
+        margin='32px 0'
+        padding='0 16px'
+        className='flex flex-wrap items-center'
+      >
         <Box
           className={`tokensFilter ${
             tokensFilter === 0 ? 'text-primary' : 'text-disabled'
@@ -125,7 +128,7 @@ const AnalyticsTokens: React.FC = () => {
         {topTokens ? (
           <TokensTable data={tokensFilter === 0 ? topTokens : favoriteTokens} />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <Skeleton width='100%' height='150px' />
         )}
       </Box>
     </Box>

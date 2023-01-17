@@ -32,7 +32,7 @@ import { calculateGasMarginV3 } from 'utils';
 import { getRatio } from 'utils/v3/getRatio';
 import { useInverter } from 'hooks/v3/useInverter';
 import { PositionPool } from 'models/interfaces';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import './index.scss';
 import RateToggle from 'components/v3/RateToggle';
 import V3IncreaseLiquidityModal from '../V3IncreaseLiquidityModal';
@@ -331,7 +331,7 @@ export default function PositionListItemDetails({
   function modalHeader() {
     return (
       <>
-        <Box mt={3} mb={2}>
+        <Box margin='24px 0 16px'>
           <Box className='flex justify-between'>
             <Box className='flex items-center'>
               <CurrencyLogo currency={feeValueUpper?.currency} size={'24px'} />
@@ -341,7 +341,7 @@ export default function PositionListItemDetails({
               {feeValueUpper ? formatCurrencyAmount(feeValueUpper, 4) : '-'}
             </p>
           </Box>
-          <Box mt={2} className='flex justify-between'>
+          <Box margin='16px 0' className='flex justify-between'>
             <Box className='flex items-center'>
               <CurrencyLogo currency={feeValueLower?.currency} size={'24px'} />
               <p className='ml-05'>{feeValueLower?.currency?.symbol}</p>
@@ -351,16 +351,11 @@ export default function PositionListItemDetails({
             </p>
           </Box>
         </Box>
-        <Box mb={2} textAlign='center'>
+        <Box margin='0 0 16px' textAlign='center'>
           <p>{t('collectingFeesWillWithdraw')}.</p>
         </Box>
         <Box className='flex justify-center'>
-          <Button
-            fullWidth
-            style={{ maxWidth: 300 }}
-            size='large'
-            onClick={collect}
-          >
+          <Button width='100%' style={{ maxWidth: 300 }} onClick={collect}>
             {t('collect')}
           </Button>
         </Box>
@@ -423,7 +418,7 @@ export default function PositionListItemDetails({
         <Box className='flex items-center justify-between'>
           <Box>
             <p className='small weight-600'>{t('liquidity')}</p>
-            <Box mt='5px'>
+            <Box margin='5px 0 0'>
               <p className='small weight-600'>
                 ${formatCurrencyAmount(fiatValueOfLiquidity, 4)}
               </p>
@@ -434,7 +429,7 @@ export default function PositionListItemDetails({
               <Button onClick={() => setOpenIncreaseLiquidityModal(true)}>
                 {t('add')}
               </Button>
-              <Box ml={1}>
+              <Box margin='0 0 0 8px'>
                 {_onFarming || _liquidity.eq(0) ? (
                   <CustomTooltip
                     title={
@@ -456,16 +451,16 @@ export default function PositionListItemDetails({
             </Box>
           )}
         </Box>
-        <Box mt={2} className='v3-pool-item-details-panel'>
-          <Box pt='4px' className='flex justify-between items-center'>
+        <Box margin='16px 0 0' className='v3-pool-item-details-panel'>
+          <Box padding='4px 0 0' className='flex justify-between items-center'>
             <Box className='flex items-center'>
               <CurrencyLogo currency={currencyQuote} size='24px' />
-              <Box ml={1}>
+              <Box margin='0 0 0 8px'>
                 <p>{currencyQuote?.symbol}</p>
               </Box>
             </Box>
             <Box className='flex items-center'>
-              <Box mr={1}>
+              <Box margin='0 8px 0 0'>
                 <p>
                   {inverted
                     ? formatCurrencyAmount(position?.amount0, 4)
@@ -477,15 +472,19 @@ export default function PositionListItemDetails({
               )}
             </Box>
           </Box>
-          <Box mt='16px' pb='4px' className='flex justify-between items-center'>
+          <Box
+            margin='16px 0 0'
+            padding='0 0 4px'
+            className='flex justify-between items-center'
+          >
             <Box className='flex items-center'>
               <CurrencyLogo currency={currencyBase} size='24px' />
-              <Box ml={1}>
+              <Box margin='0 0 0 8px'>
                 <p>{currencyBase?.symbol}</p>
               </Box>
             </Box>
             <Box className='flex items-center'>
-              <Box mr={1}>
+              <Box margin='0 8px 0 0'>
                 <p>
                   {inverted
                     ? formatCurrencyAmount(position?.amount1, 4)
@@ -498,10 +497,10 @@ export default function PositionListItemDetails({
             </Box>
           </Box>
         </Box>
-        <Box mt={3} className='flex items-center justify-between'>
+        <Box margin='24px 0 0' className='flex items-center justify-between'>
           <Box>
             <p className='small weight-600'>{t('unclaimedFees')}</p>
-            <Box mt='5px'>
+            <Box margin='5px 0 0'>
               <p className='small weight-600'>
                 $
                 {_fiatValueOfFees?.greaterThan(new Fraction(1, 100))
@@ -530,11 +529,11 @@ export default function PositionListItemDetails({
               </Button>
             )}
         </Box>
-        <Box mt={2} className='v3-pool-item-details-panel'>
-          <Box pt='4px' className='flex justify-between items-center'>
+        <Box margin='16px 0 0' className='v3-pool-item-details-panel'>
+          <Box padding='4px 0 0' className='flex justify-between items-center'>
             <Box className='flex items-center'>
               <CurrencyLogo currency={feeValueUpper?.currency} size='24px' />
-              <Box ml={1}>
+              <Box margin='0 0 0 8px'>
                 <p>{feeValueUpper?.currency?.symbol}</p>
               </Box>
             </Box>
@@ -542,10 +541,14 @@ export default function PositionListItemDetails({
               {feeValueUpper ? formatCurrencyAmount(feeValueUpper, 4) : '-'}
             </p>
           </Box>
-          <Box mt='16px' pb='4px' className='flex justify-between items-center'>
+          <Box
+            margin='16px 0 0'
+            padding='0 0 4px'
+            className='flex justify-between items-center'
+          >
             <Box className='flex items-center'>
               <CurrencyLogo currency={feeValueLower?.currency} size='24px' />
-              <Box ml={1}>
+              <Box margin='0 0 0 8px'>
                 <p>{feeValueLower?.currency?.symbol}</p>
               </Box>
             </Box>
@@ -555,8 +558,8 @@ export default function PositionListItemDetails({
           </Box>
         </Box>
         {showCollectAsWeth && (
-          <Box mt={2} className='flex items-center'>
-            <Box mr={1}>
+          <Box margin='16px 0 0' className='flex items-center'>
+            <Box margin='0 8px 0 0'>
               <p>{t('collectAsWmatic')}</p>
             </Box>
             <ToggleSwitch
@@ -565,7 +568,7 @@ export default function PositionListItemDetails({
             />
           </Box>
         )}
-        <Box mt={3} className='flex items-center justify-between'>
+        <Box margin='24px 0 0' className='flex items-center justify-between'>
           <small>{t('selectedRange')}</small>
           {currencyBase && currencyQuote && (
             <RateToggle
@@ -575,7 +578,7 @@ export default function PositionListItemDetails({
             />
           )}
         </Box>
-        <Box mt={2} className='flex justify-between'>
+        <Box margin='16px 0 0' className='flex justify-between'>
           {priceLower && (
             <Box
               width={priceUpper ? '49%' : '100%'}
@@ -619,7 +622,7 @@ export default function PositionListItemDetails({
         </Box>
         {_pool && (
           <Box
-            mt={2}
+            margin='16px 0 0'
             className='v3-pool-item-details-panel v3-pool-item-details-info'
           >
             <p>{t('currentPrice')}</p>

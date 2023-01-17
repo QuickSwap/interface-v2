@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react';
-import { useTheme } from '@material-ui/core/styles';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Skeleton } from 'theme/components';
 import { useUSDRewardsandFees } from 'state/stake/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
@@ -9,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import { isMobile } from 'react-device-detect';
 
 const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
   const parsedQuery = useParsedQueryString();
@@ -17,10 +16,8 @@ const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
       ? (parsedQuery.tab as string)
       : GlobalConst.v2FarmTab.LPFARM;
   const { t } = useTranslation();
-  const { breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
   const defaultChainId = chainId ?? ChainId.MATIC;
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const farmData = useUSDRewardsandFees(
     currentTab === GlobalConst.v2FarmTab.LPFARM,
@@ -39,11 +36,11 @@ const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
   const getRewardsSection = (isLPFarm: boolean) => (
     <>
       <Box
-        width={isMobile ? 1 : isLPFarm ? 1 / 3 : 1 / 2}
-        p={1.5}
+        width={isMobile ? '100%' : isLPFarm ? '33.3333%' : '50%'}
+        padding='12px'
         className={`text-center ${isMobile ? '' : 'border-right'}`}
       >
-        <Box mb={1}>
+        <Box margin='0 0 8px'>
           <span className='text-secondary'>{t('totalRewards')}</span>
         </Box>
         {farmData.rewardsUSD ? (
@@ -55,11 +52,11 @@ const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
         )}
       </Box>
       <Box
-        width={isMobile ? 1 : isLPFarm ? 1 / 3 : 1 / 2}
-        p={1.5}
+        width={isMobile ? '100%' : isLPFarm ? '33.3333%' : '50%'}
+        padding='12px'
         textAlign='center'
       >
-        <Box mb={1}>
+        <Box margin='0 0 8px'>
           <span className='text-secondary'>{t('fees24h')}</span>
         </Box>
         {farmData.stakingFees ? (
@@ -78,11 +75,11 @@ const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
       {currentTab === GlobalConst.v2FarmTab.LPFARM && (
         <>
           <Box
-            width={isMobile ? 1 : 1 / 3}
-            py={1.5}
+            width={isMobile ? '100%' : '33.33%'}
+            padding='12px 0'
             className='border-right text-center'
           >
-            <Box mb={1}>
+            <Box margin='0 0 8px'>
               <span className='text-secondary'>{t('rewardRate')}</span>
             </Box>
             <h6 className='weight-600'>

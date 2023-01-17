@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Box } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Box, Skeleton } from 'theme/components';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { useGlobalData } from 'state/application/hooks';
@@ -104,13 +103,13 @@ const AnalyticsLiquidityChart: React.FC = () => {
         />
       </Box>
       {globalData ? (
-        <Box mt={0.5} className='flex items-center'>
+        <Box margin='4px 0 0' className='flex items-center'>
           <h5>${formatCompact(globalData.totalLiquidityUSD)}</h5>
           <Box
-            ml={1}
-            height={23}
-            px={1}
-            borderRadius={40}
+            margin='0 0 0 8px'
+            height='23px'
+            padding='0 8px'
+            borderRadius='40px'
             className={liquidityPercentClass}
           >
             <span>
@@ -123,8 +122,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
           </Box>
         </Box>
       ) : (
-        <Box my={0.5}>
-          <Skeleton variant='rect' width='100%' height={24} />
+        <Box margin='4px 0'>
+          <Skeleton width='100%' height='24px' />
         </Box>
       )}
       <Box>
@@ -132,7 +131,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
           {dayjs.utc().format('MMM DD, YYYY')}
         </span>
       </Box>
-      <Box mt={2}>
+      <Box margin='16px 0 0'>
         {globalChartData ? (
           <AreaChart
             data={globalChartData.map((value: any) =>
@@ -147,7 +146,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
             categories={getChartDates(globalChartData, durationIndex)}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={223} />
+          <Skeleton width='100%' height='223px' />
         )}
       </Box>
     </>

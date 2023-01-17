@@ -15,8 +15,8 @@ import {
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import './index.scss';
-import { Box } from '@material-ui/core';
-import { Add, Remove } from '@material-ui/icons';
+import { Box } from 'theme/components';
+import { Plus, Minus } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 
 interface IRangeSelector {
@@ -291,7 +291,7 @@ function RangePart({
           onClick={handleDecrement}
           disabled={decrementDisabled || disabled}
         >
-          <Remove />
+          <Minus />
         </button>
         <div className='price-range-input'>
           <Input
@@ -315,11 +315,11 @@ function RangePart({
           onClick={handleIncrement}
           disabled={incrementDisabled || disabled}
         >
-          <Add />
+          <Plus />
         </button>
       </Box>
       {tokenA && tokenB && (
-        <Box mt={1}>
+        <Box margin='8px 0 0'>
           <p className='text-secondary caption'>
             {tokenB?.symbol} {t('per')} {tokenA?.symbol}
           </p>

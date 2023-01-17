@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { DoubleCurrencyLogo } from 'components';
 import React, { useState } from 'react';
 import { ReactComponent as ExpandIcon } from 'assets/images/expand_circle.svg';
@@ -48,14 +48,14 @@ export default function FarmCard({ el }: FarmCardProps) {
     <Box>
       <Box
         className='flex justify-between items-center flex-wrap'
-        borderRadius={10}
+        borderRadius='10px'
       >
         <Box className='flex flex-wrap justify-around' width='70%'>
-          <Box className='flex items-center' my={1}>
-            <Box className='v3-tokenId-wrapper' mr={2}>
+          <Box className='flex items-center' margin='8px 0'>
+            <Box className='v3-tokenId-wrapper' margin='0 16px 0 0'>
               <span>{el.id}</span>
             </Box>
-            <Box className='flex-col' ml={0.5} mr={5}>
+            <Box className='flex-col' margin='0 40px 0 4px'>
               <Box>
                 <IsActive el={el} />
               </Box>
@@ -72,7 +72,7 @@ export default function FarmCard({ el }: FarmCardProps) {
             </Box>
           </Box>
 
-          <Box className='flex items-center' my={1}>
+          <Box className='flex items-center' margin='8px 0'>
             {token0 && token1 && (
               <DoubleCurrencyLogo
                 currency0={token0}
@@ -81,7 +81,7 @@ export default function FarmCard({ el }: FarmCardProps) {
               />
             )}
 
-            <Box className='flex-col' ml={3}>
+            <Box className='flex-col' margin='0 0 0 24px'>
               <p className='caption'>{t('pool')}</p>
 
               {token0 && token1 && (
@@ -93,8 +93,7 @@ export default function FarmCard({ el }: FarmCardProps) {
 
         <Box className='flex items-center'>
           <Box
-            mr={2.5}
-            ml={1.5}
+            margin='0 20px 0 12px'
             onClick={() => setShowMore(!showMore)}
             className='cursor-pointer'
           >

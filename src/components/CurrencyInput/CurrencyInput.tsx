@@ -3,7 +3,7 @@ import { Currency, ETHER, currencyEquals } from '@uniswap/sdk';
 import { NativeCurrency } from '@uniswap/sdk-core';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -74,22 +74,22 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       className={`swapBox${showPrice ? ' priceShowBox' : ''} ${bgClass ??
         'bg-secondary2'}`}
     >
-      <Box className='flex justify-between' mb={2}>
+      <Box className='flex justify-between' margin='0 0 16px'>
         <p>{title || `${t('youPay')}:`}</p>
-        <Box display='flex'>
+        <Box className='flex'>
           {account && currency && showHalfButton && (
             <Box className='maxWrapper' onClick={onHalf}>
               <small>50%</small>
             </Box>
           )}
           {account && currency && showMaxButton && (
-            <Box className='maxWrapper' marginLeft='20px' onClick={onMax}>
+            <Box className='maxWrapper' margin='0 0 0 20px' onClick={onMax}>
               <small>{t('max')}</small>
             </Box>
           )}
         </Box>
       </Box>
-      <Box mb={2}>
+      <Box margin='0 0 16px'>
         <CurrencySelect
           id={id}
           currency={currency}

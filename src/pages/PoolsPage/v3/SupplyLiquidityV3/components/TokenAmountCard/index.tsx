@@ -14,8 +14,8 @@ import { useInitialTokenPrice, useInitialUSDPrices } from 'state/mint/v3/hooks';
 import './index.scss';
 import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
-import { Box } from '@material-ui/core';
-import { LockOutlined } from '@material-ui/icons';
+import { Box } from 'theme/components';
+import { Lock } from 'react-feather';
 import NumericalInput from 'components/NumericalInput';
 import { ETHER } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
@@ -146,7 +146,7 @@ export function TokenAmountCard({
       <Box className='v3-token-amount-card-wrapper'>
         {locked && (
           <div className='token-amount-card-locked'>
-            <LockOutlined />
+            <Lock />
             <p className='span'>
               {t('priceOutsidePriceRange')}.
               <br />
@@ -163,11 +163,11 @@ export function TokenAmountCard({
               />
               <p className='weight-600'>{currency.symbol}</p>
             </div>
-            <Box mt={1} className='token-amount-card-balance'>
+            <Box margin='8px 0 0' className='token-amount-card-balance'>
               {balanceString === 'loading' ? (
                 <Box className='flex items-center'>
                   <small className='text-secondary'>{t('balance')}: </small>
-                  <Box className='flex' ml='5px'>
+                  <Box className='flex' margin='0 0 0 5px'>
                     <Loader stroke='white' />
                   </Box>
                 </Box>

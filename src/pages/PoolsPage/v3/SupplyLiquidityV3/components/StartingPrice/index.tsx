@@ -16,9 +16,9 @@ import {
   updateSelectedPreset,
 } from 'state/mint/v3/actions';
 import Input from 'components/NumericalInput';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
-import { Error } from '@material-ui/icons';
+import { AlertCircle } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 
 interface IPrice {
@@ -74,17 +74,17 @@ function TokenPrice({
 
   return (
     <Box className='v3-pool-starting-token-price'>
-      <Box mr={1}>
+      <Box margin='0 8px 0 0'>
         <small>1 {baseSymbol}</small>
       </Box>
       <small> = </small>
-      <Box ml={1} flex={1} className='flex'>
-        <Box className='flex items-center' pr={1}>
+      <Box margin='0 0 0 8px' flex={1} className='flex'>
+        <Box className='flex items-center' padding='0 8px 0 0'>
           <small>{quoteSymbol}</small>
         </Box>
         <Box flex={1} height='100%' position='relative'>
           {isLocked ? (
-            <Box height={1} className='flex items-center'>
+            <Box height='100%' className='flex items-center'>
               <small>{tokenRatio}</small>
             </Box>
           ) : isSelected ? (
@@ -132,12 +132,12 @@ function USDPriceField({
 
   return (
     <Box className='v3-pool-starting-token-price'>
-      <Box mr={1}>
+      <Box margin='0 8px 0 0'>
         <small>1 {symbol}</small>
       </Box>
       <small>=</small>
-      <Box ml={1}>
-        <Box className='flex items-center' pr={1}>
+      <Box margin='0 0 0 8px'>
+        <Box className='flex items-center' padding='0 8px 0 0'>
           <small>$</small>
         </Box>
         {price ? (
@@ -195,7 +195,7 @@ function USDPrice({
         userUSD={userBaseCurrencyUSD}
         changeHandler={changeBaseCurrencyUSDHandler}
       ></USDPriceField>
-      <Box ml={1}>
+      <Box margin='0 0 0 8px'>
         <USDPriceField
           symbol={quoteSymbol}
           price={quotePrice}
@@ -488,7 +488,7 @@ export default function StartingPrice({
 
   return (
     <Box className='v3-pool-liquidity-starting-price'>
-      <Box mb={2} className='flex'>
+      <Box margin='0 0 16px' className='flex'>
         {(isLocked || !basePriceUSD || !quotePriceUSD) && (
           <Badge
             text={
@@ -501,7 +501,7 @@ export default function StartingPrice({
                 : `${t('cantAutoFetchPrice', { symbol: currencyB?.symbol })}.`
             }
             variant={isLocked ? BadgeVariant.PRIMARY : BadgeVariant.WARNING}
-            icon={isLocked ? undefined : <Error width={14} height={14} />}
+            icon={isLocked ? undefined : <AlertCircle width={14} height={14} />}
           />
         )}
       </Box>

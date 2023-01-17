@@ -1,6 +1,5 @@
 import { Currency } from '@uniswap/sdk';
 import React from 'react';
-import { Box } from '@material-ui/core';
 import { CurrencyLogo } from 'components';
 import 'components/styles/DoubleCurrencyLogo.scss';
 
@@ -15,10 +14,10 @@ const DoubleCurrencyLogo: React.FC<DoubleCurrencyLogoProps> = ({
   size = 16,
 }: DoubleCurrencyLogoProps) => {
   return (
-    <Box className='doubleCurrencyLogo'>
+    <div className='doubleCurrencyLogo'>
       <CurrencyLogo currency={currency0} size={size.toString() + 'px'} />
       <CurrencyLogo currency={currency1} size={size.toString() + 'px'} />
-    </Box>
+    </div>
   );
 };
 

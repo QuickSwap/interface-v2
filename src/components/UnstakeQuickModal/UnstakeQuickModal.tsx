@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -72,13 +72,13 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
 
   return (
     <CustomModal open={open} onClose={onClose}>
-      <Box paddingX={3} paddingY={4}>
+      <Box padding='32px 24px'>
         <Box className='flex items-center justify-between'>
           <h5>{t('unstake')} dQUICK</h5>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
-          mt={3}
+          margin='24px 0 0'
           className='bg-default border-gray14'
           borderRadius='10px'
           padding='16px'
@@ -89,7 +89,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
               {t('balance')}: {formatTokenAmount(dQuickBalance)}
             </small>
           </Box>
-          <Box mt={2} className='flex items-center'>
+          <Box margin='16px 0 0' className='flex items-center'>
             <NumericalInput
               placeholder='0'
               value={typedValue}
@@ -115,7 +115,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
             </span>
           </Box>
           <Box className='flex items-center'>
-            <Box flex={1} mr={2} mt={0.5}>
+            <Box flex={1} margin='4px 16px 0 0'>
               <ColoredSlider
                 min={1}
                 max={100}
@@ -139,7 +139,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
             <small>{Math.min(stakePercent, 100).toLocaleString('us')}%</small>
           </Box>
         </Box>
-        <Box mt={3}>
+        <Box margin='24px 0 0'>
           <Button
             className='stakeButton'
             disabled={!!error || attempting}

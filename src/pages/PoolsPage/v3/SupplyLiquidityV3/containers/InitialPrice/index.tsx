@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import StartingPrice from '../../components/StartingPrice';
 import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
-import { Box } from '@material-ui/core';
-
+import { Box } from 'theme/components';
 import './index.scss';
 import { useTranslation } from 'react-i18next';
 
@@ -31,7 +30,7 @@ export function InitialPrice({
   return (
     <Box>
       <small className='weight-600'>{t('setInitialPrice')}</small>
-      <Box mt={1}>
+      <Box margin='8px 0 0'>
         <StartingPrice
           currencyA={currencyA}
           currencyB={currencyB}

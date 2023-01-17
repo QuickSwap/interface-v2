@@ -1,6 +1,6 @@
 import { ChainId } from '@uniswap/sdk';
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { CustomModal } from 'components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as TransactionFailed } from 'assets/images/TransactionFailed.svg';
@@ -23,12 +23,12 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
 }) => {
   const { t } = useTranslation();
   return (
-    <Box padding={4}>
+    <Box padding='32px'>
       <Box className='txModalHeader'>
         <CloseIcon onClick={onDismiss} />
       </Box>
       <Box className='txModalContent'>
-        <Box my={4} className='flex justify-center spinner'>
+        <Box margin='32px 0' className='flex justify-center spinner'>
           <img src={SpinnerImage} alt='Spinner' />
         </Box>
         <h5>{t('waitingConfirm')}</h5>
@@ -56,20 +56,20 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
 }) => {
   const { t } = useTranslation();
   return (
-    <Box padding={4}>
+    <Box padding='32px'>
       <Box className='txModalHeader'>
         <h5>{txPending ? t('txSubmitted') : t('txCompleted')}</h5>
         <CloseIcon onClick={onDismiss} />
       </Box>
       {!txPending && (
-        <Box mt={8} className='flex justify-center'>
+        <Box margin='64px 0 0' className='flex justify-center'>
           <TransactionSuccess />
         </Box>
       )}
       <Box className='txModalContent'>
         <p>{modalContent}</p>
       </Box>
-      <Box className='flex justify-between' mt={2}>
+      <Box className='flex justify-between' margin='16px 0 0'>
         {chainId && hash && (
           <a
             href={getEtherscanLink(chainId, hash, 'transaction')}
@@ -82,11 +82,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
             </Button>
           </a>
         )}
-        <Button
-          className='txSubmitButton'
-          style={{ width: '48%' }}
-          onClick={onDismiss}
-        >
+        <Button width='48%' className='txSubmitButton' onClick={onDismiss}>
           {t('close')}
         </Button>
       </Box>
@@ -106,7 +102,7 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
   content,
 }) => {
   return (
-    <Box padding={4}>
+    <Box padding='32px'>
       <Box className='txModalHeader'>
         <h5>{title}</h5>
         <CloseIcon onClick={onDismiss} />
@@ -122,7 +118,7 @@ export const ConfirmationModalContentV3: React.FC<ConfirmationModalContentProps>
   content,
 }) => {
   return (
-    <Box padding={4}>
+    <Box padding='32px'>
       <Box className='flex justify-between items-center'>
         <p>{title}</p>
         <CloseIcon onClick={onDismiss} />
@@ -143,7 +139,7 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
 }) => {
   const { t } = useTranslation();
   return (
-    <Box padding={4}>
+    <Box padding='32px'>
       <Box>
         <Box className='txModalHeader'>
           <h5 className='text-error'>Error!</h5>

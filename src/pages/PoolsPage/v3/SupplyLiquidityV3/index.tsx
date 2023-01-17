@@ -29,7 +29,7 @@ import { AddLiquidityButton } from './containers/AddLiquidityButton';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useIsExpertMode } from 'state/user/hooks';
 import { currencyId } from 'utils/v3/currencyId';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { SettingsModal } from 'components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
@@ -269,7 +269,7 @@ export function SupplyLiquidityV3() {
             {t('clearAll')}
           </small>
           {!hidePriceFormatter && (
-            <Box className='flex' ml={1}>
+            <Box className='flex' margin='0 0 0 8px'>
               <PriceFormatToggler
                 currentFormat={priceFormat}
                 handlePriceFormat={handlePriceFormat}
@@ -281,7 +281,7 @@ export function SupplyLiquidityV3() {
           </Box>
         </Box>
       </Box>
-      <Box mt={2}>
+      <Box margin='16px 0 0'>
         {account ? (
           <SelectPair
             baseCurrency={baseCurrency}
@@ -301,12 +301,12 @@ export function SupplyLiquidityV3() {
           </Button>
         )}
       </Box>
-      <Box mt={4} position='relative'>
+      <Box margin='32px 0 0' position='relative'>
         {(!baseCurrency || !quoteCurrency) && (
           <Box className='v3-supply-liquidity-overlay' />
         )}
         {mintInfo.noLiquidity && baseCurrency && quoteCurrency && (
-          <Box mb={2}>
+          <Box margin='0 0 16px'>
             <InitialPrice
               currencyA={baseCurrency ?? undefined}
               currencyB={currencyB ?? undefined}
@@ -321,7 +321,7 @@ export function SupplyLiquidityV3() {
           mintInfo={mintInfo}
           priceFormat={priceFormat}
         />
-        <Box mt={4}>
+        <Box margin='32px 0 0'>
           <EnterAmounts
             currencyA={baseCurrency ?? undefined}
             currencyB={currencyB ?? undefined}
@@ -330,7 +330,7 @@ export function SupplyLiquidityV3() {
           />
         </Box>
 
-        <Box mt={2}>
+        <Box margin='16px 0 0'>
           <AddLiquidityButton
             baseCurrency={baseCurrency ?? undefined}
             quoteCurrency={quoteCurrency ?? undefined}

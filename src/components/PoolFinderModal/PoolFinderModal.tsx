@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Currency, TokenAmount, ETHER, JSBI } from '@uniswap/sdk';
 import { ArrowLeft, Plus } from 'react-feather';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import {
   CustomModal,
   CurrencyLogo,
@@ -84,7 +84,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
 
   return (
     <CustomModal open={open} onClose={onClose}>
-      <Box paddingX={3} paddingY={4}>
+      <Box padding='32px 24px'>
         <Box className='flex items-center justify-between'>
           <ArrowLeft
             className='text-secondary cursor-pointer'
@@ -94,7 +94,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
-          mt={2}
+          margin='16px 0 0'
           className='borderedCard'
           onClick={() => {
             setShowSearch(true);
@@ -112,7 +112,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
             <p className='weight-600'>{t('selectToken')}</p>
           )}
         </Box>
-        <Box my={1} className='flex justify-center'>
+        <Box margin='8px 0' className='flex justify-center'>
           <Plus size='20' className='text-secondary' />
         </Box>
         <Box
@@ -123,7 +123,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           }}
         >
           {currency1 ? (
-            <Box display='flex'>
+            <Box className='flex'>
               <CurrencyLogo currency={currency1} />
               <p className='weight-600' style={{ marginLeft: 6 }}>
                 {currency1.symbol}
@@ -134,7 +134,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           )}
         </Box>
         {hasPosition && (
-          <Box textAlign='center' mt={2}>
+          <Box textAlign='center' margin='16px 0 0'>
             <p>{t('poolFound')}!</p>
             <p className='cursor-pointer text-primary' onClick={onClose}>
               {t('manageThisPool')}.

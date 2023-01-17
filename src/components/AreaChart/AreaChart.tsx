@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import Chart from 'react-apexcharts';
 import { useIsDarkMode } from 'state/user/hooks';
 import { formatCompact, formatDateFromTimeStamp, formatNumber } from 'utils';
@@ -13,7 +13,7 @@ export interface AreaChartProps {
   dates?: Array<any>;
   yAxisValues?: Array<number>;
   categories?: Array<string | null>;
-  width?: number | string;
+  width?: string;
   height?: number | string;
   yAxisTicker?: string | undefined;
 }
@@ -25,7 +25,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
   data = [],
   dates = [],
   yAxisValues,
-  width = 500,
+  width = '500px',
   height = 200,
   yAxisTicker = '$',
 }) => {
@@ -141,7 +141,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
   ];
 
   return (
-    <Box display='flex' mt={2.5} width={width}>
+    <Box className='flex' margin='20px 0 0' width={width}>
       <Box className='chartContainer'>
         <Chart
           options={options}
@@ -150,7 +150,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
           width='100%'
           height={height}
         />
-        <Box className='categoryValues' mt={-5}>
+        <Box className='categoryValues' margin='-40px 0 0'>
           {categories.map((val, ind) => (
             <p key={ind}>{val}</p>
           ))}

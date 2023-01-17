@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import PositionListItem from '../PositionListItem';
 import { useShowNewestPosition } from 'state/mint/v3/hooks';
 import { PositionPool } from 'models/interfaces';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 
 type PositionListProps = React.PropsWithChildren<{
   positions: PositionPool[];
@@ -42,24 +42,24 @@ export default function PositionList({
   }, [positions]);
 
   return (
-    <Box mb={-2}>
+    <Box margin='0 0 -16px'>
       {_positionsOnOldFarming.map((p) => {
         return (
-          <Box mb={2} key={p.tokenId.toString()}>
+          <Box margin='0 0 16px' key={p.tokenId.toString()}>
             <PositionListItem positionDetails={p} />
           </Box>
         );
       })}
       {_positionsOnFarming.map((p) => {
         return (
-          <Box mb={2} key={p.tokenId.toString()}>
+          <Box margin='0 0 16px' key={p.tokenId.toString()}>
             <PositionListItem positionDetails={p} />
           </Box>
         );
       })}
       {_positions.map((p) => {
         return (
-          <Box mb={2} key={p.tokenId.toString()}>
+          <Box margin='0 0 16px' key={p.tokenId.toString()}>
             <PositionListItem
               newestPosition={newestPosition}
               highlightNewest={showNewestPosition}

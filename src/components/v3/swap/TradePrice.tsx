@@ -1,7 +1,6 @@
 import React from 'react';
 import { useCallback } from 'react';
 import { Currency, Price } from '@uniswap/sdk-core';
-import { Box } from '@material-ui/core';
 
 interface TradePriceProps {
   price: Price<Currency, Currency>;
@@ -38,8 +37,8 @@ export default function TradePrice({
     '-'} ${label}`;
 
   return (
-    <Box className='cursor-pointer' onClick={flipPrice}>
+    <div className='cursor-pointer' onClick={flipPrice}>
       <small>{text}</small>
-    </Box>
+    </div>
   );
 }

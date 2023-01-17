@@ -1,10 +1,11 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import React from 'react';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import { injected } from 'connectors';
 import Option from './Option';
 import { useTranslation } from 'react-i18next';
+import Loader from 'components/Loader';
 
 interface PendingViewProps {
   connector?: AbstractConnector;
@@ -28,7 +29,7 @@ const PendingView: React.FC<PendingViewProps> = ({
 
   return (
     <Box className='pendingSection'>
-      <Box className='flex items-center justify-center' mb={4}>
+      <Box className='flex items-center justify-center' margin='0 0 32px'>
         {error ? (
           <Box className='errorGroup'>
             <p>{t('errorConnect')}</p>
@@ -44,7 +45,7 @@ const PendingView: React.FC<PendingViewProps> = ({
           </Box>
         ) : (
           <>
-            <CircularProgress />
+            <Loader size='16px' />
             <p style={{ marginLeft: 12 }}>{t('initializing')}...</p>
           </>
         )}

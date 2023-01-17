@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { Pair, JSBI, Percent } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -93,7 +93,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
 
         <Box className='poolButtonRow'>
           <Button
-            variant='outlined'
+            // variant='outlined'
             onClick={() =>
               history.push(`/analytics/v2/pair/${pair.liquidityToken.address}`)
             }
@@ -101,7 +101,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
             <small>{t('viewAnalytics')}</small>
           </Button>
           <Button
-            variant='contained'
+            // variant='contained'
             onClick={() => {
               history.push(
                 `/pools/v2?currency0=${currencyId(
@@ -113,7 +113,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
             <small>{t('add')}</small>
           </Button>
           <Button
-            variant='contained'
+            // variant='contained'
             onClick={() => {
               setOpenRemoveModal(true);
             }}

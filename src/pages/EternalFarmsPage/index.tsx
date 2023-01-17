@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Grid } from 'theme/components';
 import { EternalFarmCard } from 'components/StakerEventCard/EternalFarmCard';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -98,10 +98,10 @@ export default function EternalFarmsPage() {
           />
         )}
       </CustomModal>
-      <Box ml={2}>
+      <Box margin='0 0 0 16px'>
         <CustomSwitch width={160} height={40} items={farmStatusItems} />
       </Box>
-      <Box px={2} py={3}>
+      <Box padding='24px 16px'>
         {eternalFarmsLoading ? (
           <div className={'eternal-page__loader'}>
             <Loader stroke='white' size='1.5rem' />

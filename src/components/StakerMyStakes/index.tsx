@@ -7,7 +7,7 @@ import { FarmingType } from '../../models/enums';
 import { Link, useLocation } from 'react-router-dom';
 import './index.scss';
 import FarmCard from './FarmCard';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'react-i18next';
@@ -113,24 +113,22 @@ export function FarmingMyFarms() {
   return (
     <>
       {transferredPositionsLoading || !shallowPositions ? (
-        <Box py={5} className='flex justify-center'>
+        <Box padding='40px 0' className='flex justify-center'>
           <Loader stroke={'white'} size={'1.5rem'} />
         </Box>
       ) : shallowPositions && shallowPositions.length === 0 ? (
-        <Box py={5} className='flex flex-col items-center'>
+        <Box padding='40px 0' className='flex flex-col items-center'>
           <Frown size={35} stroke={'white'} />
-          <Box mb={3} mt={1}>
-            {t('nofarms')}
-          </Box>
+          <Box margin='8px 0 24px'>{t('nofarms')}</Box>
         </Box>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
         <Box padding='24px'>
           <Box className='v3-farm-rewards'>
-            <Box mr={1}>✨ {t('earnMoreRewards')}</Box>
+            <Box margin='0 8px 0 0'>✨ {t('earnMoreRewards')}</Box>
             <Link to={'/dragons'}>{t('stakeRewards')}</Link>
           </Box>
           {farmedNFTs && (
-            <Box pb={2}>
+            <Box padding='0 0 16px'>
               {farmedNFTs.map((el, i) => {
                 const date = new Date(
                   +el.enteredInEternalFarming * 1000,

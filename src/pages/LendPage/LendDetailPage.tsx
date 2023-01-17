@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Grid,
-  Table,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Grid, Button, Skeleton } from 'theme/components';
 
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -163,10 +153,13 @@ const LendDetailPage: React.FC = () => {
   return (
     <>
       <Box width={'100%'}>
-        <Box mb={3}>
+        <Box margin='0 0 24px'>
           <AdsSlider sort='lend' />
         </Box>
-        <Box className='flex flex-wrap items-center' gridGap={'20px'}>
+        <Box
+          className='flex flex-wrap items-center'
+          // gridGap={'20px'}
+        >
           <Box
             className='flex items-center cursor-pointer'
             onClick={() => {
@@ -198,7 +191,10 @@ const LendDetailPage: React.FC = () => {
             </svg>
           </Box>
           <h4 className='text-bold'>{poolData?.pool.name}</h4>
-          <Box display={'flex'} gridGap={'2px'}>
+          <Box
+            className={'flex'}
+            // gridGap={'2px'}
+          >
             {poolData?.assets.map((asset, i) => (
               <CurrencyLogo
                 currency={getPoolAssetToken(asset, chainId)}
@@ -213,7 +209,7 @@ const LendDetailPage: React.FC = () => {
             ))}
           </Box>
         </Box>
-        <Box my={'24px'}>
+        <Box margin={'0 24px'}>
           <h5>{t('lendPageTitle')}</h5>
         </Box>
         <Grid container spacing={3}>
@@ -224,21 +220,21 @@ const LendDetailPage: React.FC = () => {
                 {item.data ? (
                   <h4>{item.data}</h4>
                 ) : (
-                  <Skeleton variant='rect' height={40} />
+                  <Skeleton variant='rect' height='40px' />
                 )}
               </Box>
             </Grid>
           ))}
         </Grid>
-        <Box className='lendBorrowLimitWrapper' mt={'24px'}>
+        <Box className='lendBorrowLimitWrapper' margin={'24px 0 0'}>
           <Box className='lendBorrowLimitText'>
             <Box>{t('borrowLimit')}</Box>
-            <Box ml={'8px'}>
+            <Box margin='0 0 0 8px'>
               <QuestionHelper text={t('borrowLimitHelper')} />
             </Box>
           </Box>
           <Box className='lendBorrowLimitLineWrapper'>
-            <Box mr='20px'>
+            <Box margin='0 20px 0 0'>
               <span>{midUsdFormatter(Math.min(50, borrowLimit))}</span>
             </Box>
             <Box className='lendBorrowLimitLine'>
@@ -246,64 +242,62 @@ const LendDetailPage: React.FC = () => {
               <Box className='lendBorrowLimitWarning' />
               <Box className='lendBorrowLimitError' />
             </Box>
-            <Box ml='20px'>
+            <Box margin='0 0 0 20px'>
               {borrowLimit !== undefined ? (
                 <span>{midUsdFormatter(borrowLimit)}</span>
               ) : (
-                <Skeleton variant='rect' width={60} height={20} />
+                <Skeleton variant='rect' width='60px' height='20px' />
               )}
             </Box>
           </Box>
         </Box>
-        <Box mt={3}>
+        <Box margin='24px 0 0'>
           <Grid spacing={3} container>
             <Grid item xs={12} sm={12} md={6}>
               <Box className='poolDetailsItemWrapper'>
                 <Box className='poolDetailsItemTop'>
                   <Box className='poolDetailsItemTag bg-primary' />
                   <h6>{t('supply')}</h6>
-                  <Box display={'flex'}>
+                  <Box className={'flex'}>
                     <small>{t('yoursupplybalance')}:&nbsp;</small>
                     {poolData ? (
                       <small>
                         {midUsdFormatter(poolData.totalSupplyBalanceUSD)}
                       </small>
                     ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
+                      <Skeleton variant='rect' width='40px' height='23px' />
                     )}
                   </Box>
                 </Box>
                 <Box className='poolDetailsTableWrapper'>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>
                           <Box maxWidth='180px'>
                             {t('asset')} / {t('ltv')}
                           </Box>
-                        </TableCell>
-                        <TableCell className='poolTableHideCell'>
-                          {t('supplyapy')}
-                        </TableCell>
-                        <TableCell>
+                        </th>
+                        <th className='poolTableHideCell'>{t('supplyapy')}</th>
+                        <th>
                           <Box maxWidth='150px'>{t('deposited')}</Box>
-                        </TableCell>
-                        <TableCell></TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
+                        </th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {poolData?.assets.map((asset) => {
                         if (asset.isSupplyPaused) {
                           return <></>;
                         }
                         return (
-                          <TableRow key={asset.cToken.address}>
-                            <TableCell>
+                          <tr key={asset.cToken.address}>
+                            <td>
                               <Box
                                 className='flex items-center'
                                 maxWidth='180px'
                               >
-                                <Box display={'flex'} mr='8px'>
+                                <Box className={'flex'} margin='0 8px 0 0'>
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'36px'}
@@ -331,8 +325,8 @@ const LendDetailPage: React.FC = () => {
                                   </p>
                                 </Box>
                               </Box>
-                            </TableCell>
-                            <TableCell className='poolTableHideCell'>
+                            </td>
+                            <td className='poolTableHideCell'>
                               <small>
                                 {convertMantissaToAPY(
                                   asset.supplyRatePerBlock,
@@ -348,7 +342,7 @@ const LendDetailPage: React.FC = () => {
                                   ).toFixed(2)}
                                   %
                                 </p>
-                                <Box ml='2px' className='flex'>
+                                <Box margin='0 0 0 2px' className='flex'>
                                   <CurrencyLogo
                                     currency={getPoolAssetToken(asset, chainId)}
                                     size={'16px'}
@@ -360,8 +354,8 @@ const LendDetailPage: React.FC = () => {
                                   />
                                 </Box>
                               </Box>
-                            </TableCell>
-                            <TableCell>
+                            </td>
+                            <td>
                               <Box maxWidth='150px'>
                                 <small>
                                   {midUsdFormatter(asset.supplyBalanceUSD)}
@@ -378,8 +372,8 @@ const LendDetailPage: React.FC = () => {
                                     : asset.underlyingSymbol}
                                 </p>
                               </Box>
-                            </TableCell>
-                            <TableCell>
+                            </td>
+                            <td>
                               <Button
                                 disabled={
                                   !account ||
@@ -422,12 +416,12 @@ const LendDetailPage: React.FC = () => {
                                   ? t('enterMarket')
                                   : t('deposit')}
                               </Button>
-                            </TableCell>
-                          </TableRow>
+                            </td>
+                          </tr>
                         );
                       })}
-                    </TableBody>
-                  </Table>
+                    </tbody>
+                  </table>
                 </Box>
               </Box>
             </Grid>
@@ -436,50 +430,50 @@ const LendDetailPage: React.FC = () => {
                 <Box className='poolDetailsItemTop'>
                   <Box className='poolDetailsItemTag bg-error' />
                   <h6>{t('borrow')}</h6>
-                  <Box display={'flex'}>
+                  <Box className={'flex'}>
                     <small>{t('yourborrowbalance')}:&nbsp;</small>
                     {poolData ? (
                       <small>
                         {midUsdFormatter(poolData.totalBorrowBalanceUSD)}
                       </small>
                     ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
+                      <Skeleton variant='rect' width='40px' height='23px' />
                     )}
                   </Box>
                 </Box>
                 <Box className='poolDetailsTableWrapper'>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>
-                          <Box maxWidth={150}>{t('asset')}</Box>
-                        </TableCell>
-                        <TableCell className='poolTableHideCell'>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>
+                          <Box maxWidth='150px'>{t('asset')}</Box>
+                        </th>
+                        <th className='poolTableHideCell'>
                           {t('apr')} / {t('tvl')}
-                        </TableCell>
-                        <TableCell>
+                        </th>
+                        <th>
                           <Box maxWidth='120px'>{t('borrowed')}</Box>
-                        </TableCell>
-                        <TableCell>
+                        </th>
+                        <th>
                           <Box maxWidth='120px'>{t('liquidity')}</Box>
-                        </TableCell>
-                        <TableCell></TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
+                        </th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {poolData?.assets.map((asset) => {
                         if (asset.isPaused) {
                           return null;
                         }
                         return (
                           <>
-                            <TableRow key={asset.cToken.address}>
-                              <TableCell>
+                            <tr key={asset.cToken.address}>
+                              <td>
                                 <Box
                                   className='flex items-center'
                                   maxWidth='150px'
                                 >
-                                  <Box display='flex' mr='8px'>
+                                  <Box className='flex' margin='0 8px 0 0'>
                                     <CurrencyLogo
                                       currency={getPoolAssetToken(
                                         asset,
@@ -500,8 +494,8 @@ const LendDetailPage: React.FC = () => {
                                         : '')}
                                   </small>
                                 </Box>
-                              </TableCell>
-                              <TableCell className='poolTableHideCell'>
+                              </td>
+                              <td className='poolTableHideCell'>
                                 <p className='caption'>
                                   {convertMantissaToAPR(
                                     asset.borrowRatePerBlock,
@@ -512,8 +506,8 @@ const LendDetailPage: React.FC = () => {
                                   {shortUsdFormatter(asset.totalSupplyUSD)}{' '}
                                   {t('tvl')}
                                 </p>
-                              </TableCell>
-                              <TableCell>
+                              </td>
+                              <td>
                                 <Box maxWidth='120px'>
                                   <small>
                                     {midUsdFormatter(asset.borrowBalanceUSD)}
@@ -530,8 +524,8 @@ const LendDetailPage: React.FC = () => {
                                       : asset.underlyingSymbol}
                                   </p>
                                 </Box>
-                              </TableCell>
-                              <TableCell>
+                              </td>
+                              <td>
                                 <Box maxWidth='120px'>
                                   <small>
                                     {midUsdFormatter(asset.liquidityUSD)}
@@ -550,8 +544,8 @@ const LendDetailPage: React.FC = () => {
                                       : asset.underlyingSymbol}
                                   </p>
                                 </Box>
-                              </TableCell>
-                              <TableCell>
+                              </td>
+                              <td>
                                 <Button
                                   disabled={!account}
                                   onClick={() => {
@@ -562,26 +556,26 @@ const LendDetailPage: React.FC = () => {
                                 >
                                   {t('borrow')}
                                 </Button>
-                              </TableCell>
-                            </TableRow>
+                              </td>
+                            </tr>
                             {asset.underlyingToken.toLowerCase() ===
                               GlobalValue.tokens.COMMON.MI.address.toLowerCase() && (
-                              <TableRow>
-                                <TableCell colSpan={5}>
+                              <tr>
+                                <td colSpan={5}>
                                   <Box className='maiAlertWrapper'>
                                     <p>
                                       <span>{t('pleaseNote')}:</span>{' '}
                                       {t('maiNote')}
                                     </p>
                                   </Box>
-                                </TableCell>
-                              </TableRow>
+                                </td>
+                              </tr>
                             )}
                           </>
                         );
                       })}
-                    </TableBody>
-                  </Table>
+                    </tbody>
+                  </table>
                 </Box>
               </Box>
             </Grid>
@@ -603,7 +597,7 @@ const LendDetailPage: React.FC = () => {
                       {item.data ? (
                         <small>{item.data}</small>
                       ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
+                        <Skeleton variant='rect' width='40px' height='23px' />
                       )}
                     </Grid>
                   ))}

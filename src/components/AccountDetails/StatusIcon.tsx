@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { injected, portis } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
@@ -17,7 +17,7 @@ const StatusIcon: React.FC = () => {
       <img src={icon} width={24} alt='wallet icon' />
       {connector === portis && (
         <Box
-          ml={1}
+          margin='0 0 0 8px'
           className='cursor-pointer'
           onClick={() => {
             portis.portis.showPortis();

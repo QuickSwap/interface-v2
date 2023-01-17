@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from 'theme/components';
 import { SyrupInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
 import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from 'utils';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { ChevronDown, ChevronUp } from 'react-feather';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
 import 'components/styles/SyrupCard.scss';
 import { Trans, useTranslation } from 'react-i18next';
+import { isMobile } from 'react-device-detect';
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
 }) => {
   const { t } = useTranslation();
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [expanded, setExpanded] = useState(false);
 
   const currency = unwrappedToken(syrup.token);
@@ -36,28 +34,28 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
       <Box className='syrupCardContent' onClick={() => setExpanded(!expanded)}>
         {isMobile ? (
           <>
-            <Box className='flex items-center' width={expanded ? 0.95 : 0.5}>
+            <Box className='flex items-center' width={expanded ? '95%' : '50%'}>
               <CurrencyLogo currency={currency} size='32px' />
-              <Box ml={1.5}>
+              <Box margin='0 0 0 12px'>
                 <small>{currency.symbol}</small>
               </Box>
             </Box>
             {!expanded && (
-              <Box width={0.45}>
+              <Box width='45%'>
                 <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
               </Box>
             )}
-            <Box width={0.05} className='text-primary flex justify-end'>
-              {expanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+            <Box width='5%' className='text-primary flex justify-end'>
+              {expanded ? <ChevronUp /> : <ChevronDown />}
             </Box>
           </>
         ) : (
           <>
-            <Box width={0.3} className='flex items-center'>
+            <Box width='30%' className='flex items-center'>
               <CurrencyLogo currency={currency} size='32px' />
-              <Box ml={1.5}>
+              <Box margin='0 0 0 12px'>
                 <small>{currency.symbol}</small>
-                <Box mt={0.25}>
+                <Box margin='20px 0 0'>
                   <span>
                     {syrup.rate >= 1000000
                       ? formatCompact(syrup.rate)
@@ -65,7 +63,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                     <span className='text-secondary'> / {t('day')}</span>
                   </span>
                 </Box>
-                <Box mt={0.25}>
+                <Box margin='20px 0 0'>
                   <span>
                     $
                     {syrup.rewardTokenPriceinUSD
@@ -78,14 +76,14 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 </Box>
               </Box>
             </Box>
-            <Box width={0.3}>
+            <Box width='30%'>
               <small>{depositAmount}</small>
             </Box>
-            <Box width={0.2} textAlign='left'>
+            <Box width='20%' textAlign='left'>
               <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
             </Box>
-            <Box width={0.2} textAlign='right'>
-              <Box className='flex items-center justify-end' mb={0.25}>
+            <Box width='20%' textAlign='right'>
+              <Box className='flex items-center justify-end' margin='0 0 2px'>
                 <CurrencyLogo currency={currency} size='16px' />
                 <small style={{ marginLeft: 5 }}>
                   {formatTokenAmount(syrup.earnedAmount)}

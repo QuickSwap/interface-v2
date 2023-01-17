@@ -1,6 +1,6 @@
 import React from 'react';
 import { CustomModal } from 'components';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { PositionPool } from 'models/interfaces';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
@@ -21,12 +21,12 @@ export default function V3RemoveLiquidityModal({
 
   return (
     <CustomModal open={open} onClose={onClose}>
-      <Box padding={3}>
+      <Box padding='24px'>
         <Box className='flex justify-between'>
           <p className='weight-600'>{t('removeLiquidity')}</p>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
-        <Box mt={3}>
+        <Box margin='24px 0 0'>
           <RemoveLiquidityV3 position={position} />
         </Box>
       </Box>

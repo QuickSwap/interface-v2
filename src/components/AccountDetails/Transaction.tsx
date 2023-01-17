@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box } from 'theme/components';
+import Loader from 'components/Loader';
 import { CheckCircle, Triangle } from 'react-feather';
 
 import { useActiveWeb3React } from 'hooks';
@@ -37,7 +38,7 @@ const Transaction: React.FC<TransactionProps> = ({ hash }) => {
       </a>
       <Box className='iconWrapper'>
         {pending ? (
-          <CircularProgress size={16} />
+          <Loader size='16px' />
         ) : success ? (
           <CheckCircle size='16' />
         ) : (

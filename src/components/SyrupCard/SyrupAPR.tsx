@@ -1,5 +1,4 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
 import { SyrupInfo } from 'types';
 import { CurrencyLogo } from 'components';
 import { getTokenAPRSyrup } from 'utils';
@@ -22,7 +21,7 @@ const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         {getTokenAPRSyrup(syrup).toLocaleString('us')}%
       </small>
       {isDQUICKStakingToken && (
-        <Box className='syrupAPR border-gray2'>
+        <div className='syrupAPR border-gray2'>
           <CurrencyLogo
             currency={GlobalValue.tokens.COMMON.OLD_QUICK}
             size='12px'
@@ -30,7 +29,7 @@ const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
           <span style={{ marginLeft: 4 }}>
             {dQUICKAPY}% <span className='text-hint'>{t('apy')}</span>
           </span>
-        </Box>
+        </div>
       )}
     </>
   );

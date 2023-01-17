@@ -1,5 +1,5 @@
 import React, { lazy, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { QuestionHelper, SettingsModal } from 'components';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +32,7 @@ const SupplyLiquidity: React.FC = () => {
           </Box>
         </Box>
       </Box>
-      <Box mt={2.5}>
+      <Box margin='20px 0 0'>
         <AddLiquidity />
       </Box>
     </>

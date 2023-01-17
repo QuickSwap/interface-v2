@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
@@ -44,9 +44,9 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           isNew={isNew}
         />
       )}
-      <Box display='flex'>
+      <Box className='flex'>
         <CurrencyLogo currency={quickToken} size='32px' />
-        <Box ml={1.5}>
+        <Box margin='0 0 0 12px'>
           <p className='small line-height-1'>QUICK</p>
           <span className='text-hint'>{t('stakeQUICKTitle')}</span>
         </Box>
@@ -110,7 +110,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
       >
         <small>{t('unstake')}</small>
       </Box>
-      <Box mt={3} textAlign='center'>
+      <Box margin='24px 0 0' textAlign='center'>
         <span className='text-secondary'>{t('unstakeQUICKDesc')}</span>
       </Box>
     </Box>

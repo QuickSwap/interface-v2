@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Checkbox } from '@material-ui/core';
-import { Replay } from '@material-ui/icons';
+import { Box } from 'theme/components';
+import { RefreshCw } from 'react-feather';
 import { CustomSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 
@@ -35,7 +35,8 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
   return (
     <Box className='swapFilter'>
       <Box className='checkWrapper'>
-        <Checkbox
+        <input
+          type='checkbox'
           checked={showChart}
           disabled={!showTrades}
           onChange={(evt) => setShowChart(evt.target.checked)}
@@ -43,7 +44,8 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
         <small>{t('chart')}</small>
       </Box>
       <Box className='checkWrapper'>
-        <Checkbox
+        <input
+          type='checkbox'
           checked={showTrades}
           disabled={!showChart}
           onChange={(evt) => setShowTrades(evt.target.checked)}
@@ -52,7 +54,7 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
       </Box>
       <Box className='flex items-center'>
         <small className='text-uppercase'>{t('info')}:</small>
-        <Box ml={1}>
+        <Box margin='0 0 0 8px'>
           <CustomSwitch width={190} height={30} items={infoPosItems} />
         </Box>
       </Box>
@@ -64,7 +66,7 @@ const SwapProFilter: React.FC<SwapProFilterProps> = ({
           setShowTrades(true);
         }}
       >
-        <Replay />
+        <RefreshCw />
       </Box>
     </Box>
   );

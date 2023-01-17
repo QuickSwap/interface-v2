@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Box, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
+import Loader from 'components/Loader';
 import { Trans, useTranslation } from 'react-i18next';
 import QUICKIcon from 'assets/images/quickIcon.svg';
 import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
-import { ArrowForward, ArrowDownward } from '@material-ui/icons';
+import { ArrowRight, ArrowDown } from 'react-feather';
 import {
   NumericalInput,
   TransactionErrorContent,
@@ -130,16 +131,16 @@ const ConvertQUICKPage: React.FC = () => {
   };
 
   return (
-    <Box width='100%' maxWidth={488} id='convertQUICKPage'>
+    <Box width='100%' maxWidth='488px' id='convertQUICKPage'>
       <h4>{t('convert')} QUICK</h4>
       <Box className='convertQUICKWrapper'>
-        <Box className='flex items-center' mb={3}>
+        <Box className='flex items-center' margin='0 0 24px'>
           <Box className='iconWrapper'>
             <img src={QUICKIcon} alt='QUICK' />
           </Box>
           <p className='weight-600'>QUICK(OLD)</p>
-          <Box mx={1.5} className='convertArrow'>
-            <ArrowForward />
+          <Box margin='0 12px' className='convertArrow'>
+            <ArrowRight />
           </Box>
           <Box className='iconWrapper'>
             <QUICKV2Icon />
@@ -166,7 +167,7 @@ const ConvertQUICKPage: React.FC = () => {
             {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK(NEW)
           </span>
         </Box>
-        <Box mt={4} mb={2}>
+        <Box margin='32px 0 16px'>
           <small className='text-secondary'>
             {t('yourbalance')}: {formatTokenAmount(quickBalance)}
           </small>
@@ -198,7 +199,7 @@ const ConvertQUICKPage: React.FC = () => {
               }}
             />
             <Box
-              mr={1}
+              margin='0 8px 0 0'
               className='maxButton'
               onClick={() => {
                 if (quickBalance) {
@@ -222,10 +223,10 @@ const ConvertQUICKPage: React.FC = () => {
             </small>
           )}
         </Box>
-        <Box ml={2} className='convertArrow'>
-          <ArrowDownward />
+        <Box margin='0 0 0 16px' className='convertArrow'>
+          <ArrowDown />
         </Box>
-        <Box mt={2} mb={4}>
+        <Box margin='16px 0 32px'>
           <small className='text-secondary'>{t('youwillreceive')}:</small>
           <Box className='currencyInput'>
             <NumericalInput
@@ -287,8 +288,8 @@ const ConvertQUICKPage: React.FC = () => {
                 onDismiss={handleDismissConfirmation}
                 content={() => (
                   <Box textAlign='center'>
-                    <Box mt={6} mb={5}>
-                      <CircularProgress size={80} />
+                    <Box margin='48px 0 40px'>
+                      <Loader size='80px' />
                     </Box>
                     <p>{quickConvertingText}</p>
                   </Box>

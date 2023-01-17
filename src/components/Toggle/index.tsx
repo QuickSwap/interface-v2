@@ -1,7 +1,6 @@
 import React from 'react';
 import { darken } from 'polished';
 import { useState } from 'react';
-import { Box } from '@material-ui/core';
 import styled, { keyframes } from 'styled-components/macro';
 
 const turnOnToggle = keyframes`
@@ -80,12 +79,12 @@ export default function Toggle({ id, bgColor, isActive, toggle }: ToggleProps) {
   };
 
   return (
-    <Box id={id} onClick={switchToggle}>
+    <div id={id} onClick={switchToggle}>
       <ToggleElement
         isActive={isActive}
         bgColor={bgColor}
         isInitialToggleLoad={isInitialToggleLoad}
       />
-    </Box>
+    </div>
   );
 }

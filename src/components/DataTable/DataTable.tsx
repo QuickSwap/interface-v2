@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TableSortLabel,
-  CircularProgress,
-} from '@material-ui/core';
+import { Box } from 'theme/components';
+import Loader from 'components/Loader';
 import { SortOrder, getComparator, stableSort } from './sort';
 import 'components/styles/DataTable.scss';
 
@@ -100,134 +90,123 @@ const DataTable: React.FC<DataTableProps<any>> = ({
     <Box className='datatableWrapper'>
       {toolbar}
 
-      <TableContainer>
-        <Table
-          className='table'
-          aria-labelledby='tableTitle'
-          size='medium'
-          aria-label='enhanced table'
-        >
-          <TableHead>
-            <TableRow>
-              {headCells.map((headCell, index) => (
-                <TableCell
-                  className={headCell.buttonCell ? 'buttonCell' : ''}
-                  key={`${headCell.id}_${index}`}
-                  align={headCell.align}
-                  padding='normal'
-                  sortDirection={orderBy.id === headCell.id ? order : false}
-                >
-                  {headCell.element}
-                  {sortUpIcon && sortDownIcon ? (
+      <table
+        className='table'
+        aria-labelledby='tableTitle'
+        aria-label='enhanced table'
+      >
+        <thead>
+          <tr>
+            {headCells.map((headCell, index) => (
+              <th
+                className={headCell.buttonCell ? 'buttonCell' : ''}
+                key={`${headCell.id}_${index}`}
+                // align={headCell.align}
+                // padding='normal'
+                // sortDirection={orderBy.id === headCell.id ? order : false}
+              >
+                {headCell.element}
+                {sortUpIcon && sortDownIcon ? (
+                  <Box
+                    className='flex items-center'
+                    style={{
+                      whiteSpace: isSinglelineHeader ? 'nowrap' : 'initial',
+                    }}
+                    onClick={(event: any) => handleRequestSort(event, headCell)}
+                  >
                     <Box
-                      className='flex items-center'
-                      style={{
-                        whiteSpace: isSinglelineHeader ? 'nowrap' : 'initial',
-                      }}
-                      onClick={(event: any) =>
-                        handleRequestSort(event, headCell)
-                      }
-                    >
-                      <Box
-                        className={`headCellLabel${
-                          orderBy.id === headCell.id
-                            ? ' sortRequestedHeadLabel'
-                            : ''
-                        }`}
-                      >
-                        {headCell.label}
-                      </Box>
-                      {!headCell.sortDisabled && (
-                        <Box
-                          className={`sortIcon${
-                            orderBy.id === headCell.id
-                              ? ' sortRequestedIcon'
-                              : ''
-                          }`}
-                        >
-                          {order === 'asc' && orderBy.id === headCell.id
-                            ? sortUpIcon
-                            : sortDownIcon}
-                        </Box>
-                      )}
-                    </Box>
-                  ) : (
-                    <TableSortLabel
-                      style={{
-                        whiteSpace: isSinglelineHeader ? 'nowrap' : 'initial',
-                      }}
-                      active={orderBy.id === headCell.id}
-                      direction={orderBy.id === headCell.id ? order : 'asc'}
-                      onClick={(event: any) =>
-                        handleRequestSort(event, headCell)
-                      }
+                      className={`headCellLabel${
+                        orderBy.id === headCell.id
+                          ? ' sortRequestedHeadLabel'
+                          : ''
+                      }`}
                     >
                       {headCell.label}
-                      {orderBy.id === headCell.id ? (
-                        <span className='visuallyHidden'>
-                          {order === 'desc'
-                            ? 'sorted descending'
-                            : 'sorted ascending'}
-                        </span>
-                      ) : null}
-                    </TableSortLabel>
-                  )}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {loading && (
-              <TableRow style={{ height: 53 * emptyRows }}>
-                <TableCell colSpan={headCells.length}>
-                  <Box className='flex justify-center items-center'>
-                    <CircularProgress />
+                    </Box>
+                    {!headCell.sortDisabled && (
+                      <Box
+                        className={`sortIcon${
+                          orderBy.id === headCell.id ? ' sortRequestedIcon' : ''
+                        }`}
+                      >
+                        {order === 'asc' && orderBy.id === headCell.id
+                          ? sortUpIcon
+                          : sortDownIcon}
+                      </Box>
+                    )}
                   </Box>
-                </TableCell>
-              </TableRow>
-            )}
+                ) : (
+                  <Box
+                    style={{
+                      whiteSpace: isSinglelineHeader ? 'nowrap' : 'initial',
+                    }}
+                    // active={orderBy.id === headCell.id}
+                    // direction={orderBy.id === headCell.id ? order : 'asc'}
+                    onClick={(event: any) => handleRequestSort(event, headCell)}
+                  >
+                    {headCell.label}
+                    {orderBy.id === headCell.id ? (
+                      <span className='visuallyHidden'>
+                        {order === 'desc'
+                          ? 'sorted descending'
+                          : 'sorted ascending'}
+                      </span>
+                    ) : null}
+                  </Box>
+                )}
+              </th>
+            ))}
+          </tr>
+        </thead>
 
-            {stableSort(data, getComparator(order, orderBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((item, index) => renderRow(item, index, page, rowsPerPage))}
-
-            {!loading && data.length < 1 && (
-              <TableRow style={{ height: 53 }}>
-                <TableCell colSpan={headCells.length} align='center'>
-                  {emptyMesage}
-                </TableCell>
-              </TableRow>
-            )}
-
-            {!loading && emptyRows > 0 && showEmptyRows && (
-              <TableRow
-                style={{
-                  height: 53 * (data.length < 1 ? emptyRows - 1 : emptyRows),
-                }}
-              >
-                <TableCell colSpan={headCells.length} />
-              </TableRow>
-            )}
-          </TableBody>
-
-          {/* Todo: show captions */}
-          {caption === false && (
-            <span style={{ marginTop: 24 }}>{caption}</span>
+        <tbody>
+          {loading && (
+            <tr style={{ height: 53 * emptyRows }}>
+              <td colSpan={headCells.length}>
+                <Box className='flex justify-center items-center'>
+                  <Loader size='16px' />
+                </Box>
+              </td>
+            </tr>
           )}
-        </Table>
-      </TableContainer>
+
+          {stableSort(data, getComparator(order, orderBy))
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((item, index) => renderRow(item, index, page, rowsPerPage))}
+
+          {!loading && data.length < 1 && (
+            <tr style={{ height: 53 }}>
+              <td colSpan={headCells.length} align='center'>
+                {emptyMesage}
+              </td>
+            </tr>
+          )}
+
+          {!loading && emptyRows > 0 && showEmptyRows && (
+            <tr
+              style={{
+                height: 53 * (data.length < 1 ? emptyRows - 1 : emptyRows),
+              }}
+            >
+              <td colSpan={headCells.length} />
+            </tr>
+          )}
+        </tbody>
+
+        {/* Todo: show captions */}
+        {caption === false && <span style={{ marginTop: 24 }}>{caption}</span>}
+      </table>
 
       {showPagination && (
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 50]}
+        <Box
+          // rowsPerPageOptions={[5, 10, 25, 50]}
           className='tablePagination'
-          component='div'
-          count={count}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          // component='div'
+          // count={count}
+          // rowsPerPage={rowsPerPage}
+          // page={page}
+          // onPageChange={handleChangePage}
+          // onRowsPerPageChange={handleChangeRowsPerPage}
         />
       )}
     </Box>

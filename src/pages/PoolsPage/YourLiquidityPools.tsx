@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Box, Skeleton } from 'theme/components';
 import NoLiquidity from 'assets/images/NoLiquidityPool.png';
 import { PoolFinderModal, PoolPositionCard } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
@@ -37,10 +36,10 @@ const YourLiquidityPools: React.FC = () => {
         )} */}
       </Box>
 
-      <Box mt={3}>
+      <Box margin='24px 0 0'>
         {v2IsLoading ? (
-          <Box width={1}>
-            <Skeleton width='100%' height={50} />
+          <Box width='100%'>
+            <Skeleton width='100%' height='50px' />
           </Box>
         ) : allV2PairsWithLiquidity.length > 0 ? (
           <Box>
@@ -53,7 +52,7 @@ const YourLiquidityPools: React.FC = () => {
               />
             </small>
             {allV2PairsWithLiquidity.map((pair, ind) => (
-              <Box key={ind} mt={2}>
+              <Box key={ind} margin='16px 0 0'>
                 <PoolPositionCard
                   key={pair.liquidityToken.address}
                   pair={pair}

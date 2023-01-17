@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import 'components/styles/CustomSwitch.scss';
 
 interface SwitchItems {
@@ -22,7 +22,7 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
   isLarge,
 }) => {
   return (
-    <Box display='flex' width={width} height={height}>
+    <Box className='flex' width={`${width}px`} height={`${height}px`}>
       {items.map((item, index) => {
         const returnBorderRadius = (ind: number) => {
           return index === ind ? 8 : 0; // this makes border radius for individual switch item

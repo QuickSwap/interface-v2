@@ -5,7 +5,7 @@ import Loader from '../Loader';
 import CurrencyLogo from '../CurrencyLogo';
 import { Token } from '@uniswap/sdk';
 import { ReactComponent as AddIcon } from 'assets/images/addIcon.svg';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
 import { formatCompact, getTokenFromAddress } from 'utils';
@@ -149,13 +149,17 @@ export function EternalFarmCard({
       )}
       {!refreshing && (
         <Box
-          padding={1.5}
+          padding='12px'
           width='100%'
           height='100%'
-          maxWidth={380}
+          maxWidth='380px'
           className='flex flex-col'
         >
-          <Box mb={1.5} flex={1} className='flex justify-between items-center'>
+          <Box
+            margin='0 0 12px'
+            flex={1}
+            className='flex justify-between items-center'
+          >
             <Box className='flex items-center'>
               {token0 && token1 && (
                 <DoubleCurrencyLogo
@@ -165,13 +169,13 @@ export function EternalFarmCard({
                 />
               )}
 
-              <Box ml='5px'>
+              <Box margin='0 0 0 5px'>
                 <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
               </Box>
             </Box>
             <Box className='flex'>
-              <Box mx='6px'>
-                <Box ml='3px'>
+              <Box margin='0 6px'>
+                <Box margin='0 0 0 3px'>
                   <small className='weight-600'>{t('pool')}</small>
                 </Box>
                 <Box
@@ -186,7 +190,7 @@ export function EternalFarmCard({
                 </Box>
               </Box>
               <Box>
-                <Box ml='3px'>
+                <Box margin='0 0 0 3px'>
                   <small className='weight-600'>{t('farm')}</small>
                 </Box>
                 <Box
@@ -204,16 +208,16 @@ export function EternalFarmCard({
           </Box>
           {rewardToken && (
             <Box
-              padding={1.5}
+              padding='12px'
               className='flex bg-default items-center justify-between'
-              height={56}
+              height='56px'
               borderRadius='10px'
             >
               {farmRewardToken && (
                 <Box className='flex items-center'>
                   <CurrencyLogo currency={farmRewardToken} size={'30px'} />
 
-                  <Box ml={1.5}>
+                  <Box margin='0 0 0 12px'>
                     <p className='span text-secondary'>{t('reward')}</p>
                     <small className='weight-600'>
                       {farmRewardToken.symbol}
@@ -235,19 +239,14 @@ export function EternalFarmCard({
           )}
           {bonusRewardToken && (
             <>
-              <Box
-                className='flex justify-center'
-                mt={-1.5}
-                mb={-1.5}
-                zIndex={1}
-              >
+              <Box className='flex justify-center' margin='-12px 0' zIndex={1}>
                 <AddIcon />
               </Box>
               <Box
-                padding={1.5}
+                padding='12px'
                 className='flex bg-default items-center justify-between'
                 borderRadius='10px'
-                height={56}
+                height='56px'
               >
                 {farmBonusRewardToken && (
                   <Box className='flex items-center'>
@@ -255,7 +254,7 @@ export function EternalFarmCard({
                       currency={farmBonusRewardToken}
                       size={'30px'}
                     />
-                    <Box ml={1.5}>
+                    <Box margin='0 0 0 12px'>
                       <p className='span text-secondary'>{t('bonus')}</p>
                       <small className='weight-600'>
                         {farmBonusRewardToken.symbol}
@@ -280,16 +279,16 @@ export function EternalFarmCard({
           )}
 
           {!!tvl && (
-            <Box mt={2} className='flex justify-between'>
+            <Box margin='16px 0 0' className='flex justify-between'>
               <small className='weight-600'>{t('tvl')}:</small>
               <small className='weight-600'>${formatCompact(tvl)}</small>
             </Box>
           )}
 
-          <Box marginTop={2}>
+          <Box margin='16px 0 0'>
             <Button
               style={{ height: 40, borderRadius: 16 }}
-              fullWidth
+              width='100%'
               disabled={isDetached}
               onClick={farmHandler}
             >

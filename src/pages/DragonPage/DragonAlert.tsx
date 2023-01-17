@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { ReactComponent as AlertIcon } from 'assets/images/AlertIcon.svg';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ const DragonAlert: React.FC = () => {
       {openAlert && (
         <Box className='dragonAlertWrapper bg-secondary2'>
           <AlertIcon />
-          <Box mx={2} width='calc(100% - 96px)'>
+          <Box margin='0 16px' width='calc(100% - 96px)'>
             <p>{t('dragonAlertDesc')}</p>
           </Box>
           <CloseIcon

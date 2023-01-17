@@ -2027,7 +2027,7 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
 }
 
 export function returnFullWidthMobile(isMobile: boolean) {
-  return isMobile ? 1 : 'unset';
+  return isMobile ? '100%' : 'unset';
 }
 
 export function escapeRegExp(string: string): string {

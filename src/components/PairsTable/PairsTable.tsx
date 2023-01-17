@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Divider } from '@material-ui/core';
+import { Box, Divider } from 'theme/components';
 import { Link } from 'react-router-dom';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
@@ -151,11 +151,11 @@ const PairTable: React.FC<PairsTableProps> = ({
     const apr = pair.apr;
     const farmingApr = pair.farmingApr;
     return (
-      <Box mt={index === 0 ? 0 : 3}>
-        <Box className='flex items-center' mb={1}>
+      <Box margin={index === 0 ? '0' : '24px 0 0'}>
+        <Box className='flex items-center' margin='0 0 8px'>
           <Box
-            display='flex'
-            mr={1}
+            className='flex'
+            margin='0 8px 0 0'
             onClick={() => {
               const pairIndex = bookmarkPairs.indexOf(pair.id);
               if (pairIndex === -1) {
@@ -181,7 +181,7 @@ const PairTable: React.FC<PairsTableProps> = ({
                 currency1={token1}
                 size={28}
               />
-              <Box ml={1}>
+              <Box margin='0 0 0 8px'>
                 <p className='text-gray25'>
                   {token0.symbol} / {token1.symbol}
                 </p>
@@ -190,10 +190,9 @@ const PairTable: React.FC<PairsTableProps> = ({
           </Link>
           {!isV2 && (
             <Box
-              ml={2}
-              paddingY={0.5}
-              paddingX={1}
-              borderRadius={6}
+              margin='0 0 0 16px'
+              padding='4px 8px'
+              borderRadius='6px'
               className='text-primaryText bg-gray30'
             >
               {pair.fee / 10000}% Fee
@@ -311,8 +310,8 @@ const PairTable: React.FC<PairsTableProps> = ({
         html: (
           <Box className='flex items-center'>
             <Box
-              display='flex'
-              mr={1}
+              className='flex'
+              margin='0 8px 0 0'
               onClick={() => {
                 const pairIndex = bookmarkPairs.indexOf(pair.id);
                 if (pairIndex === -1) {
@@ -338,7 +337,7 @@ const PairTable: React.FC<PairsTableProps> = ({
                   currency1={token1}
                   size={28}
                 />
-                <Box ml={1}>
+                <Box margin='0 0 0 8px'>
                   <p className='text-gray25'>
                     {token0.symbol} / {token1.symbol}
                   </p>
@@ -347,10 +346,9 @@ const PairTable: React.FC<PairsTableProps> = ({
             </Link>
             {!isV2 && (
               <Box
-                ml={2}
-                paddingY={0.5}
-                paddingX={1}
-                borderRadius={6}
+                margin='0 0 0 16px'
+                padding='4px 8px'
+                borderRadius='6px'
                 className='text-primaryText bg-gray30'
               >
                 {pair.fee / 10000}% Fee

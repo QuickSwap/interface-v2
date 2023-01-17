@@ -7,7 +7,7 @@ import { NavLink, useParams } from 'react-router-dom';
 import { BigNumber } from '@ethersproject/bignumber';
 import Loader from 'components/Loader';
 import usePrevious from 'hooks/usePrevious';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import PositionListItem from './MyLiquidityPoolsV3/components/PositionListItem';
 import { useActiveWeb3React } from 'hooks';
 import { PositionPool } from 'models/interfaces';
@@ -69,14 +69,14 @@ export default function PositionPage() {
   return (
     <>
       {(loading || positionLoading) && (
-        <Box padding={4} className='flex justify-center'>
+        <Box padding='32px' className='flex justify-center'>
           <Loader stroke={'white'} size={'2rem'} />
         </Box>
       )}
 
       {!loading && !positionLoading && (
         <>
-          <Box mb={2}>
+          <Box margin='0 0 16px'>
             <NavLink
               className='text-primary p'
               style={{ textDecoration: 'none' }}

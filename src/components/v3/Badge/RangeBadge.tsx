@@ -1,7 +1,7 @@
 import React from 'react';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import styled from 'styled-components/macro';
-import { Error } from '@material-ui/icons';
+import { AlertCircle } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 
 const ActiveDot = styled.span`
@@ -29,7 +29,7 @@ export default function RangeBadge({
         <Badge
           tooltip={withTooltip ? t('v3PositionNoLiquidity') : ''}
           variant={BadgeVariant.WARNING}
-          icon={<Error width={14} height={14} />}
+          icon={<AlertCircle width={14} height={14} />}
           text={t('closed')}
         />
       ) : inRange ? (
@@ -43,7 +43,7 @@ export default function RangeBadge({
         <Badge
           tooltip={withTooltip ? t('v3PoolOutsideSelectedRange') : ''}
           variant={BadgeVariant.WARNING}
-          icon={<Error width={14} height={14} />}
+          icon={<AlertCircle width={14} height={14} />}
           text={t('outrange')}
         />
       )}

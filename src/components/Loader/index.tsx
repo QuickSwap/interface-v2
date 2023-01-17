@@ -9,7 +9,7 @@ interface LoaderProps {
 
 export default function Loader({
   size = '16px',
-  stroke,
+  stroke = 'white',
   ...rest
 }: LoaderProps) {
   return (

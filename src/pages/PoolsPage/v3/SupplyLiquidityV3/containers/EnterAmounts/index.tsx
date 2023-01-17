@@ -15,9 +15,9 @@ import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import Loader from 'components/Loader';
-import { Check } from '@material-ui/icons';
+import { Check } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 
 interface IEnterAmounts {
@@ -140,7 +140,7 @@ export function EnterAmounts({
   return (
     <Box>
       <small className='weight-600'>{t('depositAmounts')}</small>
-      <Box my={2}>
+      <Box margin='16px 0'>
         <TokenAmountCard
           currency={currencyA}
           otherCurrency={currencyB}
@@ -183,7 +183,7 @@ export function EnterAmounts({
         isBase={true}
       />
 
-      <Box mt={2} className='flex justify-between'>
+      <Box margin='16px 0 0' className='flex justify-between'>
         {showApprovalA !== undefined && (
           <Box width={showApprovalB === undefined ? '100%' : '49%'}>
             {showApprovalA ? (

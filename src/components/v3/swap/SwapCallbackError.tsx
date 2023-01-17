@@ -1,11 +1,11 @@
-import { Box } from '@material-ui/core';
 import React, { ReactNode } from 'react';
+import { Box } from 'theme/components';
 import { AlertTriangle } from 'react-feather';
 
 export default function SwapCallbackError({ error }: { error: ReactNode }) {
   return (
     <Box className='flex items-center justify-center'>
-      <Box mr='6px'>
+      <Box margin='0 6px 0 0'>
         <AlertTriangle size={24} />
       </Box>
       <p style={{ wordBreak: 'break-word' }}>{error}</p>

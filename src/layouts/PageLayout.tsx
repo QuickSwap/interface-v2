@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { useHistory } from 'react-router-dom';
 import { Header, Footer, BetaWarningBanner, CustomModal } from 'components';
 import Background from './Background';

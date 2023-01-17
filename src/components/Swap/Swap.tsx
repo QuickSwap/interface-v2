@@ -9,7 +9,7 @@ import {
 } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
-import { Box, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
@@ -54,6 +54,7 @@ import { useHistory } from 'react-router-dom';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
+import Loader from 'components/Loader';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
@@ -641,45 +642,41 @@ const Swap: React.FC<{
       <AdvancedSwapDetails trade={trade} />
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (
-          <Box width='48%'>
-            <Button
-              fullWidth
-              disabled={
-                approving ||
-                approval !== ApprovalState.NOT_APPROVED ||
-                approvalSubmitted
-              }
-              onClick={async () => {
-                setApproving(true);
-                try {
-                  await approveCallback();
-                  setApproving(false);
-                } catch (err) {
-                  setApproving(false);
-                }
-              }}
-            >
-              {approval === ApprovalState.PENDING ? (
-                <Box className='content'>
-                  {t('approving')} <CircularProgress size={16} />
-                </Box>
-              ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
-                t('approved')
-              ) : (
-                `${t('approve')} ${currencies[Field.INPUT]?.symbol}`
-              )}
-            </Button>
-          </Box>
-        )}
-        <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
-            fullWidth
-            disabled={swapButtonDisabled as boolean}
-            onClick={account ? onSwap : connectWallet}
+            width='48%'
+            disabled={
+              approving ||
+              approval !== ApprovalState.NOT_APPROVED ||
+              approvalSubmitted
+            }
+            onClick={async () => {
+              setApproving(true);
+              try {
+                await approveCallback();
+                setApproving(false);
+              } catch (err) {
+                setApproving(false);
+              }
+            }}
           >
-            {swapButtonText}
+            {approval === ApprovalState.PENDING ? (
+              <Box className='content'>
+                {t('approving')} <Loader size='16px' />
+              </Box>
+            ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
+              t('approved')
+            ) : (
+              `${t('approve')} ${currencies[Field.INPUT]?.symbol}`
+            )}
           </Button>
-        </Box>
+        )}
+        <Button
+          width={showApproveFlow ? '48%' : '100%'}
+          disabled={swapButtonDisabled as boolean}
+          onClick={account ? onSwap : connectWallet}
+        >
+          {swapButtonText}
+        </Button>
       </Box>
     </Box>
   );

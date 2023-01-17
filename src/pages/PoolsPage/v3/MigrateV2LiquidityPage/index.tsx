@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as ArrowLeft } from 'assets/images/ArrowLeft.svg';
 import { QuestionHelper, PoolFinderModal } from 'components';
@@ -37,17 +37,17 @@ export default function MigrateV2LiquidityPage() {
           </Box>
           <p className='weight-600'>{t('migrateLiquidity')}</p>
           <Box
-            width={28}
-            height={28}
+            width='28px'
+            height='28px'
             className='flex items-center justify-center'
           >
             <QuestionHelper size={24} className='text-secondary' text='' />
           </Box>
         </Box>
-        <Box mt={3}>
+        <Box margin='24px 0 0'>
           <small>{t('migrateLiquidityDesc')}</small>
         </Box>
-        <Box mt={3}>
+        <Box margin='24px 0 0'>
           {v2PairsLoading ? (
             <Box className='flex justify-center'>
               <Loader stroke='white' size={'2rem'} />
@@ -62,7 +62,7 @@ export default function MigrateV2LiquidityPage() {
             </Box>
           )}
         </Box>
-        <Box mt={2} textAlign='center'>
+        <Box margin='16px 0 0' textAlign='center'>
           <small className='text-secondary'>
             {t('dontseeV2Liquidity')}?{' '}
             <small

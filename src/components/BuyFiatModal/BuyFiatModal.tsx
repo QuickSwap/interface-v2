@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from 'theme/components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon2.svg';
 import Transak from 'assets/images/Transak.png';
@@ -12,6 +11,7 @@ import 'components/styles/BuyFiatModal.scss';
 import { useTranslation } from 'react-i18next';
 import { CBPayInstanceType, initOnRamp } from '@coinbase/cbpay-js';
 import { useWalletModalToggle } from 'state/application/hooks';
+import { isMobile } from 'react-device-detect';
 
 interface BuyFiatModalProps {
   open: boolean;
@@ -30,8 +30,6 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
     CBPayInstanceType | undefined
   >(undefined);
   const [coinbaseReady, setCoinbaseReady] = useState(false);
-  const { breakpoints } = useTheme();
-  const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const { initTransak } = useInitTransak();
   const toggleWalletModal = useWalletModalToggle();
   const { t } = useTranslation();
@@ -91,7 +89,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
 
   return (
     <CustomModal open={open} onClose={onClose}>
-      <Box padding={3}>
+      <Box padding='24px'>
         <Box className='flex justify-between items-center'>
           <h6>{t('fiatProviders')}</h6>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
@@ -119,17 +117,17 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
             className='buyButton'
             onClick={() => {
               onClose();
-              initTransak(account, mobileWindowSize);
+              initTransak(account, isMobile);
             }}
           >
             {t('buy')}
           </Box>
         </Box>
-        <Box mt={3} display='flex'>
-          <Box display='flex' mt={0.3}>
+        <Box margin='24px 0 0' className='flex'>
+          <Box className='flex' margin='3px 0 0'>
             <HelpIcon />
           </Box>
-          <Box ml={1.5} width='calc(100% - 32px)'>
+          <Box margin='0 0 0 12px' width='calc(100% - 32px)'>
             <small>{t('fiatServiceDesc')}</small>
           </Box>
         </Box>

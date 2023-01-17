@@ -1,5 +1,5 @@
 import React, { lazy } from 'react';
-import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, Grid } from 'theme/components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import SupplyLiquidity from './SupplyLiquidity';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import VersionToggle from 'components/Toggle/VersionToggle';
 import AdsSlider from 'components/AdsSlider';
 import { useIsV2 } from 'state/application/hooks';
 import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
+import { isMobile } from 'react-device-detect';
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
 
@@ -15,16 +16,14 @@ const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
   const { isV2 } = useIsV2();
 
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const helpURL = process.env.REACT_APP_HELP_URL;
 
   return (
-    <Box width='100%' mb={3}>
+    <Box width='100%' margin='0 0 24px'>
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
           <h4>{t('pool')}</h4>
-          <Box ml={2}>
+          <Box margin='0 0 0 16px'>
             <VersionToggle />
           </Box>
         </Box>

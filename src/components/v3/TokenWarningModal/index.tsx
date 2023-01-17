@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { Token as V2Token } from '@uniswap/sdk';
 import { Token } from '@uniswap/sdk-core';
 import { CustomModal, CurrencyLogo } from 'components';
-import { ReportProblemOutlined } from '@material-ui/icons';
+import { AlertTriangle } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink, shortenAddress } from 'utils';
 import { Trans, useTranslation } from 'react-i18next';
@@ -15,8 +15,8 @@ function TokenWarningCard({ token }: { token?: Token | V2Token }) {
   if (!token) return null;
 
   return (
-    <Box mb={2} className='flex' key={token.address}>
-      <Box mr={1} className='flex'>
+    <Box margin='0 0 16px' className='flex' key={token.address}>
+      <Box margin='0 0 0 8px' className='flex'>
         <CurrencyLogo currency={token} size={'32px'} />
       </Box>
       <Box>
@@ -63,13 +63,13 @@ export default function TokenWarningModal({
   return (
     <CustomModal open={isOpen} onClose={onDismiss}>
       <Box padding='24px 16px'>
-        <Box mb={2} className='flex items-center justify-center'>
-          <Box className='flex' mr={1}>
-            <ReportProblemOutlined />
+        <Box margin='0 0 16px' className='flex items-center justify-center'>
+          <Box className='flex' margin='0 8px 0 0'>
+            <AlertTriangle />
           </Box>
           <h5>{t('tokenImported')}</h5>
         </Box>
-        <Box mb={3}>
+        <Box margin='0 0 24px'>
           <p>
             <Trans
               i18nKey='tokenImportDesc1'

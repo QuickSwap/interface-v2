@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from 'theme/components';
 import { useTranslation } from 'react-i18next';
 import { StakingInfo, DualStakingInfo } from 'types';
 import { TokenAmount, Pair } from '@uniswap/sdk';
@@ -36,6 +35,7 @@ import {
   calculateGasMargin,
 } from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
+import { isMobile } from 'react-device-detect';
 
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -43,8 +43,6 @@ const FarmCardDetails: React.FC<{
   isLPFarm?: boolean;
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const { t } = useTranslation();
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [stakeAmount, setStakeAmount] = useState('');
   const [attemptStaking, setAttemptStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
@@ -315,7 +313,7 @@ const FarmCardDetails: React.FC<{
                 <Box className='farmCardMobileRow'>
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apy')}</small>
-                    <Box ml={0.5} height={16}>
+                    <Box margin='0 0 0 4px' height='16px'>
                       <img src={CircleInfoIcon} alt={'arrow up'} />
                     </Box>
                   </Box>
@@ -343,7 +341,7 @@ const FarmCardDetails: React.FC<{
                     </Link>
                   </Box>
                 </Box>
-                <Box className='inputVal' mb={2} mt={2} p={2}>
+                <Box className='inputVal' margin='16px 0' padding='16px'>
                   <NumericalInput
                     placeholder='0.00'
                     value={stakeAmount}
@@ -375,8 +373,8 @@ const FarmCardDetails: React.FC<{
                 </Box>
                 <Box
                   className={stakeEnabled ? 'buttonClaim' : 'buttonToken'}
-                  mt={2}
-                  p={2}
+                  margin='16px 0 0'
+                  padding='16px'
                   onClick={async () => {
                     if (stakeEnabled) {
                       if (approval === ApprovalState.APPROVED) {
@@ -399,7 +397,10 @@ const FarmCardDetails: React.FC<{
                 </Box>
               </Box>
             )}
-            <Box className='buttonWrapper' mx={isMobile ? 0 : 2} my={2}>
+            <Box
+              className='buttonWrapper'
+              margin={isMobile ? '16px 0' : '16px'}
+            >
               <Box className='flex justify-between'>
                 <small>{t('mydeposits')}:</small>
                 <small>
@@ -407,7 +408,7 @@ const FarmCardDetails: React.FC<{
                   {getUSDString(stakedAmounts?.myStakedUSD)})
                 </small>
               </Box>
-              <Box className='inputVal' mb={2} mt={4.5} p={2}>
+              <Box className='inputVal' margin='36px 0 16px' padding='16px'>
                 <NumericalInput
                   placeholder='0.00'
                   value={unstakeAmount}
@@ -439,8 +440,8 @@ const FarmCardDetails: React.FC<{
               </Box>
               <Box
                 className={unstakeEnabled ? 'buttonClaim' : 'buttonToken'}
-                mt={2}
-                p={2}
+                margin='16px 0 0'
+                padding='16px'
                 onClick={() => {
                   if (unstakeEnabled) {
                     onWithdraw();
@@ -456,15 +457,15 @@ const FarmCardDetails: React.FC<{
             </Box>
             <Box className='buttonWrapper'>
               <Box className='flex flex-col items-center justify-between'>
-                <Box mb={1}>
+                <Box margin='0 0 8px'>
                   <small>{t('unclaimedRewards')}:</small>
                 </Box>
                 {isLPFarm ? (
                   <>
-                    <Box mb={1}>
+                    <Box margin='0 0 8px'>
                       <CurrencyLogo currency={lpStakingInfo.rewardToken} />
                     </Box>
-                    <Box mb={1} textAlign='center'>
+                    <Box margin='0 0 8px' textAlign='center'>
                       <p className='text-secondary'>
                         {formatTokenAmount(lpStakingInfo.earnedAmount)}
                         &nbsp;{lpStakingInfo.rewardToken.symbol}
@@ -474,7 +475,7 @@ const FarmCardDetails: React.FC<{
                   </>
                 ) : (
                   <>
-                    <Box mb={1} display='flex'>
+                    <Box margin='0 0 8px' className='flex'>
                       <CurrencyLogo
                         currency={unwrappedToken(dualStakingInfo.rewardTokenA)}
                       />
@@ -482,7 +483,7 @@ const FarmCardDetails: React.FC<{
                         currency={unwrappedToken(dualStakingInfo.rewardTokenB)}
                       />
                     </Box>
-                    <Box mb={1} textAlign='center'>
+                    <Box margin='0 0 8px' textAlign='center'>
                       <p>{earnedUSDStr}</p>
                       <p className='text-secondary'>
                         {formatTokenAmount(dualStakingInfo.earnedAmountA)}
@@ -498,7 +499,7 @@ const FarmCardDetails: React.FC<{
               </Box>
               <Box
                 className={claimEnabled ? 'buttonClaim' : 'buttonToken'}
-                p={2}
+                padding='16px'
                 onClick={() => {
                   if (claimEnabled) {
                     onClaimReward();

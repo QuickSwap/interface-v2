@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Contract } from '@ethersproject/contracts';
 import { ArrowLeft, ArrowDown } from 'react-feather';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -356,14 +356,14 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   const modalHeader = () => {
     return (
       <Box>
-        <Box className='flex justify-center' mt={10} mb={3}>
+        <Box className='flex justify-center' margin='80px 0 24px'>
           <DoubleCurrencyLogo
             currency0={currency0}
             currency1={currency1}
             size={48}
           />
         </Box>
-        <Box mb={6} textAlign='center'>
+        <Box margin='0 0 48px' textAlign='center'>
           <p className='weight-600'>
             {t('removingLP', {
               amount: formattedAmounts[Field.LIQUIDITY],
@@ -378,13 +378,13 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             {currency1.symbol}
           </p>
         </Box>
-        <Box mb={3} textAlign='center'>
+        <Box margin='0 0 24px' textAlign='center'>
           <small className='text-secondary'>
             {t('outputEstimated', { slippage: allowedSlippage / 100 })}
           </small>
         </Box>
-        <Box mt={2}>
-          <Button fullWidth className='removeButton' onClick={onRemove}>
+        <Box margin='16px 0 0'>
+          <Button width='100%' className='removeButton' onClick={onRemove}>
             {t('confirm')}
           </Button>
         </Box>
@@ -394,7 +394,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
   return (
     <CustomModal open={open} onClose={onClose}>
-      <Box paddingX={3} paddingY={4}>
+      <Box padding='32px 24px'>
         {showConfirm && (
           <TransactionConfirmationModal
             isOpen={showConfirm}
@@ -441,7 +441,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
               {t('balance')}: {formatTokenAmount(userPoolBalance)}
             </small>
           </Box>
-          <Box mt={2}>
+          <Box margin='16px 0 0'>
             <NumericalInput
               placeholder='0'
               value={formattedAmounts[Field.LIQUIDITY]}
@@ -452,7 +452,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             />
           </Box>
           <Box className='flex items-center'>
-            <Box flex={1} mr={2} mt={0.5}>
+            <Box flex={1} margin='4px 16px 0 0'>
               <ColoredSlider
                 min={1}
                 max={100}
@@ -466,7 +466,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             <small>{formattedAmounts[Field.LIQUIDITY_PERCENT]}%</small>
           </Box>
         </Box>
-        <Box className='flex justify-center' my={3}>
+        <Box className='flex justify-center' margin='24px 0'>
           <ArrowDown className='text-secondary' />
         </Box>
         <Box className='removeLiquidityInfo bg-secondary1'>
@@ -510,7 +510,11 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           </Box>
         </Box>
         {pair && (
-          <Box className='flex justify-between items-center' mt={2} px={2}>
+          <Box
+            className='flex justify-between items-center'
+            margin='16px 0 0'
+            padding='0 16px'
+          >
             <small>
               1 {currency0.symbol} ={' '}
               {tokenA ? pair.priceOf(tokenA).toSignificant(6) : '-'}{' '}
@@ -523,7 +527,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             </small>
           </Box>
         )}
-        <Box mt={2} className='flex justify-between items-center'>
+        <Box margin='16px 0 0' className='flex justify-between items-center'>
           <Button
             className='removeButton'
             onClick={onAttemptToApprove}
@@ -546,7 +550,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             {error || t('remove')}
           </Button>
         </Box>
-        <Box mt={2}>
+        <Box margin='16px 0 0'>
           <p className='text-error'>{errorMsg}</p>
         </Box>
       </Box>

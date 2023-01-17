@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Divider } from '@material-ui/core';
-import { KeyboardArrowDown } from '@material-ui/icons';
+import { Box, Divider } from 'theme/components';
+import { ChevronDown } from 'react-feather';
 import { AlertTriangle } from 'react-feather';
 import {
   CustomModal,
@@ -117,8 +117,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   return (
     <CustomModal open={open} onClose={onClose}>
       <CustomModal open={expertConfirm} onClose={() => setExpertConfirm(false)}>
-        <Box paddingX={3} paddingY={4}>
-          <Box mb={3} className='flex justify-between items-center'>
+        <Box padding='32px 24px'>
+          <Box margin='0 0 24px' className='flex justify-between items-center'>
             <h5>{t('areyousure')}</h5>
             <CloseIcon
               className='cursor-pointer'
@@ -126,12 +126,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             />
           </Box>
           <Divider />
-          <Box mt={2.5} mb={1.5}>
+          <Box margin='20px 0 12px'>
             <p>{t('expertModeDesc')}</p>
-            <Box mt={3}>
+            <Box margin='24px 0 0'>
               <p className='text-bold text-uppercase'>{t('expertModeUse')}</p>
             </Box>
-            <Box mt={3}>
+            <Box margin='24px 0 0'>
               <p className='text-bold'>{t('typeConfirmExpertMode')}</p>
             </Box>
           </Box>
@@ -156,19 +156,19 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           </Box>
         </Box>
       </CustomModal>
-      <Box paddingX={3} paddingY={4}>
-        <Box mb={3} className='flex justify-between items-center'>
+      <Box padding='32px 24px'>
+        <Box margin='0 0 24px' className='flex justify-between items-center'>
           <h5>{t('settings')}</h5>
           <CloseIcon onClick={onClose} />
         </Box>
         <Divider />
-        <Box my={2.5} className='flex items-center'>
-          <Box mr='6px'>
+        <Box margin='20px 0' className='flex items-center'>
+          <Box margin='0 6px 0 0'>
             <p>{t('slippageTolerance')}</p>
           </Box>
           <QuestionHelper size={20} text={t('slippageHelper')} />
         </Box>
-        <Box mb={2.5}>
+        <Box margin='0 0 20px'>
           <Box className='flex items-center'>
             <Box
               className={`slippageButton${
@@ -233,7 +233,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             </Box>
           </Box>
           {slippageError && (
-            <Box mt={1.5}>
+            <Box margin='12px 0 0'>
               <small className='text-yellow3'>
                 {slippageError === SlippageError.InvalidInput
                   ? t('enterValidSlippage')
@@ -245,14 +245,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           )}
         </Box>
         <Divider />
-        <Box my={2.5} className='flex items-center'>
-          <Box mr='6px'>
+        <Box margin='20px 0' className='flex items-center'>
+          <Box margin='0 6px 0 0'>
             <p>{t('txDeadline')}</p>
           </Box>
           <QuestionHelper size={20} text={t('txDeadlineHelper')} />
         </Box>
-        <Box mb={2.5} className='flex items-center'>
-          <Box className='settingsInputWrapper' maxWidth={168}>
+        <Box margin='0 0 20px' className='flex items-center'>
+          <Box className='settingsInputWrapper' maxWidth='168px'>
             <NumericalInput
               placeholder={(ttl / 60).toString()}
               value={deadlineInput}
@@ -264,17 +264,17 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               onUserInput={(value) => parseCustomDeadline(value)}
             />
           </Box>
-          <Box ml={1}>
+          <Box margin='0 0 0 8px'>
             <small>{t('minutes')}</small>
           </Box>
         </Box>
         {deadlineError && (
-          <Box mt={1.5}>
+          <Box margin='12px 0 0'>
             <small className='text-yellow3'>{t('enterValidDeadline')}</small>
           </Box>
         )}
         <Divider />
-        <Box my={2.5} className='flex justify-between items-center'>
+        <Box margin='20px 0' className='flex justify-between items-center'>
           <Box className='flex items-center'>
             <p style={{ marginRight: 6 }}>{t('expertMode')}</p>
             <QuestionHelper size={20} text={t('expertModeHelper')} />
@@ -292,13 +292,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           />
         </Box>
         <Divider />
-        <Box mt={2.5} className='flex justify-between items-center'>
+        <Box margin='20px 0 0' className='flex justify-between items-center'>
           <p>{t('language')}</p>
           <Box className='flex items-center'>
             <p>
               {t('english')} ({t('default')})
             </p>
-            <KeyboardArrowDown />
+            <ChevronDown />
           </Box>
         </Box>
       </Box>

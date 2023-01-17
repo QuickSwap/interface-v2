@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Skeleton } from 'theme/components';
 import { PairTable } from 'components';
 import { getTopPairs, getBulkPairData } from 'utils';
-import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
 import { useEthPrice, useIsV2 } from 'state/application/hooks';
@@ -78,13 +77,13 @@ const AnalyticsPairs: React.FC = () => {
   }, [topPairs, dispatch]);
 
   return (
-    <Box width='100%' mb={3}>
+    <Box width='100%' margin='0 0 24px'>
       <p>{t('allPairs')}</p>
-      <Box mt={4} className='panel'>
+      <Box margin='32px 0 0' className='panel'>
         {topPairs ? (
           <PairTable data={topPairs} />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <Skeleton variant='rect' width='100%' height='150px' />
         )}
       </Box>
     </Box>

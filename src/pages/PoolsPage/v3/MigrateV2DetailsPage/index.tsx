@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import { useHistory, useParams } from 'react-router-dom';
 import { ReactComponent as ArrowLeft } from 'assets/images/ArrowLeft.svg';
 import { ReactComponent as ArrowDown } from 'assets/images/ArrowDown1.svg';
@@ -49,7 +49,7 @@ import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
 import { currencyId } from 'utils/v3/currencyId';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
-import { ReportProblemOutlined } from '@material-ui/icons';
+import { AlertTriangle } from 'react-feather';
 import { Trans, useTranslation } from 'react-i18next';
 
 export default function MigrateV2DetailsPage() {
@@ -558,17 +558,17 @@ export default function MigrateV2DetailsPage() {
           </Box>
           <p className='weight-600'>{t('migrateLiquidity')}</p>
           <Box
-            width={28}
-            height={28}
+            width='28px'
+            height='28px'
             className='flex items-center justify-center'
           >
             <QuestionHelper size={24} className='text-secondary' text='' />
           </Box>
         </Box>
-        <Box mt={3}>
+        <Box margin='24px 0 0'>
           <BetaWarningBanner />
         </Box>
-        <Box mt={3}>
+        <Box margin='24px 0 0'>
           <small>
             <Trans
               i18nKey='liquiditymigrateComment'
@@ -578,7 +578,7 @@ export default function MigrateV2DetailsPage() {
             />
           </small>
         </Box>
-        <Box mt={3} className='v3-migrate-details-box'>
+        <Box margin='24px 0 0' className='v3-migrate-details-box'>
           <Box className='flex items-center'>
             <DoubleCurrencyLogo
               currency0={currency0 ?? undefined}
@@ -589,7 +589,7 @@ export default function MigrateV2DetailsPage() {
               {currency0?.symbol}-{currency1?.symbol} LP (V2)
             </p>
           </Box>
-          <Box mt={3} className='v3-migrate-details-row'>
+          <Box margin='24px 0 0' className='v3-migrate-details-row'>
             <Box className='flex items-center'>
               <CurrencyLogo currency={currency0 ?? undefined} size='20px' />
               <p>{currency0?.symbol}</p>
@@ -598,7 +598,7 @@ export default function MigrateV2DetailsPage() {
               token0Deposited ? formatCurrencyAmount(token0Deposited, 4) : ''
             }`}</p>
           </Box>
-          <Box mt={1.5} className='v3-migrate-details-row'>
+          <Box margin='12px 0 0' className='v3-migrate-details-row'>
             <Box className='flex items-center'>
               <CurrencyLogo currency={currency1 ?? undefined} size='20px' />
               <p>{currency1?.symbol}</p>
@@ -608,10 +608,10 @@ export default function MigrateV2DetailsPage() {
             }`}</p>
           </Box>
         </Box>
-        <Box my={2} className='flex justify-center'>
+        <Box margin='16px 0' className='flex justify-center'>
           <ArrowDown />
         </Box>
-        <Box className='flex items-center' mb={3}>
+        <Box className='flex items-center' margin='0 0 24px'>
           <DoubleCurrencyLogo
             currency0={currency0 ?? undefined}
             currency1={currency1 ?? undefined}
@@ -622,7 +622,7 @@ export default function MigrateV2DetailsPage() {
           </p>
         </Box>
         {mintInfo.noLiquidity && currency0 && quoteCurrency && (
-          <Box mb={2}>
+          <Box margin='0 0 16px'>
             <InitialPrice
               currencyA={currency0 ?? undefined}
               currencyB={currency1 ?? undefined}
@@ -637,7 +637,7 @@ export default function MigrateV2DetailsPage() {
           mintInfo={mintInfo}
           priceFormat={PriceFormats.TOKEN}
         />
-        <Box mt={2} className='v3-migrate-details-box'>
+        <Box margin='16px 0 0' className='v3-migrate-details-box'>
           <Box className='v3-migrate-details-row'>
             <Box className='flex items-center'>
               <CurrencyLogo currency={currency0 ?? undefined} size='20px' />
@@ -651,7 +651,7 @@ export default function MigrateV2DetailsPage() {
               <></>
             )}
           </Box>
-          <Box mt={1.5} className='v3-migrate-details-row'>
+          <Box margin='12px 0 0' className='v3-migrate-details-row'>
             <Box className='flex items-center'>
               <CurrencyLogo currency={currency1 ?? undefined} size='20px' />
               <p>{currency1?.symbol}</p>
@@ -668,7 +668,7 @@ export default function MigrateV2DetailsPage() {
             v3Amount1Min !== undefined &&
             refund0 &&
             refund1 && (
-              <Box mt={1.5}>
+              <Box margin='12px 0 0'>
                 <small className='text-secondary'>
                   {t('migrateRefundComment', {
                     amount1: formatCurrencyAmount(refund0, 4),
@@ -682,14 +682,17 @@ export default function MigrateV2DetailsPage() {
         </Box>
         <Box>
           {largePriceDifference && !largePriceDiffDismissed && (
-            <Box mt={2} className='pool-range-chart-warning border-error'>
-              <Box width={1} className='flex items-center'>
+            <Box
+              margin='16px 0 0'
+              className='pool-range-chart-warning border-error'
+            >
+              <Box width='100%' className='flex items-center'>
                 <Box className='pool-range-chart-warning-icon'>
-                  <ReportProblemOutlined />
+                  <AlertTriangle />
                 </Box>
                 <small>{t('priceImpactLarger')}</small>
               </Box>
-              <Box width={1} mt={1} mb={1.5}>
+              <Box width='100%' margin='8px 0 12px'>
                 <span>
                   {t('shouldDepositLiquidityatCorrectPrice')}. <br />
                   <br />
@@ -715,7 +718,7 @@ export default function MigrateV2DetailsPage() {
             </Box>
           )}
         </Box>
-        <Box mt={3}>
+        <Box margin='24px 0 0'>
           <Button
             className='v3-migrate-details-button'
             disabled={
@@ -746,7 +749,7 @@ export default function MigrateV2DetailsPage() {
             )}
           </Button>
         </Box>
-        <Box mt={2}>
+        <Box margin='16px 0 0'>
           <Button
             className='v3-migrate-details-button'
             disabled={

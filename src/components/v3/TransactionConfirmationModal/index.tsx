@@ -1,6 +1,6 @@
 import { Currency } from '@uniswap/sdk-core';
 import React, { ReactNode, useEffect } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from 'theme/components';
 import {
   AlertTriangle,
   ArrowUpCircle,
@@ -8,12 +8,12 @@ import {
   ExternalLink,
   X,
 } from 'react-feather';
-import Circle from 'assets/images/blue-loader.svg';
 import MetaMaskLogo from 'assets/images/metamask-logo.svg';
 import { useActiveWeb3React } from 'hooks';
 import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
 import { CustomModal } from 'components';
-import { CloseIcon, CustomLightSpinner } from 'theme/components';
+import { CloseIcon } from 'theme/components';
+import Loader from 'components/Loader';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
 import { useTranslation } from 'react-i18next';
 
@@ -37,14 +37,10 @@ function ConfirmationPendingContent({
           <X onClick={onDismiss} />
         </Box>
       )}
-      <CustomLightSpinner
-        src={Circle}
-        alt='loader'
-        size={inline ? '40px' : '90px'}
-      />
-      <Box mt='20px' textAlign='center'>
+      <Loader size={inline ? '40px' : '90px'} />
+      <Box margin='20px 0 0' textAlign='center'>
         <p>{t('waitingConfirm')}</p>
-        <Box my='8px'>
+        <Box margin='16px 0'>
           <small>{pendingText}</small>
         </Box>
         <p className='small text-secondary'>{t('confirmTxinWallet')}</p>
@@ -82,10 +78,10 @@ function TransactionSubmittedContent({
           <CloseIcon onClick={onDismiss} />
         </Box>
       )}
-      <Box mt={2} className='flex justify-center'>
+      <Box margin='16px 0 0' className='flex justify-center'>
         <ArrowUpCircle strokeWidth={0.5} size={inline ? '40px' : '90px'} />
       </Box>
-      <Box mt={2} className='flex flex-col items-center'>
+      <Box margin='16px 0 0' className='flex flex-col items-center'>
         <h5>{t('txSubmitted')}</h5>
         {chainId && hash && (
           <ExternalLink
@@ -112,7 +108,7 @@ function TransactionSubmittedContent({
                 </Box>
               </Button>
             ) : (
-              <Box mt='12px' className='flex items-center'>
+              <Box margin='12px 0 0' className='flex items-center'>
                 <p>
                   {t('added')} {currencyToAdd.symbol}
                 </p>
@@ -126,7 +122,7 @@ function TransactionSubmittedContent({
           </>
         )}
         <Button
-          fullWidth
+          width='100%'
           onClick={onDismiss}
           style={{
             height: 40,
@@ -184,7 +180,7 @@ export function TransactionErrorContent({
           <h5>{t('error')}</h5>
           <CloseIcon onClick={onDismiss} />
         </Box>
-        <Box mt={2} className='flex flex-col items-center'>
+        <Box margin='16px 0 0' className='flex flex-col items-center'>
           <AlertTriangle color='red' style={{ strokeWidth: 1.5 }} size={64} />
           <p
             className='text-error'
@@ -199,9 +195,9 @@ export function TransactionErrorContent({
           </p>
         </Box>
       </Box>
-      <Box mt={2}>
+      <Box margin='16px 0 0'>
         <Button
-          fullWidth
+          width='100%'
           onClick={onDismiss}
           style={{ height: '40px', borderRadius: 12 }}
         >

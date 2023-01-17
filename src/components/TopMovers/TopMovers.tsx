@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box } from '@material-ui/core';
-import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Box, Skeleton } from 'theme/components';
+import { ChevronUp, ChevronDown } from 'react-feather';
 import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
@@ -83,13 +82,13 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
               return (
                 <Box className='topMoverItem' key={token.id}>
                   <CurrencyLogo currency={currency} size='28px' />
-                  <Box ml={1}>
+                  <Box margin='0 0 0 8px'>
                     <small className='text-bold'>{token.symbol}</small>
                     <Box className='flex justify-center items-center'>
                       <small>${formatNumber(token.priceUSD)}</small>
                       <Box className={`topMoverText ${priceClass}`}>
-                        {!hideArrow && priceUp && <ArrowDropUp />}
-                        {!hideArrow && priceDown && <ArrowDropDown />}
+                        {!hideArrow && priceUp && <ChevronUp />}
+                        {!hideArrow && priceDown && <ChevronDown />}
                         <span>
                           {hideArrow && priceUp ? '+' : ''}
                           {priceUpPercent}%
@@ -102,7 +101,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
             })}
           </Box>
         ) : (
-          <Skeleton variant='rect' width='100%' height={100} />
+          <Skeleton width='100%' height='100px' />
         )}
       </Box>
     </Box>

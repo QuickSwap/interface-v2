@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Grid } from 'theme/components';
 import { CustomMenu } from 'components';
 import { useTranslation } from 'react-i18next';
 import JumpRateModel from 'utils/marketxyz/interestRateModel';
@@ -46,7 +46,7 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
           <h6>
             {asset.underlyingSymbol} {t('statistics')}
           </h6>
-          <Box height={40} minWidth={200}>
+          <Box height='40px' minWidth='200px'>
             <CustomMenu
               title=''
               selectedValue={asset.underlyingSymbol}
@@ -62,7 +62,7 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
           </Box>
         </Box>
         <Box className='flex flex-col' flex={1}>
-          <Box flex={1} paddingX={'30px'}>
+          <Box flex={1} padding={'0 30px'}>
             <ReactApexChart
               options={{
                 chart: {

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
+import { isMobile } from 'react-device-detect';
 
 const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
   exactEnd,
@@ -9,8 +8,6 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
 }) => {
   const { t } = useTranslation();
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const MINUTE = 60;
   const HOUR = MINUTE * 60;
@@ -39,7 +36,7 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
   return (
     <>
       {!isEnded && Number.isFinite(timeRemaining) && (
-        <Box
+        <div
           className={
             isMobile ? 'flex flex-wrap items-center justify-between' : ''
           }
@@ -54,7 +51,7 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
               .toString()
               .padStart(2, '0')}m ${timeRemaining}s`}
           </small>
-        </Box>
+        </div>
       )}
       {(isEnded || !Number.isFinite(timeRemaining)) && (
         <small className='text-secondary'>{t('rewardsEnded')}</small>

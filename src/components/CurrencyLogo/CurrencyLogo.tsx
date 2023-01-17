@@ -1,7 +1,7 @@
 import { Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Currency as V3Currency, Token as V3Token } from '@uniswap/sdk-core';
 import React, { useMemo } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from 'theme/components';
 import EthereumLogo from 'assets/images/Currency/PolygonSwap.svg';
 import useHttpLocations from 'hooks/useHttpLocations';
 import { WrappedTokenInfo } from 'state/lists/hooks';
@@ -74,7 +74,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
     <Box
       width={size}
       height={size}
-      borderRadius={withoutBg ? 0 : size}
+      borderRadius={`${withoutBg ? 0 : size}px`}
       className={`currencyLogo${withoutBg ? '' : ' bg-white'}`}
     >
       <Logo

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from 'theme/components';
 import {
   useIsV2,
   useUDDomain,
@@ -29,6 +28,7 @@ import SparkleBottom from 'assets/images/SparkleBottom.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 import useDeviceWidth from 'hooks/useDeviceWidth';
+import { useIsSM, useIsXS } from 'hooks/useMediaQuery';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -42,7 +42,6 @@ const Header: React.FC = () => {
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
-  const theme = useTheme();
   const allTransactions = useAllTransactions();
   const sortedRecentTransactions = useMemo(() => {
     const txs = Object.values(allTransactions);
@@ -55,8 +54,8 @@ const Header: React.FC = () => {
   const confirmed = sortedRecentTransactions
     .filter((tx: any) => tx.receipt)
     .map((tx: any) => tx.hash);
-  const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
-  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
+  const tabletWindowSize = useIsSM();
+  const mobileWindowSize = useIsXS();
   const toggleWalletModal = useWalletModalToggle();
   const deviceWidth = useDeviceWidth();
   const [headerClass, setHeaderClass] = useState('');
@@ -224,7 +223,7 @@ const Header: React.FC = () => {
           ))}
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
-            <Box display='flex' className='menuItem subMenuItem'>
+            <Box className='flex menuItem subMenuItem'>
               <ThreeDotIcon />
               <Box className='subMenuWrapper'>
                 <Box className='subMenu'>
@@ -347,7 +346,7 @@ const Header: React.FC = () => {
               <Box className='wrongNetworkWrapper'>
                 <Box className='wrongNetworkContent'>
                   <small>{t('switchWalletToPolygon')}</small>
-                  <Box mt={2.5} onClick={addMaticToMetamask}>
+                  <Box margin='20px 0 0' onClick={addMaticToMetamask}>
                     {t('switchPolygon')}
                   </Box>
                 </Box>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import 'components/styles/SearchInput.scss';
 
@@ -18,7 +17,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
 }) => {
   const [searchFocused, setSearchFocused] = useState(false);
   return (
-    <Box className={`searchInput${searchFocused ? ' focusedSearchInput' : ''}`}>
+    <div className={`searchInput${searchFocused ? ' focusedSearchInput' : ''}`}>
       <SearchIcon />
       <input
         placeholder={placeholder}
@@ -27,7 +26,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         value={value}
         onChange={(evt: any) => setValue(evt.target.value)}
       />
-    </Box>
+    </div>
   );
 };
 

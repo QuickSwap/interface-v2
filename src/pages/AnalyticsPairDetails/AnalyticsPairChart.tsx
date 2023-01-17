@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Divider, Skeleton } from 'theme/components';
 import dayjs from 'dayjs';
 import {
   formatCompact,
@@ -20,6 +19,7 @@ import { useIsV2 } from 'state/application/hooks';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
+import { isMobile } from 'react-device-detect';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -47,8 +47,6 @@ const AnalyticsPairChart: React.FC<{
   );
 
   const { isV2 } = useIsV2();
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const [priceChartTokenIdx, setPriceChartTokenIdx] = useState(0);
   const [apyVisionData, setAPYVisionData] = useState<any>(undefined);
@@ -478,14 +476,14 @@ const AnalyticsPairChart: React.FC<{
         size='big'
         textClass='text-secondary'
       />
-      <Box mt={2} mx={isMobile ? -1.5 : -3}>
+      <Box margin={isMobile ? '16px -12px 0' : '16px -24px 0'}>
         <Divider />
       </Box>
       {!chartIndexesAPYVision.includes(chartIndex) && (
         <Box className='flex flex-wrap justify-between' position='relative'>
-          <Box mt={2}>
+          <Box margin='16px 0 0'>
             <span>{chartIndexTexts[chartIndex]}</span>
-            <Box mt={1}>
+            <Box margin='8px 0 0'>
               {(currentData || currentData === 0) &&
               (currentPercent || currentPercent === 0) ? (
                 <>
@@ -499,7 +497,7 @@ const AnalyticsPairChart: React.FC<{
                     </h4>
                     <Box
                       className={`priceChangeWrapper ${currentPercentClass}`}
-                      ml={1}
+                      margin='0 0 0 8px'
                     >
                       <small>
                         {getFormattedPrice(Number(currentPercent))}%
@@ -512,21 +510,17 @@ const AnalyticsPairChart: React.FC<{
                 </>
               ) : chartIndex === CHART_LIQUIDITY ? (
                 <Box>
-                  <Box className='flex items-center' mb={0.5}>
+                  <Box className='flex items-center' margin='0 0 4px'>
                     <Box
-                      width={8}
-                      height={8}
+                      width='8px'
+                      height='8px'
                       borderRadius={'50%'}
-                      bgcolor={'#64FBD3'}
+                      className='bg-green1'
                     />
-                    <Box ml={1}>Current price</Box>
+                    <Box margin='0 0 0 8px'>Current price</Box>
                   </Box>
-                  <Box
-                    mb={0.5}
-                  >{`1 ${pairData.token0.symbol} = ${token0Rate} ${pairData.token1.symbol}`}</Box>
-                  <Box
-                    mb={0.5}
-                  >{`1 ${pairData.token1.symbol} = ${token1Rate} ${pairData.token0.symbol}`}</Box>
+                  <Box margin='0 0 4px'>{`1 ${pairData.token0.symbol} = ${token0Rate} ${pairData.token1.symbol}`}</Box>
+                  <Box margin='0 0 4px'>{`1 ${pairData.token1.symbol} = ${token1Rate} ${pairData.token0.symbol}`}</Box>
                 </Box>
               ) : (
                 <Skeleton variant='rect' width='120px' height='30px' />
@@ -535,7 +529,7 @@ const AnalyticsPairChart: React.FC<{
                 <Box
                   className='flex analyticsPriceChartToggler'
                   position={'absolute'}
-                  right={40}
+                  right='40px'
                   onClick={() =>
                     setPriceChartTokenIdx(Number(!priceChartTokenIdx))
                   }
@@ -552,7 +546,7 @@ const AnalyticsPairChart: React.FC<{
           </Box>
           <Box className='flex flex-col items-end'>
             {chartIndex !== CHART_LIQUIDITY && (
-              <Box mt={1.5}>
+              <Box margin='12px 0 0'>
                 <ChartType
                   chartTypes={GlobalData.analytics.CHART_DURATIONS}
                   typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
@@ -593,7 +587,7 @@ const AnalyticsPairChart: React.FC<{
           </>
         )
       ) : (
-        <Box mt={2} width={1}>
+        <Box margin='16px 0 0' width='100%'>
           {chartData && _chartData ? (
             chartIndex === CHART_LIQUIDITY ? (
               <AnalyticsPairLiquidityChartV3
@@ -614,7 +608,7 @@ const AnalyticsPairChart: React.FC<{
               />
             )
           ) : (
-            <Skeleton variant='rect' width='100%' height={217} />
+            <Skeleton variant='rect' width='100%' height='217px' />
           )}
         </Box>
       )}
