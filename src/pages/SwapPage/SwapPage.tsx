@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '@material-ui/core/styles';
-import { Box, Grid, useMediaQuery } from '@material-ui/core';
+import { Box, Grid } from 'theme/components';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { SettingsModal, SwapTokenDetails, ToggleSwitch } from 'components';
 import { useIsProMode, useIsV2 } from 'state/application/hooks';
@@ -21,14 +20,14 @@ import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import AdsSlider from 'components/AdsSlider';
 import { SwapBuySellWidget } from './BuySellWidget';
 import { Token } from '@uniswap/sdk';
+import { useIsSM, useIsMD, useIsXS } from 'hooks/useMediaQuery';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
-  const { breakpoints } = useTheme();
-  const isTiny = useMediaQuery(breakpoints.down('xs'));
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
-  const isTablet = useMediaQuery(breakpoints.down('md'));
+  const isTiny = useIsXS();
+  const isMobile = useIsSM();
+  const isTablet = useIsMD();
   const [showChart, setShowChart] = useState(true);
   const [showTrades, setShowTrades] = useState(true);
   const [pairId, setPairId] = useState<string | undefined>(undefined);
@@ -107,7 +106,7 @@ const SwapPage: React.FC = () => {
   const { t } = useTranslation();
   const helpURL = process.env.REACT_APP_HELP_URL;
   return (
-    <Box width='100%' mb={3} id='swap-page'>
+    <Box width='100%' margin='0 0 24px' id='swap-page'>
       {openSettingsModal && (
         <SettingsModal
           open={openSettingsModal}
@@ -162,12 +161,12 @@ const SwapPage: React.FC = () => {
               )}
             </Box>
             {isV2 && token1 && token2 && (
-              <Box className='wrapper' marginTop='32px'>
+              <Box className='wrapper' margin='32px 0 0'>
                 <LiquidityPools token1={token1} token2={token2} />
               </Box>
             )}
             {!isV2 && token1V3 && token2V3 && (
-              <Box className='wrapper' marginTop='32px'>
+              <Box className='wrapper' margin='32px 0 0'>
                 <LiquidityPools
                   token1={token1V3 as Token}
                   token2={token2V3 as Token}
@@ -183,17 +182,17 @@ const SwapPage: React.FC = () => {
           minHeight='calc(100vh - 140px)'
         >
           <Box
-            width={isMobile ? 1 : '450px'}
+            width={isMobile ? '100%' : '450px'}
             padding='20px 0'
             className={isMobile ? '' : 'border-right'}
           >
             <Box
               className='flex justify-between items-center'
               padding='0 24px'
-              mb={3}
+              margin='0 0 24px'
             >
               <h4>{t('swap')}</h4>
-              <Box className='flex items-center' mr={1}>
+              <Box className='flex items-center' margin='0 8px 0 0'>
                 <span
                   className='text-secondary text-uppercase'
                   style={{ marginRight: 8 }}
@@ -206,7 +205,7 @@ const SwapPage: React.FC = () => {
                     updateIsProMode(false);
                   }}
                 />
-                <Box ml={1} className='headingItem'>
+                <Box margin='0 0 0 8px' className='headingItem'>
                   <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
                 </Box>
               </Box>
@@ -219,7 +218,7 @@ const SwapPage: React.FC = () => {
           {infoPos === 'left' && (
             <Box
               className={isMobile ? 'border-top' : 'border-left border-right'}
-              width={isMobile ? 1 : 250}
+              width={isMobile ? '100%' : '250px'}
             >
               <SwapProInfo
                 token1={token1}
@@ -250,7 +249,7 @@ const SwapPage: React.FC = () => {
           {infoPos === 'right' && (
             <Box
               className={isMobile ? 'border-top' : 'border-left'}
-              width={isTablet ? 1 : 250}
+              width={isTablet ? '100%' : '250px'}
             >
               <SwapProInfo
                 token1={token1}

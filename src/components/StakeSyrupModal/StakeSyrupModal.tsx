@@ -226,10 +226,9 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
                 max={100}
                 step={1}
                 value={stakePercent}
-                handleChange={(_, value) => {
-                  const percent = value as number;
-                  setStakePercent(percent);
-                  setTypedValue(getPartialTokenAmount(percent, maxAmountInput));
+                onChange={(value) => {
+                  setStakePercent(value);
+                  setTypedValue(getPartialTokenAmount(value, maxAmountInput));
                 }}
               />
             </Box>

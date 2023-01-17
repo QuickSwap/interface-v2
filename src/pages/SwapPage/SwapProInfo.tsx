@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Divider } from '@material-ui/core';
-import { SwapHoriz } from '@material-ui/icons';
+import { Box, Divider, Skeleton } from 'theme/components';
+import { Repeat } from 'react-feather';
 import { Currency, Token } from '@uniswap/sdk';
 import { CurrencyLogo } from 'components';
 import { getTokenInfo, formatNumber } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
@@ -58,15 +57,15 @@ const SwapProInfo: React.FC<{
     const priceUpPercent = Number(tokenData?.priceChangeUSD);
     return (
       <>
-        <Box p={1} display='flex'>
+        <Box padding='8px' className='flex'>
           <CurrencyLogo currency={currency} />
-          <Box ml={1} flex={1}>
+          <Box margin='0 0 0 8px' flex={1}>
             <Box className='flex justify-between'>
               <small>{currency.symbol}</small>
               {tokenData ? (
                 <small>${formatNumber(tokenData?.priceUSD)}</small>
               ) : (
-                <Skeleton width={60} height={14} />
+                <Skeleton width='60px' height='14px' />
               )}
             </Box>
             {tokenData ? (
@@ -79,7 +78,7 @@ const SwapProInfo: React.FC<{
                 </span>
               </span>
             ) : (
-              <Skeleton width={60} height={12} />
+              <Skeleton width='60px' height='12px' />
             )}
           </Box>
         </Box>
@@ -90,7 +89,7 @@ const SwapProInfo: React.FC<{
 
   return (
     <>
-      <Box p={1}>
+      <Box padding='8px'>
         <p className='text-uppercase'>{t('info')}:</p>
       </Box>
       <Divider />
@@ -98,13 +97,17 @@ const SwapProInfo: React.FC<{
       {currency2 && <TokenInfo currency={currency2} tokenData={token2Data} />}
       {currency1 && currency2 && (
         <>
-          <Box py={2} px={1}>
-            <Box mb={1} px={1} className='flex items-center justify-between'>
+          <Box padding='16px 8px'>
+            <Box
+              margin='0 0 8px'
+              padding='0 8px'
+              className='flex items-center justify-between'
+            >
               <small>
                 {currency1.symbol} / {currency2.symbol}
               </small>
               <Box className='swapIcon'>
-                <SwapHoriz />
+                <Repeat />
               </Box>
             </Box>
             <SwapInfoTx transactions={transactions} />

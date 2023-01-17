@@ -408,8 +408,8 @@ export default function RemoveLiquidityV3({
           max={100}
           step={1}
           value={percentForSlider}
-          handleChange={(event, value) => {
-            onPercentSelectForSlider(value as number);
+          onChange={(value) => {
+            onPercentSelectForSlider(value);
           }}
         />
       </Box>

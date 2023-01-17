@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Slider from 'react-slick';
-import { useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { ChevronLeft, ChevronRight } from 'react-feather';
 import {
   useStakingInfo,
   getBulkPairData,
@@ -14,12 +11,12 @@ import { useActiveWeb3React } from 'hooks';
 import { getOneYearFee } from 'utils';
 import 'components/styles/RewardSlider.scss';
 import { ChainId } from '@uniswap/sdk';
+import { useIsXS, useIsSM } from 'hooks/useMediaQuery';
 
 const RewardSlider: React.FC = () => {
-  const theme = useTheme();
   const { chainId } = useActiveWeb3React();
-  const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
-  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
+  const tabletWindowSize = useIsSM();
+  const mobileWindowSize = useIsXS();
   const defaultChainId = chainId ?? ChainId.MATIC;
   const lprewardItems = useStakingInfo(defaultChainId, null, 0, 2);
   const dualrewardItems = useDualStakingInfo(defaultChainId, null, 0, 1);
@@ -63,8 +60,8 @@ const RewardSlider: React.FC = () => {
     speed: 500,
     slidesToShow: mobileWindowSize ? 1 : tabletWindowSize ? 2 : 3,
     slidesToScroll: 1,
-    nextArrow: <ChevronRightIcon />,
-    prevArrow: <ChevronLeftIcon />,
+    nextArrow: <ChevronRight />,
+    prevArrow: <ChevronLeft />,
   };
 
   return (

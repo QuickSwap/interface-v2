@@ -1,22 +1,12 @@
 import React from 'react';
-import { Box, Slider, SliderProps } from '@material-ui/core';
+import ReactSlider, { ReactSliderProps } from 'react-slider';
 import 'components/styles/ColoredSlider.scss';
 
-interface ColoredSliderProps extends SliderProps {
-  handleChange: (
-    event: React.ChangeEvent<any>,
-    value: number | number[],
-  ) => void;
-}
-
-const ColoredSlider: React.FC<ColoredSliderProps> = ({
-  handleChange,
-  ...props
-}) => {
+const ColoredSlider: React.FC<ReactSliderProps> = ({ ...props }) => {
   return (
-    <Box className='coloredSlider'>
-      <Slider {...props} onChange={handleChange} />
-    </Box>
+    <div className='coloredSlider'>
+      <ReactSlider {...props} />
+    </div>
   );
 };
 

@@ -151,7 +151,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
                 max={100}
                 step={1}
                 value={stakePercent}
-                handleChange={(evt: any, value) => {
+                onChange={(value) => {
                   setStakePercent(value as number);
                   setTypedValue(
                     quickBalance

@@ -458,9 +458,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
                 max={100}
                 step={1}
                 value={innerLiquidityPercentage}
-                handleChange={(event, value) =>
-                  setInnerLiquidityPercentage(value as number)
-                }
+                onChange={(value) => setInnerLiquidityPercentage(value)}
               />
             </Box>
             <small>{formattedAmounts[Field.LIQUIDITY_PERCENT]}%</small>

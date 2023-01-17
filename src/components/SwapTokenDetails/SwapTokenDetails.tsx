@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Grid, Skeleton } from 'theme/components';
+import { ChevronUp, ChevronDown } from 'react-feather';
 import { CurrencyLogo, CopyHelper } from 'components';
 import {
   useBlockNumber,
@@ -30,7 +28,6 @@ const SwapTokenDetails: React.FC<{
   const { t } = useTranslation();
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
-  const { palette } = useTheme();
   const latestBlock = useBlockNumber();
   const { tokenDetails, updateTokenDetails } = useTokenDetails();
   const [tokenData, setTokenData] = useState<any>(null);
@@ -122,73 +119,76 @@ const SwapTokenDetails: React.FC<{
 
   return (
     <Box>
-      <Box className='flex items-center justify-between' px={2} py={1.5}>
+      <Box className='flex items-center justify-between' padding='12px 16px'>
         <Box className='flex items-center'>
           <CurrencyLogo currency={currency} size='28px' />
-          <Box ml={1}>
+          <Box margin='0 0 0 8px'>
             <small>{currency.symbol}</small>
             {tokenData ? (
               <Box className='flex items-center'>
                 <small>${formatNumber(tokenData.priceUSD)}</small>
                 <Box
-                  ml={0.5}
+                  margin='0 0 0 4px'
                   className={`flex items-center ${
                     priceUp ? 'text-success' : 'text-error'
                   }`}
                 >
-                  {priceUp ? <ArrowDropUp /> : <ArrowDropDown />}
+                  {priceUp ? <ChevronUp /> : <ChevronDown />}
                   <small>{priceUpPercent}%</small>
                 </Box>
               </Box>
             ) : (
-              <Skeleton variant='rect' width={100} height={20} />
+              <Skeleton variant='rect' width='100px' height='20px' />
             )}
           </Box>
         </Box>
         {tokenData && priceData ? (
-          <Box width={88} height={47} position='relative'>
-            <Box position='absolute' top={-30} width={1}>
+          <Box width='88px' height='47px' position='relative'>
+            <Box position='absolute' top='-30px' width='100%'>
               {prices.length > 0 && (
                 <LineChart
                   data={prices}
                   width='100%'
                   height={120}
-                  color={priceUp ? palette.success.main : palette.error.main}
+                  color={priceUp ? '#0fc679' : '#ff5252'}
                 />
               )}
             </Box>
           </Box>
         ) : (
-          <Skeleton variant='rect' width={88} height={47} />
+          <Skeleton variant='rect' width='88px' height='47px' />
         )}
       </Box>
-      <Box className='border-top-secondary1 border-bottom-secondary1' px={2}>
+      <Box
+        className='border-top-secondary1 border-bottom-secondary1'
+        padding='0 16px'
+      >
         <Grid container>
           <Grid item xs={6}>
-            <Box className='border-right-secondary1' py={1}>
+            <Box className='border-right-secondary1' padding='8px 0'>
               {tokenData ? (
                 <small className='text-secondary'>
                   {t('tvl')}: {formatCompact(tokenData?.totalLiquidityUSD)}
                 </small>
               ) : (
-                <Skeleton variant='rect' width={100} height={16} />
+                <Skeleton variant='rect' width='100px' height='16px' />
               )}
             </Box>
           </Grid>
           <Grid item xs={6}>
-            <Box py={1} pl={2}>
+            <Box padding='8px 0 8px 16px'>
               {tokenData ? (
                 <small className='text-secondary'>
                   {t('24hVol1')}: {formatCompact(tokenData?.oneDayVolumeUSD)}
                 </small>
               ) : (
-                <Skeleton variant='rect' width={100} height={16} />
+                <Skeleton variant='rect' width='100px' height='16px' />
               )}
             </Box>
           </Grid>
         </Grid>
       </Box>
-      <Box className='flex justify-between items-center' py={1} px={2}>
+      <Box className='flex justify-between items-center' padding='8px 16px'>
         <a
           href={`${process.env.REACT_APP_SCAN_BASE_URL}/token/${tokenAddress}`}
           target='_blank'

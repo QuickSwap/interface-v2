@@ -398,3 +398,27 @@ export const Grid = styled.div<{
   justify-content: ${({ justifyContent }) => justifyContent};
   align-items: ${({ alignItems }) => alignItems};
 `;
+
+export const LinearProgress: React.FC<{ value: number }> = ({ value }) => {
+  return (
+    <div
+      style={{
+        position: 'relative',
+        height: 5,
+        borderRadius: 3,
+        background: 'rgba(0, 0, 255, 0.3)',
+      }}
+    >
+      <div
+        style={{
+          width: `${value}%`,
+          position: 'absolute',
+          height: 5,
+          background: 'rgb(0, 0, 255)',
+          top: 0,
+          left: 0,
+        }}
+      />
+    </div>
+  );
+};

@@ -2,7 +2,7 @@ import React from 'react';
 import SwapProChart from './SwapProChart';
 import { Token } from '@uniswap/sdk';
 import { Box } from 'theme/components';
-import { ArrowDown, ArrowUp } from 'react-feather';
+import { Move } from 'react-feather';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
 import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
@@ -131,8 +131,7 @@ const SwapProChartTrade: React.FC<{
             height='2px'
             className='flex justify-center items-center'
           >
-            <ArrowDown />
-            <ArrowUp />
+            <Move />
           </Box>
         </ReflexSplitter>
       )}

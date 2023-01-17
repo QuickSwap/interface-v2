@@ -1,7 +1,8 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import ReactGA from 'react-ga';
-import { Box, Button, Popover, Divider } from '@material-ui/core';
+import { Box, Button, Divider } from 'theme/components';
+import Popover from 'components/v3/Popover';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReactComponent as DropDown } from 'assets/images/dropdown.svg';
 import { useFetchListCallback } from 'hooks/useFetchListCallback';
@@ -122,37 +123,38 @@ const ListRow = memo(function ListRow({
         </Box>
 
         <Popover
-          open={Boolean(anchorEl)}
-          onClose={() => setAnchorEl(null)}
-          anchorEl={anchorEl}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Box className='popoverWrapper'>
-            <p>{list && listVersionLabel(list.version)}</p>
-            <Divider />
-            <Box>
-              <a
-                href={`https://tokenlists.org/token-list?url=${listUrl}`}
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                {t('viewList')}
-              </a>
-              <Button
-                onClick={handleRemoveList}
-                disabled={Object.keys(listsByUrl).length === 1}
-              >
-                {t('removeList')}
-              </Button>
-              {pending && (
-                <Button onClick={handleAcceptListUpdate}>
-                  {t('updateList')}
+          show={Boolean(anchorEl)}
+          content={
+            <Box className='popoverWrapper'>
+              <p>{list && listVersionLabel(list.version)}</p>
+              <Divider />
+              <Box>
+                <a
+                  href={`https://tokenlists.org/token-list?url=${listUrl}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  {t('viewList')}
+                </a>
+                <Button
+                  onClick={handleRemoveList}
+                  disabled={Object.keys(listsByUrl).length === 1}
+                >
+                  {t('removeList')}
                 </Button>
-              )}
+                {pending && (
+                  <Button onClick={handleAcceptListUpdate}>
+                    {t('updateList')}
+                  </Button>
+                )}
+              </Box>
             </Box>
-          </Box>
-        </Popover>
+          }
+          // onClose={() => setAnchorEl(null)}
+          // anchorEl={anchorEl}
+          // anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          // transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+        ></Popover>
       </div>
       {isSelected ? (
         <Button
