@@ -16,6 +16,9 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import { tryParseAmount } from 'state/swap/hooks';
 import { useQuery } from 'react-query';
+import { useMultipleContractSingleData } from 'state/multicall/hooks';
+import GammaRewarder from 'constants/abis/gamma-rewarder.json';
+import { Interface } from '@ethersproject/abi';
 
 const GammaFarmCardDetails: React.FC<{
   data: any;
@@ -31,6 +34,7 @@ const GammaFarmCardDetails: React.FC<{
   const [unStakeAmount, setUnStakeAmount] = useState('');
   const [approveOrStaking, setApproveOrStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
+  const [attemptClaiming, setAttemptClaiming] = useState(false);
 
   const fetchStakedData = async () => {
     if (!account) return;
@@ -67,6 +71,22 @@ const GammaFarmCardDetails: React.FC<{
     rewardData && rewardData['rewarders']
       ? Object.values(rewardData['rewarders'])
       : [];
+  const rewarderAddresses =
+    rewardData && rewardData['rewarders']
+      ? Object.keys(rewardData['rewarders'])
+      : [];
+  const pendingRewardsData = useMultipleContractSingleData(
+    rewarderAddresses,
+    new Interface(GammaRewarder),
+    'pendingToken',
+    [pairData.pid, account ?? undefined],
+  );
+  const pendingRewards = pendingRewardsData.map((callData) =>
+    !callData.loading && callData.result && callData.result.length > 0
+      ? callData.result[0]
+      : undefined,
+  );
+
   const tokenMap = useSelectedTokenList();
   const masterChefContract = useMasterChefContract();
   const stakeButtonDisabled =
@@ -89,6 +109,10 @@ const GammaFarmCardDetails: React.FC<{
     parsedStakeAmount,
     masterChefContract?.address,
   );
+
+  const claimButtonDisabled =
+    pendingRewards.filter((reward) => reward && Number(reward) > 0).length ===
+      0 || attemptClaiming;
 
   const approveOrStakeLP = async () => {
     setApproveOrStaking(true);
@@ -162,24 +186,31 @@ const GammaFarmCardDetails: React.FC<{
 
   const claimReward = async () => {
     if (!masterChefContract || !account) return;
-    const estimatedGas = await masterChefContract.estimateGas.harvest(
-      pairData.pid,
-      account,
-    );
-    const response: TransactionResponse = await masterChefContract.harvest(
-      pairData.pid,
-      account,
-      {
-        gasLimit: calculateGasMargin(estimatedGas),
-      },
-    );
-    addTransaction(response, {
-      summary: t('claimrewards'),
-    });
-    const receipt = await response.wait();
-    finalizedTransaction(receipt, {
-      summary: t('claimrewards'),
-    });
+    setAttemptClaiming(true);
+    try {
+      const estimatedGas = await masterChefContract.estimateGas.harvest(
+        pairData.pid,
+        account,
+      );
+      const response: TransactionResponse = await masterChefContract.harvest(
+        pairData.pid,
+        account,
+        {
+          gasLimit: calculateGasMargin(estimatedGas),
+        },
+      );
+      addTransaction(response, {
+        summary: t('claimrewards'),
+      });
+      const receipt = await response.wait();
+      finalizedTransaction(receipt, {
+        summary: t('claimrewards'),
+      });
+      setAttemptClaiming(false);
+    } catch (e) {
+      setAttemptClaiming(false);
+      console.log('err: ', e);
+    }
   };
 
   return (
@@ -266,7 +297,7 @@ const GammaFarmCardDetails: React.FC<{
           >
             <small className='text-secondary'>{t('earnedRewards')}</small>
             <Box>
-              {rewards.map((reward) => {
+              {rewards.map((reward, index) => {
                 const rewardTokenData = getTokenFromAddress(
                   reward.rewardToken,
                   chainId,
@@ -280,6 +311,9 @@ const GammaFarmCardDetails: React.FC<{
                   rewardTokenData.symbol,
                   rewardTokenData.name,
                 );
+                const pendingReward = pendingRewards[index]
+                  ? formatUnits(pendingRewards[index], rewardToken.decimals)
+                  : 0;
                 return (
                   <Box
                     key={reward.rewardToken}
@@ -287,15 +321,21 @@ const GammaFarmCardDetails: React.FC<{
                   >
                     <CurrencyLogo currency={rewardToken} size='16px' />
                     <Box ml='6px'>
-                      <small>0.00 {reward.rewardTokenSymbol}</small>
+                      <small>
+                        {formatNumber(pendingReward)} {reward.rewardTokenSymbol}
+                      </small>
                     </Box>
                   </Box>
                 );
               })}
             </Box>
             <Box width='100%'>
-              <Button fullWidth onClick={claimReward}>
-                {t('claim')}
+              <Button
+                fullWidth
+                disabled={claimButtonDisabled}
+                onClick={claimReward}
+              >
+                {attemptClaiming ? t('claiming') : t('claim')}
               </Button>
             </Box>
           </Box>
