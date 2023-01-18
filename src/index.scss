@@ -6,6 +6,11 @@
 
 body {
   margin: 0;
+  color: $textSecondary;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  line-height: 1.43;
+  font-size: 16px;
 
   iframe[style*="z-index: 2147483647"] {
     display: none!important;

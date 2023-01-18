@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Tab, Tabs } from '@material-ui/core';
+import { Box } from 'theme/components';
 import './CustomTabSwitch.scss';
 
 interface tabItem {
@@ -9,8 +9,8 @@ interface tabItem {
 }
 
 interface CustomTabSwitchProps {
-  width: number;
-  height: number;
+  width: string;
+  height: string;
   items: tabItem[];
   selectedItem: tabItem;
   handleTabChange: (event: any, value: any) => void;
@@ -25,7 +25,7 @@ const CustomTabSwitch: React.FC<CustomTabSwitchProps> = ({
 }) => {
   return (
     <Box className='customTabWrapper' width={width} height={height}>
-      <Tabs
+      {/* <Tabs
         value={selectedItem?.id}
         onChange={handleTabChange}
         textColor='primary'
@@ -39,7 +39,7 @@ const CustomTabSwitch: React.FC<CustomTabSwitchProps> = ({
             label={_item.text}
           />
         ))}
-      </Tabs>
+      </Tabs> */}
     </Box>
   );
 };

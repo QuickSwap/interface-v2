@@ -1,5 +1,6 @@
 import React from 'react';
-import { Modal, Box, Backdrop, Fade } from '@material-ui/core';
+import { Box } from 'theme/components';
+import Modal from 'react-modal';
 import 'components/styles/CustomModal.scss';
 
 interface CustomModalProps {
@@ -22,25 +23,13 @@ const CustomModal: React.FC<CustomModalProps> = ({
   hideBackdrop,
 }) => {
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      BackdropComponent={hideBackdrop ? undefined : Backdrop}
-      BackdropProps={
-        hideBackdrop
-          ? undefined
-          : { timeout: 500, classes: { root: 'customModalBackdrop' } }
-      }
-    >
-      <Fade in={open}>
-        <Box
-          className={modalWrapper ? modalWrapper : 'modalWrapperV3'}
-          bgcolor={background}
-          overflow={overflow}
-        >
-          {children}
-        </Box>
-      </Fade>
+    <Modal isOpen={open} onRequestClose={onClose}>
+      <Box
+        className={modalWrapper ? modalWrapper : 'modalWrapperV3'}
+        overflow={overflow}
+      >
+        {children}
+      </Box>
     </Modal>
   );
 };

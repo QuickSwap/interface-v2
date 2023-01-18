@@ -19,6 +19,29 @@ export default function Tooltip({ text, ...rest }: TooltipProps) {
   );
 }
 
+export function TooltipOnHover({
+  text,
+  children,
+}: {
+  text: ReactNode;
+  children: any;
+}) {
+  const [show, setShow] = useState(false);
+  return (
+    <Popover
+      show={show}
+      content={<div className='tooltipContainer'>{text}</div>}
+    >
+      <div
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+      >
+        {children}
+      </div>
+    </Popover>
+  );
+}
+
 function TooltipContent({ content, ...rest }: TooltipContentProps) {
   return (
     <Popover

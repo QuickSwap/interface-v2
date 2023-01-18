@@ -187,7 +187,10 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <Divider />
               </Box>
             )}
-            <Box className='flex items-center justify-between' mb={1.5}>
+            <Box
+              className='flex items-center justify-between'
+              margin='0 0 12px'
+            >
               <small className='text-secondary'>{t('inwallet')}</small>
               <small>
                 {userLiquidityUnstaked
@@ -205,7 +208,10 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 </small>
               </small>
             </Box>
-            <Box className='flex items-center justify-between' mb={1.5}>
+            <Box
+              className='flex items-center justify-between'
+              margin='0 0 12px'
+            >
               <small className='text-secondary'>{t('staked')}</small>
               <small>
                 {formatTokenAmount(syrup.stakedAmount)}{' '}

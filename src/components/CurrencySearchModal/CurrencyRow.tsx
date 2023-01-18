@@ -8,7 +8,7 @@ import { WrappedTokenInfo } from 'state/lists/hooks';
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useIsUserAddedToken } from 'hooks/Tokens';
-import { CurrencyLogo, CustomTooltip } from 'components';
+import { CurrencyLogo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
@@ -18,6 +18,7 @@ import { formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { toToken } from 'constants/v3/routing';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { TooltipOnHover } from 'components/v3/Tooltip';
 
 function currencyKey(currency: Token): string {
   return currency instanceof Token
@@ -46,20 +47,20 @@ function TokenTags({ currency }: { currency: Token }) {
   const tag = tags[0];
   return (
     <Box>
-      <CustomTooltip title={tag.description}>
+      <TooltipOnHover text={tag.description}>
         <Box className='tag' key={tag.id}>
           {tag.name}
         </Box>
-      </CustomTooltip>
+      </TooltipOnHover>
       {tags.length > 1 ? (
-        <CustomTooltip
-          title={tags
+        <TooltipOnHover
+          text={tags
             .slice(1)
             .map(({ name, description }) => `${name}: ${description}`)
             .join('; \n')}
         >
           <Box className='tag'>...</Box>
-        </CustomTooltip>
+        </TooltipOnHover>
       ) : null}
     </Box>
   );

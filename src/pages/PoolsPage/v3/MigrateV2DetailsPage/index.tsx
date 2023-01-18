@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button } from 'theme/components';
 import { useHistory, useParams } from 'react-router-dom';
-import { ReactComponent as ArrowLeft } from 'assets/images/ArrowLeft.svg';
-import { ReactComponent as ArrowDown } from 'assets/images/ArrowDown1.svg';
+import { ArrowLeft, ArrowDown } from 'react-feather';
 import {
   BetaWarningBanner,
   CurrencyLogo,
@@ -39,14 +38,13 @@ import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp';
 import { PoolState, usePool } from 'hooks/v3/usePools';
 import { useTotalSupply } from 'hooks/v3/useTotalSupply';
 import { useV2Pair } from 'hooks/v3/useV2Pairs';
-import { ChainId, JSBI } from '@uniswap/sdk';
+import { JSBI } from '@uniswap/sdk';
 import { FeeAmount, priceToClosestTick, TickMath, ZERO } from 'v3lib/utils';
 import { Bound } from 'state/mint/v3/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { Pool, Position } from 'v3lib/entities';
 import { V2Exchanges } from 'constants/v3/addresses';
 import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
-import { currencyId } from 'utils/v3/currencyId';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { AlertTriangle } from 'react-feather';

@@ -8,7 +8,6 @@ import {
 import { Link } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components/macro';
 import { anonymizeLink } from 'utils/v3/anonymizeLink';
-import Circle from 'assets/images/blue-loader.svg';
 
 export const ButtonText = styled.button`
   outline: none;

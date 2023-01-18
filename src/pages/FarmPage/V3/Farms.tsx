@@ -58,8 +58,8 @@ export default function Farms() {
       <Box width='100%' margin='16px 0 0'>
         <Box className='v3-farm-tabs-wrapper'>
           <CustomTabSwitch
-            width={300}
-            height={67}
+            width='300px'
+            height='67px'
             items={v3FarmCategories}
             selectedItem={selectedTab}
             handleTabChange={handleTabSwitch}

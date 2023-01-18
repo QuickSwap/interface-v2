@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box } from 'theme/components';
 import { useHistory } from 'react-router-dom';
-import { ReactComponent as ArrowLeft } from 'assets/images/ArrowLeft.svg';
+import { ArrowLeft } from 'react-feather';
 import { QuestionHelper, PoolFinderModal } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import Loader from 'components/Loader';

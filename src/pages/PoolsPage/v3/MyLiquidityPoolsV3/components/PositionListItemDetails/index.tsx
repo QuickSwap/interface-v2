@@ -39,12 +39,12 @@ import V3IncreaseLiquidityModal from '../V3IncreaseLiquidityModal';
 import V3RemoveLiquidityModal from '../V3RemoveLiquidityModal';
 import {
   ConfirmationModalContent,
-  CustomTooltip,
   ToggleSwitch,
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
 import { useTranslation } from 'react-i18next';
+import { TooltipOnHover } from 'components/v3/Tooltip';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -431,8 +431,8 @@ export default function PositionListItemDetails({
               </Button>
               <Box margin='0 0 0 8px'>
                 {_onFarming || _liquidity.eq(0) ? (
-                  <CustomTooltip
-                    title={
+                  <TooltipOnHover
+                    text={
                       _onFarming
                         ? t('mustRemoveFromFarmRemoveLiquidity')
                         : t('noLiquidityPosition')
@@ -441,7 +441,7 @@ export default function PositionListItemDetails({
                     <div className='button bg-primary'>
                       <span>{t('remove')}</span>
                     </div>
-                  </CustomTooltip>
+                  </TooltipOnHover>
                 ) : (
                   <Button onClick={() => setOpenRemoveLiquidityModal(true)}>
                     {t('remove')}

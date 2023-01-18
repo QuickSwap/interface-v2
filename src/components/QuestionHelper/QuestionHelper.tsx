@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box } from 'theme/components';
 import { HelpCircle as Question, PlusCircle } from 'react-feather';
-import { CustomTooltip } from 'components';
 import 'components/styles/QuestionHelper.scss';
+import { TooltipOnHover } from 'components/v3/Tooltip';
 
 const QuestionHelper: React.FC<{
   text: string;
@@ -10,11 +10,11 @@ const QuestionHelper: React.FC<{
   className?: string;
 }> = ({ text, size = 16, className }) => {
   return (
-    <CustomTooltip title={text}>
+    <TooltipOnHover text={text}>
       <Box className={`questionWrapper ${className}`}>
         <Question size={size} />
       </Box>
-    </CustomTooltip>
+    </TooltipOnHover>
   );
 };
 
@@ -25,11 +25,11 @@ export const PlusHelper: React.FC<{ text: string; color?: string }> = ({
   color,
 }) => {
   return (
-    <CustomTooltip title={text}>
+    <TooltipOnHover text={text}>
       <Box className='questionWrapper' color={color}>
         <PlusCircle size={16} />
       </Box>
-    </CustomTooltip>
+    </TooltipOnHover>
   );
 };
 
@@ -38,10 +38,10 @@ export const LightQuestionHelper: React.FC<{ text: string; color: string }> = ({
   color,
 }) => {
   return (
-    <CustomTooltip title={text}>
+    <TooltipOnHover text={text}>
       <Box className='lightQuestionWrapper' color={color}>
         <span className='questionMark'>?</span>
       </Box>
-    </CustomTooltip>
+    </TooltipOnHover>
   );
 };

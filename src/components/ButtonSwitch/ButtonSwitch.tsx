@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Tab, Tabs } from '@material-ui/core';
+import { Box } from 'theme/components';
 import 'components/styles/ButtonSwitch.scss';
 
 interface Item {
@@ -14,7 +14,7 @@ interface ButtonSwitchProps {
   onChange?: (value: string) => void;
   height?: number;
   padding?: number;
-  width?: number | string;
+  width?: string;
 }
 
 const ButtonSwitch: React.FC<ButtonSwitchProps> = ({
@@ -28,9 +28,9 @@ const ButtonSwitch: React.FC<ButtonSwitchProps> = ({
   const minHeight = height - padding * 2;
 
   return (
-    <Box width={width} maxWidth='100%' display='inline-block'>
+    <Box width={width} maxWidth='100%'>
       <Box className='buttonSwitchContainer' padding={`${padding}px`}>
-        <Tabs
+        {/* <Tabs
           style={{ minHeight }}
           value={value}
           variant='fullWidth'
@@ -65,7 +65,7 @@ const ButtonSwitch: React.FC<ButtonSwitchProps> = ({
               />
             );
           })}
-        </Tabs>
+        </Tabs> */}
       </Box>
     </Box>
   );

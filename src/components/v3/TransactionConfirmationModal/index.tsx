@@ -153,7 +153,7 @@ export function ConfirmationModalContent({
 }: ConfirmationModalContentProps) {
   return (
     <Box width='100%'>
-      <Box className='flex items-center justify-between' mb={2}>
+      <Box className='flex items-center justify-between' margin='0 0 16px'>
         {title}
         <CloseIcon onClick={onDismiss} />
       </Box>

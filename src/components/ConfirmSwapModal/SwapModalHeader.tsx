@@ -6,7 +6,7 @@ import { Field } from 'state/swap/actions';
 import { DoubleCurrencyLogo } from 'components';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg';
+import { ArrowDown } from 'react-feather';
 import { basisPointsToPercent, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
@@ -84,7 +84,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
           ).toLocaleString('us')}
           )
         </p>
-        <ArrowDownIcon />
+        <ArrowDown />
         <p>
           {optimalRate
             ? (
