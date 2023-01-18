@@ -7,10 +7,12 @@ import { FarmingType } from '../../models/enums';
 import { Link, useLocation } from 'react-router-dom';
 import './index.scss';
 import FarmCard from './FarmCard';
-import { Box } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'react-i18next';
+import { GlobalConst } from 'constants/index';
+import SortColumns from 'components/SortColumns';
 
 export function FarmingMyFarms() {
   const { t } = useTranslation();
@@ -21,6 +23,16 @@ export function FarmingMyFarms() {
       fetchTransferredPositionsFn,
       transferredPositions,
       transferredPositionsLoading,
+    },
+    fetchEternalFarmPoolAprs: {
+      fetchEternalFarmPoolAprsFn,
+      eternalFarmPoolAprs,
+      eternalFarmPoolAprsLoading,
+    },
+    fetchEternalFarmAprs: {
+      fetchEternalFarmAprsFn,
+      eternalFarmAprs,
+      eternalFarmAprsLoading,
     },
   } = useFarmingSubgraph() || {};
 
@@ -42,6 +54,8 @@ export function FarmingMyFarms() {
 
   useEffect(() => {
     fetchTransferredPositionsFn(true);
+    fetchEternalFarmPoolAprsFn();
+    fetchEternalFarmAprsFn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
@@ -110,9 +124,59 @@ export function FarmingMyFarms() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txHash, txConfirmed, selectedTokenId, selectedFarmingType, txType]);
 
+  const [sortByQuick, setSortByQuick] = useState(
+    GlobalConst.utils.v3FarmSortBy.pool,
+  );
+
+  const [sortDescQuick, setSortDescQuick] = useState(false);
+
+  const sortColumnsQuickSwap = [
+    {
+      text: t('pool'),
+      index: GlobalConst.utils.v3FarmSortBy.pool,
+      width: 0.5,
+      justify: 'flex-start',
+    },
+    {
+      text: t('poolAPR'),
+      index: GlobalConst.utils.v3FarmSortBy.poolAPR,
+      width: 0.15,
+      justify: 'flex-start',
+    },
+    {
+      text: t('farmAPR'),
+      index: GlobalConst.utils.v3FarmSortBy.farmAPR,
+      width: 0.15,
+      justify: 'flex-start',
+    },
+    {
+      text: t('earnedRewards'),
+      index: GlobalConst.utils.v3FarmSortBy.rewards,
+      width: 0.2,
+      justify: 'flex-start',
+    },
+  ];
+
+  const sortByDesktopItemsQuick = sortColumnsQuickSwap.map((item) => {
+    return {
+      ...item,
+      onClick: () => {
+        if (sortByQuick === item.index) {
+          setSortDescQuick(!sortDescQuick);
+        } else {
+          setSortByQuick(item.index);
+          setSortDescQuick(false);
+        }
+      },
+    };
+  });
+
   return (
     <>
-      {transferredPositionsLoading || !shallowPositions ? (
+      {transferredPositionsLoading ||
+      eternalFarmPoolAprsLoading ||
+      eternalFarmAprsLoading ||
+      !shallowPositions ? (
         <Box py={5} className='flex justify-center'>
           <Loader stroke={'white'} size={'1.5rem'} />
         </Box>
@@ -125,26 +189,44 @@ export function FarmingMyFarms() {
         </Box>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
         <Box padding='24px'>
-          <Box className='v3-farm-rewards'>
-            <Box mr={1}>✨ {t('earnMoreRewards')}</Box>
-            <Link to={'/dragons'}>{t('stakeRewards')}</Link>
-          </Box>
-          {farmedNFTs && (
-            <Box pb={2}>
-              {farmedNFTs.map((el, i) => {
-                const date = new Date(
-                  +el.enteredInEternalFarming * 1000,
-                ).toLocaleString('us');
-                return (
-                  <div
-                    className={'v3-my-farms-position-card'}
-                    key={i}
-                    data-navigatedto={hash == `#${el.id}`}
-                  >
-                    <FarmCard el={el} />
-                  </div>
-                );
-              })}
+          {farmedNFTs && farmedNFTs.length > 0 && (
+            <Box mt={2} pb={2}>
+              <Box mb={2}>
+                <Divider />
+              </Box>
+              <h6>QuickSwap {t('farms')}</h6>
+              <Box mt={2} px={3.5}>
+                <Box width='85%'>
+                  <SortColumns
+                    sortColumns={sortByDesktopItemsQuick}
+                    selectedSort={sortByQuick}
+                    sortDesc={sortDescQuick}
+                  />
+                </Box>
+              </Box>
+              <Box mt={2}>
+                {farmedNFTs.map((el, i) => {
+                  return (
+                    <div
+                      className={'v3-my-farms-position-card'}
+                      key={i}
+                      data-navigatedto={hash == `#${el.id}`}
+                    >
+                      <FarmCard
+                        el={el}
+                        poolApr={
+                          eternalFarmPoolAprs
+                            ? eternalFarmPoolAprs[el.pool.id]
+                            : undefined
+                        }
+                        farmApr={
+                          eternalFarmAprs ? eternalFarmAprs[el.id] : undefined
+                        }
+                      />
+                    </div>
+                  );
+                })}
+              </Box>
             </Box>
           )}
         </Box>

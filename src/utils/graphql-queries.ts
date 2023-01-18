@@ -43,17 +43,6 @@ export const FETCH_TOKEN = () => gql`
       symbol
       name
       decimals
-    }
-  }
-`;
-
-export const FETCH_TOKEN_V3 = () => gql`
-  query fetchTokenV3($tokenId: ID) {
-    tokens(where: { id: $tokenId }) {
-      id
-      symbol
-      name
-      decimals
       derivedMatic
     }
   }

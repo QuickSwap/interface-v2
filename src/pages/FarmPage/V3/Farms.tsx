@@ -129,6 +129,7 @@ export default function Farms() {
       justify: 'flex-start',
     },
   ];
+
   const sortByDesktopItems = sortColumns.map((item) => {
     return {
       ...item,

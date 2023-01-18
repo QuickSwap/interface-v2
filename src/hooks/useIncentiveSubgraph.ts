@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { Contract, providers } from 'ethers';
 import ERC20_ABI from 'constants/abis/erc20.json';
@@ -12,7 +12,6 @@ import {
 } from '../constants/v3/addresses';
 import { BigNumber } from '@ethersproject/bignumber';
 import {
-  CURRENT_EVENTS,
   FETCH_ETERNAL_FARM,
   FETCH_ETERNAL_FARM_FROM_POOL,
   FETCH_FINITE_FARM_FROM_POOL,
@@ -20,7 +19,6 @@ import {
   FETCH_POOL,
   FETCH_REWARDS,
   FETCH_TOKEN,
-  FETCH_TOKEN_V3,
   FUTURE_EVENTS,
   HAS_TRANSFERED_POSITIONS,
   INFINITE_EVENTS,
@@ -175,10 +173,8 @@ export function useFarmingSubgraph() {
       const {
         data: { tokens },
         errors,
-      } = await (farming ? farmingClient : v3Client).query<
-        SubgraphResponse<TokenSubgraph[]>
-      >({
-        query: farming ? FETCH_TOKEN() : FETCH_TOKEN_V3(),
+      } = await v3Client.query<SubgraphResponse<TokenSubgraph[]>>({
+        query: FETCH_TOKEN(),
         variables: { tokenId },
       });
 
