@@ -54,16 +54,22 @@ const GammaFarmCardDetails: React.FC<{
     refetchInterval: 30000,
   });
 
+  const stakedAmounts =
+    stakedData && stakedData.length > 0
+      ? stakedData.filter(
+          (data: any) =>
+            data.hypervisor.toLowerCase() === pairData.address.toLowerCase(),
+        )
+      : [];
+
   const availableStakeAmount = positionData
     ? formatUnits(positionData.shares, 18)
     : '0';
   const stakedAmount =
-    stakedData && stakedData.length > 0
-      ? stakedData[0].stakedAmount.toFixed(18)
-      : '0';
+    stakedAmounts.length > 0 ? stakedData[0].stakedAmount.toFixed(18) : '0';
   const lpTokenUSD =
     data && data.totalSupply && Number(data.totalSupply) > 0
-      ? Number(data.tvlUSD) / Number(formatUnits(data.totalSupply, 18))
+      ? (Number(data.tvlUSD) / Number(data.totalSupply)) * 10 ** 18
       : 0;
   const stakedUSD = Number(stakedAmount) * lpTokenUSD;
 
@@ -257,7 +263,7 @@ const GammaFarmCardDetails: React.FC<{
         </Box>
         <Box width='calc(33% - 32px)' px='16px'>
           <Box className='flex justify-between'>
-            <small className='text-secondary'>{t('deposited')}:</small>
+            <small className='text-secondary'>{t('deposited')}: </small>
             <small>
               {formatNumber(stakedAmount)} LP (${formatNumber(stakedUSD)})
             </small>
