@@ -9,17 +9,37 @@ import EternalFarmsPage from 'pages/EternalFarmsPage';
 import GammaFarmsPage from 'pages/GammaFarmsPage';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
-import { SearchInput, SortColumns } from 'components';
+import { SearchInput, SortColumns, CustomSwitch } from 'components';
 import { GlobalConst } from 'constants/index';
 
 export default function Farms() {
   const { t } = useTranslation();
 
   const parsedQuery = useParsedQueryString();
+  const farmStatus =
+    parsedQuery && parsedQuery.farmStatus
+      ? (parsedQuery.farmStatus as string)
+      : 'active';
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const history = useHistory();
+
+  const redirectWithFarmStatus = (status: string) => {
+    const currentPath = history.location.pathname + history.location.search;
+    let redirectPath;
+    if (parsedQuery && parsedQuery.farmStatus) {
+      redirectPath = currentPath.replace(
+        `farmStatus=${parsedQuery.farmStatus}`,
+        `farmStatus=${status}`,
+      );
+    } else {
+      redirectPath = `${currentPath}${
+        history.location.search === '' ? '?' : '&'
+      }farmStatus=${status}`;
+    }
+    history.push(redirectPath);
+  };
 
   const currentTabQueried =
     parsedQuery && parsedQuery.tab
@@ -97,6 +117,23 @@ export default function Farms() {
   const [sortBy, setSortBy] = useState(GlobalConst.utils.v3FarmSortBy.pool);
   const [sortDesc, setSortDesc] = useState(false);
 
+  const farmStatusItems = [
+    {
+      text: t('active'),
+      onClick: () => {
+        redirectWithFarmStatus('active');
+      },
+      condition: farmStatus === 'active',
+    },
+    {
+      text: t('ended'),
+      onClick: () => {
+        redirectWithFarmStatus('ended');
+      },
+      condition: farmStatus === 'ended',
+    },
+  ];
+
   const sortColumns = [
     {
       text: t('pool'),
@@ -153,17 +190,22 @@ export default function Farms() {
           selectedItem={selectedFarmCategory}
           handleChange={onChangeFarmCategory}
         />
-        <Box
-          mt={isMobile ? 2 : 0}
-          ml={isMobile ? 0 : 2}
-          width={isMobile ? 1 : 200}
-        >
-          <SearchInput
-            placeholder='Search'
-            value={searchValue}
-            setValue={setSearchValue}
-            isIconAfter
-          />
+        <Box display='flex'>
+          {selectedFarmCategory.id === 1 && (
+            <CustomSwitch width={160} height={40} items={farmStatusItems} />
+          )}
+          <Box
+            mt={isMobile ? 2 : 0}
+            ml={isMobile ? 0 : 2}
+            width={isMobile ? 1 : 200}
+          >
+            <SearchInput
+              placeholder='Search'
+              value={searchValue}
+              setValue={setSearchValue}
+              isIconAfter
+            />
+          </Box>
         </Box>
       </Box>
 

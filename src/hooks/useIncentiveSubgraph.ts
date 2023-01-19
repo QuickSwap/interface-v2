@@ -19,6 +19,7 @@ import {
   FETCH_POOL,
   FETCH_REWARDS,
   FETCH_TOKEN,
+  FETCH_TOKEN_FARM,
   FUTURE_EVENTS,
   HAS_TRANSFERED_POSITIONS,
   INFINITE_EVENTS,
@@ -173,8 +174,10 @@ export function useFarmingSubgraph() {
       const {
         data: { tokens },
         errors,
-      } = await v3Client.query<SubgraphResponse<TokenSubgraph[]>>({
-        query: FETCH_TOKEN(),
+      } = await (farming ? farmingClient : v3Client).query<
+        SubgraphResponse<TokenSubgraph[]>
+      >({
+        query: farming ? FETCH_TOKEN_FARM() : FETCH_TOKEN(),
         variables: { tokenId },
       });
 
@@ -488,8 +491,8 @@ export function useFarmingSubgraph() {
             +position.id,
           );
 
-          const _rewardToken = await fetchToken(rewardToken, true);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
+          const _rewardToken = await fetchToken(rewardToken);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken);
           const _multiplierToken = await fetchToken(multiplierToken, true);
           const _pool = await fetchPool(pool);
 
@@ -585,8 +588,8 @@ export function useFarmingSubgraph() {
             { from: account },
           );
 
-          const _rewardToken = await fetchToken(rewardToken, true);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
+          const _rewardToken = await fetchToken(rewardToken);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken);
           const _pool = await fetchPool(pool);
           const _multiplierToken = await fetchToken(multiplierToken);
 

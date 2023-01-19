@@ -169,7 +169,13 @@ export function EternalFarmCard({
       </Box>
 
       <Box width='10%'>
-        <Button onClick={farmHandler}>{t('farm')}</Button>
+        <Button
+          fullWidth
+          style={{ height: 40, borderRadius: 10 }}
+          onClick={farmHandler}
+        >
+          {t('farm')}
+        </Button>
       </Box>
     </Box>
   );

@@ -4,7 +4,7 @@ import { EternalFarmCard } from 'components/StakerEventCard/EternalFarmCard';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/Loader';
-import { CustomModal, CustomSwitch } from 'components';
+import { CustomModal } from 'components';
 import { FarmModal } from '../../components/StakeModal';
 import { FarmingType } from '../../models/enums';
 import './index.scss';
@@ -13,7 +13,6 @@ import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { GlobalConst } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { useHistory } from 'react-router';
 
 const EternalFarmsPage: React.FC<{
   farmFilter: number;
@@ -24,7 +23,6 @@ const EternalFarmsPage: React.FC<{
   const [modalForPool, setModalForPool] = useState(null);
   const { t } = useTranslation();
   const parsedQuery = useParsedQueryString();
-  const history = useHistory();
   const farmStatus =
     parsedQuery && parsedQuery.farmStatus
       ? (parsedQuery.farmStatus as string)
@@ -62,39 +60,6 @@ const EternalFarmsPage: React.FC<{
     fetchEternalFarmTvlsFn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [farmStatus]);
-
-  const redirectWithFarmStatus = (status: string) => {
-    const currentPath = history.location.pathname + history.location.search;
-    let redirectPath;
-    if (parsedQuery && parsedQuery.farmStatus) {
-      redirectPath = currentPath.replace(
-        `farmStatus=${parsedQuery.farmStatus}`,
-        `farmStatus=${status}`,
-      );
-    } else {
-      redirectPath = `${currentPath}${
-        history.location.search === '' ? '?' : '&'
-      }farmStatus=${status}`;
-    }
-    history.push(redirectPath);
-  };
-
-  const farmStatusItems = [
-    {
-      text: t('active'),
-      onClick: () => {
-        redirectWithFarmStatus('active');
-      },
-      condition: farmStatus === 'active',
-    },
-    {
-      text: t('ended'),
-      onClick: () => {
-        redirectWithFarmStatus('ended');
-      },
-      condition: farmStatus === 'ended',
-    },
-  ];
 
   const sortDescKey = sortDesc ? -1 : 1;
 
@@ -245,9 +210,7 @@ const EternalFarmsPage: React.FC<{
           />
         )}
       </CustomModal>
-      <Box ml={2}>
-        <CustomSwitch width={160} height={40} items={farmStatusItems} />
-      </Box>
+
       <Box px={2} py={3}>
         {eternalFarmsLoading ? (
           <div className={'eternal-page__loader'}>
