@@ -4,7 +4,7 @@
 .header {
   padding: 0 24px;
   position: fixed;
-  width: 100%;
+  width: calc(100% - 48px);
   display: flex;
   flex-wrap: wrap;
   min-height: 88px;
@@ -47,6 +47,7 @@
   @include media("screen", "<phone") {
     padding: 0 16px;
     position: relative;
+    width: calc(100% - 32px);
   }
 }
 .mainMenu {

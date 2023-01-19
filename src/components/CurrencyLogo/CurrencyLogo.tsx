@@ -74,7 +74,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
     <Box
       width={size}
       height={size}
-      borderRadius={`${withoutBg ? 0 : size}px`}
+      borderRadius={withoutBg ? '0' : size}
       className={`currencyLogo${withoutBg ? '' : ' bg-white'}`}
     >
       <Logo

@@ -83,7 +83,7 @@
   margin: auto;
 }
 .featureContainer {
-  & > div.MuiGrid-root {
+  & .featureGrid {
     margin-top: 32px;
     & > div {
       & img {

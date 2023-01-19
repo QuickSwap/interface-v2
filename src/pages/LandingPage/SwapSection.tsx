@@ -36,14 +36,20 @@ export const SwapSection: React.FC = () => {
       </Box>
       <Box className='swapContainer'>
         <Grid container spacing={isMobile ? 0 : 8} alignItems='center'>
-          <Grid item sm={12} md={6}>
+          <Grid item spacing={isMobile ? 0 : 8} sm={12} md={6}>
             {tabIndex === SWAP_TAB ? (
               <Swap currencyBgClass='bg-palette' />
             ) : (
               <AddLiquidity currencyBgClass='bg-palette' />
             )}
           </Grid>
-          <Grid item sm={12} md={6} className='swapInfo'>
+          <Grid
+            item
+            spacing={isMobile ? 0 : 8}
+            sm={12}
+            md={6}
+            className='swapInfo'
+          >
             <h4>
               {tabIndex === SWAP_TAB
                 ? t('swapSectionShortDesc')

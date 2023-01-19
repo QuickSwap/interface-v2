@@ -23,13 +23,25 @@ const CustomModal: React.FC<CustomModalProps> = ({
   hideBackdrop,
 }) => {
   return (
-    <Modal isOpen={open} onRequestClose={onClose}>
-      <Box
-        className={modalWrapper ? modalWrapper : 'modalWrapperV3'}
-        overflow={overflow}
-      >
-        {children}
-      </Box>
+    <Modal
+      overlayElement={(props, contentElement) => (
+        <div {...props} className='modalOverlay' style={undefined}>
+          {contentElement}
+        </div>
+      )}
+      contentElement={(props, children) => (
+        <>
+          {!hideBackdrop && <div className='modalBackdrop' />}
+          <div {...props} className='modalWrapper' style={undefined}>
+            {children}
+          </div>
+        </>
+      )}
+      isOpen={open}
+      onRequestClose={onClose}
+      shouldCloseOnOverlayClick={true}
+    >
+      {children}
     </Modal>
   );
 };

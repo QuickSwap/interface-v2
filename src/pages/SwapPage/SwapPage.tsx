@@ -129,7 +129,7 @@ const SwapPage: React.FC = () => {
       )}
       {!isProMode ? (
         <Grid container spacing={4}>
-          <Grid item xs={12} sm={12} md={6} lg={5}>
+          <Grid item spacing={4} xs={12} sm={12} md={6} lg={5}>
             <Box className='wrapper'>
               <SwapMain />
             </Box>
@@ -137,7 +137,7 @@ const SwapPage: React.FC = () => {
               <AdsSlider sort='swap' />
             </Box>
           </Grid>
-          <Grid item xs={12} sm={12} md={6} lg={7}>
+          <Grid item spacing={4} xs={12} sm={12} md={6} lg={7}>
             <Box className='flex flex-wrap justify-between fullWidth'>
               {isV2 && token1 && (
                 <Box className='swapTokenDetails'>

@@ -39,7 +39,7 @@ const PoolsPage: React.FC = () => {
         )}
       </Box>
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={12} md={5}>
+        <Grid spacing={4} item xs={12} sm={12} md={5}>
           <Box className='wrapper'>
             {!isV2 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
           </Box>
@@ -47,7 +47,7 @@ const PoolsPage: React.FC = () => {
             <AdsSlider sort='pools' />
           </Box>
         </Grid>
-        <Grid item xs={12} sm={12} md={7}>
+        <Grid spacing={4} item xs={12} sm={12} md={7}>
           <Box className='wrapper'>
             {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
           </Box>

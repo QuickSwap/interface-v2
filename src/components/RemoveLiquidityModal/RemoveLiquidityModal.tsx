@@ -454,9 +454,6 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           <Box className='flex items-center'>
             <Box flex={1} margin='4px 16px 0 0'>
               <ColoredSlider
-                min={1}
-                max={100}
-                step={1}
                 value={innerLiquidityPercentage}
                 onChange={(value) => setInnerLiquidityPercentage(value)}
               />

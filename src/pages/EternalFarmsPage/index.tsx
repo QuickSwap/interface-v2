@@ -120,7 +120,7 @@ export default function EternalFarmsPage() {
         ) : !eternalFarmsLoading && eternalFarms.length !== 0 ? (
           <Grid container spacing={2}>
             {eternalFarms.map((event: FormattedEternalFarming, j: number) => (
-              <Grid item xs={12} sm={6} md={4} key={j}>
+              <Grid spacing={2} item xs={12} sm={6} md={4} key={j}>
                 <EternalFarmCard
                   farmHandler={() => setModalForPool(event as any)}
                   refreshing={eternalFarmsLoading}

@@ -154,10 +154,10 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box margin='0 0 120px'>
         <Grid container spacing={4}>
-          <Grid item xs={12} sm={12} md={6}>
+          <Grid item spacing={4} xs={12} sm={12} md={6}>
             <BuyFiatSection />
           </Grid>
-          <Grid item xs={12} sm={12} md={6}>
+          <Grid item spacing={4} xs={12} sm={12} md={6}>
             <BuySpritzSection />
           </Grid>
         </Grid>
@@ -167,9 +167,17 @@ const LandingPage: React.FC = () => {
           <h3>{t('features')}</h3>
           <Box className='featureDivider' />
         </Box>
-        <Grid container spacing={4}>
+        <Grid className='featureGrid' container spacing={4}>
           {features.map((val, index) => (
-            <Grid item container alignItems='center' sm={12} md={6} key={index}>
+            <Grid
+              item
+              container
+              alignItems='center'
+              spacing={4}
+              sm={12}
+              md={6}
+              key={index}
+            >
               <img src={val.img} alt={val.title} />
               <Box className='featureText'>
                 <h5>{val.title}</h5>

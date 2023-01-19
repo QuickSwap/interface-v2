@@ -9,7 +9,7 @@
   & .slick-list {
     width: 100%
   }
-  & .slick-slide {
+  & .slick-slide > div {
     padding: 0 20px;
     @include media("screen", "<phone") {
       padding: 0 6px;

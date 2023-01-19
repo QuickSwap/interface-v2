@@ -370,10 +370,10 @@ export const Skeleton = styled.div<{
     transform: translateX(-100%);
     background-image: linear-gradient(
       90deg,
-      var(--dark-ebony-clay) 0,
-      var(--primary-hover) 25%,
-      var(--primary-weak) 60%,
-      var(--dark-ebony-clay)
+      #232734 0,
+      #252833 25%,
+      #2c3242 60%,
+      #696c80
     );
     animation-name: ${skeletonAnimation};
     animation-duration: 1.5s;
@@ -396,6 +396,33 @@ export const Grid = styled.div<{
   display: ${({ container }) => (container ? 'flex' : 'unset')};
   justify-content: ${({ justifyContent }) => justifyContent};
   align-items: ${({ alignItems }) => alignItems};
+  flex-wrap: ${({ container }) => (container ? 'wrap' : 'unset')};
+  grid-gap: ${({ container, spacing }) =>
+    container && spacing ? spacing * 8 + 'px' : 0};
+  width: ${({ xs, sm, md, lg, spacing, item }) => {
+    const width = lg
+      ? (lg / 12) * 100 + '%'
+      : md
+      ? (md / 12) * 100 + '%'
+      : sm
+      ? (sm / 12) * 100 + '%'
+      : xs
+      ? (xs / 12) * 100 + '%'
+      : '100%';
+    return `calc(${width} - ${item && spacing ? spacing * 4 : 0}px)`;
+  }};
+  ${({ theme, lg }) => theme.mediaWidth.upToLarge`
+    width: ${lg ? (lg / 12) * 100 + '%' : 'unset'};
+  `};
+  ${({ theme, md }) => theme.mediaWidth.upToMedium`
+    width: ${md ? (md / 12) * 100 + '%' : 'unset'};
+  `};
+  ${({ theme, sm }) => theme.mediaWidth.upToSmall`
+    width: ${sm ? (sm / 12) * 100 + '%' : 'unset'};
+  `};
+  ${({ theme, xs }) => theme.mediaWidth.upToExtraSmall`
+    width: ${xs ? (xs / 12) * 100 + '%' : 'unset'};
+  `};
 `;
 
 export const LinearProgress: React.FC<{ value: number }> = ({ value }) => {

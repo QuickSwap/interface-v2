@@ -19,7 +19,7 @@ const DragonPage: React.FC = () => {
   return (
     <Box width='100%' margin='0 0 24px'>
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={12} md={4}>
+        <Grid spacing={4} item xs={12} sm={12} md={4}>
           {showNew && (
             <Box className='dragonWrapper'>
               <Box className='dragonBg'>
@@ -58,7 +58,7 @@ const DragonPage: React.FC = () => {
             <AdsSlider sort='dragons' />
           </Box>
         </Grid>
-        <Grid item xs={12} sm={12} md={8}>
+        <Grid spacing={4} item xs={12} sm={12} md={8}>
           <Box className='dragonWrapper'>
             <Box className='dragonBg'>
               <img src={isMobile ? DragonBg2 : DragonBg1} alt='Dragon Syrup' />

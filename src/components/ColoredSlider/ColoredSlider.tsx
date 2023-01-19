@@ -4,9 +4,13 @@ import 'components/styles/ColoredSlider.scss';
 
 const ColoredSlider: React.FC<ReactSliderProps> = ({ ...props }) => {
   return (
-    <div className='coloredSlider'>
-      <ReactSlider {...props} />
-    </div>
+    <ReactSlider
+      {...props}
+      className='coloredSlider'
+      thumbClassName='coloredSliderThumb'
+      trackClassName='colorSliderTrack'
+      renderThumb={(props) => <div {...props} />}
+    />
   );
 };
 

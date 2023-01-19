@@ -164,12 +164,12 @@ const AnalyticsOverview: React.FC = () => {
   return (
     <Box width='100%' margin='0 0 24px'>
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={12} md={6}>
+        <Grid item spacing={4} xs={12} sm={12} md={6}>
           <Box className='panel' width='100%'>
             <AnalyticsLiquidityChart />
           </Box>
         </Grid>
-        <Grid item xs={12} sm={12} md={6}>
+        <Grid item spacing={4} xs={12} sm={12} md={6}>
           <Box className='analyticsVolumeChart panel'>
             <AnalyticsVolumeChart />
           </Box>
