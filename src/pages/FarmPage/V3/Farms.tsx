@@ -107,7 +107,7 @@ export default function Farms() {
     {
       text: t('tvl'),
       index: GlobalConst.utils.v3FarmSortBy.tvl,
-      width: 0.2,
+      width: 0.15,
       justify: 'flex-start',
     },
     {
@@ -125,7 +125,7 @@ export default function Farms() {
     {
       text: t('farmAPR'),
       index: GlobalConst.utils.v3FarmSortBy.farmAPR,
-      width: 0.2,
+      width: 0.15,
       justify: 'flex-start',
     },
   ];

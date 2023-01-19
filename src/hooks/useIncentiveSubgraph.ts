@@ -555,6 +555,7 @@ export function useFarmingSubgraph() {
 
         if (position.eternalFarming) {
           const {
+            id,
             rewardToken,
             bonusRewardToken,
             pool,
@@ -591,6 +592,7 @@ export function useFarmingSubgraph() {
 
           _position = {
             ..._position,
+            farmId: id,
             eternalRewardToken: _rewardToken,
             eternalBonusRewardToken: _bonusRewardToken,
             eternalStartTime: startTime,

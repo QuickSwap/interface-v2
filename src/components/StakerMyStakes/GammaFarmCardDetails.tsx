@@ -25,7 +25,8 @@ const GammaFarmCardDetails: React.FC<{
   pairData: any;
   rewardData: any;
   positionData: any;
-}> = ({ pairData, rewardData, positionData, data }) => {
+  stakedData: any[];
+}> = ({ pairData, rewardData, positionData, data, stakedData }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -36,37 +37,11 @@ const GammaFarmCardDetails: React.FC<{
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
   const [attemptClaiming, setAttemptClaiming] = useState(false);
 
-  const fetchStakedData = async () => {
-    if (!account) return;
-    try {
-      const data = await fetch(
-        `https://gammawire.net/quickswap/polygon/userRewards2/${account}`,
-      );
-      const gammaData = await data.json();
-      return gammaData ? gammaData.stakes : undefined;
-    } catch (e) {
-      console.log(e);
-      return;
-    }
-  };
-
-  const { data: stakedData } = useQuery('fetchStakedData', fetchStakedData, {
-    refetchInterval: 30000,
-  });
-
-  const stakedAmounts =
-    stakedData && stakedData.length > 0
-      ? stakedData.filter(
-          (data: any) =>
-            data.hypervisor.toLowerCase() === pairData.address.toLowerCase(),
-        )
-      : [];
-
   const availableStakeAmount = positionData
     ? formatUnits(positionData.shares, 18)
     : '0';
   const stakedAmount =
-    stakedAmounts.length > 0 ? stakedAmounts[0].stakedAmount.toFixed(18) : '0';
+    stakedData.length > 0 ? stakedData[0].stakedAmount.toFixed(18) : '0';
   const lpTokenUSD =
     data && data.totalSupply && Number(data.totalSupply) > 0
       ? (Number(data.tvlUSD) / Number(data.totalSupply)) * 10 ** 18

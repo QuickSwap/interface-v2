@@ -124,7 +124,7 @@ export function EternalFarmCard({
             </Box>
           </Box>
         </Box>
-        <Box width='20%' className='flex justify-between'>
+        <Box width='15%' className='flex justify-between'>
           {!!tvl && <small className='weight-600'>${formatNumber(tvl)}</small>}
         </Box>
         <Box width='25%'>
@@ -160,7 +160,7 @@ export function EternalFarmCard({
           </small>
         </Box>
 
-        <Box width='20%'>
+        <Box width='15%'>
           <small className='text-success'>
             {aprsLoading && <Loader stroke='#0fc679' />}
             {!aprsLoading && <>{aprValue}</>}

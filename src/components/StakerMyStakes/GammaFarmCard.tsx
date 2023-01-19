@@ -6,7 +6,7 @@ import { DoubleCurrencyLogo } from 'components';
 import { Link } from 'react-router-dom';
 import { formatNumber } from 'utils';
 import { ChevronDown, ChevronUp } from 'react-feather';
-import GammaFarmCardDetails from '../GammaFarmCardDetails';
+import GammaFarmCardDetails from './GammaFarmCardDetails';
 
 const GammaFarmCard: React.FC<{
   data: any;
@@ -15,7 +15,16 @@ const GammaFarmCard: React.FC<{
   token1: Token | null;
   pairData: any;
   positionData: any;
-}> = ({ data, rewardData, pairData, token0, token1, positionData }) => {
+  stakedData: any[];
+}> = ({
+  data,
+  rewardData,
+  pairData,
+  token0,
+  token1,
+  positionData,
+  stakedData,
+}) => {
   const { t } = useTranslation();
   const rewards: any[] =
     rewardData && rewardData['rewarders']
@@ -111,6 +120,7 @@ const GammaFarmCard: React.FC<{
           pairData={pairData}
           rewardData={rewardData}
           positionData={positionData}
+          stakedData={stakedData}
         />
       )}
     </Box>

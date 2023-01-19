@@ -231,11 +231,14 @@ const GammaFarmsPage: React.FC<{
           {filteredFarms.map((farm) => (
             <Box mb={2} key={farm.address}>
               <GammaFarmCard
-                key={farm.address}
                 token0={farm.token0}
                 token1={farm.token1}
                 pairData={farm}
-                positionData={gammaPositions[farm.address.toLowerCase()]}
+                positionData={
+                  gammaPositions
+                    ? gammaPositions[farm.address.toLowerCase()]
+                    : undefined
+                }
                 data={
                   gammaData ? gammaData[farm.address.toLowerCase()] : undefined
                 }
