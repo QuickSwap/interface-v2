@@ -6,6 +6,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import GammaLPList from './GammaLPList';
 import { useQuery } from 'react-query';
+import { GammaPairs } from 'constants/index';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
@@ -37,6 +38,18 @@ export default function MyLiquidityPoolsV3() {
     },
   );
 
+  const gammaPositionList = gammaPositions
+    ? Object.keys(gammaPositions).filter(
+        (value) =>
+          !!Object.values(GammaPairs).find(
+            (pairData) =>
+              !!pairData.find(
+                (item) => item.address.toLowerCase() === value.toLowerCase(),
+              ),
+          ),
+      )
+    : [];
+
   return (
     <Box>
       <p className='weight-600'>{t('myGammaLP')}</p>
@@ -45,8 +58,8 @@ export default function MyLiquidityPoolsV3() {
           <Box className='flex justify-center'>
             <Loader stroke='white' size={'2rem'} />
           </Box>
-        ) : gammaPositions ? (
-          <GammaLPList gammaPositions={gammaPositions} />
+        ) : gammaPositions && gammaPositionList.length > 0 ? (
+          <GammaLPList gammaPositions={gammaPositionList} />
         ) : (
           <Box textAlign='center'>
             <p>{t('noLiquidityPositions')}.</p>

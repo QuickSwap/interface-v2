@@ -102,12 +102,27 @@ export function AddLiquidityButton({
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
 
+  const baseCurrencyAddress =
+    baseCurrency && baseCurrency.wrapped
+      ? baseCurrency.wrapped.address.toLowerCase()
+      : '';
+  const quoteCurrencyAddress =
+    quoteCurrency && quoteCurrency.wrapped
+      ? quoteCurrency.wrapped.address.toLowerCase()
+      : '';
+  const gammaPair =
+    GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress];
+  const gammaPairAddress =
+    gammaPair && gammaPair.length > 0
+      ? gammaPair.find((pair) => pair.type === preset)?.address
+      : undefined;
+
   const [approvalA] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A],
     chainId
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-        ? GAMMA_UNIPROXY_ADDRESSES[chainId]
+        ? gammaPairAddress
         : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
       : undefined,
   );
@@ -116,7 +131,7 @@ export function AddLiquidityButton({
     chainId
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-        ? GAMMA_UNIPROXY_ADDRESSES[chainId]
+        ? gammaPairAddress
         : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
       : undefined,
   );
