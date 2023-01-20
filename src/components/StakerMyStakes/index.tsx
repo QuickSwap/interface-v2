@@ -19,10 +19,21 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
+import { useUSDCPricesToken } from 'utils/useUSDCPrice';
+import { formatUnits, getAddress } from 'ethers/lib/utils';
 
-export function FarmingMyFarms() {
+export const FarmingMyFarms: React.FC<{
+  farmFilter: number;
+  search: string;
+}> = ({ farmFilter, search }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
+  const tokenMap = useSelectedTokenList();
+
+  const { v3FarmSortBy } = GlobalConst.utils;
+  const [sortByQuick, setSortByQuick] = useState(v3FarmSortBy.pool);
+  const [sortDescQuick, setSortDescQuick] = useState(false);
+  const sortMultiplierQuick = sortDescQuick ? -1 : 1;
 
   const {
     fetchTransferredPositions: {
@@ -54,9 +65,129 @@ export function FarmingMyFarms() {
 
   const farmedNFTs = useMemo(() => {
     if (!shallowPositions) return;
-    const _positions = shallowPositions.filter((v) => v.onFarmingCenter);
+    const _positions = shallowPositions
+      .filter((farm) => {
+        const farmToken0Name =
+          farm && farm.pool && farm.pool.token0 && farm.pool.token0.name
+            ? farm.pool.token0.name
+            : '';
+        const farmToken1Name =
+          farm && farm.pool && farm.pool.token1 && farm.pool.token1.name
+            ? farm.pool.token1.name
+            : '';
+        const farmToken0Symbol =
+          farm && farm.pool && farm.pool.token0 && farm.pool.token0.symbol
+            ? farm.pool.token0.symbol
+            : '';
+        const farmToken1Symbol =
+          farm && farm.pool && farm.pool.token1 && farm.pool.token1.symbol
+            ? farm.pool.token1.symbol
+            : '';
+        const farmToken0Id =
+          farm && farm.pool && farm.pool.token0 && farm.pool.token0.id
+            ? farm.pool.token0.id
+            : '';
+        const farmToken1Id =
+          farm && farm.pool && farm.pool.token1 && farm.pool.token1.id
+            ? farm.pool.token1.id
+            : '';
+        return (
+          farm.onFarmingCenter &&
+          (farmToken0Name.toLowerCase().includes(search) ||
+            farmToken1Name.toLowerCase().includes(search) ||
+            farmToken0Symbol.toLowerCase().includes(search) ||
+            farmToken1Symbol.toLowerCase().includes(search) ||
+            farmToken0Id.toLowerCase().includes(search) ||
+            farmToken1Id.toLowerCase().includes(search))
+        );
+      })
+      .sort((farm1, farm2) => {
+        const farm1TokenStr =
+          farm1.pool.token0.symbol + '/' + farm1.pool.token1.symbol;
+        const farm2TokenStr =
+          farm2.pool.token0.symbol + '/' + farm2.pool.token1.symbol;
+        if (sortByQuick === v3FarmSortBy.farmAPR) {
+          const farm1FarmAPR =
+            eternalFarmAprs && farm1 && farm1.farmId
+              ? Number(eternalFarmAprs[farm1.farmId])
+              : 0;
+          const farm2FarmAPR =
+            eternalFarmAprs && farm2 && farm2.farmId
+              ? Number(eternalFarmAprs[farm2.farmId])
+              : 0;
+          return farm1FarmAPR > farm2FarmAPR
+            ? sortMultiplierQuick
+            : -1 * sortMultiplierQuick;
+        } else if (sortByQuick === v3FarmSortBy.poolAPR) {
+          const farm1PoolAPR =
+            eternalFarmPoolAprs && farm1 && farm1.pool && farm1.pool.id
+              ? Number(eternalFarmPoolAprs[farm1.pool.id])
+              : 0;
+          const farm2PoolAPR =
+            eternalFarmPoolAprs && farm2 && farm2.pool && farm2.pool.id
+              ? Number(eternalFarmPoolAprs[farm2.pool.id])
+              : 0;
+          return farm1PoolAPR > farm2PoolAPR
+            ? sortMultiplierQuick
+            : -1 * sortMultiplierQuick;
+        } else if (sortByQuick === v3FarmSortBy.rewards) {
+          const farm1Reward =
+            farm1 &&
+            farm1.eternalEarned &&
+            farm1.eternalRewardToken &&
+            farm1.eternalRewardToken.decimals &&
+            farm1.eternalRewardToken.derivedMatic
+              ? Number(farm1.eternalEarned) *
+                Number(farm1.eternalRewardToken.derivedMatic)
+              : 0;
+          const farm1BonusReward =
+            farm1 &&
+            farm1.eternalBonusEarned &&
+            farm1.eternalBonusRewardToken &&
+            farm1.eternalBonusRewardToken.decimals &&
+            farm1.eternalBonusRewardToken.derivedMatic
+              ? Number(farm1.eternalBonusEarned) *
+                Number(farm1.eternalBonusRewardToken.derivedMatic)
+              : 0;
+          const farm2Reward =
+            farm2 &&
+            farm2.eternalEarned &&
+            farm2.eternalRewardToken &&
+            farm2.eternalRewardToken.decimals &&
+            farm2.eternalRewardToken.derivedMatic
+              ? Number(farm2.eternalEarned) *
+                Number(farm2.eternalRewardToken.derivedMatic)
+              : 0;
+          const farm2BonusReward =
+            farm2 &&
+            farm2.eternalBonusEarned &&
+            farm2.eternalBonusRewardToken &&
+            farm2.eternalBonusRewardToken.decimals &&
+            farm2.eternalBonusRewardToken.derivedMatic
+              ? Number(farm2.eternalBonusEarned) *
+                Number(farm2.eternalBonusRewardToken.derivedMatic)
+              : 0;
+          return farm1Reward + farm1BonusReward > farm2Reward + farm2BonusReward
+            ? sortMultiplierQuick
+            : -1 * sortMultiplierQuick;
+        }
+        return farm1TokenStr > farm2TokenStr
+          ? sortMultiplierQuick
+          : -1 * sortMultiplierQuick;
+      });
+
     return _positions.length > 0 ? _positions : [];
-  }, [shallowPositions]);
+  }, [
+    eternalFarmAprs,
+    eternalFarmPoolAprs,
+    search,
+    shallowPositions,
+    sortByQuick,
+    sortMultiplierQuick,
+    v3FarmSortBy.farmAPR,
+    v3FarmSortBy.poolAPR,
+    v3FarmSortBy.rewards,
+  ]);
 
   useEffect(() => {
     fetchTransferredPositionsFn(true);
@@ -129,12 +260,6 @@ export function FarmingMyFarms() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txHash, txConfirmed, selectedTokenId, selectedFarmingType, txType]);
-
-  const { v3FarmSortBy } = GlobalConst.utils;
-
-  const [sortByQuick, setSortByQuick] = useState(v3FarmSortBy.pool);
-
-  const [sortDescQuick, setSortDescQuick] = useState(false);
 
   const [sortByGamma, setSortByGamma] = useState(v3FarmSortBy.pool);
 
@@ -315,7 +440,54 @@ export function FarmingMyFarms() {
   );
 
   const sortMultiplierGamma = sortDescGamma ? -1 : 1;
-  const tokenMap = useSelectedTokenList();
+
+  const gammaRewardTokens =
+    gammaRewards &&
+    chainId &&
+    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
+    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
+      ? ([] as string[])
+          .concat(
+            ...Object.values(
+              gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools'],
+            ).map((item: any) =>
+              item && item['rewarders']
+                ? Object.values(item['rewarders'])
+                    .filter(
+                      (rewarder: any) =>
+                        rewarder && Number(rewarder['rewardPerSecond']) > 0,
+                    )
+                    .map((rewarder: any) => rewarder.rewardToken)
+                : [],
+            ),
+          )
+          .filter(
+            (value, index, self) =>
+              index ===
+              self.findIndex((t) => t.toLowerCase() === value.toLowerCase()),
+          )
+          .map((tokenAddress) => {
+            const tokenData = getTokenFromAddress(
+              tokenAddress,
+              chainId,
+              tokenMap,
+              [],
+            );
+            return new Token(
+              chainId,
+              tokenData.address,
+              tokenData.decimals,
+              tokenData.symbol,
+              tokenData.name,
+            );
+          })
+      : [];
+
+  const rewardUSDPrices = useUSDCPricesToken(gammaRewardTokens);
+  const gammaRewardsWithUSDPrice = gammaRewardTokens.map((token, ind) => {
+    return { price: rewardUSDPrices[ind], tokenAddress: token.address };
+  });
+
   const myGammaFarms = ([] as GammaPair[])
     .concat(...Object.values(GammaPairs))
     .filter((item) => {
@@ -405,7 +577,41 @@ export function FarmingMyFarms() {
           gammaData1 && gammaData1['tvlUSD'] ? Number(gammaData1['tvlUSD']) : 0;
         return tvl0 > tvl1 ? sortMultiplierGamma : -1 * sortMultiplierGamma;
       } else if (sortByGamma === v3FarmSortBy.rewards) {
-        return 1;
+        const farm0RewardUSD =
+          gammaReward0 && gammaReward0['rewarders']
+            ? Object.values(gammaReward0['rewarders']).reduce(
+                (total: number, rewarder: any) => {
+                  const rewardUSD = gammaRewardsWithUSDPrice.find(
+                    (item) =>
+                      item.tokenAddress.toLowerCase() ===
+                      rewarder.rewardToken.toLowerCase(),
+                  );
+                  return (
+                    total + (rewardUSD?.price ?? 0) * rewarder.rewardPerSecond
+                  );
+                },
+                0,
+              )
+            : 0;
+        const farm1RewardUSD =
+          gammaReward1 && gammaReward1['rewarders']
+            ? Object.values(gammaReward1['rewarders']).reduce(
+                (total: number, rewarder: any) => {
+                  const rewardUSD = gammaRewardsWithUSDPrice.find(
+                    (item) =>
+                      item.tokenAddress.toLowerCase() ===
+                      rewarder.rewardToken.toLowerCase(),
+                  );
+                  return (
+                    total + (rewardUSD?.price ?? 0) * rewarder.rewardPerSecond
+                  );
+                },
+                0,
+              )
+            : 0;
+        return farm0RewardUSD > farm1RewardUSD
+          ? sortMultiplierGamma
+          : -1 * sortMultiplierGamma;
       } else if (sortByGamma === v3FarmSortBy.poolAPR) {
         const poolAPR0 =
           gammaData0 &&
@@ -570,4 +776,4 @@ export function FarmingMyFarms() {
       </Box>
     </Box>
   );
-}
+};

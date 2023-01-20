@@ -55,11 +55,11 @@ export function SelectRange({
 
   const currencyAAddress =
     currencyA && currencyA.wrapped
-      ? currencyA.wrapped.address.toUpperCase()
+      ? currencyA.wrapped.address.toLowerCase()
       : '';
   const currencyBAddress =
     currencyB && currencyB.wrapped
-      ? currencyB.wrapped.address.toUpperCase()
+      ? currencyB.wrapped.address.toLowerCase()
       : '';
   const gammaPair = GammaPairs[currencyAAddress + '-' + currencyBAddress];
 

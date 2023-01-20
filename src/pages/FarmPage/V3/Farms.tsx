@@ -231,7 +231,9 @@ export default function Farms() {
         </>
       )}
 
-      {selectedFarmCategory?.id === 0 && <FarmingMyFarms />}
+      {selectedFarmCategory?.id === 0 && (
+        <FarmingMyFarms farmFilter={farmFilter.id} search={searchValue} />
+      )}
       {selectedFarmCategory?.id === 1 && (
         <EternalFarmsPage
           farmFilter={farmFilter.id}

@@ -14,7 +14,7 @@ import { formatReward } from 'utils/formatReward';
 import { useMaticPrice } from 'state/application/hooks';
 
 interface FarmCardProps {
-  el: Deposit;
+  el: any;
   poolApr?: number;
   farmApr?: number;
 }

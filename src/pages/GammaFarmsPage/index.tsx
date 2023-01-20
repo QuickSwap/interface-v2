@@ -11,6 +11,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
+import { useUSDCPricesToken } from 'utils/useUSDCPrice';
 
 const GammaFarmsPage: React.FC<{
   farmFilter: number;
@@ -90,6 +91,53 @@ const GammaFarmsPage: React.FC<{
       refetchInterval: 30000,
     },
   );
+
+  const gammaRewardTokens =
+    gammaRewards &&
+    chainId &&
+    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
+    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
+      ? ([] as string[])
+          .concat(
+            ...Object.values(
+              gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools'],
+            ).map((item: any) =>
+              item && item['rewarders']
+                ? Object.values(item['rewarders'])
+                    .filter(
+                      (rewarder: any) =>
+                        rewarder && Number(rewarder['rewardPerSecond']) > 0,
+                    )
+                    .map((rewarder: any) => rewarder.rewardToken)
+                : [],
+            ),
+          )
+          .filter(
+            (value, index, self) =>
+              index ===
+              self.findIndex((t) => t.toLowerCase() === value.toLowerCase()),
+          )
+          .map((tokenAddress) => {
+            const tokenData = getTokenFromAddress(
+              tokenAddress,
+              chainId,
+              tokenMap,
+              [],
+            );
+            return new Token(
+              chainId,
+              tokenData.address,
+              tokenData.decimals,
+              tokenData.symbol,
+              tokenData.name,
+            );
+          })
+      : [];
+
+  const rewardUSDPrices = useUSDCPricesToken(gammaRewardTokens);
+  const gammaRewardsWithUSDPrice = gammaRewardTokens.map((token, ind) => {
+    return { price: rewardUSDPrices[ind], tokenAddress: token.address };
+  });
 
   const filteredFarms = allGammaFarms
     .map((item) => {
@@ -185,7 +233,41 @@ const GammaFarmsPage: React.FC<{
           gammaData1 && gammaData1['tvlUSD'] ? Number(gammaData1['tvlUSD']) : 0;
         return tvl0 > tvl1 ? sortMultiplier : -1 * sortMultiplier;
       } else if (sortBy === v3FarmSortBy.rewards) {
-        return 1;
+        const farm0RewardUSD =
+          gammaReward0 && gammaReward0['rewarders']
+            ? Object.values(gammaReward0['rewarders']).reduce(
+                (total: number, rewarder: any) => {
+                  const rewardUSD = gammaRewardsWithUSDPrice.find(
+                    (item) =>
+                      item.tokenAddress.toLowerCase() ===
+                      rewarder.rewardToken.toLowerCase(),
+                  );
+                  return (
+                    total + (rewardUSD?.price ?? 0) * rewarder.rewardPerSecond
+                  );
+                },
+                0,
+              )
+            : 0;
+        const farm1RewardUSD =
+          gammaReward1 && gammaReward1['rewarders']
+            ? Object.values(gammaReward1['rewarders']).reduce(
+                (total: number, rewarder: any) => {
+                  const rewardUSD = gammaRewardsWithUSDPrice.find(
+                    (item) =>
+                      item.tokenAddress.toLowerCase() ===
+                      rewarder.rewardToken.toLowerCase(),
+                  );
+                  return (
+                    total + (rewardUSD?.price ?? 0) * rewarder.rewardPerSecond
+                  );
+                },
+                0,
+              )
+            : 0;
+        return farm0RewardUSD > farm1RewardUSD
+          ? sortMultiplier
+          : -1 * sortMultiplier;
       } else if (sortBy === v3FarmSortBy.poolAPR) {
         const poolAPR0 =
           gammaData0 &&
