@@ -93,7 +93,7 @@ export function EnterAmounts({
       : '';
   const quoteCurrencyAddress =
     currencyB && currencyB.wrapped
-      ? currencyB.wrapped.address.toUpperCase()
+      ? currencyB.wrapped.address.toLowerCase()
       : '';
   const gammaPair =
     GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress];
