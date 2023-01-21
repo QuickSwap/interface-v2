@@ -26,6 +26,10 @@
   }
 }
 
+#swap-page {
+  padding-top: 88px;
+}
+
 .swapItem {
   padding: 0 16px;
   height: 46px;
@@ -45,12 +49,18 @@
   }
 }
 
+.swap-bg-highlight {
+  background-color: #404557;
+  color: white;
+}
+
 .headingItem {
   cursor: pointer;
   display: flex;
 }
 
 .proModeWrapper {
+  background-image: linear-gradient(to bottom, #282d3d, #282d3d);
   border-top: 1px solid $divider;
   border-bottom: 1px solid $divider;
   .swapItem {
@@ -185,6 +195,11 @@
     flex: 1;
     .top-pane {
       overflow: hidden;
+
+      iframe {
+        max-height: 100vh;
+        min-height: 500px;
+      }
     }
   }
   @include media("screen", "<phone") {
@@ -260,4 +275,12 @@
       }
     }
   }
+}
+
+div.sell {
+  color: $errorMain;
+}
+
+div.buy {
+  color: $successMain;
 }

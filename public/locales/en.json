@@ -99,7 +99,6 @@
   "buyCryptoFiat": "Buy crypto with Fiat",
   "buyCryptoFiatDesc": "Simple way to buy or sell crypto with a credit card, bank transfer and more",
   "buyNow": "Buy Now",
-  "payWithCrypto": "Pay with crypto",
   "enterApp": "Enter App",
   "swap": "Swap",
   "liquidity": "Liquidity",
@@ -603,5 +602,8 @@
   "nftDepositing": "Depositing NFT #{{ nftID }}",
   "nftDeposited": "NFT #{{ nftID }} was deposited",
   "nftApproving": "Approving NFT #{{ nftID }}",
-  "nftApproved": "NFT #{{ nftID }} was approved"
+  "nftApproved": "NFT #{{ nftID }} was approved",
+  "payWithCrypto": "Pay with crypto ↗",
+  "payWithFiatArrow": "Buy with fiat ↗",
+  "assets": "Assets"
 }

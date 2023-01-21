@@ -46,6 +46,8 @@ interface CurrencyInputPanelProps {
   shallow: boolean;
   swap: boolean;
   page?: string;
+  bgClass?: string;
+  color?: string;
 }
 
 export default function CurrencyInputPanel({
@@ -75,6 +77,8 @@ export default function CurrencyInputPanel({
   shallow = false,
   swap = false,
   page,
+  bgClass,
+  color,
   ...rest
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -151,7 +155,7 @@ export default function CurrencyInputPanel({
         </Box>
       )}
 
-      <Box id={id} className='bg-secondary2 swapBox'>
+      <Box id={id} className={`swapBox ${bgClass}`}>
         <Box mb={2}>
           <Box>
             <Box
@@ -184,6 +188,7 @@ export default function CurrencyInputPanel({
             <NumericalInput
               value={value}
               align='right'
+              color={color}
               placeholder='0.00'
               onUserInput={(val) => {
                 if (val === '.') val = '0.';

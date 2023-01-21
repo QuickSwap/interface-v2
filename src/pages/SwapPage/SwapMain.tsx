@@ -125,6 +125,35 @@ const SwapMain: React.FC = () => {
           >
             <p>{t('limit')}</p>
           </Box>
+          {isProMode && (
+            <Box
+              style={{
+                marginLeft: 'auto',
+                marginTop: 'auto',
+                marginBottom: 'auto',
+              }}
+            >
+              <Box margin='0 16px' className='flex items-center'>
+                <Box className='flex items-center' mr={1}>
+                  <span
+                    className='text-secondary text-uppercase'
+                    style={{ marginRight: 8 }}
+                  >
+                    {t('proMode')}
+                  </span>
+                  <ToggleSwitch
+                    toggled={true}
+                    onToggle={() => {
+                      updateIsProMode(false);
+                    }}
+                  />
+                </Box>
+                <Box className='headingItem'>
+                  <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+                </Box>
+              </Box>
+            </Box>
+          )}
         </Box>
         {!isProMode && (
           <Box margin='8px 16px 0' className='flex items-center'>
@@ -136,7 +165,7 @@ const SwapMain: React.FC = () => {
                 {t('proMode')}
               </span>
               <ToggleSwitch
-                toggled={false}
+                toggled={isProMode}
                 onToggle={() => {
                   updateIsProMode(true);
                 }}
@@ -148,7 +177,15 @@ const SwapMain: React.FC = () => {
           </Box>
         )}
       </Box>
-      <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
+      <Box
+        style={{
+          backgroundImage: isProMode
+            ? 'linear-gradient(to bottom, #282d3d, #1b1e29)'
+            : '',
+        }}
+        padding={isProMode ? '0 24px 24px' : '0'}
+        pt={3.5}
+      >
         {swapType === SWAP_BEST_TRADE && <SwapBestTrade />}
         {swapType === SWAP_NORMAL && <Swap />}
         {swapType === SWAP_V3 && <SwapV3Page />}
