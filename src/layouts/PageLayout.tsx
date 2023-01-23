@@ -54,7 +54,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const PasswordModal = () => {
     const [devPass, setDevPass] = useState('');
     const confirmPassword = () => {
-      if (devPass === 'devPass') {
+      if (devPass === 'gammaPass') {
         setOpenPassModal(false);
       }
     };
