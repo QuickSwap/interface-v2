@@ -25,7 +25,7 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
   const [showAddLPModal, setShowAddLPModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
-  return (
+  return gammaPosition ? (
     <Box>
       {showAddLPModal && (
         <IncreaseGammaLiquidityModal
@@ -114,6 +114,8 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
         </Button>
       </Box>
     </Box>
+  ) : (
+    <></>
   );
 };
 

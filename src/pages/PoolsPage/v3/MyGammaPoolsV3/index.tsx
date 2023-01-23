@@ -59,7 +59,10 @@ export default function MyLiquidityPoolsV3() {
             <Loader stroke='white' size={'2rem'} />
           </Box>
         ) : gammaPositions && gammaPositionList.length > 0 ? (
-          <GammaLPList gammaPositions={gammaPositionList} />
+          <GammaLPList
+            gammaPairs={gammaPositionList}
+            gammaPositions={gammaPositions}
+          />
         ) : (
           <Box textAlign='center'>
             <p>{t('noLiquidityPositions')}.</p>

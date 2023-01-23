@@ -7,14 +7,15 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import GammaLPItem from '../GammaLPItem';
 import { Token } from '@uniswap/sdk-core';
 
-const GammaLPList: React.FC<{ gammaPositions: any[] }> = ({
+const GammaLPList: React.FC<{ gammaPositions: any; gammaPairs: string[] }> = ({
   gammaPositions,
+  gammaPairs,
 }) => {
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
 
   const positionsList = chainId
-    ? gammaPositions.map((pairAddress) => {
+    ? gammaPairs.map((pairAddress) => {
         const gammaData = gammaPositions[pairAddress];
         const pairIndex = Object.values(GammaPairs).findIndex(
           (pairData) =>
