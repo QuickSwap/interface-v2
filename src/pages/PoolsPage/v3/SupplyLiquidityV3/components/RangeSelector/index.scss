@@ -2,7 +2,7 @@
 @use 'styles/breakpoints' as *;
 
 .price-range-part {
-    width: 100%;
+    width: calc(100% - 24px);
     border: 1px solid $secondary1;
     padding: 12px;
     border-radius: 12px;

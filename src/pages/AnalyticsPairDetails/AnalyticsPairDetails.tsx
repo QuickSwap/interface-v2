@@ -206,8 +206,8 @@ const AnalyticsPairDetails: React.FC = () => {
   const PairInfo = () => (
     <Box width='100%' margin='32px 0 0'>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={3}>
-          <Box className='panel analyticsDetailsInfoV3'>
+        <Grid item spacing={2} xs={12} sm={12} md={3}>
+          <Box className='panel analyticsDetailsInfoV3' width='100%'>
             <Box>
               <span className='text-disabled'>{t('totalTokensLocked')}</span>
               <Box
@@ -292,8 +292,8 @@ const AnalyticsPairDetails: React.FC = () => {
             </Box>
           </Box>
         </Grid>
-        <Grid item xs={12} sm={12} md={9}>
-          <Box className='panel' margin='16px 0' height={'100%'}>
+        <Grid item spacing={2} xs={12} sm={12} md={9}>
+          <Box className='panel' margin='16px 0' width='100%'>
             <AnalyticsPairChart
               pairData={pairData}
               token0Rate={token0Rate}
@@ -408,12 +408,14 @@ const AnalyticsPairDetails: React.FC = () => {
           <Box width='100%' margin='40px 0 0'>
             <p>{t('transactions')}</p>
           </Box>
-          <Box width='100%' className='panel' margin='32px 0 0'>
-            {pairTransactionsList ? (
-              <TransactionsTable data={pairTransactionsList} />
-            ) : (
-              <Skeleton variant='rect' width='100%' height='150px' />
-            )}
+          <Box width='100%' className='flex'>
+            <Box width='100%' className='panel' margin='32px 0 0'>
+              {pairTransactionsList ? (
+                <TransactionsTable data={pairTransactionsList} />
+              ) : (
+                <Skeleton variant='rect' width='100%' height='150px' />
+              )}
+            </Box>
           </Box>
         </>
       ) : dataLoading ? (

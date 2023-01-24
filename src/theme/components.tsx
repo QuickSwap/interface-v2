@@ -337,12 +337,30 @@ export const Box = styled.div<{
   justify-content: ${({ justifyContent }) => justifyContent};
 `;
 
-export const Button = styled.button<{ width?: string }>`
+export const Button = styled.button<{
+  width?: string;
+  height?: string;
+  borderRadius?: string;
+  bgColor?: string;
+  color?: string;
+}>`
   width: ${({ width }) => width};
+  height: ${({ height }) => height ?? '40px'};
+  border-radius: ${({ borderRadius }) => borderRadius ?? '12px'};
+  background-color: ${({ theme, bgColor }) => bgColor ?? theme.primary1};
+  color: ${({ color }) => color ?? 'white'};
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 export const Divider = styled.div`
-  border: 1px solid $divider;
+  border: 1px solid ${({ theme }) => theme.divider};
 `;
 
 export const skeletonAnimation = keyframes`
@@ -393,7 +411,7 @@ export const Grid = styled.div<{
   md?: number;
   lg?: number;
 }>`
-  display: ${({ container }) => (container ? 'flex' : 'unset')};
+  display: flex;
   justify-content: ${({ justifyContent }) => justifyContent};
   align-items: ${({ alignItems }) => alignItems};
   flex-wrap: ${({ container }) => (container ? 'wrap' : 'unset')};

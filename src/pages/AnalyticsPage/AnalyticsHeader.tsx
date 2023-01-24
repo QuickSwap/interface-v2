@@ -33,7 +33,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
     <Box width='100%' margin='0 0 24px'>
       <Box margin='0 0 32px' className='flex items-center'>
         <h4>{t('quickswapAnalytics')}</h4>
-        <Box margin='0 0 16px'>
+        <Box margin='0 0 0 16px'>
           <VersionToggle />
         </Box>
       </Box>

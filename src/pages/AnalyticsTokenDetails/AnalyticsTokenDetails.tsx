@@ -211,10 +211,12 @@ const AnalyticsTokenDetails: React.FC = () => {
         <Box width='100%' className='panel' margin='32px 0 0'>
           <Grid container>
             <Grid item xs={12} sm={12} md={6}>
-              <AnalyticsTokenChart token={token} />
+              <Box width='100%'>
+                <AnalyticsTokenChart token={token} />
+              </Box>
             </Grid>
             <Grid item xs={12} sm={12} md={6}>
-              <Box className='analyticsDetailsInfo'>
+              <Box className='analyticsDetailsInfo' width='100%'>
                 <Box>
                   <Box>
                     <span className='text-disabled'>{t('totalLiquidity')}</span>
@@ -285,8 +287,8 @@ const AnalyticsTokenDetails: React.FC = () => {
     <>
       <Box width='100%'>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={3}>
-            <Box className='panel analyticsDetailsInfoV3'>
+          <Grid item spacing={2} xs={12} sm={12} md={3}>
+            <Box className='panel analyticsDetailsInfoV3' width='100%'>
               <Box>
                 <span className='text-disabled'>{t('tvl')}</span>
                 <h5>${formatNumber(token.tvlUSD)}</h5>
@@ -315,8 +317,8 @@ const AnalyticsTokenDetails: React.FC = () => {
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={12} md={9}>
-            <Box className='panel' margin='16px 0' height={'100%'}>
+          <Grid item spacing={2} xs={12} sm={12} md={9}>
+            <Box className='panel' margin='16px 0' width='100%'>
               <AnalyticsTokenChart token={token} />
             </Box>
           </Grid>
@@ -327,24 +329,28 @@ const AnalyticsTokenDetails: React.FC = () => {
           {token.symbol} {t('pools')}
         </p>
       </Box>
-      <Box width='100%' margin='32px 0 0' className='panel'>
-        {tokenPairs ? (
-          <PairTable data={tokenPairs} />
-        ) : (
-          <Skeleton variant='rect' width='100%' height='150px' />
-        )}
+      <Box width='100%' className='flex'>
+        <Box width='100%' margin='32px 0 0' className='panel'>
+          {tokenPairs ? (
+            <PairTable data={tokenPairs} />
+          ) : (
+            <Skeleton variant='rect' width='100%' height='150px' />
+          )}
+        </Box>
       </Box>
       <Box width='100%' margin='40px 0 0'>
         <p>
           {token.symbol} {t('transactions')}
         </p>
       </Box>
-      <Box width='100%' margin='32px 0 0' className='panel'>
-        {tokenTransactions ? (
-          <TransactionsTable data={tokenTransactions} />
-        ) : (
-          <Skeleton variant='rect' width='100%' height='150px' />
-        )}
+      <Box width='100%' className='flex'>
+        <Box width='100%' margin='32px 0 0' className='panel'>
+          {tokenTransactions ? (
+            <TransactionsTable data={tokenTransactions} />
+          ) : (
+            <Skeleton variant='rect' width='100%' height='150px' />
+          )}
+        </Box>
       </Box>
     </>
   );

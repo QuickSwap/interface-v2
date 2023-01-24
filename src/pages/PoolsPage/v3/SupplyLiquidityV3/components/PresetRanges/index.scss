@@ -33,7 +33,7 @@
     flex-direction: column;
     width: calc(50% - 4px);
     & > div {
-        width: 100%;
+        width: calc(100% - 24px);
     }
 }
 

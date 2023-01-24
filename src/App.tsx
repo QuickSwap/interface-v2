@@ -75,7 +75,15 @@ const Web3ProviderNetwork = createWeb3ReactRoot(
 
 const Providers: React.FC = ({ children }) => {
   return (
-    <Suspense fallback={<Background fallback={true} />}>{children}</Suspense>
+    <Suspense
+      fallback={
+        <div className='page'>
+          <Background fallback={true} />
+        </div>
+      }
+    >
+      {children}
+    </Suspense>
   );
 };
 

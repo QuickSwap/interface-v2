@@ -56,7 +56,7 @@ export function colors(darkMode: boolean): Colors {
     advancedBG: darkMode ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.6)',
 
     //primary colors
-    primary1: darkMode ? '#2172E5' : '#2891F9',
+    primary1: darkMode ? '#448aff' : '#448aff',
     primary2: darkMode ? '#3680E7' : '#FF8CC3',
     primary3: darkMode ? '#4D8FEA' : '#2891F9',
     primary4: darkMode ? '#376bad70' : '#F6DDE8',
@@ -85,6 +85,7 @@ export function colors(darkMode: boolean): Colors {
     winterBackground: 'rgba(91, 183, 255, 0.6)',
     winterMainButton: '#008FFF',
     winterDisabledButton: '#17517c',
+    divider: 'rgba(130, 177, 255, 0.08)',
 
     // dont wanna forget these blue yet
     // blue4: darkMode ? '#153d6f70' : '#C4D9F8',

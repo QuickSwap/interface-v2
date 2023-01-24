@@ -152,7 +152,8 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
     <Box
       style={style}
       key={key}
-      // selected={otherSelected || isSelected}
+      padding='6px 8px'
+      className='cursor-pointer'
       onClick={() => {
         if (!isSelected && !otherSelected) onSelect();
       }}
@@ -160,12 +161,12 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
       <Box className='currencyRow'>
         {(otherSelected || isSelected) && <TokenSelectedIcon />}
         <CurrencyLogo currency={currency} size='32px' />
-        <Box margin='0 0 0 8px' height='32px'>
+        <Box margin='0 0 0 8px'>
           <Box className='flex items-center'>
             <small className='currencySymbol'>{currency.symbol}</small>
             {isMetamask && currency !== ETHER && (
               <Box
-                className='cursor-pointer'
+                className='flex cursor-pointer'
                 margin='0 0 0 2px'
                 onClick={(event: any) => {
                   addTokenToMetamask(

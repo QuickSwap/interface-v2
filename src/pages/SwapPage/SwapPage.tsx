@@ -130,50 +130,54 @@ const SwapPage: React.FC = () => {
       {!isProMode ? (
         <Grid container spacing={4}>
           <Grid item spacing={4} xs={12} sm={12} md={6} lg={5}>
-            <Box className='wrapper'>
-              <SwapMain />
-            </Box>
-            <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
-              <AdsSlider sort='swap' />
+            <Box width='100%'>
+              <Box className='wrapper'>
+                <SwapMain />
+              </Box>
+              <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
+                <AdsSlider sort='swap' />
+              </Box>
             </Box>
           </Grid>
           <Grid item spacing={4} xs={12} sm={12} md={6} lg={7}>
-            <Box className='flex flex-wrap justify-between fullWidth'>
-              {isV2 && token1 && (
-                <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token1} />
+            <Box width='100%'>
+              <Box className='flex flex-wrap justify-between fullWidth'>
+                {isV2 && token1 && (
+                  <Box className='swapTokenDetails'>
+                    <SwapTokenDetails token={token1} />
+                  </Box>
+                )}
+                {isV2 && token2 && (
+                  <Box className='swapTokenDetails'>
+                    <SwapTokenDetails token={token2} />
+                  </Box>
+                )}
+                {!isV2 && token1V3 && (
+                  <Box className='swapTokenDetails'>
+                    <SwapTokenDetails token={token1V3 as Token} />
+                  </Box>
+                )}
+                {!isV2 && token2V3 && (
+                  <Box className='swapTokenDetails'>
+                    <SwapTokenDetails token={token2V3 as Token} />
+                  </Box>
+                )}
+              </Box>
+              {isV2 && token1 && token2 && (
+                <Box className='wrapper' margin='32px 0 0'>
+                  <LiquidityPools token1={token1} token2={token2} />
                 </Box>
               )}
-              {isV2 && token2 && (
-                <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token2} />
+              {!isV2 && token1V3 && token2V3 && (
+                <Box className='wrapper' margin='32px 0 0'>
+                  <LiquidityPools
+                    token1={token1V3 as Token}
+                    token2={token2V3 as Token}
+                  />
                 </Box>
               )}
-              {!isV2 && token1V3 && (
-                <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token1V3 as Token} />
-                </Box>
-              )}
-              {!isV2 && token2V3 && (
-                <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token2V3 as Token} />
-                </Box>
-              )}
+              <SwapBuySellWidget />
             </Box>
-            {isV2 && token1 && token2 && (
-              <Box className='wrapper' margin='32px 0 0'>
-                <LiquidityPools token1={token1} token2={token2} />
-              </Box>
-            )}
-            {!isV2 && token1V3 && token2V3 && (
-              <Box className='wrapper' margin='32px 0 0'>
-                <LiquidityPools
-                  token1={token1V3 as Token}
-                  token2={token2V3 as Token}
-                />
-              </Box>
-            )}
-            <SwapBuySellWidget />
           </Grid>
         </Grid>
       ) : (

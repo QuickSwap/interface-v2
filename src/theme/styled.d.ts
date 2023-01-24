@@ -56,6 +56,8 @@ export interface Colors {
   winterBackground: Color;
   winterMainButton: Color;
   winterDisabledButton: Color;
+
+  divider: Color;
 }
 
 export interface Grids {

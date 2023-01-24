@@ -40,15 +40,17 @@ const PoolsPage: React.FC = () => {
       </Box>
       <Grid container spacing={4}>
         <Grid spacing={4} item xs={12} sm={12} md={5}>
-          <Box className='wrapper'>
-            {!isV2 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
-          </Box>
-          <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
-            <AdsSlider sort='pools' />
+          <Box width='100%'>
+            <Box className='wrapper'>
+              {!isV2 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
+            </Box>
+            <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
+              <AdsSlider sort='pools' />
+            </Box>
           </Box>
         </Grid>
         <Grid spacing={4} item xs={12} sm={12} md={7}>
-          <Box className='wrapper'>
+          <Box width='100%' className='wrapper'>
             {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
           </Box>
         </Grid>

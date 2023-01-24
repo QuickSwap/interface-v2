@@ -302,3 +302,42 @@ body {
     font-weight: 600;
   }
 }
+
+.buttonGroup {
+  display: flex;
+  text-align: center;
+  padding: 20px 0;
+  margin: auto;
+  width: 100%;
+  & > div {
+    width: 100%;
+  }
+  & button {
+    max-width: 180px;
+    width: 50%;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: 1px solid $primaryDark;
+    color: $textSecondary;
+    &.active {
+      background: $grey7;
+      border: 1px solid transparent;
+      color: $bgColor;
+    }
+    &:first-child {
+      border-top-left-radius: 24px;
+      border-bottom-left-radius: 24px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    &:last-child {
+      border-top-right-radius: 24px;
+      border-bottom-right-radius: 24px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+}

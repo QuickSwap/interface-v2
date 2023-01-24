@@ -20,7 +20,7 @@ export const SwapSection: React.FC = () => {
 
   return (
     <>
-      <Box className='buttonGroup'>
+      <Box className='buttonGroup justify-center'>
         <Button
           className={tabIndex === SWAP_TAB ? 'active' : ''}
           onClick={() => setTabIndex(SWAP_TAB)}

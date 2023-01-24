@@ -32,7 +32,11 @@ const CustomModal: React.FC<CustomModalProps> = ({
       contentElement={(props, children) => (
         <>
           {!hideBackdrop && <div className='modalBackdrop' />}
-          <div {...props} className='modalWrapper' style={undefined}>
+          <div
+            {...props}
+            className={modalWrapper ?? 'modalWrapper'}
+            style={undefined}
+          >
             {children}
           </div>
         </>
