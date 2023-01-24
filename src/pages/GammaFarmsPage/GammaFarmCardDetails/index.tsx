@@ -19,6 +19,7 @@ import { useQuery } from 'react-query';
 import { useMultipleContractSingleData } from 'state/multicall/hooks';
 import GammaRewarder from 'constants/abis/gamma-rewarder.json';
 import { Interface } from '@ethersproject/abi';
+import { useTokenBalance } from 'state/wallet/hooks';
 
 const GammaFarmCardDetails: React.FC<{
   data: any;
@@ -62,9 +63,6 @@ const GammaFarmCardDetails: React.FC<{
         )
       : [];
 
-  const availableStakeAmount = positionData
-    ? formatUnits(positionData.shares, 18)
-    : '0';
   const stakedAmount =
     stakedAmounts.length > 0 ? stakedAmounts[0].stakedAmount.toFixed(18) : '0';
   const lpTokenUSD =
@@ -93,11 +91,19 @@ const GammaFarmCardDetails: React.FC<{
       : undefined,
   );
 
+  const lpToken = chainId
+    ? new Token(chainId, pairData.address, 18)
+    : undefined;
+  const lpTokenBalance = useTokenBalance(account ?? undefined, lpToken);
+
+  const availableStakeAmount = lpTokenBalance?.toExact() ?? '0';
+  const parsedStakeAmount = tryParseAmount(stakeAmount, lpToken);
   const tokenMap = useSelectedTokenList();
   const masterChefContract = useMasterChefContract();
   const stakeButtonDisabled =
     Number(stakeAmount) <= 0 ||
-    Number(stakeAmount) > Number(availableStakeAmount) ||
+    !lpTokenBalance ||
+    parsedStakeAmount?.greaterThan(lpTokenBalance) ||
     !masterChefContract ||
     !account ||
     approveOrStaking;
@@ -107,10 +113,6 @@ const GammaFarmCardDetails: React.FC<{
     !masterChefContract ||
     !account ||
     attemptUnstaking;
-  const lpToken = chainId
-    ? new Token(chainId, pairData.address, 18)
-    : undefined;
-  const parsedStakeAmount = tryParseAmount(stakeAmount, lpToken);
   const [approval, approveCallback] = useApproveCallback(
     parsedStakeAmount,
     masterChefContract?.address,
