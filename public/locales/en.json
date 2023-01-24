@@ -622,5 +622,6 @@
   "withdrewGammaLiquidity": "Withdrew Gamma Liquidity",
   "fetchingGammaDepositRange": "Fetching Gamma Deposit Range",
   "available": "Available",
-  "noGammaFarms": "No Gamma Farms"
+  "noGammaFarms": "No Gamma Farms",
+  "addingLiquidity": "Adding Liquidity"
 }

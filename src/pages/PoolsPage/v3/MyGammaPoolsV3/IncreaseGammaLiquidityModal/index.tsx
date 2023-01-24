@@ -292,7 +292,7 @@ export default function IncreaseGammaLiquidityModal({
               />
             ) : (
               <ConfirmationModalContent
-                title={t('removingLiquidity')}
+                title={t('addingLiquidity')}
                 onDismiss={handleDismissConfirmation}
                 content={modalHeader}
               />

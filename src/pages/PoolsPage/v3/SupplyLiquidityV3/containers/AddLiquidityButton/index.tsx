@@ -227,10 +227,7 @@ export function AddLiquidityButton({
             addTransaction(wrapResponse, {
               summary: `Wrap ${wrapAmount.toSignificant()} ETH to WETH`,
             });
-            const wrapReceipt = await wrapResponse.wait();
-            finalizedTransaction(wrapReceipt, {
-              summary: `Wrap ${wrapAmount.toSignificant()} ETH to WETH`,
-            });
+            await wrapResponse.wait();
           }
           const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
             (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
