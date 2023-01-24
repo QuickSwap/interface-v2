@@ -12,6 +12,7 @@ const VersionToggle: React.FC = () => {
   const params: any = useParams();
   const history = useHistory();
   const version = params && params.version ? params.version : 'v3';
+  const isAnalyticsPage = history.location.pathname.includes('/analytics');
 
   useEffect(() => {
     updateIsV2(version === 'v2');
@@ -42,18 +43,27 @@ const VersionToggle: React.FC = () => {
   return (
     <Box className='version-toggle-container'>
       <Box
-        className={isV2 ? 'version-toggle-active' : ''}
+        className={isV2 && version !== 'total' ? 'version-toggle-active' : ''}
         onClick={() => redirectWithVersion('v2')}
       >
         <small>{t('V2')}</small>
       </Box>
 
       <Box
-        className={!isV2 ? 'version-toggle-active' : ''}
+        className={!isV2 && version !== 'total' ? 'version-toggle-active' : ''}
         onClick={() => redirectWithVersion('v3')}
       >
         <small>{t('V3')}</small>
       </Box>
+
+      {isAnalyticsPage && (
+        <Box
+          className={version === 'total' ? 'version-toggle-active' : ''}
+          onClick={() => redirectWithVersion('total')}
+        >
+          <small>{t('total')}</small>
+        </Box>
+      )}
     </Box>
   );
 };
