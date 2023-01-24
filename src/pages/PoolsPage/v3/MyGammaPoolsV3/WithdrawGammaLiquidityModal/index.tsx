@@ -23,6 +23,8 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
+import { JSBI, Token } from '@uniswap/sdk';
+import { useTokenBalance } from 'state/wallet/hooks';
 
 interface WithdrawGammaLiquidityModalProps {
   open: boolean;
@@ -37,7 +39,7 @@ export default function WithdrawGammaLiquidityModal({
 }: WithdrawGammaLiquidityModalProps) {
   const { t } = useTranslation();
   const [percent, setPercent] = useState(0);
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const [
     percentForSlider,
     onPercentSelectForSlider,
@@ -55,6 +57,11 @@ export default function WithdrawGammaLiquidityModal({
     position.pairAddress,
     GammaHyperVisorABI,
   );
+
+  const lpToken = chainId
+    ? new Token(chainId, position.pairAddress, 18)
+    : undefined;
+  const lpBalance = useTokenBalance(account ?? undefined, lpToken);
 
   const buttonDisabled = !percent || !hyperVisorContract || !account;
   const buttonText = useMemo(() => {
@@ -75,11 +82,12 @@ export default function WithdrawGammaLiquidityModal({
   }, [onPercentSelectForSlider, txnHash]);
 
   const withdrawGammaLiquidity = async () => {
-    if (!hyperVisorContract || !account) return;
+    if (!hyperVisorContract || !account || !lpBalance) return;
     setAttemptingTxn(true);
-    const withdrawAmount = BigNumber.from(position.shares)
+    const withdrawAmount = BigNumber.from(lpBalance.numerator.toString())
       .mul(BigNumber.from(percent))
       .div(BigNumber.from(100));
+
     try {
       const estimatedGas = await hyperVisorContract.estimateGas.withdraw(
         withdrawAmount,
