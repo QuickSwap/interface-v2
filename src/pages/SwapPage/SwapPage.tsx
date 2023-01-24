@@ -176,7 +176,9 @@ const SwapPage: React.FC = () => {
                   />
                 </Box>
               )}
-              <SwapBuySellWidget />
+              <Box width='100%' className='flex'>
+                <SwapBuySellWidget />
+              </Box>
             </Box>
           </Grid>
         </Grid>

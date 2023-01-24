@@ -165,7 +165,11 @@ const SwapTokenDetails: React.FC<{
       >
         <Grid container>
           <Grid item xs={6}>
-            <Box className='border-right-secondary1' padding='8px 0'>
+            <Box
+              className='border-right-secondary1'
+              width='100%'
+              padding='8px 0'
+            >
               {tokenData ? (
                 <small className='text-secondary'>
                   {t('tvl')}: {formatCompact(tokenData?.totalLiquidityUSD)}

@@ -17,6 +17,10 @@ body {
   }
 }
 
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
 .loadingDots {
   &::after {
     display: inline-block;

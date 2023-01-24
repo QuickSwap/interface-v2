@@ -1,4 +1,4 @@
-import { Box, Divider } from 'theme/components';
+import { Box, Divider, Button } from 'theme/components';
 import BillPay from 'assets/images/featured/BillPay.png';
 import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
 import SpritzIcon from 'assets/images/SpritzIcon.png';
@@ -35,8 +35,10 @@ export const SwapBuySellWidget: React.FC = ({}) => {
           </Box>
         </Box>
         <Box margin='auto 0'>
-          <a className='rounded button' target='blank' href={SPRITZ_LINK}>
-            <small>{t('payWithCrypto')}</small>
+          <a target='blank' href={SPRITZ_LINK}>
+            <Button className='rounded'>
+              <small>{t('payWithCrypto')}</small>
+            </Button>
           </a>
         </Box>
       </Box>
