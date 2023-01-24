@@ -212,15 +212,27 @@ export function AddLiquidityButton({
         setAttemptingTxn(true);
         try {
           const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
-            amountA.numerator.toString(),
-            amountB.numerator.toString(),
+            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+              ? amountA
+              : amountB
+            ).numerator.toString(),
+            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+              ? amountB
+              : amountA
+            ).numerator.toString(),
             account,
             gammaPairAddress,
             [0, 0, 0, 0],
           );
           const response: TransactionResponse = await gammaUNIPROXYContract.deposit(
-            amountA.numerator.toString(),
-            amountB.numerator.toString(),
+            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+              ? amountA
+              : amountB
+            ).numerator.toString(),
+            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+              ? amountB
+              : amountA
+            ).numerator.toString(),
             account,
             gammaPairAddress,
             [0, 0, 0, 0],

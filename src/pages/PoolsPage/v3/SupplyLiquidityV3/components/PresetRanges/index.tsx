@@ -11,11 +11,13 @@ import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import './index.scss';
-import { getContract } from 'utils';
-import { useActiveWeb3React } from 'hooks';
 import { useGammaUNIProxyContract } from 'hooks/useContract';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { formatUnits, Interface, parseUnits } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
+import {
+  useSingleContractMultipleData,
+  useMultipleContractSingleData,
+} from 'state/multicall/hooks';
 
 export interface IPresetArgs {
   type: Presets;
@@ -64,155 +66,173 @@ export function PresetRanges({
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity);
   const { t } = useTranslation();
   const [aprs, setAprs] = useState<undefined | { [key: string]: number }>();
-  const [gammaDeposit, setGammaDeposit] = useState<{
-    [key: string]: {
-      base: {
-        min: number;
-        max: number;
-      };
-      quote: { min: number; max: number };
-    };
-  }>({});
-  const [gammaValues, setGammaValues] = useState<{
-    [key: string]: { min: number; max: number };
-  }>({});
-  const { library } = useActiveWeb3React();
 
   useEffect(() => {
     fetchPoolsAPR().then(setAprs);
   }, []);
 
-  const gammaPairAddressStr = gammaPair
-    ? gammaPair.map((pair) => pair.address).join('-')
-    : '';
+  const gammaPairAddresses = gammaPair
+    ? gammaPair.map((pair) => pair.address)
+    : [];
 
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
-
-  useEffect(() => {
-    if (
-      !gammaPairAddressStr ||
-      !library ||
-      !baseCurrency ||
-      !quoteCurrency ||
-      !gammaUNIPROXYContract
-    )
-      return;
-    (async () => {
-      setGammaValues({});
-      const gammaPairAddresses = gammaPairAddressStr.split('-');
-      const gammaRange: { [key: string]: { min: number; max: number } } = {};
-      const gammaDeposits: {
-        [key: string]: {
-          base: {
-            min: number;
-            max: number;
-          };
-          quote: { min: number; max: number };
-        };
-      } = {};
-      for (const pairAddress of gammaPairAddresses) {
-        const gammaPairContract = getContract(
-          pairAddress,
-          GammaPairABI,
-          library,
-        );
-
-        const quoteDepositAmount = await gammaUNIPROXYContract.getDepositAmount(
-          pairAddress,
-          baseCurrency.wrapped.address,
-          parseUnits('1', baseCurrency.wrapped.decimals),
-        );
-        const baseDepositAmount = await gammaUNIPROXYContract.getDepositAmount(
-          pairAddress,
-          quoteCurrency.wrapped.address,
-          parseUnits('1', quoteCurrency.wrapped.decimals),
-        );
-        const baseDepositMin =
-          baseDepositAmount && baseDepositAmount.length > 1
-            ? Number(
-                formatUnits(
-                  baseDepositAmount[0],
-                  baseCurrency.wrapped.decimals,
-                ),
-              )
-            : 0;
-        const baseDepositMax =
-          baseDepositAmount && baseDepositAmount.length > 1
-            ? Number(
-                formatUnits(
-                  baseDepositAmount[1],
-                  baseCurrency.wrapped.decimals,
-                ),
-              )
-            : 0;
-        const quoteDepositMin =
-          quoteDepositAmount && quoteDepositAmount.length > 1
-            ? Number(
-                formatUnits(
-                  quoteDepositAmount[0],
-                  quoteCurrency.wrapped.decimals,
-                ),
-              )
-            : 0;
-        const quoteDepositMax =
-          quoteDepositAmount && quoteDepositAmount.length > 1
-            ? Number(
-                formatUnits(
-                  quoteDepositAmount[1],
-                  quoteCurrency.wrapped.decimals,
-                ),
-              )
-            : 0;
-
-        gammaDeposits[pairAddress] = {
-          base: { min: baseDepositMin, max: baseDepositMax },
-          quote: { min: quoteDepositMin, max: quoteDepositMax },
-        };
-        const baseLower = await gammaPairContract.baseLower();
-        const baseUpper = await gammaPairContract.baseUpper();
-        const currentTick = await gammaPairContract.currentTick();
-        const lowerValue = Math.pow(1.0001, baseLower - currentTick);
-        const upperValue = Math.pow(1.0001, baseUpper - currentTick);
-        gammaRange[pairAddress] = {
-          min: lowerValue,
-          max: upperValue,
-        };
-      }
-      setGammaValues(gammaRange);
-      setGammaDeposit(gammaDeposits);
-      // handlePresetRangeSelection(ranges[0]);
-    })();
-  }, [
-    gammaPairAddressStr,
-    library,
-    baseCurrency,
-    quoteCurrency,
+  const quoteDepositAmountData = useSingleContractMultipleData(
     gammaUNIPROXYContract,
-  ]);
+    'getDepositAmount',
+    gammaPairAddresses.map((address) => [
+      address,
+      baseCurrency?.wrapped.address,
+      parseUnits('1', baseCurrency?.wrapped.decimals ?? 0),
+    ]),
+  );
+
+  const baseDepositAmountData = useSingleContractMultipleData(
+    gammaUNIPROXYContract,
+    'getDepositAmount',
+    gammaPairAddresses.map((address) => [
+      address,
+      quoteCurrency?.wrapped.address,
+      parseUnits('1', quoteCurrency?.wrapped.decimals ?? 0),
+    ]),
+  );
+
+  const quoteDepositAmounts = quoteDepositAmountData.map((callData) => {
+    if (
+      !callData.loading &&
+      callData.result &&
+      callData.result.length > 1 &&
+      quoteCurrency
+    ) {
+      return {
+        amountMin: Number(
+          formatUnits(callData.result[0], quoteCurrency.wrapped.decimals),
+        ),
+        amountMax: Number(
+          formatUnits(callData.result[1], quoteCurrency.wrapped.decimals),
+        ),
+      };
+    }
+    return { amountMin: 0, amountMax: 0 };
+  });
+
+  const baseDepositAmounts = baseDepositAmountData.map((callData) => {
+    if (
+      !callData.loading &&
+      callData.result &&
+      callData.result.length > 1 &&
+      baseCurrency
+    ) {
+      return {
+        amountMin: Number(
+          formatUnits(callData.result[0], baseCurrency.wrapped.decimals),
+        ),
+        amountMax: Number(
+          formatUnits(callData.result[1], baseCurrency.wrapped.decimals),
+        ),
+      };
+    }
+    return { amountMin: 0, amountMax: 0 };
+  });
+
+  const gammaDeposit = gammaPairAddresses.map((_, index) => {
+    if (baseDepositAmounts.length >= index) {
+      return {
+        base: {
+          min: baseDepositAmounts[index].amountMin,
+          max: baseDepositAmounts[index].amountMax,
+        },
+        quote: {
+          min: quoteDepositAmounts[index].amountMin,
+          max: quoteDepositAmounts[index].amountMax,
+        },
+      };
+    }
+    return;
+  });
+
+  const gammaBaseLowerData = useMultipleContractSingleData(
+    gammaPairAddresses,
+    new Interface(GammaPairABI),
+    'baseLower',
+  );
+
+  const gammaBaseUpperData = useMultipleContractSingleData(
+    gammaPairAddresses,
+    new Interface(GammaPairABI),
+    'baseUpper',
+  );
+
+  const gammaCurrentTickData = useMultipleContractSingleData(
+    gammaPairAddresses,
+    new Interface(GammaPairABI),
+    'currentTick',
+  );
+
+  const gammaBaseLowers = gammaBaseLowerData.map((callData) => {
+    if (!callData.loading && callData.result && callData.result.length > 0) {
+      return Number(callData.result[0]);
+    }
+    return 0;
+  });
+
+  const gammaBaseUppers = gammaBaseUpperData.map((callData) => {
+    if (!callData.loading && callData.result && callData.result.length > 0) {
+      return Number(callData.result[0]);
+    }
+    return 0;
+  });
+
+  const gammaCurrentTicks = gammaCurrentTickData.map((callData) => {
+    if (!callData.loading && callData.result && callData.result.length > 0) {
+      return Number(callData.result[0]);
+    }
+    return 0;
+  });
+
+  const gammaValues = gammaPairAddresses.map((_, index) => {
+    if (
+      gammaBaseLowers.length >= index &&
+      gammaBaseUppers.length >= index &&
+      gammaCurrentTicks.length >= index
+    ) {
+      const lowerValue = Math.pow(
+        1.0001,
+        gammaBaseLowers[index] - gammaCurrentTicks[index],
+      );
+      const upperValue = Math.pow(
+        1.0001,
+        gammaBaseUppers[index] - gammaCurrentTicks[index],
+      );
+      return { min: lowerValue, max: upperValue };
+    }
+    return undefined;
+  });
 
   const ranges = useMemo(() => {
     if (isGamma) {
       return gammaPair
-        ? gammaPair.map((pair) => {
-            const pairAddress = pair.address;
+        ? gammaPair.map((pair, index) => {
+            const gammaDepositItem = gammaDeposit[index];
+            const gammaValue = gammaValues[index];
+
             return {
               type: pair.type,
               title: pair.title,
-              min: gammaValues[pairAddress] ? gammaValues[pairAddress].min : 0,
-              max: gammaValues[pairAddress] ? gammaValues[pairAddress].max : 0,
+              min: gammaValue ? gammaValue.min : 0,
+              max: gammaValue ? gammaValue.max : 0,
               risk: PresetProfits.VERY_LOW,
               profit: PresetProfits.HIGH,
-              baseDepositMin: gammaDeposit[pairAddress]
-                ? gammaDeposit[pairAddress].base.min
+              baseDepositMin: gammaDepositItem
+                ? gammaDepositItem.base.min
                 : undefined,
-              baseDepositMax: gammaDeposit[pairAddress]
-                ? gammaDeposit[pairAddress].base.max
+              baseDepositMax: gammaDepositItem
+                ? gammaDepositItem.base.max
                 : undefined,
-              quoteDepositMin: gammaDeposit[pairAddress]
-                ? gammaDeposit[pairAddress].quote.min
+              quoteDepositMin: gammaDepositItem
+                ? gammaDepositItem.quote.min
                 : undefined,
-              quoteDepositMax: gammaDeposit[pairAddress]
-                ? gammaDeposit[pairAddress].quote.max
+              quoteDepositMax: gammaDepositItem
+                ? gammaDepositItem.quote.max
                 : undefined,
             };
           })
