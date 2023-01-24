@@ -96,7 +96,8 @@ export function EnterAmounts({
       ? currencyB.wrapped.address.toLowerCase()
       : '';
   const gammaPair =
-    GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress];
+    GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
+    GammaPairs[quoteCurrencyAddress + '-' + baseCurrencyAddress];
   const gammaPairAddress =
     gammaPair && gammaPair.length > 0
       ? gammaPair.find((pair) => pair.type === preset)?.address

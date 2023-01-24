@@ -61,7 +61,9 @@ export function SelectRange({
     currencyB && currencyB.wrapped
       ? currencyB.wrapped.address.toLowerCase()
       : '';
-  const gammaPair = GammaPairs[currencyAAddress + '-' + currencyBAddress];
+  const gammaPair =
+    GammaPairs[currencyAAddress + '-' + currencyBAddress] ??
+    GammaPairs[currencyBAddress + '-' + currencyAAddress];
 
   useEffect(() => {
     onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);

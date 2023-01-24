@@ -86,8 +86,6 @@ export function PresetRanges({
     ? gammaPair.map((pair) => pair.address).join('-')
     : '';
 
-  const decimalDifference =
-    (quoteCurrency?.decimals ?? 0) - (baseCurrency?.decimals ?? 0);
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
 
   useEffect(() => {
@@ -182,11 +180,11 @@ export function PresetRanges({
       }
       setGammaValues(gammaRange);
       setGammaDeposit(gammaDeposits);
+      // handlePresetRangeSelection(ranges[0]);
     })();
   }, [
     gammaPairAddressStr,
     library,
-    decimalDifference,
     baseCurrency,
     quoteCurrency,
     gammaUNIPROXYContract,

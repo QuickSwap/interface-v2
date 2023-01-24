@@ -5,6 +5,7 @@
   background-color: $secondary1;
   padding: 20px;
   border-radius: 10px;
+  margin-top: 16px;
   @include media("screen", "<phone") {
     padding: 16px 12px;
   }

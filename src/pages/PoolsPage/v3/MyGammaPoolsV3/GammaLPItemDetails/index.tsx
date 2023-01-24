@@ -45,7 +45,7 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
         <small>{t('myLiquidity')}</small>
         <small>
           ${formatNumber(gammaPosition.balanceUSD)} (
-          {formatNumber(formatUnits(gammaPosition.shares, 18))} LP)
+          {formatNumber(formatUnits(gammaPosition.shares.toString(), 18))} LP)
         </small>
       </Box>
       <Box className='flex justify-between' mt={1}>

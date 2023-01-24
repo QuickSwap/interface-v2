@@ -53,9 +53,9 @@ export default function MyLiquidityPoolsV3() {
   return (
     <Box>
       <p className='weight-600'>{t('myGammaLP')}</p>
-      <Box mt={2}>
+      <>
         {positionsLoading ? (
-          <Box className='flex justify-center'>
+          <Box mt={2} className='flex justify-center'>
             <Loader stroke='white' size={'2rem'} />
           </Box>
         ) : gammaPositions && gammaPositionList.length > 0 ? (
@@ -64,7 +64,7 @@ export default function MyLiquidityPoolsV3() {
             gammaPositions={gammaPositions}
           />
         ) : (
-          <Box textAlign='center'>
+          <Box mt={2} textAlign='center'>
             <p>{t('noLiquidityPositions')}.</p>
             {showConnectAWallet && (
               <Box maxWidth={250} margin='20px auto 0'>
@@ -75,7 +75,7 @@ export default function MyLiquidityPoolsV3() {
             )}
           </Box>
         )}
-      </Box>
+      </>
     </Box>
   );
 }
