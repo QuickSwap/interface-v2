@@ -15,8 +15,10 @@ import {
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import { tryParseAmount } from 'state/swap/hooks';
-import { useQuery } from 'react-query';
-import { useMultipleContractSingleData } from 'state/multicall/hooks';
+import {
+  useMultipleContractSingleData,
+  useSingleCallResult,
+} from 'state/multicall/hooks';
 import GammaRewarder from 'constants/abis/gamma-rewarder.json';
 import { Interface } from '@ethersproject/abi';
 import { useTokenBalance } from 'state/wallet/hooks';
@@ -37,34 +39,18 @@ const GammaFarmCardDetails: React.FC<{
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
   const [attemptClaiming, setAttemptClaiming] = useState(false);
 
-  const fetchStakedData = async () => {
-    if (!account) return;
-    try {
-      const data = await fetch(
-        `https://gammawire.net/quickswap/polygon/userRewards2/${account}`,
-      );
-      const gammaData = await data.json();
-      return gammaData ? gammaData.stakes : undefined;
-    } catch (e) {
-      console.log(e);
-      return;
-    }
-  };
+  const masterChefContract = useMasterChefContract();
 
-  const { data: stakedData } = useQuery('fetchStakedData', fetchStakedData, {
-    refetchInterval: 30000,
-  });
-
-  const stakedAmounts =
-    stakedData && stakedData.length > 0
-      ? stakedData.filter(
-          (data: any) =>
-            data.hypervisor.toLowerCase() === pairData.address.toLowerCase(),
-        )
-      : [];
+  const stakedData = useSingleCallResult(masterChefContract, 'userInfo', [
+    pairData.pid,
+    account ?? undefined,
+  ]);
 
   const stakedAmount =
-    stakedAmounts.length > 0 ? stakedAmounts[0].stakedAmount.toFixed(18) : '0';
+    !stakedData.loading && stakedData.result && stakedData.result.length > 0
+      ? formatUnits(stakedData.result[0], 18)
+      : '0';
+
   const lpTokenUSD =
     data && data.totalSupply && Number(data.totalSupply) > 0
       ? (Number(data.tvlUSD) / Number(data.totalSupply)) * 10 ** 18
@@ -99,7 +85,6 @@ const GammaFarmCardDetails: React.FC<{
   const availableStakeAmount = lpTokenBalance?.toExact() ?? '0';
   const parsedStakeAmount = tryParseAmount(stakeAmount, lpToken);
   const tokenMap = useSelectedTokenList();
-  const masterChefContract = useMasterChefContract();
   const stakeButtonDisabled =
     Number(stakeAmount) <= 0 ||
     !lpTokenBalance ||
