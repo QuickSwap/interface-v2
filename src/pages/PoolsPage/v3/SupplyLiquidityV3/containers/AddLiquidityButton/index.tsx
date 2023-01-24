@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import {
   useGammaUNIProxyContract,
   useV3NFTPositionManagerContract,
+  useWETHContract,
 } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useActiveWeb3React } from 'hooks';
@@ -25,10 +26,7 @@ import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
 import { JSBI } from '@uniswap/sdk';
-import {
-  GAMMA_UNIPROXY_ADDRESSES,
-  NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
-} from 'constants/v3/addresses';
+import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { calculateGasMargin, calculateGasMarginV3 } from 'utils';
 import { Button, Box } from '@material-ui/core';
 import {
@@ -76,6 +74,7 @@ export function AddLiquidityButton({
 
   const positionManager = useV3NFTPositionManagerContract();
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
+  const wethContract = useWETHContract();
 
   const deadline = useTransactionDeadline();
 
@@ -211,6 +210,28 @@ export function AddLiquidityButton({
 
         setAttemptingTxn(true);
         try {
+          if (baseCurrency.isNative || quoteCurrency.isNative) {
+            if (!wethContract) return;
+            const wrapAmount = baseCurrency.isNative ? amountA : amountB;
+            const wrapEstimateGas = await wethContract.estimateGas.deposit({
+              value: `0x${wrapAmount.numerator.toString(16)}`,
+            });
+            const wrapResponse: TransactionResponse = await wethContract.deposit(
+              {
+                gasLimit: calculateGasMargin(wrapEstimateGas),
+                value: `0x${wrapAmount.numerator.toString(16)}`,
+              },
+            );
+            setAttemptingTxn(false);
+            setTxPending(true);
+            addTransaction(wrapResponse, {
+              summary: `Wrap ${wrapAmount.toSignificant()} ETH to WETH`,
+            });
+            const wrapReceipt = await wrapResponse.wait();
+            finalizedTransaction(wrapReceipt, {
+              summary: `Wrap ${wrapAmount.toSignificant()} ETH to WETH`,
+            });
+          }
           const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
             (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
               ? amountA

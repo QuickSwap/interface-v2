@@ -49,25 +49,6 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
         </small>
       </Box>
       <Box className='flex justify-between' mt={1}>
-        <small>
-          {t('profit')} / {t('loss')}
-        </small>
-        <small
-          className={
-            gammaPosition.returns.hypervisorReturnsUSD > 0
-              ? 'text-success'
-              : 'text-error'
-          }
-        >
-          {gammaPosition.returns.hypervisorReturnsUSD > 0
-            ? '+'
-            : gammaPosition.returns.hypervisorReturnsUSD < 0
-            ? '-'
-            : ''}
-          ${formatNumber(Math.abs(gammaPosition.returns.hypervisorReturnsUSD))}
-        </small>
-      </Box>
-      <Box className='flex justify-between' mt={1}>
         <Box className='flex items-center'>
           <Box className='flex' mr={1}>
             <CurrencyLogo currency={gammaPosition.token0} size='24px' />
