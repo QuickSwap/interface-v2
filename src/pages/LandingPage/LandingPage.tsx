@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Grid } from 'theme/components';
 import { useTranslation } from 'react-i18next';
@@ -17,12 +17,13 @@ import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.sv
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
-import { RewardSlider, TopMovers } from 'components';
 import 'pages/styles/landing.scss';
-import { SwapSection } from './SwapSection';
-import { BuyFiatSection } from './BuyFiatSection';
-import { GlobalSection } from './GlobalSection';
-import { BuySpritzSection } from './BuySpritzSection';
+const SwapSection = lazy(() => import('./SwapSection'));
+const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
+const GlobalSection = lazy(() => import('./GlobalSection'));
+const BuySpritzSection = lazy(() => import('./BuySpritzSection'));
+const TopMovers = lazy(() => import('components/TopMovers'));
+const RewardSlider = lazy(() => import('components/RewardSlider'));
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
@@ -110,23 +111,17 @@ const LandingPage: React.FC = () => {
       <GlobalSection />
       <Box className='smallCommunityContainer'>
         {socialicons.map((val, ind) => (
-          <a
-            href={val.link}
-            target='_blank'
+          <Box
             key={ind}
-            rel='noopener noreferrer'
+            margin='0 12px'
+            className={`flex ${
+              val.title.toLowerCase() === 'geckoterminal' ? 'noFill' : 'svgFill'
+            }`}
           >
-            <Box
-              margin='0 12px'
-              className={`flex ${
-                val.title.toLowerCase() === 'geckoterminal'
-                  ? 'noFill'
-                  : 'svgFill'
-              }`}
-            >
+            <a href={val.link} target='_blank' rel='noopener noreferrer'>
               {val.icon}
-            </Box>
-          </a>
+            </a>
+          </Box>
         ))}
       </Box>
       <Box margin='16px 0 0' width='100%'>

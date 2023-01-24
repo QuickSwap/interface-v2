@@ -3,15 +3,12 @@ import { Box } from 'theme/components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useIsProMode, useIsV2 } from 'state/application/hooks';
 import { Swap, SettingsModal, ToggleSwitch } from 'components';
-import {
-  GelatoLimitOrderPanel,
-  GelatoLimitOrdersHistoryPanel,
-} from '@gelatonetwork/limit-orders-react';
 import { Trans, useTranslation } from 'react-i18next';
 import { SwapBestTrade } from 'components/Swap';
 import SwapV3Page from './V3/Swap';
 import { useHistory, useParams } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import SwapLimitOrder from './SwapLimitOrder';
 
 const SWAP_BEST_TRADE = '0';
 const SWAP_NORMAL = '1';
@@ -152,29 +149,7 @@ const SwapMain: React.FC = () => {
         {swapType === SWAP_BEST_TRADE && <SwapBestTrade />}
         {swapType === SWAP_NORMAL && <Swap />}
         {swapType === SWAP_V3 && <SwapV3Page />}
-        {swapType === SWAP_LIMIT && (
-          <Box className='limitOrderPanel'>
-            <GelatoLimitOrderPanel />
-            <GelatoLimitOrdersHistoryPanel />
-            <Box margin='16px 0 0' textAlign='center'>
-              <small>
-                <Trans
-                  i18nKey='limitOrderDisclaimer'
-                  components={{
-                    bold: <b />,
-                    alink: (
-                      <a
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        href='https://www.certik.org/projects/gelato'
-                      />
-                    ),
-                  }}
-                />
-              </small>
-            </Box>
-          </Box>
-        )}
+        {swapType === SWAP_LIMIT && <SwapLimitOrder />}
       </Box>
     </>
   );

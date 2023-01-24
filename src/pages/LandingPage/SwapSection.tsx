@@ -8,7 +8,7 @@ import { isMobile } from 'react-device-detect';
 const SWAP_TAB = 0;
 const LIQUIDITY_TAB = 1;
 
-export const SwapSection: React.FC = () => {
+const SwapSection: React.FC = () => {
   const [tabIndex, setTabIndex] = useState(SWAP_TAB);
   const { t } = useTranslation();
   const { updateIsV2 } = useIsV2();
@@ -66,3 +66,5 @@ export const SwapSection: React.FC = () => {
     </>
   );
 };
+
+export default SwapSection;

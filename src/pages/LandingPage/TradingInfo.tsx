@@ -6,7 +6,7 @@ import { formatCompact, useLairDQUICKAPY } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 
-export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
+const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
   v3GlobalData,
 }) => {
@@ -93,3 +93,5 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
     </>
   );
 };
+
+export default TradingInfo;

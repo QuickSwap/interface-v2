@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 import { Box } from 'theme/components';
 import { useEthPrice, useGlobalData } from 'state/application/hooks';
-import { HeroSection } from './HeroSection';
-import { TradingInfo } from './TradingInfo';
 import { getGlobalData } from 'utils';
 import { getGlobalDataV3 } from 'utils/v3-graph';
 import { isMobile } from 'react-device-detect';
+const HeroSection = lazy(() => import('./HeroSection'));
+const TradingInfo = lazy(() => import('./TradingInfo'));
 
-export const GlobalSection: React.FC = () => {
+const GlobalSection: React.FC = () => {
   const { globalData, updateGlobalData } = useGlobalData();
   const [v3GlobalData, updateV3GlobalData] = useState<any>(undefined);
   const { ethPrice } = useEthPrice();
@@ -40,3 +40,5 @@ export const GlobalSection: React.FC = () => {
     </>
   );
 };
+
+export default GlobalSection;
