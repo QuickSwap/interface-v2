@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Token } from '@uniswap/sdk';
 import { DoubleCurrencyLogo } from 'components';
@@ -31,6 +31,8 @@ const GammaFarmCard: React.FC<{
       ? Object.values(rewardData['rewarders'])
       : [];
   const [showDetails, setShowDetails] = useState(false);
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   return (
     <Box
@@ -40,7 +42,10 @@ const GammaFarmCard: React.FC<{
     >
       <Box padding={1.5} className='flex items-center'>
         <Box width='90%' className='flex items-center'>
-          <Box width='30%' className='flex items-center'>
+          <Box
+            width={isMobile ? (showDetails ? '100%' : '70%') : '30%'}
+            className='flex items-center'
+          >
             {token0 && token1 && (
               <>
                 <DoubleCurrencyLogo
@@ -63,44 +68,50 @@ const GammaFarmCard: React.FC<{
               </>
             )}
           </Box>
-          <Box width='15%' className='flex justify-between'>
-            {data && (
-              <small className='weight-600'>
-                ${formatNumber(data['tvlUSD'])}
-              </small>
-            )}
-          </Box>
-          <Box width='25%'>
-            {rewards.map((reward, ind) => (
-              <div key={ind}>
-                {reward && Number(reward['rewardPerSecond']) > 0 && (
-                  <small className='small weight-600'>
-                    {formatNumber(reward.rewardPerSecond * 3600 * 24)}{' '}
-                    {reward.rewardTokenSymbol} / {t('day')}
+          {!isMobile && (
+            <>
+              <Box width='15%' className='flex justify-between'>
+                {data && (
+                  <small className='weight-600'>
+                    ${formatNumber(data['tvlUSD'])}
                   </small>
                 )}
-              </div>
-            ))}
-          </Box>
+              </Box>
+              <Box width='25%'>
+                {rewards.map((reward, ind) => (
+                  <div key={ind}>
+                    {reward && Number(reward['rewardPerSecond']) > 0 && (
+                      <small className='small weight-600'>
+                        {formatNumber(reward.rewardPerSecond * 3600 * 24)}{' '}
+                        {reward.rewardTokenSymbol} / {t('day')}
+                      </small>
+                    )}
+                  </div>
+                ))}
+              </Box>
 
-          <Box width='15%'>
-            {data && data['returns'] && data['returns']['allTime'] && (
-              <small className='text-success'>
-                {formatNumber(
-                  Number(data['returns']['allTime']['feeApr'] ?? 0) * 100,
+              <Box width='15%'>
+                {data && data['returns'] && data['returns']['allTime'] && (
+                  <small className='text-success'>
+                    {formatNumber(
+                      Number(data['returns']['allTime']['feeApr'] ?? 0) * 100,
+                    )}
+                    %
+                  </small>
                 )}
-                %
-              </small>
-            )}
-          </Box>
+              </Box>
+            </>
+          )}
 
-          <Box width='15%'>
-            {rewardData && (
-              <small className='text-success'>
-                {formatNumber(Number(rewardData['apr'] ?? 0) * 100)}%
-              </small>
-            )}
-          </Box>
+          {(!isMobile || !showDetails) && (
+            <Box width={isMobile ? '30%' : '15%'}>
+              {rewardData && (
+                <small className='text-success'>
+                  {formatNumber(Number(rewardData['apr'] ?? 0) * 100)}%
+                </small>
+              )}
+            </Box>
+          )}
         </Box>
 
         <Box width='10%' className='flex justify-center'>

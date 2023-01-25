@@ -219,15 +219,17 @@ export default function Farms() {
               height={50}
             />
           </Box>
-          <Box mt={2} px={3.5}>
-            <Box width='90%'>
-              <SortColumns
-                sortColumns={sortByDesktopItems}
-                selectedSort={sortBy}
-                sortDesc={sortDesc}
-              />
+          {!isMobile && (
+            <Box mt={2} px={3.5}>
+              <Box width='90%'>
+                <SortColumns
+                  sortColumns={sortByDesktopItems}
+                  selectedSort={sortBy}
+                  sortDesc={sortDesc}
+                />
+              </Box>
             </Box>
-          </Box>
+          )}
         </>
       )}
 

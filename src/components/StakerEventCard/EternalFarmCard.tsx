@@ -4,7 +4,7 @@ import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Token } from '@uniswap/sdk';
 import { Link } from 'react-router-dom';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
 import { formatCompact, formatNumber, getTokenFromAddress } from 'utils';
@@ -94,15 +94,25 @@ export function EternalFarmCard({
         ])
       : undefined;
 
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
+
   return (
     <Box
       padding={1.5}
       width='100%'
       borderRadius={16}
-      className='flex items-center bg-secondary1'
+      className='flex flex-wrap items-center bg-secondary1'
     >
-      <Box width='90%' className='flex items-center'>
-        <Box width='30%' className='flex items-center'>
+      <Box
+        width={isMobile ? '100%' : '90%'}
+        className='flex flex-wrap items-center'
+      >
+        <Box
+          width={isMobile ? '100%' : '30%'}
+          mb={isMobile ? 1 : 0}
+          className='flex items-center'
+        >
           {token0 && token1 && (
             <DoubleCurrencyLogo
               currency0={token0}
@@ -124,43 +134,65 @@ export function EternalFarmCard({
             </Box>
           </Box>
         </Box>
-        <Box width='15%' className='flex justify-between'>
+        <Box
+          width={isMobile ? '100%' : '15%'}
+          mb={isMobile ? 1 : 0}
+          className='flex justify-between'
+        >
+          {isMobile && <small className='text-secondary'>{t('tvl')}</small>}
           {!!tvl && <small className='weight-600'>${formatNumber(tvl)}</small>}
         </Box>
-        <Box width='25%'>
-          {rewardToken && rewardRate && (
-            <small className='weight-600'>
-              {formatReward(
-                Number(formatUnits(rewardRate, rewardToken.decimals)) *
-                  3600 *
-                  24,
-              )}{' '}
-              {rewardToken.symbol} / {t('day')}
-            </small>
-          )}
-          <br />
-          {bonusRewardToken && bonusRewardRate && (
-            <small className='weight-600'>
-              {formatReward(
-                Number(
-                  formatUnits(bonusRewardRate, bonusRewardToken.decimals),
-                ) *
-                  3600 *
-                  24,
-              )}{' '}
-              {bonusRewardToken.symbol} / {t('day')}
-            </small>
-          )}
+        <Box
+          width={isMobile ? '100%' : '25%'}
+          mb={isMobile ? 1 : 0}
+          className='flex justify-between'
+        >
+          {isMobile && <small className='text-secondary'>{t('rewards')}</small>}
+          <Box textAlign={isMobile ? 'right' : ''}>
+            {rewardToken && rewardRate && (
+              <small className='weight-600'>
+                {formatReward(
+                  Number(formatUnits(rewardRate, rewardToken.decimals)) *
+                    3600 *
+                    24,
+                )}{' '}
+                {rewardToken.symbol} / {t('day')}
+              </small>
+            )}
+            <br />
+            {bonusRewardToken && bonusRewardRate && (
+              <small className='weight-600'>
+                {formatReward(
+                  Number(
+                    formatUnits(bonusRewardRate, bonusRewardToken.decimals),
+                  ) *
+                    3600 *
+                    24,
+                )}{' '}
+                {bonusRewardToken.symbol} / {t('day')}
+              </small>
+            )}
+          </Box>
         </Box>
 
-        <Box width='15%'>
+        <Box
+          mb={isMobile ? 1 : 0}
+          width={isMobile ? '100%' : '15%'}
+          className='flex justify-between'
+        >
+          {isMobile && <small className='text-secondary'>{t('poolAPR')}</small>}
           <small className='text-success'>
             {poolAprsLoading && <Loader stroke='#0fc679' />}
             {!poolAprsLoading && <>{poolAprValue}</>}
           </small>
         </Box>
 
-        <Box width='15%'>
+        <Box
+          width={isMobile ? '100%' : '15%'}
+          mb={isMobile ? 1 : 0}
+          className='flex justify-between'
+        >
+          {isMobile && <small className='text-secondary'>{t('farmAPR')}</small>}
           <small className='text-success'>
             {aprsLoading && <Loader stroke='#0fc679' />}
             {!aprsLoading && <>{aprValue}</>}
@@ -168,7 +200,7 @@ export function EternalFarmCard({
         </Box>
       </Box>
 
-      <Box width='10%'>
+      <Box width={isMobile ? '100%' : '10%'}>
         <Button
           fullWidth
           style={{ height: 40, borderRadius: 10 }}

@@ -7,7 +7,7 @@ import { FarmingType } from '../../models/enums';
 import { Link, useLocation } from 'react-router-dom';
 import './index.scss';
 import FarmCard from './FarmCard';
-import { Box, Divider } from '@material-ui/core';
+import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,6 @@ import { Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesToken } from 'utils/useUSDCPrice';
-import { formatUnits, getAddress } from 'ethers/lib/utils';
 
 export const FarmingMyFarms: React.FC<{
   farmFilter: number;
@@ -29,6 +28,8 @@ export const FarmingMyFarms: React.FC<{
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const { v3FarmSortBy } = GlobalConst.utils;
   const [sortByQuick, setSortByQuick] = useState(v3FarmSortBy.pool);
@@ -666,15 +667,17 @@ export const FarmingMyFarms: React.FC<{
         <Box padding='24px'>
           {farmedNFTs && farmedNFTs.length > 0 && (
             <Box pb={2}>
-              <Box px={3.5}>
-                <Box width='85%'>
-                  <SortColumns
-                    sortColumns={sortByDesktopItemsQuick}
-                    selectedSort={sortByQuick}
-                    sortDesc={sortDescQuick}
-                  />
+              {!isMobile && (
+                <Box px={3.5}>
+                  <Box width='85%'>
+                    <SortColumns
+                      sortColumns={sortByDesktopItemsQuick}
+                      selectedSort={sortByQuick}
+                      sortDesc={sortDescQuick}
+                    />
+                  </Box>
                 </Box>
-              </Box>
+              )}
               <Box mt={2}>
                 {farmedNFTs.map((el, i) => {
                   return (
@@ -725,15 +728,17 @@ export const FarmingMyFarms: React.FC<{
           </Box>
         ) : chainId ? (
           <Box padding='24px'>
-            <Box px={1.5}>
-              <Box width='90%'>
-                <SortColumns
-                  sortColumns={sortByDesktopItemsGamma}
-                  selectedSort={sortByGamma}
-                  sortDesc={sortDescGamma}
-                />
+            {!isMobile && (
+              <Box px={1.5}>
+                <Box width='90%'>
+                  <SortColumns
+                    sortColumns={sortByDesktopItemsGamma}
+                    selectedSort={sortByGamma}
+                    sortDesc={sortDescGamma}
+                  />
+                </Box>
               </Box>
-            </Box>
+            )}
             <Box pb={2}>
               {myGammaFarms.map((farm) => (
                 <Box mt={2} key={farm.address}>

@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Divider, Button } from '@material-ui/core';
+import {
+  Box,
+  Divider,
+  Button,
+  Grid,
+  useTheme,
+  useMediaQuery,
+} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { CurrencyLogo, NumericalInput } from 'components';
 import { Token } from '@uniswap/sdk';
@@ -38,6 +45,8 @@ const GammaFarmCardDetails: React.FC<{
   const [approveOrStaking, setApproveOrStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
   const [attemptClaiming, setAttemptClaiming] = useState(false);
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const masterChefContract = useMasterChefContract();
 
@@ -209,130 +218,188 @@ const GammaFarmCardDetails: React.FC<{
   return (
     <Box>
       <Divider />
-      <Box padding={1.5} className='flex justify-between'>
-        <Box width='calc(33% - 32px)' px='16px'>
-          <Box className='flex justify-between'>
-            <small className='text-secondary'>{t('available')}:</small>
-            <small>
-              {formatNumber(availableStakeAmount)} LP ($
-              {positionData ? formatNumber(positionData.balanceUSD) : 0})
+      {isMobile && (
+        <Box padding={1.5}>
+          <Box className='flex justify-between' mb={2}>
+            <small className='text-secondary'>{t('tvl')}</small>
+            <small className='weight-600'>
+              ${formatNumber(data && data['tvlUSD'] ? data['tvlUSD'] : 0)}
             </small>
           </Box>
-          <Box
-            className='flex items-center bg-palette'
-            p='12px 16px'
-            borderRadius='10px'
-            mt={2}
-          >
-            <NumericalInput value={stakeAmount} onUserInput={setStakeAmount} />
-            <span
-              className='weight-600 cursor-pointer text-primary'
-              onClick={() => setStakeAmount(availableStakeAmount)}
-            >
-              {t('max')}
-            </span>
-          </Box>
-          <Box mt={2}>
-            <Button
-              disabled={stakeButtonDisabled}
-              fullWidth
-              onClick={approveOrStakeLP}
-            >
-              {approval === ApprovalState.APPROVED
-                ? approveOrStaking
-                  ? t('stakingLPTokens')
-                  : t('stakeLPTokens')
-                : approveOrStaking
-                ? t('approving')
-                : t('approve')}
-            </Button>
-          </Box>
-        </Box>
-        <Box width='calc(33% - 32px)' px='16px'>
-          <Box className='flex justify-between'>
-            <small className='text-secondary'>{t('deposited')}: </small>
-            <small>
-              {formatNumber(stakedAmount)} LP (${formatNumber(stakedUSD)})
-            </small>
-          </Box>
-          <Box
-            className='flex items-center bg-palette'
-            p='12px 16px'
-            borderRadius='10px'
-            mt={2}
-          >
-            <NumericalInput
-              value={unStakeAmount}
-              onUserInput={setUnStakeAmount}
-            />
-            <span
-              className='weight-600 cursor-pointer text-primary'
-              onClick={() => setUnStakeAmount(stakedAmount)}
-            >
-              {t('max')}
-            </span>
-          </Box>
-          <Box mt={2}>
-            <Button
-              disabled={unStakeButtonDisabled}
-              fullWidth
-              onClick={unStakeLP}
-            >
-              {attemptUnstaking ? t('unstakingLPTokens') : t('unstakeLPTokens')}
-            </Button>
-          </Box>
-        </Box>
-        {rewards.length > 0 && chainId && (
-          <Box
-            width='calc(33% - 32px)'
-            px='16px'
-            className='flex flex-col items-center justify-between'
-          >
-            <small className='text-secondary'>{t('earnedRewards')}</small>
-            <Box>
-              {rewards.map((reward, index) => {
-                const rewardTokenData = getTokenFromAddress(
-                  reward.rewardToken,
-                  chainId,
-                  tokenMap,
-                  [],
-                );
-                const rewardToken = new Token(
-                  chainId,
-                  rewardTokenData.address,
-                  rewardTokenData.decimals,
-                  rewardTokenData.symbol,
-                  rewardTokenData.name,
-                );
-                const pendingReward = pendingRewards[index]
-                  ? formatUnits(pendingRewards[index], rewardToken.decimals)
-                  : 0;
-                return (
-                  <Box
-                    key={reward.rewardToken}
-                    className='flex items-center justify-center'
-                  >
-                    <CurrencyLogo currency={rewardToken} size='16px' />
-                    <Box ml='6px'>
-                      <small>
-                        {formatNumber(pendingReward)} {reward.rewardTokenSymbol}
-                      </small>
-                    </Box>
-                  </Box>
-                );
-              })}
+          <Box className='flex justify-between' mb={2}>
+            <small className='text-secondary'>{t('rewards')}</small>
+            <Box textAlign='right'>
+              {rewards.map((reward, ind) => (
+                <div key={ind}>
+                  {reward && Number(reward['rewardPerSecond']) > 0 && (
+                    <p className='small weight-600'>
+                      {formatNumber(reward.rewardPerSecond * 3600 * 24)}{' '}
+                      {reward.rewardTokenSymbol} / {t('day')}
+                    </p>
+                  )}
+                </div>
+              ))}
             </Box>
-            <Box width='100%'>
-              <Button
-                fullWidth
-                disabled={claimButtonDisabled}
-                onClick={claimReward}
+          </Box>
+          <Box className='flex justify-between' mb={2}>
+            <small className='text-secondary'>{t('poolAPR')}</small>
+            <small className='text-success weight-600'>
+              {formatNumber(
+                Number(
+                  data &&
+                    data['returns'] &&
+                    data['returns']['allTime'] &&
+                    data['returns']['allTime']['feeApr']
+                    ? data['returns']['allTime']['feeApr']
+                    : 0,
+                ) * 100,
+              )}
+              %
+            </small>
+          </Box>
+          <Box className='flex justify-between'>
+            <small className='text-secondary'>{t('farmAPR')}</small>
+            <small className='text-success weight-600'>
+              {formatNumber(
+                Number(
+                  rewardData && rewardData['apr'] ? rewardData['apr'] : 0,
+                ) * 100,
+              )}
+              %
+            </small>
+          </Box>
+        </Box>
+      )}
+      <Box padding={1.5}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={4}>
+            <Box className='flex justify-between'>
+              <small className='text-secondary'>{t('available')}:</small>
+              <small>
+                {formatNumber(availableStakeAmount)} LP ($
+                {positionData ? formatNumber(positionData.balanceUSD) : 0})
+              </small>
+            </Box>
+            <Box
+              className='flex items-center bg-palette'
+              p='12px 16px'
+              borderRadius='10px'
+              mt={2}
+            >
+              <NumericalInput
+                value={stakeAmount}
+                onUserInput={setStakeAmount}
+              />
+              <span
+                className='weight-600 cursor-pointer text-primary'
+                onClick={() => setStakeAmount(availableStakeAmount)}
               >
-                {attemptClaiming ? t('claiming') : t('claim')}
+                {t('max')}
+              </span>
+            </Box>
+            <Box mt={2}>
+              <Button
+                disabled={stakeButtonDisabled}
+                fullWidth
+                onClick={approveOrStakeLP}
+              >
+                {approval === ApprovalState.APPROVED
+                  ? approveOrStaking
+                    ? t('stakingLPTokens')
+                    : t('stakeLPTokens')
+                  : approveOrStaking
+                  ? t('approving')
+                  : t('approve')}
               </Button>
             </Box>
-          </Box>
-        )}
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Box className='flex justify-between'>
+              <small className='text-secondary'>{t('deposited')}: </small>
+              <small>
+                {formatNumber(stakedAmount)} LP (${formatNumber(stakedUSD)})
+              </small>
+            </Box>
+            <Box
+              className='flex items-center bg-palette'
+              p='12px 16px'
+              borderRadius='10px'
+              mt={2}
+            >
+              <NumericalInput
+                value={unStakeAmount}
+                onUserInput={setUnStakeAmount}
+              />
+              <span
+                className='weight-600 cursor-pointer text-primary'
+                onClick={() => setUnStakeAmount(stakedAmount)}
+              >
+                {t('max')}
+              </span>
+            </Box>
+            <Box mt={2}>
+              <Button
+                disabled={unStakeButtonDisabled}
+                fullWidth
+                onClick={unStakeLP}
+              >
+                {attemptUnstaking
+                  ? t('unstakingLPTokens')
+                  : t('unstakeLPTokens')}
+              </Button>
+            </Box>
+          </Grid>
+          {rewards.length > 0 && chainId && (
+            <Grid item xs={12} sm={4}>
+              <Box height='100%' className='flex flex-col justify-between'>
+                <small className='text-secondary'>{t('earnedRewards')}</small>
+                <Box my={2}>
+                  {rewards.map((reward, index) => {
+                    const rewardTokenData = getTokenFromAddress(
+                      reward.rewardToken,
+                      chainId,
+                      tokenMap,
+                      [],
+                    );
+                    const rewardToken = new Token(
+                      chainId,
+                      rewardTokenData.address,
+                      rewardTokenData.decimals,
+                      rewardTokenData.symbol,
+                      rewardTokenData.name,
+                    );
+                    const pendingReward = pendingRewards[index]
+                      ? formatUnits(pendingRewards[index], rewardToken.decimals)
+                      : 0;
+                    return (
+                      <Box
+                        key={reward.rewardToken}
+                        className='flex items-center justify-center'
+                      >
+                        <CurrencyLogo currency={rewardToken} size='16px' />
+                        <Box ml='6px'>
+                          <small>
+                            {formatNumber(pendingReward)}{' '}
+                            {reward.rewardTokenSymbol}
+                          </small>
+                        </Box>
+                      </Box>
+                    );
+                  })}
+                </Box>
+                <Box width='100%'>
+                  <Button
+                    fullWidth
+                    disabled={claimButtonDisabled}
+                    onClick={claimReward}
+                  >
+                    {attemptClaiming ? t('claiming') : t('claim')}
+                  </Button>
+                </Box>
+              </Box>
+            </Grid>
+          )}
+        </Grid>
       </Box>
     </Box>
   );

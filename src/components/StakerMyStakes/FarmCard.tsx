@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { Deposit } from '../../models/interfaces';
 import { Token } from '@uniswap/sdk';
@@ -23,6 +23,8 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const { maticPrice } = useMaticPrice();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const tokenMap = useSelectedTokenList();
   const token0 =
@@ -111,8 +113,15 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
         className='flex justify-between items-center flex-wrap'
         borderRadius={10}
       >
-        <Box className='flex items-center' width='85%'>
-          <Box className='flex items-center' width='50%'>
+        <Box
+          className='flex items-center flex-wrap'
+          width={isMobile ? '100%' : '85%'}
+        >
+          <Box
+            className='flex items-center'
+            width={isMobile ? '100%' : '50%'}
+            mb={isMobile ? 2 : 0}
+          >
             <Box className='v3-tokenId-wrapper' mr={2}>
               <span>{el.id}</span>
             </Box>
@@ -141,44 +150,67 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
             </Box>
           </Box>
 
-          <Box className='flex items-center' width='15%'>
+          <Box
+            className='flex items-center justify-between'
+            mb={isMobile ? 2 : 0}
+            width={isMobile ? '100%' : '15%'}
+          >
+            {isMobile && <span className='text-secondary'>{t('poolAPR')}</span>}
             <small className='text-success'>
               {poolApr ? formatNumber(poolApr) : '~'}%
             </small>
           </Box>
-          <Box className='flex items-center' width='15%'>
+          <Box
+            className='flex items-center justify-between'
+            mb={isMobile ? 2 : 0}
+            width={isMobile ? '100%' : '15%'}
+          >
+            {isMobile && <span className='text-secondary'>{t('farmAPR')}</span>}
             <small className='text-success'>
               {farmApr ? formatNumber(farmApr) : '~'}%
             </small>
           </Box>
-          <Box width='20%'>
-            <small className='weight-600'>${formatNumber(usdAmount)}</small>
-            <Box className='flex items-center'>
-              {farmRewardToken && (
-                <CurrencyLogo size='16px' currency={farmRewardToken} />
-              )}
+          <Box
+            className='flex items-center justify-between'
+            mb={isMobile ? 2 : 0}
+            width={isMobile ? '100%' : '20%'}
+          >
+            {isMobile && (
+              <small className='text-secondary'>{t('earnedRewards')}</small>
+            )}
+            <Box textAlign={isMobile ? 'right' : 'left'}>
+              <small className='weight-600'>${formatNumber(usdAmount)}</small>
+              <Box
+                className={`flex items-center ${isMobile ? 'justify-end' : ''}`}
+              >
+                {farmRewardToken && (
+                  <CurrencyLogo size='16px' currency={farmRewardToken} />
+                )}
 
-              <Box ml='6px'>
-                <p className='caption'>{`${formatReward(Number(earned))} ${
-                  rewardToken.symbol
-                }`}</p>
+                <Box ml='6px'>
+                  <p className='caption'>{`${formatReward(Number(earned))} ${
+                    rewardToken.symbol
+                  }`}</p>
+                </Box>
               </Box>
-            </Box>
-            <Box className='flex items-center'>
-              {farmBonusRewardToken && (
-                <CurrencyLogo size='16px' currency={farmBonusRewardToken} />
-              )}
+              <Box
+                className={`flex items-center ${isMobile ? 'justify-end' : ''}`}
+              >
+                {farmBonusRewardToken && (
+                  <CurrencyLogo size='16px' currency={farmBonusRewardToken} />
+                )}
 
-              <Box ml='6px'>
-                <p className='caption'>{`${formatReward(Number(bonusEarned))} ${
-                  bonusRewardToken.symbol
-                }`}</p>
+                <Box ml='6px'>
+                  <p className='caption'>{`${formatReward(
+                    Number(bonusEarned),
+                  )} ${bonusRewardToken.symbol}`}</p>
+                </Box>
               </Box>
             </Box>
           </Box>
         </Box>
 
-        <Box className='flex items-center' width='15%'>
+        <Box className='flex items-center' width={isMobile ? '100%' : '15%'}>
           <FarmStakeButtons el={el} />
         </Box>
       </Box>
