@@ -11,6 +11,7 @@ body {
   font-weight: 500;
   line-height: 1.43;
   font-size: 16px;
+  box-sizing: border-box;
 
   iframe[style*="z-index: 2147483647"] {
     display: none!important;

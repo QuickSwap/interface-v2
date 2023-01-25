@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
   exactEnd,
@@ -8,6 +8,7 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
 }) => {
   const { t } = useTranslation();
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+  const isMobile = useIsXS();
 
   const MINUTE = 60;
   const HOUR = MINUTE * 60;

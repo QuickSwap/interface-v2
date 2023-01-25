@@ -660,8 +660,11 @@ const Swap: React.FC<{
             }}
           >
             {approval === ApprovalState.PENDING ? (
-              <Box className='content'>
-                {t('approving')} <Loader size='16px' />
+              <Box className='flex justify-center items-center'>
+                {t('approving')}
+                <Box className='flex' margin='0 0 0 3px'>
+                  <Loader size='16px' color='white' />
+                </Box>
               </Box>
             ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
               t('approved')

@@ -690,7 +690,7 @@ const SwapV3Page: React.FC = () => {
             </div>
           )}
 
-          <Box className='swapButtonWrapper'>
+          <Box className='swapButtonWrapper flex-wrap'>
             {!account ? (
               <Button width='100%' onClick={toggleWalletModal}>
                 {t('connectWallet')}
@@ -723,7 +723,7 @@ const SwapV3Page: React.FC = () => {
               </Button>
             ) : showApproveFlow ? (
               <>
-                <Box width='48%'>
+                <Box width='100%'>
                   <Button
                     width='100%'
                     onClick={handleApprove}
@@ -733,21 +733,15 @@ const SwapV3Page: React.FC = () => {
                       signatureState === UseERC20PermitState.SIGNED
                     }
                   >
-                    <Box className='flex justify-between'>
-                      <span
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          background: theme.winterMainButton,
-                          color: 'white',
-                        }}
-                      >
+                    <Box className='flex items-center justify-center'>
+                      <Box className='flex' margin='0 5px 0 0'>
                         <CurrencyLogo
                           currency={currencies[Field.INPUT] as WrappedCurrency}
                           size={'24px'}
-                          style={{ marginRight: '8px', flexShrink: 0 }}
                         />
-                        {/* we need to shorten this string on mobile */}
+                      </Box>
+                      {/* we need to shorten this string on mobile */}
+                      <span>
                         {approvalState === ApprovalState.APPROVED ||
                         signatureState === UseERC20PermitState.SIGNED
                           ? `${t('youcannowtrade')} ${
@@ -783,7 +777,7 @@ const SwapV3Page: React.FC = () => {
                     </Box>
                   </Button>
                 </Box>
-                <Box width='48%'>
+                <Box margin='8px 0 0' width='100%'>
                   <Button
                     width='100%'
                     onClick={() => {

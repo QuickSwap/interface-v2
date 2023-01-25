@@ -19,7 +19,7 @@ import { useIsV2 } from 'state/application/hooks';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -45,6 +45,7 @@ const AnalyticsPairChart: React.FC<{
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
+  const isMobile = useIsXS();
 
   const { isV2 } = useIsV2();
 

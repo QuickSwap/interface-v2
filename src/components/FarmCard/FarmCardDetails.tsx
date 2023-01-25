@@ -35,7 +35,7 @@ import {
   calculateGasMargin,
 } from 'utils';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -49,6 +49,7 @@ const FarmCardDetails: React.FC<{
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const [approving, setApproving] = useState(false);
   const [unstakeAmount, setUnStakeAmount] = useState('');
+  const isMobile = useIsXS();
 
   const lpStakingInfo = stakingInfo as StakingInfo;
   const dualStakingInfo = stakingInfo as DualStakingInfo;
@@ -336,8 +337,10 @@ const FarmCardDetails: React.FC<{
                       )}&currency1=${getTokenAddress(token1)}`}
                       className='text-primary'
                     >
-                      {t('get')} {currency0?.symbol} / {currency1?.symbol}{' '}
-                      {t('lp')}
+                      <small>
+                        {t('get')} {currency0?.symbol} / {currency1?.symbol}{' '}
+                        {t('lp')}
+                      </small>
                     </Link>
                   </Box>
                 </Box>

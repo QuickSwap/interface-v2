@@ -8,13 +8,14 @@ import VersionToggle from 'components/Toggle/VersionToggle';
 import AdsSlider from 'components/AdsSlider';
 import { useIsV2 } from 'state/application/hooks';
 import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
 
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
   const { isV2 } = useIsV2();
+  const isMobile = useIsXS();
 
   const helpURL = process.env.REACT_APP_HELP_URL;
 

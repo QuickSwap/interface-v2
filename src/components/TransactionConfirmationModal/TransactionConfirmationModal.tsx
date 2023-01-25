@@ -77,12 +77,10 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
             rel='noopener noreferrer'
             style={{ width: '48%', textDecoration: 'none' }}
           >
-            <Button className='txSubmitButton'>
-              {t('viewonBlockExplorer')}
-            </Button>
+            <Button width='100%'>{t('viewonBlockExplorer')}</Button>
           </a>
         )}
-        <Button width='48%' className='txSubmitButton' onClick={onDismiss}>
+        <Button width='48%' onClick={onDismiss}>
           {t('close')}
         </Button>
       </Box>
@@ -142,7 +140,7 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
     <Box padding='32px'>
       <Box>
         <Box className='txModalHeader'>
-          <h5 className='text-error'>Error!</h5>
+          <h5 className='text-error'>{t('error')}!</h5>
           <CloseIcon onClick={onDismiss} />
         </Box>
         <Box className='txModalContent'>
@@ -150,7 +148,7 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
           <p>{message}</p>
         </Box>
       </Box>
-      <Button className='txSubmitButton' onClick={onDismiss}>
+      <Button width='100%' onClick={onDismiss}>
         {t('dismiss')}
       </Button>
     </Box>

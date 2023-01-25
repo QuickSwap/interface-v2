@@ -150,7 +150,7 @@ export default function SwapModalHeader({
         </Box>
       ) : null}
 
-      <div>
+      <p>
         {trade.tradeType === TradeType.EXACT_INPUT
           ? t('outputEstimated1', {
               amount: trade.minimumAmountOut(allowedSlippage).toSignificant(6),
@@ -160,14 +160,14 @@ export default function SwapModalHeader({
               amount: trade.maximumAmountIn(allowedSlippage).toSignificant(6),
               symbol: trade.inputAmount.currency.symbol,
             })}
-      </div>
+      </p>
       {recipient !== null ? (
-        <div>
+        <p>
           {t('outputSentTo') + ' '}
           <b title={recipient}>
             {isAddress(recipient) ? shortenAddress(recipient) : recipient}
           </b>
-        </div>
+        </p>
       ) : null}
     </div>
   );

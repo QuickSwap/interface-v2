@@ -47,14 +47,3 @@
     word-break: break-all;
   }
 }
-.txSubmitButton {
-  width: 100%;
-  height: 50px;
-  font-size: 14px;
-  border-radius: 10px;
-  color: $textPrimary;
-  background: $secondary1;
-  &:hover {
-    background: $secondary1;
-  }
-}

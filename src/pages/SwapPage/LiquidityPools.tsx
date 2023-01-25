@@ -8,12 +8,13 @@ import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { getTopPairsV3ByTokens } from 'utils/v3-graph';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const LiquidityPools: React.FC<{
   token1: Token;
   token2: Token;
 }> = ({ token1, token2 }) => {
+  const isMobile = useIsXS();
   const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(false);
   const [liquidityFilterIndex, setLiquidityFilterIndex] = useState(0);
   const [tokenPairs, updateTokenPairs] = useState<any[] | null>(null);

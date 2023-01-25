@@ -11,7 +11,7 @@ import { useActiveWeb3React } from 'hooks';
 import { getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useTranslation } from 'react-i18next';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 interface FarmCardDetailProps {
   el: any;
@@ -25,6 +25,7 @@ export default function FarmCardDetail({ el }: FarmCardDetailProps) {
   const bonusRewardToken = el.eternalBonusRewardToken;
 
   const { chainId } = useActiveWeb3React();
+  const isMobile = useIsXS();
 
   const { v3Stake } = useV3StakeData();
   const { txType, selectedTokenId, txConfirmed, txError, selectedFarmingType } =

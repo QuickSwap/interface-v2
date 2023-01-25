@@ -140,8 +140,9 @@ export function EternalFarmCard({
 
   return (
     <Box
-      className='flex justify-center bg-secondary1'
+      className='flex justify-center'
       borderRadius='6px'
+      width='100%'
       height='100%'
     >
       {refreshing && (
@@ -153,7 +154,7 @@ export function EternalFarmCard({
           width='100%'
           height='100%'
           maxWidth='380px'
-          className='flex flex-col'
+          className='flex flex-col bg-secondary1'
         >
           <Box
             margin='0 0 12px'

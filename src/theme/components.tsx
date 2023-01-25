@@ -343,12 +343,14 @@ export const Button = styled.button<{
   borderRadius?: string;
   bgColor?: string;
   color?: string;
+  padding?: string;
 }>`
   width: ${({ width }) => width};
   height: ${({ height }) => height ?? '40px'};
   border-radius: ${({ borderRadius }) => borderRadius ?? '12px'};
   background-color: ${({ theme, bgColor }) => bgColor ?? theme.primary1};
   color: ${({ color }) => color ?? 'white'};
+  padding: ${({ padding }) => padding ?? 0};
   border: none;
   font-size: 14px;
   font-weight: 500;
@@ -415,9 +417,7 @@ export const Grid = styled.div<{
   justify-content: ${({ justifyContent }) => justifyContent};
   align-items: ${({ alignItems }) => alignItems};
   flex-wrap: ${({ container }) => (container ? 'wrap' : 'unset')};
-  grid-gap: ${({ container, spacing }) =>
-    container && spacing ? spacing * 8 + 'px' : 0};
-  width: ${({ xs, sm, md, lg, spacing, item }) => {
+  width: ${({ xs, sm, md, lg }) => {
     const width = lg
       ? (lg / 12) * 100 + '%'
       : md
@@ -427,18 +427,24 @@ export const Grid = styled.div<{
       : xs
       ? (xs / 12) * 100 + '%'
       : '100%';
-    return `calc(${width} - ${item && spacing ? spacing * 4 : 0}px)`;
+    return width;
   }};
-  ${({ theme, lg }) => theme.mediaWidth.upToLarge`
-    width: ${lg ? (lg / 12) * 100 + '%' : 'unset'};
+  padding: ${({ item, spacing }) => (item && spacing ? spacing * 4 + 'px' : 0)};
+  ${({ theme, md, sm, xs }) => theme.mediaWidth.upToLarge`
+    width: ${
+      md
+        ? (md / 12) * 100 + '%'
+        : sm
+        ? (sm / 12) * 100 + '%'
+        : xs
+        ? (xs / 12) * 100 + '%'
+        : '100%'
+    };
   `};
-  ${({ theme, md }) => theme.mediaWidth.upToMedium`
-    width: ${md ? (md / 12) * 100 + '%' : 'unset'};
+  ${({ theme, sm, xs }) => theme.mediaWidth.upToMedium`
+    width: ${sm ? (sm / 12) * 100 + '%' : xs ? (xs / 12) * 100 + '%' : '100%'};
   `};
-  ${({ theme, sm }) => theme.mediaWidth.upToSmall`
-    width: ${sm ? (sm / 12) * 100 + '%' : 'unset'};
-  `};
-  ${({ theme, xs }) => theme.mediaWidth.upToExtraSmall`
+  ${({ theme, xs }) => theme.mediaWidth.upToSmall`
     width: ${xs ? (xs / 12) * 100 + '%' : 'unset'};
   `};
 `;
@@ -450,7 +456,8 @@ export const LinearProgress: React.FC<{ value: number }> = ({ value }) => {
         position: 'relative',
         height: 5,
         borderRadius: 3,
-        background: 'rgba(0, 0, 255, 0.3)',
+        overflow: 'hidden',
+        background: 'rgb(162, 202, 237)',
       }}
     >
       <div
@@ -458,7 +465,7 @@ export const LinearProgress: React.FC<{ value: number }> = ({ value }) => {
           width: `${value}%`,
           position: 'absolute',
           height: 5,
-          background: 'rgb(0, 0, 255)',
+          background: 'rgb(25, 118, 210)',
           top: 0,
           left: 0,
         }}

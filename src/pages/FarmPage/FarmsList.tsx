@@ -35,7 +35,7 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const LOADFARM_COUNT = 10;
 const POOL_COLUMN = '1';
@@ -52,6 +52,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const parsedQuery = useParsedQueryString();
+  const isMobile = useIsXS();
   const currentTab =
     parsedQuery && parsedQuery.tab
       ? (parsedQuery.tab as string)

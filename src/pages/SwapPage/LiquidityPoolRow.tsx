@@ -5,13 +5,14 @@ import { DoubleCurrencyLogo } from 'components';
 import { formatCompact, getDaysCurrentYear } from 'utils';
 import { useCurrency } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const LiquidityPoolRow: React.FC<{
   pair: any;
 }> = ({ pair }) => {
   const daysCurrentYear = getDaysCurrentYear();
   const { t } = useTranslation();
+  const isMobile = useIsXS();
 
   const dayVolumeUSD =
     Number(

@@ -13,7 +13,7 @@ interface CustomTabSwitchProps {
   height: string;
   items: tabItem[];
   selectedItem: tabItem;
-  handleTabChange: (event: any, value: any) => void;
+  handleTabChange: (value: any) => void;
 }
 
 const CustomTabSwitch: React.FC<CustomTabSwitchProps> = ({
@@ -25,21 +25,17 @@ const CustomTabSwitch: React.FC<CustomTabSwitchProps> = ({
 }) => {
   return (
     <Box className='customTabWrapper' width={width} height={height}>
-      {/* <Tabs
-        value={selectedItem?.id}
-        onChange={handleTabChange}
-        textColor='primary'
-        indicatorColor='primary'
-      >
-        {items?.map((_item) => (
-          <Tab
-            value={_item?.id}
-            key={_item?.id}
-            className='tabText'
-            label={_item.text}
-          />
-        ))}
-      </Tabs> */}
+      {items.map((item, ind) => (
+        <Box
+          className={`customTab ${
+            selectedItem.id === item.id ? 'selectedTab' : ''
+          }`}
+          key={item.id}
+          onClick={() => handleTabChange(ind)}
+        >
+          {item.text}
+        </Box>
+      ))}
     </Box>
   );
 };

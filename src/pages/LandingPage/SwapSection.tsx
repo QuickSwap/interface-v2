@@ -3,7 +3,7 @@ import { Button, Box, Grid } from 'theme/components';
 import { Swap, AddLiquidity } from 'components';
 import { useTranslation } from 'react-i18next';
 import { useIsV2 } from 'state/application/hooks';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const SWAP_TAB = 0;
 const LIQUIDITY_TAB = 1;
@@ -12,6 +12,7 @@ const SwapSection: React.FC = () => {
   const [tabIndex, setTabIndex] = useState(SWAP_TAB);
   const { t } = useTranslation();
   const { updateIsV2 } = useIsV2();
+  const isMobile = useIsXS();
 
   useEffect(() => {
     updateIsV2(true);
@@ -50,16 +51,18 @@ const SwapSection: React.FC = () => {
             md={6}
             className='swapInfo'
           >
-            <h4>
-              {tabIndex === SWAP_TAB
-                ? t('swapSectionShortDesc')
-                : t('liquiditySectionShortDesc')}
-            </h4>
-            <p style={{ marginTop: '20px' }}>
-              {tabIndex === SWAP_TAB
-                ? t('swapSectionLongDesc')
-                : t('liquiditySectionLongDesc')}
-            </p>
+            <Box>
+              <h4>
+                {tabIndex === SWAP_TAB
+                  ? t('swapSectionShortDesc')
+                  : t('liquiditySectionShortDesc')}
+              </h4>
+              <p style={{ marginTop: '20px' }}>
+                {tabIndex === SWAP_TAB
+                  ? t('swapSectionLongDesc')
+                  : t('liquiditySectionLongDesc')}
+              </p>
+            </Box>
           </Grid>
         </Grid>
       </Box>

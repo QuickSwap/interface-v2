@@ -43,6 +43,7 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({ fullWidth }) => {
       />
       <Button
         className={`rounded ${fullWidth ? 'fullWidth' : ''} `}
+        padding='0 10px'
         onClick={() => {
           setOpenMenu(true);
         }}

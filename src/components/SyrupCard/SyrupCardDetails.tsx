@@ -23,13 +23,14 @@ import SyrupTimerLabel from './SyrupTimerLabel';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
   dQUICKAPY,
 }) => {
   const syrupCurrency = unwrappedToken(syrup.token);
+  const isMobile = useIsXS();
   const { t } = useTranslation();
   const [attemptingClaim, setAttemptingClaim] = useState(false);
   const [attemptingUnstake, setAttemptingUnstake] = useState(false);

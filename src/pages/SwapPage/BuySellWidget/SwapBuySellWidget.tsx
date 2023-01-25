@@ -36,7 +36,7 @@ export const SwapBuySellWidget: React.FC = ({}) => {
         </Box>
         <Box margin='auto 0'>
           <a target='blank' href={SPRITZ_LINK}>
-            <Button className='rounded'>
+            <Button padding='0 10px' className='rounded'>
               <small>{t('payWithCrypto')}</small>
             </Button>
           </a>

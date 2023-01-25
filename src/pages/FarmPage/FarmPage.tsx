@@ -18,7 +18,7 @@ import V3Farms from 'pages/FarmPage/V3';
 import { useIsV2 } from 'state/application/hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -30,6 +30,7 @@ const FarmPage: React.FC = () => {
       : GlobalConst.v2FarmTab.LPFARM;
   const { t } = useTranslation();
   const [bulkPairs, setBulkPairs] = useState<any>(null);
+  const isMobile = useIsXS();
 
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();

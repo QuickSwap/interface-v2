@@ -35,7 +35,7 @@ export default function Farms() {
     [t],
   );
   const handleTabSwitch = useCallback(
-    (event, selectedIndex) => {
+    (selectedIndex) => {
       const tab = v3FarmCategories?.[selectedIndex];
       history.push(`?tab=${tab?.link}`);
     },

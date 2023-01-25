@@ -13,12 +13,13 @@ import { GlobalValue } from 'constants/index';
 import LendAlertBox from './LendAlertBox';
 import { usePoolsData } from 'hooks/marketxyz/usePoolData';
 import AdsSlider from 'components/AdsSlider';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const LendPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const { chainId } = useActiveWeb3React();
+  const isMobile = useIsXS();
 
   const [lendSortBy, setLendSortBy] = useState('');
   const lendSortItems = [t('highestSupply'), t('highestBorrow')];

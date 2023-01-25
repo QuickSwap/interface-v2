@@ -18,7 +18,7 @@ import {
 import { ChevronDown, ChevronUp } from 'react-feather';
 import 'components/styles/FarmCard.scss';
 import { Trans, useTranslation } from 'react-i18next';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -74,6 +74,8 @@ const FarmCard: React.FC<{
   const dualRewards =
     dualStakingInfo.rateA * dualStakingInfo.rewardTokenAPrice +
     dualStakingInfo.rateB * dualStakingInfo.rewardTokenBPrice;
+
+  const isMobile = useIsXS();
 
   const renderPool = (width: string) => (
     <Box className='flex items-center' width={width}>

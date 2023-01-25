@@ -45,18 +45,10 @@
     font-size: 18px;
     font-weight: 600;
     background-image: linear-gradient(to bottom, $primary, $blue1);
-    &.Mui-disabled {
+    &:disabled {
       background-image: linear-gradient(to bottom, $secondary1, $grey10);
       color: $textSecondary;
       opacity: 0.5;
-    }
-    & .content {
-      display: flex;
-      align-items: center;
-      & > div {
-        color: white;
-        margin-left: 6px
-      }
     }
   }
 }

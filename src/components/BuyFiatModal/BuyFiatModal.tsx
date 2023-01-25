@@ -11,7 +11,7 @@ import 'components/styles/BuyFiatModal.scss';
 import { useTranslation } from 'react-i18next';
 import { CBPayInstanceType, initOnRamp } from '@coinbase/cbpay-js';
 import { useWalletModalToggle } from 'state/application/hooks';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 interface BuyFiatModalProps {
   open: boolean;
@@ -33,6 +33,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const { initTransak } = useInitTransak();
   const toggleWalletModal = useWalletModalToggle();
   const { t } = useTranslation();
+  const isMobile = useIsXS();
 
   useEffect(() => {
     if (!account || !process.env.REACT_APP_COINBASE_APP_ID || !open) return;

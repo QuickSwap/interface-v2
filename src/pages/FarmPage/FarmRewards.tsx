@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
   const parsedQuery = useParsedQueryString();
@@ -18,6 +18,7 @@ const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const defaultChainId = chainId ?? ChainId.MATIC;
+  const isMobile = useIsXS();
 
   const farmData = useUSDRewardsandFees(
     currentTab === GlobalConst.v2FarmTab.LPFARM,

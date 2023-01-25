@@ -196,7 +196,7 @@
       & .MuiButton-label {
         font-size: 14px;
       }
-      &.Mui-disabled {
+      &:disabled {
         background: $grey2;
         opacity: 1;
         & .MuiButton-label {

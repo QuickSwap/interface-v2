@@ -1,28 +1,18 @@
 @use 'styles/variables' as *;
 
-.switchItem {
-  width: 50%;
-  height: 100%;
+.customTab {
+  min-width: 160px;
+  padding: 6px 12px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: $textSecondary;
   cursor: pointer;
-  border: 1px solid $secondary1;
-  & p {
-    color: $textSecondary;
+  &.selectedTab {
+    border-bottom: 2px solid $primary;
+    color: $primary;
   }
-}
-
-.activeSwitchItem {
-  background: 'red'
-  & p {
-    color: $textPrimary;
-  }
-}
-
-.tabText {
-  text-align: center;
-  color: #696c80;
   & span {
     font-family: Inter;
     font-size: 16px;
@@ -36,10 +26,5 @@
 }
 
 .customTabWrapper {
-  .MuiTabs-root {
-    height: 100%;
-    .MuiTabs-flexContainer {
-      height: 100%;
-    }
-  }
+  display: flex;
 }

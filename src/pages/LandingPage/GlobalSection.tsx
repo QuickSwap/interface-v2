@@ -3,7 +3,7 @@ import { Box } from 'theme/components';
 import { useEthPrice, useGlobalData } from 'state/application/hooks';
 import { getGlobalData } from 'utils';
 import { getGlobalDataV3 } from 'utils/v3-graph';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 const HeroSection = lazy(() => import('./HeroSection'));
 const TradingInfo = lazy(() => import('./TradingInfo'));
 
@@ -11,6 +11,7 @@ const GlobalSection: React.FC = () => {
   const { globalData, updateGlobalData } = useGlobalData();
   const [v3GlobalData, updateV3GlobalData] = useState<any>(undefined);
   const { ethPrice } = useEthPrice();
+  const isMobile = useIsXS();
 
   useEffect(() => {
     async function fetchGlobalData() {

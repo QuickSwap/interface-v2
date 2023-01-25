@@ -3,7 +3,7 @@ import { Box } from 'theme/components';
 import { ArrowUp, ArrowDown } from 'react-feather';
 import { DataTable } from 'components';
 import 'components/styles/CustomTable.scss';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 export interface CustomTableProps<T> {
   emptyMessage?: string;
@@ -33,6 +33,7 @@ const CustomTable: React.FC<CustomTableProps<any>> = ({
   mobileHTML,
   desktopHTML,
 }) => {
+  const isMobile = useIsXS();
   return (
     <Box className='tableContainer'>
       {isMobile ? (

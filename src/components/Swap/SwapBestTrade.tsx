@@ -10,7 +10,7 @@ import {
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
-import { Box, Button } from 'theme/components';
+import { Box, Button, LinearProgress } from 'theme/components';
 import Loader from 'components/Loader';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
@@ -818,8 +818,11 @@ const SwapBestTrade: React.FC<{
             }}
           >
             {approval === ApprovalState.PENDING ? (
-              <Box className='content'>
-                {t('approving')} <Loader size='16px' />
+              <Box className='flex justify-center items-center'>
+                {t('approving')}
+                <Box className='flex' margin='0 0 0 3px'>
+                  <Loader size='16px' color='white' />
+                </Box>
               </Box>
             ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
               t('approved')

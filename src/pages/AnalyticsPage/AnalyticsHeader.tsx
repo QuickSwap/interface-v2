@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useIsV2 } from 'state/application/hooks';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -25,6 +25,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const history = useHistory();
   const { pathname } = useLocation();
   const { t } = useTranslation();
+  const isMobile = useIsXS();
 
   const { isV2 } = useIsV2();
   const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);

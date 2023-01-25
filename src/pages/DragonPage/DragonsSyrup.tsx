@@ -27,7 +27,7 @@ import { Skeleton } from 'theme/components';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const LOADSYRUP_COUNT = 10;
 const TOKEN_COLUMN = 1;
@@ -42,6 +42,7 @@ const DragonsSyrup: React.FC = () => {
   const [sortBy, setSortBy] = useState(0);
   const [sortDesc, setSortDesc] = useState(false);
   const { chainId } = useActiveWeb3React();
+  const isMobile = useIsXS();
 
   const [stakedOnly, setStakeOnly] = useState(false);
   const [syrupSearch, setSyrupSearch] = useState('');
@@ -282,7 +283,7 @@ const DragonsSyrup: React.FC = () => {
           {sortByDesktopItems.map((item) => (
             <Box
               key={item.index}
-              width={`${item.width}px`}
+              width={`${item.width * 100}%`}
               justifyContent={item.justify}
               onClick={item.onClick}
               className={`flex items-center cursor-pointer ${

@@ -9,7 +9,7 @@ import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
 import 'components/styles/SyrupCard.scss';
 import { Trans, useTranslation } from 'react-i18next';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -17,6 +17,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
 }) => {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
+  const isMobile = useIsXS();
 
   const currency = unwrappedToken(syrup.token);
 
@@ -55,7 +56,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               <CurrencyLogo currency={currency} size='32px' />
               <Box margin='0 0 0 12px'>
                 <small>{currency.symbol}</small>
-                <Box margin='20px 0 0'>
+                <Box margin='2px 0 0'>
                   <span>
                     {syrup.rate >= 1000000
                       ? formatCompact(syrup.rate)
@@ -63,7 +64,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                     <span className='text-secondary'> / {t('day')}</span>
                   </span>
                 </Box>
-                <Box margin='20px 0 0'>
+                <Box margin='2px 0 0'>
                   <span>
                     $
                     {syrup.rewardTokenPriceinUSD

@@ -15,7 +15,7 @@
     font-size: 16px;
     font-weight: 600;
   }
-  &.Mui-disabled {
+  &:disabled {
     border: none;
     background-image: none;
     background-color: $secondary1;

@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { TxnType } from 'constants/index';
 import 'components/styles/TransactionsTable.scss';
-import { isMobile } from 'react-device-detect';
+import { useIsXS } from 'hooks/useMediaQuery';
 dayjs.extend(relativeTime);
 
 interface TransactionsTableProps {
@@ -18,6 +18,7 @@ interface TransactionsTableProps {
 const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   const { t } = useTranslation();
   const [txFilter, setTxFilter] = useState(-1);
+  const isMobile = useIsXS();
   const txHeadCells = [
     {
       id: 'description',

@@ -20,7 +20,7 @@
   width: 100%;
   height: 50px;
   border-radius: 10px;
-  &.Mui-disabled {
+  &:disabled {
     background-color: $grey2;
   }
 }
