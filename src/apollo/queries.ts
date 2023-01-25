@@ -285,6 +285,28 @@ const TokenFields = `
   }
 `;
 
+export const TOKENS_FROM_ADDRESSES_V2 = (
+  blockNumber: number | undefined,
+  tokens: string[],
+) => {
+  let tokenString = `[`;
+  tokens.map((address) => {
+    return (tokenString += `"${address}",`);
+  });
+  tokenString += ']';
+  const queryString =
+    `${TokenFields}
+    query tokens {
+      tokens(where: {id_in: ${tokenString}},` +
+    (blockNumber ? `block: {number: ${blockNumber}} ,` : ``) +
+    ` orderBy: tradeVolumeUSD, orderDirection: desc) {
+        ...TokenFields
+      }
+    }`;
+
+  return gql(queryString);
+};
+
 export const TOKENS_CURRENT: any = (count: number) => {
   const queryString = `
     ${TokenFields}

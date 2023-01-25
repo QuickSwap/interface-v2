@@ -1,4 +1,4 @@
-import { clientV3, farmingClient } from 'apollo/client';
+import { clientV2, clientV3, farmingClient } from 'apollo/client';
 import {
   ALL_PAIRS_V3,
   ALL_TOKENS_V3,
@@ -36,9 +36,211 @@ import { Token } from '@uniswap/sdk-core';
 import { TickMath, tickToPrice } from '@uniswap/v3-sdk';
 import { JSBI } from '@uniswap/sdk';
 import keyBy from 'lodash.keyby';
-import { TxnType } from 'constants/index';
+import { GlobalConst, TxnType } from 'constants/index';
+import {
+  GLOBAL_ALLDATA,
+  PAIRS_BULK1,
+  PAIRS_CURRENT,
+  PAIRS_HISTORICAL_BULK,
+  TOKENS_FROM_ADDRESSES_V2,
+} from 'apollo/queries';
 
 //Global
+
+export async function getGlobalDataTotal(
+  ethPrice: number,
+  oldEthPrice: number,
+): Promise<any> {
+  let data: any = {};
+
+  try {
+    const utcCurrentTime = dayjs();
+
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+    const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
+    const utcTwoWeeksBack = utcCurrentTime.subtract(2, 'week').unix();
+
+    // get the blocks needed for time travel queries
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+      twoWeekBlock,
+    ] = await getBlocksFromTimestamps([
+      utcOneDayBack,
+      utcTwoDaysBack,
+      utcOneWeekBack,
+      utcTwoWeeksBack,
+    ]);
+
+    const v3DataCurrent = await clientV3.query({
+      query: GLOBAL_DATA_V3(),
+      fetchPolicy: 'network-only',
+    });
+
+    const v3DataOneDay = await clientV3.query({
+      query: GLOBAL_DATA_V3(oneDayBlock.number),
+      fetchPolicy: 'network-only',
+    });
+
+    const v3DataTwoDay = await clientV3.query({
+      query: GLOBAL_DATA_V3(twoDayBlock.number),
+      fetchPolicy: 'network-only',
+    });
+
+    const v3DataOneWeek = await clientV3.query({
+      query: GLOBAL_DATA_V3(oneWeekBlock.number),
+      fetchPolicy: 'network-only',
+    });
+
+    const v3DataTwoWeek = await clientV3.query({
+      query: GLOBAL_DATA_V3(twoWeekBlock.number),
+      fetchPolicy: 'network-only',
+    });
+
+    const queryReq = [
+      { index: 'result', block: null },
+      { index: 'oneDayData', block: oneDayBlock?.number },
+      { index: 'twoDayData', block: twoDayBlock?.number },
+      { index: 'oneWeekData', block: oneWeekBlock?.number },
+      { index: 'twoWeekData', block: twoWeekBlock?.number },
+    ];
+    const allData = await clientV2.query({
+      query: GLOBAL_ALLDATA(queryReq),
+      fetchPolicy: 'network-only',
+    });
+
+    const v2DataCurrent = allData.data['result'][0];
+    const v2DataOneDay = allData.data['oneDayData'][0];
+    const v2DataTwoDay = allData.data['twoDayData'][0];
+    const v2OneWeekData = allData.data['oneWeekData'][0];
+    const v2TwoWeekData = allData.data['twoWeekData'][0];
+
+    const [
+      v3StatsCurrent,
+      v3StatsOneDay,
+      v3StatsTwoDay,
+      v3StatsOneWeek,
+      v3StatsTwoWeek,
+    ] = [
+      v3DataCurrent &&
+      v3DataCurrent.data &&
+      v3DataCurrent.data.factories &&
+      v3DataCurrent.data.factories.length > 0
+        ? v3DataCurrent.data.factories[0]
+        : undefined,
+      v3DataOneDay &&
+      v3DataOneDay.data &&
+      v3DataOneDay.data.factories &&
+      v3DataOneDay.data.factories.length > 0
+        ? v3DataOneDay.data.factories[0]
+        : undefined,
+      v3DataTwoDay &&
+      v3DataTwoDay.data &&
+      v3DataTwoDay.data.factories &&
+      v3DataTwoDay.data.factories.length > 0
+        ? v3DataTwoDay.data.factories[0]
+        : undefined,
+      v3DataOneWeek &&
+      v3DataOneWeek.data &&
+      v3DataOneWeek.data.factories &&
+      v3DataOneWeek.data.factories.length > 0
+        ? v3DataOneWeek.data.factories[0]
+        : undefined,
+      v3DataTwoWeek &&
+      v3DataTwoWeek.data &&
+      v3DataTwoWeek.data.factories &&
+      v3DataTwoWeek.data.factories.length > 0
+        ? v3DataTwoWeek.data.factories[0]
+        : undefined,
+    ];
+
+    const currentVolumeUSD =
+      (v3StatsCurrent ? Number(v3StatsCurrent.totalVolumeUSD) : 0) +
+      Number(v2DataCurrent.totalVolumeUSD);
+    const oneDayBeforeVolumeUSD =
+      (v3StatsOneDay ? Number(v3StatsOneDay.totalVolumeUSD) : 0) +
+      Number(v2DataOneDay.totalVolumeUSD);
+    const twoDayBeforeVolumeUSD =
+      (v3StatsTwoDay ? Number(v3StatsTwoDay.totalVolumeUSD) : 0) +
+      Number(v2DataTwoDay.totalVolumeUSD);
+    const oneWeekBeforeVolumeUSD =
+      (v3StatsOneWeek ? Number(v3StatsOneWeek.totalVolumeUSD) : 0) +
+      Number(v2OneWeekData.totalVolumeUSD);
+    const twoWeekBeforeVolumeUSD =
+      (v3StatsTwoWeek ? Number(v3StatsTwoWeek.totalVolumeUSD) : 0) +
+      Number(v2TwoWeekData.totalVolumeUSD);
+
+    const currentTotalLiquidity =
+      (v3StatsCurrent ? Number(v3StatsCurrent.totalValueLockedUSD) : 0) +
+      v2DataCurrent.totalLiquidityETH * ethPrice;
+
+    const oneDayTotalLiquidity =
+      (v3StatsOneDay ? Number(v3StatsOneDay.totalValueLockedUSD) : 0) +
+      v2DataOneDay.totalLiquidityETH * ethPrice;
+
+    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+      currentVolumeUSD,
+      oneDayBeforeVolumeUSD,
+      twoDayBeforeVolumeUSD,
+    );
+
+    const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
+      currentVolumeUSD,
+      oneWeekBeforeVolumeUSD,
+      twoWeekBeforeVolumeUSD,
+    );
+
+    const liquidityChangeUSD = getPercentChange(
+      currentTotalLiquidity,
+      oneDayTotalLiquidity,
+    );
+
+    const currentFeesUSD =
+      (v3StatsCurrent ? Number(v3StatsCurrent.totalFeesUSD) : 0) +
+      Number(v2DataCurrent.totalVolumeUSD) * GlobalConst.utils.FEEPERCENT;
+    const oneDayFeesUSD =
+      (v3StatsOneDay ? Number(v3StatsOneDay.totalFeesUSD) : 0) +
+      Number(v2DataOneDay.totalVolumeUSD) * GlobalConst.utils.FEEPERCENT;
+    const twoDayFeesUSD =
+      (v3StatsTwoDay ? Number(v3StatsTwoDay.totalFeesUSD) : 0) +
+      Number(v2DataTwoDay.totalVolumeUSD) * GlobalConst.utils.FEEPERCENT;
+
+    const [feesUSD, feesUSDChange] = get2DayPercentChange(
+      currentFeesUSD,
+      oneDayFeesUSD,
+      twoDayFeesUSD,
+    );
+
+    const currentTxns =
+      (v3StatsCurrent ? Number(v3StatsCurrent.txCount) : 0) +
+      v2DataCurrent.txCount;
+    const oneDayTxns =
+      (v3StatsOneDay ? Number(v3StatsOneDay.txCount) : 0) +
+      v2DataOneDay.txCount;
+    const txCount = currentTxns - oneDayTxns;
+
+    data = {
+      totalLiquidityUSD: currentTotalLiquidity,
+      liquidityChangeUSD,
+      oneDayVolumeUSD,
+      volumeChangeUSD,
+      feesUSD,
+      feesUSDChange,
+      oneWeekVolume,
+      weeklyVolumeChange,
+      txCount,
+      poolCount:
+        (v3StatsCurrent ? v3StatsCurrent.poolCount : 0) +
+        v2DataCurrent.pairCount,
+    };
+  } catch (e) {
+    console.log(e);
+  }
+
+  return data;
+}
 
 export async function getGlobalDataV3(): Promise<any> {
   let data: any = {};
@@ -315,6 +517,189 @@ export const getChartDataV3 = async (oldestDateToFetch: number) => {
 };
 
 //Tokens
+
+export async function getTopTokensTotal(
+  ethPrice: number,
+  ethPrice24H: number,
+  maticPrice: number,
+  maticPrice24H: number,
+  count = 500,
+): Promise<any> {
+  try {
+    const utcCurrentTime = dayjs();
+
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+
+    const [oneDayBlock, twoDayBlock] = await getBlocksFromTimestamps([
+      utcOneDayBack,
+      utcTwoDaysBack,
+    ]);
+
+    const topTokensIds = await clientV3.query({
+      query: TOP_TOKENS_V3(count),
+      fetchPolicy: 'network-only',
+    });
+
+    const tokenAddresses: string[] = topTokensIds.data.tokens.map(
+      (el: any) => el.id,
+    );
+
+    const tokensCurrent = await fetchTokensByTime(undefined, tokenAddresses);
+
+    const tokens24 = await fetchTokensByTime(
+      oneDayBlock.number,
+      tokenAddresses,
+    );
+    const tokens48 = await fetchTokensByTime(
+      twoDayBlock.number,
+      tokenAddresses,
+    );
+
+    const v2TokensCurrent = await fetchTokensByTimeV2(
+      undefined,
+      tokenAddresses,
+    );
+
+    const v2Tokens24 = await fetchTokensByTimeV2(
+      oneDayBlock.number,
+      tokenAddresses,
+    );
+    const v2Tokens48 = await fetchTokensByTimeV2(
+      twoDayBlock.number,
+      tokenAddresses,
+    );
+
+    const parsedTokens = parseTokensData(tokensCurrent);
+    const parsedTokens24 = parseTokensData(tokens24);
+    const parsedTokens48 = parseTokensData(tokens48);
+
+    const parsedTokensV2 = parseTokensData(v2TokensCurrent);
+    const parsedTokens24V2 = parseTokensData(v2Tokens24);
+    const parsedTokens48V2 = parseTokensData(v2Tokens48);
+
+    const formatted = tokenAddresses.map((address: string) => {
+      const current = parsedTokens[address];
+      const oneDay = parsedTokens24[address];
+      const twoDay = parsedTokens48[address];
+      const v2Current = parsedTokensV2[address];
+      const v2OneDay = parsedTokens24V2[address];
+      const v2TwoDay = parsedTokens48V2[address];
+
+      const manageUntrackedVolume = current
+        ? +current.volumeUSD <= 1
+          ? 'untrackedVolumeUSD'
+          : 'volumeUSD'
+        : '';
+      const manageUntrackedTVL = current
+        ? +current.totalValueLockedUSD <= 1
+          ? 'totalValueLockedUSDUntracked'
+          : 'totalValueLockedUSD'
+        : '';
+
+      const [oneDayVolumeUSD, volumeUSDChange] = get2DayPercentChange(
+        Number(
+          current && current[manageUntrackedVolume]
+            ? current[manageUntrackedVolume]
+            : 0,
+        ) +
+          Number(
+            v2Current && v2Current.tradeVolumeUSD
+              ? v2Current.tradeVolumeUSD
+              : 0,
+          ),
+        Number(
+          oneDay && oneDay[manageUntrackedVolume]
+            ? oneDay[manageUntrackedVolume]
+            : 0,
+        ) +
+          Number(
+            v2OneDay && v2OneDay.tradeVolumeUSD ? v2OneDay.tradeVolumeUSD : 0,
+          ),
+        Number(
+          twoDay && twoDay[manageUntrackedVolume]
+            ? twoDay[manageUntrackedVolume]
+            : 0,
+        ) +
+          Number(
+            v2TwoDay && v2TwoDay.tradeVolumeUSD ? v2TwoDay.tradeVolumeUSD : 0,
+          ),
+      );
+
+      const tvlUSD =
+        (current ? parseFloat(current[manageUntrackedTVL]) : 0) +
+        (v2Current
+          ? (v2Current.totalLiquidity ?? 0) *
+            ethPrice *
+            (v2Current.derivedETH ?? 0)
+          : 0);
+      const tvlUSDOneDay =
+        (oneDay ? parseFloat(oneDay[manageUntrackedTVL]) : 0) +
+        (v2OneDay
+          ? (v2OneDay.totalLiquidity ?? 0) *
+            ethPrice *
+            (v2OneDay.derivedETH ?? 0)
+          : 0);
+      const tvlUSDChange = getPercentChange(tvlUSD, tvlUSDOneDay);
+      const priceUSDV3 = current
+        ? parseFloat(current.derivedMatic) * maticPrice
+        : 0;
+      const priceUSDOneDayV3 = oneDay
+        ? parseFloat(oneDay.derivedMatic) * maticPrice24H
+        : 0;
+      const priceUSDV2 =
+        v2Current && v2Current.derivedETH ? v2Current.derivedETH * ethPrice : 0;
+      const priceUSDOneDayV2 =
+        v2OneDay && v2OneDay.derivedETH ? v2OneDay.derivedETH * ethPrice24H : 0;
+      const priceUSD = priceUSDV2 ?? priceUSDV3;
+      const priceUSDOneDay = priceUSDOneDayV2 ?? priceUSDOneDayV3;
+
+      const priceChangeUSD =
+        priceUSD && priceUSDOneDay
+          ? getPercentChange(
+              Number(priceUSD.toString()),
+              Number(priceUSDOneDay.toString()),
+            )
+          : 0;
+
+      return {
+        id: address,
+        name: formatTokenName(
+          address,
+          current && current.name
+            ? current.name
+            : v2Current && v2Current.name
+            ? v2Current.name
+            : '',
+        ),
+        symbol: formatTokenSymbol(
+          address,
+          current && current.symbol
+            ? current.symbol
+            : v2Current && v2Current.symbol
+            ? v2Current.symbol
+            : '',
+        ),
+        decimals:
+          current && current.decimals
+            ? current.decimals
+            : v2Current && v2Current.decimals
+            ? v2Current.decimals
+            : 18,
+        oneDayVolumeUSD,
+        volumeUSDChange,
+        totalLiquidityUSD: tvlUSD,
+        liquidityChangeUSD: tvlUSDChange,
+        priceUSD,
+        priceChangeUSD,
+      };
+    });
+
+    return formatted;
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 export async function getTopTokensV3(
   maticPrice: number,
@@ -762,6 +1147,244 @@ export async function getTopPairsV3(count = 500) {
     });
 
     return formatted;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getTopPairsTotal(count = 500) {
+  try {
+    const utcCurrentTime = dayjs();
+
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
+    const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
+
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+    ] = await getBlocksFromTimestamps([
+      utcOneDayBack,
+      utcTwoDaysBack,
+      utcOneWeekBack,
+    ]);
+
+    const topPairsIds = await clientV3.query({
+      query: TOP_POOLS_V3(count),
+      fetchPolicy: 'network-only',
+    });
+
+    const topPairIdsV2 = await clientV2.query({
+      query: PAIRS_CURRENT(count),
+      fetchPolicy: 'network-only',
+    });
+
+    const pairsAddresses = topPairsIds.data.pools.map((el: any) => el.id);
+    const v2PairsAddresses = topPairIdsV2.data.pairs.map((el: any) => el.id);
+
+    const pairsCurrent = await fetchPairsByTime(undefined, pairsAddresses);
+    const pairs24 = await fetchPairsByTime(oneDayBlock.number, pairsAddresses);
+    const pairs48 = await fetchPairsByTime(twoDayBlock.number, pairsAddresses);
+    const pairsWeek = await fetchPairsByTime(
+      oneWeekBlock.number,
+      pairsAddresses,
+    );
+
+    const v2PairsResult = await clientV2.query({
+      query: PAIRS_BULK1,
+      variables: {
+        allPairs: v2PairsAddresses,
+      },
+      fetchPolicy: 'network-only',
+    });
+    const v2PairsCurrent =
+      v2PairsResult &&
+      v2PairsResult.data &&
+      v2PairsResult.data.pairs &&
+      v2PairsResult.data.pairs.length > 0
+        ? v2PairsResult.data.pairs
+        : [];
+
+    const [v2OneDayResult, v2TwoDayResult, v2OneWeekResult] = await Promise.all(
+      [oneDayBlock, twoDayBlock, oneWeekBlock].map(async (block) => {
+        const result = await clientV2.query({
+          query: PAIRS_HISTORICAL_BULK(block.number, v2PairsAddresses),
+          fetchPolicy: 'network-only',
+        });
+        return result;
+      }),
+    );
+
+    const v2PairsOneDay =
+      v2OneDayResult &&
+      v2OneDayResult.data &&
+      v2OneDayResult.data.pairs &&
+      v2OneDayResult.data.pairs.length > 0
+        ? v2OneDayResult.data.pairs
+        : [];
+
+    const v2PairsTwoDay =
+      v2TwoDayResult &&
+      v2TwoDayResult.data &&
+      v2TwoDayResult.data.pairs &&
+      v2TwoDayResult.data.pairs.length > 0
+        ? v2TwoDayResult.data.pairs
+        : [];
+
+    const v2PairsOneWeek =
+      v2OneWeekResult &&
+      v2OneWeekResult.data &&
+      v2OneWeekResult.data.pairs &&
+      v2OneWeekResult.data.pairs.length > 0
+        ? v2OneWeekResult.data.pairs
+        : [];
+
+    const parsedPairs = parsePairsData(pairsCurrent);
+    const parsedPairs24 = parsePairsData(pairs24);
+    const parsedPairs48 = parsePairsData(pairs48);
+    const parsedPairsWeek = parsePairsData(pairsWeek);
+
+    const parsedPairsV2 = parsePairsData(v2PairsCurrent);
+    const parsedPairs24V2 = parsePairsData(v2PairsOneDay);
+    const parsedPairs48V2 = parsePairsData(v2PairsTwoDay);
+    const parsedPairsWeekV2 = parsePairsData(v2PairsOneWeek);
+
+    const formattedV3 = pairsAddresses.map((address: string) => {
+      const current = parsedPairs[address];
+      const oneDay = parsedPairs24[address];
+      const twoDay = parsedPairs48[address];
+      const week = parsedPairsWeek[address];
+
+      const manageUntrackedVolume =
+        current && current.volumeUSD && Number(current.volumeUSD) <= 1
+          ? 'untrackedVolumeUSD'
+          : 'volumeUSD';
+
+      const manageUntrackedTVL =
+        current &&
+        current.totalValueLockedUSD &&
+        Number(current.totalValueLockedUSD) <= 1
+          ? 'totalValueLockedUSDUntracked'
+          : 'totalValueLockedUSD';
+
+      const v3CurrentVolumeUSD =
+        current && current[manageUntrackedVolume]
+          ? Number(current[manageUntrackedVolume])
+          : 0;
+
+      const v3OneDayVolumeUSD =
+        oneDay && oneDay[manageUntrackedVolume]
+          ? Number(oneDay[manageUntrackedVolume])
+          : 0;
+
+      const v3TwoDayVolumeUSD =
+        twoDay && twoDay[manageUntrackedVolume]
+          ? Number(twoDay[manageUntrackedVolume])
+          : 0;
+
+      const v3WeekVolumeUSD =
+        week && week[manageUntrackedVolume]
+          ? Number(week[manageUntrackedVolume])
+          : 0;
+
+      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] = get2DayPercentChange(
+        v3CurrentVolumeUSD,
+        v3OneDayVolumeUSD,
+        v3TwoDayVolumeUSD,
+      );
+
+      const oneWeekVolumeUSD = v3CurrentVolumeUSD - v3WeekVolumeUSD;
+
+      const v3CurrentTVL =
+        current && current[manageUntrackedTVL]
+          ? Number(current[manageUntrackedTVL])
+          : 0;
+
+      const v3OneDayTVL =
+        oneDay && oneDay[manageUntrackedTVL]
+          ? Number(oneDay[manageUntrackedTVL])
+          : 0;
+
+      const tvlUSD = v3CurrentTVL;
+      const tvlUSDChange = getPercentChange(tvlUSD, v3OneDayTVL);
+
+      return {
+        isV3: true,
+        token0: current.token0,
+        token1: current.token1,
+        fee: current.fee,
+        id: address,
+        oneDayVolumeUSD,
+        oneDayVolumeChangeUSD,
+        oneWeekVolumeUSD,
+        trackedReserveUSD: tvlUSD,
+        tvlUSDChange,
+        totalValueLockedUSD: tvlUSD,
+      };
+    });
+
+    const formattedV2 = v2PairsAddresses.map((address: string) => {
+      const v2Current = parsedPairsV2[address];
+      const v2OneDay = parsedPairs24V2[address];
+      const v2TwoDay = parsedPairs48V2[address];
+      const v2OneWeek = parsedPairsWeekV2[address];
+
+      const v2CurrentVolumeUSD =
+        v2Current && v2Current.volumeUSD ? Number(v2Current.volumeUSD) : 0;
+
+      const v2OneDayVolumeUSD =
+        v2OneDay && v2OneDay.volumeUSD ? Number(v2OneDay.volumeUSD) : 0;
+
+      const v2TwoDayVolumeUSD =
+        v2TwoDay && v2TwoDay.volumeUSD ? Number(v2TwoDay.volumeUSD) : 0;
+
+      const v2WeekVolumeUSD =
+        v2OneWeek && v2OneWeek.volumeUSD ? Number(v2OneWeek.volumeUSD) : 0;
+
+      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] = get2DayPercentChange(
+        v2CurrentVolumeUSD,
+        v2OneDayVolumeUSD,
+        v2TwoDayVolumeUSD,
+      );
+
+      const oneWeekVolumeUSD = v2CurrentVolumeUSD - v2WeekVolumeUSD;
+
+      const v2CurrentTVL = v2Current
+        ? v2Current.trackedReserveUSD
+          ? Number(v2Current.trackedReserveUSD)
+          : v2Current.reserveUSD
+          ? Number(v2Current.reserveUSD)
+          : 0
+        : 0;
+
+      const v2OneDayTVL = v2OneDay
+        ? v2OneDay.trackedReserveUSD
+          ? Number(v2OneDay.trackedReserveUSD)
+          : v2OneDay.reserveUSD
+          ? Number(v2OneDay.reserveUSD)
+          : 0
+        : 0;
+
+      const tvlUSD = v2CurrentTVL;
+      const tvlUSDChange = getPercentChange(tvlUSD, v2OneDayTVL);
+
+      return {
+        isV3: false,
+        token0: v2Current.token0,
+        token1: v2Current.token1,
+        fee: oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
+        id: address,
+        oneDayVolumeUSD,
+        oneDayVolumeChangeUSD,
+        oneWeekVolumeUSD,
+        trackedReserveUSD: tvlUSD,
+        tvlUSDChange,
+        totalValueLockedUSD: tvlUSD,
+      };
+    });
+
+    return formattedV3.concat(formattedV2);
   } catch (err) {
     console.error(err);
   }
@@ -1846,6 +2469,22 @@ async function fetchTokensByTime(
   }
 }
 
+async function fetchTokensByTimeV2(
+  blockNumber: number | undefined,
+  tokenAddresses: string[],
+): Promise<any> {
+  try {
+    const tokens = await clientV2.query({
+      query: TOKENS_FROM_ADDRESSES_V2(blockNumber, tokenAddresses),
+      fetchPolicy: 'network-only',
+    });
+
+    return tokens.data.tokens;
+  } catch (err) {
+    console.error('Tokens fetching by time ' + err);
+  }
+}
+
 function parseTokensData(tokenData: any) {
   return tokenData
     ? tokenData.reduce((acc: { [address: string]: any }, tokenData: any) => {
@@ -1891,9 +2530,9 @@ async function fetchPairsByTime(
   }
 }
 
-function parsePairsData(tokenData: any) {
-  return tokenData
-    ? tokenData.reduce((accum: { [address: string]: any }, poolData: any) => {
+function parsePairsData(pairData: any) {
+  return pairData
+    ? pairData.reduce((accum: { [address: string]: any }, poolData: any) => {
         accum[poolData.id] = poolData;
         return accum;
       }, {})
