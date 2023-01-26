@@ -589,7 +589,10 @@ export const getBulkPairData = async (pairList: any) => {
   //   return;
   // }
   const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+  const utcOneDayBack = utcCurrentTime
+    .subtract(1, 'day')
+    .startOf('minute')
+    .unix();
 
   const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack);
 
@@ -621,7 +624,18 @@ export const getBulkPairData = async (pairList: any) => {
       current &&
       current.data.pairs.map((pair: any) => {
         let data = pair;
-        const oneDayHistory = oneDayData?.[pair.id];
+        let oneDayHistory = oneDayData?.[pair.id];
+
+        if (
+          Number(oneDayHistory?.reserveUSD ?? 0) ===
+            Number(data?.reserveUSD ?? 0) &&
+          Number(oneDayHistory?.volumeUSD ?? 0) ===
+            Number(data?.volumeUSD ?? 0) &&
+          Number(oneDayHistory?.totalSupply ?? 0) ===
+            Number(data?.totalSupply ?? 0)
+        ) {
+          oneDayHistory = null;
+        }
 
         data = parseData(data, oneDayHistory);
         return data;
