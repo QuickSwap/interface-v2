@@ -26,6 +26,7 @@ import {
   get2DayPercentChange,
   getBlockFromTimestamp,
   getBlocksFromTimestamps,
+  getChartData,
   getPercentChange,
   getSecondsOneDay,
   splitQuery,
@@ -39,6 +40,7 @@ import keyBy from 'lodash.keyby';
 import { GlobalConst, TxnType } from 'constants/index';
 import {
   GLOBAL_ALLDATA,
+  GLOBAL_CHART,
   PAIRS_BULK1,
   PAIRS_CURRENT,
   PAIRS_HISTORICAL_BULK,
@@ -514,6 +516,40 @@ export const getChartDataV3 = async (oldestDateToFetch: number) => {
     console.log(e);
   }
   return [data, weeklyData];
+};
+
+export const getChartDataTotal = async (oldestDateToFetch: number) => {
+  const [v3DailyData, v3WeeklyData] = await getChartDataV3(oldestDateToFetch);
+  const [v2DailyData, v2WeeklyData] = await getChartData(oldestDateToFetch);
+  const dailyData = v3DailyData.map((item) => {
+    const v2Item = v2DailyData.find((v2Item) => v2Item.date === item.date);
+    return {
+      ...item,
+      dailyVolumeUSD:
+        (item && item.dailyVolumeUSD ? Number(item.dailyVolumeUSD) : 0) +
+        (v2Item && v2Item.dailyVolumeUSD ? Number(v2Item.dailyVolumeUSD) : 0),
+      feesUSD:
+        (item && item.feesUSD ? Number(item.feesUSD) : 0) +
+        (v2Item && v2Item.dailyVolumeUSD
+          ? Number(v2Item.dailyVolumeUSD) * GlobalConst.utils.FEEPERCENT
+          : 0),
+      totalLiquidityUSD:
+        (item && item.totalLiquidityUSD ? Number(item.totalLiquidityUSD) : 0) +
+        (v2Item && v2Item.totalLiquidityUSD
+          ? Number(v2Item.totalLiquidityUSD)
+          : 0),
+    };
+  });
+  const weeklydata = v3WeeklyData.map((item) => {
+    const v2Item = v2WeeklyData.find((v2Item) => v2Item.date === item.date);
+    return {
+      ...item,
+      weeklyVolumeUSD:
+        (item && item.weeklyVolumeUSD ? Number(item.weeklyVolumeUSD) : 0) +
+        (v2Item && v2Item.weeklyVolumeUSD ? Number(v2Item.weeklyVolumeUSD) : 0),
+    };
+  });
+  return [dailyData, weeklydata];
 };
 
 //Tokens
@@ -1309,19 +1345,21 @@ export async function getTopPairsTotal(count = 500) {
       const tvlUSD = v3CurrentTVL;
       const tvlUSDChange = getPercentChange(tvlUSD, v3OneDayTVL);
 
-      return {
-        isV3: true,
-        token0: current.token0,
-        token1: current.token1,
-        fee: current.fee,
-        id: address,
-        oneDayVolumeUSD,
-        oneDayVolumeChangeUSD,
-        oneWeekVolumeUSD,
-        trackedReserveUSD: tvlUSD,
-        tvlUSDChange,
-        totalValueLockedUSD: tvlUSD,
-      };
+      return current
+        ? {
+            isV3: true,
+            token0: current.token0,
+            token1: current.token1,
+            fee: current.fee,
+            id: address,
+            oneDayVolumeUSD,
+            oneDayVolumeChangeUSD,
+            oneWeekVolumeUSD,
+            trackedReserveUSD: tvlUSD,
+            tvlUSDChange,
+            totalValueLockedUSD: tvlUSD,
+          }
+        : undefined;
     });
 
     const formattedV2 = v2PairsAddresses.map((address: string) => {
@@ -1369,22 +1407,24 @@ export async function getTopPairsTotal(count = 500) {
       const tvlUSD = v2CurrentTVL;
       const tvlUSDChange = getPercentChange(tvlUSD, v2OneDayTVL);
 
-      return {
-        isV3: false,
-        token0: v2Current.token0,
-        token1: v2Current.token1,
-        fee: oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
-        id: address,
-        oneDayVolumeUSD,
-        oneDayVolumeChangeUSD,
-        oneWeekVolumeUSD,
-        trackedReserveUSD: tvlUSD,
-        tvlUSDChange,
-        totalValueLockedUSD: tvlUSD,
-      };
+      return v2Current
+        ? {
+            isV3: false,
+            token0: v2Current.token0,
+            token1: v2Current.token1,
+            fee: oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
+            id: address,
+            oneDayVolumeUSD,
+            oneDayVolumeChangeUSD,
+            oneWeekVolumeUSD,
+            trackedReserveUSD: tvlUSD,
+            tvlUSDChange,
+            totalValueLockedUSD: tvlUSD,
+          }
+        : undefined;
     });
 
-    return formattedV3.concat(formattedV2);
+    return formattedV3.concat(formattedV2).filter((item: any) => !!item);
   } catch (err) {
     console.error(err);
   }
