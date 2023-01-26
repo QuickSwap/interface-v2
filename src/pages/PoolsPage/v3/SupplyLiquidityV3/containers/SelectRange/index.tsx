@@ -66,7 +66,11 @@ export function SelectRange({
     GammaPairs[currencyBAddress + '-' + currencyAAddress];
 
   useEffect(() => {
-    onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
+    if (gammaPair) {
+      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.GAMMA_RANGE);
+    } else {
+      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currencyA, currencyB]);
 
@@ -284,21 +288,6 @@ export function SelectRange({
             <Button
               className={
                 liquidityRangeType ===
-                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
-                  ? 'active'
-                  : ''
-              }
-              onClick={() =>
-                onChangeLiquidityRangeType(
-                  GlobalConst.v3LiquidityRangeType.MANUAL_RANGE,
-                )
-              }
-            >
-              {t('manual')}
-            </Button>
-            <Button
-              className={
-                liquidityRangeType ===
                 GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
                   ? 'active'
                   : ''
@@ -315,6 +304,21 @@ export function SelectRange({
                   {t('beta')}
                 </Box>
               </Box>
+            </Button>
+            <Button
+              className={
+                liquidityRangeType ===
+                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+                  ? 'active'
+                  : ''
+              }
+              onClick={() =>
+                onChangeLiquidityRangeType(
+                  GlobalConst.v3LiquidityRangeType.MANUAL_RANGE,
+                )
+              }
+            >
+              {t('manual')}
             </Button>
           </ButtonGroup>
         </Box>
