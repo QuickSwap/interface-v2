@@ -25,14 +25,14 @@ import { tryParseAmount } from 'state/swap/hooks';
 import { useMultipleContractSingleData } from 'state/multicall/hooks';
 import GammaRewarder from 'constants/abis/gamma-rewarder.json';
 import { Interface } from '@ethersproject/abi';
+import { useTokenBalance } from 'state/wallet/hooks';
 
 const GammaFarmCardDetails: React.FC<{
   data: any;
   pairData: any;
   rewardData: any;
   positionData: any;
-  stakedData: any[];
-}> = ({ pairData, rewardData, positionData, data, stakedData }) => {
+}> = ({ pairData, rewardData, positionData, data }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -44,12 +44,15 @@ const GammaFarmCardDetails: React.FC<{
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const masterChefContract = useMasterChefContract();
 
-  const availableStakeAmount = positionData
-    ? formatUnits(positionData.shares, 18)
-    : '0';
-  const stakedAmount =
-    stakedData.length > 0 ? stakedData[0].stakedAmount.toFixed(18) : '0';
+  const lpToken = chainId
+    ? new Token(chainId, pairData.address, 18)
+    : undefined;
+  const lpTokenBalance = useTokenBalance(account ?? undefined, lpToken);
+  const availableStakeAmount = lpTokenBalance?.toExact() ?? '0';
+
+  const stakedAmount = pairData.stakedAmount;
   const lpTokenUSD =
     data && data.totalSupply && Number(data.totalSupply) > 0
       ? (Number(data.tvlUSD) / Number(data.totalSupply)) * 10 ** 18
@@ -77,7 +80,6 @@ const GammaFarmCardDetails: React.FC<{
   );
 
   const tokenMap = useSelectedTokenList();
-  const masterChefContract = useMasterChefContract();
   const stakeButtonDisabled =
     Number(stakeAmount) <= 0 ||
     Number(stakeAmount) > Number(availableStakeAmount) ||
@@ -90,9 +92,7 @@ const GammaFarmCardDetails: React.FC<{
     !masterChefContract ||
     !account ||
     attemptUnstaking;
-  const lpToken = chainId
-    ? new Token(chainId, pairData.address, 18)
-    : undefined;
+
   const parsedStakeAmount = tryParseAmount(stakeAmount, lpToken);
   const [approval, approveCallback] = useApproveCallback(
     parsedStakeAmount,

@@ -15,16 +15,7 @@ const GammaFarmCard: React.FC<{
   token1: Token | null;
   pairData: any;
   positionData: any;
-  stakedData: any[];
-}> = ({
-  data,
-  rewardData,
-  pairData,
-  token0,
-  token1,
-  positionData,
-  stakedData,
-}) => {
+}> = ({ data, rewardData, pairData, token0, token1, positionData }) => {
   const { t } = useTranslation();
   const rewards: any[] =
     rewardData && rewardData['rewarders']
@@ -131,7 +122,6 @@ const GammaFarmCard: React.FC<{
           pairData={pairData}
           rewardData={rewardData}
           positionData={positionData}
-          stakedData={stakedData}
         />
       )}
     </Box>

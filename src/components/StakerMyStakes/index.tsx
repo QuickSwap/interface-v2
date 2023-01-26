@@ -20,6 +20,9 @@ import { Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesToken } from 'utils/useUSDCPrice';
+import { useSingleContractMultipleData } from 'state/multicall/hooks';
+import { useMasterChefContract } from 'hooks/useContract';
+import { formatUnits } from 'ethers/lib/utils';
 
 export const FarmingMyFarms: React.FC<{
   farmFilter: number;
@@ -489,17 +492,30 @@ export const FarmingMyFarms: React.FC<{
     return { price: rewardUSDPrices[ind], tokenAddress: token.address };
   });
 
-  const myGammaFarms = ([] as GammaPair[])
+  const allGammaPairsToFarm = ([] as GammaPair[])
     .concat(...Object.values(GammaPairs))
+    .filter((item) => item.ableToFarm);
+
+  const masterChefContract = useMasterChefContract();
+
+  const stakedAmountData = useSingleContractMultipleData(
+    masterChefContract,
+    'userInfo',
+    allGammaPairsToFarm.map((pair) => [pair.pid, account ?? undefined]),
+  );
+
+  const stakedAmounts = stakedAmountData.map((callData) => {
+    return !callData.loading && callData.result && callData.result.length > 0
+      ? formatUnits(callData.result[0], 18)
+      : '0';
+  });
+
+  const myGammaFarms = allGammaPairsToFarm
+    .map((item, index) => {
+      return { ...item, stakedAmount: stakedAmounts[index] };
+    })
     .filter((item) => {
-      return (
-        item.ableToFarm &&
-        stakedData &&
-        stakedData.filter(
-          (data: any) =>
-            data.hypervisor.toLowerCase() === item.address.toLowerCase(),
-        ).length > 0
-      );
+      return Number(item.stakedAmount) > 0;
     })
     .map((item) => {
       if (chainId) {
@@ -765,11 +781,6 @@ export const FarmingMyFarms: React.FC<{
                           ][farm.address.toLowerCase()]
                         : undefined
                     }
-                    stakedData={stakedData.filter(
-                      (data: any) =>
-                        data.hypervisor.toLowerCase() ===
-                        farm.address.toLowerCase(),
-                    )}
                   />
                 </Box>
               ))}
