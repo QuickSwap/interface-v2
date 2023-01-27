@@ -17,6 +17,8 @@ import {
   typeLeftRangeInput,
   typeRightRangeInput,
   typeStartPriceInput,
+  updateLiquidityRangeType,
+  updatePresetRange,
 } from './actions';
 import { tryParseTick } from './utils';
 import { PoolState, usePool } from 'hooks/v3/usePools';
@@ -33,6 +35,11 @@ import { BIG_INT_ZERO } from 'constants/v3/misc';
 import { FeeAmount } from 'v3lib/utils';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
+import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
+import { GlobalConst } from 'constants/index';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { useGammaUNIProxyContract } from 'hooks/useContract';
+import { useSingleContractMultipleData } from 'state/multicall/hooks';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -60,6 +67,8 @@ export interface IDerivedMintInfo {
   dynamicFee: number;
   lowerPrice: any;
   upperPrice: any;
+  liquidityRangeType: string | undefined;
+  presetRange: IPresetArgs | undefined;
 }
 
 export function useV3MintState(): AppState['mintV3'] {
@@ -74,6 +83,8 @@ export function useV3MintActionHandlers(
   onLeftRangeInput: (typedValue: string) => void;
   onRightRangeInput: (typedValue: string) => void;
   onStartPriceInput: (typedValue: string) => void;
+  onChangeLiquidityRangeType: (value: string) => void;
+  onChangePresetRange: (value: IPresetArgs) => void;
 } {
   const dispatch = useAppDispatch();
 
@@ -124,12 +135,28 @@ export function useV3MintActionHandlers(
     [dispatch],
   );
 
+  const onChangeLiquidityRangeType = useCallback(
+    (value: string) => {
+      dispatch(updateLiquidityRangeType({ liquidityRangeType: value }));
+    },
+    [dispatch],
+  );
+
+  const onChangePresetRange = useCallback(
+    (value: IPresetArgs) => {
+      dispatch(updatePresetRange({ presetRange: value }));
+    },
+    [dispatch],
+  );
+
   return {
     onFieldAInput,
     onFieldBInput,
     onLeftRangeInput,
     onRightRangeInput,
     onStartPriceInput,
+    onChangeLiquidityRangeType,
+    onChangePresetRange,
   };
 }
 
@@ -166,6 +193,8 @@ export function useV3DerivedMintInfo(
   dynamicFee: number;
   lowerPrice: any;
   upperPrice: any;
+  liquidityRangeType: string | undefined;
+  presetRange: IPresetArgs | undefined;
 } {
   const { account } = useActiveWeb3React();
 
@@ -175,6 +204,8 @@ export function useV3DerivedMintInfo(
     leftRangeTypedValue,
     rightRangeTypedValue,
     startPriceTypedValue,
+    liquidityRangeType,
+    presetRange,
   } = useV3MintState();
 
   const dependentField =
@@ -407,7 +438,111 @@ export function useV3DerivedMintInfo(
     | CurrencyAmount<Currency>
     | undefined = tryParseAmount(typedValue, currencies[independentField]);
 
+  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+  const gammaCurrencies = [currencyA, currencyB];
+  const depositAmountsData = useSingleContractMultipleData(
+    gammaUNIPROXYContract,
+    'getDepositAmount',
+    presetRange && presetRange.address
+      ? gammaCurrencies.map((currency) => [
+          presetRange?.address,
+          currency?.wrapped.address,
+          parseUnits('1', currency?.wrapped.decimals ?? 0),
+        ])
+      : [],
+  );
+
+  const quoteDepositAmount = useMemo(() => {
+    if (
+      depositAmountsData.length > 0 &&
+      !depositAmountsData[0].loading &&
+      depositAmountsData[0].result &&
+      depositAmountsData[0].result.length > 1 &&
+      currencyB
+    ) {
+      return {
+        amountMin: Number(
+          formatUnits(
+            depositAmountsData[0].result[0],
+            currencyB.wrapped.decimals,
+          ),
+        ),
+        amountMax: Number(
+          formatUnits(
+            depositAmountsData[0].result[1],
+            currencyB.wrapped.decimals,
+          ),
+        ),
+      };
+    }
+    return;
+  }, [currencyB, depositAmountsData]);
+
+  const baseDepositAmount = useMemo(() => {
+    if (
+      depositAmountsData.length > 1 &&
+      !depositAmountsData[1].loading &&
+      depositAmountsData[1].result &&
+      depositAmountsData[1].result.length > 1 &&
+      currencyA
+    ) {
+      return {
+        amountMin: Number(
+          formatUnits(
+            depositAmountsData[1].result[0],
+            currencyA.wrapped.decimals,
+          ),
+        ),
+        amountMax: Number(
+          formatUnits(
+            depositAmountsData[1].result[1],
+            currencyA.wrapped.decimals,
+          ),
+        ),
+      };
+    }
+    return;
+  }, [currencyA, depositAmountsData]);
+
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
+    if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE) {
+      if (
+        !independentAmount ||
+        !presetRange ||
+        !presetRange.address ||
+        !quoteDepositAmount ||
+        !baseDepositAmount ||
+        !currencyA ||
+        !currencyB
+      )
+        return;
+      if (independentField === Field.CURRENCY_A) {
+        const quoteDeposit = parseUnits(
+          (
+            ((quoteDepositAmount.amountMin + quoteDepositAmount.amountMax) /
+              2) *
+            Number(independentAmount.toSignificant())
+          ).toFixed(currencyB.wrapped.decimals),
+          currencyB.wrapped.decimals,
+        );
+        return CurrencyAmount.fromRawAmount(
+          currencyB,
+          JSBI.BigInt(quoteDeposit),
+        );
+      } else {
+        const baseDeposit = parseUnits(
+          (
+            ((baseDepositAmount.amountMin + baseDepositAmount.amountMax) / 2) *
+            Number(independentAmount.toSignificant())
+          ).toFixed(currencyA.wrapped.decimals),
+          currencyA.wrapped.decimals,
+        );
+        return CurrencyAmount.fromRawAmount(
+          currencyA,
+          JSBI.BigInt(baseDeposit),
+        );
+      }
+    }
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
     const dependentCurrency =
@@ -459,14 +594,19 @@ export function useV3DerivedMintInfo(
 
     return undefined;
   }, [
+    liquidityRangeType,
     independentAmount,
-    outOfRange,
     dependentField,
     currencyB,
     currencyA,
     tickLower,
     tickUpper,
     poolForPosition,
+    presetRange,
+    quoteDepositAmount,
+    baseDepositAmount,
+    independentField,
+    outOfRange,
     invalidRange,
   ]);
 
@@ -653,6 +793,8 @@ export function useV3DerivedMintInfo(
     dynamicFee,
     lowerPrice,
     upperPrice,
+    liquidityRangeType,
+    presetRange,
   };
 }
 

@@ -5,19 +5,18 @@ import './CustomTabSwitch.scss';
 interface tabItem {
   text: string;
   id: number;
-  link: string;
 }
 
 interface CustomTabSwitchProps {
-  width: number;
+  width?: number | string;
   height: number;
   items: tabItem[];
   selectedItem: tabItem;
-  handleTabChange: (event: any, value: any) => void;
+  handleTabChange: (item: tabItem) => void;
 }
 
 const CustomTabSwitch: React.FC<CustomTabSwitchProps> = ({
-  width,
+  width = '100%',
   height,
   items,
   selectedItem,
@@ -27,9 +26,12 @@ const CustomTabSwitch: React.FC<CustomTabSwitchProps> = ({
     <Box className='customTabWrapper' width={width} height={height}>
       <Tabs
         value={selectedItem?.id}
-        onChange={handleTabChange}
-        textColor='primary'
-        indicatorColor='primary'
+        onChange={(evt, value) => {
+          const itemToSelect = items.find((item) => item.id === value);
+          if (itemToSelect) {
+            handleTabChange(itemToSelect);
+          }
+        }}
       >
         {items?.map((_item) => (
           <Tab
