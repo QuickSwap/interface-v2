@@ -73,12 +73,12 @@ const AnalyticsTokenDetails: React.FC = () => {
         return { ...item, type: TxnType.ADD };
       });
       const swaps = tokenTransactions.swaps.map((item: any) => {
-        const amount0 = item.amount0Out > 0 ? item.amount0Out : item.amount1Out;
-        const amount1 = item.amount0In > 0 ? item.amount0In : item.amount1In;
-        const token0 =
-          item.amount0Out > 0 ? item.pair.token0 : item.pair.token1;
-        const token1 =
-          item.amount0Out > 0 ? item.pair.token1 : item.pair.token0;
+        const amount0 =
+          item.amount0 > 0 ? item.amount0 : Math.abs(item.amount1);
+        const amount1 =
+          item.amount0 > 0 ? Math.abs(item.amount1) : Math.abs(item.amount0);
+        const token0 = item.amount0 > 0 ? item.pair.token0 : item.pair.token1;
+        const token1 = item.amount0 > 0 ? item.pair.token1 : item.pair.token0;
         return {
           ...item,
           amount0,
