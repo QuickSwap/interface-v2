@@ -265,10 +265,19 @@ export function PresetRanges({
     return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
   }, [baseCurrency, quoteCurrency, aprs]);
 
+  const gammaValuesLoading = gammaValues.filter((value) => !value).length > 0;
+
+  useEffect(() => {
+    if (!gammaValuesLoading) {
+      handlePresetRangeSelection(ranges[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gammaValuesLoading]);
+
   return (
     <Box>
       <Box mb='10px' className='preset-buttons'>
-        {isGamma && gammaValues.find((value) => !value) ? (
+        {isGamma && gammaValuesLoading ? (
           <Box width={1} className='flex justify-center'>
             <Loader />
           </Box>
