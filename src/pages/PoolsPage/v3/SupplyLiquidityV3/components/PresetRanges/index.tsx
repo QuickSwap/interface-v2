@@ -265,7 +265,8 @@ export function PresetRanges({
     return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
   }, [baseCurrency, quoteCurrency, aprs]);
 
-  const gammaValuesLoaded = gammaValues.filter((value) => !value).length === 0;
+  const gammaValuesLoaded =
+    mintInfo.price && gammaValues.filter((value) => !value).length === 0;
 
   useEffect(() => {
     if (gammaValuesLoaded) {

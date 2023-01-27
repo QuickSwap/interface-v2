@@ -10,12 +10,12 @@ import { FarmingType } from '../../models/enums';
 import './index.scss';
 import { FormattedEternalFarming } from 'models/interfaces';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalData, GlobalValue } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 
 const EternalFarmsPage: React.FC<{
-  farmFilter: number;
+  farmFilter: string;
   search: string;
   sortBy: string;
   sortDesc: boolean;
@@ -28,7 +28,7 @@ const EternalFarmsPage: React.FC<{
       ? (parsedQuery.farmStatus as string)
       : 'active';
 
-  const { v3FarmSortBy } = GlobalConst.utils;
+  const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 
   const {
     fetchEternalFarms: {
@@ -91,13 +91,65 @@ const EternalFarmsPage: React.FC<{
           farm && farm.pool && farm.pool.token1 && farm.pool.token1.id
             ? farm.pool.token1.id
             : '';
-        return (
+        const searchCondition =
           farmToken0Name.toLowerCase().includes(search) ||
           farmToken1Name.toLowerCase().includes(search) ||
           farmToken0Symbol.toLowerCase().includes(search) ||
           farmToken1Symbol.toLowerCase().includes(search) ||
           farmToken0Id.toLowerCase().includes(search) ||
-          farmToken1Id.toLowerCase().includes(search)
+          farmToken1Id.toLowerCase().includes(search);
+
+        const blueChipCondition =
+          !!GlobalData.blueChips.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+          ) &&
+          !!GlobalData.blueChips.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+          );
+        const stableCoinCondition =
+          !!GlobalData.stableCoins.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+          ) &&
+          !!GlobalData.stableCoins.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+          );
+        const stableLPCondition =
+          (farmToken0Id.toLowerCase() ===
+            GlobalValue.tokens.MATIC.address.toLowerCase() &&
+            (farmToken1Id.toLowerCase() ===
+              GlobalValue.tokens.COMMON.MATICX.address.toLowerCase() ||
+              farmToken1Id.toLowerCase() ===
+                GlobalValue.tokens.COMMON.STMATIC.address.toLowerCase())) ||
+          (farmToken1Id.toLowerCase() ===
+            GlobalValue.tokens.MATIC.address.toLowerCase() &&
+            (farmToken0Id.toLowerCase() ===
+              GlobalValue.tokens.COMMON.MATICX.address.toLowerCase() ||
+              farmToken0Id.toLowerCase() ===
+                GlobalValue.tokens.COMMON.STMATIC.address.toLowerCase())) ||
+          (farmToken0Id.toLowerCase() ===
+            GlobalValue.tokens.COMMON.NEW_QUICK.address.toLowerCase() &&
+            farmToken1Id.toLowerCase() ===
+              GlobalValue.tokens.COMMON.NEW_DQUICK.address.toLowerCase()) ||
+          (farmToken1Id.toLowerCase() ===
+            GlobalValue.tokens.COMMON.NEW_QUICK.address.toLowerCase() &&
+            farmToken0Id.toLowerCase() ===
+              GlobalValue.tokens.COMMON.NEW_DQUICK.address.toLowerCase());
+
+        return (
+          searchCondition &&
+          (farmFilter === v3FarmFilter.blueChip
+            ? blueChipCondition
+            : farmFilter === v3FarmFilter.stableCoin
+            ? stableCoinCondition
+            : farmFilter === v3FarmFilter.stableLP
+            ? stableLPCondition
+            : farmFilter === v3FarmFilter.otherLP
+            ? !blueChipCondition && !stableCoinCondition && !stableLPCondition
+            : true)
         );
       })
       .sort((farm1, farm2) => {
@@ -197,6 +249,8 @@ const EternalFarmsPage: React.FC<{
     sortBy,
     sortDescKey,
     v3FarmSortBy,
+    v3FarmFilter,
+    farmFilter,
   ]);
 
   return (

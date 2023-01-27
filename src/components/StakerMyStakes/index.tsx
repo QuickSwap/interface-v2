@@ -25,9 +25,8 @@ import { useMasterChefContract } from 'hooks/useContract';
 import { formatUnits } from 'ethers/lib/utils';
 
 export const FarmingMyFarms: React.FC<{
-  farmFilter: number;
   search: string;
-}> = ({ farmFilter, search }) => {
+}> = ({ search }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();

@@ -120,6 +120,13 @@ export const GlobalConst = {
       poolAPR: '4',
       farmAPR: '5',
     },
+    v3FarmFilter: {
+      allFarms: '0',
+      stableCoin: '1',
+      blueChip: '2',
+      stableLP: '3',
+      otherLP: '4',
+    },
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,
@@ -633,6 +640,20 @@ export const GlobalValue = {
         'USDD',
         'Decentralized USD',
       ),
+      MATICX: new Token(
+        ChainId.MATIC,
+        '0xfa68FB4628DFF1028CFEc22b4162FCcd0d45efb6',
+        18,
+        'MaticX',
+        'Liquid Staking Matic',
+      ),
+      STMATIC: new Token(
+        ChainId.MATIC,
+        '0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4',
+        18,
+        'stMatic',
+        'Staked MATIC',
+      ),
     },
   },
   marketSDK: {
@@ -739,6 +760,13 @@ export const GlobalData = {
     GlobalValue.tokens.COMMON.TUSD,
     GlobalValue.tokens.COMMON.UND,
     GlobalValue.tokens.COMMON.USDD,
+  ],
+  blueChips: [
+    WETH[ChainId.MATIC],
+    GlobalValue.tokens.COMMON.ETHER,
+    GlobalValue.tokens.COMMON.WBTC,
+    GlobalValue.tokens.COMMON.USDC,
+    GlobalValue.tokens.COMMON.USDT,
   ],
 };
 

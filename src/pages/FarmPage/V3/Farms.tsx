@@ -89,23 +89,23 @@ export default function Farms() {
     () => [
       {
         text: 'All Farms',
-        id: 0,
+        id: GlobalConst.utils.v3FarmFilter.allFarms,
       },
       {
         text: 'StableCoins',
-        id: 1,
+        id: GlobalConst.utils.v3FarmFilter.stableCoin,
       },
       {
         text: 'Blue chips',
-        id: 2,
+        id: GlobalConst.utils.v3FarmFilter.blueChip,
       },
       {
         text: 'Stable LPs',
-        id: 3,
+        id: GlobalConst.utils.v3FarmFilter.stableLP,
       },
       {
         text: 'Other LPs',
-        id: 4,
+        id: GlobalConst.utils.v3FarmFilter.otherLP,
       },
     ],
     [],
@@ -234,7 +234,7 @@ export default function Farms() {
       )}
 
       {selectedFarmCategory?.id === 0 && (
-        <FarmingMyFarms farmFilter={farmFilter.id} search={searchValue} />
+        <FarmingMyFarms search={searchValue} />
       )}
       {selectedFarmCategory?.id === 1 && (
         <EternalFarmsPage
