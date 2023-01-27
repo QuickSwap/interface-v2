@@ -439,9 +439,12 @@ export function useV3DerivedMintInfo(
     | undefined = tryParseAmount(typedValue, currencies[independentField]);
 
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
-  const gammaCurrencies = [currencyA, currencyB];
+  const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : [];
+
   const depositAmountsData = useSingleContractMultipleData(
-    gammaUNIPROXYContract,
+    presetRange && presetRange.address && gammaCurrencies.length > 0
+      ? gammaUNIPROXYContract
+      : undefined,
     'getDepositAmount',
     presetRange && presetRange.address
       ? gammaCurrencies.map((currency) => [

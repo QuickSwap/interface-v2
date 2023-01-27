@@ -265,19 +265,20 @@ export function PresetRanges({
     return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
   }, [baseCurrency, quoteCurrency, aprs]);
 
-  const gammaValuesLoading = gammaValues.filter((value) => !value).length > 0;
+  const gammaValuesLoaded = gammaValues.filter((value) => !value).length === 0;
 
   useEffect(() => {
-    if (!gammaValuesLoading) {
+    if (gammaValuesLoaded) {
       handlePresetRangeSelection(ranges[0]);
+      onChangePresetRange(ranges[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gammaValuesLoading]);
+  }, [gammaValuesLoaded]);
 
   return (
     <Box>
       <Box mb='10px' className='preset-buttons'>
-        {isGamma && gammaValuesLoading ? (
+        {isGamma && !gammaValuesLoaded ? (
           <Box width={1} className='flex justify-center'>
             <Loader />
           </Box>
@@ -289,8 +290,7 @@ export function PresetRanges({
                   activePreset === range.type ? 'active-preset' : ''
                 }`}
                 onClick={() => {
-                  handlePresetRangeSelection(range);
-                  if (activePreset == range.type) {
+                  if (activePreset === range.type) {
                     handlePresetRangeSelection(null);
                   } else {
                     handlePresetRangeSelection(range);
