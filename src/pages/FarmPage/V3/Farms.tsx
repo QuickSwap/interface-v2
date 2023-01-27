@@ -88,27 +88,27 @@ export default function Farms() {
   const farmFilters = useMemo(
     () => [
       {
-        text: 'All Farms',
+        text: t('allFarms'),
         id: GlobalConst.utils.v3FarmFilter.allFarms,
       },
       {
-        text: 'StableCoins',
+        text: t('stablecoins'),
         id: GlobalConst.utils.v3FarmFilter.stableCoin,
       },
       {
-        text: 'Blue chips',
+        text: t('blueChips'),
         id: GlobalConst.utils.v3FarmFilter.blueChip,
       },
       {
-        text: 'Stable LPs',
+        text: t('stableLPs'),
         id: GlobalConst.utils.v3FarmFilter.stableLP,
       },
       {
-        text: 'Other LPs',
+        text: t('otherLPs'),
         id: GlobalConst.utils.v3FarmFilter.otherLP,
       },
     ],
-    [],
+    [t],
   );
   const [farmFilter, setFarmFilter] = useState(farmFilters[0]);
 
