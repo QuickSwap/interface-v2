@@ -11,22 +11,15 @@ import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import './index.scss';
-import { useGammaUNIProxyContract } from 'hooks/useContract';
-import { formatUnits, Interface, parseUnits } from 'ethers/lib/utils';
+import { Interface } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
-import {
-  useSingleContractMultipleData,
-  useMultipleContractSingleData,
-} from 'state/multicall/hooks';
+import { useMultipleContractSingleData } from 'state/multicall/hooks';
 
 export interface IPresetArgs {
   type: Presets;
   min: number;
   max: number;
-  baseDepositMin?: number;
-  baseDepositMax?: number;
-  quoteDepositMin?: number;
-  quoteDepositMax?: number;
+  address?: string;
 }
 
 interface IPresetRanges {
@@ -74,81 +67,6 @@ export function PresetRanges({
   const gammaPairAddresses = gammaPair
     ? gammaPair.map((pair) => pair.address)
     : [];
-
-  const gammaUNIPROXYContract = useGammaUNIProxyContract();
-  const quoteDepositAmountData = useSingleContractMultipleData(
-    gammaUNIPROXYContract,
-    'getDepositAmount',
-    gammaPairAddresses.map((address) => [
-      address,
-      baseCurrency?.wrapped.address,
-      parseUnits('1', baseCurrency?.wrapped.decimals ?? 0),
-    ]),
-  );
-
-  const baseDepositAmountData = useSingleContractMultipleData(
-    gammaUNIPROXYContract,
-    'getDepositAmount',
-    gammaPairAddresses.map((address) => [
-      address,
-      quoteCurrency?.wrapped.address,
-      parseUnits('1', quoteCurrency?.wrapped.decimals ?? 0),
-    ]),
-  );
-
-  const quoteDepositAmounts = quoteDepositAmountData.map((callData) => {
-    if (
-      !callData.loading &&
-      callData.result &&
-      callData.result.length > 1 &&
-      quoteCurrency
-    ) {
-      return {
-        amountMin: Number(
-          formatUnits(callData.result[0], quoteCurrency.wrapped.decimals),
-        ),
-        amountMax: Number(
-          formatUnits(callData.result[1], quoteCurrency.wrapped.decimals),
-        ),
-      };
-    }
-    return { amountMin: 0, amountMax: 0 };
-  });
-
-  const baseDepositAmounts = baseDepositAmountData.map((callData) => {
-    if (
-      !callData.loading &&
-      callData.result &&
-      callData.result.length > 1 &&
-      baseCurrency
-    ) {
-      return {
-        amountMin: Number(
-          formatUnits(callData.result[0], baseCurrency.wrapped.decimals),
-        ),
-        amountMax: Number(
-          formatUnits(callData.result[1], baseCurrency.wrapped.decimals),
-        ),
-      };
-    }
-    return { amountMin: 0, amountMax: 0 };
-  });
-
-  const gammaDeposit = gammaPairAddresses.map((_, index) => {
-    if (baseDepositAmounts.length >= index) {
-      return {
-        base: {
-          min: baseDepositAmounts[index].amountMin,
-          max: baseDepositAmounts[index].amountMax,
-        },
-        quote: {
-          min: quoteDepositAmounts[index].amountMin,
-          max: quoteDepositAmounts[index].amountMax,
-        },
-      };
-    }
-    return;
-  });
 
   const gammaBaseLowerData = useMultipleContractSingleData(
     gammaPairAddresses,
@@ -212,28 +130,28 @@ export function PresetRanges({
     if (isGamma) {
       return gammaPair
         ? gammaPair.map((pair, index) => {
-            const gammaDepositItem = gammaDeposit[index];
             const gammaValue = gammaValues[index];
 
             return {
               type: pair.type,
               title: pair.title,
+              address: pair.address,
               min: gammaValue ? gammaValue.min : 0,
               max: gammaValue ? gammaValue.max : 0,
               risk: PresetProfits.VERY_LOW,
               profit: PresetProfits.HIGH,
-              baseDepositMin: gammaDepositItem
-                ? gammaDepositItem.base.min
-                : undefined,
-              baseDepositMax: gammaDepositItem
-                ? gammaDepositItem.base.max
-                : undefined,
-              quoteDepositMin: gammaDepositItem
-                ? gammaDepositItem.quote.min
-                : undefined,
-              quoteDepositMax: gammaDepositItem
-                ? gammaDepositItem.quote.max
-                : undefined,
+              // baseDepositMin: gammaDepositItem
+              //   ? gammaDepositItem.base.min
+              //   : undefined,
+              // baseDepositMax: gammaDepositItem
+              //   ? gammaDepositItem.base.max
+              //   : undefined,
+              // quoteDepositMin: gammaDepositItem
+              //   ? gammaDepositItem.quote.min
+              //   : undefined,
+              // quoteDepositMax: gammaDepositItem
+              //   ? gammaDepositItem.quote.max
+              //   : undefined,
             };
           })
         : [];
@@ -285,7 +203,7 @@ export function PresetRanges({
         profit: PresetProfits.HIGH,
       },
     ];
-  }, [isStablecoinPair, isGamma, gammaPair, gammaValues, gammaDeposit, t]);
+  }, [isStablecoinPair, isGamma, gammaPair, gammaValues, t]);
 
   const risk = useMemo(() => {
     if (!priceUpper || !priceLower || !price) return;

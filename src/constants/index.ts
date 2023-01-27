@@ -329,7 +329,7 @@ export const GammaPairs: {
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
     {
       type: Presets.GAMMA_DYNAMIC,
-      title: 'Dynamic',
+      title: 'Pegged Price',
       address: '0x8dd3bf71ef18dd88869d128bde058c9d8c270176',
       token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
       token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
@@ -340,7 +340,7 @@ export const GammaPairs: {
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
     {
       type: Presets.GAMMA_DYNAMIC,
-      title: 'Dynamic',
+      title: 'Pegged Price',
       address: '0xccbcaf47e87f50a338fac9bf58e567ed1c87be2b',
       token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
       token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',

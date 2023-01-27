@@ -37,7 +37,9 @@ import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
 import { GlobalConst } from 'constants/index';
-import { parseUnits } from 'ethers/lib/utils';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { useGammaUNIProxyContract } from 'hooks/useContract';
+import { useSingleContractMultipleData } from 'state/multicall/hooks';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -436,15 +438,78 @@ export function useV3DerivedMintInfo(
     | CurrencyAmount<Currency>
     | undefined = tryParseAmount(typedValue, currencies[independentField]);
 
+  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+  const gammaCurrencies = [currencyA, currencyB];
+  const depositAmountsData = useSingleContractMultipleData(
+    presetRange && presetRange.address ? gammaUNIPROXYContract : null,
+    'getDepositAmount',
+    gammaCurrencies.map((currency) => [
+      presetRange?.address,
+      currency?.wrapped.address,
+      parseUnits('1', currency?.wrapped.decimals ?? 0),
+    ]),
+  );
+
+  const quoteDepositAmount = useMemo(() => {
+    if (
+      depositAmountsData.length > 0 &&
+      !depositAmountsData[0].loading &&
+      depositAmountsData[0].result &&
+      depositAmountsData[0].result.length > 1 &&
+      currencyB
+    ) {
+      return {
+        amountMin: Number(
+          formatUnits(
+            depositAmountsData[0].result[0],
+            currencyB.wrapped.decimals,
+          ),
+        ),
+        amountMax: Number(
+          formatUnits(
+            depositAmountsData[0].result[1],
+            currencyB.wrapped.decimals,
+          ),
+        ),
+      };
+    }
+    return;
+  }, [currencyB, depositAmountsData]);
+
+  const baseDepositAmount = useMemo(() => {
+    if (
+      depositAmountsData.length > 1 &&
+      !depositAmountsData[1].loading &&
+      depositAmountsData[1].result &&
+      depositAmountsData[1].result.length > 1 &&
+      currencyA
+    ) {
+      return {
+        amountMin: Number(
+          formatUnits(
+            depositAmountsData[1].result[0],
+            currencyA.wrapped.decimals,
+          ),
+        ),
+        amountMax: Number(
+          formatUnits(
+            depositAmountsData[1].result[1],
+            currencyA.wrapped.decimals,
+          ),
+        ),
+      };
+    }
+    return;
+  }, [currencyA, depositAmountsData]);
+
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
     if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE) {
       if (
         !independentAmount ||
         !presetRange ||
-        !presetRange.baseDepositMin ||
-        !presetRange.baseDepositMax ||
-        !presetRange.quoteDepositMin ||
-        !presetRange.quoteDepositMax ||
+        !presetRange.address ||
+        !quoteDepositAmount ||
+        !baseDepositAmount ||
         !currencyA ||
         !currencyB
       )
@@ -452,7 +517,8 @@ export function useV3DerivedMintInfo(
       if (independentField === Field.CURRENCY_A) {
         const quoteDeposit = parseUnits(
           (
-            ((presetRange.quoteDepositMin + presetRange.quoteDepositMax) / 2) *
+            ((quoteDepositAmount.amountMin + quoteDepositAmount.amountMax) /
+              2) *
             Number(independentAmount.toSignificant())
           ).toFixed(currencyB.wrapped.decimals),
           currencyB.wrapped.decimals,
@@ -464,7 +530,7 @@ export function useV3DerivedMintInfo(
       } else {
         const baseDeposit = parseUnits(
           (
-            ((presetRange.baseDepositMin + presetRange.baseDepositMax) / 2) *
+            ((baseDepositAmount.amountMin + baseDepositAmount.amountMax) / 2) *
             Number(independentAmount.toSignificant())
           ).toFixed(currencyA.wrapped.decimals),
           currencyA.wrapped.decimals,
@@ -535,6 +601,8 @@ export function useV3DerivedMintInfo(
     tickUpper,
     poolForPosition,
     presetRange,
+    quoteDepositAmount,
+    baseDepositAmount,
     independentField,
     outOfRange,
     invalidRange,
