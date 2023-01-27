@@ -55,10 +55,11 @@ const GammaFarmCardDetails: React.FC<{
     account ?? undefined,
   ]);
 
-  const stakedAmount =
+  const stakedAmountBN =
     !stakedData.loading && stakedData.result && stakedData.result.length > 0
-      ? formatUnits(stakedData.result[0], 18)
-      : '0';
+      ? stakedData.result[0]
+      : undefined;
+  const stakedAmount = stakedAmountBN ? formatUnits(stakedAmountBN, 18) : '0';
 
   const lpTokenUSD =
     data && data.totalSupply && Number(data.totalSupply) > 0
@@ -132,15 +133,19 @@ const GammaFarmCardDetails: React.FC<{
   };
 
   const stakeLP = async () => {
-    if (!masterChefContract || !account) return;
+    if (!masterChefContract || !account || !lpTokenBalance) return;
     const estimatedGas = await masterChefContract.estimateGas.deposit(
       pairData.pid,
-      parseUnits(Number(stakeAmount).toFixed(18), 18),
+      stakeAmount === availableStakeAmount
+        ? lpTokenBalance.numerator.toString()
+        : parseUnits(Number(stakeAmount).toFixed(18), 18),
       account,
     );
     const response: TransactionResponse = await masterChefContract.deposit(
       pairData.pid,
-      parseUnits(Number(stakeAmount).toFixed(18), 18),
+      stakeAmount === availableStakeAmount
+        ? lpTokenBalance.numerator.toString()
+        : parseUnits(Number(stakeAmount).toFixed(18), 18),
       account,
       {
         gasLimit: calculateGasMargin(estimatedGas),
@@ -156,17 +161,21 @@ const GammaFarmCardDetails: React.FC<{
   };
 
   const unStakeLP = async () => {
-    if (!masterChefContract || !account) return;
+    if (!masterChefContract || !account || !stakedAmountBN) return;
     setAttemptUnstaking(true);
     try {
       const estimatedGas = await masterChefContract.estimateGas.withdraw(
         pairData.pid,
-        parseUnits(Number(unStakeAmount).toFixed(18), 18),
+        unStakeAmount === stakedAmount
+          ? stakedAmountBN
+          : parseUnits(Number(unStakeAmount).toFixed(18), 18),
         account,
       );
       const response: TransactionResponse = await masterChefContract.withdraw(
         pairData.pid,
-        parseUnits(Number(unStakeAmount).toFixed(18), 18),
+        unStakeAmount === stakedAmount
+          ? stakedAmountBN
+          : parseUnits(Number(unStakeAmount).toFixed(18), 18),
         account,
         {
           gasLimit: calculateGasMargin(estimatedGas),

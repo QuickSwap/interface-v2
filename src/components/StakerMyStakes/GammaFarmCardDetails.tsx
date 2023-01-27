@@ -22,7 +22,10 @@ import {
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import { tryParseAmount } from 'state/swap/hooks';
-import { useMultipleContractSingleData } from 'state/multicall/hooks';
+import {
+  useMultipleContractSingleData,
+  useSingleCallResult,
+} from 'state/multicall/hooks';
 import GammaRewarder from 'constants/abis/gamma-rewarder.json';
 import { Interface } from '@ethersproject/abi';
 import { useTokenBalance } from 'state/wallet/hooks';
@@ -52,7 +55,15 @@ const GammaFarmCardDetails: React.FC<{
   const lpTokenBalance = useTokenBalance(account ?? undefined, lpToken);
   const availableStakeAmount = lpTokenBalance?.toExact() ?? '0';
 
-  const stakedAmount = pairData.stakedAmount;
+  const stakedData = useSingleCallResult(masterChefContract, 'userInfo', [
+    pairData.pid,
+    account ?? undefined,
+  ]);
+  const stakedAmountBN =
+    !stakedData.loading && stakedData.result && stakedData.result.length > 0
+      ? stakedData.result[0]
+      : undefined;
+  const stakedAmount = stakedAmountBN ? formatUnits(stakedAmountBN, 18) : '0';
   const lpTokenUSD =
     data && data.totalSupply && Number(data.totalSupply) > 0
       ? (Number(data.tvlUSD) / Number(data.totalSupply)) * 10 ** 18
@@ -119,15 +130,19 @@ const GammaFarmCardDetails: React.FC<{
   };
 
   const stakeLP = async () => {
-    if (!masterChefContract || !account) return;
+    if (!masterChefContract || !account || !lpTokenBalance) return;
     const estimatedGas = await masterChefContract.estimateGas.deposit(
       pairData.pid,
-      parseUnits(Number(stakeAmount).toFixed(18), 18),
+      stakeAmount === availableStakeAmount
+        ? lpTokenBalance.numerator.toString()
+        : parseUnits(Number(stakeAmount).toFixed(18), 18),
       account,
     );
     const response: TransactionResponse = await masterChefContract.deposit(
       pairData.pid,
-      parseUnits(Number(stakeAmount).toFixed(18), 18),
+      stakeAmount === availableStakeAmount
+        ? lpTokenBalance.numerator.toString()
+        : parseUnits(Number(stakeAmount).toFixed(18), 18),
       account,
       {
         gasLimit: calculateGasMargin(estimatedGas),
@@ -143,17 +158,21 @@ const GammaFarmCardDetails: React.FC<{
   };
 
   const unStakeLP = async () => {
-    if (!masterChefContract || !account) return;
+    if (!masterChefContract || !account || !stakedAmountBN) return;
     setAttemptUnstaking(true);
     try {
       const estimatedGas = await masterChefContract.estimateGas.withdraw(
         pairData.pid,
-        parseUnits(Number(unStakeAmount).toFixed(18), 18),
+        unStakeAmount === stakedAmount
+          ? stakedAmountBN
+          : parseUnits(Number(unStakeAmount).toFixed(18), 18),
         account,
       );
       const response: TransactionResponse = await masterChefContract.withdraw(
         pairData.pid,
-        parseUnits(Number(unStakeAmount).toFixed(18), 18),
+        unStakeAmount === stakedAmount
+          ? stakedAmountBN
+          : parseUnits(Number(unStakeAmount).toFixed(18), 18),
         account,
         {
           gasLimit: calculateGasMargin(estimatedGas),

@@ -443,11 +443,13 @@ export function useV3DerivedMintInfo(
   const depositAmountsData = useSingleContractMultipleData(
     presetRange && presetRange.address ? gammaUNIPROXYContract : null,
     'getDepositAmount',
-    gammaCurrencies.map((currency) => [
-      presetRange?.address,
-      currency?.wrapped.address,
-      parseUnits('1', currency?.wrapped.decimals ?? 0),
-    ]),
+    presetRange && presetRange.address
+      ? gammaCurrencies.map((currency) => [
+          presetRange?.address,
+          currency?.wrapped.address,
+          parseUnits('1', currency?.wrapped.decimals ?? 0),
+        ])
+      : [],
   );
 
   const quoteDepositAmount = useMemo(() => {
