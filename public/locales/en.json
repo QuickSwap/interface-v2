@@ -623,5 +623,6 @@
   "fetchingGammaDepositRange": "Fetching Gamma Deposit Range",
   "available": "Available",
   "noGammaFarms": "No Gamma Farms",
-  "addingLiquidity": "Adding Liquidity"
+  "addingLiquidity": "Adding Liquidity",
+  "selectStrategy": "Select Strategy"
 }

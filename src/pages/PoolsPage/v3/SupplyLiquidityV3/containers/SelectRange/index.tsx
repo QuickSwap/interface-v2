@@ -324,10 +324,15 @@ export function SelectRange({
         </Box>
       )}
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
-        <Box my={1.5} className='poolRangePowerGamma'>
-          <span className='text-secondary'>{t('poweredBy')}</span>
-          <img src={GammaLogo} alt='Gamma Logo' />
-        </Box>
+        <>
+          <Box my={1.5} className='poolRangePowerGamma'>
+            <span className='text-secondary'>{t('poweredBy')}</span>
+            <img src={GammaLogo} alt='Gamma Logo' />
+          </Box>
+          <Box mb={1.5}>
+            <small className='weight-600'>{t('selectStrategy')}</small>
+          </Box>
+        </>
       )}
       <Box my={1}>
         <PresetRanges

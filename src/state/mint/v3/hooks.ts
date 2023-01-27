@@ -441,7 +441,7 @@ export function useV3DerivedMintInfo(
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
   const gammaCurrencies = [currencyA, currencyB];
   const depositAmountsData = useSingleContractMultipleData(
-    presetRange && presetRange.address ? gammaUNIPROXYContract : null,
+    gammaUNIPROXYContract,
     'getDepositAmount',
     presetRange && presetRange.address
       ? gammaCurrencies.map((currency) => [
