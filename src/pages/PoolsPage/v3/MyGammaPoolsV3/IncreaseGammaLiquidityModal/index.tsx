@@ -22,8 +22,8 @@ import { CurrencyAmount } from '@uniswap/sdk-core';
 import { JSBI } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useGammaUNIProxyContract } from 'hooks/useContract';
-import { BigNumber } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
+import { useSingleContractMultipleData } from 'state/multicall/hooks';
 
 interface IncreaseGammaLiquidityModalProps {
   open: boolean;
@@ -39,52 +39,72 @@ export default function IncreaseGammaLiquidityModal({
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
-  const [depositRange, setDepositRange] = useState<
-    | {
-        base: { min: number; max: number };
-        quote: { min: number; max: number };
-      }
-    | undefined
-  >(undefined);
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
 
-  useEffect(() => {
-    if (!gammaUNIPROXYContract) return;
-    (async () => {
-      const quoteDepositAmount = await gammaUNIPROXYContract.getDepositAmount(
-        position.pairAddress,
-        position.token0.address,
-        parseUnits('1', position.token0.decimals),
-      );
-      const baseDepositAmount = await gammaUNIPROXYContract.getDepositAmount(
-        position.pairAddress,
-        position.token1.address,
-        parseUnits('1', position.token1.decimals),
-      );
-      const baseDepositMin =
-        baseDepositAmount && baseDepositAmount.length > 1
-          ? Number(formatUnits(baseDepositAmount[0], position.token0.decimals))
-          : 0;
+  const tokens = [position.token0, position.token1];
 
-      const baseDepositMax =
-        baseDepositAmount && baseDepositAmount.length > 1
-          ? Number(formatUnits(baseDepositAmount[1], position.token0.decimals))
-          : 0;
+  const depositAmountsData = useSingleContractMultipleData(
+    gammaUNIPROXYContract,
+    'getDepositAmount',
+    tokens.map((token) => [
+      position.pairAddress,
+      token.address,
+      parseUnits('1', token.decimals),
+    ]),
+  );
 
-      const quoteDepositMin =
-        quoteDepositAmount && quoteDepositAmount.length > 1
-          ? Number(formatUnits(quoteDepositAmount[0], position.token1.decimals))
-          : 0;
-      const quoteDepositMax =
-        quoteDepositAmount && quoteDepositAmount.length > 1
-          ? Number(formatUnits(quoteDepositAmount[1], position.token1.decimals))
-          : 0;
-      setDepositRange({
-        base: { min: baseDepositMin, max: baseDepositMax },
-        quote: { min: quoteDepositMin, max: quoteDepositMax },
-      });
-    })();
-  }, [gammaUNIPROXYContract, position]);
+  const depositRange = useMemo(() => {
+    if (depositAmountsData.length < 1) return;
+    const baseDepositMin =
+      !depositAmountsData[1].loading &&
+      depositAmountsData[1].result &&
+      depositAmountsData[1].result.length > 1
+        ? Number(
+            formatUnits(
+              depositAmountsData[1].result[0],
+              position.token0.decimals,
+            ),
+          )
+        : 0;
+    const baseDepositMax =
+      !depositAmountsData[1].loading &&
+      depositAmountsData[1].result &&
+      depositAmountsData[1].result.length > 1
+        ? Number(
+            formatUnits(
+              depositAmountsData[1].result[1],
+              position.token0.decimals,
+            ),
+          )
+        : 0;
+    const quoteDepositMin =
+      !depositAmountsData[0].loading &&
+      depositAmountsData[0].result &&
+      depositAmountsData[0].result.length > 1
+        ? Number(
+            formatUnits(
+              depositAmountsData[0].result[0],
+              position.token1.decimals,
+            ),
+          )
+        : 0;
+    const quoteDepositMax =
+      !depositAmountsData[0].loading &&
+      depositAmountsData[0].result &&
+      depositAmountsData[0].result.length > 1
+        ? Number(
+            formatUnits(
+              depositAmountsData[0].result[1],
+              position.token1.decimals,
+            ),
+          )
+        : 0;
+
+    return {
+      base: { min: baseDepositMin, max: baseDepositMax },
+      quote: { min: quoteDepositMin, max: quoteDepositMax },
+    };
+  }, [depositAmountsData, position.token0.decimals, position.token1.decimals]);
 
   const [deposit0, setDeposit0] = useState('');
   const [deposit1, setDeposit1] = useState('');

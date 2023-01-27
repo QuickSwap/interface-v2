@@ -90,21 +90,21 @@ export function PresetRanges({
     if (!callData.loading && callData.result && callData.result.length > 0) {
       return Number(callData.result[0]);
     }
-    return 0;
+    return;
   });
 
   const gammaBaseUppers = gammaBaseUpperData.map((callData) => {
     if (!callData.loading && callData.result && callData.result.length > 0) {
       return Number(callData.result[0]);
     }
-    return 0;
+    return;
   });
 
   const gammaCurrentTicks = gammaCurrentTickData.map((callData) => {
     if (!callData.loading && callData.result && callData.result.length > 0) {
       return Number(callData.result[0]);
     }
-    return 0;
+    return;
   });
 
   const gammaValues = gammaPairAddresses.map((_, index) => {
@@ -113,17 +113,17 @@ export function PresetRanges({
       gammaBaseUppers.length >= index &&
       gammaCurrentTicks.length >= index
     ) {
-      const lowerValue = Math.pow(
-        1.0001,
-        gammaBaseLowers[index] - gammaCurrentTicks[index],
-      );
-      const upperValue = Math.pow(
-        1.0001,
-        gammaBaseUppers[index] - gammaCurrentTicks[index],
-      );
-      return { min: lowerValue, max: upperValue };
+      const gammaBaseLower = gammaBaseLowers[index];
+      const gammaCurrentTick = gammaCurrentTicks[index];
+      const gammaBaseUpper = gammaBaseUppers[index];
+      if (gammaBaseLower && gammaCurrentTick && gammaBaseUpper) {
+        const lowerValue = Math.pow(1.0001, gammaBaseLower - gammaCurrentTick);
+        const upperValue = Math.pow(1.0001, gammaBaseUpper - gammaCurrentTick);
+        return { min: lowerValue, max: upperValue };
+      }
+      return;
     }
-    return undefined;
+    return;
   });
 
   const ranges = useMemo(() => {
@@ -140,18 +140,6 @@ export function PresetRanges({
               max: gammaValue ? gammaValue.max : 0,
               risk: PresetProfits.VERY_LOW,
               profit: PresetProfits.HIGH,
-              // baseDepositMin: gammaDepositItem
-              //   ? gammaDepositItem.base.min
-              //   : undefined,
-              // baseDepositMax: gammaDepositItem
-              //   ? gammaDepositItem.base.max
-              //   : undefined,
-              // quoteDepositMin: gammaDepositItem
-              //   ? gammaDepositItem.quote.min
-              //   : undefined,
-              // quoteDepositMax: gammaDepositItem
-              //   ? gammaDepositItem.quote.max
-              //   : undefined,
             };
           })
         : [];
@@ -280,7 +268,7 @@ export function PresetRanges({
   return (
     <Box>
       <Box mb='10px' className='preset-buttons'>
-        {isGamma && !Object.values(gammaValues).length ? (
+        {isGamma && gammaValues.find((value) => !value) ? (
           <Box width={1} className='flex justify-center'>
             <Loader />
           </Box>
