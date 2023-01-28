@@ -624,5 +624,9 @@
   "available": "Available",
   "noGammaFarms": "No Gamma Farms",
   "addingLiquidity": "Adding Liquidity",
-  "selectStrategy": "Select Strategy"
+  "selectStrategy": "Select Strategy",
+  "allFarms": "All Farms",
+  "blueChips": "Blue chips",
+  "stableLPs": "Stable LPs",
+  "otherLPs": "Other LPs"
 }

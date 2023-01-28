@@ -88,27 +88,27 @@ export default function Farms() {
   const farmFilters = useMemo(
     () => [
       {
-        text: 'All Farms',
-        id: 0,
+        text: t('allFarms'),
+        id: GlobalConst.utils.v3FarmFilter.allFarms,
       },
       {
-        text: 'StableCoins',
-        id: 1,
+        text: t('stablecoins'),
+        id: GlobalConst.utils.v3FarmFilter.stableCoin,
       },
       {
-        text: 'Blue chips',
-        id: 2,
+        text: t('blueChips'),
+        id: GlobalConst.utils.v3FarmFilter.blueChip,
       },
       {
-        text: 'Stable LPs',
-        id: 3,
+        text: t('stableLPs'),
+        id: GlobalConst.utils.v3FarmFilter.stableLP,
       },
       {
-        text: 'Other LPs',
-        id: 4,
+        text: t('otherLPs'),
+        id: GlobalConst.utils.v3FarmFilter.otherLP,
       },
     ],
-    [],
+    [t],
   );
   const [farmFilter, setFarmFilter] = useState(farmFilters[0]);
 
@@ -234,7 +234,7 @@ export default function Farms() {
       )}
 
       {selectedFarmCategory?.id === 0 && (
-        <FarmingMyFarms farmFilter={farmFilter.id} search={searchValue} />
+        <FarmingMyFarms search={searchValue} />
       )}
       {selectedFarmCategory?.id === 1 && (
         <EternalFarmsPage

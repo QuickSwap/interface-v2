@@ -439,9 +439,11 @@ export function useV3DerivedMintInfo(
     | undefined = tryParseAmount(typedValue, currencies[independentField]);
 
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
-  const gammaCurrencies = [currencyA, currencyB];
+  const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : [];
   const depositAmountsData = useSingleContractMultipleData(
-    gammaUNIPROXYContract,
+    presetRange && presetRange.address && gammaCurrencies.length > 0
+      ? gammaUNIPROXYContract
+      : undefined,
     'getDepositAmount',
     presetRange && presetRange.address
       ? gammaCurrencies.map((currency) => [
@@ -639,29 +641,31 @@ export function useV3DerivedMintInfo(
 
   // sorted for token order
   const depositADisabled =
-    invalidRange ||
-    Boolean(
-      (deposit0Disabled &&
-        poolForPosition &&
-        tokenA &&
-        poolForPosition.token0.equals(tokenA)) ||
-        (deposit1Disabled &&
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+    (invalidRange ||
+      Boolean(
+        (deposit0Disabled &&
           poolForPosition &&
           tokenA &&
-          poolForPosition.token1.equals(tokenA)),
-    );
+          poolForPosition.token0.equals(tokenA)) ||
+          (deposit1Disabled &&
+            poolForPosition &&
+            tokenA &&
+            poolForPosition.token1.equals(tokenA)),
+      ));
   const depositBDisabled =
-    invalidRange ||
-    Boolean(
-      (deposit0Disabled &&
-        poolForPosition &&
-        tokenB &&
-        poolForPosition.token0.equals(tokenB)) ||
-        (deposit1Disabled &&
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+    (invalidRange ||
+      Boolean(
+        (deposit0Disabled &&
           poolForPosition &&
           tokenB &&
-          poolForPosition.token1.equals(tokenB)),
-    );
+          poolForPosition.token0.equals(tokenB)) ||
+          (deposit1Disabled &&
+            poolForPosition &&
+            tokenB &&
+            poolForPosition.token1.equals(tokenB)),
+      ));
 
   // create position entity based on users selection
   const position: Position | undefined = useMemo(() => {

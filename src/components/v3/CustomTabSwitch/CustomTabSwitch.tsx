@@ -4,7 +4,7 @@ import './CustomTabSwitch.scss';
 
 interface tabItem {
   text: string;
-  id: number;
+  id: string;
 }
 
 interface CustomTabSwitchProps {

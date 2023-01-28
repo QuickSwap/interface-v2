@@ -3,7 +3,13 @@ import { Box } from '@material-ui/core';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/Loader';
-import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
+import {
+  GammaPair,
+  GammaPairs,
+  GlobalConst,
+  GlobalData,
+  GlobalValue,
+} from 'constants/index';
 import { useQuery } from 'react-query';
 import GammaFarmCard from './GammaFarmCard';
 import { getTokenFromAddress } from 'utils';
@@ -14,7 +20,7 @@ import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesToken } from 'utils/useUSDCPrice';
 
 const GammaFarmsPage: React.FC<{
-  farmFilter: number;
+  farmFilter: string;
   search: string;
   sortBy: string;
   sortDesc: boolean;
@@ -26,7 +32,7 @@ const GammaFarmsPage: React.FC<{
     .concat(...Object.values(GammaPairs))
     .filter((item) => item.ableToFarm);
   const sortMultiplier = sortDesc ? -1 : 1;
-  const { v3FarmSortBy } = GlobalConst.utils;
+  const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 
   const fetchGammaData = async () => {
     try {
@@ -173,22 +179,76 @@ const GammaFarmsPage: React.FC<{
       return { ...item, token0: null, token1: null };
     })
     .filter((item) => {
-      if (search) {
-        return (
-          (item.token0 &&
-            item.token0.symbol &&
-            item.token0.symbol.toLowerCase().includes(search.toLowerCase())) ||
-          (item.token0 &&
-            item.token0.address.toLowerCase().includes(search.toLowerCase())) ||
-          (item.token1 &&
-            item.token1.symbol &&
-            item.token1.symbol.toLowerCase().includes(search.toLowerCase())) ||
-          (item.token1 &&
-            item.token1.address.toLowerCase().includes(search.toLowerCase())) ||
-          item.title.toLowerCase().includes(search.toLowerCase())
+      const searchCondition =
+        (item.token0 &&
+          item.token0.symbol &&
+          item.token0.symbol.toLowerCase().includes(search.toLowerCase())) ||
+        (item.token0 &&
+          item.token0.address.toLowerCase().includes(search.toLowerCase())) ||
+        (item.token1 &&
+          item.token1.symbol &&
+          item.token1.symbol.toLowerCase().includes(search.toLowerCase())) ||
+        (item.token1 &&
+          item.token1.address.toLowerCase().includes(search.toLowerCase())) ||
+        item.title.toLowerCase().includes(search.toLowerCase());
+      const blueChipCondition =
+        !!GlobalData.blueChips.find(
+          (token) =>
+            item.token0 &&
+            token.address.toLowerCase() === item.token0.address.toLowerCase(),
+        ) &&
+        !!GlobalData.blueChips.find(
+          (token) =>
+            item.token1 &&
+            token.address.toLowerCase() === item.token1.address.toLowerCase(),
         );
-      }
-      return true;
+      const stableCoinCondition =
+        !!GlobalData.stableCoins.find(
+          (token) =>
+            item.token0 &&
+            token.address.toLowerCase() === item.token0.address.toLowerCase(),
+        ) &&
+        !!GlobalData.stableCoins.find(
+          (token) =>
+            item.token1 &&
+            token.address.toLowerCase() === item.token1.address.toLowerCase(),
+        );
+      const stableLPCondition =
+        item.token0 &&
+        item.token1 &&
+        ((item.token0.address.toLowerCase() ===
+          GlobalValue.tokens.MATIC.address.toLowerCase() &&
+          (item.token1.address.toLowerCase() ===
+            GlobalValue.tokens.COMMON.MATICX.address.toLowerCase() ||
+            item.token1.address.toLowerCase() ===
+              GlobalValue.tokens.COMMON.STMATIC.address.toLowerCase())) ||
+          (item.token1.address.toLowerCase() ===
+            GlobalValue.tokens.MATIC.address.toLowerCase() &&
+            (item.token0.address.toLowerCase() ===
+              GlobalValue.tokens.COMMON.MATICX.address.toLowerCase() ||
+              item.token0.address.toLowerCase() ===
+                GlobalValue.tokens.COMMON.STMATIC.address.toLowerCase())) ||
+          (item.token0.address.toLowerCase() ===
+            GlobalValue.tokens.COMMON.NEW_QUICK.address.toLowerCase() &&
+            item.token1.address.toLowerCase() ===
+              GlobalValue.tokens.COMMON.NEW_DQUICK.address.toLowerCase()) ||
+          (item.token1.address.toLowerCase() ===
+            GlobalValue.tokens.COMMON.NEW_QUICK.address.toLowerCase() &&
+            item.token0.address.toLowerCase() ===
+              GlobalValue.tokens.COMMON.NEW_DQUICK.address.toLowerCase()));
+
+      return (
+        searchCondition &&
+        (farmFilter === v3FarmFilter.blueChip
+          ? blueChipCondition
+          : farmFilter === v3FarmFilter.stableCoin
+          ? stableCoinCondition
+          : farmFilter === v3FarmFilter.stableLP
+          ? stableLPCondition
+          : farmFilter === v3FarmFilter.otherLP
+          ? !blueChipCondition && !stableCoinCondition && !stableLPCondition
+          : true)
+      );
     })
     .sort((farm0, farm1) => {
       const gammaData0 = gammaData
