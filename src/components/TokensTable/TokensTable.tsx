@@ -14,7 +14,7 @@ import {
 import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
-import 'components/styles/TokensTable.scss';
+import 'components/styles/AnalyticsTable.scss';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 
