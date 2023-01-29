@@ -12,6 +12,7 @@ import {
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
+import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import cypherDIcon from 'assets/images/cypherDIcon.png';
 import BitKeepIcon from 'assets/images/bitkeep.png';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
@@ -150,6 +151,7 @@ export const GlobalConst = {
     TRUST_WALLET: 'Trust Wallet',
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
+    BRAVEWALLET: 'BraveWallet',
     BITKEEP: 'BitKeep',
     INJECTED: 'Injected',
     SAFE_APP: 'Gnosis Safe App',
@@ -387,6 +389,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: GlobalConst.walletName.BLOCKWALLET,
     iconName: BlockWalletIcon,
     description: 'BlockWallet browser extension.',
+    href: null,
+    color: '#1673ff',
+  },
+  BRAVEWALLET: {
+    connector: injected,
+    name: GlobalConst.walletName.BRAVEWALLET,
+    iconName: BraveWalletIcon,
+    description: 'Brave browser wallet.',
     href: null,
     color: '#1673ff',
   },
