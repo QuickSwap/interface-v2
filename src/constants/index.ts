@@ -355,6 +355,26 @@ export const GammaPairs: {
       pid: 15,
     },
   ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x598cA33b7F5FAB560ddC8E76D94A4b4AA52566d7',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      ableToFarm: true,
+      pid: 16,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x9134f456D33d1288de26271730047AE0c5CB6F71',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      ableToFarm: true,
+      pid: 17,
+    },
+  ],
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
