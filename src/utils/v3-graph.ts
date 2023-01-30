@@ -29,6 +29,8 @@ import {
   getChartData,
   getPercentChange,
   getSecondsOneDay,
+  getTokenChartData,
+  getTokenPairs2,
   splitQuery,
 } from 'utils';
 import dayjs from 'dayjs';
@@ -39,8 +41,8 @@ import { JSBI } from '@uniswap/sdk';
 import keyBy from 'lodash.keyby';
 import { GlobalConst, TxnType } from 'constants/index';
 import {
+  FILTERED_TRANSACTIONS,
   GLOBAL_ALLDATA,
-  GLOBAL_CHART,
   PAIRS_BULK1,
   PAIRS_CURRENT,
   PAIRS_HISTORICAL_BULK,
@@ -1423,6 +1425,35 @@ export const getTokenChartDataV3 = async (
     console.log(e);
   }
   return data;
+};
+
+export const getTokenChartDataTotal = async (
+  tokenAddress: string,
+  startTime: number,
+) => {
+  const v3Data = await getTokenChartDataV3(tokenAddress, startTime);
+  const v2Data = await getTokenChartData(tokenAddress, startTime);
+  const totalData = v3Data.map((item) => {
+    const v2Item = v2Data.find((v2Item) => v2Item.date === item.date);
+    return {
+      ...item,
+      dailyVolumeUSD:
+        (item && item.dailyVolumeUSD ? Number(item.dailyVolumeUSD) : 0) +
+        (v2Item && v2Item.dailyVolumeUSD ? Number(v2Item.dailyVolumeUSD) : 0),
+      priceUSD:
+        item && item.priceUSD
+          ? Number(item.priceUSD)
+          : v2Item && v2Item.priceUSD
+          ? Number(v2Item.priceUSD)
+          : 0,
+      totalLiquidityUSD:
+        (item && item.totalLiquidityUSD ? Number(item.totalLiquidityUSD) : 0) +
+        (v2Item && v2Item.totalLiquidityUSD
+          ? Number(v2Item.totalLiquidityUSD)
+          : 0),
+    };
+  });
+  return totalData;
 };
 
 export async function isV3TokenExists(tokenAddress: string) {
@@ -3055,6 +3086,211 @@ export async function getTokenTransactionsV3(address: string): Promise<any> {
       swaps: [...swaps0, ...swaps1],
     };
   } catch {
+    return;
+  }
+}
+
+export async function getTokenTransactionsTotal(address: string): Promise<any> {
+  try {
+    const data = await clientV3.query({
+      query: GLOBAL_TRANSACTIONS_V3,
+      variables: {
+        address: address,
+      },
+      fetchPolicy: 'network-only',
+    });
+
+    const v2tokenPairs = await getTokenPairs2(address);
+    const formattedPairs = v2tokenPairs
+      ? v2tokenPairs.map((pair: any) => {
+          return pair.id;
+        })
+      : [];
+
+    const dataV2 = await clientV2.query({
+      query: FILTERED_TRANSACTIONS,
+      variables: {
+        allPairs: formattedPairs,
+      },
+      fetchPolicy: 'network-only',
+    });
+
+    const mints0 = data.data.mintsAs0.map((m: any) => {
+      return {
+        type: TxnType.ADD,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.origin,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+    const mints1 = data.data.mintsAs1.map((m: any) => {
+      return {
+        type: TxnType.ADD,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.origin,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+
+    const burns0 = data.data.burnsAs0.map((m: any) => {
+      return {
+        type: TxnType.REMOVE,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.owner,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+    const burns1 = data.data.burnsAs1.map((m: any) => {
+      return {
+        type: TxnType.REMOVE,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.owner,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+
+    const swaps0 = data.data.swapsAs0.map((m: any) => {
+      return {
+        type: TxnType.SWAP,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.origin,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+
+    const swaps1 = data.data.swapsAs1.map((m: any) => {
+      return {
+        type: TxnType.SWAP,
+        transaction: {
+          ...m.transaction,
+          timestamp: m.timestamp,
+        },
+        timestamp: m.timestamp,
+        sender: m.origin,
+        pair: {
+          token0: {
+            symbol: formatTokenSymbol(m.pool.token0.id, m.pool.token0.symbol),
+            id: m.pool.token0.id,
+          },
+          token1: {
+            symbol: formatTokenSymbol(m.pool.token1.id, m.pool.token1.symbol),
+            id: m.pool.token1.id,
+          },
+        },
+        amountUSD: parseFloat(m.amountUSD),
+        amount0: parseFloat(m.amount0),
+        amount1: parseFloat(m.amount1),
+      };
+    });
+
+    const mintsV2 = dataV2.data.mints.map((m: any) => {
+      return {
+        ...m,
+        isV2: true,
+      };
+    });
+
+    const swapsV2 = dataV2.data.swaps.map((m: any) => {
+      return {
+        ...m,
+        isV2: true,
+      };
+    });
+
+    const burnsV2 = dataV2.data.burns.map((m: any) => {
+      return {
+        ...m,
+        isV2: true,
+      };
+    });
+
+    return {
+      mints: [...mints0, ...mints1, ...mintsV2],
+      burns: [...burns0, ...burns1, ...burnsV2],
+      swaps: [...swaps0, ...swaps1, ...swapsV2],
+    };
+  } catch (e) {
+    console.log('err', e);
     return;
   }
 }

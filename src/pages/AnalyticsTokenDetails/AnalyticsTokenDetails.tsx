@@ -33,6 +33,7 @@ import {
   getPairsAPR,
   getTokenInfoTotal,
   getTokenInfoV3,
+  getTokenTransactionsTotal,
   getTokenTransactionsV3,
   getTopPairsTotalByToken,
   getTopPairsV3ByToken,
@@ -76,12 +77,30 @@ const AnalyticsTokenDetails: React.FC = () => {
         return { ...item, type: TxnType.ADD };
       });
       const swaps = tokenTransactions.swaps.map((item: any) => {
-        const amount0 =
-          item.amount0 > 0 ? item.amount0 : Math.abs(item.amount1);
-        const amount1 =
-          item.amount0 > 0 ? Math.abs(item.amount1) : Math.abs(item.amount0);
-        const token0 = item.amount0 > 0 ? item.pair.token0 : item.pair.token1;
-        const token1 = item.amount0 > 0 ? item.pair.token1 : item.pair.token0;
+        const amount0 = item.isV2
+          ? item.amount0Out > 0
+            ? item.amount0Out
+            : item.amount1Out
+          : item.amount0 > 0
+          ? item.amount0
+          : Math.abs(item.amount1);
+        const amount1 = item.isV2
+          ? item.amount0In > 0
+            ? item.amount0In
+            : item.amount1In
+          : item.amount0 > 0
+          ? Math.abs(item.amount1)
+          : Math.abs(item.amount0);
+        const token0 = (item.isV2
+        ? item.amount0Out > 0
+        : item.amount0 > 0)
+          ? item.pair.token0
+          : item.pair.token1;
+        const token1 = (item.isV2
+        ? item.amount0Out > 0
+        : item.amount0 > 0)
+          ? item.pair.token1
+          : item.pair.token0;
         return {
           ...item,
           amount0,
@@ -151,11 +170,19 @@ const AnalyticsTokenDetails: React.FC = () => {
       }
     }
     async function fetchTransactions() {
-      getTokenTransactionsV3(tokenAddress).then((transactions) => {
-        if (transactions) {
-          updateTokenTransactions(transactions);
-        }
-      });
+      if (version === 'total') {
+        getTokenTransactionsTotal(tokenAddress).then((transactions) => {
+          if (transactions) {
+            updateTokenTransactions(transactions);
+          }
+        });
+      } else {
+        getTokenTransactionsV3(tokenAddress).then((transactions) => {
+          if (transactions) {
+            updateTokenTransactions(transactions);
+          }
+        });
+      }
     }
     async function fetchPairs() {
       const tokenPairs = await getTokenPairs2(tokenAddress);
@@ -315,21 +342,33 @@ const AnalyticsTokenDetails: React.FC = () => {
             <Box className='panel analyticsDetailsInfoV3'>
               <Box>
                 <span className='text-disabled'>{t('tvl')}</span>
-                <h5>${formatNumber(token.tvlUSD)}</h5>
-                <small
-                  className={getPriceClass(Number(token.tvlUSDChange) || 0)}
-                >
-                  {getFormattedPrice(token.tvlUSDChange || 0)}%
-                </small>
+                <Box className='flex items-center flex-wrap'>
+                  <Box mr='6px'>
+                    <h5>${formatNumber(token.tvlUSD)}</h5>
+                  </Box>
+                  <small
+                    className={`priceChangeWrapper ${getPriceClass(
+                      Number(token.tvlUSDChange) || 0,
+                    )}`}
+                  >
+                    {getFormattedPrice(token.tvlUSDChange || 0)}%
+                  </small>
+                </Box>
               </Box>
               <Box>
                 <span className='text-disabled'>{t('24hTradingVol1')}</span>
-                <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
-                <small
-                  className={getPriceClass(Number(token.volumeChangeUSD) || 0)}
-                >
-                  {getFormattedPrice(token.volumeChangeUSD || 0)}%
-                </small>
+                <Box className='flex items-center flex-wrap'>
+                  <Box mr='6px'>
+                    <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
+                  </Box>
+                  <small
+                    className={`priceChangeWrapper ${getPriceClass(
+                      Number(token.volumeChangeUSD) || 0,
+                    )}`}
+                  >
+                    {getFormattedPrice(token.volumeChangeUSD || 0)}%
+                  </small>
+                </Box>
               </Box>
               <Box>
                 <span className='text-disabled'>{t('7dTradingVol')}</span>
