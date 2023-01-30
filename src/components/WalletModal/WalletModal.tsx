@@ -29,6 +29,9 @@ import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
 
+//@ts-ignore
+import okWeb3 from '@okwallet/extension-web3-1.7.0';
+
 const WALLET_VIEWS = {
   OPTIONS: 'options',
   OPTIONS_SECONDARY: 'options_secondary',
