@@ -5,7 +5,7 @@ import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
 import { BuyFiatButton } from 'components';
 import { useTranslation } from 'react-i18next';
 
-export const BuyFiatSection: React.FC = () => {
+const BuyFiatSection: React.FC = () => {
   const { t } = useTranslation();
 
   return (
@@ -22,3 +22,5 @@ export const BuyFiatSection: React.FC = () => {
     </Box>
   );
 };
+
+export default BuyFiatSection;

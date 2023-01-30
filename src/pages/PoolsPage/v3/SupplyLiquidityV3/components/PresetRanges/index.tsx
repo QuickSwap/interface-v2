@@ -1,21 +1,25 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import { PoolStats } from '../PoolStats';
-import { IDerivedMintInfo } from 'state/mint/v3/hooks';
+import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
-import { Box, Grid } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { PoolState } from 'hooks/usePools';
 import Loader from 'components/Loader';
 import { fetchPoolsAPR } from 'utils/api';
 import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
+import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import './index.scss';
+import { Interface } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { useMultipleContractSingleData } from 'state/multicall/hooks';
 
 export interface IPresetArgs {
   type: Presets;
   min: number;
   max: number;
+  address?: string;
 }
 
 interface IPresetRanges {
@@ -28,6 +32,8 @@ interface IPresetRanges {
   priceLower: string | undefined;
   priceUpper: string | undefined;
   price: string | undefined;
+  gammaPair?: { address: string; title: string; type: Presets }[];
+  isGamma?: boolean;
 }
 
 enum PresetProfits {
@@ -47,7 +53,10 @@ export function PresetRanges({
   priceLower,
   price,
   priceUpper,
+  isGamma = false,
+  gammaPair,
 }: IPresetRanges) {
+  const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity);
   const { t } = useTranslation();
   const [aprs, setAprs] = useState<undefined | { [key: string]: number }>();
 
@@ -55,7 +64,87 @@ export function PresetRanges({
     fetchPoolsAPR().then(setAprs);
   }, []);
 
+  const gammaPairAddresses = gammaPair
+    ? gammaPair.map((pair) => pair.address)
+    : [];
+
+  const gammaBaseLowerData = useMultipleContractSingleData(
+    gammaPairAddresses,
+    new Interface(GammaPairABI),
+    'baseLower',
+  );
+
+  const gammaBaseUpperData = useMultipleContractSingleData(
+    gammaPairAddresses,
+    new Interface(GammaPairABI),
+    'baseUpper',
+  );
+
+  const gammaCurrentTickData = useMultipleContractSingleData(
+    gammaPairAddresses,
+    new Interface(GammaPairABI),
+    'currentTick',
+  );
+
+  const gammaBaseLowers = gammaBaseLowerData.map((callData) => {
+    if (!callData.loading && callData.result && callData.result.length > 0) {
+      return Number(callData.result[0]);
+    }
+    return;
+  });
+
+  const gammaBaseUppers = gammaBaseUpperData.map((callData) => {
+    if (!callData.loading && callData.result && callData.result.length > 0) {
+      return Number(callData.result[0]);
+    }
+    return;
+  });
+
+  const gammaCurrentTicks = gammaCurrentTickData.map((callData) => {
+    if (!callData.loading && callData.result && callData.result.length > 0) {
+      return Number(callData.result[0]);
+    }
+    return;
+  });
+
+  const gammaValues = gammaPairAddresses.map((_, index) => {
+    if (
+      gammaBaseLowers.length >= index &&
+      gammaBaseUppers.length >= index &&
+      gammaCurrentTicks.length >= index
+    ) {
+      const gammaBaseLower = gammaBaseLowers[index];
+      const gammaCurrentTick = gammaCurrentTicks[index];
+      const gammaBaseUpper = gammaBaseUppers[index];
+      if (gammaBaseLower && gammaCurrentTick && gammaBaseUpper) {
+        const lowerValue = Math.pow(1.0001, gammaBaseLower - gammaCurrentTick);
+        const upperValue = Math.pow(1.0001, gammaBaseUpper - gammaCurrentTick);
+        return { min: lowerValue, max: upperValue };
+      }
+      return;
+    }
+    return;
+  });
+
   const ranges = useMemo(() => {
+    if (isGamma) {
+      return gammaPair
+        ? gammaPair.map((pair, index) => {
+            const gammaValue = gammaValues[index];
+
+            return {
+              type: pair.type,
+              title: pair.title,
+              address: pair.address,
+              min: gammaValue ? gammaValue.min : 0,
+              max: gammaValue ? gammaValue.max : 0,
+              risk: PresetProfits.VERY_LOW,
+              profit: PresetProfits.HIGH,
+            };
+          })
+        : [];
+    }
+
     if (isStablecoinPair)
       return [
         {
@@ -102,7 +191,7 @@ export function PresetRanges({
         profit: PresetProfits.HIGH,
       },
     ];
-  }, [isStablecoinPair, t]);
+  }, [isStablecoinPair, isGamma, gammaPair, gammaValues, t]);
 
   const risk = useMemo(() => {
     if (!priceUpper || !priceLower || !price) return;
@@ -176,79 +265,104 @@ export function PresetRanges({
     return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
   }, [baseCurrency, quoteCurrency, aprs]);
 
+  const gammaValuesLoaded =
+    mintInfo.price && gammaValues.filter((value) => !value).length === 0;
+
+  useEffect(() => {
+    if (gammaValuesLoaded) {
+      handlePresetRangeSelection(ranges[0]);
+      onChangePresetRange(ranges[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gammaValuesLoaded, baseCurrency, quoteCurrency]);
+
   return (
     <Box>
       <Box mb='10px' className='preset-buttons'>
-        {ranges.map((range, i) => (
-          <button
-            className={`${activePreset === range.type ? 'active-preset' : ''}`}
-            onClick={() => {
-              handlePresetRangeSelection(range);
-              if (activePreset == range.type) {
-                handlePresetRangeSelection(null);
-              } else {
-                handlePresetRangeSelection(range);
-              }
-            }}
-            key={i}
-          >
-            <p className='caption'>{range.title}</p>
-          </button>
-        ))}
-      </Box>
-      <Box className='flex justify-between'>
-        {_risk && !mintInfo.invalidRange && !isStablecoinPair && (
-          <Box className='preset-range-info'>
-            <Box px='12px' className='flex items-center justify-between'>
-              <span>{t('risk')}:</span>
-              <Box className='flex items-center'>
-                {[1, 2, 3, 4, 5].map((_, i) => (
-                  <div key={i} className='preset-range-circle'>
-                    <Box
-                      key={i}
-                      left={`calc(-100% + ${_risk[i]}%)`}
-                      className='preset-range-circle-active bg-error'
-                    />
-                  </div>
-                ))}
-              </Box>
-            </Box>
-            <Box
-              mt={1}
-              px='12px'
-              className='flex  items-center justify-between'
-            >
-              <span>{t('profit')}:</span>
-              <Box className='flex items-center'>
-                {[1, 2, 3, 4, 5].map((_, i) => (
-                  <div key={i} className='preset-range-circle'>
-                    <Box
-                      key={i}
-                      left={`calc(-100% + ${_risk[i]}%)`}
-                      className='preset-range-circle-active bg-success'
-                    />
-                  </div>
-                ))}
-              </Box>
-            </Box>
+        {isGamma && !gammaValuesLoaded ? (
+          <Box width={1} className='flex justify-center'>
+            <Loader />
           </Box>
-        )}
-        {baseCurrency && quoteCurrency && (
-          <Box className='preset-range-info'>
-            <Box padding='10px 12px'>
-              <PoolStats
-                fee={feeString}
-                apr={aprString}
-                loading={
-                  mintInfo.poolState === PoolState.LOADING ||
-                  mintInfo.poolState === PoolState.INVALID
-                }
-                noLiquidity={mintInfo.noLiquidity}
-              ></PoolStats>
-            </Box>
-          </Box>
+        ) : (
+          <>
+            {ranges.map((range, i) => (
+              <button
+                className={`${
+                  activePreset === range.type ? 'active-preset' : ''
+                }`}
+                onClick={() => {
+                  if (activePreset === range.type) {
+                    handlePresetRangeSelection(null);
+                  } else {
+                    handlePresetRangeSelection(range);
+                  }
+                  onChangePresetRange(range);
+                }}
+                key={i}
+              >
+                <p className='caption'>{range.title}</p>
+              </button>
+            ))}
+          </>
         )}
       </Box>
+      {!isGamma && (
+        <>
+          <Box className='flex justify-between'>
+            {_risk && !mintInfo.invalidRange && !isStablecoinPair && (
+              <Box className='preset-range-info'>
+                <Box px='12px' className='flex items-center justify-between'>
+                  <span>{t('risk')}:</span>
+                  <Box className='flex items-center'>
+                    {[1, 2, 3, 4, 5].map((_, i) => (
+                      <div key={i} className='preset-range-circle'>
+                        <Box
+                          key={i}
+                          left={`calc(-100% + ${_risk[i]}%)`}
+                          className='preset-range-circle-active bg-error'
+                        />
+                      </div>
+                    ))}
+                  </Box>
+                </Box>
+                <Box
+                  mt={1}
+                  px='12px'
+                  className='flex  items-center justify-between'
+                >
+                  <span>{t('profit')}:</span>
+                  <Box className='flex items-center'>
+                    {[1, 2, 3, 4, 5].map((_, i) => (
+                      <div key={i} className='preset-range-circle'>
+                        <Box
+                          key={i}
+                          left={`calc(-100% + ${_risk[i]}%)`}
+                          className='preset-range-circle-active bg-success'
+                        />
+                      </div>
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+            )}
+            {baseCurrency && quoteCurrency && (
+              <Box className='preset-range-info'>
+                <Box padding='10px 12px'>
+                  <PoolStats
+                    fee={feeString}
+                    apr={aprString}
+                    loading={
+                      mintInfo.poolState === PoolState.LOADING ||
+                      mintInfo.poolState === PoolState.INVALID
+                    }
+                    noLiquidity={mintInfo.noLiquidity}
+                  ></PoolStats>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </>
+      )}
     </Box>
   );
 }

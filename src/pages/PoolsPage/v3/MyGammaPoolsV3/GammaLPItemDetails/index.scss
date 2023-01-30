@@ -1,0 +1,22 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.gamma-liquidity-item-buttons {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  & button {
+    width: 49%;
+    @include media("screen", "<phone") {
+      width: 100%;
+      &:not(:first-child) {
+        margin-top: 12px;
+      }
+    }
+  }
+}
+
+.gamma-liquidity-item-button {
+  height: 38px;
+  border-radius: 10px;
+}

@@ -294,9 +294,11 @@ export const getTokenInfo = async (
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
   const utcOneWeekBack = utcCurrentTime.subtract(7, 'day').unix();
+  const utcTwoWeekBack = utcCurrentTime.subtract(14, 'day').unix();
   const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
   const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack);
   const oneWeekBlock = await getBlockFromTimestamp(utcOneWeekBack);
+  const twoWeekBlock = await getBlockFromTimestamp(utcTwoWeekBack);
 
   try {
     const current = await clientV2.query({
@@ -316,6 +318,11 @@ export const getTokenInfo = async (
 
     const oneWeekResult = await clientV2.query({
       query: TOKEN_INFO_OLD(oneWeekBlock, address),
+      fetchPolicy: 'network-only',
+    });
+
+    const twoWeekResult = await clientV2.query({
+      query: TOKEN_INFO_OLD(twoWeekBlock, address),
       fetchPolicy: 'network-only',
     });
 
@@ -357,6 +364,16 @@ export const getTokenInfo = async (
           }, {})
         : undefined;
 
+    const twoWeekData =
+      twoWeekResult &&
+      twoWeekResult.data &&
+      twoWeekResult.data.tokens &&
+      twoWeekResult.data.tokens.length > 0
+        ? twoWeekResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
+
     const bulkResults = await Promise.all(
       currentData &&
         oneDayData &&
@@ -367,6 +384,7 @@ export const getTokenInfo = async (
           let oneDayHistory = oneDayData?.[token.id];
           let twoDayHistory = twoDayData?.[token.id];
           let oneWeekHistory = oneWeekData?.[token.id];
+          let twoWeekHistory = twoWeekData?.[token.id];
 
           // this is because old history data returns exact same data as current data when the old data does not exist
           if (
@@ -390,6 +408,7 @@ export const getTokenInfo = async (
           ) {
             twoDayHistory = null;
           }
+
           if (
             Number(oneWeekHistory?.totalLiquidity ?? 0) ===
               Number(data?.totalLiquidity ?? 0) &&
@@ -401,6 +420,17 @@ export const getTokenInfo = async (
             oneWeekHistory = null;
           }
 
+          if (
+            Number(twoWeekHistory?.totalLiquidity ?? 0) ===
+              Number(data?.totalLiquidity ?? 0) &&
+            Number(twoWeekHistory?.tradeVolume ?? 0) ===
+              Number(data?.tradeVolume ?? 0) &&
+            Number(twoWeekHistory?.derivedETH ?? 0) ===
+              Number(data?.derivedETH ?? 0)
+          ) {
+            twoWeekHistory = null;
+          }
+
           // calculate percentage changes and daily changes
           const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
             data.tradeVolumeUSD,
@@ -408,8 +438,11 @@ export const getTokenInfo = async (
             twoDayHistory?.tradeVolumeUSD ?? 0,
           );
 
-          const oneWeekVolumeUSD =
-            data.tradeVolumeUSD - (oneWeekHistory?.tradeVolumeUSD ?? 0);
+          const [oneWeekVolumeUSD] = get2DayPercentChange(
+            data.tradeVolumeUSD,
+            oneWeekHistory?.tradeVolumeUSD ?? 0,
+            twoWeekHistory?.tradeVolumeUSD ?? 0,
+          );
 
           const currentLiquidityUSD =
             data?.totalLiquidity * ethPrice * data?.derivedETH;

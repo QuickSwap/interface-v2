@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { useEthPrice, useGlobalData } from 'state/application/hooks';
-import { HeroSection } from './HeroSection';
-import { TradingInfo } from './TradingInfo';
 import { getGlobalData } from 'utils';
 import { getGlobalDataV3 } from 'utils/v3-graph';
+const HeroSection = lazy(() => import('./HeroSection'));
+const TradingInfo = lazy(() => import('./TradingInfo'));
 
-export const GlobalSection: React.FC = () => {
+const GlobalSection: React.FC = () => {
   const { globalData, updateGlobalData } = useGlobalData();
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
@@ -42,3 +42,5 @@ export const GlobalSection: React.FC = () => {
     </>
   );
 };
+
+export default GlobalSection;

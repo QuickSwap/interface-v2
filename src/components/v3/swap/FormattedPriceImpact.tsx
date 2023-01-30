@@ -1,7 +1,6 @@
 import React from 'react';
 import { Percent } from '@uniswap/sdk-core';
 import { warningSeverity } from 'utils/v3/prices';
-import { ErrorText } from './styled';
 
 /**
  * Formatted version of price impact text with warning colors
@@ -11,13 +10,20 @@ export default function FormattedPriceImpact({
 }: {
   priceImpact?: Percent;
 }) {
+  const severity = warningSeverity(priceImpact);
   return (
-    <ErrorText
-      fontWeight={500}
-      fontSize={12}
-      severity={warningSeverity(priceImpact)}
+    <small
+      className={
+        severity === 3 || severity === 4
+          ? 'text-error'
+          : severity === 2
+          ? 'text-yellow'
+          : severity === 1
+          ? 'text-blueviolet'
+          : 'text-success'
+      }
     >
       {priceImpact ? `${priceImpact.multiply(-1).toFixed(2)}%` : '-'}
-    </ErrorText>
+    </small>
   );
 }

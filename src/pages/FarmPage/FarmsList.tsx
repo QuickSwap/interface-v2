@@ -21,6 +21,7 @@ import {
   CustomMenu,
   SearchInput,
   CustomSwitch,
+  SortColumns,
 } from 'components';
 import { GlobalConst } from 'constants/index';
 import {
@@ -68,7 +69,10 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
     parsedQuery && parsedQuery.sortDesc
       ? parsedQuery.sortDesc === 'true'
       : false;
-  const sortBy = parsedQuery && parsedQuery.sortBy ? parsedQuery.sortBy : false;
+  const sortBy =
+    parsedQuery && parsedQuery.sortBy
+      ? (parsedQuery.sortBy as string)
+      : POOL_COLUMN;
 
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { chainId } = useActiveWeb3React();
@@ -561,27 +565,12 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
       </Box>
       <Divider />
       {!isMobile && (
-        <Box mt={2.5} display='flex' paddingX={2}>
-          {sortByDesktopItems.map((item) => (
-            <Box
-              key={item.index}
-              width={item.width}
-              className={`flex items-center cursor-pointer ${
-                sortBy === item.index ? '' : 'text-secondary'
-              }`}
-              justifyContent={item.justify}
-              onClick={item.onClick}
-            >
-              <small>{item.text}</small>
-              <Box display='flex' ml={0.5}>
-                {sortBy === item.index && sortDesc ? (
-                  <ArrowDown size={20} />
-                ) : (
-                  <ArrowUp size={20} />
-                )}
-              </Box>
-            </Box>
-          ))}
+        <Box mt={2.5}>
+          <SortColumns
+            sortColumns={sortByDesktopItems}
+            selectedSort={sortBy}
+            sortDesc={sortDesc}
+          />
         </Box>
       )}
       {(currentTab === GlobalConst.v2FarmTab.LPFARM && !stakingInfos) ||

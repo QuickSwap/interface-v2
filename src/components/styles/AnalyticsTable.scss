@@ -1,0 +1,22 @@
+@use 'styles/variables' as *;
+
+.mobileRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.analyticsPairVersion {
+  width: 30px;
+  height: 20px;
+  font-size: 16px;
+  line-height: 16px;
+  color: $bgPalette;
+  background: $lightBlue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+}

@@ -15,8 +15,8 @@ import {
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
-import { getChartDataV3 } from 'utils/v3-graph';
+import { getChartDataV3, getChartDataTotal } from 'utils/v3-graph';
+import { useParams } from 'react-router-dom';
 dayjs.extend(utc);
 
 const AnalyticsLiquidityChart: React.FC = () => {
@@ -27,10 +27,10 @@ const AnalyticsLiquidityChart: React.FC = () => {
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
 
-  const { isV2 } = useIsV2();
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'v3';
 
   useEffect(() => {
-    if (isV2 === undefined) return;
     const fetchChartData = async () => {
       updateGlobalChartData(null);
 
@@ -39,9 +39,12 @@ const AnalyticsLiquidityChart: React.FC = () => {
           ? 0
           : getChartStartTime(durationIndex);
 
-      const chartDataFn = isV2
-        ? getChartData(duration)
-        : getChartDataV3(duration);
+      const chartDataFn =
+        version === 'v2'
+          ? getChartData(duration)
+          : version === 'total'
+          ? getChartDataTotal(duration)
+          : getChartDataV3(duration);
 
       chartDataFn.then(([newChartData]) => {
         if (newChartData) {
@@ -54,7 +57,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
       });
     };
     fetchChartData();
-  }, [updateGlobalChartData, durationIndex, isV2]);
+  }, [updateGlobalChartData, durationIndex, version]);
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,
@@ -138,8 +141,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
             data={globalChartData.map((value: any) =>
               Number(value.totalLiquidityUSD),
             )}
-            strokeColor={isV2 ? '#00dced' : '#3e92fe'}
-            gradientColor={isV2 ? undefined : '#448aff'}
+            strokeColor={version === 'v2' ? '#00dced' : '#3e92fe'}
+            gradientColor={version === 'v2' ? undefined : '#448aff'}
             yAxisValues={yAxisValues}
             dates={globalChartData.map((value: any) => value.date)}
             width='100%'
