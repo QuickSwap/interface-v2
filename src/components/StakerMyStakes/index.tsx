@@ -500,7 +500,7 @@ export const FarmingMyFarms: React.FC<{
   const stakedAmountData = useSingleContractMultipleData(
     masterChefContract,
     'userInfo',
-    allGammaPairsToFarm.map((pair) => [pair.pid, account ?? undefined]),
+    account ? allGammaPairsToFarm.map((pair) => [pair.pid, account]) : [],
   );
 
   const stakedAmounts = stakedAmountData.map((callData) => {
