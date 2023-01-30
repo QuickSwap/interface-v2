@@ -360,7 +360,7 @@ const PairTable: React.FC<PairsTableProps> = ({
               </Box>
               <Link
                 className='no-decoration'
-                to={`/analytics/${version}/pair/${pair.id}`}
+                to={`/analytics/${pair.isV3 ? 'v3' : 'v2'}/pair/${pair.id}`}
               >
                 <Box className='flex items-center'>
                   <DoubleCurrencyLogo
