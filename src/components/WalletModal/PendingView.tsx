@@ -20,13 +20,12 @@ const PendingView: React.FC<PendingViewProps> = ({
   tryActivation,
 }) => {
   const { t } = useTranslation();
-  const { ethereum } = window as any;
+  const { ethereum, _oldMetaMask } = window as any;
   const isMetamask =
     ethereum &&
     !ethereum.isBitKeep &&
-    !ethereum.isBlockWallet &&
     !ethereum.isBraveWallet &&
-    ethereum.isMetamask;
+    (ethereum.isMetaMask || _oldMetaMask);
   const isBlockWallet = ethereum?.isBlockWallet;
   const isCypherD = ethereum?.isCypherD;
   const isBitKeep = ethereum?.isBitKeep;
