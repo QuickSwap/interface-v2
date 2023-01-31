@@ -1233,11 +1233,22 @@ const parseData = (
   ethPrice: any,
   oneDayBlock: any,
 ) => {
+  const volumeKey =
+    data && data.volumeUSD && Number(data.volumeUSD) > 0
+      ? 'volumeUSD'
+      : 'untrackedVolumeUSD';
   // get volume changes
+  const currentVolume = data && data[volumeKey] ? Number(data[volumeKey]) : 0;
+  const oneDayVolume =
+    oneDayData && oneDayData[volumeKey] ? Number(oneDayData[volumeKey]) : 0;
+  const twoDayVolume =
+    twoDayData && twoDayData[volumeKey] ? Number(twoDayData[volumeKey]) : 0;
+  const oneWeekVolume =
+    oneWeekData && oneWeekData[volumeKey] ? Number(oneWeekData[volumeKey]) : 0;
   const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-    data?.volumeUSD ? data.volumeUSD : 0,
-    oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0,
-    twoDayData?.volumeUSD ? twoDayData.volumeUSD : 0,
+    currentVolume,
+    oneDayVolume,
+    twoDayVolume,
   );
   const [oneDayVolumeUntracked, volumeChangeUntracked] = get2DayPercentChange(
     data?.untrackedVolumeUSD,
@@ -1245,9 +1256,7 @@ const parseData = (
     twoDayData?.untrackedVolumeUSD ? twoDayData?.untrackedVolumeUSD : 0,
   );
 
-  const oneWeekVolumeUSD = Number(
-    oneWeekData ? data?.volumeUSD - oneWeekData?.volumeUSD : data.volumeUSD,
-  );
+  const oneWeekVolumeUSD = currentVolume - oneWeekVolume;
 
   const oneWeekVolumeUntracked = Number(
     oneWeekData
@@ -1286,13 +1295,16 @@ const parseData = (
 
   // format if pair hasnt existed for a day or a week
   if (!oneDayData && data && data.createdAtBlockNumber > oneDayBlock) {
-    data.oneDayVolumeUSD = Number(data.volumeUSD);
+    data.oneDayVolumeUSD =
+      Number(data.volumeUSD ?? 0) ?? Number(data.untrackedVolumeUSD ?? 0);
   }
   if (!oneDayData && data) {
-    data.oneDayVolumeUSD = Number(data.volumeUSD);
+    data.oneDayVolumeUSD =
+      Number(data.volumeUSD ?? 0) ?? Number(data.untrackedVolumeUSD ?? 0);
   }
   if (!oneWeekData && data) {
-    data.oneWeekVolumeUSD = Number(data.volumeUSD);
+    data.oneWeekVolumeUSD =
+      Number(data.volumeUSD ?? 0) ?? Number(data.untrackedVolumeUSD ?? 0);
   }
 
   // format incorrect names
