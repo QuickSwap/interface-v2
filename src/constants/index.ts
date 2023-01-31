@@ -9,6 +9,7 @@ import {
   safeApp,
   trustconnect,
   unstopabbledomains,
+  metamask,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -387,7 +388,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     color: '#E8831D',
   },
   METAMASK: {
-    connector: injected,
+    connector: metamask,
     name: GlobalConst.walletName.METAMASK,
     iconName: MetamaskIcon,
     description: 'Easy-to-use browser extension.',

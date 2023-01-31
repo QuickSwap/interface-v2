@@ -13,6 +13,7 @@ import {
   safeApp,
   trustconnect,
   unstopabbledomains,
+  metamask,
 } from 'connectors';
 import { ExternalLink as LinkIcon } from 'react-feather';
 import 'components/styles/AccountDetails.scss';
@@ -78,6 +79,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           {formatConnectorName()}
           <Box className='flex items-center'>
             {connector !== injected &&
+              connector !== metamask &&
               connector !== walletlink &&
               connector !== trustconnect &&
               connector !== safeApp && (
