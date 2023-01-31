@@ -9,7 +9,7 @@ interface SwitchItems {
 }
 
 interface CustomSwitchProps {
-  width: number;
+  width: number | string;
   height: number;
   items: SwitchItems[];
   isLarge?: boolean;
