@@ -16,14 +16,20 @@ import { ChainId } from '@uniswap/sdk';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import V3Farms from 'pages/FarmPage/V3';
 import { useIsV2 } from 'state/application/hooks';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useHistory } from 'react-router-dom';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
+  const history = useHistory();
+  const parsedQuery = useParsedQueryString();
+  const currentTab =
+    parsedQuery && parsedQuery.tab
+      ? (parsedQuery.tab as string)
+      : GlobalConst.v2FarmTab.LPFARM;
   const { t } = useTranslation();
   const [bulkPairs, setBulkPairs] = useState<any>(null);
-  const [farmIndex, setFarmIndex] = useState(
-    GlobalConst.farmIndex.LPFARM_INDEX,
-  );
+
   const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
   const cntFarms = useDefaultCNTFarmList(chainIdOrDefault);
@@ -50,27 +56,43 @@ const FarmPage: React.FC = () => {
     getBulkPairData(pairLists).then((data) => setBulkPairs(data));
   }, [pairLists]);
 
+  const redirectWithFarmTab = (tab: string) => {
+    const currentPath = history.location.pathname + history.location.search;
+    let redirectPath;
+    if (parsedQuery && parsedQuery.tab) {
+      redirectPath = currentPath.replace(
+        `tab=${parsedQuery.tab}`,
+        `tab=${tab}`,
+      );
+    } else {
+      redirectPath = `${currentPath}${
+        history.location.search === '' ? '?' : '&'
+      }tab=${tab}`;
+    }
+    history.push(redirectPath);
+  };
+
   const farmCategories = [
     {
       text: t('lpMining'),
       onClick: () => {
-        setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX);
+        redirectWithFarmTab(GlobalConst.v2FarmTab.LPFARM);
       },
-      condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
+      condition: currentTab === GlobalConst.v2FarmTab.LPFARM,
     },
     {
       text: t('dualMining'),
       onClick: () => {
-        setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX);
+        redirectWithFarmTab(GlobalConst.v2FarmTab.DUALFARM);
       },
-      condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
+      condition: currentTab === GlobalConst.v2FarmTab.DUALFARM,
     },
     {
       text: t('otherLPMining'),
       onClick: () => {
-        setFarmIndex(GlobalConst.farmIndex.OTHER_LP_INDEX);
+        redirectWithFarmTab(GlobalConst.v2FarmTab.OTHER_LP);
       },
-      condition: farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX,
+      condition: currentTab === GlobalConst.v2FarmTab.OTHER_LP,
     },
   ];
   const helpURL = process.env.REACT_APP_HELP_URL;
@@ -109,7 +131,7 @@ const FarmPage: React.FC = () => {
               items={farmCategories}
               isLarge={!isMobile}
             />
-            {farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX && (
+            {currentTab === GlobalConst.v2FarmTab.OTHER_LP && (
               <Box
                 className={`flex ${isMobile ? 'mx-auto mt-1 fullWidth' : ''}`}
               >
@@ -129,14 +151,14 @@ const FarmPage: React.FC = () => {
 
           {/* Rewards */}
           <Box my={3}>
-            {farmIndex !== GlobalConst.farmIndex.OTHER_LP_INDEX && (
-              <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
+            {currentTab !== GlobalConst.v2FarmTab.OTHER_LP && (
+              <FarmRewards bulkPairs={bulkPairs} />
             )}
           </Box>
 
           {/* Farms List */}
           <Box className='farmsWrapper'>
-            <FarmsList bulkPairs={bulkPairs} farmIndex={farmIndex} />
+            <FarmsList bulkPairs={bulkPairs} />
           </Box>
         </>
       )}

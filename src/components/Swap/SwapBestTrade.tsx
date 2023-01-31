@@ -48,7 +48,12 @@ import { useParaswapCallback } from 'hooks/useParaswapCallback';
 import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
 import { SwapSide } from '@paraswap/sdk';
 import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
-import { GlobalValue, RouterTypes, SmartRouter } from 'constants/index';
+import {
+  GlobalValue,
+  paraswapTax,
+  RouterTypes,
+  SmartRouter,
+} from 'constants/index';
 import { useQuery } from 'react-query';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
@@ -266,6 +271,9 @@ const SwapBestTrade: React.FC<{
           includeDEXS: 'quickswap,quickswapv3',
           maxImpact: maxImpactAllowed,
           partner: 'quickswapv3',
+          //@ts-ignore
+          srcTokenTransferFee: paraswapTax[srcToken.toLowerCase()],
+          destTokenTransferFee: paraswapTax[destToken.toLowerCase()],
         },
       });
       setOptimalRateError('');
@@ -313,7 +321,7 @@ const SwapBestTrade: React.FC<{
   };
 
   const { data: optimalRate } = useQuery('fetchOptimalRate', fetchOptimalRate, {
-    refetchInterval: 1000,
+    refetchInterval: 5000,
   });
 
   const parsedAmounts = useMemo(() => {
@@ -341,7 +349,7 @@ const SwapBestTrade: React.FC<{
           [Field.INPUT]:
             independentField === Field.INPUT
               ? parsedAmountInput
-              : optimalRate && outputCurrency
+              : optimalRate && inputCurrency
               ? CurrencyAmount.fromRawAmount(
                   inputCurrency as Currency,
                   JSBI.BigInt(optimalRate.srcAmount),
@@ -412,7 +420,6 @@ const SwapBestTrade: React.FC<{
     error: paraswapCallbackError,
   } = useParaswapCallback(
     optimalRate,
-    pct,
     recipient,
     inputCurrency,
     outputCurrency,
@@ -778,7 +785,14 @@ const SwapBestTrade: React.FC<{
         bgClass={currencyBgClass}
       />
       <Box className='exchangeSwap'>
-        <ExchangeIcon onClick={redirectWithSwitch} />
+        <ExchangeIcon
+          onClick={() => {
+            setSwapType(
+              swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY,
+            );
+            redirectWithSwitch();
+          }}
+        />
       </Box>
       <CurrencyInput
         title={`${t('toEstimate')}:`}

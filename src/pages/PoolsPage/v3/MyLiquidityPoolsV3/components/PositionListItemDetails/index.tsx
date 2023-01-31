@@ -1,27 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { PoolState, usePool } from 'hooks/v3/usePools';
+import { usePool } from 'hooks/v3/usePools';
 import { useToken } from 'hooks/v3/Tokens';
-import { useDerivedPositionInfo } from 'hooks/v3/useDerivedPositionInfo';
-import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
-import {
-  NavLink,
-  RouteComponentProps,
-  useLocation,
-  useParams,
-} from 'react-router-dom';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import Badge from 'components/v3/Badge';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { useV3PositionFees } from 'hooks/v3/useV3PositionFees';
-import { BigNumber } from '@ethersproject/bignumber';
-import {
-  Currency,
-  CurrencyAmount,
-  Fraction,
-  Percent,
-  Token,
-} from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount, Fraction, Token } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
 import { useV3NFTPositionManagerContract } from 'hooks/useContract';
 import {
@@ -30,7 +15,6 @@ import {
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { getPriceOrderingFromPositionForUI } from '../PositionListItem';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { Bound } from 'state/mint/v3/actions';
 import useIsTickAtLimit from 'hooks/v3/useIsTickAtLimit';
@@ -60,6 +44,7 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
+import { useTranslation } from 'react-i18next';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -70,6 +55,7 @@ export default function PositionListItemDetails({
   positionDetails,
   ownsNFT,
 }: PositionListItemProps) {
+  const { t } = useTranslation();
   const { chainId, account, library } = useActiveWeb3React();
 
   const [openRemoveLiquidityModal, setOpenRemoveLiquidityModal] = useState(
@@ -286,13 +272,16 @@ export default function PositionListItemDetails({
             });
 
             addTransaction(response, {
-              summary: `Collect ${feeValue0.currency.symbol}/${feeValue1.currency.symbol} fees`,
+              summary: t('collectFees', {
+                symbol1: feeValue0.currency.symbol,
+                symbol2: feeValue1.currency.symbol,
+              }),
             });
           });
       })
       .catch((error) => {
         setCollecting(false);
-        setCollectErrorMessage('There is error in transaction');
+        setCollectErrorMessage(t('errorInTx'));
         console.error(error);
       });
   }, [
@@ -306,6 +295,7 @@ export default function PositionListItemDetails({
     _onFarming,
     gasPrice,
     addTransaction,
+    t,
   ]);
 
   // NOTE: this may cause poor ux as people might try to claim rewards
@@ -362,7 +352,7 @@ export default function PositionListItemDetails({
           </Box>
         </Box>
         <Box mb={2} textAlign='center'>
-          <p>Collecting fees will withdraw currently available fees for you.</p>
+          <p>{t('collectingFeesWillWithdraw')}.</p>
         </Box>
         <Box className='flex justify-center'>
           <Button
@@ -371,7 +361,7 @@ export default function PositionListItemDetails({
             size='large'
             onClick={collect}
           >
-            Collect
+            {t('collect')}
           </Button>
         </Box>
       </>
@@ -415,7 +405,7 @@ export default function PositionListItemDetails({
               />
             ) : (
               <ConfirmationModalContent
-                title='Collect Fees'
+                title={t('collectFees1')}
                 onDismiss={dismissCollectConfirm}
                 content={modalHeader}
               />
@@ -424,15 +414,15 @@ export default function PositionListItemDetails({
           pendingText=''
           modalContent={
             isCollectPending
-              ? 'Submitted Tx to collect fees'
-              : 'Successfully collected fees'
+              ? t('submittedTxCollectFees')
+              : t('successCollectedFees')
           }
         />
       )}
       <Box className='v3-pool-liquidity-item-details'>
         <Box className='flex items-center justify-between'>
           <Box>
-            <p className='small weight-600'>Liquidity</p>
+            <p className='small weight-600'>{t('liquidity')}</p>
             <Box mt='5px'>
               <p className='small weight-600'>
                 ${formatCurrencyAmount(fiatValueOfLiquidity, 4)}
@@ -442,24 +432,24 @@ export default function PositionListItemDetails({
           {ownsNFT && (
             <Box className='flex'>
               <Button onClick={() => setOpenIncreaseLiquidityModal(true)}>
-                Add
+                {t('add')}
               </Button>
               <Box ml={1}>
                 {_onFarming || _liquidity.eq(0) ? (
                   <CustomTooltip
                     title={
                       _onFarming
-                        ? 'You must remove your NFT from the farm before you can remove liquidity'
-                        : 'No liquidity for this position.'
+                        ? t('mustRemoveFromFarmRemoveLiquidity')
+                        : t('noLiquidityPosition')
                     }
                   >
                     <div className='button bg-primary'>
-                      <span>Remove</span>
+                      <span>{t('remove')}</span>
                     </div>
                   </CustomTooltip>
                 ) : (
                   <Button onClick={() => setOpenRemoveLiquidityModal(true)}>
-                    Remove
+                    {t('remove')}
                   </Button>
                 )}
               </Box>
@@ -510,7 +500,7 @@ export default function PositionListItemDetails({
         </Box>
         <Box mt={3} className='flex items-center justify-between'>
           <Box>
-            <p className='small weight-600'>Unclaimed Fees</p>
+            <p className='small weight-600'>{t('unclaimedFees')}</p>
             <Box mt='5px'>
               <p className='small weight-600'>
                 $
@@ -533,10 +523,10 @@ export default function PositionListItemDetails({
                 onClick={() => showCollectConfirm(true)}
               >
                 {!!collectMigrationHash && !isCollectPending
-                  ? 'Claimed'
+                  ? t('claimed')
                   : isCollectPending || collecting
-                  ? 'Claiming'
-                  : 'Claim'}
+                  ? t('claiming')
+                  : t('claim')}
               </Button>
             )}
         </Box>
@@ -567,7 +557,7 @@ export default function PositionListItemDetails({
         {showCollectAsWeth && (
           <Box mt={2} className='flex items-center'>
             <Box mr={1}>
-              <p>Collect as WMATIC</p>
+              <p>{t('collectAsWmatic')}</p>
             </Box>
             <ToggleSwitch
               toggled={receiveWETH}
@@ -576,7 +566,7 @@ export default function PositionListItemDetails({
           </Box>
         )}
         <Box mt={3} className='flex items-center justify-between'>
-          <small>Selected Range</small>
+          <small>{t('selectedRange')}</small>
           {currencyBase && currencyQuote && (
             <RateToggle
               currencyA={currencyBase}
@@ -591,15 +581,17 @@ export default function PositionListItemDetails({
               width={priceUpper ? '49%' : '100%'}
               className='v3-pool-item-details-panel v3-pool-item-details-info'
             >
-              <p>Min price</p>
+              <p>{t('minPrice')}</p>
               <h6>{formatTickPrice(priceLower, tickAtLimit, Bound.LOWER)}</h6>
               <p>
-                {currencyQuote?.symbol} per {currencyBase?.symbol}
+                {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
               </p>
               {inRange && (
                 <p>
-                  Your position will be 100% {currencyBase?.symbol} at this
-                  price.
+                  {t('positionWill100PercentatthisPrice', {
+                    symbol: currencyBase?.symbol,
+                  })}
+                  .
                 </p>
               )}
             </Box>
@@ -609,15 +601,17 @@ export default function PositionListItemDetails({
               width={priceLower ? '49%' : '100%'}
               className='v3-pool-item-details-panel v3-pool-item-details-info'
             >
-              <p>Max price</p>
+              <p>{t('maxPrice')}</p>
               <h6>{formatTickPrice(priceUpper, tickAtLimit, Bound.LOWER)}</h6>
               <p>
-                {currencyQuote?.symbol} per {currencyBase?.symbol}
+                {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
               </p>
               {inRange && (
                 <p>
-                  Your position will be 100% {currencyQuote?.symbol} at this
-                  price.
+                  {t('positionWill100PercentatthisPrice', {
+                    symbol: currencyQuote?.symbol,
+                  })}
+                  .
                 </p>
               )}
             </Box>
@@ -628,14 +622,14 @@ export default function PositionListItemDetails({
             mt={2}
             className='v3-pool-item-details-panel v3-pool-item-details-info'
           >
-            <p>Current price</p>
+            <p>{t('currentPrice')}</p>
             <h6>
               {(inverted ? _pool.token1Price : _pool.token0Price).toSignificant(
                 6,
               )}
             </h6>
             <p>
-              {currencyQuote?.symbol} per {currencyBase?.symbol}
+              {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
             </p>
           </Box>
         )}

@@ -285,6 +285,28 @@ const TokenFields = `
   }
 `;
 
+export const TOKENS_FROM_ADDRESSES_V2 = (
+  blockNumber: number | undefined,
+  tokens: string[],
+) => {
+  let tokenString = `[`;
+  tokens.map((address) => {
+    return (tokenString += `"${address}",`);
+  });
+  tokenString += ']';
+  const queryString =
+    `${TokenFields}
+    query tokens {
+      tokens(where: {id_in: ${tokenString}},` +
+    (blockNumber ? `block: {number: ${blockNumber}} ,` : ``) +
+    ` orderBy: tradeVolumeUSD, orderDirection: desc) {
+        ...TokenFields
+      }
+    }`;
+
+  return gql(queryString);
+};
+
 export const TOKENS_CURRENT: any = (count: number) => {
   const queryString = `
     ${TokenFields}
@@ -627,7 +649,7 @@ export const GET_BLOCKS: any = (timestamps: number[]) => {
 export const FILTERED_TRANSACTIONS = gql`
   query($allPairs: [Bytes]!) {
     mints(
-      first: 20
+      first: 500
       where: { pair_in: $allPairs }
       orderBy: timestamp
       orderDirection: desc
@@ -653,7 +675,7 @@ export const FILTERED_TRANSACTIONS = gql`
       amountUSD
     }
     burns(
-      first: 20
+      first: 500
       where: { pair_in: $allPairs }
       orderBy: timestamp
       orderDirection: desc
@@ -679,7 +701,7 @@ export const FILTERED_TRANSACTIONS = gql`
       amountUSD
     }
     swaps(
-      first: 30
+      first: 500
       where: { pair_in: $allPairs }
       orderBy: timestamp
       orderDirection: desc

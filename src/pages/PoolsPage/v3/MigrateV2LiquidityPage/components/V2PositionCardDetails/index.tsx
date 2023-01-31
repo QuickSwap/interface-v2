@@ -106,7 +106,7 @@ const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
             )
           }
         >
-          <small className='weight-600'>Migrate Liquidity</small>
+          <small className='weight-600'>{t('migrateLiquidity1')}</small>
         </Button>
       </Box>
     </>

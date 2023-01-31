@@ -5,8 +5,10 @@ import './index.scss';
 import { usePool } from 'hooks/usePools';
 import { Box } from '@material-ui/core';
 import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
+import { useTranslation } from 'react-i18next';
 
 export function IsActive({ el }: { el: any }) {
+  const { t } = useTranslation();
   const { position: positionDetails } = useV3PositionFromTokenId(el.id);
 
   const token0Address = positionDetails?.token0;
@@ -38,7 +40,7 @@ export function IsActive({ el }: { el: any }) {
           outOfRange ? 'bg-error' : 'bg-success'
         }`}
       />
-      <p className='weight-600'>{outOfRange ? `Out of range` : `In range`}</p>
+      <p className='weight-600'>{outOfRange ? t('outrange') : t('inrange')}</p>
     </Box>
   );
 }

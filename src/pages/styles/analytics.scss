@@ -190,8 +190,6 @@
     &:not(:first-child) {
       margin-top: 32px;
     }
-    & > small {
-    }
     @include media('screen', '<tablet') {
       width: 100%;
     }

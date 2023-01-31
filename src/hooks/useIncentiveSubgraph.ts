@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { Contract, providers } from 'ethers';
 import ERC20_ABI from 'constants/abis/erc20.json';
@@ -12,7 +12,6 @@ import {
 } from '../constants/v3/addresses';
 import { BigNumber } from '@ethersproject/bignumber';
 import {
-  CURRENT_EVENTS,
   FETCH_ETERNAL_FARM,
   FETCH_ETERNAL_FARM_FROM_POOL,
   FETCH_FINITE_FARM_FROM_POOL,
@@ -20,6 +19,7 @@ import {
   FETCH_POOL,
   FETCH_REWARDS,
   FETCH_TOKEN,
+  FETCH_TOKEN_FARM,
   FUTURE_EVENTS,
   HAS_TRANSFERED_POSITIONS,
   INFINITE_EVENTS,
@@ -177,7 +177,7 @@ export function useFarmingSubgraph() {
       } = await (farming ? farmingClient : v3Client).query<
         SubgraphResponse<TokenSubgraph[]>
       >({
-        query: FETCH_TOKEN(),
+        query: farming ? FETCH_TOKEN_FARM() : FETCH_TOKEN(),
         variables: { tokenId },
       });
 
@@ -491,8 +491,8 @@ export function useFarmingSubgraph() {
             +position.id,
           );
 
-          const _rewardToken = await fetchToken(rewardToken, true);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
+          const _rewardToken = await fetchToken(rewardToken);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken);
           const _multiplierToken = await fetchToken(multiplierToken, true);
           const _pool = await fetchPool(pool);
 
@@ -558,6 +558,7 @@ export function useFarmingSubgraph() {
 
         if (position.eternalFarming) {
           const {
+            id,
             rewardToken,
             bonusRewardToken,
             pool,
@@ -587,13 +588,14 @@ export function useFarmingSubgraph() {
             { from: account },
           );
 
-          const _rewardToken = await fetchToken(rewardToken, true);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
+          const _rewardToken = await fetchToken(rewardToken);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken);
           const _pool = await fetchPool(pool);
           const _multiplierToken = await fetchToken(multiplierToken);
 
           _position = {
             ..._position,
+            farmId: id,
             eternalRewardToken: _rewardToken,
             eternalBonusRewardToken: _bonusRewardToken,
             eternalStartTime: startTime,
@@ -877,7 +879,7 @@ export function useFarmingSubgraph() {
     }
   }
 
-  async function fetchEternalFarms(reload: boolean) {
+  async function fetchEternalFarms(reload: boolean, detached = false) {
     setEternalFarmsLoading(true);
 
     try {
@@ -886,6 +888,9 @@ export function useFarmingSubgraph() {
         errors,
       } = await farmingClient.query<SubgraphResponse<EternalFarming[]>>({
         query: INFINITE_EVENTS,
+        variables: {
+          detached,
+        },
         fetchPolicy: reload ? 'network-only' : 'cache-first',
       });
 
@@ -905,11 +910,8 @@ export function useFarmingSubgraph() {
       // .filter(farming => +farming.bonusRewardRate || +farming.rewardRate)
       for (const farming of eternalFarmings) {
         const pool = await fetchPool(farming.pool);
-        const rewardToken = await fetchToken(farming.rewardToken, true);
-        const bonusRewardToken = await fetchToken(
-          farming.bonusRewardToken,
-          true,
-        );
+        const rewardToken = await fetchToken(farming.rewardToken);
+        const bonusRewardToken = await fetchToken(farming.bonusRewardToken);
         const multiplierToken = await fetchToken(farming.multiplierToken, true);
 
         _eternalFarmings = [

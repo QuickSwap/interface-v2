@@ -80,6 +80,7 @@ export interface FormattedEternalFarming {
   tier2Multiplier: string;
   tier3Multiplier: string;
   multiplierToken: TokenSubgraph;
+  isDetached: boolean;
 }
 
 export interface FarmingEvent extends DefaultFarmingEvent {
@@ -123,6 +124,7 @@ export interface Deposit {
   eternalRewardToken: TokenSubgraph;
   eternalStartTime: string;
   id: string;
+  farmId: string;
   limitFarming: null | string;
   limitRewardToken: TokenSubgraph;
   limitEarned: string | number;

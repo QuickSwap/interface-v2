@@ -2,14 +2,12 @@ import React from 'react';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
-import { useContext, useMemo } from 'react';
-import { ThemeContext } from 'styled-components/macro';
-import { TYPE } from 'theme/index';
+import { useMemo } from 'react';
 import { computeRealizedLPFeePercent } from 'utils/v3/prices';
-import { AutoColumn } from '../Column';
-import { RowBetween, RowFixed } from '../Row';
 import FormattedPriceImpact from './FormattedPriceImpact';
 import SwapRoute from './SwapRoute';
+import { useTranslation } from 'react-i18next';
+import { Box } from '@material-ui/core';
 
 interface AdvancedSwapDetailsProps {
   trade?:
@@ -22,7 +20,7 @@ export function AdvancedSwapDetails({
   trade,
   allowedSlippage,
 }: AdvancedSwapDetailsProps) {
-  const theme = useContext(ThemeContext);
+  const { t } = useTranslation();
 
   const { realizedLPFee, priceImpact } = useMemo(() => {
     if (!trade) return { realizedLPFee: undefined, priceImpact: undefined };
@@ -34,53 +32,39 @@ export function AdvancedSwapDetails({
   }, [trade]);
 
   return !trade ? null : (
-    <AutoColumn gap='8px'>
-      <RowBetween>
-        <RowFixed>
-          <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
-            Liquidity Provider Fee
-          </TYPE.black>
-        </RowFixed>
-        <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>
+    <Box>
+      <Box className='flex justify-between' mb={0.5}>
+        <p className='caption'>{t('liquidityProviderFee')}</p>
+        <p className='caption weight-600'>
           {realizedLPFee
             ? `${realizedLPFee.toSignificant(4)} ${
                 realizedLPFee.currency.symbol
               }`
             : '-'}
-        </TYPE.black>
-      </RowBetween>
+        </p>
+      </Box>
 
-      <RowBetween>
-        <RowFixed>
-          <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
-            Route
-          </TYPE.black>
-        </RowFixed>
-        <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>
+      <Box className='flex justify-between' mb={0.5}>
+        <p className='caption'>{t('route')}</p>
+        <p className='caption weight-600'>
           <SwapRoute trade={trade} />
-        </TYPE.black>
-      </RowBetween>
+        </p>
+      </Box>
 
-      <RowBetween>
-        <RowFixed>
-          <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
-            Price Impact
-          </TYPE.black>
-        </RowFixed>
-        <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>
+      <Box className='flex justify-between' mb={0.5}>
+        <p className='caption'>{t('priceimpact')}</p>
+        <p className='caption weight-600'>
           <FormattedPriceImpact priceImpact={priceImpact} />
-        </TYPE.black>
-      </RowBetween>
+        </p>
+      </Box>
 
-      <RowBetween>
-        <RowFixed>
-          <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
-            {trade.tradeType === TradeType.EXACT_INPUT
-              ? 'Minimum received'
-              : 'Maximum sent'}
-          </TYPE.black>
-        </RowFixed>
-        <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>
+      <Box className='flex justify-between' mb={0.5}>
+        <p className='caption'>
+          {trade.tradeType === TradeType.EXACT_INPUT
+            ? t('minReceived')
+            : t('maxSold')}
+        </p>
+        <p className='caption weight-600'>
           {trade.tradeType === TradeType.EXACT_INPUT
             ? `${trade.minimumAmountOut(allowedSlippage).toSignificant(6)} ${
                 trade.outputAmount.currency.symbol
@@ -88,19 +72,13 @@ export function AdvancedSwapDetails({
             : `${trade.maximumAmountIn(allowedSlippage).toSignificant(6)} ${
                 trade.inputAmount.currency.symbol
               }`}
-        </TYPE.black>
-      </RowBetween>
+        </p>
+      </Box>
 
-      <RowBetween>
-        <RowFixed>
-          <TYPE.black fontSize={12} fontWeight={400} color={theme.text2}>
-            Slippage tolerance
-          </TYPE.black>
-        </RowFixed>
-        <TYPE.black textAlign='right' fontSize={12} color={theme.text1}>
-          {allowedSlippage.toFixed(2)}%
-        </TYPE.black>
-      </RowBetween>
-    </AutoColumn>
+      <Box className='flex justify-between'>
+        <p className='caption'>{t('slippageTolerance')}</p>
+        <p className='caption weight-600'>{allowedSlippage.toFixed(2)}%</p>
+      </Box>
+    </Box>
   );
 }

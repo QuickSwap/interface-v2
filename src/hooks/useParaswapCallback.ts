@@ -4,13 +4,7 @@ import {
   TransactionResponse,
   TransactionRequest,
 } from '@ethersproject/providers';
-import {
-  JSBI,
-  SwapParameters,
-  Fraction,
-  Currency,
-  Percent,
-} from '@uniswap/sdk';
+import { Currency, SwapParameters } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { GlobalConst, RouterTypes, SmartRouter } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -62,7 +56,6 @@ const convertToEthersTransaction = (txParams: any): TransactionRequest => {
 // and the user has approved the slippage adjusted input amount for the trade
 export function useParaswapCallback(
   priceRoute: OptimalRate | undefined,
-  allowedSlippage: Percent, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
   inputCurrency?: Currency,
   outputCurrency?: Currency,
@@ -142,6 +135,7 @@ export function useParaswapCallback(
             destAmount: priceRoute.destAmount,
             priceRoute: priceRoute,
             userAddress: account,
+            receiver: recipient,
             partner: referrer,
           });
         } catch (e) {

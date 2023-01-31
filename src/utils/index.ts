@@ -83,6 +83,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useEthPrice } from 'state/application/hooks';
 import { getGlobalDataV3 } from './v3-graph';
+import { TFunction } from 'react-i18next';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -293,9 +294,11 @@ export const getTokenInfo = async (
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
   const utcOneWeekBack = utcCurrentTime.subtract(7, 'day').unix();
+  const utcTwoWeekBack = utcCurrentTime.subtract(14, 'day').unix();
   const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack);
   const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack);
   const oneWeekBlock = await getBlockFromTimestamp(utcOneWeekBack);
+  const twoWeekBlock = await getBlockFromTimestamp(utcTwoWeekBack);
 
   try {
     const current = await clientV2.query({
@@ -318,37 +321,70 @@ export const getTokenInfo = async (
       fetchPolicy: 'network-only',
     });
 
-    const oneDayData = oneDayResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
+    const twoWeekResult = await clientV2.query({
+      query: TOKEN_INFO_OLD(twoWeekBlock, address),
+      fetchPolicy: 'network-only',
+    });
 
-    const twoDayData = twoDayResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
+    const currentData =
+      current &&
+      current.data &&
+      current.data.tokens &&
+      current.data.tokens.length > 0
+        ? current.data.tokens
+        : undefined;
 
-    const oneWeekData = oneWeekResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
+    const oneDayData =
+      oneDayResult &&
+      oneDayResult.data &&
+      oneDayResult.data.tokens &&
+      oneDayResult.data.tokens.length > 0
+        ? oneDayResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
+
+    const twoDayData =
+      oneDayResult &&
+      twoDayResult.data &&
+      twoDayResult.data.tokens &&
+      twoDayResult.data.tokens.length > 0
+        ? twoDayResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
+
+    const oneWeekData =
+      oneWeekResult &&
+      oneWeekResult.data &&
+      oneWeekResult.data.tokens &&
+      oneWeekResult.data.tokens.length > 0
+        ? oneWeekResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
+
+    const twoWeekData =
+      twoWeekResult &&
+      twoWeekResult.data &&
+      twoWeekResult.data.tokens &&
+      twoWeekResult.data.tokens.length > 0
+        ? twoWeekResult.data.tokens.reduce((obj: any, cur: any) => {
+            return { ...obj, [cur.id]: cur };
+          }, {})
+        : undefined;
 
     const bulkResults = await Promise.all(
-      current &&
+      currentData &&
         oneDayData &&
         twoDayData &&
-        current?.data?.tokens?.map(async (token: any) => {
+        currentData.map(async (token: any) => {
           const data = token;
 
           let oneDayHistory = oneDayData?.[token.id];
           let twoDayHistory = twoDayData?.[token.id];
           let oneWeekHistory = oneWeekData?.[token.id];
+          let twoWeekHistory = twoWeekData?.[token.id];
 
           // this is because old history data returns exact same data as current data when the old data does not exist
           if (
@@ -372,6 +408,7 @@ export const getTokenInfo = async (
           ) {
             twoDayHistory = null;
           }
+
           if (
             Number(oneWeekHistory?.totalLiquidity ?? 0) ===
               Number(data?.totalLiquidity ?? 0) &&
@@ -383,6 +420,17 @@ export const getTokenInfo = async (
             oneWeekHistory = null;
           }
 
+          if (
+            Number(twoWeekHistory?.totalLiquidity ?? 0) ===
+              Number(data?.totalLiquidity ?? 0) &&
+            Number(twoWeekHistory?.tradeVolume ?? 0) ===
+              Number(data?.tradeVolume ?? 0) &&
+            Number(twoWeekHistory?.derivedETH ?? 0) ===
+              Number(data?.derivedETH ?? 0)
+          ) {
+            twoWeekHistory = null;
+          }
+
           // calculate percentage changes and daily changes
           const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
             data.tradeVolumeUSD,
@@ -390,8 +438,11 @@ export const getTokenInfo = async (
             twoDayHistory?.tradeVolumeUSD ?? 0,
           );
 
-          const oneWeekVolumeUSD =
-            data.tradeVolumeUSD - (oneWeekHistory?.tradeVolumeUSD ?? 0);
+          const [oneWeekVolumeUSD] = get2DayPercentChange(
+            data.tradeVolumeUSD,
+            oneWeekHistory?.tradeVolumeUSD ?? 0,
+            twoWeekHistory?.tradeVolumeUSD ?? 0,
+          );
 
           const currentLiquidityUSD =
             data?.totalLiquidity * ethPrice * data?.derivedETH;
@@ -1520,6 +1571,7 @@ export function isAddress(value: string | null | undefined): string | false {
  */
 export function confirmPriceImpactWithoutFee(
   priceImpactWithoutFee: Percent,
+  translation: TFunction,
 ): boolean {
   if (
     !priceImpactWithoutFee.lessThan(
@@ -1528,9 +1580,11 @@ export function confirmPriceImpactWithoutFee(
   ) {
     return (
       window.prompt(
-        `This swap has a price impact of at least ${GlobalValue.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
-          0,
-        )}%. Please type the word "confirm" to continue with this swap.`,
+        translation('typeConfirmSwapPriceImpact', {
+          priceImpact: GlobalValue.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
+            0,
+          ),
+        }),
       ) === 'confirm'
     );
   } else if (
@@ -1539,9 +1593,9 @@ export function confirmPriceImpactWithoutFee(
     )
   ) {
     return window.confirm(
-      `This swap has a price impact of at least ${GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(
-        0,
-      )}%. Please confirm that you would like to continue with this swap.`,
+      translation('confirmSwapPriceImpact', {
+        priceImpact: GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(0),
+      }),
     );
   }
   return true;

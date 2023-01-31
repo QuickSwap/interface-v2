@@ -1,6 +1,7 @@
 import React from 'react';
 import { Percent } from '@uniswap/sdk-core';
-import { StyledLabel } from '../Common/styledElements';
+import { useTranslation } from 'react-i18next';
+import { Box } from '@material-ui/core';
 
 interface SwapHeaderProps {
   allowedSlippage: Percent;
@@ -11,18 +12,13 @@ export default function SwapHeader({
   allowedSlippage,
   dynamicFee = null,
 }: SwapHeaderProps) {
+  const { t } = useTranslation();
   return (
-    <div className={'flex-s-between w-100 mb-1'}>
-      <div className={'flex-s-between w-100'}>
-        <StyledLabel fontSize='16px' color='#c7cad9'>
-          {'Swap'}
-        </StyledLabel>
-        {dynamicFee && (
-          <StyledLabel fontSize='12px' color='#b4b9cc' className={' br-8'}>
-            {`Fee is ${dynamicFee / 10000}%`}
-          </StyledLabel>
-        )}
-      </div>
-    </div>
+    <Box width='100%' mb={1} className='flex justify-between'>
+      <p>{t('swap')}</p>
+      {dynamicFee && (
+        <p className='caption'>{t('feeIs', { fee: dynamicFee / 10000 })}</p>
+      )}
+    </Box>
   );
 }

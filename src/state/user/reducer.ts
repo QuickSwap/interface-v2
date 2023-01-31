@@ -16,6 +16,7 @@ import {
   toggleURLWarning,
   updateUserSingleHopOnly,
   updateUserBonusRouter,
+  updateSlippageManuallySet,
 } from './actions';
 
 const currentTimestamp = () => new Date().getTime();
@@ -32,6 +33,7 @@ export interface UserState {
 
   // user defined slippage tolerance in bips, used in all txns
   userSlippageTolerance: number;
+  slippageManuallySet: boolean;
 
   // deadline set by user in minutes, used in all txns
   userDeadline: number;
@@ -65,6 +67,7 @@ export const initialState: UserState = {
   userExpertMode: false,
   userBonusRouterDisabled: false,
   userSlippageTolerance: GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE,
+  slippageManuallySet: false,
   userDeadline: GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW,
   tokens: {},
   pairs: {},
@@ -159,5 +162,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUserBonusRouter, (state, action) => {
       state.userBonusRouterDisabled = action.payload.userBonusRouterDisabled;
+    })
+    .addCase(updateSlippageManuallySet, (state, action) => {
+      state.slippageManuallySet = action.payload.slippageManuallySet;
     }),
 );

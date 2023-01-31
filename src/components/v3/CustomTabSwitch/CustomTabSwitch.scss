@@ -1,45 +1,28 @@
 @use 'styles/variables' as *;
-
-.switchItem {
-  width: 50%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  border: 1px solid $secondary1;
-  & p {
-    color: $textSecondary;
-  }
-}
-
-.activeSwitchItem {
-  background: 'red'
-  & p {
-    color: $textPrimary;
-  }
-}
-
-.tabText {
-  text-align: center;
-  color: #696c80;
-  & span {
-    font-family: Inter;
-    font-size: 16px;
-    font-weight: 500;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 4.75;
-    letter-spacing: normal;
-    text-transform: none;
-  }
-}
+@use 'styles/breakpoints' as *;
 
 .customTabWrapper {
-  .MuiTabs-root {
-    height: 100%;
-    .MuiTabs-flexContainer {
-      height: 100%;
+  display: flex;
+  align-items: center;
+  & .MuiTabs-root {
+    & button {
+      min-width: unset;
+      max-width: none;
+      padding: 6px 0;
+      margin: 0 12px;
+      &.Mui-selected {
+        span {
+          color: $textPrimary;
+        }
+      }
+      & span {
+        font-size: 14px;
+        color: $textSecondary;
+        text-transform: none;
+      }
+    }
+    & .MuiTabs-indicator {
+      background-color: $textPrimary;
     }
   }
 }

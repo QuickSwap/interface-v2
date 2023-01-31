@@ -5,6 +5,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import {
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
+  useV3MintState,
 } from 'state/mint/v3/hooks';
 import { InitialPrice } from './containers/InitialPrice';
 import { EnterAmounts } from './containers/EnterAmounts';
@@ -35,8 +36,11 @@ import { SettingsModal } from 'components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useAppDispatch } from 'state/hooks';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
+import { useTranslation } from 'react-i18next';
+import { GlobalConst } from 'constants/index';
 
 export function SupplyLiquidityV3() {
+  const { t } = useTranslation();
   const params: any = useParams();
   const parsedQuery = useParsedQueryString();
   const currencyIdAParam =
@@ -105,6 +109,7 @@ export function SupplyLiquidityV3() {
     undefined,
   );
 
+  const { liquidityRangeType } = useV3MintState();
   const {
     onFieldAInput,
     onFieldBInput,
@@ -252,7 +257,7 @@ export function SupplyLiquidityV3() {
         />
       )}
       <Box className='flex justify-between items-center'>
-        <p className='weight-600'>Supply Liquidity</p>
+        <p className='weight-600'>{t('supplyLiquidity')}</p>
         <Box className='flex items-center'>
           <small
             className='cursor-pointer text-primary'
@@ -264,7 +269,7 @@ export function SupplyLiquidityV3() {
               onFieldBInput('');
             }}
           >
-            Clear all
+            {t('clearAll')}
           </small>
           {!hidePriceFormatter && (
             <Box className='flex' ml={1}>
@@ -295,7 +300,7 @@ export function SupplyLiquidityV3() {
             className='v3-supply-liquidity-button'
             onClick={toggleWalletModal}
           >
-            Connect Wallet
+            {t('connectWallet')}
           </Button>
         )}
       </Box>
@@ -303,16 +308,20 @@ export function SupplyLiquidityV3() {
         {(!baseCurrency || !quoteCurrency) && (
           <Box className='v3-supply-liquidity-overlay' />
         )}
-        {mintInfo.noLiquidity && baseCurrency && quoteCurrency && (
-          <Box mb={2}>
-            <InitialPrice
-              currencyA={baseCurrency ?? undefined}
-              currencyB={currencyB ?? undefined}
-              mintInfo={mintInfo}
-              priceFormat={priceFormat}
-            />
-          </Box>
-        )}
+        {mintInfo.noLiquidity &&
+          baseCurrency &&
+          quoteCurrency &&
+          liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+            <Box mb={2}>
+              <InitialPrice
+                currencyA={baseCurrency ?? undefined}
+                currencyB={currencyB ?? undefined}
+                mintInfo={mintInfo}
+                priceFormat={priceFormat}
+              />
+            </Box>
+          )}
         <SelectRange
           currencyA={baseCurrency}
           currencyB={quoteCurrency}
@@ -338,7 +347,7 @@ export function SupplyLiquidityV3() {
               onFieldAInput('');
               onFieldBInput('');
             }}
-            title={expertMode ? `Add liquidity` : 'Preview'}
+            title={expertMode ? t('addLiquidity') : t('preview')}
           />
         </Box>
       </Box>

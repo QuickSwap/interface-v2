@@ -6,7 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { useMemo } from 'react';
-import { GlobalConst, GlobalValue } from '../constants';
+import { GlobalConst } from '../constants';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS,
@@ -31,6 +31,8 @@ import { abi as LairABI } from 'abis/DragonLair.json';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
 import {
+  GAMMA_MASTERCHEF_ADDRESSES,
+  GAMMA_UNIPROXY_ADDRESSES,
   MULTICALL_ADDRESS,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   QUOTER_ADDRESSES,
@@ -39,6 +41,8 @@ import {
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
+import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
+import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -265,6 +269,22 @@ export function useV3NFTPositionManagerContract(
   return useContract(
     NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
     NFTPosMan,
+    withSignerIfPossible,
+  );
+}
+
+export function useGammaUNIProxyContract(withSignerIfPossible?: boolean) {
+  return useContract(
+    GAMMA_UNIPROXY_ADDRESSES,
+    GammaUniProxy,
+    withSignerIfPossible,
+  );
+}
+
+export function useMasterChefContract(withSignerIfPossible?: boolean) {
+  return useContract(
+    GAMMA_MASTERCHEF_ADDRESSES,
+    GammaMasterChef,
     withSignerIfPossible,
   );
 }

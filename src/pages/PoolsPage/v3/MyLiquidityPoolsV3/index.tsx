@@ -9,8 +9,10 @@ import PositionList from './components/PositionList';
 import FilterPanelItem from '../FilterPanelItem';
 import { PositionPool } from 'models/interfaces';
 import { useWalletModalToggle } from 'state/application/hooks';
+import { useTranslation } from 'react-i18next';
 
 export default function MyLiquidityPoolsV3() {
+  const { t } = useTranslation();
   const { account } = useActiveWeb3React();
   const history = useHistory();
   const [userHideClosedPositions, setUserHideClosedPositions] = useState(true);
@@ -30,12 +32,12 @@ export default function MyLiquidityPoolsV3() {
 
   const filters = [
     {
-      title: `Closed`,
+      title: t('closed'),
       method: setUserHideClosedPositions,
       checkValue: userHideClosedPositions,
     },
     {
-      title: `Farming`,
+      title: t('farming'),
       method: setHideFarmingPositions,
       checkValue: hideFarmingPositions,
     },
@@ -88,7 +90,7 @@ export default function MyLiquidityPoolsV3() {
 
   return (
     <Box>
-      <p className='weight-600'>My Liquidity Pools</p>
+      <p className='weight-600'>{t('myQuickSwapLP')}</p>
       {account && (
         <Box mt={2} className='flex justify-between items-center'>
           <Box className='flex'>
@@ -122,11 +124,11 @@ export default function MyLiquidityPoolsV3() {
           />
         ) : (
           <Box textAlign='center'>
-            <p>You do not have any liquidity positions.</p>
+            <p>{t('noLiquidityPositions')}.</p>
             {showConnectAWallet && (
               <Box maxWidth={250} margin='20px auto 0'>
                 <Button fullWidth onClick={toggleWalletModal}>
-                  Connect Wallet
+                  {t('connectWallet')}
                 </Button>
               </Box>
             )}

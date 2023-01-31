@@ -7,8 +7,10 @@ import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import Loader from 'components/Loader';
 import V2PositionCard from './components/V2PositionCard';
 import './index.scss';
+import { useTranslation } from 'react-i18next';
 
 export default function MigrateV2LiquidityPage() {
+  const { t } = useTranslation();
   const history = useHistory();
   const { account } = useActiveWeb3React();
   const {
@@ -33,7 +35,7 @@ export default function MigrateV2LiquidityPage() {
           >
             <ArrowLeft />
           </Box>
-          <p className='weight-600'>Migrate V2 Liquidity</p>
+          <p className='weight-600'>{t('migrateLiquidity')}</p>
           <Box
             width={28}
             height={28}
@@ -43,10 +45,7 @@ export default function MigrateV2LiquidityPage() {
           </Box>
         </Box>
         <Box mt={3}>
-          <small>
-            For each pool shown below, click ‘Migrate liquidity’ to remove
-            liquidity from Quickswap V2 and deposit it into Quickswap V3.
-          </small>
+          <small>{t('migrateLiquidityDesc')}</small>
         </Box>
         <Box mt={3}>
           {v2PairsLoading ? (
@@ -59,18 +58,18 @@ export default function MigrateV2LiquidityPage() {
             ))
           ) : (
             <Box textAlign='center'>
-              <small>There are no v2 liquidity pools</small>
+              <small>{t('noV2LiquidityPools')}</small>
             </Box>
           )}
         </Box>
         <Box mt={2} textAlign='center'>
           <small className='text-secondary'>
-            Don‘t see your V2 liquidity?{' '}
+            {t('dontseeV2Liquidity')}?{' '}
             <small
               className='text-primary cursor-pointer'
               onClick={() => setOpenPoolFinder(true)}
             >
-              Import it
+              {t('importIt')}
             </small>
           </small>
         </Box>

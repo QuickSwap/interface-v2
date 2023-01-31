@@ -24,6 +24,7 @@ import { useV3StakeData } from 'state/farms/hooks';
 
 export function useFarmingHandlers() {
   const { chainId, account, library } = useActiveWeb3React();
+  const { t } = useTranslation();
 
   const provider = useMemo(() => {
     if (!library) return;
@@ -40,22 +41,7 @@ export function useFarmingHandlers() {
   const addTransaction = useTransactionAdder();
   const finalizeTransaction = useTransactionFinalizer();
 
-  const [transferedHash, setTransfered] = useState<DefaultFarming | string>({
-    hash: null,
-    id: null,
-  });
-
   const { updateV3Stake } = useV3StakeData();
-
-  const [sendNFTL2Hash, setSendNFTL2] = useState<DefaultFarming | string>({
-    hash: null,
-    id: null,
-  });
-  const [claimHash, setClaimHash] = useState<DefaultFarmingWithError | string>({
-    hash: null,
-    id: null,
-    error: null,
-  });
 
   //exit from basic farming and claim than
   const claimRewardsHandler = useCallback(
@@ -192,7 +178,7 @@ export function useFarmingHandlers() {
         }
 
         addTransaction(result, {
-          summary: `Undeposit from NFT #${token}`,
+          summary: t('undepositNFT', { nftID: token }),
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -200,14 +186,14 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: `Undeposited from NFT #${token}`,
+          summary: t('undepositedNFT', { nftID: token }),
         });
 
         updateV3Stake({ txConfirmed: true });
       } catch (err) {
         updateV3Stake({ txError: 'failed' });
         if (err.code !== 4001) {
-          throw new Error('Undeposit ' + err.message);
+          throw new Error(t('undeposit') + ' ' + err.message);
         }
       }
     },
@@ -219,6 +205,7 @@ export function useFarmingHandlers() {
       gasPrice,
       provider,
       updateV3Stake,
+      t,
     ],
   );
 
@@ -301,7 +288,7 @@ export function useFarmingHandlers() {
         }
 
         addTransaction(result, {
-          summary: `Claiming reward`,
+          summary: t('claimingReward'),
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -309,14 +296,14 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: `Claimed Reward`,
+          summary: t('claimedReward'),
         });
 
         updateV3Stake({ txConfirmed: true });
       } catch (err) {
         updateV3Stake({ txError: 'failed' });
         if (err instanceof Error) {
-          throw new Error('Claiming rewards ' + err.message);
+          throw new Error(t('claimingReward') + ' ' + err.message);
         }
       }
     },
@@ -328,122 +315,7 @@ export function useFarmingHandlers() {
       gasPrice,
       provider,
       updateV3Stake,
-    ],
-  );
-
-  const claimReward = useCallback(
-    async (tokenReward) => {
-      try {
-        if (!account || !provider || !chainId) return;
-
-        const farmingCenterContract = new Contract(
-          FARMING_CENTER[chainId],
-          FARMING_CENTER_ABI,
-          provider.getSigner(),
-        );
-
-        const MaxUint128 = toHex(
-          JSBI.subtract(
-            JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(128)),
-            JSBI.BigInt(1),
-          ),
-        );
-
-        const result: TransactionResponse = await farmingCenterContract.claimReward(
-          tokenReward,
-          account,
-          MaxUint128,
-          MaxUint128,
-          { gasPrice: gasPrice * GAS_PRICE_MULTIPLIER },
-        );
-
-        setClaimHash({ hash: result.hash, id: tokenReward });
-        addTransaction(result, {
-          summary: `Claiming reward`,
-        });
-      } catch (e) {
-        setClaimHash('failed');
-        if (e instanceof Error) {
-          throw new Error('Claim rewards ' + e.message);
-        }
-      }
-    },
-    [account, addTransaction, chainId, gasPrice, provider],
-  );
-
-  //exit from basic farming before the start
-  const exitHandler = useCallback(
-    async (
-      token,
-      {
-        limitRewardToken,
-        limitBonusRewardToken,
-        pool,
-        limitStartTime,
-        limitEndTime,
-      },
-      eventType,
-    ) => {
-      if (!account || !provider || !chainId) return;
-
-      updateV3Stake({
-        selectedTokenId: token,
-        selectedFarmingType: eventType,
-        txType: 'getRewards',
-        txConfirmed: false,
-        txHash: '',
-        txError: '',
-      });
-
-      try {
-        const farmingCenterContract = new Contract(
-          FARMING_CENTER[chainId],
-          FARMING_CENTER_ABI,
-          provider.getSigner(),
-        );
-
-        const result: TransactionResponse = await farmingCenterContract.exitFarming(
-          [
-            limitRewardToken.id,
-            limitBonusRewardToken.id,
-            pool.id,
-            +limitStartTime,
-            +limitEndTime,
-          ],
-          +token,
-          {
-            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-          },
-        );
-
-        addTransaction(result, {
-          summary: `Claiming Rewards!`,
-        });
-
-        updateV3Stake({ txHash: result.hash });
-
-        const receipt = await result.wait();
-
-        finalizeTransaction(receipt, {
-          summary: `Rewards were claimed!`,
-        });
-
-        updateV3Stake({ txConfirmed: true });
-      } catch (err) {
-        updateV3Stake({ txError: 'failed' });
-        if (err instanceof Error) {
-          throw new Error('Getting rewards ' + err.message);
-        }
-      }
-    },
-    [
-      account,
-      addTransaction,
-      chainId,
-      finalizeTransaction,
-      gasPrice,
-      provider,
-      updateV3Stake,
+      t,
     ],
   );
 
@@ -477,7 +349,7 @@ export function useFarmingHandlers() {
         );
 
         addTransaction(result, {
-          summary: `Withdrawing NFT #${token}!`,
+          summary: t('withdrawingNFT', { nftID: token }) + '!',
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -485,14 +357,14 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: `NFT #${token} was withdrawn!`,
+          summary: t('withdrawnNFT', { nftID: token }),
         });
 
         updateV3Stake({ txConfirmed: true });
       } catch (err) {
         updateV3Stake({ txError: 'failed' });
         if (err instanceof Error) {
-          throw new Error('Withdrawing ' + err);
+          throw new Error(t('withdrawing') + ' ' + err);
         }
       }
     },
@@ -504,6 +376,7 @@ export function useFarmingHandlers() {
       gasPrice,
       provider,
       updateV3Stake,
+      t,
     ],
   );
 
@@ -548,7 +421,7 @@ export function useFarmingHandlers() {
           );
 
           addTransaction(result, {
-            summary: `NFT #${selectedNFT.id} was deposited!`,
+            summary: `${t('nftDepositing', { nftID: selectedNFT.id })}!`,
           });
 
           updateV3Stake({ txHash: result.hash });
@@ -556,7 +429,7 @@ export function useFarmingHandlers() {
           const receipt = await result.wait();
 
           finalizeTransaction(receipt, {
-            summary: `NFT #${selectedNFT.id} was deposited!`,
+            summary: `${t('nftDeposited', { nftID: selectedNFT.id })}!`,
           });
 
           updateV3Stake({ txConfirmed: true });
@@ -564,7 +437,7 @@ export function useFarmingHandlers() {
       } catch (err) {
         updateV3Stake({ txError: 'failed' });
         if (err instanceof Error) {
-          throw new Error('Farming ' + current + ' ' + err.message);
+          throw new Error(t('depositing') + ' ' + current + ' ' + err.message);
         }
       }
     },
@@ -576,47 +449,8 @@ export function useFarmingHandlers() {
       gasPrice,
       provider,
       updateV3Stake,
+      t,
     ],
-  );
-
-  const transferHandler = useCallback(
-    async (selectedNFT) => {
-      if (!account || !provider || !chainId) return;
-
-      setTransfered({ hash: null, id: null });
-
-      let current;
-
-      try {
-        const nonFunPosManContract = new Contract(
-          NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
-          NON_FUN_POS_MAN,
-          provider.getSigner(),
-        );
-
-        if (selectedNFT.approved) {
-          current = selectedNFT.id;
-
-          const result = await nonFunPosManContract[
-            'safeTransferFrom(address,address,uint256)'
-          ](account, FARMING_CENTER[chainId], selectedNFT.id, {
-            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-          });
-
-          addTransaction(result, {
-            summary: `NFT #${selectedNFT.id} was transferred!`,
-          });
-
-          setTransfered({ hash: result.hash, id: selectedNFT.id });
-        }
-      } catch (err) {
-        setTransfered('failed');
-        if (err instanceof Error) {
-          throw new Error('Farming ' + current + ' ' + err.message);
-        }
-      }
-    },
-    [account, addTransaction, chainId, gasPrice, provider],
   );
 
   const approveHandler = useCallback(
@@ -656,7 +490,7 @@ export function useFarmingHandlers() {
           });
 
           addTransaction(result, {
-            summary: `NFT #${selectedNFT.id} was approved!`,
+            summary: `${t('nftApproving', { nftID: selectedNFT.id })}!`,
           });
 
           updateV3Stake({ txHash: result.hash });
@@ -664,7 +498,7 @@ export function useFarmingHandlers() {
           const receipt = await result.wait();
 
           finalizeTransaction(receipt, {
-            summary: `NFT #${selectedNFT.id} was approved!`,
+            summary: `${t('nftApproved', { nftID: selectedNFT.id })}!`,
           });
 
           updateV3Stake({ txConfirmed: true });
@@ -672,7 +506,7 @@ export function useFarmingHandlers() {
       } catch (err) {
         updateV3Stake({ txError: 'failed' });
         if (err instanceof Error) {
-          throw new Error('Approving NFT ' + current + ' ' + err.message);
+          throw new Error(t('approving') + ' ' + current + ' ' + err.message);
         }
       }
     },
@@ -684,68 +518,15 @@ export function useFarmingHandlers() {
       gasPrice,
       provider,
       updateV3Stake,
+      t,
     ],
-  );
-
-  const sendNFTL2Handler = useCallback(
-    async (recipient: string, l2TokenId: string) => {
-      if (!account || !provider || !chainId) return;
-
-      setSendNFTL2({ hash: null, id: null });
-
-      try {
-        const farmingCenterContract = new Contract(
-          FARMING_CENTER[chainId],
-          FARMING_CENTER_ABI,
-          provider.getSigner(),
-        );
-
-        const farmingCenterInterface = new Interface(FARMING_CENTER_ABI);
-
-        const approveData = farmingCenterInterface.encodeFunctionData(
-          'approve',
-          [recipient, l2TokenId],
-        );
-
-        const sendData = farmingCenterInterface.encodeFunctionData(
-          'safeTransferFrom(address,address,uint256)',
-          [account, recipient, l2TokenId],
-        );
-
-        const result = await farmingCenterContract.multicall(
-          [approveData, sendData],
-          {
-            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-          },
-        );
-
-        addTransaction(result, {
-          summary: `NFT #${l2TokenId} was sent!`,
-        });
-
-        setSendNFTL2({ hash: result.hash, id: l2TokenId });
-      } catch (err) {
-        setSendNFTL2('failed');
-        if (err instanceof Error) {
-          throw new Error('Send NFT L2 ' + err.message);
-        }
-      }
-    },
-    [account, addTransaction, chainId, gasPrice, provider],
   );
 
   return {
     approveHandler,
-    transferHandler,
-    transferedHash,
     farmHandler,
-    exitHandler,
     withdrawHandler,
     claimRewardsHandler,
-    sendNFTL2Handler,
-    sendNFTL2Hash,
     eternalCollectRewardHandler,
-    claimReward,
-    claimHash,
   };
 }

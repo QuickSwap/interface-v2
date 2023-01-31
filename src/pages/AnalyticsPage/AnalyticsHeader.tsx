@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import AnalyticsSearch from 'components/AnalyticsSearch';
@@ -26,9 +26,8 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-
-  const { isV2 } = useIsV2();
-  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'v3';
 
   return (
     <Box width='100%' mb={3}>
