@@ -1,16 +1,14 @@
 import { ConnectorUpdate } from '@web3-react/types';
-import { AbstractConnector } from '@web3-react/abstract-connector';
+import { InjectedConnector } from '@web3-react/injected-connector';
 //@ts-ignore
-import okxWeb3 from '@okwallet/extension-web3-1.7.0';
+import okWeb3 from '@okwallet/extension-web3-1.7.0';
 
 interface OKXConnectorArguments {
   chainId: number;
 }
 
-export class OKXWalletConnector extends AbstractConnector {
+export class OKXWalletConnector extends InjectedConnector {
   private readonly chainId: number;
-
-  public arkane: any;
 
   constructor({ chainId }: OKXConnectorArguments) {
     super({ supportedChainIds: [chainId] });
@@ -19,44 +17,18 @@ export class OKXWalletConnector extends AbstractConnector {
   }
 
   public async activate(): Promise<ConnectorUpdate> {
-    let okWallet;
-    const success = (wallet: any) => {
-      // return wallet account information
-      console.log(wallet);
-    };
-    const changed = (wallet: any) => {
-      // return wallet account information
-      // if there is no wallet is connecting, it will be null
-      okWallet = wallet;
-    };
-    const error = (error: any) => {
-      // Error returned when rejected
-      console.error(error);
-    };
-    const uninstall = () => {
-      console.log('uninstall');
-    };
-
     const { okxwallet } = window as any;
-    await okxWeb3.init({
-      success,
-      changed,
-      error,
-      uninstall,
-    });
 
     const accounts = await okxwallet.request({ method: 'eth_requestAccounts' });
+    const provider = await super.getProvider();
+
+    await okWeb3.init();
 
     return {
-      provider: okxwallet,
+      provider,
       chainId: this.chainId,
       account: accounts[0],
     };
-  }
-
-  public async getProvider(): Promise<any> {
-    const { okxwallet } = window as any;
-    return okxwallet;
   }
 
   public async getChainId(): Promise<number | string> {
@@ -71,12 +43,10 @@ export class OKXWalletConnector extends AbstractConnector {
   }
 
   public deactivate(): void {
-    okxWeb3.disconnect();
-    console.log('deactivate');
+    okWeb3.disconnect();
   }
 
   public close(): void {
-    okxWeb3.disconnect();
-    console.log('disconnected');
+    okWeb3.disconnect();
   }
 }
