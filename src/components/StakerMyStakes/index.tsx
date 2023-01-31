@@ -356,51 +356,45 @@ export const FarmingMyFarms: React.FC<{
     };
   });
 
-  const fetchStakedData = async () => {
-    if (!account) return;
-    try {
-      const data = await fetch(
-        `https://gammawire.net/quickswap/polygon/userRewards2/${account}`,
-      );
-      const gammaData = await data.json();
-      return gammaData ? gammaData.stakes : undefined;
-    } catch (e) {
-      console.log(e);
-      return;
-    }
-  };
-
-  const { isLoading: gammaStakesLoading, data: stakedData } = useQuery(
-    'fetchStakedData',
-    fetchStakedData,
-    {
-      refetchInterval: 30000,
-    },
-  );
-
   const fetchGammaData = async () => {
     try {
       const data = await fetch(
-        `https://gammawire.net/quickswap/polygon/hypervisors/allData`,
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
       );
       const gammaData = await data.json();
       return gammaData;
-    } catch (e) {
-      console.log(e);
-      return;
+    } catch {
+      try {
+        const data = await fetch(
+          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
+        );
+        const gammaData = await data.json();
+        return gammaData;
+      } catch (e) {
+        console.log(e);
+        return;
+      }
     }
   };
 
   const fetchGammaRewards = async () => {
     try {
       const data = await fetch(
-        `https://gammawire.net/quickswap/polygon/allRewards2`,
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
       );
       const gammaData = await data.json();
       return gammaData;
-    } catch (e) {
-      console.log(e);
-      return;
+    } catch {
+      try {
+        const data = await fetch(
+          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
+        );
+        const gammaData = await data.json();
+        return gammaData;
+      } catch (e) {
+        console.log(e);
+        return;
+      }
     }
   };
 
@@ -408,13 +402,21 @@ export const FarmingMyFarms: React.FC<{
     if (!account) return;
     try {
       const data = await fetch(
-        `https://gammawire.net/quickswap/polygon/user/${account}`,
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
       );
       const positions = await data.json();
       return positions[account.toLowerCase()];
-    } catch (e) {
-      console.log(e);
-      return;
+    } catch {
+      try {
+        const data = await fetch(
+          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
+        );
+        const positions = await data.json();
+        return positions[account.toLowerCase()];
+      } catch (e) {
+        console.log(e);
+        return;
+      }
     }
   };
 
@@ -727,10 +729,7 @@ export const FarmingMyFarms: React.FC<{
         <Box px={2} mt={2}>
           <h6>Gamma {t('farms')}</h6>
         </Box>
-        {gammaFarmsLoading ||
-        positionsLoading ||
-        gammaRewardsLoading ||
-        gammaStakesLoading ? (
+        {gammaFarmsLoading || positionsLoading || gammaRewardsLoading ? (
           <Box py={5} className='flex justify-center'>
             <Loader stroke={'white'} size={'1.5rem'} />
           </Box>
