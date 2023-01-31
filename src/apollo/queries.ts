@@ -174,6 +174,7 @@ const PairFields = `
     reserve0
     reserve1
     volumeUSD
+    untrackedVolumeUSD
     reserveUSD
     totalSupply
     token0 {
