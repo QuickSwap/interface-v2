@@ -20,13 +20,21 @@ export default function MyLiquidityPoolsV3() {
     if (!account) return;
     try {
       const data = await fetch(
-        `https://gammawire.net/quickswap/polygon/user/${account}`,
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
       );
       const positions = await data.json();
       return positions[account.toLowerCase()];
-    } catch (e) {
-      console.log(e);
-      return;
+    } catch {
+      try {
+        const data = await fetch(
+          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
+        );
+        const positions = await data.json();
+        return positions[account.toLowerCase()];
+      } catch (e) {
+        console.log(e);
+        return;
+      }
     }
   };
 

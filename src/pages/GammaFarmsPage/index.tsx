@@ -37,26 +37,42 @@ const GammaFarmsPage: React.FC<{
   const fetchGammaData = async () => {
     try {
       const data = await fetch(
-        `https://gammawire.net/quickswap/polygon/hypervisors/allData`,
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
       );
       const gammaData = await data.json();
       return gammaData;
-    } catch (e) {
-      console.log(e);
-      return;
+    } catch {
+      try {
+        const data = await fetch(
+          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
+        );
+        const gammaData = await data.json();
+        return gammaData;
+      } catch (e) {
+        console.log(e);
+        return;
+      }
     }
   };
 
   const fetchGammaRewards = async () => {
     try {
       const data = await fetch(
-        `https://gammawire.net/quickswap/polygon/allRewards2`,
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
       );
       const gammaData = await data.json();
       return gammaData;
-    } catch (e) {
-      console.log(e);
-      return;
+    } catch {
+      try {
+        const data = await fetch(
+          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
+        );
+        const gammaData = await data.json();
+        return gammaData;
+      } catch (e) {
+        console.log(e);
+        return;
+      }
     }
   };
 
@@ -64,13 +80,21 @@ const GammaFarmsPage: React.FC<{
     if (!account) return;
     try {
       const data = await fetch(
-        `https://gammawire.net/quickswap/polygon/user/${account}`,
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
       );
       const positions = await data.json();
       return positions[account.toLowerCase()];
     } catch (e) {
-      console.log(e);
-      return;
+      try {
+        const data = await fetch(
+          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
+        );
+        const positions = await data.json();
+        return positions[account.toLowerCase()];
+      } catch (e) {
+        console.log(e);
+        return;
+      }
     }
   };
 

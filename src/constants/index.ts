@@ -269,8 +269,8 @@ export const GammaPairs: {
       address: '0x9e31214db6931727b7d63a0d2b6236db455c0965',
       token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
       token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-      ableToFarm: true,
-      pid: 10,
+      // ableToFarm: true,
+      // pid: 10,
     },
   ],
   '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
@@ -280,8 +280,8 @@ export const GammaPairs: {
       address: '0x795f8c9b0a0da9cd8dea65fc10f9b57abc532e58',
       token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
       token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      ableToFarm: true,
-      pid: 11,
+      // ableToFarm: true,
+      // pid: 11,
     },
   ],
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x580a84c73811e1839f75d86d75d88cca0c241ff4': [
@@ -340,8 +340,8 @@ export const GammaPairs: {
       address: '0x8dd3bf71ef18dd88869d128bde058c9d8c270176',
       token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
       token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
-      ableToFarm: true,
-      pid: 14,
+      // ableToFarm: true,
+      // pid: 14,
     },
   ],
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
@@ -351,8 +351,8 @@ export const GammaPairs: {
       address: '0xccbcaf47e87f50a338fac9bf58e567ed1c87be2b',
       token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
       token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
-      ableToFarm: true,
-      pid: 15,
+      // ableToFarm: true,
+      // pid: 15,
     },
   ],
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
