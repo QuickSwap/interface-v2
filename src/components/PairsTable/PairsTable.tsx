@@ -24,7 +24,7 @@ const PairTable: React.FC<PairsTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
   const liquidityHeadCellIndex = version === 'total' ? 2 : 1;
 
   const v2SpecificCells = [
