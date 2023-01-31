@@ -755,9 +755,13 @@ export const get2DayPercentChange = (valueNow: any, value24HoursAgo: any) => {
 
 function parseData(data: any, oneDayData: any) {
   // get volume changes
+  const volumeKey =
+    data && data.volumeUSD && Number(data.volumeUSD)
+      ? 'volumeUSD'
+      : 'untrackedVolumeUSD';
   const oneDayVolumeUSD = get2DayPercentChange(
-    data?.volumeUSD,
-    oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0,
+    data && data[volumeKey] ? Number(data[volumeKey]) : 0,
+    oneDayData && oneDayData[volumeKey] ? Number(oneDayData[volumeKey]) : 0,
   );
   return {
     id: data.id,
@@ -1254,13 +1258,13 @@ export function useDualStakingInfo(
           );
 
           const individualRewardRateA = getHypotheticalRewardRate(
-            dummyToken,
+            stakingInfo.rewardTokenA,
             stakedAmount,
             totalStakedAmount,
             totalRewardRateA01,
           );
           const individualRewardRateB = getHypotheticalRewardRate(
-            dummyToken,
+            stakingInfo.rewardTokenB,
             stakedAmount,
             totalStakedAmount,
             totalRewardRateB01,
@@ -1321,11 +1325,11 @@ export function useDualStakingInfo(
             name: stakingInfo.name,
             lp: stakingInfo.lp,
             earnedAmountA: initTokenAmountFromCallResult(
-              dummyToken,
+              stakingInfo.rewardTokenA,
               earnedAAmountState,
             ),
             earnedAmountB: initTokenAmountFromCallResult(
-              dummyToken,
+              stakingInfo.rewardTokenB,
               earnedBAmountState,
             ),
             rewardRateA: individualRewardRateA,

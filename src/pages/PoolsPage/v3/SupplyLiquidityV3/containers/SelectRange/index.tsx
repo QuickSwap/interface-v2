@@ -40,7 +40,11 @@ export function SelectRange({
 }: IRangeSelector) {
   const { t } = useTranslation();
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true);
-  const { startPriceTypedValue, liquidityRangeType } = useV3MintState();
+  const {
+    startPriceTypedValue,
+    liquidityRangeType,
+    presetRange,
+  } = useV3MintState();
   const { onChangeLiquidityRangeType } = useV3MintActionHandlers(
     mintInfo.noLiquidity,
   );
@@ -64,6 +68,13 @@ export function SelectRange({
   const gammaPair =
     GammaPairs[currencyAAddress + '-' + currencyBAddress] ??
     GammaPairs[currencyBAddress + '-' + currencyAAddress];
+
+  const gammaPairReversed = !!(
+    gammaPair && GammaPairs[currencyBAddress + '-' + currencyAAddress]
+  );
+
+  const gammaCurrencyA = gammaPairReversed ? currencyB : currencyA;
+  const gammaCurrencyB = gammaPairReversed ? currencyA : currencyB;
 
   useEffect(() => {
     if (gammaPair) {
@@ -351,24 +362,36 @@ export function SelectRange({
           gammaPair={gammaPair}
         />
       </Box>
-      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
-        <Box my={2}>
-          <small className='text-secondary'>
-            <Trans
-              i18nKey='gammaLiquidityRangeLearnMore'
-              components={{
-                alink: (
-                  <a
-                    href='https://quickswap.exchange'
-                    target='_blank'
-                    rel='noreferrer'
-                  />
-                ),
-              }}
-            />
-          </small>
-        </Box>
-      )}
+      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+        presetRange &&
+        gammaCurrencyA &&
+        gammaCurrencyB &&
+        gammaCurrencyA.wrapped.symbol &&
+        gammaCurrencyB.wrapped.symbol &&
+        gammaPair && (
+          <Box my={2}>
+            <small className='text-secondary'>
+              <Trans
+                i18nKey='gammaLiquidityRangeLearnMore'
+                components={{
+                  alink: (
+                    <a
+                      href={`https://quickswap.gamma.xyz/vault-detail/${gammaCurrencyA.wrapped.symbol.toUpperCase()}-${gammaCurrencyB.wrapped.symbol.toUpperCase()}-0${
+                        presetRange.type === Presets.GAMMA_NARROW
+                          ? '-Narrow'
+                          : presetRange.type === Presets.GAMMA_WIDE
+                          ? '-Wide'
+                          : ''
+                      }`}
+                      target='_blank'
+                      rel='noreferrer'
+                    />
+                  ),
+                }}
+              />
+            </small>
+          </Box>
+        )}
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
         <>
           {mintInfo.price && (

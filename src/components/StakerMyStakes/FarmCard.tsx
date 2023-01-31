@@ -102,10 +102,16 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
 
   const currentMaticPrice = maticPrice.price ?? 0;
   const usdAmount =
-    currentMaticPrice * Number(earned) * Number(rewardToken.derivedMatic) +
+    currentMaticPrice *
+      Number(earned) *
+      (rewardToken && rewardToken.derivedMatic
+        ? Number(rewardToken.derivedMatic)
+        : 0) +
     currentMaticPrice *
       Number(bonusEarned) *
-      Number(bonusRewardToken.derivedMatic);
+      (bonusRewardToken && bonusRewardToken.derivedMatic
+        ? Number(bonusRewardToken.derivedMatic)
+        : 0);
 
   return (
     <Box>
@@ -187,11 +193,13 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
                   <CurrencyLogo size='16px' currency={farmRewardToken} />
                 )}
 
-                <Box ml='6px'>
-                  <p className='caption'>{`${formatReward(Number(earned))} ${
-                    rewardToken.symbol
-                  }`}</p>
-                </Box>
+                {rewardToken && (
+                  <Box ml='6px'>
+                    <p className='caption'>{`${formatReward(Number(earned))} ${
+                      rewardToken.symbol
+                    }`}</p>
+                  </Box>
+                )}
               </Box>
               <Box
                 className={`flex items-center ${isMobile ? 'justify-end' : ''}`}
@@ -200,11 +208,13 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
                   <CurrencyLogo size='16px' currency={farmBonusRewardToken} />
                 )}
 
-                <Box ml='6px'>
-                  <p className='caption'>{`${formatReward(
-                    Number(bonusEarned),
-                  )} ${bonusRewardToken.symbol}`}</p>
-                </Box>
+                {bonusRewardToken && (
+                  <Box ml='6px'>
+                    <p className='caption'>{`${formatReward(
+                      Number(bonusEarned),
+                    )} ${bonusRewardToken.symbol}`}</p>
+                  </Box>
+                )}
               </Box>
             </Box>
           </Box>

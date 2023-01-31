@@ -174,6 +174,7 @@ const PairFields = `
     reserve0
     reserve1
     volumeUSD
+    untrackedVolumeUSD
     reserveUSD
     totalSupply
     token0 {
@@ -649,7 +650,7 @@ export const GET_BLOCKS: any = (timestamps: number[]) => {
 export const FILTERED_TRANSACTIONS = gql`
   query($allPairs: [Bytes]!) {
     mints(
-      first: 20
+      first: 500
       where: { pair_in: $allPairs }
       orderBy: timestamp
       orderDirection: desc
@@ -675,7 +676,7 @@ export const FILTERED_TRANSACTIONS = gql`
       amountUSD
     }
     burns(
-      first: 20
+      first: 500
       where: { pair_in: $allPairs }
       orderBy: timestamp
       orderDirection: desc
@@ -701,7 +702,7 @@ export const FILTERED_TRANSACTIONS = gql`
       amountUSD
     }
     swaps(
-      first: 30
+      first: 500
       where: { pair_in: $allPairs }
       orderBy: timestamp
       orderDirection: desc
