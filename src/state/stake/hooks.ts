@@ -1254,13 +1254,13 @@ export function useDualStakingInfo(
           );
 
           const individualRewardRateA = getHypotheticalRewardRate(
-            dummyToken,
+            stakingInfo.rewardTokenA,
             stakedAmount,
             totalStakedAmount,
             totalRewardRateA01,
           );
           const individualRewardRateB = getHypotheticalRewardRate(
-            dummyToken,
+            stakingInfo.rewardTokenB,
             stakedAmount,
             totalStakedAmount,
             totalRewardRateB01,
@@ -1321,11 +1321,11 @@ export function useDualStakingInfo(
             name: stakingInfo.name,
             lp: stakingInfo.lp,
             earnedAmountA: initTokenAmountFromCallResult(
-              dummyToken,
+              stakingInfo.rewardTokenA,
               earnedAAmountState,
             ),
             earnedAmountB: initTokenAmountFromCallResult(
-              dummyToken,
+              stakingInfo.rewardTokenB,
               earnedBAmountState,
             ),
             rewardRateA: individualRewardRateA,
