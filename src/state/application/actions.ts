@@ -61,10 +61,6 @@ export const updateMaticPrice = createAction<{
   maticPriceChange: number;
 }>('application/updateMaticPrice');
 
-export const updateGlobalData = createAction<{ data: any }>(
-  'application/updateGlobalData',
-);
-
 export const addBookMarkToken = createAction<string>(
   'application/addBookMarkedToken',
 );

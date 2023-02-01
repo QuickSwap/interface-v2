@@ -24,7 +24,9 @@ const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
 const CHART_PRICE = 2;
 
-const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
+const AnalyticsTokenChart: React.FC<{
+  token: any;
+}> = ({ token }) => {
   const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id;
@@ -110,6 +112,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
       });
     }
     fetchTokenChartData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenAddress, durationIndex, version]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
@@ -185,4 +188,4 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
   );
 };
 
-export default AnalyticsTokenChart;
+export default React.memo(AnalyticsTokenChart);

@@ -28,14 +28,17 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const params: any = useParams();
   const version = params && params.version ? params.version : 'v3';
+  const isPairDetails = history.location.pathname.includes('pair/');
 
   return (
     <Box width='100%' mb={3}>
       <Box mb={4} className='flex items-center'>
         <h4>{t('quickswapAnalytics')}</h4>
-        <Box ml={2}>
-          <VersionToggle />
-        </Box>
+        {!isPairDetails && (
+          <Box ml={2}>
+            <VersionToggle />
+          </Box>
+        )}
       </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='analytics' />

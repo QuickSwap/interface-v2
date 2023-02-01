@@ -29,10 +29,8 @@ const AnalyticsPairs: React.FC = () => {
         );
         if (pairsData) {
           const data = pairsData.filter((item: any) => !!item);
-          updateTopPairs(data);
           try {
             const aprs = await getPairsAPR(data.map((item: any) => item.id));
-
             updateTopPairs(
               data.map((item: any, ind: number) => {
                 return {
@@ -67,10 +65,8 @@ const AnalyticsPairs: React.FC = () => {
         );
         if (pairsData) {
           const data = pairsData.filter((item: any) => !!item);
-          updateTopPairs(data);
           try {
             const aprs = await getPairsAPR(data.map((item: any) => item.id));
-
             updateTopPairs(
               data.map((item: any, ind: number) => {
                 return {
@@ -95,6 +91,8 @@ const AnalyticsPairs: React.FC = () => {
   useEffect(() => {
     if (topPairs) {
       dispatch(setAnalyticsLoaded(true));
+    } else {
+      dispatch(setAnalyticsLoaded(false));
     }
   }, [topPairs, dispatch]);
 
