@@ -14,9 +14,10 @@ import {
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { getChartDataV3 } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
+import { getChartDataTotal, getChartDataV3 } from 'utils/v3-graph';
+import { useParams } from 'react-router-dom';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
@@ -34,10 +35,10 @@ const AnalyticsVolumeChart: React.FC = () => {
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const { isV2 } = useIsV2();
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'v3';
 
   useEffect(() => {
-    if (isV2 === undefined) return;
     const fetchChartData = async () => {
       updateGlobalChartData(null);
 
@@ -46,9 +47,12 @@ const AnalyticsVolumeChart: React.FC = () => {
           ? 0
           : getChartStartTime(durationIndex);
 
-      const chartDataFn = !isV2
-        ? getChartDataV3(duration, chainIdToUse)
-        : getChartData(duration, chainIdToUse);
+      const chartDataFn =
+        version === 'v2'
+          ? getChartDataV3(duration, chainIdToUse)
+          : version === 'total'
+          ? getChartDataTotal(duration, chainIdToUse)
+          : getChartData(duration, chainIdToUse);
 
       chartDataFn.then(([newChartData, newWeeklyData]) => {
         if (newChartData && newWeeklyData) {
@@ -65,7 +69,7 @@ const AnalyticsVolumeChart: React.FC = () => {
       });
     };
     fetchChartData();
-  }, [durationIndex, isV2, chainIdToUse]);
+  }, [durationIndex, version, chainIdToUse]);
 
   const liquidityWeeks = useMemo(() => {
     if (globalChartData) {
@@ -245,10 +249,10 @@ const AnalyticsVolumeChart: React.FC = () => {
         </Box>
       </Box>
       <Box mt={2}>
-        {globalChartData && isV2 !== undefined ? (
+        {globalChartData ? (
           <BarChart
             height={200}
-            isV3={!isV2}
+            isV3={version !== 'v2'}
             data={barChartData}
             categories={
               volumeIndex === WEEK_VOLUME

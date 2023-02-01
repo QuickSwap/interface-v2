@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config';
 
-export const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
+const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
   v3GlobalData,
 }) => {
@@ -70,3 +70,5 @@ export const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
     </Box>
   );
 };
+
+export default HeroSection;

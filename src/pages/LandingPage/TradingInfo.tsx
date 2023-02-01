@@ -10,7 +10,7 @@ import { useActiveWeb3React } from 'hooks';
 import { getConfig } from '../../config/index';
 import { useV3DistributedRewards } from 'hooks/v3/useV3DistributedRewards';
 
-export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
+const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
   v3GlobalData,
 }) => {
@@ -115,3 +115,5 @@ export const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
     </>
   );
 };
+
+export default TradingInfo;

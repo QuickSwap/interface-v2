@@ -3,18 +3,15 @@ import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useIsV2 } from 'state/application/hooks';
 import { Swap, SettingsModal, ToggleSwitch } from 'components';
-import {
-  GelatoLimitOrderPanel,
-  GelatoLimitOrdersHistoryPanel,
-} from '@gelatonetwork/limit-orders-react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { SwapBestTrade } from 'components/Swap';
 import SwapV3Page from './V3/Swap';
 import { getConfig } from '../../config/index';
 import { useActiveWeb3React } from 'hooks';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
+import SwapLimitOrder from './SwapLimitOrder';
 
 const SWAP_BEST_TRADE = '0';
 const SWAP_NORMAL = '1';
@@ -194,29 +191,7 @@ const SwapMain: React.FC = () => {
         {swapType === SWAP_BEST_TRADE && showBestTrade && <SwapBestTrade />}
         {swapType === SWAP_NORMAL && v2 && <Swap />}
         {swapType === SWAP_V3 && v3 && <SwapV3Page />}
-        {swapType === SWAP_LIMIT && showLimitOrder && (
-          <Box className='limitOrderPanel'>
-            <GelatoLimitOrderPanel />
-            <GelatoLimitOrdersHistoryPanel />
-            <Box mt={2} textAlign='center'>
-              <small>
-                <Trans
-                  i18nKey='limitOrderDisclaimer'
-                  components={{
-                    bold: <b />,
-                    alink: (
-                      <a
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        href='https://www.certik.org/projects/gelato'
-                      />
-                    ),
-                  }}
-                />
-              </small>
-            </Box>
-          </Box>
-        )}
+        {swapType === SWAP_LIMIT && showLimitOrder && <SwapLimitOrder />}
       </Box>
     </>
   );

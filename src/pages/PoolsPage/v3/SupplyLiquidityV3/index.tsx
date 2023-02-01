@@ -5,6 +5,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import {
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
+  useV3MintState,
 } from 'state/mint/v3/hooks';
 import { InitialPrice } from './containers/InitialPrice';
 import { EnterAmounts } from './containers/EnterAmounts';
@@ -38,6 +39,7 @@ import usePoolsRedirect from 'hooks/usePoolsRedirect';
 import { CHAIN_INFO } from 'constants/v3/chains';
 import { ChainId } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
+import { GlobalConst } from 'constants/index';
 
 export function SupplyLiquidityV3() {
   const { t } = useTranslation();
@@ -111,6 +113,7 @@ export function SupplyLiquidityV3() {
     undefined,
   );
 
+  const { liquidityRangeType } = useV3MintState();
   const {
     onFieldAInput,
     onFieldBInput,
@@ -316,16 +319,20 @@ export function SupplyLiquidityV3() {
         {(!baseCurrency || !quoteCurrency) && (
           <Box className='v3-supply-liquidity-overlay' />
         )}
-        {mintInfo.noLiquidity && baseCurrency && quoteCurrency && (
-          <Box mb={2}>
-            <InitialPrice
-              currencyA={baseCurrency ?? undefined}
-              currencyB={currencyB ?? undefined}
-              mintInfo={mintInfo}
-              priceFormat={priceFormat}
-            />
-          </Box>
-        )}
+        {mintInfo.noLiquidity &&
+          baseCurrency &&
+          quoteCurrency &&
+          liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+            <Box mb={2}>
+              <InitialPrice
+                currencyA={baseCurrency ?? undefined}
+                currencyB={currencyB ?? undefined}
+                mintInfo={mintInfo}
+                priceFormat={priceFormat}
+              />
+            </Box>
+          )}
         <SelectRange
           currencyA={baseCurrency}
           currencyB={quoteCurrency}

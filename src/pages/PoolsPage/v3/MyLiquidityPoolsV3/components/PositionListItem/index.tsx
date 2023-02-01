@@ -206,7 +206,7 @@ export default function PositionListItem({
         }
         className='flex items-center'
       >
-        <Box className='v3-pool-item-tokenId-wrapper'>
+        <Box className='v3-tokenId-wrapper'>
           <p>{t('nftID')}:</p>
           <span>{positionDetails.tokenId.toString()}</span>
         </Box>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
@@ -9,7 +9,6 @@ import {
   useEthPrice,
   useGlobalData,
   useMaticPrice,
-  useIsV2,
 } from 'state/application/hooks';
 import {
   getTopPairs,
@@ -25,9 +24,12 @@ import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
 import {
   getGlobalDataV3,
+  getGlobalDataTotal,
   getPairsAPR,
   getTopPairsV3,
   getTopTokensV3,
+  getTopTokensTotal,
+  getTopPairsTotal,
 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
@@ -48,18 +50,26 @@ const AnalyticsOverview: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const dispatch = useDispatch();
-
-  const { isV2 } = useIsV2();
-  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'v3';
 
   useEffect(() => {
-    if (isV2 === undefined) return;
-
     (async () => {
-      if (!isV2) {
+      if (version === 'v3') {
         const data = await getGlobalDataV3(chainIdToUse);
         if (data) {
           updateGlobalData({ data });
+        }
+      } else if (version === 'total') {
+        if (ethPrice.price && ethPrice.oneDayPrice) {
+          const data = await getGlobalDataTotal(
+            ethPrice.price,
+            ethPrice.oneDayPrice,
+            chainIdToUse,
+          );
+          if (data) {
+            updateGlobalData({ data });
+          }
         }
       } else if (ethPrice.price && ethPrice.oneDayPrice) {
         const data = await getGlobalData(
@@ -75,7 +85,7 @@ const AnalyticsOverview: React.FC = () => {
     })();
 
     (async () => {
-      if (!isV2) {
+      if (version === 'v3') {
         if (maticPrice.price && maticPrice.oneDayPrice) {
           const data = await getTopTokensV3(
             maticPrice.price,
@@ -87,7 +97,7 @@ const AnalyticsOverview: React.FC = () => {
             updateTopTokens(data);
           }
         }
-      } else {
+      } else if (version === 'v2') {
         if (ethPrice.price && ethPrice.oneDayPrice) {
           const data = await getTopTokens(
             ethPrice.price,
@@ -99,11 +109,30 @@ const AnalyticsOverview: React.FC = () => {
             updateTopTokens(data);
           }
         }
+      } else {
+        if (
+          maticPrice.price &&
+          maticPrice.oneDayPrice &&
+          ethPrice.price &&
+          ethPrice.oneDayPrice
+        ) {
+          const data = await getTopTokensTotal(
+            ethPrice.price,
+            ethPrice.oneDayPrice,
+            maticPrice.price,
+            maticPrice.oneDayPrice,
+            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            chainIdToUse,
+          );
+          if (data) {
+            updateTopTokens(data);
+          }
+        }
       }
     })();
 
     (async () => {
-      if (!isV2) {
+      if (version === 'v3') {
         const pairsData = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
           chainIdToUse,
@@ -111,30 +140,26 @@ const AnalyticsOverview: React.FC = () => {
         if (pairsData) {
           const data = pairsData.filter((item: any) => !!item);
           updateTopPairs(data);
-          if (!isV2) {
-            (async () => {
-              try {
-                const aprs = await getPairsAPR(
-                  data.map((item: any) => item.id),
-                  chainIdToUse,
-                );
+          try {
+            const aprs = await getPairsAPR(
+              data.map((item: any) => item.id),
+              chainIdToUse,
+            );
 
-                updateTopPairs(
-                  data.map((item: any, ind: number) => {
-                    return {
-                      ...item,
-                      apr: aprs[ind].apr,
-                      farmingApr: aprs[ind].farmingApr,
-                    };
-                  }),
-                );
-              } catch (e) {
-                console.log(e);
-              }
-            })();
+            updateTopPairs(
+              data.map((item: any, ind: number) => {
+                return {
+                  ...item,
+                  apr: aprs[ind].apr,
+                  farmingApr: aprs[ind].farmingApr,
+                };
+              }),
+            );
+          } catch (e) {
+            console.log(e);
           }
         }
-      } else {
+      } else if (version === 'v2') {
         if (ethPrice.price) {
           const pairs = await getTopPairs(
             GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
@@ -154,6 +179,33 @@ const AnalyticsOverview: React.FC = () => {
             updateTopPairs(data);
           }
         }
+      } else {
+        const pairsData = await getTopPairsTotal(
+          GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+          chainIdToUse,
+        );
+        if (pairsData) {
+          const data = pairsData.filter((item: any) => !!item);
+          updateTopPairs(data);
+          try {
+            const aprs = await getPairsAPR(
+              data.map((item: any) => item.id),
+              chainIdToUse,
+            );
+
+            updateTopPairs(
+              data.map((item: any, ind: number) => {
+                return {
+                  ...item,
+                  apr: aprs[ind].apr,
+                  farmingApr: aprs[ind].farmingApr,
+                };
+              }),
+            );
+          } catch (e) {
+            console.log(e);
+          }
+        }
       }
     })();
   }, [
@@ -162,18 +214,16 @@ const AnalyticsOverview: React.FC = () => {
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
-    isV2,
+    version,
     chainIdToUse,
   ]);
 
   useEffect(() => {
-    if (isV2 !== undefined) {
-      updateGlobalData({ data: null });
-      updateTopPairs(null);
-      updateTopTokens(null);
-    }
+    updateGlobalData({ data: null });
+    updateTopPairs(null);
+    updateTopTokens(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isV2]);
+  }, [version]);
 
   useEffect(() => {
     if (globalData && topTokens && topPairs) {
@@ -220,7 +270,16 @@ const AnalyticsOverview: React.FC = () => {
       </Box>
       <Box mt={3} className='panel'>
         {topTokens ? (
-          <TokensTable data={topTokens} showPagination={false} />
+          <TokensTable
+            data={topTokens
+              .sort((token1, token2) => {
+                return token1.totalLiquidityUSD > token2.totalLiquidityUSD
+                  ? -1
+                  : 1;
+              })
+              .slice(0, 10)}
+            showPagination={false}
+          />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
         )}
@@ -241,7 +300,20 @@ const AnalyticsOverview: React.FC = () => {
       </Box>
       <Box mt={3} className='panel'>
         {topPairs ? (
-          <PairTable data={topPairs} showPagination={false} />
+          <PairTable
+            data={topPairs
+              .sort((pair1, pair2) => {
+                const liquidity1 = pair1.trackedReserveUSD
+                  ? pair1.trackedReserveUSD
+                  : pair1.reserveUSD ?? 0;
+                const liquidity2 = pair2.trackedReserveUSD
+                  ? pair2.trackedReserveUSD
+                  : pair2.reserveUSD ?? 0;
+                return liquidity1 > liquidity2 ? -1 : 1;
+              })
+              .slice(0, 10)}
+            showPagination={false}
+          />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
         )}

@@ -61,12 +61,30 @@ const AnalyticsPairDetails: React.FC = () => {
         return { ...item, type: TxnType.ADD };
       });
       const swaps = pairTransactions.swaps.map((item: any) => {
-        const amount0 = item.amount0Out > 0 ? item.amount0Out : item.amount1Out;
-        const amount1 = item.amount0In > 0 ? item.amount0In : item.amount1In;
-        const token0 =
-          item.amount0Out > 0 ? item.pair.token0 : item.pair.token1;
-        const token1 =
-          item.amount0Out > 0 ? item.pair.token1 : item.pair.token0;
+        const amount0 = isV2
+          ? item.amount0Out > 0
+            ? item.amount0Out
+            : item.amount1Out
+          : item.amount0 > 0
+          ? item.amount0
+          : Math.abs(item.amount1);
+        const amount1 = isV2
+          ? item.amount0In > 0
+            ? item.amount0In
+            : item.amount1In
+          : item.amount0 > 0
+          ? Math.abs(item.amount1)
+          : Math.abs(item.amount0);
+        const token0 = (isV2
+        ? item.amount0Out > 0
+        : item.amount0 > 0)
+          ? item.pair.token0
+          : item.pair.token1;
+        const token1 = (isV2
+        ? item.amount0Out > 0
+        : item.amount0 > 0)
+          ? item.pair.token1
+          : item.pair.token0;
         return {
           ...item,
           amount0,
@@ -82,7 +100,7 @@ const AnalyticsPairDetails: React.FC = () => {
     } else {
       return null;
     }
-  }, [pairTransactions]);
+  }, [pairTransactions, isV2]);
   const currency0 = pairData
     ? getTokenFromAddress(pairData.token0.id, chainIdToUse, tokenMap, [
         new Token(

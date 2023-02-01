@@ -16,7 +16,7 @@ import SwapV3Page from 'pages/SwapPage/V3/Swap';
 const SWAP_TAB = 0;
 const LIQUIDITY_TAB = 1;
 
-export const SwapSection: React.FC = () => {
+const SwapSection: React.FC = () => {
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const [tabIndex, setTabIndex] = useState(SWAP_TAB);
@@ -75,3 +75,5 @@ export const SwapSection: React.FC = () => {
     </>
   );
 };
+
+export default SwapSection;

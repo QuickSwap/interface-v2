@@ -336,21 +336,21 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
   });
 }
 
-export function useUSDCPricesToken(tokens: Token[], chainId: ChainId) {
+export function useUSDCPricesToken(tokens: Token[], chainId?: ChainId) {
   const dQUICKtoQUICK = useDQUICKtoQUICK();
-  const oldQuickToken = OLD_QUICK[chainId];
-  const oldDQuickToken = OLD_DQUICK[chainId];
-  const newQuickToken = NEW_QUICK[chainId];
-  const newDQuickToken = NEW_DQUICK[chainId];
-  const usdcToken = USDC[chainId];
+  const oldQuickToken = chainId ? OLD_QUICK[chainId] : undefined;
+  const oldDQuickToken = chainId ? OLD_DQUICK[chainId] : undefined;
+  const newQuickToken = chainId ? NEW_QUICK[chainId] : undefined;
+  const newDQuickToken = chainId ? NEW_DQUICK[chainId] : undefined;
+  const usdcToken = chainId ? USDC[chainId] : undefined;
   const [, quickUsdcPair] = usePair(oldQuickToken, usdcToken);
   const [, newQuickUsdcPair] = usePair(newQuickToken, usdcToken);
-  const quickPrice = Number(
-    quickUsdcPair?.priceOf(oldQuickToken)?.toSignificant(6) ?? 0,
-  );
-  const newQuickPrice = Number(
-    newQuickUsdcPair?.priceOf(newQuickToken)?.toSignificant(6) ?? 0,
-  );
+  const quickPrice = oldQuickToken
+    ? Number(quickUsdcPair?.priceOf(oldQuickToken)?.toSignificant(6) ?? 0)
+    : 0;
+  const newQuickPrice = newQuickToken
+    ? Number(newQuickUsdcPair?.priceOf(newQuickToken)?.toSignificant(6) ?? 0)
+    : 0;
   const filteredTokens = tokens
     .filter((item, pos, self) => {
       return (

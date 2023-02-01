@@ -1,8 +1,6 @@
 import { Currency } from '@uniswap/sdk-core';
-import React, { ReactNode, useContext, useEffect } from 'react';
-import { Box } from '@material-ui/core';
-import { ThemeContext } from 'styled-components/macro';
-import { RowBetween, RowFixed } from '../Row';
+import React, { ReactNode, useEffect } from 'react';
+import { Box, Button } from '@material-ui/core';
 import {
   AlertTriangle,
   ArrowUpCircle,
@@ -10,23 +8,13 @@ import {
   ExternalLink,
   X,
 } from 'react-feather';
-import { ButtonLight } from '../Button';
-import { AutoColumn } from '../Column';
 import Circle from 'assets/images/blue-loader.svg';
 import MetaMaskLogo from 'assets/images/metamask-logo.svg';
 import { useActiveWeb3React } from 'hooks';
 import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
-import {
-  BottomSection,
-  ConfirmedIcon,
-  Section,
-  StyledLogo,
-  Wrapper,
-} from './styled';
 import { CustomModal } from 'components';
 import { CloseIcon, CustomLightSpinner } from 'theme/components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
-import { StyledButton, StyledLabel } from '../Common/styledElements';
 import { useTranslation } from 'react-i18next';
 
 interface ConfirmationPendingContentProps {
@@ -42,33 +30,26 @@ function ConfirmationPendingContent({
 }: ConfirmationPendingContentProps) {
   const { t } = useTranslation();
   return (
-    <div className={'p-1 w-100'}>
+    <Box className='flex flex-col items-center'>
       {!inline && (
-        <div className={'flex-s-between'}>
-          <div />
-          <X className={'c-w hover-op trans-op'} onClick={onDismiss} />
-        </div>
+        <Box width='100%' className='flex justify-between'>
+          <Box />
+          <X onClick={onDismiss} />
+        </Box>
       )}
-      <div className={'f c f-ac f-jc mb-1 p-2'}>
-        <CustomLightSpinner
-          src={Circle}
-          alt='loader'
-          size={inline ? '40px' : '90px'}
-        />
-      </div>
-      <div className={'f c f-ac ta-c'}>
-        <StyledLabel className=' mb-05' fontSize='16px' color='#c7cad9'>
-          {t('waitingConfirm')}
-        </StyledLabel>
-        <StyledLabel className=' mb-05' fontSize='14px' color='#c7cad9'>
-          {pendingText}
-        </StyledLabel>
-
-        <StyledLabel className=' mb-05' fontSize='14px' color='#696c80'>
-          {t('confirmTxinWallet')}
-        </StyledLabel>
-      </div>
-    </div>
+      <CustomLightSpinner
+        src={Circle}
+        alt='loader'
+        size={inline ? '40px' : '90px'}
+      />
+      <Box mt='20px' textAlign='center'>
+        <p>{t('waitingConfirm')}</p>
+        <Box my='8px'>
+          <small>{pendingText}</small>
+        </Box>
+        <p className='small text-secondary'>{t('confirmTxinWallet')}</p>
+      </Box>
+    </Box>
   );
 }
 
@@ -88,7 +69,6 @@ function TransactionSubmittedContent({
   inline,
 }: TransactionSubmittedContentProps) {
   const { t } = useTranslation();
-  const theme = useContext(ThemeContext);
 
   const { library } = useActiveWeb3React();
 
@@ -97,62 +77,67 @@ function TransactionSubmittedContent({
   return (
     <div>
       {!inline && (
-        <RowBetween>
+        <Box className='flex justify-between'>
           <div />
           <CloseIcon onClick={onDismiss} />
-        </RowBetween>
+        </Box>
       )}
-      <ConfirmedIcon inline={inline}>
-        <ArrowUpCircle
-          strokeWidth={0.5}
-          size={inline ? '40px' : '90px'}
-          color={theme.winterMainButton}
-        />
-      </ConfirmedIcon>
-      <AutoColumn gap='12px' justify={'center'}>
-        <StyledLabel fontSize={'20px'} className='text-center'>
-          {t('txSubmitted')}
-        </StyledLabel>
+      <Box mt={2} className='flex justify-center'>
+        <ArrowUpCircle strokeWidth={0.5} size={inline ? '40px' : '90px'} />
+      </Box>
+      <Box mt={2} className='flex flex-col items-center'>
+        <h5>{t('txSubmitted')}</h5>
         {chainId && hash && (
           <ExternalLink
             href={getEtherscanLink(chainId, hash, ExplorerDataType.TRANSACTION)}
           >
-            <StyledLabel fontSize={'14px'} color={theme.winterMainButton}>
-              {t('viewonBlockExplorer')}
-            </StyledLabel>
+            <small>{t('viewonBlockExplorer')}</small>
           </ExternalLink>
         )}
         {currencyToAdd && library?.provider?.isMetaMask && (
-          <ButtonLight
-            mt='12px'
-            padding='6px 12px'
-            width='fit-content'
-            onClick={addToken}
-          >
+          <>
             {!success ? (
-              <RowFixed>
-                {t('addToMetamaskToken', { symbol: currencyToAdd.symbol })}
-                <StyledLogo src={MetaMaskLogo} />
-              </RowFixed>
+              <Button
+                style={{ marginTop: 12, borderRadius: 12 }}
+                onClick={addToken}
+              >
+                <Box className='flex items-center'>
+                  {t('addToMetamaskToken', { symbol: currencyToAdd.symbol })}
+                  <img
+                    src={MetaMaskLogo}
+                    alt='Metamask'
+                    width='16px'
+                    style={{ marginLeft: 6 }}
+                  />
+                </Box>
+              </Button>
             ) : (
-              <RowFixed>
-                {t('added')} {currencyToAdd.symbol}
+              <Box mt='12px' className='flex items-center'>
+                <p>
+                  {t('added')} {currencyToAdd.symbol}
+                </p>
                 <CheckCircle
                   size={'16px'}
-                  stroke={'var(--green)'}
+                  stroke='green'
                   style={{ marginLeft: '6px' }}
                 />
-              </RowFixed>
+              </Box>
             )}
-          </ButtonLight>
+          </>
         )}
-        <StyledButton
+        <Button
+          fullWidth
           onClick={onDismiss}
-          style={{ margin: '20px 0 0 0', color: 'white' }}
+          style={{
+            height: 40,
+            borderRadius: 12,
+            margin: '20px 0 0 0',
+            color: 'white',
+          }}
         >
           {inline ? t('return') : t('close')}
-        </StyledButton>
-      </AutoColumn>
+        </Button>
+      </Box>
     </div>
   );
 }
@@ -171,16 +156,14 @@ export function ConfirmationModalContent({
   topContent,
 }: ConfirmationModalContentProps) {
   return (
-    <div className={'w-100'}>
-      <div className={'flex-s-between mb-1'}>
+    <Box width='100%'>
+      <Box className='flex items-center justify-between' mb={2}>
         {title}
-        <CloseIcon className={'hover-op trans-op'} onClick={onDismiss} />
-      </div>
+        <CloseIcon onClick={onDismiss} />
+      </Box>
       {topContent()}
-      {bottomContent && (
-        <BottomSection gap='12px'>{bottomContent()}</BottomSection>
-      )}
-    </div>
+      {bottomContent && <>{bottomContent()}</>}
+    </Box>
   );
 }
 
@@ -194,41 +177,38 @@ export function TransactionErrorContent({
   onDismiss,
 }: TransactionErrorContentProps) {
   const { t } = useTranslation();
-  const theme = useContext(ThemeContext);
   return (
-    <Wrapper>
-      <Section>
-        <RowBetween>
-          <StyledLabel fontSize={'20px'}>{t('error')}</StyledLabel>
+    <Box>
+      <Box>
+        <Box className='flex justify-between'>
+          <h5>{t('error')}</h5>
           <CloseIcon onClick={onDismiss} />
-        </RowBetween>
-        <AutoColumn
-          style={{ marginTop: 20, padding: '2rem 0' }}
-          gap='24px'
-          justify='center'
-        >
-          <AlertTriangle
-            color={theme.red1}
-            style={{ strokeWidth: 1.5 }}
-            size={64}
-          />
-          <StyledLabel
-            fontSize={'16px'}
-            color={theme.red1}
+        </Box>
+        <Box mt={2} className='flex flex-col items-center'>
+          <AlertTriangle color='red' style={{ strokeWidth: 1.5 }} size={64} />
+          <p
+            className='text-error'
             style={{
+              marginTop: 16,
               textAlign: 'center',
               width: '85%',
               wordBreak: 'break-word',
             }}
           >
             {message}
-          </StyledLabel>
-        </AutoColumn>
-      </Section>
-      <BottomSection gap='12px'>
-        <StyledButton onClick={onDismiss}>{t('dismiss')}</StyledButton>
-      </BottomSection>
-    </Wrapper>
+          </p>
+        </Box>
+      </Box>
+      <Box mt={2}>
+        <Button
+          fullWidth
+          onClick={onDismiss}
+          style={{ height: '40px', borderRadius: 12 }}
+        >
+          {t('dismiss')}
+        </Button>
+      </Box>
+    </Box>
   );
 }
 

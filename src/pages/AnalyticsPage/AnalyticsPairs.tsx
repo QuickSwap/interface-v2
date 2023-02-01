@@ -5,12 +5,13 @@ import { getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
-import { useEthPrice, useIsV2 } from 'state/application/hooks';
-import { getTopPairsV3, getPairsAPR } from 'utils/v3-graph';
+import { useEthPrice } from 'state/application/hooks';
+import { getTopPairsV3, getPairsAPR, getTopPairsTotal } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
+import { useParams } from 'react-router-dom';
+import { useActiveWeb3React } from 'hooks';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();
@@ -19,15 +20,14 @@ const AnalyticsPairs: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const { isV2 } = useIsV2();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'v3';
 
   useEffect(() => {
-    if (isV2 === undefined) return;
-
     (async () => {
-      if (!isV2) {
+      if (version === 'v3') {
         const pairsData = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
           chainIdToUse,
@@ -54,7 +54,7 @@ const AnalyticsPairs: React.FC = () => {
             console.log(e);
           }
         }
-      } else {
+      } else if (version === 'v2') {
         if (ethPrice.price) {
           const pairs = await getTopPairs(
             GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
@@ -74,15 +74,40 @@ const AnalyticsPairs: React.FC = () => {
             updateTopPairs(data);
           }
         }
+      } else {
+        const pairsData = await getTopPairsTotal(
+          GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+          chainIdToUse,
+        );
+        if (pairsData) {
+          const data = pairsData.filter((item: any) => !!item);
+          updateTopPairs(data);
+          try {
+            const aprs = await getPairsAPR(
+              data.map((item: any) => item.id),
+              chainIdToUse,
+            );
+
+            updateTopPairs(
+              data.map((item: any, ind: number) => {
+                return {
+                  ...item,
+                  apr: aprs[ind].apr,
+                  farmingApr: aprs[ind].farmingApr,
+                };
+              }),
+            );
+          } catch (e) {
+            console.log(e);
+          }
+        }
       }
     })();
-  }, [ethPrice.price, isV2, chainIdToUse]);
+  }, [ethPrice.price, version, chainIdToUse]);
 
   useEffect(() => {
-    if (isV2 !== undefined) {
-      updateTopPairs(null);
-    }
-  }, [isV2]);
+    updateTopPairs(null);
+  }, [version]);
 
   useEffect(() => {
     if (topPairs) {

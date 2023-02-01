@@ -1,4 +1,4 @@
-import React, { useEffect, lazy } from 'react';
+import React, { lazy } from 'react';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import SupplyLiquidity from './SupplyLiquidity';
@@ -8,11 +8,12 @@ import VersionToggle from 'components/Toggle/VersionToggle';
 import AdsSlider from 'components/AdsSlider';
 import { useIsV2 } from 'state/application/hooks';
 import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
-const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
-const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
 import { getConfig } from '../../config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
+const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
+const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
+const MyGammaPoolsV3 = lazy(() => import('./v3/MyGammaPoolsV3'));
 
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -64,6 +65,11 @@ const PoolsPage: React.FC = () => {
           <Box className='wrapper'>
             {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
           </Box>
+          {!isV2 && (
+            <Box mt={4} className='wrapper'>
+              <MyGammaPoolsV3 />
+            </Box>
+          )}
         </Grid>
       </Grid>
     </Box>

@@ -1,18 +1,17 @@
-import React, { useEffect, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import { getConfig } from '../../config/index';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
-import { updateIsV2 } from 'state/application/actions';
+import { useIsV2 } from 'state/application/hooks';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -33,11 +32,11 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
-  const farms = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
-  const { isV2, updateIsV2 } = useIsV2();
-  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'v3';
+  const { updateIsV2 } = useIsV2();
 
   useEffect(() => {
     if (!v2 && v3) {

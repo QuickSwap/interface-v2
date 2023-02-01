@@ -51,3 +51,51 @@
     width: 20px;
   }
 }
+
+.poolRangeButtonGroup {
+  padding: 0;
+  margin: 12px 0 16px;
+  & .MuiButtonGroup-root {
+    margin-bottom: 0;
+    & button {
+      max-width: unset;
+      height: 36px;
+      background-color: $secondary1;
+      &:first-child {
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+      }
+      &:last-child {
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+      &.active span {
+        color: $bgPalette;
+      }
+      & span {
+        font-size: 14px;
+        color: $textPrimary;
+      }
+    }
+  } 
+}
+
+.poolRangeBetaBox {
+  background-color: $yellow5;
+  font-size: 8px;
+  padding: 0 4px;
+  border-radius: 3px;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  color: $bgPalette;
+}
+
+.poolRangePowerGamma {
+  display: flex;
+  align-items: center;
+  & img {
+    height: 9px;
+    margin-left: 5px;
+  }
+}

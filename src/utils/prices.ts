@@ -7,6 +7,7 @@ import {
   TokenAmount,
   Trade,
 } from '@uniswap/sdk';
+import { Percent as PercentV3 } from '@uniswap/sdk-core';
 import { Field } from 'state/swap/actions';
 import { basisPointsToPercent } from 'utils';
 import { OptimalRate } from '@paraswap/sdk';

@@ -27,8 +27,8 @@ export interface PoolAddressSubgraph {
 export interface PoolChartSubgraph {
   id: string;
   fee: string;
-  token0: TokenSubgraph | WrappedTokenInfo;
-  token1: TokenSubgraph | WrappedTokenInfo;
+  token0: TokenSubgraph;
+  token1: TokenSubgraph;
   sqrtPrice: string;
   liquidity: string;
   tick: string;

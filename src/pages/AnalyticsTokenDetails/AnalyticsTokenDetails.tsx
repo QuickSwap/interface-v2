@@ -19,8 +19,8 @@ import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
 import {
   useBookmarkTokens,
   useEthPrice,
-  useMaticPrice,
   useIsV2,
+  useMaticPrice,
 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -32,13 +32,17 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import {
   getPairsAPR,
+  getTokenInfoTotal,
   getTokenInfoV3,
+  getTokenTransactionsTotal,
   getTokenTransactionsV3,
+  getTopPairsTotalByToken,
   getTopPairsV3ByToken,
 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { getConfig } from 'config';
+import { useParams } from 'react-router-dom';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -70,13 +74,15 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const { isV2, updateIsV2 } = useIsV2();
+  const { updateIsV2 } = useIsV2();
 
   useEffect(() => {
     if (!v2 && v3) {
       updateIsV2(false);
     }
   }, [updateIsV2, v2, v3]);
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'v3';
 
   const tokenTransactionsList = useMemo(() => {
     if (tokenTransactions) {
@@ -84,12 +90,30 @@ const AnalyticsTokenDetails: React.FC = () => {
         return { ...item, type: TxnType.ADD };
       });
       const swaps = tokenTransactions.swaps.map((item: any) => {
-        const amount0 = item.amount0Out > 0 ? item.amount0Out : item.amount1Out;
-        const amount1 = item.amount0In > 0 ? item.amount0In : item.amount1In;
-        const token0 =
-          item.amount0Out > 0 ? item.pair.token0 : item.pair.token1;
-        const token1 =
-          item.amount0Out > 0 ? item.pair.token1 : item.pair.token0;
+        const amount0 = item.isV2
+          ? item.amount0Out > 0
+            ? item.amount0Out
+            : item.amount1Out
+          : item.amount0 > 0
+          ? item.amount0
+          : Math.abs(item.amount1);
+        const amount1 = item.isV2
+          ? item.amount0In > 0
+            ? item.amount0In
+            : item.amount1In
+          : item.amount0 > 0
+          ? Math.abs(item.amount1)
+          : Math.abs(item.amount0);
+        const token0 = (item.isV2
+        ? item.amount0Out > 0
+        : item.amount0 > 0)
+          ? item.pair.token0
+          : item.pair.token1;
+        const token1 = (item.isV2
+        ? item.amount0Out > 0
+        : item.amount0 > 0)
+          ? item.pair.token1
+          : item.pair.token0;
         return {
           ...item,
           amount0,
@@ -110,7 +134,7 @@ const AnalyticsTokenDetails: React.FC = () => {
   useEffect(() => {
     async function fetchTokenInfo() {
       try {
-        if (!isV2) {
+        if (version === 'v3') {
           if (maticPrice.price && maticPrice.oneDayPrice) {
             const tokenInfo = await getTokenInfoV3(
               maticPrice.price,
@@ -123,9 +147,29 @@ const AnalyticsTokenDetails: React.FC = () => {
             }
             setLoadingData(false);
           }
-        } else {
+        } else if (version === 'v2') {
           if (ethPrice.price && ethPrice.oneDayPrice) {
             const tokenInfo = await getTokenInfo(
+              ethPrice.price,
+              ethPrice.oneDayPrice,
+              tokenAddress,
+              chainIdToUse,
+            );
+            if (tokenInfo) {
+              setToken(tokenInfo[0] || tokenInfo);
+            }
+            setLoadingData(false);
+          }
+        } else {
+          if (
+            ethPrice.price &&
+            ethPrice.oneDayPrice &&
+            maticPrice.price &&
+            maticPrice.oneDayPrice
+          ) {
+            const tokenInfo = await getTokenInfoTotal(
+              maticPrice.price,
+              maticPrice.oneDayPrice,
               ethPrice.price,
               ethPrice.oneDayPrice,
               tokenAddress,
@@ -142,13 +186,23 @@ const AnalyticsTokenDetails: React.FC = () => {
       }
     }
     async function fetchTransactions() {
-      getTokenTransactionsV3(tokenAddress, chainIdToUse).then(
-        (transactions) => {
-          if (transactions) {
-            updateTokenTransactions(transactions);
-          }
-        },
-      );
+      if (version === 'total') {
+        getTokenTransactionsTotal(tokenAddress, chainIdToUse).then(
+          (transactions) => {
+            if (transactions) {
+              updateTokenTransactions(transactions);
+            }
+          },
+        );
+      } else {
+        getTokenTransactionsV3(tokenAddress, chainIdToUse).then(
+          (transactions) => {
+            if (transactions) {
+              updateTokenTransactions(transactions);
+            }
+          },
+        );
+      }
     }
     async function fetchPairs() {
       const tokenPairs = await getTokenPairs2(tokenAddress, chainIdToUse);
@@ -167,7 +221,12 @@ const AnalyticsTokenDetails: React.FC = () => {
       }
     }
     async function fetchPairsV3() {
-      const tokenPairs = await getTopPairsV3ByToken(tokenAddress, chainIdToUse);
+      let tokenPairs;
+      if (version === 'total') {
+        tokenPairs = await getTopPairsTotalByToken(tokenAddress, chainIdToUse);
+      } else {
+        tokenPairs = await getTopPairsV3ByToken(tokenAddress, chainIdToUse);
+      }
       if (tokenPairs) {
         const data = tokenPairs.filter((item: any) => !!item);
         updateTokenPairs(data);
@@ -191,16 +250,14 @@ const AnalyticsTokenDetails: React.FC = () => {
         }
       }
     }
-    if (isV2 !== undefined) {
-      fetchTokenInfo();
-      if (!isV2) {
-        fetchPairsV3();
-        fetchTransactions();
-      } else {
-        if (ethPrice.price) {
-          fetchPairs();
-        }
+    fetchTokenInfo();
+    if (version === 'v2') {
+      if (ethPrice.price) {
+        fetchPairs();
       }
+    } else {
+      fetchPairsV3();
+      fetchTransactions();
     }
   }, [
     tokenAddress,
@@ -208,7 +265,7 @@ const AnalyticsTokenDetails: React.FC = () => {
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
-    isV2,
+    version,
     chainIdToUse,
   ]);
 
@@ -217,13 +274,13 @@ const AnalyticsTokenDetails: React.FC = () => {
     setToken(null);
     updateTokenPairs(null);
     updateTokenTransactions(null);
-  }, [tokenAddress, isV2]);
+  }, [tokenAddress, version]);
 
   useEffect(() => {
-    if (token && (!isV2 ? tokenTransactions : tokenPairs)) {
+    if (token && (version === 'v2' ? tokenPairs : tokenTransactions)) {
       dispatch(setAnalyticsLoaded(true));
     }
-  }, [token, tokenPairs, tokenTransactions, isV2, dispatch]);
+  }, [token, tokenPairs, tokenTransactions, version, dispatch]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,
@@ -313,21 +370,33 @@ const AnalyticsTokenDetails: React.FC = () => {
             <Box className='panel analyticsDetailsInfoV3'>
               <Box>
                 <span className='text-disabled'>{t('tvl')}</span>
-                <h5>${formatNumber(token.tvlUSD)}</h5>
-                <small
-                  className={getPriceClass(Number(token.tvlUSDChange) || 0)}
-                >
-                  {getFormattedPrice(token.tvlUSDChange || 0)}%
-                </small>
+                <Box className='flex items-center flex-wrap'>
+                  <Box mr='6px'>
+                    <h5>${formatNumber(token.tvlUSD)}</h5>
+                  </Box>
+                  <small
+                    className={`priceChangeWrapper ${getPriceClass(
+                      Number(token.tvlUSDChange) || 0,
+                    )}`}
+                  >
+                    {getFormattedPrice(token.tvlUSDChange || 0)}%
+                  </small>
+                </Box>
               </Box>
               <Box>
                 <span className='text-disabled'>{t('24hTradingVol1')}</span>
-                <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
-                <small
-                  className={getPriceClass(Number(token.volumeChangeUSD) || 0)}
-                >
-                  {getFormattedPrice(token.volumeChangeUSD || 0)}%
-                </small>
+                <Box className='flex items-center flex-wrap'>
+                  <Box mr='6px'>
+                    <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
+                  </Box>
+                  <small
+                    className={`priceChangeWrapper ${getPriceClass(
+                      Number(token.volumeChangeUSD) || 0,
+                    )}`}
+                  >
+                    {getFormattedPrice(token.volumeChangeUSD || 0)}%
+                  </small>
+                </Box>
               </Box>
               <Box>
                 <span className='text-disabled'>{t('7dTradingVol')}</span>
@@ -414,7 +483,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                 mr={1.5}
                 onClick={() => {
                   history.push(
-                    `/pools${isV2 ? '/v2' : '/v3'}?currency0=${
+                    `/pools${version === 'v2' ? '/v2' : '/v3'}?currency0=${
                       token.id
                     }&currency1=ETH`,
                   );
@@ -426,7 +495,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                 className='button filledButton'
                 onClick={() => {
                   history.push(
-                    `/swap${isV2 ? '/v2' : ''}?currency0=${
+                    `/swap${version === 'v2' ? '/v2' : ''}?currency0=${
                       token.id
                     }&currency1=ETH`,
                   );
@@ -436,13 +505,13 @@ const AnalyticsTokenDetails: React.FC = () => {
               </Box>
             </Box>
           </Box>
-          {!isV2 ? (
+          {version === 'v2' ? (
+            <V2TokenInfo token={token} tokenPairs={tokenPairs} />
+          ) : (
             <V3TokenInfo
               token={token}
               tokenTransactions={tokenTransactionsList}
             />
-          ) : (
-            <V2TokenInfo token={token} tokenPairs={tokenPairs} />
           )}
         </>
       ) : loadingData ? (
