@@ -27,7 +27,7 @@ const AnalyticsTokens: React.FC = () => {
   const { maticPrice } = useMaticPrice();
 
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {

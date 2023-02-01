@@ -11,10 +11,15 @@ const VersionToggle: React.FC = () => {
   const { isV2, updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
-  const version = params && params.version ? params.version : 'v3';
   const isAnalyticsPage =
     history.location.pathname.includes('/analytics') &&
     !history.location.pathname.includes('pair/');
+  const version =
+    params && params.version
+      ? params.version
+      : isAnalyticsPage
+      ? 'total'
+      : 'v3';
 
   useEffect(() => {
     updateIsV2(version === 'v2');

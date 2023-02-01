@@ -81,7 +81,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
   }, [token, chartIndex]);
 
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
 
   useEffect(() => {
     async function fetchTokenChartData() {
