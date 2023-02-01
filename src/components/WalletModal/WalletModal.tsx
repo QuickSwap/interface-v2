@@ -69,16 +69,10 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   const previousAccount = usePrevious(account);
 
-  okWeb3.addListener('connect', (isConnected: any) => {
-    console.log(isConnected); // boolean
-  });
-
-  okWeb3.addListener('disconnect', () => {
-    console.log('okx disconnected');
-  });
-
-  okWeb3.addListener('connectWallet', (wallet: any) => {
-    console.log(wallet);
+  okWeb3.addListener('walletChanged', (wallet: any) => {
+    if (!wallet || !wallet.length) {
+      deactivate();
+    }
   });
 
   // close on connection, when logged out before
