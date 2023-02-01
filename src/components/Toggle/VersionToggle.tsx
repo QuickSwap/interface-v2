@@ -12,8 +12,13 @@ const VersionToggle: React.FC = () => {
   const { isV2, updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
-  const version = params && params.version ? params.version : 'v3';
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
+  const version =
+    params && params.version
+      ? params.version
+      : isAnalyticsPage
+      ? 'total'
+      : 'v3';
 
   const analyticsLoaded = useIsAnalyticsLoaded();
   const toggleDisabled = isAnalyticsPage && !analyticsLoaded;

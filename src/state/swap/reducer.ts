@@ -1,11 +1,16 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { RouterTypes, SmartRouter } from 'constants/index';
 import {
   Field,
   replaceSwapState,
+  RouterTypeParams,
   selectCurrency,
   setRecipient,
+  SwapDelay,
   switchCurrencies,
   typeInput,
+  setSwapDelay,
+  setBestRoute,
 } from './actions';
 
 export interface SwapState {
@@ -19,6 +24,8 @@ export interface SwapState {
   };
   // the typed recipient address or ENS name, or null if swap should go to sender
   readonly recipient: string | null;
+  readonly swapDelay: SwapDelay;
+  readonly bestRoute: RouterTypeParams;
 }
 
 const initialState: SwapState = {
@@ -31,6 +38,11 @@ const initialState: SwapState = {
     currencyId: '',
   },
   recipient: null,
+  swapDelay: SwapDelay.INIT,
+  bestRoute: {
+    routerType: RouterTypes.QUICKSWAP,
+    smartRouter: SmartRouter.QUICKSWAP,
+  },
 };
 
 export default createReducer<SwapState>(initialState, (builder) =>
@@ -46,6 +58,8 @@ export default createReducer<SwapState>(initialState, (builder) =>
             field,
             inputCurrencyId,
             outputCurrencyId,
+            swapDelay,
+            bestRoute,
           },
         },
       ) => {
@@ -59,6 +73,8 @@ export default createReducer<SwapState>(initialState, (builder) =>
           independentField: field,
           typedValue: typedValue,
           recipient,
+          swapDelay,
+          bestRoute,
         };
       },
     )
@@ -99,5 +115,11 @@ export default createReducer<SwapState>(initialState, (builder) =>
     })
     .addCase(setRecipient, (state, { payload: { recipient } }) => {
       state.recipient = recipient;
+    })
+    .addCase(setSwapDelay, (state, { payload: { swapDelay } }) => {
+      state.swapDelay = swapDelay;
+    })
+    .addCase(setBestRoute, (state, { payload: { bestRoute } }) => {
+      state.bestRoute = bestRoute;
     }),
 );

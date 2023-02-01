@@ -6,12 +6,18 @@ import {
 } from '@ethersproject/providers';
 import { Currency, SwapParameters } from '@uniswap/sdk';
 import { useMemo } from 'react';
+import { GlobalConst, RouterTypes, SmartRouter } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { isAddress, shortenAddress, getSigner } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
+import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
+import { useContract } from './useContract';
+import callWallchainAPI from 'utils/wallchainService';
+import { useSwapActionHandlers } from 'state/swap/hooks';
+import { ONE } from 'v3lib/utils';
 
 export enum SwapCallbackState {
   INVALID,
@@ -62,12 +68,18 @@ export function useParaswapCallback(
 } {
   const { account, chainId, library } = useActiveWeb3React();
   const paraswap = useParaswap();
+  const { onBestRoute, onSetSwapDelay } = useSwapActionHandlers();
 
   const addTransaction = useTransactionAdder();
 
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
+
+  const paraswapContract = useContract(
+    priceRoute?.contractAddress,
+    ParaswapABI,
+  );
 
   return useMemo(() => {
     if (!priceRoute || !library || !account || !chainId) {
@@ -93,19 +105,30 @@ export function useParaswapCallback(
       }
     }
 
+    const referrer = 'quickswapv3';
+
+    const srcToken = priceRoute.srcToken;
+    const destToken = priceRoute.destToken;
+
+    //TODO: we need to support max impact
+    // if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
+    //   throw new Error('Price Rate updated beyond expected slipage rate');
+    // }
+    // const minDestAmount = new Fraction(ONE)
+    //   .add(allowedSlippage)
+    //   .invert()
+    //   .multiply(priceRoute.destAmount).quotient;
+
     return {
       state: SwapCallbackState.VALID,
       callback: async function onSwap(): Promise<{
         response: TransactionResponse;
         summary: string;
       }> {
-        const referrer = 'quickswapv3';
-
-        const srcToken = priceRoute.srcToken;
-        const destToken = priceRoute.destToken;
+        let txParams;
 
         try {
-          const txParams = await paraswap.buildTx({
+          txParams = await paraswap.buildTx({
             srcToken,
             destToken,
             srcAmount: priceRoute.srcAmount,
@@ -115,55 +138,80 @@ export function useParaswapCallback(
             receiver: recipient,
             partner: referrer,
           });
-
-          const signer = getSigner(library, account);
-          const ethersTxParams = convertToEthersTransaction(txParams);
-          return signer
-            .sendTransaction(ethersTxParams)
-            .then((response: TransactionResponse) => {
-              const inputSymbol = inputCurrency?.symbol;
-              const outputSymbol = outputCurrency?.symbol;
-              const inputAmount =
-                Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
-              const outputAmount =
-                Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
-
-              const base = `Swap ${inputAmount.toLocaleString(
-                'us',
-              )} ${inputSymbol} for ${outputAmount.toLocaleString(
-                'us',
-              )} ${outputSymbol}`;
-              const withRecipient =
-                recipient === account
-                  ? base
-                  : `${base} to ${
-                      recipientAddressOrName &&
-                      isAddress(recipientAddressOrName)
-                        ? shortenAddress(recipientAddressOrName)
-                        : recipientAddressOrName
-                    }`;
-
-              const withVersion = withRecipient;
-
-              addTransaction(response, {
-                summary: withVersion,
-              });
-
-              return { response, summary: withVersion };
-            })
-            .catch((error: any) => {
-              // if the user rejected the tx, pass this along
-              if (error?.code === 4001) {
-                throw new Error('Transaction rejected.');
-              } else {
-                throw new Error(`Swap failed: ${error.message}`);
-              }
-            });
         } catch (e) {
           console.log(e);
           throw new Error(
             'For rebase or taxed tokens, try market V2 instead of best trade.',
           );
+        }
+
+        if (txParams.data && paraswapContract) {
+          const response = await callWallchainAPI(
+            priceRoute.contractMethod,
+            txParams.data,
+            txParams.value,
+            chainId,
+            account,
+            paraswapContract,
+            SmartRouter.PARASWAP,
+            RouterTypes.SMART,
+            onBestRoute,
+            onSetSwapDelay,
+            100,
+          );
+
+          const swapRouterAddress = chainId
+            ? GlobalConst.addresses.SWAP_ROUTER_ADDRESS[chainId]
+            : undefined;
+          if (
+            response &&
+            response.pathFound &&
+            response.transactionArgs.data &&
+            swapRouterAddress
+          ) {
+            txParams.to = swapRouterAddress;
+            txParams.data = response.transactionArgs.data;
+          }
+        }
+
+        const signer = getSigner(library, account);
+        const ethersTxParams = convertToEthersTransaction(txParams);
+        try {
+          const response = await signer.sendTransaction(ethersTxParams);
+          const inputSymbol = inputCurrency?.symbol;
+          const outputSymbol = outputCurrency?.symbol;
+          const inputAmount =
+            Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
+          const outputAmount =
+            Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
+
+          const base = `Swap ${inputAmount.toLocaleString(
+            'us',
+          )} ${inputSymbol} for ${outputAmount.toLocaleString(
+            'us',
+          )} ${outputSymbol}`;
+          const withRecipient =
+            recipient === account
+              ? base
+              : `${base} to ${
+                  recipientAddressOrName && isAddress(recipientAddressOrName)
+                    ? shortenAddress(recipientAddressOrName)
+                    : recipientAddressOrName
+                }`;
+
+          const withVersion = withRecipient;
+
+          addTransaction(response, {
+            summary: withVersion,
+          });
+
+          return { response, summary: withVersion };
+        } catch (error) {
+          if (error?.code === 4001) {
+            throw new Error('Transaction rejected.');
+          } else {
+            throw new Error(`Swap failed: ${error.message}`);
+          }
         }
       },
       error: null,
@@ -176,8 +224,11 @@ export function useParaswapCallback(
     recipient,
     recipientAddressOrName,
     paraswap,
+    paraswapContract,
+    onBestRoute,
+    onSetSwapDelay,
+    inputCurrency?.symbol,
+    outputCurrency?.symbol,
     addTransaction,
-    inputCurrency,
-    outputCurrency,
   ]);
 }
