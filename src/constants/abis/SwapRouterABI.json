@@ -1,0 +1,600 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_dexAgent", "type": "address" },
+      {
+        "internalType": "contract IWChainMaster",
+        "name": "_wchainMaster",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IMultiPath",
+        "name": "multiRouter",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenTransferProxy",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "message",
+        "type": "string"
+      }
+    ],
+    "name": "EventMessage",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "adapter", "type": "address" },
+          { "internalType": "address", "name": "fromToken", "type": "address" },
+          { "internalType": "address", "name": "toToken", "type": "address" },
+          {
+            "internalType": "uint256",
+            "name": "fromAmount",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "toAmount", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "expectedAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address payable",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "components": [
+              { "internalType": "uint256", "name": "index", "type": "uint256" },
+              {
+                "internalType": "address",
+                "name": "targetExchange",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "percent",
+                "type": "uint256"
+              },
+              { "internalType": "bytes", "name": "payload", "type": "bytes" },
+              {
+                "internalType": "uint256",
+                "name": "networkFee",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct Utils.Route[]",
+            "name": "route",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "address payable",
+            "name": "partner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "feePercent",
+            "type": "uint256"
+          },
+          { "internalType": "bytes", "name": "permit", "type": "bytes" },
+          { "internalType": "uint256", "name": "deadline", "type": "uint256" },
+          { "internalType": "bytes16", "name": "uuid", "type": "bytes16" }
+        ],
+        "internalType": "struct Utils.BuyData",
+        "name": "data",
+        "type": "tuple"
+      },
+      { "internalType": "bytes", "name": "masterInput", "type": "bytes" }
+    ],
+    "name": "buy",
+    "outputs": [
+      { "internalType": "uint256", "name": "receivedAmount", "type": "uint256" }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "dexAgent",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "exchangeProfitShare",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "fromToken", "type": "address" },
+          {
+            "internalType": "uint256",
+            "name": "fromAmount",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "toAmount", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "expectedAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address payable",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "fromAmountPercent",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "to",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "totalNetworkFee",
+                    "type": "uint256"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "address payable",
+                        "name": "adapter",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "percent",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "networkFee",
+                        "type": "uint256"
+                      },
+                      {
+                        "components": [
+                          {
+                            "internalType": "uint256",
+                            "name": "index",
+                            "type": "uint256"
+                          },
+                          {
+                            "internalType": "address",
+                            "name": "targetExchange",
+                            "type": "address"
+                          },
+                          {
+                            "internalType": "uint256",
+                            "name": "percent",
+                            "type": "uint256"
+                          },
+                          {
+                            "internalType": "bytes",
+                            "name": "payload",
+                            "type": "bytes"
+                          },
+                          {
+                            "internalType": "uint256",
+                            "name": "networkFee",
+                            "type": "uint256"
+                          }
+                        ],
+                        "internalType": "struct Utils.Route[]",
+                        "name": "route",
+                        "type": "tuple[]"
+                      }
+                    ],
+                    "internalType": "struct Utils.Adapter[]",
+                    "name": "adapters",
+                    "type": "tuple[]"
+                  }
+                ],
+                "internalType": "struct Utils.Path[]",
+                "name": "path",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct Utils.MegaSwapPath[]",
+            "name": "path",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "address payable",
+            "name": "partner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "feePercent",
+            "type": "uint256"
+          },
+          { "internalType": "bytes", "name": "permit", "type": "bytes" },
+          { "internalType": "uint256", "name": "deadline", "type": "uint256" },
+          { "internalType": "bytes16", "name": "uuid", "type": "bytes16" }
+        ],
+        "internalType": "struct Utils.MegaSwapSellData",
+        "name": "data",
+        "type": "tuple"
+      },
+      { "internalType": "bytes", "name": "masterInput", "type": "bytes" }
+    ],
+    "name": "megaSwap",
+    "outputs": [
+      { "internalType": "uint256", "name": "receivedAmount", "type": "uint256" }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "fromToken", "type": "address" },
+          {
+            "internalType": "uint256",
+            "name": "fromAmount",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "toAmount", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "expectedAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address payable",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "components": [
+              { "internalType": "address", "name": "to", "type": "address" },
+              {
+                "internalType": "uint256",
+                "name": "totalNetworkFee",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address payable",
+                    "name": "adapter",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "percent",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "networkFee",
+                    "type": "uint256"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "uint256",
+                        "name": "index",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "targetExchange",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "percent",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "bytes",
+                        "name": "payload",
+                        "type": "bytes"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "networkFee",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct Utils.Route[]",
+                    "name": "route",
+                    "type": "tuple[]"
+                  }
+                ],
+                "internalType": "struct Utils.Adapter[]",
+                "name": "adapters",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct Utils.Path[]",
+            "name": "path",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "address payable",
+            "name": "partner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "feePercent",
+            "type": "uint256"
+          },
+          { "internalType": "bytes", "name": "permit", "type": "bytes" },
+          { "internalType": "uint256", "name": "deadline", "type": "uint256" },
+          { "internalType": "bytes16", "name": "uuid", "type": "bytes16" }
+        ],
+        "internalType": "struct Utils.SellData",
+        "name": "data",
+        "type": "tuple"
+      },
+      { "internalType": "bytes", "name": "masterInput", "type": "bytes" }
+    ],
+    "name": "multiSwap",
+    "outputs": [
+      { "internalType": "uint256", "name": "receivedAmount", "type": "uint256" }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "router",
+    "outputs": [
+      { "internalType": "contract IMultiPath", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_dexAgent", "type": "address" }
+    ],
+    "name": "setDexAgent",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_exchangeProfitShare",
+        "type": "uint256"
+      }
+    ],
+    "name": "setShare",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "fromToken", "type": "address" },
+          { "internalType": "address", "name": "toToken", "type": "address" },
+          {
+            "internalType": "uint256",
+            "name": "fromAmount",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "toAmount", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "expectedAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address[]",
+            "name": "callees",
+            "type": "address[]"
+          },
+          { "internalType": "bytes", "name": "exchangeData", "type": "bytes" },
+          {
+            "internalType": "uint256[]",
+            "name": "startIndexes",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "values",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "address payable",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "internalType": "address payable",
+            "name": "partner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "feePercent",
+            "type": "uint256"
+          },
+          { "internalType": "bytes", "name": "permit", "type": "bytes" },
+          { "internalType": "uint256", "name": "deadline", "type": "uint256" },
+          { "internalType": "bytes16", "name": "uuid", "type": "bytes16" }
+        ],
+        "internalType": "struct Utils.SimpleData",
+        "name": "data",
+        "type": "tuple"
+      },
+      { "internalType": "bytes", "name": "masterInput", "type": "bytes" }
+    ],
+    "name": "simpleBuy",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "fromToken", "type": "address" },
+          { "internalType": "address", "name": "toToken", "type": "address" },
+          {
+            "internalType": "uint256",
+            "name": "fromAmount",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "toAmount", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "expectedAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address[]",
+            "name": "callees",
+            "type": "address[]"
+          },
+          { "internalType": "bytes", "name": "exchangeData", "type": "bytes" },
+          {
+            "internalType": "uint256[]",
+            "name": "startIndexes",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "values",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "address payable",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "internalType": "address payable",
+            "name": "partner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "feePercent",
+            "type": "uint256"
+          },
+          { "internalType": "bytes", "name": "permit", "type": "bytes" },
+          { "internalType": "uint256", "name": "deadline", "type": "uint256" },
+          { "internalType": "bytes16", "name": "uuid", "type": "bytes16" }
+        ],
+        "internalType": "struct Utils.SimpleData",
+        "name": "data",
+        "type": "tuple"
+      },
+      { "internalType": "bytes", "name": "masterInput", "type": "bytes" }
+    ],
+    "name": "simpleSwap",
+    "outputs": [
+      { "internalType": "uint256", "name": "receivedAmount", "type": "uint256" }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "tokenTransferProxy",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "upgradeMaster",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "wchainMaster",
+    "outputs": [
+      {
+        "internalType": "contract IWChainMaster",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  { "stateMutability": "payable", "type": "receive" }
+]
