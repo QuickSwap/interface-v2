@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
-import { Deposit } from '../../models/interfaces';
 import { Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { formatNumber, getTokenFromAddress } from 'utils';
@@ -128,7 +127,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
             width={isMobile ? '100%' : '50%'}
             mb={isMobile ? 2 : 0}
           >
-            <Box className='v3-tokenId-wrapper' mr={2}>
+            <Box className='v3-tokenId-wrapper' mr={1}>
               <span>{el.id}</span>
             </Box>
             {token0 && token1 && (
@@ -139,7 +138,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
               />
             )}
             {token0 && token1 && (
-              <Box ml='16px'>
+              <Box ml='8px'>
                 <p className='small'>{`${token0.symbol} / ${token1.symbol}`}</p>
                 <a
                   className='small'
@@ -151,7 +150,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
                 </a>
               </Box>
             )}
-            <Box ml={2}>
+            <Box ml={1}>
               <RangeBadge removed={false} inRange={!outOfRange} />
             </Box>
           </Box>
