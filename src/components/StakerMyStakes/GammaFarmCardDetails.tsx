@@ -305,6 +305,7 @@ const GammaFarmCardDetails: React.FC<{
             </Box>
             <Box mt={2}>
               <Button
+                style={{ height: 40, borderRadius: 10 }}
                 disabled={stakeButtonDisabled}
                 fullWidth
                 onClick={approveOrStakeLP}
@@ -345,6 +346,7 @@ const GammaFarmCardDetails: React.FC<{
             </Box>
             <Box mt={2}>
               <Button
+                style={{ height: 40, borderRadius: 10 }}
                 disabled={unStakeButtonDisabled}
                 fullWidth
                 onClick={unStakeLP}
@@ -396,6 +398,7 @@ const GammaFarmCardDetails: React.FC<{
                 <Box width='100%'>
                   <Button
                     fullWidth
+                    style={{ height: 40, borderRadius: 10 }}
                     disabled={claimButtonDisabled}
                     onClick={claimReward}
                   >
