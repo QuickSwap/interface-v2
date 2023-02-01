@@ -43,6 +43,18 @@ export const FETCH_TOKEN = () => gql`
       symbol
       name
       decimals
+      derivedMatic
+    }
+  }
+`;
+
+export const FETCH_TOKEN_FARM = () => gql`
+  query fetchToken($tokenId: ID) {
+    tokens(where: { id: $tokenId }) {
+      id
+      symbol
+      name
+      decimals
     }
   }
 `;

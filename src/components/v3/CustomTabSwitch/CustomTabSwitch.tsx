@@ -4,12 +4,11 @@ import './CustomTabSwitch.scss';
 
 interface tabItem {
   text: string;
-  id: number;
-  link: string;
+  id: string;
 }
 
 interface CustomTabSwitchProps {
-  width: string;
+  width?: string;
   height: string;
   items: tabItem[];
   selectedItem: tabItem;
@@ -17,7 +16,7 @@ interface CustomTabSwitchProps {
 }
 
 const CustomTabSwitch: React.FC<CustomTabSwitchProps> = ({
-  width,
+  width = '100%',
   height,
   items,
   selectedItem,

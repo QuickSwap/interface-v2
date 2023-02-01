@@ -134,7 +134,7 @@
   ],
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@arcxmoney/analytics": "^1.1.0",
+    "@arcxmoney/analytics": "^1.6.1",
     "@coinbase/cbpay-js": "^1.6.0",
     "@cryption/df-sdk-core": "0.0.8",
     "@paraswap/sdk": "^5.6.0-alpha.6",
@@ -156,6 +156,7 @@
     "react-virtuoso": "^2.8.4",
     "sass": "^1.51.0",
     "slick-carousel": "^1.8.1",
-    "styled-components": "^5.1.0"
+    "styled-components": "^5.1.0",
+    "tiny-warning": "^1.0.3"
   }
 }

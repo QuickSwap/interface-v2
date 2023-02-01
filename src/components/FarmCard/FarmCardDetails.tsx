@@ -332,9 +332,10 @@ const FarmCardDetails: React.FC<{
                       {getUSDString(stakedAmounts?.unStakedUSD)})
                     </small>
                     <Link
-                      to={`/pools?currency0=${getTokenAddress(
+                      to={`/pools/v2?currency0=${getTokenAddress(
                         token0,
                       )}&currency1=${getTokenAddress(token1)}`}
+                      target='_blank'
                       className='text-primary'
                     >
                       <small>

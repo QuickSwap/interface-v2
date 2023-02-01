@@ -256,10 +256,10 @@
     tslib "^2.3.0"
     zen-observable-ts "^1.2.5"
 
-"@arcxmoney/analytics@^1.1.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@arcxmoney/analytics/-/analytics-1.3.0.tgz#a0e7128bc074059dd12cc25f84136a2cc9d41c4d"
-  integrity sha512-9LUBpqALT8/s9oEmuRerNVzQS9Ln6ngmcNm/D7+wpVcffunLNszBPF21XHup51+O1PgL8DJJx4J3t9z7jAIqAA==
+"@arcxmoney/analytics@^1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@arcxmoney/analytics/-/analytics-1.6.1.tgz#1d90b7379b3bb672255b1cb1d3df310ab6b0c9be"
+  integrity sha512-GWct4Jkrxi1uRBxQWsbJYFQCgauCgHQxIne5Qc/M5whnlyiap9iL5O9VNKbIfSjONXYFe4zhh+EPFEKgjs4YtA==
   dependencies:
     "@restless/sanitizers" "^0.2.5"
 

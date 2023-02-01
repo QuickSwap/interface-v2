@@ -2,22 +2,22 @@ import React from 'react';
 import { DoubleCurrencyLogo } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
-import CurrencyLogo from '../CurrencyLogo';
 import { Token } from '@uniswap/sdk';
 import { ReactComponent as AddIcon } from 'assets/images/addIcon.svg';
 import { Box, Button } from 'theme/components';
+import { Link } from 'react-router-dom';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
-import { formatCompact, getTokenFromAddress } from 'utils';
+import { formatCompact, formatNumber, getTokenFromAddress } from 'utils';
 import { Aprs } from 'models/interfaces';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { useIsXS } from 'hooks/useMediaQuery';
 
 interface EternalFarmCardProps {
   active?: boolean;
   now?: number;
-  refreshing?: boolean;
   farmHandler?: () => void;
   event?: {
     id?: any;
@@ -43,7 +43,6 @@ interface EternalFarmCardProps {
 
 export function EternalFarmCard({
   active,
-  refreshing,
   farmHandler,
   now,
   event: {
@@ -66,11 +65,11 @@ export function EternalFarmCard({
   const { t } = useTranslation();
   const apr = aprs ? aprs[id] : undefined;
   const aprValue =
-    (apr !== undefined && apr >= 0 ? formatCompact(apr) : '~') + '% APR';
+    (apr !== undefined && apr >= 0 ? formatCompact(apr) : '~') + '%';
   const poolApr = poolAprs ? poolAprs[pool.id] : undefined;
   const poolAprValue =
     (poolApr !== undefined && poolApr >= 0 ? formatCompact(poolApr) : '~') +
-    '% APR';
+    '%';
   const tvl = tvls ? tvls[id] : undefined;
   const { chainId } = useActiveWeb3React();
 
@@ -97,207 +96,116 @@ export function EternalFarmCard({
         ])
       : undefined;
 
-  const farmRewardToken =
-    chainId && rewardToken
-      ? getTokenFromAddress(rewardToken.id, chainId, tokenMap, [
-          new Token(
-            chainId,
-            rewardToken.id,
-            Number(rewardToken.decimals),
-            rewardToken.symbol,
-          ),
-        ])
-      : undefined;
-
-  const HOPTokenAddress = '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc';
-
-  const farmBonusRewardToken =
-    chainId && bonusRewardToken
-      ? getTokenFromAddress(
-          pool &&
-            pool.id &&
-            pool.id.toLowerCase() ===
-              '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
-            ? HOPTokenAddress
-            : bonusRewardToken.id,
-          chainId,
-          tokenMap,
-          [
-            new Token(
-              chainId,
-              pool &&
-              pool.id &&
-              pool.id.toLowerCase() ===
-                '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
-                ? HOPTokenAddress
-                : bonusRewardToken.id,
-              Number(bonusRewardToken.decimals),
-              bonusRewardToken.symbol,
-            ),
-          ],
-        )
-      : undefined;
+  const isMobile = useIsXS();
 
   return (
     <Box
-      className='flex justify-center'
-      borderRadius='6px'
+      padding='12px'
       width='100%'
-      height='100%'
+      borderRadius='16px'
+      className='flex flex-wrap items-center bg-secondary1'
     >
-      {refreshing && (
-        <Loader size={'18px'} stroke={'white'} style={{ margin: 'auto' }} />
-      )}
-      {!refreshing && (
+      <Box
+        width={isMobile ? '100%' : '90%'}
+        className='flex flex-wrap items-center'
+      >
         <Box
-          padding='12px'
-          width='100%'
-          height='100%'
-          maxWidth='380px'
-          className='flex flex-col bg-secondary1'
+          width={isMobile ? '100%' : '30%'}
+          margin={isMobile ? '0 0 8px' : '0'}
+          className='flex items-center'
         >
-          <Box
-            margin='0 0 12px'
-            flex={1}
-            className='flex justify-between items-center'
-          >
-            <Box className='flex items-center'>
-              {token0 && token1 && (
-                <DoubleCurrencyLogo
-                  currency0={token0}
-                  currency1={token1}
-                  size={30}
-                />
-              )}
-
-              <Box margin='0 0 0 5px'>
-                <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
-              </Box>
-            </Box>
-            <Box className='flex'>
-              <Box margin='0 6px'>
-                <Box margin='0 0 0 3px'>
-                  <small className='weight-600'>{t('pool')}</small>
-                </Box>
-                <Box
-                  className='flex items-center bg-successLight'
-                  padding='0 4px'
-                  borderRadius='4px'
-                >
-                  <span className='text-success'>
-                    {poolAprsLoading && <Loader stroke='#0fc679' />}
-                    {!poolAprsLoading && <>{poolAprValue}</>}
-                  </span>
-                </Box>
-              </Box>
-              <Box>
-                <Box margin='0 0 0 3px'>
-                  <small className='weight-600'>{t('farm')}</small>
-                </Box>
-                <Box
-                  className='flex items-center bg-successLight'
-                  padding='0 4px'
-                  borderRadius='4px'
-                >
-                  <span className='text-success'>
-                    {aprsLoading && <Loader stroke='#0fc679' />}
-                    {!aprsLoading && <>{aprValue}</>}
-                  </span>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-          {rewardToken && (
-            <Box
-              padding='12px'
-              className='flex bg-default items-center justify-between'
-              height='56px'
-              borderRadius='10px'
-            >
-              {farmRewardToken && (
-                <Box className='flex items-center'>
-                  <CurrencyLogo currency={farmRewardToken} size={'30px'} />
-
-                  <Box margin='0 0 0 12px'>
-                    <p className='span text-secondary'>{t('reward')}</p>
-                    <small className='weight-600'>
-                      {farmRewardToken.symbol}
-                    </small>
-                  </Box>
-                </Box>
-              )}
-              {rewardRate && (
-                <small className='weight-600'>
-                  {formatReward(
-                    Number(formatUnits(rewardRate, rewardToken.decimals)) *
-                      3600 *
-                      24,
-                  )}{' '}
-                  / {t('day')}
-                </small>
-              )}
-            </Box>
+          {token0 && token1 && (
+            <DoubleCurrencyLogo
+              currency0={token0}
+              currency1={token1}
+              size={30}
+            />
           )}
-          {bonusRewardToken && (
-            <>
-              <Box className='flex justify-center' margin='-12px 0' zIndex={1}>
-                <AddIcon />
-              </Box>
-              <Box
-                padding='12px'
-                className='flex bg-default items-center justify-between'
-                borderRadius='10px'
-                height='56px'
+
+          <Box margin='0 0 0 6px'>
+            <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
+            <Box className='cursor-pointer'>
+              <Link
+                to={`/pools?currency0=${pool.token0.id}&currency1=${pool.token1.id}`}
+                target='_blank'
+                className='no-decoration'
               >
-                {farmBonusRewardToken && (
-                  <Box className='flex items-center'>
-                    <CurrencyLogo
-                      currency={farmBonusRewardToken}
-                      size={'30px'}
-                    />
-                    <Box margin='0 0 0 12px'>
-                      <p className='span text-secondary'>{t('bonus')}</p>
-                      <small className='weight-600'>
-                        {farmBonusRewardToken.symbol}
-                      </small>
-                    </Box>
-                  </Box>
-                )}
-                {bonusRewardRate && (
-                  <small className='weight-600'>
-                    {formatReward(
-                      Number(
-                        formatUnits(bonusRewardRate, bonusRewardToken.decimals),
-                      ) *
-                        3600 *
-                        24,
-                    )}{' '}
-                    / {t('day')}
-                  </small>
-                )}
-              </Box>
-            </>
-          )}
-
-          {!!tvl && (
-            <Box margin='16px 0 0' className='flex justify-between'>
-              <small className='weight-600'>{t('tvl')}:</small>
-              <small className='weight-600'>${formatCompact(tvl)}</small>
+                <small className='text-primary'>{t('getLP')}↗</small>
+              </Link>
             </Box>
-          )}
-
-          <Box margin='16px 0 0'>
-            <Button
-              style={{ height: 40, borderRadius: 16 }}
-              width='100%'
-              disabled={isDetached}
-              onClick={farmHandler}
-            >
-              {t('farm')}
-            </Button>
           </Box>
         </Box>
-      )}
+        <Box
+          width={isMobile ? '100%' : '15%'}
+          margin={isMobile ? '0 0 8px' : '0'}
+          className='flex justify-between'
+        >
+          {isMobile && <small className='text-secondary'>{t('tvl')}</small>}
+          {!!tvl && <small className='weight-600'>${formatNumber(tvl)}</small>}
+        </Box>
+        <Box
+          width={isMobile ? '100%' : '25%'}
+          margin={isMobile ? '0 0 8px' : '0'}
+          className='flex justify-between'
+        >
+          {isMobile && <small className='text-secondary'>{t('rewards')}</small>}
+          <Box textAlign={isMobile ? 'right' : ''}>
+            {rewardToken && rewardRate && (
+              <small className='weight-600'>
+                {formatReward(
+                  Number(formatUnits(rewardRate, rewardToken.decimals)) *
+                    3600 *
+                    24,
+                )}{' '}
+                {rewardToken.symbol} / {t('day')}
+              </small>
+            )}
+            <br />
+            {bonusRewardToken && bonusRewardRate && (
+              <small className='weight-600'>
+                {formatReward(
+                  Number(
+                    formatUnits(bonusRewardRate, bonusRewardToken.decimals),
+                  ) *
+                    3600 *
+                    24,
+                )}{' '}
+                {bonusRewardToken.symbol} / {t('day')}
+              </small>
+            )}
+          </Box>
+        </Box>
+
+        <Box
+          margin={isMobile ? '0 0 8px' : '0'}
+          width={isMobile ? '100%' : '15%'}
+          className='flex justify-between'
+        >
+          {isMobile && <small className='text-secondary'>{t('poolAPR')}</small>}
+          <small className='text-success'>
+            {poolAprsLoading && <Loader stroke='#0fc679' />}
+            {!poolAprsLoading && <>{poolAprValue}</>}
+          </small>
+        </Box>
+
+        <Box
+          width={isMobile ? '100%' : '15%'}
+          margin={isMobile ? '0 0 8px' : '0'}
+          className='flex justify-between'
+        >
+          {isMobile && <small className='text-secondary'>{t('farmAPR')}</small>}
+          <small className='text-success'>
+            {aprsLoading && <Loader stroke='#0fc679' />}
+            {!aprsLoading && <>{aprValue}</>}
+          </small>
+        </Box>
+      </Box>
+
+      <Box width={isMobile ? '100%' : '10%'}>
+        <Button width='100%' onClick={farmHandler}>
+          {t('farm')}
+        </Button>
+      </Box>
     </Box>
   );
 }

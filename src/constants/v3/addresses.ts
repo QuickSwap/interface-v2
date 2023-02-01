@@ -31,6 +31,14 @@ export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6',
 };
 
+export const GAMMA_UNIPROXY_ADDRESSES: AddressMap = {
+  [ChainId.MATIC]: '0x8c8f7d348a568553819c4dad401ba6a68fa65924',
+};
+
+export const GAMMA_MASTERCHEF_ADDRESSES: AddressMap = {
+  [ChainId.MATIC]: '0x20ec0d06f447d550fc6edee42121bc8c1817b97d',
+};
+
 export const MULTICALL_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0x6ccb9426CeceE2903FbD97fd833fD1D31c100292',
 };

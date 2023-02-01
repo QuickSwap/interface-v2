@@ -1,12 +1,11 @@
-import React, { useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import React from 'react';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Box } from 'theme/components';
 import { ChevronRight } from 'react-feather';
 import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import { useIsXS } from 'hooks/useMediaQuery';
@@ -26,9 +25,8 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const { pathname } = useLocation();
   const { t } = useTranslation();
   const isMobile = useIsXS();
-
-  const { isV2 } = useIsV2();
-  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'total';
 
   return (
     <Box width='100%' margin='0 0 24px'>

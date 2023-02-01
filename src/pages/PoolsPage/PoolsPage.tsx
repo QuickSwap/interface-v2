@@ -11,6 +11,7 @@ import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 import { useIsXS } from 'hooks/useMediaQuery';
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
+const MyGammaPoolsV3 = lazy(() => import('./v3/MyGammaPoolsV3'));
 
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -51,8 +52,15 @@ const PoolsPage: React.FC = () => {
           </Box>
         </Grid>
         <Grid spacing={4} item xs={12} sm={12} md={7}>
-          <Box width='100%' className='wrapper'>
-            {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
+          <Box width='100%'>
+            <Box width='100%' className='wrapper'>
+              {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
+            </Box>
+            {!isV2 && (
+              <Box margin='32px 0 0' className='wrapper'>
+                <MyGammaPoolsV3 />
+              </Box>
+            )}
           </Box>
         </Grid>
       </Grid>

@@ -26,10 +26,7 @@
   border-radius: 16px;
   padding: 12px;
   a {
-    color: $textPrimary;
-  }
-  button {
-    height: 40px;
-    border-radius: 12px;
+    color: $primary;
+    text-decoration: none;
   }
 }
