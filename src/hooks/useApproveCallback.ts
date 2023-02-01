@@ -272,6 +272,7 @@ export function useApproveCallbackFromBestTrade(
   allowedSlippage: Percent,
   currency?: Currency,
   optimalRate?: OptimalRate,
+  bonusRouteFound?: boolean,
 ): [ApprovalState, () => Promise<void>] {
   const { chainId } = useActiveWeb3React();
   const amountToApprove = useMemo(
@@ -288,7 +289,9 @@ export function useApproveCallbackFromBestTrade(
       ? CurrencyAmountV3.fromRawAmount(currency, amountToApprove)
       : undefined,
     chainId
-      ? GlobalConst.addresses.PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
+      ? bonusRouteFound
+        ? GlobalConst.addresses.SWAP_ROUTER_ADDRESS[chainId]
+        : GlobalConst.addresses.PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
       : undefined,
   );
 }
