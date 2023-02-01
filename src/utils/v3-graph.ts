@@ -185,7 +185,7 @@ export async function getGlobalDataTotal(
 
     const oneDayTotalLiquidity =
       (v3StatsOneDay ? Number(v3StatsOneDay.totalValueLockedUSD) : 0) +
-      v2DataOneDay.totalLiquidityETH * ethPrice;
+      v2DataOneDay.totalLiquidityETH * oldEthPrice;
 
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
       currentVolumeUSD,
@@ -678,7 +678,7 @@ export async function getTopTokensTotal(
         (oneDay ? parseFloat(oneDay[manageUntrackedTVL]) : 0) +
         (v2OneDay
           ? (v2OneDay.totalLiquidity ?? 0) *
-            ethPrice *
+            ethPrice24H *
             (v2OneDay.derivedETH ?? 0)
           : 0);
       const tvlUSDChange = getPercentChange(tvlUSD, tvlUSDOneDay);
@@ -1554,6 +1554,7 @@ export async function getTopPairsV3(count = 500) {
       );
 
       return {
+        isV3: true,
         token0: current.token0,
         token1: current.token1,
         fee: current.fee,
@@ -1898,6 +1899,7 @@ export async function getTopPairsV3ByToken(tokenAddress: string) {
       );
 
       return {
+        isV3: true,
         token0: current.token0,
         token1: current.token1,
         fee: current.fee,

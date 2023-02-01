@@ -53,7 +53,7 @@ const AnalyticsOverview: React.FC = () => {
     (async () => {
       if (version === 'v3') {
         const data = await getGlobalDataV3();
-        if (data) {
+        if (data && version === 'v3') {
           updateGlobalData({ data });
         }
       } else if (version === 'total') {
@@ -62,13 +62,13 @@ const AnalyticsOverview: React.FC = () => {
             ethPrice.price,
             ethPrice.oneDayPrice,
           );
-          if (data) {
+          if (data && version === 'total') {
             updateGlobalData({ data });
           }
         }
       } else if (ethPrice.price && ethPrice.oneDayPrice) {
         const data = await getGlobalData(ethPrice.price, ethPrice.oneDayPrice);
-        if (data) {
+        if (data && version === 'v2') {
           updateGlobalData({ data });
         }
       }
@@ -82,7 +82,7 @@ const AnalyticsOverview: React.FC = () => {
             maticPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
           );
-          if (data) {
+          if (data && version === 'v3') {
             updateTopTokens(data);
           }
         }
@@ -93,7 +93,7 @@ const AnalyticsOverview: React.FC = () => {
             ethPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
           );
-          if (data) {
+          if (data && version === 'v2') {
             updateTopTokens(data);
           }
         }
@@ -111,7 +111,7 @@ const AnalyticsOverview: React.FC = () => {
             maticPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
           );
-          if (data) {
+          if (data && version === 'total') {
             updateTopTokens(data);
           }
         }
@@ -123,7 +123,7 @@ const AnalyticsOverview: React.FC = () => {
         const pairsData = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
         );
-        if (pairsData) {
+        if (pairsData && version === 'v3') {
           const data = pairsData.filter((item: any) => !!item);
           updateTopPairs(data);
           try {
@@ -153,7 +153,7 @@ const AnalyticsOverview: React.FC = () => {
               })
             : [];
           const data = await getBulkPairData(formattedPairs, ethPrice.price);
-          if (data) {
+          if (data && version === 'v2') {
             updateTopPairs(data);
           }
         }
@@ -161,7 +161,7 @@ const AnalyticsOverview: React.FC = () => {
         const pairsData = await getTopPairsTotal(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
         );
-        if (pairsData) {
+        if (pairsData && version === 'total') {
           const data = pairsData.filter((item: any) => !!item);
           updateTopPairs(data);
           try {
