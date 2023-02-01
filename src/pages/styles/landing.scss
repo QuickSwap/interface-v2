@@ -196,13 +196,6 @@
   & > div {
     width: 100%;
   }
-  @include media("screen", "<phone") {
-    & .MuiGrid-item {
-      width: 100%;
-      margin-bottom: 32px;
-      text-align: center;
-    }
-  }
 }
 
 .swapInfo {

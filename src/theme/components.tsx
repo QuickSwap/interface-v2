@@ -451,23 +451,11 @@ export const Grid = styled.div<{
 
 export const LinearProgress: React.FC<{ value: number }> = ({ value }) => {
   return (
-    <div
-      style={{
-        position: 'relative',
-        height: 5,
-        borderRadius: 3,
-        overflow: 'hidden',
-        background: 'rgb(162, 202, 237)',
-      }}
-    >
+    <div className='linearProgress'>
       <div
+        className='linearProgressInner'
         style={{
           width: `${value}%`,
-          position: 'absolute',
-          height: 5,
-          background: 'rgb(25, 118, 210)',
-          top: 0,
-          left: 0,
         }}
       />
     </div>

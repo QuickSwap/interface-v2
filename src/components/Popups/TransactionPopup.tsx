@@ -44,6 +44,7 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
         </small>
         {chainId && hash.length > 0 && (
           <a
+            className='text-secondary'
             href={getEtherscanLink(chainId, hash, 'transaction')}
             target='_blank'
             rel='noopener noreferrer'

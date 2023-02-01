@@ -2,9 +2,6 @@
 @use 'styles/breakpoints' as *;
 
 .tableContainer {
-  & .MuiTableContainer-root {
-    overflow: unset;
-  }
   & thead {
     height: 53px
   }
@@ -52,14 +49,6 @@
       padding: 6px 0px 6px 15px;
       @include media("screen", "<tablet") {
         padding: 6px;
-      }
-    }
-    &.buttonCell.MuiButton-textPrimary {
-      & button {
-        color: white;
-        &:hover {
-          color: $primary;
-        }
       }
     }
   }

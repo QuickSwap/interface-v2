@@ -181,30 +181,6 @@
 .poolDetailsTableWrapper {
   display: flex;
   padding: 12px 20px 16px;
-  & .MuiTableCell-root {
-    padding: 4px;
-    border-bottom: none;
-    &:not(:first-child) {
-      text-align: right;
-    }
-    & small, & p {
-      word-break: break-all;
-    }
-    & button {
-      height: 36px;
-      border-radius: 10px;
-      & .MuiButton-label {
-        font-size: 14px;
-      }
-      &:disabled {
-        background: $grey2;
-        opacity: 1;
-        & .MuiButton-label {
-          color: $textSecondary
-        }
-      }
-    }
-  }
 }
 
 .poolDetailsInfoItem {

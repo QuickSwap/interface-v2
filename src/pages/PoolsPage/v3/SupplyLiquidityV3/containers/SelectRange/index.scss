@@ -55,29 +55,26 @@
 .poolRangeButtonGroup {
   padding: 0;
   margin: 12px 0 16px;
-  & .MuiButtonGroup-root {
-    margin-bottom: 0;
-    & button {
-      max-width: unset;
-      height: 36px;
-      background-color: $secondary1;
-      &:first-child {
-        border-top-left-radius: 6px;
-        border-bottom-left-radius: 6px;
-      }
-      &:last-child {
-        border-top-right-radius: 6px;
-        border-bottom-right-radius: 6px;
-      }
-      &.active span {
-        color: $bgPalette;
-      }
-      & span {
-        font-size: 14px;
-        color: $textPrimary;
-      }
+  & button {
+    max-width: unset;
+    height: 36px;
+    background-color: $secondary1;
+    &:first-child {
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
     }
-  } 
+    &:last-child {
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+    &.active span {
+      color: $bgPalette;
+    }
+    & span {
+      font-size: 14px;
+      color: $textPrimary;
+    }
+  }
 }
 
 .poolRangeBetaBox {

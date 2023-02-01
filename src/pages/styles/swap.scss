@@ -143,12 +143,6 @@
   display: flex;
   align-items: center;
   margin-right: 16px;
-  & .MuiCheckbox-root {
-    padding: 2px;
-    & svg path {
-      fill: $textPrimary;
-    }
-  }
   & small {
     text-transform: uppercase;
   }
@@ -194,7 +188,7 @@
 
 .swapTxInfo {
   padding: 8px;
-  & > div {
+  & > div.row {
     padding: 8px 0;
     display: flex;
     justify-content: space-between;

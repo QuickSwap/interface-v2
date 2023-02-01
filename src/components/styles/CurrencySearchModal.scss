@@ -70,12 +70,6 @@
   // causes the modal to be non responsive
   // overflow-y: auto;
   margin-top: 16px;
-  & .MuiListItem-root {
-    padding: 6px;
-    &.Mui-selected, &:hover {
-      background: none;
-    }
-  }
 }
 .baseWrapper {
   border-radius: 18px;

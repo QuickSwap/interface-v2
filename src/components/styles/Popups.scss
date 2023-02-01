@@ -36,12 +36,6 @@
   bottom: 0;
   width: 100%;
   left: 0;
-  & .MuiLinearProgress-root {
-    background: $yellow2;
-    & .MuiLinearProgress-bar {
-      background: $yellow3
-    }
-  }
 }
 .popupItem {
   padding: 20px;

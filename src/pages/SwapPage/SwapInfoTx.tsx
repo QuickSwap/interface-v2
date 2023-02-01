@@ -42,7 +42,7 @@ const SwapInfoTx: React.FC<{
         ]}
       />
       <Box className='swapTxInfo'>
-        <Box>
+        <Box className='row'>
           <small className='text-secondary'>{t('transactions')}:</small>
           {filteredTxs ? (
             <small>{filteredTxs.length}</small>
@@ -51,7 +51,7 @@ const SwapInfoTx: React.FC<{
           )}
         </Box>
         <Divider />
-        <Box>
+        <Box className='row'>
           <small className='text-secondary'>{t('buys')}:</small>
           <small>
             {filteredBuyTxs ? (
@@ -62,7 +62,7 @@ const SwapInfoTx: React.FC<{
           </small>
         </Box>
         <Divider />
-        <Box>
+        <Box className='row'>
           <small className='text-secondary'>{t('sells')}:</small>
           <small>
             {filteredSellTxs ? (
@@ -73,7 +73,7 @@ const SwapInfoTx: React.FC<{
           </small>
         </Box>
         <Divider />
-        <Box>
+        <Box className='row'>
           <small className='text-secondary'>{t('volume')}:</small>
           <small>
             {filteredTxs ? (
