@@ -12,7 +12,7 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
 import { SearchInput, SortColumns, CustomSwitch } from 'components';
-import { GlobalConst } from 'constants/index';
+import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
 
 export default function Farms() {
   const { t } = useTranslation();
@@ -28,6 +28,14 @@ export default function Farms() {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const history = useHistory();
+
+  const allGammaFarms = useMemo(() => {
+    return chainId
+      ? ([] as GammaPair[])
+          .concat(...Object.values(GammaPairs[chainId]))
+          .filter((item) => item.ableToFarm)
+      : [];
+  }, [chainId]);
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -50,27 +58,39 @@ export default function Farms() {
       ? (parsedQuery.tab as string)
       : 'eternal-farms';
 
-  const v3FarmCategories = useMemo(
-    () => [
-      {
-        text: t('myFarms'),
-        id: 0,
-        link: 'my-farms',
-      },
-      {
-        text: t('quickswapFarms'),
-        id: 1,
-        link: 'eternal-farms',
-      },
-      {
-        text: t('gammaFarms'),
-        id: 2,
-        link: 'gamma-farms',
-        hasSeparator: true,
-      },
-    ],
-    [t],
-  );
+  const v3FarmCategories = useMemo(() => {
+    return allGammaFarms.length > 0
+      ? [
+          {
+            text: t('myFarms'),
+            id: 0,
+            link: 'my-farms',
+          },
+          {
+            text: t('quickswapFarms'),
+            id: 1,
+            link: 'eternal-farms',
+          },
+          {
+            text: t('gammaFarms'),
+            id: 2,
+            link: 'gamma-farms',
+            hasSeparator: true,
+          },
+        ]
+      : [
+          {
+            text: t('myFarms'),
+            id: 0,
+            link: 'my-farms',
+          },
+          {
+            text: t('quickswapFarms'),
+            id: 1,
+            link: 'eternal-farms',
+          },
+        ];
+  }, [t, allGammaFarms]);
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
       history.push(`?tab=${selected?.link}`);

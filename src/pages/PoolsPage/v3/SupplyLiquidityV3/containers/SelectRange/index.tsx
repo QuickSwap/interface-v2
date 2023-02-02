@@ -76,12 +76,15 @@ export function SelectRange({
     currencyB && currencyB.wrapped
       ? currencyB.wrapped.address.toLowerCase()
       : '';
-  const gammaPair =
-    GammaPairs[currencyAAddress + '-' + currencyBAddress] ??
-    GammaPairs[currencyBAddress + '-' + currencyAAddress];
+  const gammaPair = chainId
+    ? GammaPairs[chainId][currencyAAddress + '-' + currencyBAddress] ??
+      GammaPairs[chainId][currencyBAddress + '-' + currencyAAddress]
+    : [];
 
   const gammaPairReversed = !!(
-    gammaPair && GammaPairs[currencyBAddress + '-' + currencyAAddress]
+    gammaPair &&
+    chainId &&
+    GammaPairs[chainId][currencyBAddress + '-' + currencyAAddress]
   );
 
   const gammaCurrencyA = gammaPairReversed ? currencyB : currencyA;

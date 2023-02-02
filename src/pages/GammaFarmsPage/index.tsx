@@ -28,9 +28,11 @@ const GammaFarmsPage: React.FC<{
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
-  const allGammaFarms = ([] as GammaPair[])
-    .concat(...Object.values(GammaPairs))
-    .filter((item) => item.ableToFarm);
+  const allGammaFarms = chainId
+    ? ([] as GammaPair[])
+        .concat(...Object.values(GammaPairs[chainId]))
+        .filter((item) => item.ableToFarm)
+    : [];
   const sortMultiplier = sortDesc ? -1 : 1;
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 

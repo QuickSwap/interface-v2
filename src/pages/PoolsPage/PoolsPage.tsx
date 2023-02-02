@@ -11,6 +11,7 @@ import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 import { getConfig } from '../../config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
+import { GammaPairs } from 'constants/index';
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
 const MyGammaPoolsV3 = lazy(() => import('./v3/MyGammaPoolsV3'));
@@ -29,6 +30,7 @@ const PoolsPage: React.FC = () => {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const helpURL = process.env.REACT_APP_HELP_URL;
+  const allGammaPairs = chainId ? GammaPairs[chainId] : {};
 
   return (
     <Box width='100%' mb={3}>
@@ -65,7 +67,7 @@ const PoolsPage: React.FC = () => {
           <Box className='wrapper'>
             {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
           </Box>
-          {!isV2 && (
+          {!isV2 && Object.values(allGammaPairs).length > 0 && (
             <Box mt={4} className='wrapper'>
               <MyGammaPoolsV3 />
             </Box>

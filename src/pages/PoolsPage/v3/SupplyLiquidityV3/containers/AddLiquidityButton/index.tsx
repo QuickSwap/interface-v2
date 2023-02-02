@@ -109,9 +109,10 @@ export function AddLiquidityButton({
     quoteCurrency && quoteCurrency.wrapped
       ? quoteCurrency.wrapped.address.toLowerCase()
       : '';
-  const gammaPair =
-    GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
-    GammaPairs[quoteCurrencyAddress + '-' + baseCurrencyAddress];
+  const gammaPair = chainId
+    ? GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
+      GammaPairs[chainId][quoteCurrencyAddress + '-' + baseCurrencyAddress]
+    : [];
   const gammaPairAddress =
     gammaPair && gammaPair.length > 0
       ? gammaPair.find((pair) => pair.type === preset)?.address
@@ -198,8 +199,10 @@ export function AddLiquidityButton({
           ? quoteCurrency.wrapped.address.toLowerCase()
           : '';
         const gammaPair =
-          GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
-          GammaPairs[quoteCurrencyAddress + '-' + baseCurrencyAddress];
+          GammaPairs[chainId][
+            baseCurrencyAddress + '-' + quoteCurrencyAddress
+          ] ??
+          GammaPairs[chainId][quoteCurrencyAddress + '-' + baseCurrencyAddress];
         const gammaPairAddress =
           gammaPair && gammaPair.length > 0
             ? gammaPair.find((pair) => pair.type === preset)?.address
@@ -230,11 +233,15 @@ export function AddLiquidityButton({
             await wrapResponse.wait();
           }
           const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
-            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            (GammaPairs[chainId][
+              baseCurrencyAddress + '-' + quoteCurrencyAddress
+            ]
               ? amountA
               : amountB
             ).numerator.toString(),
-            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            (GammaPairs[chainId][
+              baseCurrencyAddress + '-' + quoteCurrencyAddress
+            ]
               ? amountB
               : amountA
             ).numerator.toString(),
@@ -243,11 +250,15 @@ export function AddLiquidityButton({
             [0, 0, 0, 0],
           );
           const response: TransactionResponse = await gammaUNIPROXYContract.deposit(
-            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            (GammaPairs[chainId][
+              baseCurrencyAddress + '-' + quoteCurrencyAddress
+            ]
               ? amountA
               : amountB
             ).numerator.toString(),
-            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            (GammaPairs[chainId][
+              baseCurrencyAddress + '-' + quoteCurrencyAddress
+            ]
               ? amountB
               : amountA
             ).numerator.toString(),

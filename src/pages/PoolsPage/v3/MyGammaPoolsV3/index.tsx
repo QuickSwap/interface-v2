@@ -10,7 +10,7 @@ import { GammaPairs } from 'constants/index';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
 
   const showConnectAWallet = Boolean(!account);
 
@@ -46,17 +46,18 @@ export default function MyLiquidityPoolsV3() {
     },
   );
 
-  const gammaPositionList = gammaPositions
-    ? Object.keys(gammaPositions).filter(
-        (value) =>
-          !!Object.values(GammaPairs).find(
-            (pairData) =>
-              !!pairData.find(
-                (item) => item.address.toLowerCase() === value.toLowerCase(),
-              ),
-          ),
-      )
-    : [];
+  const gammaPositionList =
+    gammaPositions && chainId
+      ? Object.keys(gammaPositions).filter(
+          (value) =>
+            !!Object.values(GammaPairs[chainId]).find(
+              (pairData) =>
+                !!pairData.find(
+                  (item) => item.address.toLowerCase() === value.toLowerCase(),
+                ),
+            ),
+        )
+      : [];
 
   return (
     <Box>

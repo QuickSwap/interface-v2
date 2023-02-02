@@ -17,14 +17,16 @@ const GammaLPList: React.FC<{ gammaPositions: any; gammaPairs: string[] }> = ({
   const positionsList = chainId
     ? gammaPairs.map((pairAddress) => {
         const gammaData = gammaPositions[pairAddress];
-        const pairIndex = Object.values(GammaPairs).findIndex(
+        const pairIndex = Object.values(GammaPairs[chainId]).findIndex(
           (pairData) =>
             !!pairData.find(
               (item) =>
                 item.address.toLowerCase() === pairAddress.toLowerCase(),
             ),
         );
-        const tokenArray = Object.keys(GammaPairs)[pairIndex].split('-');
+        const tokenArray = Object.keys(GammaPairs[chainId])[pairIndex].split(
+          '-',
+        );
         const token0Data = getTokenFromAddress(
           tokenArray[0],
           chainId,
