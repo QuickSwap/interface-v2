@@ -100,6 +100,8 @@ const AnalyticsTokens: React.FC = () => {
   useEffect(() => {
     if (topTokens) {
       dispatch(setAnalyticsLoaded(true));
+    } else {
+      dispatch(setAnalyticsLoaded(false));
     }
   }, [topTokens, dispatch]);
 

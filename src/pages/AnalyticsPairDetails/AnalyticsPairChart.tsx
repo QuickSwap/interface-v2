@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams, useRouteMatch } from 'react-router-dom';
 import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import dayjs from 'dayjs';
@@ -16,7 +16,6 @@ import {
 import { AreaChart, ChartType, MixedChart, ColumnChart } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
@@ -46,7 +45,9 @@ const AnalyticsPairChart: React.FC<{
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
 
-  const { isV2 } = useIsV2();
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'v3';
+  const isV2 = version === 'v2';
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
@@ -242,9 +243,7 @@ const AnalyticsPairChart: React.FC<{
         }
       });
     }
-    if (isV2 !== undefined) {
-      fetchPairChartData();
-    }
+    fetchPairChartData();
   }, [pairAddress, durationIndex, isV2]);
 
   useEffect(() => {
