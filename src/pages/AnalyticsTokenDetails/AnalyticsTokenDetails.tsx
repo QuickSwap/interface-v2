@@ -248,11 +248,17 @@ const AnalyticsTokenDetails: React.FC = () => {
     updateTokenTransactions(null);
   }, [tokenAddress, version]);
 
+  const tokenLoaded = !!token;
+  const tokenPairsLoaded = !!tokenPairs;
+  const tokenTxLoaded = version === 'v2' ? true : !!tokenTransactions;
+
   useEffect(() => {
-    if (token && (version === 'v2' ? tokenPairs : tokenTransactions)) {
+    if (tokenLoaded && tokenPairsLoaded && tokenTxLoaded) {
       dispatch(setAnalyticsLoaded(true));
+    } else {
+      dispatch(setAnalyticsLoaded(false));
     }
-  }, [token, tokenPairs, tokenTransactions, version, dispatch]);
+  }, [tokenLoaded, tokenPairsLoaded, tokenTxLoaded, version, dispatch]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,
@@ -497,4 +503,4 @@ const AnalyticsTokenDetails: React.FC = () => {
   );
 };
 
-export default AnalyticsTokenDetails;
+export default React.memo(AnalyticsTokenDetails);

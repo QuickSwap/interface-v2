@@ -1554,6 +1554,7 @@ export async function getTopPairsV3(count = 500) {
       );
 
       return {
+        isV3: true,
         token0: current.token0,
         token1: current.token1,
         fee: current.fee,
@@ -1898,6 +1899,7 @@ export async function getTopPairsV3ByToken(tokenAddress: string) {
       );
 
       return {
+        isV3: true,
         token0: current.token0,
         token1: current.token1,
         fee: current.fee,
