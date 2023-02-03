@@ -63,6 +63,7 @@ const AnalyticsOverview: React.FC = () => {
           const data = await getGlobalDataTotal(
             ethPrice.price,
             ethPrice.oneDayPrice,
+            V2_FACTORY_ADDRESSES[chainIdToUse],
             chainIdToUse,
           );
           if (data) {

@@ -64,6 +64,36 @@ export const WALLCHAIN_PARAMS = {
       apiKey: '',
     },
   },
+  [ChainId.DOEGCHAIN_TESTNET]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+  },
+  [ChainId.DOGECHAIN]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+  },
+  [ChainId.ZKTESTNET]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+  },
 };
 
 export const BONUS_CUTOFF_AMOUNT = {

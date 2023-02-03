@@ -51,13 +51,13 @@ import {
   TOKEN_INFO,
   TOKEN_INFO_OLD,
 } from 'apollo/queries';
-import ApolloClient from 'apollo-client';
 
 //Global
 
 export async function getGlobalDataTotal(
   ethPrice: number,
   oldEthPrice: number,
+  factory: string,
   chainId: ChainId,
 ): Promise<any> {
   let data: any = {};
@@ -115,7 +115,7 @@ export async function getGlobalDataTotal(
       { index: 'twoWeekData', block: twoWeekBlock?.number },
     ];
     const allData = await clientV2[chainId].query({
-      query: GLOBAL_ALLDATA(queryReq),
+      query: GLOBAL_ALLDATA(queryReq, factory),
       fetchPolicy: 'network-only',
     });
 
