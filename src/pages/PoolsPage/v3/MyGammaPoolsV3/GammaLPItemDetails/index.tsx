@@ -7,7 +7,6 @@ import { CurrencyLogo } from 'components';
 import Badge from 'components/v3/Badge';
 import { Button } from '@material-ui/core';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
-import { formatUnits } from 'ethers/lib/utils';
 import IncreaseGammaLiquidityModal from '../IncreaseGammaLiquidityModal';
 import WithdrawGammaLiquidityModal from '../WithdrawGammaLiquidityModal';
 
@@ -54,7 +53,7 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
             : 0}{' '}
           (
           {gammaPosition.shares
-            ? formatNumber(formatUnits(gammaPosition.shares.toString(), 18))
+            ? formatNumber(gammaPosition.shares / 10 ** 18)
             : 0}{' '}
           LP)
         </small>
