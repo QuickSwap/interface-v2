@@ -218,6 +218,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isCypherD = ethereum && ethereum.isCypherD;
     const isBitKeep = ethereum && ethereum.isBitKeep;
     const trustWallet = getTrustWalletInjectedProvider();
+    const isBraveWallet = ethereum && ethereum.isBraveWallet;
 
     // is trust wallet installed?
     const isTrustWalledInstalled = !!trustWallet;
@@ -256,7 +257,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
                   isBitKeep ===
                     (option.name === GlobalConst.walletName.BITKEEP) ||
                   isMetamask ===
-                    (option.name === GlobalConst.walletName.METAMASK))
+                    (option.name === GlobalConst.walletName.METAMASK) ||
+                  isBraveWallet ===
+                    (option.name === GlobalConst.walletName.BRAVEWALLET))
               }
               color={option.color}
               link={option.href}
@@ -293,7 +296,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         // don't return metamask if injected provider isn't metamask
         else if (
           option.name === GlobalConst.walletName.METAMASK &&
-          !isMetamask
+          (!isMetamask || isBraveWallet)
         ) {
           return null;
         } else if (
@@ -311,11 +314,20 @@ const WalletModal: React.FC<WalletModalProps> = ({
           !isCypherD
         ) {
           return null;
+        } else if (
+          option.name === GlobalConst.walletName.BRAVEWALLET &&
+          !isBraveWallet
+        ) {
+          return null;
         }
         // likewise for generic
         else if (
           option.name === GlobalConst.walletName.INJECTED &&
-          (isMetamask || isBitKeep || isBlockWallet || isCypherD)
+          (isMetamask ||
+            isBitKeep ||
+            isBlockWallet ||
+            isBraveWallet ||
+            isCypherD)
         ) {
           return null;
         }
@@ -343,7 +355,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 isBitKeep ===
                   (option.name === GlobalConst.walletName.BITKEEP) ||
                 isMetamask ===
-                  (option.name === GlobalConst.walletName.METAMASK))
+                  (option.name === GlobalConst.walletName.METAMASK) ||
+                isBraveWallet ===
+                  (option.name === GlobalConst.walletName.BRAVEWALLET))
             }
             color={option.color}
             link={option.href}
