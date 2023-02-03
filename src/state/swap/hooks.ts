@@ -11,11 +11,10 @@ import {
   Trade,
 } from '@uniswap/sdk';
 import { ParsedQs } from 'qs';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency } from 'hooks/Tokens';
-import { useTradeExactIn, useTradeExactOut } from 'hooks/Trades';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { isAddress } from 'utils';
 import { AppDispatch, AppState } from 'state';
@@ -23,8 +22,12 @@ import { useCurrencyBalances } from 'state/wallet/hooks';
 import {
   Field,
   replaceSwapState,
+  RouterTypeParams,
   selectCurrency,
+  setBestRoute,
   setRecipient,
+  setSwapDelay,
+  SwapDelay,
   switchCurrencies,
   typeInput,
 } from './actions';
@@ -34,8 +37,9 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { GlobalData } from 'constants/index';
+import { RouterTypes, SmartRouter } from 'constants/index';
 import { StableCoins } from 'constants/v3/addresses';
+import useFindBestRoute from 'hooks/useFindBestRoute';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -46,11 +50,15 @@ export function useSwapActionHandlers(): {
   onSwitchTokens: () => void;
   onUserInput: (field: Field, typedValue: string) => void;
   onChangeRecipient: (recipient: string | null) => void;
+  onSetSwapDelay: (swapDelay: SwapDelay) => void;
+  onBestRoute: (bestRoute: RouterTypeParams) => void;
 } {
   const dispatch = useDispatch<AppDispatch>();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
+  const timer = useRef<any>(null);
+
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
@@ -68,6 +76,13 @@ export function useSwapActionHandlers(): {
     [dispatch, nativeCurrency],
   );
 
+  const onSetSwapDelay = useCallback(
+    (swapDelay: SwapDelay) => {
+      dispatch(setSwapDelay({ swapDelay }));
+    },
+    [dispatch],
+  );
+
   const onSwitchTokens = useCallback(() => {
     dispatch(switchCurrencies());
   }, [dispatch]);
@@ -75,8 +90,17 @@ export function useSwapActionHandlers(): {
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
       dispatch(typeInput({ field, typedValue }));
+      if (!typedValue) {
+        onSetSwapDelay(SwapDelay.INIT);
+        return;
+      }
+      onSetSwapDelay(SwapDelay.USER_INPUT);
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => {
+        onSetSwapDelay(SwapDelay.USER_INPUT_COMPLETE);
+      }, 300);
     },
-    [dispatch],
+    [dispatch, onSetSwapDelay],
   );
 
   const onChangeRecipient = useCallback(
@@ -86,11 +110,20 @@ export function useSwapActionHandlers(): {
     [dispatch],
   );
 
+  const onBestRoute = useCallback(
+    (bestRoute: RouterTypeParams) => {
+      dispatch(setBestRoute({ bestRoute }));
+    },
+    [dispatch],
+  );
+
   return {
     onSwitchTokens,
     onCurrencySelection,
     onUserInput,
     onChangeRecipient,
+    onSetSwapDelay,
+    onBestRoute,
   };
 }
 
@@ -177,16 +210,7 @@ export function useDerivedSwapInfo(): {
     (isExactIn ? inputCurrency : outputCurrency) ?? undefined,
   );
 
-  const bestTradeExactIn = useTradeExactIn(
-    isExactIn ? parsedAmount : undefined,
-    outputCurrency ?? undefined,
-  );
-  const bestTradeExactOut = useTradeExactOut(
-    inputCurrency ?? undefined,
-    !isExactIn ? parsedAmount : undefined,
-  );
-
-  const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut;
+  const { v2Trade, bestTradeExactIn, bestTradeExactOut } = useFindBestRoute();
 
   const currencyBalances = {
     [Field.INPUT]: relevantTokenBalances[0],
@@ -346,6 +370,11 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
     independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
     recipient,
+    swapDelay: SwapDelay.INIT,
+    bestRoute: {
+      routerType: RouterTypes.QUICKSWAP,
+      smartRouter: SmartRouter.QUICKSWAP,
+    },
   };
 }
 
@@ -378,6 +407,11 @@ export function useDefaultsFromURLSearch():
         inputCurrencyId: parsed[Field.INPUT].currencyId,
         outputCurrencyId: parsed[Field.OUTPUT].currencyId,
         recipient: parsed.recipient,
+        swapDelay: SwapDelay.INIT,
+        bestRoute: {
+          routerType: RouterTypes.QUICKSWAP,
+          smartRouter: SmartRouter.QUICKSWAP,
+        },
       }),
     );
 

@@ -27,7 +27,7 @@ const PairTable: React.FC<PairsTableProps> = ({
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
   const liquidityHeadCellIndex = version === 'total' ? 2 : 1;
 
   const v2SpecificCells = [

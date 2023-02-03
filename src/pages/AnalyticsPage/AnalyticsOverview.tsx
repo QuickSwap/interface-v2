@@ -5,11 +5,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import {
-  useEthPrice,
-  useGlobalData,
-  useMaticPrice,
-} from 'state/application/hooks';
+import { useEthPrice, useMaticPrice } from 'state/application/hooks';
 import {
   getTopPairs,
   getTopTokens,
@@ -42,23 +38,25 @@ dayjs.extend(utc);
 const AnalyticsOverview: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { globalData, updateGlobalData } = useGlobalData();
+  const [globalData, updateGlobalData] = useState<any>(null);
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
+  const [liquidityChartLoaded, setLiquidityChartLoaded] = useState(false);
+  const [volumeChartLoaded, setVolumeChartLoaded] = useState(false);
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const dispatch = useDispatch();
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
 
   useEffect(() => {
     (async () => {
       if (version === 'v3') {
         const data = await getGlobalDataV3(chainIdToUse);
         if (data) {
-          updateGlobalData({ data });
+          updateGlobalData(data);
         }
       } else if (version === 'total') {
         if (ethPrice.price && ethPrice.oneDayPrice) {
@@ -68,7 +66,7 @@ const AnalyticsOverview: React.FC = () => {
             chainIdToUse,
           );
           if (data) {
-            updateGlobalData({ data });
+            updateGlobalData(data);
           }
         }
       } else if (ethPrice.price && ethPrice.oneDayPrice) {
@@ -79,7 +77,7 @@ const AnalyticsOverview: React.FC = () => {
           chainIdToUse,
         );
         if (data) {
-          updateGlobalData({ data });
+          updateGlobalData(data);
         }
       }
     })();
@@ -139,7 +137,6 @@ const AnalyticsOverview: React.FC = () => {
         );
         if (pairsData) {
           const data = pairsData.filter((item: any) => !!item);
-          updateTopPairs(data);
           try {
             const aprs = await getPairsAPR(
               data.map((item: any) => item.id),
@@ -186,7 +183,6 @@ const AnalyticsOverview: React.FC = () => {
         );
         if (pairsData) {
           const data = pairsData.filter((item: any) => !!item);
-          updateTopPairs(data);
           try {
             const aprs = await getPairsAPR(
               data.map((item: any) => item.id),
@@ -209,7 +205,6 @@ const AnalyticsOverview: React.FC = () => {
       }
     })();
   }, [
-    updateGlobalData,
     ethPrice.price,
     ethPrice.oneDayPrice,
     maticPrice.price,
@@ -219,29 +214,50 @@ const AnalyticsOverview: React.FC = () => {
   ]);
 
   useEffect(() => {
-    updateGlobalData({ data: null });
+    updateGlobalData(null);
     updateTopPairs(null);
     updateTopTokens(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
 
   useEffect(() => {
-    if (globalData && topTokens && topPairs) {
+    if (
+      globalData &&
+      topTokens &&
+      topPairs &&
+      liquidityChartLoaded &&
+      volumeChartLoaded
+    ) {
       dispatch(setAnalyticsLoaded(true));
+    } else {
+      dispatch(setAnalyticsLoaded(false));
     }
-  }, [globalData, topTokens, topPairs, dispatch]);
+  }, [
+    globalData,
+    topTokens,
+    topPairs,
+    dispatch,
+    liquidityChartLoaded,
+    volumeChartLoaded,
+  ]);
 
   return (
     <Box width='100%' mb={3}>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='panel' width={1}>
-            <AnalyticsLiquidityChart />
+            <AnalyticsLiquidityChart
+              globalData={globalData}
+              setDataLoaded={setLiquidityChartLoaded}
+            />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='analyticsVolumeChart panel'>
-            <AnalyticsVolumeChart />
+            <AnalyticsVolumeChart
+              globalData={globalData}
+              setDataLoaded={setVolumeChartLoaded}
+            />
           </Box>
         </Grid>
       </Grid>

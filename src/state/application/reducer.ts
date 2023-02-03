@@ -7,7 +7,6 @@ import {
   ApplicationModal,
   setOpenModal,
   updateEthPrice,
-  updateGlobalData,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
@@ -142,9 +141,6 @@ export default createReducer(initialState, (builder) =>
         };
       },
     )
-    .addCase(updateGlobalData, (state, { payload: { data } }) => {
-      state.globalData = data;
-    })
     .addCase(addBookMarkToken, (state, { payload }) => {
       const tokens = state.bookmarkedTokens;
       tokens.push(payload);

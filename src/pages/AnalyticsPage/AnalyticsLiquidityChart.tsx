@@ -3,7 +3,6 @@ import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { useGlobalData } from 'state/application/hooks';
 import {
   formatCompact,
   getChartData,
@@ -21,9 +20,11 @@ import { ChainId } from '@uniswap/sdk';
 import { useParams } from 'react-router-dom';
 dayjs.extend(utc);
 
-const AnalyticsLiquidityChart: React.FC = () => {
+const AnalyticsLiquidityChart: React.FC<{
+  globalData: any;
+  setDataLoaded: (loaded: boolean) => void;
+}> = ({ globalData, setDataLoaded }) => {
   const { t } = useTranslation();
-  const { globalData } = useGlobalData();
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
@@ -31,11 +32,12 @@ const AnalyticsLiquidityChart: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
 
   useEffect(() => {
     const fetchChartData = async () => {
       updateGlobalChartData(null);
+      setDataLoaded(false);
 
       const duration =
         durationIndex === GlobalConst.analyticChart.ALL_CHART
@@ -50,6 +52,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
           : getChartDataV3(duration, chainIdToUse);
 
       chartDataFn.then(([newChartData]) => {
+        setDataLoaded(true);
         if (newChartData) {
           const chartData = getLimitedData(
             newChartData,
@@ -60,7 +63,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
       });
     };
     fetchChartData();
-  }, [updateGlobalChartData, durationIndex, version, chainIdToUse]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [durationIndex, version, chainIdToUse]);
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,

@@ -23,7 +23,7 @@ const AnalyticsPairs: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
 
   useEffect(() => {
     (async () => {
@@ -34,7 +34,6 @@ const AnalyticsPairs: React.FC = () => {
         );
         if (pairsData) {
           const data = pairsData.filter((item: any) => !!item);
-          updateTopPairs(data);
           try {
             const aprs = await getPairsAPR(
               data.map((item: any) => item.id),
@@ -81,7 +80,6 @@ const AnalyticsPairs: React.FC = () => {
         );
         if (pairsData) {
           const data = pairsData.filter((item: any) => !!item);
-          updateTopPairs(data);
           try {
             const aprs = await getPairsAPR(
               data.map((item: any) => item.id),
@@ -112,6 +110,8 @@ const AnalyticsPairs: React.FC = () => {
   useEffect(() => {
     if (topPairs) {
       dispatch(setAnalyticsLoaded(true));
+    } else {
+      dispatch(setAnalyticsLoaded(false));
     }
   }, [topPairs, dispatch]);
 

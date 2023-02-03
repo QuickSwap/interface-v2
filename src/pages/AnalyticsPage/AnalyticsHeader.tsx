@@ -35,7 +35,6 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const v3 = config['v3'];
   const v2 = config['v2'];
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
   const { updateIsV2 } = useIsV2();
 
   useEffect(() => {
@@ -43,12 +42,14 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
       updateIsV2(false);
     }
   }, [updateIsV2, v2, v3]);
+  const version = params && params.version ? params.version : 'total';
+  const isPairDetails = history.location.pathname.includes('pair/');
 
   return (
     <Box width='100%' mb={3}>
       <Box mb={4} className='flex items-center'>
         <h4>{t('quickswapAnalytics')}</h4>
-        {v2 && v3 && (
+        {v2 && v3 && !isPairDetails && (
           <Box ml={2}>
             <VersionToggle />
           </Box>

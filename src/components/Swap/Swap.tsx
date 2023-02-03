@@ -22,7 +22,7 @@ import {
   useExpertModeManager,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
-import { Field } from 'state/swap/actions';
+import { Field, SwapDelay } from 'state/swap/actions';
 import {
   CurrencyInput,
   ConfirmSwapModal,
@@ -98,7 +98,7 @@ const Swap: React.FC<{
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const { independentField, typedValue, recipient } = useSwapState();
+  const { independentField, typedValue, recipient, swapDelay } = useSwapState();
   const {
     v1Trade,
     v2Trade,
@@ -537,6 +537,11 @@ const Swap: React.FC<{
     t,
   ]);
 
+  const fetchingBestRoute =
+    swapDelay === SwapDelay.USER_INPUT ||
+    swapDelay === SwapDelay.FETCHING_SWAP ||
+    swapDelay === SwapDelay.FETCHING_BONUS;
+
   return (
     <Box>
       <TokenWarningModal
@@ -642,7 +647,13 @@ const Swap: React.FC<{
           )}
         </Box>
       )}
-      <AdvancedSwapDetails trade={trade} />
+      {fetchingBestRoute ? (
+        <Box mt={2} className='flex justify-center'>
+          <p>Fetching Best Route...</p>
+        </Box>
+      ) : (
+        <AdvancedSwapDetails trade={trade} />
+      )}
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (
           <Box width='48%'>

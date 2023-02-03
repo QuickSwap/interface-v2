@@ -1,7 +1,7 @@
 import React, { lazy, useEffect, useState } from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { useEthPrice, useGlobalData } from 'state/application/hooks';
+import { useEthPrice } from 'state/application/hooks';
 import { getGlobalData } from 'utils';
 import { getGlobalDataV3 } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
@@ -11,7 +11,7 @@ const HeroSection = lazy(() => import('./HeroSection'));
 const TradingInfo = lazy(() => import('./TradingInfo'));
 
 const GlobalSection: React.FC = () => {
-  const { globalData, updateGlobalData } = useGlobalData();
+  const [globalData, updateGlobalData] = useState<any>(undefined);
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const [v3GlobalData, updateV3GlobalData] = useState<any>(undefined);
@@ -31,7 +31,7 @@ const GlobalSection: React.FC = () => {
           chainId,
         );
         if (newGlobalData) {
-          updateGlobalData({ data: newGlobalData });
+          updateGlobalData(newGlobalData);
         }
       }
       if (v3 && chainId) {
@@ -40,7 +40,7 @@ const GlobalSection: React.FC = () => {
       }
     }
     fetchGlobalData();
-  }, [updateGlobalData, ethPrice.price, ethPrice.oneDayPrice, chainId, v2, v3]);
+  }, [ethPrice.price, ethPrice.oneDayPrice, chainId, v2, v3]);
 
   return (
     <>

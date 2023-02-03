@@ -214,14 +214,19 @@ export default function Farms() {
           selectedItem={selectedFarmCategory}
           handleChange={onChangeFarmCategory}
         />
-        <Box display='flex'>
+        <Box
+          className='flex items-center flex-wrap'
+          width={isMobile ? '100%' : 'auto'}
+        >
           {selectedFarmCategory.id === 1 && (
-            <CustomSwitch width={160} height={40} items={farmStatusItems} />
+            <Box mt={isMobile ? 2 : 0} width={isMobile ? '100%' : 160}>
+              <CustomSwitch width='100%' height={40} items={farmStatusItems} />
+            </Box>
           )}
           <Box
             mt={isMobile ? 2 : 0}
             ml={isMobile ? 0 : 2}
-            width={isMobile ? 1 : 200}
+            width={isMobile ? '100%' : 200}
           >
             <SearchInput
               placeholder='Search'

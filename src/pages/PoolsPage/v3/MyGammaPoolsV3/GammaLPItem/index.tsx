@@ -29,21 +29,27 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
     <Box className='gamma-liquidity-item'>
       <Box className='flex items-center justify-between'>
         <Box className='flex items-center'>
-          <Box className='flex' mr='8px'>
-            <DoubleCurrencyLogo
-              currency0={gammaPosition.token0}
-              currency1={gammaPosition.token1}
-              size={24}
-            />
-          </Box>
-          <p className='weight-600'>
-            {gammaPosition.token0.symbol}/{gammaPosition.token1.symbol}
-          </p>
-          <Box ml={1.5} className='gamma-liquidity-range'>
-            <small>
-              {gammaPairInfo?.title} {t('range').toLowerCase()}
-            </small>
-          </Box>
+          {gammaPosition.token0 && gammaPosition.token1 && (
+            <>
+              <Box className='flex' mr='8px'>
+                <DoubleCurrencyLogo
+                  currency0={gammaPosition.token0}
+                  currency1={gammaPosition.token1}
+                  size={24}
+                />
+              </Box>
+              <p className='weight-600'>
+                {gammaPosition.token0.symbol}/{gammaPosition.token1.symbol}
+              </p>
+            </>
+          )}
+          {gammaPairInfo && (
+            <Box ml={1.5} className='gamma-liquidity-range'>
+              <small>
+                {gammaPairInfo.title} {t('range').toLowerCase()}
+              </small>
+            </Box>
+          )}
         </Box>
 
         <Box
@@ -55,7 +61,7 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
           {expanded ? <ExpandLess /> : <ExpandMore />}
         </Box>
       </Box>
-      {expanded && (
+      {expanded && gammaPosition && (
         <Box mt={2}>
           <GammaLPItemDetails gammaPosition={gammaPosition} />
         </Box>

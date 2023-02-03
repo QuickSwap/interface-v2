@@ -27,6 +27,7 @@ import { useTokenContract } from './useContract';
 import {
   PARASWAP_PROXY_ROUTER_ADDRESS,
   V2_ROUTER_ADDRESS,
+  SWAP_ROUTER_ADDRESS,
 } from 'constants/v3/addresses';
 import { OptimalRate } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
@@ -285,6 +286,7 @@ export function useApproveCallbackFromBestTrade(
   allowedSlippage: Percent,
   currency?: Currency,
   optimalRate?: OptimalRate,
+  bonusRouteFound?: boolean,
 ): [ApprovalState, () => Promise<void>] {
   const { chainId } = useActiveWeb3React();
   const amountToApprove = useMemo(
@@ -300,6 +302,10 @@ export function useApproveCallbackFromBestTrade(
     amountToApprove && currency
       ? CurrencyAmountV3.fromRawAmount(currency, amountToApprove)
       : undefined,
-    chainId ? PARASWAP_PROXY_ROUTER_ADDRESS[chainId] : undefined,
+    chainId
+      ? bonusRouteFound
+        ? SWAP_ROUTER_ADDRESS[chainId]
+        : PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
+      : undefined,
   );
 }

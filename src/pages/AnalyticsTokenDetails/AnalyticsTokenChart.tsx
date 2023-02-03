@@ -26,7 +26,9 @@ const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
 const CHART_PRICE = 2;
 
-const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
+const AnalyticsTokenChart: React.FC<{
+  token: any;
+}> = ({ token }) => {
   const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id;
@@ -85,7 +87,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
   }, [token, chartIndex]);
 
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
 
   useEffect(() => {
     async function fetchTokenChartData() {
@@ -189,4 +191,4 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
   );
 };
 
-export default AnalyticsTokenChart;
+export default React.memo(AnalyticsTokenChart);

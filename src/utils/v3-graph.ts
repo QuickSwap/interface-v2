@@ -704,7 +704,7 @@ export async function getTopTokensTotal(
         (oneDay ? parseFloat(oneDay[manageUntrackedTVL]) : 0) +
         (v2OneDay
           ? (v2OneDay.totalLiquidity ?? 0) *
-            ethPrice *
+            ethPrice24H *
             (v2OneDay.derivedETH ?? 0)
           : 0);
       const tvlUSDChange = getPercentChange(tvlUSD, tvlUSDOneDay);
@@ -1729,6 +1729,7 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
       );
 
       return {
+        isV3: true,
         token0: current.token0,
         token1: current.token1,
         fee: current.fee,
@@ -2106,6 +2107,7 @@ export async function getTopPairsV3ByToken(
       );
 
       return {
+        isV3: true,
         token0: current.token0,
         token1: current.token1,
         fee: current.fee,

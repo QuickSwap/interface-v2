@@ -30,7 +30,7 @@ const AnalyticsTokens: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -107,6 +107,8 @@ const AnalyticsTokens: React.FC = () => {
   useEffect(() => {
     if (topTokens) {
       dispatch(setAnalyticsLoaded(true));
+    } else {
+      dispatch(setAnalyticsLoaded(false));
     }
   }, [topTokens, dispatch]);
 

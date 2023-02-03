@@ -24,6 +24,7 @@ import { useRouterContract } from './useContract';
 import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
+import { RouterTypeParams } from 'state/swap/actions';
 
 export enum SwapCallbackState {
   INVALID,
@@ -54,10 +55,10 @@ type EstimatedSwapCall = SuccessfulCall | FailedCall;
  * @param allowedSlippage user allowed slippage
  * @param recipientAddressOrName
  */
-function useSwapCallArguments(
+export function useSwapCallArguments(
   trade: Trade | undefined, // trade to execute, required
   allowedSlippage: number = GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE, // in bips
-  recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
+  recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender,
 ): SwapCall[] {
   const { account, chainId, library } = useActiveWeb3React();
 

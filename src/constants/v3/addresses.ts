@@ -77,6 +77,10 @@ export const SWAP_ROUTER_ADDRESSES: AddressMap = {
   [ChainId.ZKTESTNET]: '0x4857Dfd11c712e862eC362cEee29F7974B70EfcD',
 };
 
+export const SWAP_ROUTER_ADDRESS: AddressMap = {
+  [ChainId.MATIC]: '0xfaa746afc5ff7d5ef0aa469bb26ddd6cd8f13911',
+};
+
 export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6',
   [ChainId.DOGECHAIN]: '0x0b012055F770AE7BB7a8303968A7Fb6088A2296e',
