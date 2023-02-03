@@ -216,6 +216,10 @@
   }
 }
 
+.swapTxInfoHeader {
+  color: $textSecondary;
+}
+
 .buySellWidgetContainer {
   display: flex;
   flex-direction: column;
@@ -283,4 +287,22 @@ div.sell {
 
 div.buy {
   color: $successMain;
+}
+
+.btn-swap-widget {
+  cursor: pointer;
+  background-color: #1b1e29;
+  border-radius: 12px;
+  padding: 12px 12px;
+  margin: 0px;
+
+  &:hover {
+    color: $textPrimary;
+    background: $secondary1;
+  }
+}
+
+.tradingview-widget-container > iframe {
+  height: 100%;
+  width: 100%;
 }

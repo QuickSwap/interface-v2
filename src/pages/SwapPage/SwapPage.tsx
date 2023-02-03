@@ -18,6 +18,7 @@ import AdsSlider from 'components/AdsSlider';
 import { SwapBuySellWidget } from './BuySellWidget';
 import { Token } from '@uniswap/sdk';
 import SwapProMain from './SwapProMain';
+import SwapDefaultMode from './SwapDefaultMode';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -44,7 +45,8 @@ const SwapPage: React.FC = () => {
   // this is for refreshing data of trades table every 60 seconds
   useEffect(() => {
     if (!isProMode) {
-      updateIsProMode(true);
+      // TODO - Make it true
+      updateIsProMode(false);
     }
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
@@ -123,54 +125,7 @@ const SwapPage: React.FC = () => {
         </Box>
       )}
       {!isProMode ? (
-        <Grid container spacing={4}>
-          <Grid item xs={12} sm={12} md={6} lg={5}>
-            <Box className='wrapper'>
-              <SwapMain />
-            </Box>
-            <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
-              <AdsSlider sort='swap' />
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={12} md={6} lg={7}>
-            <Box className='flex flex-wrap justify-between fullWidth'>
-              {isV2 && token1 && (
-                <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token1} />
-                </Box>
-              )}
-              {isV2 && token2 && (
-                <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token2} />
-                </Box>
-              )}
-              {!isV2 && token1V3 && (
-                <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token1V3 as Token} />
-                </Box>
-              )}
-              {!isV2 && token2V3 && (
-                <Box className='swapTokenDetails'>
-                  <SwapTokenDetails token={token2V3 as Token} />
-                </Box>
-              )}
-            </Box>
-            {isV2 && token1 && token2 && (
-              <Box className='wrapper' marginTop='32px'>
-                <LiquidityPools token1={token1} token2={token2} />
-              </Box>
-            )}
-            {!isV2 && token1V3 && token2V3 && (
-              <Box className='wrapper' marginTop='32px'>
-                <LiquidityPools
-                  token1={token1V3 as Token}
-                  token2={token2V3 as Token}
-                />
-              </Box>
-            )}
-            <SwapBuySellWidget />
-          </Grid>
-        </Grid>
+        <SwapDefaultMode isTiny={isTiny} token1={token1} token2={token2} />
       ) : (
         <SwapProMain
           pairId={pairId}

@@ -19,8 +19,11 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const { isProMode, updateIsProMode } = useIsProMode();
   const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {
+    console.log('getPageWrapperClassName => ', location);
     if (isProMode) {
       return '';
+    } else if (location.href.indexOf('/swap?') > 0) {
+      return 'pageWrapper-no-max';
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   };

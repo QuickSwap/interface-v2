@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, List, ListItem, Menu } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useIsProMode, useIsV2 } from 'state/application/hooks';
 import { Swap, SettingsModal, ToggleSwitch } from 'components';
@@ -12,13 +12,29 @@ import { SwapBestTrade } from 'components/Swap';
 import SwapV3Page from './V3/Swap';
 import { useHistory, useParams } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import SwapCrossChain from './SwapCrossChain';
 
 const SWAP_BEST_TRADE = '0';
 const SWAP_NORMAL = '1';
 const SWAP_V3 = '2';
 const SWAP_LIMIT = '3';
+const SWAP_CROSS_CHAIN = '4';
+
+const SwapDropdownTabs = [
+  { name: 'bestTrade', key: SWAP_BEST_TRADE },
+  { name: 'market', key: SWAP_NORMAL },
+  { name: 'marketV3', key: SWAP_V3 },
+];
+
+const SwapOtherTabs = [
+  { name: 'bestTrade', subTitle: 'Comming Soon!', key: SWAP_CROSS_CHAIN },
+  { name: 'limit', key: SWAP_LIMIT },
+];
 
 const SwapMain: React.FC = () => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
   const parsedQs = useParsedQueryString();
   const swapType = parsedQs.swapIndex;
   const history = useHistory();
@@ -92,6 +108,10 @@ const SwapMain: React.FC = () => {
         }`}
       >
         <Box display='flex' width={1}>
+          <List component='nav' aria-label='Swap Selection'>
+            <ListItem button id='swap-menu'></ListItem>
+          </List>
+          <Menu id='swap-menu' open={false}></Menu>
           <Box
             //TODO: Active class resolution should come from from a func
             className={swapTabClass(SWAP_BEST_TRADE)}
@@ -118,6 +138,14 @@ const SwapMain: React.FC = () => {
             <p>{t('marketV3')}</p>
           </Box>
           <Box
+            className={swapTabClass(SWAP_CROSS_CHAIN)}
+            onClick={() => {
+              redirectWithSwapType(SWAP_CROSS_CHAIN);
+            }}
+          >
+            <p>{t('crossChain2')}</p>
+          </Box>
+          <Box
             className={swapTabClass(SWAP_LIMIT)}
             onClick={() => {
               redirectWithSwapType(SWAP_LIMIT);
@@ -125,7 +153,7 @@ const SwapMain: React.FC = () => {
           >
             <p>{t('limit')}</p>
           </Box>
-          {isProMode && (
+          {
             <Box
               style={{
                 marginLeft: 'auto',
@@ -142,9 +170,9 @@ const SwapMain: React.FC = () => {
                     {t('proMode')}
                   </span>
                   <ToggleSwitch
-                    toggled={true}
+                    toggled={isProMode}
                     onToggle={() => {
-                      updateIsProMode(false);
+                      updateIsProMode(!isProMode);
                     }}
                   />
                 </Box>
@@ -153,9 +181,9 @@ const SwapMain: React.FC = () => {
                 </Box>
               </Box>
             </Box>
-          )}
+          }
         </Box>
-        {!isProMode && (
+        {/* {!isProMode && (
           <Box margin='8px 16px 0' className='flex items-center'>
             <Box className='flex items-center' mr={1}>
               <span
@@ -175,7 +203,7 @@ const SwapMain: React.FC = () => {
               <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
             </Box>
           </Box>
-        )}
+        )} */}
       </Box>
       <Box
         style={{
@@ -189,6 +217,7 @@ const SwapMain: React.FC = () => {
         {swapType === SWAP_BEST_TRADE && <SwapBestTrade />}
         {swapType === SWAP_NORMAL && <Swap />}
         {swapType === SWAP_V3 && <SwapV3Page />}
+        {swapType === SWAP_CROSS_CHAIN && <SwapCrossChain />}
         {swapType === SWAP_LIMIT && (
           <Box className='limitOrderPanel'>
             <GelatoLimitOrderPanel />
