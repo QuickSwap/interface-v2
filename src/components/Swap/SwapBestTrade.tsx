@@ -392,12 +392,6 @@ const SwapBestTrade: React.FC<{
     bonusRouteFound,
   );
 
-  console.log(
-    'approval State: ',
-    approval,
-    ' , 0: Unknown, 1: Not approved, 2: Pending, 3: Approved',
-  );
-
   const showApproveFlow =
     !swapInputError &&
     (approval === ApprovalState.NOT_APPROVED ||
