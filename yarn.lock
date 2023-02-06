@@ -3043,22 +3043,22 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
-"@gelatonetwork/limit-orders-lib@^4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@gelatonetwork/limit-orders-lib/-/limit-orders-lib-4.4.0.tgz#e3e0be19d4876374cfdb88cac6b22b1f2b617e75"
-  integrity sha512-ZZpvVOlHd9EX5EaLdtVojOPUsJc/TFJD3qgoHeq3rd6dD1OPkaRFSFyZ8ahCQRYpofaD8WlzhgGb4tjgkGpTeA==
+"@gelatonetwork/limit-orders-lib@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@gelatonetwork/limit-orders-lib/-/limit-orders-lib-4.5.0.tgz#4fae642cc979690ebd32526d56dc6c7749897d31"
+  integrity sha512-XXlRWxZSpWaoOvdqEiKwAvB4Vg85+q1NmIKfnryNnLt9jrBRw0OcOJ8VTU71e4X7XJ0xkKuiVSWUAnTOnGiJ2w==
   dependencies:
     ethers "^5.4.6"
     graphql "^15.5.3"
     graphql-request "^3.5.0"
     tslib "^2.3.1"
 
-"@gelatonetwork/limit-orders-react@^2.4.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@gelatonetwork/limit-orders-react/-/limit-orders-react-2.7.0.tgz#10638b911f115098fa8a310dc14d537d923aad47"
-  integrity sha512-kF5v41+ZBAjX3AspmbdhKO9BMf7Swuy0TAnMapUdU3rvJg06MrrRCid9ZELRbMo6MWAuIPCRaI5YBPiSOfi2bA==
+"@gelatonetwork/limit-orders-react@^2.8.1":
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/@gelatonetwork/limit-orders-react/-/limit-orders-react-2.8.1.tgz#7606719ca19f7fc835d65e91d2feba7e8cede77b"
+  integrity sha512-rK6LgVnRs6HSyI3NgFolndbc7y9554UWPY3TcU+t0SUpAuF8MNB+r7LKF9oF/7zOuFvu4bHKlGGtASM+u2ggTQ==
   dependencies:
-    "@gelatonetwork/limit-orders-lib" "^4.4.0"
+    "@gelatonetwork/limit-orders-lib" "^4.5.0"
     "@popperjs/core" "^2.9.2"
     "@reach/dialog" "^0.15.0"
     "@uniswap/default-token-list" "^2.0.0"
