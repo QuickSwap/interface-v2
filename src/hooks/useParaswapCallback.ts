@@ -145,7 +145,7 @@ export function useParaswapCallback(
           );
         }
 
-        if (txParams.data && paraswapContract) {
+        if (txParams && txParams.data && paraswapContract) {
           const response = await callWallchainAPI(
             priceRoute.contractMethod,
             txParams.data,
