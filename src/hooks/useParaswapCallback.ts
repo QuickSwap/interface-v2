@@ -174,6 +174,8 @@ export function useParaswapCallback(
           }
         }
 
+        console.log('Router: ', txParams?.to, ' , txParams: ', txParams);
+
         const signer = getSigner(library, account);
         const ethersTxParams = convertToEthersTransaction(txParams);
         try {
