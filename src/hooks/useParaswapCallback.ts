@@ -145,7 +145,7 @@ export function useParaswapCallback(
           );
         }
 
-        if (txParams.data && paraswapContract) {
+        if (txParams && txParams.data && paraswapContract) {
           const response = await callWallchainAPI(
             priceRoute.contractMethod,
             txParams.data,
@@ -173,6 +173,8 @@ export function useParaswapCallback(
             txParams.data = response.transactionArgs.data;
           }
         }
+
+        console.log('Router: ', txParams?.to, ' , txParams: ', txParams);
 
         const signer = getSigner(library, account);
         const ethersTxParams = convertToEthersTransaction(txParams);
