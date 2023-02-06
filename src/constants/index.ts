@@ -490,23 +490,6 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     color: '#4196FC',
     mobile: true,
   },
-  ARKANE_CONNECT: {
-    connector: arkaneconnect,
-    name: GlobalConst.walletName.ARKANE_CONNECT,
-    iconName: VenlyIcon,
-    description: 'Login using Venly hosted wallet.',
-    href: null,
-    color: '#4196FC',
-  },
-  Portis: {
-    connector: portis,
-    name: GlobalConst.walletName.Portis,
-    iconName: PortisIcon,
-    description: 'Login using Portis hosted wallet',
-    href: null,
-    color: '#4A6C9B',
-    mobile: true,
-  },
   WALLET_LINK: {
     connector: walletlink,
     name: GlobalConst.walletName.WALLET_LINK,
@@ -531,6 +514,23 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Unstoppable Domains',
     href: null,
     color: '#E8831D',
+  },
+  ARKANE_CONNECT: {
+    connector: arkaneconnect,
+    name: GlobalConst.walletName.ARKANE_CONNECT,
+    iconName: VenlyIcon,
+    description: 'Login using Venly hosted wallet.',
+    href: null,
+    color: '#4196FC',
+  },
+  Portis: {
+    connector: portis,
+    name: GlobalConst.walletName.Portis,
+    iconName: PortisIcon,
+    description: 'Login using Portis hosted wallet',
+    href: null,
+    color: '#4A6C9B',
+    mobile: true,
   },
 };
 
