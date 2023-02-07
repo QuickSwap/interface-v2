@@ -68,6 +68,8 @@ export function EternalFarmCard({
   const poolAprValue =
     (poolApr !== undefined && poolApr >= 0 ? formatCompact(poolApr) : '~') +
     '%';
+  const totalAPR =
+    (poolApr && poolApr > 0 ? poolApr : 0) + (apr && apr > 0 ? apr : 0);
   const tvl = tvls ? tvls[id] : undefined;
   const { chainId } = useActiveWeb3React();
 
@@ -135,7 +137,7 @@ export function EternalFarmCard({
           </Box>
         </Box>
         <Box
-          width={isMobile ? '100%' : '15%'}
+          width={isMobile ? '100%' : '20%'}
           mb={isMobile ? 1 : 0}
           className='flex justify-between'
         >
@@ -177,25 +179,15 @@ export function EternalFarmCard({
 
         <Box
           mb={isMobile ? 1 : 0}
-          width={isMobile ? '100%' : '15%'}
+          width={isMobile ? '100%' : '25%'}
           className='flex justify-between'
         >
-          {isMobile && <small className='text-secondary'>{t('poolAPR')}</small>}
+          {isMobile && <small className='text-secondary'>{t('apr')}</small>}
           <small className='text-success'>
-            {poolAprsLoading && <Loader stroke='#0fc679' />}
-            {!poolAprsLoading && <>{poolAprValue}</>}
-          </small>
-        </Box>
-
-        <Box
-          width={isMobile ? '100%' : '15%'}
-          mb={isMobile ? 1 : 0}
-          className='flex justify-between'
-        >
-          {isMobile && <small className='text-secondary'>{t('farmAPR')}</small>}
-          <small className='text-success'>
-            {aprsLoading && <Loader stroke='#0fc679' />}
-            {!aprsLoading && <>{aprValue}</>}
+            {(poolAprsLoading || aprsLoading) && <Loader stroke='#0fc679' />}
+            {!poolAprsLoading && !aprsLoading && (
+              <>{formatCompact(totalAPR)}%</>
+            )}
           </small>
         </Box>
       </Box>

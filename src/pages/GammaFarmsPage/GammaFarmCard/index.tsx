@@ -61,7 +61,7 @@ const GammaFarmCard: React.FC<{
           </Box>
           {!isMobile && (
             <>
-              <Box width='15%' className='flex justify-between'>
+              <Box width='20%' className='flex justify-between'>
                 {data && (
                   <small className='weight-600'>
                     ${formatNumber(data['tvlUSD'])}
@@ -80,27 +80,22 @@ const GammaFarmCard: React.FC<{
                   </div>
                 ))}
               </Box>
-              <Box width='15%'>
-                {data && data['returns'] && data['returns']['allTime'] && (
-                  <small className='text-success'>
-                    {formatNumber(
-                      Number(data['returns']['allTime']['feeApr'] ?? 0) * 100,
-                    )}
-                    %
-                  </small>
-                )}
+              <Box width='25%'>
+                {data &&
+                  data['returns'] &&
+                  data['returns']['allTime'] &&
+                  rewardData && (
+                    <small className='text-success'>
+                      {formatNumber(
+                        (Number(data['returns']['allTime']['feeApr'] ?? 0) +
+                          Number(rewardData['apr'] ?? 0)) *
+                          100,
+                      )}
+                      %
+                    </small>
+                  )}
               </Box>
             </>
-          )}
-
-          {(!isMobile || !showDetails) && (
-            <Box width={isMobile ? '30%' : '15%'}>
-              {rewardData && (
-                <small className='text-success'>
-                  {formatNumber(Number(rewardData['apr'] ?? 0) * 100)}%
-                </small>
-              )}
-            </Box>
           )}
         </Box>
 
