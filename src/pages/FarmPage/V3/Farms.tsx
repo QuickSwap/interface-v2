@@ -44,7 +44,7 @@ export default function Farms() {
   const currentTabQueried =
     parsedQuery && parsedQuery.tab
       ? (parsedQuery.tab as string)
-      : 'eternal-farms';
+      : 'gamma-farms';
 
   const v3FarmCategories = useMemo(
     () => [
