@@ -51,3 +51,6 @@ export const toggleURLWarning = createAction<void>('app/toggleURLWarning');
 export const updateUserSingleHopOnly = createAction<{
   userSingleHopOnly: boolean;
 }>('user/updateUserSingleHopOnly');
+export const updateUserBonusRouter = createAction<{
+  userBonusRouterDisabled: boolean;
+}>('user/updateUserBonusRouter');

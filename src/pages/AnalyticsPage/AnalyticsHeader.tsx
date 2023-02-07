@@ -27,7 +27,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
   const isPairDetails = history.location.pathname.includes('pair/');
 
   return (

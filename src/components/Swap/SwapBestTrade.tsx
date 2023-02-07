@@ -22,7 +22,7 @@ import {
   useExpertModeManager,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
-import { Field } from 'state/swap/actions';
+import { Field, SwapDelay } from 'state/swap/actions';
 import { useHistory } from 'react-router-dom';
 import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -38,6 +38,7 @@ import {
   isSupportedNetwork,
   maxAmountSpend,
   basisPointsToPercent,
+  getContract,
 } from 'utils';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
@@ -47,12 +48,19 @@ import { useParaswapCallback } from 'hooks/useParaswapCallback';
 import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
 import { SwapSide } from '@paraswap/sdk';
 import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
-import { GlobalValue, paraswapTax } from 'constants/index';
+import {
+  GlobalValue,
+  paraswapTax,
+  RouterTypes,
+  SmartRouter,
+} from 'constants/index';
 import { useQuery } from 'react-query';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
+import callWallchainAPI from 'utils/wallchainService';
+import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { ONE } from 'v3lib/utils';
 
 const SwapBestTrade: React.FC<{
@@ -69,6 +77,8 @@ const SwapBestTrade: React.FC<{
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(
     false,
   );
+  const [bonusRouteFound, setBonusRouteFound] = useState(false);
+
   const urlLoadedTokens: Token[] = useMemo(
     () =>
       [loadedInputCurrency, loadedOutputCurrency]?.filter(
@@ -95,7 +105,7 @@ const SwapBestTrade: React.FC<{
     });
 
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const {
     currencyBalances,
@@ -122,6 +132,8 @@ const SwapBestTrade: React.FC<{
     onCurrencySelection,
     onUserInput,
     onChangeRecipient,
+    onBestRoute,
+    onSetSwapDelay,
   } = useSwapActionHandlers();
   const { address: recipientAddress } = useENSAddress(recipient);
   const [allowedSlippage] = useUserSlippageTolerance();
@@ -237,7 +249,14 @@ const SwapBestTrade: React.FC<{
       );
 
   const fetchOptimalRate = async () => {
-    if (!srcToken || !destToken || !srcAmount) {
+    if (
+      !srcToken ||
+      !destToken ||
+      !srcAmount ||
+      !account ||
+      !chainId ||
+      !library
+    ) {
       return;
     }
     try {
@@ -258,7 +277,46 @@ const SwapBestTrade: React.FC<{
         },
       });
       setOptimalRateError('');
-      return rate;
+      try {
+        const txParams = await paraswap.buildTx({
+          srcToken: rate.srcToken,
+          destToken: rate.destToken,
+          srcAmount: rate.srcAmount,
+          destAmount: rate.destAmount,
+          priceRoute: rate,
+          userAddress: account,
+          partner: 'quickswapv3',
+        });
+
+        if (txParams.data) {
+          const paraswapContract = getContract(
+            rate.contractAddress,
+            ParaswapABI,
+            library,
+            account,
+          );
+          const response = await callWallchainAPI(
+            rate.contractMethod,
+            txParams.data,
+            txParams.value,
+            chainId,
+            account,
+            paraswapContract,
+            SmartRouter.PARASWAP,
+            RouterTypes.SMART,
+            onBestRoute,
+            onSetSwapDelay,
+            50,
+          );
+          setBonusRouteFound(response ? response.pathFound : false);
+        } else {
+          setBonusRouteFound(false);
+        }
+        return rate;
+      } catch (e) {
+        setBonusRouteFound(false);
+        return rate;
+      }
     } catch (err) {
       setOptimalRateError(err.message);
       return;
@@ -331,6 +389,7 @@ const SwapBestTrade: React.FC<{
     pct,
     inputCurrency as Currency,
     optimalRate,
+    bonusRouteFound,
   );
 
   const showApproveFlow =
@@ -792,11 +851,13 @@ const SwapBestTrade: React.FC<{
           )}
         </Box>
       )}
-      <BestTradeAdvancedSwapDetails
-        optimalRate={optimalRate}
-        inputCurrency={inputCurrency}
-        outputCurrency={outputCurrency}
-      />
+      {
+        <BestTradeAdvancedSwapDetails
+          optimalRate={optimalRate}
+          inputCurrency={inputCurrency}
+          outputCurrency={outputCurrency}
+        />
+      }
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (
           <Box width='48%'>

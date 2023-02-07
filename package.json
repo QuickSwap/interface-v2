@@ -157,6 +157,7 @@
     "react-virtuoso": "^2.8.4",
     "sass": "^1.51.0",
     "slick-carousel": "^1.8.1",
-    "styled-components": "^5.3.3"
+    "styled-components": "^5.3.3",
+    "tiny-warning": "^1.0.3"
   }
 }

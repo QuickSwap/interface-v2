@@ -69,7 +69,7 @@ const AnalyticsTokenDetails: React.FC = () => {
   const dispatch = useDispatch();
 
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
 
   const tokenTransactionsList = useMemo(() => {
     if (tokenTransactions) {
