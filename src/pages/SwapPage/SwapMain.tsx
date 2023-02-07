@@ -3,11 +3,7 @@ import { Box } from '@material-ui/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useIsProMode, useIsV2 } from 'state/application/hooks';
 import { Swap, SettingsModal, ToggleSwitch } from 'components';
-import {
-  GelatoLimitOrderPanel,
-  GelatoLimitOrdersHistoryPanel,
-} from '@gelatonetwork/limit-orders-react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { SwapBestTrade } from 'components/Swap';
 import SwapV3Page from './V3/Swap';
 import { useHistory, useParams } from 'react-router-dom';
