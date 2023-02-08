@@ -6,6 +6,7 @@ import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon2.svg';
 import Transak from 'assets/images/Transak.png';
 import BinanceConnect from 'assets/images/binanceConnect.png';
 import CoinbasePay from 'assets/images/coinbasePay.png';
+import MeldHexagon from 'assets/images/meld-hexagon.svg';
 import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import 'components/styles/BuyFiatModal.scss';
@@ -128,7 +129,10 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           </Box>
         </Box>
         <Box className='paymentBox'>
-          <h1>Meld</h1>
+          <Box className='payment-meld-logo'>
+            <img src={MeldHexagon} alt='meld' />
+            <p>MELD</p>
+          </Box>
           <Box className='buyButton' onClick={buyMeld}>
             {t('buy')}
           </Box>

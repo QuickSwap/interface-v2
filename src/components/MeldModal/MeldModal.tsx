@@ -16,16 +16,12 @@ const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
       background='#fff'
       overflow='hidden'
     >
-      <div style={{ height: '100%', width: '100%', overflowY: 'auto' }}>
+      <div className='buyFiatContent'>
         <iframe
           title='meld widget'
           allow='accelerometer; autoplay; camera; gyroscope; payment'
           height='600px'
-          src={`${
-            process.env.REACT_APP_BINANCE_CNT_URL
-          }/en/pre-connect?merchantCode=${
-            process.env.REACT_APP_BINANCE_MERCHANT_CODE
-          }&timestamp=${new Date().getTime()}`}
+          src={`${process.env.REACT_APP_MELD_URL}/?publicKey=${process.env.REACT_APP_MELD_KEY}`}
           width='100%'
         >
           <p>{t('notSupportIframe')}</p>
