@@ -10,6 +10,7 @@ import {
   trustconnect,
   unstopabbledomains,
   metamask,
+  zengoconnect,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -22,6 +23,7 @@ import PortisIcon from 'assets/images/portisIcon.png';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
+import ZengoIcon from 'assets/images/zengo.webp';
 import { Presets } from 'state/mint/v3/reducer';
 import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 
@@ -203,6 +205,7 @@ export const GlobalConst = {
     Portis: 'Portis',
     WALLET_LINK: 'Coinbase Wallet',
     WALLET_CONNECT: 'WalletConnect',
+    ZENGO_CONNECT: 'ZenGo',
   },
 };
 
@@ -637,6 +640,15 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Use Coinbase Wallet app on mobile device',
     href: null,
     color: '#315CF5',
+  },
+  ZENGO_CONNECT: {
+    connector: zengoconnect,
+    name: GlobalConst.walletName.ZENGO_CONNECT,
+    iconName: ZengoIcon,
+    description: 'Connect to Zengo Wallet',
+    href: null,
+    color: '#4196FC',
+    mobile: true,
   },
   WALLET_CONNECT: {
     connector: walletconnect,
