@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { useGlobalData, useIsV2 } from 'state/application/hooks';
 import {
   formatCompact,
   getChartData,
@@ -14,12 +13,16 @@ import {
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { getChartDataV3 } from 'utils/v3-graph';
+import { getChartDataTotal, getChartDataV3 } from 'utils/v3-graph';
+import { useParams } from 'react-router-dom';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
 
-const AnalyticsVolumeChart: React.FC = () => {
+const AnalyticsVolumeChart: React.FC<{
+  globalData: any;
+  setDataLoaded: (loaded: boolean) => void;
+}> = ({ globalData, setDataLoaded }) => {
   const { t } = useTranslation();
   const volumeTypes = [DAY_VOLUME, WEEK_VOLUME];
   const volumeTypeTexts = [t('dayAbb'), t('weekAbb')];
@@ -28,26 +31,30 @@ const AnalyticsVolumeChart: React.FC = () => {
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
-  const { globalData } = useGlobalData();
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
 
-  const { isV2 } = useIsV2();
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'total';
 
   useEffect(() => {
-    if (isV2 === undefined) return;
     const fetchChartData = async () => {
       updateGlobalChartData(null);
+      setDataLoaded(false);
 
       const duration =
         durationIndex === GlobalConst.analyticChart.ALL_CHART
           ? 0
           : getChartStartTime(durationIndex);
 
-      const chartDataFn = !isV2
-        ? getChartDataV3(duration)
-        : getChartData(duration);
+      const chartDataFn =
+        version === 'v2'
+          ? getChartDataV3(duration)
+          : version === 'total'
+          ? getChartDataTotal(duration)
+          : getChartData(duration);
 
       chartDataFn.then(([newChartData, newWeeklyData]) => {
+        setDataLoaded(true);
         if (newChartData && newWeeklyData) {
           const dayItems = getLimitedData(
             newChartData,
@@ -62,7 +69,8 @@ const AnalyticsVolumeChart: React.FC = () => {
       });
     };
     fetchChartData();
-  }, [durationIndex, isV2]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [durationIndex, version]);
 
   const liquidityWeeks = useMemo(() => {
     if (globalChartData) {
@@ -242,10 +250,10 @@ const AnalyticsVolumeChart: React.FC = () => {
         </Box>
       </Box>
       <Box mt={2}>
-        {globalChartData && isV2 !== undefined ? (
+        {globalChartData ? (
           <BarChart
             height={200}
-            isV3={!isV2}
+            isV3={version !== 'v2'}
             data={barChartData}
             categories={
               volumeIndex === WEEK_VOLUME

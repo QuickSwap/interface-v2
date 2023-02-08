@@ -4,13 +4,17 @@ import './index.scss';
 import { Field } from 'state/mint/actions';
 import {
   IDerivedMintInfo,
+  useActivePreset,
   useV3MintActionHandlers,
   useV3MintState,
 } from 'state/mint/v3/hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { useActiveWeb3React } from 'hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
+import {
+  GAMMA_UNIPROXY_ADDRESSES,
+  NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+} from 'constants/v3/addresses';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
@@ -18,6 +22,7 @@ import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box, Button } from '@material-ui/core';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
+import { GammaPairs, GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 
 interface IEnterAmounts {
@@ -35,6 +40,7 @@ export function EnterAmounts({
 }: IEnterAmounts) {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
+  const preset = useActivePreset();
 
   const { independentField, typedValue } = useV3MintState();
 
@@ -81,14 +87,40 @@ export function EnterAmounts({
     };
   }, {});
 
+  const baseCurrencyAddress =
+    currencyA && currencyA.wrapped
+      ? currencyA.wrapped.address.toLowerCase()
+      : '';
+  const quoteCurrencyAddress =
+    currencyB && currencyB.wrapped
+      ? currencyB.wrapped.address.toLowerCase()
+      : '';
+  const gammaPair =
+    GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
+    GammaPairs[quoteCurrencyAddress + '-' + baseCurrencyAddress];
+  const gammaPairAddress =
+    gammaPair && gammaPair.length > 0
+      ? gammaPair.find((pair) => pair.type === preset)?.address
+      : undefined;
+
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A] || tryParseAmount('1', currencyA),
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? gammaPairAddress
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_B] || tryParseAmount('1', currencyB),
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? gammaPairAddress
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
 
   const showApprovalA = useMemo(() => {

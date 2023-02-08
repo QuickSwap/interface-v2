@@ -64,3 +64,4 @@ export { default as TransactionsTable } from './TransactionsTable';
 export { default as PoolFinderModal } from './PoolFinderModal';
 export { default as BuyFiatButton } from './BuyFiatButton';
 export { default as MeldModal } from './MeldModal';
+export { default as SortColumns } from './SortColumns';

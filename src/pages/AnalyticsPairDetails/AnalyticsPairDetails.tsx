@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHistory, useRouteMatch, Link } from 'react-router-dom';
+import { useHistory, useRouteMatch, Link, useParams } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
@@ -23,11 +23,10 @@ import 'pages/styles/analytics.scss';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
-import { useEthPrice, useIsV2 } from 'state/application/hooks';
+import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
-import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { CallMade } from '@material-ui/icons';
 
 const AnalyticsPairDetails: React.FC = () => {
@@ -40,8 +39,9 @@ const AnalyticsPairDetails: React.FC = () => {
   const [pairData, setPairData] = useState<any>(null);
   const [pairTransactions, setPairTransactions] = useState<any>(null);
 
-  const { isV2 } = useIsV2();
-  const version = useMemo(() => `${!isV2 ? `v3` : 'v2'}`, [isV2]);
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'v3';
+  const isV2 = version === 'v2';
 
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
@@ -49,12 +49,30 @@ const AnalyticsPairDetails: React.FC = () => {
         return { ...item, type: TxnType.ADD };
       });
       const swaps = pairTransactions.swaps.map((item: any) => {
-        const amount0 = item.amount0Out > 0 ? item.amount0Out : item.amount1Out;
-        const amount1 = item.amount0In > 0 ? item.amount0In : item.amount1In;
-        const token0 =
-          item.amount0Out > 0 ? item.pair.token0 : item.pair.token1;
-        const token1 =
-          item.amount0Out > 0 ? item.pair.token1 : item.pair.token0;
+        const amount0 = isV2
+          ? item.amount0Out > 0
+            ? item.amount0Out
+            : item.amount1Out
+          : item.amount0 > 0
+          ? item.amount0
+          : Math.abs(item.amount1);
+        const amount1 = isV2
+          ? item.amount0In > 0
+            ? item.amount0In
+            : item.amount1In
+          : item.amount0 > 0
+          ? Math.abs(item.amount1)
+          : Math.abs(item.amount0);
+        const token0 = (isV2
+        ? item.amount0Out > 0
+        : item.amount0 > 0)
+          ? item.pair.token0
+          : item.pair.token1;
+        const token1 = (isV2
+        ? item.amount0Out > 0
+        : item.amount0 > 0)
+          ? item.pair.token1
+          : item.pair.token0;
         return {
           ...item,
           amount0,
@@ -70,7 +88,7 @@ const AnalyticsPairDetails: React.FC = () => {
     } else {
       return null;
     }
-  }, [pairTransactions]);
+  }, [pairTransactions, isV2]);
   const { chainId } = useActiveWeb3React();
   const currency0 = pairData
     ? getTokenFromAddress(pairData.token0.id, ChainId.MATIC, tokenMap, [
@@ -185,7 +203,7 @@ const AnalyticsPairDetails: React.FC = () => {
         }
       });
     }
-    if (isV2 !== undefined && ethPrice.price) {
+    if (ethPrice.price) {
       fetchPairData();
       fetchTransctions();
     }
@@ -196,13 +214,6 @@ const AnalyticsPairDetails: React.FC = () => {
     setPairData(null);
     setPairTransactions(null);
   }, [pairAddress, isV2]);
-
-  useEffect(() => {
-    //TODO v2 Subgraph for txs is not working, for now always true
-    if (pairData && (!isV2 ? pairTransactions : true)) {
-      dispatch(setAnalyticsLoaded(true));
-    }
-  }, [pairData, pairTransactions, isV2, dispatch]);
 
   const PairInfo = () => (
     <Box width={1} mt={4}>

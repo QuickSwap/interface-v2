@@ -24,8 +24,6 @@ import SyrupTimerLabel from './SyrupTimerLabel';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
-import { GlobalConst } from 'constants/index';
-import { formatUnits } from 'ethers/lib/utils';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,

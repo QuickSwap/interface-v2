@@ -17,14 +17,16 @@ import { AreaChart, ChartType } from 'components';
 import { getTokenChartData } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { getTokenChartDataV3 } from 'utils/v3-graph';
-import { useIsV2 } from 'state/application/hooks';
+import { getTokenChartDataTotal, getTokenChartDataV3 } from 'utils/v3-graph';
+import { useParams } from 'react-router-dom';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
 const CHART_PRICE = 2;
 
-const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
+const AnalyticsTokenChart: React.FC<{
+  token: any;
+}> = ({ token }) => {
   const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id;
@@ -80,7 +82,8 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
     }
   }, [token, chartIndex]);
 
-  const { isV2 } = useIsV2();
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'total';
 
   useEffect(() => {
     async function fetchTokenChartData() {
@@ -91,9 +94,12 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
           ? 0
           : getChartStartTime(durationIndex);
 
-      const tokenChartDataFn = !isV2
-        ? getTokenChartDataV3(tokenAddress, duration)
-        : getTokenChartData(tokenAddress, duration);
+      const tokenChartDataFn =
+        version === 'v3'
+          ? getTokenChartDataV3(tokenAddress, duration)
+          : version === 'v2'
+          ? getTokenChartData(tokenAddress, duration)
+          : getTokenChartDataTotal(tokenAddress, duration);
 
       tokenChartDataFn.then((chartData) => {
         if (chartData) {
@@ -105,10 +111,9 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
         }
       });
     }
-    if (isV2 !== undefined) {
-      fetchTokenChartData();
-    }
-  }, [tokenAddress, durationIndex, isV2]);
+    fetchTokenChartData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokenAddress, durationIndex, version]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
@@ -170,9 +175,9 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
             yAxisValues={getYAXISValuesAnalytics(chartData)}
             dates={tokenChartData.map((value: any) => value.date)}
             width='100%'
-            strokeColor={!isV2 ? '#3e92fe' : '#00dced'}
-            gradientColor={!isV2 ? '#448aff' : undefined}
-            height={!isV2 ? 275 : 240}
+            strokeColor={version !== 'v2' ? '#3e92fe' : '#00dced'}
+            gradientColor={version !== 'v2' ? '#448aff' : undefined}
+            height={version !== 'v2' ? 275 : 240}
             categories={getChartDates(tokenChartData, durationIndex)}
           />
         ) : (
@@ -183,4 +188,4 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
   );
 };
 
-export default AnalyticsTokenChart;
+export default React.memo(AnalyticsTokenChart);

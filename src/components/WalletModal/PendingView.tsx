@@ -20,11 +20,16 @@ const PendingView: React.FC<PendingViewProps> = ({
   tryActivation,
 }) => {
   const { t } = useTranslation();
-  const { ethereum } = window as any;
-  const isMetamask = ethereum?.isMetaMask;
+  const { ethereum, _oldMetaMask } = window as any;
+  const isMetamask =
+    ethereum &&
+    !ethereum.isBitKeep &&
+    !ethereum.isBraveWallet &&
+    (ethereum.isMetaMask || _oldMetaMask);
   const isBlockWallet = ethereum?.isBlockWallet;
   const isCypherD = ethereum?.isCypherD;
   const isBitKeep = ethereum?.isBitKeep;
+  const isBraveWallet = ethereum && ethereum.isBraveWallet;
 
   return (
     <Box className='pendingSection'>
@@ -83,6 +88,18 @@ const PendingView: React.FC<PendingViewProps> = ({
             if (
               !isBlockWallet &&
               option.name === GlobalConst.walletName.BLOCKWALLET
+            ) {
+              return null;
+            }
+            if (
+              isBraveWallet &&
+              option.name !== GlobalConst.walletName.BRAVEWALLET
+            ) {
+              return null;
+            }
+            if (
+              !isBraveWallet &&
+              option.name === GlobalConst.walletName.BRAVEWALLET
             ) {
               return null;
             }

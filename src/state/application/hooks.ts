@@ -9,7 +9,6 @@ import {
   removePopup,
   setOpenModal,
   updateEthPrice,
-  updateGlobalData,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
@@ -151,23 +150,6 @@ export function useMaticPrice(): {
     [dispatch],
   );
   return { maticPrice, updateMaticPrice: _updateMaticPrice };
-}
-
-export function useGlobalData(): {
-  globalData: any;
-  updateGlobalData: ({ data }: any) => void;
-} {
-  const globalData = useSelector(
-    (state: AppState) => state.application.globalData,
-  );
-  const dispatch = useDispatch();
-  const _updateGlobalData = useCallback(
-    ({ data }) => {
-      dispatch(updateGlobalData({ data }));
-    },
-    [dispatch],
-  );
-  return { globalData, updateGlobalData: _updateGlobalData };
 }
 
 export function useTokenDetails(): {

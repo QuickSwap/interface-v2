@@ -1,11 +1,11 @@
 import { Box, Divider } from '@material-ui/core';
-import BillPay from 'assets/images/featured/BillPay.svg';
-import BuyWithFiat from 'assets/images/featured/BuywithFiatNoPad.svg';
+import BillPay from 'assets/images/featured/BillPay.png';
+import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
 import SpritzIcon from 'assets/images/SpritzIcon.png';
 import { BuyFiatButton } from 'components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import './../../styles/swap.scss';
+import 'pages/styles/swap.scss';
 
 export const SwapBuySellWidget: React.FC = ({}) => {
   const { t } = useTranslation();
@@ -13,7 +13,7 @@ export const SwapBuySellWidget: React.FC = ({}) => {
 
   return (
     <Box className='wrapper buySellWidgetContainer'>
-      <Box className='row mb-1'>
+      <Box mb={2} className='row'>
         <Box>
           <img className='wallet' src={BuyWithFiat} alt='buy with fiat' />
         </Box>
@@ -23,7 +23,7 @@ export const SwapBuySellWidget: React.FC = ({}) => {
         </Box>
       </Box>
       <Divider />
-      <Box className='row mt-1'>
+      <Box mt={2} className='row'>
         <Box>
           <img className='bill' src={BillPay} alt='bill pay' />
         </Box>

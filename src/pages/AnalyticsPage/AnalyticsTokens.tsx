@@ -5,15 +5,15 @@ import {
   useBookmarkTokens,
   useEthPrice,
   useMaticPrice,
-  useIsV2,
 } from 'state/application/hooks';
 import { getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
-import { getTopTokensV3 } from 'utils/v3-graph';
+import { getTopTokensTotal, getTopTokensV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
+import { useParams } from 'react-router-dom';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
@@ -26,7 +26,8 @@ const AnalyticsTokens: React.FC = () => {
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
 
-  const { isV2 } = useIsV2();
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'total';
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -39,10 +40,8 @@ const AnalyticsTokens: React.FC = () => {
   }, [topTokens, bookmarkTokens]);
 
   useEffect(() => {
-    if (isV2 === undefined) return;
-
     (async () => {
-      if (!isV2) {
+      if (version === 'v3') {
         if (
           maticPrice.price !== undefined &&
           maticPrice.oneDayPrice !== undefined
@@ -56,7 +55,7 @@ const AnalyticsTokens: React.FC = () => {
             updateTopTokens(data);
           }
         }
-      } else {
+      } else if (version === 'v2') {
         if (
           ethPrice.price !== undefined &&
           ethPrice.oneDayPrice !== undefined
@@ -70,6 +69,24 @@ const AnalyticsTokens: React.FC = () => {
             updateTopTokens(data);
           }
         }
+      } else {
+        if (
+          maticPrice.price &&
+          maticPrice.oneDayPrice &&
+          ethPrice.price &&
+          ethPrice.oneDayPrice
+        ) {
+          const data = await getTopTokensTotal(
+            ethPrice.price,
+            ethPrice.oneDayPrice,
+            maticPrice.price,
+            maticPrice.oneDayPrice,
+            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+          );
+          if (data) {
+            updateTopTokens(data);
+          }
+        }
       }
     })();
   }, [
@@ -77,20 +94,20 @@ const AnalyticsTokens: React.FC = () => {
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
-    isV2,
+    version,
   ]);
 
   useEffect(() => {
     if (topTokens) {
       dispatch(setAnalyticsLoaded(true));
+    } else {
+      dispatch(setAnalyticsLoaded(false));
     }
   }, [topTokens, dispatch]);
 
   useEffect(() => {
-    if (isV2) {
-      updateTopTokens(null);
-    }
-  }, [isV2]);
+    updateTopTokens(null);
+  }, [version]);
 
   return (
     <Box width='100%' mb={3}>

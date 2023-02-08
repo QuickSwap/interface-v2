@@ -10,7 +10,11 @@ import { FortmaticConnector } from './Fortmatic';
 import { ArkaneConnector } from './Arkane';
 import { NetworkConnector } from './NetworkConnector';
 import { SafeAppConnector } from './SafeApp';
-import { TrustWalletConnector } from './TrustWalletConnector';
+import {
+  getTrustWalletInjectedProvider,
+  TrustWalletConnector,
+} from './TrustWalletConnector';
+import { MetaMaskConnector } from './MetaMaskConnector';
 
 const POLLING_INTERVAL = 12000;
 
@@ -44,6 +48,10 @@ export const injected = new InjectedConnector({
   supportedChainIds: [137, 80001],
 });
 
+export const metamask = new MetaMaskConnector({
+  supportedChainIds: [137, 80001],
+});
+
 export const safeApp = new SafeAppConnector();
 
 // mainnet only
@@ -54,9 +62,15 @@ export const walletconnect = new WalletConnectConnector({
 });
 
 // mainnet only
-export const trustconnect = new TrustWalletConnector({
-  supportedChainIds: [137],
-});
+export const trustconnect = !!getTrustWalletInjectedProvider()
+  ? new TrustWalletConnector({
+      supportedChainIds: [137],
+    })
+  : new WalletConnectConnector({
+      rpc: { 137: NETWORK_URL },
+      bridge: 'https://bridge.walletconnect.org',
+      qrcode: true,
+    });
 
 // mainnet only
 export const arkaneconnect = new ArkaneConnector({

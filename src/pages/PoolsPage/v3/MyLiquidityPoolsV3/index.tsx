@@ -90,7 +90,7 @@ export default function MyLiquidityPoolsV3() {
 
   return (
     <Box>
-      <p className='weight-600'>{t('myLiquidityPools')}</p>
+      <p className='weight-600'>{t('myQuickSwapLP')}</p>
       {account && (
         <Box mt={2} className='flex justify-between items-center'>
           <Box className='flex'>

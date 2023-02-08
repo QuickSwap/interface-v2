@@ -124,6 +124,7 @@ export interface Deposit {
   eternalRewardToken: TokenSubgraph;
   eternalStartTime: string;
   id: string;
+  farmId: string;
   limitFarming: null | string;
   limitRewardToken: TokenSubgraph;
   limitEarned: string | number;
