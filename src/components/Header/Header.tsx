@@ -206,18 +206,22 @@ const Header: React.FC = () => {
                   <img
                     className='menuItemSparkle menuItemSparkleLeft'
                     src={SparkleLeft}
+                    alt='menuItem sparkle left'
                   />
                   <img
                     className='menuItemSparkle menuItemSparkleRight'
                     src={SparkleRight}
+                    alt='menuItem sparkle right'
                   />
                   <img
                     className='menuItemSparkle menuItemSparkleBottom'
                     src={SparkleBottom}
+                    alt='menuItem sparkle bottom'
                   />
                   <img
                     className='menuItemSparkle menuItemSparkleTop'
                     src={SparkleTop}
+                    alt='menuItem sparkle top'
                   />
                 </>
               )}

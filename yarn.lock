@@ -299,10 +299,10 @@
     tslib "^2.3.0"
     zen-observable-ts "^1.2.5"
 
-"@arcxmoney/analytics@^1.1.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@arcxmoney/analytics/-/analytics-1.3.0.tgz#a0e7128bc074059dd12cc25f84136a2cc9d41c4d"
-  integrity sha512-9LUBpqALT8/s9oEmuRerNVzQS9Ln6ngmcNm/D7+wpVcffunLNszBPF21XHup51+O1PgL8DJJx4J3t9z7jAIqAA==
+"@arcxmoney/analytics@^1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@arcxmoney/analytics/-/analytics-1.6.1.tgz#1d90b7379b3bb672255b1cb1d3df310ab6b0c9be"
+  integrity sha512-GWct4Jkrxi1uRBxQWsbJYFQCgauCgHQxIne5Qc/M5whnlyiap9iL5O9VNKbIfSjONXYFe4zhh+EPFEKgjs4YtA==
   dependencies:
     "@restless/sanitizers" "^0.2.5"
 
@@ -4562,7 +4562,7 @@
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
 
-"@release-it/conventional-changelog@github:release-it/conventional-changelog":
+"@release-it/conventional-changelog@github:release-it/conventional-changelog", "@release-it/conventional-changelog@release-it/conventional-changelog":
   version "5.1.1"
   resolved "https://codeload.github.com/release-it/conventional-changelog/tar.gz/8f43427bd3c7ec08bda3dbebd20f583e21fd3b48"
   dependencies:
@@ -12833,15 +12833,7 @@ ethereumjs-abi@0.6.5:
     bn.js "^4.10.0"
     ethereumjs-util "^4.3.0"
 
-ethereumjs-abi@0.6.8:
-  version "0.6.8"
-  resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.8.tgz#71bc152db099f70e62f108b7cdfca1b362c6fcae"
-  integrity sha512-Tx0r/iXI6r+lRsdvkFDlut0N08jWMnKRZ6Gkq+Nmw75lZe4e6o3EkSnkaBP5NF6+m5PTGAr9JP43N3LyeoglsA==
-  dependencies:
-    bn.js "^4.11.8"
-    ethereumjs-util "^6.0.0"
-
-"ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
+ethereumjs-abi@0.6.8, "ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
   version "0.6.8"
   resolved "git+https://github.com/ethereumjs/ethereumjs-abi.git#ee3994657fa7a427238e6ba92a84d0b529bbcde0"
   dependencies:

@@ -5,7 +5,7 @@ import BillPay from 'assets/images/featured/BillPay.png';
 import SpritzIcon from 'assets/images/SpritzIcon.png';
 import { useTranslation } from 'react-i18next';
 
-export const BuySpritzSection: React.FC = () => {
+const BuySpritzSection: React.FC = () => {
   const { t } = useTranslation();
   const SPRITZ_LINK = process.env.REACT_APP_SPRITZ_FINANCE_LINK;
 
@@ -32,3 +32,5 @@ export const BuySpritzSection: React.FC = () => {
     </Box>
   );
 };
+
+export default BuySpritzSection;

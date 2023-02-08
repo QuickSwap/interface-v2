@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { Header, Footer, BetaWarningBanner, CustomModal } from 'components';
-import Background from './Background';
 import { useIsProMode } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
+const Header = lazy(() => import('components/Header'));
+const Footer = lazy(() => import('components/Footer'));
+const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
+const CustomModal = lazy(() => import('components/CustomModal'));
+const Background = lazy(() => import('./Background'));
 
 export interface PageLayoutProps {
   children: any;
@@ -62,7 +65,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const PasswordModal = () => {
     const [devPass, setDevPass] = useState('');
     const confirmPassword = () => {
-      if (devPass === 'devPass') {
+      if (devPass === 'gammaPass' || devPass === 'devPass') {
         setOpenPassModal(false);
       }
     };
