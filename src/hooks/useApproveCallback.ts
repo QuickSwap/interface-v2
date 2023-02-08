@@ -171,14 +171,6 @@ export function useApproveCallbackV3(
       : ApprovalState.APPROVED;
   }, [amountToApprove, currentAllowance, pendingApproval, spender]);
 
-  console.log(
-    'approval State: ',
-    approvalState,
-    ', 0: Unknown, 1: Not approved, 2: Pending, 3: Approved',
-  );
-
-  console.log('swap router: ', spender);
-
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();
 

@@ -1,4 +1,3 @@
-import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import {
   TransactionResponse,
@@ -8,7 +7,12 @@ import { Currency, SwapParameters } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { GlobalConst, RouterTypes, SmartRouter } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
-import { isAddress, shortenAddress, getSigner } from 'utils';
+import {
+  isAddress,
+  shortenAddress,
+  getSigner,
+  calculateGasMargin,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate } from 'paraswap-core';
@@ -17,27 +21,12 @@ import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
 import { useSwapActionHandlers } from 'state/swap/hooks';
-import { ONE } from 'v3lib/utils';
+import { BigNumber } from 'ethers';
 
 export enum SwapCallbackState {
   INVALID,
   LOADING,
   VALID,
-}
-
-interface SwapCall {
-  contract: Contract;
-  parameters: SwapParameters;
-}
-
-interface SuccessfulCall {
-  call: SwapCall;
-  gasEstimate: BigNumber;
-}
-
-interface FailedCall {
-  call: SwapCall;
-  error: Error;
 }
 
 const convertToEthersTransaction = (txParams: any): TransactionRequest => {
@@ -46,8 +35,7 @@ const convertToEthersTransaction = (txParams: any): TransactionRequest => {
     from: txParams.from,
     data: txParams.data,
     chainId: txParams.chainId,
-    gasPrice: txParams.gasPrice,
-    gasLimit: txParams.gas,
+    gasLimit: calculateGasMargin(BigNumber.from(txParams.gas)),
     value: txParams.value,
   };
 };
@@ -173,8 +161,6 @@ export function useParaswapCallback(
             txParams.data = response.transactionArgs.data;
           }
         }
-
-        console.log('Router: ', txParams?.to, ' , txParams: ', txParams);
 
         const signer = getSigner(library, account);
         const ethersTxParams = convertToEthersTransaction(txParams);
