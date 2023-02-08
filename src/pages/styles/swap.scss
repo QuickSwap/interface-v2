@@ -11,15 +11,15 @@
   background: $bgPalette;
   border-radius: 16px;
   width: calc(50% - 16px);
-  @include media("screen", "<desktop") {
+  @include media('screen', '<desktop') {
     width: 100%;
     margin-bottom: 16px;
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     width: calc(50% - 16px);
-    margin: 0
+    margin: 0;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     width: 100%;
     margin-top: 16px;
     margin-bottom: 16px;
@@ -45,7 +45,7 @@
 .activeSwap {
   background: $secondary1;
   & p {
-    color: white
+    color: white;
   }
 }
 
@@ -64,7 +64,7 @@
   border-top: 1px solid $divider;
   border-bottom: 1px solid $divider;
   .swapItem {
-    border-radius: 0
+    border-radius: 0;
   }
 }
 
@@ -98,17 +98,18 @@
 }
 
 .splitPane {
-  & [data-type=Resizer] {
-    margin: 8px 0 0
+  & [data-type='Resizer'] {
+    margin: 8px 0 0;
   }
 }
 
 .tradeTable {
   width: 100%;
-  & thead tr th, & tbody tr td {
+  & thead tr th,
+  & tbody tr td {
     border-right: 1px solid $divider;
     &:last-child {
-      border-right: none
+      border-right: none;
     }
   }
   & thead tr th {
@@ -118,7 +119,7 @@
     padding: 8px 16px;
     background: $secondary;
     color: $textPrimary;
-    font-weight: normal
+    font-weight: normal;
   }
   & tbody td.sell {
     color: $errorMain;
@@ -135,7 +136,7 @@
   & tbody tr td {
     padding: 8px 16px;
     & a {
-      text-decoration: none
+      text-decoration: none;
     }
   }
 }
@@ -146,7 +147,7 @@
   flex-wrap: wrap;
   padding: 8px;
   & p {
-    text-transform: uppercase
+    text-transform: uppercase;
   }
 }
 .checkWrapper {
@@ -202,8 +203,8 @@
       }
     }
   }
-  @include media("screen", "<phone") {
-    flex: none
+  @include media('screen', '<phone') {
+    flex: none;
   }
 }
 

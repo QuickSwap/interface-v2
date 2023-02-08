@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { SquidWidget } from '@0xsquid/widget';
 import { Box, Grid } from '@material-ui/core';
-// import { SquidWidget } from '@0xsquid/widget';
+import React, { useEffect } from 'react';
 
 const SwapCrossChain: React.FC = () => {
   useEffect(() => {
@@ -8,15 +8,14 @@ const SwapCrossChain: React.FC = () => {
   }, []);
 
   return (
-    <Grid>
-      <Box>
-        Squid Widget
-        {/* <SquidWidget
+    <Grid style={{ display: 'flex' }}>
+      <Box style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+        <SquidWidget
           config={{
             companyName: 'Quickswap',
             apiUrl: 'https://api.0xsquid.com',
           }}
-        /> */}
+        />
       </Box>
     </Grid>
   );

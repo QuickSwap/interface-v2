@@ -1,29 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { Box, List, ListItem, Menu } from '@material-ui/core';
-import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import { useIsProMode, useIsV2 } from 'state/application/hooks';
-import { Swap, SettingsModal, ToggleSwitch } from 'components';
 import {
   GelatoLimitOrderPanel,
   GelatoLimitOrdersHistoryPanel,
 } from '@gelatonetwork/limit-orders-react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Box, Button, Menu, MenuItem } from '@material-ui/core';
+import { KeyboardArrowDown } from '@material-ui/icons';
+import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
+import { SettingsModal, Swap, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
-import SwapV3Page from './V3/Swap';
-import { useHistory, useParams } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import React, { useEffect, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { useHistory, useParams } from 'react-router-dom';
+import { useIsProMode, useIsV2 } from 'state/application/hooks';
 import SwapCrossChain from './SwapCrossChain';
+import SwapV3Page from './V3/Swap';
 
 const SWAP_BEST_TRADE = '0';
 const SWAP_NORMAL = '1';
 const SWAP_V3 = '2';
-const SWAP_LIMIT = '3';
-const SWAP_CROSS_CHAIN = '4';
+const SWAP_CROSS_CHAIN = '3';
+const SWAP_LIMIT = '4';
 
 const SwapDropdownTabs = [
   { name: 'bestTrade', key: SWAP_BEST_TRADE },
   { name: 'market', key: SWAP_NORMAL },
   { name: 'marketV3', key: SWAP_V3 },
+  {
+    name: 'crossChain',
+    subTitle: 'Comming Soon!',
+    key: SWAP_CROSS_CHAIN,
+    visible: false,
+  },
+  { name: 'limit', key: SWAP_LIMIT },
 ];
 
 const SwapOtherTabs = [
@@ -33,6 +41,7 @@ const SwapOtherTabs = [
 
 const SwapMain: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
   const open = Boolean(anchorEl);
 
   const parsedQs = useParsedQueryString();
@@ -47,6 +56,14 @@ const SwapMain: React.FC = () => {
   const isOnV2 = params ? params.version === 'v2' : false;
 
   const { t } = useTranslation();
+
+  const [dropDownMenuText, setDropdownMenuText] = useState(
+    SwapDropdownTabs[parseInt(swapType?.toString() || '0', 0)].name,
+  );
+
+  const [selectedIndex, setSelectedIndex] = React.useState(
+    parseInt(swapType?.toString() || '0', 0),
+  );
 
   const redirectWithSwapType = (swapTypeTo: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -69,6 +86,24 @@ const SwapMain: React.FC = () => {
       swapType === currentSwapType ? 'activeSwap' : ''
     } swapItem headingItem
     `;
+  };
+
+  const handleMenuItemClick = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number,
+  ) => {
+    setSelectedIndex(index);
+    setAnchorEl(null);
+    setDropdownMenuText(SwapDropdownTabs[index].name);
+    redirectWithSwapType(SwapDropdownTabs[index].key);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
   useEffect(() => {
@@ -108,42 +143,82 @@ const SwapMain: React.FC = () => {
         }`}
       >
         <Box display='flex' width={1}>
-          <List component='nav' aria-label='Swap Selection'>
-            <ListItem button id='swap-menu'></ListItem>
-          </List>
-          <Menu id='swap-menu' open={false}></Menu>
-          <Box
-            //TODO: Active class resolution should come from from a func
-            className={swapTabClass(SWAP_BEST_TRADE)}
-            onClick={() => {
-              redirectWithSwapType(SWAP_BEST_TRADE);
-            }}
-          >
-            <p>{t('bestTrade')}</p>
-          </Box>
-          <Box
-            className={swapTabClass(SWAP_NORMAL)}
-            onClick={() => {
-              redirectWithSwapType(SWAP_NORMAL);
-            }}
-          >
-            <p>{t('market')}</p>
-          </Box>
-          <Box
-            className={swapTabClass(SWAP_V3)}
-            onClick={() => {
-              redirectWithSwapType(SWAP_V3);
-            }}
-          >
-            <p>{t('marketV3')}</p>
-          </Box>
-          <Box
+          {!isProMode ? (
+            <>
+              <Button
+                id='swap-button'
+                aria-controls={open ? 'swap-menu' : undefined}
+                aria-haspopup='true'
+                aria-expanded={open ? 'true' : undefined}
+                variant='text'
+                style={{ background: 'transparent' }}
+                disableElevation
+                onClick={handleClickListItem}
+                endIcon={<KeyboardArrowDown />}
+              >
+                {t(dropDownMenuText)}
+              </Button>
+              <Menu
+                id='swap-menu'
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'swap-button',
+                  role: 'listbox',
+                }}
+              >
+                {SwapDropdownTabs.map((option, index) =>
+                  option.visible === false ? (
+                    <></>
+                  ) : (
+                    <MenuItem
+                      key={option.key}
+                      disabled={index === selectedIndex}
+                      selected={index === selectedIndex}
+                      onClick={(event) => handleMenuItemClick(event, index)}
+                    >
+                      {t(option.name)}
+                    </MenuItem>
+                  ),
+                )}
+              </Menu>
+              <Box
+                className={swapTabClass(SWAP_CROSS_CHAIN)}
+                onClick={() => {
+                  setSelectedIndex(3);
+                  setAnchorEl(null);
+                  setDropdownMenuText(SwapDropdownTabs[0].name);
+                  redirectWithSwapType(SWAP_CROSS_CHAIN);
+                }}
+              >
+                <p>{t('crossChain')}</p>
+              </Box>
+            </>
+          ) : (
+            <>
+              {SwapDropdownTabs.map((option, index) => (
+                <Box
+                  key={option.key}
+                  style={{ textAlign: 'center' }}
+                  className={swapTabClass(option.key)}
+                  onClick={() => {
+                    redirectWithSwapType(option.key);
+                  }}
+                >
+                  <p>{t(option.name)}</p>
+                </Box>
+              ))}
+            </>
+          )}
+
+          {/* <Box
             className={swapTabClass(SWAP_CROSS_CHAIN)}
             onClick={() => {
               redirectWithSwapType(SWAP_CROSS_CHAIN);
             }}
           >
-            <p>{t('crossChain2')}</p>
+            <p>{t('crossChain')}</p>
           </Box>
           <Box
             className={swapTabClass(SWAP_LIMIT)}
@@ -152,7 +227,7 @@ const SwapMain: React.FC = () => {
             }}
           >
             <p>{t('limit')}</p>
-          </Box>
+          </Box> */}
           {
             <Box
               style={{
@@ -183,27 +258,6 @@ const SwapMain: React.FC = () => {
             </Box>
           }
         </Box>
-        {/* {!isProMode && (
-          <Box margin='8px 16px 0' className='flex items-center'>
-            <Box className='flex items-center' mr={1}>
-              <span
-                className='text-secondary text-uppercase'
-                style={{ marginRight: 8 }}
-              >
-                {t('proMode')}
-              </span>
-              <ToggleSwitch
-                toggled={isProMode}
-                onToggle={() => {
-                  updateIsProMode(true);
-                }}
-              />
-            </Box>
-            <Box className='headingItem'>
-              <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
-            </Box>
-          </Box>
-        )} */}
       </Box>
       <Box
         style={{

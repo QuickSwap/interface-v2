@@ -1,24 +1,19 @@
-import { Box, Button, Divider, Grid, Paper } from '@material-ui/core';
-import React, { useState, useEffect } from 'react';
+import { Box, Divider, Grid } from '@material-ui/core';
+import { NavigateBefore, NavigateNext } from '@material-ui/icons';
+import { AdsSlider, SwapTokenDetailsHorizontal } from 'components';
+import React, { useState } from 'react';
+import { SwapBuySellMiniWidget } from './BuySellWidget';
 import LiquidityPools from './LiquidityPools';
 import SwapMain from './SwapMain';
-import { Token } from '@uniswap/sdk';
 import SwapNewsWidget from './SwapNewWidget';
-import {
-  ArrowLeftSharp,
-  NavigateBefore,
-  NavigateNext,
-} from '@material-ui/icons';
-import { SwapBuySellMiniWidget } from './BuySellWidget';
-import { AdsSlider, SwapTokenDetailsHorizontal } from 'components';
 
 const SwapDefaultMode: React.FC<{
   isTiny: boolean;
   token1: any;
   token2: any;
 }> = ({ isTiny, token1, token2 }) => {
-  const [leftOpen, setLeftOpen] = useState(true);
-  const [rightOpen, setRightOpen] = useState(true);
+  const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
 
   return (
     <Grid>

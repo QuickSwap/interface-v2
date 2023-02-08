@@ -1,24 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { Box, Grid, useMediaQuery } from '@material-ui/core';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
-import { SettingsModal, SwapTokenDetails, ToggleSwitch } from 'components';
+import { SettingsModal } from 'components';
+
+import { useActiveWeb3React } from 'hooks';
+import 'pages/styles/swap.scss';
+import React, { useEffect, useState } from 'react';
 import { useIsProMode, useIsV2 } from 'state/application/hooks';
+import { Field } from 'state/swap/actions';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { useDerivedSwapInfo as useDerivedSwapInfoV3 } from 'state/swap/v3/hooks';
-import { Field } from 'state/swap/actions';
 import { getPairAddress, getSwapTransactions } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { useActiveWeb3React } from 'hooks';
-import SwapMain from './SwapMain';
-import LiquidityPools from './LiquidityPools';
-import { useTranslation } from 'react-i18next';
-import 'pages/styles/swap.scss';
-import AdsSlider from 'components/AdsSlider';
-import { SwapBuySellWidget } from './BuySellWidget';
-import { Token } from '@uniswap/sdk';
-import SwapProMain from './SwapProMain';
 import SwapDefaultMode from './SwapDefaultMode';
+import SwapPageHeader from './SwapPageHeader';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -100,8 +94,6 @@ const SwapPage: React.FC = () => {
     }
   }, [pairId, isProMode]);
 
-  const { t } = useTranslation();
-  const helpURL = process.env.REACT_APP_HELP_URL;
   return (
     <Box width='100%' mb={3} id='swap-page'>
       {openSettingsModal && (
@@ -110,32 +102,31 @@ const SwapPage: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      {!isProMode && (
-        <Box className='pageHeading'>
-          <h4>{t('swap')}</h4>
-          {helpURL && (
-            <Box
-              className='helpWrapper'
-              onClick={() => window.open(helpURL, '_blank')}
-            >
-              <small>{t('help')}</small>
-              <HelpIcon />
-            </Box>
-          )}
-        </Box>
-      )}
-      {!isProMode ? (
-        <SwapDefaultMode isTiny={isTiny} token1={token1} token2={token2} />
-      ) : (
-        <SwapProMain
-          pairId={pairId}
-          pairTokenReversed={pairTokenReversed}
-          token1={token1}
-          token2={token2}
-          transactions={transactions}
-        />
-      )}
+      <SwapPageHeader proMode={isProMode} />
+      <SwapDefaultMode
+        isTiny={isTiny}
+        token1={isV2 ? token1 : token1V3}
+        token2={isV2 ? token2 : token2V3}
+      />
     </Box>
+    // <Box width='100%' mb={3} id='swap-page'>
+
+    //   {!isProMode ? (
+    //     <SwapDefaultMode
+    //       isTiny={isTiny}
+    //       token1={isV2 ? token1 : token1V3}
+    //       token2={isV2 ? token2 : token2V3}
+    //     />
+    //   ) : (
+    //     <SwapProMain
+    //       pairId={pairId}
+    //       pairTokenReversed={pairTokenReversed}
+    //       token1={isV2 ? token1 : token1V3}
+    //       token2={isV2 ? token2 : token2V3}
+    //       transactions={transactions}
+    //     />
+    //   )}
+    // </Box>
   );
 };
 
