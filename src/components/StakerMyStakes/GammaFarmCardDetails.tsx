@@ -48,6 +48,7 @@ const GammaFarmCardDetails: React.FC<{
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const masterChefContract = useMasterChefContract();
+  const tokenMap = useSelectedTokenList();
 
   const lpToken = chainId
     ? new Token(chainId, pairData.address, 18)
@@ -84,13 +85,53 @@ const GammaFarmCardDetails: React.FC<{
     'pendingToken',
     [pairData.pid, account ?? undefined],
   );
-  const pendingRewards = pendingRewardsData.map((callData) =>
-    !callData.loading && callData.result && callData.result.length > 0
-      ? callData.result[0]
-      : undefined,
-  );
+  const pendingRewards = pendingRewardsData.reduce<
+    { token: Token; amount: number }[]
+  >((rewardArray, callData, index) => {
+    const reward = rewards.length > 0 ? rewards[index] : undefined;
+    if (chainId && reward && tokenMap) {
+      const rewardTokenData = getTokenFromAddress(
+        reward.rewardToken,
+        chainId,
+        tokenMap,
+        [],
+      );
+      const rewardToken = new Token(
+        chainId,
+        rewardTokenData.address,
+        rewardTokenData.decimals,
+        rewardTokenData.symbol,
+        rewardTokenData.name,
+      );
 
-  const tokenMap = useSelectedTokenList();
+      const existingRewardIndex = rewardArray.findIndex(
+        (item) =>
+          item.token.address.toLowerCase() === reward.rewardToken.toLowerCase(),
+      );
+      const rewardAmountBN =
+        !callData.loading && callData.result && callData.result.length > 0
+          ? callData.result[0]
+          : undefined;
+
+      const rewardAmount =
+        (rewardAmountBN
+          ? Number(formatUnits(rewardAmountBN, rewardToken.decimals))
+          : 0) +
+        (existingRewardIndex > -1
+          ? rewardArray[existingRewardIndex].amount
+          : 0);
+      if (existingRewardIndex === -1) {
+        rewardArray.push({ token: rewardToken, amount: rewardAmount });
+      } else {
+        rewardArray[existingRewardIndex] = {
+          token: rewardToken,
+          amount: rewardAmount,
+        };
+      }
+    }
+    return rewardArray;
+  }, []);
+
   const stakeButtonDisabled =
     Number(stakeAmount) <= 0 ||
     Number(stakeAmount) > Number(availableStakeAmount) ||
@@ -111,8 +152,8 @@ const GammaFarmCardDetails: React.FC<{
   );
 
   const claimButtonDisabled =
-    pendingRewards.filter((reward) => reward && Number(reward) > 0).length ===
-      0 || attemptClaiming;
+    pendingRewards.filter((reward) => reward && Number(reward.amount) > 0)
+      .length === 0 || attemptClaiming;
 
   const approveOrStakeLP = async () => {
     setApproveOrStaking(true);
@@ -362,33 +403,16 @@ const GammaFarmCardDetails: React.FC<{
               <Box height='100%' className='flex flex-col justify-between'>
                 <small className='text-secondary'>{t('earnedRewards')}</small>
                 <Box my={2}>
-                  {rewards.map((reward, index) => {
-                    const rewardTokenData = getTokenFromAddress(
-                      reward.rewardToken,
-                      chainId,
-                      tokenMap,
-                      [],
-                    );
-                    const rewardToken = new Token(
-                      chainId,
-                      rewardTokenData.address,
-                      rewardTokenData.decimals,
-                      rewardTokenData.symbol,
-                      rewardTokenData.name,
-                    );
-                    const pendingReward = pendingRewards[index]
-                      ? formatUnits(pendingRewards[index], rewardToken.decimals)
-                      : 0;
+                  {pendingRewards.map((reward) => {
                     return (
                       <Box
-                        key={reward.rewardToken}
+                        key={reward.token.address}
                         className='flex items-center justify-center'
                       >
-                        <CurrencyLogo currency={rewardToken} size='16px' />
+                        <CurrencyLogo currency={reward.token} size='16px' />
                         <Box ml='6px'>
                           <small>
-                            {formatNumber(pendingReward)}{' '}
-                            {reward.rewardTokenSymbol}
+                            {formatNumber(reward.amount)} {reward.token.symbol}
                           </small>
                         </Box>
                       </Box>
