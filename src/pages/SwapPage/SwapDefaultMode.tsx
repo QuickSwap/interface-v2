@@ -12,8 +12,8 @@ const SwapDefaultMode: React.FC<{
   token1: any;
   token2: any;
 }> = ({ isTiny, token1, token2 }) => {
-  const [leftOpen, setLeftOpen] = useState(false);
-  const [rightOpen, setRightOpen] = useState(false);
+  const [leftOpen, setLeftOpen] = useState(true);
+  const [rightOpen, setRightOpen] = useState(true);
 
   return (
     <Grid>
