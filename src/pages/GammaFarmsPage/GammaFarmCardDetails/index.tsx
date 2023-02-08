@@ -102,7 +102,7 @@ const GammaFarmCardDetails: React.FC<{
         rewardTokenData.name,
       );
 
-      const existingReward = rewardArray.find(
+      const existingRewardIndex = rewardArray.findIndex(
         (item) =>
           item.token.address.toLowerCase() === reward.rewardToken.toLowerCase(),
       );
@@ -114,9 +114,17 @@ const GammaFarmCardDetails: React.FC<{
       const rewardAmount =
         (rewardAmountBN
           ? Number(formatUnits(rewardAmountBN, rewardToken.decimals))
-          : 0) + (existingReward ? existingReward.amount : 0);
-      if (!existingReward) {
+          : 0) +
+        (existingRewardIndex > -1
+          ? rewardArray[existingRewardIndex].amount
+          : 0);
+      if (existingRewardIndex === -1) {
         rewardArray.push({ token: rewardToken, amount: rewardAmount });
+      } else {
+        rewardArray[existingRewardIndex] = {
+          token: rewardToken,
+          amount: rewardAmount,
+        };
       }
     }
     return rewardArray;
