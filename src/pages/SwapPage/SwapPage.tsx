@@ -13,6 +13,7 @@ import { getPairAddress, getSwapTransactions } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import SwapDefaultMode from './SwapDefaultMode';
 import SwapPageHeader from './SwapPageHeader';
+import SwapProMain from './SwapProMain';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -103,30 +104,22 @@ const SwapPage: React.FC = () => {
         />
       )}
       <SwapPageHeader proMode={isProMode} />
-      <SwapDefaultMode
-        isTiny={isTiny}
-        token1={isV2 ? token1 : token1V3}
-        token2={isV2 ? token2 : token2V3}
-      />
+      {isProMode ? (
+        <SwapProMain
+          pairId={pairId}
+          pairTokenReversed={pairTokenReversed}
+          token1={isV2 ? token1 : token1V3}
+          token2={isV2 ? token2 : token2V3}
+          transactions={transactions}
+        />
+      ) : (
+        <SwapDefaultMode
+          isTiny={isTiny}
+          token1={isV2 ? token1 : token1V3}
+          token2={isV2 ? token2 : token2V3}
+        />
+      )}
     </Box>
-    // <Box width='100%' mb={3} id='swap-page'>
-
-    //   {!isProMode ? (
-    //     <SwapDefaultMode
-    //       isTiny={isTiny}
-    //       token1={isV2 ? token1 : token1V3}
-    //       token2={isV2 ? token2 : token2V3}
-    //     />
-    //   ) : (
-    //     <SwapProMain
-    //       pairId={pairId}
-    //       pairTokenReversed={pairTokenReversed}
-    //       token1={isV2 ? token1 : token1V3}
-    //       token2={isV2 ? token2 : token2V3}
-    //       transactions={transactions}
-    //     />
-    //   )}
-    // </Box>
   );
 };
 
