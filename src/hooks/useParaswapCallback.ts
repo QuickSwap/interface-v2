@@ -10,8 +10,9 @@ import { useTransactionAdder } from 'state/transactions/hooks';
 import { isAddress, shortenAddress, getSigner } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
-import { OptimalRate } from 'paraswap-core';
+import { OptimalRate, SwapSide } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
+import { useUserSlippageTolerance } from 'state/user/hooks';
 
 export enum SwapCallbackState {
   INVALID,
@@ -62,6 +63,7 @@ export function useParaswapCallback(
 } {
   const { account, chainId, library } = useActiveWeb3React();
   const paraswap = useParaswap();
+  const [allowedSlippage] = useUserSlippageTolerance();
 
   const addTransaction = useTransactionAdder();
 
@@ -103,13 +105,28 @@ export function useParaswapCallback(
 
         const srcToken = priceRoute.srcToken;
         const destToken = priceRoute.destToken;
+        const minDestAmount =
+          priceRoute.side === SwapSide.BUY
+            ? priceRoute.destAmount
+            : BigNumber.from(priceRoute.destAmount)
+                .mul(BigNumber.from(10000 - Number(allowedSlippage.toFixed(0))))
+                .div(BigNumber.from(10000))
+                .toString();
+
+        const maxSrcAmount =
+          priceRoute.side === SwapSide.BUY
+            ? BigNumber.from(priceRoute.srcAmount)
+                .mul(BigNumber.from(10000 + Number(allowedSlippage.toFixed(0))))
+                .div(BigNumber.from(10000))
+                .toString()
+            : priceRoute.srcAmount;
 
         try {
           const txParams = await paraswap.buildTx({
             srcToken,
             destToken,
-            srcAmount: priceRoute.srcAmount,
-            destAmount: priceRoute.destAmount,
+            srcAmount: maxSrcAmount,
+            destAmount: minDestAmount,
             priceRoute: priceRoute,
             userAddress: account,
             receiver: recipient,
@@ -179,5 +196,6 @@ export function useParaswapCallback(
     addTransaction,
     inputCurrency,
     outputCurrency,
+    allowedSlippage,
   ]);
 }
