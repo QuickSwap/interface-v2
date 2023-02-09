@@ -15,8 +15,8 @@ import SwapV3Page from './V3/Swap';
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
 const SWAP_V3 = 2;
-const SWAP_CROSS_CHAIN = 3;
-const SWAP_LIMIT = 4;
+const SWAP_LIMIT = 3;
+const SWAP_CROSS_CHAIN = 4;
 
 const SwapDropdownTabs = [
   { name: 'bestTrade', key: SWAP_BEST_TRADE },
@@ -169,9 +169,11 @@ const SwapMain: React.FC = () => {
                   (option, index) => (
                     <MenuItem
                       key={option.key}
-                      disabled={index === selectedIndex}
-                      selected={index === selectedIndex}
-                      onClick={(event) => handleMenuItemClick(event, index)}
+                      disabled={option.key === selectedIndex}
+                      selected={option.key === selectedIndex}
+                      onClick={(event) =>
+                        handleMenuItemClick(event, option.key)
+                      }
                     >
                       {t(option.name)}
                     </MenuItem>
@@ -181,7 +183,7 @@ const SwapMain: React.FC = () => {
               <Box
                 className={swapTabClass(SWAP_CROSS_CHAIN)}
                 onClick={() => {
-                  setSelectedIndex(3);
+                  setSelectedIndex(SWAP_CROSS_CHAIN);
                   setAnchorEl(null);
                   setDropdownMenuText(SwapDropdownTabs[0].name);
                   redirectWithSwapType(SWAP_CROSS_CHAIN);

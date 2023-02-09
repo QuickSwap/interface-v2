@@ -1,5 +1,4 @@
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
 import { SettingsModal } from 'components';
 
 import { useActiveWeb3React } from 'hooks';
@@ -18,8 +17,6 @@ import SwapProMain from './SwapProMain';
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isProMode, updateIsProMode } = useIsProMode();
-  const { breakpoints } = useTheme();
-  const isTiny = useMediaQuery(breakpoints.down('xs'));
   const [pairId, setPairId] = useState<string | undefined>(undefined);
   const [pairTokenReversed, setPairTokenReversed] = useState(false);
 
@@ -65,7 +62,6 @@ const SwapPage: React.FC = () => {
         />
       ) : (
         <SwapDefaultMode
-          isTiny={isTiny}
           token1={isV2 ? token1 : token1V3}
           token2={isV2 ? token2 : token2V3}
         />

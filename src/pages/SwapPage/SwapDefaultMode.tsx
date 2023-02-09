@@ -8,10 +8,9 @@ import SwapMain from './SwapMain';
 import SwapNewsWidget from './SwapNewWidget';
 
 const SwapDefaultMode: React.FC<{
-  isTiny: boolean;
   token1: any;
   token2: any;
-}> = ({ isTiny, token1, token2 }) => {
+}> = ({ token1, token2 }) => {
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
 
@@ -22,6 +21,7 @@ const SwapDefaultMode: React.FC<{
           <Grid container justifyContent='flex-end' spacing={2}>
             <Grid item>
               <Box
+                sx={{ display: { xs: 'none', lg: 'block' } }}
                 className='btn-swap-widget'
                 onClick={() => setLeftOpen(!leftOpen)}
               >
@@ -30,10 +30,13 @@ const SwapDefaultMode: React.FC<{
               </Box>
             </Grid>
             {leftOpen && (
-              <Grid item xs={10}>
+              <Grid item xs={12} lg={10}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <Box className='wrapper'>
+                    <Box
+                      className='wrapper'
+                      sx={{ marginTop: { xs: '-16px', lg: '0px' } }}
+                    >
                       {token1 && <SwapTokenDetailsHorizontal token={token1} />}
                       <Divider
                         style={{
@@ -62,14 +65,14 @@ const SwapDefaultMode: React.FC<{
           <Box className='wrapper'>
             <SwapMain />
           </Box>
-          <Box maxWidth={isTiny ? '320px' : '352px'} margin='16px auto 0'>
+          <Box sx={{ marginTop: '16px' }}>
             <AdsSlider sort='swap' />
           </Box>
         </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={4}>
+        <Grid item lg={4}>
           <Grid container justifyContent='flex-start' spacing={2}>
             {rightOpen && (
-              <Grid item xs={10}>
+              <Grid item xs={12} lg={10}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Box className='wrapper'>
@@ -85,6 +88,7 @@ const SwapDefaultMode: React.FC<{
             <Grid item>
               <Box
                 className='btn-swap-widget'
+                sx={{ display: { xs: 'none', lg: 'block' } }}
                 onClick={() => setRightOpen(!rightOpen)}
               >
                 {rightOpen && <NavigateBefore />}
