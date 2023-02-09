@@ -641,15 +641,6 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     href: null,
     color: '#315CF5',
   },
-  ZENGO_CONNECT: {
-    connector: zengoconnect,
-    name: GlobalConst.walletName.ZENGO_CONNECT,
-    iconName: ZengoIcon,
-    description: 'Connect to Zengo Wallet',
-    href: null,
-    color: '#4196FC',
-    mobile: true,
-  },
   WALLET_CONNECT: {
     connector: walletconnect,
     name: GlobalConst.walletName.WALLET_CONNECT,
@@ -682,6 +673,15 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Login using Portis hosted wallet',
     href: null,
     color: '#4A6C9B',
+    mobile: true,
+  },
+  ZENGO_CONNECT: {
+    connector: zengoconnect,
+    name: GlobalConst.walletName.ZENGO_CONNECT,
+    iconName: ZengoIcon,
+    description: 'Connect to Zengo Wallet',
+    href: null,
+    color: '#4196FC',
     mobile: true,
   },
 };
