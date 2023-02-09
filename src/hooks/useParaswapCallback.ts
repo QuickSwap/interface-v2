@@ -12,6 +12,7 @@ import {
   shortenAddress,
   getSigner,
   calculateGasMargin,
+  calculateGasMarginBonus,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
@@ -29,13 +30,18 @@ export enum SwapCallbackState {
   VALID,
 }
 
-const convertToEthersTransaction = (txParams: any): TransactionRequest => {
+const convertToEthersTransaction = (
+  txParams: any,
+  isBonusRoute?: boolean,
+): TransactionRequest => {
   return {
     to: txParams.to,
     from: txParams.from,
     data: txParams.data,
     chainId: txParams.chainId,
-    gasLimit: calculateGasMargin(BigNumber.from(txParams.gas)),
+    gasLimit: isBonusRoute
+      ? calculateGasMarginBonus(BigNumber.from(txParams.gas))
+      : calculateGasMargin(BigNumber.from(txParams.gas)),
     value: txParams.value,
   };
 };
@@ -133,6 +139,7 @@ export function useParaswapCallback(
           );
         }
 
+        let isBonusRoute = false;
         if (txParams && txParams.data && paraswapContract) {
           const response = await callWallchainAPI(
             priceRoute.contractMethod,
@@ -148,6 +155,8 @@ export function useParaswapCallback(
             100,
           );
 
+          console.log('aaa', response, txParams);
+
           const swapRouterAddress = chainId
             ? GlobalConst.addresses.SWAP_ROUTER_ADDRESS[chainId]
             : undefined;
@@ -159,11 +168,16 @@ export function useParaswapCallback(
           ) {
             txParams.to = swapRouterAddress;
             txParams.data = response.transactionArgs.data;
+            isBonusRoute = true;
           }
         }
 
         const signer = getSigner(library, account);
-        const ethersTxParams = convertToEthersTransaction(txParams);
+        const ethersTxParams = convertToEthersTransaction(
+          txParams,
+          isBonusRoute,
+        );
+
         try {
           const response = await signer.sendTransaction(ethersTxParams);
           const inputSymbol = inputCurrency?.symbol;
