@@ -162,8 +162,7 @@ export const GlobalConst = {
       pool: '1',
       tvl: '2',
       rewards: '3',
-      poolAPR: '4',
-      farmAPR: '5',
+      apr: '4',
     },
     v3FarmFilter: {
       allFarms: '0',

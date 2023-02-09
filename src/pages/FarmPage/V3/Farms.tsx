@@ -144,25 +144,19 @@ export default function Farms() {
     {
       text: t('tvl'),
       index: GlobalConst.utils.v3FarmSortBy.tvl,
-      width: 0.15,
+      width: 0.2,
       justify: 'flex-start',
     },
     {
       text: t('rewards'),
       index: GlobalConst.utils.v3FarmSortBy.rewards,
-      width: 0.25,
+      width: 0.3,
       justify: 'flex-start',
     },
     {
-      text: t('poolAPR'),
-      index: GlobalConst.utils.v3FarmSortBy.poolAPR,
-      width: 0.15,
-      justify: 'flex-start',
-    },
-    {
-      text: t('farmAPR'),
-      index: GlobalConst.utils.v3FarmSortBy.farmAPR,
-      width: 0.15,
+      text: t('apr'),
+      index: GlobalConst.utils.v3FarmSortBy.apr,
+      width: 0.2,
       justify: 'flex-start',
     },
   ];

@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Deposit } from '../../models/interfaces';
 import { FarmingType } from '../../models/enums';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import './index.scss';
 import FarmCard from './FarmCard';
 import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
@@ -109,7 +109,7 @@ export const FarmingMyFarms: React.FC<{
           farm1.pool.token0.symbol + '/' + farm1.pool.token1.symbol;
         const farm2TokenStr =
           farm2.pool.token0.symbol + '/' + farm2.pool.token1.symbol;
-        if (sortByQuick === v3FarmSortBy.farmAPR) {
+        if (sortByQuick === v3FarmSortBy.apr) {
           const farm1FarmAPR =
             eternalFarmAprs && farm1 && farm1.farmId
               ? Number(eternalFarmAprs[farm1.farmId])
@@ -118,10 +118,6 @@ export const FarmingMyFarms: React.FC<{
             eternalFarmAprs && farm2 && farm2.farmId
               ? Number(eternalFarmAprs[farm2.farmId])
               : 0;
-          return farm1FarmAPR > farm2FarmAPR
-            ? sortMultiplierQuick
-            : -1 * sortMultiplierQuick;
-        } else if (sortByQuick === v3FarmSortBy.poolAPR) {
           const farm1PoolAPR =
             eternalFarmPoolAprs && farm1 && farm1.pool && farm1.pool.id
               ? Number(eternalFarmPoolAprs[farm1.pool.id])
@@ -130,7 +126,7 @@ export const FarmingMyFarms: React.FC<{
             eternalFarmPoolAprs && farm2 && farm2.pool && farm2.pool.id
               ? Number(eternalFarmPoolAprs[farm2.pool.id])
               : 0;
-          return farm1PoolAPR > farm2PoolAPR
+          return farm1FarmAPR + farm1PoolAPR > farm2FarmAPR + farm2PoolAPR
             ? sortMultiplierQuick
             : -1 * sortMultiplierQuick;
         } else if (sortByQuick === v3FarmSortBy.rewards) {
@@ -187,9 +183,7 @@ export const FarmingMyFarms: React.FC<{
     shallowPositions,
     sortByQuick,
     sortMultiplierQuick,
-    v3FarmSortBy.farmAPR,
-    v3FarmSortBy.poolAPR,
-    v3FarmSortBy.rewards,
+    v3FarmSortBy,
   ]);
 
   useEffect(() => {
@@ -272,19 +266,13 @@ export const FarmingMyFarms: React.FC<{
     {
       text: t('pool'),
       index: v3FarmSortBy.pool,
-      width: 0.5,
+      width: 0.6,
       justify: 'flex-start',
     },
     {
-      text: t('poolAPR'),
-      index: v3FarmSortBy.poolAPR,
-      width: 0.15,
-      justify: 'flex-start',
-    },
-    {
-      text: t('farmAPR'),
-      index: v3FarmSortBy.farmAPR,
-      width: 0.15,
+      text: t('apr'),
+      index: v3FarmSortBy.apr,
+      width: 0.2,
       justify: 'flex-start',
     },
     {
@@ -305,25 +293,19 @@ export const FarmingMyFarms: React.FC<{
     {
       text: t('tvl'),
       index: v3FarmSortBy.tvl,
-      width: 0.15,
+      width: 0.2,
       justify: 'flex-start',
     },
     {
       text: t('rewards'),
       index: v3FarmSortBy.rewards,
-      width: 0.25,
+      width: 0.3,
       justify: 'flex-start',
     },
     {
-      text: t('poolAPR'),
-      index: v3FarmSortBy.poolAPR,
-      width: 0.15,
-      justify: 'flex-start',
-    },
-    {
-      text: t('farmAPR'),
-      index: v3FarmSortBy.farmAPR,
-      width: 0.15,
+      text: t('apr'),
+      index: v3FarmSortBy.apr,
+      width: 0.2,
       justify: 'flex-start',
     },
   ];
@@ -630,7 +612,7 @@ export const FarmingMyFarms: React.FC<{
         return farm0RewardUSD > farm1RewardUSD
           ? sortMultiplierGamma
           : -1 * sortMultiplierGamma;
-      } else if (sortByGamma === v3FarmSortBy.poolAPR) {
+      } else if (sortByGamma === v3FarmSortBy.apr) {
         const poolAPR0 =
           gammaData0 &&
           gammaData0['returns'] &&
@@ -645,15 +627,11 @@ export const FarmingMyFarms: React.FC<{
           gammaData1['returns']['allTime']['feeApr']
             ? Number(gammaData1['returns']['allTime']['feeApr'])
             : 0;
-        return poolAPR0 > poolAPR1
-          ? sortMultiplierGamma
-          : -1 * sortMultiplierGamma;
-      } else if (sortByGamma === v3FarmSortBy.farmAPR) {
         const farmAPR0 =
           gammaReward0 && gammaReward0['apr'] ? Number(gammaReward0['apr']) : 0;
         const farmAPR1 =
           gammaReward1 && gammaReward1['apr'] ? Number(gammaReward1['apr']) : 0;
-        return farmAPR0 > farmAPR1
+        return poolAPR0 + farmAPR0 > poolAPR1 + farmAPR1
           ? sortMultiplierGamma
           : -1 * sortMultiplierGamma;
       }

@@ -352,7 +352,7 @@ const GammaFarmsPage: React.FC<{
         return farm0RewardUSD > farm1RewardUSD
           ? sortMultiplier
           : -1 * sortMultiplier;
-      } else if (sortBy === v3FarmSortBy.poolAPR) {
+      } else if (sortBy === v3FarmSortBy.apr) {
         const poolAPR0 =
           gammaData0 &&
           gammaData0['returns'] &&
@@ -367,13 +367,13 @@ const GammaFarmsPage: React.FC<{
           gammaData1['returns']['allTime']['feeApr']
             ? Number(gammaData1['returns']['allTime']['feeApr'])
             : 0;
-        return poolAPR0 > poolAPR1 ? sortMultiplier : -1 * sortMultiplier;
-      } else if (sortBy === v3FarmSortBy.farmAPR) {
         const farmAPR0 =
           gammaReward0 && gammaReward0['apr'] ? Number(gammaReward0['apr']) : 0;
         const farmAPR1 =
           gammaReward1 && gammaReward1['apr'] ? Number(gammaReward1['apr']) : 0;
-        return farmAPR0 > farmAPR1 ? sortMultiplier : -1 * sortMultiplier;
+        return poolAPR0 + farmAPR0 > poolAPR1 + farmAPR1
+          ? sortMultiplier
+          : -1 * sortMultiplier;
       }
       return 1;
     });
