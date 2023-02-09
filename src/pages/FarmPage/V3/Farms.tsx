@@ -150,13 +150,13 @@ export default function Farms() {
     {
       text: t('rewards'),
       index: GlobalConst.utils.v3FarmSortBy.rewards,
-      width: 0.25,
+      width: 0.3,
       justify: 'flex-start',
     },
     {
       text: t('apr'),
-      index: GlobalConst.utils.v3FarmSortBy.poolAPR,
-      width: 0.25,
+      index: GlobalConst.utils.v3FarmSortBy.apr,
+      width: 0.2,
       justify: 'flex-start',
     },
   ];

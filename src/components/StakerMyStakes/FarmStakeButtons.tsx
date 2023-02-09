@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import { FarmingType } from 'models/enums';
 import Loader from 'components/Loader';
@@ -12,6 +13,9 @@ interface FarmCardDetailProps {
 
 export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
   const { t } = useTranslation();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isSmallDesktop = useMediaQuery(breakpoints.down('md'));
 
   const { v3Stake } = useV3StakeData();
   const { txType, selectedTokenId, txConfirmed, txError, selectedFarmingType } =
@@ -53,8 +57,8 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
         </Button>
       )}
       {el.eternalFarming && (
-        <Box width='100%' className='flex justify-between'>
-          <Box width='49%'>
+        <Box width='100%' className='flex flex-wrap justify-between'>
+          <Box my={0.5} width={!isMobile && isSmallDesktop ? '100%' : '49%'}>
             <Button
               fullWidth
               disabled={
@@ -83,7 +87,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
               )}
             </Button>
           </Box>
-          <Box width='49%'>
+          <Box my={0.5} width={!isMobile && isSmallDesktop ? '100%' : '49%'}>
             <Button
               fullWidth
               disabled={
