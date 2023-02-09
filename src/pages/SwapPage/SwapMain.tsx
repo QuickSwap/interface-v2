@@ -54,9 +54,14 @@ const SwapMain: React.FC = () => {
 
   const { t } = useTranslation();
 
-  const [dropDownMenuText, setDropdownMenuText] = useState(
-    SwapDropdownTabs[parseInt(swapType?.toString() || '0', 0)].name,
-  );
+  const [dropDownMenuText, setDropdownMenuText] = useState(() => {
+    const currentTab = parseInt(swapType?.toString() || '0', 0);
+    if (currentTab == SWAP_CROSS_CHAIN) {
+      return SwapDropdownTabs[0].name;
+    } else {
+      return SwapDropdownTabs[currentTab].name;
+    }
+  });
 
   const [selectedIndex, setSelectedIndex] = React.useState(
     parseInt(swapType?.toString() || '0', 0),
