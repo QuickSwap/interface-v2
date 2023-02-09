@@ -87,7 +87,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
       </Box>
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} lg={3}>
             <Item className='bg-palette'>
               <SwapProAssets />
             </Item>
@@ -96,7 +96,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
               <SwapBuySellMiniWidget />
             </Item>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} lg={6}>
             <Item
               className='bg-palette  swapProWrapper'
               style={{ maxHeight: '100vh', minHeight: '500px', padding: '0' }}
@@ -115,7 +115,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
               <SwapMain />
             </Item>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} lg={3}>
             <Item className='bg-palette'>
               <SwapProInfo
                 token1={token1}
@@ -128,7 +128,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
               <SwapProTransactions data={transactions || []} />
             </Item>
           </Grid>
-          <Grid item xs={12} md={3}></Grid>
+          <Grid item xs={12} lg={3}></Grid>
         </Grid>
       </Box>
     </Box>
