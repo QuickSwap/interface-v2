@@ -12,23 +12,23 @@ import SwapCrossChain from './SwapCrossChain';
 import SwapLimitOrder from './SwapLimitOrder';
 import SwapV3Page from './V3/Swap';
 
-const SWAP_BEST_TRADE = '0';
-const SWAP_NORMAL = '1';
-const SWAP_V3 = '2';
-const SWAP_CROSS_CHAIN = '3';
-const SWAP_LIMIT = '4';
+const SWAP_BEST_TRADE = 0;
+const SWAP_NORMAL = 1;
+const SWAP_V3 = 2;
+const SWAP_CROSS_CHAIN = 3;
+const SWAP_LIMIT = 4;
 
 const SwapDropdownTabs = [
   { name: 'bestTrade', key: SWAP_BEST_TRADE },
   { name: 'market', key: SWAP_NORMAL },
   { name: 'marketV3', key: SWAP_V3 },
+  { name: 'limit', key: SWAP_LIMIT },
   {
     name: 'crossChain',
     subTitle: 'Comming Soon!',
     key: SWAP_CROSS_CHAIN,
     visible: false,
   },
-  { name: 'limit', key: SWAP_LIMIT },
 ];
 
 const SwapOtherTabs = [
@@ -62,7 +62,7 @@ const SwapMain: React.FC = () => {
     parseInt(swapType?.toString() || '0', 0),
   );
 
-  const redirectWithSwapType = (swapTypeTo: string) => {
+  const redirectWithSwapType = (swapTypeTo: number) => {
     const currentPath = history.location.pathname + history.location.search;
     let redirectPath = '';
     if (swapType) {
@@ -78,9 +78,9 @@ const SwapMain: React.FC = () => {
     history.push(redirectPath);
   };
 
-  const swapTabClass = (currentSwapType: string) => {
+  const swapTabClass = (currentSwapType: number) => {
     return `${
-      swapType === currentSwapType ? 'activeSwap' : ''
+      swapType === currentSwapType.toString() ? 'activeSwap' : ''
     } swapItem headingItem
     `;
   };
@@ -117,7 +117,7 @@ const SwapMain: React.FC = () => {
 
   useEffect(() => {
     if (swapType) {
-      if (swapType === SWAP_V3) {
+      if (swapType === SWAP_V3.toString()) {
         updateIsV2(false);
       } else {
         updateIsV2(true);
@@ -263,11 +263,11 @@ const SwapMain: React.FC = () => {
         padding={isProMode ? '0 24px 24px' : '0'}
         pt={3.5}
       >
-        {swapType === SWAP_BEST_TRADE && <SwapBestTrade />}
-        {swapType === SWAP_NORMAL && <Swap />}
-        {swapType === SWAP_V3 && <SwapV3Page />}
-        {swapType === SWAP_CROSS_CHAIN && <SwapCrossChain />}
-        {swapType === SWAP_LIMIT && <SwapLimitOrder />}
+        {swapType === SWAP_BEST_TRADE.toString() && <SwapBestTrade />}
+        {swapType === SWAP_NORMAL.toString() && <Swap />}
+        {swapType === SWAP_V3.toString() && <SwapV3Page />}
+        {swapType === SWAP_CROSS_CHAIN.toString() && <SwapCrossChain />}
+        {swapType === SWAP_LIMIT.toString() && <SwapLimitOrder />}
       </Box>
     </>
   );
