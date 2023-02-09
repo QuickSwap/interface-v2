@@ -2,13 +2,12 @@ import { Box, Button, Menu, MenuItem } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { SettingsModal, Swap, ToggleSwitch } from 'components';
-import { useTranslation } from 'react-i18next';
-import { useIsProMode, useIsV2 } from 'state/application/hooks';
-
 import { SwapBestTrade } from 'components/Swap';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
+import { useIsProMode, useIsV2 } from 'state/application/hooks';
 import SwapCrossChain from './SwapCrossChain';
 import SwapLimitOrder from './SwapLimitOrder';
 import SwapV3Page from './V3/Swap';
@@ -166,10 +165,8 @@ const SwapMain: React.FC = () => {
                   role: 'listbox',
                 }}
               >
-                {SwapDropdownTabs.map((option, index) =>
-                  option.visible === false ? (
-                    <></>
-                  ) : (
+                {SwapDropdownTabs.filter((o) => o.visible !== false).map(
+                  (option, index) => (
                     <MenuItem
                       key={option.key}
                       disabled={index === selectedIndex}
