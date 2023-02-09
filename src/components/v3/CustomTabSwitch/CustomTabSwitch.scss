@@ -5,6 +5,12 @@
   display: flex;
   align-items: center;
   & .MuiTabs-root {
+    & .MuiTabs-scroller {
+      overflow-x: auto !important;
+      & .MuiTabs-flexContainer {
+        display: inline;
+      }
+    }
     & button {
       min-width: unset;
       max-width: none;

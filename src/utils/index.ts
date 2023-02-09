@@ -1809,6 +1809,10 @@ export function calculateGasMargin(value: BigNumber): BigNumber {
     .div(BigNumber.from(10000));
 }
 
+export function calculateGasMarginBonus(value: BigNumber): BigNumber {
+  return value.mul(BigNumber.from(2));
+}
+
 export function calculateGasMarginV3(
   chainId: number,
   value: BigNumber,
