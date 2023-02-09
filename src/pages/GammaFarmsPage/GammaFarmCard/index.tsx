@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import { formatNumber } from 'utils';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import GammaFarmCardDetails from '../GammaFarmCardDetails';
+import CircleInfoIcon from 'assets/images/circleinfo.svg';
+import TotalAPRTooltip from 'components/TotalAPRToolTip';
 
 const GammaFarmCard: React.FC<{
   data: any;
@@ -61,14 +63,14 @@ const GammaFarmCard: React.FC<{
           </Box>
           {!isMobile && (
             <>
-              <Box width='15%' className='flex justify-between'>
+              <Box width='20%' className='flex justify-between'>
                 {data && (
                   <small className='weight-600'>
                     ${formatNumber(data['tvlUSD'])}
                   </small>
                 )}
               </Box>
-              <Box width='25%'>
+              <Box width='30%'>
                 {rewards.map((reward, ind) => (
                   <div key={ind}>
                     {reward && Number(reward['rewardPerSecond']) > 0 && (
@@ -80,26 +82,37 @@ const GammaFarmCard: React.FC<{
                   </div>
                 ))}
               </Box>
-              <Box width='15%'>
-                {data && data['returns'] && data['returns']['allTime'] && (
-                  <small className='text-success'>
-                    {formatNumber(
-                      Number(data['returns']['allTime']['feeApr'] ?? 0) * 100,
-                    )}
-                    %
-                  </small>
-                )}
-              </Box>
             </>
           )}
 
-          {(!isMobile || !showDetails) && (
-            <Box width={isMobile ? '30%' : '15%'}>
-              {rewardData && (
-                <small className='text-success'>
-                  {formatNumber(Number(rewardData['apr'] ?? 0) * 100)}%
-                </small>
-              )}
+          {!showDetails && (
+            <Box width={isMobile ? '30%' : '20%'} className='flex items-center'>
+              {data &&
+                data['returns'] &&
+                data['returns']['allTime'] &&
+                rewardData && (
+                  <>
+                    <small className='text-success'>
+                      {formatNumber(
+                        (Number(data['returns']['allTime']['feeApr'] ?? 0) +
+                          Number(rewardData['apr'] ?? 0)) *
+                          100,
+                      )}
+                      %
+                    </small>
+                    <Box ml={0.5} height={16}>
+                      <TotalAPRTooltip
+                        farmAPR={Number(rewardData['apr'] ?? 0) * 100}
+                        poolAPR={
+                          Number(data['returns']['allTime']['feeApr'] ?? 0) *
+                          100
+                        }
+                      >
+                        <img src={CircleInfoIcon} alt={'arrow up'} />
+                      </TotalAPRTooltip>
+                    </Box>
+                  </>
+                )}
             </Box>
           )}
         </Box>

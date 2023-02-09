@@ -1,0 +1,11 @@
+@use 'styles/variables' as *;
+
+.totalAPRTooltipWrapper {
+  background-color: $bgColor;
+  width: 168px;
+  border-radius: 10px;
+  overflow: hidden;
+  & > div {
+    padding: 0 10px;
+  }
+}

@@ -12,6 +12,8 @@ import { Aprs } from 'models/interfaces';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
+import CircleInfoIcon from 'assets/images/circleinfo.svg';
+import TotalAPRTooltip from 'components/TotalAPRToolTip';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -62,12 +64,9 @@ export function EternalFarmCard({
 }: EternalFarmCardProps) {
   const { t } = useTranslation();
   const apr = aprs ? aprs[id] : undefined;
-  const aprValue =
-    (apr !== undefined && apr >= 0 ? formatCompact(apr) : '~') + '%';
   const poolApr = poolAprs ? poolAprs[pool.id] : undefined;
-  const poolAprValue =
-    (poolApr !== undefined && poolApr >= 0 ? formatCompact(poolApr) : '~') +
-    '%';
+  const totalAPR =
+    (poolApr && poolApr > 0 ? poolApr : 0) + (apr && apr > 0 ? apr : 0);
   const tvl = tvls ? tvls[id] : undefined;
   const { chainId } = useActiveWeb3React();
 
@@ -135,7 +134,7 @@ export function EternalFarmCard({
           </Box>
         </Box>
         <Box
-          width={isMobile ? '100%' : '15%'}
+          width={isMobile ? '100%' : '20%'}
           mb={isMobile ? 1 : 0}
           className='flex justify-between'
         >
@@ -143,7 +142,7 @@ export function EternalFarmCard({
           {!!tvl && <small className='weight-600'>${formatNumber(tvl)}</small>}
         </Box>
         <Box
-          width={isMobile ? '100%' : '25%'}
+          width={isMobile ? '100%' : '30%'}
           mb={isMobile ? 1 : 0}
           className='flex justify-between'
         >
@@ -175,29 +174,46 @@ export function EternalFarmCard({
           </Box>
         </Box>
 
-        <Box
-          mb={isMobile ? 1 : 0}
-          width={isMobile ? '100%' : '15%'}
-          className='flex justify-between'
-        >
-          {isMobile && <small className='text-secondary'>{t('poolAPR')}</small>}
-          <small className='text-success'>
-            {poolAprsLoading && <Loader stroke='#0fc679' />}
-            {!poolAprsLoading && <>{poolAprValue}</>}
-          </small>
-        </Box>
-
-        <Box
-          width={isMobile ? '100%' : '15%'}
-          mb={isMobile ? 1 : 0}
-          className='flex justify-between'
-        >
-          {isMobile && <small className='text-secondary'>{t('farmAPR')}</small>}
-          <small className='text-success'>
-            {aprsLoading && <Loader stroke='#0fc679' />}
-            {!aprsLoading && <>{aprValue}</>}
-          </small>
-        </Box>
+        {isMobile ? (
+          <>
+            <Box
+              mb={1}
+              width='100%'
+              className='flex items-center justify-between'
+            >
+              <small className='text-secondary'>{t('poolAPR')}</small>
+              <small className='text-success'>
+                {poolAprsLoading && <Loader stroke='#0fc679' />}
+                {!poolAprsLoading && <>{formatCompact(poolApr ?? 0)}%</>}
+              </small>
+            </Box>
+            <Box
+              mb={1}
+              width='100%'
+              className='flex items-center justify-between'
+            >
+              <small className='text-secondary'>{t('farmAPR')}</small>
+              <small className='text-success'>
+                {aprsLoading && <Loader stroke='#0fc679' />}
+                {!aprsLoading && <>{formatCompact(apr ?? 0)}%</>}
+              </small>
+            </Box>
+          </>
+        ) : (
+          <Box width='20%' className='flex items-center'>
+            <small className='text-success'>
+              {(poolAprsLoading || aprsLoading) && <Loader stroke='#0fc679' />}
+              {!poolAprsLoading && !aprsLoading && (
+                <>{formatCompact(totalAPR)}%</>
+              )}
+            </small>
+            <Box ml={0.5} height={16}>
+              <TotalAPRTooltip farmAPR={apr ?? 0} poolAPR={poolApr ?? 0}>
+                <img src={CircleInfoIcon} alt={'arrow up'} />
+              </TotalAPRTooltip>
+            </Box>
+          </Box>
+        )}
       </Box>
 
       <Box width={isMobile ? '100%' : '10%'}>
