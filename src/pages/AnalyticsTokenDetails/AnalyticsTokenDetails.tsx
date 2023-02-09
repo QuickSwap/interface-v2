@@ -205,7 +205,6 @@ const AnalyticsTokenDetails: React.FC = () => {
       }
       if (tokenPairs) {
         const data = tokenPairs.filter((item: any) => !!item);
-        updateTokenPairs(data);
         try {
           const aprs = await getPairsAPR(data.map((item: any) => item.id));
 
