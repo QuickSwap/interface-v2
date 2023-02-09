@@ -1,6 +1,7 @@
 import { Box, Grid, styled, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getSwapTransactions } from 'utils';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
 // import { SwapBuySellWidget } from './BuySellWidget';
 import SwapMain from './SwapMain';
@@ -19,7 +20,6 @@ const Item = styled(Box)(({ theme }) => ({
 export interface SwapProMainProps {
   token1: any;
   token2: any;
-  transactions: any;
   pairId: any;
   pairTokenReversed: any;
 }
@@ -27,15 +27,58 @@ export interface SwapProMainProps {
 const SwapProMain: React.FC<SwapProMainProps> = ({
   token1,
   token2,
-  transactions,
   pairId,
   pairTokenReversed,
 }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
-
+  const [transactions, setTransactions] = useState<any[] | undefined>(
+    undefined,
+  );
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
   const [showChart, setShowChart] = useState(true);
   const [showTrades, setShowTrades] = useState(true);
+
+  // this is for refreshing data of trades table every 60 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (pairId && transactions && transactions.length > 0) {
+        const txns = await getSwapTransactions(
+          pairId,
+          Number(transactions[0].transaction.timestamp),
+        );
+        if (txns) {
+          const filteredTxns = txns.filter(
+            (txn) =>
+              !transactions.find(
+                (tx) => tx.transaction.id === txn.transaction.id,
+              ),
+          );
+          setTransactions([...filteredTxns, ...transactions]);
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  useEffect(() => {
+    async function getTradesData(pairId: string) {
+      setTransactions(undefined);
+      const transactions = await getSwapTransactions(pairId);
+      setTransactions(transactions);
+    }
+    if (pairId) {
+      getTradesData(pairId);
+    }
+  }, [pairId]);
 
   return (
     <Box>
