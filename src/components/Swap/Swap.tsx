@@ -231,11 +231,15 @@ const Swap: React.FC<{
   useEffect(() => {
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else if (history.location.pathname !== '/') {
+    } else if (
+      history.location.pathname !== '/' &&
+      parsedCurrency0 === undefined &&
+      !parsedCurrency1Id
+    ) {
       redirectWithCurrency(ETHER, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0Id]);
+  }, [parsedCurrency0, parsedCurrency1Id]);
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
@@ -308,6 +312,7 @@ const Swap: React.FC<{
   ]);
 
   const swapButtonDisabled = useMemo(() => {
+    const inputCurrency = currencies[Field.INPUT];
     if (account) {
       if (showWrap) {
         return Boolean(wrapInputError);
@@ -321,6 +326,9 @@ const Swap: React.FC<{
         );
       } else {
         return (
+          (inputCurrency &&
+            currencyEquals(inputCurrency, ETHER) &&
+            approval === ApprovalState.UNKNOWN) ||
           !isValid ||
           (priceImpactSeverity > 3 && !isExpertMode) ||
           !!swapCallbackError
@@ -341,6 +349,7 @@ const Swap: React.FC<{
     isValid,
     swapCallbackError,
     isExpertMode,
+    currencies,
   ]);
 
   const [
