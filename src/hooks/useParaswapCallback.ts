@@ -155,8 +155,6 @@ export function useParaswapCallback(
             100,
           );
 
-          console.log('aaa', response, txParams);
-
           const swapRouterAddress = chainId
             ? GlobalConst.addresses.SWAP_ROUTER_ADDRESS[chainId]
             : undefined;
