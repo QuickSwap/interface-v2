@@ -34,7 +34,7 @@ const AnalyticsVolumeChart: React.FC<{
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
 
   const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = params && params.version ? params.version : 'total';
 
   useEffect(() => {
     const fetchChartData = async () => {

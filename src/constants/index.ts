@@ -9,9 +9,11 @@ import {
   safeApp,
   trustconnect,
   unstopabbledomains,
+  metamask,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
+import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import cypherDIcon from 'assets/images/cypherDIcon.png';
 import BitKeepIcon from 'assets/images/bitkeep.png';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
@@ -37,6 +39,45 @@ export enum TxnType {
   REMOVE,
 }
 
+export enum RouterTypes {
+  QUICKSWAP = 'QUICKSWAP',
+  SMART = 'SMART',
+  BONUS = 'BONUS',
+}
+
+export enum SmartRouter {
+  PARASWAP = 'PARASWAP',
+  QUICKSWAP = 'QUICKSWAP',
+}
+
+export const WALLCHAIN_PARAMS = {
+  [ChainId.MATIC]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: 'https://matic.wallchains.com/upgrade_txn/',
+      apiKey: '91b92acd-e8fd-49c3-80fd-db2bc58bb8cf',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: 'https://matic.wallchains.com/upgrade_txn/',
+      apiKey: '50eaf751-196d-4fe0-9506-b983f7c83735',
+    },
+  },
+  [ChainId.MUMBAI]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+  },
+};
+
+export const BONUS_CUTOFF_AMOUNT = {
+  [ChainId.MUMBAI]: 0,
+  [ChainId.MATIC]: 0,
+};
+
 export const GlobalConst = {
   blacklists: {
     TOKEN_BLACKLIST: [
@@ -58,6 +99,10 @@ export const GlobalConst = {
     },
     PARASWAP_ROUTER_ADDRESS: {
       [ChainId.MATIC]: '0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57',
+      [ChainId.MUMBAI]: undefined,
+    },
+    SWAP_ROUTER_ADDRESS: {
+      [ChainId.MATIC]: '0xfaa746afc5ff7d5ef0aa469bb26ddd6cd8f13911',
       [ChainId.MUMBAI]: undefined,
     },
     ROUTER_ADDRESS: {
@@ -149,6 +194,7 @@ export const GlobalConst = {
     TRUST_WALLET: 'Trust Wallet',
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
+    BRAVEWALLET: 'BraveWallet',
     BITKEEP: 'BitKeep',
     INJECTED: 'Injected',
     SAFE_APP: 'Gnosis Safe App',
@@ -526,7 +572,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     color: '#E8831D',
   },
   METAMASK: {
-    connector: injected,
+    connector: metamask,
     name: GlobalConst.walletName.METAMASK,
     iconName: MetamaskIcon,
     description: 'Easy-to-use browser extension.',
@@ -546,6 +592,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: GlobalConst.walletName.BLOCKWALLET,
     iconName: BlockWalletIcon,
     description: 'BlockWallet browser extension.',
+    href: null,
+    color: '#1673ff',
+  },
+  BRAVEWALLET: {
+    connector: injected,
+    name: GlobalConst.walletName.BRAVEWALLET,
+    iconName: BraveWalletIcon,
+    description: 'Brave browser wallet.',
     href: null,
     color: '#1673ff',
   },
