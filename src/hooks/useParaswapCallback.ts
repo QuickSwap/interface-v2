@@ -39,6 +39,7 @@ const convertToEthersTransaction = (
     from: txParams.from,
     data: txParams.data,
     chainId: txParams.chainId,
+    gasPrice: txParams.gasPrice,
     gasLimit: isBonusRoute
       ? calculateGasMarginBonus(BigNumber.from(txParams.gas))
       : calculateGasMargin(BigNumber.from(txParams.gas)),
