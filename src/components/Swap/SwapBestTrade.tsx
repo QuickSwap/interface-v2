@@ -32,6 +32,7 @@ import {
 } from 'hooks/useApproveCallback';
 import { useTransactionFinalizer } from 'state/transactions/hooks';
 import useENSAddress from 'hooks/useENSAddress';
+import useENS from 'hooks/useENS';
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import {
   addMaticToMetamask,
@@ -178,11 +179,11 @@ const SwapBestTrade: React.FC<{
   useEffect(() => {
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else {
+    } else if (parsedCurrency0 === undefined && !parsedCurrency1Id) {
       redirectWithCurrency(ETHER, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0Id]);
+  }, [parsedCurrency0, parsedCurrency1Id]);
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
@@ -257,6 +258,7 @@ const SwapBestTrade: React.FC<{
           destTokenTransferFee: paraswapTax[destToken.toLowerCase()],
         },
       });
+
       setOptimalRateError('');
       return rate;
     } catch (err) {
@@ -364,24 +366,26 @@ const SwapBestTrade: React.FC<{
   );
 
   const noRoute = !optimalRate || optimalRate.bestRoute.length < 0;
-  const swapInputAmountWithSlippage = optimalRate
-    ? CurrencyAmount.fromRawAmount(
-        inputCurrency as Currency,
-        (optimalRate.side === SwapSide.BUY
-          ? new Fraction(ONE).add(pct)
-          : new Fraction(ONE)
-        ).multiply(optimalRate.srcAmount).quotient,
-      )
-    : undefined;
+  const swapInputAmountWithSlippage =
+    optimalRate && inputCurrency
+      ? CurrencyAmount.fromRawAmount(
+          inputCurrency as Currency,
+          (optimalRate.side === SwapSide.BUY
+            ? new Fraction(ONE).add(pct)
+            : new Fraction(ONE)
+          ).multiply(optimalRate.srcAmount).quotient,
+        )
+      : undefined;
 
   const swapInputBalanceCurrency = currencyBalances[Field.INPUT];
 
-  const swapInputBalance = swapInputBalanceCurrency
-    ? CurrencyAmount.fromRawAmount(
-        inputCurrency as Currency,
-        swapInputBalanceCurrency.raw.toString(),
-      )
-    : undefined;
+  const swapInputBalance =
+    swapInputBalanceCurrency && inputCurrency
+      ? CurrencyAmount.fromRawAmount(
+          inputCurrency as Currency,
+          swapInputBalanceCurrency.raw.toString(),
+        )
+      : undefined;
 
   const swapButtonText = useMemo(() => {
     if (account) {
@@ -451,6 +455,9 @@ const SwapBestTrade: React.FC<{
         );
       } else {
         return (
+          (inputCurrency &&
+            (inputCurrency as Currency).isToken &&
+            approval === ApprovalState.UNKNOWN) ||
           !isValid ||
           (optimalRate && optimalRate.maxImpactReached && !isExpertMode) ||
           !!paraswapCallbackError ||
@@ -485,6 +492,7 @@ const SwapBestTrade: React.FC<{
     parsedAmounts,
     swapInputAmountWithSlippage,
     swapInputBalance,
+    inputCurrency,
   ]);
 
   const [
