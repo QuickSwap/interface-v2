@@ -17,6 +17,7 @@ import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.sv
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
+import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
 import 'pages/styles/landing.scss';
 const SwapSection = lazy(() => import('./SwapSection'));
 const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
@@ -101,6 +102,11 @@ const LandingPage: React.FC = () => {
       link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
       icon: <GeckoterminalIcon />,
       title: 'GeckoTerminal',
+    },
+    {
+      link: 'https://www.tiktok.com/@quickswapofficial',
+      icon: <img src={TikTokIcon} alt='TikTok' />,
+      title: 'TikTok',
     },
   ];
 
