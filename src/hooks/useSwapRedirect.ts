@@ -87,15 +87,31 @@ export default function useSwapRedirects() {
           );
         }
       } else {
-        redirectPath = `${currentPath}${
-          history.location.search === '' ? '?' : '&'
-        }currency1=${inputCurrencyId}`;
+        if (parsedQs.currency0) {
+          redirectPath = currentPath.replace(
+            `currency0=${parsedQs.currency0}`,
+            `currency1=${parsedQs.currency0}`,
+          );
+        } else {
+          redirectPath = currentPath.replace(
+            `inputCurrency=${inputCurrencyId}`,
+            `currency1=${inputCurrencyId}`,
+          );
+        }
       }
     } else {
       if (outputCurrencyId) {
-        redirectPath = `${currentPath}${
-          history.location.search === '' ? '?' : '&'
-        }currency0=${outputCurrencyId}`;
+        if (parsedQs.currency1) {
+          redirectPath = currentPath.replace(
+            `currency1=${parsedQs.currency1}`,
+            `currency0=${parsedQs.currency1}`,
+          );
+        } else {
+          redirectPath = currentPath.replace(
+            `outputCurrency=${outputCurrencyId}`,
+            `currency0=${outputCurrencyId}`,
+          );
+        }
       }
     }
     history.push(redirectPath);

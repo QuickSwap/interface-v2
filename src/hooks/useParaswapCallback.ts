@@ -1,9 +1,8 @@
-import { Contract } from '@ethersproject/contracts';
 import {
   TransactionResponse,
   TransactionRequest,
 } from '@ethersproject/providers';
-import { Currency, SwapParameters } from '@uniswap/sdk';
+import { Currency } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { GlobalConst, RouterTypes, SmartRouter } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -16,8 +15,9 @@ import {
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
-import { OptimalRate } from 'paraswap-core';
+import { OptimalRate, SwapSide } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
+import { useUserSlippageTolerance } from 'state/user/hooks';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
@@ -63,6 +63,7 @@ export function useParaswapCallback(
 } {
   const { account, chainId, library } = useActiveWeb3React();
   const paraswap = useParaswap();
+  const [allowedSlippage] = useUserSlippageTolerance();
   const { onBestRoute, onSetSwapDelay } = useSwapActionHandlers();
 
   const addTransaction = useTransactionAdder();
@@ -100,34 +101,40 @@ export function useParaswapCallback(
       }
     }
 
-    const referrer = 'quickswapv3';
-
-    const srcToken = priceRoute.srcToken;
-    const destToken = priceRoute.destToken;
-
-    //TODO: we need to support max impact
-    // if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
-    //   throw new Error('Price Rate updated beyond expected slipage rate');
-    // }
-    // const minDestAmount = new Fraction(ONE)
-    //   .add(allowedSlippage)
-    //   .invert()
-    //   .multiply(priceRoute.destAmount).quotient;
-
     return {
       state: SwapCallbackState.VALID,
       callback: async function onSwap(): Promise<{
         response: TransactionResponse;
         summary: string;
       }> {
+        const referrer = 'quickswapv3';
+
+        const srcToken = priceRoute.srcToken;
+        const destToken = priceRoute.destToken;
+        const minDestAmount =
+          priceRoute.side === SwapSide.BUY
+            ? priceRoute.destAmount
+            : BigNumber.from(priceRoute.destAmount)
+                .mul(BigNumber.from(10000 - Number(allowedSlippage.toFixed(0))))
+                .div(BigNumber.from(10000))
+                .toString();
+
+        const maxSrcAmount =
+          priceRoute.side === SwapSide.BUY
+            ? BigNumber.from(priceRoute.srcAmount)
+                .mul(BigNumber.from(10000 + Number(allowedSlippage.toFixed(0))))
+                .div(BigNumber.from(10000))
+                .toString()
+            : priceRoute.srcAmount;
+
         let txParams;
 
         try {
           txParams = await paraswap.buildTx({
             srcToken,
             destToken,
-            srcAmount: priceRoute.srcAmount,
-            destAmount: priceRoute.destAmount,
+            srcAmount: maxSrcAmount,
+            destAmount: minDestAmount,
             priceRoute: priceRoute,
             userAddress: account,
             receiver: recipient,
@@ -228,8 +235,9 @@ export function useParaswapCallback(
     paraswapContract,
     onBestRoute,
     onSetSwapDelay,
-    inputCurrency?.symbol,
-    outputCurrency?.symbol,
     addTransaction,
+    inputCurrency,
+    outputCurrency,
+    allowedSlippage,
   ]);
 }
