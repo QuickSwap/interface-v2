@@ -48,10 +48,10 @@ const AnalyticsVolumeChart: React.FC<{
 
       const chartDataFn =
         version === 'v2'
-          ? getChartDataV3(duration)
+          ? getChartData(duration)
           : version === 'total'
           ? getChartDataTotal(duration)
-          : getChartData(duration);
+          : getChartDataV3(duration);
 
       chartDataFn.then(([newChartData, newWeeklyData]) => {
         setDataLoaded(true);
