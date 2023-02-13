@@ -1908,6 +1908,10 @@ export function calculateGasMargin(value: BigNumber): BigNumber {
     .div(BigNumber.from(10000));
 }
 
+export function calculateGasMarginBonus(value: BigNumber): BigNumber {
+  return value.mul(BigNumber.from(2));
+}
+
 export function calculateGasMarginV3(
   chainId: number,
   value: BigNumber,
@@ -2182,10 +2186,16 @@ export function getWalletKeys(
   connector: AbstractConnector | undefined,
 ): string[] {
   const { ethereum } = window as any;
-  const isMetaMask = !!(ethereum && !ethereum.isBitKeep && ethereum.isMetaMask);
+  const isMetaMask = !!(
+    ethereum &&
+    !ethereum.isBitKeep &&
+    !ethereum.isBraveWallet &&
+    ethereum.isMetaMask
+  );
   const isBitkeep = !!(ethereum && ethereum.isBitKeep);
   const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
   const isCypherDWallet = !!(ethereum && ethereum.isCypherD);
+  const isBraveWallet = !!(ethereum && ethereum.isBraveWallet);
   return Object.keys(SUPPORTED_WALLETS).filter(
     (k) =>
       SUPPORTED_WALLETS[k].connector === connector &&
@@ -2193,7 +2203,8 @@ export function getWalletKeys(
         (isCypherDWallet && k == 'CYPHERD') ||
         (isBlockWallet && k === 'BLOCKWALLET') ||
         (isBitkeep && k === 'BITKEEP') ||
-        (isMetaMask && k === 'METAMASK')),
+        (isMetaMask && k === 'METAMASK') ||
+        (isBraveWallet && k === 'BRAVEWALLET')),
   );
 }
 
