@@ -5,6 +5,7 @@ import {
   Price,
   WETH,
   Token,
+  Trade,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { PairState, usePairs, usePair } from 'data/Reserves';
@@ -12,12 +13,50 @@ import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
 import { useDQUICKtoQUICK } from 'state/stake/hooks';
 import { GlobalValue } from 'constants/index';
+import { useAllCommonPairs } from 'hooks/Trades';
+import { tryParseAmount } from 'state/swap/hooks';
+
+export default function useUSDCPrice(currency?: Currency): Price | undefined {
+  const { chainId } = useActiveWeb3React();
+
+  const amountOut = chainId
+    ? tryParseAmount('1', GlobalValue.tokens.COMMON.USDC)
+    : undefined;
+
+  const allowedPairs = useAllCommonPairs(
+    currency,
+    GlobalValue.tokens.COMMON.USDC,
+  );
+
+  return useMemo(() => {
+    if (!currency || !amountOut) {
+      return undefined;
+    }
+
+    const trade =
+      Trade.bestTradeExactOut(allowedPairs, currency, amountOut, {
+        maxHops: 3,
+        maxNumResults: 1,
+      })[0] ?? null;
+
+    if (!trade) return;
+
+    const { numerator, denominator } = trade.route.midPrice;
+
+    return new Price(
+      currency,
+      GlobalValue.tokens.COMMON.USDC,
+      denominator,
+      numerator,
+    );
+  }, [currency, allowedPairs, amountOut]);
+}
 
 /**
  * Returns the price in USDC of the input currency
  * @param currency currency to compute the USDC price of
  */
-export default function useUSDCPrice(currency?: Currency): Price | undefined {
+export function useUSDCPrice1(currency?: Currency): Price | undefined {
   const { chainId } = useActiveWeb3React();
   let wrapped = wrappedCurrency(currency, chainId);
   const internalWrapped = wrapped;
