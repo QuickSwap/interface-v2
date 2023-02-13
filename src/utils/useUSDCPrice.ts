@@ -29,7 +29,7 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   );
 
   return useMemo(() => {
-    if (!currency || !amountOut) {
+    if (!currency || !amountOut || !allowedPairs.length) {
       return undefined;
     }
 
