@@ -22,14 +22,22 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const { isProMode, updateIsProMode } = useIsProMode();
   const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {
+    console.log('getPageWrapperClassName => ', location);
     if (isProMode) {
       return '';
+    } else if (location.href.indexOf('/swap?') > 0) {
+      return 'pageWrapper-no-max';
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   };
   useEffect(() => {
     const unlisten = history.listen((location) => {
-      updateIsProMode(false);
+      const willBeSwapPage = location.pathname === '/swap';
+
+      // disallow the pro mode except for the swap page
+      if (!willBeSwapPage) {
+        updateIsProMode(false);
+      }
     });
     return function cleanup() {
       unlisten();

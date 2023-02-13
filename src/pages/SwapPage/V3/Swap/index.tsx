@@ -31,7 +31,7 @@ import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { WrappedCurrency } from 'models/types';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
 import CurrencyLogo from 'components/CurrencyLogo';
 import useToggledVersion, { Version } from 'hooks/v3/useToggledVersion';
 import {
@@ -77,6 +77,7 @@ const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const history = useHistory();
+  const { isProMode, updateIsProMode } = useIsProMode();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
   const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
