@@ -385,8 +385,8 @@ export const GammaPairs: {
       address: '0x8dd3bf71ef18dd88869d128bde058c9d8c270176',
       token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
       token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
-      // ableToFarm: true,
-      // pid: 14,
+      ableToFarm: true,
+      pid: 14,
     },
   ],
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
@@ -396,8 +396,8 @@ export const GammaPairs: {
       address: '0xccbcaf47e87f50a338fac9bf58e567ed1c87be2b',
       token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
       token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
-      // ableToFarm: true,
-      // pid: 15,
+      ableToFarm: true,
+      pid: 15,
     },
   ],
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
@@ -558,6 +558,26 @@ export const GammaPairs: {
       token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
       ableToFarm: true,
       pid: 31,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x14223bb48c8cf3ef49319be44a6e718e4dbf9486',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      ableToFarm: true,
+      pid: 32,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x69b2aaaf08ac9b04cd5b64a1d23ffcb40224fdaf',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      ableToFarm: true,
+      pid: 33,
     },
   ],
 };
@@ -883,6 +903,7 @@ export const GlobalValue = {
 
 export const paraswapTax: { [key: string]: number } = {
   '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
+  '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3': 0,
 };
 
 export const GlobalData = {

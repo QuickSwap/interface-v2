@@ -22,7 +22,7 @@ import {
   useExpertModeManager,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
-import { Field, SwapDelay } from 'state/swap/actions';
+import { Field } from 'state/swap/actions';
 import { useHistory } from 'react-router-dom';
 import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -32,7 +32,6 @@ import {
 } from 'hooks/useApproveCallback';
 import { useTransactionFinalizer } from 'state/transactions/hooks';
 import useENSAddress from 'hooks/useENSAddress';
-import useENS from 'hooks/useENS';
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import {
   addMaticToMetamask,
@@ -862,13 +861,11 @@ const SwapBestTrade: React.FC<{
           )}
         </Box>
       )}
-      {
-        <BestTradeAdvancedSwapDetails
-          optimalRate={optimalRate}
-          inputCurrency={inputCurrency}
-          outputCurrency={outputCurrency}
-        />
-      }
+      <BestTradeAdvancedSwapDetails
+        optimalRate={optimalRate}
+        inputCurrency={inputCurrency}
+        outputCurrency={outputCurrency}
+      />
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (
           <Box width='48%'>

@@ -5,6 +5,7 @@ import {
   Price,
   WETH,
   Token,
+  Trade,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { PairState, usePairs, usePair } from 'data/Reserves';
@@ -12,183 +13,43 @@ import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
 import { useDQUICKtoQUICK } from 'state/stake/hooks';
 import { GlobalValue } from 'constants/index';
+import { useAllCommonPairs } from 'hooks/Trades';
+import { tryParseAmount } from 'state/swap/hooks';
 
-/**
- * Returns the price in USDC of the input currency
- * @param currency currency to compute the USDC price of
- */
 export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const { chainId } = useActiveWeb3React();
-  let wrapped = wrappedCurrency(currency, chainId);
-  const internalWrapped = wrapped;
-  if (wrapped?.equals(GlobalValue.tokens.COMMON.CXETH)) {
-    wrapped = wrappedCurrency(GlobalValue.tokens.COMMON.ETHER, chainId);
-  }
-  const oldQuickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
-  const usdcToken = GlobalValue.tokens.COMMON.USDC;
-  const usdtToken = GlobalValue.tokens.COMMON.USDT;
-  const daiToken = GlobalValue.tokens.COMMON.DAI;
-  const cxETHToken = GlobalValue.tokens.COMMON.CXETH;
-  const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
-    () => [
-      [
-        chainId && wrapped && currencyEquals(WETH[chainId], wrapped)
-          ? undefined
-          : wrapped,
-        chainId ? WETH[chainId] : undefined,
-      ],
-      [
-        wrapped?.equals(oldQuickToken) ? undefined : wrapped,
-        chainId === ChainId.MATIC ? oldQuickToken : undefined,
-      ],
-      [
-        wrapped?.equals(usdcToken) ? undefined : wrapped,
-        chainId === ChainId.MATIC ? usdcToken : undefined,
-      ],
-      [
-        wrapped?.equals(usdtToken) ? undefined : wrapped,
-        chainId === ChainId.MATIC ? usdtToken : undefined,
-      ],
-      [
-        wrapped?.equals(daiToken) ? undefined : wrapped,
-        chainId === ChainId.MATIC ? daiToken : undefined,
-      ],
-      [
-        chainId ? WETH[chainId] : undefined,
-        chainId === ChainId.MATIC ? usdcToken : undefined,
-      ],
-      [
-        chainId === ChainId.MATIC ? oldQuickToken : undefined,
-        chainId === ChainId.MATIC ? usdcToken : undefined,
-      ],
-    ],
-    [chainId, wrapped, daiToken, oldQuickToken, usdcToken, usdtToken],
+
+  const amountOut = chainId
+    ? tryParseAmount('1', GlobalValue.tokens.COMMON.USDC)
+    : undefined;
+
+  const allowedPairs = useAllCommonPairs(
+    currency,
+    GlobalValue.tokens.COMMON.USDC,
   );
-  const [
-    [ethPairState, ethPair],
-    [quickPairState, quickPair],
-    [usdcPairState, usdcPair],
-    [usdtPairState, usdtPair],
-    [daiPairState, daiPair],
-    [usdcEthPairState, usdcEthPair],
-    [usdcQuickPairState, usdcQuickPair],
-  ] = usePairs(tokenPairs);
 
   return useMemo(() => {
-    if (!currency || !wrapped || !chainId) {
+    if (!currency || !amountOut || !allowedPairs.length) {
       return undefined;
     }
-    // handle weth/eth
-    if (wrapped.equals(WETH[chainId])) {
-      if (usdcPair) {
-        const price = usdcPair.priceOf(WETH[chainId]);
-        return new Price(
-          currency,
-          usdcToken,
-          price.denominator,
-          price.numerator,
-        );
-      } else {
-        return undefined;
-      }
-    }
-    // handle usdc
-    if (wrapped.equals(usdcToken)) {
-      return new Price(usdcToken, usdcToken, '1', '1');
-    }
 
-    // all other tokens
-    // first try the usdc pair
-    if (usdcPairState === PairState.EXISTS && usdcPair) {
-      const price = usdcPair.priceOf(wrapped);
+    const trade =
+      Trade.bestTradeExactOut(allowedPairs, currency, amountOut, {
+        maxHops: 3,
+        maxNumResults: 1,
+      })[0] ?? null;
 
-      if (internalWrapped?.equals(cxETHToken)) {
-        return new Price(
-          cxETHToken,
-          usdcToken,
-          price.denominator,
-          price.numerator,
-        );
-      }
+    if (!trade) return;
 
-      return new Price(currency, usdcToken, price.denominator, price.numerator);
-    }
-    if (usdtPairState === PairState.EXISTS && usdtPair) {
-      const price = usdtPair.priceOf(wrapped);
-      return new Price(currency, usdtToken, price.denominator, price.numerator);
-    }
-    if (daiPairState === PairState.EXISTS && daiPair) {
-      const price = daiPair.priceOf(wrapped);
-      return new Price(currency, daiToken, price.denominator, price.numerator);
-    }
-    if (
-      ethPairState === PairState.EXISTS &&
-      ethPair &&
-      usdcEthPairState === PairState.EXISTS &&
-      usdcEthPair
-    ) {
-      if (
-        usdcEthPair.reserveOf(usdcToken).greaterThan('0') &&
-        ethPair.reserveOf(WETH[chainId]).greaterThan('1')
-      ) {
-        const ethUsdcPrice = usdcEthPair.priceOf(usdcToken);
-        const currencyEthPrice = ethPair.priceOf(WETH[chainId]);
-        const usdcPrice = ethUsdcPrice.multiply(currencyEthPrice).invert();
-        return new Price(
-          currency,
-          usdcToken,
-          usdcPrice.denominator,
-          usdcPrice.numerator,
-        );
-      }
-    }
-    if (
-      quickPairState === PairState.EXISTS &&
-      quickPair &&
-      usdcQuickPairState === PairState.EXISTS &&
-      usdcQuickPair
-    ) {
-      if (
-        usdcQuickPair.reserveOf(usdcToken).greaterThan('0') &&
-        quickPair.reserveOf(oldQuickToken).greaterThan('5')
-      ) {
-        const quickUsdcPrice = usdcQuickPair.priceOf(usdcToken);
-        const currencyQuickPrice = quickPair.priceOf(oldQuickToken);
-        const usdcPrice = quickUsdcPrice.multiply(currencyQuickPrice).invert();
-        return new Price(
-          currency,
-          usdcToken,
-          usdcPrice.denominator,
-          usdcPrice.numerator,
-        );
-      }
-    }
-    return undefined;
-  }, [
-    currency,
-    wrapped,
-    chainId,
-    ethPair,
-    usdcEthPair,
-    usdcPairState,
-    usdcPair,
-    usdtPairState,
-    usdtPair,
-    daiPairState,
-    daiPair,
-    ethPairState,
-    usdcEthPairState,
-    quickPairState,
-    quickPair,
-    usdcQuickPairState,
-    usdcQuickPair,
-    internalWrapped,
-    cxETHToken,
-    daiToken,
-    oldQuickToken,
-    usdcToken,
-    usdtToken,
-  ]);
+    const { numerator, denominator } = trade.route.midPrice;
+
+    return new Price(
+      currency,
+      GlobalValue.tokens.COMMON.USDC,
+      denominator,
+      numerator,
+    );
+  }, [currency, allowedPairs, amountOut]);
 }
 
 //TODO: the majority of these functions share alot of common logic,
