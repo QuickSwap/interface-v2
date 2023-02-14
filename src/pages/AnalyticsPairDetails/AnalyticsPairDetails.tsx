@@ -26,7 +26,6 @@ import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
-import { useDispatch } from 'react-redux';
 import { CallMade } from '@material-ui/icons';
 
 const AnalyticsPairDetails: React.FC = () => {
@@ -164,8 +163,6 @@ const AnalyticsPairDetails: React.FC = () => {
     ? formatNumber(pairData.feesUSDOneDay)
     : '-';
   const { ethPrice } = useEthPrice();
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     async function fetchPairData() {
