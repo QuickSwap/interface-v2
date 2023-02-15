@@ -630,5 +630,7 @@
   "blueChips": "Blue chips",
   "stableLPs": "Stable LPs",
   "otherLPs": "Other LPs",
-  "totalAPR": "Total APR"
+  "totalAPR": "Total APR",
+  "wrapMATIC": "Wrap MATIC",
+  "wrappingMATIC": "Wrapping MATIC"
 }
