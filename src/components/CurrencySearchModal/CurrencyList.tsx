@@ -1,11 +1,5 @@
-import {
-  currencyEquals,
-  Token,
-  Currency,
-  CurrencyAmount,
-  ETHER,
-} from '@uniswap/sdk';
-import React, { useMemo, useCallback, MutableRefObject } from 'react';
+import { currencyEquals, Token, Currency, CurrencyAmount } from '@uniswap/sdk';
+import React, { useMemo, useCallback } from 'react';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { isTokensOnList } from 'utils';
 import CurrencyRow from './CurrencyRow';

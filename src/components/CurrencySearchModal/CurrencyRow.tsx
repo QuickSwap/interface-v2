@@ -9,7 +9,7 @@ import { CurrencyLogo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
-import { formatTokenAmount } from 'utils';
+import { formatNumber, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 
 function currencyKey(currency: Token): string {
@@ -196,7 +196,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
             <>
               <Balance balance={balance} />
               <span className='text-secondary'>
-                ${(Number(balance.toExact()) * usdPrice).toLocaleString('us')}
+                ${formatNumber(Number(balance.toExact()) * usdPrice)}
               </span>
             </>
           ) : account ? (
