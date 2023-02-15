@@ -124,7 +124,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   const tokenAddresses = allCurrencies
     .map((currency) => {
       const token = wrappedCurrency(currency, chainId);
-      return token?.address ?? '';
+      return token ? token.address.toLowerCase() : '';
     })
     .filter((address, ind, self) => self.indexOf(address) === ind);
 
