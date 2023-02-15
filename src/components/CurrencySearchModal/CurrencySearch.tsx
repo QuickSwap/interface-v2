@@ -121,10 +121,12 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     allCurrencies,
   );
 
-  const tokenAddresses = allCurrencies.map((currency) => {
-    const token = wrappedCurrency(currency, chainId);
-    return token?.address ?? '';
-  });
+  const tokenAddresses = allCurrencies
+    .map((currency) => {
+      const token = wrappedCurrency(currency, chainId);
+      return token?.address ?? '';
+    })
+    .filter((address, ind, self) => self.indexOf(address) === ind);
 
   const usdPrices = useUSDCPricesFromAddresses(tokenAddresses);
 

@@ -10,6 +10,8 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { isTokensOnList } from 'utils';
 import CurrencyRow from './CurrencyRow';
 import { Virtuoso } from 'react-virtuoso';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { useActiveWeb3React } from 'hooks';
 
 interface CurrencyListProps {
   currencies: Token[];
@@ -18,16 +20,8 @@ interface CurrencyListProps {
   otherCurrency?: Currency | null;
   showETH: boolean;
   balances: (CurrencyAmount | undefined)[];
-  usdPrices?: number[];
+  usdPrices?: { address: string; price: number }[];
 }
-
-const currencyKey = (currency: Token): string => {
-  return currency instanceof Token
-    ? currency.address
-    : currency === ETHER
-    ? 'ETHER'
-    : '';
-};
 
 const CurrencyList: React.FC<CurrencyListProps> = ({
   currencies,
@@ -42,6 +36,7 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
     () => (showETH ? [Token.ETHER, ...currencies] : currencies),
     [currencies, showETH],
   );
+  const { chainId } = useActiveWeb3React();
   const selectedTokenList = useSelectedTokenList();
   const isOnSelectedList = useMemo(
     () => isTokensOnList(selectedTokenList, itemData),
@@ -58,6 +53,13 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
         otherCurrency && currencyEquals(otherCurrency, currency),
       );
       const handleSelect = () => onCurrencySelect(currency);
+      const token = wrappedCurrency(currency, chainId);
+      const usdPrice = usdPrices
+        ? usdPrices.find(
+            (item) =>
+              item.address.toLowerCase() === token?.address.toLowerCase(),
+          )
+        : undefined;
       return (
         <CurrencyRow
           style={style}
@@ -67,7 +69,7 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
           otherSelected={otherSelected}
           isOnSelectedList={isOnSelectedList[index]}
           balance={balances[index]}
-          usdPrice={usdPrices ? usdPrices[index] : 0}
+          usdPrice={usdPrice ? usdPrice.price : 0}
         />
       );
     },
@@ -78,12 +80,8 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
       isOnSelectedList,
       balances,
       usdPrices,
+      chainId,
     ],
-  );
-
-  const itemKey = useCallback(
-    (index: number, data: any) => currencyKey(data[index]),
-    [],
   );
 
   return (

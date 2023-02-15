@@ -65,7 +65,9 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
 export function useUSDCPricesFromAddresses(addresses: string[]) {
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
-  const [prices, setPrices] = useState<number[] | undefined>();
+  const [prices, setPrices] = useState<
+    { address: string; price: number }[] | undefined
+  >();
 
   useEffect(() => {
     (async () => {
@@ -108,7 +110,10 @@ export function useUSDCPricesFromAddresses(addresses: string[]) {
             (item: any) => item.id.toLowerCase() === address.toLowerCase(),
           );
           if (priceV2 && priceV2.derivedETH && Number(priceV2.derivedETH)) {
-            return (ethPrice.price ?? 0) * Number(priceV2.derivedETH);
+            return {
+              address,
+              price: (ethPrice.price ?? 0) * Number(priceV2.derivedETH),
+            };
           } else {
             const priceV3 = pricesV3.find(
               (item: any) => item.id.toLowerCase() === address.toLowerCase(),
@@ -118,9 +123,12 @@ export function useUSDCPricesFromAddresses(addresses: string[]) {
               priceV3.derivedMatic &&
               Number(priceV3.derivedMatic)
             ) {
-              return (maticPrice.price ?? 0) * Number(priceV3.derivedMatic);
+              return {
+                address,
+                price: (maticPrice.price ?? 0) * Number(priceV3.derivedMatic),
+              };
             }
-            return 0;
+            return { address, price: 0 };
           }
         });
         setPrices(prices);
