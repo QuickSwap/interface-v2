@@ -1,9 +1,15 @@
-import { currencyEquals, Token, Currency } from '@uniswap/sdk';
-import React, { useMemo, useCallback } from 'react';
-import { Virtuoso } from 'react-virtuoso';
+import {
+  currencyEquals,
+  Token,
+  Currency,
+  CurrencyAmount,
+  ETHER,
+} from '@uniswap/sdk';
+import React, { useMemo, useCallback, MutableRefObject } from 'react';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { isTokensOnList } from 'utils';
 import CurrencyRow from './CurrencyRow';
+import { Virtuoso } from 'react-virtuoso';
 
 interface CurrencyListProps {
   currencies: Token[];
@@ -11,7 +17,17 @@ interface CurrencyListProps {
   onCurrencySelect: (currency: Token) => void;
   otherCurrency?: Currency | null;
   showETH: boolean;
+  balances: (CurrencyAmount | undefined)[];
+  usdPrices?: number[];
 }
+
+const currencyKey = (currency: Token): string => {
+  return currency instanceof Token
+    ? currency.address
+    : currency === ETHER
+    ? 'ETHER'
+    : '';
+};
 
 const CurrencyList: React.FC<CurrencyListProps> = ({
   currencies,
@@ -19,6 +35,8 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
   onCurrencySelect,
   otherCurrency,
   showETH,
+  balances,
+  usdPrices,
 }) => {
   const itemData = useMemo(
     () => (showETH ? [Token.ETHER, ...currencies] : currencies),
@@ -48,10 +66,24 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
           onSelect={handleSelect}
           otherSelected={otherSelected}
           isOnSelectedList={isOnSelectedList[index]}
+          balance={balances[index]}
+          usdPrice={usdPrices ? usdPrices[index] : 0}
         />
       );
     },
-    [onCurrencySelect, otherCurrency, selectedCurrency, isOnSelectedList],
+    [
+      onCurrencySelect,
+      otherCurrency,
+      selectedCurrency,
+      isOnSelectedList,
+      balances,
+      usdPrices,
+    ],
+  );
+
+  const itemKey = useCallback(
+    (index: number, data: any) => currencyKey(data[index]),
+    [],
   );
 
   return (
