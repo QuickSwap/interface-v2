@@ -115,7 +115,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-app-rewired start",
     "start-legacy": "react-app-rewired --openssl-legacy-provider start",
-    "build": "GENERATE_SOURCEMAP=false CI=false react-app-rewired --max-old-space-size=8192 build",
+    "build": "GENERATE_SOURCEMAP=false CI=false react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
     "format": "prettier --write \"**/*.{ts,js,tsx,json,md}\"",
     "eject": "react-scripts eject",
