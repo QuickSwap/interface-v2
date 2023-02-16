@@ -32,7 +32,7 @@ export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = {
 };
 
 export const GAMMA_UNIPROXY_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0x8c8f7d348a568553819c4dad401ba6a68fa65924',
+  [ChainId.MATIC]: '0xe0A61107E250f8B5B24bf272baBFCf638569830C',
 };
 
 export const GAMMA_MASTERCHEF_ADDRESSES: AddressMap = {
