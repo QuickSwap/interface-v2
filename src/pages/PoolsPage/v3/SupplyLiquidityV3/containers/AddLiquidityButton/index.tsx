@@ -25,7 +25,7 @@ import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
-import { JSBI } from '@uniswap/sdk';
+import { JSBI, WETH } from '@uniswap/sdk';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { calculateGasMargin, calculateGasMarginV3 } from 'utils';
 import { Button, Box } from '@material-ui/core';
@@ -42,6 +42,8 @@ import RateToggle from 'components/v3/RateToggle';
 import { useInverter } from 'hooks/v3/useInverter';
 import { GammaPairs, GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
+import { useCurrencyBalance } from 'state/wallet/hooks';
+import { formatUnits } from 'ethers/lib/utils';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -116,6 +118,60 @@ export function AddLiquidityButton({
     gammaPair && gammaPair.length > 0
       ? gammaPair.find((pair) => pair.type === preset)?.address
       : undefined;
+  const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A];
+  const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B];
+  const wmaticBalance = useCurrencyBalance(
+    account ?? undefined,
+    chainId ? WETH[chainId] : undefined,
+  );
+
+  const [wrappingETH, setWrappingETH] = useState(false);
+  const amountToWrap = useMemo(() => {
+    if (
+      !baseCurrency ||
+      !quoteCurrency ||
+      !amountA ||
+      !amountB ||
+      !chainId ||
+      mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+    )
+      return;
+    if (
+      baseCurrency.isNative ||
+      baseCurrency.wrapped.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase()
+    ) {
+      if (
+        wmaticBalance &&
+        JSBI.greaterThan(amountA.numerator, wmaticBalance.numerator)
+      ) {
+        return JSBI.subtract(amountA.numerator, wmaticBalance.numerator);
+      }
+      return;
+    } else if (
+      quoteCurrency.isNative ||
+      quoteCurrency.wrapped.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase()
+    ) {
+      if (
+        wmaticBalance &&
+        JSBI.greaterThan(amountB.numerator, wmaticBalance.numerator)
+      ) {
+        return JSBI.subtract(amountB.numerator, wmaticBalance.numerator);
+      }
+      return;
+    }
+    return;
+  }, [
+    amountA,
+    amountB,
+    baseCurrency,
+    chainId,
+    mintInfo.liquidityRangeType,
+    quoteCurrency,
+    wmaticBalance,
+  ]);
 
   const [approvalA] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A],
@@ -147,7 +203,8 @@ export function AddLiquidityButton({
         !mintInfo.errorMessage &&
         !mintInfo.invalidRange &&
         !txHash &&
-        !isNetworkFailed,
+        !isNetworkFailed &&
+        (amountToWrap ? !wrappingETH : true),
     );
   }, [
     mintInfo.depositADisabled,
@@ -158,6 +215,8 @@ export function AddLiquidityButton({
     approvalB,
     txHash,
     isNetworkFailed,
+    amountToWrap,
+    wrappingETH,
   ]);
 
   const onAddLiquidity = () => {
@@ -176,6 +235,39 @@ export function AddLiquidityButton({
     dispatch(setAddLiquidityTxHash({ txHash: '' }));
   }, [dispatch]);
 
+  async function onWrapMatic() {
+    if (!chainId || !library || !account || !wethContract || !amountToWrap)
+      return;
+
+    setWrappingETH(true);
+    try {
+      const wrapEstimateGas = await wethContract.estimateGas.deposit({
+        value: `0x${amountToWrap.toString(16)}`,
+      });
+      const wrapResponse: TransactionResponse = await wethContract.deposit({
+        gasLimit: calculateGasMargin(wrapEstimateGas),
+        value: `0x${amountToWrap.toString(16)}`,
+      });
+      setAttemptingTxn(false);
+      setTxPending(true);
+      const summary = `Wrap ${formatUnits(
+        amountToWrap.toString(),
+        18,
+      )} ETH to WETH`;
+      addTransaction(wrapResponse, {
+        summary,
+      });
+      const receipt = await wrapResponse.wait();
+      finalizedTransaction(receipt, {
+        summary,
+      });
+      setWrappingETH(false);
+    } catch (e) {
+      console.error(e);
+      setWrappingETH(false);
+    }
+  }
+
   async function onAdd() {
     if (!chainId || !library || !account) return;
 
@@ -189,8 +281,6 @@ export function AddLiquidityButton({
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
       ) {
         if (!gammaUNIPROXYContract) return;
-        const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A];
-        const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B];
         const baseCurrencyAddress = baseCurrency.wrapped
           ? baseCurrency.wrapped.address.toLowerCase()
           : '';
@@ -210,25 +300,6 @@ export function AddLiquidityButton({
 
         setAttemptingTxn(true);
         try {
-          if (baseCurrency.isNative || quoteCurrency.isNative) {
-            if (!wethContract) return;
-            const wrapAmount = baseCurrency.isNative ? amountA : amountB;
-            const wrapEstimateGas = await wethContract.estimateGas.deposit({
-              value: `0x${wrapAmount.numerator.toString(16)}`,
-            });
-            const wrapResponse: TransactionResponse = await wethContract.deposit(
-              {
-                gasLimit: calculateGasMargin(wrapEstimateGas),
-                value: `0x${wrapAmount.numerator.toString(16)}`,
-              },
-            );
-            setAttemptingTxn(false);
-            setTxPending(true);
-            addTransaction(wrapResponse, {
-              summary: `Wrap ${wrapAmount.toSignificant()} ETH to WETH`,
-            });
-            await wrapResponse.wait();
-          }
           const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
             (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
               ? amountA
@@ -584,9 +655,13 @@ export function AddLiquidityButton({
       <Button
         className='v3-supply-liquidity-button'
         disabled={!isReady}
-        onClick={onAddLiquidity}
+        onClick={amountToWrap ? onWrapMatic : onAddLiquidity}
       >
-        {title}
+        {amountToWrap
+          ? wrappingETH
+            ? t('wrappingMATIC')
+            : t('wrapMATIC')
+          : title}
       </Button>
     </>
   );

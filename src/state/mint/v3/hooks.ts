@@ -6,6 +6,7 @@ import {
   Price,
   Rounding,
   Token,
+  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
 import { AppState } from '../../index';
@@ -34,12 +35,15 @@ import { getTickToPrice } from 'v3lib/utils/getTickToPrice';
 import { BIG_INT_ZERO } from 'constants/v3/misc';
 import { FeeAmount } from 'v3lib/utils';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
+import { useCurrencyBalance } from 'state/wallet/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
 import { GlobalConst } from 'constants/index';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useGammaUNIProxyContract } from 'hooks/useContract';
 import { useSingleContractMultipleData } from 'state/multicall/hooks';
+import { ETHER, WETH } from '@uniswap/sdk';
+import { maxAmountSpend } from 'utils';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -196,7 +200,7 @@ export function useV3DerivedMintInfo(
   liquidityRangeType: string | undefined;
   presetRange: IPresetArgs | undefined;
 } {
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
 
   const {
     independentField,
@@ -236,14 +240,47 @@ export function useV3DerivedMintInfo(
     [tokenA, tokenB],
   );
 
+  const ethBalance = useCurrencyBalance(account ?? undefined, ETHER);
+  const wethBalance = useCurrencyBalance(
+    account ?? undefined,
+    chainId ? WETH[chainId] : undefined,
+  );
+  const maxSpendETH = maxAmountSpend(ethBalance);
   // balances
   const balances = useCurrencyBalances(account ?? undefined, [
     currencies[Field.CURRENCY_A],
     currencies[Field.CURRENCY_B],
   ]);
+
   const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
-    [Field.CURRENCY_A]: balances[0],
-    [Field.CURRENCY_B]: balances[1],
+    [Field.CURRENCY_A]:
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      currencyA &&
+      chainId &&
+      currencyA.wrapped.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase()
+        ? CurrencyAmount.fromRawAmount(
+            currencyA,
+            JSBI.ADD(
+              JSBI.BigInt(wethBalance ? wethBalance.numerator.toString() : '0'),
+              JSBI.BigInt(maxSpendETH ? maxSpendETH.numerator.toString() : '0'),
+            ),
+          )
+        : balances[0],
+    [Field.CURRENCY_B]:
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      currencyB &&
+      chainId &&
+      currencyB.wrapped.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase()
+        ? CurrencyAmount.fromRawAmount(
+            currencyB,
+            JSBI.ADD(
+              JSBI.BigInt(wethBalance ? wethBalance.numerator.toString() : '0'),
+              JSBI.BigInt(maxSpendETH ? maxSpendETH.numerator.toString() : '0'),
+            ),
+          )
+        : balances[1],
   };
 
   // pool
@@ -434,9 +471,18 @@ export function useV3DerivedMintInfo(
       (price.lessThan(lowerPrice) || price.greaterThan(upperPrice)),
   );
 
+  const independentCurrency = currencies[independentField];
+
   const independentAmount:
     | CurrencyAmount<Currency>
-    | undefined = tryParseAmount(typedValue, currencies[independentField]);
+    | undefined = tryParseAmount(
+    typedValue,
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      independentCurrency &&
+      independentCurrency.isNative
+      ? independentCurrency.wrapped
+      : independentCurrency,
+  );
 
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
   const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : [];
@@ -528,7 +574,7 @@ export function useV3DerivedMintInfo(
           currencyB.wrapped.decimals,
         );
         return CurrencyAmount.fromRawAmount(
-          currencyB,
+          currencyB.isNative ? currencyB.wrapped : currencyB,
           JSBI.BigInt(quoteDeposit),
         );
       } else {
@@ -540,7 +586,7 @@ export function useV3DerivedMintInfo(
           currencyA.wrapped.decimals,
         );
         return CurrencyAmount.fromRawAmount(
-          currencyA,
+          currencyA.isNative ? currencyA.wrapped : currencyA,
           JSBI.BigInt(baseDeposit),
         );
       }
