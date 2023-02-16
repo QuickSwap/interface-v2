@@ -346,3 +346,38 @@ body {
     font-weight: 600;
   }
 }
+.fullHeight {
+  height: 100%;
+}
+
+.text-link {
+  text-decoration: none;
+}
+
+.text-link:hover {
+  opacity: 0.9;
+}
+
+.text-lg {
+  font-size: 1rem;
+}
+
+.m-2 {
+  margin: 0.5rem;
+}
+
+.m-3 {
+  margin: 1rem;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+
+.ml-1 {
+  margin-left: 1rem;
+}
+
+.p-1 {
+  padding: 1rem;
+}

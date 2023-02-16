@@ -16,7 +16,11 @@ const LiquidityPools: React.FC<{
 }> = ({ token1, token2 }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(false);
+  const isLg = useMediaQuery(breakpoints.only('lg'));
+  const isMd = useMediaQuery(breakpoints.only('md'));
+  const isXl = useMediaQuery(breakpoints.only('xl'));
+
+  const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(isMobile);
   const [liquidityFilterIndex, setLiquidityFilterIndex] = useState(0);
   const [tokenPairs, updateTokenPairs] = useState<any[] | null>(null);
   const token1Address = token1.address.toLowerCase();
@@ -100,6 +104,12 @@ const LiquidityPools: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token1Address, token2Address, whiteListAddressList, ethPrice.price]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setLiquidityPoolClosed(isMobile);
+    }, 300);
+  }, [isMobile]);
+
   return (
     <>
       <Box
@@ -146,7 +156,12 @@ const LiquidityPools: React.FC<{
                   {token2.symbol?.toUpperCase()}
                 </small>
               </Box>
-              {!isMobile && (
+              {isLg && (
+                <Box style={{ textAlign: 'right' }} width={0.5}>
+                  <small>{t('24hVol')}</small>
+                </Box>
+              )}
+              {!isMobile && !isLg && (
                 <>
                   <Box width={0.2}>
                     <small>{t('tvl')}</small>
