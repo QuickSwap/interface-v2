@@ -155,7 +155,7 @@
     "react-query": "^3.34.19",
     "react-reflex": "^4.0.6",
     "react-slick": "^0.28.1",
-    "react-virtuoso": "^2.8.4",
+    "react-virtuoso": "^4.1.0",
     "sass": "^1.51.0",
     "slick-carousel": "^1.8.1",
     "styled-components": "^5.3.3",

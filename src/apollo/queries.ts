@@ -308,6 +308,25 @@ export const TOKENS_FROM_ADDRESSES_V2 = (
   return gql(queryString);
 };
 
+export const TOKEN_PRICES_V2 = (tokens: string[], blockNumber?: number) => {
+  let tokenString = `[`;
+  tokens.map((address) => {
+    return (tokenString += `"${address.toLowerCase()}",`);
+  });
+  tokenString += ']';
+  const queryString =
+    `query tokens {
+      tokens(where: {id_in: ${tokenString}},` +
+    (blockNumber ? `block: {number: ${blockNumber}} ,` : ``) +
+    ` first: 1000) {
+        id
+        derivedETH
+      }
+    }`;
+
+  return gql(queryString);
+};
+
 export const TOKENS_CURRENT: any = (count: number) => {
   const queryString = `
     ${TokenFields}
