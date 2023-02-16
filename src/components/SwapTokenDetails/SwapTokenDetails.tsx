@@ -13,16 +13,16 @@ import {
 import {
   shortenAddress,
   formatCompact,
-  getTokenInfo,
   getIntervalTokenData,
   formatNumber,
+  getTokenInfoSwapDetails,
 } from 'utils';
 import { LineChart } from 'components';
 import { Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTranslation } from 'react-i18next';
-import { getIntervalTokenDataV3, getTokenInfoV3 } from 'utils/v3-graph';
+import { getIntervalTokenDataV3 } from 'utils/v3-graph';
 
 const SwapTokenDetails: React.FC<{
   token: Token;
@@ -73,42 +73,25 @@ const SwapTokenDetails: React.FC<{
         : tokenPriceDataV3;
       setPriceData(tokenPriceData);
 
-      if (ethPrice.price && ethPrice.oneDayPrice) {
-        const tokenInfo = await getTokenInfo(
+      if (
+        ethPrice.price &&
+        ethPrice.oneDayPrice &&
+        maticPrice.price &&
+        maticPrice.oneDayPrice
+      ) {
+        const tokenInfo = await getTokenInfoSwapDetails(
           ethPrice.price,
           ethPrice.oneDayPrice,
+          maticPrice.price,
+          maticPrice.oneDayPrice,
           tokenAddress,
         );
-        const token0 =
-          tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
-        if (token0 && token0.priceUSD) {
-          setTokenData(token0);
-          const tokenDetailToUpdate = {
-            address: tokenAddress,
-            tokenData: token0,
-            priceData: tokenPriceData,
-          };
-          updateTokenDetails(tokenDetailToUpdate);
-        } else if (maticPrice.price && maticPrice.oneDayPrice) {
-          const tokenInfoV3 = await getTokenInfoV3(
-            maticPrice.price,
-            maticPrice.oneDayPrice,
-            tokenAddress.toLowerCase(),
-          );
-          const tokenV3 =
-            tokenInfoV3 && tokenInfoV3.length > 0
-              ? tokenInfoV3[0]
-              : tokenInfoV3;
-          if (tokenV3) {
-            setTokenData(tokenV3);
-            const tokenDetailToUpdate = {
-              address: tokenAddress,
-              tokenData: tokenV3,
-              priceData: tokenPriceData,
-            };
-            updateTokenDetails(tokenDetailToUpdate);
-          }
-        }
+        setTokenData(tokenInfo);
+        updateTokenDetails({
+          address: tokenAddress,
+          tokenData: tokenInfo,
+          priceData: tokenPriceData,
+        });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

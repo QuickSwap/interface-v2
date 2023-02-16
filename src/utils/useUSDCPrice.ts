@@ -7,7 +7,7 @@ import {
   Token,
   Trade,
 } from '@uniswap/sdk';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PairState, usePairs, usePair } from 'data/Reserves';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
@@ -15,6 +15,16 @@ import { useDQUICKtoQUICK } from 'state/stake/hooks';
 import { GlobalValue } from 'constants/index';
 import { useAllCommonPairs } from 'hooks/Trades';
 import { tryParseAmount } from 'state/swap/hooks';
+import { useEthPrice, useMaticPrice } from 'state/application/hooks';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
+import { clientV2, clientV3 } from 'apollo/client';
+import { TOKEN_PRICES_V2 } from 'apollo/queries';
+import { TOKENPRICES_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
+
+dayjs.extend(utc);
+dayjs.extend(weekOfYear);
 
 export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const { chainId } = useActiveWeb3React();
@@ -50,6 +60,84 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
       numerator,
     );
   }, [currency, allowedPairs, amountOut]);
+}
+
+export function useUSDCPricesFromAddresses(addresses: string[]) {
+  const { ethPrice } = useEthPrice();
+  const { maticPrice } = useMaticPrice();
+  const [prices, setPrices] = useState<
+    { address: string; price: number }[] | undefined
+  >();
+
+  useEffect(() => {
+    (async () => {
+      if (ethPrice.price && maticPrice.price) {
+        const pricesDataV2 = await clientV2.query({
+          query: TOKEN_PRICES_V2(addresses),
+          fetchPolicy: 'network-only',
+        });
+
+        const pricesV2 =
+          pricesDataV2.data &&
+          pricesDataV2.data.tokens &&
+          pricesDataV2.data.tokens.length > 0
+            ? pricesDataV2.data.tokens
+            : [];
+
+        const addressesNotInV2 = addresses.filter((address) => {
+          const priceV2 = pricesV2.find(
+            (item: any) => item.id.toLowerCase() === address.toLowerCase(),
+          );
+          return !priceV2 || !priceV2.derivedETH || !Number(priceV2.derivedETH);
+        });
+
+        const pricesDataV3 = await clientV3.query({
+          query: TOKENPRICES_FROM_ADDRESSES_V3(
+            addressesNotInV2.map((address) => address.toLowerCase()),
+          ),
+          fetchPolicy: 'network-only',
+        });
+
+        const pricesV3 =
+          pricesDataV3.data &&
+          pricesDataV3.data.tokens &&
+          pricesDataV3.data.tokens.length > 0
+            ? pricesDataV3.data.tokens
+            : [];
+
+        const prices = addresses.map((address) => {
+          const priceV2 = pricesV2.find(
+            (item: any) => item.id.toLowerCase() === address.toLowerCase(),
+          );
+          if (priceV2 && priceV2.derivedETH && Number(priceV2.derivedETH)) {
+            return {
+              address,
+              price: (ethPrice.price ?? 0) * Number(priceV2.derivedETH),
+            };
+          } else {
+            const priceV3 = pricesV3.find(
+              (item: any) => item.id.toLowerCase() === address.toLowerCase(),
+            );
+            if (
+              priceV3 &&
+              priceV3.derivedMatic &&
+              Number(priceV3.derivedMatic)
+            ) {
+              return {
+                address,
+                price: (maticPrice.price ?? 0) * Number(priceV3.derivedMatic),
+              };
+            }
+            return { address, price: 0 };
+          }
+        });
+        setPrices(prices);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ethPrice.price, maticPrice.price]);
+
+  return prices;
 }
 
 //TODO: the majority of these functions share alot of common logic,

@@ -84,6 +84,7 @@ import { useEffect, useState } from 'react';
 import { useEthPrice } from 'state/application/hooks';
 import { getGlobalDataV3 } from './v3-graph';
 import { TFunction } from 'react-i18next';
+import { TOKENS_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -283,6 +284,140 @@ export const getEthPrice: () => Promise<number[]> = async () => {
   }
 
   return [ethPrice, ethPriceOneDay, priceChangeETH];
+};
+
+export const getTokenInfoSwapDetails = async (
+  ethPrice: number,
+  ethPriceOld: number,
+  maticPrice: number,
+  maticPriceOld: number,
+  address: string,
+) => {
+  const utcCurrentTime = dayjs();
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+  const [oneDayBlock] = await getBlocksFromTimestamps([utcOneDayBack]);
+
+  try {
+    const currentDataV2 = await clientV2.query({
+      query: TOKEN_INFO(address.toLowerCase()),
+      fetchPolicy: 'network-only',
+    });
+
+    const oneDayDataV2 = await clientV2.query({
+      query: TOKEN_INFO_OLD(oneDayBlock.number, address.toLowerCase()),
+      fetchPolicy: 'network-only',
+    });
+
+    const currentDataV3 = await clientV3.query({
+      query: TOKENS_FROM_ADDRESSES_V3(undefined, [address.toLowerCase()]),
+      fetchPolicy: 'network-only',
+    });
+
+    const oneDayDataV3 = await clientV3.query({
+      query: TOKENS_FROM_ADDRESSES_V3(oneDayBlock.number, [
+        address.toLowerCase(),
+      ]),
+      fetchPolicy: 'network-only',
+    });
+
+    const currentV2 =
+      currentDataV2 &&
+      currentDataV2.data &&
+      currentDataV2.data.tokens &&
+      currentDataV2.data.tokens.length > 0
+        ? currentDataV2.data.tokens[0]
+        : undefined;
+
+    const oneDayV2 =
+      oneDayDataV2 &&
+      oneDayDataV2.data &&
+      oneDayDataV2.data.tokens &&
+      oneDayDataV2.data.tokens.length > 0
+        ? oneDayDataV2.data.tokens[0]
+        : undefined;
+
+    const currentV3 =
+      currentDataV3 &&
+      currentDataV3.data &&
+      currentDataV3.data.tokens &&
+      currentDataV3.data.tokens.length > 0
+        ? currentDataV3.data.tokens[0]
+        : undefined;
+
+    const oneDayV3 =
+      oneDayDataV3 &&
+      oneDayDataV3.data &&
+      oneDayDataV3.data.tokens &&
+      oneDayDataV3.data.tokens.length > 0
+        ? oneDayDataV3.data.tokens[0]
+        : undefined;
+
+    const manageUntrackedVolume = currentV3
+      ? +currentV3.volumeUSD <= 1
+        ? 'untrackedVolumeUSD'
+        : 'volumeUSD'
+      : '';
+    const manageUntrackedTVL = currentV3
+      ? +currentV3.totalValueLockedUSD <= 1
+        ? 'totalValueLockedUSDUntracked'
+        : 'totalValueLockedUSD'
+      : '';
+
+    const oneDayVolumeUSD =
+      Number(
+        currentV3 && currentV3[manageUntrackedVolume]
+          ? currentV3[manageUntrackedVolume]
+          : 0,
+      ) +
+      Number(
+        currentV2 && currentV2.tradeVolumeUSD ? currentV2.tradeVolumeUSD : 0,
+      ) -
+      Number(
+        oneDayV3 && oneDayV3[manageUntrackedVolume]
+          ? oneDayV3[manageUntrackedVolume]
+          : 0,
+      ) -
+      Number(oneDayV2 && oneDayV2.tradeVolumeUSD ? oneDayV2.tradeVolumeUSD : 0);
+
+    const totalLiquidityUSD =
+      (currentV3 ? Number(currentV3[manageUntrackedTVL]) : 0) +
+      (currentV2
+        ? (currentV2.totalLiquidity ?? 0) *
+          ethPrice *
+          (currentV2.derivedETH ?? 0)
+        : 0);
+
+    const priceUSDV3 = currentV3
+      ? parseFloat(currentV3.derivedMatic) * maticPrice
+      : 0;
+    const priceUSDOneDayV3 = oneDayV3
+      ? parseFloat(oneDayV3.derivedMatic) * maticPriceOld
+      : 0;
+    const priceUSDV2 =
+      currentV2 && currentV2.derivedETH ? currentV2.derivedETH * ethPrice : 0;
+    const priceUSDOneDayV2 =
+      oneDayV2 && oneDayV2.derivedETH ? oneDayV2.derivedETH * ethPriceOld : 0;
+    const priceUSD = priceUSDV2 ?? priceUSDV3;
+    const priceUSDOneDay = priceUSDOneDayV2 ?? priceUSDOneDayV3;
+
+    const priceChangeUSD =
+      priceUSD && priceUSDOneDay
+        ? getPercentChange(
+            Number(priceUSD.toString()),
+            Number(priceUSDOneDay.toString()),
+          )
+        : 0;
+
+    return {
+      totalLiquidityUSD,
+      oneDayVolumeUSD,
+      priceUSD,
+      priceChangeUSD,
+    };
+  } catch (e) {
+    console.log(e);
+    return;
+  }
 };
 
 export const getTokenInfo = async (
