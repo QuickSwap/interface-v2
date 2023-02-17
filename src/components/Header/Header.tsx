@@ -32,6 +32,7 @@ import { useTranslation } from 'react-i18next';
 import { getConfig } from 'config/index';
 import useDeviceWidth from 'hooks/useDeviceWidth';
 import { GlobalValue } from 'constants/index';
+import { USDC } from 'constants/v3/addresses';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -104,13 +105,14 @@ const Header: React.FC = () => {
   const showAnalytics = config['analytics']['available'];
   const showLending = config['lending']['available'];
   const showGamingHub = config['gamingHub']['available'];
-  const { isV2 } = useIsV2();
 
   const menuItems = [];
 
   if (showSwap) {
     menuItems.push({
-      link: `/swap?swapIndex=0&currency0=ETH&currency1=${GlobalValue.tokens.COMMON.USDC.address}`,
+      link: `/swap?currency0=ETH${
+        chainId ? `&currency1=${USDC[chainId].address}` : ''
+      }`,
       text: t('swap'),
       id: 'swap-page-link',
     });

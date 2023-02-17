@@ -7,7 +7,7 @@ import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useIsV2 } from 'state/application/hooks';
@@ -21,31 +21,13 @@ const SWAP_V3 = 2;
 const SWAP_LIMIT = 3;
 const SWAP_CROSS_CHAIN = 4;
 
-const SwapDropdownTabs = [
-  { name: 'bestTrade', key: SWAP_BEST_TRADE },
-  { name: 'market', key: SWAP_NORMAL },
-  { name: 'marketV3', key: SWAP_V3 },
-  { name: 'limit', key: SWAP_LIMIT },
-  // {
-  //   name: 'crossChain',
-  //   subTitle: 'Comming Soon!',
-  //   key: SWAP_CROSS_CHAIN,
-  //   visible: false,
-  // },
-];
-
-const SwapOtherTabs = [
-  { name: 'bestTrade', subTitle: 'Comming Soon!', key: SWAP_CROSS_CHAIN },
-  { name: 'limit', key: SWAP_LIMIT },
-];
-
 const SwapMain: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
 
   const parsedQs = useParsedQueryString();
-  const swapType = Number(parsedQs.swapIndex);
+  const swapType = parsedQs.swapIndex;
   const isProMode = Boolean(
     parsedQs.isProMode && parsedQs.isProMode === 'true',
   );
@@ -63,12 +45,34 @@ const SwapMain: React.FC = () => {
   const showBestTrade = config['swap']['bestTrade'];
   const showLimitOrder = config['swap']['limitOrder'];
 
+  const SwapDropdownTabs = useMemo(() => {
+    const tabs = [];
+    if (showBestTrade) {
+      tabs.push({ name: 'bestTrade', key: SWAP_BEST_TRADE });
+    }
+    if (v2) {
+      tabs.push({ name: 'market', key: SWAP_NORMAL });
+    }
+    if (v3) {
+      tabs.push({ name: 'marketV3', key: SWAP_V3 });
+    }
+    if (showLimitOrder) {
+      tabs.push({ name: 'limit', key: SWAP_LIMIT });
+    }
+    return tabs;
+  }, [showBestTrade, showLimitOrder, v2, v3]);
+
+  const SwapOtherTabs = [
+    { name: 'bestTrade', subTitle: 'Comming Soon!', key: SWAP_CROSS_CHAIN },
+    { name: 'limit', key: SWAP_LIMIT },
+  ];
+
   const [dropDownMenuText, setDropdownMenuText] = useState(() => {
-    const currentTab = parseInt(swapType?.toString() || '0', 0);
-    if (currentTab == SWAP_CROSS_CHAIN) {
+    if (!swapType) return;
+    if (swapType == SWAP_CROSS_CHAIN.toString()) {
       return SwapDropdownTabs[0].name;
     } else {
-      return SwapDropdownTabs[currentTab].name;
+      return SwapDropdownTabs[Number(swapType)].name;
     }
   });
 
@@ -94,7 +98,7 @@ const SwapMain: React.FC = () => {
 
   const swapTabClass = (currentSwapType: number) => {
     return `${
-      swapType === currentSwapType ? 'activeSwap' : ''
+      swapType === currentSwapType.toString() ? 'activeSwap' : ''
     } swapItem headingItem
     `;
   };
@@ -120,10 +124,10 @@ const SwapMain: React.FC = () => {
   useEffect(() => {
     if (
       !swapType ||
-      (swapType === SWAP_BEST_TRADE && !showBestTrade) ||
-      (swapType === SWAP_NORMAL && !v2) ||
-      (swapType === SWAP_V3 && !v3) ||
-      (swapType === SWAP_LIMIT && !showLimitOrder)
+      (Number(swapType) === SWAP_BEST_TRADE && !showBestTrade) ||
+      (Number(swapType) === SWAP_NORMAL && !v2) ||
+      (Number(swapType) === SWAP_V3 && !v3) ||
+      (Number(swapType) === SWAP_LIMIT && !showLimitOrder)
     ) {
       const availableSwapTypes = [
         SWAP_BEST_TRADE,
@@ -156,7 +160,7 @@ const SwapMain: React.FC = () => {
 
   useEffect(() => {
     if (swapType) {
-      if (swapType === SWAP_V3) {
+      if (Number(swapType) === SWAP_V3) {
         updateIsV2(false);
       } else {
         updateIsV2(true);
@@ -181,19 +185,21 @@ const SwapMain: React.FC = () => {
         <Box display='flex' width={1}>
           {!isProMode ? (
             <>
-              <Button
-                id='swap-button'
-                aria-controls={open ? 'swap-menu' : undefined}
-                aria-haspopup='true'
-                aria-expanded={open ? 'true' : undefined}
-                variant='text'
-                style={{ background: 'transparent' }}
-                disableElevation
-                onClick={handleClickListItem}
-                endIcon={<KeyboardArrowDown />}
-              >
-                {t(dropDownMenuText)}
-              </Button>
+              {dropDownMenuText && (
+                <Button
+                  id='swap-button'
+                  aria-controls={open ? 'swap-menu' : undefined}
+                  aria-haspopup='true'
+                  aria-expanded={open ? 'true' : undefined}
+                  variant='text'
+                  style={{ background: 'transparent' }}
+                  disableElevation
+                  onClick={handleClickListItem}
+                  endIcon={<KeyboardArrowDown />}
+                >
+                  {t(dropDownMenuText)}
+                </Button>
+              )}
               <Menu
                 id='swap-menu'
                 anchorEl={anchorEl}
@@ -262,7 +268,7 @@ const SwapMain: React.FC = () => {
                   <ToggleSwitch
                     toggled={isProMode}
                     onToggle={() => {
-                      redirectWithProMode(true);
+                      redirectWithProMode(!isProMode);
                     }}
                   />
                 </Box>
@@ -283,11 +289,15 @@ const SwapMain: React.FC = () => {
         padding={isProMode ? '0 24px 24px' : '0'}
         pt={3.5}
       >
-        {showBestTrade && swapType === SWAP_BEST_TRADE && <SwapBestTrade />}
-        {v2 && swapType === SWAP_NORMAL && <Swap />}
-        {v3 && swapType === SWAP_V3 && <SwapV3Page />}
+        {showBestTrade && Number(swapType) === SWAP_BEST_TRADE && (
+          <SwapBestTrade />
+        )}
+        {v2 && Number(swapType) === SWAP_NORMAL && <Swap />}
+        {v3 && Number(swapType) === SWAP_V3 && <SwapV3Page />}
         {/* {swapType === SWAP_CROSS_CHAIN.toString() && <SwapCrossChain />} */}
-        {showLimitOrder && swapType === SWAP_LIMIT && <SwapLimitOrder />}
+        {showLimitOrder && Number(swapType) === SWAP_LIMIT && (
+          <SwapLimitOrder />
+        )}
       </Box>
     </>
   );
