@@ -67,14 +67,14 @@ const SwapMain: React.FC = () => {
     { name: 'limit', key: SWAP_LIMIT },
   ];
 
-  const [dropDownMenuText, setDropdownMenuText] = useState(() => {
+  const dropDownMenuText = useMemo(() => {
     if (!swapType) return;
-    if (swapType == SWAP_CROSS_CHAIN.toString()) {
-      return SwapDropdownTabs[0].name;
-    } else {
-      return SwapDropdownTabs[Number(swapType)].name;
-    }
-  });
+    const dropdownTab = SwapDropdownTabs.find(
+      (item) => item.key === Number(swapType),
+    );
+    if (!dropdownTab) return;
+    return dropdownTab.name;
+  }, [SwapDropdownTabs, swapType]);
 
   const [selectedIndex, setSelectedIndex] = React.useState(
     parseInt(swapType?.toString() || '0', 0),
@@ -109,7 +109,6 @@ const SwapMain: React.FC = () => {
   ) => {
     setSelectedIndex(index);
     setAnchorEl(null);
-    setDropdownMenuText(SwapDropdownTabs[index].name);
     redirectWithSwapType(SwapDropdownTabs[index].key);
   };
 

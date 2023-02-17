@@ -1,7 +1,7 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://dogechain.ankr.com",
+  "rpc": "https://rpc-sg.dogechain.dog",
   "blockExplorer": "https://explorer.dogechain.dog",
   "networkName": "DogeChain",
   "isMainnet": true,
