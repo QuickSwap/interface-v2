@@ -410,9 +410,12 @@ const Header: React.FC = () => {
             {ethereum && !isSupportedNetwork(ethereum) && (
               <Box className='wrongNetworkWrapper'>
                 <Box className='wrongNetworkContent'>
-                  <small>{t('switchWalletToPolygon')}</small>
-                  <Box mt={2.5} onClick={addMaticToMetamask}>
-                    {t('switchPolygon')}
+                  <small>{t('switchWalletToNetwork')}</small>
+                  <Box
+                    mt={2.5}
+                    onClick={() => setOpenNetworkSelectionModal(true)}
+                  >
+                    {t('selectNetwork')}
                   </Box>
                 </Box>
               </Box>

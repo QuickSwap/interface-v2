@@ -6,7 +6,7 @@ import 'components/styles/NetworkSelectionModal.scss';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
-import { switchNetwork } from 'utils';
+import { isSupportedNetwork, switchNetwork } from 'utils';
 
 interface NetworkSelectionModalProps {
   open: boolean;
@@ -22,6 +22,8 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
     const config = getConfig(chain);
     return config && config.isMainnet;
   });
+  const { ethereum } = window as any;
+
   return (
     <CustomModal
       open={open}
@@ -40,7 +42,11 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
               className='networkItemWrapper'
               key={chain}
               onClick={() => {
-                if (chainId && chain !== chainId) {
+                if (
+                  !ethereum ||
+                  !isSupportedNetwork(ethereum) ||
+                  (chainId && chain !== chainId)
+                ) {
                   switchNetwork(chain);
                 }
                 onClose();
@@ -50,12 +56,15 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
                 <img src={config['nativeCurrencyImage']} alt='network Image' />
                 <small className='weight-600'>{config['networkName']}</small>
               </Box>
-              {chainId && chainId === chain && (
-                <Box className='flex items-center'>
-                  <Box className='networkConnectedDot' />
-                  <span>Connected</span>
-                </Box>
-              )}
+              {ethereum &&
+                isSupportedNetwork(ethereum) &&
+                chainId &&
+                chainId === chain && (
+                  <Box className='flex items-center'>
+                    <Box className='networkConnectedDot' />
+                    <span>Connected</span>
+                  </Box>
+                )}
             </Box>
           );
         })}
