@@ -32,6 +32,8 @@ import { ChainId, JSBI } from '@uniswap/sdk';
 import { StableCoins } from 'constants/v3/addresses';
 import { getEternalFarmFromTokens } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
+import AutomaticImage from 'assets/images/automatic.svg';
+import AutomaticImageDark from 'assets/images/automaticDark.svg';
 import { Trans, useTranslation } from 'react-i18next';
 
 interface IRangeSelector {
@@ -365,12 +367,15 @@ export function SelectRange({
                 )
               }
             >
-              <Box className='flex items-start'>
-                <span>{t('automatic')}</span>
-                <Box ml='3px' className='poolRangeBetaBox'>
-                  {t('beta')}
-                </Box>
-              </Box>
+              <img
+                src={
+                  liquidityRangeType ===
+                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+                    ? AutomaticImageDark
+                    : AutomaticImage
+                }
+                alt='gamma range'
+              />
             </Button>
             <Button
               className={

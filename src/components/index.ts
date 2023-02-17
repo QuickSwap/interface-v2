@@ -57,6 +57,7 @@ export {
 } from './TransactionConfirmationModal';
 export { default as SearchInput } from './SearchInput';
 export { default as SwapTokenDetails } from './SwapTokenDetails';
+export { default as SwapTokenDetailsHorizontal } from './SwapTokenDetailsHorizontal';
 export { default as TopMovers } from './TopMovers';
 export { default as TokensTable } from './TokensTable';
 export { default as PairTable } from './PairsTable';

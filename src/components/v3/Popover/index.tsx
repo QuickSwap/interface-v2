@@ -11,6 +11,8 @@ export interface PopoverProps {
   show: boolean;
   children?: React.ReactNode;
   placement?: Placement;
+  color?: string;
+  borderRadius?: string;
 }
 
 export default function Popover({
@@ -18,6 +20,8 @@ export default function Popover({
   show,
   children,
   placement = 'auto',
+  color,
+  borderRadius,
 }: PopoverProps) {
   const [
     referenceElement,
@@ -52,12 +56,15 @@ export default function Popover({
       <Portal>
         <PopoverContainer
           show={show}
+          color={color}
+          borderRadius={borderRadius}
           ref={setPopperElement as any}
           style={styles.popper}
           {...attributes.popper}
         >
           {content}
           <Arrow
+            color={color}
             className={`arrow-${attributes.popper?.['data-popper-placement'] ??
               ''}`}
             ref={setArrowElement as any}

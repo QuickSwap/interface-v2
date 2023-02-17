@@ -169,7 +169,7 @@ const EternalFarmsPage: React.FC<{
               ? Number(eternalFarmTvls[farm2.id])
               : 0;
           return farm1TVL > farm2TVL ? sortDescKey : -1 * sortDescKey;
-        } else if (sortBy === v3FarmSortBy.farmAPR) {
+        } else if (sortBy === v3FarmSortBy.apr) {
           const farm1FarmAPR =
             eternalFarmAprs && farm1 && farm1.id
               ? Number(eternalFarmAprs[farm1.id])
@@ -178,8 +178,6 @@ const EternalFarmsPage: React.FC<{
             eternalFarmAprs && farm2 && farm2.id
               ? Number(eternalFarmAprs[farm2.id])
               : 0;
-          return farm1FarmAPR > farm2FarmAPR ? sortDescKey : -1 * sortDescKey;
-        } else if (sortBy === v3FarmSortBy.poolAPR) {
           const farm1PoolAPR =
             eternalFarmPoolAprs && farm1 && farm1.pool && farm1.pool.id
               ? Number(eternalFarmPoolAprs[farm1.pool.id])
@@ -188,7 +186,9 @@ const EternalFarmsPage: React.FC<{
             eternalFarmPoolAprs && farm2 && farm2.pool && farm2.pool.id
               ? Number(eternalFarmPoolAprs[farm2.pool.id])
               : 0;
-          return farm1PoolAPR > farm2PoolAPR ? sortDescKey : -1 * sortDescKey;
+          return farm1FarmAPR + farm1PoolAPR > farm2FarmAPR + farm2PoolAPR
+            ? sortDescKey
+            : -1 * sortDescKey;
         } else if (sortBy === v3FarmSortBy.rewards) {
           const farm1Reward =
             farm1 &&

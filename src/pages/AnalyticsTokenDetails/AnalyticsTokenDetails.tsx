@@ -229,7 +229,6 @@ const AnalyticsTokenDetails: React.FC = () => {
       }
       if (tokenPairs) {
         const data = tokenPairs.filter((item: any) => !!item);
-        updateTokenPairs(data);
         try {
           const aprs = await getPairsAPR(
             data.map((item: any) => item.id),
@@ -276,17 +275,13 @@ const AnalyticsTokenDetails: React.FC = () => {
     updateTokenTransactions(null);
   }, [tokenAddress, version]);
 
-  const tokenLoaded = !!token;
-  const tokenPairsLoaded = !!tokenPairs;
-  const tokenTxLoaded = version === 'v2' ? true : !!tokenTransactions;
-
   useEffect(() => {
-    if (tokenLoaded && tokenPairsLoaded && tokenTxLoaded) {
+    if (!loadingData) {
       dispatch(setAnalyticsLoaded(true));
     } else {
       dispatch(setAnalyticsLoaded(false));
     }
-  }, [tokenLoaded, tokenPairsLoaded, tokenTxLoaded, version, dispatch]);
+  }, [loadingData, dispatch]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,

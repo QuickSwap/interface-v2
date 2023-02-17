@@ -588,8 +588,8 @@ export async function getTopTokensTotal(
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
     const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
 
-    const [oneDayBlock, twoDayBlock] = await getBlocksFromTimestamps(
-      [utcOneDayBack, utcTwoDaysBack],
+    const [oneDayBlock] = await getBlocksFromTimestamps(
+      [utcOneDayBack],
       500,
       chainId,
     );
@@ -614,11 +614,6 @@ export async function getTopTokensTotal(
       tokenAddresses,
       chainId,
     );
-    const tokens48 = await fetchTokensByTime(
-      twoDayBlock.number,
-      tokenAddresses,
-      chainId,
-    );
 
     const v2TokensCurrent = await fetchTokensByTimeV2(
       undefined,
@@ -631,27 +626,18 @@ export async function getTopTokensTotal(
       tokenAddresses,
       chainId,
     );
-    const v2Tokens48 = await fetchTokensByTimeV2(
-      twoDayBlock.number,
-      tokenAddresses,
-      chainId,
-    );
 
     const parsedTokens = parseTokensData(tokensCurrent);
     const parsedTokens24 = parseTokensData(tokens24);
-    const parsedTokens48 = parseTokensData(tokens48);
 
     const parsedTokensV2 = parseTokensData(v2TokensCurrent);
     const parsedTokens24V2 = parseTokensData(v2Tokens24);
-    const parsedTokens48V2 = parseTokensData(v2Tokens48);
 
     const formatted = tokenAddresses.map((address: string) => {
       const current = parsedTokens[address];
       const oneDay = parsedTokens24[address];
-      const twoDay = parsedTokens48[address];
       const v2Current = parsedTokensV2[address];
       const v2OneDay = parsedTokens24V2[address];
-      const v2TwoDay = parsedTokens48V2[address];
 
       const manageUntrackedVolume = current
         ? +current.volumeUSD <= 1
@@ -664,34 +650,23 @@ export async function getTopTokensTotal(
           : 'totalValueLockedUSD'
         : '';
 
-      const [oneDayVolumeUSD, volumeUSDChange] = get2DayPercentChange(
+      const oneDayVolumeUSD =
         Number(
           current && current[manageUntrackedVolume]
             ? current[manageUntrackedVolume]
             : 0,
         ) +
-          Number(
-            v2Current && v2Current.tradeVolumeUSD
-              ? v2Current.tradeVolumeUSD
-              : 0,
-          ),
+        Number(
+          v2Current && v2Current.tradeVolumeUSD ? v2Current.tradeVolumeUSD : 0,
+        ) -
         Number(
           oneDay && oneDay[manageUntrackedVolume]
             ? oneDay[manageUntrackedVolume]
             : 0,
-        ) +
-          Number(
-            v2OneDay && v2OneDay.tradeVolumeUSD ? v2OneDay.tradeVolumeUSD : 0,
-          ),
+        ) -
         Number(
-          twoDay && twoDay[manageUntrackedVolume]
-            ? twoDay[manageUntrackedVolume]
-            : 0,
-        ) +
-          Number(
-            v2TwoDay && v2TwoDay.tradeVolumeUSD ? v2TwoDay.tradeVolumeUSD : 0,
-          ),
-      );
+          v2OneDay && v2OneDay.tradeVolumeUSD ? v2OneDay.tradeVolumeUSD : 0,
+        );
 
       const tvlUSD =
         (current ? parseFloat(current[manageUntrackedTVL]) : 0) +
@@ -754,7 +729,6 @@ export async function getTopTokensTotal(
             ? v2Current.decimals
             : 18,
         oneDayVolumeUSD,
-        volumeUSDChange,
         totalLiquidityUSD: tvlUSD,
         liquidityChangeUSD: tvlUSDChange,
         priceUSD,
@@ -778,10 +752,9 @@ export async function getTopTokensV3(
     const utcCurrentTime = dayjs();
 
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
 
-    const [oneDayBlock, twoDayBlock] = await getBlocksFromTimestamps(
-      [utcOneDayBack, utcTwoDaysBack],
+    const [oneDayBlock] = await getBlocksFromTimestamps(
+      [utcOneDayBack],
       500,
       chainId,
     );
@@ -806,20 +779,13 @@ export async function getTopTokensV3(
       tokenAddresses,
       chainId,
     );
-    const tokens48 = await fetchTokensByTime(
-      twoDayBlock.number,
-      tokenAddresses,
-      chainId,
-    );
 
     const parsedTokens = parseTokensData(tokensCurrent);
     const parsedTokens24 = parseTokensData(tokens24);
-    const parsedTokens48 = parseTokensData(tokens48);
 
     const formatted = tokenAddresses.map((address: string) => {
       const current = parsedTokens[address];
       const oneDay = parsedTokens24[address];
-      const twoDay = parsedTokens48[address];
 
       const manageUntrackedVolume = current
         ? +current.volumeUSD <= 1
@@ -832,16 +798,17 @@ export async function getTopTokensV3(
           : 'totalValueLockedUSD'
         : '';
 
-      const [oneDayVolumeUSD, volumeUSDChange] =
-        current && oneDay && twoDay
-          ? get2DayPercentChange(
-              current[manageUntrackedVolume],
-              oneDay[manageUntrackedVolume],
-              twoDay[manageUntrackedVolume],
-            )
-          : current
-          ? [parseFloat(current[manageUntrackedVolume]), 0]
-          : [0, 0];
+      const currentVolume =
+        current && current[manageUntrackedVolume]
+          ? Number(current[manageUntrackedVolume])
+          : 0;
+
+      const oneDayVolume =
+        oneDay && oneDay[manageUntrackedVolume]
+          ? Number(oneDay[manageUntrackedVolume])
+          : 0;
+
+      const oneDayVolumeUSD = currentVolume - oneDayVolume;
 
       const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
       const tvlUSDChange = getPercentChange(
@@ -884,7 +851,6 @@ export async function getTopTokensV3(
         symbol: current ? formatTokenSymbol(address, current.symbol) : '',
         decimals: current ? current.decimals : 18,
         oneDayVolumeUSD,
-        volumeUSDChange,
         txCount,
         totalLiquidityUSD: tvlUSD,
         liquidityChangeUSD: tvlUSDChange,
@@ -1640,15 +1606,10 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
     const utcCurrentTime = dayjs();
 
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
     const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
 
-    const [
-      oneDayBlock,
-      twoDayBlock,
-      oneWeekBlock,
-    ] = await getBlocksFromTimestamps(
-      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack],
+    const [oneDayBlock, oneWeekBlock] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcOneWeekBack],
       500,
       chainId,
     );
@@ -1670,11 +1631,6 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
       pairsAddresses,
       chainId,
     );
-    const pairs48 = await fetchPairsByTime(
-      twoDayBlock.number,
-      pairsAddresses,
-      chainId,
-    );
     const pairsWeek = await fetchPairsByTime(
       oneWeekBlock.number,
       pairsAddresses,
@@ -1683,13 +1639,11 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
 
     const parsedPairs = parsePairsData(pairsCurrent);
     const parsedPairs24 = parsePairsData(pairs24);
-    const parsedPairs48 = parsePairsData(pairs48);
     const parsedPairsWeek = parsePairsData(pairsWeek);
 
     const formatted = pairsAddresses.map((address: string) => {
       const current = parsedPairs[address];
       const oneDay = parsedPairs24[address];
-      const twoDay = parsedPairs48[address];
       const week = parsedPairsWeek[address];
 
       if (!current) return;
@@ -1702,25 +1656,24 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
           ? 'totalValueLockedUSDUntracked'
           : 'totalValueLockedUSD';
 
-      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
-        oneDay && twoDay
-          ? get2DayPercentChange(
-              current[manageUntrackedVolume],
-              oneDay[manageUntrackedVolume],
-              twoDay[manageUntrackedVolume],
-            )
-          : oneDay
-          ? [
-              parseFloat(current[manageUntrackedVolume]) -
-                parseFloat(oneDay[manageUntrackedVolume]),
-              0,
-            ]
-          : [parseFloat(current[manageUntrackedVolume]), 0];
+      const currentVolume =
+        current && current[manageUntrackedVolume]
+          ? Number(current[manageUntrackedVolume])
+          : 0;
 
-      const oneWeekVolumeUSD = week
-        ? parseFloat(current[manageUntrackedVolume]) -
-          parseFloat(week[manageUntrackedVolume])
-        : parseFloat(current[manageUntrackedVolume]);
+      const oneDayVolume =
+        oneDay && oneDay[manageUntrackedVolume]
+          ? Number(oneDay[manageUntrackedVolume])
+          : 0;
+
+      const oneWeekVolume =
+        week && week[manageUntrackedVolume]
+          ? Number(week[manageUntrackedVolume])
+          : 0;
+
+      const oneDayVolumeUSD = currentVolume - oneDayVolume;
+
+      const oneWeekVolumeUSD = currentVolume - oneWeekVolume;
 
       const tvlUSD = parseFloat(current[manageUntrackedTVL]);
       const tvlUSDChange = getPercentChange(
@@ -1735,7 +1688,6 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
         fee: current.fee,
         id: address,
         oneDayVolumeUSD,
-        oneDayVolumeChangeUSD,
         oneWeekVolumeUSD,
         trackedReserveUSD: tvlUSD,
         tvlUSDChange,
@@ -1758,15 +1710,10 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
     const utcCurrentTime = dayjs();
 
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
     const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
 
-    const [
-      oneDayBlock,
-      twoDayBlock,
-      oneWeekBlock,
-    ] = await getBlocksFromTimestamps(
-      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack],
+    const [oneDayBlock, oneWeekBlock] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcOneWeekBack],
       500,
       chainId,
     );
@@ -1794,11 +1741,6 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
       pairsAddresses,
       chainId,
     );
-    const pairs48 = await fetchPairsByTime(
-      twoDayBlock.number,
-      pairsAddresses,
-      chainId,
-    );
     const pairsWeek = await fetchPairsByTime(
       oneWeekBlock.number,
       pairsAddresses,
@@ -1820,8 +1762,8 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
         ? v2PairsResult.data.pairs
         : [];
 
-    const [v2OneDayResult, v2TwoDayResult, v2OneWeekResult] = await Promise.all(
-      [oneDayBlock, twoDayBlock, oneWeekBlock].map(async (block) => {
+    const [v2OneDayResult, v2OneWeekResult] = await Promise.all(
+      [oneDayBlock, oneWeekBlock].map(async (block) => {
         const result = await clientV2[chainId].query({
           query: PAIRS_HISTORICAL_BULK(block.number, v2PairsAddresses),
           fetchPolicy: 'network-only',
@@ -1838,14 +1780,6 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
         ? v2OneDayResult.data.pairs
         : [];
 
-    const v2PairsTwoDay =
-      v2TwoDayResult &&
-      v2TwoDayResult.data &&
-      v2TwoDayResult.data.pairs &&
-      v2TwoDayResult.data.pairs.length > 0
-        ? v2TwoDayResult.data.pairs
-        : [];
-
     const v2PairsOneWeek =
       v2OneWeekResult &&
       v2OneWeekResult.data &&
@@ -1856,18 +1790,15 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
 
     const parsedPairs = parsePairsData(pairsCurrent);
     const parsedPairs24 = parsePairsData(pairs24);
-    const parsedPairs48 = parsePairsData(pairs48);
     const parsedPairsWeek = parsePairsData(pairsWeek);
 
     const parsedPairsV2 = parsePairsData(v2PairsCurrent);
     const parsedPairs24V2 = parsePairsData(v2PairsOneDay);
-    const parsedPairs48V2 = parsePairsData(v2PairsTwoDay);
     const parsedPairsWeekV2 = parsePairsData(v2PairsOneWeek);
 
     const formattedV3 = pairsAddresses.map((address: string) => {
       const current = parsedPairs[address];
       const oneDay = parsedPairs24[address];
-      const twoDay = parsedPairs48[address];
       const week = parsedPairsWeek[address];
 
       const manageUntrackedVolume =
@@ -1892,21 +1823,12 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
           ? Number(oneDay[manageUntrackedVolume])
           : 0;
 
-      const v3TwoDayVolumeUSD =
-        twoDay && twoDay[manageUntrackedVolume]
-          ? Number(twoDay[manageUntrackedVolume])
-          : 0;
-
       const v3WeekVolumeUSD =
         week && week[manageUntrackedVolume]
           ? Number(week[manageUntrackedVolume])
           : 0;
 
-      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] = get2DayPercentChange(
-        v3CurrentVolumeUSD,
-        v3OneDayVolumeUSD,
-        v3TwoDayVolumeUSD,
-      );
+      const oneDayVolumeUSD = v3CurrentVolumeUSD - v3OneDayVolumeUSD;
 
       const oneWeekVolumeUSD = v3CurrentVolumeUSD - v3WeekVolumeUSD;
 
@@ -1931,7 +1853,6 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
             fee: current.fee,
             id: address,
             oneDayVolumeUSD,
-            oneDayVolumeChangeUSD,
             oneWeekVolumeUSD,
             trackedReserveUSD: tvlUSD,
             tvlUSDChange,
@@ -1943,7 +1864,6 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
     const formattedV2 = v2PairsAddresses.map((address: string) => {
       const v2Current = parsedPairsV2[address];
       const v2OneDay = parsedPairs24V2[address];
-      const v2TwoDay = parsedPairs48V2[address];
       const v2OneWeek = parsedPairsWeekV2[address];
 
       const v2CurrentVolumeUSD =
@@ -1952,17 +1872,10 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
       const v2OneDayVolumeUSD =
         v2OneDay && v2OneDay.volumeUSD ? Number(v2OneDay.volumeUSD) : 0;
 
-      const v2TwoDayVolumeUSD =
-        v2TwoDay && v2TwoDay.volumeUSD ? Number(v2TwoDay.volumeUSD) : 0;
-
       const v2WeekVolumeUSD =
         v2OneWeek && v2OneWeek.volumeUSD ? Number(v2OneWeek.volumeUSD) : 0;
 
-      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] = get2DayPercentChange(
-        v2CurrentVolumeUSD,
-        v2OneDayVolumeUSD,
-        v2TwoDayVolumeUSD,
-      );
+      const oneDayVolumeUSD = v2CurrentVolumeUSD - v2OneDayVolumeUSD;
 
       const oneWeekVolumeUSD = v2CurrentVolumeUSD - v2WeekVolumeUSD;
 
@@ -1993,7 +1906,6 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
             fee: oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
             id: address,
             oneDayVolumeUSD,
-            oneDayVolumeChangeUSD,
             oneWeekVolumeUSD,
             trackedReserveUSD: tvlUSD,
             tvlUSDChange,
@@ -2016,15 +1928,10 @@ export async function getTopPairsV3ByToken(
     const utcCurrentTime = dayjs();
 
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
     const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
 
-    const [
-      oneDayBlock,
-      twoDayBlock,
-      oneWeekBlock,
-    ] = await getBlocksFromTimestamps(
-      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack],
+    const [oneDayBlock, oneWeekBlock] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcOneWeekBack],
       undefined,
       chainId,
     );
@@ -2048,11 +1955,6 @@ export async function getTopPairsV3ByToken(
       pairsAddresses,
       chainId,
     );
-    const pairs48 = await fetchPairsByTime(
-      twoDayBlock.number,
-      pairsAddresses,
-      chainId,
-    );
     const pairsWeek = await fetchPairsByTime(
       oneWeekBlock.number,
       pairsAddresses,
@@ -2061,13 +1963,11 @@ export async function getTopPairsV3ByToken(
 
     const parsedPairs = parsePairsData(pairsCurrent);
     const parsedPairs24 = parsePairsData(pairs24);
-    const parsedPairs48 = parsePairsData(pairs48);
     const parsedPairsWeek = parsePairsData(pairsWeek);
 
     const formatted = pairsAddresses.map((address: string) => {
       const current = parsedPairs[address];
       const oneDay = parsedPairs24[address];
-      const twoDay = parsedPairs48[address];
       const week = parsedPairsWeek[address];
 
       if (!current) return;
@@ -2080,20 +1980,15 @@ export async function getTopPairsV3ByToken(
           ? 'totalValueLockedUSDUntracked'
           : 'totalValueLockedUSD';
 
-      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
-        oneDay && twoDay
-          ? get2DayPercentChange(
-              current[manageUntrackedVolume],
-              oneDay[manageUntrackedVolume],
-              twoDay[manageUntrackedVolume],
-            )
-          : oneDay
-          ? [
-              parseFloat(current[manageUntrackedVolume]) -
-                parseFloat(oneDay[manageUntrackedVolume]),
-              0,
-            ]
-          : [parseFloat(current[manageUntrackedVolume]), 0];
+      const currentVolume =
+        current && current[manageUntrackedVolume]
+          ? Number(current[manageUntrackedVolume])
+          : 0;
+      const oneDayVolume =
+        oneDay && oneDay[manageUntrackedVolume]
+          ? Number(oneDay[manageUntrackedVolume])
+          : 0;
+      const oneDayVolumeUSD = currentVolume - oneDayVolume;
 
       const oneWeekVolumeUSD = week
         ? parseFloat(current[manageUntrackedVolume]) -
@@ -2113,7 +2008,6 @@ export async function getTopPairsV3ByToken(
         fee: current.fee,
         id: address,
         oneDayVolumeUSD,
-        oneDayVolumeChangeUSD,
         oneWeekVolumeUSD,
         trackedReserveUSD: tvlUSD,
         tvlUSDChange,
@@ -2135,15 +2029,10 @@ export async function getTopPairsTotalByToken(
     const utcCurrentTime = dayjs();
 
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
     const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
 
-    const [
-      oneDayBlock,
-      twoDayBlock,
-      oneWeekBlock,
-    ] = await getBlocksFromTimestamps(
-      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack],
+    const [oneDayBlock, oneWeekBlock] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcOneWeekBack],
       500,
       chainId,
     );
@@ -2175,11 +2064,6 @@ export async function getTopPairsTotalByToken(
       pairsAddresses,
       chainId,
     );
-    const pairs48 = await fetchPairsByTime(
-      twoDayBlock.number,
-      pairsAddresses,
-      chainId,
-    );
     const pairsWeek = await fetchPairsByTime(
       oneWeekBlock.number,
       pairsAddresses,
@@ -2201,8 +2085,8 @@ export async function getTopPairsTotalByToken(
         ? v2PairsResult.data.pairs
         : [];
 
-    const [v2OneDayResult, v2TwoDayResult, v2OneWeekResult] = await Promise.all(
-      [oneDayBlock, twoDayBlock, oneWeekBlock].map(async (block) => {
+    const [v2OneDayResult, v2OneWeekResult] = await Promise.all(
+      [oneDayBlock, oneWeekBlock].map(async (block) => {
         const result = await clientV2[chainId].query({
           query: PAIRS_HISTORICAL_BULK(block.number, v2PairsAddresses),
           fetchPolicy: 'network-only',
@@ -2219,14 +2103,6 @@ export async function getTopPairsTotalByToken(
         ? v2OneDayResult.data.pairs
         : [];
 
-    const v2PairsTwoDay =
-      v2TwoDayResult &&
-      v2TwoDayResult.data &&
-      v2TwoDayResult.data.pairs &&
-      v2TwoDayResult.data.pairs.length > 0
-        ? v2TwoDayResult.data.pairs
-        : [];
-
     const v2PairsOneWeek =
       v2OneWeekResult &&
       v2OneWeekResult.data &&
@@ -2237,18 +2113,15 @@ export async function getTopPairsTotalByToken(
 
     const parsedPairs = parsePairsData(pairsCurrent);
     const parsedPairs24 = parsePairsData(pairs24);
-    const parsedPairs48 = parsePairsData(pairs48);
     const parsedPairsWeek = parsePairsData(pairsWeek);
 
     const parsedPairsV2 = parsePairsData(v2PairsCurrent);
     const parsedPairs24V2 = parsePairsData(v2PairsOneDay);
-    const parsedPairs48V2 = parsePairsData(v2PairsTwoDay);
     const parsedPairsWeekV2 = parsePairsData(v2PairsOneWeek);
 
     const formattedV3 = pairsAddresses.map((address: string) => {
       const current = parsedPairs[address];
       const oneDay = parsedPairs24[address];
-      const twoDay = parsedPairs48[address];
       const week = parsedPairsWeek[address];
 
       const manageUntrackedVolume =
@@ -2273,21 +2146,12 @@ export async function getTopPairsTotalByToken(
           ? Number(oneDay[manageUntrackedVolume])
           : 0;
 
-      const v3TwoDayVolumeUSD =
-        twoDay && twoDay[manageUntrackedVolume]
-          ? Number(twoDay[manageUntrackedVolume])
-          : 0;
-
       const v3WeekVolumeUSD =
         week && week[manageUntrackedVolume]
           ? Number(week[manageUntrackedVolume])
           : 0;
 
-      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] = get2DayPercentChange(
-        v3CurrentVolumeUSD,
-        v3OneDayVolumeUSD,
-        v3TwoDayVolumeUSD,
-      );
+      const oneDayVolumeUSD = v3CurrentVolumeUSD - v3OneDayVolumeUSD;
 
       const oneWeekVolumeUSD = v3CurrentVolumeUSD - v3WeekVolumeUSD;
 
@@ -2312,7 +2176,6 @@ export async function getTopPairsTotalByToken(
             fee: current.fee,
             id: address,
             oneDayVolumeUSD,
-            oneDayVolumeChangeUSD,
             oneWeekVolumeUSD,
             trackedReserveUSD: tvlUSD,
             tvlUSDChange,
@@ -2324,7 +2187,6 @@ export async function getTopPairsTotalByToken(
     const formattedV2 = v2PairsAddresses.map((address: string) => {
       const v2Current = parsedPairsV2[address];
       const v2OneDay = parsedPairs24V2[address];
-      const v2TwoDay = parsedPairs48V2[address];
       const v2OneWeek = parsedPairsWeekV2[address];
 
       const v2CurrentVolumeUSD =
@@ -2333,17 +2195,10 @@ export async function getTopPairsTotalByToken(
       const v2OneDayVolumeUSD =
         v2OneDay && v2OneDay.volumeUSD ? Number(v2OneDay.volumeUSD) : 0;
 
-      const v2TwoDayVolumeUSD =
-        v2TwoDay && v2TwoDay.volumeUSD ? Number(v2TwoDay.volumeUSD) : 0;
-
       const v2WeekVolumeUSD =
         v2OneWeek && v2OneWeek.volumeUSD ? Number(v2OneWeek.volumeUSD) : 0;
 
-      const [oneDayVolumeUSD, oneDayVolumeChangeUSD] = get2DayPercentChange(
-        v2CurrentVolumeUSD,
-        v2OneDayVolumeUSD,
-        v2TwoDayVolumeUSD,
-      );
+      const oneDayVolumeUSD = v2CurrentVolumeUSD - v2OneDayVolumeUSD;
 
       const oneWeekVolumeUSD = v2CurrentVolumeUSD - v2WeekVolumeUSD;
 
@@ -2374,7 +2229,6 @@ export async function getTopPairsTotalByToken(
             fee: oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
             id: address,
             oneDayVolumeUSD,
-            oneDayVolumeChangeUSD,
             oneWeekVolumeUSD,
             trackedReserveUSD: tvlUSD,
             tvlUSDChange,

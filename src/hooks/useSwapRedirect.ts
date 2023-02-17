@@ -101,8 +101,8 @@ export default function useSwapRedirects() {
       } else {
         if (parsedQs.currency0) {
           redirectPath = currentPath.replace(
-            `currency0=${inputCurrencyId}`,
-            `currency1=${inputCurrencyId}`,
+            `currency0=${parsedQs.currency0}`,
+            `currency1=${parsedQs.currency0}`,
           );
         } else {
           redirectPath = currentPath.replace(
@@ -115,8 +115,8 @@ export default function useSwapRedirects() {
       if (outputCurrencyId) {
         if (parsedQs.currency1) {
           redirectPath = currentPath.replace(
-            `currency1=${outputCurrencyId}`,
-            `currency0=${outputCurrencyId}`,
+            `currency1=${parsedQs.currency1}`,
+            `currency0=${parsedQs.currency1}`,
           );
         } else {
           redirectPath = currentPath.replace(

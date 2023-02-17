@@ -1,26 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Button, Menu, MenuItem } from '@material-ui/core';
+import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import { useIsV2 } from 'state/application/hooks';
-import { Swap, SettingsModal, ToggleSwitch } from 'components';
-import { useTranslation } from 'react-i18next';
+import { SettingsModal, Swap, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
-import SwapV3Page from './V3/Swap';
-import { getConfig } from '../../config/index';
+import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
-import { useHistory } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import useSwapRedirects from 'hooks/useSwapRedirect';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
+import { useIsV2 } from 'state/application/hooks';
+import SwapCrossChain from './SwapCrossChain';
 import SwapLimitOrder from './SwapLimitOrder';
+import SwapV3Page from './V3/Swap';
 
-const SWAP_BEST_TRADE = '0';
-const SWAP_NORMAL = '1';
-const SWAP_V3 = '2';
-const SWAP_LIMIT = '3';
+const SWAP_BEST_TRADE = 0;
+const SWAP_NORMAL = 1;
+const SWAP_V3 = 2;
+const SWAP_LIMIT = 3;
+const SWAP_CROSS_CHAIN = 4;
+
+const SwapDropdownTabs = [
+  { name: 'bestTrade', key: SWAP_BEST_TRADE },
+  { name: 'market', key: SWAP_NORMAL },
+  { name: 'marketV3', key: SWAP_V3 },
+  { name: 'limit', key: SWAP_LIMIT },
+  // {
+  //   name: 'crossChain',
+  //   subTitle: 'Comming Soon!',
+  //   key: SWAP_CROSS_CHAIN,
+  //   visible: false,
+  // },
+];
+
+const SwapOtherTabs = [
+  { name: 'bestTrade', subTitle: 'Comming Soon!', key: SWAP_CROSS_CHAIN },
+  { name: 'limit', key: SWAP_LIMIT },
+];
 
 const SwapMain: React.FC = () => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
+
   const parsedQs = useParsedQueryString();
-  const swapType = parsedQs.swapIndex;
+  const swapType = Number(parsedQs.swapIndex);
   const isProMode = Boolean(
     parsedQs.isProMode && parsedQs.isProMode === 'true',
   );
@@ -28,7 +52,6 @@ const SwapMain: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { chainId } = useActiveWeb3React();
 
-  const { redirectWithProMode } = useSwapRedirects();
   const { updateIsV2 } = useIsV2();
 
   const { t } = useTranslation();
@@ -36,10 +59,22 @@ const SwapMain: React.FC = () => {
   const v2 = config['v2'];
   const v3 = config['v3'];
   const showBestTrade = config['swap']['bestTrade'];
-  const showProMode = config['swap']['proMode'];
   const showLimitOrder = config['swap']['limitOrder'];
 
-  const redirectWithSwapType = (swapTypeTo: string) => {
+  const [dropDownMenuText, setDropdownMenuText] = useState(() => {
+    const currentTab = parseInt(swapType?.toString() || '0', 0);
+    if (currentTab == SWAP_CROSS_CHAIN) {
+      return SwapDropdownTabs[0].name;
+    } else {
+      return SwapDropdownTabs[currentTab].name;
+    }
+  });
+
+  const [selectedIndex, setSelectedIndex] = React.useState(
+    parseInt(swapType?.toString() || '0', 0),
+  );
+
+  const redirectWithSwapType = (swapTypeTo: number) => {
     const currentPath = history.location.pathname + history.location.search;
     let redirectPath = '';
     if (swapType) {
@@ -55,11 +90,29 @@ const SwapMain: React.FC = () => {
     history.push(redirectPath);
   };
 
-  const swapTabClass = (currentSwapType: string) => {
+  const swapTabClass = (currentSwapType: number) => {
     return `${
       swapType === currentSwapType ? 'activeSwap' : ''
     } swapItem headingItem
     `;
+  };
+
+  const handleMenuItemClick = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number,
+  ) => {
+    setSelectedIndex(index);
+    setAnchorEl(null);
+    setDropdownMenuText(SwapDropdownTabs[index].name);
+    redirectWithSwapType(SwapDropdownTabs[index].key);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
   useEffect(() => {
@@ -123,75 +176,116 @@ const SwapMain: React.FC = () => {
           isProMode ? ' proModeWrapper' : ''
         }`}
       >
-        <Box display='flex'>
-          {showBestTrade && (
-            <Box
-              className={swapTabClass(SWAP_BEST_TRADE)}
-              onClick={() => {
-                redirectWithSwapType(SWAP_BEST_TRADE);
-              }}
-            >
-              <p>{t('bestTrade')}</p>
-            </Box>
-          )}
-          {v2 && (
-            <Box
-              className={swapTabClass(SWAP_NORMAL)}
-              onClick={() => {
-                redirectWithSwapType(SWAP_NORMAL);
-              }}
-            >
-              <p>{t('market')}</p>
-            </Box>
-          )}
-          {v3 && (
-            <Box
-              className={swapTabClass(SWAP_V3)}
-              onClick={() => {
-                redirectWithSwapType(SWAP_V3);
-              }}
-            >
-              <p>{t('marketV3')}</p>
-            </Box>
-          )}
-          {showLimitOrder && (
-            <Box
-              className={swapTabClass(SWAP_LIMIT)}
-              onClick={() => {
-                redirectWithSwapType(SWAP_LIMIT);
-              }}
-            >
-              <p>{t('limit')}</p>
-            </Box>
-          )}
-        </Box>
-        <Box margin='8px 16px 0' className='flex items-center'>
-          {!isProMode && showProMode && (
-            <Box className='flex items-center' mr={1}>
-              <span
-                className='text-secondary text-uppercase'
-                style={{ marginRight: 8 }}
+        <Box display='flex' width={1}>
+          {!isProMode ? (
+            <>
+              <Button
+                id='swap-button'
+                aria-controls={open ? 'swap-menu' : undefined}
+                aria-haspopup='true'
+                aria-expanded={open ? 'true' : undefined}
+                variant='text'
+                style={{ background: 'transparent' }}
+                disableElevation
+                onClick={handleClickListItem}
+                endIcon={<KeyboardArrowDown />}
               >
-                {t('proMode')}
-              </span>
-              <ToggleSwitch
-                toggled={false}
-                onToggle={() => {
-                  redirectWithProMode(true);
+                {t(dropDownMenuText)}
+              </Button>
+              <Menu
+                id='swap-menu'
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'swap-button',
+                  role: 'listbox',
                 }}
-              />
-            </Box>
+              >
+                {SwapDropdownTabs.map((option, index) => (
+                  <MenuItem
+                    key={option.key}
+                    disabled={option.key === selectedIndex}
+                    selected={option.key === selectedIndex}
+                    onClick={(event) => handleMenuItemClick(event, option.key)}
+                  >
+                    {t(option.name)}
+                  </MenuItem>
+                ))}
+              </Menu>
+              {/* <Box
+                className={swapTabClass(SWAP_CROSS_CHAIN)}
+                onClick={() => {
+                  setSelectedIndex(SWAP_CROSS_CHAIN);
+                  setAnchorEl(null);
+                  setDropdownMenuText(SwapDropdownTabs[0].name);
+                  redirectWithSwapType(SWAP_CROSS_CHAIN);
+                }}
+              >
+                <p>{t('crossChain')}</p>
+              </Box> */}
+            </>
+          ) : (
+            <>
+              {SwapDropdownTabs.map((option, index) => (
+                <Box
+                  key={option.key}
+                  style={{ textAlign: 'center' }}
+                  className={swapTabClass(option.key)}
+                  onClick={() => {
+                    redirectWithSwapType(option.key);
+                  }}
+                >
+                  <p>{t(option.name)}</p>
+                </Box>
+              ))}
+            </>
           )}
-          <Box className='headingItem'>
-            <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
-          </Box>
+          {
+            <Box
+              style={{
+                marginLeft: 'auto',
+                marginTop: 'auto',
+                marginBottom: 'auto',
+              }}
+            >
+              <Box margin='0 16px' className='flex items-center'>
+                <Box className='flex items-center' mr={1}>
+                  <span
+                    className='text-secondary text-uppercase'
+                    style={{ marginRight: 8 }}
+                  >
+                    {t('proMode')}
+                  </span>
+                  <ToggleSwitch
+                    toggled={isProMode}
+                    onToggle={() => {
+                      updateIsProMode(!isProMode);
+                    }}
+                  />
+                </Box>
+                <Box className='headingItem'>
+                  <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+                </Box>
+              </Box>
+            </Box>
+          }
         </Box>
       </Box>
-      <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
-        {swapType === SWAP_BEST_TRADE && showBestTrade && <SwapBestTrade />}
-        {swapType === SWAP_NORMAL && v2 && <Swap />}
-        {swapType === SWAP_V3 && v3 && <SwapV3Page />}
-        {swapType === SWAP_LIMIT && showLimitOrder && <SwapLimitOrder />}
+      <Box
+        style={{
+          backgroundImage: isProMode
+            ? 'linear-gradient(to bottom, #282d3d, #1b1e29)'
+            : '',
+        }}
+        padding={isProMode ? '0 24px 24px' : '0'}
+        pt={3.5}
+      >
+        {showBestTrade && swapType === SWAP_BEST_TRADE && <SwapBestTrade />}
+        {v2 && swapType === SWAP_NORMAL && <Swap />}
+        {v3 && swapType === SWAP_V3 && <SwapV3Page />}
+        {/* {swapType === SWAP_CROSS_CHAIN.toString() && <SwapCrossChain />} */}
+        {showLimitOrder && swapType === SWAP_LIMIT && <SwapLimitOrder />}
       </Box>
     </>
   );

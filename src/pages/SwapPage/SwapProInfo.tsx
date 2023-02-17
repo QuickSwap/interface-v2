@@ -15,7 +15,8 @@ const SwapProInfo: React.FC<{
   token1?: Token;
   token2?: Token;
   transactions?: any[];
-}> = ({ token1, token2, transactions }) => {
+  showHeading?: boolean;
+}> = ({ token1, token2, transactions, showHeading = true }) => {
   const { t } = useTranslation();
   const [token1Data, setToken1Data] = useState<any>(null);
   const [token2Data, setToken2Data] = useState<any>(null);
@@ -101,10 +102,14 @@ const SwapProInfo: React.FC<{
 
   return (
     <>
-      <Box p={1}>
-        <p className='text-uppercase'>{t('info')}:</p>
-      </Box>
-      <Divider />
+      {showHeading && (
+        <Box>
+          <Box p={1}>
+            <p className='text-uppercase'>{t('info')}:</p>
+          </Box>
+          <Divider />
+        </Box>
+      )}
       {currency1 && <TokenInfo currency={currency1} tokenData={token1Data} />}
       {currency2 && <TokenInfo currency={currency2} tokenData={token2Data} />}
       {currency1 && currency2 && (

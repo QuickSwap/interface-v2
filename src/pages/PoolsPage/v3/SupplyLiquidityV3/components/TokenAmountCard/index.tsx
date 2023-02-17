@@ -1,29 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Currency,
-  CurrencyAmount,
-  Token,
-  NativeCurrency,
-} from '@uniswap/sdk-core';
+import React, { useMemo } from 'react';
+import { Currency, CurrencyAmount, Token } from '@uniswap/sdk-core';
 
 import CurrencyLogo from 'components/CurrencyLogo';
-import { WrappedCurrency } from 'models/types';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
-import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import Loader from 'components/Loader';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
-import { tryParseAmount } from 'state/swap/v3/hooks';
-import { useBestV3TradeExactIn } from 'hooks/v3/useBestV3Trade';
-import { useInitialTokenPrice, useInitialUSDPrices } from 'state/mint/v3/hooks';
 import './index.scss';
-import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
 import NumericalInput from 'components/NumericalInput';
-import { ChainId, ETHER } from '@uniswap/sdk';
-import { USDC, WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { ETHER, WETH } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
+import { useV3MintState } from 'state/mint/v3/hooks';
+import { GlobalConst } from 'constants/index';
+import { DoubleCurrencyLogo } from 'components';
 
 interface ITokenAmountCard {
   currency: Currency | undefined | null;
@@ -63,95 +54,96 @@ export function TokenAmountCard({
     wrapped: WMATIC_EXTENDED[chainIdToUse],
   } as NativeCurrency;
   const { t } = useTranslation();
+  const { chainId, account } = useActiveWeb3React();
+  const { liquidityRangeType } = useV3MintState();
 
   const balance = useCurrencyBalance(
     account ?? undefined,
     currency?.isNative ? nativeCurrency : currency ?? undefined,
   );
-  const balanceUSD = useUSDCPrice(currency ?? undefined);
-
-  const [localUSDValue, setLocalUSDValue] = useState('');
-  const [localTokenValue, setLocalTokenValue] = useState('');
-
-  const valueUSD = useUSDCValue(
-    tryParseAmount(
-      value,
-      currency ? (currency.isNative ? currency.wrapped : currency) : undefined,
-    ),
-    true,
+  const ethBalance = useCurrencyBalance(account ?? undefined, ETHER);
+  const wETHBalance = useCurrencyBalance(
+    account ?? undefined,
+    chainId ? WETH[chainId] : undefined,
   );
-  const USDC_POLYGON = toToken(USDC[chainIdToUse]);
-  const tokenValue = useBestV3TradeExactIn(
-    tryParseAmount('1', USDC_POLYGON),
-    currency ?? undefined,
-  );
+  // const balanceUSD = useUSDCPrice(currency ?? undefined);
 
-  const currencyPrice = useUSDCPrice(currency ?? undefined);
-  const otherCurrencyPrice = useUSDCPrice(otherCurrency ?? undefined);
+  // const [localUSDValue, setLocalUSDValue] = useState('');
+  // const [localTokenValue, setLocalTokenValue] = useState('');
 
-  const initialUSDPrices = useInitialUSDPrices();
-  const initialTokenPrice = useInitialTokenPrice();
+  // const valueUSD = useUSDCValue(
+  //   tryParseAmount(
+  //     value,
+  //     currency ? (currency.isNative ? currency.wrapped : currency) : undefined,
+  //   ),
+  //   true,
+  // );
+  // const USDC_POLYGON = toToken(GlobalValue.tokens.COMMON.USDC);
+  // const tokenValue = useBestV3TradeExactIn(
+  //   tryParseAmount('1', USDC_POLYGON),
+  //   currency ?? undefined,
+  // );
 
-  const isUSD = useMemo(() => {
-    return priceFormat === PriceFormats.USD;
-  }, [priceFormat]);
+  // const currencyPrice = useUSDCPrice(currency ?? undefined);
+  // const otherCurrencyPrice = useUSDCPrice(otherCurrency ?? undefined);
 
-  useEffect(() => {
-    if (currencyPrice) {
-      setLocalUSDValue(String(+value * +currencyPrice.toSignificant(5)));
-    } else if (isBase && initialUSDPrices.CURRENCY_B) {
-      setLocalUSDValue(String(+value * +initialUSDPrices.CURRENCY_B));
-    } else if (!isBase && initialUSDPrices.CURRENCY_A) {
-      setLocalUSDValue(String(+value * +initialUSDPrices.CURRENCY_A));
-    } else if (initialTokenPrice && otherCurrencyPrice) {
-      setLocalUSDValue(
-        String(
-          +value * +initialTokenPrice * +otherCurrencyPrice.toSignificant(5),
-        ),
-      );
-    }
+  // const initialUSDPrices = useInitialUSDPrices();
+  // const initialTokenPrice = useInitialTokenPrice();
 
-    setLocalTokenValue(value ?? '');
-  }, [
-    isBase,
-    initialTokenPrice,
-    initialUSDPrices,
-    currencyPrice,
-    otherCurrencyPrice,
-    value,
-  ]);
+  // const isUSD = useMemo(() => {
+  //   return priceFormat === PriceFormats.USD;
+  // }, [priceFormat]);
+
+  // useEffect(() => {
+  //   if (currencyPrice) {
+  //     setLocalUSDValue(String(+value * +currencyPrice.toSignificant(5)));
+  //   } else if (isBase && initialUSDPrices.CURRENCY_B) {
+  //     setLocalUSDValue(String(+value * +initialUSDPrices.CURRENCY_B));
+  //   } else if (!isBase && initialUSDPrices.CURRENCY_A) {
+  //     setLocalUSDValue(String(+value * +initialUSDPrices.CURRENCY_A));
+  //   } else if (initialTokenPrice && otherCurrencyPrice) {
+  //     setLocalUSDValue(
+  //       String(
+  //         +value * +initialTokenPrice * +otherCurrencyPrice.toSignificant(5),
+  //       ),
+  //     );
+  //   }
+
+  //   setLocalTokenValue(value ?? '');
+  // }, [
+  //   isBase,
+  //   initialTokenPrice,
+  //   initialUSDPrices,
+  //   currencyPrice,
+  //   otherCurrencyPrice,
+  //   value,
+  // ]);
 
   const balanceString = useMemo(() => {
     if (!balance || !currency) return t('loading');
 
-    const _balance =
-      isUSD && balanceUSD
-        ? String(
-            parseFloat(
-              String(
-                (
-                  +balance.toSignificant(5) * +balanceUSD.toSignificant(5)
-                ).toFixed(5),
-              ),
-            ),
-          )
-        : String(
-            parseFloat(String(Number(balance.toSignificant(5)).toFixed(5))),
-          );
-
-    if (_balance.split('.')[0].length > 10) {
-      return `${isUSD ? '$ ' : ''}${_balance.slice(0, 7)}...`;
+    if (
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      chainId &&
+      currency.wrapped.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase()
+    ) {
+      return (
+        (wETHBalance ? Number(wETHBalance.toExact()) : 0) +
+        (ethBalance ? Number(ethBalance.toExact()) : 0)
+      ).toFixed(5);
+    } else {
+      return balance.toSignificant();
     }
-
-    if (+balance.toFixed() === 0) {
-      return `${isUSD ? '$ ' : ''}0`;
-    }
-    if (+balance.toFixed() < 0.0001) {
-      return `< ${isUSD ? '$ ' : ''}0.0001`;
-    }
-
-    return `${isUSD ? '$ ' : ''}${_balance}`;
-  }, [balance, currency, isUSD, balanceUSD, t]);
+  }, [
+    balance,
+    currency,
+    t,
+    liquidityRangeType,
+    chainId,
+    wETHBalance,
+    ethBalance,
+  ]);
 
   return (
     <>
@@ -169,11 +161,28 @@ export function TokenAmountCard({
         {currency ? (
           <Box className='flex flex-col items-start'>
             <div className='token-amount-card-logo'>
-              <CurrencyLogo
-                size='24px'
-                currency={currency as WrappedCurrency}
-              />
-              <p className='weight-600'>{currency.symbol}</p>
+              {liquidityRangeType ===
+                GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+              chainId &&
+              currency.wrapped.address.toLowerCase() ===
+                WETH[chainId].address.toLowerCase() ? (
+                <DoubleCurrencyLogo
+                  size={24}
+                  currency0={ETHER}
+                  currency1={WETH[chainId]}
+                />
+              ) : (
+                <CurrencyLogo size='24px' currency={currency} />
+              )}
+              <p className='weight-600'>
+                {liquidityRangeType ===
+                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+                chainId &&
+                currency.wrapped.address.toLowerCase() ===
+                  WETH[chainId].address.toLowerCase()
+                  ? 'MATIC+WMATIC'
+                  : currency.symbol}
+              </p>
             </div>
             <Box mt={1} className='token-amount-card-balance'>
               {balanceString === 'loading' ? (

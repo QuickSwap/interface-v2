@@ -11,6 +11,7 @@ import {
   getTopTokens,
   getGlobalData,
   getBulkPairData,
+  getTopPairsV2,
 } from 'utils';
 import { GlobalConst } from 'constants/index';
 import { TokensTable, PairTable } from 'components';
@@ -159,22 +160,12 @@ const AnalyticsOverview: React.FC = () => {
         }
       } else if (version === 'v2') {
         if (ethPrice.price) {
-          const pairs = await getTopPairs(
+          const pairsData = await getTopPairsV2(
             GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
             chainIdToUse,
           );
-          const formattedPairs = pairs
-            ? pairs.map((pair: any) => {
-                return pair.id;
-              })
-            : [];
-          const data = await getBulkPairData(
-            formattedPairs,
-            ethPrice.price,
-            chainIdToUse,
-          );
-          if (data) {
-            updateTopPairs(data);
+          if (pairsData) {
+            updateTopPairs(pairsData);
           }
         }
       } else {

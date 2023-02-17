@@ -73,6 +73,29 @@ export const TOP_TOKENS_V3 = (count: number) => gql`
   }
 `;
 
+export const TOKENPRICES_FROM_ADDRESSES_V3 = (
+  tokens: string[],
+  blockNumber?: number,
+) => {
+  let tokenString = `[`;
+  tokens.map((address) => {
+    return (tokenString += `"${address}",`);
+  });
+  tokenString += ']';
+  const queryString =
+    `query tokens {
+      tokens(where: {id_in: ${tokenString}},` +
+    (blockNumber ? `block: {number: ${blockNumber}} ,` : ``) +
+    `) {
+            id
+            derivedMatic
+          }
+        }
+        `;
+
+  return gql(queryString);
+};
+
 export const TOKENS_FROM_ADDRESSES_V3 = (
   blockNumber: number | undefined,
   tokens: string[],

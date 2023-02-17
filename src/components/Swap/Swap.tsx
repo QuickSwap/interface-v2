@@ -11,7 +11,7 @@ import {
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -61,6 +61,7 @@ const Swap: React.FC<{
 }> = ({ currencyBgClass }) => {
   const loadedUrlParams = useDefaultsFromURLSearch();
   const history = useHistory();
+  const { isProMode, updateIsProMode } = useIsProMode();
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -233,9 +234,15 @@ const Swap: React.FC<{
   useEffect(() => {
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
+    } else if (
+      history.location.pathname !== '/' &&
+      parsedCurrency0 === undefined &&
+      !parsedCurrency1Id
+    ) {
+      redirectWithCurrency(ETHER, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0Id, chainIdToUse]);
+  }, [parsedCurrency0, parsedCurrency1Id, chainIdToUse]);
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
@@ -311,6 +318,7 @@ const Swap: React.FC<{
   ]);
 
   const swapButtonDisabled = useMemo(() => {
+    const inputCurrency = currencies[Field.INPUT];
     if (account) {
       if (showWrap) {
         return Boolean(wrapInputError);
@@ -324,6 +332,9 @@ const Swap: React.FC<{
         );
       } else {
         return (
+          (inputCurrency &&
+            currencyEquals(inputCurrency, ETHER) &&
+            approval === ApprovalState.UNKNOWN) ||
           !isValid ||
           (priceImpactSeverity > 3 && !isExpertMode) ||
           !!swapCallbackError
@@ -344,6 +355,7 @@ const Swap: React.FC<{
     isValid,
     swapCallbackError,
     isExpertMode,
+    currencies,
   ]);
 
   const [
@@ -578,7 +590,8 @@ const Swap: React.FC<{
         handleCurrencySelect={handleCurrencySelect}
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
-        bgClass={currencyBgClass}
+        color={isProMode ? 'white' : 'secondary'}
+        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
       <Box className='exchangeSwap'>
         <ExchangeIcon onClick={redirectWithSwitch} />
@@ -593,7 +606,8 @@ const Swap: React.FC<{
         handleCurrencySelect={handleOtherCurrencySelect}
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
-        bgClass={currencyBgClass}
+        color={isProMode ? 'white' : 'secondary'}
+        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
       {trade && trade.executionPrice && (
         <Box className='swapPrice'>

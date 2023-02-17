@@ -1,28 +1,17 @@
-import {
-  ChainId,
-  CurrencyAmount,
-  currencyEquals,
-  ETHER,
-  Token,
-} from '@uniswap/sdk';
-import { Currency as V3Currency, NativeCurrency } from '@uniswap/sdk-core';
+import { ChainId, CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
+import { Currency as V3Currency } from '@uniswap/sdk-core';
 import React from 'react';
 import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';
-import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useIsUserAddedToken } from 'hooks/Tokens';
 import { CurrencyLogo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
-import useUSDCPrice from 'utils/useUSDCPrice';
-import { default as useUSDCPriceV3 } from 'hooks/v3/useUSDCPrice';
-import { formatTokenAmount } from 'utils';
+import { formatNumber, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
-import { toToken } from 'constants/v3/routing';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 
 //TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {
@@ -78,6 +67,8 @@ interface CurrenyRowProps {
   otherSelected: boolean;
   style: any;
   isOnSelectedList?: boolean;
+  balance: CurrencyAmount | undefined;
+  usdPrice: number;
 }
 
 const CurrencyRow: React.FC<CurrenyRowProps> = ({
@@ -87,32 +78,17 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   otherSelected,
   style,
   isOnSelectedList,
+  balance,
+  usdPrice,
 }) => {
   const { t } = useTranslation();
 
   const { ethereum } = window as any;
   const { account, chainId } = useActiveWeb3React();
   const key = currencyKey(currency);
+  const customAdded = useIsUserAddedToken(currency);
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
-  const usdPriceV2 = useUSDCPrice(currency);
-  const usdPriceV2Number = usdPriceV2 ? Number(usdPriceV2.toSignificant()) : 0;
-  const currencyV3 =
-    chainId && currency
-      ? (currency as any).isNative || currencyEquals(currency, ETHER[chainId])
-        ? ({
-            ...ETHER[chainId],
-            isNative: true,
-            isToken: false,
-            wrapped: WMATIC_EXTENDED[chainId],
-          } as NativeCurrency)
-        : toToken(currency)
-      : undefined;
-  const usdPriceV3 = useUSDCPriceV3(currencyV3);
-  const usdPriceV3Number = usdPriceV3 ? Number(usdPriceV3.toSignificant()) : 0;
-  const usdPrice = usdPriceV3Number ?? usdPriceV2Number;
-  const balance = useCurrencyBalance(account ?? undefined, currency);
-  const customAdded = useIsUserAddedToken(currency);
 
   const removeToken = useRemoveUserAddedToken();
   const addToken = useAddUserToken();
@@ -221,7 +197,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
             <>
               <Balance balance={balance} />
               <span className='text-secondary'>
-                ${(Number(balance.toExact()) * usdPrice).toLocaleString('us')}
+                ${formatNumber(Number(balance.toExact()) * usdPrice)}
               </span>
             </>
           ) : account ? (

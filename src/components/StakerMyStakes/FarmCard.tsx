@@ -11,6 +11,8 @@ import RangeBadge from 'components/v3/Badge/RangeBadge';
 import FarmStakeButtons from './FarmStakeButtons';
 import { formatReward } from 'utils/formatReward';
 import { useMaticPrice } from 'state/application/hooks';
+import CircleInfoIcon from 'assets/images/circleinfo.svg';
+import TotalAPRTooltip from 'components/TotalAPRToolTip';
 
 interface FarmCardProps {
   el: any;
@@ -125,13 +127,19 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
         className='flex justify-between items-center flex-wrap'
         borderRadius={10}
       >
+        {isMobile && (
+          <Box mb={1}>
+            <RangeBadge removed={false} inRange={!outOfRange} />
+          </Box>
+        )}
+
         <Box
           className='flex items-center flex-wrap'
           width={isMobile ? '100%' : '85%'}
         >
           <Box
             className='flex items-center'
-            width={isMobile ? '100%' : '50%'}
+            width={isMobile ? '100%' : '60%'}
             mb={isMobile ? 2 : 0}
           >
             <Box className='v3-tokenId-wrapper' mr={1}>
@@ -157,31 +165,48 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
                 </a>
               </Box>
             )}
-            <Box ml={1}>
-              <RangeBadge removed={false} inRange={!outOfRange} />
-            </Box>
+            {!isMobile && (
+              <Box ml={1}>
+                <RangeBadge removed={false} inRange={!outOfRange} />
+              </Box>
+            )}
           </Box>
 
-          <Box
-            className='flex items-center justify-between'
-            mb={isMobile ? 2 : 0}
-            width={isMobile ? '100%' : '15%'}
-          >
-            {isMobile && <span className='text-secondary'>{t('poolAPR')}</span>}
-            <small className='text-success'>
-              {poolApr ? formatNumber(poolApr) : '~'}%
-            </small>
-          </Box>
-          <Box
-            className='flex items-center justify-between'
-            mb={isMobile ? 2 : 0}
-            width={isMobile ? '100%' : '15%'}
-          >
-            {isMobile && <span className='text-secondary'>{t('farmAPR')}</span>}
-            <small className='text-success'>
-              {farmApr ? formatNumber(farmApr) : '~'}%
-            </small>
-          </Box>
+          {isMobile ? (
+            <>
+              <Box
+                className='flex items-center justify-between'
+                mb={2}
+                width='100%'
+              >
+                <small className='text-secondary'>{t('poolAPR')}</small>
+                <small className='text-success'>
+                  {poolApr ? formatNumber(poolApr) : '~'}%
+                </small>
+              </Box>
+              <Box
+                className='flex items-center justify-between'
+                mb={2}
+                width='100%'
+              >
+                <small className='text-secondary'>{t('farmAPR')}</small>
+                <small className='text-success'>
+                  {farmApr ? formatNumber(farmApr) : '~'}%
+                </small>
+              </Box>
+            </>
+          ) : (
+            <Box className='flex items-center' width='20%'>
+              <small className='text-success'>
+                {formatNumber((poolApr ?? 0) + (farmApr ?? 0))}%
+              </small>
+              <Box ml={0.5} height={16}>
+                <TotalAPRTooltip farmAPR={farmApr ?? 0} poolAPR={poolApr ?? 0}>
+                  <img src={CircleInfoIcon} alt='info' />
+                </TotalAPRTooltip>
+              </Box>
+            </Box>
+          )}
           <Box
             className='flex items-center justify-between'
             mb={isMobile ? 2 : 0}

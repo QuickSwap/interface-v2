@@ -25,12 +25,11 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
   return (
     <Box className='customSelectorWrapper'>
       {items.map((item) => (
-        <>
+        <Box key={item.id} className='flex items-center'>
           {item.hasSeparator && (
             <Box mr={1} height={height} className='customSelectorSeparator' />
           )}
           <Box
-            key={item.id}
             height={height}
             className={`customSelector ${
               item.id === selectedItem.id ? 'selectedCustomSelector' : ''
@@ -41,7 +40,7 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
           >
             <small>{item.text}</small>
           </Box>
-        </>
+        </Box>
       ))}
     </Box>
   );

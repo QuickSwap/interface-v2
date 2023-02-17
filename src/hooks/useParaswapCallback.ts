@@ -1,24 +1,29 @@
-import { BigNumber } from '@ethersproject/bignumber';
-import { Contract } from '@ethersproject/contracts';
 import {
   TransactionResponse,
   TransactionRequest,
 } from '@ethersproject/providers';
-import { Currency, SwapParameters } from '@uniswap/sdk';
+import { Currency } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { RouterTypes, SmartRouter } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
-import { isAddress, shortenAddress, getSigner } from 'utils';
+import {
+  isAddress,
+  shortenAddress,
+  getSigner,
+  calculateGasMargin,
+  calculateGasMarginBonus,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
-import { OptimalRate } from 'paraswap-core';
+import { OptimalRate, SwapSide } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
+import { useUserSlippageTolerance } from 'state/user/hooks';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
 import { useSwapActionHandlers } from 'state/swap/hooks';
-import { ONE } from 'v3lib/utils';
+import { BigNumber } from 'ethers';
 
 export enum SwapCallbackState {
   INVALID,
@@ -26,29 +31,19 @@ export enum SwapCallbackState {
   VALID,
 }
 
-interface SwapCall {
-  contract: Contract;
-  parameters: SwapParameters;
-}
-
-interface SuccessfulCall {
-  call: SwapCall;
-  gasEstimate: BigNumber;
-}
-
-interface FailedCall {
-  call: SwapCall;
-  error: Error;
-}
-
-const convertToEthersTransaction = (txParams: any): TransactionRequest => {
+const convertToEthersTransaction = (
+  txParams: any,
+  isBonusRoute?: boolean,
+): TransactionRequest => {
   return {
     to: txParams.to,
     from: txParams.from,
     data: txParams.data,
     chainId: txParams.chainId,
     gasPrice: txParams.gasPrice,
-    gasLimit: txParams.gas,
+    gasLimit: isBonusRoute
+      ? calculateGasMarginBonus(BigNumber.from(txParams.gas))
+      : calculateGasMargin(BigNumber.from(txParams.gas)),
     value: txParams.value,
   };
 };
@@ -69,6 +64,7 @@ export function useParaswapCallback(
 } {
   const { account, chainId, library } = useActiveWeb3React();
   const paraswap = useParaswap();
+  const [allowedSlippage] = useUserSlippageTolerance();
   const { onBestRoute, onSetSwapDelay } = useSwapActionHandlers();
 
   const addTransaction = useTransactionAdder();
@@ -106,34 +102,40 @@ export function useParaswapCallback(
       }
     }
 
-    const referrer = 'quickswapv3';
-
-    const srcToken = priceRoute.srcToken;
-    const destToken = priceRoute.destToken;
-
-    //TODO: we need to support max impact
-    // if (minDestAmount.greaterThan(JSBI.BigInt(priceRoute.destAmount))) {
-    //   throw new Error('Price Rate updated beyond expected slipage rate');
-    // }
-    // const minDestAmount = new Fraction(ONE)
-    //   .add(allowedSlippage)
-    //   .invert()
-    //   .multiply(priceRoute.destAmount).quotient;
-
     return {
       state: SwapCallbackState.VALID,
       callback: async function onSwap(): Promise<{
         response: TransactionResponse;
         summary: string;
       }> {
+        const referrer = 'quickswapv3';
+
+        const srcToken = priceRoute.srcToken;
+        const destToken = priceRoute.destToken;
+        const minDestAmount =
+          priceRoute.side === SwapSide.BUY
+            ? priceRoute.destAmount
+            : BigNumber.from(priceRoute.destAmount)
+                .mul(BigNumber.from(10000 - Number(allowedSlippage.toFixed(0))))
+                .div(BigNumber.from(10000))
+                .toString();
+
+        const maxSrcAmount =
+          priceRoute.side === SwapSide.BUY
+            ? BigNumber.from(priceRoute.srcAmount)
+                .mul(BigNumber.from(10000 + Number(allowedSlippage.toFixed(0))))
+                .div(BigNumber.from(10000))
+                .toString()
+            : priceRoute.srcAmount;
+
         let txParams;
 
         try {
           txParams = await paraswap.buildTx({
             srcToken,
             destToken,
-            srcAmount: priceRoute.srcAmount,
-            destAmount: priceRoute.destAmount,
+            srcAmount: maxSrcAmount,
+            destAmount: minDestAmount,
             priceRoute: priceRoute,
             userAddress: account,
             receiver: recipient,
@@ -146,7 +148,8 @@ export function useParaswapCallback(
           );
         }
 
-        if (txParams.data && paraswapContract) {
+        let isBonusRoute = false;
+        if (txParams && txParams.data && paraswapContract) {
           const response = await callWallchainAPI(
             priceRoute.contractMethod,
             txParams.data,
@@ -172,11 +175,16 @@ export function useParaswapCallback(
           ) {
             txParams.to = swapRouterAddress;
             txParams.data = response.transactionArgs.data;
+            isBonusRoute = true;
           }
         }
 
         const signer = getSigner(library, account);
-        const ethersTxParams = convertToEthersTransaction(txParams);
+        const ethersTxParams = convertToEthersTransaction(
+          txParams,
+          isBonusRoute,
+        );
+
         try {
           const response = await signer.sendTransaction(ethersTxParams);
           const inputSymbol = inputCurrency?.symbol;
@@ -228,8 +236,9 @@ export function useParaswapCallback(
     paraswapContract,
     onBestRoute,
     onSetSwapDelay,
-    inputCurrency?.symbol,
-    outputCurrency?.symbol,
     addTransaction,
+    inputCurrency,
+    outputCurrency,
+    allowedSlippage,
   ]);
 }

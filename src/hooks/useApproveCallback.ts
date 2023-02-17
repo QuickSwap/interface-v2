@@ -21,7 +21,7 @@ import {
   useHasPendingApproval,
 } from 'state/transactions/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { calculateGasMargin } from 'utils';
+import { calculateGasMargin, calculateGasMarginBonus } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenContract } from './useContract';
 import {
@@ -158,6 +158,7 @@ export function useApproveCallback(
 export function useApproveCallbackV3(
   amountToApprove?: CurrencyAmountV3<Currency>,
   spender?: string,
+  isBonusRoute?: boolean,
 ): [ApprovalState, () => Promise<void>] {
   const { account, chainId } = useActiveWeb3React();
   const token = amountToApprove?.currency?.isToken
@@ -235,7 +236,9 @@ export function useApproveCallbackV3(
         spender,
         useExact ? amountToApprove.quotient.toString() : MaxUint256,
         {
-          gasLimit: calculateGasMargin(estimatedGas),
+          gasLimit: isBonusRoute
+            ? calculateGasMarginBonus(estimatedGas)
+            : calculateGasMargin(estimatedGas),
         },
       )
       .then((response: TransactionResponse) => {
@@ -256,6 +259,7 @@ export function useApproveCallbackV3(
     spender,
     addTransaction,
     chainId,
+    isBonusRoute,
   ]);
 
   return [approvalState, approve];
@@ -307,5 +311,6 @@ export function useApproveCallbackFromBestTrade(
         ? SWAP_ROUTER_ADDRESS[chainId]
         : PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
       : undefined,
+    bonusRouteFound,
   );
 }

@@ -47,6 +47,7 @@ async function fetchChunk(
       returnData.forEach(({ gasUsed, returnData, success }: any, i: number) => {
         if (
           !success &&
+          gasUsed &&
           returnData.length === 2 &&
           gasUsed &&
           gasUsed.gte(
