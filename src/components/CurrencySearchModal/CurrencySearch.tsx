@@ -114,7 +114,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   }, [filteredTokens, searchQuery, searchToken, tokenComparator]);
 
   const allCurrencies = showETH
-    ? [Token.ETHER, ...filteredSortedTokens]
+    ? [Token.ETHER[chainIdToUse], ...filteredSortedTokens]
     : filteredSortedTokens;
 
   const currencyBalances = useCurrencyBalances(

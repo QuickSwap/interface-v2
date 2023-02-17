@@ -6,6 +6,7 @@ import { SwapBestTrade } from 'components/Swap';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -53,6 +54,7 @@ const SwapMain: React.FC = () => {
   const { chainId } = useActiveWeb3React();
 
   const { updateIsV2 } = useIsV2();
+  const { redirectWithProMode } = useSwapRedirects();
 
   const { t } = useTranslation();
   const config = getConfig(chainId);
@@ -260,7 +262,7 @@ const SwapMain: React.FC = () => {
                   <ToggleSwitch
                     toggled={isProMode}
                     onToggle={() => {
-                      updateIsProMode(!isProMode);
+                      redirectWithProMode(true);
                     }}
                   />
                 </Box>

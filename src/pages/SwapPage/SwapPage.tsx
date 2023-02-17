@@ -2,22 +2,23 @@ import { Box } from '@material-ui/core';
 import { ChainId } from '@uniswap/sdk';
 import { SettingsModal } from 'components';
 
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
 import 'pages/styles/swap.scss';
 import React, { useEffect, useState } from 'react';
-import { useIsProMode, useIsV2 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { Field } from 'state/swap/actions';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { useDerivedSwapInfo as useDerivedSwapInfoV3 } from 'state/swap/v3/hooks';
 import { getPairAddress } from 'utils';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { wrappedCurrency, wrappedCurrencyV3 } from 'utils/wrappedCurrency';
 import SwapDefaultMode from './SwapDefaultMode';
 import SwapPageHeader from './SwapPageHeader';
 import SwapProMain from './SwapProMain';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
-  const { isProMode, updateIsProMode } = useIsProMode();
+  const { isV2 } = useIsV2();
+  const isProMode = useIsProMode();
   const [pairId, setPairId] = useState<string | undefined>(undefined);
   const [pairTokenReversed, setPairTokenReversed] = useState(false);
 

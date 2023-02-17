@@ -1,6 +1,6 @@
 import React, { lazy, useEffect, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 const Header = lazy(() => import('components/Header'));
@@ -16,10 +16,7 @@ export interface PageLayoutProps {
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const { chainId, account } = useActiveWeb3React();
-  const parsedQs = useParsedQueryString();
-  const isProMode = Boolean(
-    parsedQs.isProMode && parsedQs.isProMode === 'true',
-  );
+  const isProMode = useIsProMode();
   const arcxSDK = useArcxAnalytics();
   const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {
@@ -31,19 +28,6 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   };
-  useEffect(() => {
-    const unlisten = history.listen((location) => {
-      const willBeSwapPage = location.pathname === '/swap';
-
-      // disallow the pro mode except for the swap page
-      if (!willBeSwapPage) {
-        updateIsProMode(false);
-      }
-    });
-    return function cleanup() {
-      unlisten();
-    };
-  }, [history, updateIsProMode]);
 
   useEffect(() => {
     if (

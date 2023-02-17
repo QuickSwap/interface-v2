@@ -10,24 +10,19 @@ import {
   useMaticPrice,
   useTokenDetails,
 } from 'state/application/hooks';
-import {
-  shortenAddress,
-  formatCompact,
-  getTokenInfo,
-  getIntervalTokenData,
-  formatNumber,
-} from 'utils';
+import { getTokenInfo, getIntervalTokenData, formatNumber } from 'utils';
 import { LineChart } from 'components';
-import { Token } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { useTranslation } from 'react-i18next';
 import { getIntervalTokenDataV3, getTokenInfoV3 } from 'utils/v3-graph';
+import { useActiveWeb3React } from 'hooks';
 
 const SwapTokenDetailsHorizontal: React.FC<{
   token: Token;
 }> = ({ token }) => {
-  const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
   const { palette } = useTheme();
@@ -58,12 +53,14 @@ const SwapTokenDetailsHorizontal: React.FC<{
         startTime,
         3600,
         latestBlock,
+        chainIdToUse,
       );
       const tokenPriceDataV3 = await getIntervalTokenDataV3(
         tokenAddress.toLowerCase(),
         startTime,
         3600,
         latestBlock,
+        chainIdToUse,
       );
       const tokenPriceIsV2 = !!tokenPriceDataV2.find(
         (item) => item.open && item.close,
@@ -78,6 +75,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
           ethPrice.price,
           ethPrice.oneDayPrice,
           tokenAddress,
+          chainIdToUse,
         );
         const token0 =
           tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
@@ -94,6 +92,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
             maticPrice.price,
             maticPrice.oneDayPrice,
             tokenAddress.toLowerCase(),
+            chainIdToUse,
           );
           const tokenV3 =
             tokenInfoV3 && tokenInfoV3.length > 0
@@ -118,6 +117,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
+    chainIdToUse,
   ]);
 
   return (

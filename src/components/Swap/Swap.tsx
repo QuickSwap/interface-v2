@@ -11,7 +11,7 @@ import {
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
+import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -29,7 +29,7 @@ import {
   AdvancedSwapDetails,
   AddressInput,
 } from 'components';
-import { useActiveWeb3React } from 'hooks';
+import { useIsProMode, useActiveWeb3React } from 'hooks';
 import {
   ApprovalState,
   useApproveCallbackFromTrade,
@@ -61,7 +61,7 @@ const Swap: React.FC<{
 }> = ({ currencyBgClass }) => {
   const loadedUrlParams = useDefaultsFromURLSearch();
   const history = useHistory();
-  const { isProMode, updateIsProMode } = useIsProMode();
+  const isProMode = useIsProMode();
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -333,7 +333,8 @@ const Swap: React.FC<{
       } else {
         return (
           (inputCurrency &&
-            currencyEquals(inputCurrency, ETHER) &&
+            chainId &&
+            currencyEquals(inputCurrency, ETHER[chainId]) &&
             approval === ApprovalState.UNKNOWN) ||
           !isValid ||
           (priceImpactSeverity > 3 && !isExpertMode) ||
@@ -356,6 +357,7 @@ const Swap: React.FC<{
     swapCallbackError,
     isExpertMode,
     currencies,
+    chainId,
   ]);
 
   const [

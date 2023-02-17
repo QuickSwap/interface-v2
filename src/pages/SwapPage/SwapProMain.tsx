@@ -1,5 +1,7 @@
 import { Box, Grid, styled, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
+import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
 import React, { useEffect, useState } from 'react';
 import { getSwapTransactions } from 'utils';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
@@ -30,8 +32,8 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
   pairId,
   pairTokenReversed,
 }) => {
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const [transactions, setTransactions] = useState<any[] | undefined>(
     undefined,
   );
@@ -52,6 +54,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
     (async () => {
       if (pairId && transactions && transactions.length > 0) {
         const txns = await getSwapTransactions(
+          chainIdToUse,
           pairId,
           Number(transactions[0].transaction.timestamp),
         );
@@ -67,18 +70,18 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, chainIdToUse]);
 
   useEffect(() => {
     async function getTradesData(pairId: string) {
       setTransactions(undefined);
-      const transactions = await getSwapTransactions(pairId);
+      const transactions = await getSwapTransactions(chainIdToUse, pairId);
       setTransactions(transactions);
     }
     if (pairId) {
       getTradesData(pairId);
     }
-  }, [pairId]);
+  }, [pairId, chainIdToUse]);
 
   return (
     <Box>

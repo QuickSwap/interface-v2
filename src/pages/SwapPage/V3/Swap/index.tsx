@@ -50,7 +50,7 @@ import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router-dom';
-import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
+import { useWalletModalToggle } from 'state/application/hooks';
 import { Field } from 'state/swap/v3/actions';
 import {
   useDefaultsFromURLSearch,
@@ -66,7 +66,7 @@ import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { warningSeverity } from 'utils/v3/prices';
 
 import { Box, Button } from '@material-ui/core';
-import { ETHER } from '@uniswap/sdk';
+import { ChainId, ETHER } from '@uniswap/sdk';
 import { AddressInput } from 'components';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -79,7 +79,6 @@ const SwapV3Page: React.FC = () => {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const history = useHistory();
-  const { isProMode, updateIsProMode } = useIsProMode();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
   const outputCurrencyId = loadedUrlParams?.outputCurrencyId;

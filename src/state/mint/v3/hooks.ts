@@ -240,12 +240,15 @@ export function useV3DerivedMintInfo(
     [tokenA, tokenB],
   );
 
-  const ethBalance = useCurrencyBalance(account ?? undefined, ETHER);
+  const ethBalance = useCurrencyBalance(
+    account ?? undefined,
+    chainId ? ETHER[chainId] : undefined,
+  );
   const wethBalance = useCurrencyBalance(
     account ?? undefined,
     chainId ? WETH[chainId] : undefined,
   );
-  const maxSpendETH = maxAmountSpend(ethBalance);
+  const maxSpendETH = chainId ? maxAmountSpend(chainId, ethBalance) : undefined;
   // balances
   const balances = useCurrencyBalances(account ?? undefined, [
     currencies[Field.CURRENCY_A],

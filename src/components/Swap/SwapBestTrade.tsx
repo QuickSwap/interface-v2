@@ -12,7 +12,7 @@ import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
+import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -26,7 +26,7 @@ import {
 import { Field } from 'state/swap/actions';
 import { useHistory } from 'react-router-dom';
 import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
 import {
   ApprovalState,
   useApproveCallbackFromBestTrade,
@@ -69,7 +69,7 @@ const SwapBestTrade: React.FC<{
 }> = ({ currencyBgClass }) => {
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
-  const { isProMode, updateIsProMode } = useIsProMode();
+  const isProMode = useIsProMode();
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [

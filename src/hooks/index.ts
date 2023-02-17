@@ -17,6 +17,7 @@ import { useArgentWalletDetectorContract } from './useContract';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { usePairs } from 'data/Reserves';
+import useParsedQueryString from './useParsedQueryString';
 
 export function useActiveWeb3React(): Web3ReactContextInterface<
   Web3Provider
@@ -233,3 +234,11 @@ export function useV2LiquidityPools(account?: string) {
 
   return { loading: v2IsLoading, pairs: allV2PairsWithLiquidity };
 }
+
+export const useIsProMode = () => {
+  const parsedQs = useParsedQueryString();
+  const isProMode = Boolean(
+    parsedQs.isProMode && parsedQs.isProMode === 'true',
+  );
+  return isProMode;
+};
