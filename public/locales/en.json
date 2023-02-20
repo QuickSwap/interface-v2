@@ -635,5 +635,6 @@
   "otherLPs": "Other LPs",
   "totalAPR": "Total APR",
   "wrapMATIC": "Wrap MATIC",
-  "wrappingMATIC": "Wrapping MATIC"
+  "wrappingMATIC": "Wrapping MATIC",
+  "fetchingBestRoute": "Fetching Best Route"
 }
