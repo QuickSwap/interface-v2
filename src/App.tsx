@@ -15,6 +15,7 @@ const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
+const ContestPage = lazy(() => import('./pages/ContestPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
 // const LendPage = lazy(() => import('./pages/LendPage'));
 // const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
@@ -134,6 +135,11 @@ const AppContent = () => (
                   <Route exact path='/swap/:version?'>
                     <PageLayout>
                       <SwapPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/contest'>
+                    <PageLayout>
+                      <ContestPage />
                     </PageLayout>
                   </Route>
                   {/* <Route exact path='/lend'>

@@ -837,3 +837,40 @@ export const PRICES_BY_BLOCK_V3: any = (
   queryString += '}';
   return gql(queryString);
 };
+
+export const SWAP_TRANSACTIONS_V3 = gql`
+  query(
+    $pool: String!
+    $timestamp_gte: Int!
+    $timestamp_lte: Int!
+    $skip: Int!
+  ) {
+    swaps(
+      first: 1000
+      skip: $skip
+      where: {
+        pool: $pool
+        timestamp_gte: $timestamp_gte
+        timestamp_lte: $timestamp_lte
+      }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      id
+      timestamp
+      origin
+      token0 {
+        id
+        symbol
+      }
+      token1 {
+        id
+        symbol
+      }
+      amountUSD
+      amount0
+      amount1
+      sender
+    }
+  }
+`;
