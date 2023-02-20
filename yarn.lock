@@ -239,10 +239,10 @@
     ethers "^5.7.1"
     release-it "^15.5.0"
 
-"@0xsquid/widget@1.4.36":
-  version "1.4.36"
-  resolved "https://registry.yarnpkg.com/@0xsquid/widget/-/widget-1.4.36.tgz#60c1ce90f89c02307a446237b1f3b86ca4089f0e"
-  integrity sha512-OeNWMEkMh1sdtA6fKt9ErewViwzJvfg0YDTb0EkIOq6EqNa95KmxKCyMbzAP4gxlAbUUfbEWcobJXxTA5Bvg0g==
+"@0xsquid/widget@1.4.39":
+  version "1.4.39"
+  resolved "https://registry.yarnpkg.com/@0xsquid/widget/-/widget-1.4.39.tgz#ef8feafb2614db025cc6239b706997956769ec93"
+  integrity sha512-N+pMu0rvhAIZCyFTcv/PLOuOqFW9l1MwVl6XxAFd89BbvX+bpLC0nq61IbYxcQTSgaK5K1RFQzxgw0qDqrZUMg==
   dependencies:
     "@0xsquid/sdk" "^1.3.9"
     "@cosmjs/stargate" "^0.29.2"
@@ -4562,7 +4562,7 @@
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
 
-"@release-it/conventional-changelog@github:release-it/conventional-changelog":
+"@release-it/conventional-changelog@github:release-it/conventional-changelog", "@release-it/conventional-changelog@release-it/conventional-changelog":
   version "5.1.1"
   resolved "https://codeload.github.com/release-it/conventional-changelog/tar.gz/ff9f1aae654dc378d5ed4703a2802ef9591e1a96"
   dependencies:

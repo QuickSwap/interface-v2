@@ -135,7 +135,7 @@
   ],
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@0xsquid/widget": "1.4.36",
+    "@0xsquid/widget": "1.4.39",
     "@arcxmoney/analytics": "^1.6.1",
     "@coinbase/cbpay-js": "^1.6.0",
     "@cryption/df-sdk-core": "0.0.8",
