@@ -17,12 +17,11 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
   open,
   onClose,
 }) => {
-  const { chainId } = useActiveWeb3React();
+  const { library, chainId } = useActiveWeb3React();
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
     const config = getConfig(chain);
     return config && config.isMainnet;
   });
-  const { ethereum } = window as any;
 
   return (
     <CustomModal
@@ -42,11 +41,7 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
               className='networkItemWrapper'
               key={chain}
               onClick={() => {
-                if (
-                  !ethereum ||
-                  !isSupportedNetwork(ethereum) ||
-                  (chainId && chain !== chainId)
-                ) {
+                if (chainId && chain !== chainId) {
                   switchNetwork(chain);
                 }
                 onClose();
@@ -56,15 +51,12 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
                 <img src={config['nativeCurrencyImage']} alt='network Image' />
                 <small className='weight-600'>{config['networkName']}</small>
               </Box>
-              {ethereum &&
-                isSupportedNetwork(ethereum) &&
-                chainId &&
-                chainId === chain && (
-                  <Box className='flex items-center'>
-                    <Box className='networkConnectedDot' />
-                    <span>Connected</span>
-                  </Box>
-                )}
+              {chainId && chainId === chain && (
+                <Box className='flex items-center'>
+                  <Box className='networkConnectedDot' />
+                  <span>Connected</span>
+                </Box>
+              )}
             </Box>
           );
         })}

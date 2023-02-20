@@ -13,7 +13,7 @@ import {
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress, addMaticToMetamask, isSupportedNetwork } from 'utils';
+import { shortenAddress, isSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal, NetworkSelectionModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -31,7 +31,6 @@ import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 import { getConfig } from 'config/index';
 import useDeviceWidth from 'hooks/useDeviceWidth';
-import { GlobalValue } from 'constants/index';
 import { USDC } from 'constants/v3/addresses';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
@@ -369,19 +368,17 @@ const Header: React.FC = () => {
         {/* <Box className='headerIconWrapper'>
           <LightIcon />
         </Box> */}
-        {ethereum && isSupportedNetwork(ethereum) && (
-          <Box
-            className='networkSelection'
-            onClick={() => setOpenNetworkSelectionModal(true)}
-          >
-            <Box className='networkSelectionImage'>
-              <Box className='styledPollingDot' />
-              <img src={config['nativeCurrencyImage']} alt='network Image' />
-            </Box>
-            <small className='weight-600'>{config['networkName']}</small>
-            <KeyboardArrowDown />
+        <Box
+          className='networkSelection'
+          onClick={() => setOpenNetworkSelectionModal(true)}
+        >
+          <Box className='networkSelectionImage'>
+            <Box className='styledPollingDot' />
+            <img src={config['nativeCurrencyImage']} alt='network Image' />
           </Box>
-        )}
+          <small className='weight-600'>{config['networkName']}</small>
+          <KeyboardArrowDown />
+        </Box>
         {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
           <Box
             id='web3-status-connected'
