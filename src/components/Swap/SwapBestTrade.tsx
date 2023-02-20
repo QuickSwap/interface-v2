@@ -202,7 +202,7 @@ const SwapBestTrade: React.FC<{
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
     } else if (parsedCurrency0 === undefined && !parsedCurrency1Id) {
-      redirectWithCurrency(ETHER, true);
+      redirectWithCurrency(ETHER[chainIdToUse], true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedCurrency0, parsedCurrency1Id, chainIdToUse]);
@@ -784,7 +784,7 @@ const SwapBestTrade: React.FC<{
       if (
         swapIsReady &&
         inputCurrency &&
-        !currencyEquals(inputCurrency, ETHER) &&
+        !currencyEquals(inputCurrency, ETHER[chainIdToUse]) &&
         optimalRate &&
         account &&
         library &&
