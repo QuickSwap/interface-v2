@@ -10,7 +10,6 @@ import {
   FINITE_FARMING,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
 } from '../constants/v3/addresses';
-import { BigNumber } from '@ethersproject/bignumber';
 import {
   FETCH_ETERNAL_FARM,
   FETCH_ETERNAL_FARM_FROM_POOL,
@@ -157,12 +156,9 @@ export function useFarmingSubgraph() {
         rewardToken,
         bonusRewardToken,
         multiplierToken,
-        reward: formatUnits(
-          BigNumber.from(events[i].reward),
-          rewardToken.decimals,
-        ),
+        reward: formatUnits(events[i].reward, rewardToken.decimals),
         bonusReward: formatUnits(
-          BigNumber.from(events[i].bonusReward),
+          events[i].bonusReward,
           bonusRewardToken.decimals,
         ),
       };
@@ -544,16 +540,10 @@ export function useFarmingSubgraph() {
             ended: +endTime * 1000 < Date.now(),
             createdAtTimestamp: +createdAtTimestamp,
             limitEarned: rewardInfo[0]
-              ? formatUnits(
-                  BigNumber.from(rewardInfo[0]),
-                  _rewardToken.decimals,
-                )
+              ? formatUnits(rewardInfo[0], _rewardToken.decimals)
               : 0,
             limitBonusEarned: rewardInfo[1]
-              ? formatUnits(
-                  BigNumber.from(rewardInfo[1]),
-                  _bonusRewardToken.decimals,
-                )
+              ? formatUnits(rewardInfo[1], _bonusRewardToken.decimals)
               : 0,
             multiplierToken: _multiplierToken,
             tokenAmountForTier1,
@@ -661,12 +651,9 @@ export function useFarmingSubgraph() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: newPool,
-            eternalEarned: formatUnits(
-              BigNumber.from(reward),
-              _rewardToken.decimals,
-            ),
+            eternalEarned: formatUnits(reward, _rewardToken.decimals),
             eternalBonusEarned: formatUnits(
-              BigNumber.from(bonusReward),
+              bonusReward,
               _bonusRewardToken.decimals,
             ),
           };

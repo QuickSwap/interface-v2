@@ -79,6 +79,7 @@ const SwapBestTrade: React.FC<{
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(
     false,
   );
+  const [bonusRouteLoading, setBonusRouteLoading] = useState(false);
   const [bonusRouteFound, setBonusRouteFound] = useState(false);
 
   const urlLoadedTokens: Token[] = useMemo(
@@ -298,46 +299,7 @@ const SwapBestTrade: React.FC<{
       });
 
       setOptimalRateError('');
-      try {
-        const txParams = await paraswap.buildTx({
-          srcToken: rate.srcToken,
-          destToken: rate.destToken,
-          srcAmount: rate.srcAmount,
-          destAmount: rate.destAmount,
-          priceRoute: rate,
-          userAddress: account,
-          partner: 'quickswapv3',
-        });
-
-        if (txParams.data) {
-          const paraswapContract = getContract(
-            rate.contractAddress,
-            ParaswapABI,
-            library,
-            account,
-          );
-          const response = await callWallchainAPI(
-            rate.contractMethod,
-            txParams.data,
-            txParams.value,
-            chainId,
-            account,
-            paraswapContract,
-            SmartRouter.PARASWAP,
-            RouterTypes.SMART,
-            onBestRoute,
-            onSetSwapDelay,
-            50,
-          );
-          setBonusRouteFound(response ? response.pathFound : false);
-        } else {
-          setBonusRouteFound(false);
-        }
-        return rate;
-      } catch (e) {
-        setBonusRouteFound(false);
-        return rate;
-      }
+      return rate;
     } catch (err) {
       setOptimalRateError(err.message);
       return;
@@ -494,6 +456,8 @@ const SwapBestTrade: React.FC<{
         swapInputAmountWithSlippage.greaterThan(swapInputBalance)
       ) {
         return `Insufficient ${currencies[Field.INPUT]?.symbol} Balance`;
+      } else if (bonusRouteLoading) {
+        return t('fetchingBestRoute');
       } else {
         return t('swap');
       }
@@ -517,6 +481,7 @@ const SwapBestTrade: React.FC<{
     wrapType,
     maxImpactAllowed,
     ethereum,
+    bonusRouteLoading,
   ]);
 
   const swapButtonDisabled = useMemo(() => {
@@ -771,6 +736,112 @@ const SwapBestTrade: React.FC<{
       (Number(optimalRate.srcAmount) * 10 ** optimalRate.destDecimals)
     : undefined;
 
+  const swapDisabledForTx = useMemo(() => {
+    if (account) {
+      if (showWrap) {
+        return Boolean(wrapInputError);
+      } else if (noRoute && userHasSpecifiedInputOutput) {
+        return true;
+      } else {
+        return (
+          !isValid ||
+          (optimalRate && optimalRate.maxImpactReached && !isExpertMode) ||
+          !!paraswapCallbackError ||
+          (optimalRate &&
+            !parsedAmounts[Field.INPUT]?.equalTo(
+              JSBI.BigInt(optimalRate.srcAmount),
+            )) ||
+          (optimalRate &&
+            !parsedAmounts[Field.OUTPUT]?.equalTo(
+              JSBI.BigInt(optimalRate.destAmount),
+            )) ||
+          (swapInputAmountWithSlippage &&
+            swapInputBalance &&
+            swapInputAmountWithSlippage.greaterThan(swapInputBalance))
+        );
+      }
+    } else {
+      return false;
+    }
+  }, [
+    account,
+    showWrap,
+    noRoute,
+    userHasSpecifiedInputOutput,
+    wrapInputError,
+    isValid,
+    optimalRate,
+    isExpertMode,
+    paraswapCallbackError,
+    parsedAmounts,
+    swapInputAmountWithSlippage,
+    swapInputBalance,
+  ]);
+  const swapIsReady = Boolean(!swapDisabledForTx && !optimalRateError);
+
+  useEffect(() => {
+    (async () => {
+      if (
+        swapIsReady &&
+        inputCurrency &&
+        !currencyEquals(inputCurrency, ETHER) &&
+        optimalRate &&
+        account &&
+        library &&
+        chainId
+      ) {
+        setBonusRouteFound(false);
+        setBonusRouteLoading(true);
+        try {
+          const txParams = await paraswap.buildTx({
+            srcToken: optimalRate.srcToken,
+            destToken: optimalRate.destToken,
+            srcAmount: optimalRate.srcAmount,
+            destAmount: optimalRate.destAmount,
+            priceRoute: optimalRate,
+            userAddress: account,
+            partner: 'quickswapv3',
+          });
+
+          if (txParams.data) {
+            const paraswapContract = getContract(
+              optimalRate.contractAddress,
+              ParaswapABI,
+              library,
+              account,
+            );
+            const response = await callWallchainAPI(
+              optimalRate.contractMethod,
+              txParams.data,
+              txParams.value,
+              chainId,
+              account,
+              paraswapContract,
+              SmartRouter.PARASWAP,
+              RouterTypes.SMART,
+              onBestRoute,
+              onSetSwapDelay,
+              50,
+            );
+            setBonusRouteFound(response ? response.pathFound : false);
+          } else {
+            setBonusRouteFound(false);
+          }
+          setBonusRouteLoading(false);
+        } catch (e) {
+          setBonusRouteFound(false);
+          setBonusRouteLoading(false);
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swapIsReady, inputCurrency]);
+
+  useEffect(() => {
+    fetchOptimalRate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typedValue, independentField, inputCurrency, outputCurrency]);
+
   return (
     <Box>
       <TokenWarningModal
@@ -923,7 +994,11 @@ const SwapBestTrade: React.FC<{
         <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
             fullWidth
-            disabled={(optimalRateError || swapButtonDisabled) as boolean}
+            disabled={
+              (bonusRouteLoading ||
+                optimalRateError ||
+                swapButtonDisabled) as boolean
+            }
             onClick={account ? onParaswap : connectWallet}
           >
             {swapButtonText}
