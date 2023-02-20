@@ -14,6 +14,7 @@ import { getAddress } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
+import { useMaticPrice } from 'state/application/hooks';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -69,6 +70,7 @@ export function EternalFarmCard({
     (poolApr && poolApr > 0 ? poolApr : 0) + (apr && apr > 0 ? apr : 0);
   const tvl = tvls ? tvls[id] : undefined;
   const { chainId } = useActiveWeb3React();
+  const { maticPrice } = useMaticPrice();
 
   const tokenMap = useSelectedTokenList();
   const token0 =
@@ -139,7 +141,11 @@ export function EternalFarmCard({
           className='flex justify-between'
         >
           {isMobile && <small className='text-secondary'>{t('tvl')}</small>}
-          {!!tvl && <small className='weight-600'>${formatNumber(tvl)}</small>}
+          {!!tvl && (
+            <small className='weight-600'>
+              ${formatNumber(Number(tvl) * (maticPrice.price ?? 0))}
+            </small>
+          )}
         </Box>
         <Box
           width={isMobile ? '100%' : '30%'}
