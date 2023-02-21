@@ -1,4 +1,5 @@
 import { createReducer, nanoid } from '@reduxjs/toolkit';
+import { ChainId } from '@uniswap/sdk';
 import {
   addPopup,
   PopupContent,
@@ -18,6 +19,7 @@ import {
   updateGasPrice,
   updateIsV2,
   updateUDDomain,
+  updateLocalChainId,
 } from './actions';
 
 type PopupList = Array<{
@@ -60,6 +62,7 @@ export interface ApplicationState {
   readonly gasPrice: { fetched: number | null; override: boolean };
   readonly isV2: boolean | undefined;
   readonly udDomain: string | undefined;
+  readonly localChainId: ChainId | undefined;
 }
 
 const initialState: ApplicationState = {
@@ -77,6 +80,7 @@ const initialState: ApplicationState = {
   gasPrice: { fetched: 70, override: true },
   isV2: undefined,
   udDomain: undefined,
+  localChainId: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -198,5 +202,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUDDomain, (state, { payload }) => {
       state.udDomain = payload;
+    })
+    .addCase(updateLocalChainId, (state, { payload }) => {
+      state.localChainId = payload;
     }),
 );

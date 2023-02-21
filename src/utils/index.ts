@@ -34,12 +34,9 @@ import {
   TOKEN_INFO_OLD,
   FILTERED_TRANSACTIONS,
   SWAP_TRANSACTIONS,
-  HOURLY_PAIR_RATES,
   GLOBAL_ALLDATA,
   ETH_PRICE,
   PAIR_ID,
-  IS_PAIR_EXISTS,
-  IS_TOKEN_EXISTS,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
@@ -85,7 +82,6 @@ import Web3 from 'web3';
 import { useActiveWeb3React } from 'hooks';
 import { NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
 import { getConfig } from 'config';
-import { MATIC_PRICE_V3 } from 'apollo/queries-v3';
 import {
   FETCH_ETERNAL_FARM_FROM_POOL,
   FETCH_POOL_FROM_TOKENS,
@@ -2647,7 +2643,10 @@ export const getEternalFarmFromTokens = async (
   }
 };
 
-export const switchNetwork = (chainId: ChainId) => {
+export const switchNetwork = (
+  chainId: ChainId,
+  updateLocalChainId: (chainId: ChainId) => void,
+) => {
   const config = getConfig(chainId);
   const { ethereum } = window as any;
   const chainIdHex = chainId.toString(16);
@@ -2673,5 +2672,8 @@ export const switchNetwork = (chainId: ChainId) => {
           console.error(error);
         }
       });
+  } else {
+    localStorage.setItem('quickswap_chainId', chainId.toString());
+    updateLocalChainId(chainId);
   }
 };

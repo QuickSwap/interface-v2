@@ -365,18 +365,21 @@ const Header: React.FC = () => {
         </Box>
       )}
       <Box>
-        {/* <Box className='headerIconWrapper'>
-          <LightIcon />
-        </Box> */}
         <Box
           className='networkSelection'
           onClick={() => setOpenNetworkSelectionModal(true)}
         >
-          <Box className='networkSelectionImage'>
-            <Box className='styledPollingDot' />
-            <img src={config['nativeCurrencyImage']} alt='network Image' />
-          </Box>
-          <small className='weight-600'>{config['networkName']}</small>
+          {(!ethereum || isSupportedNetwork(ethereum)) && (
+            <Box className='networkSelectionImage'>
+              <Box className='styledPollingDot' />
+              <img src={config['nativeCurrencyImage']} alt='network Image' />
+            </Box>
+          )}
+          <small className='weight-600'>
+            {ethereum && !isSupportedNetwork(ethereum)
+              ? t('wrongNetwork')
+              : config['networkName']}
+          </small>
           <KeyboardArrowDown />
         </Box>
         {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
@@ -388,36 +391,17 @@ const Header: React.FC = () => {
             <p>{udDomain ?? shortenAddress(account)}</p>
             <img src={WalletIcon} alt='Wallet' />
           </Box>
-        ) : (
+        ) : !ethereum || isSupportedNetwork(ethereum) ? (
           <Box
-            className={`connectButton ${
-              ethereum && !isSupportedNetwork(ethereum)
-                ? 'bg-error'
-                : 'bg-primary'
-            }`}
+            className='connectButton bg-primary'
             onClick={() => {
-              if (!ethereum || isSupportedNetwork(ethereum)) {
-                toggleWalletModal();
-              }
+              toggleWalletModal();
             }}
           >
-            {ethereum && !isSupportedNetwork(ethereum)
-              ? t('wrongNetwork')
-              : t('connectWallet')}
-            {ethereum && !isSupportedNetwork(ethereum) && (
-              <Box className='wrongNetworkWrapper'>
-                <Box className='wrongNetworkContent'>
-                  <small>{t('switchWalletToNetwork')}</small>
-                  <Box
-                    mt={2.5}
-                    onClick={() => setOpenNetworkSelectionModal(true)}
-                  >
-                    {t('selectNetwork')}
-                  </Box>
-                </Box>
-              </Box>
-            )}
+            {t('connectWallet')}
           </Box>
+        ) : (
+          <></>
         )}
       </Box>
     </Box>

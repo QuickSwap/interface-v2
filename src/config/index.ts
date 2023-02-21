@@ -12,5 +12,6 @@ export const getConfig = (network: ChainId | undefined) => {
   if (network === undefined) {
     return configs[ChainId.MATIC];
   }
-  return configs[network];
+  const config = configs[network];
+  return config;
 };

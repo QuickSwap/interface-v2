@@ -7,6 +7,7 @@ import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
 import { isSupportedNetwork, switchNetwork } from 'utils';
+import { useLocalChainId } from 'state/application/hooks';
 
 interface NetworkSelectionModalProps {
   open: boolean;
@@ -22,6 +23,8 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
     const config = getConfig(chain);
     return config && config.isMainnet;
   });
+  const { updateLocalChainId } = useLocalChainId();
+  const { ethereum } = window as any;
 
   return (
     <CustomModal
@@ -41,8 +44,11 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
               className='networkItemWrapper'
               key={chain}
               onClick={() => {
-                if (chain !== chainId) {
-                  switchNetwork(chain);
+                if (
+                  (ethereum && !isSupportedNetwork(ethereum)) ||
+                  chain !== chainId
+                ) {
+                  switchNetwork(chain, updateLocalChainId);
                 }
                 onClose();
               }}
@@ -51,12 +57,14 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
                 <img src={config['nativeCurrencyImage']} alt='network Image' />
                 <small className='weight-600'>{config['networkName']}</small>
               </Box>
-              {chainId && chainId === chain && (
-                <Box className='flex items-center'>
-                  <Box className='networkConnectedDot' />
-                  <span>Connected</span>
-                </Box>
-              )}
+              {(!ethereum || isSupportedNetwork(ethereum)) &&
+                chainId &&
+                chainId === chain && (
+                  <Box className='flex items-center'>
+                    <Box className='networkConnectedDot' />
+                    <span>Connected</span>
+                  </Box>
+                )}
             </Box>
           );
         })}

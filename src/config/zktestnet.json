@@ -41,6 +41,9 @@
   "lending": {
     "available": false
   },
+  "migrate": {
+    "available": false
+  },
   "gamingHub": {
     "available": false
   }

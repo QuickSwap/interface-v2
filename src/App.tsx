@@ -1,6 +1,10 @@
 import React, { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core';
+import {
+  createWeb3ReactRoot,
+  useWeb3React,
+  Web3ReactProvider,
+} from '@web3-react/core';
 import { Switch, Route } from 'react-router-dom';
 import {
   ThemeProvider as MuiThemeProvider,
@@ -73,6 +77,8 @@ import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
+import { Web3Provider } from '@ethersproject/providers';
+import { ChainId } from '@uniswap/sdk';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(
   GlobalConst.utils.NetworkContextName,
@@ -118,7 +124,12 @@ function Updaters() {
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const { chainId } = useActiveWeb3React();
+  const { chainId: web3ChainId } = useWeb3React<Web3Provider>();
+  const localChainIdStr = localStorage.getItem('quickswap_chainId');
+  const localChainId = localChainIdStr
+    ? (Number(localChainIdStr) as ChainId)
+    : undefined;
+  const chainId = web3ChainId ?? localChainId;
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
   const showPool = config['pools']['available'];
