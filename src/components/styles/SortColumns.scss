@@ -1,0 +1,13 @@
+@use 'styles/variables' as *;
+
+.sortArrows {
+  display: flex;
+  flex-direction: column;
+  & > div {
+    display: flex;
+    color: $textSecondary;
+    &.selectedSortArrow {
+      color: $textPrimary;
+    }
+  }
+}

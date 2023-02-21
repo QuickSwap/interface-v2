@@ -119,12 +119,15 @@
     justify-content: center;
     margin-top: 48px;
     & > div {
-      margin: 16px;
+      padding: 16px;
       text-align: center;
       width: 120px;
       & a {
         text-decoration: none;
         color: $textPrimary;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         &:hover {
           color: white;
         }
@@ -132,17 +135,18 @@
       &.svgFill a:hover svg path {
         fill: white;
       }
-      & svg {
+      & svg, & img {
         width: 64px;
         height: 64px;
+        margin-bottom: 8px;
       }
       &.svgFill svg path {
         fill: $textPrimary;
       }
-      &.noFill svg {
+      &.noFill svg, & img {
         opacity: 0.8;
       }
-      &.noFill a:hover svg {
+      &.noFill a:hover svg, & a:hover img {
         opacity: 1;
       }
     }
@@ -171,13 +175,13 @@
       fill: $textSecondary
     }
   }
-  & .noFill svg {
+  & .noFill svg, & img {
     opacity: 0.5;
     &:hover {
       opacity: 1;
     }
   }
-  & svg {
+  & svg, & img {
     width: 32px;
     height: 32px;
     cursor: pointer;
@@ -204,53 +208,7 @@
     }
   }
 }
-.buttonGroup {
-  text-align: center;
-  padding: 20px 0;
-  max-width: 1048px;
-  margin: auto;
-  width: 100%;
-  & > div {
-    width: 100%;
-  }
-  & .MuiButtonGroup-root {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin-bottom: 50px;
-    & button {
-      max-width: 180px;
-      width: 50%;
-      height: 48px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: transparent;
-      border: 1px solid $primaryDark;
-      color: $textSecondary;
-      &.active {
-        background: $grey7;
-        border: 1px solid transparent;
-        color: $bgColor;
-      }
-      &:first-child {
-        border-top-left-radius: 24px;
-        border-bottom-left-radius: 24px;
-      }
-      &:last-child {
-        border-top-right-radius: 24px;
-        border-bottom-right-radius: 24px;
-      }
-    }
-  }
-  @include media("screen", "<phone") {
-    & .MuiGrid-item {
-      width: 100%;
-      margin-bottom: 32px;
-      text-align: center;
-    }
-  }
-}
+
 .swapInfo {
   text-align: left;
   margin-bottom: 60px;

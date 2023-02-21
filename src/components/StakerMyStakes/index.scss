@@ -26,7 +26,8 @@
   border-radius: 16px;
   padding: 12px;
   a {
-    color: $textPrimary;
+    color: $primary;
+    text-decoration: none;
   }
   button {
     height: 40px;

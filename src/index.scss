@@ -75,6 +75,55 @@ body {
   }
 }
 
+
+.buttonGroup {
+  text-align: center;
+  padding: 20px 0;
+  max-width: 1048px;
+  margin: auto;
+  width: 100%;
+  & > div {
+    width: 100%;
+  }
+  & .MuiButtonGroup-root {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 50px;
+    & button {
+      max-width: 180px;
+      width: 50%;
+      height: 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: transparent;
+      border: 1px solid $primaryDark;
+      color: $textSecondary;
+      &.active {
+        background: $grey7;
+        border: 1px solid transparent;
+        color: $bgColor;
+      }
+      &:first-child {
+        border-top-left-radius: 24px;
+        border-bottom-left-radius: 24px;
+      }
+      &:last-child {
+        border-top-right-radius: 24px;
+        border-bottom-right-radius: 24px;
+      }
+    }
+  }
+  @include media("screen", "<phone") {
+    & .MuiGrid-item {
+      width: 100%;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+  }
+}
+
 .page {
   background-color: $bgColor;
   width: 100%;
@@ -296,4 +345,39 @@ body {
     color: $secondary1;
     font-weight: 600;
   }
+}
+.fullHeight {
+  height: 100%;
+}
+
+.text-link {
+  text-decoration: none;
+}
+
+.text-link:hover {
+  opacity: 0.9;
+}
+
+.text-lg {
+  font-size: 1rem;
+}
+
+.m-2 {
+  margin: 0.5rem;
+}
+
+.m-3 {
+  margin: 1rem;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+
+.ml-1 {
+  margin-left: 1rem;
+}
+
+.p-1 {
+  padding: 1rem;
 }

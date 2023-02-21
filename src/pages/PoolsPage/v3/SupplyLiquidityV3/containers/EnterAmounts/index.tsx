@@ -4,6 +4,7 @@ import './index.scss';
 import { Field } from 'state/mint/actions';
 import {
   IDerivedMintInfo,
+  useActivePreset,
   useV3MintActionHandlers,
   useV3MintState,
 } from 'state/mint/v3/hooks';
@@ -18,6 +19,7 @@ import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box, Button } from '@material-ui/core';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
+import { GammaPairs, GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 
 interface IEnterAmounts {
@@ -35,6 +37,7 @@ export function EnterAmounts({
 }: IEnterAmounts) {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
+  const preset = useActivePreset();
 
   const { independentField, typedValue } = useV3MintState();
 
@@ -81,14 +84,56 @@ export function EnterAmounts({
     };
   }, {});
 
+  const baseCurrencyAddress =
+    currencyA && currencyA.wrapped
+      ? currencyA.wrapped.address.toLowerCase()
+      : '';
+  const quoteCurrencyAddress =
+    currencyB && currencyB.wrapped
+      ? currencyB.wrapped.address.toLowerCase()
+      : '';
+  const gammaPair =
+    GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
+    GammaPairs[quoteCurrencyAddress + '-' + baseCurrencyAddress];
+  const gammaPairAddress =
+    gammaPair && gammaPair.length > 0
+      ? gammaPair.find((pair) => pair.type === preset)?.address
+      : undefined;
+
   // check whether the user has approved the router on the tokens
+  const currencyAApproval =
+    mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+    currencyA &&
+    currencyA.isNative
+      ? currencyA.wrapped
+      : currencyA;
+  const currencyBApproval =
+    mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+    currencyB &&
+    currencyB.isNative
+      ? currencyB.wrapped
+      : currencyB;
   const [approvalA, approveACallback] = useApproveCallback(
-    mintInfo.parsedAmounts[Field.CURRENCY_A] || tryParseAmount('1', currencyA),
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    mintInfo.parsedAmounts[Field.CURRENCY_A] ||
+      tryParseAmount('1', currencyAApproval),
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? gammaPairAddress
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
-    mintInfo.parsedAmounts[Field.CURRENCY_B] || tryParseAmount('1', currencyB),
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    mintInfo.parsedAmounts[Field.CURRENCY_B] ||
+      tryParseAmount('1', currencyBApproval),
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? gammaPairAddress
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
 
   const showApprovalA = useMemo(() => {
@@ -191,7 +236,7 @@ export function EnterAmounts({
                 <Box className='token-approve-button-loading'>
                   <Loader stroke='white' />
                   <p>
-                    {t('approving')} {currencyA?.symbol}
+                    {t('approving')} {currencyAApproval?.symbol}
                   </p>
                 </Box>
               ) : (
@@ -200,7 +245,7 @@ export function EnterAmounts({
                   onClick={approveACallback}
                 >
                   <p>
-                    {t('approve')} {currencyA?.symbol}
+                    {t('approve')} {currencyAApproval?.symbol}
                   </p>
                 </Button>
               )
@@ -208,7 +253,7 @@ export function EnterAmounts({
               <Box className='token-approve-button-loading'>
                 <Check />
                 <p>
-                  {t('approved')} {currencyA?.symbol}
+                  {t('approved')} {currencyAApproval?.symbol}
                 </p>
               </Box>
             )}
@@ -221,7 +266,7 @@ export function EnterAmounts({
                 <Box className='token-approve-button-loading'>
                   <Loader stroke='white' />
                   <p>
-                    {t('approving')} {currencyB?.symbol}
+                    {t('approving')} {currencyBApproval?.symbol}
                   </p>
                 </Box>
               ) : (
@@ -230,7 +275,7 @@ export function EnterAmounts({
                   onClick={approveBCallback}
                 >
                   <p>
-                    {t('approve')} {currencyB?.symbol}
+                    {t('approve')} {currencyBApproval?.symbol}
                   </p>
                 </Button>
               )
@@ -238,7 +283,7 @@ export function EnterAmounts({
               <Box className='token-approve-button-loading'>
                 <Check />
                 <p>
-                  {t('approved')} {currencyB?.symbol}
+                  {t('approved')} {currencyBApproval?.symbol}
                 </p>
               </Box>
             )}

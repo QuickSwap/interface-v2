@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { Contract, providers } from 'ethers';
 import ERC20_ABI from 'constants/abis/erc20.json';
@@ -10,9 +10,7 @@ import {
   FINITE_FARMING,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
 } from '../constants/v3/addresses';
-import { BigNumber } from '@ethersproject/bignumber';
 import {
-  CURRENT_EVENTS,
   FETCH_ETERNAL_FARM,
   FETCH_ETERNAL_FARM_FROM_POOL,
   FETCH_FINITE_FARM_FROM_POOL,
@@ -20,6 +18,7 @@ import {
   FETCH_POOL,
   FETCH_REWARDS,
   FETCH_TOKEN,
+  FETCH_TOKEN_FARM,
   FUTURE_EVENTS,
   HAS_TRANSFERED_POSITIONS,
   INFINITE_EVENTS,
@@ -153,12 +152,9 @@ export function useFarmingSubgraph() {
         rewardToken,
         bonusRewardToken,
         multiplierToken,
-        reward: formatUnits(
-          BigNumber.from(events[i].reward),
-          rewardToken.decimals,
-        ),
+        reward: formatUnits(events[i].reward, rewardToken.decimals),
         bonusReward: formatUnits(
-          BigNumber.from(events[i].bonusReward),
+          events[i].bonusReward,
           bonusRewardToken.decimals,
         ),
       };
@@ -177,7 +173,7 @@ export function useFarmingSubgraph() {
       } = await (farming ? farmingClient : v3Client).query<
         SubgraphResponse<TokenSubgraph[]>
       >({
-        query: FETCH_TOKEN(),
+        query: farming ? FETCH_TOKEN_FARM() : FETCH_TOKEN(),
         variables: { tokenId },
       });
 
@@ -491,8 +487,8 @@ export function useFarmingSubgraph() {
             +position.id,
           );
 
-          const _rewardToken = await fetchToken(rewardToken, true);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
+          const _rewardToken = await fetchToken(rewardToken);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken);
           const _multiplierToken = await fetchToken(multiplierToken, true);
           const _pool = await fetchPool(pool);
 
@@ -509,16 +505,10 @@ export function useFarmingSubgraph() {
             ended: +endTime * 1000 < Date.now(),
             createdAtTimestamp: +createdAtTimestamp,
             limitEarned: rewardInfo[0]
-              ? formatUnits(
-                  BigNumber.from(rewardInfo[0]),
-                  _rewardToken.decimals,
-                )
+              ? formatUnits(rewardInfo[0], _rewardToken.decimals)
               : 0,
             limitBonusEarned: rewardInfo[1]
-              ? formatUnits(
-                  BigNumber.from(rewardInfo[1]),
-                  _bonusRewardToken.decimals,
-                )
+              ? formatUnits(rewardInfo[1], _bonusRewardToken.decimals)
               : 0,
             multiplierToken: _multiplierToken,
             tokenAmountForTier1,
@@ -558,6 +548,7 @@ export function useFarmingSubgraph() {
 
         if (position.eternalFarming) {
           const {
+            id,
             rewardToken,
             bonusRewardToken,
             pool,
@@ -587,13 +578,14 @@ export function useFarmingSubgraph() {
             { from: account },
           );
 
-          const _rewardToken = await fetchToken(rewardToken, true);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
+          const _rewardToken = await fetchToken(rewardToken);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken);
           const _pool = await fetchPool(pool);
           const _multiplierToken = await fetchToken(multiplierToken);
 
           _position = {
             ..._position,
+            farmId: id,
             eternalRewardToken: _rewardToken,
             eternalBonusRewardToken: _bonusRewardToken,
             eternalStartTime: startTime,
@@ -608,12 +600,9 @@ export function useFarmingSubgraph() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: _pool,
-            eternalEarned: formatUnits(
-              BigNumber.from(reward),
-              _rewardToken.decimals,
-            ),
+            eternalEarned: formatUnits(reward, _rewardToken.decimals),
             eternalBonusEarned: formatUnits(
-              BigNumber.from(bonusReward),
+              bonusReward,
               _bonusRewardToken.decimals,
             ),
           };
@@ -908,11 +897,8 @@ export function useFarmingSubgraph() {
       // .filter(farming => +farming.bonusRewardRate || +farming.rewardRate)
       for (const farming of eternalFarmings) {
         const pool = await fetchPool(farming.pool);
-        const rewardToken = await fetchToken(farming.rewardToken, true);
-        const bonusRewardToken = await fetchToken(
-          farming.bonusRewardToken,
-          true,
-        );
+        const rewardToken = await fetchToken(farming.rewardToken);
+        const bonusRewardToken = await fetchToken(farming.bonusRewardToken);
         const multiplierToken = await fetchToken(farming.multiplierToken, true);
 
         _eternalFarmings = [

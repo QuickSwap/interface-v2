@@ -11,7 +11,7 @@ import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -38,6 +38,7 @@ import {
   isSupportedNetwork,
   maxAmountSpend,
   basisPointsToPercent,
+  getContract,
 } from 'utils';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
@@ -47,12 +48,19 @@ import { useParaswapCallback } from 'hooks/useParaswapCallback';
 import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
 import { SwapSide } from '@paraswap/sdk';
 import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
-import { GlobalValue, paraswapTax } from 'constants/index';
+import {
+  GlobalValue,
+  paraswapTax,
+  RouterTypes,
+  SmartRouter,
+} from 'constants/index';
 import { useQuery } from 'react-query';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
+import callWallchainAPI from 'utils/wallchainService';
+import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { ONE } from 'v3lib/utils';
 
 const SwapBestTrade: React.FC<{
@@ -60,6 +68,7 @@ const SwapBestTrade: React.FC<{
 }> = ({ currencyBgClass }) => {
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
+  const { isProMode, updateIsProMode } = useIsProMode();
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -69,6 +78,9 @@ const SwapBestTrade: React.FC<{
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(
     false,
   );
+  const [bonusRouteLoading, setBonusRouteLoading] = useState(false);
+  const [bonusRouteFound, setBonusRouteFound] = useState(false);
+
   const urlLoadedTokens: Token[] = useMemo(
     () =>
       [loadedInputCurrency, loadedOutputCurrency]?.filter(
@@ -95,7 +107,7 @@ const SwapBestTrade: React.FC<{
     });
 
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const {
     currencyBalances,
@@ -122,6 +134,8 @@ const SwapBestTrade: React.FC<{
     onCurrencySelection,
     onUserInput,
     onChangeRecipient,
+    onBestRoute,
+    onSetSwapDelay,
   } = useSwapActionHandlers();
   const { address: recipientAddress } = useENSAddress(recipient);
   const [allowedSlippage] = useUserSlippageTolerance();
@@ -178,11 +192,11 @@ const SwapBestTrade: React.FC<{
   useEffect(() => {
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else {
+    } else if (parsedCurrency0 === undefined && !parsedCurrency1Id) {
       redirectWithCurrency(ETHER, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0Id]);
+  }, [parsedCurrency0, parsedCurrency1Id]);
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
@@ -237,7 +251,14 @@ const SwapBestTrade: React.FC<{
       );
 
   const fetchOptimalRate = async () => {
-    if (!srcToken || !destToken || !srcAmount) {
+    if (
+      !srcToken ||
+      !destToken ||
+      !srcAmount ||
+      !account ||
+      !chainId ||
+      !library
+    ) {
       return;
     }
     try {
@@ -257,6 +278,7 @@ const SwapBestTrade: React.FC<{
           destTokenTransferFee: paraswapTax[destToken.toLowerCase()],
         },
       });
+
       setOptimalRateError('');
       return rate;
     } catch (err) {
@@ -331,6 +353,7 @@ const SwapBestTrade: React.FC<{
     pct,
     inputCurrency as Currency,
     optimalRate,
+    bonusRouteFound,
   );
 
   const showApproveFlow =
@@ -364,24 +387,26 @@ const SwapBestTrade: React.FC<{
   );
 
   const noRoute = !optimalRate || optimalRate.bestRoute.length < 0;
-  const swapInputAmountWithSlippage = optimalRate
-    ? CurrencyAmount.fromRawAmount(
-        inputCurrency as Currency,
-        (optimalRate.side === SwapSide.BUY
-          ? new Fraction(ONE).add(pct)
-          : new Fraction(ONE)
-        ).multiply(optimalRate.srcAmount).quotient,
-      )
-    : undefined;
+  const swapInputAmountWithSlippage =
+    optimalRate && inputCurrency
+      ? CurrencyAmount.fromRawAmount(
+          inputCurrency as Currency,
+          (optimalRate.side === SwapSide.BUY
+            ? new Fraction(ONE).add(pct)
+            : new Fraction(ONE)
+          ).multiply(optimalRate.srcAmount).quotient,
+        )
+      : undefined;
 
   const swapInputBalanceCurrency = currencyBalances[Field.INPUT];
 
-  const swapInputBalance = swapInputBalanceCurrency
-    ? CurrencyAmount.fromRawAmount(
-        inputCurrency as Currency,
-        swapInputBalanceCurrency.raw.toString(),
-      )
-    : undefined;
+  const swapInputBalance =
+    swapInputBalanceCurrency && inputCurrency
+      ? CurrencyAmount.fromRawAmount(
+          inputCurrency as Currency,
+          swapInputBalanceCurrency.raw.toString(),
+        )
+      : undefined;
 
   const swapButtonText = useMemo(() => {
     if (account) {
@@ -412,6 +437,8 @@ const SwapBestTrade: React.FC<{
         swapInputAmountWithSlippage.greaterThan(swapInputBalance)
       ) {
         return `Insufficient ${currencies[Field.INPUT]?.symbol} Balance`;
+      } else if (bonusRouteLoading) {
+        return t('fetchingBestRoute');
       } else {
         return t('swap');
       }
@@ -435,6 +462,7 @@ const SwapBestTrade: React.FC<{
     wrapType,
     maxImpactAllowed,
     ethereum,
+    bonusRouteLoading,
   ]);
 
   const swapButtonDisabled = useMemo(() => {
@@ -451,6 +479,9 @@ const SwapBestTrade: React.FC<{
         );
       } else {
         return (
+          (inputCurrency &&
+            (inputCurrency as Currency).isToken &&
+            approval === ApprovalState.UNKNOWN) ||
           !isValid ||
           (optimalRate && optimalRate.maxImpactReached && !isExpertMode) ||
           !!paraswapCallbackError ||
@@ -485,6 +516,7 @@ const SwapBestTrade: React.FC<{
     parsedAmounts,
     swapInputAmountWithSlippage,
     swapInputBalance,
+    inputCurrency,
   ]);
 
   const [
@@ -682,6 +714,112 @@ const SwapBestTrade: React.FC<{
       (Number(optimalRate.srcAmount) * 10 ** optimalRate.destDecimals)
     : undefined;
 
+  const swapDisabledForTx = useMemo(() => {
+    if (account) {
+      if (showWrap) {
+        return Boolean(wrapInputError);
+      } else if (noRoute && userHasSpecifiedInputOutput) {
+        return true;
+      } else {
+        return (
+          !isValid ||
+          (optimalRate && optimalRate.maxImpactReached && !isExpertMode) ||
+          !!paraswapCallbackError ||
+          (optimalRate &&
+            !parsedAmounts[Field.INPUT]?.equalTo(
+              JSBI.BigInt(optimalRate.srcAmount),
+            )) ||
+          (optimalRate &&
+            !parsedAmounts[Field.OUTPUT]?.equalTo(
+              JSBI.BigInt(optimalRate.destAmount),
+            )) ||
+          (swapInputAmountWithSlippage &&
+            swapInputBalance &&
+            swapInputAmountWithSlippage.greaterThan(swapInputBalance))
+        );
+      }
+    } else {
+      return false;
+    }
+  }, [
+    account,
+    showWrap,
+    noRoute,
+    userHasSpecifiedInputOutput,
+    wrapInputError,
+    isValid,
+    optimalRate,
+    isExpertMode,
+    paraswapCallbackError,
+    parsedAmounts,
+    swapInputAmountWithSlippage,
+    swapInputBalance,
+  ]);
+  const swapIsReady = Boolean(!swapDisabledForTx && !optimalRateError);
+
+  useEffect(() => {
+    (async () => {
+      if (
+        swapIsReady &&
+        inputCurrency &&
+        !currencyEquals(inputCurrency, ETHER) &&
+        optimalRate &&
+        account &&
+        library &&
+        chainId
+      ) {
+        setBonusRouteFound(false);
+        setBonusRouteLoading(true);
+        try {
+          const txParams = await paraswap.buildTx({
+            srcToken: optimalRate.srcToken,
+            destToken: optimalRate.destToken,
+            srcAmount: optimalRate.srcAmount,
+            destAmount: optimalRate.destAmount,
+            priceRoute: optimalRate,
+            userAddress: account,
+            partner: 'quickswapv3',
+          });
+
+          if (txParams.data) {
+            const paraswapContract = getContract(
+              optimalRate.contractAddress,
+              ParaswapABI,
+              library,
+              account,
+            );
+            const response = await callWallchainAPI(
+              optimalRate.contractMethod,
+              txParams.data,
+              txParams.value,
+              chainId,
+              account,
+              paraswapContract,
+              SmartRouter.PARASWAP,
+              RouterTypes.SMART,
+              onBestRoute,
+              onSetSwapDelay,
+              50,
+            );
+            setBonusRouteFound(response ? response.pathFound : false);
+          } else {
+            setBonusRouteFound(false);
+          }
+          setBonusRouteLoading(false);
+        } catch (e) {
+          setBonusRouteFound(false);
+          setBonusRouteLoading(false);
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swapIsReady, inputCurrency]);
+
+  useEffect(() => {
+    fetchOptimalRate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typedValue, independentField, inputCurrency, outputCurrency]);
+
   return (
     <Box>
       <TokenWarningModal
@@ -720,7 +858,8 @@ const SwapBestTrade: React.FC<{
         handleCurrencySelect={handleCurrencySelect}
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
-        bgClass={currencyBgClass}
+        color={isProMode ? 'white' : 'secondary'}
+        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
       <Box className='exchangeSwap'>
         <ExchangeIcon
@@ -742,7 +881,8 @@ const SwapBestTrade: React.FC<{
         handleCurrencySelect={handleOtherCurrencySelect}
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
-        bgClass={currencyBgClass}
+        color={isProMode ? 'white' : 'secondary'}
+        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
       {paraRate && (
         <Box className='swapPrice'>
@@ -832,7 +972,11 @@ const SwapBestTrade: React.FC<{
         <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
             fullWidth
-            disabled={(optimalRateError || swapButtonDisabled) as boolean}
+            disabled={
+              (bonusRouteLoading ||
+                optimalRateError ||
+                swapButtonDisabled) as boolean
+            }
             onClick={account ? onParaswap : connectWallet}
           >
             {swapButtonText}

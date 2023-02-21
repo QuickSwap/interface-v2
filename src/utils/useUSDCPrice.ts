@@ -5,190 +5,139 @@ import {
   Price,
   WETH,
   Token,
+  Trade,
 } from '@uniswap/sdk';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PairState, usePairs, usePair } from 'data/Reserves';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
 import { useDQUICKtoQUICK } from 'state/stake/hooks';
 import { GlobalValue } from 'constants/index';
+import { useAllCommonPairs } from 'hooks/Trades';
+import { tryParseAmount } from 'state/swap/hooks';
+import { useEthPrice, useMaticPrice } from 'state/application/hooks';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
+import { clientV2, clientV3 } from 'apollo/client';
+import { TOKEN_PRICES_V2 } from 'apollo/queries';
+import { TOKENPRICES_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
 
-/**
- * Returns the price in USDC of the input currency
- * @param currency currency to compute the USDC price of
- */
+dayjs.extend(utc);
+dayjs.extend(weekOfYear);
+
 export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const { chainId } = useActiveWeb3React();
-  let wrapped = wrappedCurrency(currency, chainId);
-  const internalWrapped = wrapped;
-  if (wrapped?.equals(GlobalValue.tokens.COMMON.CXETH)) {
-    wrapped = wrappedCurrency(GlobalValue.tokens.COMMON.ETHER, chainId);
-  }
-  const oldQuickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
-  const usdcToken = GlobalValue.tokens.COMMON.USDC;
-  const usdtToken = GlobalValue.tokens.COMMON.USDT;
-  const daiToken = GlobalValue.tokens.COMMON.DAI;
-  const cxETHToken = GlobalValue.tokens.COMMON.CXETH;
-  const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
-    () => [
-      [
-        chainId && wrapped && currencyEquals(WETH[chainId], wrapped)
-          ? undefined
-          : wrapped,
-        chainId ? WETH[chainId] : undefined,
-      ],
-      [
-        wrapped?.equals(oldQuickToken) ? undefined : wrapped,
-        chainId === ChainId.MATIC ? oldQuickToken : undefined,
-      ],
-      [
-        wrapped?.equals(usdcToken) ? undefined : wrapped,
-        chainId === ChainId.MATIC ? usdcToken : undefined,
-      ],
-      [
-        wrapped?.equals(usdtToken) ? undefined : wrapped,
-        chainId === ChainId.MATIC ? usdtToken : undefined,
-      ],
-      [
-        wrapped?.equals(daiToken) ? undefined : wrapped,
-        chainId === ChainId.MATIC ? daiToken : undefined,
-      ],
-      [
-        chainId ? WETH[chainId] : undefined,
-        chainId === ChainId.MATIC ? usdcToken : undefined,
-      ],
-      [
-        chainId === ChainId.MATIC ? oldQuickToken : undefined,
-        chainId === ChainId.MATIC ? usdcToken : undefined,
-      ],
-    ],
-    [chainId, wrapped, daiToken, oldQuickToken, usdcToken, usdtToken],
+
+  const amountOut = chainId
+    ? tryParseAmount('1', GlobalValue.tokens.COMMON.USDC)
+    : undefined;
+
+  const allowedPairs = useAllCommonPairs(
+    currency,
+    GlobalValue.tokens.COMMON.USDC,
   );
-  const [
-    [ethPairState, ethPair],
-    [quickPairState, quickPair],
-    [usdcPairState, usdcPair],
-    [usdtPairState, usdtPair],
-    [daiPairState, daiPair],
-    [usdcEthPairState, usdcEthPair],
-    [usdcQuickPairState, usdcQuickPair],
-  ] = usePairs(tokenPairs);
 
   return useMemo(() => {
-    if (!currency || !wrapped || !chainId) {
+    if (!currency || !amountOut || !allowedPairs.length) {
       return undefined;
     }
-    // handle weth/eth
-    if (wrapped.equals(WETH[chainId])) {
-      if (usdcPair) {
-        const price = usdcPair.priceOf(WETH[chainId]);
-        return new Price(
-          currency,
-          usdcToken,
-          price.denominator,
-          price.numerator,
-        );
-      } else {
-        return undefined;
-      }
-    }
-    // handle usdc
-    if (wrapped.equals(usdcToken)) {
-      return new Price(usdcToken, usdcToken, '1', '1');
-    }
 
-    // all other tokens
-    // first try the usdc pair
-    if (usdcPairState === PairState.EXISTS && usdcPair) {
-      const price = usdcPair.priceOf(wrapped);
+    const trade =
+      Trade.bestTradeExactOut(allowedPairs, currency, amountOut, {
+        maxHops: 3,
+        maxNumResults: 1,
+      })[0] ?? null;
 
-      if (internalWrapped?.equals(cxETHToken)) {
-        return new Price(
-          cxETHToken,
-          usdcToken,
-          price.denominator,
-          price.numerator,
-        );
-      }
+    if (!trade) return;
 
-      return new Price(currency, usdcToken, price.denominator, price.numerator);
-    }
-    if (usdtPairState === PairState.EXISTS && usdtPair) {
-      const price = usdtPair.priceOf(wrapped);
-      return new Price(currency, usdtToken, price.denominator, price.numerator);
-    }
-    if (daiPairState === PairState.EXISTS && daiPair) {
-      const price = daiPair.priceOf(wrapped);
-      return new Price(currency, daiToken, price.denominator, price.numerator);
-    }
-    if (
-      ethPairState === PairState.EXISTS &&
-      ethPair &&
-      usdcEthPairState === PairState.EXISTS &&
-      usdcEthPair
-    ) {
-      if (
-        usdcEthPair.reserveOf(usdcToken).greaterThan('0') &&
-        ethPair.reserveOf(WETH[chainId]).greaterThan('1')
-      ) {
-        const ethUsdcPrice = usdcEthPair.priceOf(usdcToken);
-        const currencyEthPrice = ethPair.priceOf(WETH[chainId]);
-        const usdcPrice = ethUsdcPrice.multiply(currencyEthPrice).invert();
-        return new Price(
-          currency,
-          usdcToken,
-          usdcPrice.denominator,
-          usdcPrice.numerator,
-        );
+    const { numerator, denominator } = trade.route.midPrice;
+
+    return new Price(
+      currency,
+      GlobalValue.tokens.COMMON.USDC,
+      denominator,
+      numerator,
+    );
+  }, [currency, allowedPairs, amountOut]);
+}
+
+export function useUSDCPricesFromAddresses(addresses: string[]) {
+  const { ethPrice } = useEthPrice();
+  const { maticPrice } = useMaticPrice();
+  const [prices, setPrices] = useState<
+    { address: string; price: number }[] | undefined
+  >();
+
+  useEffect(() => {
+    (async () => {
+      if (ethPrice.price && maticPrice.price) {
+        const pricesDataV2 = await clientV2.query({
+          query: TOKEN_PRICES_V2(addresses),
+          fetchPolicy: 'network-only',
+        });
+
+        const pricesV2 =
+          pricesDataV2.data &&
+          pricesDataV2.data.tokens &&
+          pricesDataV2.data.tokens.length > 0
+            ? pricesDataV2.data.tokens
+            : [];
+
+        const addressesNotInV2 = addresses.filter((address) => {
+          const priceV2 = pricesV2.find(
+            (item: any) => item.id.toLowerCase() === address.toLowerCase(),
+          );
+          return !priceV2 || !priceV2.derivedETH || !Number(priceV2.derivedETH);
+        });
+
+        const pricesDataV3 = await clientV3.query({
+          query: TOKENPRICES_FROM_ADDRESSES_V3(
+            addressesNotInV2.map((address) => address.toLowerCase()),
+          ),
+          fetchPolicy: 'network-only',
+        });
+
+        const pricesV3 =
+          pricesDataV3.data &&
+          pricesDataV3.data.tokens &&
+          pricesDataV3.data.tokens.length > 0
+            ? pricesDataV3.data.tokens
+            : [];
+
+        const prices = addresses.map((address) => {
+          const priceV2 = pricesV2.find(
+            (item: any) => item.id.toLowerCase() === address.toLowerCase(),
+          );
+          if (priceV2 && priceV2.derivedETH && Number(priceV2.derivedETH)) {
+            return {
+              address,
+              price: (ethPrice.price ?? 0) * Number(priceV2.derivedETH),
+            };
+          } else {
+            const priceV3 = pricesV3.find(
+              (item: any) => item.id.toLowerCase() === address.toLowerCase(),
+            );
+            if (
+              priceV3 &&
+              priceV3.derivedMatic &&
+              Number(priceV3.derivedMatic)
+            ) {
+              return {
+                address,
+                price: (maticPrice.price ?? 0) * Number(priceV3.derivedMatic),
+              };
+            }
+            return { address, price: 0 };
+          }
+        });
+        setPrices(prices);
       }
-    }
-    if (
-      quickPairState === PairState.EXISTS &&
-      quickPair &&
-      usdcQuickPairState === PairState.EXISTS &&
-      usdcQuickPair
-    ) {
-      if (
-        usdcQuickPair.reserveOf(usdcToken).greaterThan('0') &&
-        quickPair.reserveOf(oldQuickToken).greaterThan('5')
-      ) {
-        const quickUsdcPrice = usdcQuickPair.priceOf(usdcToken);
-        const currencyQuickPrice = quickPair.priceOf(oldQuickToken);
-        const usdcPrice = quickUsdcPrice.multiply(currencyQuickPrice).invert();
-        return new Price(
-          currency,
-          usdcToken,
-          usdcPrice.denominator,
-          usdcPrice.numerator,
-        );
-      }
-    }
-    return undefined;
-  }, [
-    currency,
-    wrapped,
-    chainId,
-    ethPair,
-    usdcEthPair,
-    usdcPairState,
-    usdcPair,
-    usdtPairState,
-    usdtPair,
-    daiPairState,
-    daiPair,
-    ethPairState,
-    usdcEthPairState,
-    quickPairState,
-    quickPair,
-    usdcQuickPairState,
-    usdcQuickPair,
-    internalWrapped,
-    cxETHToken,
-    daiToken,
-    oldQuickToken,
-    usdcToken,
-    usdtToken,
-  ]);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ethPrice.price, maticPrice.price]);
+
+  return prices;
 }
 
 //TODO: the majority of these functions share alot of common logic,

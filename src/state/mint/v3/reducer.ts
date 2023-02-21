@@ -1,6 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { selectCurrency } from './actions';
+import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
 import {
+  selectCurrency,
   Field,
   resetMintState,
   setAddLiquidityTxHash,
@@ -15,6 +16,8 @@ import {
   typeStartPriceInput,
   updateDynamicFee,
   updateSelectedPreset,
+  updateLiquidityRangeType,
+  updatePresetRange,
 } from './actions';
 
 export type FullRange = true;
@@ -25,6 +28,10 @@ export enum Presets {
   NORMAL,
   FULL,
   STABLE,
+  GAMMA_NARROW,
+  GAMMA_WIDE,
+  GAMMA_DYNAMIC,
+  GAMMA_STABLE,
 }
 
 interface MintState {
@@ -49,6 +56,8 @@ interface MintState {
   readonly [Field.CURRENCY_B]: {
     readonly currencyId: string | undefined;
   };
+  readonly liquidityRangeType: string | undefined;
+  readonly presetRange: IPresetArgs | undefined;
 }
 
 const initialState: MintState = {
@@ -70,6 +79,8 @@ const initialState: MintState = {
   [Field.CURRENCY_B]: {
     currencyId: '',
   },
+  liquidityRangeType: undefined,
+  presetRange: undefined,
 };
 
 export default createReducer<MintState>(initialState, (builder) =>
@@ -200,6 +211,21 @@ export default createReducer<MintState>(initialState, (builder) =>
       return {
         ...state,
         currentStep,
+      };
+    })
+    .addCase(
+      updateLiquidityRangeType,
+      (state, { payload: { liquidityRangeType } }) => {
+        return {
+          ...state,
+          liquidityRangeType,
+        };
+      },
+    )
+    .addCase(updatePresetRange, (state, { payload: { presetRange } }) => {
+      return {
+        ...state,
+        presetRange,
       };
     }),
 );

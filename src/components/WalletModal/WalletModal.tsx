@@ -7,7 +7,7 @@ import ReactGA from 'react-ga';
 import { Box } from '@material-ui/core';
 import MetamaskIcon from 'assets/images/metamask.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
-import { fortmatic, injected, portis, safeApp, trustconnect } from 'connectors';
+import { fortmatic, injected, metamask, portis, safeApp } from 'connectors';
 import { OVERLAY_READY } from 'connectors/Fortmatic';
 import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import usePrevious from 'hooks/usePrevious';
@@ -23,11 +23,15 @@ import { UAuthConnector } from '@uauth/web3-react';
 import UAuth from '@uauth/js';
 
 import { InjectedConnector } from '@web3-react/injected-connector';
-import { TrustWalletConnector } from 'connectors/TrustWalletConnector';
+import {
+  getTrustWalletInjectedProvider,
+  TrustWalletConnector,
+} from 'connectors/TrustWalletConnector';
 
 import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
+import { getMetaMaskInjectedProvider } from 'connectors/MetaMaskConnector';
 
 //@ts-ignore
 import okWeb3 from '@okwallet/extension-web3-1.7.0';
@@ -217,25 +221,19 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   // get wallets user can switch too, depending on device/browser
   function getOptions() {
-    const { ethereum, web3, trustwallet, _oldMetaMask } = window as any;
-    const isMetamask =
-      ethereum && !ethereum.isBitKeep && (ethereum.isMetaMask || _oldMetaMask);
+    const { ethereum, web3, _oldMetaMask } = window as any;
+    const isMetamask = !!getMetaMaskInjectedProvider() || _oldMetaMask;
     const isBlockWallet = ethereum && ethereum.isBlockWallet;
     const isCypherD = ethereum && ethereum.isCypherD;
     const isBitKeep = ethereum && ethereum.isBitKeep;
-    const isTrustWallet = ethereum && ethereum.isTrustWallet;
+    const trustWallet = getTrustWalletInjectedProvider();
+    const isBraveWallet = ethereum && ethereum.isBraveWallet;
 
     // is trust wallet installed?
-    const isTrustWalledInstalled = trustwallet !== undefined;
+    const isTrustWalledInstalled = !!trustWallet;
 
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key];
-
-      if (option.connector === trustconnect) {
-        if (!isTrustWalledInstalled) {
-          option.installLink = process.env.REACT_APP_TRUST_WALLET_INSTALL_LINK;
-        }
-      }
 
       //disable safe app by in the list
       if (option.connector === safeApp) {
@@ -268,7 +266,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
                   isBitKeep ===
                     (option.name === GlobalConst.walletName.BITKEEP) ||
                   isMetamask ===
-                    (option.name === GlobalConst.walletName.METAMASK))
+                    (option.name === GlobalConst.walletName.METAMASK) ||
+                  isBraveWallet ===
+                    (option.name === GlobalConst.walletName.BRAVEWALLET))
               }
               color={option.color}
               link={option.href}
@@ -283,7 +283,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       }
 
       // overwrite injected when needed
-      if (option.connector === injected) {
+      if (option.connector === injected || option.connector === metamask) {
         // don't show injected if there's no injected provider
         if (!(web3 || ethereum)) {
           if (option.name === GlobalConst.walletName.METAMASK) {
@@ -305,7 +305,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         // don't return metamask if injected provider isn't metamask
         else if (
           option.name === GlobalConst.walletName.METAMASK &&
-          !isMetamask
+          (!isMetamask || isBraveWallet)
         ) {
           return null;
         } else if (
@@ -323,11 +323,20 @@ const WalletModal: React.FC<WalletModalProps> = ({
           !isCypherD
         ) {
           return null;
+        } else if (
+          option.name === GlobalConst.walletName.BRAVEWALLET &&
+          !isBraveWallet
+        ) {
+          return null;
         }
         // likewise for generic
         else if (
           option.name === GlobalConst.walletName.INJECTED &&
-          (isMetamask || isBitKeep || isBlockWallet || isCypherD)
+          (isMetamask ||
+            isBitKeep ||
+            isBlockWallet ||
+            isBraveWallet ||
+            isCypherD)
         ) {
           return null;
         }
@@ -355,7 +364,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 isBitKeep ===
                   (option.name === GlobalConst.walletName.BITKEEP) ||
                 isMetamask ===
-                  (option.name === GlobalConst.walletName.METAMASK))
+                  (option.name === GlobalConst.walletName.METAMASK) ||
+                isBraveWallet ===
+                  (option.name === GlobalConst.walletName.BRAVEWALLET))
             }
             color={option.color}
             link={option.href}

@@ -174,6 +174,7 @@ const PairFields = `
     reserve0
     reserve1
     volumeUSD
+    untrackedVolumeUSD
     reserveUSD
     totalSupply
     token0 {
@@ -284,6 +285,47 @@ const TokenFields = `
     totalLiquidity
   }
 `;
+
+export const TOKENS_FROM_ADDRESSES_V2 = (
+  blockNumber: number | undefined,
+  tokens: string[],
+) => {
+  let tokenString = `[`;
+  tokens.map((address) => {
+    return (tokenString += `"${address}",`);
+  });
+  tokenString += ']';
+  const queryString =
+    `${TokenFields}
+    query tokens {
+      tokens(where: {id_in: ${tokenString}},` +
+    (blockNumber ? `block: {number: ${blockNumber}} ,` : ``) +
+    ` orderBy: tradeVolumeUSD, orderDirection: desc) {
+        ...TokenFields
+      }
+    }`;
+
+  return gql(queryString);
+};
+
+export const TOKEN_PRICES_V2 = (tokens: string[], blockNumber?: number) => {
+  let tokenString = `[`;
+  tokens.map((address) => {
+    return (tokenString += `"${address.toLowerCase()}",`);
+  });
+  tokenString += ']';
+  const queryString =
+    `query tokens {
+      tokens(where: {id_in: ${tokenString}},` +
+    (blockNumber ? `block: {number: ${blockNumber}} ,` : ``) +
+    ` first: 1000) {
+        id
+        derivedETH
+      }
+    }`;
+
+  return gql(queryString);
+};
 
 export const TOKENS_CURRENT: any = (count: number) => {
   const queryString = `
@@ -627,7 +669,7 @@ export const GET_BLOCKS: any = (timestamps: number[]) => {
 export const FILTERED_TRANSACTIONS = gql`
   query($allPairs: [Bytes]!) {
     mints(
-      first: 20
+      first: 500
       where: { pair_in: $allPairs }
       orderBy: timestamp
       orderDirection: desc
@@ -653,7 +695,7 @@ export const FILTERED_TRANSACTIONS = gql`
       amountUSD
     }
     burns(
-      first: 20
+      first: 500
       where: { pair_in: $allPairs }
       orderBy: timestamp
       orderDirection: desc
@@ -679,7 +721,7 @@ export const FILTERED_TRANSACTIONS = gql`
       amountUSD
     }
     swaps(
-      first: 30
+      first: 500
       where: { pair_in: $allPairs }
       orderBy: timestamp
       orderDirection: desc

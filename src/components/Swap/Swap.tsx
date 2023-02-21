@@ -10,7 +10,7 @@ import {
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -21,7 +21,7 @@ import {
   useExpertModeManager,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
-import { Field } from 'state/swap/actions';
+import { Field, SwapDelay } from 'state/swap/actions';
 import {
   CurrencyInput,
   ConfirmSwapModal,
@@ -60,6 +60,7 @@ const Swap: React.FC<{
 }> = ({ currencyBgClass }) => {
   const loadedUrlParams = useDefaultsFromURLSearch();
   const history = useHistory();
+  const { isProMode, updateIsProMode } = useIsProMode();
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -96,7 +97,7 @@ const Swap: React.FC<{
 
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
-  const { independentField, typedValue, recipient } = useSwapState();
+  const { independentField, typedValue, recipient, swapDelay } = useSwapState();
   const {
     v1Trade,
     v2Trade,
@@ -231,11 +232,15 @@ const Swap: React.FC<{
   useEffect(() => {
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else if (history.location.pathname !== '/') {
+    } else if (
+      history.location.pathname !== '/' &&
+      parsedCurrency0 === undefined &&
+      !parsedCurrency1Id
+    ) {
       redirectWithCurrency(ETHER, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0Id]);
+  }, [parsedCurrency0, parsedCurrency1Id]);
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
@@ -308,6 +313,7 @@ const Swap: React.FC<{
   ]);
 
   const swapButtonDisabled = useMemo(() => {
+    const inputCurrency = currencies[Field.INPUT];
     if (account) {
       if (showWrap) {
         return Boolean(wrapInputError);
@@ -321,6 +327,9 @@ const Swap: React.FC<{
         );
       } else {
         return (
+          (inputCurrency &&
+            currencyEquals(inputCurrency, ETHER) &&
+            approval === ApprovalState.UNKNOWN) ||
           !isValid ||
           (priceImpactSeverity > 3 && !isExpertMode) ||
           !!swapCallbackError
@@ -341,6 +350,7 @@ const Swap: React.FC<{
     isValid,
     swapCallbackError,
     isExpertMode,
+    currencies,
   ]);
 
   const [
@@ -533,6 +543,11 @@ const Swap: React.FC<{
     t,
   ]);
 
+  const fetchingBestRoute =
+    swapDelay === SwapDelay.USER_INPUT ||
+    swapDelay === SwapDelay.FETCHING_SWAP ||
+    swapDelay === SwapDelay.FETCHING_BONUS;
+
   return (
     <Box>
       <TokenWarningModal
@@ -569,7 +584,8 @@ const Swap: React.FC<{
         handleCurrencySelect={handleCurrencySelect}
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
-        bgClass={currencyBgClass}
+        color={isProMode ? 'white' : 'secondary'}
+        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
       <Box className='exchangeSwap'>
         <ExchangeIcon onClick={redirectWithSwitch} />
@@ -584,7 +600,8 @@ const Swap: React.FC<{
         handleCurrencySelect={handleOtherCurrencySelect}
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
-        bgClass={currencyBgClass}
+        color={isProMode ? 'white' : 'secondary'}
+        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
       {trade && trade.executionPrice && (
         <Box className='swapPrice'>
@@ -638,7 +655,13 @@ const Swap: React.FC<{
           )}
         </Box>
       )}
-      <AdvancedSwapDetails trade={trade} />
+      {fetchingBestRoute ? (
+        <Box mt={2} className='flex justify-center'>
+          <p>{t('fetchingBestRoute')}...</p>
+        </Box>
+      ) : (
+        <AdvancedSwapDetails trade={trade} />
+      )}
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (
           <Box width='48%'>

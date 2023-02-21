@@ -5,13 +5,23 @@ import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { GlobalConst } from 'constants/index';
+import { useIsAnalyticsLoaded } from 'state/analytics/hooks';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
-  const version = params && params.version ? params.version : 'v3';
+  const isAnalyticsPage = history.location.pathname.includes('/analytics');
+  const version =
+    params && params.version
+      ? params.version
+      : isAnalyticsPage
+      ? 'total'
+      : 'v3';
+
+  const analyticsLoaded = useIsAnalyticsLoaded();
+  const toggleDisabled = isAnalyticsPage && !analyticsLoaded;
 
   useEffect(() => {
     updateIsV2(version === 'v2');
@@ -40,20 +50,45 @@ const VersionToggle: React.FC = () => {
   };
 
   return (
-    <Box className='version-toggle-container'>
+    <Box
+      className={`version-toggle-container${
+        toggleDisabled ? ' version-toggle-disabled' : ''
+      }`}
+    >
       <Box
-        className={isV2 ? 'version-toggle-active' : ''}
-        onClick={() => redirectWithVersion('v2')}
+        className={isV2 && version !== 'total' ? 'version-toggle-active' : ''}
+        onClick={() => {
+          if (!toggleDisabled) {
+            redirectWithVersion('v2');
+          }
+        }}
       >
         <small>{t('V2')}</small>
       </Box>
 
       <Box
-        className={!isV2 ? 'version-toggle-active' : ''}
-        onClick={() => redirectWithVersion('v3')}
+        className={!isV2 && version !== 'total' ? 'version-toggle-active' : ''}
+        onClick={() => {
+          if (!toggleDisabled) {
+            redirectWithVersion('v3');
+          }
+        }}
       >
         <small>{t('V3')}</small>
       </Box>
+
+      {isAnalyticsPage && (
+        <Box
+          className={version === 'total' ? 'version-toggle-active' : ''}
+          onClick={() => {
+            if (!toggleDisabled) {
+              redirectWithVersion('total');
+            }
+          }}
+        >
+          <small>{t('total')}</small>
+        </Box>
+      )}
     </Box>
   );
 };

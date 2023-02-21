@@ -10,9 +10,11 @@ import {
   trustconnect,
   unstopabbledomains,
   okxConnect,
+  metamask,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
+import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import cypherDIcon from 'assets/images/cypherDIcon.png';
 import BitKeepIcon from 'assets/images/bitkeep.png';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
@@ -21,6 +23,7 @@ import PortisIcon from 'assets/images/portisIcon.png';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
+import { Presets } from 'state/mint/v3/reducer';
 import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 import OKXWALLETIcon from 'assets/images/OKXWallet.svg';
 
@@ -37,6 +40,45 @@ export enum TxnType {
   ADD,
   REMOVE,
 }
+
+export enum RouterTypes {
+  QUICKSWAP = 'QUICKSWAP',
+  SMART = 'SMART',
+  BONUS = 'BONUS',
+}
+
+export enum SmartRouter {
+  PARASWAP = 'PARASWAP',
+  QUICKSWAP = 'QUICKSWAP',
+}
+
+export const WALLCHAIN_PARAMS = {
+  [ChainId.MATIC]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: 'https://matic.wallchains.com/upgrade_txn/',
+      apiKey: '91b92acd-e8fd-49c3-80fd-db2bc58bb8cf',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: 'https://matic.wallchains.com/upgrade_txn/',
+      apiKey: '50eaf751-196d-4fe0-9506-b983f7c83735',
+    },
+  },
+  [ChainId.MUMBAI]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+  },
+};
+
+export const BONUS_CUTOFF_AMOUNT = {
+  [ChainId.MUMBAI]: 0,
+  [ChainId.MATIC]: 0,
+};
 
 export const GlobalConst = {
   blacklists: {
@@ -59,6 +101,10 @@ export const GlobalConst = {
     },
     PARASWAP_ROUTER_ADDRESS: {
       [ChainId.MATIC]: '0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57',
+      [ChainId.MUMBAI]: undefined,
+    },
+    SWAP_ROUTER_ADDRESS: {
+      [ChainId.MATIC]: '0xfaa746afc5ff7d5ef0aa469bb26ddd6cd8f13911',
       [ChainId.MUMBAI]: undefined,
     },
     ROUTER_ADDRESS: {
@@ -114,6 +160,19 @@ export const GlobalConst = {
     DEFAULT_SYRUP_LIST_URL: process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL + '',
     ANALYTICS_TOKENS_COUNT: 200,
     ANALYTICS_PAIRS_COUNT: 400,
+    v3FarmSortBy: {
+      pool: '1',
+      tvl: '2',
+      rewards: '3',
+      apr: '4',
+    },
+    v3FarmFilter: {
+      allFarms: '0',
+      stableCoin: '1',
+      blueChip: '2',
+      stableLP: '3',
+      otherLP: '4',
+    },
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,
@@ -128,11 +187,16 @@ export const GlobalConst = {
     DUALFARM: 'DualFarm',
     OTHER_LP: 'OtherFarm',
   },
+  v3LiquidityRangeType: {
+    MANUAL_RANGE: '0',
+    GAMMA_RANGE: '1',
+  },
   walletName: {
     METAMASK: 'Metamask',
     TRUST_WALLET: 'Trust Wallet',
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
+    BRAVEWALLET: 'BraveWallet',
     BITKEEP: 'BitKeep',
     INJECTED: 'Injected',
     SAFE_APP: 'Gnosis Safe App',
@@ -142,6 +206,383 @@ export const GlobalConst = {
     WALLET_CONNECT: 'WalletConnect',
     OKXWALLET: 'OKX wallet',
   },
+};
+
+export interface GammaPair {
+  address: string;
+  title: string;
+  type: Presets;
+  token0Address: string;
+  token1Address: string;
+  ableToFarm?: boolean;
+  pid?: number;
+}
+
+export const GammaPairs: {
+  [key: string]: GammaPair[];
+} = {
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x02203f2351e7ac6ab5051205172d3f772db7d814',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      ableToFarm: true,
+      pid: 0,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x81cec323bf8c4164c66ec066f53cc053a535f03d',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      ableToFarm: true,
+      pid: 1,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x3cc20a6795c4b57d9817399f68e83e71c8626580',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      ableToFarm: true,
+      pid: 4,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x6077177d4c41e114780d9901c9b5c784841c523f',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      ableToFarm: true,
+      pid: 5,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x04d521e2c414e6d898c6f2599fdd863edf49e247',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      ableToFarm: true,
+      pid: 2,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x4a83253e88e77e8d518638974530d0cbbbf3b675',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      ableToFarm: true,
+      pid: 3,
+    },
+  ],
+  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x4b9e26a02121a1c541403a611b542965bd4b68ce',
+      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      ableToFarm: true,
+      pid: 8,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0xadc7b4096c3059ec578585df36e6e1286d345367',
+      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      ableToFarm: true,
+      pid: 9,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x25b186eed64ca5fdd1bc33fc4cffd6d34069baec',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x9e31214db6931727b7d63a0d2b6236db455c0965',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+      // ableToFarm: true,
+      // pid: 10,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x795f8c9b0a0da9cd8dea65fc10f9b57abc532e58',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      // ableToFarm: true,
+      // pid: 11,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x580a84c73811e1839f75d86d75d88cca0c241ff4': [
+    {
+      type: Presets.GAMMA_DYNAMIC,
+      title: 'Dynamic',
+      address: '0xe0f0622f871d9597649062e9bbbe9bd65e918e34',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x580a84c73811e1839f75d86d75d88cca0c241ff4',
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x7f09bd2801a7b795df29c273c4afbb0ff15e2d63',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+      ableToFarm: true,
+      pid: 12,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x543403307bc9f9ec46fd9bc1048b263c9692a26a',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+      ableToFarm: true,
+      pid: 13,
+    },
+  ],
+  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x3f35705479d9d77c619b2aac9dd7a64e57151506',
+      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      ableToFarm: true,
+      pid: 6,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0xe40a5aa22cbccc8165aedd86f6d03fc5f551c3c6',
+      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      ableToFarm: true,
+      pid: 7,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
+    {
+      type: Presets.GAMMA_DYNAMIC,
+      title: 'Pegged Price',
+      address: '0x8dd3bf71ef18dd88869d128bde058c9d8c270176',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
+      ableToFarm: true,
+      pid: 14,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
+    {
+      type: Presets.GAMMA_DYNAMIC,
+      title: 'Pegged Price',
+      address: '0xccbcaf47e87f50a338fac9bf58e567ed1c87be2b',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+      ableToFarm: true,
+      pid: 15,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x598cA33b7F5FAB560ddC8E76D94A4b4AA52566d7',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      ableToFarm: true,
+      pid: 16,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x9134f456D33d1288de26271730047AE0c5CB6F71',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      ableToFarm: true,
+      pid: 17,
+    },
+  ],
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0xac15baba7bcc532f8727c1a42b23501f59630115',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      ableToFarm: true,
+      pid: 18,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0xccbbb572eb5edc973a90fdc57d07d7740bb027f5',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      ableToFarm: true,
+      pid: 19,
+    },
+  ],
+  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x3e99b86b16f36dcf3b987ebc8b754c54030403b5',
+      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      ableToFarm: true,
+      pid: 20,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x5ec3511b49d4fe7798015a26a83abdc01261615b',
+      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      ableToFarm: true,
+      pid: 21,
+    },
+  ],
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0xf86d6151d03007b1906465b63e36d6f48136bc39',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+      ableToFarm: true,
+      pid: 22,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x454Ff7780A9A99Ecb3462ab61bA06fe4A886862E',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+      ableToFarm: true,
+      pid: 23,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0xa1c3e15b3307b04067e843d3bfaf3cead5b51cb7',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+      ableToFarm: true,
+      pid: 24,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x4f7e090fe185aac68fc58e7fa1b9d4314d357327',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+      ableToFarm: true,
+      pid: 25,
+    },
+  ],
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x5928f9f61902b139e1c40cba59077516734ff09f',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      ableToFarm: true,
+      pid: 26,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x3672d301778750c41a7864980a5ddbc2af99476e',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      ableToFarm: true,
+      pid: 27,
+    },
+  ],
+  '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063-0xe5417af564e4bfda1c483642db72007871397896': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x7ae7fb44c92b4d41abb6e28494f46a2eb3c2a690',
+      token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+      ableToFarm: true,
+      pid: 28,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0xfd73ce19d3842ad7b551bb184ac6c6256dc2c9ab',
+      token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+      ableToFarm: true,
+      pid: 29,
+    },
+  ],
+  '0xa3fa99a148fa48d14ed51d610c367c61876997f1-0xe5417af564e4bfda1c483642db72007871397896': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x1c1b4cf2a40810c49a8b42a9da857cb0b76d06e3',
+      token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+      ableToFarm: true,
+      pid: 30,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x46840e073376178b1e669693c021329b17fb22aa',
+      token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+      ableToFarm: true,
+      pid: 31,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x14223bb48c8cf3ef49319be44a6e718e4dbf9486',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      ableToFarm: true,
+      pid: 32,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x69b2aaaf08ac9b04cd5b64a1d23ffcb40224fdaf',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      ableToFarm: true,
+      pid: 33,
+    },
+  ],
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
@@ -154,7 +595,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     color: '#E8831D',
   },
   METAMASK: {
-    connector: injected,
+    connector: metamask,
     name: GlobalConst.walletName.METAMASK,
     iconName: MetamaskIcon,
     description: 'Easy-to-use browser extension.',
@@ -174,6 +615,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: GlobalConst.walletName.BLOCKWALLET,
     iconName: BlockWalletIcon,
     description: 'BlockWallet browser extension.',
+    href: null,
+    color: '#1673ff',
+  },
+  BRAVEWALLET: {
+    connector: injected,
+    name: GlobalConst.walletName.BRAVEWALLET,
+    iconName: BraveWalletIcon,
+    description: 'Brave browser wallet.',
     href: null,
     color: '#1673ff',
   },
@@ -201,23 +650,6 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Login using gnosis safe app',
     href: null,
     color: '#4196FC',
-    mobile: true,
-  },
-  ARKANE_CONNECT: {
-    connector: arkaneconnect,
-    name: GlobalConst.walletName.ARKANE_CONNECT,
-    iconName: VenlyIcon,
-    description: 'Login using Venly hosted wallet.',
-    href: null,
-    color: '#4196FC',
-  },
-  Portis: {
-    connector: portis,
-    name: GlobalConst.walletName.Portis,
-    iconName: PortisIcon,
-    description: 'Login using Portis hosted wallet',
-    href: null,
-    color: '#4A6C9B',
     mobile: true,
   },
   WALLET_LINK: {
@@ -252,6 +684,23 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'OKX wallet.',
     href: null,
     color: '#E8831D',
+  },
+  ARKANE_CONNECT: {
+    connector: arkaneconnect,
+    name: GlobalConst.walletName.ARKANE_CONNECT,
+    iconName: VenlyIcon,
+    description: 'Login using Venly hosted wallet.',
+    href: null,
+    color: '#4196FC',
+  },
+  Portis: {
+    connector: portis,
+    name: GlobalConst.walletName.Portis,
+    iconName: PortisIcon,
+    description: 'Login using Portis hosted wallet',
+    href: null,
+    color: '#4A6C9B',
+    mobile: true,
   },
 };
 
@@ -435,6 +884,20 @@ export const GlobalValue = {
         'USDD',
         'Decentralized USD',
       ),
+      MATICX: new Token(
+        ChainId.MATIC,
+        '0xfa68FB4628DFF1028CFEc22b4162FCcd0d45efb6',
+        18,
+        'MaticX',
+        'Liquid Staking Matic',
+      ),
+      STMATIC: new Token(
+        ChainId.MATIC,
+        '0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4',
+        18,
+        'stMatic',
+        'Staked MATIC',
+      ),
     },
   },
   marketSDK: {
@@ -451,6 +914,7 @@ export const GlobalValue = {
 
 export const paraswapTax: { [key: string]: number } = {
   '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
+  '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3': 0,
 };
 
 export const GlobalData = {
@@ -541,6 +1005,13 @@ export const GlobalData = {
     GlobalValue.tokens.COMMON.TUSD,
     GlobalValue.tokens.COMMON.UND,
     GlobalValue.tokens.COMMON.USDD,
+  ],
+  blueChips: [
+    WETH[ChainId.MATIC],
+    GlobalValue.tokens.COMMON.ETHER,
+    GlobalValue.tokens.COMMON.WBTC,
+    GlobalValue.tokens.COMMON.USDC,
+    GlobalValue.tokens.COMMON.USDT,
   ],
 };
 
