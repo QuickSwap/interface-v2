@@ -25,10 +25,10 @@ const ContestCard: React.FC<{
         {isMobile ? (
           <>
             <Box width={0.1} textAlign='start'>
-              <small>{index}</small>
+              <small>{index + 1}</small>
             </Box>
             <Box width={0.5} textAlign='center'>
-              <small>{shortenAddress(contestantData['sender'])}</small>
+              <small>{shortenAddress(contestantData['origin'])}</small>
             </Box>
             <Box width={0.4} textAlign='end' className='text-success'>
               <small>{formatNumber(contestantData['amountUSD'])}</small>
@@ -40,11 +40,11 @@ const ContestCard: React.FC<{
         ) : (
           <>
             <Box width={0.1} textAlign='start'>
-              <small>{index}</small>
+              <small>{index + 1}</small>
             </Box>
 
             <Box width={0.4} textAlign='center'>
-              <small>{contestantData['sender']}</small>
+              <small>{contestantData['origin']}</small>
             </Box>
             <Box width={0.2} textAlign='center'>
               <small>{contestantData['txCount']}</small>

@@ -137,7 +137,7 @@ const AppContent = () => (
                       <SwapPage />
                     </PageLayout>
                   </Route>
-                  <Route exact path='/contest'>
+                  <Route exact path='/leader-board'>
                     <PageLayout>
                       <ContestPage />
                     </PageLayout>

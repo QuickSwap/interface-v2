@@ -78,13 +78,13 @@ const ContestPage: React.FC = () => {
   };
 
   const getFormattedLeaderBoardData = useCallback((swapData: SwapDataV3[]) => {
-    const formattedLeaderBoardData = swapData.reduce(
+    let formattedLeaderBoardData = swapData.reduce(
       (p: ContestLeaderBoard[], c) => {
-        const i = p.findIndex((e: ContestLeaderBoard) => e.sender === c.sender);
+        const i = p.findIndex((e: ContestLeaderBoard) => e.origin === c.origin);
 
         if (i === -1) {
           p.push({
-            sender: c.sender,
+            origin: c.origin,
             amountUSD: +c.amountUSD,
             txCount: 1,
           });
@@ -96,7 +96,9 @@ const ContestPage: React.FC = () => {
       },
       [],
     );
-    formattedLeaderBoardData.sort((a, b) => b.amountUSD - a.amountUSD);
+    formattedLeaderBoardData = formattedLeaderBoardData
+      .sort((a, b) => b.amountUSD - a.amountUSD)
+      .slice(0, 100);
     return formattedLeaderBoardData;
   }, []);
 
@@ -153,7 +155,7 @@ const ContestPage: React.FC = () => {
     <Box width='100%' mb={3} id='contest-page'>
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
-          <h4>{t('contest')}</h4>
+          <h4>{t('leaderBoard')}</h4>
         </Box>
 
         {helpURL && (
