@@ -17,7 +17,7 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
   open,
   onClose,
 }) => {
-  const { library, chainId } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
     const config = getConfig(chain);
     return config && config.isMainnet;
@@ -41,7 +41,7 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
               className='networkItemWrapper'
               key={chain}
               onClick={() => {
-                if (chainId && chain !== chainId) {
+                if (chain !== chainId) {
                   switchNetwork(chain);
                 }
                 onClose();

@@ -17,6 +17,7 @@ import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { usePairs } from 'data/Reserves';
 import useParsedQueryString from './useParsedQueryString';
+import { GlobalConst } from 'constants/index';
 
 export function useActiveWeb3React(): Web3ReactContextInterface<
   Web3Provider
@@ -24,7 +25,10 @@ export function useActiveWeb3React(): Web3ReactContextInterface<
   chainId?: ChainId;
 } {
   const context = useWeb3ReactCore<Web3Provider>();
-  return context;
+  const contextNetwork = useWeb3ReactCore<Web3Provider>(
+    GlobalConst.utils.NetworkContextName,
+  );
+  return context.active ? context : contextNetwork;
 }
 
 export function useIsArgentWallet(): boolean {

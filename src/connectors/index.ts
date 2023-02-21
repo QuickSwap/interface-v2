@@ -95,7 +95,7 @@ export const injected = new InjectedConnector({
 });
 
 export const metamask = new MetaMaskConnector({
-  supportedChainIds: [137, 80001],
+  supportedChainIds: supportedChainIds,
 });
 
 export const safeApp = new SafeAppConnector();
