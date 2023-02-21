@@ -11,6 +11,7 @@ import {
   unstopabbledomains,
   okxConnect,
   metamask,
+  zengoconnect,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -23,6 +24,7 @@ import PortisIcon from 'assets/images/portisIcon.png';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
+import ZengoIcon from 'assets/images/zengo.webp';
 import { Presets } from 'state/mint/v3/reducer';
 import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 import OKXWALLETIcon from 'assets/images/OKXWallet.svg';
@@ -205,6 +207,7 @@ export const GlobalConst = {
     WALLET_LINK: 'Coinbase Wallet',
     WALLET_CONNECT: 'WalletConnect',
     OKXWALLET: 'OKX wallet',
+    ZENGO_CONNECT: 'ZenGo',
   },
 };
 
@@ -700,6 +703,15 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Login using Portis hosted wallet',
     href: null,
     color: '#4A6C9B',
+    mobile: true,
+  },
+  ZENGO_CONNECT: {
+    connector: zengoconnect,
+    name: GlobalConst.walletName.ZENGO_CONNECT,
+    iconName: ZengoIcon,
+    description: 'Connect to Zengo Wallet',
+    href: null,
+    color: '#4196FC',
     mobile: true,
   },
 };
