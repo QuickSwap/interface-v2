@@ -275,185 +275,183 @@ export function AddLiquidityButton({
       return;
     }
 
-    if (mintInfo.position && account && deadline) {
-      if (
-        mintInfo.liquidityRangeType ===
-        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-      ) {
-        if (!gammaUNIPROXYContract) return;
-        const baseCurrencyAddress = baseCurrency.wrapped
-          ? baseCurrency.wrapped.address.toLowerCase()
-          : '';
-        const quoteCurrencyAddress = quoteCurrency.wrapped
-          ? quoteCurrency.wrapped.address.toLowerCase()
-          : '';
-        const gammaPair =
-          GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
-          GammaPairs[quoteCurrencyAddress + '-' + baseCurrencyAddress];
-        const gammaPairAddress =
-          gammaPair && gammaPair.length > 0
-            ? gammaPair.find((pair) => pair.type === preset)?.address
-            : undefined;
-        if (!amountA || !amountB || !gammaPairAddress) return;
+    if (
+      mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+    ) {
+      if (!gammaUNIPROXYContract) return;
+      const baseCurrencyAddress = baseCurrency.wrapped
+        ? baseCurrency.wrapped.address.toLowerCase()
+        : '';
+      const quoteCurrencyAddress = quoteCurrency.wrapped
+        ? quoteCurrency.wrapped.address.toLowerCase()
+        : '';
+      const gammaPair =
+        GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
+        GammaPairs[quoteCurrencyAddress + '-' + baseCurrencyAddress];
+      const gammaPairAddress =
+        gammaPair && gammaPair.length > 0
+          ? gammaPair.find((pair) => pair.type === preset)?.address
+          : undefined;
+      if (!amountA || !amountB || !gammaPairAddress) return;
 
-        setRejected && setRejected(false);
+      setRejected && setRejected(false);
 
-        setAttemptingTxn(true);
-        try {
-          const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
-            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
-              ? amountA
-              : amountB
-            ).numerator.toString(),
-            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
-              ? amountB
-              : amountA
-            ).numerator.toString(),
-            account,
-            gammaPairAddress,
-            [0, 0, 0, 0],
-          );
-          const response: TransactionResponse = await gammaUNIPROXYContract.deposit(
-            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
-              ? amountA
-              : amountB
-            ).numerator.toString(),
-            (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
-              ? amountB
-              : amountA
-            ).numerator.toString(),
-            account,
-            gammaPairAddress,
-            [0, 0, 0, 0],
-            {
-              gasLimit: calculateGasMargin(estimatedGas),
-            },
-          );
-          const summary = mintInfo.noLiquidity
-            ? t('createPoolandaddLiquidity', {
-                symbolA: baseCurrency?.symbol,
-                symbolB: quoteCurrency?.symbol,
-              })
-            : t('addLiquidityWithTokens', {
-                symbolA: baseCurrency?.symbol,
-                symbolB: quoteCurrency?.symbol,
+      setAttemptingTxn(true);
+      try {
+        const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
+          (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            ? amountA
+            : amountB
+          ).numerator.toString(),
+          (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            ? amountB
+            : amountA
+          ).numerator.toString(),
+          account,
+          gammaPairAddress,
+          [0, 0, 0, 0],
+        );
+        const response: TransactionResponse = await gammaUNIPROXYContract.deposit(
+          (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            ? amountA
+            : amountB
+          ).numerator.toString(),
+          (GammaPairs[baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            ? amountB
+            : amountA
+          ).numerator.toString(),
+          account,
+          gammaPairAddress,
+          [0, 0, 0, 0],
+          {
+            gasLimit: calculateGasMargin(estimatedGas),
+          },
+        );
+        const summary = mintInfo.noLiquidity
+          ? t('createPoolandaddLiquidity', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            })
+          : t('addLiquidityWithTokens', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            });
+        setAttemptingTxn(false);
+        setTxPending(true);
+        addTransaction(response, {
+          summary,
+        });
+        dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary,
+        });
+        setTxPending(false);
+        handleAddLiquidity();
+      } catch (error) {
+        console.error('Failed to send transaction', error);
+        setAttemptingTxn(false);
+        setTxPending(false);
+        setAddLiquidityErrorMessage(
+          error?.code === 4001 ? t('txRejected') : t('errorInTx'),
+        );
+      }
+    } else if (mintInfo.position && account && deadline) {
+      if (!positionManager) return;
+      const useNative = baseCurrency.isNative
+        ? baseCurrency
+        : quoteCurrency.isNative
+        ? quoteCurrency
+        : undefined;
+
+      const { calldata, value } = NonFunPosMan.addCallParameters(
+        mintInfo.position,
+        {
+          slippageTolerance: allowedSlippagePercent,
+          recipient: account,
+          deadline: deadline.toString(),
+          useNative,
+          createPool: mintInfo.noLiquidity,
+        },
+      );
+
+      const txn: { to: string; data: string; value: string } = {
+        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+        data: calldata,
+        value,
+      };
+
+      setRejected && setRejected(false);
+
+      setAttemptingTxn(true);
+
+      library
+        .getSigner()
+        .estimateGas(txn)
+        .then((estimate) => {
+          const newTxn = {
+            ...txn,
+            gasLimit: calculateGasMarginV3(chainId, estimate),
+            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
+          };
+
+          return library
+            .getSigner()
+            .sendTransaction(newTxn)
+            .then(async (response: TransactionResponse) => {
+              setAttemptingTxn(false);
+              setTxPending(true);
+              const summary = mintInfo.noLiquidity
+                ? t('createPoolandaddLiquidity', {
+                    symbolA: baseCurrency?.symbol,
+                    symbolB: quoteCurrency?.symbol,
+                  })
+                : t('addLiquidityWithTokens', {
+                    symbolA: baseCurrency?.symbol,
+                    symbolB: quoteCurrency?.symbol,
+                  });
+              addTransaction(response, {
+                summary,
               });
-          setAttemptingTxn(false);
-          setTxPending(true);
-          addTransaction(response, {
-            summary,
-          });
-          dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
-          const receipt = await response.wait();
-          finalizedTransaction(receipt, {
-            summary,
-          });
-          setTxPending(false);
-          handleAddLiquidity();
-        } catch (error) {
+
+              dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+
+              try {
+                const receipt = await response.wait();
+                finalizedTransaction(receipt, {
+                  summary,
+                });
+                setTxPending(false);
+                handleAddLiquidity();
+              } catch (error) {
+                console.error('Failed to send transaction', error);
+                setTxPending(false);
+                setAddLiquidityErrorMessage(
+                  error?.code === 4001 ? t('txRejected') : t('errorInTx'),
+                );
+              }
+            })
+            .catch((err) => {
+              console.error('Failed to send transaction', err);
+              setAttemptingTxn(false);
+              setAddLiquidityErrorMessage(
+                err?.code === 4001 ? t('txRejected') : t('errorInTx'),
+              );
+            });
+        })
+        .catch((error) => {
           console.error('Failed to send transaction', error);
+          // we only care if the error is something _other_ than the user rejected the tx
+          setRejected && setRejected(true);
           setAttemptingTxn(false);
-          setTxPending(false);
           setAddLiquidityErrorMessage(
             error?.code === 4001 ? t('txRejected') : t('errorInTx'),
           );
-        }
-      } else {
-        if (!positionManager) return;
-        const useNative = baseCurrency.isNative
-          ? baseCurrency
-          : quoteCurrency.isNative
-          ? quoteCurrency
-          : undefined;
-
-        const { calldata, value } = NonFunPosMan.addCallParameters(
-          mintInfo.position,
-          {
-            slippageTolerance: allowedSlippagePercent,
-            recipient: account,
-            deadline: deadline.toString(),
-            useNative,
-            createPool: mintInfo.noLiquidity,
-          },
-        );
-
-        const txn: { to: string; data: string; value: string } = {
-          to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
-          data: calldata,
-          value,
-        };
-
-        setRejected && setRejected(false);
-
-        setAttemptingTxn(true);
-
-        library
-          .getSigner()
-          .estimateGas(txn)
-          .then((estimate) => {
-            const newTxn = {
-              ...txn,
-              gasLimit: calculateGasMarginV3(chainId, estimate),
-              gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-            };
-
-            return library
-              .getSigner()
-              .sendTransaction(newTxn)
-              .then(async (response: TransactionResponse) => {
-                setAttemptingTxn(false);
-                setTxPending(true);
-                const summary = mintInfo.noLiquidity
-                  ? t('createPoolandaddLiquidity', {
-                      symbolA: baseCurrency?.symbol,
-                      symbolB: quoteCurrency?.symbol,
-                    })
-                  : t('addLiquidityWithTokens', {
-                      symbolA: baseCurrency?.symbol,
-                      symbolB: quoteCurrency?.symbol,
-                    });
-                addTransaction(response, {
-                  summary,
-                });
-
-                dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
-
-                try {
-                  const receipt = await response.wait();
-                  finalizedTransaction(receipt, {
-                    summary,
-                  });
-                  setTxPending(false);
-                  handleAddLiquidity();
-                } catch (error) {
-                  console.error('Failed to send transaction', error);
-                  setTxPending(false);
-                  setAddLiquidityErrorMessage(
-                    error?.code === 4001 ? t('txRejected') : t('errorInTx'),
-                  );
-                }
-              })
-              .catch((err) => {
-                console.error('Failed to send transaction', err);
-                setAttemptingTxn(false);
-                setAddLiquidityErrorMessage(
-                  err?.code === 4001 ? t('txRejected') : t('errorInTx'),
-                );
-              });
-          })
-          .catch((error) => {
-            console.error('Failed to send transaction', error);
-            // we only care if the error is something _other_ than the user rejected the tx
-            setRejected && setRejected(true);
-            setAttemptingTxn(false);
-            setAddLiquidityErrorMessage(
-              error?.code === 4001 ? t('txRejected') : t('errorInTx'),
-            );
-            if (error?.code !== 4001) {
-              console.error(error);
-            }
-          });
-      }
+          if (error?.code !== 4001) {
+            console.error(error);
+          }
+        });
     } else {
       return;
     }
