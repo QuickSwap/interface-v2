@@ -6340,21 +6340,21 @@
     "@walletconnect/utils" "^1.8.0"
 
 "@walletconnect/jsonrpc-http-connection@^1.0.2", "@walletconnect/jsonrpc-http-connection@^1.0.4":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@walletconnect/jsonrpc-http-connection/-/jsonrpc-http-connection-1.0.5.tgz#103eec0e66ca3a0e881e612dfd052958e9feb543"
-  integrity sha512-4IjbKW+ee7QukDaPyEkfMl4Cu0W0TfzKKiiIzy2lxKkJMmS9EVQOVDV4a9HFuxBqYbfUKiycB7jGkuDTqOedMg==
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@walletconnect/jsonrpc-http-connection/-/jsonrpc-http-connection-1.0.6.tgz#48c41cf3e5ac9add9425420b345615dc438594cd"
+  integrity sha512-/3zSqDi7JDN06E4qm0NmVYMitngXfh21UWwy8zeJcBeJc+Jcs094EbLsIxtziIIKTCCbT88lWuTjl1ZujxN7cw==
   dependencies:
-    "@walletconnect/jsonrpc-utils" "^1.0.5"
+    "@walletconnect/jsonrpc-utils" "^1.0.6"
     "@walletconnect/safe-json" "^1.0.1"
     cross-fetch "^3.1.4"
     tslib "1.14.1"
 
 "@walletconnect/jsonrpc-provider@^1.0.5", "@walletconnect/jsonrpc-provider@^1.0.6":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@walletconnect/jsonrpc-provider/-/jsonrpc-provider-1.0.7.tgz#8213969b8774a0fec17ca9bea78ce92deba5c0f8"
-  integrity sha512-MMyHQhgumAIKDuPNhaZqVttknrUTZXZycvaUm3pIo9tQqeYPvFcjZ7NSCRbK5Dcw3I6A9NJ1Jc9TDjEOtqcuAA==
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@walletconnect/jsonrpc-provider/-/jsonrpc-provider-1.0.8.tgz#d56e5bc95c1ec264748a6911389a3ac80f4bd831"
+  integrity sha512-M44vzTrF0TeDcxQorm2lJ5klmfqchYOZqmIHb5T9lIPA/rj22643P83j44flZLyzycPqy5UUlIH6foeBPwjxMg==
   dependencies:
-    "@walletconnect/jsonrpc-utils" "^1.0.5"
+    "@walletconnect/jsonrpc-utils" "^1.0.6"
     "@walletconnect/safe-json" "^1.0.1"
     tslib "1.14.1"
 
@@ -6366,21 +6366,21 @@
     keyvaluestorage-interface "^1.0.0"
     tslib "1.14.1"
 
-"@walletconnect/jsonrpc-utils@^1.0.3", "@walletconnect/jsonrpc-utils@^1.0.4", "@walletconnect/jsonrpc-utils@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@walletconnect/jsonrpc-utils/-/jsonrpc-utils-1.0.5.tgz#b21f0349d366c5226f4bcdea27ba4d213097fc67"
-  integrity sha512-4xdaegX9K6rEdguqCLvudYq2h0KCeTYWnWwNNMhooWnkilT7PrR1kmatpr/HP4l191zyvS33K5VClWhkCTeAxQ==
+"@walletconnect/jsonrpc-utils@^1.0.3", "@walletconnect/jsonrpc-utils@^1.0.4", "@walletconnect/jsonrpc-utils@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@walletconnect/jsonrpc-utils/-/jsonrpc-utils-1.0.6.tgz#7fa58e6671247e64e189828103282e6258f5330f"
+  integrity sha512-snp0tfkjPiDLQp/jrBewI+9SM33GPV4+Gjgldod6XQ7rFyQ5FZjnBxUkY4xWH0+arNxzQSi6v5iDXjCjSaorpg==
   dependencies:
     "@walletconnect/environment" "^1.0.1"
     "@walletconnect/jsonrpc-types" "^1.0.2"
     tslib "1.14.1"
 
 "@walletconnect/jsonrpc-ws-connection@^1.0.7":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@walletconnect/jsonrpc-ws-connection/-/jsonrpc-ws-connection-1.0.8.tgz#8913ee3ecf31675b3051cdacb5d9d4da16c7ac14"
-  integrity sha512-zD09CBCfwG7KdCxKVsxkSPuTI71xDwS42VIn8YLpQVxufLCZACyAPWI5xUHGPLXYR+AEhmMnh132fbR8ClMbDA==
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@walletconnect/jsonrpc-ws-connection/-/jsonrpc-ws-connection-1.0.9.tgz#38e089818e490cf52cfad9f98300949a74de9fdd"
+  integrity sha512-x1COaW6hhMLEo+ND5zF/siBGg5SEwC/gHjeRbJtK1CRiq9atkg/XR7JwtSNfMvYX/O3PRCVmuc5SP0RQio9JUw==
   dependencies:
-    "@walletconnect/jsonrpc-utils" "^1.0.5"
+    "@walletconnect/jsonrpc-utils" "^1.0.6"
     "@walletconnect/safe-json" "^1.0.1"
     events "^3.3.0"
     tslib "1.14.1"
@@ -6430,9 +6430,9 @@
     tslib "1.14.1"
 
 "@walletconnect/relay-api@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@walletconnect/relay-api/-/relay-api-1.0.7.tgz#e7aed03cbaff99ecdf2c8d32280c0b5d673bb419"
-  integrity sha512-Mf/Ql7Z0waZzAuondHS9bbUi12Kyvl95ihxVDM7mPO8o7Ke7S1ffpujCUhXbSacSKcw9aV2+7bKADlsBjQLR5Q==
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@walletconnect/relay-api/-/relay-api-1.0.8.tgz#5df0c161e2f12b702d05ea1c9f1d8afc42e96bb5"
+  integrity sha512-PJ3Suq3LBXZ+m2ObWCnBbiyExL3yPKuKp2HjeYLHotDAq6+YJjGXBPSyEWWHpNz0qLvstxjE12kL3xHOnFfVGg==
   dependencies:
     "@walletconnect/jsonrpc-types" "^1.0.2"
     tslib "1.14.1"
@@ -12655,15 +12655,7 @@ ethereumjs-abi@0.6.5:
     bn.js "^4.10.0"
     ethereumjs-util "^4.3.0"
 
-ethereumjs-abi@0.6.8:
-  version "0.6.8"
-  resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.8.tgz#71bc152db099f70e62f108b7cdfca1b362c6fcae"
-  integrity sha512-Tx0r/iXI6r+lRsdvkFDlut0N08jWMnKRZ6Gkq+Nmw75lZe4e6o3EkSnkaBP5NF6+m5PTGAr9JP43N3LyeoglsA==
-  dependencies:
-    bn.js "^4.11.8"
-    ethereumjs-util "^6.0.0"
-
-"ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
+ethereumjs-abi@0.6.8, "ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
   version "0.6.8"
   resolved "git+https://github.com/ethereumjs/ethereumjs-abi.git#ee3994657fa7a427238e6ba92a84d0b529bbcde0"
   dependencies:
