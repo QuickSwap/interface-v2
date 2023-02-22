@@ -6,7 +6,14 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import GammaLPList from './GammaLPList';
 import { useQuery } from 'react-query';
-import { GammaPairs } from 'constants/index';
+import { GammaPair, GammaPairs } from 'constants/index';
+import { useMasterChefContract } from 'hooks/useContract';
+import {
+  useMultipleContractSingleData,
+  useSingleContractMultipleData,
+} from 'state/multicall/hooks';
+import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import { formatUnits, Interface } from 'ethers/lib/utils';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
@@ -38,9 +45,38 @@ export default function MyLiquidityPoolsV3() {
     }
   };
 
+  const fetchGammaData = async () => {
+    try {
+      const data = await fetch(
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
+      );
+      const gammaData = await data.json();
+      return gammaData;
+    } catch {
+      try {
+        const data = await fetch(
+          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
+        );
+        const gammaData = await data.json();
+        return gammaData;
+      } catch (e) {
+        console.log(e);
+        return;
+      }
+    }
+  };
+
   const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
     'fetchGammaPositions',
     fetchGammaPositions,
+    {
+      refetchInterval: 30000,
+    },
+  );
+
+  const { isLoading: dataLoading, data: gammaData } = useQuery(
+    'fetchGammaData',
+    fetchGammaData,
     {
       refetchInterval: 30000,
     },
@@ -58,18 +94,104 @@ export default function MyLiquidityPoolsV3() {
       )
     : [];
 
+  const allGammaPairsToFarm = ([] as GammaPair[])
+    .concat(...Object.values(GammaPairs))
+    .filter((item) => item.ableToFarm);
+
+  const masterChefContract = useMasterChefContract();
+
+  const stakedAmountData = useSingleContractMultipleData(
+    masterChefContract,
+    'userInfo',
+    account ? allGammaPairsToFarm.map((pair) => [pair.pid, account]) : [],
+  );
+
+  const stakedAmounts = stakedAmountData.map((callData) => {
+    return !callData.loading && callData.result && callData.result.length > 0
+      ? formatUnits(callData.result[0], 18)
+      : '0';
+  });
+
+  const stakedLoading = !!stakedAmountData.find((callData) => callData.loading);
+
+  const stakedLPs = allGammaPairsToFarm
+    .map((item, index) => {
+      return { ...item, stakedAmount: Number(stakedAmounts[index]) };
+    })
+    .filter((item) => {
+      return item.stakedAmount > 0;
+    });
+
+  const stakedLPAddresses = stakedLPs.map((lp) => lp.address);
+
+  const lpTotalAmounts = useMultipleContractSingleData(
+    stakedLPAddresses,
+    new Interface(GammaPairABI),
+    'getTotalAmounts',
+  );
+  const lpTotalSupply = useMultipleContractSingleData(
+    stakedLPAddresses,
+    new Interface(GammaPairABI),
+    'totalSupply',
+  );
+
+  const stakedPositions = stakedLPs.map((lp, ind) => {
+    const totalAmountsCalldata = lpTotalAmounts[ind];
+    const totalSupplyCalldata = lpTotalSupply[ind];
+    const totalAmount0 =
+      !totalAmountsCalldata.loading &&
+      totalAmountsCalldata.result &&
+      totalAmountsCalldata.result.length > 0
+        ? Number(formatUnits(totalAmountsCalldata.result[0], 18))
+        : 0;
+    const totalAmount1 =
+      !totalAmountsCalldata.loading &&
+      totalAmountsCalldata.result &&
+      totalAmountsCalldata.result.length > 1
+        ? Number(formatUnits(totalAmountsCalldata.result[1], 18))
+        : 0;
+    const totalSupply =
+      !totalSupplyCalldata.loading &&
+      totalSupplyCalldata.result &&
+      totalSupplyCalldata.result.length > 0
+        ? Number(formatUnits(totalSupplyCalldata.result[0], 18))
+        : 0;
+    const balance0 =
+      totalSupply > 0 ? (totalAmount0 * lp.stakedAmount) / totalSupply : 0;
+    const balance1 =
+      totalSupply > 0 ? (totalAmount1 * lp.stakedAmount) / totalSupply : 0;
+
+    const lpData = gammaData ? gammaData[lp.address.toLowerCase()] : undefined;
+    const lpUSD =
+      lpData && lpData.totalSupply && Number(lpData.totalSupply) > 0
+        ? (Number(lpData.tvlUSD) / Number(lpData.totalSupply)) * 10 ** 18
+        : 0;
+    const balanceUSD = lp.stakedAmount * lpUSD;
+
+    return {
+      balance0,
+      balance1,
+      balanceUSD,
+      shares: lp.stakedAmount * 10 ** 18,
+      pairAddress: lp.address,
+      farming: true,
+    };
+  });
+
   return (
     <Box>
       <p className='weight-600'>{t('myGammaLP')}</p>
       <>
-        {positionsLoading ? (
+        {positionsLoading || stakedLoading || dataLoading ? (
           <Box mt={2} className='flex justify-center'>
             <Loader stroke='white' size={'2rem'} />
           </Box>
-        ) : gammaPositions && gammaPositionList.length > 0 ? (
+        ) : (gammaPositions && gammaPositionList.length > 0) ||
+          stakedPositions.length > 0 ? (
           <GammaLPList
             gammaPairs={gammaPositionList}
             gammaPositions={gammaPositions}
+            stakedPositions={stakedPositions}
           />
         ) : (
           <Box mt={2} textAlign='center'>

@@ -85,7 +85,7 @@ const GammaFarmCard: React.FC<{
             </>
           )}
 
-          {!showDetails && (
+          {(!isMobile || !showDetails) && (
             <Box width={isMobile ? '30%' : '20%'} className='flex items-center'>
               {data &&
                 data['returns'] &&
