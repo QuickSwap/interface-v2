@@ -14,10 +14,12 @@ import {
 } from 'state/multicall/hooks';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
+import { Token } from '@uniswap/sdk';
+import { useTokenBalances } from 'state/wallet/hooks';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
 
   const showConnectAWallet = Boolean(!account);
 
@@ -124,6 +126,11 @@ export default function MyLiquidityPoolsV3() {
 
   const stakedLPAddresses = stakedLPs.map((lp) => lp.address);
 
+  const lpTokens = chainId
+    ? stakedLPAddresses.map((address) => new Token(chainId, address, 18))
+    : undefined;
+  const lpBalances = useTokenBalances(account ?? undefined, lpTokens);
+
   const lpTotalAmounts = useMultipleContractSingleData(
     stakedLPAddresses,
     new Interface(GammaPairABI),
@@ -142,38 +149,43 @@ export default function MyLiquidityPoolsV3() {
       !totalAmountsCalldata.loading &&
       totalAmountsCalldata.result &&
       totalAmountsCalldata.result.length > 0
-        ? Number(formatUnits(totalAmountsCalldata.result[0], 18))
-        : 0;
+        ? totalAmountsCalldata.result[0]
+        : undefined;
     const totalAmount1 =
       !totalAmountsCalldata.loading &&
       totalAmountsCalldata.result &&
       totalAmountsCalldata.result.length > 1
-        ? Number(formatUnits(totalAmountsCalldata.result[1], 18))
-        : 0;
+        ? totalAmountsCalldata.result[1]
+        : undefined;
     const totalSupply =
       !totalSupplyCalldata.loading &&
       totalSupplyCalldata.result &&
       totalSupplyCalldata.result.length > 0
         ? Number(formatUnits(totalSupplyCalldata.result[0], 18))
         : 0;
-    const balance0 =
-      totalSupply > 0 ? (totalAmount0 * lp.stakedAmount) / totalSupply : 0;
-    const balance1 =
-      totalSupply > 0 ? (totalAmount1 * lp.stakedAmount) / totalSupply : 0;
 
     const lpData = gammaData ? gammaData[lp.address.toLowerCase()] : undefined;
     const lpUSD =
       lpData && lpData.totalSupply && Number(lpData.totalSupply) > 0
         ? (Number(lpData.tvlUSD) / Number(lpData.totalSupply)) * 10 ** 18
         : 0;
-    const balanceUSD = lp.stakedAmount * lpUSD;
+    const lpBalanceInd = Object.keys(lpBalances).findIndex(
+      (addr) => addr.toLowerCase() === lp.address.toLowerCase(),
+    );
+    const lpBalance =
+      lpBalanceInd >= 0 ? Object.values(lpBalances)[lpBalanceInd] : undefined;
+    const lpBalanceNumber = lpBalance ? Number(lpBalance.toExact()) : 0;
+    const balanceUSD = (lpBalanceNumber + lp.stakedAmount) * lpUSD;
 
     return {
-      balance0,
-      balance1,
+      totalAmount0,
+      totalAmount1,
+      totalSupply,
       balanceUSD,
-      shares: lp.stakedAmount * 10 ** 18,
+      lpAmount: lpBalanceNumber + lp.stakedAmount,
       pairAddress: lp.address,
+      token0Address: lp.token0Address,
+      token1Address: lp.token1Address,
       farming: true,
     };
   });

@@ -34,8 +34,7 @@ const GammaFarmCardDetails: React.FC<{
   data: any;
   pairData: any;
   rewardData: any;
-  positionData: any;
-}> = ({ pairData, rewardData, positionData, data }) => {
+}> = ({ pairData, rewardData, data }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -136,6 +135,7 @@ const GammaFarmCardDetails: React.FC<{
   const lpTokenBalance = useTokenBalance(account ?? undefined, lpToken);
 
   const availableStakeAmount = lpTokenBalance?.toExact() ?? '0';
+  const availableStakeUSD = Number(availableStakeAmount) * lpTokenUSD;
   const parsedStakeAmount = tryParseAmount(stakeAmount, lpToken);
   const stakeButtonDisabled =
     Number(stakeAmount) <= 0 ||
@@ -328,7 +328,7 @@ const GammaFarmCardDetails: React.FC<{
               <small className='text-secondary'>{t('available')}:</small>
               <small>
                 {formatNumber(availableStakeAmount)} LP ($
-                {positionData ? formatNumber(positionData.balanceUSD) : 0})
+                {formatNumber(availableStakeUSD)})
               </small>
             </Box>
             <Box
