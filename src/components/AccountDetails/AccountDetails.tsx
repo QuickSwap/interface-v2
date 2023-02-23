@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { AbstractConnector } from '@web3-react/abstract-connector';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
@@ -86,7 +87,10 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                 <small
                   style={{ cursor: 'pointer', marginRight: 8 }}
                   onClick={() => {
-                    if (connector === unstopabbledomains) {
+                    if (
+                      connector ===
+                      ((unstopabbledomains as any) as AbstractConnector)
+                    ) {
                       (connector as any).handleDeactivate();
                     } else {
                       (connector as any).close();
