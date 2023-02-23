@@ -9,6 +9,7 @@ import {
   safeApp,
   trustconnect,
   unstopabbledomains,
+  okxConnect,
   metamask,
   zengoconnect,
 } from '../connectors';
@@ -26,6 +27,7 @@ import TrustIcon from 'assets/images/trust.png';
 import ZengoIcon from 'assets/images/zengo.webp';
 import { Presets } from 'state/mint/v3/reducer';
 import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
+import OKXWALLETIcon from 'assets/images/OKXWallet.svg';
 
 const WETH_ONLY: ChainTokenList = {
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
@@ -204,6 +206,7 @@ export const GlobalConst = {
     Portis: 'Portis',
     WALLET_LINK: 'Coinbase Wallet',
     WALLET_CONNECT: 'WalletConnect',
+    OKXWALLET: 'OKX wallet',
     ZENGO_CONNECT: 'ZenGo',
   },
 };
@@ -774,6 +777,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: 'Unstoppable Domains',
     iconName: UnstoppableDomainsIcon,
     description: 'Unstoppable Domains',
+    href: null,
+    color: '#E8831D',
+  },
+  OKXWALLET: {
+    connector: okxConnect,
+    name: GlobalConst.walletName.OKXWALLET,
+    iconName: OKXWALLETIcon,
+    description: 'OKX wallet.',
     href: null,
     color: '#E8831D',
   },

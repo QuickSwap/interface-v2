@@ -15,6 +15,7 @@ import {
   TrustWalletConnector,
 } from './TrustWalletConnector';
 import { MetaMaskConnector } from './MetaMaskConnector';
+import { OKXWalletConnector } from './OKXWallet';
 
 const POLLING_INTERVAL = 12000;
 
@@ -125,4 +126,8 @@ export const unstopabbledomains = new UAuthConnector({
 
   // Injected and walletconnect connectors are required.
   connectors: { injected, walletconnect },
+});
+
+export const okxConnect = new OKXWalletConnector({
+  chainId: 137,
 });
