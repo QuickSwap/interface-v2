@@ -19,7 +19,7 @@ import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import '../GammaLPItemDetails/index.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { CurrencyAmount } from '@uniswap/sdk-core';
-import { JSBI } from '@uniswap/sdk';
+import { JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useGammaUNIProxyContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
@@ -37,7 +37,7 @@ export default function IncreaseGammaLiquidityModal({
   onClose,
 }: IncreaseGammaLiquidityModalProps) {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
 
@@ -372,6 +372,11 @@ export default function IncreaseGammaLiquidityModal({
             shallow={true}
             disabled={false}
             swap={false}
+            showETH={
+              chainId &&
+              position.token0.address.toLowerCase() ===
+                WETH[chainId].address.toLowerCase()
+            }
           />
         </Box>
         <Box mt={2} className='v3-increase-liquidity-input'>
@@ -393,6 +398,11 @@ export default function IncreaseGammaLiquidityModal({
             shallow={true}
             disabled={false}
             swap={false}
+            showETH={
+              chainId &&
+              position.token1.address.toLowerCase() ===
+                WETH[chainId].address.toLowerCase()
+            }
           />
         </Box>
         <Box mt={2}>
