@@ -107,6 +107,7 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
         </Button>
         <Button
           className='gamma-liquidity-item-button'
+          disabled={gammaPosition.farming}
           onClick={() => setShowWithdrawModal(true)}
         >
           <small>{t('withdraw')}</small>
