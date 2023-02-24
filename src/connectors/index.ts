@@ -100,6 +100,13 @@ export const metamask = new MetaMaskConnector({
 
 export const safeApp = new SafeAppConnector();
 
+export const zengoconnect = new WalletConnectConnector({
+  rpc: { 137: NETWORK_URL },
+  bridge: 'https://bridge.walletconnect.org',
+  qrcode: true,
+  qrcodeModalOptions: { mobileLinks: ['ZenGo'] },
+});
+
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
   rpc: rpcMap,
