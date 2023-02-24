@@ -56,7 +56,6 @@ export default function Updater(): null {
   }, []);
 
   useEffect(() => {
-    console.log('ccc');
     const localChainIdStr = localStorage.getItem('quickswap_chainId');
     const localChainId = localChainIdStr
       ? (Number(localChainIdStr) as ChainId)

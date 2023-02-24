@@ -18,6 +18,7 @@ import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { usePairs } from 'data/Reserves';
 import useParsedQueryString from './useParsedQueryString';
 import { useLocalChainId } from 'state/application/hooks';
+import { GlobalConst } from 'constants/index';
 
 export function useActiveWeb3React(): Web3ReactContextInterface<
   Web3Provider
@@ -25,9 +26,13 @@ export function useActiveWeb3React(): Web3ReactContextInterface<
   chainId?: ChainId;
 } {
   const context = useWeb3ReactCore<Web3Provider>();
+  const contextNetwork = useWeb3ReactCore<Web3Provider>(
+    GlobalConst.utils.NetworkContextName,
+  );
   const { localChainId } = useLocalChainId();
+  const contextActive = context.active ? context : contextNetwork;
   return {
-    ...context,
+    ...contextActive,
     chainId: context.chainId ?? localChainId,
   };
 }
