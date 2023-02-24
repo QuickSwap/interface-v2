@@ -1,5 +1,5 @@
 export interface ContestLeaderBoard {
-  sender: string;
+  origin: string;
   amountUSD: number;
   txCount: number;
 }
