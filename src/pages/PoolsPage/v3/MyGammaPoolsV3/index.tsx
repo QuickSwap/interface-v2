@@ -84,18 +84,6 @@ export default function MyLiquidityPoolsV3() {
     },
   );
 
-  const gammaPositionList = gammaPositions
-    ? Object.keys(gammaPositions).filter(
-        (value) =>
-          !!Object.values(GammaPairs).find(
-            (pairData) =>
-              !!pairData.find(
-                (item) => item.address.toLowerCase() === value.toLowerCase(),
-              ),
-          ),
-      )
-    : [];
-
   const allGammaPairsToFarm = ([] as GammaPair[])
     .concat(...Object.values(GammaPairs))
     .filter((item) => item.ableToFarm);
@@ -189,6 +177,26 @@ export default function MyLiquidityPoolsV3() {
       farming: true,
     };
   });
+
+  const gammaPositionList = gammaPositions
+    ? Object.keys(gammaPositions)
+        .filter(
+          (value) =>
+            !!Object.values(GammaPairs).find(
+              (pairData) =>
+                !!pairData.find(
+                  (item) => item.address.toLowerCase() === value.toLowerCase(),
+                ),
+            ),
+        )
+        .filter(
+          (pairAddress) =>
+            !stakedPositions.find(
+              (item) =>
+                item.pairAddress.toLowerCase() === pairAddress.toLowerCase(),
+            ),
+        )
+    : [];
 
   return (
     <Box>
