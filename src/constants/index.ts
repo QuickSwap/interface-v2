@@ -1036,6 +1036,10 @@ export interface WalletInfo {
 
 export const ContestPairs = [
   {
+    name: 'All',
+    address: 'all',
+  },
+  {
     name: 'WETH / USDC',
     address: '0x55caabb0d2b704fd0ef8192a7e35d8837e678207',
     token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
@@ -1060,6 +1064,11 @@ export const ContestPairs = [
     token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
   },
 ];
+
+export const LeaderBoardAnalytics = {
+  CHART_DURATIONS: [1, 7, 30],
+  CHART_DURATION_TEXTS: ['24H', '7D', '30D'],
+};
 
 // export const ContestPairs = {
 //   ETH_USDC_PAIR: '0x853Ee4b2A13f8a742d64C8F088bE7bA2131f670d',

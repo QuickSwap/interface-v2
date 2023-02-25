@@ -642,5 +642,7 @@
   "rank": "Rank",
   "address": "Address",
   "tradesTitleCase": "Trades",
-  "volumeUSDC": "Volume USDC"
+  "volumeUSDC": "Volume USDC",
+  "searchAddress": "Search for address.",
+  "searchResult": "Search Result"
 }
