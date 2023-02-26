@@ -4,7 +4,7 @@ import { Box } from '@material-ui/core';
 import { ContestPairs, LeaderBoardAnalytics } from 'constants/index';
 import 'pages/styles/contest.scss';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
-import { ContestLeaderBoard } from 'models/interfaces/contest';
+import { ContestLeaderBoard, SwapDataV3 } from 'models/interfaces/contest';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import { isAddress } from 'utils';
 import 'components/styles/SearchWidget.scss';
@@ -17,6 +17,10 @@ import ContestTable from 'components/ContestTable/ContestTable';
 import { ChartType } from 'components';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { formatNumber } from 'utils';
+import {
+  getTradingDataBetweenDates,
+  getFormattedLeaderBoardData,
+} from 'lib/src/leaderboard';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -25,6 +29,7 @@ const ContestPage: React.FC = () => {
   const helpURL = process.env.REACT_APP_HELP_URL;
   const [durationIndex, setDurationIndex] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState(null);
   const [contestLeaderBoard, setContestLeaderBoard] = useState<
     ContestLeaderBoard[]
@@ -34,7 +39,7 @@ const ContestPage: React.FC = () => {
   const [searchValInput, setSearchValInput] = useDebouncedChangeHandler(
     searchVal,
     setSearchVal,
-    300,
+    500,
   );
 
   const [contestFilter, setContestFilter] = useState(ContestPairs[0]);
@@ -72,13 +77,67 @@ const ContestPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contestFilter, durationIndex]);
 
+  const getTradingDataForAddress = async () => {
+    try {
+      setSearchLoading(true);
+      const today = dayjs()
+        .utc()
+        .unix();
+
+      const firstTradeDay = dayjs
+        .utc()
+        .subtract(durationIndex, 'day')
+        .unix();
+
+      let pools_in: string[] = [];
+      if (contestFilter.address === 'all') {
+        pools_in = ContestPairs.filter((e) => e.address !== 'all').map(
+          (e) => e.address,
+        );
+      } else {
+        pools_in = [contestFilter.address];
+      }
+      console.log('pools_in', pools_in);
+
+      const swapData: SwapDataV3[] = await getTradingDataBetweenDates(
+        pools_in,
+        firstTradeDay * 1000,
+        today * 1000,
+        searchVal,
+      );
+
+      if (swapData) {
+        const formattedLeaderBoardData = getFormattedLeaderBoardData(swapData);
+        if (!formattedLeaderBoardData[0]) {
+          formattedLeaderBoardData[0] = {
+            origin: searchVal,
+            amountUSD: 0,
+            txCount: 0,
+            rank: '>300',
+          };
+        }
+        setSearchResult(formattedLeaderBoardData[0]);
+      }
+
+      setSearchLoading(false);
+    } catch (error) {
+      setSearchLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isAddress(searchVal) && contestLeaderBoard.length) {
       const searchResponse = contestLeaderBoard.find(
         (e) => e.origin.toLowerCase() === searchVal.toLowerCase(),
       );
-      setSearchResult(searchResponse);
+
+      if (searchResponse) {
+        setSearchResult(searchResponse);
+      } else {
+        getTradingDataForAddress();
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchVal, contestLeaderBoard]);
 
   return (
@@ -134,28 +193,30 @@ const ContestPage: React.FC = () => {
           <>
             <Box className='bg-palette topMoversWrapper' my={4}>
               <p className='weight-600 text-secondary'>{t('searchResult')}</p>
-              {searchResult ? (
-                <Box className='topMoversContent'>
-                  <Box className='flex items-center'>
-                    <Box width={0.1} textAlign='start'>
-                      <small>{searchResult.rank}</small>
-                    </Box>
+              {!searchLoading && searchResult ? (
+                <>
+                  <Box className='topMoversContent'>
+                    <Box className='flex items-center'>
+                      <Box width={0.1} textAlign='start'>
+                        <small>{searchResult.rank}</small>
+                      </Box>
 
-                    <Box width={0.4} textAlign='center'>
-                      <small>{searchResult['origin']}</small>
-                    </Box>
-                    <Box width={0.2} textAlign='center'>
-                      <small>{searchResult['txCount']}</small>
-                    </Box>
+                      <Box width={0.4} textAlign='center'>
+                        <small>{searchResult['origin']}</small>
+                      </Box>
+                      <Box width={0.2} textAlign='center'>
+                        <small>{searchResult['txCount']}</small>
+                      </Box>
 
-                    <Box width={0.3} textAlign='end' className='text-success'>
-                      <small>{formatNumber(searchResult['amountUSD'])}</small>
+                      <Box width={0.3} textAlign='end' className='text-success'>
+                        <small>{formatNumber(searchResult['amountUSD'])}</small>
+                      </Box>
                     </Box>
                   </Box>
-                </Box>
+                </>
               ) : (
                 <Box my={2} textAlign={'center'} width={1}>
-                  Rank greater than 300 for {searchVal}
+                  <Skeleton variant='rect' width='100%' height={40} />
                 </Box>
               )}
             </Box>

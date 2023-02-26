@@ -1,5 +1,5 @@
 export interface ContestLeaderBoard {
-  rank: number;
+  rank: number | string;
   origin: string;
   amountUSD: number;
   txCount: number;
