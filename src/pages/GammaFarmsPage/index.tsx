@@ -12,7 +12,12 @@ import {
 } from 'constants/index';
 import { useQuery } from 'react-query';
 import GammaFarmCard from './GammaFarmCard';
-import { getTokenFromAddress } from 'utils';
+import {
+  getGammaData,
+  getGammaPositions,
+  getGammaRewards,
+  getTokenFromAddress,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
@@ -34,68 +39,15 @@ const GammaFarmsPage: React.FC<{
   const sortMultiplier = sortDesc ? -1 : 1;
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 
-  const fetchGammaData = async () => {
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
-        );
-        const gammaData = await data.json();
-        return gammaData;
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
-  };
-
   const fetchGammaRewards = async () => {
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
-        );
-        const gammaData = await data.json();
-        return gammaData;
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
+    const gammaRewards = await getGammaRewards(chainId);
+    return gammaRewards;
   };
 
   const fetchGammaPositions = async () => {
     if (!account) return;
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
-      );
-      const positions = await data.json();
-      return positions[account.toLowerCase()];
-    } catch (e) {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
-        );
-        const positions = await data.json();
-        return positions[account.toLowerCase()];
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
+    const gammaPositions = await getGammaPositions(account);
+    return gammaPositions;
   };
 
   const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
@@ -108,7 +60,7 @@ const GammaFarmsPage: React.FC<{
 
   const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
     'fetchGammaData',
-    fetchGammaData,
+    getGammaData,
     {
       refetchInterval: 30000,
     },
@@ -123,15 +75,10 @@ const GammaFarmsPage: React.FC<{
   );
 
   const gammaRewardTokens =
-    gammaRewards &&
-    chainId &&
-    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
+    gammaRewards && chainId
       ? ([] as string[])
           .concat(
-            ...Object.values(
-              gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools'],
-            ).map((item: any) =>
+            ...Object.values(gammaRewards).map((item: any) =>
               item && item['rewarders']
                 ? Object.values(item['rewarders'])
                     .filter(
@@ -409,12 +356,8 @@ const GammaFarmsPage: React.FC<{
                   gammaData ? gammaData[farm.address.toLowerCase()] : undefined
                 }
                 rewardData={
-                  gammaRewards &&
-                  gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-                  gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
-                    ? gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]][
-                        'pools'
-                      ][farm.address.toLowerCase()]
+                  gammaRewards
+                    ? gammaRewards[farm.address.toLowerCase()]
                     : undefined
                 }
               />

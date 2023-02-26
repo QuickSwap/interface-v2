@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import GammaLPList from './GammaLPList';
 import { useQuery } from 'react-query';
 import { GammaPairs } from 'constants/index';
+import { getGammaPositions } from 'utils';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
@@ -18,24 +19,8 @@ export default function MyLiquidityPoolsV3() {
 
   const fetchGammaPositions = async () => {
     if (!account) return;
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
-      );
-      const positions = await data.json();
-      return positions[account.toLowerCase()];
-    } catch {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
-        );
-        const positions = await data.json();
-        return positions[account.toLowerCase()];
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
+    const gammaPositions = await getGammaPositions(account);
+    return gammaPositions;
   };
 
   const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
