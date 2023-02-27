@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import { ContestPairs, LeaderBoardAnalytics } from 'constants/index';
 import 'pages/styles/contest.scss';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { ContestLeaderBoard, SwapDataV3 } from 'models/interfaces/contest';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { isAddress } from 'utils';
+import { isAddress, shortenAddress } from 'utils';
+import { useTheme } from '@material-ui/core/styles';
 import 'components/styles/SearchWidget.scss';
 
 import dayjs from 'dayjs';
@@ -21,6 +22,7 @@ import {
   getTradingDataBetweenDates,
   getFormattedLeaderBoardData,
 } from 'lib/src/leaderboard';
+import { useActiveWeb3React } from 'hooks';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -41,8 +43,16 @@ const ContestPage: React.FC = () => {
     setSearchVal,
     500,
   );
-
+  const { account } = useActiveWeb3React();
   const [contestFilter, setContestFilter] = useState(ContestPairs[0]);
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
+
+  useEffect(() => {
+    if (account) {
+      setSearchVal(account);
+    }
+  }, [account]);
 
   const getTradingDataForPool = async () => {
     try {
@@ -140,6 +150,33 @@ const ContestPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchVal, contestLeaderBoard]);
 
+  const searchCardColumns = [
+    {
+      label: 'Rank',
+      align: 'start',
+      width: 0.1,
+      key: 'rank',
+    },
+    {
+      label: 'Origin',
+      align: 'center',
+      width: 0.4,
+      key: 'origin',
+    },
+    {
+      label: 'Trades',
+      align: 'center',
+      width: 0.2,
+      key: 'txCount',
+    },
+    {
+      label: 'Volume USDC',
+      align: 'end',
+      width: 0.3,
+      key: 'amountUSD',
+    },
+  ];
+
   return (
     <Box width='100%' mb={3} id='contest-page'>
       <Box className='pageHeading'>
@@ -196,13 +233,35 @@ const ContestPage: React.FC = () => {
               {!searchLoading && searchResult ? (
                 <>
                   <Box className='topMoversContent'>
+                    <Box className='flex items-center' mt={2}>
+                      {searchCardColumns.map((column) => {
+                        return (
+                          <Box
+                            width={column.width}
+                            key={column.key}
+                            className='flex items-center cursor-pointer'
+                            justifyContent={column.align}
+                          >
+                            <small className={'text-secondary'}>
+                              {column.label}
+                            </small>
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  </Box>
+                  <Box className='topMoversContent'>
                     <Box className='flex items-center'>
                       <Box width={0.1} textAlign='start'>
                         <small>{searchResult.rank}</small>
                       </Box>
 
                       <Box width={0.4} textAlign='center'>
-                        <small>{searchResult['origin']}</small>
+                        <small>
+                          {isMobile
+                            ? shortenAddress(searchResult['origin'])
+                            : searchResult['origin']}
+                        </small>
                       </Box>
                       <Box width={0.2} textAlign='center'>
                         <small>{searchResult['txCount']}</small>
@@ -216,7 +275,7 @@ const ContestPage: React.FC = () => {
                 </>
               ) : (
                 <Box my={2} textAlign={'center'} width={1}>
-                  <Skeleton variant='rect' width='100%' height={40} />
+                  <Skeleton variant='rect' width='100%' height={60} />
                 </Box>
               )}
             </Box>

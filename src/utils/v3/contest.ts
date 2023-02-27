@@ -41,12 +41,7 @@ export const getSwapTransactionsV3 = async (
 
     return swaps;
   } catch (e) {
-    console.error(
-      'Error: getSwapTransactionsV3 queryDetails: ',
-      { pool_in, fromTime, toTime, skip },
-      ' : Reason : ',
-      e,
-    );
+    console.error('Error: getSwapTransactionsV3 queryDetails: ', e);
     return [];
   }
 };
