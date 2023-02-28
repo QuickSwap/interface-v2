@@ -380,36 +380,6 @@ export const FarmingMyFarms: React.FC<{
     }
   };
 
-  const fetchGammaPositions = async () => {
-    if (!account) return;
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
-      );
-      const positions = await data.json();
-      return positions[account.toLowerCase()];
-    } catch {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
-        );
-        const positions = await data.json();
-        return positions[account.toLowerCase()];
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
-  };
-
-  const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
-    'fetchGammaPositions',
-    fetchGammaPositions,
-    {
-      refetchInterval: 30000,
-    },
-  );
-
   const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
     'fetchGammaData',
     fetchGammaData,
@@ -707,7 +677,7 @@ export const FarmingMyFarms: React.FC<{
         <Box px={2} mt={2}>
           <h6>Gamma {t('farms')}</h6>
         </Box>
-        {gammaFarmsLoading || positionsLoading || gammaRewardsLoading ? (
+        {gammaFarmsLoading || gammaRewardsLoading ? (
           <Box py={5} className='flex justify-center'>
             <Loader stroke={'white'} size={'1.5rem'} />
           </Box>
@@ -738,11 +708,6 @@ export const FarmingMyFarms: React.FC<{
                     token0={farm.token0}
                     token1={farm.token1}
                     pairData={farm}
-                    positionData={
-                      gammaPositions
-                        ? gammaPositions[farm.address.toLowerCase()]
-                        : undefined
-                    }
                     data={
                       gammaData
                         ? gammaData[farm.address.toLowerCase()]
