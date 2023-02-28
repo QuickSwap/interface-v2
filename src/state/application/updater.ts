@@ -64,7 +64,7 @@ export default function Updater(): null {
   }, [updateLocalChainId]);
 
   useEffect(() => {
-    if (!chainId) return;
+    if (!chainId || state.chainId !== chainId) return;
     (async () => {
       try {
         const [
@@ -90,7 +90,7 @@ export default function Updater(): null {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, chainId]);
+  }, [currentTime, chainId, state.chainId]);
 
   // attach/detach listeners
   useEffect(() => {
