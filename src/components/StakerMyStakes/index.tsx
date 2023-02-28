@@ -14,12 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
 import SortColumns from 'components/SortColumns';
 import { useQuery } from 'react-query';
-import {
-  getGammaData,
-  getGammaPositions,
-  getGammaRewards,
-  getTokenFromAddress,
-} from 'utils';
+import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
@@ -348,20 +343,6 @@ export const FarmingMyFarms: React.FC<{
     return gammaRewards;
   };
 
-  const fetchGammaPositions = async () => {
-    if (!account) return;
-    const gammaPositions = await getGammaPositions(account);
-    return gammaPositions;
-  };
-
-  const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
-    'fetchGammaPositions',
-    fetchGammaPositions,
-    {
-      refetchInterval: 30000,
-    },
-  );
-
   const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
     'fetchGammaData',
     getGammaData,
@@ -654,7 +635,7 @@ export const FarmingMyFarms: React.FC<{
         <Box px={2} mt={2}>
           <h6>Gamma {t('farms')}</h6>
         </Box>
-        {gammaFarmsLoading || positionsLoading || gammaRewardsLoading ? (
+        {gammaFarmsLoading || gammaRewardsLoading ? (
           <Box py={5} className='flex justify-center'>
             <Loader stroke={'white'} size={'1.5rem'} />
           </Box>
@@ -685,11 +666,6 @@ export const FarmingMyFarms: React.FC<{
                     token0={farm.token0}
                     token1={farm.token1}
                     pairData={farm}
-                    positionData={
-                      gammaPositions
-                        ? gammaPositions[farm.address.toLowerCase()]
-                        : undefined
-                    }
                     data={
                       gammaData
                         ? gammaData[farm.address.toLowerCase()]

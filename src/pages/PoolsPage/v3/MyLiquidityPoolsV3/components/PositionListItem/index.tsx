@@ -21,7 +21,7 @@ import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import Badge, { BadgeVariant } from 'components/v3/Badge';
+import Badge from 'components/v3/Badge';
 import PositionListItemDetails from '../PositionListItemDetails';
 import { useTranslation } from 'react-i18next';
 
@@ -174,7 +174,7 @@ export default function PositionListItem({
     ? _pool.tickCurrent < _tickLower || _pool.tickCurrent >= _tickUpper
     : false;
 
-  const farmingLink = `/farm/v3`;
+  const farmingLink = `/farm/v3?tab=my-farms`;
 
   const isNewest = newestPosition
     ? newestPosition === +positionDetails.tokenId

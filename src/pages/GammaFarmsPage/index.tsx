@@ -12,12 +12,7 @@ import {
 } from 'constants/index';
 import { useQuery } from 'react-query';
 import GammaFarmCard from './GammaFarmCard';
-import {
-  getGammaData,
-  getGammaPositions,
-  getGammaRewards,
-  getTokenFromAddress,
-} from 'utils';
+import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
@@ -43,20 +38,6 @@ const GammaFarmsPage: React.FC<{
     const gammaRewards = await getGammaRewards(chainId);
     return gammaRewards;
   };
-
-  const fetchGammaPositions = async () => {
-    if (!account) return;
-    const gammaPositions = await getGammaPositions(account);
-    return gammaPositions;
-  };
-
-  const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
-    'fetchGammaPositions',
-    fetchGammaPositions,
-    {
-      refetchInterval: 30000,
-    },
-  );
 
   const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
     'fetchGammaData',
@@ -327,7 +308,7 @@ const GammaFarmsPage: React.FC<{
 
   return (
     <Box px={2} py={3}>
-      {positionsLoading || gammaFarmsLoading || gammaRewardsLoading ? (
+      {gammaFarmsLoading || gammaRewardsLoading ? (
         <div className='flex justify-center' style={{ padding: '16px 0' }}>
           <Loader stroke='white' size='1.5rem' />
         </div>
@@ -347,11 +328,6 @@ const GammaFarmsPage: React.FC<{
                 token0={farm.token0}
                 token1={farm.token1}
                 pairData={farm}
-                positionData={
-                  gammaPositions
-                    ? gammaPositions[farm.address.toLowerCase()]
-                    : undefined
-                }
                 data={
                   gammaData ? gammaData[farm.address.toLowerCase()] : undefined
                 }
