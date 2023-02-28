@@ -15,7 +15,7 @@ import {
 import { calculateGasMargin, formatTokenAmount } from 'utils';
 import 'components/styles/StakeModal.scss';
 import { useTranslation } from 'react-i18next';
-import { NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
+import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 
 interface StakeQuickModalProps {
@@ -35,7 +35,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const quickToken = isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
+  const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
   const quickBalance = useCurrencyBalance(account ?? undefined, quickToken);
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -81,11 +81,11 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
             },
           );
           addTransaction(response, {
-            summary: `${t('stake')} QUICK`,
+            summary: `${t('stake')} ${quickToken?.symbol}`,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
-            summary: `${t('stake')} dQUICK`,
+            summary: `${t('stake')} ${quickToken?.symbol}`,
           });
           setAttempting(false);
           setStakePercent(0);
@@ -104,7 +104,9 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box className='flex items-center justify-between'>
-          <h5>{t('stake')} QUICK</h5>
+          <h5>
+            {t('stake')} {quickToken?.symbol}
+          </h5>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
@@ -114,7 +116,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
           padding='16px'
         >
           <Box className='flex items-center justify-between'>
-            <small>QUICK</small>
+            <small>{quickToken?.symbol}</small>
             <small>
               {t('balance')}: {formatTokenAmount(quickBalance)}
             </small>

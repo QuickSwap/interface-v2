@@ -14,6 +14,7 @@ import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useHistory } from 'react-router-dom';
+import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -23,6 +24,8 @@ const DragonPage: React.FC = () => {
 
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
+  const quickToken = DLQUICK[chainIdToUse];
+  const dQuickToken = DLDQUICK[chainIdToUse];
   const config = getConfig(chainIdToUse);
   const showLair = config['lair']['available'];
   const showOld = config['lair']['oldLair'];
@@ -52,7 +55,12 @@ const DragonPage: React.FC = () => {
               />
               <Box className='dragonTitle'>
                 <h5>{t('newDragonLair')}</h5>
-                <small>{t('dragonLairTitle')}</small>
+                <small>
+                  {t('dragonLairTitle', {
+                    symbol: quickToken?.symbol,
+                    symbol1: dQuickToken?.symbol,
+                  })}
+                </small>
               </Box>
               <DragonsLair isNew={true} />
             </Box>

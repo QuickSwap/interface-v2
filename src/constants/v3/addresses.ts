@@ -298,7 +298,7 @@ export const NEW_QUICK: { [chainId: number]: Token } = {
     ChainId.MATIC,
     NEW_QUICK_ADDRESS[ChainId.MATIC],
     18,
-    'QUICK(NEW)',
+    'QUICK',
     'QuickSwap(NEW)',
   ),
 };
