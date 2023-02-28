@@ -19,11 +19,12 @@ import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import '../GammaLPItemDetails/index.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { CurrencyAmount } from '@uniswap/sdk-core';
-import { JSBI } from '@uniswap/sdk';
+import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useGammaUNIProxyContract } from 'hooks/useContract';
+import { useGammaUNIProxyContract, useWETHContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { useSingleContractMultipleData } from 'state/multicall/hooks';
+import { useCurrencyBalance } from 'state/wallet/hooks';
 
 interface IncreaseGammaLiquidityModalProps {
   open: boolean;
@@ -37,7 +38,7 @@ export default function IncreaseGammaLiquidityModal({
   onClose,
 }: IncreaseGammaLiquidityModalProps) {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
 
@@ -108,21 +109,38 @@ export default function IncreaseGammaLiquidityModal({
 
   const [deposit0, setDeposit0] = useState('');
   const [deposit1, setDeposit1] = useState('');
+  const ethBalance = useCurrencyBalance(account ?? undefined, ETHER);
   const token0Balance = useTokenBalance(account ?? undefined, position.token0);
   const token1Balance = useTokenBalance(account ?? undefined, position.token1);
-  const deposit0CurrencyAmount = CurrencyAmount.fromRawAmount(
-    position.token0,
-    JSBI.BigInt(
-      parseUnits(!deposit0 ? '0' : deposit0, position.token0.decimals),
-    ),
+  const token0isWETH =
+    chainId &&
+    position.token0.address.toLowerCase() ===
+      WETH[chainId].address.toLowerCase();
+  const token1isWETH =
+    chainId &&
+    position.token1.address.toLowerCase() ===
+      WETH[chainId].address.toLowerCase();
+  const token0BalanceJSBI = JSBI.add(
+    token0isWETH && ethBalance ? ethBalance.numerator : JSBI.BigInt('0'),
+    token0Balance ? token0Balance.numerator : JSBI.BigInt('0'),
   );
-  const deposit1CurrencyAmount = CurrencyAmount.fromRawAmount(
-    position.token1,
-    JSBI.BigInt(
-      parseUnits(!deposit1 ? '0' : deposit1, position.token1.decimals),
-    ),
+  const token1BalanceJSBI = JSBI.add(
+    chainId &&
+      position.token1.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase() &&
+      ethBalance
+      ? ethBalance.numerator
+      : JSBI.BigInt('0'),
+    token1Balance ? token1Balance.numerator : JSBI.BigInt('0'),
+  );
+  const deposit0JSBI = JSBI.BigInt(
+    parseUnits(!deposit0 ? '0' : deposit0, position.token0.decimals),
+  );
+  const deposit1JSBI = JSBI.BigInt(
+    parseUnits(!deposit1 ? '0' : deposit1, position.token1.decimals),
   );
 
+  const [wrappingETH, setWrappingETH] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
   const [txnHash, setTxnHash] = useState<string | undefined>();
@@ -136,32 +154,67 @@ export default function IncreaseGammaLiquidityModal({
     !Number(deposit1) ||
     !account ||
     !depositRange ||
-    !token0Balance ||
-    deposit0CurrencyAmount.greaterThan(token0Balance) ||
-    !token1Balance ||
-    deposit1CurrencyAmount.greaterThan(token1Balance);
+    JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI) ||
+    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI) ||
+    wrappingETH;
+
+  const wrapAmount = useMemo(() => {
+    if (token0isWETH) {
+      const token0BalanceJSBI = token0Balance
+        ? token0Balance.numerator
+        : JSBI.BigInt('0');
+      if (JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI))
+        return JSBI.subtract(deposit0JSBI, token0BalanceJSBI);
+      return;
+    } else if (token1isWETH) {
+      const token1BalanceJSBI = token1Balance
+        ? token1Balance.numerator
+        : JSBI.BigInt('0');
+      if (JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI))
+        return JSBI.subtract(deposit1JSBI, token1BalanceJSBI);
+      return;
+    }
+    return;
+  }, [
+    deposit0JSBI,
+    deposit1JSBI,
+    token0Balance,
+    token0isWETH,
+    token1Balance,
+    token1isWETH,
+  ]);
 
   const buttonText = useMemo(() => {
+    if (wrappingETH) return t('wrappingMATIC');
     if (!account) return t('connectWallet');
     if (!depositRange) return t('fetchingGammaDepositRange');
-    if (!token0Balance || deposit0CurrencyAmount.greaterThan(token0Balance))
-      return t('insufficientBalance', { symbol: position.token0.symbol });
-    if (!token1Balance || deposit1CurrencyAmount.greaterThan(token1Balance))
-      return t('insufficientBalance', { symbol: position.token1.symbol });
+    if (JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI))
+      return t('insufficientBalance', {
+        symbol: token0isWETH ? 'MATIC+' : '' + position.token0.symbol,
+      });
+    if (JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI))
+      return t('insufficientBalance', {
+        symbol: token1isWETH ? 'MATIC+' : '' + position.token1.symbol,
+      });
     if (!Number(deposit0) || !Number(deposit1)) return t('enterAmount');
+    if (wrapAmount) return t('wrapMATIC');
     return t('addLiquidity');
   }, [
     account,
     t,
     depositRange,
-    token0Balance,
-    deposit0CurrencyAmount,
+    deposit0JSBI,
+    token0BalanceJSBI,
+    token0isWETH,
     position.token0.symbol,
     position.token1.symbol,
-    token1Balance,
-    deposit1CurrencyAmount,
+    deposit1JSBI,
+    token1BalanceJSBI,
+    token1isWETH,
     deposit0,
     deposit1,
+    wrapAmount,
+    wrappingETH,
   ]);
 
   const handleDismissConfirmation = useCallback(() => {
@@ -176,20 +229,54 @@ export default function IncreaseGammaLiquidityModal({
     setAddErrorMessage('');
   }, [txnHash]);
 
+  const wethContract = useWETHContract();
+
+  const wrapETH = async () => {
+    if (!chainId || !account || !wethContract || !wrapAmount) return;
+
+    setWrappingETH(true);
+    try {
+      const wrapEstimateGas = await wethContract.estimateGas.deposit({
+        value: wrapAmount.toString(),
+      });
+      const wrapResponse: TransactionResponse = await wethContract.deposit({
+        gasLimit: calculateGasMargin(wrapEstimateGas),
+        value: wrapAmount.toString(),
+      });
+      setAttemptingTxn(false);
+      setTxPending(true);
+      const summary = `Wrap ${formatUnits(
+        wrapAmount.toString(),
+        18,
+      )} ETH to WETH`;
+      addTransaction(wrapResponse, {
+        summary,
+      });
+      const receipt = await wrapResponse.wait();
+      finalizedTransaction(receipt, {
+        summary,
+      });
+      setWrappingETH(false);
+    } catch (e) {
+      console.error(e);
+      setWrappingETH(false);
+    }
+  };
+
   const addGammaLiquidity = async () => {
     if (!gammaUNIPROXYContract || !account) return;
     setAttemptingTxn(true);
     try {
       const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
-        deposit0CurrencyAmount.numerator.toString(),
-        deposit1CurrencyAmount.numerator.toString(),
+        deposit0JSBI.toString(),
+        deposit1JSBI.toString(),
         account,
         position.pairAddress,
         [0, 0, 0, 0],
       );
       const response: TransactionResponse = await gammaUNIPROXYContract.deposit(
-        deposit0CurrencyAmount.numerator.toString(),
-        deposit1CurrencyAmount.numerator.toString(),
+        deposit0JSBI.toString(),
+        deposit1JSBI.toString(),
         account,
         position.pairAddress,
         [0, 0, 0, 0],
@@ -362,16 +449,24 @@ export default function IncreaseGammaLiquidityModal({
             }}
             onMax={() => {
               setIsBaseInput(true);
-              setDeposit0(token0Balance?.toExact() ?? '');
+              setDeposit0(
+                formatUnits(
+                  token0BalanceJSBI.toString(),
+                  position.token0.decimals,
+                ),
+              );
             }}
-            showMaxButton={
-              !(token0Balance && token0Balance.equalTo(deposit0CurrencyAmount))
-            }
+            showMaxButton={!JSBI.equal(token0BalanceJSBI, deposit0JSBI)}
             currency={position.token0}
             id='add-gamma-liquidity-input-tokena'
             shallow={true}
             disabled={false}
             swap={false}
+            showETH={
+              chainId &&
+              position.token0.address.toLowerCase() ===
+                WETH[chainId].address.toLowerCase()
+            }
           />
         </Box>
         <Box mt={2} className='v3-increase-liquidity-input'>
@@ -383,23 +478,31 @@ export default function IncreaseGammaLiquidityModal({
             }}
             onMax={() => {
               setIsBaseInput(false);
-              setDeposit1(token1Balance?.toExact() ?? '');
+              setDeposit1(
+                formatUnits(
+                  token1BalanceJSBI.toString(),
+                  position.token1.decimals,
+                ),
+              );
             }}
-            showMaxButton={
-              !(token1Balance && token1Balance.equalTo(deposit1CurrencyAmount))
-            }
+            showMaxButton={!JSBI.equal(token1BalanceJSBI, deposit1JSBI)}
             currency={position.token1}
             id='add-gamma-liquidity-input-tokenb'
             shallow={true}
             disabled={false}
             swap={false}
+            showETH={
+              chainId &&
+              position.token1.address.toLowerCase() ===
+                WETH[chainId].address.toLowerCase()
+            }
           />
         </Box>
         <Box mt={2}>
           <Button
             className='gamma-liquidity-item-button'
             disabled={buttonDisabled}
-            onClick={() => setShowConfirm(true)}
+            onClick={() => (wrapAmount ? wrapETH() : setShowConfirm(true))}
             fullWidth
           >
             {buttonText}

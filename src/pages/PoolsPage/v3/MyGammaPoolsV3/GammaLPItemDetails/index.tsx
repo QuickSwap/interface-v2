@@ -9,11 +9,19 @@ import { Button } from '@material-ui/core';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import IncreaseGammaLiquidityModal from '../IncreaseGammaLiquidityModal';
 import WithdrawGammaLiquidityModal from '../WithdrawGammaLiquidityModal';
+import { JSBI, Token } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
+import { useTokenBalance } from 'state/wallet/hooks';
 
 const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
   gammaPosition,
 }) => {
   const { t } = useTranslation();
+  const { chainId, account } = useActiveWeb3React();
+  const lpToken = chainId
+    ? new Token(chainId, gammaPosition.pairAddress, 18)
+    : undefined;
+  const lpTokenBalance = useTokenBalance(account ?? undefined, lpToken);
   const token0USDPrice = useUSDCPrice(gammaPosition?.token0);
   const token0PooledPercent =
     token0USDPrice &&
@@ -107,6 +115,11 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
         </Button>
         <Button
           className='gamma-liquidity-item-button'
+          disabled={
+            gammaPosition.farming &&
+            (!lpTokenBalance ||
+              JSBI.equal(lpTokenBalance.numerator, JSBI.BigInt('0')))
+          }
           onClick={() => setShowWithdrawModal(true)}
         >
           <small>{t('withdraw')}</small>
