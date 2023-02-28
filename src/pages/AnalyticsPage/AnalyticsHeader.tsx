@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import AnalyticsSearch from 'components/AnalyticsSearch';
@@ -10,7 +10,7 @@ import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import { getConfig } from '../../config/index';
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useIsV2 } from 'state/application/hooks';
 
 interface AnalyticHeaderProps {
@@ -34,7 +34,6 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const config = getConfig(chainIdToUse);
   const v3 = config['v3'];
   const v2 = config['v2'];
-  const params: any = useParams();
   const { updateIsV2 } = useIsV2();
 
   useEffect(() => {
@@ -42,7 +41,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
       updateIsV2(false);
     }
   }, [updateIsV2, v2, v3]);
-  const version = params && params.version ? params.version : 'total';
+  const version = useAnalyticsVersion();
   const isPairDetails = history.location.pathname.includes('pair/');
 
   return (

@@ -19,6 +19,8 @@ import { usePairs } from 'data/Reserves';
 import useParsedQueryString from './useParsedQueryString';
 import { useLocalChainId } from 'state/application/hooks';
 import { GlobalConst } from 'constants/index';
+import { useParams } from 'react-router-dom';
+import { getConfig } from 'config';
 
 export function useActiveWeb3React(): Web3ReactContextInterface<
   Web3Provider
@@ -247,4 +249,16 @@ export const useIsProMode = () => {
     parsedQs.isProMode && parsedQs.isProMode === 'true',
   );
   return isProMode;
+};
+
+export const useAnalyticsVersion = () => {
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const v2 = config['v2'];
+  const v3 = config['v3'];
+  const defaultVersion = v2 && v3 ? 'total' : v2 ? 'v2' : 'v3';
+  const params: any = useParams();
+  const version = params && params.version ? params.version : defaultVersion;
+  return version;
 };

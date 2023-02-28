@@ -14,7 +14,7 @@ import {
   getBulkPairData,
   getTokenFromAddress,
 } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
 import {
   useBookmarkTokens,
@@ -42,7 +42,6 @@ import {
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { getConfig } from 'config';
-import { useParams } from 'react-router-dom';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -81,8 +80,7 @@ const AnalyticsTokenDetails: React.FC = () => {
       updateIsV2(false);
     }
   }, [updateIsV2, v2, v3]);
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = useAnalyticsVersion();
 
   const tokenTransactionsList = useMemo(() => {
     if (tokenTransactions) {

@@ -13,9 +13,8 @@ import { GlobalConst } from 'constants/index';
 import { getTopTokensTotal, getTopTokensV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { useParams } from 'react-router-dom';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
@@ -29,8 +28,7 @@ const AnalyticsTokens: React.FC = () => {
   const { maticPrice } = useMaticPrice();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = useAnalyticsVersion();
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {

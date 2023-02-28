@@ -18,9 +18,8 @@ import { getTokenChartData } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getTokenChartDataTotal, getTokenChartDataV3 } from 'utils/v3-graph';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { useParams } from 'react-router-dom';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
@@ -86,8 +85,7 @@ const AnalyticsTokenChart: React.FC<{
     }
   }, [token, chartIndex]);
 
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
     async function fetchTokenChartData() {

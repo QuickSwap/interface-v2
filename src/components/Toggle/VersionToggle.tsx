@@ -6,6 +6,7 @@ import './index.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
 import { useIsAnalyticsLoaded } from 'state/analytics/hooks';
+import { useAnalyticsVersion } from 'hooks';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
@@ -13,11 +14,12 @@ const VersionToggle: React.FC = () => {
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
+  const analyticsVersion = useAnalyticsVersion();
   const version =
     params && params.version
       ? params.version
       : isAnalyticsPage
-      ? 'total'
+      ? analyticsVersion
       : 'v3';
 
   const analyticsLoaded = useIsAnalyticsLoaded();

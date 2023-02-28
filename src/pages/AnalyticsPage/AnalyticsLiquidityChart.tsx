@@ -15,9 +15,8 @@ import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
 import { getChartDataV3, getChartDataTotal } from 'utils/v3-graph';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { useParams } from 'react-router-dom';
 dayjs.extend(utc);
 
 const AnalyticsLiquidityChart: React.FC<{
@@ -31,8 +30,7 @@ const AnalyticsLiquidityChart: React.FC<{
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
     const fetchChartData = async () => {

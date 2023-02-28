@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Divider } from '@material-ui/core';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
@@ -11,7 +11,7 @@ import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg
 import { useTranslation } from 'react-i18next';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import 'components/styles/AnalyticsTable.scss';
 
 interface PairsTableProps {
@@ -26,8 +26,7 @@ const PairTable: React.FC<PairsTableProps> = ({
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = useAnalyticsVersion();
   const liquidityHeadCellIndex = version === 'total' ? 2 : 1;
 
   const v2SpecificCells = [

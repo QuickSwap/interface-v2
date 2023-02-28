@@ -10,8 +10,7 @@ import { getTopPairsV3, getPairsAPR, getTopPairsTotal } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { ChainId } from '@uniswap/sdk';
-import { useParams } from 'react-router-dom';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();
@@ -22,8 +21,7 @@ const AnalyticsPairs: React.FC = () => {
 
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
     (async () => {

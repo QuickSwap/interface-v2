@@ -13,10 +13,9 @@ import {
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { getChartDataTotal, getChartDataV3 } from 'utils/v3-graph';
-import { useParams } from 'react-router-dom';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
@@ -36,8 +35,7 @@ const AnalyticsVolumeChart: React.FC<{
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
     const fetchChartData = async () => {

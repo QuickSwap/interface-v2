@@ -1,18 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Grid } from '@material-ui/core';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { useEthPrice, useMaticPrice } from 'state/application/hooks';
-import {
-  getTopPairs,
-  getTopTokens,
-  getGlobalData,
-  getBulkPairData,
-  getTopPairsV2,
-} from 'utils';
+import { getTopTokens, getGlobalData, getTopPairsV2 } from 'utils';
 import { GlobalConst } from 'constants/index';
 import { TokensTable, PairTable } from 'components';
 import AnalyticsInfo from './AnalyticsInfo';
@@ -31,7 +25,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
 
 dayjs.extend(utc);
@@ -49,8 +43,7 @@ const AnalyticsOverview: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const dispatch = useDispatch();
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
     (async () => {
