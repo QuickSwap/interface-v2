@@ -23,7 +23,6 @@ import { useUSDCPricesToken } from 'utils/useUSDCPrice';
 import { useSingleContractMultipleData } from 'state/multicall/hooks';
 import { useMasterChefContract } from 'hooks/useContract';
 import { formatUnits } from 'ethers/lib/utils';
-import { getConfig } from '../../config/index';
 
 export const FarmingMyFarms: React.FC<{
   search: string;
@@ -39,6 +38,14 @@ export const FarmingMyFarms: React.FC<{
   const [sortByQuick, setSortByQuick] = useState(v3FarmSortBy.pool);
   const [sortDescQuick, setSortDescQuick] = useState(false);
   const sortMultiplierQuick = sortDescQuick ? -1 : 1;
+
+  const allGammaFarms = useMemo(() => {
+    return chainId
+      ? ([] as GammaPair[])
+          .concat(...Object.values(GammaPairs[chainId]))
+          .filter((item) => item.ableToFarm)
+      : [];
+  }, [chainId]);
 
   const {
     fetchTransferredPositions: {
@@ -644,132 +651,141 @@ export const FarmingMyFarms: React.FC<{
   return (
     <Box mt={2}>
       <Divider />
-      <Box px={2} my={2}>
-        <h6>QuickSwap {t('farms')}</h6>
-      </Box>
-      {transferredPositionsLoading ||
-      eternalFarmPoolAprsLoading ||
-      eternalFarmAprsLoading ||
-      !shallowPositions ? (
-        <Box py={5} className='flex justify-center'>
-          <Loader stroke={'white'} size={'1.5rem'} />
-        </Box>
-      ) : shallowPositions && shallowPositions.length === 0 ? (
-        <Box py={5} className='flex flex-col items-center'>
-          <Frown size={35} stroke={'white'} />
-          <Box mb={3} mt={1}>
-            {t('nofarms')}
-          </Box>
-        </Box>
-      ) : shallowPositions && shallowPositions.length !== 0 ? (
-        <Box padding='24px'>
-          {farmedNFTs && farmedNFTs.length > 0 && chainId && (
-            <Box pb={2}>
-              {!isMobile && (
-                <Box px={3.5}>
-                  <Box width='85%'>
-                    <SortColumns
-                      sortColumns={sortByDesktopItemsQuick}
-                      selectedSort={sortByQuick}
-                      sortDesc={sortDescQuick}
-                    />
-                  </Box>
-                </Box>
-              )}
-              <Box mt={2}>
-                {farmedNFTs.map((el, i) => {
-                  return (
-                    <div
-                      className={'v3-my-farms-position-card'}
-                      key={i}
-                      data-navigatedto={hash == `#${el.id}`}
-                    >
-                      <FarmCard
-                        el={el}
-                        poolApr={
-                          eternalFarmPoolAprs
-                            ? eternalFarmPoolAprs[el.pool.id]
-                            : undefined
-                        }
-                        farmApr={
-                          eternalFarmAprs
-                            ? eternalFarmAprs[el.farmId]
-                            : undefined
-                        }
-                        chainId={chainId}
-                      />
-                    </div>
-                  );
-                })}
-              </Box>
-            </Box>
-          )}
-        </Box>
-      ) : null}
-      <Box my={2}>
-        <Divider />
+      {allGammaFarms.length > 0 && (
         <Box px={2} mt={2}>
-          <h6>Gamma {t('farms')}</h6>
+          <h6>QuickSwap {t('farms')}</h6>
         </Box>
-        {gammaFarmsLoading || positionsLoading || gammaRewardsLoading ? (
+      )}
+      <Box mt={2}>
+        {transferredPositionsLoading ||
+        eternalFarmPoolAprsLoading ||
+        eternalFarmAprsLoading ||
+        !shallowPositions ? (
           <Box py={5} className='flex justify-center'>
             <Loader stroke={'white'} size={'1.5rem'} />
           </Box>
-        ) : myGammaFarms.length === 0 ? (
+        ) : shallowPositions && shallowPositions.length === 0 ? (
           <Box py={5} className='flex flex-col items-center'>
             <Frown size={35} stroke={'white'} />
             <Box mb={3} mt={1}>
               {t('nofarms')}
             </Box>
           </Box>
-        ) : chainId ? (
+        ) : shallowPositions && shallowPositions.length !== 0 ? (
           <Box padding='24px'>
-            {!isMobile && (
-              <Box px={1.5}>
-                <Box width='90%'>
-                  <SortColumns
-                    sortColumns={sortByDesktopItemsGamma}
-                    selectedSort={sortByGamma}
-                    sortDesc={sortDescGamma}
-                  />
+            {farmedNFTs && farmedNFTs.length > 0 && chainId && (
+              <Box pb={2}>
+                {!isMobile && (
+                  <Box px={3.5}>
+                    <Box width='85%'>
+                      <SortColumns
+                        sortColumns={sortByDesktopItemsQuick}
+                        selectedSort={sortByQuick}
+                        sortDesc={sortDescQuick}
+                      />
+                    </Box>
+                  </Box>
+                )}
+                <Box mt={2}>
+                  {farmedNFTs.map((el, i) => {
+                    return (
+                      <div
+                        className={'v3-my-farms-position-card'}
+                        key={i}
+                        data-navigatedto={hash == `#${el.id}`}
+                      >
+                        <FarmCard
+                          el={el}
+                          poolApr={
+                            eternalFarmPoolAprs
+                              ? eternalFarmPoolAprs[el.pool.id]
+                              : undefined
+                          }
+                          farmApr={
+                            eternalFarmAprs
+                              ? eternalFarmAprs[el.farmId]
+                              : undefined
+                          }
+                          chainId={chainId}
+                        />
+                      </div>
+                    );
+                  })}
                 </Box>
               </Box>
             )}
-            <Box pb={2}>
-              {myGammaFarms.map((farm) => (
-                <Box mt={2} key={farm.address}>
-                  <GammaFarmCard
-                    token0={farm.token0}
-                    token1={farm.token1}
-                    pairData={farm}
-                    positionData={
-                      gammaPositions
-                        ? gammaPositions[farm.address.toLowerCase()]
-                        : undefined
-                    }
-                    data={
-                      gammaData
-                        ? gammaData[farm.address.toLowerCase()]
-                        : undefined
-                    }
-                    rewardData={
-                      gammaRewards &&
-                      gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-                      gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
-                        ? gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]][
-                            'pools'
-                          ][farm.address.toLowerCase()]
-                        : undefined
-                    }
-                  />
-                </Box>
-              ))}
-            </Box>
           </Box>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </Box>
+
+      {allGammaFarms.length > 0 && (
+        <Box my={2}>
+          <Divider />
+          <Box px={2} mt={2}>
+            <h6>Gamma {t('farms')}</h6>
+          </Box>
+          {gammaFarmsLoading || positionsLoading || gammaRewardsLoading ? (
+            <Box py={5} className='flex justify-center'>
+              <Loader stroke={'white'} size={'1.5rem'} />
+            </Box>
+          ) : myGammaFarms.length === 0 ? (
+            <Box py={5} className='flex flex-col items-center'>
+              <Frown size={35} stroke={'white'} />
+              <Box mb={3} mt={1}>
+                {t('nofarms')}
+              </Box>
+            </Box>
+          ) : chainId ? (
+            <Box padding='24px'>
+              {!isMobile && (
+                <Box px={1.5}>
+                  <Box width='90%'>
+                    <SortColumns
+                      sortColumns={sortByDesktopItemsGamma}
+                      selectedSort={sortByGamma}
+                      sortDesc={sortDescGamma}
+                    />
+                  </Box>
+                </Box>
+              )}
+              <Box pb={2}>
+                {myGammaFarms.map((farm) => (
+                  <Box mt={2} key={farm.address}>
+                    <GammaFarmCard
+                      token0={farm.token0}
+                      token1={farm.token1}
+                      pairData={farm}
+                      positionData={
+                        gammaPositions
+                          ? gammaPositions[farm.address.toLowerCase()]
+                          : undefined
+                      }
+                      data={
+                        gammaData
+                          ? gammaData[farm.address.toLowerCase()]
+                          : undefined
+                      }
+                      rewardData={
+                        gammaRewards &&
+                        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
+                        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]][
+                          'pools'
+                        ]
+                          ? gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]][
+                              'pools'
+                            ][farm.address.toLowerCase()]
+                          : undefined
+                      }
+                    />
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          ) : (
+            <></>
+          )}
+        </Box>
+      )}
     </Box>
   );
 };
