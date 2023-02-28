@@ -170,6 +170,7 @@ export const LAIR_ADDRESS: AddressMap = {
 
 export const NEW_LAIR_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0x958d208Cdf087843e9AD98d23823d32E17d723A1',
+  [ChainId.DOGECHAIN]: '0xD0364429C7c236d7E2dd71fb1ac1cF438323A398',
 };
 
 export const QUICK_ADDRESS: AddressMap = {
@@ -178,6 +179,11 @@ export const QUICK_ADDRESS: AddressMap = {
 
 export const NEW_QUICK_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
+};
+
+export const DL_QUICK_ADDRESS: AddressMap = {
+  [ChainId.MATIC]: NEW_QUICK_ADDRESS[ChainId.MATIC],
+  [ChainId.DOGECHAIN]: '0x582daef1f36d6009f64b74519cfd612a8467be18',
 };
 
 export const QUICK_CONVERSION: AddressMap = {
@@ -400,10 +406,20 @@ export const DC: { [chainId: number]: Token } = {
 export const DD: { [chainId: number]: Token } = {
   [ChainId.DOGECHAIN]: new Token(
     ChainId.DOGECHAIN,
-    '0x582daef1f36d6009f64b74519cfd612a8467be18',
+    DL_QUICK_ADDRESS[ChainId.DOGECHAIN],
     18,
     'DD',
     'Doge Dragon',
+  ),
+};
+
+export const dDD: { [chainId: number]: Token } = {
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    NEW_LAIR_ADDRESS[ChainId.DOGECHAIN],
+    18,
+    'dDD',
+    'Dragon DD',
   ),
 };
 
@@ -455,6 +471,16 @@ export const USDD: { [chainId: number]: Token } = {
     'USDD',
     'Decentralized USD',
   ),
+};
+
+export const DLQUICK: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: NEW_QUICK[ChainId.MATIC],
+  [ChainId.DOGECHAIN]: DD[ChainId.DOGECHAIN],
+};
+
+export const DLDQUICK: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: NEW_DQUICK[ChainId.MATIC],
+  [ChainId.DOGECHAIN]: dDD[ChainId.DOGECHAIN],
 };
 
 export const V2_BASES_TO_CHECK_TRADES_AGAINST: {

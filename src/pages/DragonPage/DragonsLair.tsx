@@ -8,13 +8,19 @@ import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
+import {
+  DLDQUICK,
+  DLQUICK,
+  OLD_DQUICK,
+  OLD_QUICK,
+} from 'constants/v3/addresses';
 
 const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
-  const quickToken = isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
+  const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
+  const dQuickToken = isNew ? DLDQUICK[chainIdToUse] : OLD_DQUICK[chainIdToUse];
   const quickPrice = useUSDCPriceToken(quickToken, chainIdToUse);
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
@@ -50,12 +56,14 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
       <Box display='flex'>
         <CurrencyLogo currency={quickToken} size='32px' />
         <Box ml={1.5}>
-          <p className='small line-height-1'>QUICK</p>
+          <p className='small line-height-1'>{quickToken?.symbol}</p>
           <span className='text-hint'>{t('stakeQUICKTitle')}</span>
         </Box>
       </Box>
       <Box className='dragonLairRow'>
-        <small>{t('total')} QUICK</small>
+        <small>
+          {t('total')} {quickToken?.symbol}
+        </small>
         <small>
           {lairInfoToUse
             ? lairInfoToUse.totalQuickBalance.toFixed(2, {
@@ -90,11 +98,13 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
       <Box className='quickTodQuick border-secondary1'>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? 1 : Number(dQUICKtoQUICK).toLocaleString('us')} QUICK =
+          {isQUICKRate ? 1 : Number(dQUICKtoQUICK).toLocaleString('us')}{' '}
+          {quickToken?.symbol} =
         </small>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? Number(QUICKtodQUICK).toLocaleString('us') : 1} dQUICK
+          {isQUICKRate ? Number(QUICKtodQUICK).toLocaleString('us') : 1}{' '}
+          {dQuickToken?.symbol}
         </small>
         <PriceExchangeIcon
           className='cursor-pointer'

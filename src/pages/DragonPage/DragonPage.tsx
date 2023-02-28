@@ -20,13 +20,13 @@ const DragonPage: React.FC = () => {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
   //showing old dragons lair until we're ready to deploy
-  const showOld = true;
-  const showNew = true;
 
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
   const showLair = config['lair']['available'];
+  const showOld = config['lair']['oldLair'];
+  const showNew = config['lair']['newLair'];
   const history = useHistory();
 
   useEffect(() => {

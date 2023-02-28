@@ -58,8 +58,9 @@ import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { useDefaultSyrupList } from 'state/syrups/hooks';
 import { Contract } from '@ethersproject/contracts';
 import {
+  DLDQUICK,
+  DLQUICK,
   LAIR_ADDRESS,
-  NEW_DQUICK,
   NEW_LAIR_ADDRESS,
   NEW_QUICK,
   OLD_DQUICK,
@@ -1439,8 +1440,8 @@ export function useNewLairInfo(): LairInfo | undefined {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const lairAddress = NEW_LAIR_ADDRESS[chainIdToUse];
-  const quickToken = NEW_QUICK[chainIdToUse];
-  const dQuickToken = NEW_DQUICK[chainIdToUse];
+  const quickToken = DLQUICK[chainIdToUse];
+  const dQuickToken = DLDQUICK[chainIdToUse];
 
   return useLairInfo(
     lairContract,

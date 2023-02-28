@@ -25,9 +25,9 @@
     "available": true
   },
   "lair": {
-    "available": false,
+    "available": true,
     "oldLair": false,
-    "newLair": false,
+    "newLair": true,
     "syrup": false
   },
   "convert": {

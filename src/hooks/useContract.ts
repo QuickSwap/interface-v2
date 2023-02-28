@@ -1,12 +1,8 @@
 import { Contract } from '@ethersproject/contracts';
-import { abi as GOVERNANCE_ABI } from '@uniswap/governance/build/GovernorAlpha.json';
-import { abi as UNI_ABI } from '@uniswap/governance/build/Uni.json';
 import { abi as STAKING_REWARDS_ABI } from '@uniswap/liquidity-staker/build/StakingRewards.json';
-import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json';
 import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { useMemo } from 'react';
-import { GlobalConst } from '../constants';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS,
@@ -42,8 +38,8 @@ import {
   LAIR_ADDRESS,
   QUICK_ADDRESS,
   NEW_LAIR_ADDRESS,
-  NEW_QUICK_ADDRESS,
   QUICK_CONVERSION,
+  DL_QUICK_ADDRESS,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
@@ -102,7 +98,7 @@ export function useNewLairContract(): Contract | null {
 }
 
 export function useNewQUICKContract(): Contract | null {
-  return useContract(NEW_QUICK_ADDRESS, ERC20_ABI, true);
+  return useContract(DL_QUICK_ADDRESS, ERC20_ABI, true);
 }
 
 export function useQUICKConversionContract(): Contract | null {
