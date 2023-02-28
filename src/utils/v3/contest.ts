@@ -8,9 +8,10 @@ dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
 export const getSwapTransactionsV3 = async (
-  poolId: string,
+  pool_in: string[],
   fromTime?: number,
   toTime?: number,
+  origin?: string,
   skip = 0,
 ): Promise<SwapDataV3[]> => {
   const today = dayjs()
@@ -27,10 +28,11 @@ export const getSwapTransactionsV3 = async (
     const result = await clientV3.query({
       query: SWAP_TRANSACTIONS_V3,
       variables: {
-        pool: poolId,
+        pool_in: pool_in,
         timestamp_gte: fromTimestamp,
         timestamp_lte: toTimestamp,
         skip: skip,
+        origin,
       },
       fetchPolicy: 'network-only',
     });
@@ -39,7 +41,7 @@ export const getSwapTransactionsV3 = async (
 
     return swaps;
   } catch (e) {
-    console.error('error getSwapTransactionsV3', e);
+    console.error('Error: getSwapTransactionsV3 queryDetails: ', e);
     return [];
   }
 };

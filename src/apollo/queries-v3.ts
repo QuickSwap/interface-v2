@@ -840,18 +840,20 @@ export const PRICES_BY_BLOCK_V3: any = (
 
 export const SWAP_TRANSACTIONS_V3 = gql`
   query(
-    $pool: String!
+    $pool_in: [String]!
     $timestamp_gte: Int!
     $timestamp_lte: Int!
     $skip: Int!
+    $origin: String!
   ) {
     swaps(
       first: 1000
       skip: $skip
       where: {
-        pool: $pool
+        pool_in: $pool_in
         timestamp_gte: $timestamp_gte
         timestamp_lte: $timestamp_lte
+        origin: $origin
       }
       orderBy: timestamp
       orderDirection: desc

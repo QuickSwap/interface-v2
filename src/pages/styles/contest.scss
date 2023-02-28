@@ -1,4 +1,39 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
 .rounded-top-10px {
   border-top-left-radius: 10px !important ;
   border-top-right-radius: 10px !important ;
+}
+.tokensFilter {
+  cursor: pointer;
+  display: flex;
+  margin: 8px 16px 8px 0;
+}
+
+.topTab {
+  height: 46px;
+  padding: 0 24px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  & p {
+    color: $textDisabled;
+  }
+}
+
+.selectedTab {
+  background: $secondary2;
+  & p {
+    color: $textPrimary;
+  }
+}
+.panel {
+  background: $grey3;
+  border-radius: 20px;
+  padding: 24px;
+  @include media('screen', '<phone') {
+    padding: 12px;
+  }
 }
