@@ -56,7 +56,9 @@ export default function Farms() {
   const currentTabQueried =
     parsedQuery && parsedQuery.tab
       ? (parsedQuery.tab as string)
-      : 'gamma-farms';
+      : allGammaFarms.length > 0
+      ? 'gamma-farms'
+      : 'eternal-farms';
 
   const v3FarmCategories = useMemo(() => {
     return allGammaFarms.length > 0
