@@ -85,6 +85,7 @@ import { useEthPrice } from 'state/application/hooks';
 import { getGlobalDataV3 } from './v3-graph';
 import { TFunction } from 'react-i18next';
 import { TOKENS_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
+import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -2668,5 +2669,75 @@ export const getEternalFarmFromTokens = async (
     return eternalFarm;
   } catch (e) {
     return;
+  }
+};
+
+export const getGammaData = async () => {
+  try {
+    const data = await fetch(
+      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
+    );
+    const gammaData = await data.json();
+    return gammaData;
+  } catch {
+    try {
+      const data = await fetch(
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
+      );
+      const gammaData = await data.json();
+      return gammaData;
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+  }
+};
+
+export const getGammaPositions = async (account?: string) => {
+  if (!account) return;
+  try {
+    const data = await fetch(
+      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
+    );
+    const positions = await data.json();
+    return positions[account.toLowerCase()];
+  } catch {
+    try {
+      const data = await fetch(
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
+      );
+      const positions = await data.json();
+      return positions[account.toLowerCase()];
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+  }
+};
+
+export const getGammaRewards = async (chainId?: ChainId) => {
+  if (!chainId) return;
+  const masterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[chainId];
+  try {
+    const data = await fetch(
+      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
+    );
+    const gammaData = await data.json();
+    return gammaData && gammaData[masterChefAddress]
+      ? gammaData[masterChefAddress]['pools']
+      : undefined;
+  } catch {
+    try {
+      const data = await fetch(
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
+      );
+      const gammaData = await data.json();
+      return gammaData && gammaData[masterChefAddress]
+        ? gammaData[masterChefAddress]['pools']
+        : undefined;
+    } catch (e) {
+      console.log(e);
+      return;
+    }
   }
 };

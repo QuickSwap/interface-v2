@@ -7,13 +7,12 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { useEthPrice, useMaticPrice } from 'state/application/hooks';
 import {
-  getTopPairs,
   getTopTokens,
   getGlobalData,
-  getBulkPairData,
   getTopPairsV2,
+  getGammaRewards,
 } from 'utils';
-import { GlobalConst } from 'constants/index';
+import { GammaPairs, GlobalConst } from 'constants/index';
 import { TokensTable, PairTable } from 'components';
 import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
@@ -30,11 +29,13 @@ import {
 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
+import { useActiveWeb3React } from 'hooks';
 
 dayjs.extend(utc);
 
 const AnalyticsOverview: React.FC = () => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
   const history = useHistory();
   const [globalData, updateGlobalData] = useState<any>(null);
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
@@ -126,13 +127,42 @@ const AnalyticsOverview: React.FC = () => {
           const data = pairsData.filter((item: any) => !!item);
           try {
             const aprs = await getPairsAPR(data.map((item: any) => item.id));
+            const gammaRewards = await getGammaRewards(chainId);
 
             updateTopPairs(
               data.map((item: any, ind: number) => {
+                const gammaPairs =
+                  GammaPairs[
+                    item.token0.id.toLowerCase() +
+                      '-' +
+                      item.token1.id.toLowerCase()
+                  ];
+                const gammaFarmAPRs = gammaPairs
+                  ? gammaPairs.map((pair) => {
+                      return {
+                        title: pair.title,
+                        apr:
+                          gammaRewards &&
+                          gammaRewards[pair.address] &&
+                          gammaRewards[pair.address.toLowerCase()]['apr']
+                            ? Number(
+                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                              ) * 100
+                            : 0,
+                      };
+                    })
+                  : [];
+                const quickFarmingAPR = aprs[ind].farmingApr;
+                const farmingApr = Math.max(
+                  quickFarmingAPR ?? 0,
+                  ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
+                );
                 return {
                   ...item,
                   apr: aprs[ind].apr,
-                  farmingApr: aprs[ind].farmingApr,
+                  farmingApr,
+                  quickFarmingAPR,
+                  gammaFarmAPRs,
                 };
               }),
             );
@@ -157,13 +187,41 @@ const AnalyticsOverview: React.FC = () => {
           const data = pairsData.filter((item: any) => !!item);
           try {
             const aprs = await getPairsAPR(data.map((item: any) => item.id));
+            const gammaRewards = await getGammaRewards(chainId);
 
             updateTopPairs(
               data.map((item: any, ind: number) => {
+                const gammaPairs = item.isV3
+                  ? GammaPairs[
+                      item.token0.id.toLowerCase() + '-' + item.token1.id
+                    ]
+                  : undefined;
+                const gammaFarmAPRs = gammaPairs
+                  ? gammaPairs.map((pair) => {
+                      return {
+                        title: pair.title,
+                        apr:
+                          gammaRewards &&
+                          gammaRewards[pair.address] &&
+                          gammaRewards[pair.address.toLowerCase()]['apr']
+                            ? Number(
+                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                              ) * 100
+                            : 0,
+                      };
+                    })
+                  : [];
+                const quickFarmingAPR = aprs[ind].farmingApr;
+                const farmingApr = Math.max(
+                  quickFarmingAPR ?? 0,
+                  ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
+                );
                 return {
                   ...item,
                   apr: aprs[ind].apr,
-                  farmingApr: aprs[ind].farmingApr,
+                  farmingApr,
+                  quickFarmingAPR,
+                  gammaFarmAPRs,
                 };
               }),
             );
@@ -179,6 +237,7 @@ const AnalyticsOverview: React.FC = () => {
     maticPrice.price,
     maticPrice.oneDayPrice,
     version,
+    chainId,
   ]);
 
   useEffect(() => {
