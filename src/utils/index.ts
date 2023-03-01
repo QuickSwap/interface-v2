@@ -82,7 +82,7 @@ import {
 } from './graphql-queries';
 import { useEffect, useState } from 'react';
 import { useEthPrice } from 'state/application/hooks';
-import { getGlobalDataV3 } from './v3-graph';
+import { formatTokenSymbol, getGlobalDataV3 } from './v3-graph';
 import { TFunction } from 'react-i18next';
 import { TOKENS_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
@@ -606,8 +606,7 @@ export const getTokenInfo = async (
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0,
           );
-          data.symbol =
-            data.symbol.toLowerCase() === 'mimatic' ? 'MAI' : data.symbol;
+          data.symbol = formatTokenSymbol(data.id, data.symbol);
 
           // new tokens
           if (!oneDayHistory && data) {
@@ -715,8 +714,7 @@ export const getTopTokens = async (
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0,
           );
-          data.symbol =
-            data.symbol.toLowerCase() === 'mimatic' ? 'MAI' : data.symbol;
+          data.symbol = formatTokenSymbol(data.id, data.symbol);
 
           // new tokens
           if (!oneDayHistory && data) {
@@ -1508,17 +1506,11 @@ const parseData = (
   data.volumeChangeUntracked = volumeChangeUntracked;
   data.token0 = {
     ...data.token0,
-    symbol:
-      data.token0.symbol.toLowerCase() === 'mimatic'
-        ? 'MAI'
-        : data.token0.symbol,
+    symbol: formatTokenSymbol(data.token0.id, data.token0.symbol),
   };
   data.token1 = {
     ...data.token1,
-    symbol:
-      data.token1.symbol.toLowerCase() === 'mimatic'
-        ? 'MAI'
-        : data.token1.symbol,
+    symbol: formatTokenSymbol(data.token1.id, data.token1.symbol),
   };
 
   // set liquidity properties
