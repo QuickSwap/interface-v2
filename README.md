@@ -1,4 +1,4 @@
-# QuickSwap Interface
+# QuickSwap new Interface
 
 An open source interface for QuickSwap -- a protocol for decentralized exchange on Polygon.
 
