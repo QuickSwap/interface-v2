@@ -51,6 +51,7 @@ import {
 import { useSelectedTokenList } from 'state/lists/v3/hooks';
 import { getV3TokenFromAddress } from 'utils';
 import { ChainId } from '@uniswap/sdk';
+import { formatTokenSymbol } from 'utils/v3-graph';
 
 export function useFarmingSubgraph() {
   const { chainId, account, library } = useActiveWeb3React();
@@ -211,17 +212,11 @@ export function useFarmingSubgraph() {
         ...pools[0],
         token0: {
           ...pools[0].token0,
-          symbol:
-            pools[0].token0.symbol.toLowerCase() === 'mimatic'
-              ? 'MAI'
-              : pools[0].token0.symbol,
+          symbol: formatTokenSymbol(pools[0].token0.id, pools[0].token0.symbol),
         },
         token1: {
           ...pools[0].token1,
-          symbol:
-            pools[0].token1.symbol.toLowerCase() === 'mimatic'
-              ? 'MAI'
-              : pools[0].token1.symbol,
+          symbol: formatTokenSymbol(pools[0].token1.id, pools[0].token1.symbol),
         },
       };
     } catch (err) {

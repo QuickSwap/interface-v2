@@ -693,11 +693,12 @@ export async function getTopTokensTotal(
         v2Current && v2Current.derivedETH ? v2Current.derivedETH * ethPrice : 0;
       const priceUSDOneDayV2 =
         v2OneDay && v2OneDay.derivedETH ? v2OneDay.derivedETH * ethPrice24H : 0;
-      const priceUSD = priceUSDV2 ?? priceUSDV3;
-      const priceUSDOneDay = priceUSDOneDayV2 ?? priceUSDOneDayV3;
+      const priceUSD = priceUSDV2 > 0 ? priceUSDV2 : priceUSDV3;
+      const priceUSDOneDay =
+        priceUSDOneDayV2 > 0 ? priceUSDOneDayV2 : priceUSDOneDayV3;
 
       const priceChangeUSD =
-        priceUSD && priceUSDOneDay
+        priceUSD > 0 && priceUSDOneDay > 0
           ? getPercentChange(
               Number(priceUSD.toString()),
               Number(priceUSDOneDay.toString()),
@@ -1419,8 +1420,9 @@ export async function getTokenInfoTotal(
         ? Number(oneDayDataV2.derivedETH) * ethPriceOld
         : 0;
 
-    const priceUSD = priceUSDV2 ?? priceUSDV3;
-    const priceUSDOneDay = priceUSDOneDayV2 ?? priceUSDOneDayV3;
+    const priceUSD = priceUSDV2 > 0 ? priceUSDV2 : priceUSDV3;
+    const priceUSDOneDay =
+      priceUSDOneDayV2 > 0 ? priceUSDOneDayV2 : priceUSDOneDayV3;
 
     const priceChangeUSD = getPercentChange(priceUSD, priceUSDOneDay);
 
@@ -2520,17 +2522,17 @@ export async function getPairInfoV3(address: string, chainId: ChainId) {
         ? {
             token0: {
               ...current.token0,
-              symbol:
-                current.token0.symbol.toLowerCase() === 'mimatic'
-                  ? 'MAI'
-                  : current.token0.symbol,
+              symbol: formatTokenSymbol(
+                current.token0.id,
+                current.token0.symbol,
+              ),
             },
             token1: {
               ...current.token1,
-              symbol:
-                current.token1.symbol.toLowerCase() === 'mimatic'
-                  ? 'MAI'
-                  : current.token1.symbol,
+              symbol: formatTokenSymbol(
+                current.token1.id,
+                current.token1.symbol,
+              ),
             },
             fee: current.fee,
             id: address,
@@ -3502,6 +3504,8 @@ export function formatTokenSymbol(address: string, symbol: string) {
     return 'MATIC';
   } else if (symbol.toLowerCase() === 'mimatic') {
     return 'MAI';
+  } else if (symbol.toLowerCase() === 'amaticc') {
+    return 'ankrMATIC';
   }
   return symbol;
 }

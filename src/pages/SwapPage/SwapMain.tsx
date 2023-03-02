@@ -11,7 +11,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useIsV2 } from 'state/application/hooks';
-import SwapCrossChain from './SwapCrossChain';
+// import SwapCrossChain from './SwapCrossChain';
 import SwapLimitOrder from './SwapLimitOrder';
 import SwapV3Page from './V3/Swap';
 
@@ -20,6 +20,19 @@ const SWAP_NORMAL = 1;
 const SWAP_V3 = 2;
 const SWAP_LIMIT = 3;
 const SWAP_CROSS_CHAIN = 4;
+
+const SwapDropdownTabs = [
+  { name: 'bestTrade', key: SWAP_BEST_TRADE },
+  { name: 'market', key: SWAP_NORMAL },
+  { name: 'marketV3', key: SWAP_V3 },
+  { name: 'limit', key: SWAP_LIMIT },
+  // {
+  //   name: 'crossChain',
+  //   subTitle: 'Comming Soon!',
+  //   key: SWAP_CROSS_CHAIN,
+  //   visible: false,
+  // },
+];
 
 const SwapMain: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

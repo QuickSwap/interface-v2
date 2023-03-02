@@ -13,6 +13,7 @@ import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import 'components/styles/AnalyticsTable.scss';
+import FarmingAPRTooltip from 'components/FarmingAPRTooltip';
 
 interface PairsTableProps {
   data: any[];
@@ -229,11 +230,11 @@ const PairTable: React.FC<PairsTableProps> = ({
           <>
             <Box className={`mobileRow ${apr ? 'text-success' : ''}`}>
               <p>{t('apr')}</p>
-              <p>{apr ? `${apr}%` : '-'}</p>
+              <p>{apr ? `${formatNumber(apr)}%` : '-'}</p>
             </Box>
             <Box className={`mobileRow ${farmingApr ? 'text-success' : ''}`}>
               <p>{t('farmingApr')}</p>
-              <p>{farmingApr ? `${farmingApr}%` : '-'}</p>
+              <p>{farmingApr ? `${formatNumber(farmingApr)}%` : '-'}</p>
             </Box>
           </>
         ) : (
@@ -296,15 +297,20 @@ const PairTable: React.FC<PairsTableProps> = ({
       {
         html: (
           <p className={`${apr ? 'text-success' : ''}`}>
-            {apr ? `${apr}%` : '-'}
+            {apr ? `${formatNumber(apr)}%` : '-'}
           </p>
         ),
       },
       {
         html: (
-          <p className={`${farmingApr ? 'text-success' : ''}`}>
-            {farmingApr ? `${farmingApr}%` : '-'}
-          </p>
+          <FarmingAPRTooltip
+            qsAPR={pair.quickFarmingAPR}
+            gammaAPRs={pair.gammaFarmAPRs}
+          >
+            <p className={`${farmingApr ? 'text-success' : ''}`}>
+              {farmingApr ? `${formatNumber(farmingApr)}%` : '-'}
+            </p>
+          </FarmingAPRTooltip>
         ),
       },
     ];

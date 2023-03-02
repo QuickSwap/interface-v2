@@ -4,7 +4,7 @@ import { PairTable } from 'components';
 import { getTopPairs, getBulkPairData } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
-import { GlobalConst } from 'constants/index';
+import { GammaPairs, GlobalConst } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import { getTopPairsV3, getPairsAPR, getTopPairsTotal } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
@@ -14,12 +14,12 @@ import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
   const { ethPrice } = useEthPrice();
 
   const dispatch = useDispatch();
 
-  const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const version = useAnalyticsVersion();
 
@@ -37,13 +37,41 @@ const AnalyticsPairs: React.FC = () => {
               data.map((item: any) => item.id),
               chainIdToUse,
             );
-
+            const gammaRewards = await getGammaRewards(chainId);
             updateTopPairs(
               data.map((item: any, ind: number) => {
+                const gammaPairs =
+                  GammaPairs[chainIdToUse][
+                    item.token0.id.toLowerCase() +
+                      '-' +
+                      item.token1.id.toLowerCase()
+                  ];
+                const gammaFarmAPRs = gammaPairs
+                  ? gammaPairs.map((pair) => {
+                      return {
+                        title: pair.title,
+                        apr:
+                          gammaRewards &&
+                          gammaRewards[pair.address] &&
+                          gammaRewards[pair.address.toLowerCase()]['apr']
+                            ? Number(
+                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                              ) * 100
+                            : undefined,
+                      };
+                    })
+                  : [];
+                const quickFarmingAPR = aprs[ind].farmingApr;
+                const farmingApr = Math.max(
+                  quickFarmingAPR ?? 0,
+                  ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
+                );
                 return {
                   ...item,
                   apr: aprs[ind].apr,
-                  farmingApr: aprs[ind].farmingApr,
+                  farmingApr,
+                  quickFarmingAPR,
+                  gammaFarmAPRs,
                 };
               }),
             );
@@ -83,13 +111,40 @@ const AnalyticsPairs: React.FC = () => {
               data.map((item: any) => item.id),
               chainIdToUse,
             );
-
+            const gammaRewards = await getGammaRewards(chainId);
             updateTopPairs(
               data.map((item: any, ind: number) => {
+                const gammaPairs = item.isV3
+                  ? GammaPairs[chainIdToUse][
+                      item.token0.id.toLowerCase() + '-' + item.token1.id
+                    ]
+                  : undefined;
+                const gammaFarmAPRs = gammaPairs
+                  ? gammaPairs.map((pair) => {
+                      return {
+                        title: pair.title,
+                        apr:
+                          gammaRewards &&
+                          gammaRewards[pair.address] &&
+                          gammaRewards[pair.address.toLowerCase()]['apr']
+                            ? Number(
+                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                              ) * 100
+                            : undefined,
+                      };
+                    })
+                  : [];
+                const quickFarmingAPR = aprs[ind].farmingApr;
+                const farmingApr = Math.max(
+                  quickFarmingAPR ?? 0,
+                  ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
+                );
                 return {
                   ...item,
                   apr: aprs[ind].apr,
-                  farmingApr: aprs[ind].farmingApr,
+                  farmingApr,
+                  quickFarmingAPR,
+                  gammaFarmAPRs,
                 };
               }),
             );

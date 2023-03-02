@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pair } from '@uniswap/v2-sdk';
+import { ETHER } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { LockOutlined } from '@material-ui/icons';
@@ -8,12 +9,14 @@ import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { WrappedCurrency } from 'models/types/Currency';
 import CurrencyLogo from 'components/CurrencyLogo';
+import { useCurrencyBalance as useCurrencyBalanceV2 } from 'state/wallet/hooks';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@material-ui/core';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
+import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -46,6 +49,7 @@ interface CurrencyInputPanelProps {
   page?: string;
   bgClass?: string;
   color?: string;
+  showETH?: boolean;
 }
 
 export default function CurrencyInputPanel({
@@ -77,12 +81,15 @@ export default function CurrencyInputPanel({
   page,
   bgClass,
   color,
+  showETH,
   ...rest
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const { t } = useTranslation();
 
+  const nativeCurrency = chainId ? ETHER[chainId] : undefined;
+  const ethBalance = useCurrencyBalanceV2(account ?? undefined, nativeCurrency);
   const balance = useCurrencyBalance(
     account ?? undefined,
     currency ?? undefined,
@@ -129,8 +136,21 @@ export default function CurrencyInputPanel({
               {currency ? (
                 <Box className='flex w-100 justify-between items-center'>
                   <Box className='flex'>
-                    <CurrencyLogo size={'25px'} currency={currency} />
-                    <p>{currency?.symbol}</p>
+                    {showETH ? (
+                      <DoubleCurrencyLogo
+                        size={25}
+                        currency0={nativeCurrency}
+                        currency1={currency}
+                      />
+                    ) : (
+                      <CurrencyLogo
+                        size={'25px'}
+                        currency={currency as WrappedCurrency}
+                      ></CurrencyLogo>
+                    )}
+                    <p>{`${showETH ? ETHER.symbol + '+' : ''}${
+                      currency?.symbol
+                    }`}</p>
                   </Box>
                 </Box>
               ) : (
@@ -155,7 +175,10 @@ export default function CurrencyInputPanel({
         <Box className='flex justify-between'>
           <Box display='flex'>
             <small className='text-secondary'>
-              {t('balance')}: {balance?.toSignificant(5)}
+              {t('balance')}:{' '}
+              {(showETH && ethBalance
+                ? Number(ethBalance.toSignificant(5))
+                : 0) + (balance ? Number(balance.toSignificant(5)) : 0)}
             </small>
 
             {account && currency && showHalfButton && (

@@ -6,6 +6,7 @@ import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
 import { Box } from '@material-ui/core';
 import MetamaskIcon from 'assets/images/metamask.png';
+import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { fortmatic, injected, metamask, portis, safeApp } from 'connectors';
 import { OVERLAY_READY } from 'connectors/Fortmatic';
@@ -238,6 +239,22 @@ const WalletModal: React.FC<WalletModalProps> = ({
         }
 
         if (!web3 && !ethereum && option.mobile) {
+          if (
+            option.name === GlobalConst.walletName.BRAVEWALLET &&
+            !isBraveWallet
+          ) {
+            return (
+              <Option
+                id={`connect-${key}`}
+                key={key}
+                color={'#E8831D'}
+                header={t('installBrave')}
+                subheader={t('installBraveDesc')}
+                link={'https://brave.com/wallet'}
+                icon={BraveWalletIcon}
+              />
+            );
+          }
           return (
             <Option
               onClick={() => {
@@ -318,7 +335,17 @@ const WalletModal: React.FC<WalletModalProps> = ({
           option.name === GlobalConst.walletName.BRAVEWALLET &&
           !isBraveWallet
         ) {
-          return null;
+          return (
+            <Option
+              id={`connect-${key}`}
+              key={key}
+              color={'#E8831D'}
+              header={t('installBrave')}
+              subheader={t('installBraveDesc')}
+              link={'https://brave.com/wallet'}
+              icon={BraveWalletIcon}
+            />
+          );
         }
         // likewise for generic
         else if (

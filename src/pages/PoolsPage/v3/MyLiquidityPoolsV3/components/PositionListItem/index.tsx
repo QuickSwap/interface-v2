@@ -180,7 +180,7 @@ export default function PositionListItem({
     ? _pool.tickCurrent < _tickLower || _pool.tickCurrent >= _tickUpper
     : false;
 
-  const farmingLink = `/farm/v3`;
+  const farmingLink = `/farm/v3?tab=my-farms`;
 
   const isNewest = newestPosition
     ? newestPosition === +positionDetails.tokenId

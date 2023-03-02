@@ -154,7 +154,6 @@ const Header: React.FC = () => {
       id: 'predictions-page-link',
       isExternal: true,
       externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
-      isNew: true,
     });
   }
   if (showConvert) {

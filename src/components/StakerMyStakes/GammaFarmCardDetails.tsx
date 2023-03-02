@@ -34,8 +34,7 @@ const GammaFarmCardDetails: React.FC<{
   data: any;
   pairData: any;
   rewardData: any;
-  positionData: any;
-}> = ({ pairData, rewardData, positionData, data }) => {
+}> = ({ pairData, rewardData, data }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -70,6 +69,7 @@ const GammaFarmCardDetails: React.FC<{
       ? (Number(data.tvlUSD) / Number(data.totalSupply)) * 10 ** 18
       : 0;
   const stakedUSD = Number(stakedAmount) * lpTokenUSD;
+  const availableStakeUSD = Number(availableStakeAmount) * lpTokenUSD;
 
   const rewards: any[] =
     rewardData && rewardData['rewarders']
@@ -326,7 +326,7 @@ const GammaFarmCardDetails: React.FC<{
               <small className='text-secondary'>{t('available')}:</small>
               <small>
                 {formatNumber(availableStakeAmount)} LP ($
-                {positionData ? formatNumber(positionData.balanceUSD) : 0})
+                {formatNumber(availableStakeUSD)})
               </small>
             </Box>
             <Box

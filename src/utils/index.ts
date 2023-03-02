@@ -88,10 +88,11 @@ import {
 } from './graphql-queries';
 import { useEffect, useState } from 'react';
 import { useEthPrice } from 'state/application/hooks';
-import { getGlobalDataV3 } from './v3-graph';
+import { formatTokenSymbol, getGlobalDataV3 } from './v3-graph';
 import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
 import { TFunction } from 'react-i18next';
 import { TOKENS_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
+import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -626,8 +627,7 @@ export const getTokenInfo = async (
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0,
           );
-          data.symbol =
-            data.symbol.toLowerCase() === 'mimatic' ? 'MAI' : data.symbol;
+          data.symbol = formatTokenSymbol(data.id, data.symbol);
 
           // new tokens
           if (!oneDayHistory && data) {
@@ -736,8 +736,7 @@ export const getTopTokens = async (
             currentLiquidityUSD ?? 0,
             oldLiquidityUSD ?? 0,
           );
-          data.symbol =
-            data.symbol.toLowerCase() === 'mimatic' ? 'MAI' : data.symbol;
+          data.symbol = formatTokenSymbol(data.id, data.symbol);
 
           // new tokens
           if (!oneDayHistory && data) {
@@ -1450,17 +1449,11 @@ const parseData = (
   data.volumeChangeUntracked = volumeChangeUntracked;
   data.token0 = {
     ...data.token0,
-    symbol:
-      data.token0.symbol.toLowerCase() === 'mimatic'
-        ? 'MAI'
-        : data.token0.symbol,
+    symbol: formatTokenSymbol(data.token0.id, data.token0.symbol),
   };
   data.token1 = {
     ...data.token1,
-    symbol:
-      data.token1.symbol.toLowerCase() === 'mimatic'
-        ? 'MAI'
-        : data.token1.symbol,
+    symbol: formatTokenSymbol(data.token1.id, data.token1.symbol),
   };
 
   // set liquidity properties
@@ -2675,5 +2668,75 @@ export const switchNetwork = (
   } else {
     localStorage.setItem('quickswap_chainId', chainId.toString());
     updateLocalChainId(chainId);
+  }
+};
+
+export const getGammaData = async () => {
+  try {
+    const data = await fetch(
+      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
+    );
+    const gammaData = await data.json();
+    return gammaData;
+  } catch {
+    try {
+      const data = await fetch(
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
+      );
+      const gammaData = await data.json();
+      return gammaData;
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+  }
+};
+
+export const getGammaPositions = async (account?: string) => {
+  if (!account) return;
+  try {
+    const data = await fetch(
+      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
+    );
+    const positions = await data.json();
+    return positions[account.toLowerCase()];
+  } catch {
+    try {
+      const data = await fetch(
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
+      );
+      const positions = await data.json();
+      return positions[account.toLowerCase()];
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+  }
+};
+
+export const getGammaRewards = async (chainId?: ChainId) => {
+  if (!chainId) return;
+  const masterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[chainId];
+  try {
+    const data = await fetch(
+      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
+    );
+    const gammaData = await data.json();
+    return gammaData && gammaData[masterChefAddress]
+      ? gammaData[masterChefAddress]['pools']
+      : undefined;
+  } catch {
+    try {
+      const data = await fetch(
+        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
+      );
+      const gammaData = await data.json();
+      return gammaData && gammaData[masterChefAddress]
+        ? gammaData[masterChefAddress]['pools']
+        : undefined;
+    } catch (e) {
+      console.log(e);
+      return;
+    }
   }
 };

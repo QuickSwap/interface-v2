@@ -7,6 +7,8 @@ import './index.scss';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import GammaLPItemDetails from '../GammaLPItemDetails';
 import { useActiveWeb3React } from 'hooks';
+import { ArrowRight } from 'react-feather';
+import { useHistory } from 'react-router-dom';
 
 const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
   const { t } = useTranslation();
@@ -24,6 +26,8 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
       )
     : undefined;
   const [expanded, setExpanded] = useState(false);
+  const history = useHistory();
+  const farmingLink = `/farm/v3?tab=my-farms`;
 
   return (
     <Box className='gamma-liquidity-item'>
@@ -48,6 +52,23 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
               <small>
                 {gammaPairInfo.title} {t('range').toLowerCase()}
               </small>
+            </Box>
+          )}
+          {gammaPosition && gammaPosition.farming && (
+            <Box
+              className='flex items-center bg-primary cursor-pointer'
+              padding='0 5px'
+              height='22px'
+              borderRadius='11px'
+              ml={1}
+              my={0.5}
+              color='white'
+              onClick={() => history.push(farmingLink)}
+            >
+              <p className='span'>{t('farming')}</p>
+              <Box className='flex' ml='3px'>
+                <ArrowRight size={12} />
+              </Box>
             </Box>
           )}
         </Box>
