@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
 import { CurrencyLogo, CopyHelper } from 'components';
 import {
@@ -10,7 +9,12 @@ import {
   useMaticPrice,
   useTokenDetails,
 } from 'state/application/hooks';
-import { getTokenInfo, getIntervalTokenData, formatNumber } from 'utils';
+import {
+  getTokenInfo,
+  getIntervalTokenData,
+  formatNumber,
+  shortenAddress,
+} from 'utils';
 import { LineChart } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { PairTable } from 'components';
-import { getTopPairs, getBulkPairData } from 'utils';
+import { getTopPairs, getBulkPairData, getGammaRewards } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { GammaPairs, GlobalConst } from 'constants/index';

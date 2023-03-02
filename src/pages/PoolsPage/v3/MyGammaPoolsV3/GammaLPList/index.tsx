@@ -25,7 +25,7 @@ const GammaLPList: React.FC<{
             item.address.toLowerCase() === position.pairAddress.toLowerCase(),
         ),
     );
-    const tokenArray = Object.keys(GammaPairs)[pairIndex].split('-');
+    const tokenArray = Object.keys(GammaPairs[chainId])[pairIndex].split('-');
     const token0Data = getTokenFromAddress(
       tokenArray[0],
       chainId,
