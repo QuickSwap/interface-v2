@@ -5,6 +5,7 @@ import {
   Currency,
   CurrencyAmount,
   ChainId,
+  WETH,
 } from '@uniswap/sdk';
 import React, { useMemo, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -12,8 +13,6 @@ import { useIsV2 } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { isTokensOnList } from 'utils';
 import CurrencyRow from './CurrencyRow';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { useActiveWeb3React } from 'hooks';
 
 interface CurrencyListProps {
   currencies: Token[];
@@ -54,7 +53,7 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
 
   const Row = useCallback(
     ({ data, index, style }) => {
-      const currency: Token = data[index];
+      const currency = data[index];
       const isSelected = Boolean(
         selectedCurrency && currencyEquals(selectedCurrency, currency),
       );
@@ -62,7 +61,10 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
         otherCurrency && currencyEquals(otherCurrency, currency),
       );
       const handleSelect = () => onCurrencySelect(currency);
-      const token = wrappedCurrency(currency, chainId);
+      const token =
+        currencyEquals(currency, ETHER[chainId]) || currency.isNative
+          ? WETH[chainId]
+          : currency;
       const usdPrice = usdPrices
         ? usdPrices.find(
             (item) =>

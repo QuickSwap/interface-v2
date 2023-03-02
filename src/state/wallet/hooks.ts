@@ -175,29 +175,19 @@ export function useCurrencyBalances(
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
-  const { isV2 } = useIsV2();
 
   const tokens = useMemo(
     () =>
       currencies
-        ?.filter((currency) =>
-          isV2
-            ? currency !== nativeCurrency
-            : currency && !(currency as V3Currency).isNative,
-        )
+        ?.filter((currency) => currency !== nativeCurrency)
         .map((currency) => currency as Token) ?? [],
-    [currencies, nativeCurrency, isV2],
+    [currencies, nativeCurrency],
   );
 
   const tokenBalances = useTokenBalances(account, tokens);
   const containsETH: boolean = useMemo(
-    () =>
-      currencies?.some((currency) =>
-        isV2
-          ? currency === nativeCurrency
-          : currency && (currency as V3Currency).isNative,
-      ) ?? false,
-    [currencies, nativeCurrency, isV2],
+    () => currencies?.some((currency) => currency === nativeCurrency) ?? false,
+    [currencies, nativeCurrency],
   );
   const ethBalance = useETHBalances(chainIdToUse, containsETH ? [account] : []);
 
@@ -205,12 +195,7 @@ export function useCurrencyBalances(
     () =>
       currencies?.map((currency) => {
         if (!account || !currency) return undefined;
-        if (
-          isV2
-            ? currency === nativeCurrency
-            : currency && (currency as V3Currency).isNative
-        )
-          return ethBalance[account];
+        if (currency === nativeCurrency) return ethBalance[account];
         if (currency) {
           const address = (currency as Token).address;
           if (!address) {
@@ -220,7 +205,7 @@ export function useCurrencyBalances(
         }
         return undefined;
       }) ?? [],
-    [account, currencies, ethBalance, tokenBalances, nativeCurrency, isV2],
+    [account, currencies, ethBalance, tokenBalances, nativeCurrency],
   );
 }
 
