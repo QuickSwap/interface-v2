@@ -37,3 +37,15 @@
     padding: 12px;
   }
 }
+
+.filter-options-wrapper { 
+  @include media('screen', '<tablet') {
+    flex-direction: column;
+    margin-bottom: 12px;
+  }
+  .pair-options  {
+    @include media('screen', '<phone') {
+      justify-content: center;
+    } 
+  }
+}
