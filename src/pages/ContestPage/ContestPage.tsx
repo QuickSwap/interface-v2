@@ -196,8 +196,12 @@ const ContestPage: React.FC = () => {
       </Box>
 
       <Box width='100%' mb={3}>
-        <Box className='flex items-center justify-between'>
-          <Box my={4} px={0} className='flex flex-wrap items-center'>
+        <Box className='flex items-center justify-between filter-options-wrapper'>
+          <Box
+            my={4}
+            px={0}
+            className='flex flex-wrap items-center pair-options'
+          >
             {ContestPairs.map((pair) => {
               return (
                 <Box
