@@ -4,7 +4,7 @@ import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
-import { useUSDCPriceToken } from 'utils/useUSDCPrice';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
@@ -21,7 +21,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
 
   const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
   const dQuickToken = isNew ? DLDQUICK[chainIdToUse] : OLD_DQUICK[chainIdToUse];
-  const quickPrice = useUSDCPriceToken(quickToken, chainIdToUse);
+  const quickPrice = useUSDCPriceFromAddress(quickToken.address);
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
@@ -76,7 +76,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <small>{t('tvl')}</small>
         <small>
           $
-          {lairInfoToUse
+          {lairInfoToUse && quickPrice
             ? (
                 Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
               ).toLocaleString('us')

@@ -73,14 +73,14 @@ import {
   SyrupInfo,
 } from 'types';
 import { unwrappedToken } from './wrappedCurrency';
-import { useUSDCPriceToken } from './useUSDCPrice';
+import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { injected } from 'connectors';
 import Web3 from 'web3';
 import { useActiveWeb3React } from 'hooks';
-import { NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
+import { DLQUICK, NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
 import { getConfig } from 'config';
 import {
   FETCH_ETERNAL_FARM_FROM_POOL,
@@ -2220,6 +2220,8 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
   const config = getConfig(chainIdToUse);
   const newLair = config['lair']['newLair'];
   const oldLair = config['lair']['oldLair'];
+  const v2 = config['v2'];
+  const v3 = config['v3'];
 
   chainIdToUse = isNew
     ? newLair
@@ -2228,40 +2230,48 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     : oldLair
     ? chainIdToUse
     : ChainId.MATIC;
-  const quickToken = isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
-  const quickPrice = useUSDCPriceToken(quickToken, chainIdToUse);
+  const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
+  const quickPrice = useUSDCPriceFromAddress(quickToken.address);
   const [feesPercent, setFeesPercent] = useState(0);
   const { ethPrice } = useEthPrice();
 
   useEffect(() => {
     (async () => {
       let feePercent = 0;
-      if (ethPrice.price && ethPrice.oneDayPrice) {
+      if (v3) {
         const v3Data = await getGlobalDataV3(chainIdToUse);
+        if (v3Data) {
+          feePercent += Number(v3Data.feesUSD ?? 0) / 7.5;
+        }
+        if (!v2) {
+          setFeesPercent(feePercent);
+        }
+      }
+      if (ethPrice.price && ethPrice.oneDayPrice && v2) {
         const v2data = await getGlobalData(
           ethPrice.price,
           ethPrice.oneDayPrice,
           V2_FACTORY_ADDRESSES[chainIdToUse],
           chainIdToUse,
         );
-        if (v2data && v3Data) {
+        if (v2data) {
           feePercent +=
-            Number(v3Data.feesUSD ?? 0) / 7.5 +
             (Number(v2data.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT) /
-              14.7;
-        } else if (v3Data) {
-          feePercent += Number(v3Data.feesUSD ?? 0) / 7.5;
+            14.7;
         }
-        setFeesPercent(feePercent);
+        if (v3) {
+          setFeesPercent(feePercent);
+        }
       }
     })();
-  }, [ethPrice.oneDayPrice, ethPrice.price, chainIdToUse]);
+  }, [ethPrice.oneDayPrice, ethPrice.price, chainIdToUse, v2, v3]);
 
-  if (!lair) return '';
+  if (!lair || !quickPrice) return '';
 
   const dQUICKAPR =
     (feesPercent * daysCurrentYear) /
     (Number(lair.totalQuickBalance.toExact()) * quickPrice);
+
   if (!dQUICKAPR) return '';
   const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;
   if (temp > 100) {

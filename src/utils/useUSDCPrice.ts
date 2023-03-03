@@ -151,6 +151,14 @@ export function useUSDCPricesFromAddresses(addresses: string[]) {
   return prices;
 }
 
+export function useUSDCPriceFromAddress(address: string) {
+  const usdPrices = useUSDCPricesFromAddresses([address]);
+  if (usdPrices) {
+    return usdPrices[0].price;
+  }
+  return;
+}
+
 export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
