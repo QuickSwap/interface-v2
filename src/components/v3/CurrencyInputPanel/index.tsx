@@ -148,7 +148,7 @@ export default function CurrencyInputPanel({
                         currency={currency as WrappedCurrency}
                       ></CurrencyLogo>
                     )}
-                    <p>{`${showETH ? ETHER.symbol + '+' : ''}${
+                    <p>{`${showETH ? nativeCurrency?.symbol + '+' : ''}${
                       currency?.symbol
                     }`}</p>
                   </Box>

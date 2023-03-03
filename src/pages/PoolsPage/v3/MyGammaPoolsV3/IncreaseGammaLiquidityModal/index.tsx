@@ -109,7 +109,10 @@ export default function IncreaseGammaLiquidityModal({
 
   const [deposit0, setDeposit0] = useState('');
   const [deposit1, setDeposit1] = useState('');
-  const ethBalance = useCurrencyBalance(account ?? undefined, ETHER);
+  const ethBalance = useCurrencyBalance(
+    account ?? undefined,
+    chainId ? ETHER[chainId] : undefined,
+  );
   const token0Balance = useTokenBalance(account ?? undefined, position.token0);
   const token1Balance = useTokenBalance(account ?? undefined, position.token1);
   const token0isWETH =

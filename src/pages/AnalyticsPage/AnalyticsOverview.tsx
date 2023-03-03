@@ -142,7 +142,7 @@ const AnalyticsOverview: React.FC = () => {
               data.map((item: any) => item.id),
               chainIdToUse,
             );
-            const gammaRewards = await getGammaRewards(chainId);
+            const gammaRewards = await getGammaRewards(chainIdToUse);
 
             updateTopPairs(
               data.map((item: any, ind: number) => {
@@ -207,7 +207,7 @@ const AnalyticsOverview: React.FC = () => {
               data.map((item: any) => item.id),
               chainIdToUse,
             );
-            const gammaRewards = await getGammaRewards(chainId);
+            const gammaRewards = await getGammaRewards(chainIdToUse);
 
             updateTopPairs(
               data.map((item: any, ind: number) => {
