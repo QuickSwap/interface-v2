@@ -689,14 +689,8 @@ export const FarmingMyFarms: React.FC<{
                           : undefined
                       }
                       rewardData={
-                        gammaRewards &&
-                        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-                        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]][
-                          'pools'
-                        ]
-                          ? gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]][
-                              'pools'
-                            ][farm.address.toLowerCase()]
+                        gammaRewards
+                          ? gammaRewards[farm.address.toLowerCase()]
                           : undefined
                       }
                     />
