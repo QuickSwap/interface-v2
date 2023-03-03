@@ -5,6 +5,7 @@ import { GlobalConst } from 'constants/index';
 import { formatNumber, shortenAddress } from 'utils';
 import 'components/styles/AnalyticsTable.scss';
 import { useTranslation } from 'react-i18next';
+import AddressCell from './AddressCell';
 
 interface ContestTableProps {
   data: any[];
@@ -55,7 +56,7 @@ const ContestTable: React.FC<ContestTableProps> = ({
         <Box className='mobileRow'>
           <p>{t('address')}</p>
           <Box className={``}>
-            <small>{shortenAddress(token.origin)}</small>
+            <AddressCell address={token.origin} displayShortened={true} />
           </Box>
         </Box>
         <Box className='mobileRow'>
@@ -84,7 +85,7 @@ const ContestTable: React.FC<ContestTableProps> = ({
       {
         html: (
           <Box className={`priceChangeWrapper`} mr={2}>
-            <small>{token.origin}</small>
+            <AddressCell address={token.origin} displayShortened={false} />
           </Box>
         ),
       },
