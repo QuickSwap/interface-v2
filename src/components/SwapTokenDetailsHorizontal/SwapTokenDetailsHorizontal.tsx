@@ -171,6 +171,23 @@ const SwapTokenDetailsHorizontal: React.FC<{
           <Skeleton variant='rect' width={88} height={47} />
         )}
       </Grid>
+      <Grid item xs={12}>
+        <Box className='flex items-center' py={1}>
+          <a
+            href={`${process.env.REACT_APP_SCAN_BASE_URL}/token/${tokenAddress}`}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='no-decoration'
+          >
+            <small className='text-primary'>
+              {shortenAddress(tokenAddress)}
+            </small>
+          </a>
+          <Box className='flex' ml='5px'>
+            <CopyHelper toCopy={tokenAddress} />
+          </Box>
+        </Box>
+      </Grid>
     </Grid>
   );
 };

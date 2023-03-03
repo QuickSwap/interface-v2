@@ -31,11 +31,6 @@ const SwapDropdownTabs = [
   },
 ];
 
-const SwapOtherTabs = [
-  { name: 'bestTrade', subTitle: 'Comming Soon!', key: SWAP_CROSS_CHAIN },
-  { name: 'limit', key: SWAP_LIMIT },
-];
-
 const SwapMain: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 

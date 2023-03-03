@@ -818,6 +818,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Brave browser wallet.',
     href: null,
     color: '#1673ff',
+    mobile: true,
   },
   BITKEEP: {
     connector: injected,
