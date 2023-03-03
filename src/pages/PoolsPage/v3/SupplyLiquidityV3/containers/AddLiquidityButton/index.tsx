@@ -10,7 +10,6 @@ import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
 import { Percent, Currency } from '@uniswap/sdk-core';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
-import { GAS_PRICE_MULTIPLIER } from 'hooks/useGasPrice';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
@@ -92,13 +91,6 @@ export function AddLiquidityButton({
   const allowedSlippagePercent: Percent = useMemo(() => {
     return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
   }, [allowedSlippage]);
-
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
 
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
@@ -395,7 +387,6 @@ export function AddLiquidityButton({
             const newTxn = {
               ...txn,
               gasLimit: calculateGasMarginV3(chainId, estimate),
-              gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
             };
 
             return library

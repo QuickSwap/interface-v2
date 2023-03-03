@@ -30,7 +30,6 @@ import { useActiveWeb3React } from 'hooks';
 import { calculateGasMarginV3 } from 'utils';
 import usePrevious from 'hooks/usePrevious';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import { GAS_PRICE_MULTIPLIER } from 'hooks/useGasPrice';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { NonfungiblePositionManager } from 'v3lib/nonfungiblePositionManager';
 import { WrappedCurrency } from 'models/types';

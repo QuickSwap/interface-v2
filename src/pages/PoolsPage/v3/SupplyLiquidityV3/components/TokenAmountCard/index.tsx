@@ -8,6 +8,7 @@ import {
 
 import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance } from 'state/wallet/hooks';
+import { useCurrencyBalance as useCurrencyBalanceV3 } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
@@ -62,7 +63,7 @@ export function TokenAmountCard({
   const { t } = useTranslation();
   const { liquidityRangeType } = useV3MintState();
 
-  const balance = useCurrencyBalance(
+  const balance = useCurrencyBalanceV3(
     account ?? undefined,
     currency?.isNative ? nativeCurrency : currency ?? undefined,
   );

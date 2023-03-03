@@ -17,7 +17,6 @@ import {
 import { useTokenContract } from './useContract';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenAllowance } from './useTokenAllowance';
-import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { useAppSelector } from 'state';
 import { calculateGasMargin } from 'utils';
 

@@ -13,13 +13,10 @@ import {
 } from '../state/transactions/hooks';
 import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';
-import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { TransactionResponse } from '@ethersproject/providers';
-import { DefaultFarming, DefaultFarmingWithError } from '../models/interfaces';
 import { FarmingType } from '../models/enums';
 import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/src/utils/calldata';
-import { useAppSelector } from 'state';
 import { useV3StakeData } from 'state/farms/hooks';
 import { calculateGasMargin } from 'utils';
 
