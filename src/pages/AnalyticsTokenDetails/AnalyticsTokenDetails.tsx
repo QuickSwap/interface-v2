@@ -233,7 +233,7 @@ const AnalyticsTokenDetails: React.FC = () => {
             data.map((item: any) => item.id),
             chainIdToUse,
           );
-          const gammaRewards = await getGammaRewards(chainId);
+          const gammaRewards = await getGammaRewards(chainIdToUse);
 
           updateTokenPairs(
             data.map((item: any, ind: number) => {

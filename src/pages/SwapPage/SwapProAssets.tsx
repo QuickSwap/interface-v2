@@ -269,17 +269,14 @@ const SwapProAssets: React.FC = ({}) => {
       },
       {
         html: (
-          <Box>
+          <Box width='100%' style={{ wordBreak: 'break-all' }}>
             <p>${formatNumber(token.priceUSD)}</p>
           </Box>
         ),
       },
       {
         html: (
-          <Box
-            className={`priceChangeWrapper ${priceClass} bg-transparent`}
-            mr={2}
-          >
+          <Box className={`priceChangeWrapper ${priceClass} bg-transparent`}>
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         ),
