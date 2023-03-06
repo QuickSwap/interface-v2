@@ -413,6 +413,8 @@
   "tryagain": "Try Again",
   "initializing": "Initializing",
   "installMetamask": "Install Metamask",
+  "installBrave": "Install Brave Wallet",
+  "installBraveDesc": "You need to install brave browser to use brave wallet. If you are on brave browser, you need to disable metamask or set Default Ethereum Wallet to Brave Wallet in settings. (brave://settings/wallet)",
   "wrongNetwork": "Wrong Network",
   "connectPolygonNetwork": "Please connect to the appropriate Polygon network.",
   "errorConnectRefresh": "Error connecting. Try refreshing the page.",

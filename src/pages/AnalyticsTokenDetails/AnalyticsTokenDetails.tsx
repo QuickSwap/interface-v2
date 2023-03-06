@@ -13,6 +13,7 @@ import {
   getTokenPairs2,
   getBulkPairData,
   getTokenFromAddress,
+  getGammaRewards,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
@@ -23,7 +24,7 @@ import {
 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
-import { GlobalConst, TxnType } from 'constants/index';
+import { GammaPairs, GlobalConst, TxnType } from 'constants/index';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
@@ -207,13 +208,42 @@ const AnalyticsTokenDetails: React.FC = () => {
         const data = tokenPairs.filter((item: any) => !!item);
         try {
           const aprs = await getPairsAPR(data.map((item: any) => item.id));
+          const gammaRewards = await getGammaRewards(chainId);
 
           updateTokenPairs(
             data.map((item: any, ind: number) => {
+              const gammaPairs =
+                GammaPairs[
+                  item.token0.id.toLowerCase() +
+                    '-' +
+                    item.token1.id.toLowerCase()
+                ];
+              const gammaFarmAPRs = gammaPairs
+                ? gammaPairs.map((pair) => {
+                    return {
+                      title: pair.title,
+                      apr:
+                        gammaRewards &&
+                        gammaRewards[pair.address] &&
+                        gammaRewards[pair.address.toLowerCase()]['apr']
+                          ? Number(
+                              gammaRewards[pair.address.toLowerCase()]['apr'],
+                            ) * 100
+                          : undefined,
+                    };
+                  })
+                : [];
+              const quickFarmingAPR = aprs[ind].farmingApr;
+              const farmingApr = Math.max(
+                quickFarmingAPR ?? 0,
+                ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
+              );
               return {
                 ...item,
                 apr: aprs[ind].apr,
-                farmingApr: aprs[ind].farmingApr,
+                farmingApr,
+                quickFarmingAPR,
+                gammaFarmAPRs,
               };
             }),
           );
