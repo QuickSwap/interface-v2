@@ -23,6 +23,7 @@ const NETWORK_URL = 'https://polygon-rpc.com/';
 // const PORTIS_ID = 'c0e2bf01-4b08-4fd5-ac7b-8e26b58cd236'
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;
 const PORTIS_ID = process.env.REACT_APP_PORTIS_ID;
+const MAINNET_NETWORK_URL = process.env.REACT_APP_MAINNET_NETWORK_URL;
 
 export const NETWORK_CHAIN_ID: number = parseInt(
   process.env.REACT_APP_CHAIN_ID ?? '1',
@@ -38,10 +39,20 @@ export const network = new NetworkConnector({
   urls: { [Number('137')]: NETWORK_URL },
 });
 
+export const mainnetNetwork = new NetworkConnector({
+  urls: {
+    [Number('1')]: MAINNET_NETWORK_URL || 'https://rpc.ankr.com/eth',
+  },
+});
+
 let networkLibrary: Web3Provider | undefined;
 export function getNetworkLibrary(): Web3Provider {
   return (networkLibrary =
     networkLibrary ?? new Web3Provider(network.provider as any));
+}
+
+export function getMainnetNetworkLibrary(): Web3Provider {
+  return new Web3Provider(mainnetNetwork.provider as any);
 }
 
 export const injected = new InjectedConnector({
