@@ -3,6 +3,7 @@ export interface ContestLeaderBoard {
   origin: string;
   amountUSD: number;
   txCount: number;
+  lensHandle?: string | undefined;
 }
 
 export interface TokenData {

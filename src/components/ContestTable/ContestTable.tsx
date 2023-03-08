@@ -56,7 +56,11 @@ const ContestTable: React.FC<ContestTableProps> = ({
         <Box className='mobileRow'>
           <p>{t('address')}</p>
           <Box className={``}>
-            <AddressCell address={token.origin} displayShortened={true} />
+            <AddressCell
+              address={token.origin}
+              displayShortened={true}
+              lensHandle={token.lensHandle}
+            />
           </Box>
         </Box>
         <Box className='mobileRow'>
@@ -85,7 +89,11 @@ const ContestTable: React.FC<ContestTableProps> = ({
       {
         html: (
           <Box className={`priceChangeWrapper`} mr={2}>
-            <AddressCell address={token.origin} displayShortened={false} />
+            <AddressCell
+              address={token.origin}
+              displayShortened={false}
+              lensHandle={token.lensHandle}
+            />
           </Box>
         ),
       },

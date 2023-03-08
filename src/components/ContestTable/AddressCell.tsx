@@ -1,18 +1,40 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
-import useENSName from 'hooks/useENSName';
 import { getEtherscanLink, shortenAddress } from 'utils';
+import { getMainnetNetworkLibrary } from 'connectors';
 
 type Props = {
   address: string;
   displayShortened?: boolean;
+  lensHandle?: string;
 };
 
-function AddressCell({ address, displayShortened = false }: Props) {
+function AddressCell({ address, displayShortened = false, lensHandle }: Props) {
   const { chainId } = useActiveWeb3React();
-  const { ENSName } = useENSName(address ?? undefined);
+  const [ENSName, setENSName] = useState<string | null>(null);
+
+  const ensResolver = useCallback(async () => {
+    try {
+      const networkLibrary = getMainnetNetworkLibrary();
+
+      const name = await networkLibrary.lookupAddress(address);
+      setENSName(name);
+    } catch (error) {
+      console.error('Error while resolving ens name', error);
+    }
+  }, [address]);
+
+  useEffect(() => {
+    ensResolver();
+  }, [ensResolver]);
 
   if (!chainId) return <></>;
+
+  const getDisplayText = () => {
+    let text = ENSName || lensHandle;
+    if (!text) text = displayShortened ? shortenAddress(address) : address;
+    return text;
+  };
 
   return (
     <a
@@ -22,13 +44,7 @@ function AddressCell({ address, displayShortened = false }: Props) {
       className='text-primaryText no-decoration'
       style={{ width: '48%', textDecoration: 'none' }}
     >
-      <small>
-        {ENSName
-          ? ENSName
-          : displayShortened
-          ? shortenAddress(address)
-          : address}
-      </small>
+      <small>{getDisplayText()}</small>
     </a>
   );
 }

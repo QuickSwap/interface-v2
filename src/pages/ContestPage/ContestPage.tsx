@@ -23,6 +23,8 @@ import {
   getFormattedLeaderBoardData,
 } from 'lib/src/leaderboard';
 import { useActiveWeb3React } from 'hooks';
+import { getMainnetNetworkLibrary } from 'connectors';
+import { getLensProfiles } from 'utils/getLensProfile';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -38,6 +40,7 @@ const ContestPage: React.FC = () => {
   >([]);
   const [searchResult, setSearchResult] = useState<ContestLeaderBoard>();
   const [searchVal, setSearchVal] = useState('');
+  const [searchedEnsName, setSearchedEnsName] = useState<string | null>('');
   const [searchValInput, setSearchValInput] = useDebouncedChangeHandler(
     searchVal,
     setSearchVal,
@@ -47,6 +50,7 @@ const ContestPage: React.FC = () => {
   const [contestFilter, setContestFilter] = useState(ContestPairs[0]);
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
+  const networkLibrary = getMainnetNetworkLibrary();
 
   useEffect(() => {
     if (account) {
@@ -68,7 +72,21 @@ const ContestPage: React.FC = () => {
       }
 
       const data = await res.json();
-      setContestLeaderBoard(data.leaderboardData);
+      // Fetch lens handles of all the addresses
+      const lensProfileResult = await getLensProfiles(
+        data.leaderboardData.map((e: any) => e.origin),
+      );
+      let result = data.leaderboardData;
+      if (lensProfileResult) {
+        result = result.map((d: ContestLeaderBoard, i: number) => {
+          return {
+            ...d,
+            lensHandle: lensProfileResult[i]?.handle,
+          };
+        });
+      }
+
+      setContestLeaderBoard(result);
       setLoading(false);
       setError(null);
     } catch (error) {
@@ -135,12 +153,21 @@ const ContestPage: React.FC = () => {
     }
   };
 
+  const lookUpSearchedAddress = async () => {
+    try {
+      const name = await networkLibrary.lookupAddress(searchVal);
+      setSearchedEnsName(name);
+    } catch (error) {
+      setSearchedEnsName('');
+    }
+  };
+
   useEffect(() => {
     if (isAddress(searchVal) && contestLeaderBoard.length) {
       const searchResponse = contestLeaderBoard.find(
         (e) => e.origin.toLowerCase() === searchVal.toLowerCase(),
       );
-
+      lookUpSearchedAddress();
       if (searchResponse) {
         setSearchResult(searchResponse);
       } else {
@@ -262,7 +289,9 @@ const ContestPage: React.FC = () => {
 
                       <Box width={0.4} textAlign='center'>
                         <small>
-                          {isMobile
+                          {searchedEnsName
+                            ? searchedEnsName
+                            : isMobile
                             ? shortenAddress(searchResult['origin'])
                             : searchResult['origin']}
                         </small>
