@@ -1,8 +1,8 @@
 @use 'styles/variables' as *;
 
-.totalAPRTooltipWrapper {
+.farmingAPRTooltipWrapper {
   background-color: $bgColor;
-  width: 168px;
+  width: 220px;
   border-radius: 10px;
   overflow: hidden;
   & > div {
