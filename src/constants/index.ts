@@ -11,6 +11,7 @@ import {
   unstopabbledomains,
   metamask,
   zengoconnect,
+  phantomconnect,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -20,6 +21,7 @@ import BitKeepIcon from 'assets/images/bitkeep.png';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
 import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
 import PortisIcon from 'assets/images/portisIcon.png';
+import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
@@ -194,6 +196,7 @@ export const GlobalConst = {
   walletName: {
     METAMASK: 'Metamask',
     TRUST_WALLET: 'Trust Wallet',
+    PHANTOM_WALLET: 'Phantom Wallet',
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
     BRAVEWALLET: 'BraveWallet',
@@ -837,6 +840,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: GlobalConst.walletName.TRUST_WALLET,
     iconName: TrustIcon,
     description: 'Trust wallet extension.',
+    href: null,
+    color: '#E8831D',
+  },
+  PHANTOM_WALLET: {
+    connector: phantomconnect,
+    name: GlobalConst.walletName.PHANTOM_WALLET,
+    iconName: PhantomIcon,
+    description: 'Phantom wallet extension.',
     href: null,
     color: '#E8831D',
   },
