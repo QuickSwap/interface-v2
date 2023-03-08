@@ -24,4 +24,9 @@ module.exports = {
       return config;
     };
   },
+  // Disable parallel build
+  terseDisableParallel: (config) => {
+    config.optimization.minimizer[0].parallel = false;
+    return config;
+  },
 };
