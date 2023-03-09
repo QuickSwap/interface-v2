@@ -371,7 +371,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             key={key}
             color={'#E8831D'}
             header={t('installPhantom')}
-            subheader={null}
+            subheader={t('installPhantomDesc')}
             link={'https://phantom.app/'}
             icon={option.iconName}
           />
