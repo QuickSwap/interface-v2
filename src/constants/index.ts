@@ -1247,6 +1247,14 @@ export const GlobalData = {
     GlobalValue.tokens.COMMON.USDT,
     GlobalValue.tokens.COMMON.DAI,
   ],
+  stablePairs: [
+    [
+      GlobalValue.tokens.MATIC,
+      GlobalValue.tokens.COMMON.MATICX,
+      GlobalValue.tokens.COMMON.STMATIC,
+    ],
+    [GlobalValue.tokens.COMMON.NEW_QUICK, GlobalValue.tokens.COMMON.NEW_DQUICK],
+  ],
 };
 
 // a list of tokens by chain

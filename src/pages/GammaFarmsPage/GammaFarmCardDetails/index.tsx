@@ -171,9 +171,7 @@ const GammaFarmCardDetails: React.FC<{
     masterChefContract?.address,
   );
 
-  const claimButtonDisabled =
-    pendingRewards.filter((reward) => reward && reward.amount > 0).length ===
-      0 || attemptClaiming;
+  const claimButtonDisabled = pendingRewards.length === 0 || attemptClaiming;
 
   const approveOrStakeLP = async () => {
     setApproveOrStaking(true);

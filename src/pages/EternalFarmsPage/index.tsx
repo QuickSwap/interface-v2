@@ -117,27 +117,31 @@ const EternalFarmsPage: React.FC<{
             (token) =>
               token.address.toLowerCase() === farmToken1Id.toLowerCase(),
           );
+        const stablePair0 = GlobalData.stablePairs.find(
+          (tokens) =>
+            !!tokens.find(
+              (token) =>
+                token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+            ),
+        );
+        const stablePair1 = GlobalData.stablePairs.find(
+          (tokens) =>
+            !!tokens.find(
+              (token) =>
+                token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+            ),
+        );
         const stableLPCondition =
-          (farmToken0Id.toLowerCase() ===
-            GlobalValue.tokens.MATIC.address.toLowerCase() &&
-            (farmToken1Id.toLowerCase() ===
-              GlobalValue.tokens.COMMON.MATICX.address.toLowerCase() ||
-              farmToken1Id.toLowerCase() ===
-                GlobalValue.tokens.COMMON.STMATIC.address.toLowerCase())) ||
-          (farmToken1Id.toLowerCase() ===
-            GlobalValue.tokens.MATIC.address.toLowerCase() &&
-            (farmToken0Id.toLowerCase() ===
-              GlobalValue.tokens.COMMON.MATICX.address.toLowerCase() ||
-              farmToken0Id.toLowerCase() ===
-                GlobalValue.tokens.COMMON.STMATIC.address.toLowerCase())) ||
-          (farmToken0Id.toLowerCase() ===
-            GlobalValue.tokens.COMMON.NEW_QUICK.address.toLowerCase() &&
-            farmToken1Id.toLowerCase() ===
-              GlobalValue.tokens.COMMON.NEW_DQUICK.address.toLowerCase()) ||
-          (farmToken1Id.toLowerCase() ===
-            GlobalValue.tokens.COMMON.NEW_QUICK.address.toLowerCase() &&
-            farmToken0Id.toLowerCase() ===
-              GlobalValue.tokens.COMMON.NEW_DQUICK.address.toLowerCase());
+          (stablePair0 &&
+            stablePair0.find(
+              (token) =>
+                token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+            )) ||
+          (stablePair1 &&
+            stablePair1.find(
+              (token) =>
+                token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+            ));
 
         return (
           searchCondition &&
