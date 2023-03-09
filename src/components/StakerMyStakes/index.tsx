@@ -20,7 +20,7 @@ import { Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesToken } from 'utils/useUSDCPrice';
-import { useSingleContractMultipleData } from 'state/multicall/hooks';
+import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
 import { useMasterChefContract } from 'hooks/useContract';
 import { formatUnits } from 'ethers/lib/utils';
 
