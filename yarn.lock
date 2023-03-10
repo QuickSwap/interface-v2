@@ -259,10 +259,10 @@
     ethers "^5.7.1"
     release-it "^15.5.0"
 
-"@0xsquid/widget@1.4.40":
-  version "1.4.40"
-  resolved "https://registry.yarnpkg.com/@0xsquid/widget/-/widget-1.4.40.tgz#b96770f6da70281ecb0556d972154d3aeaeb3a5b"
-  integrity sha512-o16S+f4bahrzLYE925b/9hv+XS7WQ9YqS3W+lKUioootglLLxIiwFtEX+uP+JkwyYnKPFXDKdRFl4OeTg8IREA==
+"@0xsquid/widget@1.4.46":
+  version "1.4.46"
+  resolved "https://registry.yarnpkg.com/@0xsquid/widget/-/widget-1.4.46.tgz#1d194abfa6c19cfb377822b59c46594d304fc3de"
+  integrity sha512-jJsoVBmxg2Wyanv1DrjvUfAaw10bqUiY+1wumNbQR+3twxpPWGmhfYmzwA3yHTeeJDYK2O3gh+DNr7k/lTxojQ==
   dependencies:
     "@0xsquid/sdk" "^1.3.9"
     "@cosmjs/stargate" "^0.29.2"
@@ -281,7 +281,6 @@
     lodash "^4.17.21"
     react-content-loader "^6.2.0"
     react-icons "^4.7.1"
-    react-router-dom "^6.3.0"
     wagmi "^0.10.4"
     zustand "^4.1.1"
 
@@ -4291,11 +4290,6 @@
     conventional-changelog "^3.1.25"
     conventional-recommended-bump "^6.1.0"
     semver "7.3.8"
-
-"@remix-run/router@1.3.3":
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.3.3.tgz#d6d531d69c0fa3a44fda7dc00b20d49b44549164"
-  integrity sha512-YRHie1yQEj0kqqCTCJEfHqYSSNlZQ696QJG+MMiW4mxSl9I0ojz/eRhJS4fs88Z5i6D1SmoF9d3K99/QOhI8/w==
 
 "@restless/sanitizers@^0.2.5":
   version "0.2.5"
@@ -20969,14 +20963,6 @@ react-router-dom@^5.2.0:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
 
-react-router-dom@^6.3.0:
-  version "6.8.2"
-  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.8.2.tgz#a6654a3400be9aafd504d7125573568921b78b57"
-  integrity sha512-N/oAF1Shd7g4tWy+75IIufCGsHBqT74tnzHQhbiUTYILYF0Blk65cg+HPZqwC+6SqEyx033nKqU7by38v3lBZg==
-  dependencies:
-    "@remix-run/router" "1.3.3"
-    react-router "6.8.2"
-
 react-router@5.3.4:
   version "5.3.4"
   resolved "https://registry.yarnpkg.com/react-router/-/react-router-5.3.4.tgz#8ca252d70fcc37841e31473c7a151cf777887bb5"
@@ -20991,13 +20977,6 @@ react-router@5.3.4:
     react-is "^16.6.0"
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
-
-react-router@6.8.2:
-  version "6.8.2"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.8.2.tgz#98f83582a73f316a3287118b440f0cee30ed6f33"
-  integrity sha512-lF7S0UmXI5Pd8bmHvMdPKI4u4S5McxmHnzJhrYi9ZQ6wE+DA8JN5BzVC5EEBuduWWDaiJ8u6YhVOCmThBli+rw==
-  dependencies:
-    "@remix-run/router" "1.3.3"
 
 react-scripts@4.0.3:
   version "4.0.3"
