@@ -11,6 +11,7 @@ import {
   getGlobalData,
   getTopPairsV2,
   getGammaRewards,
+  getGammaData,
 } from 'utils';
 import { GammaPairs, GlobalConst } from 'constants/index';
 import { TokensTable, PairTable } from 'components';
@@ -128,6 +129,7 @@ const AnalyticsOverview: React.FC = () => {
           try {
             const aprs = await getPairsAPR(data.map((item: any) => item.id));
             const gammaRewards = await getGammaRewards(chainId);
+            const gammaData = await getGammaData();
 
             updateTopPairs(
               data.map((item: any, ind: number) => {
@@ -136,6 +138,11 @@ const AnalyticsOverview: React.FC = () => {
                     item.token0.id.toLowerCase() +
                       '-' +
                       item.token1.id.toLowerCase()
+                  ] ??
+                  GammaPairs[
+                    item.token1.id.toLowerCase() +
+                      '-' +
+                      item.token0.id.toLowerCase()
                   ];
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
@@ -143,10 +150,33 @@ const AnalyticsOverview: React.FC = () => {
                         title: pair.title,
                         apr:
                           gammaRewards &&
-                          gammaRewards[pair.address] &&
+                          gammaRewards[pair.address.toLowerCase()] &&
                           gammaRewards[pair.address.toLowerCase()]['apr']
                             ? Number(
                                 gammaRewards[pair.address.toLowerCase()]['apr'],
+                              ) * 100
+                            : 0,
+                      };
+                    })
+                  : [];
+                const gammaPoolAPRs = gammaPairs
+                  ? gammaPairs.map((pair) => {
+                      return {
+                        title: pair.title,
+                        apr:
+                          gammaData &&
+                          gammaData[pair.address.toLowerCase()] &&
+                          gammaData[pair.address.toLowerCase()]['returns'] &&
+                          gammaData[pair.address.toLowerCase()]['returns'][
+                            'allTime'
+                          ] &&
+                          gammaData[pair.address.toLowerCase()]['returns'][
+                            'allTime'
+                          ]['feeApr']
+                            ? Number(
+                                gammaData[pair.address.toLowerCase()][
+                                  'returns'
+                                ]['allTime']['feeApr'],
                               ) * 100
                             : 0,
                       };
@@ -157,12 +187,19 @@ const AnalyticsOverview: React.FC = () => {
                   quickFarmingAPR ?? 0,
                   ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
                 );
+                const quickPoolAPR = aprs[ind].apr;
+                const apr = Math.max(
+                  quickPoolAPR ?? 0,
+                  ...gammaPoolAPRs.map((item) => Number(item.apr ?? 0)),
+                );
                 return {
                   ...item,
-                  apr: aprs[ind].apr,
+                  apr,
                   farmingApr,
                   quickFarmingAPR,
+                  quickPoolAPR,
                   gammaFarmAPRs,
+                  gammaPoolAPRs,
                 };
               }),
             );
@@ -188,6 +225,7 @@ const AnalyticsOverview: React.FC = () => {
           try {
             const aprs = await getPairsAPR(data.map((item: any) => item.id));
             const gammaRewards = await getGammaRewards(chainId);
+            const gammaData = await getGammaData();
 
             updateTopPairs(
               data.map((item: any, ind: number) => {
@@ -202,10 +240,33 @@ const AnalyticsOverview: React.FC = () => {
                         title: pair.title,
                         apr:
                           gammaRewards &&
-                          gammaRewards[pair.address] &&
+                          gammaRewards[pair.address.toLowerCase()] &&
                           gammaRewards[pair.address.toLowerCase()]['apr']
                             ? Number(
                                 gammaRewards[pair.address.toLowerCase()]['apr'],
+                              ) * 100
+                            : 0,
+                      };
+                    })
+                  : [];
+                const gammaPoolAPRs = gammaPairs
+                  ? gammaPairs.map((pair) => {
+                      return {
+                        title: pair.title,
+                        apr:
+                          gammaData &&
+                          gammaData[pair.address.toLowerCase()] &&
+                          gammaData[pair.address.toLowerCase()]['returns'] &&
+                          gammaData[pair.address.toLowerCase()]['returns'][
+                            'allTime'
+                          ] &&
+                          gammaData[pair.address.toLowerCase()]['returns'][
+                            'allTime'
+                          ]['feeApr']
+                            ? Number(
+                                gammaData[pair.address.toLowerCase()][
+                                  'returns'
+                                ]['allTime']['feeApr'],
                               ) * 100
                             : 0,
                       };
@@ -216,12 +277,19 @@ const AnalyticsOverview: React.FC = () => {
                   quickFarmingAPR ?? 0,
                   ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
                 );
+                const quickPoolAPR = aprs[ind].apr;
+                const apr = Math.max(
+                  quickPoolAPR ?? 0,
+                  ...gammaPoolAPRs.map((item) => Number(item.apr ?? 0)),
+                );
                 return {
                   ...item,
-                  apr: aprs[ind].apr,
+                  apr,
                   farmingApr,
                   quickFarmingAPR,
+                  quickPoolAPR,
                   gammaFarmAPRs,
+                  gammaPoolAPRs,
                 };
               }),
             );
