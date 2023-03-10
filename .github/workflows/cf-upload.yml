@@ -1,5 +1,5 @@
 name: Release
-on: [push, pull_request, worflow_dispatch]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   bump_version:
