@@ -131,22 +131,22 @@ export function useFarmingHandlers() {
             );
           }
 
-          let tempResult;
-
           if (isDetached) {
             result = await farmingCenterContract.multicall(callDatas, {
               gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
               gasLimit: 350000,
             });
           } else {
+            let isSuccessful;
             try {
-              tempResult = await farmingCenterContract.callStatic.multicall(
+              result = await farmingCenterContract.callStatic.multicall(
                 callDatas,
                 {
                   gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
                   gasLimit: 350000,
                 },
               );
+              isSuccessful = true;
             } catch (err) {
               result = await farmingCenterContract.multicall([callDatas[0]], {
                 gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
@@ -155,7 +155,7 @@ export function useFarmingHandlers() {
               console.log(err, result);
             }
 
-            if (tempResult) {
+            if (isSuccessful) {
               result = await farmingCenterContract.multicall(callDatas, {
                 gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
                 gasLimit: 350000,
