@@ -78,7 +78,7 @@ export function useFarmingSubgraph() {
   ] = useState<boolean>(false);
 
   const [rewardsResult, setRewardsResult] = useState<
-    FormattedRewardInterface[] | string
+    FormattedRewardInterface[]
   >([]);
   const [rewardsLoading, setRewardsLoading] = useState<boolean>(false);
 
@@ -289,25 +289,21 @@ export function useFarmingSubgraph() {
       const newRewards: any[] = [];
 
       for (const reward of rewards) {
-        const rewardContract = new Contract(
-          reward.rewardAddress,
-          ERC20_ABI,
-          provider,
-        );
+        const rewardToken = await fetchToken(reward.rewardAddress, true);
 
-        const symbol = await rewardContract.symbol();
-        const name = await rewardContract.name();
-        const decimals = await rewardContract.decimals();
+        const rewardAmount =
+          +reward.amount > 0
+            ? (+reward.amount / Math.pow(10, rewardToken.decimals)).toFixed(
+                +rewardToken.decimals,
+              )
+            : 0;
 
         const newReward = {
           ...reward,
-          amount:
-            reward.amount > 0
-              ? (reward.amount / Math.pow(10, decimals)).toFixed(decimals)
-              : 0,
-          trueAmount: reward.amount,
-          symbol,
-          name,
+          amount: rewardAmount,
+          trueAmount: +reward.amount,
+          symbol: rewardToken.symbol,
+          name: rewardToken.name,
         };
 
         newRewards.push(newReward);
@@ -315,7 +311,7 @@ export function useFarmingSubgraph() {
 
       setRewardsResult(newRewards);
     } catch (err) {
-      setRewardsResult('failed');
+      // setRewardsResult(null);
       if (err instanceof Error) {
         throw new Error('Reward fetching ' + err.message);
       }
@@ -556,6 +552,7 @@ export function useFarmingSubgraph() {
             tokenAmountForTier1,
             tokenAmountForTier2,
             tokenAmountForTier3,
+            isDetached,
           } = await fetchEternalFarming(position.eternalFarming);
 
           const farmingCenterContract = new Contract(
@@ -592,6 +589,7 @@ export function useFarmingSubgraph() {
             tokenAmountForTier1,
             tokenAmountForTier2,
             tokenAmountForTier3,
+            isDetached,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: _pool,
