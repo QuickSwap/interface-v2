@@ -2,16 +2,27 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
-import { Deposit } from '../../models/interfaces';
+import { Deposit, FormattedRewardInterface } from '../../models/interfaces';
 import { FarmingType } from '../../models/enums';
 import { useLocation } from 'react-router-dom';
 import './index.scss';
 import FarmCard from './FarmCard';
-import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Divider,
+  useMediaQuery,
+  useTheme,
+} from '@material-ui/core';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'react-i18next';
-import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
+import {
+  GammaPair,
+  GammaPairs,
+  GlobalConst,
+  MATIC_CHAIN,
+} from 'constants/index';
 import SortColumns from 'components/SortColumns';
 import { useQuery } from 'react-query';
 import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
@@ -20,9 +31,12 @@ import { Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesToken } from 'utils/useUSDCPrice';
+import { formatReward } from 'utils/formatReward';
 import { useSingleContractMultipleData } from 'state/multicall/hooks';
 import { useMasterChefContract } from 'hooks/useContract';
 import { formatUnits } from 'ethers/lib/utils';
+import { useFarmingHandlers } from 'hooks/useStakerHandlers';
+import CurrencyLogo from 'components/CurrencyLogo';
 
 export const FarmingMyFarms: React.FC<{
   search: string;
@@ -38,7 +52,10 @@ export const FarmingMyFarms: React.FC<{
   const [sortDescQuick, setSortDescQuick] = useState(false);
   const sortMultiplierQuick = sortDescQuick ? -1 : 1;
 
+  const { eternalOnlyCollectRewardHandler } = useFarmingHandlers();
+
   const {
+    fetchRewards: { rewardsResult, fetchRewardsFn, rewardsLoading },
     fetchTransferredPositions: {
       fetchTransferredPositionsFn,
       transferredPositions,
@@ -57,12 +74,22 @@ export const FarmingMyFarms: React.FC<{
   } = useFarmingSubgraph() || {};
 
   const { v3Stake } = useV3StakeData();
-  const { selectedTokenId, txType, txHash, txConfirmed, selectedFarmingType } =
-    v3Stake ?? {};
+  const {
+    selectedTokenId,
+    txType,
+    txHash,
+    txError,
+    txConfirmed,
+    selectedFarmingType,
+  } = v3Stake ?? {};
 
   const [shallowPositions, setShallowPositions] = useState<Deposit[] | null>(
     null,
   );
+
+  const [shallowRewards, setShallowRewards] = useState<
+    FormattedRewardInterface[] | null
+  >();
 
   const { hash } = useLocation();
 
@@ -190,6 +217,7 @@ export const FarmingMyFarms: React.FC<{
     fetchTransferredPositionsFn(true);
     fetchEternalFarmPoolAprsFn();
     fetchEternalFarmAprsFn();
+    fetchRewardsFn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
@@ -204,6 +232,10 @@ export const FarmingMyFarms: React.FC<{
     setShallowPositions(transferredPositions);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transferredPositions?.length]);
+
+  useEffect(() => {
+    setShallowRewards(rewardsResult.filter((reward) => reward.trueAmount));
+  }, [rewardsResult?.length]);
 
   useEffect(() => {
     if (!shallowPositions) return;
@@ -252,6 +284,12 @@ export const FarmingMyFarms: React.FC<{
             }
             return el;
           }),
+        );
+      } else if (txType === 'eternalOnlyCollectReward') {
+        if (!shallowRewards) return;
+
+        setShallowRewards(
+          shallowRewards.filter((reward) => reward.id !== selectedTokenId),
         );
       }
     }
@@ -569,6 +607,62 @@ export const FarmingMyFarms: React.FC<{
   return (
     <Box mt={2}>
       <Divider />
+      {shallowRewards?.length ? (
+        <Box px={2} my={2}>
+          <h6>Unclaimed Rewards</h6>
+          <Box my={2} className='flex'>
+            {shallowRewards?.map((reward, index) =>
+              reward.trueAmount ? (
+                <Box key={index} className='flex items-center' mr={2}>
+                  <CurrencyLogo
+                    size='28px'
+                    currency={
+                      new Token(
+                        MATIC_CHAIN,
+                        reward.rewardAddress,
+                        18,
+                        reward.symbol,
+                      )
+                    }
+                  />
+                  <Box mx={2}>
+                    <Box>{reward.name}</Box>
+                    <Box>{formatReward(reward.amount)}</Box>
+                  </Box>
+                  <Button
+                    disabled={
+                      selectedTokenId === reward.id &&
+                      txType === 'eternalOnlyCollectReward' &&
+                      !txConfirmed &&
+                      !txError
+                    }
+                    onClick={() => {
+                      eternalOnlyCollectRewardHandler(reward);
+                    }}
+                  >
+                    {selectedTokenId === reward.id &&
+                    txType === 'eternalOnlyCollectReward' &&
+                    !txConfirmed &&
+                    !txError ? (
+                      <>
+                        <Loader size={'1rem'} stroke={'var(--white)'} />
+                        <Box ml='5px'>
+                          <small>{t('claiming')}</small>
+                        </Box>
+                      </>
+                    ) : (
+                      <>
+                        <small>{t('claim')}</small>
+                      </>
+                    )}
+                  </Button>
+                </Box>
+              ) : null,
+            )}
+          </Box>
+          <Divider />
+        </Box>
+      ) : null}
       <Box px={2} my={2}>
         <h6>QuickSwap {t('farms')}</h6>
       </Box>
