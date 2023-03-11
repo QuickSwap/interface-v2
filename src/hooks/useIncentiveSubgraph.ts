@@ -293,9 +293,9 @@ export function useFarmingSubgraph() {
 
         const rewardAmount =
           +reward.amount > 0
-            ? (+reward.amount / Math.pow(10, rewardToken.decimals)).toFixed(
-                +rewardToken.decimals,
-              )
+            ? (+reward.amount / Math.pow(10, +rewardToken.decimals)).toFixed(
+              +rewardToken.decimals,
+            )
             : 0;
 
         const newReward = {
