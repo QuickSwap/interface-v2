@@ -8,8 +8,6 @@ jobs:
     permissions:
       contents: read
       deployments: write
-    needs: bump_version
-    if: ${{ needs.bump_version.outputs.new_tag != null }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
