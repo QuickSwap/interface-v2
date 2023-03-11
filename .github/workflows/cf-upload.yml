@@ -2,23 +2,6 @@ name: Release
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  bump_version:
-    name: Bump Version
-    runs-on: ubuntu-latest
-    outputs:
-      new_tag: ${{ steps.github_tag_action.outputs.new_tag }}
-      changelog: ${{ steps.github_tag_action.outputs.changelog }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Bump version and push tag
-        id: github_tag_action
-        uses: mathieudutour/github-tag-action@v6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_branches: master
-
   create_release:
     name: Create Release
     runs-on: ubuntu-latest
