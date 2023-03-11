@@ -12,7 +12,7 @@ import {
 } from 'constants/index';
 import { useQuery } from 'react-query';
 import GammaFarmCard from './GammaFarmCard';
-import { getTokenFromAddress } from 'utils';
+import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
@@ -26,7 +26,7 @@ const GammaFarmsPage: React.FC<{
   sortDesc: boolean;
 }> = ({ farmFilter, search, sortBy, sortDesc }) => {
   const { t } = useTranslation();
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
   const allGammaFarms = ([] as GammaPair[])
     .concat(...Object.values(GammaPairs))
@@ -34,81 +34,14 @@ const GammaFarmsPage: React.FC<{
   const sortMultiplier = sortDesc ? -1 : 1;
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 
-  const fetchGammaData = async () => {
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
-        );
-        const gammaData = await data.json();
-        return gammaData;
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
-  };
-
   const fetchGammaRewards = async () => {
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
-        );
-        const gammaData = await data.json();
-        return gammaData;
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
+    const gammaRewards = await getGammaRewards(chainId);
+    return gammaRewards;
   };
-
-  const fetchGammaPositions = async () => {
-    if (!account) return;
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
-      );
-      const positions = await data.json();
-      return positions[account.toLowerCase()];
-    } catch (e) {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
-        );
-        const positions = await data.json();
-        return positions[account.toLowerCase()];
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
-  };
-
-  const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
-    'fetchGammaPositions',
-    fetchGammaPositions,
-    {
-      refetchInterval: 30000,
-    },
-  );
 
   const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
     'fetchGammaData',
-    fetchGammaData,
+    getGammaData,
     {
       refetchInterval: 30000,
     },
@@ -123,15 +56,10 @@ const GammaFarmsPage: React.FC<{
   );
 
   const gammaRewardTokens =
-    gammaRewards &&
-    chainId &&
-    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
+    gammaRewards && chainId
       ? ([] as string[])
           .concat(
-            ...Object.values(
-              gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools'],
-            ).map((item: any) =>
+            ...Object.values(gammaRewards).map((item: any) =>
               item && item['rewarders']
                 ? Object.values(item['rewarders'])
                     .filter(
@@ -237,29 +165,37 @@ const GammaFarmsPage: React.FC<{
             item.token1 &&
             token.address.toLowerCase() === item.token1.address.toLowerCase(),
         );
+
+      const stablePair0 = GlobalData.stablePairs.find(
+        (tokens) =>
+          !!tokens.find(
+            (token) =>
+              item.token0 &&
+              token.address.toLowerCase() === item.token0.address.toLowerCase(),
+          ),
+      );
+      const stablePair1 = GlobalData.stablePairs.find(
+        (tokens) =>
+          !!tokens.find(
+            (token) =>
+              item.token1 &&
+              token.address.toLowerCase() === item.token1.address.toLowerCase(),
+          ),
+      );
       const stableLPCondition =
         item.token0 &&
         item.token1 &&
-        ((item.token0.address.toLowerCase() ===
-          GlobalValue.tokens.MATIC.address.toLowerCase() &&
-          (item.token1.address.toLowerCase() ===
-            GlobalValue.tokens.COMMON.MATICX.address.toLowerCase() ||
-            item.token1.address.toLowerCase() ===
-              GlobalValue.tokens.COMMON.STMATIC.address.toLowerCase())) ||
-          (item.token1.address.toLowerCase() ===
-            GlobalValue.tokens.MATIC.address.toLowerCase() &&
-            (item.token0.address.toLowerCase() ===
-              GlobalValue.tokens.COMMON.MATICX.address.toLowerCase() ||
-              item.token0.address.toLowerCase() ===
-                GlobalValue.tokens.COMMON.STMATIC.address.toLowerCase())) ||
-          (item.token0.address.toLowerCase() ===
-            GlobalValue.tokens.COMMON.NEW_QUICK.address.toLowerCase() &&
-            item.token1.address.toLowerCase() ===
-              GlobalValue.tokens.COMMON.NEW_DQUICK.address.toLowerCase()) ||
-          (item.token1.address.toLowerCase() ===
-            GlobalValue.tokens.COMMON.NEW_QUICK.address.toLowerCase() &&
-            item.token0.address.toLowerCase() ===
-              GlobalValue.tokens.COMMON.NEW_DQUICK.address.toLowerCase()));
+        ((stablePair0 &&
+          stablePair0.find(
+            (token) =>
+              token.address.toLowerCase() === item.token1.address.toLowerCase(),
+          )) ||
+          (stablePair1 &&
+            stablePair1.find(
+              (token) =>
+                token.address.toLowerCase() ===
+                item.token0.address.toLowerCase(),
+            )));
 
       return (
         searchCondition &&
@@ -380,7 +316,7 @@ const GammaFarmsPage: React.FC<{
 
   return (
     <Box px={2} py={3}>
-      {positionsLoading || gammaFarmsLoading || gammaRewardsLoading ? (
+      {gammaFarmsLoading || gammaRewardsLoading ? (
         <div className='flex justify-center' style={{ padding: '16px 0' }}>
           <Loader stroke='white' size='1.5rem' />
         </div>
@@ -400,21 +336,12 @@ const GammaFarmsPage: React.FC<{
                 token0={farm.token0}
                 token1={farm.token1}
                 pairData={farm}
-                positionData={
-                  gammaPositions
-                    ? gammaPositions[farm.address.toLowerCase()]
-                    : undefined
-                }
                 data={
                   gammaData ? gammaData[farm.address.toLowerCase()] : undefined
                 }
                 rewardData={
-                  gammaRewards &&
-                  gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-                  gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
-                    ? gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]][
-                        'pools'
-                      ][farm.address.toLowerCase()]
+                  gammaRewards
+                    ? gammaRewards[farm.address.toLowerCase()]
                     : undefined
                 }
               />

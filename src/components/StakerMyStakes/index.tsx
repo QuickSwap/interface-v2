@@ -14,13 +14,13 @@ import { useTranslation } from 'react-i18next';
 import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
 import SortColumns from 'components/SortColumns';
 import { useQuery } from 'react-query';
-import { getTokenFromAddress } from 'utils';
+import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesToken } from 'utils/useUSDCPrice';
-import { useSingleContractMultipleData } from 'state/multicall/hooks';
+import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
 import { useMasterChefContract } from 'hooks/useContract';
 import { formatUnits } from 'ethers/lib/utils';
 
@@ -338,81 +338,14 @@ export const FarmingMyFarms: React.FC<{
     };
   });
 
-  const fetchGammaData = async () => {
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
-        );
-        const gammaData = await data.json();
-        return gammaData;
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
-  };
-
   const fetchGammaRewards = async () => {
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
-        );
-        const gammaData = await data.json();
-        return gammaData;
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
+    const gammaRewards = await getGammaRewards(chainId);
+    return gammaRewards;
   };
-
-  const fetchGammaPositions = async () => {
-    if (!account) return;
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
-      );
-      const positions = await data.json();
-      return positions[account.toLowerCase()];
-    } catch {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
-        );
-        const positions = await data.json();
-        return positions[account.toLowerCase()];
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
-  };
-
-  const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
-    'fetchGammaPositions',
-    fetchGammaPositions,
-    {
-      refetchInterval: 30000,
-    },
-  );
 
   const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
     'fetchGammaData',
-    fetchGammaData,
+    getGammaData,
     {
       refetchInterval: 30000,
     },
@@ -429,15 +362,10 @@ export const FarmingMyFarms: React.FC<{
   const sortMultiplierGamma = sortDescGamma ? -1 : 1;
 
   const gammaRewardTokens =
-    gammaRewards &&
-    chainId &&
-    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
+    gammaRewards && chainId
       ? ([] as string[])
           .concat(
-            ...Object.values(
-              gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools'],
-            ).map((item: any) =>
+            ...Object.values(gammaRewards).map((item: any) =>
               item && item['rewarders']
                 ? Object.values(item['rewarders'])
                     .filter(
@@ -707,7 +635,7 @@ export const FarmingMyFarms: React.FC<{
         <Box px={2} mt={2}>
           <h6>Gamma {t('farms')}</h6>
         </Box>
-        {gammaFarmsLoading || positionsLoading || gammaRewardsLoading ? (
+        {gammaFarmsLoading || gammaRewardsLoading ? (
           <Box py={5} className='flex justify-center'>
             <Loader stroke={'white'} size={'1.5rem'} />
           </Box>
@@ -738,23 +666,14 @@ export const FarmingMyFarms: React.FC<{
                     token0={farm.token0}
                     token1={farm.token1}
                     pairData={farm}
-                    positionData={
-                      gammaPositions
-                        ? gammaPositions[farm.address.toLowerCase()]
-                        : undefined
-                    }
                     data={
                       gammaData
                         ? gammaData[farm.address.toLowerCase()]
                         : undefined
                     }
                     rewardData={
-                      gammaRewards &&
-                      gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-                      gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
-                        ? gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]][
-                            'pools'
-                          ][farm.address.toLowerCase()]
+                      gammaRewards
+                        ? gammaRewards[farm.address.toLowerCase()]
                         : undefined
                     }
                   />

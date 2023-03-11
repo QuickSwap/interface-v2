@@ -48,6 +48,7 @@ import {
   fetchEternalFarmTVL,
   fetchPoolsAPR,
 } from 'utils/api';
+import { formatTokenSymbol } from 'utils/v3-graph';
 
 export function useFarmingSubgraph() {
   const { chainId, account, library } = useActiveWeb3React();
@@ -207,17 +208,11 @@ export function useFarmingSubgraph() {
         ...pools[0],
         token0: {
           ...pools[0].token0,
-          symbol:
-            pools[0].token0.symbol.toLowerCase() === 'mimatic'
-              ? 'MAI'
-              : pools[0].token0.symbol,
+          symbol: formatTokenSymbol(pools[0].token0.id, pools[0].token0.symbol),
         },
         token1: {
           ...pools[0].token1,
-          symbol:
-            pools[0].token1.symbol.toLowerCase() === 'mimatic'
-              ? 'MAI'
-              : pools[0].token1.symbol,
+          symbol: formatTokenSymbol(pools[0].token1.id, pools[0].token1.symbol),
         },
       };
     } catch (err) {

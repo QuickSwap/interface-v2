@@ -10,7 +10,6 @@ import SwapProChartTrade from './SwapProChartTrade';
 import SwapProInfo from './SwapProInfo';
 import SwapProTransactions from './SwapProTransactions';
 import TickerWidget from './TickerWidget';
-import AdsSlider from 'components/AdsSlider';
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -131,9 +130,6 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
           </Grid>
           <Grid item xs={12} lg={3}></Grid>
         </Grid>
-      </Box>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <AdsSlider sort='analytics' />
       </Box>
     </Box>
   );

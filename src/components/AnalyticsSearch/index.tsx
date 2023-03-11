@@ -20,7 +20,11 @@ import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useIsV2 } from 'state/application/hooks';
-import { getAllPairsV3, getAllTokensV3 } from 'utils/v3-graph';
+import {
+  formatTokenSymbol,
+  getAllPairsV3,
+  getAllTokensV3,
+} from 'utils/v3-graph';
 import { PAIR_SEARCH_V3, TOKEN_SEARCH_V3 } from 'apollo/queries-v3';
 dayjs.extend(utc);
 
@@ -201,35 +205,56 @@ const AnalyticsSearch: React.FC = () => {
             .concat(pairs.data.as1)
             .concat(pairs.data.asAddress);
 
-          allPairs = allPairs.concat(
-            foundPairs.filter((searchedPair: any) => {
-              let included = false;
-              allPairs.map((pair) => {
-                if (pair.id === searchedPair.id) {
-                  included = true;
-                }
-                return true;
-              });
-              return !included;
-            }),
-          );
+          allPairs = allPairs
+            .concat(
+              foundPairs.filter((searchedPair: any) => {
+                let included = false;
+                allPairs.map((pair) => {
+                  if (pair.id === searchedPair.id) {
+                    included = true;
+                  }
+                  return true;
+                });
+                return !included;
+              }),
+            )
+            .map((pair: any) => {
+              return {
+                ...pair,
+                token0: {
+                  ...pair.token0,
+                  symbol: formatTokenSymbol(pair.token0.id, pair.token0.symbol),
+                },
+                token1: {
+                  ...pair.token1,
+                  symbol: formatTokenSymbol(pair.token1.id, pair.token1.symbol),
+                },
+              };
+            });
 
           const foundTokens = tokens.data.asSymbol
             .concat(tokens.data.asAddress)
             .concat(tokens.data.asName);
 
-          allTokens = allTokens.concat(
-            foundTokens.filter((searchedToken: any) => {
-              let included = false;
-              allTokens.map((token) => {
-                if (token.id === searchedToken.id) {
-                  included = true;
-                }
-                return true;
-              });
-              return !included;
-            }),
-          );
+          allTokens = allTokens
+            .concat(
+              foundTokens.filter((searchedToken: any) => {
+                let included = false;
+                allTokens.map((token) => {
+                  if (token.id === searchedToken.id) {
+                    included = true;
+                  }
+                  return true;
+                });
+                return !included;
+              }),
+            )
+            .map((token: any) => {
+              return {
+                ...token,
+                symbol: formatTokenSymbol(token.id, token.symbol),
+              };
+            });
         }
 
         setSearchedTokens(allTokens);

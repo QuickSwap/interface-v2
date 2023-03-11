@@ -241,6 +241,26 @@ export const GammaPairs: {
       pid: 1,
     },
   ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x04d521e2c414e6d898c6f2599fdd863edf49e247',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      ableToFarm: true,
+      pid: 2,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x4a83253e88e77e8d518638974530d0cbbbf3b675',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      ableToFarm: true,
+      pid: 3,
+    },
+  ],
   '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
     {
       type: Presets.GAMMA_NARROW,
@@ -261,24 +281,24 @@ export const GammaPairs: {
       pid: 5,
     },
   ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
     {
       type: Presets.GAMMA_NARROW,
       title: 'Narrow',
-      address: '0x04d521e2c414e6d898c6f2599fdd863edf49e247',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      address: '0x3f35705479d9d77c619b2aac9dd7a64e57151506',
+      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
       token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
       ableToFarm: true,
-      pid: 2,
+      pid: 6,
     },
     {
       type: Presets.GAMMA_WIDE,
       title: 'Wide',
-      address: '0x4a83253e88e77e8d518638974530d0cbbbf3b675',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      address: '0xe40a5aa22cbccc8165aedd86f6d03fc5f551c3c6',
+      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
       token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
       ableToFarm: true,
-      pid: 3,
+      pid: 7,
     },
   ],
   '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
@@ -301,15 +321,6 @@ export const GammaPairs: {
       pid: 9,
     },
   ],
-  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
-    {
-      type: Presets.GAMMA_STABLE,
-      title: 'Stable',
-      address: '0x25b186eed64ca5fdd1bc33fc4cffd6d34069baec',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-    },
-  ],
   '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
     {
       type: Presets.GAMMA_STABLE,
@@ -317,8 +328,8 @@ export const GammaPairs: {
       address: '0x9e31214db6931727b7d63a0d2b6236db455c0965',
       token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
       token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-      // ableToFarm: true,
-      // pid: 10,
+      ableToFarm: true,
+      pid: 10,
     },
   ],
   '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
@@ -328,17 +339,8 @@ export const GammaPairs: {
       address: '0x795f8c9b0a0da9cd8dea65fc10f9b57abc532e58',
       token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
       token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      // ableToFarm: true,
-      // pid: 11,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x580a84c73811e1839f75d86d75d88cca0c241ff4': [
-    {
-      type: Presets.GAMMA_DYNAMIC,
-      title: 'Dynamic',
-      address: '0xe0f0622f871d9597649062e9bbbe9bd65e918e34',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0x580a84c73811e1839f75d86d75d88cca0c241ff4',
+      ableToFarm: true,
+      pid: 11,
     },
   ],
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
@@ -359,26 +361,6 @@ export const GammaPairs: {
       token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
       ableToFarm: true,
       pid: 13,
-    },
-  ],
-  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x3f35705479d9d77c619b2aac9dd7a64e57151506',
-      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
-      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      ableToFarm: true,
-      pid: 6,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0xe40a5aa22cbccc8165aedd86f6d03fc5f551c3c6',
-      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
-      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      ableToFarm: true,
-      pid: 7,
     },
   ],
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
@@ -583,6 +565,254 @@ export const GammaPairs: {
       pid: 33,
     },
   ],
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x683292172e2175bd08e3927a5e72fc301b161300',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+      ableToFarm: true,
+      pid: 34,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x3ae59be14da16183f0a36e23518506c386e63a96',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+      ableToFarm: true,
+      pid: 35,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0xfe4bb996926aca85c9747bbec886ec2a3f510c66',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
+      ableToFarm: true,
+      pid: 36,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x2e18b825b049c4994370b0db6c35d0100295b96c',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
+      ableToFarm: true,
+      pid: 37,
+    },
+  ],
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x2c53dfa65370b2d70975e40172b63210d477e470',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+      ableToFarm: true,
+      pid: 38,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0xcfd4a6a885c4404a2a5720918a9b4880600876a8',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+      ableToFarm: true,
+      pid: 39,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x05c731f5f922835796c49412a30615c46cca4d9e',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+      ableToFarm: true,
+      pid: 40,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x9a4b458a5ae5d96565455d1e1882301fea5c076f',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+      ableToFarm: true,
+      pid: 41,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0xf6bE87Ae8976f50DCd231d42580e430CF6133400',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
+      ableToFarm: true,
+      pid: 42,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0xee2a89071654333703b3d6c9be9ab8f085f977de',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
+      ableToFarm: true,
+      pid: 43,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xe5417af564e4bfda1c483642db72007871397896': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x688cb9492bd2c72016f1765d813b2d713aa1f4c7',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+      ableToFarm: true,
+      pid: 44,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x566452e9d621a1902f9ccf2adaf029cf0f36ec67',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+      ableToFarm: true,
+      pid: 45,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xbbba073c31bf03b8acf7c28ef0738decf3695683': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0xef4f95d8c252d64308c04f711fb31892cc4c9965',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
+      ableToFarm: true,
+      pid: 46,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x62f88fb208df717b035325d065c6919d7913b937',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
+      ableToFarm: true,
+      pid: 47,
+    },
+  ],
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc': [
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x706bae8828c260d5e52ccfa96f1258a2d2f6fdda',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc',
+      ableToFarm: true,
+      pid: 48,
+    },
+  ],
+  '0xa3fa99a148fa48d14ed51d610c367c61876997f1-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x1825c76ced3c1625250b8af6204bf4fc4e5b9fcf',
+      token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      ableToFarm: true,
+      pid: 49,
+    },
+  ],
+  '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x3273c153ecc6891a68af60ee0b67c16dd7b2c7e5',
+      token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      ableToFarm: true,
+      pid: 50,
+    },
+  ],
+  '0xa3fa99a148fa48d14ed51d610c367c61876997f1-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x0f7e4c66cebb5f5cabd435684946585a917b2f65',
+      token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+      ableToFarm: true,
+      pid: 51,
+    },
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x535206aaeca58c038ef28ce9924c7782bbb3d94d',
+      token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+      ableToFarm: true,
+      pid: 52,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x33b0b883626c21ce5b3aad202bc435f876aee2c4',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+      ableToFarm: true,
+      pid: 53,
+    },
+  ],
+  '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
+    {
+      type: Presets.STABLE,
+      title: 'Stable',
+      address: '0xe503c1dfd7012e72af4c415f4c5e8abf5b45c25f',
+      token0Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+      token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
+      ableToFarm: true,
+      pid: 54,
+    },
+  ],
+  '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+    {
+      type: Presets.STABLE,
+      title: 'Stable',
+      address: '0x45a3a657b834699f5cc902e796c547f826703b79',
+      token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      ableToFarm: true,
+      pid: 55,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x3fb73a554defa86b18f72e543aa2174a4d5f9621',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
+      ableToFarm: true,
+      pid: 56,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x2ef46196d7d25b5111ca1fcba206b248fee32d8d',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
+      ableToFarm: true,
+      pid: 57,
+    },
+  ],
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
@@ -625,6 +855,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Brave browser wallet.',
     href: null,
     color: '#1673ff',
+    mobile: true,
   },
   BITKEEP: {
     connector: injected,
@@ -916,6 +1147,7 @@ export const GlobalValue = {
 export const paraswapTax: { [key: string]: number } = {
   '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
   '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3': 0,
+  '0xf16ec50ec49abc95fa793c7871682833b6bc47e7': 1300,
 };
 
 export const GlobalData = {
@@ -1013,6 +1245,15 @@ export const GlobalData = {
     GlobalValue.tokens.COMMON.WBTC,
     GlobalValue.tokens.COMMON.USDC,
     GlobalValue.tokens.COMMON.USDT,
+    GlobalValue.tokens.COMMON.DAI,
+  ],
+  stablePairs: [
+    [
+      GlobalValue.tokens.MATIC,
+      GlobalValue.tokens.COMMON.MATICX,
+      GlobalValue.tokens.COMMON.STMATIC,
+    ],
+    [GlobalValue.tokens.COMMON.NEW_QUICK, GlobalValue.tokens.COMMON.NEW_DQUICK],
   ],
 };
 

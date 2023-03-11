@@ -62,6 +62,11 @@ export default function WithdrawGammaLiquidityModal({
     ? new Token(chainId, position.pairAddress, 18)
     : undefined;
   const lpBalance = useTokenBalance(account ?? undefined, lpToken);
+  const lpBalanceNumber = lpBalance
+    ? Number(lpBalance.numerator.toString())
+    : 0;
+  const withdrawPercent =
+    position && position.shares > 0 ? lpBalanceNumber / position.shares : 0;
 
   const buttonDisabled = !percent || !hyperVisorContract || !account;
   const buttonText = useMemo(() => {
@@ -120,9 +125,13 @@ export default function WithdrawGammaLiquidityModal({
   };
 
   const pendingText = t('removingLiquidityMsg', {
-    amount1: formatNumber((position.balance0 * percent) / 100),
+    amount1: formatNumber(
+      (position.balance0 * withdrawPercent * percent) / 100,
+    ),
     symbol1: position.token0.symbol,
-    amount2: formatNumber((position.balance1 * percent) / 100),
+    amount2: formatNumber(
+      (position.balance1 * withdrawPercent * percent) / 100,
+    ),
     symbol2: position.token1.symbol,
   });
 
@@ -134,7 +143,11 @@ export default function WithdrawGammaLiquidityModal({
             {t('pooled')} {position.token0.symbol}
           </p>
           <Box className='flex items-center'>
-            <p>{formatNumber((position.balance0 * percent) / 100)}</p>
+            <p>
+              {formatNumber(
+                (position.balance0 * withdrawPercent * percent) / 100,
+              )}
+            </p>
             <Box className='flex' ml={1}>
               <CurrencyLogo size='24px' currency={position.token0} />
             </Box>
@@ -145,7 +158,11 @@ export default function WithdrawGammaLiquidityModal({
             {t('pooled')} {position.token1.symbol}
           </p>
           <Box className='flex items-center'>
-            <p>{formatNumber((position.balance1 * percent) / 100)}</p>
+            <p>
+              {formatNumber(
+                (position.balance1 * withdrawPercent * percent) / 100,
+              )}
+            </p>
             <Box className='flex' ml={1}>
               <CurrencyLogo size='24px' currency={position.token1} />
             </Box>
@@ -244,7 +261,7 @@ export default function WithdrawGammaLiquidityModal({
               {t('pooled')} {position.token0.symbol}
             </p>
             <Box className='flex items-center'>
-              <p>{formatNumber(position.balance0)}</p>
+              <p>{formatNumber(position.balance0 * withdrawPercent)}</p>
               <Box className='flex' ml={1}>
                 <CurrencyLogo size='24px' currency={position.token0} />
               </Box>
@@ -255,7 +272,7 @@ export default function WithdrawGammaLiquidityModal({
               {t('pooled')} {position.token1.symbol}
             </p>
             <Box className='flex items-center'>
-              <p>{formatNumber(position.balance1)}</p>
+              <p>{formatNumber(position.balance1 * withdrawPercent)}</p>
               <Box className='flex' ml={1}>
                 <CurrencyLogo size='24px' currency={position.token1} />
               </Box>
