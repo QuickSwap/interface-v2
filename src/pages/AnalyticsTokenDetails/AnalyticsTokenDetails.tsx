@@ -14,6 +14,7 @@ import {
   getBulkPairData,
   getTokenFromAddress,
   getGammaRewards,
+  getGammaData,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
@@ -209,6 +210,7 @@ const AnalyticsTokenDetails: React.FC = () => {
         try {
           const aprs = await getPairsAPR(data.map((item: any) => item.id));
           const gammaRewards = await getGammaRewards(chainId);
+          const gammaData = await getGammaData();
 
           updateTokenPairs(
             data.map((item: any, ind: number) => {
@@ -217,6 +219,11 @@ const AnalyticsTokenDetails: React.FC = () => {
                   item.token0.id.toLowerCase() +
                     '-' +
                     item.token1.id.toLowerCase()
+                ] ??
+                GammaPairs[
+                  item.token1.id.toLowerCase() +
+                    '-' +
+                    item.token0.id.toLowerCase()
                 ];
               const gammaFarmAPRs = gammaPairs
                 ? gammaPairs.map((pair) => {
@@ -224,7 +231,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                       title: pair.title,
                       apr:
                         gammaRewards &&
-                        gammaRewards[pair.address] &&
+                        gammaRewards[pair.address.toLowerCase()] &&
                         gammaRewards[pair.address.toLowerCase()]['apr']
                           ? Number(
                               gammaRewards[pair.address.toLowerCase()]['apr'],
@@ -233,17 +240,49 @@ const AnalyticsTokenDetails: React.FC = () => {
                     };
                   })
                 : [];
+              const gammaPoolAPRs = gammaPairs
+                ? gammaPairs.map((pair) => {
+                    return {
+                      title: pair.title,
+                      apr:
+                        gammaData &&
+                        gammaData[pair.address.toLowerCase()] &&
+                        gammaData[pair.address.toLowerCase()]['returns'] &&
+                        gammaData[pair.address.toLowerCase()]['returns'][
+                          'allTime'
+                        ] &&
+                        gammaData[pair.address.toLowerCase()]['returns'][
+                          'allTime'
+                        ]['feeApr']
+                          ? Number(
+                              gammaData[pair.address.toLowerCase()]['returns'][
+                                'allTime'
+                              ]['feeApr'],
+                            ) * 100
+                          : 0,
+                    };
+                  })
+                : [];
+
               const quickFarmingAPR = aprs[ind].farmingApr;
               const farmingApr = Math.max(
                 quickFarmingAPR ?? 0,
                 ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
               );
+
+              const quickPoolAPR = aprs[ind].apr;
+              const apr = Math.max(
+                quickPoolAPR ?? 0,
+                ...gammaPoolAPRs.map((item) => Number(item.apr ?? 0)),
+              );
               return {
                 ...item,
-                apr: aprs[ind].apr,
+                apr,
                 farmingApr,
                 quickFarmingAPR,
+                quickPoolAPR,
                 gammaFarmAPRs,
+                gammaPoolAPRs,
               };
             }),
           );
@@ -268,6 +307,7 @@ const AnalyticsTokenDetails: React.FC = () => {
     maticPrice.price,
     maticPrice.oneDayPrice,
     version,
+    chainId,
   ]);
 
   useEffect(() => {

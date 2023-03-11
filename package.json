@@ -115,7 +115,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-app-rewired start",
     "start-legacy": "react-app-rewired --openssl-legacy-provider start",
-    "build": "GENERATE_SOURCEMAP=false CI=false react-app-rewired build",
+    "build": "GENERATE_SOURCEMAP=false CI=false react-app-rewired build --max-old-space-size=7168",
     "test": "react-app-rewired test --env=jsdom",
     "format": "prettier --write \"**/*.{ts,js,tsx,json,md}\"",
     "eject": "react-scripts eject",
@@ -135,7 +135,7 @@
   ],
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@0xsquid/widget": "1.4.40",
+    "@0xsquid/widget": "1.4.46",
     "@arcxmoney/analytics": "^1.6.1",
     "@coinbase/cbpay-js": "^1.6.0",
     "@cryption/df-sdk-core": "0.0.8",
