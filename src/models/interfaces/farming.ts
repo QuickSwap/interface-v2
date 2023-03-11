@@ -153,7 +153,7 @@ export interface Deposit {
   tierLimit: string;
   multiplierToken: TokenSubgraph;
   oldFarming?: boolean;
-  isDetached?: boolean
+  isDetached?: boolean;
 }
 
 export interface DefaultFarming {
