@@ -220,6 +220,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isBitKeep = ethereum && ethereum.isBitKeep;
     const trustWallet = getTrustWalletInjectedProvider();
     const isBraveWallet = ethereum && ethereum.isBraveWallet;
+    const isPhantomWallet = ethereum && ethereum.isPhantom;
 
     // is trust wallet installed?
     const isTrustWalledInstalled = !!trustWallet;
@@ -358,6 +359,23 @@ const WalletModal: React.FC<WalletModalProps> = ({
         ) {
           return null;
         }
+      }
+
+      if (
+        option.name === GlobalConst.walletName.PHANTOM_WALLET &&
+        !isPhantomWallet
+      ) {
+        return (
+          <Option
+            id={`connect-${key}`}
+            key={key}
+            color={'#E8831D'}
+            header={t('installPhantom')}
+            subheader={t('installPhantomDesc')}
+            link={'https://phantom.app/'}
+            icon={option.iconName}
+          />
+        );
       }
 
       // return rest of options
