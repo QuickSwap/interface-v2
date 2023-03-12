@@ -15,6 +15,7 @@ import {
   TrustWalletConnector,
 } from './TrustWalletConnector';
 import { MetaMaskConnector } from './MetaMaskConnector';
+import { PhantomWalletConnector } from './PhantomWalletConnector';
 
 const POLLING_INTERVAL = 12000;
 
@@ -53,6 +54,10 @@ export const metamask = new MetaMaskConnector({
 });
 
 export const safeApp = new SafeAppConnector();
+
+export const phantomconnect = new PhantomWalletConnector({
+  supportedChainIds: [137, 80001],
+});
 
 export const zengoconnect = new WalletConnectConnector({
   rpc: { 137: NETWORK_URL },
