@@ -13,10 +13,12 @@ import {
 } from '../state/transactions/hooks';
 import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';
+import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { TransactionResponse } from '@ethersproject/providers';
 import { FarmingType } from '../models/enums';
 import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/src/utils/calldata';
+import { useAppSelector } from 'state';
 import { useV3StakeData } from 'state/farms/hooks';
 import { calculateGasMargin } from 'utils';
 
@@ -28,6 +30,13 @@ export function useFarmingHandlers() {
     if (!library) return;
     return new providers.Web3Provider(library.provider);
   }, [library]);
+
+  const gasPrice = useAppSelector((state) => {
+    if (!state.application.gasPrice.fetched) return 36;
+    return state.application.gasPrice.override
+      ? 36
+      : state.application.gasPrice.fetched;
+  });
 
   const addTransaction = useTransactionAdder();
   const finalizeTransaction = useTransactionFinalizer();
@@ -133,20 +142,17 @@ export function useFarmingHandlers() {
           } else {
             let isSuccessful;
             try {
-              const estimatedGas = await farmingCenterContract.estimateGas.multicall(
-                callDatas,
-              );
-
               result = await farmingCenterContract.callStatic.multicall(
                 callDatas,
                 {
-                  gasLimit: calculateGasMargin(estimatedGas),
+                  gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
+                  gasLimit: 350000,
                 },
               );
               isSuccessful = true;
             } catch (err) {
               const estimatedGas = await farmingCenterContract.estimateGas.multicall(
-                callDatas,
+                [callDatas[0]],
               );
               result = await farmingCenterContract.multicall([callDatas[0]], {
                 gasLimit: calculateGasMargin(estimatedGas),
@@ -234,6 +240,7 @@ export function useFarmingHandlers() {
       addTransaction,
       chainId,
       finalizeTransaction,
+      gasPrice,
       provider,
       updateV3Stake,
       t,
