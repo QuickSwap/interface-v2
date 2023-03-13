@@ -71,11 +71,6 @@ const SwapMain: React.FC = () => {
     return tabs;
   }, [showBestTrade, showLimitOrder, v2, v3, showCrossChain]);
 
-  const SwapOtherTabs = [
-    { name: 'bestTrade', subTitle: 'Comming Soon!', key: SWAP_CROSS_CHAIN },
-    { name: 'limit', key: SWAP_LIMIT },
-  ];
-
   const dropDownMenuText = useMemo(() => {
     if (!swapType) return;
     const dropdownTab = SwapDropdownTabs.find(

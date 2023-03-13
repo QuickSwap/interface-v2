@@ -237,6 +237,7 @@ export const FarmingMyFarms: React.FC<{
 
   useEffect(() => {
     setShallowRewards(rewardsResult.filter((reward) => reward.trueAmount));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rewardsResult?.length]);
 
   useEffect(() => {

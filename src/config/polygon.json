@@ -16,7 +16,8 @@
     "available": true,
     "bestTrade": true,
     "proMode": true,
-    "limitOrder": true
+    "limitOrder": true,
+    "crossChain": true
   },
   "pools": {
     "available": true
@@ -46,6 +47,9 @@
     "available": true
   },
   "gamingHub": {
+    "available": true
+  },
+  "leaderboard": {
     "available": true
   }
 }
