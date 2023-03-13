@@ -149,17 +149,28 @@ const SwapBestTrade: React.FC<{
   const inputCurrency = currencies[Field.INPUT];
   const outputCurrency = currencies[Field.OUTPUT];
 
-  const inputCurrencyV3 = inputCurrency
-    ? currencyEquals(inputCurrency, ETHER)
-      ? ({ ...ETHER, isNative: true, isToken: false } as NativeCurrency)
-      : ({ ...inputCurrency, isNative: false, isToken: true } as Currency)
-    : undefined;
+  const inputCurrencyV3 = useMemo(() => {
+    if (!inputCurrency || !chainId) return;
+    if (currencyEquals(inputCurrency, ETHER[chainId])) {
+      return {
+        ...ETHER[chainId],
+        isNative: true,
+        isToken: false,
+      } as NativeCurrency;
+    }
+    return { ...inputCurrency, isNative: false, isToken: true } as Currency;
+  }, [chainId, inputCurrency]);
 
-  const outputCurrencyV3 = outputCurrency
-    ? currencyEquals(outputCurrency, ETHER)
-      ? ({ ...ETHER, isNative: true, isToken: false } as NativeCurrency)
-      : ({ ...outputCurrency, isNative: false, isToken: true } as Currency)
-    : undefined;
+  const outputCurrencyV3 = useMemo(() => {
+    if (!outputCurrency || !chainId) return;
+    if (currencyEquals(outputCurrency, ETHER[chainId]))
+      return {
+        ...ETHER[chainId],
+        isNative: true,
+        isToken: false,
+      } as NativeCurrency;
+    return { ...outputCurrency, isNative: false, isToken: true } as Currency;
+  }, [chainId, outputCurrency]);
 
   const [optimalRateError, setOptimalRateError] = useState('');
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
@@ -542,7 +553,7 @@ const SwapBestTrade: React.FC<{
     parsedAmounts,
     swapInputAmountWithSlippage,
     swapInputBalance,
-    inputCurrency,
+    inputCurrencyV3,
   ]);
 
   const [

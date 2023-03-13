@@ -4,10 +4,12 @@ import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { SWAP_TRANSACTIONS_V3 } from 'apollo/queries-v3';
 import { clientV3 } from 'apollo/client';
+import { ChainId } from '@uniswap/sdk';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
 export const getSwapTransactionsV3 = async (
+  chainId: ChainId,
   pool_in: string[],
   fromTime?: number,
   toTime?: number,
@@ -25,7 +27,7 @@ export const getSwapTransactionsV3 = async (
   const toTimestamp = toTime ?? today;
 
   try {
-    const result = await clientV3.query({
+    const result = await clientV3[chainId].query({
       query: SWAP_TRANSACTIONS_V3,
       variables: {
         pool_in: pool_in,

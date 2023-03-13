@@ -46,7 +46,7 @@ const ContestPage: React.FC = () => {
     setSearchVal,
     500,
   );
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const [contestFilter, setContestFilter] = useState(ContestPairs[0]);
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
@@ -106,6 +106,7 @@ const ContestPage: React.FC = () => {
   }, [contestFilter, durationIndex]);
 
   const getTradingDataForAddress = async () => {
+    if (!chainId) return;
     try {
       setSearchLoading(true);
       const today = dayjs()
@@ -132,6 +133,7 @@ const ContestPage: React.FC = () => {
         firstTradeDay * 1000,
         today * 1000,
         searchVal,
+        chainId,
       );
 
       if (swapData) {
@@ -207,7 +209,7 @@ const ContestPage: React.FC = () => {
   return (
     <Box width='100%' mb={3} id='contest-page'>
       <Box className='pageHeading'>
-        <Box className='flex row items-center'>
+        <Box className='flex items-center row'>
           <h4>{t('leaderBoard')}</h4>
         </Box>
 
@@ -328,7 +330,7 @@ const ContestPage: React.FC = () => {
           {!loading ? (
             <>
               {error ? (
-                <p className='weight-600 text-center'>{error}</p>
+                <p className='text-center weight-600'>{error}</p>
               ) : (
                 <ContestTable data={contestLeaderBoard} />
               )}

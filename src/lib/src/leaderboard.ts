@@ -3,6 +3,7 @@ import { getSwapTransactionsV3 } from 'utils/v3/contest';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
+import { ChainId } from '@uniswap/sdk';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -11,6 +12,7 @@ export const getTradingDataOfDay = async (
   fromTime: number,
   toTime: number,
   origin: string,
+  chainId: ChainId,
 ) => {
   let daysTrades: SwapDataV3[] = [];
   /**
@@ -20,6 +22,7 @@ export const getTradingDataOfDay = async (
    */
   for (let index = 0; index <= 5; index++) {
     const pageData = await getSwapTransactionsV3(
+      chainId,
       pool,
       fromTime,
       toTime,
@@ -39,6 +42,7 @@ export const getTradingDataBetweenDates = async (
   fromDate: number,
   toDate: number,
   origin: string,
+  chainId: ChainId,
 ) => {
   const diffDays = dayjs(toDate).diff(dayjs(fromDate), 'day');
   let weeksTradeData: SwapDataV3[] = [];
@@ -49,7 +53,13 @@ export const getTradingDataBetweenDates = async (
     const toTime = dayjs(fromDate)
       .add(i + 1, 'day')
       .unix();
-    const swapData = await getTradingDataOfDay(pool, fromTime, toTime, origin);
+    const swapData = await getTradingDataOfDay(
+      pool,
+      fromTime,
+      toTime,
+      origin,
+      chainId,
+    );
     weeksTradeData = weeksTradeData.concat(swapData);
   }
   return weeksTradeData;

@@ -81,7 +81,6 @@ const GammaFarmCardDetails: React.FC<{
       : 0;
   const stakedUSD = Number(stakedAmount) * lpTokenUSD;
   const availableStakeUSD = Number(availableStakeAmount) * lpTokenUSD;
-  const lpTokenBalance = tryParseAmount(availableStakeAmount, lpToken);
 
   const rewards: any[] =
     rewardData && rewardData['rewarders']
@@ -354,7 +353,7 @@ const GammaFarmCardDetails: React.FC<{
                 onUserInput={setStakeAmount}
               />
               <span
-                className='weight-600 cursor-pointer text-primary'
+                className='cursor-pointer weight-600 text-primary'
                 onClick={() => setStakeAmount(availableStakeAmount)}
               >
                 {t('max')}
@@ -395,7 +394,7 @@ const GammaFarmCardDetails: React.FC<{
                 onUserInput={setUnStakeAmount}
               />
               <span
-                className='weight-600 cursor-pointer text-primary'
+                className='cursor-pointer weight-600 text-primary'
                 onClick={() => setUnStakeAmount(stakedAmount)}
               >
                 {t('max')}
