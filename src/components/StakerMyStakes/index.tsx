@@ -17,12 +17,7 @@ import {
 import { useV3StakeData } from 'state/farms/hooks';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'react-i18next';
-import {
-  GammaPair,
-  GammaPairs,
-  GlobalConst,
-  MATIC_CHAIN,
-} from 'constants/index';
+import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
 import SortColumns from 'components/SortColumns';
 import { useQuery } from 'react-query';
 import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
@@ -627,7 +622,7 @@ export const FarmingMyFarms: React.FC<{
                     size='28px'
                     currency={
                       new Token(
-                        MATIC_CHAIN,
+                        chainId ?? ChainId.MATIC,
                         reward.rewardAddress,
                         18,
                         reward.symbol,
@@ -673,7 +668,10 @@ export const FarmingMyFarms: React.FC<{
         </Box>
       ) : null}
       <Box px={2} my={2}>
-        <h6>QuickSwap {t('farms')}</h6>
+        <Divider />
+        <Box px={2} mt={2}>
+          <h6>QuickSwap {t('farms')}</h6>
+        </Box>
       </Box>
       {transferredPositionsLoading ||
       eternalFarmPoolAprsLoading ||
@@ -691,7 +689,7 @@ export const FarmingMyFarms: React.FC<{
         </Box>
       ) : shallowPositions && shallowPositions.length !== 0 ? (
         <Box padding='24px'>
-          {farmedNFTs && farmedNFTs.length > 0 && (
+          {farmedNFTs && farmedNFTs.length > 0 && chainId && (
             <Box pb={2}>
               {!isMobile && (
                 <Box px={3.5}>
@@ -713,6 +711,7 @@ export const FarmingMyFarms: React.FC<{
                       data-navigatedto={hash == `#${el.id}`}
                     >
                       <FarmCard
+                        chainId={chainId}
                         el={el}
                         poolApr={
                           eternalFarmPoolAprs
@@ -733,73 +732,6 @@ export const FarmingMyFarms: React.FC<{
           )}
         </Box>
       ) : null}
-      <Box my={2}>
-        <Divider />
-        <Box px={2} mt={2}>
-          <h6>QuickSwap {t('farms')}</h6>
-        </Box>
-      </Box>
-      <Box mt={2}>
-        {transferredPositionsLoading ||
-        eternalFarmPoolAprsLoading ||
-        eternalFarmAprsLoading ||
-        !shallowPositions ? (
-          <Box py={5} className='flex justify-center'>
-            <Loader stroke={'white'} size={'1.5rem'} />
-          </Box>
-        ) : shallowPositions && shallowPositions.length === 0 ? (
-          <Box py={5} className='flex flex-col items-center'>
-            <Frown size={35} stroke={'white'} />
-            <Box mb={3} mt={1}>
-              {t('nofarms')}
-            </Box>
-          </Box>
-        ) : shallowPositions && shallowPositions.length !== 0 ? (
-          <Box padding='24px'>
-            {farmedNFTs && farmedNFTs.length > 0 && chainId && (
-              <Box pb={2}>
-                {!isMobile && (
-                  <Box px={3.5}>
-                    <Box width='85%'>
-                      <SortColumns
-                        sortColumns={sortByDesktopItemsQuick}
-                        selectedSort={sortByQuick}
-                        sortDesc={sortDescQuick}
-                      />
-                    </Box>
-                  </Box>
-                )}
-                <Box mt={2}>
-                  {farmedNFTs.map((el, i) => {
-                    return (
-                      <div
-                        className={'v3-my-farms-position-card'}
-                        key={i}
-                        data-navigatedto={hash == `#${el.id}`}
-                      >
-                        <FarmCard
-                          el={el}
-                          poolApr={
-                            eternalFarmPoolAprs
-                              ? eternalFarmPoolAprs[el.pool.id]
-                              : undefined
-                          }
-                          farmApr={
-                            eternalFarmAprs
-                              ? eternalFarmAprs[el.farmId]
-                              : undefined
-                          }
-                          chainId={chainId}
-                        />
-                      </div>
-                    );
-                  })}
-                </Box>
-              </Box>
-            )}
-          </Box>
-        ) : null}
-      </Box>
 
       {allGammaFarms.length > 0 && (
         <Box my={2}>

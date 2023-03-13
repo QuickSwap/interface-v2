@@ -9,8 +9,8 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
-import { useIsProMode, useIsV2 } from 'state/application/hooks';
+import { useHistory } from 'react-router-dom';
+import { useIsV2 } from 'state/application/hooks';
 import SwapCrossChain from './SwapCrossChain';
 import SwapLimitOrder from './SwapLimitOrder';
 import SwapV3Page from './V3/Swap';
@@ -20,19 +20,6 @@ const SWAP_NORMAL = 1;
 const SWAP_V3 = 2;
 const SWAP_LIMIT = 3;
 const SWAP_CROSS_CHAIN = 4;
-
-const SwapDropdownTabs = [
-  { name: 'bestTrade', key: SWAP_BEST_TRADE },
-  { name: 'market', key: SWAP_NORMAL },
-  { name: 'marketV3', key: SWAP_V3 },
-  { name: 'limit', key: SWAP_LIMIT },
-  {
-    name: 'crossChain',
-    subTitle: 'Comming Soon!',
-    key: SWAP_CROSS_CHAIN,
-    visible: false,
-  },
-];
 
 const SwapMain: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -57,6 +44,7 @@ const SwapMain: React.FC = () => {
   const v3 = config['v3'];
   const showBestTrade = config['swap']['bestTrade'];
   const showLimitOrder = config['swap']['limitOrder'];
+  const showCrossChain = config['swap']['crossChain'];
 
   const SwapDropdownTabs = useMemo(() => {
     const tabs = [];
@@ -72,8 +60,16 @@ const SwapMain: React.FC = () => {
     if (showLimitOrder) {
       tabs.push({ name: 'limit', key: SWAP_LIMIT });
     }
+    if (showCrossChain) {
+      tabs.push({
+        name: 'crossChain',
+        subTitle: 'Comming Soon!',
+        key: SWAP_CROSS_CHAIN,
+        visible: false,
+      });
+    }
     return tabs;
-  }, [showBestTrade, showLimitOrder, v2, v3]);
+  }, [showBestTrade, showLimitOrder, v2, v3, showCrossChain]);
 
   const SwapOtherTabs = [
     { name: 'bestTrade', subTitle: 'Comming Soon!', key: SWAP_CROSS_CHAIN },
@@ -242,7 +238,6 @@ const SwapMain: React.FC = () => {
                 onClick={() => {
                   setSelectedIndex(SWAP_CROSS_CHAIN);
                   setAnchorEl(null);
-                  setDropdownMenuText(SwapDropdownTabs[0].name);
                   redirectWithSwapType(SWAP_CROSS_CHAIN);
                 }}
               >

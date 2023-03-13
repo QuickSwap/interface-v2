@@ -133,7 +133,7 @@ export function useFarmingHandlers() {
           } else {
             let isSuccessful;
             try {
-              const estimatedGas = await farmingCenterContract.callStatic.estimateGas.multicall(
+              const estimatedGas = await farmingCenterContract.estimateGas.multicall(
                 callDatas,
               );
 
