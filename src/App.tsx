@@ -2,10 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core';
 import { Switch, Route } from 'react-router-dom';
-import {
-  ThemeProvider as MuiThemeProvider,
-  CssBaseline,
-} from '@material-ui/core';
+import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
 import { Provider } from 'react-redux';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 import store from 'state';
