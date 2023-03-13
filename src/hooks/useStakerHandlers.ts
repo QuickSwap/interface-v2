@@ -52,6 +52,7 @@ export function useFarmingHandlers() {
         eternalEarned,
         limitBonusEarned,
         limitEarned,
+        isDetached,
       },
       farmingType,
     ) => {
@@ -121,13 +122,47 @@ export function useFarmingHandlers() {
             );
           }
 
-          const estimatedGas = await farmingCenterContract.estimateGas.multicall(
-            callDatas,
-          );
+          if (isDetached) {
+            const estimatedGas = await farmingCenterContract.estimateGas.multicall(
+              callDatas,
+            );
 
-          result = await farmingCenterContract.multicall(callDatas, {
-            gasLimit: calculateGasMargin(estimatedGas),
-          });
+            result = await farmingCenterContract.multicall(callDatas, {
+              gasLimit: calculateGasMargin(estimatedGas),
+            });
+          } else {
+            let isSuccessful;
+            try {
+              const estimatedGas = await farmingCenterContract.callStatic.estimateGas.multicall(
+                callDatas,
+              );
+
+              result = await farmingCenterContract.callStatic.multicall(
+                callDatas,
+                {
+                  gasLimit: calculateGasMargin(estimatedGas),
+                },
+              );
+              isSuccessful = true;
+            } catch (err) {
+              const estimatedGas = await farmingCenterContract.estimateGas.multicall(
+                callDatas,
+              );
+              result = await farmingCenterContract.multicall([callDatas[0]], {
+                gasLimit: calculateGasMargin(estimatedGas),
+              });
+              console.log(err, result);
+            }
+
+            if (isSuccessful) {
+              const estimatedGas = await farmingCenterContract.estimateGas.multicall(
+                callDatas,
+              );
+              result = await farmingCenterContract.multicall(callDatas, {
+                gasLimit: calculateGasMargin(estimatedGas),
+              });
+            }
+          }
         } else {
           callDatas = [
             farmingCenterInterface.encodeFunctionData('exitFarming', [
@@ -537,11 +572,104 @@ export function useFarmingHandlers() {
     ],
   );
 
+  const eternalOnlyCollectRewardHandler = useCallback(
+    async (rewardToken) => {
+      if (!account || !provider || !chainId) return;
+
+      const farmingCenterContract = new Contract(
+        FARMING_CENTER[chainId],
+        FARMING_CENTER_ABI,
+        provider.getSigner(),
+      );
+
+      updateV3Stake({
+        selectedTokenId: rewardToken.id,
+        selectedFarmingType: null,
+        txType: 'eternalOnlyCollectReward',
+        txConfirmed: false,
+        txHash: '',
+        txError: '',
+      });
+
+      try {
+        const MaxUint128 = toHex(
+          JSBI.subtract(
+            JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(128)),
+            JSBI.BigInt(1),
+          ),
+        );
+
+        const result: TransactionResponse = await farmingCenterContract.claimReward(
+          rewardToken.rewardAddress,
+          account,
+          MaxUint128,
+          MaxUint128,
+        );
+
+        addTransaction(result, {
+          summary: t('claimingReward'),
+        });
+
+        updateV3Stake({ txHash: result.hash });
+
+        const receipt = await result.wait();
+
+        finalizeTransaction(receipt, {
+          summary: t('claimedReward'),
+        });
+
+        updateV3Stake({ txConfirmed: true });
+      } catch (err) {
+        updateV3Stake({ txError: 'failed' });
+        if (err instanceof Error) {
+          throw new Error(t('claimingReward') + ' ' + err.message);
+        }
+      }
+    },
+    [
+      account,
+      addTransaction,
+      chainId,
+      finalizeTransaction,
+      provider,
+      updateV3Stake,
+      t,
+    ],
+  );
+
+  //   const claimReward = useCallback(async (tokenReward) => {
+  //     try {
+  //         if (!account || !provider || !chainId) return
+
+  //         const farmingCenterContract = new Contract(
+  //             FARMING_CENTER[chainId],
+  //             FARMING_CENTER_ABI,
+  //             provider.getSigner()
+  //         )
+
+  //         const MaxUint128 = toHex(JSBI.subtract(JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(128)), JSBI.BigInt(1)))
+
+  //         const result: TransactionResponse = await farmingCenterContract.claimReward(tokenReward, account, MaxUint128, MaxUint128)
+
+  //         setClaimHash({ hash: result.hash, id: tokenReward })
+  //         addTransaction(result, {
+  //             summary: t`Claiming reward`
+  //         })
+  //     } catch (e) {
+  //         setClaimHash('failed')
+  //         if (e instanceof Error) {
+  //             throw new Error('Claim rewards ' + e.message)
+  //         }
+
+  //     }
+  // }, [account, chainId])
+
   return {
     approveHandler,
     farmHandler,
     withdrawHandler,
     claimRewardsHandler,
     eternalCollectRewardHandler,
+    eternalOnlyCollectRewardHandler,
   };
 }

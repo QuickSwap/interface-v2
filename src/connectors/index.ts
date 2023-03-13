@@ -16,6 +16,7 @@ import {
 } from './TrustWalletConnector';
 import { MetaMaskConnector } from './MetaMaskConnector';
 import { ChainId } from '@uniswap/sdk';
+import { PhantomWalletConnector } from './PhantomWalletConnector';
 
 const POLLING_INTERVAL = 12000;
 
@@ -58,6 +59,7 @@ const NETWORK_URL = 'https://polygon-rpc.com/';
 // const PORTIS_ID = 'c0e2bf01-4b08-4fd5-ac7b-8e26b58cd236'
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;
 const PORTIS_ID = process.env.REACT_APP_PORTIS_ID;
+const MAINNET_NETWORK_URL = process.env.REACT_APP_MAINNET_NETWORK_URL;
 
 export const NETWORK_CHAIN_ID: number = parseInt(
   process.env.REACT_APP_CHAIN_ID ?? '137',
@@ -75,6 +77,16 @@ export const network = new NetworkConnector({
   urls: rpcMap,
   defaultChainId: ChainId.MATIC,
 });
+
+export const mainnetNetwork = new NetworkConnector({
+  urls: {
+    [Number('1')]: MAINNET_NETWORK_URL || 'https://rpc.ankr.com/eth',
+  },
+});
+
+export function getMainnetNetworkLibrary(): Web3Provider {
+  return new Web3Provider(mainnetNetwork.provider as any);
+}
 
 let networkLibrary: Web3Provider | undefined;
 export function getNetworkLibrary(): Web3Provider {
@@ -99,6 +111,10 @@ export const metamask = new MetaMaskConnector({
 });
 
 export const safeApp = new SafeAppConnector();
+
+export const phantomconnect = new PhantomWalletConnector({
+  supportedChainIds: [137, 80001],
+});
 
 export const zengoconnect = new WalletConnectConnector({
   rpc: { 137: NETWORK_URL },

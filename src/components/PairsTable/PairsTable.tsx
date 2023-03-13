@@ -196,14 +196,14 @@ const PairTable: React.FC<PairsTableProps> = ({
             </Link>
           </Box>
           <Box className='flex items-center'>
-            {version !== 'v2' && (
+            {version !== 'v2' && pair.isV3 && (
               <Box
                 paddingY={0.5}
                 paddingX={1}
                 borderRadius={6}
                 className='text-primaryText bg-gray30'
               >
-                {pair.fee / 10000}% Fee
+                {formatNumber(pair.fee / 10000)}% Fee
               </Box>
             )}
             {version === 'total' && (
@@ -228,13 +228,39 @@ const PairTable: React.FC<PairsTableProps> = ({
         </Box>
         {version !== 'v2' ? (
           <>
-            <Box className={`mobileRow ${apr ? 'text-success' : ''}`}>
+            <Box className='mobileRow'>
               <p>{t('apr')}</p>
-              <p>{apr ? `${formatNumber(apr)}%` : '-'}</p>
+              {pair.isV3 ? (
+                <FarmingAPRTooltip
+                  qsAPR={pair.quickPoolAPR}
+                  gammaAPRs={pair.gammaPoolAPRs}
+                >
+                  <p className={`${apr ? 'text-success' : ''}`}>
+                    {apr ? `${formatNumber(apr)}%` : '-'}
+                  </p>
+                </FarmingAPRTooltip>
+              ) : (
+                <p className={`${apr ? 'text-success' : ''}`}>
+                  {apr ? `${formatNumber(apr)}%` : '-'}
+                </p>
+              )}
             </Box>
-            <Box className={`mobileRow ${farmingApr ? 'text-success' : ''}`}>
+            <Box className='mobileRow'>
               <p>{t('farmingApr')}</p>
-              <p>{farmingApr ? `${formatNumber(farmingApr)}%` : '-'}</p>
+              {pair.isV3 ? (
+                <FarmingAPRTooltip
+                  qsAPR={pair.quickFarmingAPR}
+                  gammaAPRs={pair.gammaFarmAPRs}
+                >
+                  <p className={`${farmingApr ? 'text-success' : ''}`}>
+                    {farmingApr ? `${formatNumber(farmingApr)}%` : '-'}
+                  </p>
+                </FarmingAPRTooltip>
+              ) : (
+                <p className={`${farmingApr ? 'text-success' : ''}`}>
+                  {farmingApr ? `${formatNumber(farmingApr)}%` : '-'}
+                </p>
+              )}
             </Box>
           </>
         ) : (
@@ -295,14 +321,23 @@ const PairTable: React.FC<PairsTableProps> = ({
 
     const v3SpecificRows = [
       {
-        html: (
+        html: pair.isV3 ? (
+          <FarmingAPRTooltip
+            qsAPR={pair.quickPoolAPR}
+            gammaAPRs={pair.gammaPoolAPRs}
+          >
+            <p className={`${apr ? 'text-success' : ''}`}>
+              {apr ? `${formatNumber(apr)}%` : '-'}
+            </p>
+          </FarmingAPRTooltip>
+        ) : (
           <p className={`${apr ? 'text-success' : ''}`}>
             {apr ? `${formatNumber(apr)}%` : '-'}
           </p>
         ),
       },
       {
-        html: (
+        html: pair.isV3 ? (
           <FarmingAPRTooltip
             qsAPR={pair.quickFarmingAPR}
             gammaAPRs={pair.gammaFarmAPRs}
@@ -311,6 +346,10 @@ const PairTable: React.FC<PairsTableProps> = ({
               {farmingApr ? `${formatNumber(farmingApr)}%` : '-'}
             </p>
           </FarmingAPRTooltip>
+        ) : (
+          <p className={`${farmingApr ? 'text-success' : ''}`}>
+            {farmingApr ? `${formatNumber(farmingApr)}%` : '-'}
+          </p>
         ),
       },
     ];
@@ -371,7 +410,7 @@ const PairTable: React.FC<PairsTableProps> = ({
                   borderRadius={6}
                   className='text-primaryText bg-gray30'
                 >
-                  {pair.fee / 10000}% Fee
+                  {formatNumber(pair.fee / 10000)}% Fee
                 </Box>
               )}
             </Box>

@@ -26,7 +26,7 @@ const GammaFarmsPage: React.FC<{
   sortDesc: boolean;
 }> = ({ farmFilter, search, sortBy, sortDesc }) => {
   const { t } = useTranslation();
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
   const allGammaFarms = chainId
     ? ([] as GammaPair[])
@@ -167,29 +167,37 @@ const GammaFarmsPage: React.FC<{
             item.token1 &&
             token.address.toLowerCase() === item.token1.address.toLowerCase(),
         );
+
+      const stablePair0 = GlobalData.stablePairs.find(
+        (tokens) =>
+          !!tokens.find(
+            (token) =>
+              item.token0 &&
+              token.address.toLowerCase() === item.token0.address.toLowerCase(),
+          ),
+      );
+      const stablePair1 = GlobalData.stablePairs.find(
+        (tokens) =>
+          !!tokens.find(
+            (token) =>
+              item.token1 &&
+              token.address.toLowerCase() === item.token1.address.toLowerCase(),
+          ),
+      );
       const stableLPCondition =
         item.token0 &&
         item.token1 &&
-        ((item.token0.address.toLowerCase() ===
-          GlobalValue.tokens.MATIC.address.toLowerCase() &&
-          (item.token1.address.toLowerCase() ===
-            GlobalValue.tokens.COMMON.MATICX.address.toLowerCase() ||
-            item.token1.address.toLowerCase() ===
-              GlobalValue.tokens.COMMON.STMATIC.address.toLowerCase())) ||
-          (item.token1.address.toLowerCase() ===
-            GlobalValue.tokens.MATIC.address.toLowerCase() &&
-            (item.token0.address.toLowerCase() ===
-              GlobalValue.tokens.COMMON.MATICX.address.toLowerCase() ||
-              item.token0.address.toLowerCase() ===
-                GlobalValue.tokens.COMMON.STMATIC.address.toLowerCase())) ||
-          (item.token0.address.toLowerCase() ===
-            GlobalValue.tokens.COMMON.NEW_QUICK.address.toLowerCase() &&
-            item.token1.address.toLowerCase() ===
-              GlobalValue.tokens.COMMON.NEW_DQUICK.address.toLowerCase()) ||
-          (item.token1.address.toLowerCase() ===
-            GlobalValue.tokens.COMMON.NEW_QUICK.address.toLowerCase() &&
-            item.token0.address.toLowerCase() ===
-              GlobalValue.tokens.COMMON.NEW_DQUICK.address.toLowerCase()));
+        ((stablePair0 &&
+          stablePair0.find(
+            (token) =>
+              token.address.toLowerCase() === item.token1.address.toLowerCase(),
+          )) ||
+          (stablePair1 &&
+            stablePair1.find(
+              (token) =>
+                token.address.toLowerCase() ===
+                item.token0.address.toLowerCase(),
+            )));
 
       return (
         searchCondition &&

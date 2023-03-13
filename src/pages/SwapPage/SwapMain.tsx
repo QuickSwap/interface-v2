@@ -9,9 +9,9 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
-import { useIsV2 } from 'state/application/hooks';
-// import SwapCrossChain from './SwapCrossChain';
+import { useHistory, useParams } from 'react-router-dom';
+import { useIsProMode, useIsV2 } from 'state/application/hooks';
+import SwapCrossChain from './SwapCrossChain';
 import SwapLimitOrder from './SwapLimitOrder';
 import SwapV3Page from './V3/Swap';
 
@@ -26,12 +26,12 @@ const SwapDropdownTabs = [
   { name: 'market', key: SWAP_NORMAL },
   { name: 'marketV3', key: SWAP_V3 },
   { name: 'limit', key: SWAP_LIMIT },
-  // {
-  //   name: 'crossChain',
-  //   subTitle: 'Comming Soon!',
-  //   key: SWAP_CROSS_CHAIN,
-  //   visible: false,
-  // },
+  {
+    name: 'crossChain',
+    subTitle: 'Comming Soon!',
+    key: SWAP_CROSS_CHAIN,
+    visible: false,
+  },
 ];
 
 const SwapMain: React.FC = () => {
@@ -222,18 +222,22 @@ const SwapMain: React.FC = () => {
                   role: 'listbox',
                 }}
               >
-                {SwapDropdownTabs.map((option, index) => (
-                  <MenuItem
-                    key={option.key}
-                    disabled={option.key === selectedIndex}
-                    selected={option.key === selectedIndex}
-                    onClick={(event) => handleMenuItemClick(event, option.key)}
-                  >
-                    {t(option.name)}
-                  </MenuItem>
-                ))}
+                {SwapDropdownTabs.filter((d) => d.visible !== false).map(
+                  (option, index) => (
+                    <MenuItem
+                      key={option.key}
+                      disabled={option.key === selectedIndex}
+                      selected={option.key === selectedIndex}
+                      onClick={(event) =>
+                        handleMenuItemClick(event, option.key)
+                      }
+                    >
+                      {t(option.name)}
+                    </MenuItem>
+                  ),
+                )}
               </Menu>
-              {/* <Box
+              <Box
                 className={swapTabClass(SWAP_CROSS_CHAIN)}
                 onClick={() => {
                   setSelectedIndex(SWAP_CROSS_CHAIN);
@@ -243,7 +247,7 @@ const SwapMain: React.FC = () => {
                 }}
               >
                 <p>{t('crossChain')}</p>
-              </Box> */}
+              </Box>
             </>
           ) : (
             <>
@@ -306,7 +310,7 @@ const SwapMain: React.FC = () => {
         )}
         {v2 && Number(swapType) === SWAP_NORMAL && <Swap />}
         {v3 && Number(swapType) === SWAP_V3 && <SwapV3Page />}
-        {/* {swapType === SWAP_CROSS_CHAIN.toString() && <SwapCrossChain />} */}
+        {Number(swapType) === SWAP_CROSS_CHAIN && <SwapCrossChain />}
         {showLimitOrder && Number(swapType) === SWAP_LIMIT && (
           <SwapLimitOrder />
         )}

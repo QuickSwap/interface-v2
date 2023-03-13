@@ -14,7 +14,10 @@ import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { calculateGasMargin, formatNumber, getTokenFromAddress } from 'utils';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useMasterChefContract } from 'hooks/useContract';
+import {
+  useGammaHypervisorContract,
+  useMasterChefContract,
+} from 'hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
@@ -25,10 +28,9 @@ import { tryParseAmount } from 'state/swap/hooks';
 import {
   useMultipleContractSingleData,
   useSingleCallResult,
-} from 'state/multicall/hooks';
+} from 'state/multicall/v3/hooks';
 import GammaRewarder from 'constants/abis/gamma-rewarder.json';
 import { Interface } from '@ethersproject/abi';
-import { useTokenBalance } from 'state/wallet/hooks';
 
 const GammaFarmCardDetails: React.FC<{
   data: any;
@@ -47,13 +49,22 @@ const GammaFarmCardDetails: React.FC<{
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const masterChefContract = useMasterChefContract();
+  const hypervisorContract = useGammaHypervisorContract(pairData.address);
   const tokenMap = useSelectedTokenList();
 
   const lpToken = chainId
     ? new Token(chainId, pairData.address, 18)
     : undefined;
-  const lpTokenBalance = useTokenBalance(account ?? undefined, lpToken);
-  const availableStakeAmount = lpTokenBalance?.toExact() ?? '0';
+  const lpBalanceData = useSingleCallResult(hypervisorContract, 'balanceOf', [
+    account ?? undefined,
+  ]);
+  const lpBalanceBN =
+    !lpBalanceData.loading &&
+    lpBalanceData.result &&
+    lpBalanceData.result.length > 0
+      ? lpBalanceData.result[0]
+      : undefined;
+  const availableStakeAmount = lpBalanceBN ? formatUnits(lpBalanceBN, 18) : '0';
 
   const stakedData = useSingleCallResult(masterChefContract, 'userInfo', [
     pairData.pid,
@@ -70,6 +81,7 @@ const GammaFarmCardDetails: React.FC<{
       : 0;
   const stakedUSD = Number(stakedAmount) * lpTokenUSD;
   const availableStakeUSD = Number(availableStakeAmount) * lpTokenUSD;
+  const lpTokenBalance = tryParseAmount(availableStakeAmount, lpToken);
 
   const rewards: any[] =
     rewardData && rewardData['rewarders']
@@ -85,52 +97,56 @@ const GammaFarmCardDetails: React.FC<{
     'pendingToken',
     [pairData.pid, account ?? undefined],
   );
-  const pendingRewards = pendingRewardsData.reduce<
-    { token: Token; amount: number }[]
-  >((rewardArray, callData, index) => {
-    const reward = rewards.length > 0 ? rewards[index] : undefined;
-    if (chainId && reward && tokenMap) {
-      const rewardTokenData = getTokenFromAddress(
-        reward.rewardToken,
-        chainId,
-        tokenMap,
-        [],
-      );
-      const rewardToken = new Token(
-        chainId,
-        rewardTokenData.address,
-        rewardTokenData.decimals,
-        rewardTokenData.symbol,
-        rewardTokenData.name,
-      );
+  const pendingRewards = pendingRewardsData
+    .reduce<{ token: Token; amount: number }[]>(
+      (rewardArray, callData, index) => {
+        const reward = rewards.length > 0 ? rewards[index] : undefined;
+        if (chainId && reward && tokenMap) {
+          const rewardTokenData = getTokenFromAddress(
+            reward.rewardToken,
+            chainId,
+            tokenMap,
+            [],
+          );
+          const rewardToken = new Token(
+            chainId,
+            rewardTokenData.address,
+            rewardTokenData.decimals,
+            rewardTokenData.symbol,
+            rewardTokenData.name,
+          );
 
-      const existingRewardIndex = rewardArray.findIndex(
-        (item) =>
-          item.token.address.toLowerCase() === reward.rewardToken.toLowerCase(),
-      );
-      const rewardAmountBN =
-        !callData.loading && callData.result && callData.result.length > 0
-          ? callData.result[0]
-          : undefined;
+          const existingRewardIndex = rewardArray.findIndex(
+            (item) =>
+              item.token.address.toLowerCase() ===
+              reward.rewardToken.toLowerCase(),
+          );
+          const rewardAmountBN =
+            !callData.loading && callData.result && callData.result.length > 0
+              ? callData.result[0]
+              : undefined;
 
-      const rewardAmount =
-        (rewardAmountBN
-          ? Number(formatUnits(rewardAmountBN, rewardToken.decimals))
-          : 0) +
-        (existingRewardIndex > -1
-          ? rewardArray[existingRewardIndex].amount
-          : 0);
-      if (existingRewardIndex === -1) {
-        rewardArray.push({ token: rewardToken, amount: rewardAmount });
-      } else {
-        rewardArray[existingRewardIndex] = {
-          token: rewardToken,
-          amount: rewardAmount,
-        };
-      }
-    }
-    return rewardArray;
-  }, []);
+          const rewardAmount =
+            (rewardAmountBN
+              ? Number(formatUnits(rewardAmountBN, rewardToken.decimals))
+              : 0) +
+            (existingRewardIndex > -1
+              ? rewardArray[existingRewardIndex].amount
+              : 0);
+          if (existingRewardIndex === -1) {
+            rewardArray.push({ token: rewardToken, amount: rewardAmount });
+          } else {
+            rewardArray[existingRewardIndex] = {
+              token: rewardToken,
+              amount: rewardAmount,
+            };
+          }
+        }
+        return rewardArray;
+      },
+      [],
+    )
+    .filter((reward) => reward && Number(reward.amount) > 0);
 
   const stakeButtonDisabled =
     Number(stakeAmount) <= 0 ||
@@ -153,9 +169,7 @@ const GammaFarmCardDetails: React.FC<{
     masterChefContract?.address,
   );
 
-  const claimButtonDisabled =
-    pendingRewards.filter((reward) => reward && Number(reward.amount) > 0)
-      .length === 0 || attemptClaiming;
+  const claimButtonDisabled = pendingRewards.length === 0 || attemptClaiming;
 
   const approveOrStakeLP = async () => {
     setApproveOrStaking(true);
@@ -173,18 +187,18 @@ const GammaFarmCardDetails: React.FC<{
   };
 
   const stakeLP = async () => {
-    if (!masterChefContract || !account || !lpTokenBalance) return;
+    if (!masterChefContract || !account || !lpBalanceBN) return;
     const estimatedGas = await masterChefContract.estimateGas.deposit(
       pairData.pid,
       stakeAmount === availableStakeAmount
-        ? lpTokenBalance.numerator.toString()
+        ? lpBalanceBN
         : parseUnits(Number(stakeAmount).toFixed(18), 18),
       account,
     );
     const response: TransactionResponse = await masterChefContract.deposit(
       pairData.pid,
       stakeAmount === availableStakeAmount
-        ? lpTokenBalance.numerator.toString()
+        ? lpBalanceBN
         : parseUnits(Number(stakeAmount).toFixed(18), 18),
       account,
       {

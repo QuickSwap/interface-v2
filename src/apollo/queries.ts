@@ -801,3 +801,17 @@ export const V3_TICKS: any = (poolAddress: string, skips: number) => {
     `;
   return gql(queryStr);
 };
+
+export const GET_LENS_PROFILES = gql`
+  query($ownedBy: [EthereumAddress!]) {
+    profiles(request: { ownedBy: $ownedBy }) {
+      items {
+        name
+        handle
+        ownedBy
+        bio
+        id
+      }
+    }
+  }
+`;

@@ -2,16 +2,27 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
-import { Deposit } from '../../models/interfaces';
+import { Deposit, FormattedRewardInterface } from '../../models/interfaces';
 import { FarmingType } from '../../models/enums';
 import { useLocation } from 'react-router-dom';
 import './index.scss';
 import FarmCard from './FarmCard';
-import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Divider,
+  useMediaQuery,
+  useTheme,
+} from '@material-ui/core';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'react-i18next';
-import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
+import {
+  GammaPair,
+  GammaPairs,
+  GlobalConst,
+  MATIC_CHAIN,
+} from 'constants/index';
 import SortColumns from 'components/SortColumns';
 import { useQuery } from 'react-query';
 import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
@@ -20,9 +31,12 @@ import { ChainId, Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesToken } from 'utils/useUSDCPrice';
-import { useSingleContractMultipleData } from 'state/multicall/hooks';
+import { formatReward } from 'utils/formatReward';
+import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
 import { useMasterChefContract } from 'hooks/useContract';
 import { formatUnits } from 'ethers/lib/utils';
+import { useFarmingHandlers } from 'hooks/useStakerHandlers';
+import CurrencyLogo from 'components/CurrencyLogo';
 
 export const FarmingMyFarms: React.FC<{
   search: string;
@@ -46,8 +60,10 @@ export const FarmingMyFarms: React.FC<{
           .filter((item) => item.ableToFarm)
       : [];
   }, [chainId]);
+  const { eternalOnlyCollectRewardHandler } = useFarmingHandlers();
 
   const {
+    fetchRewards: { rewardsResult, fetchRewardsFn, rewardsLoading },
     fetchTransferredPositions: {
       fetchTransferredPositionsFn,
       transferredPositions,
@@ -65,12 +81,22 @@ export const FarmingMyFarms: React.FC<{
     },
   } = useFarmingSubgraph() || {};
   const { v3Stake } = useV3StakeData();
-  const { selectedTokenId, txType, txHash, txConfirmed, selectedFarmingType } =
-    v3Stake ?? {};
+  const {
+    selectedTokenId,
+    txType,
+    txHash,
+    txError,
+    txConfirmed,
+    selectedFarmingType,
+  } = v3Stake ?? {};
 
   const [shallowPositions, setShallowPositions] = useState<Deposit[] | null>(
     null,
   );
+
+  const [shallowRewards, setShallowRewards] = useState<
+    FormattedRewardInterface[] | null
+  >();
 
   const { hash } = useLocation();
 
@@ -198,6 +224,7 @@ export const FarmingMyFarms: React.FC<{
     fetchTransferredPositionsFn(true);
     fetchEternalFarmPoolAprsFn();
     fetchEternalFarmAprsFn();
+    fetchRewardsFn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
@@ -212,6 +239,10 @@ export const FarmingMyFarms: React.FC<{
     setShallowPositions(transferredPositions);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transferredPositions?.length]);
+
+  useEffect(() => {
+    setShallowRewards(rewardsResult.filter((reward) => reward.trueAmount));
+  }, [rewardsResult?.length]);
 
   useEffect(() => {
     if (!shallowPositions) return;
@@ -260,6 +291,12 @@ export const FarmingMyFarms: React.FC<{
             }
             return el;
           }),
+        );
+      } else if (txType === 'eternalOnlyCollectReward') {
+        if (!shallowRewards) return;
+
+        setShallowRewards(
+          shallowRewards.filter((reward) => reward.id !== selectedTokenId),
         );
       }
     }
@@ -579,11 +616,129 @@ export const FarmingMyFarms: React.FC<{
   return (
     <Box mt={2}>
       <Divider />
-      {allGammaFarms.length > 0 && (
+      {shallowRewards?.length ? (
+        <Box px={2} my={2}>
+          <h6>Unclaimed Rewards</h6>
+          <Box my={2} className='flex'>
+            {shallowRewards?.map((reward, index) =>
+              reward.trueAmount ? (
+                <Box key={index} className='flex items-center' mr={2}>
+                  <CurrencyLogo
+                    size='28px'
+                    currency={
+                      new Token(
+                        MATIC_CHAIN,
+                        reward.rewardAddress,
+                        18,
+                        reward.symbol,
+                      )
+                    }
+                  />
+                  <Box mx={2}>
+                    <Box>{reward.name}</Box>
+                    <Box>{formatReward(reward.amount)}</Box>
+                  </Box>
+                  <Button
+                    disabled={
+                      selectedTokenId === reward.id &&
+                      txType === 'eternalOnlyCollectReward' &&
+                      !txConfirmed &&
+                      !txError
+                    }
+                    onClick={() => {
+                      eternalOnlyCollectRewardHandler(reward);
+                    }}
+                  >
+                    {selectedTokenId === reward.id &&
+                    txType === 'eternalOnlyCollectReward' &&
+                    !txConfirmed &&
+                    !txError ? (
+                      <>
+                        <Loader size={'1rem'} stroke={'var(--white)'} />
+                        <Box ml='5px'>
+                          <small>{t('claiming')}</small>
+                        </Box>
+                      </>
+                    ) : (
+                      <>
+                        <small>{t('claim')}</small>
+                      </>
+                    )}
+                  </Button>
+                </Box>
+              ) : null,
+            )}
+          </Box>
+          <Divider />
+        </Box>
+      ) : null}
+      <Box px={2} my={2}>
+        <h6>QuickSwap {t('farms')}</h6>
+      </Box>
+      {transferredPositionsLoading ||
+      eternalFarmPoolAprsLoading ||
+      eternalFarmAprsLoading ||
+      !shallowPositions ? (
+        <Box py={5} className='flex justify-center'>
+          <Loader stroke={'white'} size={'1.5rem'} />
+        </Box>
+      ) : shallowPositions && shallowPositions.length === 0 ? (
+        <Box py={5} className='flex flex-col items-center'>
+          <Frown size={35} stroke={'white'} />
+          <Box mb={3} mt={1}>
+            {t('nofarms')}
+          </Box>
+        </Box>
+      ) : shallowPositions && shallowPositions.length !== 0 ? (
+        <Box padding='24px'>
+          {farmedNFTs && farmedNFTs.length > 0 && (
+            <Box pb={2}>
+              {!isMobile && (
+                <Box px={3.5}>
+                  <Box width='85%'>
+                    <SortColumns
+                      sortColumns={sortByDesktopItemsQuick}
+                      selectedSort={sortByQuick}
+                      sortDesc={sortDescQuick}
+                    />
+                  </Box>
+                </Box>
+              )}
+              <Box mt={2}>
+                {farmedNFTs.map((el, i) => {
+                  return (
+                    <div
+                      className={'v3-my-farms-position-card'}
+                      key={i}
+                      data-navigatedto={hash == `#${el.id}`}
+                    >
+                      <FarmCard
+                        el={el}
+                        poolApr={
+                          eternalFarmPoolAprs
+                            ? eternalFarmPoolAprs[el.pool.id]
+                            : undefined
+                        }
+                        farmApr={
+                          eternalFarmAprs
+                            ? eternalFarmAprs[el.farmId]
+                            : undefined
+                        }
+                      />
+                    </div>
+                  );
+                })}
+              </Box>
+            </Box>
+          )}
+        </Box>
+      ) : null}
+      <Box my={2}>
+        <Divider />
         <Box px={2} mt={2}>
           <h6>QuickSwap {t('farms')}</h6>
         </Box>
-      )}
+      </Box>
       <Box mt={2}>
         {transferredPositionsLoading ||
         eternalFarmPoolAprsLoading ||

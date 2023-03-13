@@ -41,7 +41,7 @@ import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/Pre
 import { GlobalConst } from 'constants/index';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useGammaUNIProxyContract } from 'hooks/useContract';
-import { useSingleContractMultipleData } from 'state/multicall/hooks';
+import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
 import { ETHER, WETH } from '@uniswap/sdk';
 import { maxAmountSpend } from 'utils';
 

@@ -18,12 +18,11 @@ import {
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import '../GammaLPItemDetails/index.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
-import { CurrencyAmount } from '@uniswap/sdk-core';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useGammaUNIProxyContract, useWETHContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { useSingleContractMultipleData } from 'state/multicall/hooks';
+import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 
 interface IncreaseGammaLiquidityModalProps {

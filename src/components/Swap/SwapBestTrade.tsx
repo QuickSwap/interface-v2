@@ -8,7 +8,7 @@ import {
   Fraction,
   ChainId,
 } from '@uniswap/sdk';
-import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount, NativeCurrency } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
@@ -148,6 +148,18 @@ const SwapBestTrade: React.FC<{
     independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
   const inputCurrency = currencies[Field.INPUT];
   const outputCurrency = currencies[Field.OUTPUT];
+
+  const inputCurrencyV3 = inputCurrency
+    ? currencyEquals(inputCurrency, ETHER)
+      ? ({ ...ETHER, isNative: true, isToken: false } as NativeCurrency)
+      : ({ ...inputCurrency, isNative: false, isToken: true } as Currency)
+    : undefined;
+
+  const outputCurrencyV3 = outputCurrency
+    ? currencyEquals(outputCurrency, ETHER)
+      ? ({ ...ETHER, isNative: true, isToken: false } as NativeCurrency)
+      : ({ ...outputCurrency, isNative: false, isToken: true } as Currency)
+    : undefined;
 
   const [optimalRateError, setOptimalRateError] = useState('');
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
@@ -312,18 +324,12 @@ const SwapBestTrade: React.FC<{
 
   const parsedAmounts = useMemo(() => {
     const parsedAmountInput =
-      inputCurrency && parsedAmount
-        ? CurrencyAmount.fromRawAmount(
-            inputCurrency as Currency,
-            parsedAmount.raw,
-          )
+      inputCurrencyV3 && parsedAmount
+        ? CurrencyAmount.fromRawAmount(inputCurrencyV3, parsedAmount.raw)
         : undefined;
     const parsedAmountOutput =
-      outputCurrency && parsedAmount
-        ? CurrencyAmount.fromRawAmount(
-            outputCurrency as Currency,
-            parsedAmount.raw,
-          )
+      outputCurrencyV3 && parsedAmount
+        ? CurrencyAmount.fromRawAmount(outputCurrencyV3, parsedAmount.raw)
         : undefined;
 
     return showWrap
@@ -335,18 +341,18 @@ const SwapBestTrade: React.FC<{
           [Field.INPUT]:
             independentField === Field.INPUT
               ? parsedAmountInput
-              : optimalRate && inputCurrency
+              : optimalRate && inputCurrencyV3
               ? CurrencyAmount.fromRawAmount(
-                  inputCurrency as Currency,
+                  inputCurrencyV3,
                   JSBI.BigInt(optimalRate.srcAmount),
                 )
               : undefined,
           [Field.OUTPUT]:
             independentField === Field.OUTPUT
               ? parsedAmountOutput
-              : optimalRate && outputCurrency
+              : optimalRate && outputCurrencyV3
               ? CurrencyAmount.fromRawAmount(
-                  outputCurrency as Currency,
+                  outputCurrencyV3,
                   JSBI.BigInt(optimalRate.destAmount),
                 )
               : undefined,
@@ -356,8 +362,8 @@ const SwapBestTrade: React.FC<{
     independentField,
     showWrap,
     optimalRate,
-    inputCurrency,
-    outputCurrency,
+    inputCurrencyV3,
+    outputCurrencyV3,
   ]);
   const formattedAmounts = useMemo(() => {
     return {
@@ -370,7 +376,7 @@ const SwapBestTrade: React.FC<{
 
   const [approval, approveCallback] = useApproveCallbackFromBestTrade(
     pct,
-    inputCurrency as Currency,
+    inputCurrencyV3,
     optimalRate,
     bonusRouteFound,
   );
@@ -407,9 +413,9 @@ const SwapBestTrade: React.FC<{
 
   const noRoute = !optimalRate || optimalRate.bestRoute.length < 0;
   const swapInputAmountWithSlippage =
-    optimalRate && inputCurrency
+    optimalRate && inputCurrencyV3
       ? CurrencyAmount.fromRawAmount(
-          inputCurrency as Currency,
+          inputCurrencyV3,
           (optimalRate.side === SwapSide.BUY
             ? new Fraction(ONE).add(pct)
             : new Fraction(ONE)
@@ -420,9 +426,9 @@ const SwapBestTrade: React.FC<{
   const swapInputBalanceCurrency = currencyBalances[Field.INPUT];
 
   const swapInputBalance =
-    swapInputBalanceCurrency && inputCurrency
+    swapInputBalanceCurrency && inputCurrencyV3
       ? CurrencyAmount.fromRawAmount(
-          inputCurrency as Currency,
+          inputCurrencyV3,
           swapInputBalanceCurrency.raw.toString(),
         )
       : undefined;
@@ -485,6 +491,24 @@ const SwapBestTrade: React.FC<{
   ]);
 
   const swapButtonDisabled = useMemo(() => {
+    const isSwapError =
+      (inputCurrencyV3 &&
+        inputCurrencyV3.isToken &&
+        approval === ApprovalState.UNKNOWN) ||
+      !isValid ||
+      (optimalRate && optimalRate.maxImpactReached && !isExpertMode) ||
+      !!paraswapCallbackError ||
+      (optimalRate &&
+        !parsedAmounts[Field.INPUT]?.equalTo(
+          JSBI.BigInt(optimalRate.srcAmount),
+        )) ||
+      (optimalRate &&
+        !parsedAmounts[Field.OUTPUT]?.equalTo(
+          JSBI.BigInt(optimalRate.destAmount),
+        )) ||
+      (swapInputAmountWithSlippage &&
+        swapInputBalance &&
+        swapInputAmountWithSlippage.greaterThan(swapInputBalance));
     if (account) {
       if (showWrap) {
         return Boolean(wrapInputError);
@@ -494,28 +518,11 @@ const SwapBestTrade: React.FC<{
         return (
           !isValid ||
           approval !== ApprovalState.APPROVED ||
-          (optimalRate && optimalRate.maxImpactReached && !isExpertMode)
+          (optimalRate && optimalRate.maxImpactReached && !isExpertMode) ||
+          isSwapError
         );
       } else {
-        return (
-          (inputCurrency &&
-            (inputCurrency as Currency).isToken &&
-            approval === ApprovalState.UNKNOWN) ||
-          !isValid ||
-          (optimalRate && optimalRate.maxImpactReached && !isExpertMode) ||
-          !!paraswapCallbackError ||
-          (optimalRate &&
-            !parsedAmounts[Field.INPUT]?.equalTo(
-              JSBI.BigInt(optimalRate.srcAmount),
-            )) ||
-          (optimalRate &&
-            !parsedAmounts[Field.OUTPUT]?.equalTo(
-              JSBI.BigInt(optimalRate.destAmount),
-            )) ||
-          (swapInputAmountWithSlippage &&
-            swapInputBalance &&
-            swapInputAmountWithSlippage.greaterThan(swapInputBalance))
-        );
+        return isSwapError;
       }
     } else {
       return false;
@@ -584,11 +591,8 @@ const SwapBestTrade: React.FC<{
     currencyBalances[Field.INPUT],
   );
   const maxAmountInput =
-    maxAmountInputV2 && inputCurrency
-      ? CurrencyAmount.fromRawAmount(
-          inputCurrency as Currency,
-          maxAmountInputV2.raw,
-        )
+    maxAmountInputV2 && inputCurrencyV3
+      ? CurrencyAmount.fromRawAmount(inputCurrencyV3, maxAmountInputV2.raw)
       : undefined;
 
   const handleMaxInput = useCallback(() => {
@@ -778,6 +782,18 @@ const SwapBestTrade: React.FC<{
     swapInputBalance,
   ]);
   const swapIsReady = Boolean(!swapDisabledForTx && !optimalRateError);
+  const inputCurrencySymbol = inputCurrency?.symbol;
+  const inputCurrencyAny = inputCurrency as any;
+  const inputCurrencyAddress =
+    inputCurrencyAny && inputCurrencyAny.address
+      ? inputCurrencyAny.address.toLowerCase()
+      : undefined;
+  const outputCurrencySymbol = outputCurrency?.symbol;
+  const outputCurrencyAny = outputCurrency as any;
+  const outputCurrencyAddress =
+    outputCurrencyAny && outputCurrencyAny.address
+      ? outputCurrencyAny.address.toLowerCase()
+      : undefined;
 
   useEffect(() => {
     (async () => {
@@ -835,7 +851,13 @@ const SwapBestTrade: React.FC<{
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swapIsReady, inputCurrency]);
+  }, [
+    swapIsReady,
+    inputCurrencySymbol,
+    inputCurrencyAddress,
+    outputCurrencySymbol,
+    outputCurrencyAddress,
+  ]);
 
   useEffect(() => {
     fetchOptimalRate();

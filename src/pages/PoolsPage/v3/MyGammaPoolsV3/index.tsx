@@ -12,7 +12,7 @@ import { useMasterChefContract } from 'hooks/useContract';
 import {
   useMultipleContractSingleData,
   useSingleContractMultipleData,
-} from 'state/multicall/hooks';
+} from 'state/multicall/v3/hooks';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
 import { Token } from '@uniswap/sdk';

@@ -19,6 +19,7 @@ const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
+const ContestPage = lazy(() => import('./pages/ContestPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
 // const LendPage = lazy(() => import('./pages/LendPage'));
 // const LendDetailPage = lazy(() => import('./pages/LendPage/LendDetailPage'));
@@ -143,6 +144,7 @@ const AppContent = () => {
   const showMigrate = config['migrate']['available'];
   const v2 = config['v2'];
   const v3 = config['v3'];
+  const showLeaderboard = config['leaderboard']['available'];
   return (
     <QueryClientProvider client={queryClient}>
       <Web3ReactProvider getLibrary={getLibrary}>
@@ -164,6 +166,13 @@ const AppContent = () => {
                       <Route exact path='/swap/:version?'>
                         <PageLayout>
                           <SwapPage />
+                        </PageLayout>
+                      </Route>
+                    )}
+                    {showLeaderboard && (
+                      <Route exact path='/leader-board'>
+                        <PageLayout>
+                          <ContestPage />
                         </PageLayout>
                       </Route>
                     )}

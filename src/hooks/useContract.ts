@@ -46,6 +46,7 @@ import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
 import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
+import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -271,4 +272,11 @@ export function useMasterChefContract(withSignerIfPossible?: boolean) {
     GammaMasterChef,
     withSignerIfPossible,
   );
+}
+
+export function useGammaHypervisorContract(
+  address: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, GammaPairABI, withSignerIfPossible);
 }

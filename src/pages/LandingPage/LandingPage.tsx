@@ -109,6 +109,11 @@ const LandingPage: React.FC = () => {
       icon: <img src={TikTokIcon} alt='TikTok' />,
       title: 'TikTok',
     },
+    {
+      link: 'https://t.me/QuickSwapAnnouncements',
+      icon: <TelegramIcon />,
+      title: 'Announcement',
+    },
   ];
 
   const history = useHistory();

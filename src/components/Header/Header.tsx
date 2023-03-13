@@ -104,6 +104,7 @@ const Header: React.FC = () => {
   const showAnalytics = config['analytics']['available'];
   const showLending = config['lending']['available'];
   const showGamingHub = config['gamingHub']['available'];
+  const showLeaderboard = config['leaderboard']['available'];
 
   const menuItems = [];
 
@@ -154,6 +155,16 @@ const Header: React.FC = () => {
       id: 'predictions-page-link',
       isExternal: true,
       externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
+    });
+  }
+  if (showLeaderboard) {
+    menuItems.push({
+      link: '/leader-board',
+      text: 'Leader Board',
+      id: 'contest-page-link',
+      isExternal: true,
+      externalLink: process?.env?.REACT_APP_CONTEST_URL || '',
+      isNew: true,
     });
   }
   if (showConvert) {

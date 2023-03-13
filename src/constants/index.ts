@@ -11,6 +11,7 @@ import {
   unstopabbledomains,
   metamask,
   zengoconnect,
+  phantomconnect,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -20,6 +21,7 @@ import BitKeepIcon from 'assets/images/bitkeep.png';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
 import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
 import PortisIcon from 'assets/images/portisIcon.png';
+import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
@@ -191,6 +193,7 @@ export const GlobalConst = {
   walletName: {
     METAMASK: 'Metamask',
     TRUST_WALLET: 'Trust Wallet',
+    PHANTOM_WALLET: 'Phantom',
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
     BRAVEWALLET: 'BraveWallet',
@@ -249,6 +252,26 @@ export const GammaPairs: {
         pid: 1,
       },
     ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x04d521e2c414e6d898c6f2599fdd863edf49e247',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        ableToFarm: true,
+        pid: 2,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x4a83253e88e77e8d518638974530d0cbbbf3b675',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        ableToFarm: true,
+        pid: 3,
+      },
+    ],
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
       {
         type: Presets.GAMMA_NARROW,
@@ -269,24 +292,24 @@ export const GammaPairs: {
         pid: 5,
       },
     ],
-    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+    '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
       {
         type: Presets.GAMMA_NARROW,
         title: 'Narrow',
-        address: '0x04d521e2c414e6d898c6f2599fdd863edf49e247',
-        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        address: '0x3f35705479d9d77c619b2aac9dd7a64e57151506',
+        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
         token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         ableToFarm: true,
-        pid: 2,
+        pid: 6,
       },
       {
         type: Presets.GAMMA_WIDE,
         title: 'Wide',
-        address: '0x4a83253e88e77e8d518638974530d0cbbbf3b675',
-        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        address: '0xe40a5aa22cbccc8165aedd86f6d03fc5f551c3c6',
+        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
         token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         ableToFarm: true,
-        pid: 3,
+        pid: 7,
       },
     ],
     '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
@@ -309,15 +332,6 @@ export const GammaPairs: {
         pid: 9,
       },
     ],
-    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
-      {
-        type: Presets.GAMMA_STABLE,
-        title: 'Stable',
-        address: '0x25b186eed64ca5fdd1bc33fc4cffd6d34069baec',
-        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-        token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      },
-    ],
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
       {
         type: Presets.GAMMA_STABLE,
@@ -325,8 +339,8 @@ export const GammaPairs: {
         address: '0x9e31214db6931727b7d63a0d2b6236db455c0965',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-        // ableToFarm: true,
-        // pid: 10,
+        ableToFarm: true,
+        pid: 10,
       },
     ],
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
@@ -336,17 +350,8 @@ export const GammaPairs: {
         address: '0x795f8c9b0a0da9cd8dea65fc10f9b57abc532e58',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-        // ableToFarm: true,
-        // pid: 11,
-      },
-    ],
-    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x580a84c73811e1839f75d86d75d88cca0c241ff4': [
-      {
-        type: Presets.GAMMA_DYNAMIC,
-        title: 'Dynamic',
-        address: '0xe0f0622f871d9597649062e9bbbe9bd65e918e34',
-        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-        token1Address: '0x580a84c73811e1839f75d86d75d88cca0c241ff4',
+        ableToFarm: true,
+        pid: 11,
       },
     ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
@@ -367,26 +372,6 @@ export const GammaPairs: {
         token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
         ableToFarm: true,
         pid: 13,
-      },
-    ],
-    '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
-      {
-        type: Presets.GAMMA_NARROW,
-        title: 'Narrow',
-        address: '0x3f35705479d9d77c619b2aac9dd7a64e57151506',
-        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
-        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-        ableToFarm: true,
-        pid: 6,
-      },
-      {
-        type: Presets.GAMMA_WIDE,
-        title: 'Wide',
-        address: '0xe40a5aa22cbccc8165aedd86f6d03fc5f551c3c6',
-        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
-        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-        ableToFarm: true,
-        pid: 7,
       },
     ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
@@ -784,6 +769,61 @@ export const GammaPairs: {
         pid: 52,
       },
     ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x33b0b883626c21ce5b3aad202bc435f876aee2c4',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+        ableToFarm: true,
+        pid: 53,
+      },
+    ],
+    '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
+      {
+        type: Presets.STABLE,
+        title: 'Stable',
+        address: '0xe503c1dfd7012e72af4c415f4c5e8abf5b45c25f',
+        token0Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+        token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
+        ableToFarm: true,
+        pid: 54,
+      },
+    ],
+    '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.STABLE,
+        title: 'Stable',
+        address: '0x45a3a657b834699f5cc902e796c547f826703b79',
+        token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 55,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x3fb73a554defa86b18f72e543aa2174a4d5f9621',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
+        ableToFarm: true,
+        pid: 56,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x2ef46196d7d25b5111ca1fcba206b248fee32d8d',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
+        ableToFarm: true,
+        pid: 57,
+      },
+    ],
   },
   [ChainId.MUMBAI]: {},
   [ChainId.DOEGCHAIN_TESTNET]: {},
@@ -813,6 +853,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: GlobalConst.walletName.TRUST_WALLET,
     iconName: TrustIcon,
     description: 'Trust wallet extension.',
+    href: null,
+    color: '#E8831D',
+  },
+  PHANTOM_WALLET: {
+    connector: phantomconnect,
+    name: GlobalConst.walletName.PHANTOM_WALLET,
+    iconName: PhantomIcon,
+    description: 'Phantom wallet extension.',
     href: null,
     color: '#E8831D',
   },
@@ -1149,6 +1197,14 @@ export const GlobalData = {
     GlobalValue.tokens.COMMON.USDT,
     GlobalValue.tokens.COMMON.DAI,
   ],
+  stablePairs: [
+    [
+      GlobalValue.tokens.MATIC,
+      GlobalValue.tokens.COMMON.MATICX,
+      GlobalValue.tokens.COMMON.STMATIC,
+    ],
+    [GlobalValue.tokens.COMMON.NEW_QUICK, GlobalValue.tokens.COMMON.NEW_DQUICK],
+  ],
 };
 
 // a list of tokens by chain
@@ -1168,3 +1224,46 @@ export interface WalletInfo {
   mobileOnly?: true;
   installLink?: string | null;
 }
+
+export const ContestPairs = [
+  {
+    name: 'All',
+    address: 'all',
+  },
+  {
+    name: 'WETH / USDC',
+    address: '0x55caabb0d2b704fd0ef8192a7e35d8837e678207',
+    token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+    token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+  },
+  {
+    name: 'WMATIC / USDC',
+    address: '0xae81fac689a1b4b1e06e7ef4a2ab4cd8ac0a087d',
+    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+    token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+  },
+  {
+    name: 'WMATIC / USDT',
+    address: '0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff',
+    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+    token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+  },
+  {
+    name: 'WMATIC / WETH',
+    address: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
+    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+    token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+  },
+];
+
+export const LeaderBoardAnalytics = {
+  CHART_DURATIONS: [1, 7, 30],
+  CHART_DURATION_TEXTS: ['24H', '7D', '30D'],
+};
+
+// export const ContestPairs = {
+//   ETH_USDC_PAIR: '0x853Ee4b2A13f8a742d64C8F088bE7bA2131f670d',
+//   MATIC_USDC_PAIR: '0x6e7a5FAFcec6BB1e78bAE2A1F0B612012BF14827',
+//   MATIC_USDT_PAIR: '0x604229c960e5cacf2aaeac8be68ac07ba9df81c3',
+//   MATIC_ETH_PAIR: '0xadbf1854e5883eb8aa7baf50705338739e558e5b',
+// };

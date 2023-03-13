@@ -225,13 +225,15 @@ export function EternalFarmCard({
       </Box>
 
       <Box width={isMobile ? '100%' : '10%'}>
-        <Button
-          fullWidth
-          style={{ height: 40, borderRadius: 10 }}
-          onClick={farmHandler}
-        >
-          {t('farm')}
-        </Button>
+        {!isDetached && (
+          <Button
+            fullWidth
+            style={{ height: 40, borderRadius: 10 }}
+            onClick={farmHandler}
+          >
+            {t('farm')}
+          </Button>
+        )}
       </Box>
     </Box>
   );
