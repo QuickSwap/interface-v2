@@ -117,14 +117,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   };
 
   return (
-    <CustomModal open={open} onClose={onClose} hideBackdrop={true}>
-      <CustomModal
-        open={expertConfirm}
-        hideBackdrop={true}
-        onClose={() => setExpertConfirm(false)}
-      >
+    <CustomModal open={open} onClose={onClose}>
+      <CustomModal open={expertConfirm} onClose={() => setExpertConfirm(false)}>
         <Box paddingX={3} paddingY={4}>
-          <Box mb={3} className='flex justify-between items-center'>
+          <Box mb={3} className='flex items-center justify-between'>
             <h5>{t('areyousure')}</h5>
             <CloseIcon
               className='cursor-pointer'
@@ -163,7 +159,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         </Box>
       </CustomModal>
       <Box paddingX={3} paddingY={4}>
-        <Box mb={3} className='flex justify-between items-center'>
+        <Box mb={3} className='flex items-center justify-between'>
           <h5>{t('settings')}</h5>
           <CloseIcon onClick={onClose} />
         </Box>
@@ -280,7 +276,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           </Box>
         )}
         <Divider />
-        <Box my={2.5} className='flex justify-between items-center'>
+        <Box my={2.5} className='flex items-center justify-between'>
           <Box className='flex items-center'>
             <p style={{ marginRight: 6 }}>{t('expertMode')}</p>
             <QuestionHelper size={20} text={t('expertModeHelper')} />
@@ -298,7 +294,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           />
         </Box>
         <Divider />
-        <Box my={2.5} className='flex justify-between items-center'>
+        <Box my={2.5} className='flex items-center justify-between'>
           <Box className='flex items-center'>
             <p style={{ marginRight: 6 }}>{t('disableBonusRouter')}</p>
           </Box>
@@ -308,7 +304,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           />
         </Box>
         <Divider />
-        <Box mt={2.5} className='flex justify-between items-center'>
+        <Box mt={2.5} className='flex items-center justify-between'>
           <p>{t('language')}</p>
           <Box className='flex items-center'>
             <p>
