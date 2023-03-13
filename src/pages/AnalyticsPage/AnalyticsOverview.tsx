@@ -231,7 +231,14 @@ const AnalyticsOverview: React.FC = () => {
               data.map((item: any, ind: number) => {
                 const gammaPairs = item.isV3
                   ? GammaPairs[
-                      item.token0.id.toLowerCase() + '-' + item.token1.id
+                      item.token0.id.toLowerCase() +
+                        '-' +
+                        item.token1.id.toLowerCase()
+                    ] ??
+                    GammaPairs[
+                      item.token1.id.toLowerCase() +
+                        '-' +
+                        item.token0.id.toLowerCase9
                     ]
                   : undefined;
                 const gammaFarmAPRs = gammaPairs
@@ -357,7 +364,7 @@ const AnalyticsOverview: React.FC = () => {
         </Grid>
       </Grid>
       <Box mt={4}>
-        <Box className='panel flex flex-wrap'>
+        <Box className='flex flex-wrap panel'>
           {globalData ? (
             <AnalyticsInfo data={globalData} />
           ) : (
@@ -366,12 +373,12 @@ const AnalyticsOverview: React.FC = () => {
         </Box>
       </Box>
       <Box mt={4}>
-        <Box className='flex justify-between items-center'>
+        <Box className='flex items-center justify-between'>
           <Box className='headingWrapper'>
             <p className='weight-600'>{t('topTokens')}</p>
           </Box>
           <Box
-            className='headingWrapper cursor-pointer'
+            className='cursor-pointer headingWrapper'
             onClick={() => history.push(`/analytics/${version}/tokens`)}
           >
             <p className='weight-600'>{t('seeAll')}</p>
@@ -401,7 +408,7 @@ const AnalyticsOverview: React.FC = () => {
             <p className='weight-600'>{t('topPairs')}</p>
           </Box>
           <Box
-            className='headingWrapper cursor-pointer'
+            className='cursor-pointer headingWrapper'
             onClick={() => history.push(`/analytics/${version}/pairs`)}
           >
             <p className='weight-600'>{t('seeAll')}</p>

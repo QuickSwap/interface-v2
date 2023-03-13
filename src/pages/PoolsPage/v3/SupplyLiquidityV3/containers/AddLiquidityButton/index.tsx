@@ -351,10 +351,22 @@ export function AddLiquidityButton({
         handleAddLiquidity();
       } catch (error) {
         console.error('Failed to send transaction', error);
+        const errorMsg =
+          error && error.message
+            ? error.message.toLowerCase()
+            : error && error.data && error.data.message
+            ? error.data.message.toLowerCase()
+            : '';
         setAttemptingTxn(false);
         setTxPending(false);
         setAddLiquidityErrorMessage(
-          error?.code === 4001 ? t('txRejected') : t('errorInTx'),
+          errorMsg.indexOf('improper ratio') > -1
+            ? t('gammaImproperRatio')
+            : errorMsg.indexOf('price overflow') > -1
+            ? t('gammaPriceOverflow')
+            : error?.code === 4001
+            ? t('txRejected')
+            : t('errorInTx'),
         );
       }
     } else if (mintInfo.position && account && deadline) {
@@ -502,7 +514,7 @@ export function AddLiquidityButton({
   const modalHeader = () => {
     return (
       <Box>
-        <Box mt={3} className='flex justify-between items-center'>
+        <Box mt={3} className='flex items-center justify-between'>
           <Box className='flex items-center'>
             <Box className='flex' mr={1}>
               <DoubleCurrencyLogo
@@ -547,7 +559,7 @@ export function AddLiquidityButton({
           </Box>
         </Box>
         <Box mt={3}>
-          <Box className='flex justify-between items-center'>
+          <Box className='flex items-center justify-between'>
             <p>{t('selectedRange')}</p>
             {currencyBase && currencyQuote && (
               <RateToggle

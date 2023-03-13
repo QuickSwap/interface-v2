@@ -640,5 +640,7 @@
   "totalAPR": "Total APR",
   "wrapMATIC": "Wrap MATIC",
   "wrappingMATIC": "Wrapping MATIC",
-  "fetchingBestRoute": "Fetching Best Route"
+  "fetchingBestRoute": "Fetching Best Route",
+  "gammaImproperRatio": "Current asset ratio is expired.  Please refresh page and re-try the transaction",
+  "gammaPriceOverflow": "Market volatility is too high at the moment.  Please re-try deposit in 15 minutes"
 }
