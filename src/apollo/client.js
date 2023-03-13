@@ -41,3 +41,11 @@ export const blockClient = new ApolloClient({
   cache: new InMemoryCache(),
   shouldBatch: true,
 });
+
+export const lensClient = new ApolloClient({
+  link: new HttpLink({
+    uri: process.env.REACT_APP_LENS_API_URL,
+  }),
+  cache: new InMemoryCache(),
+  shouldBatch: true,
+});
