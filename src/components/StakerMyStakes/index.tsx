@@ -669,10 +669,7 @@ export const FarmingMyFarms: React.FC<{
         </Box>
       ) : null}
       <Box px={2} my={2}>
-        <Divider />
-        <Box px={2} mt={2}>
-          <h6>QuickSwap {t('farms')}</h6>
-        </Box>
+        <h6>QuickSwap {t('farms')}</h6>
       </Box>
       {transferredPositionsLoading ||
       eternalFarmPoolAprsLoading ||
