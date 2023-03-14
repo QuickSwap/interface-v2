@@ -147,7 +147,14 @@ const AnalyticsPairs: React.FC = () => {
               data.map((item: any, ind: number) => {
                 const gammaPairs = item.isV3
                   ? GammaPairs[
-                      item.token0.id.toLowerCase() + '-' + item.token1.id
+                      item.token0.id.toLowerCase() +
+                        '-' +
+                        item.token1.id.toLowerCase()
+                    ] ??
+                    GammaPairs[
+                      item.token1.id.toLowerCase() +
+                        '-' +
+                        item.token0.id.toLowerCase()
                     ]
                   : undefined;
                 const gammaFarmAPRs = gammaPairs
