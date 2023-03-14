@@ -1,11 +1,21 @@
 import { Box, Divider, Grid } from '@material-ui/core';
 import { NavigateBefore, NavigateNext } from '@material-ui/icons';
 import { AdsSlider, SwapTokenDetailsHorizontal } from 'components';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
 import LiquidityPools from './LiquidityPools';
 import SwapMain from './SwapMain';
 import SwapNewsWidget from './SwapNewWidget';
+
+type NavParams = {
+  swapIndex: string | undefined;
+};
+
+function useQuery() {
+  const { search } = useLocation();
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
 const SwapDefaultMode: React.FC<{
   token1: any;
@@ -13,6 +23,18 @@ const SwapDefaultMode: React.FC<{
 }> = ({ token1, token2 }) => {
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
+  const query = useQuery();
+  const [disabledLeft, setDisabledLeft] = useState(false);
+
+  useEffect(() => {
+    if (query.get('swapIndex') === '4') {
+      setDisabledLeft(true);
+      setLeftOpen(false);
+    } else {
+      setLeftOpen(true);
+      setDisabledLeft(false);
+    }
+  }, [query]);
 
   return (
     <Grid>
@@ -22,8 +44,13 @@ const SwapDefaultMode: React.FC<{
             <Grid item>
               <Box
                 sx={{ display: { xs: 'none', lg: 'block' } }}
-                className='btn-swap-widget'
-                onClick={() => setLeftOpen(!leftOpen)}
+                className={`btn-swap-widget ${
+                  disabledLeft ? 'btn-swap-widget-disabled' : ''
+                } `}
+                onClick={() => {
+                  if (disabledLeft) return;
+                  setLeftOpen(!leftOpen);
+                }}
               >
                 {!leftOpen && <NavigateBefore />}
                 {leftOpen && <NavigateNext />}
