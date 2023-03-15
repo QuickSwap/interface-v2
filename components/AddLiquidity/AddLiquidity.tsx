@@ -40,7 +40,7 @@ import {
   formatTokenAmount,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
+import AddLiquidityIcon from 'svgs/AddLiquidityIcon.svg';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { useParams } from 'react-router-dom';
@@ -519,13 +519,13 @@ const AddLiquidity: React.FC<{
             </Box>
           </Box>
         )}
-      <Box className='swapButtonWrapper flex-wrap'>
+      <Box className='flex-wrap swapButtonWrapper'>
         {(approvalA === ApprovalState.NOT_APPROVED ||
           approvalA === ApprovalState.PENDING ||
           approvalB === ApprovalState.NOT_APPROVED ||
           approvalB === ApprovalState.PENDING) &&
           !error && (
-            <Box className='flex fullWidth justify-between' mb={2}>
+            <Box className='flex justify-between fullWidth' mb={2}>
               {approvalA !== ApprovalState.APPROVED && (
                 <Box
                   width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box } from '@material-ui/core';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import { Box } from '@mui/material';
+import SearchIcon from 'svgs/SearchIcon.svg';
 import { clientV2, clientV3 } from 'apollo/client';
 import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
 import {

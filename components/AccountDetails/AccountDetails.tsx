@@ -3,11 +3,11 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
-import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
+import Close from 'svgs/CloseIcon.svg';
 import {
   injected,
   walletlink,
@@ -76,7 +76,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <Close className='cursor-pointer' onClick={toggleWalletModal} />
       </Box>
       <Box mt={2} padding={2} borderRadius={10} className='bg-secondary2'>
-        <Box className='flex justify-between items-center'>
+        <Box className='flex items-center justify-between'>
           {formatConnectorName()}
           <Box className='flex items-center'>
             {connector !== injected &&
@@ -122,7 +122,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               : account && shortenAddress(account)}
           </h5>
         </Box>
-        <Box className='flex justify-between items-center'>
+        <Box className='flex items-center justify-between'>
           {account && (
             <Box className='flex items-center'>
               <Copy toCopy={account} />
@@ -152,7 +152,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       {!!pendingTransactions.length || !!confirmedTransactions.length ? (
         <>
           <Box
-            className='flex justify-between items-center'
+            className='flex items-center justify-between'
             px={2}
             pt={2}
             mb={1}
