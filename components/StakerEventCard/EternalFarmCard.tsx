@@ -4,7 +4,7 @@ import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Token } from '@uniswap/sdk';
 import { Link } from 'react-router-dom';
-import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
 import { formatCompact, formatNumber, getTokenFromAddress } from 'utils';

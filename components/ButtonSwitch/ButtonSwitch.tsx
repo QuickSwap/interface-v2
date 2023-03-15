@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Tab, Tabs } from '@material-ui/core';
+import { Box, Tab, Tabs } from '@mui/material';
 import 'components/styles/ButtonSwitch.scss';
 
 interface Item {

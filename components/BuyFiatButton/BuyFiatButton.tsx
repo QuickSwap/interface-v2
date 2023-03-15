@@ -1,4 +1,4 @@
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { BinanceModal, BuyFiatModal, MoonpayModal } from 'components';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +47,7 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({
       />
       {textOnly ? (
         <Box
-          className='text-link text-primary cursor-pointer'
+          className='cursor-pointer text-link text-primary'
           onClick={() => {
             setOpenMenu(true);
           }}

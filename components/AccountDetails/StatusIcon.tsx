@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { injected, portis } from 'connectors';
 import { useActiveWeb3React } from 'hooks';

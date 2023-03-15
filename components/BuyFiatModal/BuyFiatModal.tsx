@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon2.svg';
 import Transak from 'assets/images/Transak.png';
@@ -92,7 +91,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   return (
     <CustomModal open={open} onClose={onClose}>
       <Box padding={3}>
-        <Box className='flex justify-between items-center'>
+        <Box className='flex items-center justify-between'>
           <h6>{t('fiatProviders')}</h6>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>

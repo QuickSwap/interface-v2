@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import Slider from 'react-slick';
 import { useDefaultAdsList } from 'state/ads/hooks';
 

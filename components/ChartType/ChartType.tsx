@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import 'components/styles/ChartType.scss';
 
 interface ChartTypeProps {
@@ -20,7 +20,7 @@ const ChartType: React.FC<ChartTypeProps> = ({
   textClass = 'text-primaryText',
 }) => {
   return (
-    <Box className='flex items-center flex-wrap'>
+    <Box className='flex flex-wrap items-center'>
       {chartTypes.map((value, index) => (
         <Box
           key={index}

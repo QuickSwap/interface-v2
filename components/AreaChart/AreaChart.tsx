@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import Chart from 'react-apexcharts';
 import { useIsDarkMode } from 'state/user/hooks';
 import { formatCompact, formatDateFromTimeStamp, formatNumber } from 'utils';
