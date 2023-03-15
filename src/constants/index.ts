@@ -1185,6 +1185,13 @@ export const GlobalValue = {
         'stMatic',
         'Staked MATIC',
       ),
+      WSTETH: new Token(
+        ChainId.MATIC,
+        '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+        18,
+        'wstETH',
+        'Wrapped liquid staked Ether 2.0',
+      ),
     },
   },
   marketSDK: {
