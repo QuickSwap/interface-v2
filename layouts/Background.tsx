@@ -1,24 +1,20 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import { useLocation } from 'react-router-dom';
-import HeroBkg from 'assets/images/heroBkg.png';
-import defaultHeroBkg from 'assets/images/heroBkg.svg';
+import { Box } from '@mui/material';
 
 const Background: React.FC<{ fallback: boolean | undefined }> = ({
   fallback = false,
 }) => {
-  const { pathname } = useLocation();
-  const showDefaultBG = fallback || pathname !== '/';
+  const showDefaultBG = fallback;
   return (
     <Box className='heroBkg'>
       <img
         className={showDefaultBG ? 'hidden' : ''}
-        src={HeroBkg}
+        src='assets/images/heroBkg.png'
         alt='Hero Background'
       />
       <img
         className={showDefaultBG ? '' : 'hidden'}
-        src={defaultHeroBkg}
+        src='assets/images/heroBkg.svg'
         alt='Hero Background'
       />
     </Box>

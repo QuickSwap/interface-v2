@@ -1,7 +1,6 @@
 import App, { AppProps } from 'next/app';
 import React, { Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
 import Head from 'next/head';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
@@ -9,7 +8,7 @@ import { PageLayout } from 'layouts';
 import Background from 'layouts/Background';
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core';
 import { getLibrary } from 'utils';
-import { mainTheme } from './theme';
+import { mainTheme } from 'styles/theme';
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
 import { GlobalConst } from 'constants/index';
 import store from 'state';
@@ -72,7 +71,6 @@ function Updaters() {
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const queryClient = new QueryClient();
-  const router = useRouter();
   const arcXAPIKey = process.env.REACT_APP_ARCX_API_KEY;
 
   const AppContent = () => (
@@ -106,16 +104,11 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           name='viewport'
           content='width=device-width, initial-scale=1, minimum-scale=1'
         />
-        <meta name='theme-color' content='#000000' />
         <meta
           name='description'
           content='QuickSwap is a next-gen #DEX for #DeFi. Trade at lightning-fast speeds with near-zero gas fees.'
         />
         <link rel='apple-touch-icon' href='/logo_circle.png' />
-
-        <link rel='manifest' href='/manifest.json' />
-        <link rel='preconnect' href='https://fonts.googleapis.com' />
-        <link rel='preconnect' href='https://fonts.gstatic.com' />
         <title>QuickSwap</title>
       </Head>
       {arcXAPIKey ? (
