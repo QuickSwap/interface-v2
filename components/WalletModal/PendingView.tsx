@@ -1,6 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import React from 'react';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box, CircularProgress } from '@mui/material';
 import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import { injected } from 'connectors';
 import Option from './Option';

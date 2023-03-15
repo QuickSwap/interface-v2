@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({

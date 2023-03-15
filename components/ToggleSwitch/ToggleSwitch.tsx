@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import 'components/styles/ToggleSwitch.scss';
 
 const ToggleSwitch: React.FC<{ toggled: boolean; onToggle: () => void }> = ({

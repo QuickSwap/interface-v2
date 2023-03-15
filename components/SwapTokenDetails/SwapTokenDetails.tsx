@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Grid, useTheme } from '@mui/material';
+import { Skeleton } from '@mui/lab';
+import { ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
 import { CurrencyLogo, CopyHelper } from 'components';
 import {
   useBlockNumber,
@@ -171,7 +170,7 @@ const SwapTokenDetails: React.FC<{
           </Grid>
         </Grid>
       </Box>
-      <Box className='flex justify-between items-center' py={1} px={2}>
+      <Box className='flex items-center justify-between' py={1} px={2}>
         <a
           href={`${process.env.REACT_APP_SCAN_BASE_URL}/token/${tokenAddress}`}
           target='_blank'

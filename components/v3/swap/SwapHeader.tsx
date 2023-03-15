@@ -1,7 +1,7 @@
 import React from 'react';
 import { Percent } from '@uniswap/sdk-core';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 interface SwapHeaderProps {
   allowedSlippage: Percent;

@@ -5,7 +5,7 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
-import { Box, Button, Divider } from '@material-ui/core';
+import { Box, Button, Divider } from '@mui/material';
 import { PositionPool } from 'models/interfaces';
 import { useTranslation } from 'react-i18next';
 import {

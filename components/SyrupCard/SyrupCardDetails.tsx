@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Divider, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTranslation } from 'react-i18next';
 import { SyrupInfo } from 'types';

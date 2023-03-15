@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Token } from '@uniswap/sdk';
 import { DoubleCurrencyLogo } from 'components';
@@ -118,7 +118,7 @@ const GammaFarmCard: React.FC<{
 
         <Box width='10%' className='flex justify-center'>
           <Box
-            className='flex items-center justify-center text-primary cursor-pointer'
+            className='flex items-center justify-center cursor-pointer text-primary'
             width={20}
             height={20}
             onClick={() => setShowDetails(!showDetails)}

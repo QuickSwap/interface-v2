@@ -1,7 +1,7 @@
 import { Currency, Fraction, Trade, TradeType } from '@uniswap/sdk';
 import React, { useMemo } from 'react';
 import { AlertTriangle } from 'react-feather';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { Field } from 'state/swap/actions';
 import { DoubleCurrencyLogo } from 'components';
 import useUSDCPrice from 'utils/useUSDCPrice';

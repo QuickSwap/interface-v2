@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Slider from 'react-slick';
-import { useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { useMediaQuery, useTheme } from '@mui/material';
+import { ChevronRight, ChevronLeft } from '@mui/icons-material';
 import {
   useStakingInfo,
   getBulkPairData,
@@ -63,8 +61,8 @@ const RewardSlider: React.FC = () => {
     speed: 500,
     slidesToShow: mobileWindowSize ? 1 : tabletWindowSize ? 2 : 3,
     slidesToScroll: 1,
-    nextArrow: <ChevronRightIcon />,
-    prevArrow: <ChevronLeftIcon />,
+    nextArrow: <ChevronRight />,
+    prevArrow: <ChevronLeft />,
   };
 
   return (

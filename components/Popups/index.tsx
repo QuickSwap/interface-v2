@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useActivePopups } from 'state/application/hooks';
 import { useURLWarningVisible } from 'state/user/hooks';
 import PopupItem from './PopupItem';

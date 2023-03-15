@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import 'components/styles/SearchInput.scss';
 

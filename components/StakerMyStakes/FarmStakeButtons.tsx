@@ -1,6 +1,5 @@
 import React from 'react';
-import { Box, Button, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import { FarmingType } from 'models/enums';
 import Loader from 'components/Loader';

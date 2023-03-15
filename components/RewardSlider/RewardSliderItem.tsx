@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { DoubleCurrencyLogo } from 'components';

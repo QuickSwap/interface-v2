@@ -1,6 +1,6 @@
 import { ChainId } from '@uniswap/sdk';
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { CustomModal } from 'components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { ReactComponent as TransactionFailed } from 'assets/images/TransactionFailed.svg';
@@ -123,7 +123,7 @@ export const ConfirmationModalContentV3: React.FC<ConfirmationModalContentProps>
 }) => {
   return (
     <Box padding={4}>
-      <Box className='flex justify-between items-center'>
+      <Box className='flex items-center justify-between'>
         <p>{title}</p>
         <CloseIcon onClick={onDismiss} />
       </Box>

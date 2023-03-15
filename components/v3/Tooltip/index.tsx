@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback, useState } from 'react';
 import Popover, { PopoverProps } from '../Popover';
 import 'components/styles/v3/tooltip.scss';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 interface TooltipProps extends Omit<PopoverProps, 'content'> {
   text: ReactNode;

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
+import { Box } from '@mui/material';
+import { ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
 import 'components/styles/SortColumns.scss';
 
 export interface SortColumn {

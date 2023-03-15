@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Contract } from '@ethersproject/contracts';
 import { ArrowLeft, ArrowDown } from 'react-feather';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -426,7 +426,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         )}
         <Box className='flex items-center justify-between'>
           <ArrowLeft
-            className='text-secondary cursor-pointer'
+            className='cursor-pointer text-secondary'
             onClick={onClose}
           />
           <h6>{t('removeLiquidity')}</h6>
@@ -510,7 +510,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           </Box>
         </Box>
         {pair && (
-          <Box className='flex justify-between items-center' mt={2} px={2}>
+          <Box className='flex items-center justify-between' mt={2} px={2}>
             <small>
               1 {currency0.symbol} ={' '}
               {tokenA ? pair.priceOf(tokenA).toSignificant(6) : '-'}{' '}
@@ -523,7 +523,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             </small>
           </Box>
         )}
-        <Box mt={2} className='flex justify-between items-center'>
+        <Box mt={2} className='flex items-center justify-between'>
           <Button
             className='removeButton'
             onClick={onAttemptToApprove}

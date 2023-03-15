@@ -12,7 +12,7 @@ import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance as useCurrencyBalanceV2 } from 'state/wallet/hooks';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'react-i18next';
 import JSBI from 'jsbi';
@@ -175,7 +175,7 @@ export default function CurrencyInputPanel({
               }}
             >
               {currency ? (
-                <Box className='flex w-100 justify-between items-center'>
+                <Box className='flex items-center justify-between w-100'>
                   <Box className='flex'>
                     {showETH ? (
                       <DoubleCurrencyLogo

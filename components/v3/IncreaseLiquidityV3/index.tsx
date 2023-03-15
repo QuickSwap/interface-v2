@@ -36,7 +36,7 @@ import { JSBI } from '@uniswap/sdk';
 import { PositionPool } from 'models/interfaces';
 import { useTranslation } from 'react-i18next';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';

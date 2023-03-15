@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box } from '@material-ui/core';
-import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Box } from '@mui/material';
+import { ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
+import { Skeleton } from '@mui/lab';
 import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
@@ -85,7 +85,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
                   <CurrencyLogo currency={currency} size='28px' />
                   <Box ml={1}>
                     <small className='text-bold'>{token.symbol}</small>
-                    <Box className='flex justify-center items-center'>
+                    <Box className='flex items-center justify-center'>
                       <small>${formatNumber(token.priceUSD)}</small>
                       <Box className={`topMoverText ${priceClass}`}>
                         {!hideArrow && priceUp && <ArrowDropUp />}
@@ -102,7 +102,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
             })}
           </Box>
         ) : (
-          <Skeleton variant='rect' width='100%' height={100} />
+          <Skeleton variant='rectangular' width='100%' height={100} />
         )}
       </Box>
     </Box>

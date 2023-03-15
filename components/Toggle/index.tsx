@@ -1,7 +1,7 @@
 import React from 'react';
 import { darken } from 'polished';
 import { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import styled, { keyframes } from 'styled-components/macro';
 
 const turnOnToggle = keyframes`

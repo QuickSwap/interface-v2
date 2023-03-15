@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, LinearProgress } from '@material-ui/core';
+import { Box, LinearProgress } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils/index';
 import { ReactComponent as ArrowTopRight } from 'assets/images/ArrowTopRight.svg';
@@ -34,7 +34,7 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
 
   return (
     <>
-      <Box mb={1.5} className='flex justify-between items-center'>
+      <Box mb={1.5} className='flex items-center justify-between'>
         <small
           className={`weight-600 ${
             pending ? 'text-yellow3' : success ? 'text-success' : 'text-error'

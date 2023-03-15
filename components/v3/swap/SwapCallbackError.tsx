@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import React, { ReactNode } from 'react';
 import { AlertTriangle } from 'react-feather';
 

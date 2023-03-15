@@ -15,7 +15,7 @@ import { shortenAddress } from 'utils';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { WrappedCurrency } from 'models/types';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import 'components/styles/v3/swap.scss';
 
@@ -128,7 +128,7 @@ export default function SwapModalHeader({
           mb={2}
           p={1}
           borderRadius='6px'
-          className='flex items-center bg-primaryLight justify-between'
+          className='flex items-center justify-between bg-primaryLight'
         >
           <Box className='flex text-primary'>
             <AlertTriangle

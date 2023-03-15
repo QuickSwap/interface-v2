@@ -6,7 +6,7 @@ import {
   Button,
   useTheme,
   useMediaQuery,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { CurrencyLogo, NumericalInput } from 'components';
 import { Token } from '@uniswap/sdk';
@@ -352,7 +352,7 @@ const GammaFarmCardDetails: React.FC<{
                 onUserInput={setStakeAmount}
               />
               <span
-                className='weight-600 cursor-pointer text-primary'
+                className='cursor-pointer weight-600 text-primary'
                 onClick={() => setStakeAmount(availableStakeAmount)}
               >
                 {t('max')}
@@ -393,7 +393,7 @@ const GammaFarmCardDetails: React.FC<{
                 onUserInput={setUnStakeAmount}
               />
               <span
-                className='weight-600 cursor-pointer text-primary'
+                className='cursor-pointer weight-600 text-primary'
                 onClick={() => setUnStakeAmount(stakedAmount)}
               >
                 {t('max')}

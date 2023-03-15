@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { formatNumber } from 'utils';
 import { useTranslation } from 'react-i18next';
 import 'components/styles/TotalAPRToolTip.scss';
@@ -27,7 +27,7 @@ const TotalAPRTooltip: React.FC<TotalAPRToolTipProps> = ({
       content={
         <Box className='totalAPRTooltipWrapper'>
           <Box
-            className='flex justify-between items-center bg-grey29'
+            className='flex items-center justify-between bg-grey29'
             height='40px'
           >
             <small>{t('totalAPR')}</small>

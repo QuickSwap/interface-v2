@@ -21,9 +21,9 @@ import { Token } from '@uniswap/sdk-core';
 import { formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { ChainId } from '@uniswap/sdk';
-import { Box, Button } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
-import { Check } from '@material-ui/icons';
+import { Box, Button } from '@mui/material';
+import { Skeleton } from '@mui/lab';
+import { Check } from '@mui/icons-material';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useTranslation } from 'react-i18next';
 
@@ -368,7 +368,7 @@ export function FarmModal({
         </Box>
       ) : positionsForPoolLoading ? (
         <Box
-          className='flex justify-center items-center'
+          className='flex items-center justify-center'
           width='100%'
           height='400px'
         >
@@ -411,7 +411,7 @@ export function FarmModal({
                   <p>{t('noNFTForPool')}</p>
                 </Box>
                 <p>{t('takePartinFarmNeedTo')}</p>
-                <Box mt={1} className='flex justify-center items-center'>
+                <Box mt={1} className='flex items-center justify-center'>
                   <NavLink
                     className='v3-stake-liquidity-link'
                     to={linkToProviding}

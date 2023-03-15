@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -105,7 +105,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
               }}
             />
             <span
-              className='text-primary text-bold cursor-pointer'
+              className='cursor-pointer text-primary text-bold'
               onClick={() => {
                 setTypedValue(dQuickBalance ? dQuickBalance.toExact() : '0');
                 setStakePercent(100);

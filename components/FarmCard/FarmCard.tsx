@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
@@ -145,7 +144,7 @@ const FarmCard: React.FC<{
                 </>
               )}
             </Box>
-            <Box width={0.15} className='flex justify-center items-center'>
+            <Box width={0.15} className='flex items-center justify-center'>
               <small className='text-success'>{apyWithFee}%</small>
               <Box ml={0.5} height={16}>
                 <img src={CircleInfoIcon} alt={'arrow up'} />

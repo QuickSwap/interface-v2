@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { formatNumber } from 'utils';
 import 'components/styles/FarmingAPRToolTip.scss';
 import Popover from 'components/v3/Popover';

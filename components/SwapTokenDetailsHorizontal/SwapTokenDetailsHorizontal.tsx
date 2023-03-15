@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Grid, useTheme } from '@mui/material';
+import { Skeleton } from '@mui/lab';
 import { CurrencyLogo, CopyHelper } from 'components';
 import {
   useBlockNumber,
@@ -12,7 +10,6 @@ import {
 } from 'state/application/hooks';
 import {
   shortenAddress,
-  formatCompact,
   getTokenInfo,
   getIntervalTokenData,
   formatNumber,
@@ -21,13 +18,11 @@ import { LineChart } from 'components';
 import { Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { useTranslation } from 'react-i18next';
 import { getIntervalTokenDataV3, getTokenInfoV3 } from 'utils/v3-graph';
 
 const SwapTokenDetailsHorizontal: React.FC<{
   token: Token;
 }> = ({ token }) => {
-  const { t } = useTranslation();
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
   const { palette } = useTheme();
@@ -136,7 +131,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
           {tokenData ? (
             <Box>${formatNumber(tokenData.priceUSD)}</Box>
           ) : (
-            <Skeleton variant='rect' width={80} height={20} />
+            <Skeleton variant='rectangular' width={80} height={20} />
           )}
         </Box>
       </Grid>
@@ -149,7 +144,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
               {priceUpPercent}%
             </Box>
           ) : (
-            <Skeleton variant='rect' width={60} height={20} />
+            <Skeleton variant='rectangular' width={60} height={20} />
           )}
         </Box>
       </Grid>
@@ -168,7 +163,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
             </Box>
           </Box>
         ) : (
-          <Skeleton variant='rect' width={88} height={47} />
+          <Skeleton variant='rectangular' width={88} height={47} />
         )}
       </Grid>
       <Grid item xs={12}>

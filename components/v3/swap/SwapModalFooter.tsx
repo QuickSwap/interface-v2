@@ -4,7 +4,7 @@ import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
 import SwapCallbackError from './SwapCallbackError';
 import { useTranslation } from 'react-i18next';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 
 export default function SwapModalFooter({
   onConfirm,

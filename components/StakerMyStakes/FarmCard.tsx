@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
@@ -117,7 +117,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
   return (
     <Box>
       <Box
-        className='flex justify-between items-center flex-wrap'
+        className='flex flex-wrap items-center justify-between'
         borderRadius={10}
       >
         {isMobile && (
@@ -127,7 +127,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
         )}
 
         <Box
-          className='flex items-center flex-wrap'
+          className='flex flex-wrap items-center'
           width={isMobile ? '100%' : '85%'}
         >
           <Box

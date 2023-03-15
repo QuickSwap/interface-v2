@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
@@ -168,7 +168,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   return (
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
-        <Box className='flex justify-between items-center'>
+        <Box className='flex items-center justify-between'>
           <h5>
             {t('stake')} {syrup.stakingToken.symbol}
           </h5>
@@ -210,7 +210,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
               }}
             />
             <span
-              className='text-primary text-bold cursor-pointer'
+              className='cursor-pointer text-primary text-bold'
               onClick={() => {
                 setTypedValue(maxAmountInput ? maxAmountInput.toExact() : '0');
                 setStakePercent(100);
@@ -248,7 +248,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             {syrup.token.symbol} / {t('day')}
           </p>
         </Box>
-        <Box mt={3} className='flex justify-between items-center'>
+        <Box mt={3} className='flex items-center justify-between'>
           <Box width='48%'>
             <Button
               className='stakeButton'

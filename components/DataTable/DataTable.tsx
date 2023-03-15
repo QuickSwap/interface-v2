@@ -10,7 +10,7 @@ import {
   TableRow,
   TableSortLabel,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
 import { SortOrder, getComparator, stableSort } from './sort';
 import 'components/styles/DataTable.scss';
 
@@ -181,7 +181,7 @@ const DataTable: React.FC<DataTableProps<any>> = ({
             {loading && (
               <TableRow style={{ height: 53 * emptyRows }}>
                 <TableCell colSpan={headCells.length}>
-                  <Box className='flex justify-center items-center'>
+                  <Box className='flex items-center justify-center'>
                     <CircularProgress />
                   </Box>
                 </TableCell>

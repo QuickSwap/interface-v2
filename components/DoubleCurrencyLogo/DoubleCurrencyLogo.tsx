@@ -1,6 +1,6 @@
 import { Currency } from '@uniswap/sdk';
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { CurrencyLogo } from 'components';
 import 'components/styles/DoubleCurrencyLogo.scss';
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Currency, TokenAmount, ETHER, JSBI } from '@uniswap/sdk';
 import { ArrowLeft, Plus } from 'react-feather';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import {
   CustomModal,
   CurrencyLogo,
@@ -87,7 +87,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
       <Box paddingX={3} paddingY={4}>
         <Box className='flex items-center justify-between'>
           <ArrowLeft
-            className='text-secondary cursor-pointer'
+            className='cursor-pointer text-secondary'
             onClick={onClose}
           />
           <h6>{t('importPool')}</h6>
@@ -141,7 +141,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
             </p>
           </Box>
         )}
-        <Box className='poolFinderInfo border'>
+        <Box className='border poolFinderInfo'>
           {currency0 && currency1 ? (
             pairState === PairState.EXISTS ? (
               hasPosition && pair ? (

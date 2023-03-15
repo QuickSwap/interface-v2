@@ -3,7 +3,7 @@ import { Currency, ETHER, currencyEquals } from '@uniswap/sdk';
 import { NativeCurrency } from '@uniswap/sdk-core';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';

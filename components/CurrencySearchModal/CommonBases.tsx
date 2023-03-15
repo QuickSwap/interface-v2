@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { GlobalData } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
 import { useTranslation } from 'react-i18next';

@@ -1,6 +1,6 @@
 import { Currency } from '@uniswap/sdk-core';
 import React, { ReactNode, useEffect } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import {
   AlertTriangle,
   ArrowUpCircle,

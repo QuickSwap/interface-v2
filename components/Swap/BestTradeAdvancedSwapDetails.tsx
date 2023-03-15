@@ -1,6 +1,6 @@
 import { Currency, Fraction, Percent } from '@uniswap/sdk';
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { computePriceImpact } from 'utils/prices';

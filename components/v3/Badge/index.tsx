@@ -1,6 +1,6 @@
 import React from 'react';
 import './index.scss';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { MouseoverTooltip } from '../Tooltip';
 
 export enum BadgeVariant {

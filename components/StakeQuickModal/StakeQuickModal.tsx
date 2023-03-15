@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedLairInfo } from 'state/stake/hooks';
@@ -135,7 +135,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
               }}
             />
             <span
-              className='text-primary text-bold cursor-pointer'
+              className='cursor-pointer text-primary text-bold'
               onClick={() => {
                 setTypedValue(quickBalance ? quickBalance.toExact() : '0');
                 setStakePercent(100);

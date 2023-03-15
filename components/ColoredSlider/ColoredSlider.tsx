@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Slider, SliderProps } from '@material-ui/core';
+import { Box, Slider, SliderProps } from '@mui/material';
 import 'components/styles/ColoredSlider.scss';
 
 interface ColoredSliderProps extends SliderProps {

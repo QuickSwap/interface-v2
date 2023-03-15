@@ -7,13 +7,7 @@ import { FarmingType } from '../../models/enums';
 import { useLocation } from 'react-router-dom';
 import './index.scss';
 import FarmCard from './FarmCard';
-import {
-  Box,
-  Button,
-  Divider,
-  useMediaQuery,
-  useTheme,
-} from '@material-ui/core';
+import { Box, Button, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'react-i18next';

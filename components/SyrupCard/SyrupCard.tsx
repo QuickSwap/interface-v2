@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { SyrupInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
 import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from 'utils';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
 import 'components/styles/SyrupCard.scss';
@@ -47,7 +46,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
               </Box>
             )}
-            <Box width={0.05} className='text-primary flex justify-end'>
+            <Box width={0.05} className='flex justify-end text-primary'>
               {expanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
             </Box>
           </>

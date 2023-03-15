@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk-core';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
 import 'components/styles/CurrencyInput.scss';
 import { useTranslation } from 'react-i18next';

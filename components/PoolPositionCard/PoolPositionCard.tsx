@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { ChainId, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -78,7 +78,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
         </Box>
 
         <Box
-          className='flex items-center text-primary cursor-pointer'
+          className='flex items-center cursor-pointer text-primary'
           onClick={() => setShowMore(!showMore)}
         >
           <p style={{ marginRight: 8 }}>{t('manage')}</p>

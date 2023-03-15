@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Button } from '@material-ui/core';
-import { ArrowForward } from '@material-ui/icons';
+import { Box, Button } from '@mui/material';
+import { ArrowForward } from '@mui/icons-material';
 import { USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
 import JumpRateModel from 'utils/marketxyz/interestRateModel';
 import { midUsdFormatter } from 'utils/bigUtils';
@@ -562,7 +562,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               },
             ]}
           />
-          <Box mt={'24px'} className='flex justify-between items-center'>
+          <Box mt={'24px'} className='flex items-center justify-between'>
             <span className='text-secondary text-uppercase'>
               {!borrow ? t('supplyAmount') : t('borrowAmount')}
             </span>

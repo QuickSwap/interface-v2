@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import ReactGA from 'react-ga';
-import { Box, Button, Popover, Divider } from '@material-ui/core';
+import { Box, Button, Popover, Divider } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReactComponent as DropDown } from 'assets/images/dropdown.svg';
 import { useFetchListCallback } from 'hooks/useFetchListCallback';

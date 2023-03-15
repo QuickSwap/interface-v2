@@ -1,6 +1,6 @@
 import { CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
 import React from 'react';
-import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
+import { Box, Tooltip, CircularProgress, ListItem } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';

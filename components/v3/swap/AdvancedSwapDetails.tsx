@@ -7,7 +7,7 @@ import { computeRealizedLPFeePercent } from 'utils/v3/prices';
 import FormattedPriceImpact from './FormattedPriceImpact';
 import SwapRoute from './SwapRoute';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 interface AdvancedSwapDetailsProps {
   trade?:

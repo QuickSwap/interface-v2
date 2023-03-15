@@ -1,7 +1,12 @@
 import React, { ReactChild } from 'react';
-import { Box, useMediaQuery, TableRow, TableCell } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import { ArrowUpward, ArrowDownward } from '@material-ui/icons';
+import {
+  Box,
+  useMediaQuery,
+  TableRow,
+  TableCell,
+  useTheme,
+} from '@mui/material';
+import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { DataTable } from 'components';
 import 'components/styles/CustomTable.scss';
 
