@@ -303,6 +303,17 @@ div.buy {
   }
 }
 
+.btn-swap-widget-disabled {
+  cursor: not-allowed;
+  background-color: #282d3d;
+  color: 'grey' !important;
+
+  &:hover {
+    color: 'grey' !important;
+    background: #282d3d !important;
+  }
+}
+
 .tradingview-widget-container > iframe {
   height: 100%;
   width: 100%;
