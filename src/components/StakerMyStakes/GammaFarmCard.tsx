@@ -118,7 +118,7 @@ const GammaFarmCard: React.FC<{
 
         <Box width='10%' className='flex justify-center'>
           <Box
-            className='flex items-center justify-center text-primary cursor-pointer'
+            className='flex items-center justify-center cursor-pointer text-primary'
             width={20}
             height={20}
             onClick={() => setShowDetails(!showDetails)}

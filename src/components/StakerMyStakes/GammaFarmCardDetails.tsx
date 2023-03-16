@@ -48,7 +48,9 @@ const GammaFarmCardDetails: React.FC<{
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const masterChefContract = useMasterChefContract();
+  const masterChefContract = useMasterChefContract(
+    pairData.masterChefIndex ?? 0,
+  );
   const hypervisorContract = useGammaHypervisorContract(pairData.address);
   const tokenMap = useSelectedTokenList();
 
@@ -352,7 +354,7 @@ const GammaFarmCardDetails: React.FC<{
                 onUserInput={setStakeAmount}
               />
               <span
-                className='weight-600 cursor-pointer text-primary'
+                className='cursor-pointer weight-600 text-primary'
                 onClick={() => setStakeAmount(availableStakeAmount)}
               >
                 {t('max')}
@@ -393,7 +395,7 @@ const GammaFarmCardDetails: React.FC<{
                 onUserInput={setUnStakeAmount}
               />
               <span
-                className='weight-600 cursor-pointer text-primary'
+                className='cursor-pointer weight-600 text-primary'
                 onClick={() => setUnStakeAmount(stakedAmount)}
               >
                 {t('max')}

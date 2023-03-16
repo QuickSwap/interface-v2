@@ -16,6 +16,7 @@ import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useParams } from 'react-router-dom';
 import { useActiveWeb3React } from 'hooks';
+import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();
@@ -56,16 +57,30 @@ const AnalyticsPairs: React.FC = () => {
                   ];
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
+                      const masterChefAddress = chainId
+                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                            chainId
+                          ]
+                        : undefined;
                       return {
                         title: pair.title,
                         apr:
                           gammaRewards &&
-                          gammaRewards[pair.address.toLowerCase()] &&
-                          gammaRewards[pair.address.toLowerCase()]['apr']
+                          masterChefAddress &&
+                          gammaRewards[masterChefAddress] &&
+                          gammaRewards[masterChefAddress]['pools'] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ]['apr']
                             ? Number(
-                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                                gammaRewards[masterChefAddress]['pools'][
+                                  pair.address.toLowerCase()
+                                ]['apr'],
                               ) * 100
-                            : undefined,
+                            : 0,
                       };
                     })
                   : [];
@@ -159,16 +174,30 @@ const AnalyticsPairs: React.FC = () => {
                   : undefined;
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
+                      const masterChefAddress = chainId
+                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                            chainId
+                          ]
+                        : undefined;
                       return {
                         title: pair.title,
                         apr:
                           gammaRewards &&
-                          gammaRewards[pair.address.toLowerCase()] &&
-                          gammaRewards[pair.address.toLowerCase()]['apr']
+                          masterChefAddress &&
+                          gammaRewards[masterChefAddress] &&
+                          gammaRewards[masterChefAddress]['pools'] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ]['apr']
                             ? Number(
-                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                                gammaRewards[masterChefAddress]['pools'][
+                                  pair.address.toLowerCase()
+                                ]['apr'],
                               ) * 100
-                            : undefined,
+                            : 0,
                       };
                     })
                   : [];
