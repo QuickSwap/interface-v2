@@ -13,8 +13,8 @@ import { usePair, PairState } from 'data/Reserves';
 import { usePairAdder } from 'state/user/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { currencyId } from 'utils';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import { Link } from 'react-router-dom';
+import { Close } from '@mui/icons-material';
+import Link from 'next/link';
 import 'components/styles/PoolFinderModal.scss';
 import { useTranslation } from 'react-i18next';
 
@@ -91,7 +91,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
             onClick={onClose}
           />
           <h6>{t('importPool')}</h6>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={2}
@@ -150,7 +150,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
                 <Box textAlign='center'>
                   <p>{t('noLiquidityinPool')}.</p>
                   <Link
-                    to={`/pools?currency0=${currencyId(
+                    href={`/pools?currency0=${currencyId(
                       currency0,
                     )}&currency1=${currencyId(currency1)}`}
                     className='text-primary no-decoration'
@@ -164,7 +164,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
               <Box textAlign='center'>
                 <p>{t('nopoolFound')}.</p>
                 <Link
-                  to={`/pools?currency0=${currencyId(
+                  href={`/pools?currency0=${currencyId(
                     currency0,
                   )}&currency1=${currencyId(currency1)}`}
                   className='text-primary no-decoration'

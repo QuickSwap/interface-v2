@@ -3,9 +3,8 @@ import { ArrowLeft } from 'react-feather';
 import ReactGA from 'react-ga';
 import { Box, Button, Popover, Divider } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { ReactComponent as DropDown } from 'assets/images/dropdown.svg';
+import { ExpandMore, Close } from '@mui/icons-material';
 import { useFetchListCallback } from 'hooks/useFetchListCallback';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 
 import { AppDispatch, AppState } from 'state';
 import { acceptListUpdate, removeList, selectList } from 'state/lists/actions';
@@ -118,7 +117,7 @@ const ListRow = memo(function ListRow({
             setAnchorEl(evt.currentTarget);
           }}
         >
-          <DropDown />
+          <ExpandMore />
         </Box>
 
         <Popover
@@ -263,7 +262,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
       <Box className='header'>
         <ArrowLeft onClick={onBack} />
         <p>{t('manageLists')}</p>
-        <CloseIcon onClick={onDismiss} />
+        <Close onClick={onDismiss} />
       </Box>
 
       <Divider />

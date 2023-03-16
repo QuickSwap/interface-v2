@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useIsV2 } from 'state/application/hooks';

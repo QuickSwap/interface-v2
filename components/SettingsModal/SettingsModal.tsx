@@ -16,7 +16,7 @@ import {
   useBonusRouterManager,
   useSlippageManuallySet,
 } from 'state/user/hooks';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Close } from '@mui/icons-material';
 import 'components/styles/SettingsModal.scss';
 import { useTranslation } from 'react-i18next';
 
@@ -122,7 +122,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         <Box paddingX={3} paddingY={4}>
           <Box mb={3} className='flex items-center justify-between'>
             <h5>{t('areyousure')}</h5>
-            <CloseIcon
+            <Close
               className='cursor-pointer'
               onClick={() => setExpertConfirm(false)}
             />
@@ -161,7 +161,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
       <Box paddingX={3} paddingY={4}>
         <Box mb={3} className='flex items-center justify-between'>
           <h5>{t('settings')}</h5>
-          <CloseIcon onClick={onClose} />
+          <Close onClick={onClose} />
         </Box>
         <Divider />
         <Box my={2.5} className='flex items-center'>

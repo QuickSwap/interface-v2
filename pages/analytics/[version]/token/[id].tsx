@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHistory, useRouteMatch } from 'react-router-dom';
-import { Box, Grid } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Grid } from '@mui/material';
+import { Skeleton } from '@mui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
 import {
   shortenAddress,
@@ -23,10 +22,10 @@ import {
   useEthPrice,
   useMaticPrice,
 } from 'state/application/hooks';
-import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
-import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
+import StarChecked from 'svgs/StarChecked.svg';
+import StarUnchecked from 'svgs/StarUnchecked.svg';
 import { GammaPairs, GlobalConst, TxnType } from 'constants/index';
-import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
+import AnalyticsHeader from '../../AnalyticsHeader';
 import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
@@ -42,13 +41,12 @@ import {
 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
-  const history = useHistory();
-  const match = useRouteMatch<{ id: string }>();
-  const tokenAddress = match.params.id.toLowerCase();
+  const router = useRouter();
+  const tokenAddress = (router.query.id as string).toLowerCase();
   const [loadingData, setLoadingData] = useState(false);
   const [token, setToken] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
@@ -70,8 +68,7 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = router.query.version ?? 'total';
 
   const tokenTransactionsList = useMemo(() => {
     if (tokenTransactions) {
@@ -398,7 +395,7 @@ const AnalyticsTokenDetails: React.FC = () => {
           {tokenPairs ? (
             <PairTable data={tokenPairs} />
           ) : (
-            <Skeleton variant='rect' width='100%' height={150} />
+            <Skeleton variant='rectangular' width='100%' height={150} />
           )}
         </Box>
       </>
@@ -413,7 +410,7 @@ const AnalyticsTokenDetails: React.FC = () => {
             <Box className='panel analyticsDetailsInfoV3'>
               <Box>
                 <span className='text-disabled'>{t('tvl')}</span>
-                <Box className='flex items-center flex-wrap'>
+                <Box className='flex flex-wrap items-center'>
                   <Box mr='6px'>
                     <h5>${formatNumber(token.tvlUSD)}</h5>
                   </Box>
@@ -428,7 +425,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               </Box>
               <Box>
                 <span className='text-disabled'>{t('24hTradingVol1')}</span>
-                <Box className='flex items-center flex-wrap'>
+                <Box className='flex flex-wrap items-center'>
                   <Box mr='6px'>
                     <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
                   </Box>
@@ -467,7 +464,7 @@ const AnalyticsTokenDetails: React.FC = () => {
         {tokenPairs ? (
           <PairTable data={tokenPairs} />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <Skeleton variant='rectangular' width='100%' height={150} />
         )}
       </Box>
       <Box width={1} mt={5}>
@@ -479,7 +476,7 @@ const AnalyticsTokenDetails: React.FC = () => {
         {tokenTransactions ? (
           <TransactionsTable data={tokenTransactions} />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <Skeleton variant='rectangular' width='100%' height={150} />
         )}
       </Box>
     </>
@@ -525,7 +522,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                 className='button border-primary'
                 mr={1.5}
                 onClick={() => {
-                  history.push(
+                  router.push(
                     `/pools${version === 'v2' ? '/v2' : '/v3'}?currency0=${
                       token.id
                     }&currency1=ETH`,
@@ -537,7 +534,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               <Box
                 className='button filledButton'
                 onClick={() => {
-                  history.push(
+                  router.push(
                     `/swap${version === 'v2' ? '/v2' : ''}?currency0=${
                       token.id
                     }&currency1=ETH`,

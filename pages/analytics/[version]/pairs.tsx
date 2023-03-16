@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { PairTable } from 'components';
 import {
   getTopPairs,
@@ -7,14 +7,14 @@ import {
   getGammaRewards,
   getGammaData,
 } from 'utils';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
 import { GammaPairs, GlobalConst } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import { getTopPairsV3, getPairsAPR, getTopPairsTotal } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { useActiveWeb3React } from 'hooks';
 
 const AnalyticsPairs: React.FC = () => {
@@ -25,8 +25,8 @@ const AnalyticsPairs: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const router = useRouter();
+  const version = router.query.version ?? 'total';
 
   useEffect(() => {
     (async () => {
@@ -236,7 +236,7 @@ const AnalyticsPairs: React.FC = () => {
         {topPairs ? (
           <PairTable data={topPairs} />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <Skeleton variant='rectangular' width='100%' height={150} />
         )}
       </Box>
     </Box>

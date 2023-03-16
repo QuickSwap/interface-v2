@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Close } from '@mui/icons-material';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
   useTransactionAdder,
@@ -75,7 +75,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
       <Box paddingX={3} paddingY={4}>
         <Box className='flex items-center justify-between'>
           <h5>{t('unstake')} dQUICK</h5>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={3}

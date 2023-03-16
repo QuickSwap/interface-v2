@@ -7,7 +7,7 @@ import { Box } from '@mui/material';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
 import { SUPPORTED_WALLETS } from 'constants/index';
-import Close from 'svgs/CloseIcon.svg';
+import { Close } from '@mui/icons-material';
 import {
   injected,
   walletlink,
@@ -50,7 +50,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   openOptions,
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
-  const { udDomain, updateUDDomain } = useUDDomain();
+  const { udDomain } = useUDDomain();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 

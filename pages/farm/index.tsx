@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, useMediaQuery, useTheme, Button } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { getBulkPairData } from 'state/stake/hooks';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
+import { HelpOutline } from '@mui/icons-material';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import FarmRewards from './FarmRewards';
@@ -16,17 +16,14 @@ import { ChainId } from '@uniswap/sdk';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import V3Farms from 'pages/FarmPage/V3';
 import { useIsV2 } from 'state/application/hooks';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
-  const history = useHistory();
-  const parsedQuery = useParsedQueryString();
-  const currentTab =
-    parsedQuery && parsedQuery.tab
-      ? (parsedQuery.tab as string)
-      : GlobalConst.v2FarmTab.LPFARM;
+  const router = useRouter();
+  const currentTab = router.query.tab
+    ? (router.query.tab as string)
+    : GlobalConst.v2FarmTab.LPFARM;
   const { t } = useTranslation();
   const [bulkPairs, setBulkPairs] = useState<any>(null);
 
@@ -57,19 +54,19 @@ const FarmPage: React.FC = () => {
   }, [pairLists]);
 
   const redirectWithFarmTab = (tab: string) => {
-    const currentPath = history.location.pathname + history.location.search;
+    const currentPath = router.asPath;
     let redirectPath;
-    if (parsedQuery && parsedQuery.tab) {
-      redirectPath = currentPath.replace(
-        `tab=${parsedQuery.tab}`,
-        `tab=${tab}`,
-      );
-    } else {
-      redirectPath = `${currentPath}${
-        history.location.search === '' ? '?' : '&'
-      }tab=${tab}`;
-    }
-    history.push(redirectPath);
+    // if (router.query.tab) {
+    //   redirectPath = currentPath.replace(
+    //     `tab=${router.query.tab}`,
+    //     `tab=${tab}`,
+    //   );
+    // } else {
+    //   redirectPath = `${currentPath}${
+    //     router.location.search === '' ? '?' : '&'
+    //   }tab=${tab}`;
+    // }
+    // router.push(redirectPath);
   };
 
   const farmCategories = [
@@ -102,7 +99,7 @@ const FarmPage: React.FC = () => {
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
-        <Box className='flex row items-center'>
+        <Box className='flex items-center row'>
           <h4>{t('farm')}</h4>
           <Box ml={2}>
             <VersionToggle />
@@ -114,7 +111,7 @@ const FarmPage: React.FC = () => {
             onClick={() => window.open(helpURL, '_blank')}
           >
             <small>{t('help')}</small>
-            <HelpIcon />
+            <HelpOutline />
           </Box>
         )}
       </Box>

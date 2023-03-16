@@ -17,8 +17,7 @@ import { useAllTokens, useToken } from 'hooks/Tokens';
 import { useSelectedListInfo } from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
 import { GlobalConst } from 'constants/index';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import { Close, Search } from '@mui/icons-material';
 import CommonBases from './CommonBases';
 import CurrencyList from './CurrencyList';
 import { AppDispatch } from 'state';
@@ -177,10 +176,10 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     <Box className='currencySearchWrapper'>
       <Box className='currencySearchHeader'>
         <h6>{t('selectToken')}</h6>
-        <CloseIcon onClick={onDismiss} />
+        <Close onClick={onDismiss} />
       </Box>
       <Box className='searchInputWrapper'>
-        <SearchIcon />
+        <Search />
         <input
           type='text'
           placeholder={t('tokenSearchPlaceholder')}

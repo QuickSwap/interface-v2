@@ -1,6 +1,6 @@
 import React, { lazy } from 'react';
-import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
+import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { HelpOutline } from '@mui/icons-material';
 import SupplyLiquidity from './SupplyLiquidity';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
@@ -23,7 +23,7 @@ const PoolsPage: React.FC = () => {
   return (
     <Box width='100%' mb={3}>
       <Box className='pageHeading'>
-        <Box className='flex row items-center'>
+        <Box className='flex items-center row'>
           <h4>{t('pool')}</h4>
           <Box ml={2}>
             <VersionToggle />
@@ -36,7 +36,7 @@ const PoolsPage: React.FC = () => {
             onClick={() => window.open(helpURL, '_blank')}
           >
             <small>{t('help')}</small>
-            <HelpIcon />
+            <HelpOutline />
           </Box>
         )}
       </Box>

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Grid } from '@material-ui/core';
-import { useHistory, useParams } from 'react-router-dom';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { ArrowForwardIos } from '@material-ui/icons';
+import React, { useState, useEffect } from 'react';
+import { Box, Grid } from '@mui/material';
+import { useRouter } from 'next/router';
+import { Skeleton } from '@mui/lab';
+import { ArrowForwardIos } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { useEthPrice, useMaticPrice } from 'state/application/hooks';
@@ -15,9 +15,9 @@ import {
 } from 'utils';
 import { GammaPairs, GlobalConst } from 'constants/index';
 import { TokensTable, PairTable } from 'components';
-import AnalyticsInfo from './AnalyticsInfo';
-import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
-import AnalyticsVolumeChart from './AnalyticsVolumeChart';
+import AnalyticsInfo from '../AnalyticsInfo';
+import AnalyticsLiquidityChart from '../AnalyticsLiquidityChart';
+import AnalyticsVolumeChart from '../AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
 import {
   getGlobalDataV3,
@@ -37,7 +37,7 @@ dayjs.extend(utc);
 const AnalyticsOverview: React.FC = () => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const history = useHistory();
+  const router = useRouter();
   const [globalData, updateGlobalData] = useState<any>(null);
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
@@ -47,8 +47,7 @@ const AnalyticsOverview: React.FC = () => {
   const { maticPrice } = useMaticPrice();
 
   const dispatch = useDispatch();
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = router.query.version ?? 'total';
 
   useEffect(() => {
     (async () => {
@@ -357,7 +356,7 @@ const AnalyticsOverview: React.FC = () => {
         </Grid>
       </Grid>
       <Box mt={4}>
-        <Box className='panel flex flex-wrap'>
+        <Box className='flex flex-wrap panel'>
           {globalData ? (
             <AnalyticsInfo data={globalData} />
           ) : (
@@ -366,13 +365,13 @@ const AnalyticsOverview: React.FC = () => {
         </Box>
       </Box>
       <Box mt={4}>
-        <Box className='flex justify-between items-center'>
+        <Box className='flex items-center justify-between'>
           <Box className='headingWrapper'>
             <p className='weight-600'>{t('topTokens')}</p>
           </Box>
           <Box
-            className='headingWrapper cursor-pointer'
-            onClick={() => history.push(`/analytics/${version}/tokens`)}
+            className='cursor-pointer headingWrapper'
+            onClick={() => router.push(`/analytics/${version}/tokens`)}
           >
             <p className='weight-600'>{t('seeAll')}</p>
             <ArrowForwardIos />
@@ -392,7 +391,7 @@ const AnalyticsOverview: React.FC = () => {
             showPagination={false}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <Skeleton variant='rectangular' width='100%' height={150} />
         )}
       </Box>
       <Box mt={4}>
@@ -401,8 +400,8 @@ const AnalyticsOverview: React.FC = () => {
             <p className='weight-600'>{t('topPairs')}</p>
           </Box>
           <Box
-            className='headingWrapper cursor-pointer'
-            onClick={() => history.push(`/analytics/${version}/pairs`)}
+            className='cursor-pointer headingWrapper'
+            onClick={() => router.push(`/analytics/${version}/pairs`)}
           >
             <p className='weight-600'>{t('seeAll')}</p>
             <ArrowForwardIos />
@@ -426,7 +425,7 @@ const AnalyticsOverview: React.FC = () => {
             showPagination={false}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <Skeleton variant='rectangular' width='100%' height={150} />
         )}
       </Box>
     </Box>

@@ -7,7 +7,7 @@ import ReactGA from 'react-ga';
 import { Box } from '@mui/material';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
-import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
+import { Close } from '@mui/icons-material';
 import { fortmatic, injected, metamask, portis, safeApp } from 'connectors';
 import { OVERLAY_READY } from 'connectors/Fortmatic';
 import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';

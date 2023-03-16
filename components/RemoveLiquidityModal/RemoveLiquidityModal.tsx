@@ -42,7 +42,7 @@ import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { useRouterContract } from 'hooks/useContract';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useTotalSupply } from 'data/TotalSupply';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Close } from '@mui/icons-material';
 import 'components/styles/RemoveLiquidityModal.scss';
 import { useTranslation } from 'react-i18next';
 
@@ -430,7 +430,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             onClick={onClose}
           />
           <h6>{t('removeLiquidity')}</h6>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box className='removeLiquidityInput'>
           <Box className='flex items-center justify-between'>

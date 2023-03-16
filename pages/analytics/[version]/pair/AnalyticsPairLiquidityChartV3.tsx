@@ -2,19 +2,13 @@ import { JSBI } from '@uniswap/sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import { Pool, TickMath } from '@uniswap/v3-sdk';
 import { BigNumber } from 'ethers';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { isAddress } from 'utils';
 import { getLiquidityChart } from 'utils/v3-graph';
 import Chart from 'react-apexcharts';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import '../styles/analytics.scss';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
 
 const AnalyticsPairLiquidityChartV3: React.FC<{
@@ -43,7 +37,6 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     .sub(1);
 
   const [processedData, setProcessedData] = useState<any[] | null>(null);
-  const ref = useRef<HTMLDivElement>(null);
 
   const formattedAddress0 = isAddress(pairData?.token0?.id);
   const formattedAddress1 = isAddress(pairData?.token1?.id);
@@ -322,7 +315,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
           </Box>
         </>
       ) : (
-        <Skeleton variant='rect' width='100%' height='100%' />
+        <Skeleton variant='rectangular' width='100%' height='100%' />
       )}
     </Box>
   );

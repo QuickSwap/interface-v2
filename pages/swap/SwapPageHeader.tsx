@@ -1,5 +1,5 @@
-import { Box } from '@material-ui/core';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
+import { Box } from '@mui/material';
+import { HelpOutline } from '@mui/icons-material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,7 @@ const SwapPageHeader: React.FC<{ proMode: boolean }> = ({ proMode }) => {
           onClick={() => window.open(helpURL, '_blank')}
         >
           <small>{t('help')}</small>
-          <HelpIcon />
+          <HelpOutline />
         </Box>
       )}
     </Box>

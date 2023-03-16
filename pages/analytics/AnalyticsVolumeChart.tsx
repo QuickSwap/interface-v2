@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Box } from '@mui/material';
+import { Skeleton } from '@mui/lab';
 import {
   formatCompact,
   getChartData,
@@ -14,7 +14,7 @@ import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getChartDataTotal, getChartDataV3 } from 'utils/v3-graph';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
@@ -33,8 +33,8 @@ const AnalyticsVolumeChart: React.FC<{
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
 
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const router = useRouter();
+  const version = router.query.version ?? 'total';
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -238,7 +238,7 @@ const AnalyticsVolumeChart: React.FC<{
             </Box>
           ) : (
             <Box mr={2} flex={1}>
-              <Skeleton variant='rect' width='100%' height={24} />
+              <Skeleton variant='rectangular' width='100%' height={24} />
             </Box>
           )}
           <ChartType
@@ -266,7 +266,7 @@ const AnalyticsVolumeChart: React.FC<{
             }}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={250} />
+          <Skeleton variant='rectangular' width='100%' height={250} />
         )}
       </Box>
     </>

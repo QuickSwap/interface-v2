@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHistory, useRouteMatch, Link, useParams } from 'react-router-dom';
-import { Box, Grid } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Box, Grid } from '@mui/material';
+import { Skeleton } from '@mui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
 import {
   shortenAddress,
@@ -20,26 +21,24 @@ import {
 import { getAddress } from '@ethersproject/address';
 import { GlobalConst, TxnType } from 'constants/index';
 import 'pages/styles/analytics.scss';
-import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
+import AnalyticsHeader from '../../AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
-import { CallMade } from '@material-ui/icons';
+import { CallMade } from '@mui/icons-material';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
-  const history = useHistory();
-  const match = useRouteMatch<{ id: string }>();
-  const pairAddress = match.params.id;
+  const router = useRouter();
+  const pairAddress = router.query.id as string;
   const tokenMap = useSelectedTokenList();
   const [dataLoading, setDataLoading] = useState(false);
   const [pairData, setPairData] = useState<any>(null);
   const [pairTransactions, setPairTransactions] = useState<any>(null);
 
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = router.query.version ?? 'v3';
   const isV2 = version === 'v2';
 
   const pairTransactionsList = useMemo(() => {
@@ -223,7 +222,7 @@ const AnalyticsPairDetails: React.FC = () => {
                 <Box
                   className='flex items-center justify-between cursor-pointer'
                   onClick={() => {
-                    history.push(
+                    router.push(
                       `/analytics/${version}/token/${pairData.token0.id}`,
                     );
                   }}
@@ -240,7 +239,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   mt={1}
                   className='flex items-center justify-between cursor-pointer'
                   onClick={() => {
-                    history.push(
+                    router.push(
                       `/analytics/${version}/token/${pairData.token1.id}`,
                     );
                   }}
@@ -325,13 +324,13 @@ const AnalyticsPairDetails: React.FC = () => {
                 <Box ml={1}>
                   <p className='heading1'>
                     <Link
-                      to={`/analytics/${version}/token/${pairData.token0.id}`}
+                      href={`/analytics/${version}/token/${pairData.token0.id}`}
                     >
                       {pairData.token0.symbol}
                     </Link>{' '}
                     /{' '}
                     <Link
-                      to={`/analytics/${version}/token/${pairData.token1.id}`}
+                      href={`/analytics/${version}/token/${pairData.token1.id}`}
                     >
                       {pairData.token1.symbol}
                     </Link>
@@ -353,7 +352,7 @@ const AnalyticsPairDetails: React.FC = () => {
                 <Box
                   className='analyticsPairRate'
                   onClick={() => {
-                    history.push(
+                    router.push(
                       `/analytics/${version}/token/${pairData.token0.id}`,
                     );
                   }}
@@ -368,7 +367,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   ml={1}
                   className='analyticsPairRate'
                   onClick={() => {
-                    history.push(
+                    router.push(
                       `/analytics/${version}/token/${pairData.token1.id}`,
                     );
                   }}
@@ -386,7 +385,7 @@ const AnalyticsPairDetails: React.FC = () => {
                 className='button border-primary'
                 mr={1.5}
                 onClick={() => {
-                  history.push(
+                  router.push(
                     `/pools${isV2 ? '/v2' : '/v3'}?currency0=${
                       pairData.token0.id
                     }&currency1=${pairData.token1.id}`,
@@ -398,7 +397,7 @@ const AnalyticsPairDetails: React.FC = () => {
               <Box
                 className='button filledButton'
                 onClick={() => {
-                  history.push(
+                  router.push(
                     `/swap${isV2 ? '/v2' : '/v3'}?currency0=${
                       pairData.token0.id
                     }&currency1=${pairData.token1.id}`,
@@ -417,7 +416,7 @@ const AnalyticsPairDetails: React.FC = () => {
             {pairTransactionsList ? (
               <TransactionsTable data={pairTransactionsList} />
             ) : (
-              <Skeleton variant='rect' width='100%' height={150} />
+              <Skeleton variant='rectangular' width='100%' height={150} />
             )}
           </Box>
         </>

@@ -1,12 +1,11 @@
-import React, { useMemo } from 'react';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
-import { ArrowForwardIos } from '@material-ui/icons';
+import React from 'react';
+import { useRouter } from 'next/router';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { ArrowForwardIos } from '@mui/icons-material';
 import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
 
@@ -21,14 +20,12 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   type,
   address,
 }) => {
-  const history = useHistory();
-  const { pathname } = useLocation();
+  const router = useRouter();
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
-  const isPairDetails = history.location.pathname.includes('pair/');
+  const version = router.query.version ?? 'total';
+  const isPairDetails = router.pathname.includes('pair/');
 
   return (
     <Box width='100%' mb={3}>
@@ -46,7 +43,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
       <Box
         mb={4}
         position='relative'
-        className='flex justify-between flex-wrap'
+        className='flex flex-wrap justify-between'
       >
         <Box marginY={1.5} className='flex items-center'>
           {type && (
@@ -54,7 +51,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
               <span
                 className='link'
                 onClick={() => {
-                  history.push(`/analytics/${version}`);
+                  router.push(`/analytics/${version}`);
                 }}
               >
                 {t('analytics')}
@@ -63,7 +60,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
               <span
                 className='link'
                 onClick={() => {
-                  history.push(`/analytics/${version}/${type}s`);
+                  router.push(`/analytics/${version}/${type}s`);
                 }}
               >
                 {type === 'token' ? t('tokens') : t('pairs')}
@@ -88,24 +85,24 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
           {!type && (
             <>
               <Box
-                className={`topTab ${pathname.indexOf('pair') === -1 &&
-                  pathname.indexOf('token') === -1 &&
+                className={`topTab ${router.pathname.indexOf('pair') === -1 &&
+                  router.pathname.indexOf('token') === -1 &&
                   'selectedTab'}`}
-                onClick={() => history.push(`/analytics/${version}`)}
+                onClick={() => router.push(`/analytics/${version}`)}
               >
                 <p>{t('overview')}</p>
               </Box>
               <Box
-                className={`topTab ${pathname.indexOf('token') > -1 &&
+                className={`topTab ${router.pathname.indexOf('token') > -1 &&
                   'selectedTab'}`}
-                onClick={() => history.push(`/analytics/${version}/tokens`)}
+                onClick={() => router.push(`/analytics/${version}/tokens`)}
               >
                 <p>{t('tokens')}</p>
               </Box>
               <Box
-                className={`topTab ${pathname.indexOf('pair') > -1 &&
+                className={`topTab ${router.pathname.indexOf('pair') > -1 &&
                   'selectedTab'}`}
-                onClick={() => history.push(`/analytics/${version}/pairs`)}
+                onClick={() => router.push(`/analytics/${version}/pairs`)}
               >
                 <p>{t('pairs')}</p>
               </Box>

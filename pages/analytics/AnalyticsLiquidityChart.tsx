@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Box } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Box } from '@mui/material';
+import { Skeleton } from '@mui/lab';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import {
@@ -15,7 +15,7 @@ import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
 import { getChartDataV3, getChartDataTotal } from 'utils/v3-graph';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 dayjs.extend(utc);
 
 const AnalyticsLiquidityChart: React.FC<{
@@ -28,8 +28,8 @@ const AnalyticsLiquidityChart: React.FC<{
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
 
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const router = useRouter();
+  const version = router.query.version ?? 'total';
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -131,7 +131,7 @@ const AnalyticsLiquidityChart: React.FC<{
         </Box>
       ) : (
         <Box my={0.5}>
-          <Skeleton variant='rect' width='100%' height={24} />
+          <Skeleton variant='rectangular' width='100%' height={24} />
         </Box>
       )}
       <Box>
@@ -154,7 +154,7 @@ const AnalyticsLiquidityChart: React.FC<{
             categories={getChartDates(globalChartData, durationIndex)}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={223} />
+          <Skeleton variant='rectangular' width='100%' height={223} />
         )}
       </Box>
     </>

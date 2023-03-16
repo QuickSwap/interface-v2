@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, useRouteMatch } from 'react-router-dom';
-import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { useRouter } from 'next/router';
+import { Box, Divider, useMediaQuery, useTheme } from '@mui/material';
+import { Skeleton } from '@mui/lab';
 import dayjs from 'dayjs';
 import {
   formatCompact,
@@ -37,16 +37,15 @@ const AnalyticsPairChart: React.FC<{
   token1Rate?: any;
 }> = ({ pairData, token0Rate, token1Rate }) => {
   const { t } = useTranslation();
-  const match = useRouteMatch<{ id: string }>();
-  const pairAddress = match.params.id;
+  const router = useRouter();
+  const pairAddress = router.query.id as string;
   const [pairChartData, setPairChartData] = useState<any[] | null>(null);
   const [pairFeeData, setPairFeeData] = useState<any[] | null>(null);
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
 
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'v3';
+  const version = router.query.version ?? 'v3';
   const isV2 = version === 'v2';
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
@@ -528,7 +527,7 @@ const AnalyticsPairChart: React.FC<{
                   >{`1 ${pairData.token1.symbol} = ${token1Rate} ${pairData.token0.symbol}`}</Box>
                 </Box>
               ) : (
-                <Skeleton variant='rect' width='120px' height='30px' />
+                <Skeleton variant='rectangular' width='120px' height='30px' />
               )}
               {chartIndex === CHART_PRICE ? (
                 <Box
@@ -613,7 +612,7 @@ const AnalyticsPairChart: React.FC<{
               />
             )
           ) : (
-            <Skeleton variant='rect' width='100%' height={217} />
+            <Skeleton variant='rectangular' width='100%' height={217} />
           )}
         </Box>
       )}

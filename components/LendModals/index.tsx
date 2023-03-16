@@ -37,13 +37,13 @@ import {
 } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'components/styles/LendModal.scss';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Close } from '@mui/icons-material';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { GlobalValue } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useMarket } from 'hooks/marketxyz/useMarket';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
@@ -544,7 +544,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                 </p>
               </Box>
             </Box>
-            <CloseIcon className='cursor-pointer' onClick={onClose} />
+            <Close className='cursor-pointer' onClick={onClose} />
           </Box>
           <ButtonSwitch
             height={56}
@@ -749,7 +749,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               <Box mt={2} textAlign='center'>
                 <Link
                   className='assetLPLink'
-                  to={`/pools?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`}
+                  href={`/pools?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`}
                 >
                   Get {asset.underlyingSymbol} LP ↗
                 </Link>

@@ -3,7 +3,7 @@ import { Box, Button } from '@mui/material';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedLairInfo } from 'state/stake/hooks';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Close } from '@mui/icons-material';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalValue } from 'constants/index';
@@ -105,7 +105,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
       <Box paddingX={3} paddingY={4}>
         <Box className='flex items-center justify-between'>
           <h5>{t('stake')} QUICK</h5>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={3}

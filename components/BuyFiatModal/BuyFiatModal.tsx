@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon2.svg';
-import Transak from 'assets/images/Transak.png';
-import BinanceConnect from 'assets/images/binanceConnect.png';
-import CoinbasePay from 'assets/images/coinbasePay.png';
+import { Close } from '@mui/icons-material';
+import HelpIcon from 'svgs/HelpIcon1.svg';
 import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import 'components/styles/BuyFiatModal.scss';
 import { useTranslation } from 'react-i18next';
 import { CBPayInstanceType, initOnRamp } from '@coinbase/cbpay-js';
 import { useWalletModalToggle } from 'state/application/hooks';
+import Image from 'next/image';
 
 interface BuyFiatModalProps {
   open: boolean;
@@ -93,16 +91,16 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
       <Box padding={3}>
         <Box className='flex items-center justify-between'>
           <h6>{t('fiatProviders')}</h6>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box className='paymentBox'>
-          <img src={BinanceConnect} alt='binance connect' />
+          <Image src='/images/binanceConnect.png' alt='binance connect' />
           <Box className='buyButton' onClick={buyBinance}>
             {t('buy')}
           </Box>
         </Box>
         <Box className='paymentBox'>
-          <img src={CoinbasePay} alt='coinbase pay' />
+          <Image src='/images/coinbasePay.png' alt='coinbase pay' />
           <Box
             className={`buyButton ${
               account && !coinbaseReady ? 'disabled' : ''
@@ -113,7 +111,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           </Box>
         </Box>
         <Box className='paymentBox'>
-          <img src={Transak} alt='transak' />
+          <Image src='/images/Transak.png' alt='transak' />
           <Box
             className='buyButton'
             onClick={() => {

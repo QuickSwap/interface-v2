@@ -1,8 +1,4 @@
-import {
-  createTheme,
-  responsiveFontSizes,
-  ThemeOptions,
-} from '@material-ui/core';
+import { createTheme, responsiveFontSizes, ThemeOptions } from '@mui/material';
 import { merge } from 'lodash';
 
 // colors
