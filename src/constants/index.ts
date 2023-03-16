@@ -861,18 +861,18 @@ export const GammaPairs: {
       pid: 61,
     },
   ],
-  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x1ddae2e33c1d68211c5eae05948fd298e72c541a',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
-      ableToFarm: true,
-      pid: 62,
-      masterChefIndex: 1,
-    },
-  ],
+  // '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
+  //   {
+  //     type: Presets.GAMMA_WIDE,
+  //     title: 'Wide',
+  //     address: '0x1ddae2e33c1d68211c5eae05948fd298e72c541a',
+  //     token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+  //     token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
+  //     ableToFarm: true,
+  //     pid: 62,
+  //     masterChefIndex: 1,
+  //   },
+  // ],
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
