@@ -864,7 +864,7 @@ export const GammaPairs: {
   '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
     {
       type: Presets.GAMMA_STABLE,
-      title: 'Stable',
+      title: 'Wide',
       address: '0x1ddae2e33c1d68211c5eae05948fd298e72c541a',
       token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
       token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
@@ -1205,6 +1205,13 @@ export const GlobalValue = {
         'wstETH',
         'Wrapped liquid staked Ether 2.0',
       ),
+      ANKRMATIC: new Token(
+        ChainId.MATIC,
+        '0x0E9b89007eEE9c958c0EDA24eF70723C2C93dD58',
+        18,
+        'ankrMATIC',
+        'Ankr Staked MATIC',
+      ),
     },
   },
   marketSDK: {
@@ -1327,8 +1334,10 @@ export const GlobalData = {
       GlobalValue.tokens.MATIC,
       GlobalValue.tokens.COMMON.MATICX,
       GlobalValue.tokens.COMMON.STMATIC,
+      GlobalValue.tokens.COMMON.ANKRMATIC,
     ],
     [GlobalValue.tokens.COMMON.NEW_QUICK, GlobalValue.tokens.COMMON.NEW_DQUICK],
+    [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.WSTETH],
   ],
 };
 
