@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { SUPPORTED_WALLETS } from 'constants/index';
-import { injected, portis } from 'connectors';
+import { portis } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { getWalletKeys } from 'utils';

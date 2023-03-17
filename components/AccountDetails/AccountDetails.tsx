@@ -17,7 +17,7 @@ import {
   metamask,
 } from 'connectors';
 import { ExternalLink as LinkIcon } from 'react-feather';
-import 'components/styles/AccountDetails.scss';
+import styles from 'styles/components/AccountDetails.module.scss';
 import StatusIcon from './StatusIcon';
 import Copy from './CopyHelper';
 import Transaction from './Transaction';
@@ -131,7 +131,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           )}
           {chainId && account && (
             <a
-              className='addressLink'
+              className={styles.addressLink}
               href={
                 chainId &&
                 getEtherscanLink(
