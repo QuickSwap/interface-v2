@@ -48,7 +48,9 @@ const GammaFarmCardDetails: React.FC<{
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const masterChefContract = useMasterChefContract();
+  const masterChefContract = useMasterChefContract(
+    pairData.masterChefIndex ?? 0,
+  );
   const hypervisorContract = useGammaHypervisorContract(pairData.address);
   const tokenMap = useSelectedTokenList();
 

@@ -27,8 +27,8 @@ import GammaFarmCard from './GammaFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesToken } from 'utils/useUSDCPrice';
 import { formatReward } from 'utils/formatReward';
-import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
-import { useMasterChefContract } from 'hooks/useContract';
+import { useMultipleContractMultipleData } from 'state/multicall/v3/hooks';
+import { useMasterChefContracts } from 'hooks/useContract';
 import { formatUnits } from 'ethers/lib/utils';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import CurrencyLogo from 'components/CurrencyLogo';
@@ -402,42 +402,55 @@ export const FarmingMyFarms: React.FC<{
 
   const sortMultiplierGamma = sortDescGamma ? -1 : 1;
 
-  const gammaRewardTokens =
-    gammaRewards && chainId
-      ? ([] as string[])
-          .concat(
-            ...Object.values(gammaRewards).map((item: any) =>
-              item && item['rewarders']
-                ? Object.values(item['rewarders'])
-                    .filter(
-                      (rewarder: any) =>
-                        rewarder && Number(rewarder['rewardPerSecond']) > 0,
-                    )
-                    .map((rewarder: any) => rewarder.rewardToken)
-                : [],
-            ),
-          )
-          .filter(
-            (value, index, self) =>
-              index ===
-              self.findIndex((t) => t.toLowerCase() === value.toLowerCase()),
-          )
-          .map((tokenAddress) => {
-            const tokenData = getTokenFromAddress(
-              tokenAddress,
-              chainId,
-              tokenMap,
-              [],
-            );
-            return new Token(
-              chainId,
-              tokenData.address,
-              tokenData.decimals,
-              tokenData.symbol,
-              tokenData.name,
-            );
-          })
-      : [];
+  const gammaRewardTokenAddresses = GAMMA_MASTERCHEF_ADDRESSES.reduce<string[]>(
+    (memo, masterChef) => {
+      const gammaReward =
+        gammaRewards &&
+        chainId &&
+        gammaRewards[masterChef[chainId].toLowerCase()]
+          ? gammaRewards[masterChef[chainId].toLowerCase()]['pools']
+          : undefined;
+      if (gammaReward) {
+        const gammaRewardArr: any[] = Object.values(gammaReward);
+        for (const item of gammaRewardArr) {
+          if (item && item['rewarders']) {
+            const rewarders: any[] = Object.values(item['rewarders']);
+            for (const rewarder of rewarders) {
+              if (
+                rewarder &&
+                rewarder['rewardPerSecond'] &&
+                Number(rewarder['rewardPerSecond']) > 0 &&
+                rewarder.rewardToken &&
+                !memo.includes(rewarder.rewardToken)
+              ) {
+                memo.push(rewarder.rewardToken);
+              }
+            }
+          }
+        }
+      }
+      return memo;
+    },
+    [],
+  );
+
+  const gammaRewardTokens = chainId
+    ? gammaRewardTokenAddresses.map((tokenAddress) => {
+        const tokenData = getTokenFromAddress(
+          tokenAddress,
+          chainId,
+          tokenMap,
+          [],
+        );
+        return new Token(
+          chainId,
+          tokenData.address,
+          tokenData.decimals,
+          tokenData.symbol,
+          tokenData.name,
+        );
+      })
+    : [];
 
   const rewardUSDPrices = useUSDCPricesToken(gammaRewardTokens, chainId);
   const gammaRewardsWithUSDPrice = gammaRewardTokens.map((token, ind) => {
@@ -450,12 +463,18 @@ export const FarmingMyFarms: React.FC<{
         .filter((item) => item.ableToFarm)
     : [];
 
-  const masterChefContract = useMasterChefContract();
+  const masterChefContracts = useMasterChefContracts();
 
-  const stakedAmountData = useSingleContractMultipleData(
-    masterChefContract,
+  const stakedAmountData = useMultipleContractMultipleData(
+    masterChefContracts,
     'userInfo',
-    account ? allGammaPairsToFarm.map((pair) => [pair.pid, account]) : [],
+    account
+      ? masterChefContracts.map((_, ind) =>
+          allGammaPairsToFarm
+            .filter((pair) => (pair.masterChefIndex ?? 0) === ind)
+            .map((pair) => [pair.pid, account]),
+        )
+      : [],
   );
 
   const stakedAmounts = stakedAmountData.map((callData) => {
@@ -510,21 +529,31 @@ export const FarmingMyFarms: React.FC<{
       const gammaData1 = gammaData
         ? gammaData[farm1.address.toLowerCase()]
         : undefined;
+      const farm0MasterChefAddress = chainId
+        ? GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][
+            chainId
+          ].toLowerCase()
+        : undefined;
+      const farm1MasterChefAddress = chainId
+        ? GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][
+            chainId
+          ].toLowerCase()
+        : undefined;
       const gammaReward0 =
         gammaRewards &&
-        chainId &&
-        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
-          ? gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools'][
+        farm0MasterChefAddress &&
+        gammaRewards[farm0MasterChefAddress] &&
+        gammaRewards[farm0MasterChefAddress]['pools']
+          ? gammaRewards[farm0MasterChefAddress]['pools'][
               farm0.address.toLowerCase()
             ]
           : undefined;
       const gammaReward1 =
         gammaRewards &&
-        chainId &&
-        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
-          ? gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools'][
+        farm1MasterChefAddress &&
+        gammaRewards[farm1MasterChefAddress] &&
+        gammaRewards[farm1MasterChefAddress]['pools']
+          ? gammaRewards[farm1MasterChefAddress]['pools'][
               farm1.address.toLowerCase()
             ]
           : undefined;
@@ -774,8 +803,22 @@ export const FarmingMyFarms: React.FC<{
                           : undefined
                       }
                       rewardData={
-                        gammaRewards
-                          ? gammaRewards[farm.address.toLowerCase()]
+                        gammaRewards &&
+                        gammaRewards[
+                          GAMMA_MASTERCHEF_ADDRESSES[farm.masterChefIndex ?? 0][
+                            chainId
+                          ].toLowerCase()
+                        ] &&
+                        gammaRewards[
+                          GAMMA_MASTERCHEF_ADDRESSES[farm.masterChefIndex ?? 0][
+                            chainId
+                          ].toLowerCase()
+                        ]['pools']
+                          ? gammaRewards[
+                              GAMMA_MASTERCHEF_ADDRESSES[
+                                farm.masterChefIndex ?? 0
+                              ][chainId].toLowerCase()
+                            ]['pools'][farm.address.toLowerCase()]
                           : undefined
                       }
                     />

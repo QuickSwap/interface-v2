@@ -162,8 +162,6 @@ const Header: React.FC = () => {
       link: '/leader-board',
       text: 'Leader Board',
       id: 'contest-page-link',
-      isExternal: true,
-      externalLink: process?.env?.REACT_APP_CONTEST_URL || '',
       isNew: true,
     });
   }

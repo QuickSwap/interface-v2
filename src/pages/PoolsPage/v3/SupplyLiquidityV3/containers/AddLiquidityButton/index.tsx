@@ -344,10 +344,22 @@ export function AddLiquidityButton({
         handleAddLiquidity();
       } catch (error) {
         console.error('Failed to send transaction', error);
+        const errorMsg =
+          error && error.message
+            ? error.message.toLowerCase()
+            : error && error.data && error.data.message
+            ? error.data.message.toLowerCase()
+            : '';
         setAttemptingTxn(false);
         setTxPending(false);
         setAddLiquidityErrorMessage(
-          error?.code === 4001 ? t('txRejected') : t('errorInTx'),
+          errorMsg.indexOf('improper ratio') > -1
+            ? t('gammaImproperRatio')
+            : errorMsg.indexOf('price change overflow') > -1
+            ? t('gammaPriceOverflow')
+            : error?.code === 4001
+            ? t('txRejected')
+            : t('errorInTx'),
         );
       }
     } else {

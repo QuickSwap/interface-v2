@@ -16,6 +16,8 @@ import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { useParams } from 'react-router-dom';
+import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();
@@ -60,16 +62,29 @@ const AnalyticsPairs: React.FC = () => {
                   ];
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
+                      const masterChefAddress =
+                        GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                          chainIdToUse
+                        ];
                       return {
                         title: pair.title,
                         apr:
                           gammaRewards &&
-                          gammaRewards[pair.address.toLowerCase()] &&
-                          gammaRewards[pair.address.toLowerCase()]['apr']
+                          masterChefAddress &&
+                          gammaRewards[masterChefAddress] &&
+                          gammaRewards[masterChefAddress]['pools'] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ]['apr']
                             ? Number(
-                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                                gammaRewards[masterChefAddress]['pools'][
+                                  pair.address.toLowerCase()
+                                ]['apr'],
                               ) * 100
-                            : undefined,
+                            : 0,
                       };
                     })
                   : [];
@@ -160,21 +175,41 @@ const AnalyticsPairs: React.FC = () => {
               data.map((item: any, ind: number) => {
                 const gammaPairs = item.isV3
                   ? GammaPairs[chainIdToUse][
-                      item.token0.id.toLowerCase() + '-' + item.token1.id
+                      item.token0.id.toLowerCase() +
+                        '-' +
+                        item.token1.id.toLowerCase()
+                    ] ??
+                    GammaPairs[chainIdToUse][
+                      item.token1.id.toLowerCase() +
+                        '-' +
+                        item.token0.id.toLowerCase()
                     ]
                   : undefined;
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
+                      const masterChefAddress =
+                        GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                          chainIdToUse
+                        ];
                       return {
                         title: pair.title,
                         apr:
                           gammaRewards &&
-                          gammaRewards[pair.address.toLowerCase()] &&
-                          gammaRewards[pair.address.toLowerCase()]['apr']
+                          masterChefAddress &&
+                          gammaRewards[masterChefAddress] &&
+                          gammaRewards[masterChefAddress]['pools'] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ]['apr']
                             ? Number(
-                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                                gammaRewards[masterChefAddress]['pools'][
+                                  pair.address.toLowerCase()
+                                ]['apr'],
                               ) * 100
-                            : undefined,
+                            : 0,
                       };
                     })
                   : [];

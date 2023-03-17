@@ -51,7 +51,9 @@ const GammaFarmCardDetails: React.FC<{
 
   const tokenMap = useSelectedTokenList();
 
-  const masterChefContract = useMasterChefContract();
+  const masterChefContract = useMasterChefContract(
+    pairData.masterChefIndex ?? 0,
+  );
   const hypervisorContract = useGammaHypervisorContract(pairData.address);
 
   const stakedData = useSingleCallResult(masterChefContract, 'userInfo', [

@@ -82,6 +82,43 @@ export function useContract<T extends Contract = Contract>(
   ]) as T;
 }
 
+export function useContracts<T extends Contract = Contract>(
+  addressOrAddressMaps: string[] | { [chainId: number]: string }[] | undefined,
+  ABI: any,
+  withSignerIfPossible = true,
+): (T | null)[] {
+  const { library, account, chainId } = useActiveWeb3React();
+
+  return useMemo(() => {
+    if (!addressOrAddressMaps || !ABI || !library || !chainId) return [];
+    return addressOrAddressMaps.map((addressOrAddressMap) => {
+      let address: string | undefined;
+      if (typeof addressOrAddressMap === 'string')
+        address = addressOrAddressMap;
+      else address = addressOrAddressMap[chainId];
+      if (!address) return null;
+      try {
+        return getContract(
+          address,
+          ABI,
+          library,
+          withSignerIfPossible && account ? account : undefined,
+        );
+      } catch (error) {
+        console.error('Failed to get contract', error);
+        return null;
+      }
+    });
+  }, [
+    addressOrAddressMaps,
+    ABI,
+    library,
+    chainId,
+    withSignerIfPossible,
+    account,
+  ]) as (T | null)[];
+}
+
 export function useLairContract(chainId?: ChainId): Contract | null {
   return useContract(
     chainId ? LAIR_ADDRESS[chainId] : LAIR_ADDRESS,
@@ -266,8 +303,19 @@ export function useGammaUNIProxyContract(withSignerIfPossible?: boolean) {
   );
 }
 
-export function useMasterChefContract(withSignerIfPossible?: boolean) {
+export function useMasterChefContract(
+  index?: number,
+  withSignerIfPossible?: boolean,
+) {
   return useContract(
+    GAMMA_MASTERCHEF_ADDRESSES[index ?? 0],
+    GammaMasterChef,
+    withSignerIfPossible,
+  );
+}
+
+export function useMasterChefContracts(withSignerIfPossible?: boolean) {
+  return useContracts(
     GAMMA_MASTERCHEF_ADDRESSES,
     GammaMasterChef,
     withSignerIfPossible,

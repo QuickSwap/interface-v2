@@ -236,6 +236,70 @@ export function useSingleContractMultipleData(
   }, [fragment, contract, results, latestBlockNumber]);
 }
 
+export function useMultipleContractMultipleData(
+  contracts: (Contract | null | undefined)[],
+  methodName: string,
+  callInputsArr: OptionalMethodInputs[][],
+  options: Partial<V3ListenerOptions> & { gasRequired?: number } = {},
+): CallState[] {
+  const blocksPerFetch = options?.blocksPerFetch;
+  const gasRequired = options?.gasRequired;
+
+  const calls = useMemo(() => {
+    return contracts.reduce<
+      {
+        call: Call | undefined;
+        contract: Contract | null | undefined;
+        fragment: FunctionFragment;
+      }[]
+    >((memo, contract, index) => {
+      const callInputs = callInputsArr[index];
+      if (contract) {
+        const fragment = contract.interface.getFunction(methodName);
+        if (
+          callInputs.length > 0 &&
+          callInputs.every((inputs) => isValidMethodArgs(inputs))
+        ) {
+          for (const inputs of callInputs) {
+            memo.push({
+              call: {
+                address: contract.address,
+                callData: contract.interface.encodeFunctionData(
+                  fragment,
+                  inputs,
+                ),
+                ...(gasRequired ? { gasRequired } : {}),
+              },
+              contract,
+              fragment,
+            });
+          }
+        }
+      }
+      return memo;
+    }, []);
+  }, [callInputsArr, contracts, gasRequired, methodName]);
+
+  const results = useCallsData(
+    calls.map((call) => call.call),
+    blocksPerFetch ? { blocksPerFetch } : undefined,
+    methodName,
+  );
+
+  const latestBlockNumber = useBlockNumber();
+
+  return useMemo(() => {
+    return results.map((result, ind) =>
+      toCallState(
+        result,
+        calls[ind].contract?.interface,
+        calls[ind].fragment,
+        latestBlockNumber,
+      ),
+    );
+  }, [calls, results, latestBlockNumber]);
+}
+
 export function useMultipleContractSingleData(
   addresses: (string | undefined)[],
   contractInterface: Interface,
