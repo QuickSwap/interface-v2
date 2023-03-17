@@ -117,6 +117,12 @@ const Header: React.FC = () => {
       isNew: true,
     },
     {
+      link: '/leader-board',
+      text: 'Leader Board',
+      id: 'contest-page-link',
+      isNew: true,
+    },
+    {
       link: '/predictions',
       text: 'Predictions',
       id: 'predictions-page-link',
