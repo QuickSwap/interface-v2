@@ -1,12 +1,10 @@
 import { currencyEquals, ETHER } from '@uniswap/sdk';
 import { useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
-import useParsedQueryString from './useParsedQueryString';
+import { useRouter } from 'next/router';
 
 export default function useSwapRedirects() {
-  const history = useHistory();
-  const currentPath = history.location.pathname + history.location.search;
-  const parsedQs = useParsedQueryString();
+  const router = useRouter();
+  const currentPath = router.asPath;
 
   const redirectWithCurrency = useCallback(
     (currency: any, isInput: boolean, isV2 = true) => {
@@ -17,80 +15,82 @@ export default function useSwapRedirects() {
         ? 'ETH'
         : currency.address;
       if (isInput) {
-        if (parsedQs.currency0 ?? parsedQs.inputCurrency) {
-          if (parsedQs.currency0) {
+        if (router.query.currency0 ?? router.query.inputCurrency) {
+          if (router.query.currency0) {
             redirectPath = currentPath.replace(
-              `currency0=${parsedQs.currency0}`,
+              `currency0=${router.query.currency0}`,
               `currency0=${currencyId}`,
             );
           } else {
             redirectPath = currentPath.replace(
-              `inputCurrency=${parsedQs.inputCurrency}`,
+              `inputCurrency=${router.query.inputCurrency}`,
               `inputCurrency=${currencyId}`,
             );
           }
         } else {
-          redirectPath = `${currentPath}${
-            history.location.search === '' ? '?' : '&'
-          }currency0=${currencyId}`;
+          // redirectPath = `${currentPath}${
+          //   history.location.search === '' ? '?' : '&'
+          // }currency0=${currencyId}`;
         }
       } else {
-        if (parsedQs.currency1 ?? parsedQs.outputCurrency) {
-          if (parsedQs.currency1) {
+        if (router.query.currency1 ?? router.query.outputCurrency) {
+          if (router.query.currency1) {
             redirectPath = currentPath.replace(
-              `currency1=${parsedQs.currency1}`,
+              `currency1=${router.query.currency1}`,
               `currency1=${currencyId}`,
             );
           } else {
             redirectPath = currentPath.replace(
-              `outputCurrency=${parsedQs.outputCurrency}`,
+              `outputCurrency=${router.query.outputCurrency}`,
               `outputCurrency=${currencyId}`,
             );
           }
         } else {
-          redirectPath = `${currentPath}${
-            history.location.search === '' ? '?' : '&'
-          }currency1=${currencyId}`;
+          // redirectPath = `${currentPath}${
+          //   history.location.search === '' ? '?' : '&'
+          // }currency1=${currencyId}`;
         }
       }
-      history.push(redirectPath);
+      router.push(redirectPath);
     },
-    [currentPath, history, parsedQs],
+    [currentPath, router],
   );
 
   const redirectWithSwitch = useCallback(() => {
     let redirectPath = '';
-    const inputCurrencyId = parsedQs.currency0 ?? parsedQs.inputCurrency;
-    const outputCurrencyId = parsedQs.currency1 ?? parsedQs.outputCurrency;
+    const inputCurrencyId =
+      router.query.currency0 ?? router.query.inputCurrency;
+    const outputCurrencyId =
+      router.query.currency1 ?? router.query.outputCurrency;
     if (inputCurrencyId) {
       if (outputCurrencyId) {
-        if (parsedQs.currency1) {
+        if (router.query.currency1) {
           redirectPath = currentPath.replace(
-            `currency1=${parsedQs.currency1}`,
+            `currency1=${router.query.currency1}`,
             `currency1=${inputCurrencyId}`,
           );
         } else {
           redirectPath = currentPath.replace(
-            `outputCurrency=${parsedQs.currency1}`,
+            `outputCurrency=${router.query.currency1}`,
             `currency1=${inputCurrencyId}`,
           );
         }
-        if (parsedQs.currency0) {
+        if (router.query.currency0) {
           redirectPath = redirectPath.replace(
-            `currency0=${parsedQs.currency0}`,
+            `currency0=${router.query.currency0}`,
             `currency0=${outputCurrencyId}`,
           );
         } else {
           redirectPath = redirectPath.replace(
-            `inputCurrency=${parsedQs.currency0}`,
+            `inputCurrency=${router.query.currency0}`,
             `currency0=${outputCurrencyId}`,
           );
         }
       } else {
-        if (parsedQs.currency0) {
+        if (router.query.currency0) {
           redirectPath = currentPath.replace(
-            `currency0=${parsedQs.currency0}`,
-            `currency1=${parsedQs.currency0}`,
+            `currency0=${router.query.currency0}`,
+            `currency1=${router.query.currency0}`,
           );
         } else {
           redirectPath = currentPath.replace(
@@ -101,10 +101,10 @@ export default function useSwapRedirects() {
       }
     } else {
       if (outputCurrencyId) {
-        if (parsedQs.currency1) {
+        if (router.query.currency1) {
           redirectPath = currentPath.replace(
-            `currency1=${parsedQs.currency1}`,
-            `currency0=${parsedQs.currency1}`,
+            `currency1=${router.query.currency1}`,
+            `currency0=${router.query.currency1}`,
           );
         } else {
           redirectPath = currentPath.replace(
@@ -114,8 +114,8 @@ export default function useSwapRedirects() {
         }
       }
     }
-    history.push(redirectPath);
-  }, [currentPath, history, parsedQs]);
+    router.push(redirectPath);
+  }, [currentPath, router]);
 
   return { redirectWithCurrency, redirectWithSwitch };
 }

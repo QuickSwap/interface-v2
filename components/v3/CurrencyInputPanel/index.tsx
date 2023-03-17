@@ -3,7 +3,7 @@ import { Pair } from '@uniswap/v2-sdk';
 import { ETHER } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
-import { LockOutlined } from '@material-ui/icons';
+import { LockOutlined } from '@mui/icons-material';
 
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
@@ -66,25 +66,10 @@ export default function CurrencyInputPanel({
   otherCurrency,
   id,
   showCommonBases,
-  showCurrencyAmount,
-  disableNonToken,
-  fiatValue,
-  priceImpact,
-  hideBalance = false,
-  pair = null, // used for double token logo
-  hideInput = false,
   locked = false,
-  showBalance,
-  hideCurrency = false,
-  centered = false,
-  disabled,
-  shallow = false,
-  swap = false,
-  page,
   bgClass,
   color,
   showETH,
-  ...rest
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const { account } = useActiveWeb3React();
@@ -131,24 +116,24 @@ export default function CurrencyInputPanel({
     setModalOpen(false);
   }, [setModalOpen]);
 
-  const balanceAsUsdc = useMemo(() => {
-    if (!balance) return 'Loading...';
+  // const balanceAsUsdc = useMemo(() => {
+  //   if (!balance) return 'Loading...';
 
-    const _balance = balance.toFixed();
+  //   const _balance = balance.toFixed();
 
-    if (_balance.split('.')[0].length > 10) {
-      return _balance.slice(0, 7) + '...';
-    }
+  //   if (_balance.split('.')[0].length > 10) {
+  //     return _balance.slice(0, 7) + '...';
+  //   }
 
-    if (+balance.toFixed() === 0) {
-      return '0';
-    }
-    if (+balance.toFixed() < 0.0001) {
-      return '< 0.0001';
-    }
+  //   if (+balance.toFixed() === 0) {
+  //     return '0';
+  //   }
+  //   if (+balance.toFixed() < 0.0001) {
+  //     return '< 0.0001';
+  //   }
 
-    return +balance.toFixed(3);
-  }, [balance]);
+  //   return +balance.toFixed(3);
+  // }, [balance]);
 
   return (
     <Box className='v3-currency-input-panel'>

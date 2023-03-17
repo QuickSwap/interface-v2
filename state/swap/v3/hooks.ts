@@ -27,7 +27,7 @@ import {
   V3TradeState,
 } from 'hooks/v3/useBestV3Trade';
 import useENS from 'hooks/useENS';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useRouter } from 'next/router';
 import { AppState } from 'state';
 import { isAddress } from 'utils';
 import { useCurrency } from 'hooks/v3/Tokens';
@@ -49,14 +49,6 @@ export function useSwapActionHandlers(): {
   onChangeRecipient: (recipient: string | null) => void;
 } {
   const dispatch = useAppDispatch();
-
-  const { chainId } = useActiveWeb3React();
-
-  let symbol: string;
-
-  if (chainId === 137) {
-    symbol = 'MATIC';
-  }
 
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
@@ -363,7 +355,7 @@ export function useDefaultsFromURLSearch():
   | undefined {
   const { chainId } = useActiveWeb3React();
   const dispatch = useAppDispatch();
-  const parsedQs = useParsedQueryString();
+  const { query } = useRouter();
   const [result, setResult] = useState<
     | {
         inputCurrencyId: string | undefined;
@@ -374,7 +366,7 @@ export function useDefaultsFromURLSearch():
 
   useEffect(() => {
     if (!chainId) return;
-    const parsed = queryParametersToSwapState(parsedQs, chainId);
+    const parsed = queryParametersToSwapState(query, chainId);
 
     dispatch(
       replaceSwapState({

@@ -1,122 +1,117 @@
-import React, { lazy } from 'react';
+import React from 'react';
 import { Box, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-// import Motif from 'assets/images/Motif.svg';
-// import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
-// import Analytics from 'assets/images/featured/Analytics.svg';
-// import DragonsLair from 'assets/images/featured/DragonsLair.svg';
-// import ProvideLiquidity from 'assets/images/featured/ProvideLiquidity.svg';
-// import Rewards from 'assets/images/featured/Rewards.svg';
-// import FeaturedSwap from 'assets/images/featured/Swap.svg';
-// import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.svg';
-// import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
-// import { ReactComponent as MediumIcon } from 'assets/images/social/Medium.svg';
-// import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
-// import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
-// import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
-// import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
-// import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
-// import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
+import Motif from 'assets/images/Motif.svg';
+import CoingeckoIcon from 'svgs/social/Coingecko.svg';
+import DiscordIcon from 'svgs/social/Discord.svg';
+import MediumIcon from 'svgs/social/Medium.svg';
+import RedditIcon from 'svgs/social/Reddit.svg';
+import TelegramIcon from 'svgs/social/Telegram.svg';
+import TwitterIcon from 'svgs/social/Twitter.svg';
+import YouTubeIcon from 'svgs/social/YouTube.svg';
+import GeckoterminalIcon from 'svgs/social/Geckoterminal.svg';
+import Image from 'next/image';
 import 'pages/styles/landing.scss';
-// const SwapSection = lazy(() => import('./SwapSection'));
-// const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
-// const GlobalSection = lazy(() => import('./GlobalSection'));
-// const BuySpritzSection = lazy(() => import('./BuySpritzSection'));
-// const TopMovers = lazy(() => import('components/TopMovers'));
-// const RewardSlider = lazy(() => import('components/RewardSlider'));
+import GlobalSection from 'components/pages/home/GlobalSection';
+import SwapSection from 'components/pages/home/SwapSection';
+import BuyFiatSection from 'components/pages/home/BuyFiatSection';
+import BuySpritzSection from 'components/pages/home/BuySpritzSection';
+import { TopMovers, RewardSlider } from 'components';
+import { useRouter } from 'next/router';
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
+  const router = useRouter();
 
-  // const features = [
-  //   {
-  //     img: FeaturedSwap,
-  //     title: t('swapTokens'),
-  //     desc: t('featureTradeDesc'),
-  //   },
-  //   {
-  //     img: ProvideLiquidity,
-  //     title: t('supplyLiquidity'),
-  //     desc: t('featureLiquidityDesc'),
-  //   },
-  //   {
-  //     img: Rewards,
-  //     title: t('earndQUICK'),
-  //     desc: t('featureDepositDesc'),
-  //   },
-  //   {
-  //     img: DragonsLair,
-  //     title: t('dragonLair'),
-  //     desc: t('featureDragonDesc'),
-  //   },
-  //   {
-  //     img: BuyWithFiat,
-  //     title: t('buyWithFiat'),
-  //     desc: t('featureBuyFiatDesc'),
-  //   },
-  //   {
-  //     img: Analytics,
-  //     title: t('analytics'),
-  //     desc: t('featureAnalyticsDesc'),
-  //   },
-  // ];
+  const features = [
+    {
+      img: '/images/featured/Swap.svg',
+      title: t('swapTokens'),
+      desc: t('featureTradeDesc'),
+    },
+    {
+      img: '/images/featured/ProvideLiquidity.svg',
+      title: t('supplyLiquidity'),
+      desc: t('featureLiquidityDesc'),
+    },
+    {
+      img: '/images/featured/Rewards.svg',
+      title: t('earndQUICK'),
+      desc: t('featureDepositDesc'),
+    },
+    {
+      img: '/images/featured/DragonsLair.svg',
+      title: t('dragonLair'),
+      desc: t('featureDragonDesc'),
+    },
+    {
+      img: '/images/featured/BuyWithFiatNoPad.png',
+      title: t('buyWithFiat'),
+      desc: t('featureBuyFiatDesc'),
+    },
+    {
+      img: '/images/featured/Analytics.svg',
+      title: t('analytics'),
+      desc: t('featureAnalyticsDesc'),
+    },
+  ];
 
-  // const socialicons = [
-  //   {
-  //     link: 'https://www.reddit.com/r/QuickSwap/',
-  //     icon: <RedditIcon />,
-  //     title: 'Reddit',
-  //   },
-  //   {
-  //     link: 'https://discord.gg/dSMd7AFH36',
-  //     icon: <DiscordIcon />,
-  //     title: 'Discord',
-  //   },
-  //   {
-  //     link: 'https://twitter.com/QuickswapDEX',
-  //     icon: <TwitterIcon />,
-  //     title: 'Twitter',
-  //   },
-  //   {
-  //     link: 'https://quickswap-layer2.medium.com/',
-  //     icon: <MediumIcon />,
-  //     title: 'Medium',
-  //   },
-  //   {
-  //     link: 'https://www.youtube.com/channel/UCrPlF-DBwD-UzLFDzJ4Z5Fw',
-  //     icon: <YouTubeIcon />,
-  //     title: 'Youtube',
-  //   },
-  //   {
-  //     link: 'https://t.me/QuickSwapDEX',
-  //     icon: <TelegramIcon />,
-  //     title: 'Telegram',
-  //   },
-  //   {
-  //     link: 'https://www.coingecko.com/en/exchanges/quickswap',
-  //     icon: <CoingeckoIcon />,
-  //     title: 'CoinGecko',
-  //   },
-  //   {
-  //     link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
-  //     icon: <GeckoterminalIcon />,
-  //     title: 'GeckoTerminal',
-  //   },
-  //   {
-  //     link: 'https://www.tiktok.com/@quickswapofficial',
-  //     icon: <img src={TikTokIcon} alt='TikTok' />,
-  //     title: 'TikTok',
-  //   },
-  //   {
-  //     link: 'https://t.me/QuickSwapAnnouncements',
-  //     icon: <TelegramIcon />,
-  //     title: 'Announcement',
-  //   },
-  // ];
+  const socialicons = [
+    {
+      link: 'https://www.reddit.com/r/QuickSwap/',
+      icon: <RedditIcon />,
+      title: 'Reddit',
+    },
+    {
+      link: 'https://discord.gg/dSMd7AFH36',
+      icon: <DiscordIcon />,
+      title: 'Discord',
+    },
+    {
+      link: 'https://twitter.com/QuickswapDEX',
+      icon: <TwitterIcon />,
+      title: 'Twitter',
+    },
+    {
+      link: 'https://quickswap-layer2.medium.com/',
+      icon: <MediumIcon />,
+      title: 'Medium',
+    },
+    {
+      link: 'https://www.youtube.com/channel/UCrPlF-DBwD-UzLFDzJ4Z5Fw',
+      icon: <YouTubeIcon />,
+      title: 'Youtube',
+    },
+    {
+      link: 'https://t.me/QuickSwapDEX',
+      icon: <TelegramIcon />,
+      title: 'Telegram',
+    },
+    {
+      link: 'https://www.coingecko.com/en/exchanges/quickswap',
+      icon: <CoingeckoIcon />,
+      title: 'CoinGecko',
+    },
+    {
+      link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
+      icon: <GeckoterminalIcon />,
+      title: 'GeckoTerminal',
+    },
+    {
+      link: 'https://www.tiktok.com/@quickswapofficial',
+      icon: <Image src='/images/social/TikTok_Qs.png' alt='TikTok' />,
+      title: 'TikTok',
+    },
+    {
+      link: 'https://t.me/QuickSwapAnnouncements',
+      icon: <TelegramIcon />,
+      title: 'Announcement',
+    },
+  ];
 
   return (
     <div id='landing-page' style={{ width: '100%' }}>
-      {/* <GlobalSection />
+      <GlobalSection />
       <Box className='smallCommunityContainer'>
         {socialicons.map((val, ind) => (
           <Box
@@ -149,7 +144,7 @@ const LandingPage: React.FC = () => {
         <Box
           className='allRewardPairs'
           onClick={() => {
-            history.push('/farm');
+            router.push('/farm');
           }}
         >
           <p>{t('seeAllPairs')}</p>
@@ -204,7 +199,7 @@ const LandingPage: React.FC = () => {
             </Box>
           ))}
         </Box>
-      </Box> */}
+      </Box>
     </div>
   );
 };

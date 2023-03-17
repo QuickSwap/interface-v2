@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { CheckCircle } from 'react-feather';
 import { useTranslation } from 'react-i18next';
-import CopyIcon from 'svgs/CopyIcon.svg';
+import { ContentCopy } from '@mui/icons-material';
 
 interface CopyHelperProps {
   toCopy: string;
@@ -21,7 +21,7 @@ const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy }) => {
           <small>{t('copied')}</small>
         </>
       ) : (
-        <CopyIcon />
+        <ContentCopy />
       )}
     </Box>
   );

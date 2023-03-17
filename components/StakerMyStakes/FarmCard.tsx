@@ -11,8 +11,8 @@ import RangeBadge from 'components/v3/Badge/RangeBadge';
 import FarmStakeButtons from './FarmStakeButtons';
 import { formatReward } from 'utils/formatReward';
 import { useMaticPrice } from 'state/application/hooks';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
+import Image from 'next/image';
 
 interface FarmCardProps {
   el: any;
@@ -195,7 +195,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
               </small>
               <Box ml={0.5} height={16}>
                 <TotalAPRTooltip farmAPR={farmApr ?? 0} poolAPR={poolApr ?? 0}>
-                  <img src={CircleInfoIcon} alt='info' />
+                  <Image src='/images/circleinfo.svg' alt='info' />
                 </TotalAPRTooltip>
               </Box>
             </Box>

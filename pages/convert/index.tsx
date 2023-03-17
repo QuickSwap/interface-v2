@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Box, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import QUICKIcon from 'assets/images/quickIcon.svg';
-import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
-import { ArrowForward, ArrowDownward } from '@material-ui/icons';
+import QUICKV2Icon from 'svgs/QUICKV2.svg';
+import { ArrowForward, ArrowDownward } from '@mui/icons-material';
 import {
   NumericalInput,
   TransactionErrorContent,

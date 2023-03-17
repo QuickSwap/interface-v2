@@ -3,7 +3,6 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmCardDetails from './FarmCardDetails';
 import {
   getAPYWithFee,
@@ -15,9 +14,10 @@ import {
   formatTokenAmount,
   formatAPY,
 } from 'utils';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import 'components/styles/FarmCard.scss';
 import { Trans, useTranslation } from 'react-i18next';
+import Image from 'next/image';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -112,7 +112,7 @@ const FarmCard: React.FC<{
                 <Box className='flex items-center'>
                   <span className='text-secondary'>{t('apy')}</span>
                   <Box ml={0.5} height={16}>
-                    <img src={CircleInfoIcon} alt={'arrow up'} />
+                    <Image src='/images/circleinfo.svg' alt={'arrow up'} />
                   </Box>
                 </Box>
                 <Box mt={0.5}>
@@ -147,7 +147,7 @@ const FarmCard: React.FC<{
             <Box width={0.15} className='flex items-center justify-center'>
               <small className='text-success'>{apyWithFee}%</small>
               <Box ml={0.5} height={16}>
-                <img src={CircleInfoIcon} alt={'arrow up'} />
+                <Image src='/images/circleinfo.svg' alt={'arrow up'} />
               </Box>
             </Box>
             <Box width={0.2} textAlign='right'>

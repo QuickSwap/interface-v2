@@ -13,21 +13,7 @@ import {
   zengoconnect,
   phantomconnect,
 } from '../connectors';
-import MetamaskIcon from 'assets/images/metamask.png';
-import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
-import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
-import cypherDIcon from 'assets/images/cypherDIcon.png';
-import BitKeepIcon from 'assets/images/bitkeep.png';
-import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
-import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
-import PortisIcon from 'assets/images/portisIcon.png';
-import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
-import VenlyIcon from 'assets/images/venly.svg';
-import GnosisIcon from 'assets/images/gnosis_safe.png';
-import TrustIcon from 'assets/images/trust.png';
-import ZengoIcon from 'assets/images/zengo.webp';
 import { Presets } from 'state/mint/v3/reducer';
-import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 
 const WETH_ONLY: ChainTokenList = {
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
@@ -822,7 +808,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   CYPHERD: {
     connector: injected,
     name: GlobalConst.walletName.CYPHERD,
-    iconName: cypherDIcon,
+    iconName: '/images/cypherDIcon.png',
     description: 'CypherD browser extension.',
     href: null,
     color: '#E8831D',
@@ -830,7 +816,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   METAMASK: {
     connector: metamask,
     name: GlobalConst.walletName.METAMASK,
-    iconName: MetamaskIcon,
+    iconName: '/images/metamask.png',
     description: 'Easy-to-use browser extension.',
     href: null,
     color: '#E8831D',
@@ -838,7 +824,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   TRUST_WALLET: {
     connector: trustconnect,
     name: GlobalConst.walletName.TRUST_WALLET,
-    iconName: TrustIcon,
+    iconName: '/images/trust.png',
     description: 'Trust wallet extension.',
     href: null,
     color: '#E8831D',
@@ -846,7 +832,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   PHANTOM_WALLET: {
     connector: phantomconnect,
     name: GlobalConst.walletName.PHANTOM_WALLET,
-    iconName: PhantomIcon,
+    iconName: '/images/wallets/phantomIconPurple.svg',
     description: 'Phantom wallet extension.',
     href: null,
     color: '#E8831D',
@@ -854,7 +840,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   BLOCKWALLET: {
     connector: injected,
     name: GlobalConst.walletName.BLOCKWALLET,
-    iconName: BlockWalletIcon,
+    iconName: '/images/blockwalletIcon.svg',
     description: 'BlockWallet browser extension.',
     href: null,
     color: '#1673ff',
@@ -862,7 +848,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   BRAVEWALLET: {
     connector: injected,
     name: GlobalConst.walletName.BRAVEWALLET,
-    iconName: BraveWalletIcon,
+    iconName: '/images/braveWalletIcon.png',
     description: 'Brave browser wallet.',
     href: null,
     color: '#1673ff',
@@ -871,7 +857,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   BITKEEP: {
     connector: injected,
     name: GlobalConst.walletName.BITKEEP,
-    iconName: BitKeepIcon,
+    iconName: '/images/bitkeep.png',
     description: 'BitKeep browser extension.',
     href: null,
     color: '#E8831D',
@@ -879,7 +865,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   INJECTED: {
     connector: injected,
     name: GlobalConst.walletName.INJECTED,
-    iconName: 'arrow-right.svg',
+    iconName: '/images/arrow-right.svg',
     description: 'Injected web3 provider.',
     href: null,
     color: '#010101',
@@ -888,7 +874,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   SAFE_APP: {
     connector: safeApp,
     name: GlobalConst.walletName.SAFE_APP,
-    iconName: GnosisIcon,
+    iconName: '/images/gnosis_safe.png',
     description: 'Login using gnosis safe app',
     href: null,
     color: '#4196FC',
@@ -897,7 +883,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   WALLET_LINK: {
     connector: walletlink,
     name: GlobalConst.walletName.WALLET_LINK,
-    iconName: CoinbaseWalletIcon,
+    iconName: '/images/coinbaseWalletIcon.svg',
     description: 'Use Coinbase Wallet app on mobile device',
     href: null,
     color: '#315CF5',
@@ -905,7 +891,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   WALLET_CONNECT: {
     connector: walletconnect,
     name: GlobalConst.walletName.WALLET_CONNECT,
-    iconName: WalletConnectIcon,
+    iconName: '/images/walletConnectIcon.svg',
     description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
     href: null,
     color: '#4196FC',
@@ -914,7 +900,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   UNSTOPABBLEDOMAINS: {
     connector: unstopabbledomains,
     name: 'Unstoppable Domains',
-    iconName: UnstoppableDomainsIcon,
+    iconName: '/images/unstoppableDomains.png',
     description: 'Unstoppable Domains',
     href: null,
     color: '#E8831D',
@@ -922,7 +908,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   ARKANE_CONNECT: {
     connector: arkaneconnect,
     name: GlobalConst.walletName.ARKANE_CONNECT,
-    iconName: VenlyIcon,
+    iconName: '/images/venly.svg',
     description: 'Login using Venly hosted wallet.',
     href: null,
     color: '#4196FC',
@@ -930,7 +916,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   Portis: {
     connector: portis,
     name: GlobalConst.walletName.Portis,
-    iconName: PortisIcon,
+    iconName: '/images/portisIcon.png',
     description: 'Login using Portis hosted wallet',
     href: null,
     color: '#4A6C9B',
@@ -939,7 +925,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   ZENGO_CONNECT: {
     connector: zengoconnect,
     name: GlobalConst.walletName.ZENGO_CONNECT,
-    iconName: ZengoIcon,
+    iconName: '/images/zengo.webp',
     description: 'Connect to Zengo Wallet',
     href: null,
     color: '#4196FC',

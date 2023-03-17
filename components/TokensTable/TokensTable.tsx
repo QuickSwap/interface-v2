@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Box, Divider } from '@mui/material';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
@@ -12,8 +12,8 @@ import {
   getTokenFromAddress,
 } from 'utils';
 import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
-import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
-import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
+import StarChecked from 'svgs/StarChecked.svg';
+import StarUnchecked from 'svgs/StarUnchecked.svg';
 import 'components/styles/AnalyticsTable.scss';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
@@ -111,7 +111,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
           </Box>
           <Link
             className='no-decoration'
-            to={`/analytics/${version}/token/${tokenCurrency.address}`}
+            href={`/analytics/${version}/token/${tokenCurrency.address}`}
           >
             <Box className='flex items-center'>
               <CurrencyLogo currency={tokenCurrency} size='28px' />
@@ -188,7 +188,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
             </Box>
             <Link
               className='no-decoration'
-              to={`/analytics/${version}/token/${tokenCurrency.address}`}
+              href={`/analytics/${version}/token/${tokenCurrency.address}`}
             >
               <Box className='flex items-center'>
                 <CurrencyLogo currency={tokenCurrency} size='28px' />

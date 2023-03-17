@@ -7,7 +7,7 @@ import { useChunkedRows } from '../../utils/chunkForRows';
 import Loader from '../Loader';
 import { FarmingType } from '../../models/enums';
 import { NTFInterface } from '../../models/interfaces';
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
 import './index.scss';
 import FarmModalFarmingTiers from 'components/StakeModalFarmingTiers';
 import { IsActive } from 'components/StakerMyStakes/IsActive';
@@ -412,19 +412,19 @@ export function FarmModal({
                 </Box>
                 <p>{t('takePartinFarmNeedTo')}</p>
                 <Box mt={1} className='flex items-center justify-center'>
-                  <NavLink
+                  <Link
                     className='v3-stake-liquidity-link'
-                    to={linkToProviding}
+                    href={linkToProviding}
                   >
                     <small>{`${t('provideLiquidity')} ${pool.token0.symbol} / ${
                       pool.token1.symbol
                     }`}</small>
                     <ArrowRight size={16} />
-                  </NavLink>
+                  </Link>
                 </Box>
               </Box>
             ) : chunkedPositions && chunkedPositions.length !== 0 ? (
-              chunkedPositions.map((row, i, arr) => (
+              chunkedPositions.map((row, i) => (
                 <Box
                   style={{
                     opacity:
@@ -497,7 +497,7 @@ export function FarmModal({
                     className='flex items-center border'
                     key={i}
                   >
-                    <Skeleton variant='circle' width='40px' height='40px' />
+                    <Skeleton variant='circular' width='40px' height='40px' />
                     <Box ml={1}>
                       <Skeleton width={50} height={16} />
                       <Skeleton width={60} height={20} />

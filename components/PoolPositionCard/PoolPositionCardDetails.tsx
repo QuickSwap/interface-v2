@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { Box, Button } from '@mui/material';
 import { Pair, JSBI, Percent } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const router = useRouter();
 
   const { account } = useActiveWeb3React();
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
@@ -95,7 +95,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           <Button
             variant='outlined'
             onClick={() =>
-              history.push(`/analytics/v2/pair/${pair.liquidityToken.address}`)
+              router.push(`/analytics/v2/pair/${pair.liquidityToken.address}`)
             }
           >
             <small>{t('viewAnalytics')}</small>
@@ -103,7 +103,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           <Button
             variant='contained'
             onClick={() => {
-              history.push(
+              router.push(
                 `/pools/v2?currency0=${currencyId(
                   currency0,
                 )}&currency1=${currencyId(currency1)}`,

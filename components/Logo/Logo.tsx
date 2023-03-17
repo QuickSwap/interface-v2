@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { stringToColour } from 'utils/stringToColour';
-import { StyledLogo } from './styled';
+import Image from 'next/image';
 
 const BAD_SRCS: { [tokenAddress: string]: true } = {};
 
@@ -25,8 +24,8 @@ const Logo: React.FC<LogoProps> = ({
   const displaySymbol = symbol.slice(0, 1) + symbol.slice(-1);
   if (src) {
     return (
-      <img
-        alt={alt}
+      <Image
+        alt={alt ?? 'Logo'}
         src={src}
         style={{ width: size, height: size }}
         onError={() => {
@@ -37,17 +36,18 @@ const Logo: React.FC<LogoProps> = ({
     );
   }
   return (
-    <StyledLogo
-      size={size}
-      style={{
-        background: stringToColour(alt ?? '').background,
-        color: stringToColour(alt ?? '').text,
-        border: stringToColour(alt ?? '').border,
-        fontSize: fontSize,
-      }}
-    >
-      {displaySymbol}
-    </StyledLogo>
+    <div />
+    // <StyledLogo
+    //   size={size}
+    //   style={{
+    //     background: stringToColour(alt ?? '').background,
+    //     color: stringToColour(alt ?? '').text,
+    //     border: stringToColour(alt ?? '').border,
+    //     fontSize: fontSize,
+    //   }}
+    // >
+    //   {displaySymbol}
+    // </StyledLogo>
   );
 };
 

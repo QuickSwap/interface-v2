@@ -8,14 +8,13 @@ import {
   ExternalLink,
   X,
 } from 'react-feather';
-import Circle from 'assets/images/blue-loader.svg';
-import MetaMaskLogo from 'assets/images/metamask-logo.svg';
 import { useActiveWeb3React } from 'hooks';
 import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
 import { CustomModal } from 'components';
 import { CloseIcon, CustomLightSpinner } from 'theme/components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
 import { useTranslation } from 'react-i18next';
+import Image from 'next/image';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -38,7 +37,7 @@ function ConfirmationPendingContent({
         </Box>
       )}
       <CustomLightSpinner
-        src={Circle}
+        src='/images/blue-loader.svg'
         alt='loader'
         size={inline ? '40px' : '90px'}
       />
@@ -103,10 +102,10 @@ function TransactionSubmittedContent({
               >
                 <Box className='flex items-center'>
                   {t('addToMetamaskToken', { symbol: currencyToAdd.symbol })}
-                  <img
-                    src={MetaMaskLogo}
+                  <Image
+                    src='/images/blue-loader.svg'
                     alt='Metamask'
-                    width='16px'
+                    width={16}
                     style={{ marginLeft: 6 }}
                   />
                 </Box>

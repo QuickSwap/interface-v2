@@ -4,7 +4,7 @@ import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Deposit, FormattedRewardInterface } from '../../models/interfaces';
 import { FarmingType } from '../../models/enums';
-import { useLocation } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import './index.scss';
 import FarmCard from './FarmCard';
 import { Box, Button, Divider, useMediaQuery, useTheme } from '@mui/material';
@@ -85,7 +85,8 @@ export const FarmingMyFarms: React.FC<{
     FormattedRewardInterface[] | null
   >();
 
-  const { hash } = useLocation();
+  const { asPath } = useRouter();
+  const hash = asPath.split('#')[1];
 
   const farmedNFTs = useMemo(() => {
     if (!shallowPositions) return;

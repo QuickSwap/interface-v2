@@ -6,7 +6,7 @@ import { Field } from 'state/swap/actions';
 import { DoubleCurrencyLogo } from 'components';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg';
+import ArrowDownIcon from 'svgs/ArrowDownIcon.svg';
 import { basisPointsToPercent, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';

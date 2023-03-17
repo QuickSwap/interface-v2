@@ -8,7 +8,7 @@ import { useIsUserAddedToken } from 'hooks/Tokens';
 import { CurrencyLogo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { PlusHelper } from 'components/QuestionHelper';
-import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
+import TokenSelectedIcon from 'svgs/TokenSelected.svg';
 import { formatNumber, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 

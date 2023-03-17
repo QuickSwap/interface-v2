@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { DualStakingInfo, StakingInfo } from 'types';
 import { DoubleCurrencyLogo } from 'components';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
+import HelpIcon from 'svgs/HelpIcon.svg';
 import {
   formatAPY,
   getAPYWithFee,
@@ -22,7 +22,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
   stakingAPY,
 }) => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const router = useRouter();
 
   const stakedAmounts = getStakedAmountStakingInfo(info);
   const tvl = getTVLStaking(
@@ -87,7 +87,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
         <Button
           fullWidth
           onClick={() => {
-            history.push(
+            router.push(
               `/pools?currency0=${info.tokens[0].address}&currency1=${info.tokens[1].address}`,
             );
           }}

@@ -10,7 +10,7 @@ import {
   CurrencyLogo,
   SettingsModal,
 } from 'components';
-import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
+import EditIcon from 'svgs/EditIcon.svg';
 import { basisPointsToPercent } from 'utils';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';

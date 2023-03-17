@@ -1,16 +1,17 @@
 import { currencyEquals, ETHER } from '@uniswap/sdk';
 import { GlobalConst } from 'constants/index';
 import { useCallback } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import useParsedQueryString from './useParsedQueryString';
+import { useRouter } from 'next/router';
 
 export default function usePoolsRedirect() {
-  const history = useHistory();
-  const params: any = useParams();
-  const currentPath = history.location.pathname + history.location.search;
-  const parsedQuery = useParsedQueryString();
-  const currencyIdAParam = params ? params.currencyIdA : undefined;
-  const currencyIdBParam = params ? params.currencyIdB : undefined;
+  const router = useRouter();
+  const currentPath = router.asPath;
+  const currencyIdAParam = router.query.currencyIdA
+    ? (router.query.currencyIdA as string)
+    : undefined;
+  const currencyIdBParam = router.query.currencyIdB
+    ? (router.query.currencyIdB as string)
+    : undefined;
   const newQuickAddress = GlobalConst.addresses.NEW_QUICK_ADDRESS;
 
   const redirectWithCurrency = useCallback(
@@ -22,42 +23,42 @@ export default function usePoolsRedirect() {
         ? 'ETH'
         : currency.address;
       if (isInput) {
-        if (currencyIdAParam ?? parsedQuery.currency0) {
+        if (currencyIdAParam ?? router.query.currency0) {
           if (currencyIdAParam) {
             redirectPath = currentPath.replace(currencyIdAParam, currencyId);
           } else {
             redirectPath = currentPath.replace(
-              `currency0=${parsedQuery.currency0}`,
+              `currency0=${router.query.currency0}`,
               `currency0=${currencyId}`,
             );
           }
         } else {
-          if (history.location.pathname.includes('/add')) {
+          if (router.pathname.includes('/add')) {
             redirectPath = `${currentPath}/${currencyId}/${
               currencyIdBParam
                 ? currencyIdBParam
                 : currencyId === 'ETH'
                 ? newQuickAddress
                 : 'ETH'
-            }${params && params.version ? `/${params.version}` : ''}`;
+            }${router.query.version ? `/${router.query.version}` : ''}`;
           } else {
-            redirectPath = `${currentPath}${
-              history.location.search === '' ? '?' : '&'
-            }currency0=${currencyId}`;
+            // redirectPath = `${currentPath}${
+            //   history.location.search === '' ? '?' : '&'
+            // }currency0=${currencyId}`;
           }
         }
       } else {
-        if (currencyIdBParam ?? parsedQuery.currency1) {
+        if (currencyIdBParam ?? router.query.currency1) {
           if (currencyIdBParam) {
             redirectPath = currentPath.replace(currencyIdBParam, currencyId);
           } else {
             redirectPath = currentPath.replace(
-              `currency1=${parsedQuery.currency1}`,
+              `currency1=${router.query.currency1}`,
               `currency1=${currencyId}`,
             );
           }
         } else {
-          if (history.location.pathname.includes('/add')) {
+          if (router.pathname.includes('/add')) {
             redirectPath = `${currentPath}/${
               currencyIdAParam
                 ? currencyIdAParam
@@ -65,26 +66,18 @@ export default function usePoolsRedirect() {
                 ? newQuickAddress
                 : 'ETH'
             }/${currencyId}${
-              params && params.version ? `/${params.version}` : ''
+              router.query.version ? `/${router.query.version}` : ''
             }`;
           } else {
-            redirectPath = `${currentPath}${
-              history.location.search === '' ? '?' : '&'
-            }currency1=${currencyId}`;
+            // redirectPath = `${currentPath}${
+            //   history.location.search === '' ? '?' : '&'
+            // }currency1=${currencyId}`;
           }
         }
       }
-      history.push(redirectPath);
+      router.push(redirectPath);
     },
-    [
-      currentPath,
-      history,
-      parsedQuery,
-      currencyIdAParam,
-      currencyIdBParam,
-      newQuickAddress,
-      params,
-    ],
+    [currentPath, router, currencyIdAParam, currencyIdBParam, newQuickAddress],
   );
 
   const redirectWithSwitch = useCallback(
@@ -96,25 +89,25 @@ export default function usePoolsRedirect() {
         : currency.address;
       let redirectPath;
       if (isInput) {
-        if (history.location.pathname.includes('/add')) {
+        if (router.pathname.includes('/add')) {
           redirectPath = `/add/${currencyId}/${currencyIdAParam}${
-            params && params.version ? `/${params.version}` : ''
+            router.query.version ? `/${router.query.version}` : ''
           }`;
         } else {
-          redirectPath = `${history.location.pathname}?currency0=${currencyId}&currency1=${parsedQuery.currency0}`;
+          redirectPath = `${router.pathname}?currency0=${currencyId}&currency1=${router.query.currency0}`;
         }
       } else {
-        if (history.location.pathname.includes('/add')) {
+        if (router.pathname.includes('/add')) {
           redirectPath = `/add/${currencyIdBParam}/${currencyId}${
-            params && params.version ? `/${params.version}` : ''
+            router.query.version ? `/${router.query.version}` : ''
           }`;
         } else {
-          redirectPath = `${history.location.pathname}?currency0=${parsedQuery.currency1}&currency1=${currencyId}`;
+          redirectPath = `${router.pathname}?currency0=${router.query.currency1}&currency1=${currencyId}`;
         }
       }
-      history.push(redirectPath);
+      router.push(redirectPath);
     },
-    [currencyIdAParam, currencyIdBParam, history, params, parsedQuery],
+    [currencyIdAParam, currencyIdBParam, router],
   );
 
   return { redirectWithCurrency, redirectWithSwitch };

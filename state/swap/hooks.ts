@@ -14,7 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency } from 'hooks/Tokens';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useRouter } from 'next/router';
 import { isAddress } from 'utils';
 import { AppDispatch, AppState } from 'state';
 import { useCurrencyBalances } from 'state/wallet/hooks';
@@ -174,8 +174,10 @@ export function useDerivedSwapInfo(): {
   v1Trade: Trade | undefined;
 } {
   const { account } = useActiveWeb3React();
-  const parsedQuery = useParsedQueryString();
-  const swapType = parsedQuery ? parsedQuery.swapIndex : undefined;
+  const router = useRouter();
+  const swapType = router.query.swapIndex
+    ? (router.query.swapIndex as string)
+    : undefined;
 
   const {
     independentField,
@@ -375,7 +377,7 @@ export function useDefaultsFromURLSearch():
   | undefined {
   const { chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
-  const parsedQs = useParsedQueryString();
+  const router = useRouter();
   const [result, setResult] = useState<
     | {
         inputCurrencyId: string | undefined;
@@ -386,7 +388,7 @@ export function useDefaultsFromURLSearch():
 
   useEffect(() => {
     if (!chainId) return;
-    const parsed = queryParametersToSwapState(parsedQs);
+    const parsed = queryParametersToSwapState(router.query);
 
     dispatch(
       replaceSwapState({

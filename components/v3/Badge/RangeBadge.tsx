@@ -1,7 +1,7 @@
 import React from 'react';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import styled from 'styled-components/macro';
-import { Error } from '@material-ui/icons';
+import { Error } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
 const ActiveDot = styled.span`

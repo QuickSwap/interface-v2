@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Text, TextProps as TextPropsOriginal } from 'rebass';
 import styled, {
   ThemeProvider as StyledComponentsThemeProvider,

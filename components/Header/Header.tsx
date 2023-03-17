@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import Image from 'next/image';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import {
   useIsV2,
@@ -15,16 +17,8 @@ import { shortenAddress, addMaticToMetamask, isSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
-import QuickIcon from 'assets/images/quickIcon.svg';
-import QuickLogo from 'assets/images/quickLogo.png';
-import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
-import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
-import WalletIcon from 'assets/images/WalletIcon.png';
-import NewTag from 'assets/images/NewTag.png';
-import SparkleLeft from 'assets/images/SparkleLeft.svg';
-import SparkleRight from 'assets/images/SparkleRight.svg';
-import SparkleTop from 'assets/images/SparkleTop.svg';
-import SparkleBottom from 'assets/images/SparkleBottom.svg';
+import { MoreHoriz } from '@mui/icons-material';
+import LightIcon from 'svgs/LightIcon.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 import useDeviceWidth from 'hooks/useDeviceWidth';
@@ -36,7 +30,7 @@ const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
-  const { pathname } = useLocation();
+  const { pathname } = useRouter();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
   const { ENSName } = useENSName(account ?? undefined);
@@ -176,9 +170,11 @@ const Header: React.FC = () => {
         pendingTransactions={pending}
         confirmedTransactions={confirmed}
       />
-      <Link to='/'>
-        <img
-          src={mobileWindowSize ? QuickIcon : QuickLogo}
+      <Link href='/'>
+        <Image
+          src={
+            mobileWindowSize ? '/images/quickIcon.svg' : '/images/quickLogo.png'
+          }
           alt='QuickLogo'
           height={60}
         />
@@ -187,7 +183,7 @@ const Header: React.FC = () => {
         <Box className='mainMenu'>
           {menuItems.slice(0, menuItemCountToShow).map((val, index) => (
             <Link
-              to={val.link}
+              href={val.link}
               key={index}
               id={val.id}
               className={`menuItem ${
@@ -200,25 +196,25 @@ const Header: React.FC = () => {
               <small>{val.text}</small>
               {val.isNew && (
                 <>
-                  <img src={NewTag} alt='new menu' width={46} />
-                  <img
+                  <Image src='/images/NewTag.png' alt='new menu' width={46} />
+                  <Image
                     className='menuItemSparkle menuItemSparkleLeft'
-                    src={SparkleLeft}
+                    src='/images/SparkleLeft.svg'
                     alt='menuItem sparkle left'
                   />
                   <img
                     className='menuItemSparkle menuItemSparkleRight'
-                    src={SparkleRight}
+                    src='/images/SparkleRight.svg'
                     alt='menuItem sparkle right'
                   />
                   <img
                     className='menuItemSparkle menuItemSparkleBottom'
-                    src={SparkleBottom}
+                    src='/images/SparkleBottom.svg'
                     alt='menuItem sparkle bottom'
                   />
                   <img
                     className='menuItemSparkle menuItemSparkleTop'
-                    src={SparkleTop}
+                    src='/images/SparkleTop.svg'
                     alt='menuItem sparkle top'
                   />
                 </>
@@ -228,14 +224,14 @@ const Header: React.FC = () => {
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
             <Box display='flex' className='menuItem subMenuItem'>
-              <ThreeDotIcon />
+              <MoreHoriz />
               <Box className='subMenuWrapper'>
                 <Box className='subMenu'>
                   {menuItems
                     .slice(menuItemCountToShow, menuItems.length)
                     .map((val, index) => (
                       <Link
-                        to={val.link}
+                        href={val.link}
                         key={index}
                         onClick={() => {
                           setOpenDetailMenu(false);
@@ -261,7 +257,7 @@ const Header: React.FC = () => {
           <Box className='mobileMenu'>
             {menuItems.slice(0, 4).map((val, index) => (
               <Link
-                to={val.link}
+                href={val.link}
                 key={index}
                 className={
                   pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
@@ -271,9 +267,7 @@ const Header: React.FC = () => {
               </Link>
             ))}
             <Box className='flex menuItem'>
-              <ThreeDotIcon
-                onClick={() => setOpenDetailMenu(!openDetailMenu)}
-              />
+              <MoreHoriz onClick={() => setOpenDetailMenu(!openDetailMenu)} />
               {openDetailMenu && (
                 <Box className='subMenuWrapper'>
                   <Box className='subMenu'>
@@ -289,7 +283,7 @@ const Header: React.FC = () => {
                         </a>
                       ) : (
                         <Link
-                          to={val.link}
+                          href={val.link}
                           key={index}
                           onClick={() => {
                             setOpenDetailMenu(false);
@@ -328,7 +322,7 @@ const Header: React.FC = () => {
             onClick={toggleWalletModal}
           >
             <p>{udDomain ?? shortenAddress(account)}</p>
-            <img src={WalletIcon} alt='Wallet' />
+            <Image src='/images/WalletIcon.png' alt='Wallet' />
           </Box>
         ) : (
           <Box

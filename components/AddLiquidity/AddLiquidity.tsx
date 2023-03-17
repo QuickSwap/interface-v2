@@ -41,9 +41,8 @@ import {
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import AddLiquidityIcon from 'svgs/AddLiquidityIcon.svg';
-import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
 
 const AddLiquidity: React.FC<{
@@ -66,26 +65,21 @@ const AddLiquidity: React.FC<{
   const finalizedTransaction = useTransactionFinalizer();
 
   // queried currency
-  const params: any = useParams();
-  const parsedQuery = useParsedQueryString();
-  const currency0Id =
-    params && params.currencyIdA
-      ? params.currencyIdA.toLowerCase() === 'matic' ||
-        params.currencyIdA.toLowerCase() === 'eth'
-        ? 'ETH'
-        : params.currencyIdA
-      : parsedQuery && parsedQuery.currency0
-      ? (parsedQuery.currency0 as string)
-      : undefined;
-  const currency1Id =
-    params && params.currencyIdB
-      ? params.currencyIdB.toLowerCase() === 'matic' ||
-        params.currencyIdB.toLowerCase() === 'eth'
-        ? 'ETH'
-        : params.currencyIdB
-      : parsedQuery && parsedQuery.currency1
-      ? (parsedQuery.currency1 as string)
-      : undefined;
+  const router = useRouter();
+  const currencyId0 = router.query.currencyIdA ?? router.query.currency0;
+  const currencyId1 = router.query.currencyIdB ?? router.query.currency1;
+  const currency0Id = currencyId0
+    ? (currencyId0 as string).toLowerCase() === 'matic' ||
+      (currencyId0 as string).toLowerCase() === 'eth'
+      ? 'ETH'
+      : (currencyId0 as string)
+    : undefined;
+  const currency1Id = currencyId1
+    ? (currencyId1 as string).toLowerCase() === 'matic' ||
+      (currencyId1 as string).toLowerCase() === 'eth'
+      ? 'ETH'
+      : (currencyId1 as string)
+    : undefined;
   const currency0 = useCurrency(currency0Id);
   const currency1 = useCurrency(currency1Id);
 
@@ -225,10 +219,10 @@ const AddLiquidity: React.FC<{
     }
   };
 
-  const router = useRouterContract();
+  const routerContract = useRouterContract();
 
   const onAddLiquidity = async () => {
-    if (!chainId || !library || !account || !router) return;
+    if (!chainId || !library || !account || !routerContract) return;
 
     const {
       [Field.CURRENCY_A]: parsedAmountA,
@@ -264,8 +258,8 @@ const AddLiquidity: React.FC<{
       currencies[Field.CURRENCY_B] === ETHER
     ) {
       const tokenBIsETH = currencies[Field.CURRENCY_B] === ETHER;
-      estimate = router.estimateGas.addLiquidityETH;
-      method = router.addLiquidityETH;
+      estimate = routerContract.estimateGas.addLiquidityETH;
+      method = routerContract.addLiquidityETH;
       args = [
         wrappedCurrency(
           tokenBIsETH
@@ -287,8 +281,8 @@ const AddLiquidity: React.FC<{
         (tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString(),
       );
     } else {
-      estimate = router.estimateGas.addLiquidity;
-      method = router.addLiquidity;
+      estimate = routerContract.estimateGas.addLiquidity;
+      method = routerContract.addLiquidity;
       args = [
         wrappedCurrency(currencies[Field.CURRENCY_A], chainId)?.address ?? '',
         wrappedCurrency(currencies[Field.CURRENCY_B], chainId)?.address ?? '',

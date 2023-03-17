@@ -13,7 +13,7 @@ import {
 } from 'state/transactions/hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo, NumericalInput } from 'components';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -34,7 +34,7 @@ import {
   formatNumber,
   calculateGasMargin,
 } from 'utils';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
+import Image from 'next/image';
 
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -315,7 +315,7 @@ const FarmCardDetails: React.FC<{
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apy')}</small>
                     <Box ml={0.5} height={16}>
-                      <img src={CircleInfoIcon} alt={'arrow up'} />
+                      <Image src='/images/circleinfo.svg' alt='arrow up' />
                     </Box>
                   </Box>
                   <small className='text-success'>{apyWithFee}%</small>
@@ -332,7 +332,7 @@ const FarmCardDetails: React.FC<{
                       {getUSDString(stakedAmounts?.unStakedUSD)})
                     </small>
                     <Link
-                      to={`/pools/v2?currency0=${getTokenAddress(
+                      href={`/pools/v2?currency0=${getTokenAddress(
                         token0,
                       )}&currency1=${getTokenAddress(token1)}`}
                       target='_blank'

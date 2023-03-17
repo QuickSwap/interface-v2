@@ -1,13 +1,14 @@
 import React from 'react';
 import { Box, Divider } from '@mui/material';
-import { Link, useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
 import { useBookmarkPairs } from 'state/application/hooks';
-import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
-import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
+import StarChecked from 'svgs/StarChecked.svg';
+import StarUnchecked from 'svgs/StarUnchecked.svg';
 import { useTranslation } from 'react-i18next';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
@@ -24,8 +25,10 @@ const PairTable: React.FC<PairsTableProps> = ({
   showPagination = true,
 }) => {
   const { t } = useTranslation();
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const router = useRouter();
+  const version = router.query.version
+    ? (router.query.version as string)
+    : 'total';
   const liquidityHeadCellIndex = version === 'total' ? 2 : 1;
 
   const v2SpecificCells = [
@@ -187,7 +190,7 @@ const PairTable: React.FC<PairsTableProps> = ({
             </Box>
             <Link
               className='no-decoration'
-              to={`/analytics/${version}/pair/${pair.id}`}
+              href={`/analytics/${version}/pair/${pair.id}`}
             >
               <Box className='flex items-center'>
                 <DoubleCurrencyLogo
@@ -405,7 +408,7 @@ const PairTable: React.FC<PairsTableProps> = ({
               </Box>
               <Link
                 className='no-decoration'
-                to={`/analytics/${pair.isV3 ? 'v3' : 'v2'}/pair/${pair.id}`}
+                href={`/analytics/${pair.isV3 ? 'v3' : 'v2'}/pair/${pair.id}`}
               >
                 <Box className='flex items-center'>
                   <DoubleCurrencyLogo

@@ -3,7 +3,7 @@ import { DoubleCurrencyLogo } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Token } from '@uniswap/sdk';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
@@ -12,9 +12,9 @@ import { Aprs } from 'models/interfaces';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { useMaticPrice } from 'state/application/hooks';
+import Image from 'next/image';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -43,9 +43,7 @@ interface EternalFarmCardProps {
 }
 
 export function EternalFarmCard({
-  active,
   farmHandler,
-  now,
   event: {
     id,
     pool,
@@ -60,8 +58,6 @@ export function EternalFarmCard({
   poolAprs,
   poolAprsLoading,
   tvls,
-  tvlsLoading,
-  eternal,
 }: EternalFarmCardProps) {
   const { t } = useTranslation();
   const apr = aprs ? aprs[id] : undefined;
@@ -126,7 +122,7 @@ export function EternalFarmCard({
             <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
             <Box className='cursor-pointer'>
               <Link
-                to={`/pools?currency0=${pool.token0.id}&currency1=${pool.token1.id}`}
+                href={`/pools?currency0=${pool.token0.id}&currency1=${pool.token1.id}`}
                 target='_blank'
                 className='no-decoration'
               >
@@ -153,7 +149,7 @@ export function EternalFarmCard({
           className='flex justify-between'
         >
           {isMobile && <small className='text-secondary'>{t('rewards')}</small>}
-          <Box textAlign={isMobile ? 'right' : ''}>
+          <Box textAlign={isMobile ? 'right' : undefined}>
             {rewardToken && rewardRate && (
               <small className='weight-600'>
                 {formatReward(
@@ -215,7 +211,7 @@ export function EternalFarmCard({
             </small>
             <Box ml={0.5} height={16}>
               <TotalAPRTooltip farmAPR={apr ?? 0} poolAPR={poolApr ?? 0}>
-                <img src={CircleInfoIcon} alt={'arrow up'} />
+                <Image src='/images/circleinfo.svg' alt='arrow up' />
               </TotalAPRTooltip>
             </Box>
           </Box>

@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { usePopper } from 'react-popper';
 
 import Portal from '@reach/portal';
-import { Arrow, PopoverContainer, ReferenceElement } from './styled';
+// import { Arrow, PopoverContainer, ReferenceElement } from './styled';
 import useInterval from 'hooks/useInterval';
 
 export interface PopoverProps {
@@ -50,7 +50,7 @@ export default function Popover({
 
   return (
     <>
-      <ReferenceElement ref={setReferenceElement as any}>
+      {/* <ReferenceElement ref={setReferenceElement as any}>
         {children}
       </ReferenceElement>
       <Portal>
@@ -72,7 +72,7 @@ export default function Popover({
             {...attributes.arrow}
           />
         </PopoverContainer>
-      </Portal>
+      </Portal> */}
     </>
   );
 }

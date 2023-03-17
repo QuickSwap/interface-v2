@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { Box } from '@mui/material';
 import SearchIcon from 'svgs/SearchIcon.svg';
 import { clientV2, clientV3 } from 'apollo/client';
@@ -30,7 +30,7 @@ dayjs.extend(utc);
 
 const AnalyticsSearch: React.FC = () => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const router = useRouter();
   const [searchVal, setSearchVal] = useState('');
   const [searchValInput, setSearchValInput] = useDebouncedChangeHandler(
     searchVal,
@@ -333,7 +333,7 @@ const AnalyticsSearch: React.FC = () => {
                 key={ind}
                 className='searchWidgetRow'
                 onClick={() => {
-                  history.push(`/analytics/${version}/pair/${val.id}`);
+                  router.push(`/analytics/${version}/pair/${val.id}`);
                   setMenuOpen(false);
                 }}
               >
@@ -367,7 +367,7 @@ const AnalyticsSearch: React.FC = () => {
                 key={ind}
                 className='searchWidgetRow'
                 onClick={() => {
-                  history.push(`/analytics/${version}/token/${val.id}`);
+                  router.push(`/analytics/${version}/token/${val.id}`);
                   setMenuOpen(false);
                 }}
               >

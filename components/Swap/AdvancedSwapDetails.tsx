@@ -14,7 +14,7 @@ import {
   CurrencyLogo,
   SettingsModal,
 } from 'components';
-import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
+import EditIcon from 'svgs/EditIcon.svg';
 import { formatTokenAmount } from 'utils';
 
 interface TradeSummaryProps {

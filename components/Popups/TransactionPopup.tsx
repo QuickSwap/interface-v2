@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Box, LinearProgress } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils/index';
-import { ReactComponent as ArrowTopRight } from 'assets/images/ArrowTopRight.svg';
+import { CallMade } from '@mui/icons-material';
 
 interface TransactionPopupProps {
   hash: string;
@@ -48,7 +48,7 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
             target='_blank'
             rel='noopener noreferrer'
           >
-            <ArrowTopRight />
+            <CallMade />
           </a>
         )}
       </Box>

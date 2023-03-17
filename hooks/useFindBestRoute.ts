@@ -14,11 +14,11 @@ import { useCurrency } from './Tokens';
 import { useTradeExactIn, useTradeExactOut } from './Trades';
 import { useActiveWeb3React } from 'hooks';
 import { useSwapCallArguments } from './useSwapCallback';
-import useParsedQueryString from './useParsedQueryString';
+import { useRouter } from 'next/router';
 
 const useFindBestRoute = () => {
   const { onSetSwapDelay, onBestRoute } = useSwapActionHandlers();
-  const parsedQuery = useParsedQueryString();
+  const router = useRouter();
   const {
     recipient,
     swapDelay,
@@ -79,13 +79,7 @@ const useFindBestRoute = () => {
     onSetSwapDelay(SwapDelay.SWAP_REFRESH);
     return { v2Trade, bestTradeExactIn, bestTradeExactOut };
   }
-  if (
-    account &&
-    chainId &&
-    swapCalls[0] &&
-    parsedQuery &&
-    parsedQuery.swapIndex === '1'
-  ) {
+  if (account && chainId && swapCalls[0] && router.query.swapIndex === '1') {
     const {
       contract,
       parameters: { methodName, args, value },

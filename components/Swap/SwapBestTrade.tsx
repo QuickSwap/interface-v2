@@ -23,7 +23,7 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -40,8 +40,8 @@ import {
   basisPointsToPercent,
   getContract,
 } from 'utils';
-import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
+import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
+import ExchangeIcon from 'svgs/ExchangeIcon.svg';
 import 'components/styles/Swap.scss';
 import { useTranslation } from 'react-i18next';
 import { useParaswapCallback } from 'hooks/useParaswapCallback';
@@ -57,7 +57,6 @@ import {
 import { useQuery } from 'react-query';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
-import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import callWallchainAPI from 'utils/wallchainService';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
@@ -66,7 +65,7 @@ import { ONE } from 'v3lib/utils';
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
 }> = ({ currencyBgClass }) => {
-  const history = useHistory();
+  const router = useRouter();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const { isProMode, updateIsProMode } = useIsProMode();
 
@@ -95,8 +94,8 @@ const SwapBestTrade: React.FC<{
   // reset if they close warning without tokens in params
   const handleDismissTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
-    history.push('/swap');
-  }, [history]);
+    router.push('/swap');
+  }, [router]);
 
   // dismiss warning if all imported tokens are in active lists
   const defaultTokens = useAllTokens();
@@ -174,12 +173,11 @@ const SwapBestTrade: React.FC<{
     }
   };
 
-  const parsedQs = useParsedQueryString();
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
-  const parsedCurrency0Id = (parsedQs.currency0 ??
-    parsedQs.inputCurrency) as string;
-  const parsedCurrency1Id = (parsedQs.currency1 ??
-    parsedQs.outputCurrency) as string;
+  const parsedCurrency0Id = (router.query.currency0 ??
+    router.query.inputCurrency) as string;
+  const parsedCurrency1Id = (router.query.currency1 ??
+    router.query.outputCurrency) as string;
 
   const handleCurrencySelect = useCallback(
     (inputCurrency) => {
@@ -293,8 +291,9 @@ const SwapBestTrade: React.FC<{
 
       setOptimalRateError('');
       return rate;
-    } catch (err) {
-      setOptimalRateError(err.message);
+    } catch (error) {
+      const err = error as any;
+      setOptimalRateError(err?.message);
       return;
     }
   };

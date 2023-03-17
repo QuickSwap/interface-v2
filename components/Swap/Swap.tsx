@@ -45,21 +45,20 @@ import {
   maxAmountSpend,
 } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
-import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
+import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
+import ExchangeIcon from 'svgs/ExchangeIcon.svg';
 import 'components/styles/Swap.scss';
 import { useTranslation } from 'react-i18next';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
-import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
 }> = ({ currencyBgClass }) => {
   const loadedUrlParams = useDefaultsFromURLSearch();
-  const history = useHistory();
+  const router = useRouter();
   const { isProMode, updateIsProMode } = useIsProMode();
 
   // token warning stuff
@@ -84,8 +83,8 @@ const Swap: React.FC<{
   // reset if they close warning without tokens in params
   const handleDismissTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
-    history.push('/swap?swapIndex=1');
-  }, [history]);
+    router.push('/swap?swapIndex=1');
+  }, [router]);
 
   // dismiss warning if all imported tokens are in active lists
   const defaultTokens = useAllTokens();
@@ -201,13 +200,11 @@ const Swap: React.FC<{
       toggleWalletModal();
     }
   };
-
-  const parsedQs = useParsedQueryString();
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
-  const parsedCurrency0Id = (parsedQs.currency0 ??
-    parsedQs.inputCurrency) as string;
-  const parsedCurrency1Id = (parsedQs.currency1 ??
-    parsedQs.outputCurrency) as string;
+  const parsedCurrency0Id = (router.query.currency0 ??
+    router.query.inputCurrency) as string;
+  const parsedCurrency1Id = (router.query.currency1 ??
+    router.query.outputCurrency) as string;
 
   const handleCurrencySelect = useCallback(
     (inputCurrency) => {
@@ -233,7 +230,7 @@ const Swap: React.FC<{
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
     } else if (
-      history.location.pathname !== '/' &&
+      router.pathname !== '/' &&
       parsedCurrency0 === undefined &&
       !parsedCurrency1Id
     ) {

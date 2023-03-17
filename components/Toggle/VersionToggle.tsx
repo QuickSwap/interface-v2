@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import './index.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { GlobalConst } from 'constants/index';
@@ -10,15 +10,13 @@ import { useIsAnalyticsLoaded } from 'state/analytics/hooks';
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
-  const params: any = useParams();
-  const history = useHistory();
-  const isAnalyticsPage = history.location.pathname.includes('/analytics');
-  const version =
-    params && params.version
-      ? params.version
-      : isAnalyticsPage
-      ? 'total'
-      : 'v3';
+  const router = useRouter();
+  const isAnalyticsPage = router.pathname.includes('/analytics');
+  const version = router.query.version
+    ? (router.query.version as string)
+    : isAnalyticsPage
+    ? 'total'
+    : 'v3';
 
   const analyticsLoaded = useIsAnalyticsLoaded();
   const toggleDisabled = isAnalyticsPage && !analyticsLoaded;
@@ -30,22 +28,26 @@ const VersionToggle: React.FC = () => {
 
   const redirectWithVersion = (version: string) => {
     const newQuickAddress = GlobalConst.addresses.NEW_QUICK_ADDRESS;
-    const versionParam = params ? params.version : undefined;
-    const currencyIdAParam = params ? params.currencyIdA : undefined;
-    const currencyIdBParam = params ? params.currencyIdB : undefined;
+    const versionParam = router.query.version
+      ? (router.query.version as string)
+      : undefined;
+    const currencyIdAParam = router.query.currencyIdA
+      ? (router.query.currencyIdA as string)
+      : undefined;
+    const currencyIdBParam = router.query.currencyIdB
+      ? (router.query.currencyIdB as string)
+      : undefined;
     const redirectPathName = versionParam
-      ? history.location.pathname.replace('/' + versionParam, `/${version}`)
-      : history.location.pathname +
-        (history.location.pathname.includes('/add')
+      ? router.pathname.replace('/' + versionParam, `/${version}`)
+      : router.pathname +
+        (router.pathname.includes('/add')
           ? (currencyIdAParam ? '' : `/ETH`) +
             (currencyIdBParam ? '' : `/${newQuickAddress}`)
           : '') +
         `/${version}`;
-    history.push(
+    router.push(
       redirectPathName +
-        (history.location.pathname.includes('/pools')
-          ? history.location.search
-          : ''),
+        (router.pathname.includes('/pools') ? router.asPath : ''),
     );
   };
 

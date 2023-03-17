@@ -5,8 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
 import { Box } from '@mui/material';
-import MetamaskIcon from 'assets/images/metamask.png';
-import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import { Close } from '@mui/icons-material';
 import { fortmatic, injected, metamask, portis, safeApp } from 'connectors';
 import { OVERLAY_READY } from 'connectors/Fortmatic';
@@ -252,7 +250,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 header={t('installBrave')}
                 subheader={t('installBraveDesc')}
                 link={'https://brave.com/wallet'}
-                icon={BraveWalletIcon}
+                icon='/images/braveWalletIcon.png'
               />
             );
           }
@@ -304,7 +302,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 header={t('installMetamask')}
                 subheader={null}
                 link={'https://metamask.io/'}
-                icon={MetamaskIcon}
+                icon='/images/metamask.png'
               />
             );
           } else {
@@ -344,7 +342,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               header={t('installBrave')}
               subheader={t('installBraveDesc')}
               link={'https://brave.com/wallet'}
-              icon={BraveWalletIcon}
+              icon='/images/braveWalletIcon.png'
             />
           );
         }
