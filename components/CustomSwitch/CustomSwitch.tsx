@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import 'components/styles/CustomSwitch.scss';
+import styles from 'styles/components/CustomSwitch.module.scss';
 
 interface SwitchItems {
   text: string;
@@ -30,7 +30,9 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
         return (
           <Box
             key={index}
-            className={`switchItem${item.condition ? ' activeSwitchItem' : ''}
+            className={`${styles.switchItem} ${
+              item.condition ? styles.activeSwitchItem : ''
+            }
             `}
             style={{
               // makes left border radius for the first switch item and right border radius for the last switch item

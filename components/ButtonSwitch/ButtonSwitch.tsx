@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Tab, Tabs } from '@mui/material';
-import 'components/styles/ButtonSwitch.scss';
+import styles from 'styles/components/ButtonSwitch.module.scss';
 
 interface Item {
   label: React.ReactNode;
@@ -29,7 +29,7 @@ const ButtonSwitch: React.FC<ButtonSwitchProps> = ({
 
   return (
     <Box width={width} maxWidth='100%' display='inline-block'>
-      <Box className='buttonSwitchContainer' padding={`${padding}px`}>
+      <Box className={styles.buttonSwitchContainer} padding={`${padding}px`}>
         <Tabs
           style={{ minHeight }}
           value={value}
@@ -55,8 +55,8 @@ const ButtonSwitch: React.FC<ButtonSwitchProps> = ({
                 }
                 value={tab.value}
                 wrapped
-                className={`tab ${
-                  value === tab.value ? 'tabActive' : 'tabInactive'
+                className={`${styles.tab} ${
+                  value === tab.value ? styles.tabActive : styles.tabInactive
                 }`}
                 style={{
                   minHeight: minHeight,

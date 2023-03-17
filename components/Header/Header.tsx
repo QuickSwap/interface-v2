@@ -19,7 +19,7 @@ import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import { MoreHoriz } from '@mui/icons-material';
 import LightIcon from 'svgs/LightIcon.svg';
-import 'components/styles/Header.scss';
+import styles from 'styles/components/Header.module.scss';
 import { useTranslation } from 'react-i18next';
 import useDeviceWidth from 'hooks/useDeviceWidth';
 import { GlobalValue } from 'constants/index';
@@ -164,7 +164,7 @@ const Header: React.FC = () => {
   const { updateIsV2 } = useIsV2();
 
   return (
-    <Box className={`header ${tabletWindowSize ? '' : headerClass}`}>
+    <Box className={`${styles.header} ${tabletWindowSize ? '' : headerClass}`}>
       <WalletModal
         ENSName={ENSName ?? undefined}
         pendingTransactions={pending}
@@ -180,13 +180,13 @@ const Header: React.FC = () => {
         />
       </Link>
       {!tabletWindowSize && (
-        <Box className='mainMenu'>
+        <Box className={styles.mainMenu}>
           {menuItems.slice(0, menuItemCountToShow).map((val, index) => (
             <Link
               href={val.link}
               key={index}
               id={val.id}
-              className={`menuItem ${
+              className={`${styles.menuItem} ${
                 pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
               }`}
               onClick={() => {
@@ -198,22 +198,22 @@ const Header: React.FC = () => {
                 <>
                   <Image src='/images/NewTag.png' alt='new menu' width={46} />
                   <Image
-                    className='menuItemSparkle menuItemSparkleLeft'
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
                     src='/images/SparkleLeft.svg'
                     alt='menuItem sparkle left'
                   />
                   <img
-                    className='menuItemSparkle menuItemSparkleRight'
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
                     src='/images/SparkleRight.svg'
                     alt='menuItem sparkle right'
                   />
                   <img
-                    className='menuItemSparkle menuItemSparkleBottom'
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
                     src='/images/SparkleBottom.svg'
                     alt='menuItem sparkle bottom'
                   />
                   <img
-                    className='menuItemSparkle menuItemSparkleTop'
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
                     src='/images/SparkleTop.svg'
                     alt='menuItem sparkle top'
                   />
@@ -223,10 +223,13 @@ const Header: React.FC = () => {
           ))}
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
-            <Box display='flex' className='menuItem subMenuItem'>
+            <Box
+              display='flex'
+              className={`${styles.menuItem} ${styles.subMenuItem}`}
+            >
               <MoreHoriz />
-              <Box className='subMenuWrapper'>
-                <Box className='subMenu'>
+              <Box className={styles.subMenuWrapper}>
+                <Box className={styles.subMenu}>
                   {menuItems
                     .slice(menuItemCountToShow, menuItems.length)
                     .map((val, index) => (
@@ -253,24 +256,24 @@ const Header: React.FC = () => {
         </Box>
       )}
       {tabletWindowSize && (
-        <Box className='mobileMenuContainer'>
-          <Box className='mobileMenu'>
+        <Box className={styles.mobileMenuContainer}>
+          <Box className={styles.mobileMenu}>
             {menuItems.slice(0, 4).map((val, index) => (
               <Link
                 href={val.link}
                 key={index}
                 className={
-                  pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
+                  pathname.indexOf(val.link) > -1 ? 'active' : styles.menuItem
                 }
               >
                 <small>{val.text}</small>
               </Link>
             ))}
-            <Box className='flex menuItem'>
+            <Box className={`flex ${styles.menuItem}`}>
               <MoreHoriz onClick={() => setOpenDetailMenu(!openDetailMenu)} />
               {openDetailMenu && (
-                <Box className='subMenuWrapper'>
-                  <Box className='subMenu'>
+                <Box className={styles.subMenuWrapper}>
+                  <Box className={styles.subMenu}>
                     {menuItems.slice(4, menuItems.length).map((val, index) => {
                       return val.isExternal ? (
                         <a
@@ -311,14 +314,14 @@ const Header: React.FC = () => {
         </Box>
       )}
       <Box>
-        <Box className='headerIconWrapper'>
-          <Box className='styledPollingDot' />
+        <Box className={styles.headerIconWrapper}>
+          <Box className={styles.styledPollingDot} />
           <LightIcon />
         </Box>
         {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
           <Box
             id='web3-status-connected'
-            className='accountDetails'
+            className={styles.accountDetails}
             onClick={toggleWalletModal}
           >
             <p>{udDomain ?? shortenAddress(account)}</p>
@@ -326,7 +329,7 @@ const Header: React.FC = () => {
           </Box>
         ) : (
           <Box
-            className={`connectButton ${
+            className={`${styles.connectButton} ${
               ethereum && !isSupportedNetwork(ethereum)
                 ? 'bg-error'
                 : 'bg-primary'
@@ -341,8 +344,8 @@ const Header: React.FC = () => {
               ? t('wrongNetwork')
               : t('connectWallet')}
             {ethereum && !isSupportedNetwork(ethereum) && (
-              <Box className='wrongNetworkWrapper'>
-                <Box className='wrongNetworkContent'>
+              <Box className={styles.wrongNetworkWrapper}>
+                <Box className={styles.wrongNetworkContent}>
                   <small>{t('switchWalletToPolygon')}</small>
                   <Box mt={2.5} onClick={addMaticToMetamask}>
                     {t('switchPolygon')}

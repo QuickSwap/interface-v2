@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.v3-farm-stake-modal-wrapper {
+.v3FarmStakeModalWrapper {
   width: 100%;
   button {
     width: 100%;
@@ -10,7 +10,7 @@
   }
 }
 
-.v3-farm-stake-modal-position {
+.v3FarmStakeModalPosition {
   background-color: $secondary3;
   height: 84px;
   min-width: 250px;

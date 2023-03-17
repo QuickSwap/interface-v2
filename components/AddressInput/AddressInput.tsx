@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import useENS from 'hooks/useENS';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils';
-import 'components/styles/AddressInput.scss';
+import styles from 'styles/components/AddressInput.module.scss';
 import { useTranslation } from 'react-i18next';
 
 interface AddressInputProps {
@@ -26,7 +26,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
 
   return (
     <Box
-      className={`addressInput ${
+      className={`${styles.addressInput} ${
         error ? 'border-error' : 'border-primaryDark'
       }`}
     >

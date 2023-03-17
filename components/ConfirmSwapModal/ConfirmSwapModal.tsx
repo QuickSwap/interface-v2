@@ -7,7 +7,6 @@ import {
 } from 'components';
 import SwapModalHeader from './SwapModalHeader';
 import { formatTokenAmount } from 'utils';
-import 'components/styles/ConfirmSwapModal.scss';
 import { useTranslation } from 'react-i18next';
 import { OptimalRate } from '@paraswap/sdk';
 

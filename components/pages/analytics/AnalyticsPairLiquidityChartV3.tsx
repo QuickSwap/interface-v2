@@ -7,7 +7,7 @@ import { isAddress } from 'utils';
 import { getLiquidityChart } from 'utils/v3-graph';
 import Chart from 'react-apexcharts';
 import { Box } from '@mui/material';
-import '../styles/analytics.scss';
+import styles from 'styles/pages/Analytics.module.scss';
 import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
 
@@ -300,14 +300,14 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
           <Box className='flex' position={'absolute'} right={16} bottom={0}>
             <button
               disabled={zoom === MAX_ZOOM}
-              className='liquidityChartButton'
+              className={styles.liquidityChartButton}
               onClick={handleZoomIn}
             >
               +
             </button>
             <button
               disabled={zoom === 2}
-              className='liquidityChartButton'
+              className={styles.liquidityChartButton}
               onClick={handleZoomOut}
             >
               -

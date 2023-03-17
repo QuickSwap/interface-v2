@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.v3-badge {
+.v3Badge {
   padding: 0 8px;
   height: 24px;
   display: flex;
@@ -16,15 +16,15 @@
   }
 }
 
-.v3-badge-success {
+.v3BadgeSuccess {
   background-color: $successLight;
 }
 
-.v3-badge-warning {
+.v3BadgeWarning {
   background-color: $yellow3;
   color: $bgColor;
 }
 
-.v3-badge-primary {
+.v3BadgePrimary {
   background-color: $purple;
 }

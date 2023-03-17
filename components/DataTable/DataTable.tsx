@@ -12,7 +12,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { SortOrder, getComparator, stableSort } from './sort';
-import 'components/styles/DataTable.scss';
+import styles from 'styles/components/DataTable.module.scss';
 
 export interface HeadCell<T> {
   id: string;
@@ -97,7 +97,7 @@ const DataTable: React.FC<DataTableProps<any>> = ({
     rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
   return (
-    <Box className='datatableWrapper'>
+    <Box className={styles.datatableWrapper}>
       {toolbar}
 
       <TableContainer>
@@ -111,7 +111,7 @@ const DataTable: React.FC<DataTableProps<any>> = ({
             <TableRow>
               {headCells.map((headCell, index) => (
                 <TableCell
-                  className={headCell.buttonCell ? 'buttonCell' : ''}
+                  className={headCell.buttonCell ? styles.buttonCell : ''}
                   key={`${headCell.id}_${index}`}
                   align={headCell.align}
                   padding='normal'
@@ -129,9 +129,9 @@ const DataTable: React.FC<DataTableProps<any>> = ({
                       }
                     >
                       <Box
-                        className={`headCellLabel${
+                        className={`${styles.headCellLabel} ${
                           orderBy.id === headCell.id
-                            ? ' sortRequestedHeadLabel'
+                            ? styles.sortRequestedHeadLabel
                             : ''
                         }`}
                       >
@@ -139,9 +139,9 @@ const DataTable: React.FC<DataTableProps<any>> = ({
                       </Box>
                       {!headCell.sortDisabled && (
                         <Box
-                          className={`sortIcon${
+                          className={`${styles.sortIcon} ${
                             orderBy.id === headCell.id
-                              ? ' sortRequestedIcon'
+                              ? styles.sortRequestedIcon
                               : ''
                           }`}
                         >

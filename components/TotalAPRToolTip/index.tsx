@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { formatNumber } from 'utils';
 import { useTranslation } from 'react-i18next';
-import 'components/styles/TotalAPRToolTip.scss';
+import styles from 'styles/components/TotalAPRToolTip.module.scss';
 import Popover from 'components/v3/Popover';
 
 interface TotalAPRToolTipProps {
@@ -25,7 +25,7 @@ const TotalAPRTooltip: React.FC<TotalAPRToolTipProps> = ({
       color='#12131a'
       borderRadius='10px'
       content={
-        <Box className='totalAPRTooltipWrapper'>
+        <Box className={styles.totalAPRTooltipWrapper}>
           <Box
             className='flex items-center justify-between bg-grey29'
             height='40px'

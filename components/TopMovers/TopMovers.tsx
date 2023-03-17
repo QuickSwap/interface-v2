@@ -6,7 +6,7 @@ import { Token, ChainId } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
 import { getTopTokens, getPriceClass, formatNumber } from 'utils';
-import 'components/styles/TopMovers.scss';
+import styles from 'styles/components/TopMovers.module.scss';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice, useMaticPrice, useIsV2 } from 'state/application/hooks';
 import { getTopTokensV3 } from 'utils/v3-graph';
@@ -65,9 +65,9 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   ]);
 
   return (
-    <Box className='bg-palette topMoversWrapper'>
+    <Box className={`bg-palette ${styles.topMoversWrapper}`}>
       <p className='weight-600 text-secondary'>{t('24hMostVolume')}</p>
-      <Box className='topMoversContent'>
+      <Box className={styles.topMoversContent}>
         {topMoverTokens ? (
           <Box>
             {topMoverTokens.map((token: any) => {
@@ -81,13 +81,13 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
               const priceDown = Number(token.priceChangeUSD) < 0;
               const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
               return (
-                <Box className='topMoverItem' key={token.id}>
+                <Box className={styles.topMoverItem} key={token.id}>
                   <CurrencyLogo currency={currency} size='28px' />
                   <Box ml={1}>
                     <small className='text-bold'>{token.symbol}</small>
                     <Box className='flex items-center justify-center'>
                       <small>${formatNumber(token.priceUSD)}</small>
-                      <Box className={`topMoverText ${priceClass}`}>
+                      <Box className={`${styles.topMoverText} ${priceClass}`}>
                         {!hideArrow && priceUp && <ArrowDropUp />}
                         {!hideArrow && priceDown && <ArrowDropDown />}
                         <span>

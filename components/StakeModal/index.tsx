@@ -8,7 +8,7 @@ import Loader from '../Loader';
 import { FarmingType } from '../../models/enums';
 import { NTFInterface } from '../../models/interfaces';
 import Link from 'next/link';
-import './index.scss';
+import styles from './StakeModal.module.scss';
 import FarmModalFarmingTiers from 'components/StakeModalFarmingTiers';
 import { IsActive } from 'components/StakerMyStakes/IsActive';
 import { useCurrencyBalance } from 'state/wallet/hooks';
@@ -375,7 +375,7 @@ export function FarmModal({
           <Loader size={'25px'} />
         </Box>
       ) : (
-        <div className='v3-farm-stake-modal-wrapper'>
+        <div className={styles.v3FarmStakeModalWrapper}>
           <Box mb={1} className='flex justify-between'>
             <h6 className='weight-600'>{t('selectNFTFarm')}</h6>
             <Box className='cursor-pointer' onClick={closeHandler}>

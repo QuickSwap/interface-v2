@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { useActivePopups } from 'state/application/hooks';
 import { useURLWarningVisible } from 'state/user/hooks';
 import PopupItem from './PopupItem';
-import 'components/styles/Popups.scss';
+import styles from 'styles/components/Popups.module.scss';
 
 const Popups: React.FC = () => {
   // get all popups
@@ -13,7 +13,7 @@ const Popups: React.FC = () => {
   return (
     <>
       <Box
-        className='fixedPopupColumn'
+        className={styles.fixedPopupColumn}
         top={urlWarningActive ? '108px' : '88px'}
       >
         {activePopups.map((item) => (
@@ -26,11 +26,11 @@ const Popups: React.FC = () => {
         ))}
       </Box>
       <Box
-        className='mobilePopupWrapper'
+        className={styles.mobilePopupWrapper}
         height={activePopups?.length > 0 ? 'fit-content' : 0}
         margin={activePopups?.length > 0 ? '0 auto 20px' : 0}
       >
-        <Box className='mobilePopupInner'>
+        <Box className={styles.mobilePopupInner}>
           {activePopups // reverse so new items up front
             .slice(0)
             .reverse()

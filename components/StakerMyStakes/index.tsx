@@ -5,7 +5,7 @@ import Loader from '../Loader';
 import { Deposit, FormattedRewardInterface } from '../../models/interfaces';
 import { FarmingType } from '../../models/enums';
 import { useRouter } from 'next/router';
-import './index.scss';
+import styles from './StakerMystakes.module.scss';
 import FarmCard from './FarmCard';
 import { Box, Button, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { useV3StakeData } from 'state/farms/hooks';
@@ -694,7 +694,7 @@ export const FarmingMyFarms: React.FC<{
                 {farmedNFTs.map((el, i) => {
                   return (
                     <div
-                      className={'v3-my-farms-position-card'}
+                      className={styles.v3MyFarmsPositionCard}
                       key={i}
                       data-navigatedto={hash == `#${el.id}`}
                     >

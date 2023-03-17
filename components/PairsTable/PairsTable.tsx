@@ -12,7 +12,7 @@ import StarUnchecked from 'svgs/StarUnchecked.svg';
 import { useTranslation } from 'react-i18next';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import 'components/styles/AnalyticsTable.scss';
+import styles from 'styles/components/AnalyticsTable.module.scss';
 import FarmingAPRTooltip from 'components/FarmingAPRTooltip';
 
 interface PairsTableProps {
@@ -218,7 +218,7 @@ const PairTable: React.FC<PairsTableProps> = ({
               </Box>
             )}
             {version === 'total' && (
-              <Box ml={0.5} className='analyticsPairVersion'>
+              <Box ml={0.5} className={styles.analyticsPairVersion}>
                 {pair.isV3 ? 'V3' : 'V2'}
               </Box>
             )}

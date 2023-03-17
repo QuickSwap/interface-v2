@@ -1,11 +1,11 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.v3-currency-input-panel {
+.v3CurrencyInputPanel {
   position: relative;
 }
 
-.v3-currency-input-lock-wrapper {
+.v3CurrencyInputLockWrapper {
   position: absolute;
   top: 0;
   left: 0;

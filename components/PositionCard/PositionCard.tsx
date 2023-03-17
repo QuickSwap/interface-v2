@@ -7,7 +7,7 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { formatTokenAmount } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
-import 'components/styles/PositionCard.scss';
+import styles from 'styles/components/PositionCard.module.scss';
 import { useTranslation } from 'react-i18next';
 
 interface PositionCardProps {
@@ -65,13 +65,13 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
       : [undefined, undefined];
 
   return (
-    <Box className='minimalCardWrapper' border={border}>
+    <Box className={styles.minimalCardWrapper} border={border}>
       {userPoolBalance &&
       JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
         <Box>
           <p>{t('yourposition')}</p>
           <Box
-            className='minimalCardRow'
+            className={styles.minimalCardRow}
             onClick={() => setShowMore(!showMore)}
           >
             <Box className='flex items-center'>
@@ -86,17 +86,17 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
             </Box>
             <p>{formatTokenAmount(userPoolBalance)}</p>
           </Box>
-          <Box className='minimalCardRow'>
+          <Box className={styles.minimalCardRow}>
             <p>{t('yourPoolShare')}:</p>
             <p>
               {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
             </p>
           </Box>
-          <Box className='minimalCardRow'>
+          <Box className={styles.minimalCardRow}>
             <p>{currency0.symbol}:</p>
             <p>{formatTokenAmount(token0Deposited)}</p>
           </Box>
-          <Box className='minimalCardRow'>
+          <Box className={styles.minimalCardRow}>
             <p>{currency1.symbol}:</p>
             <p>{formatTokenAmount(token1Deposited)}</p>
           </Box>

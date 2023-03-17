@@ -13,7 +13,7 @@ import { GlobalConst, MATIC_CHAIN } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
-import 'components/styles/SearchWidget.scss';
+import styles from 'styles/components/AnalyticsSearch.module.scss';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -287,8 +287,8 @@ const AnalyticsSearch: React.FC = () => {
   }, []);
 
   return (
-    <Box className='searchWidgetWrapper'>
-      <Box className='searchWidgetInput'>
+    <Box className={styles.searchWidgetWrapper}>
+      <Box className={styles.searchWidgetInput}>
         <input
           placeholder={t('searchTokenPair')}
           value={searchValInput}
@@ -301,7 +301,7 @@ const AnalyticsSearch: React.FC = () => {
         </Box>
       </Box>
       {menuOpen && (
-        <div ref={wrapperRef} className='searchWidgetContent'>
+        <div ref={wrapperRef} className={styles.searchWidgetContent}>
           <h6>{t('pairs')}</h6>
           {filteredPairs.slice(0, pairsShown).map((val, ind) => {
             const currency0 = getTokenFromAddress(
@@ -331,7 +331,7 @@ const AnalyticsSearch: React.FC = () => {
             return (
               <Box
                 key={ind}
-                className='searchWidgetRow'
+                className={styles.searchWidgetRow}
                 onClick={() => {
                   router.push(`/analytics/${version}/pair/${val.id}`);
                   setMenuOpen(false);
@@ -349,7 +349,7 @@ const AnalyticsSearch: React.FC = () => {
             );
           })}
           <Box
-            className='searchWidgetShowMore'
+            className={styles.searchWidgetShowMore}
             onClick={() => setPairsShown(pairsShown + 5)}
           >
             <small>{t('showMore')}</small>
@@ -365,7 +365,7 @@ const AnalyticsSearch: React.FC = () => {
             return (
               <Box
                 key={ind}
-                className='searchWidgetRow'
+                className={styles.searchWidgetRow}
                 onClick={() => {
                   router.push(`/analytics/${version}/token/${val.id}`);
                   setMenuOpen(false);
@@ -379,7 +379,7 @@ const AnalyticsSearch: React.FC = () => {
             );
           })}
           <Box
-            className='searchWidgetShowMore'
+            className={styles.searchWidgetShowMore}
             onClick={() => setTokensShown(tokensShown + 5)}
           >
             <small>{t('showMore')}</small>

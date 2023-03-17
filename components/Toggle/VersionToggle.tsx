@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import './index.scss';
+import styles from './Toggle.module.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { GlobalConst } from 'constants/index';
 import { useIsAnalyticsLoaded } from 'state/analytics/hooks';
@@ -53,8 +53,8 @@ const VersionToggle: React.FC = () => {
 
   return (
     <Box
-      className={`version-toggle-container${
-        toggleDisabled ? ' version-toggle-disabled' : ''
+      className={`${styles.versionToggleContainer} ${
+        toggleDisabled ? styles.versionToggleDisabled : ''
       }`}
     >
       <Box

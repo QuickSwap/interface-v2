@@ -39,7 +39,7 @@ import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import ColoredSlider from 'components/ColoredSlider';
 import { JSBI } from '@uniswap/sdk';
 import { useUserSlippageTolerance } from 'state/user/hooks';
-import './index.scss';
+import styles from './RemoveLiquidityV3.module.scss';
 
 interface RemoveLiquidityV3Props {
   position: PositionPool;
@@ -77,7 +77,6 @@ export default function RemoveLiquidityV3({
     feeValue0,
     feeValue1,
     outOfRange,
-    error,
   } = useMemo(() => {
     if (
       (!derivedInfo.feeValue0 ||
@@ -387,7 +386,7 @@ export default function RemoveLiquidityV3({
         </Box>
         <RangeBadge removed={removed} inRange={!outOfRange} />
       </Box>
-      <Box mt={2} className='v3-remove-liquidity-input-wrapper'>
+      <Box mt={2} className={styles.v3RemoveLiquidityInputWrapper}>
         <Box mb={2} className='flex justify-between'>
           <small className='text-secondary'>{t('amount')}</small>
         </Box>
@@ -410,7 +409,7 @@ export default function RemoveLiquidityV3({
           }}
         />
       </Box>
-      <Box my={2} className='v3-remove-liquidity-info-wrapper'>
+      <Box my={2} className={styles.v3RemoveLiquidityInfoWrapper}>
         <Box>
           <p>
             {t('pooled')} {liquidityValue0?.currency?.symbol}
@@ -465,7 +464,7 @@ export default function RemoveLiquidityV3({
         </Box>
       )}
       <Button
-        className='v3-remove-liquidity-button'
+        className={styles.v3RemoveLiquidityButton}
         disabled={removed || percent === 0 || !liquidityValue0}
         onClick={() => setShowConfirm(true)}
       >

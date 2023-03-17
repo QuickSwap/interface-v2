@@ -36,7 +36,7 @@ import {
   CurrencyLogo,
 } from 'components';
 import { useTranslation } from 'react-i18next';
-import 'components/styles/LendModal.scss';
+import styles from 'styles/components/LendModal.module.scss';
 import { Close } from '@mui/icons-material';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
@@ -525,7 +525,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
         />
       )}
       <CustomModal open={open} onClose={onClose}>
-        <Box className='lendModalWrapper'>
+        <Box className={styles.lendModalWrapper}>
           <Box mt={1} mb={2.5} className='flex items-center justify-between'>
             <Box className='flex items-center'>
               <CurrencyLogo
@@ -579,7 +579,9 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
           </Box>
           <Box
             mt={2}
-            className={`lendModalInput ${inputFocused ? 'focused' : ''}`}
+            className={`${styles.lendModalInput} ${
+              inputFocused ? 'focused' : ''
+            }`}
           >
             <Box>
               <NumericalInput
@@ -594,7 +596,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               </p>
             </Box>
             <Box
-              className='lendMaxButton'
+              className={styles.lendMaxButton}
               onClick={() => {
                 setValue(
                   maxAmount ? formatUnits(maxAmount, assetDecimals) : '0',
@@ -604,11 +606,11 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               {t('max')}
             </Box>
           </Box>
-          <Box my={3} className='lendModalContentWrapper'>
+          <Box my={3} className={styles.lendModalContentWrapper}>
             {lendModalRows
               .filter((row) => !!row)
               .map((row, ind) => (
-                <Box key={ind} className='lendModalRow'>
+                <Box key={ind} className={styles.lendModalRow}>
                   <p>{row?.label}:</p>
                   <p>
                     {row?.html}
@@ -623,8 +625,8 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
               ))}
           </Box>
           {!borrow && (
-            <Box className='lendModalContentWrapper'>
-              <Box className='lendModalRow'>
+            <Box className={styles.lendModalContentWrapper}>
+              <Box className={styles.lendModalRow}>
                 <p>{t('enableAsCollateral')}</p>
                 <ToggleSwitch
                   toggled={enableAsCollateral}
@@ -748,7 +750,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
             {asset.underlyingName.includes('LP') && pairData && (
               <Box mt={2} textAlign='center'>
                 <Link
-                  className='assetLPLink'
+                  className={styles.assetLPLink}
                   href={`/pools?currency0=${pairData.token0.id}&currency1=${pairData.token1.id}`}
                 >
                   Get {asset.underlyingSymbol} LP ↗

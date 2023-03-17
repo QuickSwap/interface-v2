@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.toggle-button {
+.toggleButton {
   background-color: $secondary3;
   border: 1px solid $grey12;
   border-radius: 6px;

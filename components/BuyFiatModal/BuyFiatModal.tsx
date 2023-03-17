@@ -4,7 +4,7 @@ import { Close } from '@mui/icons-material';
 import HelpIcon from 'svgs/HelpIcon1.svg';
 import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
-import 'components/styles/BuyFiatModal.scss';
+import styles from 'styles/components/BuyFiatModal.module.scss';
 import { useTranslation } from 'react-i18next';
 import { CBPayInstanceType, initOnRamp } from '@coinbase/cbpay-js';
 import { useWalletModalToggle } from 'state/application/hooks';
@@ -93,16 +93,16 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           <h6>{t('fiatProviders')}</h6>
           <Close className='cursor-pointer' onClick={onClose} />
         </Box>
-        <Box className='paymentBox'>
+        <Box className={styles.paymentBox}>
           <Image src='/images/binanceConnect.png' alt='binance connect' />
-          <Box className='buyButton' onClick={buyBinance}>
+          <Box className={styles.buyButton} onClick={buyBinance}>
             {t('buy')}
           </Box>
         </Box>
-        <Box className='paymentBox'>
+        <Box className={styles.paymentBox}>
           <Image src='/images/coinbasePay.png' alt='coinbase pay' />
           <Box
-            className={`buyButton ${
+            className={`${styles.buyButton} ${
               account && !coinbaseReady ? 'disabled' : ''
             }`}
             onClick={buyWithCoinbase}
@@ -110,7 +110,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
             {account ? t('buy') : t('connectWallet')}
           </Box>
         </Box>
-        <Box className='paymentBox'>
+        <Box className={styles.paymentBox}>
           <Image src='/images/Transak.png' alt='transak' />
           <Box
             className='buyButton'

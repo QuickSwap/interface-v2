@@ -11,6 +11,7 @@ import { basisPointsToPercent, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
+import styles from 'styles/components/ConfirmSwapModal.module.scss';
 
 interface SwapModalHeaderProps {
   trade?: Trade;
@@ -62,7 +63,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
           size={48}
         />
       </Box>
-      <Box className='swapContent'>
+      <Box className={styles.swapContent}>
         <p>
           {t('swap')}{' '}
           {optimalRate
@@ -98,7 +99,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
         </p>
       </Box>
       {showAcceptChanges && (
-        <Box className='priceUpdate'>
+        <Box className={styles.priceUpdate}>
           <Box>
             <AlertTriangle size={20} />
             <p>{t('priceUpdated')}</p>
@@ -106,7 +107,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
           <Button onClick={onAcceptChanges}>{t('accept')}</Button>
         </Box>
       )}
-      <Box className='transactionText'>
+      <Box className={styles.transactionText}>
         {trade?.tradeType === TradeType.EXACT_INPUT ||
         optimalRate?.side === SwapSide.SELL ? (
           <p className='small'>
@@ -144,7 +145,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
         ) : (
           <></>
         )}
-        <Button onClick={onConfirm} className='swapButton'>
+        <Button onClick={onConfirm} className={styles.swapButton}>
           {t('confirmSwap')}
         </Button>
       </Box>

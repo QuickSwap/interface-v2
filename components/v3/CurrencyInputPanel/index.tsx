@@ -16,7 +16,7 @@ import { Box } from '@mui/material';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'react-i18next';
 import JSBI from 'jsbi';
-import './index.scss';
+import styles from './CurrencyInputPanel.module.scss';
 import { parseUnits } from 'ethers/lib/utils';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 
@@ -136,9 +136,9 @@ export default function CurrencyInputPanel({
   // }, [balance]);
 
   return (
-    <Box className='v3-currency-input-panel'>
+    <Box className={styles.v3CurrencyInputPanel}>
       {locked && (
-        <Box className='v3-currency-input-lock-wrapper'>
+        <Box className={styles.v3CurrencyInputLockWrapper}>
           <LockOutlined />
           <small>
             Price is outside specified price range. Single-asset deposit only.

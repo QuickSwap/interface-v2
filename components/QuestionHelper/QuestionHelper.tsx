@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { HelpCircle as Question, PlusCircle } from 'react-feather';
 import { CustomTooltip } from 'components';
-import 'components/styles/QuestionHelper.scss';
+import styles from 'styles/components/QuestionHelper.module.scss';
 
 const QuestionHelper: React.FC<{
   text: string;
@@ -11,7 +11,7 @@ const QuestionHelper: React.FC<{
 }> = ({ text, size = 16, className }) => {
   return (
     <CustomTooltip title={text}>
-      <Box className={`questionWrapper ${className}`}>
+      <Box className={`${styles.questionWrapper} ${className}`}>
         <Question size={size} />
       </Box>
     </CustomTooltip>
@@ -26,7 +26,7 @@ export const PlusHelper: React.FC<{ text: string; color?: string }> = ({
 }) => {
   return (
     <CustomTooltip title={text}>
-      <Box className='questionWrapper' color={color}>
+      <Box className={styles.questionWrapper} color={color}>
         <PlusCircle size={16} />
       </Box>
     </CustomTooltip>
@@ -39,7 +39,7 @@ export const LightQuestionHelper: React.FC<{ text: string; color: string }> = ({
 }) => {
   return (
     <CustomTooltip title={text}>
-      <Box className='lightQuestionWrapper' color={color}>
+      <Box className={styles.lightQuestionWrapper} color={color}>
         <span className='questionMark'>?</span>
       </Box>
     </CustomTooltip>

@@ -42,7 +42,7 @@ import {
 } from 'utils';
 import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
 import ExchangeIcon from 'svgs/ExchangeIcon.svg';
-import 'components/styles/Swap.scss';
+import styles from 'styles/components/Swap.module.scss';
 import { useTranslation } from 'react-i18next';
 import { useParaswapCallback } from 'hooks/useParaswapCallback';
 import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
@@ -146,17 +146,19 @@ const SwapBestTrade: React.FC<{
   const inputCurrency = currencies[Field.INPUT];
   const outputCurrency = currencies[Field.OUTPUT];
 
-  const inputCurrencyV3 = inputCurrency
-    ? currencyEquals(inputCurrency, ETHER)
+  const inputCurrencyV3 = useMemo(() => {
+    if (!inputCurrency) return;
+    return currencyEquals(inputCurrency, ETHER)
       ? ({ ...ETHER, isNative: true, isToken: false } as NativeCurrency)
-      : ({ ...inputCurrency, isNative: false, isToken: true } as Currency)
-    : undefined;
+      : ({ ...inputCurrency, isNative: false, isToken: true } as Currency);
+  }, [inputCurrency]);
 
-  const outputCurrencyV3 = outputCurrency
-    ? currencyEquals(outputCurrency, ETHER)
+  const outputCurrencyV3 = useMemo(() => {
+    if (!outputCurrency) return;
+    return currencyEquals(outputCurrency, ETHER)
       ? ({ ...ETHER, isNative: true, isToken: false } as NativeCurrency)
-      : ({ ...outputCurrency, isNative: false, isToken: true } as Currency)
-    : undefined;
+      : ({ ...outputCurrency, isNative: false, isToken: true } as Currency);
+  }, [outputCurrency]);
 
   const [optimalRateError, setOptimalRateError] = useState('');
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
@@ -508,21 +510,21 @@ const SwapBestTrade: React.FC<{
       return false;
     }
   }, [
-    account,
-    showWrap,
-    noRoute,
-    userHasSpecifiedInputOutput,
-    showApproveFlow,
-    wrapInputError,
-    isValid,
+    inputCurrencyV3,
     approval,
+    isValid,
     optimalRate,
     isExpertMode,
     paraswapCallbackError,
     parsedAmounts,
     swapInputAmountWithSlippage,
     swapInputBalance,
-    inputCurrency,
+    account,
+    showWrap,
+    noRoute,
+    userHasSpecifiedInputOutput,
+    showApproveFlow,
+    wrapInputError,
   ]);
 
   const [
@@ -928,7 +930,7 @@ const SwapBestTrade: React.FC<{
         </Box>
       )}
       {!showWrap && isExpertMode && (
-        <Box className='recipientInput'>
+        <Box className={styles.recipientInput}>
           <Box className='recipientInputHeader'>
             {recipient !== null ? (
               <ArrowDown size='16' color='white' />

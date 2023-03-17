@@ -4,7 +4,7 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
 import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
-import 'pages/styles/analytics.scss';
+import styles from 'styles/pages/Analytics.module.scss';
 import { useTranslation } from 'react-i18next';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
@@ -85,23 +85,26 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
           {!type && (
             <>
               <Box
-                className={`topTab ${router.pathname.indexOf('pair') === -1 &&
+                className={`${styles.topTab} ${router.pathname.indexOf(
+                  'pair',
+                ) === -1 &&
                   router.pathname.indexOf('token') === -1 &&
-                  'selectedTab'}`}
+                  styles.selectedTab}`}
                 onClick={() => router.push(`/analytics/${version}`)}
               >
                 <p>{t('overview')}</p>
               </Box>
               <Box
-                className={`topTab ${router.pathname.indexOf('token') > -1 &&
-                  'selectedTab'}`}
+                className={`${styles.topTab} ${router.pathname.indexOf(
+                  'token',
+                ) > -1 && styles.selectedTab}`}
                 onClick={() => router.push(`/analytics/${version}/tokens`)}
               >
                 <p>{t('tokens')}</p>
               </Box>
               <Box
-                className={`topTab ${router.pathname.indexOf('pair') > -1 &&
-                  'selectedTab'}`}
+                className={`${styles.topTab} ${router.pathname.indexOf('pair') >
+                  -1 && styles.selectedTab}`}
                 onClick={() => router.push(`/analytics/${version}/pairs`)}
               >
                 <p>{t('pairs')}</p>

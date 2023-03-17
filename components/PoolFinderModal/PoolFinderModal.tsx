@@ -15,7 +15,7 @@ import { useActiveWeb3React } from 'hooks';
 import { currencyId } from 'utils';
 import { Close } from '@mui/icons-material';
 import Link from 'next/link';
-import 'components/styles/PoolFinderModal.scss';
+import styles from 'styles/components/PoolFinderModal.module.scss';
 import { useTranslation } from 'react-i18next';
 
 enum Fields {
@@ -95,7 +95,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
         </Box>
         <Box
           mt={2}
-          className='borderedCard'
+          className={styles.borderedCard}
           onClick={() => {
             setShowSearch(true);
             setActiveField(Fields.TOKEN0);
@@ -116,7 +116,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           <Plus size='20' className='text-secondary' />
         </Box>
         <Box
-          className='borderedCard'
+          className={styles.borderedCard}
           onClick={() => {
             setShowSearch(true);
             setActiveField(Fields.TOKEN1);

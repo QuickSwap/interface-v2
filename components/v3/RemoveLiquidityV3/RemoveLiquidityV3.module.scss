@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.v3-remove-liquidity-input-wrapper {
+.v3RemoveLiquidityInputWrapper {
   padding: 16px;
   border-radius: 10px;
   background-color: $bgColor;
@@ -10,7 +10,7 @@
   }
 }
 
-.v3-remove-liquidity-info-wrapper {
+.v3RemoveLiquidityInfoWrapper {
   padding: 16px;
   border-radius: 10px;
   background-color: $secondary1;
@@ -24,13 +24,13 @@
   }
 }
 
-.v3-remove-liquidity-button {
+.v3RemoveLiquidityButton {
   height: 50px;
   width: 100%;
   border-radius: 10px !important;
 }
 
-.v3-remove-liquidity-percent-buttons {
+.v3RemoveLiquidityPercentButtons {
   display: flex;
   justify-content: space-between;
   flex: 1;

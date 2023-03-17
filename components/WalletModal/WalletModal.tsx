@@ -29,7 +29,7 @@ import {
 
 import Option from './Option';
 import PendingView from './PendingView';
-import 'components/styles/WalletModal.scss';
+import styles from 'styles/components/WalletModal.module.scss';
 import { getMetaMaskInjectedProvider } from 'connectors/MetaMaskConnector';
 
 const WALLET_VIEWS = {
@@ -485,7 +485,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   return (
     <CustomModal open={walletModalOpen} onClose={toggleWalletModal}>
-      <Box className='walletModalWrapper'>{getModalContent()}</Box>
+      <Box className={styles.walletModalWrapper}>{getModalContent()}</Box>
     </CustomModal>
   );
 };

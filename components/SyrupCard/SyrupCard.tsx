@@ -7,7 +7,7 @@ import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
-import 'components/styles/SyrupCard.scss';
+import styles from 'styles/components/SyrupCard.module.scss';
 import { Trans, useTranslation } from 'react-i18next';
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
@@ -28,11 +28,18 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
       }`;
 
   return (
-    <Box className={`syrupCard ${syrup.sponsored ? 'syrupSponsoredCard' : ''}`}>
+    <Box
+      className={`${styles.syrupCard} ${
+        syrup.sponsored ? styles.syrupSponsoredCard : ''
+      }`}
+    >
       {syrup.sponsored && (
-        <Box className='syrupSponsorTag'>{t('sponsored')}</Box>
+        <Box className={styles.syrupSponsorTag}>{t('sponsored')}</Box>
       )}
-      <Box className='syrupCardContent' onClick={() => setExpanded(!expanded)}>
+      <Box
+        className={styles.syrupCardContent}
+        onClick={() => setExpanded(!expanded)}
+      >
         {isMobile ? (
           <>
             <Box className='flex items-center' width={expanded ? 0.95 : 0.5}>

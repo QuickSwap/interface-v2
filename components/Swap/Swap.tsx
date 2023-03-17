@@ -47,7 +47,7 @@ import {
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
 import ExchangeIcon from 'svgs/ExchangeIcon.svg';
-import 'components/styles/Swap.scss';
+import styles from 'styles/components/Swap.module.scss';
 import { useTranslation } from 'react-i18next';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import { useRouter } from 'next/router';
@@ -601,7 +601,7 @@ const Swap: React.FC<{
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
       {trade && trade.executionPrice && (
-        <Box className='swapPrice'>
+        <Box className={styles.swapPrice}>
           <small>{t('price')}:</small>
           <small>
             1{' '}
@@ -627,8 +627,8 @@ const Swap: React.FC<{
         </Box>
       )}
       {!showWrap && isExpertMode && (
-        <Box className='recipientInput'>
-          <Box className='recipientInputHeader'>
+        <Box className={styles.recipientInput}>
+          <Box className={styles.recipientInputHeader}>
             {recipient !== null ? (
               <ArrowDown size='16' color='white' />
             ) : (
@@ -659,7 +659,7 @@ const Swap: React.FC<{
       ) : (
         <AdvancedSwapDetails trade={trade} />
       )}
-      <Box className='swapButtonWrapper'>
+      <Box className={styles.swapButtonWrapper}>
         {showApproveFlow && (
           <Box width='48%'>
             <Button

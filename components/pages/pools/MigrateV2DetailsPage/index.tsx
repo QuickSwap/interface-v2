@@ -15,7 +15,7 @@ import {
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
 import { useCurrency, useToken } from 'hooks/v3/Tokens';
-import './index.scss';
+import styles from 'styles/pages/Pools.module.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { CurrencyAmount, Fraction, Percent, Price } from '@uniswap/sdk-core';
 import {
@@ -641,8 +641,8 @@ export default function MigrateV2DetailsPage() {
           mintInfo={mintInfo}
           priceFormat={PriceFormats.TOKEN}
         />
-        <Box mt={2} className='v3-migrate-details-box'>
-          <Box className='v3-migrate-details-row'>
+        <Box mt={2} className={styles.v3MigrateDetailsBox}>
+          <Box className={styles.v3MigrateDetailsRow}>
             <Box className='flex items-center'>
               <CurrencyLogo currency={currency0 ?? undefined} size='20px' />
               <p>{currency0?.symbol}</p>
@@ -655,7 +655,7 @@ export default function MigrateV2DetailsPage() {
               <></>
             )}
           </Box>
-          <Box mt={1.5} className='v3-migrate-details-row'>
+          <Box mt={1.5} className={styles.v3MigrateDetailsRow}>
             <Box className='flex items-center'>
               <CurrencyLogo currency={currency1 ?? undefined} size='20px' />
               <p>{currency1?.symbol}</p>
@@ -721,7 +721,7 @@ export default function MigrateV2DetailsPage() {
         </Box>
         <Box mt={3}>
           <Button
-            className='v3-migrate-details-button'
+            className={styles.v3MigrateDetailsButton}
             disabled={
               attemptApproving ||
               approval === ApprovalState.APPROVED ||
@@ -752,7 +752,7 @@ export default function MigrateV2DetailsPage() {
         </Box>
         <Box mt={2}>
           <Button
-            className='v3-migrate-details-button'
+            className={styles.v3MigrateDetailsButton}
             disabled={
               !v3Amount0Min ||
               !v3Amount1Min ||

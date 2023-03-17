@@ -2,7 +2,7 @@ import { Box, Divider } from '@mui/material';
 import { BuyFiatButton } from 'components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import 'pages/styles/swap.scss';
+import styles from 'styles/pages/Swap.module.scss';
 import Image from 'next/image';
 
 export const SwapBuySellWidget: React.FC = ({}) => {
@@ -10,7 +10,7 @@ export const SwapBuySellWidget: React.FC = ({}) => {
   const SPRITZ_LINK = process.env.REACT_APP_SPRITZ_FINANCE_LINK;
 
   return (
-    <Box className='wrapper buySellWidgetContainer'>
+    <Box className={`${styles.wrapper} ${styles.buySellWidgetContainer}`}>
       <Box mb={2} className='row'>
         <Box>
           <Image

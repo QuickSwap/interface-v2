@@ -1,7 +1,7 @@
 import { Percent } from '@uniswap/sdk';
 import React from 'react';
-import { GlobalConst } from '../../constants';
-import { warningSeverity } from '../../utils/prices';
+import { GlobalConst } from 'constants/index';
+import { warningSeverity } from 'utils/prices';
 
 /**
  * Formatted version of price impact text with warning colors

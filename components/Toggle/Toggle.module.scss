@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.version-toggle-container {
+.versionToggleContainer {
   height: 28px;
   display: flex;
   border: 1px solid $divider;
@@ -25,6 +25,6 @@
   }
 }
 
-.version-toggle-disabled {
+.versionToggleDisabled {
   background-color: $secondary1;
 }

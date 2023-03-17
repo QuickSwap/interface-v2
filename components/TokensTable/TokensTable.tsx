@@ -14,7 +14,7 @@ import {
 import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
 import StarChecked from 'svgs/StarChecked.svg';
 import StarUnchecked from 'svgs/StarUnchecked.svg';
-import 'components/styles/AnalyticsTable.scss';
+import styles from 'styles/components/AnalyticsTable.module.scss';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 
@@ -125,21 +125,21 @@ const TokensTable: React.FC<TokensTableProps> = ({
           </Link>
         </Box>
         <Divider />
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('price')}</p>
           <p>${formatNumber(token.priceUSD)}</p>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('24hPer')}</p>
-          <Box className={`priceChangeWrapper ${priceClass}`}>
+          <Box className={`${styles.priceChangeWrapper} ${priceClass}`}>
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('24hVol')}</p>
           <p>${formatNumber(token.oneDayVolumeUSD)}</p>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('liquidity')}</p>
           <p>${formatNumber(token.totalLiquidityUSD)}</p>
         </Box>
@@ -212,7 +212,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
       },
       {
         html: (
-          <Box className={`priceChangeWrapper ${priceClass}`} mr={2}>
+          <Box className={`${styles.priceChangeWrapper} ${priceClass}`} mr={2}>
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         ),

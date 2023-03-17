@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { DataTable } from 'components';
-import 'components/styles/CustomTable.scss';
+import styles from 'styles/components/CustomTable.module.scss';
 
 export interface CustomTableProps<T> {
   emptyMessage?: string;
@@ -42,7 +42,7 @@ const CustomTable: React.FC<CustomTableProps<any>> = ({
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
 
   return (
-    <Box className='tableContainer'>
+    <Box className={styles.tableContainer}>
       {mobileWindowSize ? (
         <>
           {data.map((item: any, index: number) => (

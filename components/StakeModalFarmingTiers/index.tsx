@@ -4,7 +4,7 @@ import { useActiveWeb3React } from 'hooks';
 import { WrappedCurrency } from 'models/types';
 import { useCallback, useMemo, useState } from 'react';
 import { useCurrencyBalance } from 'state/wallet/hooks';
-import './index.scss';
+// import styles from './StakeModalFarmingTiers.module.scss';
 
 import { formatAmountTokens } from 'utils/numbers';
 import { HelpCircle } from 'react-feather';

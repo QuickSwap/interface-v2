@@ -4,7 +4,6 @@ import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
 import { useState } from 'react';
 import { AlertTriangle, ArrowDown } from 'react-feather';
-import { Text } from 'rebass';
 import { FiatValue } from '../CurrencyInputPanel/FiatValue';
 
 import { AdvancedSwapDetails } from './AdvancedSwapDetails';
@@ -17,7 +16,7 @@ import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpac
 import { WrappedCurrency } from 'models/types';
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import 'components/styles/v3/swap.scss';
+import styles from 'styles/components/V3Swap.module.scss';
 
 interface SwapModalHeaderProps {
   trade:
@@ -67,7 +66,7 @@ export default function SwapModalHeader({
             <p className='weight-600'>{trade.inputAmount.currency.symbol}</p>
           </Box>
           <p
-            className={`truncatedText weight-600 ${
+            className={`${styles.truncatedText} weight-600 ${
               showAcceptChanges && trade.tradeType === TradeType.EXACT_OUTPUT
                 ? 'text-primary'
                 : ''
@@ -77,7 +76,7 @@ export default function SwapModalHeader({
           </p>
         </Box>
       </Box>
-      <Box className='swapModalHeaderArrowWrapper'>
+      <Box className={styles.swapModalHeaderArrowWrapper}>
         <ArrowDown size='1rem' />
       </Box>
       <Box className='bg-secondary1' borderRadius='6px' marginTop={1}>

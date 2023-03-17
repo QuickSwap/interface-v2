@@ -129,10 +129,8 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   // only show add or remove buttons if not on selected list
   return (
     <ListItem
-      button
       style={style}
       key={key}
-      selected={otherSelected || isSelected}
       onClick={() => {
         if (!isSelected && !otherSelected) onSelect();
       }}

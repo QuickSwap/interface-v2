@@ -7,7 +7,7 @@ import { WrappedTokenInfo } from 'state/lists/hooks';
 import { WrappedTokenInfo as V3WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { Logo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
-import 'components/styles/CurrencyLogo.scss';
+import styles from 'styles/components/CurrencyLogo.module.scss';
 import Image from 'next/image';
 
 interface CurrencyLogoProps {
@@ -63,10 +63,10 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
         width={size}
         height={size}
         borderRadius={size}
-        className='currencyLogo'
+        className={styles.currencyLogo}
       >
         <Image
-          className='ethereumLogo'
+          className={styles.ethereumLogo}
           src='/images/Currency/PolygonSwap.svg'
           alt='Ethereum Logo'
         />
@@ -79,7 +79,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
       width={size}
       height={size}
       borderRadius={withoutBg ? 0 : size}
-      className={`currencyLogo${withoutBg ? '' : ' bg-white'}`}
+      className={`${styles.currencyLogo} ${withoutBg ? '' : 'bg-white'}`}
     >
       <Logo
         srcs={srcs}

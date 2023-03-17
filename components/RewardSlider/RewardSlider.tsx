@@ -10,7 +10,7 @@ import {
 import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
 import { getOneYearFee } from 'utils';
-import 'components/styles/RewardSlider.scss';
+import styles from 'styles/components/RewardSlider.module.scss';
 import { ChainId } from '@uniswap/sdk';
 
 const RewardSlider: React.FC = () => {
@@ -66,7 +66,7 @@ const RewardSlider: React.FC = () => {
   };
 
   return (
-    <Slider {...rewardSliderSettings} className='rewardsSlider'>
+    <Slider {...rewardSliderSettings} className={styles.rewardsSlider}>
       {lprewardItems.map((item, index) => (
         <RewardSliderItem
           key={index}

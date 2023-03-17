@@ -5,7 +5,7 @@ import { Box, CircularProgress } from '@mui/material';
 import { network } from 'connectors';
 import { useEagerConnect, useInactiveListener } from 'hooks';
 import { GlobalConst } from 'constants/index';
-import 'components/styles/Web3ReactManager.scss';
+import styles from 'styles/components/Web3ReactManager.module.scss';
 
 const Web3ReactManager: React.FC<{ children: JSX.Element }> = ({
   children,
@@ -51,8 +51,8 @@ const Web3ReactManager: React.FC<{ children: JSX.Element }> = ({
   // if the account context isn't active, and there's an error on the network context, it's an irrecoverable error
   if (!active && networkError) {
     return (
-      <Box className='messageWrapper'>
-        <p className='message'>{t('unknownError')}</p>
+      <Box className={styles.messageWrapper}>
+        <p className={styles.message}>{t('unknownError')}</p>
       </Box>
     );
   }
@@ -60,7 +60,7 @@ const Web3ReactManager: React.FC<{ children: JSX.Element }> = ({
   // if neither context is active, spin
   if (!active && !networkActive) {
     return showLoader ? (
-      <Box className='messageWrapper'>
+      <Box className={styles.messageWrapper}>
         <CircularProgress />
       </Box>
     ) : null;

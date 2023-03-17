@@ -1,13 +1,13 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import QuickIcon from 'svgs/quickIcon.svg';
-import 'components/styles/Footer.scss';
+import styles from 'styles/components/Footer.module.scss';
 
 const Footer: React.FC = () => {
   const copyrightYear = new Date().getFullYear();
 
   return (
-    <Box className='footer'>
+    <Box className={styles.footer}>
       <QuickIcon />
       <p>© {copyrightYear} QuickSwap.</p>
     </Box>

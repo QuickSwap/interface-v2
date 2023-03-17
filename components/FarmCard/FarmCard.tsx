@@ -15,7 +15,7 @@ import {
   formatAPY,
 } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import 'components/styles/FarmCard.scss';
+import styles from 'styles/components/FarmCard.module.scss';
 import { Trans, useTranslation } from 'react-i18next';
 import Image from 'next/image';
 
@@ -93,15 +93,15 @@ const FarmCard: React.FC<{
 
   return (
     <Box
-      className={`farmLPCard ${
-        stakingInfo.sponsored ? 'farmSponsoredCard' : ''
-      } ${isExpandCard ? 'highlightedCard' : ''}`}
+      className={`${styles.farmLPCard} ${
+        stakingInfo.sponsored ? styles.farmSponsoredCard : ''
+      } ${isExpandCard ? styles.highlightedCard : ''}`}
     >
       {stakingInfo.sponsored && (
-        <Box className='farmSponsorTag'>{t('sponsored')}</Box>
+        <Box className={styles.farmSponsorTag}>{t('sponsored')}</Box>
       )}
       <Box
-        className='farmLPCardUp'
+        className={styles.farmLPCardUp}
         onClick={() => setExpandCard(!isExpandCard)}
       >
         {isMobile ? (
@@ -200,7 +200,7 @@ const FarmCard: React.FC<{
         />
       )}
       {stakingInfo.sponsored && stakingInfo.sponsorLink && (
-        <Box className='farmSponsoredLink'>
+        <Box className={styles.farmSponsoredLink}>
           <Trans
             i18nKey='learnmoreproject'
             components={{

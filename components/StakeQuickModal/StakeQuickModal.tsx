@@ -14,7 +14,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { calculateGasMargin, formatTokenAmount } from 'utils';
-import 'components/styles/StakeModal.scss';
+import styles from 'styles/components/StakeModal.module.scss';
 import { useTranslation } from 'react-i18next';
 
 interface StakeQuickModalProps {
@@ -172,7 +172,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
         <Box mt={3} className='flex items-center justify-between'>
           <Box width='48%'>
             <Button
-              className='stakeButton'
+              className={styles.stakeButton}
               disabled={approving || approval !== ApprovalState.NOT_APPROVED}
               onClick={async () => {
                 setApproving(true);
@@ -189,7 +189,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
           </Box>
           <Box width='48%'>
             <Button
-              className='stakeButton'
+              className={styles.stakeButton}
               disabled={
                 !!error || attempting || approval !== ApprovalState.APPROVED
               }

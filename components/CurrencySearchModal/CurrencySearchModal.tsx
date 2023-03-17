@@ -4,7 +4,6 @@ import ReactGA from 'react-ga';
 import { CustomModal } from 'components';
 import useLast from 'hooks/useLast';
 import CurrencySearch from './CurrencySearch';
-import 'components/styles/CurrencySearchModal.scss';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
 import { NativeCurrency } from '@uniswap/sdk-core';

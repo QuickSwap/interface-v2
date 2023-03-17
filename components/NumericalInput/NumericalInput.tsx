@@ -1,6 +1,6 @@
 import React from 'react';
 import { escapeRegExp } from 'utils';
-import 'components/styles/NumericalInput.scss';
+import styles from 'styles/components/NumericalInput.module.scss';
 
 const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`); // match escaped "." characters via in a non-capturing group
 
@@ -30,7 +30,7 @@ export const Input = React.memo(function InnerInput({
   return (
     <input
       {...rest}
-      className='styledInput'
+      className={styles.styledInput}
       value={value}
       style={{ textAlign: align, color, fontSize, fontWeight }}
       onChange={(event) => {

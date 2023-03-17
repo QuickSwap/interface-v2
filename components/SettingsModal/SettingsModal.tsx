@@ -17,7 +17,7 @@ import {
   useSlippageManuallySet,
 } from 'state/user/hooks';
 import { Close } from '@mui/icons-material';
-import 'components/styles/SettingsModal.scss';
+import styles from 'styles/components/SettingsModal.module.scss';
 import { useTranslation } from 'react-i18next';
 
 enum SlippageError {
@@ -137,15 +137,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <p className='text-bold'>{t('typeConfirmExpertMode')}</p>
             </Box>
           </Box>
-          <Box className='expertConfirmInput'>
+          <Box className={styles.expertConfirmInput}>
             <input
               value={expertConfirmText}
               onChange={(e: any) => setExpertConfirmText(e.target.value)}
             />
           </Box>
           <Box
-            className={`expertButtonWrapper${
-              expertConfirmText === 'confirm' ? '' : ' opacity-disabled'
+            className={`${styles.expertButtonWrapper} ${
+              expertConfirmText === 'confirm' ? '' : 'opacity-disabled'
             }`}
             onClick={() => {
               if (expertConfirmText === 'confirm') {
@@ -173,8 +173,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         <Box mb={2.5}>
           <Box className='flex items-center'>
             <Box
-              className={`slippageButton${
-                userSlippageTolerance === 10 ? ' activeSlippageButton' : ''
+              className={`${styles.slippageButton} ${
+                userSlippageTolerance === 10 ? styles.activeSlippageButton : ''
               }`}
               onClick={() => {
                 setSlippageInput('');
@@ -187,8 +187,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <small>0.1%</small>
             </Box>
             <Box
-              className={`slippageButton${
-                userSlippageTolerance === 50 ? ' activeSlippageButton' : ''
+              className={`${styles.slippageButton} ${
+                userSlippageTolerance === 50 ? styles.activeSlippageButton : ''
               }`}
               onClick={() => {
                 setSlippageInput('');
@@ -201,8 +201,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <small>0.5%</small>
             </Box>
             <Box
-              className={`slippageButton${
-                userSlippageTolerance === 100 ? ' activeSlippageButton' : ''
+              className={`${styles.slippageButton} ${
+                userSlippageTolerance === 100 ? styles.activeSlippageButton : ''
               }`}
               onClick={() => {
                 setSlippageInput('');
@@ -215,7 +215,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <small>1%</small>
             </Box>
             <Box
-              className={`settingsInputWrapper ${
+              className={`${styles.settingsInputWrapper} ${
                 slippageAlert ? 'border-primary' : 'border-secondary1'
               }`}
             >
@@ -254,7 +254,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           <QuestionHelper size={20} text={t('txDeadlineHelper')} />
         </Box>
         <Box mb={2.5} className='flex items-center'>
-          <Box className='settingsInputWrapper' maxWidth={168}>
+          <Box className={styles.settingsInputWrapper} maxWidth={168}>
             <NumericalInput
               placeholder={(ttl / 60).toString()}
               value={deadlineInput}

@@ -1,12 +1,12 @@
-import React, { lazy, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
-const Header = lazy(() => import('components/Header'));
-const Footer = lazy(() => import('components/Footer'));
-const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
-const CustomModal = lazy(() => import('components/CustomModal'));
-const Background = lazy(() => import('./Background'));
+import Header from 'components/Header';
+import Footer from 'components/Footer';
+import BetaWarningBanner from 'components/BetaWarningBanner';
+import CustomModal from 'components/CustomModal';
+import Background from './Background';
 
 export interface PageLayoutProps {
   children: any;
@@ -76,12 +76,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
 
   return (
     <Box className='page'>
-      {openPassModal && <PasswordModal />}
+      {/* {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
       <Header />
       {!isProMode && <Background fallback={false} />}
       <Box className={getPageWrapperClassName()}>{children}</Box>
-      <Footer />
+      <Footer /> */}
     </Box>
   );
 };

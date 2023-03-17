@@ -11,7 +11,7 @@ import {
 import { DoubleCurrencyLogo } from 'components';
 import { formatAPY, getAPYWithFee, getOneYearFee } from 'utils';
 import PoolPositionCardDetails from './PoolPositionCardDetails';
-import 'components/styles/PoolPositionCard.scss';
+import styles from 'styles/components/PoolPositionCard.module.scss';
 import { Trans, useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
 
@@ -59,11 +59,11 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
 
   return (
     <Box
-      className={`poolPositionCard ${
+      className={`${styles.poolPositionCard} ${
         showMore ? 'bg-secondary2' : 'bg-transparent'
       }`}
     >
-      <Box className='poolPositionCardTop'>
+      <Box className={styles.poolPositionCardTop}>
         <Box className='flex items-center'>
           <DoubleCurrencyLogo
             currency0={currency0}
@@ -88,7 +88,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
 
       {showMore && <PoolPositionCardDetails pair={pair} />}
       {stakingInfo && !stakingInfo.ended && apyWithFee && (
-        <Box className='poolPositionAPYWrapper'>
+        <Box className={styles.poolPositionAPYWrapper}>
           <small>
             <Trans
               i18nKey='poolAPYDesc'

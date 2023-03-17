@@ -9,7 +9,7 @@ import { NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
-import 'components/styles/CurrencyInput.scss';
+import styles from 'styles/components/CurrencyInput.module.scss';
 import { useTranslation } from 'react-i18next';
 import CurrencySelect from 'components/CurrencySelect';
 import { default as useUSDCPriceV3 } from 'hooks/v3/useUSDCPrice';
@@ -73,19 +73,24 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   return (
     <Box
       id={id}
-      className={`swapBox${showPrice ? ' priceShowBox' : ''} ${bgClass ??
-        'bg-secondary2'}`}
+      className={`${styles.swapBox} ${
+        showPrice ? styles.priceShowBox : ''
+      } ${bgClass ?? 'bg-secondary2'}`}
     >
       <Box className='flex justify-between' mb={2}>
         <p>{title || `${t('youPay')}:`}</p>
         <Box display='flex'>
           {account && currency && showHalfButton && (
-            <Box className='maxWrapper' onClick={onHalf}>
+            <Box className={styles.maxWrapper} onClick={onHalf}>
               <small>50%</small>
             </Box>
           )}
           {account && currency && showMaxButton && (
-            <Box className='maxWrapper' marginLeft='20px' onClick={onMax}>
+            <Box
+              className={styles.maxWrapper}
+              marginLeft='20px'
+              onClick={onMax}
+            >
               <small>{t('max')}</small>
             </Box>
           )}
@@ -98,7 +103,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           otherCurrency={otherCurrency}
           handleCurrencySelect={handleCurrencySelect}
         />
-        <Box className='inputWrapper'>
+        <Box className={styles.inputWrapper}>
           <NumericalInput
             value={amount}
             align='right'

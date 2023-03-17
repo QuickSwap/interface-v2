@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import 'components/styles/ChartType.scss';
+import styles from 'styles/components/ChartType.module.scss';
 
 interface ChartTypeProps {
   typeTexts: string[];
@@ -24,8 +24,12 @@ const ChartType: React.FC<ChartTypeProps> = ({
       {chartTypes.map((value, index) => (
         <Box
           key={index}
-          className={`chartType${size == 'big' ? ' chartType_big' : ''} ${
-            chartType === value ? 'bg-gray2 chartType_selected' : 'transparent'
+          className={`${styles.chartType} ${
+            size == 'big' ? styles.chartType_big : ''
+          } ${
+            chartType === value
+              ? `bg-gray2 ${styles.chartType_selected}`
+              : 'transparent'
           }`}
           onClick={() => setChartType(value)}
         >

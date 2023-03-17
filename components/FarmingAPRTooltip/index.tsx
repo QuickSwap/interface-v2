@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { formatNumber } from 'utils';
-import 'components/styles/FarmingAPRToolTip.scss';
+import styles from 'styles/components/FarmingAPRToolTip.module.scss';
 import Popover from 'components/v3/Popover';
 
 interface FarmingAPRTooltipProps {
@@ -23,7 +23,7 @@ const FarmingAPRTooltip: React.FC<FarmingAPRTooltipProps> = ({
       color='#12131a'
       borderRadius='10px'
       content={
-        <Box className='farmingAPRTooltipWrapper'>
+        <Box className={styles.farmingAPRTooltipWrapper}>
           <Box
             className='flex justify-between'
             margin={gammaAPRs.length > 0 ? '10px 0 0' : '10px 0'}

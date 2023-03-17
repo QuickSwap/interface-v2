@@ -7,7 +7,7 @@ import TransactionFailed from 'svgs/TransactionFailed.svg';
 import TransactionSuccess from 'svgs/TransactionSuccess.svg';
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import 'components/styles/TransactionConfirmationModal.scss';
+import styles from 'styles/components/TransactionConfirmationModal.module.scss';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 
@@ -23,10 +23,10 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
   const { t } = useTranslation();
   return (
     <Box padding={4}>
-      <Box className='txModalHeader'>
+      <Box className={styles.txModalHeader}>
         <Close onClick={onDismiss} />
       </Box>
-      <Box className='txModalContent'>
+      <Box className={styles.txModalContent}>
         <Box my={4} className='flex justify-center spinner'>
           <Image src='/images/spinner.svg' alt='Spinner' />
         </Box>
@@ -56,7 +56,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
   const { t } = useTranslation();
   return (
     <Box padding={4}>
-      <Box className='txModalHeader'>
+      <Box className={styles.txModalHeader}>
         <h5>{txPending ? t('txSubmitted') : t('txCompleted')}</h5>
         <Close onClick={onDismiss} />
       </Box>
@@ -65,7 +65,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
           <TransactionSuccess />
         </Box>
       )}
-      <Box className='txModalContent'>
+      <Box className={styles.txModalContent}>
         <p>{modalContent}</p>
       </Box>
       <Box className='flex justify-between' mt={2}>
@@ -76,13 +76,13 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
             rel='noopener noreferrer'
             style={{ width: '48%', textDecoration: 'none' }}
           >
-            <Button className='txSubmitButton'>
+            <Button className={styles.txSubmitButton}>
               {t('viewonBlockExplorer')}
             </Button>
           </a>
         )}
         <Button
-          className='txSubmitButton'
+          className={styles.txSubmitButton}
           style={{ width: '48%' }}
           onClick={onDismiss}
         >
@@ -106,7 +106,7 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
 }) => {
   return (
     <Box padding={4}>
-      <Box className='txModalHeader'>
+      <Box className={styles.txModalHeader}>
         <h5>{title}</h5>
         <Close onClick={onDismiss} />
       </Box>
@@ -144,16 +144,16 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
   return (
     <Box padding={4}>
       <Box>
-        <Box className='txModalHeader'>
+        <Box className={styles.txModalHeader}>
           <h5 className='text-error'>Error!</h5>
           <Close onClick={onDismiss} />
         </Box>
-        <Box className='txModalContent'>
+        <Box className={styles.txModalContent}>
           <TransactionFailed />
           <p>{message}</p>
         </Box>
       </Box>
-      <Button className='txSubmitButton' onClick={onDismiss}>
+      <Button className={styles.txSubmitButton} onClick={onDismiss}>
         {t('dismiss')}
       </Button>
     </Box>

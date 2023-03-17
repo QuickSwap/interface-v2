@@ -7,7 +7,7 @@ import Loader from 'components/Loader';
 import { CustomModal } from 'components';
 import { FarmModal } from 'components/StakeModal';
 import { FarmingType } from 'models/enums';
-import './index.scss';
+import styles from 'styles/pages/Farm.module.scss';
 import { FormattedEternalFarming } from 'models/interfaces';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { GlobalConst, GlobalData } from 'constants/index';
@@ -270,11 +270,11 @@ const EternalFarmsPage: React.FC<{
 
       <Box px={2} py={3}>
         {eternalFarmsLoading ? (
-          <div className={'eternal-page__loader'}>
+          <div className={styles.eternalPageLoader}>
             <Loader stroke='white' size='1.5rem' />
           </div>
         ) : eternalFarmsFiltered.length === 0 ? (
-          <div className={'eternal-page__loader'}>
+          <div className={styles.eternalPageLoader}>
             <div>
               {t(
                 farmStatus === 'active'

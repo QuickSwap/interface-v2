@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import 'components/styles/BarChart.scss';
+import styles from 'styles/components/BarChart.module.scss';
 
 export interface BarChartProps {
   data?: Array<number>;
@@ -26,7 +26,7 @@ const BarChart: React.FC<BarChartProps> = ({
         {data.map((value, index) => (
           <Box
             key={index}
-            className={`barChartItem ${isV3 && 'isV3'}`}
+            className={`${styles.barChartItem} ${isV3 && 'isV3'}`}
             width={`calc(${100 / data.length}% - 2px)`}
             height={`${Math.max(6, (value / maxValue) * height)}px`} // set min height of bar to 6px for the items with small amount
             onMouseOver={() => onHover && onHover(index)}
@@ -34,7 +34,7 @@ const BarChart: React.FC<BarChartProps> = ({
         ))}
       </Box>
       {categories && data.length > 0 && (
-        <Box className={`categoryValues`} mt={2}>
+        <Box className={styles.categoryValues} mt={2}>
           {categories.map((val, ind) => (
             <p key={ind}>{val}</p>
           ))}

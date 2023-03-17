@@ -43,7 +43,7 @@ import { useRouterContract } from 'hooks/useContract';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useTotalSupply } from 'data/TotalSupply';
 import { Close } from '@mui/icons-material';
-import 'components/styles/RemoveLiquidityModal.scss';
+import styles from 'styles/components/RemoveLiquidityModal.module.scss';
 import { useTranslation } from 'react-i18next';
 
 interface RemoveLiquidityModalProps {
@@ -432,7 +432,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           <h6>{t('removeLiquidity')}</h6>
           <Close className='cursor-pointer' onClick={onClose} />
         </Box>
-        <Box className='removeLiquidityInput'>
+        <Box className={styles.removeLiquidityInput}>
           <Box className='flex items-center justify-between'>
             <small>
               {currency0.symbol} / {currency1.symbol} LP
@@ -469,7 +469,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         <Box className='flex justify-center' my={3}>
           <ArrowDown className='text-secondary' />
         </Box>
-        <Box className='removeLiquidityInfo bg-secondary1'>
+        <Box className={`${styles.removeLiquidityInfo} bg-secondary1`}>
           <Box>
             <p>
               {t('pooled')} {currency0.symbol}
@@ -525,7 +525,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         )}
         <Box mt={2} className='flex items-center justify-between'>
           <Button
-            className='removeButton'
+            className={styles.removeButton}
             onClick={onAttemptToApprove}
             disabled={approving || approval !== ApprovalState.NOT_APPROVED}
           >
@@ -536,7 +536,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
               : t('approve')}
           </Button>
           <Button
-            className='removeButton'
+            className={styles.removeButton}
             onClick={() => {
               setRemoveErrorMessage('');
               setShowConfirm(true);

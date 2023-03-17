@@ -28,6 +28,7 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useCurrencyBalances } from 'state/wallet/hooks';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
+import styles from 'styles/components/CurrencySearchModal.module.scss';
 
 interface CurrencySearchProps {
   isOpen: boolean;
@@ -173,12 +174,12 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   selectedListInfo = useSelectedListInfo();
 
   return (
-    <Box className='currencySearchWrapper'>
-      <Box className='currencySearchHeader'>
+    <Box className={styles.currencySearchWrapper}>
+      <Box className={styles.currencySearchHeader}>
         <h6>{t('selectToken')}</h6>
         <Close onClick={onDismiss} />
       </Box>
-      <Box className='searchInputWrapper'>
+      <Box className={styles.searchInputWrapper}>
         <Search />
         <input
           type='text'

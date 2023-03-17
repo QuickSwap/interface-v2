@@ -7,7 +7,7 @@ import { useActiveWeb3React } from 'hooks';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { TxnType } from 'constants/index';
-import 'components/styles/TransactionsTable.scss';
+import styles from 'styles/components/TransactionsTable.module.scss';
 dayjs.extend(relativeTime);
 
 interface TransactionsTableProps {
@@ -124,7 +124,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
           )}
         </Box>
         <Divider />
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('totalValue')}</p>
           <p>${Number(txn.amountUSD).toLocaleString('us')}</p>
         </Box>

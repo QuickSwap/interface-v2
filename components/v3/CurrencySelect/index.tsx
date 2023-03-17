@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import { Box } from '@mui/material';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
-import 'components/styles/CurrencyInput.scss';
+import styles from 'styles/components/CurrencyInput.module.scss';
 import { useTranslation } from 'react-i18next';
 
 interface CurrencySelectProps {
@@ -33,7 +33,9 @@ const V3CurrencySelect: React.FC<CurrencySelectProps> = ({
       <Box
         className={
           !bgClass
-            ? `currencyButton ${currency ? 'currencySelected' : 'noCurrency'}`
+            ? `${styles.currencyButton} ${
+                currency ? styles.currencySelected : styles.noCurrency
+              }`
             : bgClass
         }
         onClick={handleOpenModal}

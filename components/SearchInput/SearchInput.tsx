@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import 'components/styles/SearchInput.scss';
+import styles from 'styles/components/SearchInput.module.scss';
 
 interface SearchInputProps {
   placeholder: string;
@@ -19,7 +19,11 @@ const SearchInput: React.FC<SearchInputProps> = ({
 }) => {
   const [searchFocused, setSearchFocused] = useState(false);
   return (
-    <Box className={`searchInput${searchFocused ? ' focusedSearchInput' : ''}`}>
+    <Box
+      className={`${styles.searchInput} ${
+        searchFocused ? styles.focusedSearchInput : ''
+      }`}
+    >
       {!isIconAfter && <Search />}
       <Box flex={1} margin={isIconAfter ? '0 8px 0 0' : '0 0 0 8px'}>
         <input
