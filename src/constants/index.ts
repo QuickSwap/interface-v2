@@ -219,6 +219,7 @@ export interface GammaPair {
   token1Address: string;
   ableToFarm?: boolean;
   pid?: number;
+  masterChefIndex?: number;
 }
 
 export const GammaPairs: {
@@ -816,6 +817,62 @@ export const GammaPairs: {
       pid: 57,
     },
   ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x0e9b89007eee9c958c0eda24ef70723c2c93dd58': [
+    {
+      type: Presets.GAMMA_DYNAMIC,
+      title: 'Pegged Price',
+      address: '0x8557dac2a7724712f12952de3dabeef54459bd97',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x0e9b89007eee9c958c0eda24ef70723c2c93dd58',
+      ableToFarm: true,
+      pid: 58,
+    },
+  ],
+  '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+    {
+      type: Presets.GAMMA_DYNAMIC,
+      title: 'Pegged Price',
+      address: '0x6a6d4d17c2e38d076264081676ffcdddf32c9715',
+      token0Address: '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      ableToFarm: true,
+      pid: 59,
+    },
+  ],
+  '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x972a53e2ee68d5c2b1614f65061815e06b1cce68',
+      token0Address: '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+      token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+      ableToFarm: true,
+      pid: 60,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x750e4c4984a9e0f12978ea6742bc1c5d248f40ed': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x374c44443553d7eb86b5f77597cc67a507b19179',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0x750e4c4984a9e0f12978ea6742bc1c5d248f40ed',
+      ableToFarm: true,
+      pid: 61,
+    },
+  ],
+  // '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
+  //   {
+  //     type: Presets.GAMMA_WIDE,
+  //     title: 'Wide',
+  //     address: '0x1ddae2e33c1d68211c5eae05948fd298e72c541a',
+  //     token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+  //     token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
+  //     ableToFarm: true,
+  //     pid: 62,
+  //     masterChefIndex: 1,
+  //   },
+  // ],
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
@@ -1141,6 +1198,20 @@ export const GlobalValue = {
         'stMatic',
         'Staked MATIC',
       ),
+      WSTETH: new Token(
+        ChainId.MATIC,
+        '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+        18,
+        'wstETH',
+        'Wrapped liquid staked Ether 2.0',
+      ),
+      ANKRMATIC: new Token(
+        ChainId.MATIC,
+        '0x0E9b89007eEE9c958c0EDA24eF70723C2C93dD58',
+        18,
+        'ankrMATIC',
+        'Ankr Staked MATIC',
+      ),
     },
   },
   marketSDK: {
@@ -1263,8 +1334,10 @@ export const GlobalData = {
       GlobalValue.tokens.MATIC,
       GlobalValue.tokens.COMMON.MATICX,
       GlobalValue.tokens.COMMON.STMATIC,
+      GlobalValue.tokens.COMMON.ANKRMATIC,
     ],
     [GlobalValue.tokens.COMMON.NEW_QUICK, GlobalValue.tokens.COMMON.NEW_DQUICK],
+    [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.WSTETH],
   ],
 };
 

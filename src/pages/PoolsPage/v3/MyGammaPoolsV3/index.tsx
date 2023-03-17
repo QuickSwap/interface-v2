@@ -8,10 +8,10 @@ import GammaLPList from './GammaLPList';
 import { useQuery } from 'react-query';
 import { getGammaPositions } from 'utils';
 import { GammaPair, GammaPairs } from 'constants/index';
-import { useMasterChefContract } from 'hooks/useContract';
+import { useMasterChefContracts } from 'hooks/useContract';
 import {
+  useMultipleContractMultipleData,
   useMultipleContractSingleData,
-  useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
@@ -73,12 +73,18 @@ export default function MyLiquidityPoolsV3() {
     .concat(...Object.values(GammaPairs))
     .filter((item) => item.ableToFarm);
 
-  const masterChefContract = useMasterChefContract();
+  const masterChefContracts = useMasterChefContracts();
 
-  const stakedAmountData = useSingleContractMultipleData(
-    masterChefContract,
+  const stakedAmountData = useMultipleContractMultipleData(
+    masterChefContracts,
     'userInfo',
-    account ? allGammaPairsToFarm.map((pair) => [pair.pid, account]) : [],
+    account
+      ? masterChefContracts.map((_, ind) =>
+          allGammaPairsToFarm
+            .filter((pair) => (pair.masterChefIndex ?? 0) === ind)
+            .map((pair) => [pair.pid, account]),
+        )
+      : [],
   );
 
   const stakedAmounts = stakedAmountData.map((callData) => {

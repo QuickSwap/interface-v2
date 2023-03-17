@@ -31,6 +31,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React } from 'hooks';
+import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 dayjs.extend(utc);
 
@@ -146,14 +147,28 @@ const AnalyticsOverview: React.FC = () => {
                   ];
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
+                      const masterChefAddress = chainId
+                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                            chainId
+                          ]
+                        : undefined;
                       return {
                         title: pair.title,
                         apr:
                           gammaRewards &&
-                          gammaRewards[pair.address.toLowerCase()] &&
-                          gammaRewards[pair.address.toLowerCase()]['apr']
+                          masterChefAddress &&
+                          gammaRewards[masterChefAddress] &&
+                          gammaRewards[masterChefAddress]['pools'] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ]['apr']
                             ? Number(
-                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                                gammaRewards[masterChefAddress]['pools'][
+                                  pair.address.toLowerCase()
+                                ]['apr'],
                               ) * 100
                             : 0,
                       };
@@ -231,19 +246,40 @@ const AnalyticsOverview: React.FC = () => {
               data.map((item: any, ind: number) => {
                 const gammaPairs = item.isV3
                   ? GammaPairs[
-                      item.token0.id.toLowerCase() + '-' + item.token1.id
+                      item.token0.id.toLowerCase() +
+                        '-' +
+                        item.token1.id.toLowerCase()
+                    ] ??
+                    GammaPairs[
+                      item.token1.id.toLowerCase() +
+                        '-' +
+                        item.token0.id.toLowerCase9
                     ]
                   : undefined;
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
+                      const masterChefAddress = chainId
+                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                            chainId
+                          ]
+                        : undefined;
                       return {
                         title: pair.title,
                         apr:
                           gammaRewards &&
-                          gammaRewards[pair.address.toLowerCase()] &&
-                          gammaRewards[pair.address.toLowerCase()]['apr']
+                          masterChefAddress &&
+                          gammaRewards[masterChefAddress] &&
+                          gammaRewards[masterChefAddress]['pools'] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ]['apr']
                             ? Number(
-                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                                gammaRewards[masterChefAddress]['pools'][
+                                  pair.address.toLowerCase()
+                                ]['apr'],
                               ) * 100
                             : 0,
                       };
@@ -357,7 +393,7 @@ const AnalyticsOverview: React.FC = () => {
         </Grid>
       </Grid>
       <Box mt={4}>
-        <Box className='panel flex flex-wrap'>
+        <Box className='flex flex-wrap panel'>
           {globalData ? (
             <AnalyticsInfo data={globalData} />
           ) : (
@@ -366,12 +402,12 @@ const AnalyticsOverview: React.FC = () => {
         </Box>
       </Box>
       <Box mt={4}>
-        <Box className='flex justify-between items-center'>
+        <Box className='flex items-center justify-between'>
           <Box className='headingWrapper'>
             <p className='weight-600'>{t('topTokens')}</p>
           </Box>
           <Box
-            className='headingWrapper cursor-pointer'
+            className='cursor-pointer headingWrapper'
             onClick={() => history.push(`/analytics/${version}/tokens`)}
           >
             <p className='weight-600'>{t('seeAll')}</p>
@@ -401,7 +437,7 @@ const AnalyticsOverview: React.FC = () => {
             <p className='weight-600'>{t('topPairs')}</p>
           </Box>
           <Box
-            className='headingWrapper cursor-pointer'
+            className='cursor-pointer headingWrapper'
             onClick={() => history.push(`/analytics/${version}/pairs`)}
           >
             <p className='weight-600'>{t('seeAll')}</p>

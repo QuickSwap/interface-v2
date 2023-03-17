@@ -43,6 +43,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useParams } from 'react-router-dom';
+import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -227,16 +228,30 @@ const AnalyticsTokenDetails: React.FC = () => {
                 ];
               const gammaFarmAPRs = gammaPairs
                 ? gammaPairs.map((pair) => {
+                    const masterChefAddress = chainId
+                      ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                          chainId
+                        ]
+                      : undefined;
                     return {
                       title: pair.title,
                       apr:
                         gammaRewards &&
-                        gammaRewards[pair.address.toLowerCase()] &&
-                        gammaRewards[pair.address.toLowerCase()]['apr']
+                        masterChefAddress &&
+                        gammaRewards[masterChefAddress] &&
+                        gammaRewards[masterChefAddress]['pools'] &&
+                        gammaRewards[masterChefAddress]['pools'][
+                          pair.address.toLowerCase()
+                        ] &&
+                        gammaRewards[masterChefAddress]['pools'][
+                          pair.address.toLowerCase()
+                        ]['apr']
                           ? Number(
-                              gammaRewards[pair.address.toLowerCase()]['apr'],
+                              gammaRewards[masterChefAddress]['pools'][
+                                pair.address.toLowerCase()
+                              ]['apr'],
                             ) * 100
-                          : undefined,
+                          : 0,
                     };
                   })
                 : [];
@@ -413,7 +428,7 @@ const AnalyticsTokenDetails: React.FC = () => {
             <Box className='panel analyticsDetailsInfoV3'>
               <Box>
                 <span className='text-disabled'>{t('tvl')}</span>
-                <Box className='flex items-center flex-wrap'>
+                <Box className='flex flex-wrap items-center'>
                   <Box mr='6px'>
                     <h5>${formatNumber(token.tvlUSD)}</h5>
                   </Box>
@@ -428,7 +443,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               </Box>
               <Box>
                 <span className='text-disabled'>{t('24hTradingVol1')}</span>
-                <Box className='flex items-center flex-wrap'>
+                <Box className='flex flex-wrap items-center'>
                   <Box mr='6px'>
                     <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
                   </Box>
