@@ -2709,24 +2709,19 @@ export const getGammaPositions = async (account?: string) => {
 
 export const getGammaRewards = async (chainId?: ChainId) => {
   if (!chainId) return;
-  const masterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[chainId];
   try {
     const data = await fetch(
       `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
     );
     const gammaData = await data.json();
-    return gammaData && gammaData[masterChefAddress]
-      ? gammaData[masterChefAddress]['pools']
-      : undefined;
+    return gammaData;
   } catch {
     try {
       const data = await fetch(
         `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
       );
       const gammaData = await data.json();
-      return gammaData && gammaData[masterChefAddress]
-        ? gammaData[masterChefAddress]['pools']
-        : undefined;
+      return gammaData;
     } catch (e) {
       console.log(e);
       return;

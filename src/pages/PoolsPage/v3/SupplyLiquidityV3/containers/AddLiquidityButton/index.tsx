@@ -362,7 +362,7 @@ export function AddLiquidityButton({
         setAddLiquidityErrorMessage(
           errorMsg.indexOf('improper ratio') > -1
             ? t('gammaImproperRatio')
-            : errorMsg.indexOf('price overflow') > -1
+            : errorMsg.indexOf('price change overflow') > -1
             ? t('gammaPriceOverflow')
             : error?.code === 4001
             ? t('txRejected')
