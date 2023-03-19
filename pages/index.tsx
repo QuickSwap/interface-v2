@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import Motif from 'assets/images/Motif.svg';
 import CoingeckoIcon from 'svgs/social/Coingecko.svg';
 import DiscordIcon from 'svgs/social/Discord.svg';
 import MediumIcon from 'svgs/social/Medium.svg';
@@ -11,7 +10,7 @@ import TwitterIcon from 'svgs/social/Twitter.svg';
 import YouTubeIcon from 'svgs/social/YouTube.svg';
 import GeckoterminalIcon from 'svgs/social/Geckoterminal.svg';
 import Image from 'next/image';
-import 'pages/styles/landing.scss';
+import styles from 'styles/pages/Home.module.scss';
 import GlobalSection from 'components/pages/home/GlobalSection';
 import SwapSection from 'components/pages/home/SwapSection';
 import BuyFiatSection from 'components/pages/home/BuyFiatSection';
@@ -112,7 +111,7 @@ const LandingPage: React.FC = () => {
   return (
     <div id='landing-page' style={{ width: '100%' }}>
       <GlobalSection />
-      <Box className='smallCommunityContainer'>
+      <Box className={styles.smallCommunityContainer}>
         {socialicons.map((val, ind) => (
           <Box
             key={ind}
@@ -130,19 +129,19 @@ const LandingPage: React.FC = () => {
       <Box mt={2} width={1}>
         <TopMovers />
       </Box>
-      <Box className='quickInfo'>
+      <Box className={styles.quickInfo}>
         <h4>{t('quickInfoTitle')}</h4>
-        <img src={Motif} alt='Motif' />
+        <Image src='/images/Motif.svg' alt='Motif' />
       </Box>
       <SwapSection />
-      <Box className='rewardsContainer'>
+      <Box className={styles.rewardsContainer}>
         <Box maxWidth='480px' width='100%'>
           <h4>{t('earnRewardsbyDeposit')}</h4>
           <p style={{ marginTop: '20px' }}>{t('depositLPTokensRewards')}</p>
         </Box>
         <RewardSlider />
         <Box
-          className='allRewardPairs'
+          className={styles.allRewardPairs}
           onClick={() => {
             router.push('/farm');
           }}
@@ -160,16 +159,16 @@ const LandingPage: React.FC = () => {
           </Grid>
         </Grid>
       </Box>
-      <Box className='featureContainer'>
-        <Box className='featureHeading'>
+      <Box className={styles.featureContainer}>
+        <Box className={styles.featureHeading}>
           <h3>{t('features')}</h3>
-          <Box className='featureDivider' />
+          <Box className={styles.featureDivider} />
         </Box>
         <Grid container spacing={4}>
           {features.map((val, index) => (
             <Grid item container alignItems='center' sm={12} md={6} key={index}>
               <img src={val.img} alt={val.title} />
-              <Box className='featureText'>
+              <Box className={styles.featureText}>
                 <h5>{val.title}</h5>
                 <p>{val.desc}</p>
               </Box>
@@ -177,12 +176,12 @@ const LandingPage: React.FC = () => {
           ))}
         </Grid>
       </Box>
-      <Box className='communityContainer'>
-        <Box className='featureHeading'>
+      <Box className={styles.communityContainer}>
+        <Box className={styles.featureHeading}>
           <h3>{t('joinCommunity')}</h3>
-          <Box className='featureDivider' />
+          <Box className={styles.featureDivider} />
         </Box>
-        <Box className='socialContent'>
+        <Box className={styles.socialContent}>
           {socialicons.map((val, ind) => (
             <Box
               key={ind}
