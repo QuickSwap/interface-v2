@@ -462,7 +462,7 @@ export const FarmingMyFarms: React.FC<{
   const masterChefContracts = useMasterChefContracts();
 
   const stakedAmountData = useMultipleContractMultipleData(
-    masterChefContracts,
+    account ? masterChefContracts : [],
     'userInfo',
     account
       ? masterChefContracts.map((_, ind) =>
