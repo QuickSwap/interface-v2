@@ -7,7 +7,7 @@ import {
   TradeType,
 } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '@uniswap/v2-sdk';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import { splitSignature } from 'ethers/lib/utils';
 import { useMemo, useState } from 'react';
 import { SWAP_ROUTER_ADDRESSES } from 'constants/v3/addresses';

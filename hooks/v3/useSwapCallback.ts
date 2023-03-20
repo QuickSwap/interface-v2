@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { SignatureData } from './useERC20Permit';
@@ -12,7 +12,7 @@ import { SWAP_ROUTER_ADDRESSES } from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
 import { useAppSelector } from 'state';
 import { GAS_PRICE_MULTIPLIER } from 'hooks/useGasPrice';
-import { SwapRouter } from 'lib/src/swapRouter';
+import { SwapRouter } from 'lib/swapRouter';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { useTransactionAdder } from 'state/transactions/hooks';

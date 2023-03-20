@@ -6,11 +6,10 @@ import Head from 'next/head';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 import { PageLayout } from 'layouts';
 import Background from 'layouts/Background';
-import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core';
+import { Web3ReactProvider } from '@web3-react/core';
 import { getLibrary } from 'utils';
 import { mainTheme } from 'styles/theme';
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
-import { GlobalConst } from 'constants/index';
 import store from 'state';
 import ApplicationUpdater from 'state/application/updater';
 import TransactionUpdater from 'state/transactions/updater';
@@ -27,9 +26,11 @@ import AdsUpdater from 'state/ads/updater';
 import GasUpdater from 'state/application/gasUpdater';
 import StyledThemeProvider from 'theme/index';
 import { Web3ReactManager, Popups } from 'components';
+import dynamic from 'next/dynamic';
 
-const Web3ProviderNetwork = createWeb3ReactRoot(
-  GlobalConst.utils.NetworkContextName,
+const Web3DefaultNetworkProvider = dynamic(
+  () => import('components/Web3DefaultNetworkProvider'),
+  { ssr: false },
 );
 
 const ThemeProvider: React.FC = ({ children }) => {
@@ -71,12 +72,12 @@ function Updaters() {
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const queryClient = new QueryClient();
-  const arcXAPIKey = process.env.REACT_APP_ARCX_API_KEY;
+  const arcXAPIKey = process.env.NEXT_PUBLIC_ARCX_API_KEY;
 
   const AppContent = () => (
     <QueryClientProvider client={queryClient}>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <Web3ProviderNetwork getLibrary={getLibrary}>
+        <Web3DefaultNetworkProvider getLibrary={getLibrary}>
           <Provider store={store}>
             <Updaters />
             <Providers>
@@ -90,7 +91,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
               </StyledThemeProvider>
             </Providers>
           </Provider>
-        </Web3ProviderNetwork>
+        </Web3DefaultNetworkProvider>
       </Web3ReactProvider>
     </QueryClientProvider>
   );

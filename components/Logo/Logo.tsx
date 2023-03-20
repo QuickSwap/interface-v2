@@ -32,6 +32,8 @@ const Logo: React.FC<LogoProps> = ({
           if (src) BAD_SRCS[src] = true;
           refresh((i) => i + 1);
         }}
+        width={100}
+        height={100}
       />
     );
   }

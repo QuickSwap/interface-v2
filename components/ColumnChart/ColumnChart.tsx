@@ -1,5 +1,6 @@
 import React from 'react';
-import Chart from 'react-apexcharts';
+import dynamic from 'next/dynamic';
+const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 import { useIsDarkMode } from 'state/user/hooks';
 
 export interface ColumnChartProps {

@@ -6,9 +6,9 @@ import { useAllV3Routes } from './useAllV3Routes';
 import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useV3Quoter } from 'hooks/useContract';
-import { Route } from 'lib/src/route';
-import { Trade } from 'lib/src/trade';
-import { encodeRouteToPath } from 'lib/src/utils/encodeRouteToPath';
+import { Route } from 'lib/route';
+import { Trade } from 'lib/trade';
+import { encodeRouteToPath } from 'lib/utils/encodeRouteToPath';
 
 export enum V3TradeState {
   LOADING,

@@ -10,7 +10,7 @@ import { getMaticPrice } from 'utils/v3-graph';
 
 export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
-  const { ethereum } = window as any;
+  const ethereum = window?.ethereum;
   const dispatch = useDispatch();
   const { updateEthPrice } = useEthPrice();
   const { updateMaticPrice } = useMaticPrice();
@@ -54,6 +54,7 @@ export default function Updater(): null {
   }, []);
 
   useEffect(() => {
+    console.log('ccc', process.env.NEXT_PUBLIC_GRAPH_V2_API_URL);
     (async () => {
       try {
         const [

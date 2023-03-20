@@ -1,7 +1,7 @@
 import React from 'react';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '@uniswap/v2-sdk';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import { useMemo } from 'react';
 import { computeRealizedLPFeePercent } from 'utils/v3/prices';
 import FormattedPriceImpact from './FormattedPriceImpact';

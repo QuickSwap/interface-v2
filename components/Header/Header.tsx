@@ -173,10 +173,12 @@ const Header: React.FC = () => {
       <Link href='/'>
         <Image
           src={
-            mobileWindowSize ? '/images/quickIcon.svg' : '/images/quickLogo.png'
+            mobileWindowSize
+              ? '/assets/images/quickIcon.svg'
+              : '/assets/images/quickLogo.png'
           }
           alt='QuickLogo'
-          height={60}
+          fill
         />
       </Link>
       {!tabletWindowSize && (
@@ -196,26 +198,30 @@ const Header: React.FC = () => {
               <small>{val.text}</small>
               {val.isNew && (
                 <>
-                  <Image src='/images/NewTag.png' alt='new menu' width={46} />
+                  <Image src='/assets/images/NewTag.png' alt='new menu' fill />
                   <Image
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
-                    src='/images/SparkleLeft.svg'
+                    src='/assets/images/SparkleLeft.svg'
                     alt='menuItem sparkle left'
+                    fill
                   />
-                  <img
+                  <Image
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
-                    src='/images/SparkleRight.svg'
+                    src='/assets/images/SparkleRight.svg'
                     alt='menuItem sparkle right'
+                    fill
                   />
-                  <img
+                  <Image
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
-                    src='/images/SparkleBottom.svg'
+                    src='/assets/images/SparkleBottom.svg'
                     alt='menuItem sparkle bottom'
+                    fill
                   />
-                  <img
+                  <Image
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
-                    src='/images/SparkleTop.svg'
+                    src='/assets/images/SparkleTop.svg'
                     alt='menuItem sparkle top'
+                    fill
                   />
                 </>
               )}

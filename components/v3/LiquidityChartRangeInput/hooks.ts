@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Currency } from '@uniswap/sdk-core';
-import { FeeAmount } from 'lib/src/constants';
+import { FeeAmount } from 'lib/constants';
 
 import { ChartEntry } from './types';
 import JSBI from 'jsbi';

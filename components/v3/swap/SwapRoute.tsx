@@ -1,13 +1,13 @@
 import React, { Fragment, memo, useContext } from 'react';
 import { Currency, TradeType } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '@uniswap/v2-sdk';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import { ChevronRight } from 'react-feather';
 import { Flex } from 'rebass';
 import { ThemeContext } from 'styled-components/macro';
 import { TYPE } from 'theme/index';
 import { unwrappedToken } from 'utils/unwrappedToken';
-import { FeeAmount } from 'lib/src/constants';
+import { FeeAmount } from 'lib/constants';
 
 function LabeledArrow({}: { fee: FeeAmount }) {
   const theme = useContext(ThemeContext);

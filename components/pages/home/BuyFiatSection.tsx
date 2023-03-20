@@ -9,7 +9,7 @@ const BuyFiatSection: React.FC = () => {
 
   return (
     <Box className='buyFiatContainer'>
-      <Image src='/images/FiatMask.svg' alt='Fiat Mask' />
+      <Image src='/assets/images/FiatMask.svg' alt='Fiat Mask' fill />
       <Box>
         <Box className='buyFiatInfo'>
           <h3>{t('buyCryptoFiat')}</h3>
@@ -17,8 +17,9 @@ const BuyFiatSection: React.FC = () => {
           <BuyFiatButton />
         </Box>
         <Image
-          src='/images/featured/BuyWithFiatNoPad.png'
+          src='/assets/images/featured/BuyWithFiatNoPad.png'
           alt='buy with fiat'
+          fill
         />
       </Box>
     </Box>

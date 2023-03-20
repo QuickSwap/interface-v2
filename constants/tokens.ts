@@ -1,6 +1,6 @@
 import { Token } from '@uniswap/sdk-core';
-import { Matic } from 'lib/src/matic';
-import { WMATIC } from 'lib/src/wmatic';
+import { Matic } from 'lib/matic';
+import { WMATIC } from 'lib/wmatic';
 export const WMATIC_EXTENDED: { [chainId: number]: Token } = {
   ...WMATIC,
 };

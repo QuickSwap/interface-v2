@@ -24,32 +24,32 @@ const LandingPage: React.FC = () => {
 
   const features = [
     {
-      img: '/images/featured/Swap.svg',
+      img: '/assets/images/featured/Swap.svg',
       title: t('swapTokens'),
       desc: t('featureTradeDesc'),
     },
     {
-      img: '/images/featured/ProvideLiquidity.svg',
+      img: '/assets/images/featured/ProvideLiquidity.svg',
       title: t('supplyLiquidity'),
       desc: t('featureLiquidityDesc'),
     },
     {
-      img: '/images/featured/Rewards.svg',
+      img: '/assets/images/featured/Rewards.svg',
       title: t('earndQUICK'),
       desc: t('featureDepositDesc'),
     },
     {
-      img: '/images/featured/DragonsLair.svg',
+      img: '/assets/images/featured/DragonsLair.svg',
       title: t('dragonLair'),
       desc: t('featureDragonDesc'),
     },
     {
-      img: '/images/featured/BuyWithFiatNoPad.png',
+      img: '/assets/images/featured/BuyWithFiatNoPad.png',
       title: t('buyWithFiat'),
       desc: t('featureBuyFiatDesc'),
     },
     {
-      img: '/images/featured/Analytics.svg',
+      img: '/assets/images/featured/Analytics.svg',
       title: t('analytics'),
       desc: t('featureAnalyticsDesc'),
     },
@@ -98,7 +98,7 @@ const LandingPage: React.FC = () => {
     },
     {
       link: 'https://www.tiktok.com/@quickswapofficial',
-      icon: <Image src='/images/social/TikTok_Qs.png' alt='TikTok' />,
+      icon: <Image src='/assets/images/TikTok_Qs.png' alt='TikTok' fill />,
       title: 'TikTok',
     },
     {
@@ -131,7 +131,7 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={styles.quickInfo}>
         <h4>{t('quickInfoTitle')}</h4>
-        <Image src='/images/Motif.svg' alt='Motif' />
+        <Image src='/images/Motif.svg' alt='Motif' fill />
       </Box>
       <SwapSection />
       <Box className={styles.rewardsContainer}>

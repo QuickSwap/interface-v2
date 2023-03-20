@@ -69,6 +69,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
           className={styles.ethereumLogo}
           src='/images/Currency/PolygonSwap.svg'
           alt='Ethereum Logo'
+          fill
         />
       </Box>
     );

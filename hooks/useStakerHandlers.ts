@@ -2,7 +2,7 @@ import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
 import FARMING_CENTER_ABI from 'abis/farming-center.json';
 import { Contract, providers } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
@@ -15,10 +15,9 @@ import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';
 import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { TransactionResponse } from '@ethersproject/providers';
-import { DefaultFarming, DefaultFarmingWithError } from '../models/interfaces';
 import { FarmingType } from '../models/enums';
 import { useTranslation } from 'react-i18next';
-import { toHex } from 'lib/src/utils/calldata';
+import { toHex } from 'lib/utils/calldata';
 import { useAppSelector } from 'state';
 import { useV3StakeData } from 'state/farms/hooks';
 
@@ -218,7 +217,8 @@ export function useFarmingHandlers() {
         });
 
         updateV3Stake({ txConfirmed: true });
-      } catch (err) {
+      } catch (error) {
+        const err = error as any;
         updateV3Stake({ txError: 'failed' });
         if (err.code !== 4001) {
           throw new Error(t('undeposit') + ' ' + err.message);
@@ -609,7 +609,6 @@ export function useFarmingHandlers() {
       addTransaction,
       chainId,
       finalizeTransaction,
-      gasPrice,
       provider,
       updateV3Stake,
       t,

@@ -76,12 +76,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
 
   return (
     <Box className='page'>
-      {/* {openPassModal && <PasswordModal />}
+      {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
       <Header />
       {!isProMode && <Background fallback={false} />}
       <Box className={getPageWrapperClassName()}>{children}</Box>
-      <Footer /> */}
+      <Footer />
     </Box>
   );
 };

@@ -6,7 +6,7 @@ import abi from 'constants/abis/v3/pool.json';
 import { Interface } from '@ethersproject/abi';
 import { useToken } from './Tokens';
 import { usePreviousNonErroredArray } from './usePrevious';
-import { Pool } from 'lib/src/pool';
+import { Pool } from 'lib/pool';
 import { computePoolAddress } from './v3/computePoolAddress';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 

@@ -94,13 +94,16 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box className={styles.paymentBox}>
-          <Image src='/images/binanceConnect.png' alt='binance connect' />
+          <Image
+            src='/assets/images/binanceConnect.png'
+            alt='binance connect'
+          />
           <Box className={styles.buyButton} onClick={buyBinance}>
             {t('buy')}
           </Box>
         </Box>
         <Box className={styles.paymentBox}>
-          <Image src='/images/coinbasePay.png' alt='coinbase pay' />
+          <Image src='/assets/images/coinbasePay.png' alt='coinbase pay' />
           <Box
             className={`${styles.buyButton} ${
               account && !coinbaseReady ? 'disabled' : ''
@@ -111,7 +114,7 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
           </Box>
         </Box>
         <Box className={styles.paymentBox}>
-          <Image src='/images/Transak.png' alt='transak' />
+          <Image src='/assets/images/Transak.png' alt='transak' />
           <Box
             className='buyButton'
             onClick={() => {

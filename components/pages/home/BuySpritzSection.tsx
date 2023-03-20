@@ -9,7 +9,7 @@ const BuySpritzSection: React.FC = () => {
 
   return (
     <Box className='buyFiatContainer'>
-      <Image src='/images/FiatMask.svg' alt='Fiat Mask' />
+      <Image src='/assets/images/FiatMask.svg' alt='Fiat Mask' fill />
       <Box>
         <Box className='buyFiatInfo'>
           <h3>{t('payBillWithCrypto')}</h3>
@@ -21,14 +21,19 @@ const BuySpritzSection: React.FC = () => {
             <small>{t('payWithCrypto')}</small>
           </Button>
         </Box>
-        <Image src='/images/featured/BillPay.png' alt='buy with crypto' />
+        <Image
+          src='/assets/images/featured/BillPay.png'
+          alt='buy with crypto'
+          fill
+        />
       </Box>
       <Box className='poweredBySection'>
         {t('poweredBy')}
         <Image
           className='spritz'
-          src='/images/SpritzIcon.png'
+          src='/assets/images/SpritzIcon.png'
           alt='spritz finance'
+          fill
         />
       </Box>
     </Box>
