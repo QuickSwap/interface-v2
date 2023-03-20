@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { TopMovers, TokensTable } from 'components';
 import {
   useBookmarkTokens,
@@ -7,17 +7,18 @@ import {
   useMaticPrice,
 } from 'state/application/hooks';
 import { getTopTokens } from 'utils';
-import { Skeleton } from '@material-ui/lab';
-import { useTranslation } from 'react-i18next';
+import { Skeleton } from '@mui/lab';
+import { useTranslation } from 'next-i18next';
 import { GlobalConst } from 'constants/index';
 import { getTopTokensTotal, getTopTokensV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
   const [tokensFilter, setTokensFilter] = useState(0);
+  const router = useRouter();
 
   const dispatch = useDispatch();
 
@@ -26,8 +27,9 @@ const AnalyticsTokens: React.FC = () => {
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
 
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = router.query.version
+    ? (router.query.version as string)
+    : 'total';
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -142,7 +144,7 @@ const AnalyticsTokens: React.FC = () => {
         {topTokens ? (
           <TokensTable data={tokensFilter === 0 ? topTokens : favoriteTokens} />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <Skeleton variant='rectangular' width='100%' height={150} />
         )}
       </Box>
     </Box>

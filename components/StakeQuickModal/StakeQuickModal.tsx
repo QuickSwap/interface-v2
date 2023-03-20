@@ -15,7 +15,7 @@ import {
 } from 'state/transactions/hooks';
 import { calculateGasMargin, formatTokenAmount } from 'utils';
 import styles from 'styles/components/StakeModal.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface StakeQuickModalProps {
   open: boolean;

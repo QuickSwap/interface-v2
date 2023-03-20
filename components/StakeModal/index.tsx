@@ -25,7 +25,7 @@ import { Box, Button } from '@mui/material';
 import { Skeleton } from '@mui/lab';
 import { Check } from '@mui/icons-material';
 import { useV3StakeData } from 'state/farms/hooks';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface FarmModalProps {
   event: {

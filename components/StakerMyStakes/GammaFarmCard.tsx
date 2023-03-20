@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { Token } from '@uniswap/sdk';
 import { DoubleCurrencyLogo } from 'components';
 import Link from 'next/link';

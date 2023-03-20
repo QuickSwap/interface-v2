@@ -4,7 +4,7 @@ import { Box, CircularProgress } from '@mui/material';
 import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
 import { injected } from 'connectors';
 import Option from './Option';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface PendingViewProps {
   connector?: AbstractConnector;

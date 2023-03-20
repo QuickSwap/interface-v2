@@ -7,7 +7,7 @@ import {
 } from 'components';
 import { Box, Button, Divider } from '@mui/material';
 import { PositionPool } from 'models/interfaces';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import {
   useBurnV3ActionHandlers,
   useBurnV3State,

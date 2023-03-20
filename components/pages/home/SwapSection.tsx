@@ -8,7 +8,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { Swap, AddLiquidity } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useIsV2 } from 'state/application/hooks';
 
 const SWAP_TAB = 0;

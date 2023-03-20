@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { GlobalConst } from 'constants/index';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useIsV2 } from 'state/application/hooks';
 import { getFormattedPrice, getPriceClass } from 'utils';
 

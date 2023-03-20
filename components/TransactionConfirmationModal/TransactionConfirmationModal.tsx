@@ -8,7 +8,7 @@ import TransactionSuccess from 'svgs/TransactionSuccess.svg';
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import styles from 'styles/components/TransactionConfirmationModal.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 
 interface ConfirmationPendingContentProps {

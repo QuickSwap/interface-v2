@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { Skeleton } from '@mui/lab';
 import { PoolFinderModal, PoolPositionCard } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 

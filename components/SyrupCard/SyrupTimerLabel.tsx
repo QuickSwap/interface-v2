@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
   exactEnd,

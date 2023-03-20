@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { HelpOutline } from '@mui/icons-material';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const SwapPageHeader: React.FC<{ proMode: boolean }> = ({ proMode }) => {
   const helpURL = process.env.REACT_APP_HELP_URL;

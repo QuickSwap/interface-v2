@@ -10,7 +10,7 @@ import FarmCard from './FarmCard';
 import { Box, Button, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import {
   GammaPair,
   GammaPairs,

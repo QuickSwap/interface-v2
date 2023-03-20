@@ -4,7 +4,7 @@ import { Skeleton } from '@mui/lab';
 import { useUSDRewardsandFees } from 'state/stake/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useRouter } from 'next/router';

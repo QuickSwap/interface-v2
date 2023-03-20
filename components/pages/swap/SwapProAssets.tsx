@@ -13,7 +13,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useEthPrice, useIsV2, useMaticPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import {

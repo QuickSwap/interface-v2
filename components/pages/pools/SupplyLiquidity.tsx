@@ -1,9 +1,9 @@
-import React, { lazy, useState } from 'react';
+import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { Settings } from '@mui/icons-material';
 import { QuestionHelper, SettingsModal } from 'components';
-import { useTranslation } from 'react-i18next';
-const AddLiquidity = lazy(() => import('components/AddLiquidity'));
+import { useTranslation } from 'next-i18next';
+import AddLiquidity from 'components/AddLiquidity';
 
 const SupplyLiquidity: React.FC = () => {
   const { t } = useTranslation();

@@ -4,17 +4,16 @@ import { getBulkPairData } from 'state/stake/hooks';
 import { HelpOutline } from '@mui/icons-material';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
-import FarmRewards from './FarmRewards';
-import FarmsList from './FarmsList';
+import FarmRewards from 'components/pages/farms/FarmRewards';
+import FarmsList from 'components/pages/farms/FarmsList';
 import { AdsSlider, CustomSwitch } from 'components';
-import { useTranslation } from 'react-i18next';
-import 'pages/styles/farm.scss';
+import { useTranslation } from 'next-i18next';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultCNTFarmList } from 'state/cnt/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import V3Farms from 'pages/FarmPage/V3';
+import V3Farms from 'components/pages/farms/V3/Farms';
 import { useIsV2 } from 'state/application/hooks';
 import { useRouter } from 'next/router';
 
@@ -56,17 +55,18 @@ const FarmPage: React.FC = () => {
   const redirectWithFarmTab = (tab: string) => {
     const currentPath = router.asPath;
     let redirectPath;
-    // if (router.query.tab) {
-    //   redirectPath = currentPath.replace(
-    //     `tab=${router.query.tab}`,
-    //     `tab=${tab}`,
-    //   );
-    // } else {
-    //   redirectPath = `${currentPath}${
-    //     router.location.search === '' ? '?' : '&'
-    //   }tab=${tab}`;
-    // }
-    // router.push(redirectPath);
+    if (router.query.tab) {
+      redirectPath = currentPath.replace(
+        `tab=${router.query.tab}`,
+        `tab=${tab}`,
+      );
+    } else {
+      redirectPath = '';
+      // redirectPath = `${currentPath}${
+      //   router.location.search === '' ? '?' : '&'
+      // }tab=${tab}`;
+    }
+    router.push(redirectPath);
   };
 
   const farmCategories = [
@@ -120,7 +120,6 @@ const FarmPage: React.FC = () => {
       </Box>
       {isV2 && (
         <>
-          {/* Custom switch layer */}
           <Box className='flex flex-wrap justify-between'>
             <CustomSwitch
               width={450}

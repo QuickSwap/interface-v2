@@ -26,7 +26,7 @@ import {
   getPartialTokenAmount,
   calculateGasMargin,
 } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface StakeSyrupModalProps {
   open: boolean;

@@ -4,7 +4,7 @@ import useENS from 'hooks/useENS';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils';
 import styles from 'styles/components/AddressInput.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface AddressInputProps {
   value: string;

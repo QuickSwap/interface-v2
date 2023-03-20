@@ -27,6 +27,7 @@ import GasUpdater from 'state/application/gasUpdater';
 import StyledThemeProvider from 'theme/index';
 import { Web3ReactManager, Popups } from 'components';
 import dynamic from 'next/dynamic';
+import { appWithTranslation } from 'next-i18next';
 
 const Web3DefaultNetworkProvider = dynamic(
   () => import('components/Web3DefaultNetworkProvider'),
@@ -128,4 +129,4 @@ MyApp.getInitialProps = async (appContext: any) => {
   return { ...appProps };
 };
 
-export default MyApp;
+export default appWithTranslation(MyApp);

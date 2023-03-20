@@ -8,7 +8,7 @@ import useUSDCPrice from 'utils/useUSDCPrice';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import ArrowDownIcon from 'svgs/ArrowDownIcon.svg';
 import { basisPointsToPercent, formatTokenAmount } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
 import styles from 'styles/components/ConfirmSwapModal.module.scss';

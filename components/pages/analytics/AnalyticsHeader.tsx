@@ -5,7 +5,7 @@ import { ArrowForwardIos } from '@mui/icons-material';
 import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import styles from 'styles/pages/Analytics.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
 

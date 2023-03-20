@@ -7,7 +7,7 @@ import { getTokenInfo, formatNumber } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { Skeleton } from '@mui/lab';
 import SwapInfoTx from './SwapInfoTx';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useEthPrice } from 'state/application/hooks';
 
 const SwapProInfo: React.FC<{

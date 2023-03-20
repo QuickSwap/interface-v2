@@ -21,7 +21,7 @@ import styles from 'styles/components/AccountDetails.module.scss';
 import StatusIcon from './StatusIcon';
 import Copy from './CopyHelper';
 import Transaction from './Transaction';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useUDDomain } from 'state/application/hooks';
 
 function renderTransactions(transactions: string[]) {

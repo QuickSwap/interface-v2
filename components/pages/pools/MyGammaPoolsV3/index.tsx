@@ -3,7 +3,7 @@ import { Box, Button } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
 import { useWalletModalToggle } from 'state/application/hooks';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import GammaLPList from './GammaLPList';
 import { useQuery } from 'react-query';
 import { getGammaPositions } from 'utils';

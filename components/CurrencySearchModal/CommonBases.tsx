@@ -3,7 +3,7 @@ import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Box } from '@mui/material';
 import { GlobalData } from 'constants/index';
 import { CurrencyLogo, QuestionHelper } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface CommonBasesProps {
   chainId?: ChainId;

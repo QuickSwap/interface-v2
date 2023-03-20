@@ -8,11 +8,9 @@ import {
   TableRow,
   TableCell,
   Button,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
-
-import { useHistory, useLocation } from 'react-router-dom';
-
+} from '@mui/material';
+import { Skeleton } from '@mui/lab';
+import { useRouter } from 'next/router';
 import { QuickModalContent } from 'components/LendModals';
 
 import { usePoolData } from 'hooks/marketxyz/usePoolData';
@@ -35,7 +33,7 @@ import {
   getPoolAssetToken,
 } from 'utils/marketxyz';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import {
   QuestionHelper,
   CopyHelper,
@@ -50,8 +48,7 @@ import AdsSlider from 'components/AdsSlider';
 
 const LendDetailPage: React.FC = () => {
   const { t } = useTranslation();
-  const history = useHistory();
-  const location = useLocation();
+  const router = useRouter();
   const { chainId, account } = useActiveWeb3React();
 
   const [txLoading, setTxLoading] = useState(false);
@@ -166,11 +163,11 @@ const LendDetailPage: React.FC = () => {
         <Box mb={3}>
           <AdsSlider sort='lend' />
         </Box>
-        <Box className='flex flex-wrap items-center' gridGap={'20px'}>
+        <Box className='flex flex-wrap items-center' gap={'20px'}>
           <Box
             className='flex items-center cursor-pointer'
             onClick={() => {
-              history.push('../lend');
+              router.push('/lend');
             }}
           >
             <svg
@@ -198,7 +195,7 @@ const LendDetailPage: React.FC = () => {
             </svg>
           </Box>
           <h4 className='text-bold'>{poolData?.pool.name}</h4>
-          <Box display={'flex'} gridGap={'2px'}>
+          <Box display={'flex'} gap={'2px'}>
             {poolData?.assets.map((asset, i) => (
               <CurrencyLogo
                 currency={getPoolAssetToken(asset, chainId)}
@@ -224,7 +221,7 @@ const LendDetailPage: React.FC = () => {
                 {item.data ? (
                   <h4>{item.data}</h4>
                 ) : (
-                  <Skeleton variant='rect' height={40} />
+                  <Skeleton variant='rectangular' height={40} />
                 )}
               </Box>
             </Grid>
@@ -250,7 +247,7 @@ const LendDetailPage: React.FC = () => {
               {borrowLimit !== undefined ? (
                 <span>{midUsdFormatter(borrowLimit)}</span>
               ) : (
-                <Skeleton variant='rect' width={60} height={20} />
+                <Skeleton variant='rectangular' width={60} height={20} />
               )}
             </Box>
           </Box>
@@ -269,7 +266,7 @@ const LendDetailPage: React.FC = () => {
                         {midUsdFormatter(poolData.totalSupplyBalanceUSD)}
                       </small>
                     ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
+                      <Skeleton variant='rectangular' width={40} height={23} />
                     )}
                   </Box>
                 </Box>
@@ -408,7 +405,7 @@ const LendDetailPage: React.FC = () => {
                                         setSelectedAsset(undefined);
                                       })
                                       .catch((e) => {
-                                        setTxError(t('errorInTx'));
+                                        setTxError(t('errorInTx') ?? undefined);
                                         setTxLoading(false);
                                         setSelectedAsset(undefined);
                                       });
@@ -443,7 +440,7 @@ const LendDetailPage: React.FC = () => {
                         {midUsdFormatter(poolData.totalBorrowBalanceUSD)}
                       </small>
                     ) : (
-                      <Skeleton variant='rect' width={40} height={23} />
+                      <Skeleton variant='rectangular' width={40} height={23} />
                     )}
                   </Box>
                 </Box>
@@ -603,7 +600,11 @@ const LendDetailPage: React.FC = () => {
                       {item.data ? (
                         <small>{item.data}</small>
                       ) : (
-                        <Skeleton variant='rect' width={40} height={23} />
+                        <Skeleton
+                          variant='rectangular'
+                          width={40}
+                          height={23}
+                        />
                       )}
                     </Grid>
                   ))}

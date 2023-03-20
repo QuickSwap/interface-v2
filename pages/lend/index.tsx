@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Skeleton } from '@mui/lab';
 import { SearchInput, CustomMenu, CurrencyLogo } from 'components';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { useActiveWeb3React } from 'hooks';
 import { midUsdFormatter } from 'utils/bigUtils';
 import { PoolData, USDPricedPoolAsset } from 'utils/marketxyz/fetchPoolData';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import 'pages/styles/lend.scss';
 import { getPoolAssetToken } from 'utils/marketxyz';
 import { Token } from '@uniswap/sdk';
@@ -17,7 +17,7 @@ import AdsSlider from 'components/AdsSlider';
 
 const LendPage: React.FC = () => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const router = useRouter();
   const { chainId } = useActiveWeb3React();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
@@ -135,7 +135,7 @@ const LendPage: React.FC = () => {
               {item.data ? (
                 <h4>{item.data}</h4>
               ) : (
-                <Skeleton variant='rect' height={40} />
+                <Skeleton variant='rectangular' height={40} />
               )}
             </Box>
           </Grid>
@@ -149,10 +149,10 @@ const LendPage: React.FC = () => {
         sx={{
           justifyContent: { xs: 'center', sm: 'center', md: 'space-between' },
         }}
-        gridGap={'24px'}
+        gap={'24px'}
         flexWrap={'wrap'}
       >
-        <Box display={'flex'} gridGap={'24px'}>
+        <Box display={'flex'} gap={'24px'}>
           <h6
             className={`text-bold ${
               isMyPools ? 'text-secondary' : 'text-primary'
@@ -176,7 +176,7 @@ const LendPage: React.FC = () => {
             flexDirection: { xs: 'column', sm: 'row' },
             width: { xs: '100%', sm: 'unset' },
           }}
-          gridGap={'16px'}
+          gap={'16px'}
         >
           <SearchInput
             placeholder={t('search')}
@@ -217,13 +217,13 @@ const LendPage: React.FC = () => {
                     md={4}
                     key={index}
                     onClick={() => {
-                      history.push('/lend/detail?poolId=' + poolId);
+                      router.push('/lend/detail?poolId=' + poolId);
                     }}
                   >
                     <Box className='lendCard'>
                       <Box className='lendCardTop'>
                         <h5>{pool.name}</h5>
-                        <Box mt={'14px'} display={'flex'} gridGap={'4px'}>
+                        <Box mt={'14px'} display={'flex'} gap={'4px'}>
                           {poolTokens.map((token: Token) => (
                             <CurrencyLogo
                               key={token.address}

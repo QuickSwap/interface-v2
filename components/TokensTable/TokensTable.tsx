@@ -15,7 +15,7 @@ import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
 import StarChecked from 'svgs/StarChecked.svg';
 import StarUnchecked from 'svgs/StarUnchecked.svg';
 import styles from 'styles/components/AnalyticsTable.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 
 interface TokensTableProps {

@@ -13,7 +13,7 @@ import {
 } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { getChartDataV3, getChartDataTotal } from 'utils/v3-graph';
 import { useRouter } from 'next/router';
 dayjs.extend(utc);

@@ -7,7 +7,7 @@ import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import V3CurrencySelect from 'components/v3/CurrencySelect';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface ISelectPair {
   baseCurrency: Currency | null | undefined;

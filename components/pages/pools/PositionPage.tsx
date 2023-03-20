@@ -15,7 +15,7 @@ import { PositionPool } from 'models/interfaces';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useV3NFTPositionManagerContract } from 'hooks/useContract';
 import { FARMING_CENTER } from 'constants/v3/addresses';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 export default function PositionPage() {
   const { t } = useTranslation();

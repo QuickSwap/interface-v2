@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Button, CircularProgress } from '@mui/material';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 import QUICKIcon from 'assets/images/quickIcon.svg';
 import QUICKV2Icon from 'svgs/QUICKV2.svg';
 import { ArrowForward, ArrowDownward } from '@mui/icons-material';

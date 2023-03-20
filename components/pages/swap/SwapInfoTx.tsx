@@ -5,7 +5,7 @@ import dayjs, { ManipulateType } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { Skeleton } from '@mui/lab';
 import { formatCompact, formatNumber } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 dayjs.extend(utc);
 
 const SwapInfoTx: React.FC<{

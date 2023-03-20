@@ -20,7 +20,7 @@ import { LineChart } from 'components';
 import { Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { getIntervalTokenDataV3 } from 'utils/v3-graph';
 
 const SwapTokenDetails: React.FC<{

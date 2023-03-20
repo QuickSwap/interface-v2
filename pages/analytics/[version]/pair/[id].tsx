@@ -23,7 +23,7 @@ import { GlobalConst, TxnType } from 'constants/index';
 import 'pages/styles/analytics.scss';
 import AnalyticsHeader from '../../AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';

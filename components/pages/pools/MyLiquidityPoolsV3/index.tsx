@@ -9,7 +9,7 @@ import PositionList from './components/PositionList';
 import FilterPanelItem from '../FilterPanelItem';
 import { PositionPool } from 'models/interfaces';
 import { useWalletModalToggle } from 'state/application/hooks';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();

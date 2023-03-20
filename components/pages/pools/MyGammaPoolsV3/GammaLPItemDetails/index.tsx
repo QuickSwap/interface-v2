@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import './index.scss';
 import { formatNumber } from 'utils';
 import { CurrencyLogo } from 'components';

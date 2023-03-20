@@ -34,7 +34,7 @@ import { calculateGasMarginV3 } from 'utils';
 import { useToken } from 'hooks/v3/Tokens';
 import { JSBI } from '@uniswap/sdk';
 import { PositionPool } from 'models/interfaces';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import { Box, Button } from '@mui/material';
 import RangeBadge from 'components/v3/Badge/RangeBadge';

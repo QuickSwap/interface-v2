@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import ReactGA from 'react-ga';
 import { Box, Divider } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTokens, useToken } from 'hooks/Tokens';
@@ -183,7 +183,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         <Search />
         <input
           type='text'
-          placeholder={t('tokenSearchPlaceholder')}
+          placeholder={t('tokenSearchPlaceholder') ?? undefined}
           value={searchQueryInput}
           ref={inputRef as RefObject<HTMLInputElement>}
           onChange={(e) => setSearchQueryInput(e.target.value)}

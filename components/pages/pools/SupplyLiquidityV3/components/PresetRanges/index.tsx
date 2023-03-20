@@ -10,9 +10,9 @@ import { fetchPoolsAPR } from 'utils/api';
 import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
-import './index.scss';
+import styles from './PresetRanges.module.scss';
 import { Interface } from 'ethers/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useMultipleContractSingleData } from 'state/multicall/hooks';
 
 export interface IPresetArgs {
@@ -278,7 +278,7 @@ export function PresetRanges({
 
   return (
     <Box>
-      <Box mb='10px' className='preset-buttons'>
+      <Box mb='10px' className={styles.presetButtons}>
         {isGamma && !gammaValuesLoaded ? (
           <Box width={1} className='flex justify-center'>
             <Loader />
@@ -288,7 +288,7 @@ export function PresetRanges({
             {ranges.map((range, i) => (
               <button
                 className={`${
-                  activePreset === range.type ? 'active-preset' : ''
+                  activePreset === range.type ? styles.activePresetButton : ''
                 }`}
                 onClick={() => {
                   if (activePreset === range.type) {
@@ -310,16 +310,16 @@ export function PresetRanges({
         <>
           <Box className='flex justify-between'>
             {_risk && !mintInfo.invalidRange && !isStablecoinPair && (
-              <Box className='preset-range-info'>
+              <Box className={styles.presetRangeInfo}>
                 <Box px='12px' className='flex items-center justify-between'>
                   <span>{t('risk')}:</span>
                   <Box className='flex items-center'>
                     {[1, 2, 3, 4, 5].map((_, i) => (
-                      <div key={i} className='preset-range-circle'>
+                      <div key={i} className={styles.presetRangeCircle}>
                         <Box
                           key={i}
                           left={`calc(-100% + ${_risk[i]}%)`}
-                          className='preset-range-circle-active bg-error'
+                          className={`${styles.presetRangeCircleActive} bg-error`}
                         />
                       </div>
                     ))}
@@ -333,11 +333,11 @@ export function PresetRanges({
                   <span>{t('profit')}:</span>
                   <Box className='flex items-center'>
                     {[1, 2, 3, 4, 5].map((_, i) => (
-                      <div key={i} className='preset-range-circle'>
+                      <div key={i} className={styles.presetRangeCircle}>
                         <Box
                           key={i}
                           left={`calc(-100% + ${_risk[i]}%)`}
-                          className='preset-range-circle-active bg-success'
+                          className={`${styles.presetRangeCircleActive} bg-success`}
                         />
                       </div>
                     ))}
@@ -346,7 +346,7 @@ export function PresetRanges({
               </Box>
             )}
             {baseCurrency && quoteCurrency && (
-              <Box className='preset-range-info'>
+              <Box className={styles.presetRangeInfo}>
                 <Box padding='10px 12px'>
                   <PoolStats
                     fee={feeString}

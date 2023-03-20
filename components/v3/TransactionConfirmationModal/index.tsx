@@ -13,7 +13,7 @@ import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
 import { CustomModal } from 'components';
 import { CloseIcon, CustomLightSpinner } from 'theme/components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 
 interface ConfirmationPendingContentProps {

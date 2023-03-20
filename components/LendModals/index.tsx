@@ -35,7 +35,7 @@ import {
   NumericalInput,
   CurrencyLogo,
 } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import styles from 'styles/components/LendModal.module.scss';
 import { Close } from '@mui/icons-material';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
@@ -740,7 +740,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
                   setTxHash(txResponse.transactionHash);
                   setLoading(false);
                 } catch (e) {
-                  setTxError(t('errorInTx'));
+                  setTxError(t('errorInTx') ?? undefined);
                   setLoading(false);
                 }
               }}

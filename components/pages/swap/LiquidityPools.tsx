@@ -5,7 +5,7 @@ import { getTokenPairs, getBulkPairData } from 'utils';
 import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { getTopPairsV3ByTokens } from 'utils/v3-graph';
 

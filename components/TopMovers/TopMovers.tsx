@@ -7,7 +7,7 @@ import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
 import { getTopTokens, getPriceClass, formatNumber } from 'utils';
 import styles from 'styles/components/TopMovers.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useEthPrice, useMaticPrice, useIsV2 } from 'state/application/hooks';
 import { getTopTokensV3 } from 'utils/v3-graph';
 

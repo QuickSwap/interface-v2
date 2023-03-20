@@ -23,7 +23,7 @@ import { useRouter } from 'next/router';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import Badge from 'components/v3/Badge';
 import PositionListItemDetails from '../PositionListItemDetails';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;

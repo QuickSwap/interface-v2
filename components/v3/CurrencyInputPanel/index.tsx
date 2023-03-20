@@ -14,7 +14,7 @@ import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@mui/material';
 import NumericalInput from 'components/NumericalInput';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import JSBI from 'jsbi';
 import styles from './CurrencyInputPanel.module.scss';
 import { parseUnits } from 'ethers/lib/utils';

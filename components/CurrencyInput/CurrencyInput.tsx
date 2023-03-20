@@ -10,7 +10,7 @@ import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
 import styles from 'styles/components/CurrencyInput.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import CurrencySelect from 'components/CurrencySelect';
 import { default as useUSDCPriceV3 } from 'hooks/v3/useUSDCPrice';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';

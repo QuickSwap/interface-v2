@@ -13,7 +13,7 @@ import Image from 'next/image';
 import { Token } from '@uniswap/sdk-core';
 
 import { ChainId } from '@uniswap/sdk';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface StakeModalFarmingTiersProps {
   tiersLimits: {

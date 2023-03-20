@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { SyrupInfo } from 'types';
 import { CurrencyLogo } from 'components';
 import { getTokenAPRSyrup } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { GlobalValue } from 'constants/index';
 
 const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({

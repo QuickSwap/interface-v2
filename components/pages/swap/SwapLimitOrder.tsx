@@ -5,7 +5,7 @@ import {
   GelatoLimitOrderPanel,
   GelatoLimitOrdersHistoryPanel,
 } from '@gelatonetwork/limit-orders-react';
-import { Trans } from 'react-i18next';
+import { Trans } from 'next-i18next';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
 

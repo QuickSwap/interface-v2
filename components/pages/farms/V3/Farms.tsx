@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import CustomSelector from 'components/v3/CustomSelector';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import EternalFarmsPage from 'components/pages/farms/EternalFarmsPage';
 import GammaFarmsPage from 'components/pages/farms/GammaFarmsPage';

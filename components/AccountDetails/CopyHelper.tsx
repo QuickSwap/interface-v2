@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@mui/material';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { CheckCircle } from 'react-feather';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { ContentCopy } from '@mui/icons-material';
 import styles from 'styles/components/AccountDetails.module.scss';
 

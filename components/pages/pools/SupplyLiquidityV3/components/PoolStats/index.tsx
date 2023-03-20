@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 import Loader from 'components/Loader';
 import { Box } from '@mui/material';
-import './index.scss';
-import { useTranslation } from 'react-i18next';
+import styles from './PoolStats.module.scss';
+import { useTranslation } from 'next-i18next';
 
 interface IPoolStats {
   fee: string | ReactElement;
@@ -21,7 +21,7 @@ export function PoolStats({ fee, apr, noLiquidity, loading }: IPoolStats) {
     );
 
   return (
-    <Box className='poolStats'>
+    <Box className={styles.poolStats}>
       <span>{noLiquidity ? t('newPool') : t('currentPoolstats')}</span>
       <Box mt='6px' className='flex items-center'>
         <Box className='poolStatsWrapper bg-primaryLight'>

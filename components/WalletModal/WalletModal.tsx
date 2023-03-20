@@ -17,7 +17,7 @@ import {
   useWalletModalToggle,
 } from 'state/application/hooks';
 import { AccountDetails, CustomModal } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { UAuthConnector } from '@uauth/web3-react';
 import UAuth from '@uauth/js';
 

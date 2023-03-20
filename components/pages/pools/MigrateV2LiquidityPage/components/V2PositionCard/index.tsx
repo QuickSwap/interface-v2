@@ -5,7 +5,7 @@ import { Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
 import V2PositionCardDetails from '../V2PositionCardDetails';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();

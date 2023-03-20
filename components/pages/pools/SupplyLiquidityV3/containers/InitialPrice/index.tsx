@@ -6,7 +6,7 @@ import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
 import { Box } from '@mui/material';
 
 import './index.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface IInitialPrice {
   currencyA: Currency | undefined;

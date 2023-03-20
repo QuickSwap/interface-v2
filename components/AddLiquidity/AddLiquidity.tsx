@@ -11,7 +11,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { ETHER, TokenAmount, currencyEquals } from '@uniswap/sdk';
 import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';

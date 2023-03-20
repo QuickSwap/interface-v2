@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { ScaleLinear } from 'd3';
 import { StyledLine } from './styled';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 export const Line = ({
   value,

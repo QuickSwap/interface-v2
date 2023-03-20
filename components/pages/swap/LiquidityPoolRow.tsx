@@ -4,7 +4,7 @@ import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo } from 'components';
 import { formatCompact, getDaysCurrentYear } from 'utils';
 import { useCurrency } from 'hooks/Tokens';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const LiquidityPoolRow: React.FC<{
   pair: any;

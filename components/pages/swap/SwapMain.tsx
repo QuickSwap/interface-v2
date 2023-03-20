@@ -3,7 +3,7 @@ import { KeyboardArrowDown, Settings } from '@mui/icons-material';
 import { SettingsModal, Swap, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useIsProMode, useIsV2 } from 'state/application/hooks';
 import SwapCrossChain from './SwapCrossChain';

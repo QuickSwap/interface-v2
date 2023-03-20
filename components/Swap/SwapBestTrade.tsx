@@ -43,7 +43,7 @@ import {
 import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
 import ExchangeIcon from 'svgs/ExchangeIcon.svg';
 import styles from 'styles/components/Swap.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useParaswapCallback } from 'hooks/useParaswapCallback';
 import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
 import { SwapSide } from '@paraswap/sdk';

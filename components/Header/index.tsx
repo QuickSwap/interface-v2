@@ -20,7 +20,7 @@ import { useActiveWeb3React } from 'hooks';
 import { MoreHoriz } from '@mui/icons-material';
 import LightIcon from 'svgs/LightIcon.svg';
 import styles from 'styles/components/Header.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import useDeviceWidth from 'hooks/useDeviceWidth';
 import { GlobalValue } from 'constants/index';
 
@@ -29,7 +29,7 @@ const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
 };
 
 const Header: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const { pathname } = useRouter();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;

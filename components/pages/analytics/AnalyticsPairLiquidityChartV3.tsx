@@ -10,7 +10,7 @@ const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 import { Box } from '@mui/material';
 import styles from 'styles/pages/Analytics.module.scss';
 import { Skeleton } from '@mui/lab';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;

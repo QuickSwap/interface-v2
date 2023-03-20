@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { AlertTriangle, XCircle } from 'react-feather';
 import styles from 'styles/components/BetaWarningBanner.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const BetaWarningBanner: React.FC = () => {
   const [showBanner, setShowBanner] = useState(true);

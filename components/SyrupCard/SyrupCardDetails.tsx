@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { TransactionResponse } from '@ethersproject/providers';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { SyrupInfo } from 'types';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';

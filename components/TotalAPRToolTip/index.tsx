@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { formatNumber } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import styles from 'styles/components/TotalAPRToolTip.module.scss';
 import Popover from 'components/v3/Popover';
 

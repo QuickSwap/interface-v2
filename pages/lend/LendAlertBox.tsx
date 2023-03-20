@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+import { Box } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 
 const LendAlertBox: React.FC = () => {
   const { t } = useTranslation();

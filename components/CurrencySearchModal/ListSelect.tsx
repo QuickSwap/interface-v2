@@ -13,7 +13,7 @@ import listVersionLabel from 'utils/listVersionLabel';
 import { parseENSAddress } from 'utils/parseENSAddress';
 import uriToHttp from 'utils/uriToHttp';
 import { QuestionHelper, ListLogo } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 function ListOrigin({ listUrl }: { listUrl: string }) {
   const ensName = useMemo(() => parseENSAddress(listUrl)?.ensName, [listUrl]);
@@ -86,7 +86,10 @@ const ListRow = memo(function ListRow({
       action: 'Start Remove List',
       label: listUrl,
     });
-    if (window.prompt(t('confirmRemoveList')) === t('REMOVE').toUpperCase()) {
+    if (
+      window.prompt(t('confirmRemoveList') ?? undefined) ===
+      t('REMOVE').toUpperCase()
+    ) {
       ReactGA.event({
         category: 'Lists',
         action: 'Confirm Remove List',
@@ -276,7 +279,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
           <input
             type='text'
             id='list-add-input'
-            placeholder={t('listPlaceholder')}
+            placeholder={t('listPlaceholder') ?? undefined}
             value={listUrlInput}
             onChange={handleInput}
             onKeyDown={handleEnterKey}

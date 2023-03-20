@@ -9,7 +9,7 @@ import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
 import dayjs from 'dayjs';
 import { useActiveWeb3React } from 'hooks';
 import { TableVirtuoso } from 'react-virtuoso';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { GlobalConst } from 'constants/index';
 
 const SwapProChartTrade: React.FC<{

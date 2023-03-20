@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { DoubleCurrencyLogo } from 'components';
 import { GammaPairs } from 'constants/index';
 import './index.scss';

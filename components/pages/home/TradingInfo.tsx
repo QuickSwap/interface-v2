@@ -4,7 +4,7 @@ import { Skeleton } from '@mui/lab';
 import { StakeQuickModal } from 'components';
 import { useNewLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 import { formatCompact, useLairDQUICKAPY } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { ChainId } from '@uniswap/sdk';
 
 const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({

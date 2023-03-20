@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { computeRealizedLPFeePercent } from 'utils/v3/prices';
 import FormattedPriceImpact from './FormattedPriceImpact';
 import SwapRoute from './SwapRoute';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { Box } from '@mui/material';
 
 interface AdvancedSwapDetailsProps {

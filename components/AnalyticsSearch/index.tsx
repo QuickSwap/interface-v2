@@ -14,7 +14,7 @@ import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import styles from 'styles/components/AnalyticsSearch.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
@@ -290,7 +290,7 @@ const AnalyticsSearch: React.FC = () => {
     <Box className={styles.searchWidgetWrapper}>
       <Box className={styles.searchWidgetInput}>
         <input
-          placeholder={t('searchTokenPair')}
+          placeholder={t('searchTokenPair') ?? undefined}
           value={searchValInput}
           ref={menuRef}
           onFocus={() => setMenuOpen(true)}

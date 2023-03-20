@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { BuyFiatButton } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 
 const BuyFiatSection: React.FC = () => {

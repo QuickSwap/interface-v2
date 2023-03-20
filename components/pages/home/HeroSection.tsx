@@ -5,7 +5,7 @@ import { Skeleton } from '@mui/lab';
 import { isSupportedNetwork, addMaticToMetamask } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,

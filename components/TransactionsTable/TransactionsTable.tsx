@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Divider, useMediaQuery, useTheme } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { CustomTable } from 'components';
 import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
 import { useActiveWeb3React } from 'hooks';

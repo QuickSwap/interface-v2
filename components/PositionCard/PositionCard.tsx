@@ -8,7 +8,7 @@ import { formatTokenAmount } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
 import styles from 'styles/components/PositionCard.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface PositionCardProps {
   pair: Pair;

@@ -16,7 +16,7 @@ import {
 import { AreaChart, ChartType } from 'components';
 import { getTokenChartData } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { getTokenChartDataTotal, getTokenChartDataV3 } from 'utils/v3-graph';
 
 const CHART_VOLUME = 0;

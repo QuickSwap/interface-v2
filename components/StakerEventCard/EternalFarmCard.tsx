@@ -11,7 +11,7 @@ import { formatCompact, formatNumber, getTokenFromAddress } from 'utils';
 import { Aprs } from 'models/interfaces';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { useMaticPrice } from 'state/application/hooks';
 import Image from 'next/image';

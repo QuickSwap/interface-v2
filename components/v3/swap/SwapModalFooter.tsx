@@ -3,7 +3,7 @@ import { Currency, TradeType } from '@uniswap/sdk-core';
 import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/trade';
 import SwapCallbackError from './SwapCallbackError';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { Box, Button } from '@mui/material';
 
 export default function SwapModalFooter({

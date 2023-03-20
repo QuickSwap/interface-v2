@@ -6,7 +6,7 @@ import { QuestionHelper, PoolFinderModal } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import Loader from 'components/Loader';
 import V2PositionCard from './components/V2PositionCard';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 export default function MigrateV2LiquidityPage() {
   const { t } = useTranslation();

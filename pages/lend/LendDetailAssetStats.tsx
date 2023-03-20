@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Grid } from '@mui/material';
 import { CustomMenu } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import JumpRateModel from 'utils/marketxyz/interestRateModel';
 import { PoolData } from 'utils/marketxyz/fetchPoolData';
 import { shortUsdFormatter } from 'utils/bigUtils';
@@ -166,7 +166,7 @@ const LendDetailAssetStats: React.FC<{ poolData: PoolData }> = ({
                             },
                             borderColor: '#3e4252',
                             orientation: 'horizontal',
-                            text: t('currentUtilization'),
+                            text: t('currentUtilization') ?? undefined,
                           },
                         },
                       ]

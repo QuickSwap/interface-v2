@@ -16,7 +16,7 @@ import { currencyId } from 'utils';
 import { Close } from '@mui/icons-material';
 import Link from 'next/link';
 import styles from 'styles/components/PoolFinderModal.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 enum Fields {
   TOKEN0 = 0,

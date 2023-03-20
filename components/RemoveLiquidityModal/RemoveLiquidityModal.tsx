@@ -44,7 +44,7 @@ import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useTotalSupply } from 'data/TotalSupply';
 import { Close } from '@mui/icons-material';
 import styles from 'styles/components/RemoveLiquidityModal.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface RemoveLiquidityModalProps {
   currency0: Currency;

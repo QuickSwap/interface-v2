@@ -6,7 +6,7 @@ import { CustomModal, CurrencyLogo } from 'components';
 import { ReportProblemOutlined } from '@mui/icons-material';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink, shortenAddress } from 'utils';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 
 function TokenWarningCard({ token }: { token?: Token | V2Token }) {
   const { chainId } = useActiveWeb3React();

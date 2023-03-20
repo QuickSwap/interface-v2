@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { SUPPORTED_WALLETS } from 'constants/index';
 import { portis } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { getWalletKeys } from 'utils';
 
 const StatusIcon: React.FC = () => {

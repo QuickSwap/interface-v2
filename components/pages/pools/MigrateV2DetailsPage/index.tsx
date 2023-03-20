@@ -51,7 +51,7 @@ import { V2Exchanges } from 'constants/v3/addresses';
 import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 
 export default function MigrateV2DetailsPage() {
   const { t } = useTranslation();

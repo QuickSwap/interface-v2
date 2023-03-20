@@ -5,7 +5,7 @@ import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
 import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { GlobalValue } from 'constants/index';
 
 const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {

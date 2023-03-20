@@ -1,7 +1,7 @@
 import { Trade, TradeType } from '@uniswap/sdk';
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { Field } from 'state/swap/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import {

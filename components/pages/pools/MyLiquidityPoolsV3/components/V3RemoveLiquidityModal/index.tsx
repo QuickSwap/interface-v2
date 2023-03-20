@@ -3,7 +3,7 @@ import { CustomModal } from 'components';
 import { Box } from '@mui/material';
 import { PositionPool } from 'models/interfaces';
 import { Close } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import RemoveLiquidityV3 from 'components/v3/RemoveLiquidityV3';
 
 interface V3RemoveLiquidityModalProps {

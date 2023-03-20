@@ -4,7 +4,7 @@ import { CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { formatNumber, getEtherscanLink } from 'utils';
 import dayjs from 'dayjs';
 

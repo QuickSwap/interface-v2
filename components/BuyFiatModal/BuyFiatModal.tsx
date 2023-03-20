@@ -5,7 +5,7 @@ import HelpIcon from 'svgs/HelpIcon1.svg';
 import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import styles from 'styles/components/BuyFiatModal.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { CBPayInstanceType, initOnRamp } from '@coinbase/cbpay-js';
 import { useWalletModalToggle } from 'state/application/hooks';
 import Image from 'next/image';

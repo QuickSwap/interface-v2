@@ -15,7 +15,7 @@ import {
 } from 'utils';
 import { AreaChart, ChartType, MixedChart, ColumnChart } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 

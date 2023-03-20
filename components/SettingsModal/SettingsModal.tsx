@@ -18,7 +18,7 @@ import {
 } from 'state/user/hooks';
 import { Close } from '@mui/icons-material';
 import styles from 'styles/components/SettingsModal.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',

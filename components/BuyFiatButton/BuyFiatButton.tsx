@@ -1,7 +1,7 @@
 import { Box, Button } from '@mui/material';
 import { BinanceModal, BuyFiatModal, MoonpayModal } from 'components';
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface BuyFiatButtonProps {
   fullWidth?: boolean;

@@ -20,7 +20,7 @@ import { Box, Button } from '@mui/material';
 import Loader from 'components/Loader';
 import { Check } from '@mui/icons-material';
 import { GammaPairs, GlobalConst } from 'constants/index';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;

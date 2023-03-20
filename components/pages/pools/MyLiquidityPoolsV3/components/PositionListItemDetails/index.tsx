@@ -44,7 +44,7 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;

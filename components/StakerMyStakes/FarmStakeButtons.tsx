@@ -3,7 +3,7 @@ import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import { FarmingType } from 'models/enums';
 import Loader from 'components/Loader';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useV3StakeData } from 'state/farms/hooks';
 
 interface FarmCardDetailProps {

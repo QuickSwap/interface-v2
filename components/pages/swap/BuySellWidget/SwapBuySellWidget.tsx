@@ -1,7 +1,7 @@
 import { Box, Divider } from '@mui/material';
 import { BuyFiatButton } from 'components';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Swap.module.scss';
 import Image from 'next/image';
 

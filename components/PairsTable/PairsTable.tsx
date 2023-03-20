@@ -9,7 +9,7 @@ import { GlobalConst } from 'constants/index';
 import { useBookmarkPairs } from 'state/application/hooks';
 import StarChecked from 'svgs/StarChecked.svg';
 import StarUnchecked from 'svgs/StarUnchecked.svg';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import styles from 'styles/components/AnalyticsTable.module.scss';

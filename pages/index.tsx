@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Grid } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import CoingeckoIcon from 'svgs/social/Coingecko.svg';
 import DiscordIcon from 'svgs/social/Discord.svg';
 import MediumIcon from 'svgs/social/Medium.svg';
@@ -19,7 +19,7 @@ import { TopMovers, RewardSlider } from 'components';
 import { useRouter } from 'next/router';
 
 const LandingPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const router = useRouter();
 
   const features = [

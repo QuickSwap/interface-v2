@@ -15,10 +15,10 @@ import {
 } from 'utils';
 import { GammaPairs, GlobalConst } from 'constants/index';
 import { TokensTable, PairTable } from 'components';
-import AnalyticsInfo from '../AnalyticsInfo';
-import AnalyticsLiquidityChart from '../AnalyticsLiquidityChart';
-import AnalyticsVolumeChart from '../AnalyticsVolumeChart';
-import { useTranslation } from 'react-i18next';
+import AnalyticsInfo from 'components/pages/analytics/AnalyticsInfo';
+import AnalyticsLiquidityChart from 'components/pages/analytics/AnalyticsLiquidityChart';
+import AnalyticsVolumeChart from 'components/pages/analytics/AnalyticsVolumeChart';
+import { useTranslation } from 'next-i18next';
 import {
   getGlobalDataV3,
   getGlobalDataTotal,

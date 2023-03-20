@@ -12,7 +12,7 @@ import { DoubleCurrencyLogo } from 'components';
 import { formatAPY, getAPYWithFee, getOneYearFee } from 'utils';
 import PoolPositionCardDetails from './PoolPositionCardDetails';
 import styles from 'styles/components/PoolPositionCard.module.scss';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {

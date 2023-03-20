@@ -11,7 +11,7 @@ import { Box } from '@mui/material';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { format } from 'd3';
 import { Chart } from './Chart';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const ZOOM_LEVEL: ZoomLevels = {
   initialMin: 0.5,

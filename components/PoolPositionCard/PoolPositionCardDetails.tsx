@@ -8,7 +8,7 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import { CurrencyLogo, RemoveLiquidityModal } from 'components';
 import { currencyId, formatTokenAmount } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { Frown } from 'react-feather';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import Loader from 'components/Loader';
 import {
   GammaPair,

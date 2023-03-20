@@ -12,7 +12,7 @@ import {
 } from 'utils';
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { getChartDataTotal, getChartDataV3 } from 'utils/v3-graph';
 import { useRouter } from 'next/router';
 

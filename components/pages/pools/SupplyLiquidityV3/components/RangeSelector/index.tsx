@@ -17,7 +17,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import './index.scss';
 import { Box } from '@mui/material';
 import { Add, Remove } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface IRangeSelector {
   priceLower: Price<Token, Token> | undefined;

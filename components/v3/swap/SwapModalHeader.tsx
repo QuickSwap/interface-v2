@@ -15,7 +15,7 @@ import CurrencyLogo from 'components/CurrencyLogo';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { WrappedCurrency } from 'models/types';
 import { Box, Button } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import styles from 'styles/components/V3Swap.module.scss';
 
 interface SwapModalHeaderProps {

@@ -8,7 +8,7 @@ import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
 import styles from 'styles/components/SyrupCard.module.scss';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,

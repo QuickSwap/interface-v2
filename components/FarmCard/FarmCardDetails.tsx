@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { StakingInfo, DualStakingInfo } from 'types';
 import { TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';

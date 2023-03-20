@@ -8,7 +8,7 @@ import {
 } from 'components';
 import { Box, Button } from '@mui/material';
 import { Close } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { calculateGasMargin, formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {

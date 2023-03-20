@@ -3,7 +3,7 @@ import { Currency } from '@uniswap/sdk';
 import { Box } from '@mui/material';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
 import styles from 'styles/components/CurrencyInput.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface CurrencySelectProps {
   title?: string;

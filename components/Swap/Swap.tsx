@@ -48,7 +48,7 @@ import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
 import ExchangeIcon from 'svgs/ExchangeIcon.svg';
 import styles from 'styles/components/Swap.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import { useRouter } from 'next/router';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';

@@ -35,7 +35,7 @@ import { SettingsModal } from 'components';
 import { Settings } from '@mui/icons-material';
 import { useAppDispatch } from 'state/hooks';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { GlobalConst } from 'constants/index';
 
 export function SupplyLiquidityV3() {

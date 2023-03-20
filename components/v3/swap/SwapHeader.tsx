@@ -1,6 +1,6 @@
 import React from 'react';
 import { Percent } from '@uniswap/sdk-core';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { Box } from '@mui/material';
 
 interface SwapHeaderProps {

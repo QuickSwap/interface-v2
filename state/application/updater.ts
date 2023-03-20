@@ -54,7 +54,6 @@ export default function Updater(): null {
   }, []);
 
   useEffect(() => {
-    console.log('ccc', process.env.NEXT_PUBLIC_GRAPH_V2_API_URL);
     (async () => {
       try {
         const [

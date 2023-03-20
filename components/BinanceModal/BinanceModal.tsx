@@ -1,6 +1,6 @@
 import React from 'react';
 import { CustomModal } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface BinanceModalProps {
   open: boolean;

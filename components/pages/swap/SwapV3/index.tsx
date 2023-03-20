@@ -70,7 +70,7 @@ import { ETHER } from '@uniswap/sdk';
 import { AddressInput } from 'components';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useSwapRedirects from 'hooks/useSwapRedirect';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();

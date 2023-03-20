@@ -16,7 +16,7 @@ import {
 } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import styles from 'styles/components/FarmCard.module.scss';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 import Image from 'next/image';
 
 const FarmCard: React.FC<{

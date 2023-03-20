@@ -41,7 +41,7 @@ import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { useInverter } from 'hooks/v3/useInverter';
 import { GammaPairs, GlobalConst } from 'constants/index';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { formatUnits } from 'ethers/lib/utils';
 

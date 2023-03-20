@@ -31,7 +31,7 @@ import {
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useInfiniteLoading } from 'utils/useInfiniteLoading';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useRouter } from 'next/router';

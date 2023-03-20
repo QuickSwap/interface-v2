@@ -11,7 +11,7 @@ import {
 import { useLairContract, useNewLairContract } from 'hooks/useContract';
 import Web3 from 'web3';
 import { calculateGasMargin, formatTokenAmount } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const web3 = new Web3();
 

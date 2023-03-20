@@ -10,7 +10,7 @@ import {
 } from 'components';
 import { Box, Button } from '@mui/material';
 import { Close } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import '../GammaLPItemDetails/index.scss';
 import { calculateGasMargin, formatNumber } from 'utils';

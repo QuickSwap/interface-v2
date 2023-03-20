@@ -19,7 +19,7 @@ import Input from 'components/NumericalInput';
 import { Box, Button } from '@mui/material';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import { Error } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface IPrice {
   baseCurrency: Currency | undefined;

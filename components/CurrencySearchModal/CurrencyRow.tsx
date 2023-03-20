@@ -10,7 +10,7 @@ import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { PlusHelper } from 'components/QuestionHelper';
 import TokenSelectedIcon from 'svgs/TokenSelected.svg';
 import { formatNumber, formatTokenAmount } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 function currencyKey(currency: Token): string {
   return currency instanceof Token

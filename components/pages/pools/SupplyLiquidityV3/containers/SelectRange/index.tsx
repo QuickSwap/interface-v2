@@ -22,7 +22,7 @@ import { GammaPairs, GlobalConst, GlobalData } from 'constants/index';
 import { Box, ButtonGroup, Button } from '@mui/material';
 import { ReportProblemOutlined } from '@mui/icons-material';
 import { getEternalFarmFromTokens } from 'utils';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 import Image from 'next/image';
 
 interface IRangeSelector {

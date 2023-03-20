@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.preset-buttons {
+.presetButtons {
   display: flex;
   button {
     width: calc(25% - 3px);
@@ -15,19 +15,20 @@
     & p {
       color: $textSecondary;
     }
-    &.active-preset {
-      border: 1px solid $primary;
-      & p {
-        color: $textPrimary;
-      }
-    }
     &:first-child {
       margin-left: 0;
     }
   }
 }
 
-.preset-range-info {
+.activePresetButton {
+  border: 1px solid $primary;
+  & p {
+    color: $textPrimary;
+  }
+}
+
+.presetRangeInfo {
   border-radius: 6px;
   border: 1px solid $secondary1;
   background: $grey31;
@@ -40,7 +41,7 @@
   }
 }
 
-.preset-range-circle {
+.presetRangeCircle {
   width: 10px;
   height: 10px;
   margin-left: 5px;
@@ -49,7 +50,7 @@
   background-color: $textSecondary;
 }
 
-.preset-range-circle-active {
+.presetRangeCircleActive {
   position: relative;
   height: 10px;
 }

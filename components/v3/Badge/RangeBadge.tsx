@@ -2,7 +2,7 @@ import React from 'react';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import styled from 'styled-components/macro';
 import { Error } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const ActiveDot = styled.span`
   background-color: ${({ theme }) => theme.success};

@@ -8,7 +8,7 @@ import {
   getGammaData,
 } from 'utils';
 import { Skeleton } from '@mui/lab';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { GammaPairs, GlobalConst } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import { getTopPairsV3, getPairsAPR, getTopPairsTotal } from 'utils/v3-graph';
