@@ -407,6 +407,7 @@ export const FarmingMyFarms: React.FC<{
       const gammaReward =
         gammaRewards &&
         chainId &&
+        masterChef[chainId] &&
         gammaRewards[masterChef[chainId].toLowerCase()]
           ? gammaRewards[masterChef[chainId].toLowerCase()]['pools']
           : undefined;
@@ -529,16 +530,20 @@ export const FarmingMyFarms: React.FC<{
       const gammaData1 = gammaData
         ? gammaData[farm1.address.toLowerCase()]
         : undefined;
-      const farm0MasterChefAddress = chainId
-        ? GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][
-            chainId
-          ].toLowerCase()
-        : undefined;
-      const farm1MasterChefAddress = chainId
-        ? GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][
-            chainId
-          ].toLowerCase()
-        : undefined;
+      const farm0MasterChefAddress =
+        chainId &&
+        GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][chainId]
+          ? GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][
+              chainId
+            ].toLowerCase()
+          : undefined;
+      const farm1MasterChefAddress =
+        chainId &&
+        GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][chainId]
+          ? GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][
+              chainId
+            ].toLowerCase()
+          : undefined;
       const gammaReward0 =
         gammaRewards &&
         farm0MasterChefAddress &&
