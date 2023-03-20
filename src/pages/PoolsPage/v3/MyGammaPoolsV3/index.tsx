@@ -78,7 +78,7 @@ export default function MyLiquidityPoolsV3() {
   const masterChefContracts = useMasterChefContracts();
 
   const stakedAmountData = useMultipleContractMultipleData(
-    masterChefContracts,
+    account ? masterChefContracts : [],
     'userInfo',
     account
       ? masterChefContracts.map((_, ind) =>

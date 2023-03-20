@@ -148,13 +148,13 @@ export default function CurrencyInputPanel({
                         currency={currency as WrappedCurrency}
                       ></CurrencyLogo>
                     )}
-                    <p>{`${showETH ? nativeCurrency?.symbol + '+' : ''}${
-                      currency?.symbol
-                    }`}</p>
+                    <p className='text-primaryText'>{`${
+                      showETH ? nativeCurrency?.symbol + '+' : ''
+                    }${currency?.symbol}`}</p>
                   </Box>
                 </Box>
               ) : (
-                <p>{t('selectToken')}</p>
+                <p className='text-primaryText'>{t('selectToken')}</p>
               )}
             </Box>
           </Box>
