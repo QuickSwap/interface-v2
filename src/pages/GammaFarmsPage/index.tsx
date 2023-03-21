@@ -60,6 +60,7 @@ const GammaFarmsPage: React.FC<{
       const gammaReward =
         gammaRewards &&
         chainId &&
+        masterChef[chainId] &&
         gammaRewards[masterChef[chainId].toLowerCase()]
           ? gammaRewards[masterChef[chainId].toLowerCase()]['pools']
           : undefined;
@@ -230,16 +231,20 @@ const GammaFarmsPage: React.FC<{
       const gammaData1 = gammaData
         ? gammaData[farm1.address.toLowerCase()]
         : undefined;
-      const farm0MasterChefAddress = chainId
-        ? GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][
-            chainId
-          ].toLowerCase()
-        : undefined;
-      const farm1MasterChefAddress = chainId
-        ? GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][
-            chainId
-          ].toLowerCase()
-        : undefined;
+      const farm0MasterChefAddress =
+        chainId &&
+        GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][chainId]
+          ? GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][
+              chainId
+            ].toLowerCase()
+          : undefined;
+      const farm1MasterChefAddress =
+        chainId &&
+        GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][chainId]
+          ? GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][
+              chainId
+            ].toLowerCase()
+          : undefined;
       const gammaReward0 =
         gammaRewards &&
         farm0MasterChefAddress &&
@@ -353,37 +358,39 @@ const GammaFarmsPage: React.FC<{
         </div>
       ) : !gammaFarmsLoading && filteredFarms.length > 0 && chainId ? (
         <Box>
-          {filteredFarms.map((farm) => (
-            <Box mb={2} key={farm.address}>
-              <GammaFarmCard
-                token0={farm.token0}
-                token1={farm.token1}
-                pairData={farm}
-                data={
-                  gammaData ? gammaData[farm.address.toLowerCase()] : undefined
-                }
-                rewardData={
-                  gammaRewards &&
-                  gammaRewards[
-                    GAMMA_MASTERCHEF_ADDRESSES[farm.masterChefIndex ?? 0][
-                      chainId
-                    ].toLowerCase()
-                  ] &&
-                  gammaRewards[
-                    GAMMA_MASTERCHEF_ADDRESSES[farm.masterChefIndex ?? 0][
-                      chainId
-                    ].toLowerCase()
-                  ]['pools']
-                    ? gammaRewards[
-                        GAMMA_MASTERCHEF_ADDRESSES[farm.masterChefIndex ?? 0][
-                          chainId
-                        ].toLowerCase()
-                      ]['pools'][farm.address.toLowerCase()]
-                    : undefined
-                }
-              />
-            </Box>
-          ))}
+          {filteredFarms.map((farm) => {
+            const gfMasterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[
+              farm.masterChefIndex ?? 0
+            ][chainId]
+              ? GAMMA_MASTERCHEF_ADDRESSES[farm.masterChefIndex ?? 0][
+                  chainId
+                ].toLowerCase()
+              : undefined;
+            return (
+              <Box mb={2} key={farm.address}>
+                <GammaFarmCard
+                  token0={farm.token0}
+                  token1={farm.token1}
+                  pairData={farm}
+                  data={
+                    gammaData
+                      ? gammaData[farm.address.toLowerCase()]
+                      : undefined
+                  }
+                  rewardData={
+                    gammaRewards &&
+                    gfMasterChefAddress &&
+                    gammaRewards[gfMasterChefAddress] &&
+                    gammaRewards[gfMasterChefAddress]['pools']
+                      ? gammaRewards[gfMasterChefAddress]['pools'][
+                          farm.address.toLowerCase()
+                        ]
+                      : undefined
+                  }
+                />
+              </Box>
+            );
+          })}
         </Box>
       ) : null}
     </Box>
