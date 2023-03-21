@@ -92,7 +92,6 @@ import { formatTokenSymbol, getGlobalDataV3 } from './v3-graph';
 import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
 import { TFunction } from 'react-i18next';
 import { TOKENS_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
-import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
