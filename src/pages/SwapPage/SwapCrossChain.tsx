@@ -4,6 +4,9 @@ import { Box, Grid } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { useIsDarkMode } from 'state/user/hooks';
 
+const QUICKSWAP = 'Quickswap';
+const QUICKSWAP_V3 = 'Quickswap_v3';
+
 const SwapCrossChain: React.FC = () => {
   const darkMode = useIsDarkMode();
   const darkModeStyle: ConfigTheme = {
@@ -60,6 +63,7 @@ const SwapCrossChain: React.FC = () => {
             apiUrl: 'https://api.0xsquid.com',
             style: darkMode ? darkModeStyle : lightModeStyle,
             loadPreviousStateFromLocalStorage: true,
+            preferDex: [QUICKSWAP, QUICKSWAP_V3],
           }}
         />
       </Box>
