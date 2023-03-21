@@ -147,11 +147,15 @@ const AnalyticsOverview: React.FC = () => {
                   ];
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
-                      const masterChefAddress = chainId
-                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
-                            chainId
-                          ]
-                        : undefined;
+                      const masterChefAddress =
+                        chainId &&
+                        GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                          chainId
+                        ]
+                          ? GAMMA_MASTERCHEF_ADDRESSES[
+                              pair.masterChefIndex ?? 0
+                            ][chainId].toLowerCase()
+                          : undefined;
                       return {
                         title: pair.title,
                         apr:
@@ -258,11 +262,15 @@ const AnalyticsOverview: React.FC = () => {
                   : undefined;
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
-                      const masterChefAddress = chainId
-                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
-                            chainId
-                          ]
-                        : undefined;
+                      const masterChefAddress =
+                        chainId &&
+                        GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                          chainId
+                        ]
+                          ? GAMMA_MASTERCHEF_ADDRESSES[
+                              pair.masterChefIndex ?? 0
+                            ][chainId].toLowerCase()
+                          : undefined;
                       return {
                         title: pair.title,
                         apr:
