@@ -873,6 +873,50 @@ export const GammaPairs: {
   //     masterChefIndex: 1,
   //   },
   // ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x172370d5cd63279efa6d502dab29171933a610af': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x33eeafa7ef22cd4468d65819b2fe30f170db5b69',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x172370d5cd63279efa6d502dab29171933a610af',
+      ableToFarm: true,
+      pid: 63,
+    },
+  ],
+  '0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x3da7e0320c04d88b71e0ada960aad3d21f10cadf',
+      token0Address: '0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      ableToFarm: true,
+      pid: 64,
+    },
+  ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x5f528db1129488083434e1b96e9808e3c4c6ed83',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+      ableToFarm: true,
+      pid: 65,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xec38621e72d86775a89c7422746de1f52bba5320': [
+    {
+      type: Presets.GAMMA_STABLE,
+      title: 'Stable',
+      address: '0x2385cb5590413b2cd1fae63e68886b9f2ce43a9a',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0xec38621e72d86775a89c7422746de1f52bba5320',
+      ableToFarm: true,
+      pid: 66,
+    },
+  ],
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
@@ -1212,6 +1256,20 @@ export const GlobalValue = {
         'ankrMATIC',
         'Ankr Staked MATIC',
       ),
+      CRV: new Token(
+        ChainId.MATIC,
+        '0x172370d5Cd63279eFa6d502DAB29171933a610AF',
+        18,
+        'CRV',
+        'CRV (PoS)',
+      ),
+      DAVOS: new Token(
+        ChainId.MATIC,
+        '0xec38621e72d86775a89c7422746de1f52bba5320',
+        18,
+        'DAVOS',
+        'Davos',
+      ),
     },
   },
   marketSDK: {
@@ -1320,6 +1378,7 @@ export const GlobalData = {
     GlobalValue.tokens.COMMON.TUSD,
     GlobalValue.tokens.COMMON.UND,
     GlobalValue.tokens.COMMON.USDD,
+    GlobalValue.tokens.COMMON.DAVOS,
   ],
   blueChips: [
     WETH[ChainId.MATIC],
