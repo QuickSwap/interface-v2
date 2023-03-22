@@ -63,7 +63,6 @@ const SwapMain: React.FC = () => {
     if (showCrossChain) {
       tabs.push({
         name: 'crossChain',
-        subTitle: 'Comming Soon!',
         key: SWAP_CROSS_CHAIN,
         visible: false,
       });
@@ -228,16 +227,18 @@ const SwapMain: React.FC = () => {
                   ),
                 )}
               </Menu>
-              <Box
-                className={swapTabClass(SWAP_CROSS_CHAIN)}
-                onClick={() => {
-                  setSelectedIndex(SWAP_CROSS_CHAIN);
-                  setAnchorEl(null);
-                  redirectWithSwapType(SWAP_CROSS_CHAIN);
-                }}
-              >
-                <p>{t('crossChain')}</p>
-              </Box>
+              {showCrossChain && (
+                <Box
+                  className={swapTabClass(SWAP_CROSS_CHAIN)}
+                  onClick={() => {
+                    setSelectedIndex(SWAP_CROSS_CHAIN);
+                    setAnchorEl(null);
+                    redirectWithSwapType(SWAP_CROSS_CHAIN);
+                  }}
+                >
+                  <p>{t('crossChain')}</p>
+                </Box>
+              )}
             </>
           ) : (
             <>
@@ -300,7 +301,9 @@ const SwapMain: React.FC = () => {
         )}
         {v2 && Number(swapType) === SWAP_NORMAL && <Swap />}
         {v3 && Number(swapType) === SWAP_V3 && <SwapV3Page />}
-        {Number(swapType) === SWAP_CROSS_CHAIN && <SwapCrossChain />}
+        {showCrossChain && Number(swapType) === SWAP_CROSS_CHAIN && (
+          <SwapCrossChain />
+        )}
         {showLimitOrder && Number(swapType) === SWAP_LIMIT && (
           <SwapLimitOrder />
         )}
