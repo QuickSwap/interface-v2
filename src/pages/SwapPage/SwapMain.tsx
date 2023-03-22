@@ -73,7 +73,9 @@ const SwapMain: React.FC = () => {
   const dropDownMenuText = useMemo(() => {
     if (!swapType) return;
     const dropdownTab = SwapDropdownTabs.find(
-      (item) => item.key === Number(swapType),
+      (item) =>
+        item.key ===
+        (Number(swapType) === SWAP_CROSS_CHAIN ? 0 : Number(swapType)),
     );
     if (!dropdownTab) return;
     return dropdownTab.name;
