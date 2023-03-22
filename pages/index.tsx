@@ -1,14 +1,7 @@
 import React from 'react';
 import { Box, Grid } from '@mui/material';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { useTranslation } from 'next-i18next';
-import CoingeckoIcon from 'svgs/social/Coingecko.svg';
-import DiscordIcon from 'svgs/social/Discord.svg';
-import MediumIcon from 'svgs/social/Medium.svg';
-import RedditIcon from 'svgs/social/Reddit.svg';
-import TelegramIcon from 'svgs/social/Telegram.svg';
-import TwitterIcon from 'svgs/social/Twitter.svg';
-import YouTubeIcon from 'svgs/social/YouTube.svg';
-import GeckoterminalIcon from 'svgs/social/Geckoterminal.svg';
 import Image from 'next/image';
 import styles from 'styles/pages/Home.module.scss';
 import GlobalSection from 'components/pages/home/GlobalSection';
@@ -17,8 +10,11 @@ import BuyFiatSection from 'components/pages/home/BuyFiatSection';
 import BuySpritzSection from 'components/pages/home/BuySpritzSection';
 import { TopMovers, RewardSlider } from 'components';
 import { useRouter } from 'next/router';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-const LandingPage: React.FC = () => {
+const LandingPage = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation('common');
   const router = useRouter();
 
@@ -58,70 +54,64 @@ const LandingPage: React.FC = () => {
   const socialicons = [
     {
       link: 'https://www.reddit.com/r/QuickSwap/',
-      icon: <RedditIcon />,
+      icon: '/assets/images/social/Reddit.svg',
       title: 'Reddit',
     },
     {
       link: 'https://discord.gg/dSMd7AFH36',
-      icon: <DiscordIcon />,
+      icon: '/assets/images/social/Discord.svg',
       title: 'Discord',
     },
     {
       link: 'https://twitter.com/QuickswapDEX',
-      icon: <TwitterIcon />,
+      icon: '/assets/images/social/Twitter.svg',
       title: 'Twitter',
     },
     {
       link: 'https://quickswap-layer2.medium.com/',
-      icon: <MediumIcon />,
+      icon: '/assets/images/social/Medium.svg',
       title: 'Medium',
     },
     {
       link: 'https://www.youtube.com/channel/UCrPlF-DBwD-UzLFDzJ4Z5Fw',
-      icon: <YouTubeIcon />,
+      icon: '/assets/images/social/YouTube.svg',
       title: 'Youtube',
     },
     {
       link: 'https://t.me/QuickSwapDEX',
-      icon: <TelegramIcon />,
+      icon: '/assets/images/social/Telegram.svg',
       title: 'Telegram',
     },
     {
       link: 'https://www.coingecko.com/en/exchanges/quickswap',
-      icon: <CoingeckoIcon />,
+      icon: '/assets/images/social/Coingecko.svg',
       title: 'CoinGecko',
     },
     {
       link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
-      icon: <GeckoterminalIcon />,
+      icon: '/assets/images/social/Geckoterminal.svg',
       title: 'GeckoTerminal',
     },
     {
       link: 'https://www.tiktok.com/@quickswapofficial',
-      icon: <Image src='/assets/images/TikTok_Qs.png' alt='TikTok' fill />,
+      icon: '/assets/images/social/TikTok_Qs.png',
       title: 'TikTok',
     },
     {
       link: 'https://t.me/QuickSwapAnnouncements',
-      icon: <TelegramIcon />,
+      icon: '/assets/images/social/Telegram.svg',
       title: 'Announcement',
     },
   ];
 
   return (
-    <div id='landing-page' style={{ width: '100%' }}>
+    <>
       <GlobalSection />
       <Box className={styles.smallCommunityContainer}>
         {socialicons.map((val, ind) => (
-          <Box
-            key={ind}
-            mx={1.5}
-            className={
-              val.title.toLowerCase() === 'geckoterminal' ? 'noFill' : 'svgFill'
-            }
-          >
+          <Box key={ind} mx={1.5}>
             <a href={val.link} target='_blank' rel='noopener noreferrer'>
-              {val.icon}
+              <Image src={val.icon} alt='social icons' width={64} height={64} />
             </a>
           </Box>
         ))}
@@ -131,7 +121,7 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box className={styles.quickInfo}>
         <h4>{t('quickInfoTitle')}</h4>
-        <Image src='/images/Motif.svg' alt='Motif' fill />
+        <Image src='/images/Motif.svg' alt='Motif' width={15} height={38} />
       </Box>
       <SwapSection />
       <Box className={styles.rewardsContainer}>
@@ -167,7 +157,7 @@ const LandingPage: React.FC = () => {
         <Grid container spacing={4}>
           {features.map((val, index) => (
             <Grid item container alignItems='center' sm={12} md={6} key={index}>
-              <img src={val.img} alt={val.title} />
+              <Image src={val.img} alt={val.title} width={200} height={200} />
               <Box className={styles.featureText}>
                 <h5>{val.title}</h5>
                 <p>{val.desc}</p>
@@ -183,24 +173,28 @@ const LandingPage: React.FC = () => {
         </Box>
         <Box className={styles.socialContent}>
           {socialicons.map((val, ind) => (
-            <Box
-              key={ind}
-              className={
-                val.title.toLowerCase() === 'geckoterminal'
-                  ? 'noFill'
-                  : 'svgFill'
-              }
-            >
+            <Box key={ind}>
               <a href={val.link} target='_blank' rel='noopener noreferrer'>
-                {val.icon}
+                <Image
+                  src={val.icon}
+                  alt='social icons'
+                  width={32}
+                  height={32}
+                />
                 <p>{val.title}</p>
               </a>
             </Box>
           ))}
         </Box>
       </Box>
-    </div>
+    </>
   );
 };
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+  },
+});
 
 export default LandingPage;

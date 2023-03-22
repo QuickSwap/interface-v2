@@ -5,6 +5,7 @@ import { getGlobalData } from 'utils';
 import { getGlobalDataV3 } from 'utils/v3-graph';
 import HeroSection from './HeroSection';
 import TradingInfo from './TradingInfo';
+import styles from 'styles/pages/Home.module.scss';
 
 const GlobalSection: React.FC = () => {
   const [globalData, updateGlobalData] = useState<any>(undefined);
@@ -35,7 +36,7 @@ const GlobalSection: React.FC = () => {
       <Box margin={mobileWindowSize ? '64px 0' : '100px 0 80px'}>
         <HeroSection globalData={globalData} v3GlobalData={v3GlobalData} />
       </Box>
-      <Box className='flex tradingInfo'>
+      <Box className={`flex ${styles.tradingInfo}`}>
         <TradingInfo globalData={globalData} v3GlobalData={v3GlobalData} />
       </Box>
     </>

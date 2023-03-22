@@ -57,16 +57,16 @@
   @include media("screen", "<phone") {
     margin: 32px 0 64px;
   }
-  .allRewardPairs {
-    width: 194px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 24px;
-    background-color: $secondary1;
-    cursor: pointer;
-  }
+}
+.allRewardPairs {
+  width: 194px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  background-color: $secondary1;
+  cursor: pointer;
 }
 .featureHeading {
   margin: auto;
@@ -102,53 +102,47 @@
       }
     }
   }
-  & .featureText {
-    margin-left: 8px;
-    & h3 {
-      color: white;
-      margin-bottom: 8;
-    }
+}
+.featureText {
+  margin-left: 8px;
+  & h3 {
+    color: white;
+    margin-bottom: 8;
   }
 }
 .communityContainer {
   margin: 100px 0;
-  & .socialContent {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    margin-top: 48px;
-    & > div {
-      padding: 16px;
-      text-align: center;
-      width: 120px;
-      & a {
-        text-decoration: none;
-        color: $textPrimary;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        &:hover {
-          color: white;
-        }
+}
+.socialContent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-top: 48px;
+  & > div {
+    padding: 16px;
+    text-align: center;
+    width: 120px;
+    & a {
+      text-decoration: none;
+      color: $textPrimary;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      &:hover {
+        color: white;
       }
-      &.svgFill a:hover svg path {
-        fill: white;
-      }
-      & svg, & img {
-        width: 64px;
-        height: 64px;
-        margin-bottom: 8px;
-      }
-      &.svgFill svg path {
-        fill: $textPrimary;
-      }
-      &.noFill svg, & img {
-        opacity: 0.8;
-      }
-      &.noFill a:hover svg, & a:hover img {
-        opacity: 1;
-      }
+    }
+    & svg, & img {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 8px;
+    }
+    & img {
+      opacity: 0.8;
+    }
+    & a:hover img {
+      opacity: 1;
     }
   }
 }
