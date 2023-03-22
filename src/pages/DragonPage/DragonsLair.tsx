@@ -126,7 +126,9 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <small>{t('unstake')}</small>
       </Box>
       <Box mt={3} textAlign='center'>
-        <span className='text-secondary'>{t('unstakeQUICKDesc')}</span>
+        <span className='text-secondary'>
+          {t('unstakeQUICKDesc', { symbol: quickToken.symbol })}
+        </span>
       </Box>
     </Box>
   );

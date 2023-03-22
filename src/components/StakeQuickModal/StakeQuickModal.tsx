@@ -60,7 +60,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
   );
 
   const onAttemptToApprove = async () => {
-    if (!lairContract) throw new Error(t('missingdependencies'));
+    if (!lairContractToUse) throw new Error(t('missingdependencies'));
     const liquidityAmount = parsedAmount;
     if (!liquidityAmount) throw new Error(t('missingliquidity'));
     return approveCallback();

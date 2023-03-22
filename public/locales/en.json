@@ -226,7 +226,7 @@
   "total": "Total",
   "yourdeposits": "Your Deposits",
   "unstake": "Unstake",
-  "unstakeQUICKDesc": "⭐️ When you unstake, the contract will automatically claim QUICK on your behalf.",
+  "unstakeQUICKDesc": "⭐️ When you unstake, the contract will automatically claim {{ symbol }} on your behalf.",
   "earn": "Earn",
   "apr": "APR",
   "swappingFor": "Swapping {{ amount1 }} {{ symbol1 }} for {{ amount2 }} {{ symbol2 }}",
