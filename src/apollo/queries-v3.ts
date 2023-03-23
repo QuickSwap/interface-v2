@@ -876,3 +876,17 @@ export const SWAP_TRANSACTIONS_V3 = gql`
     }
   }
 `;
+
+export const PAIR_ID_V3 = (tokenAddress0: string, tokenAddress1: string) => {
+  const queryString = `
+    query pairs {
+      pairs0: pools(where: {token0: "${tokenAddress0}", token1: "${tokenAddress1}"}){
+        id
+      }
+      pairs1: pools(where: {token0: "${tokenAddress1}", token1: "${tokenAddress0}"}){
+        id
+      }
+    }
+  `;
+  return gql(queryString);
+};

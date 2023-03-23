@@ -1,9 +1,5 @@
 import { ApolloClient } from 'apollo-client';
-import {
-  InMemoryCache,
-  NormalizedCache,
-  NormalizedCacheObject,
-} from 'apollo-cache-inmemory';
+import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ChainId } from '@uniswap/sdk';
 
@@ -121,7 +117,7 @@ export const txClient: ApolloChainMap = {
   }),
   [ChainId.DOGECHAIN]: new ApolloClient({
     link: new HttpLink({
-      uri: process.env.REACT_APP_GRAPH_V2_2000_API_URL,
+      uri: process.env.REACT_APP_GRAPH_V3_2000_API_URL,
     }),
     cache: new InMemoryCache(),
   }),
@@ -133,7 +129,7 @@ export const txClient: ApolloChainMap = {
   }),
   [ChainId.DOEGCHAIN_TESTNET]: new ApolloClient({
     link: new HttpLink({
-      uri: process.env.REACT_APP_GRAPH_V2_568_API_URL,
+      uri: process.env.REACT_APP_GRAPH_V3_568_API_URL,
     }),
     cache: new InMemoryCache(),
   }),

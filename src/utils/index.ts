@@ -91,7 +91,7 @@ import { useEthPrice } from 'state/application/hooks';
 import { formatTokenSymbol, getGlobalDataV3 } from './v3-graph';
 import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
 import { TFunction } from 'react-i18next';
-import { TOKENS_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
+import { PAIR_ID_V3, TOKENS_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -1091,7 +1091,25 @@ export const getPairAddress = async (
   chainId: ChainId,
 ) => {
   const pairData = await clientV2[chainId].query({
-    query: PAIR_ID(token0Address, token1Address),
+    query: PAIR_ID(token0Address.toLowerCase(), token1Address.toLowerCase()),
+  });
+  const pairs =
+    pairData && pairData.data
+      ? pairData.data.pairs0.concat(pairData.data.pairs1)
+      : undefined;
+  if (!pairs || pairs.length === 0) return;
+  const pairId = pairs[0].id;
+  const tokenReversed = pairData.data.pairs1.length > 0;
+  return { pairId, tokenReversed };
+};
+
+export const getPairAddressV3 = async (
+  token0Address: string,
+  token1Address: string,
+  chainId: ChainId,
+) => {
+  const pairData = await clientV3[chainId].query({
+    query: PAIR_ID_V3(token0Address.toLowerCase(), token1Address.toLowerCase()),
   });
   const pairs =
     pairData && pairData.data
@@ -1113,6 +1131,7 @@ export const getSwapTransactions = async (
     .subtract(1, 'day')
     .unix();
   const sTimestamp = startTime ?? oneDayAgo;
+  console.log('ccc', pairId);
   try {
     const result = await txClient[chainId].query({
       query: SWAP_TRANSACTIONS,
