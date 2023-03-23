@@ -1,11 +1,10 @@
-import { Box, Grid, styled, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Grid, styled } from '@material-ui/core';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import React, { useEffect, useState } from 'react';
-import { getSwapTransactions } from 'utils';
+import { useIsV2 } from 'state/application/hooks';
+import { getSwapTransactions, getSwapTransactionsV3 } from 'utils';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
-// import { SwapBuySellWidget } from './BuySellWidget';
 import SwapMain from './SwapMain';
 import SwapProAssets from './SwapProAssets';
 import SwapProChartTrade from './SwapProChartTrade';
@@ -34,6 +33,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
 }) => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
+  const { isV2 } = useIsV2();
   const [transactions, setTransactions] = useState<any[] | undefined>(
     undefined,
   );
@@ -52,12 +52,22 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
 
   useEffect(() => {
     (async () => {
+      if (isV2 === undefined) return;
       if (pairId && transactions && transactions.length > 0) {
-        const txns = await getSwapTransactions(
-          chainIdToUse,
-          pairId,
-          Number(transactions[0].transaction.timestamp),
-        );
+        let txns;
+        if (isV2) {
+          txns = await getSwapTransactions(
+            chainIdToUse,
+            pairId,
+            Number(transactions[0].transaction.timestamp),
+          );
+        } else {
+          txns = await getSwapTransactionsV3(
+            chainIdToUse,
+            pairId,
+            Number(transactions[0].transaction.timestamp),
+          );
+        }
         if (txns) {
           const filteredTxns = txns.filter(
             (txn) =>
@@ -70,18 +80,27 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, chainIdToUse]);
+  }, [currentTime, chainIdToUse, isV2]);
 
   useEffect(() => {
+    if (isV2 === undefined) return;
     async function getTradesData(pairId: string) {
       setTransactions(undefined);
-      const transactions = await getSwapTransactions(chainIdToUse, pairId);
+      let transactions;
+      if (isV2) {
+        transactions = await getSwapTransactions(chainIdToUse, pairId);
+      } else {
+        transactions = await getSwapTransactionsV3(
+          chainIdToUse,
+          pairId.toLowerCase(),
+        );
+      }
       setTransactions(transactions);
     }
     if (pairId) {
       getTradesData(pairId);
     }
-  }, [pairId, chainIdToUse]);
+  }, [pairId, chainIdToUse, isV2]);
 
   return (
     <Box>

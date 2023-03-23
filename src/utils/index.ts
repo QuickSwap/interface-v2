@@ -91,7 +91,11 @@ import { useEthPrice } from 'state/application/hooks';
 import { formatTokenSymbol, getGlobalDataV3 } from './v3-graph';
 import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
 import { TFunction } from 'react-i18next';
-import { PAIR_ID_V3, TOKENS_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
+import {
+  PAIR_ID_V3,
+  SWAP_TRANSACTIONS_v3,
+  TOKENS_FROM_ADDRESSES_V3,
+} from 'apollo/queries-v3';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -1131,7 +1135,6 @@ export const getSwapTransactions = async (
     .subtract(1, 'day')
     .unix();
   const sTimestamp = startTime ?? oneDayAgo;
-  console.log('ccc', pairId);
   try {
     const result = await txClient[chainId].query({
       query: SWAP_TRANSACTIONS,
@@ -1145,6 +1148,45 @@ export const getSwapTransactions = async (
 
     return swaps;
   } catch (e) {
+    return;
+  }
+};
+
+export const getSwapTransactionsV3 = async (
+  chainId: ChainId,
+  pairId: string,
+  startTime?: number,
+) => {
+  const oneDayAgo = dayjs
+    .utc()
+    .subtract(1, 'day')
+    .unix();
+  const sTimestamp = startTime ?? oneDayAgo;
+  try {
+    const result = await clientV3[chainId].query({
+      query: SWAP_TRANSACTIONS_v3,
+      variables: {
+        address: pairId,
+        lastTime: sTimestamp,
+      },
+      fetchPolicy: 'network-only',
+    });
+    const swaps: any[] = result.data.swaps.map((swap: any) => {
+      return {
+        transaction: { id: swap.transaction.id, timestamp: swap.timestamp },
+        pair: swap.pool,
+        to: swap.recipient,
+        amount0In: swap.amount0,
+        amount0Out: Number(swap.amount0) * -1,
+        amount1In: swap.amount1,
+        amount1Out: Number(swap.amount1) * -1,
+        amountUSD: swap.amountUSD,
+      };
+    });
+
+    return swaps;
+  } catch (e) {
+    console.log('ccc', e);
     return;
   }
 };
