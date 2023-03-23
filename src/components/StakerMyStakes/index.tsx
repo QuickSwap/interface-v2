@@ -455,9 +455,9 @@ export const FarmingMyFarms: React.FC<{
     return { price: rewardUSDPrices[ind], tokenAddress: token.address };
   });
 
-  const allGammaPairsToFarm = ([] as GammaPair[])
-    .concat(...Object.values(GammaPairs))
-    .filter((item) => item.ableToFarm);
+  const allGammaPairsToFarm = ([] as GammaPair[]).concat(
+    ...Object.values(GammaPairs),
+  );
 
   const masterChefContracts = useMasterChefContracts();
 
