@@ -3,7 +3,6 @@ import { Box, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { useIsProMode } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { useArcxAnalytics } from '@arcxmoney/analytics';
 const Header = lazy(() => import('components/Header'));
 const Footer = lazy(() => import('components/Footer'));
 const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
@@ -18,7 +17,7 @@ export interface PageLayoutProps {
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const history = useHistory();
   const { chainId, account } = useActiveWeb3React();
-  const arcxSDK = useArcxAnalytics();
+  const arcxSDK = (window as any).arcx;
   const { isProMode, updateIsProMode } = useIsProMode();
   const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {

@@ -26,6 +26,23 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
+    <script>
+      const script = document.createElement('script');
+      const apiKey = '%REACT_APP_ARCX_API_KEY%'
+      const config = {
+        // We are tracking wallet connections manually
+        trackWalletConnections: false
+      } 
+      script.src = 'https://unpkg.com/@arcxmoney/analytics'
+      script.onload = function () {
+        ArcxAnalyticsSdk.init(apiKey, config)
+          .then(function (sdk) {
+            window.arcx = sdk
+          })
+      }
+    
+      document.head.appendChild(script)
+    </script>
     <title>QuickSwap</title>
   </head>
   <body>

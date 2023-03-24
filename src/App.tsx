@@ -7,7 +7,6 @@ import {
   CssBaseline,
 } from '@material-ui/core';
 import { Provider } from 'react-redux';
-import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 import store from 'state';
 import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
 const DragonPage = lazy(() => import('./pages/DragonPage'));
@@ -256,16 +255,6 @@ const AppContent = () => (
   </QueryClientProvider>
 );
 
-const App: React.FC = () => {
-  const arcXAPIKey = process.env.REACT_APP_ARCX_API_KEY;
-
-  return arcXAPIKey ? (
-    <ArcxAnalyticsProvider apiKey={arcXAPIKey}>
-      <AppContent />
-    </ArcxAnalyticsProvider>
-  ) : (
-    <AppContent />
-  );
-};
+const App: React.FC = () => <AppContent />;
 
 export default App;
