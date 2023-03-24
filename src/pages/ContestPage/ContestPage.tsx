@@ -25,6 +25,8 @@ import {
 import { useActiveWeb3React } from 'hooks';
 import { getMainnetNetworkLibrary } from 'connectors';
 import { getLensProfiles } from 'utils/getLensProfile';
+import { getConfig } from 'config';
+import { useHistory } from 'react-router-dom';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -51,6 +53,16 @@ const ContestPage: React.FC = () => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const networkLibrary = getMainnetNetworkLibrary();
+  const config = getConfig(chainId);
+  const showLeaderBoard = config['leaderboard']['available'];
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!showLeaderBoard) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showLeaderBoard]);
 
   useEffect(() => {
     if (account) {

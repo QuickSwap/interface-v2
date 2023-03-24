@@ -21,6 +21,7 @@ import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { getIntervalTokenDataV3, getTokenInfoV3 } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
+import { getConfig } from 'config';
 
 const SwapTokenDetailsHorizontal: React.FC<{
   token: Token;
@@ -39,6 +40,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
   const prices = priceData ? priceData.map((price: any) => price.close) : [];
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
+  const config = getConfig(chainId);
 
   useEffect(() => {
     (async () => {
@@ -178,7 +180,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       <Grid item xs={12}>
         <Box className='flex items-center' py={1}>
           <a
-            href={`${process.env.REACT_APP_SCAN_BASE_URL}/token/${tokenAddress}`}
+            href={`${config.blockExplorer}/token/${tokenAddress}`}
             target='_blank'
             rel='noopener noreferrer'
             className='no-decoration'

@@ -10,7 +10,6 @@ import dayjs from 'dayjs';
 import { useActiveWeb3React } from 'hooks';
 import { TableVirtuoso } from 'react-virtuoso';
 import { useTranslation } from 'react-i18next';
-import { GlobalConst } from 'constants/index';
 import { V2_MATIC_USDT_PAIR } from 'constants/v3/addresses';
 
 const SwapProChartTrade: React.FC<{
