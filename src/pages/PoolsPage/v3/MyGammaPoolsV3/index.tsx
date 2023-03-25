@@ -70,9 +70,7 @@ export default function MyLiquidityPoolsV3() {
   );
 
   const allGammaPairsToFarm = chainId
-    ? ([] as GammaPair[])
-        .concat(...Object.values(GammaPairs[chainId]))
-        .filter((item) => item.ableToFarm)
+    ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
     : [];
 
   const masterChefContracts = useMasterChefContracts();
