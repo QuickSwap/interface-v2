@@ -244,11 +244,14 @@ export function useV2LiquidityPools(account?: string) {
 }
 
 export const useIsProMode = () => {
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const proModeEnabled = config['swap']['proMode'];
   const parsedQs = useParsedQueryString();
   const isProMode = Boolean(
     parsedQs.isProMode && parsedQs.isProMode === 'true',
   );
-  return isProMode;
+  return proModeEnabled && isProMode;
 };
 
 export const useAnalyticsVersion = () => {

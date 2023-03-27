@@ -1,5 +1,5 @@
 import { ChainId, currencyEquals, ETHER } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
 import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import useParsedQueryString from './useParsedQueryString';
@@ -8,7 +8,7 @@ export default function useSwapRedirects() {
   const history = useHistory();
   const currentPath = history.location.pathname + history.location.search;
   const parsedQs = useParsedQueryString();
-  const isProMode = parsedQs.isProMode;
+  const isProMode = useIsProMode();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
 

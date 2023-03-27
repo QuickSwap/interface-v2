@@ -4,7 +4,7 @@ import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { SettingsModal, Swap, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
 import { getConfig } from 'config';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -28,9 +28,7 @@ const SwapMain: React.FC = () => {
 
   const parsedQs = useParsedQueryString();
   const swapType = parsedQs.swapIndex;
-  const isProMode = Boolean(
-    parsedQs.isProMode && parsedQs.isProMode === 'true',
-  );
+  const isProMode = useIsProMode();
   const history = useHistory();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { chainId } = useActiveWeb3React();
@@ -45,6 +43,7 @@ const SwapMain: React.FC = () => {
   const showBestTrade = config['swap']['bestTrade'];
   const showLimitOrder = config['swap']['limitOrder'];
   const showCrossChain = config['swap']['crossChain'];
+  const showProMode = config['swap']['proMode'];
 
   const SwapDropdownTabs = useMemo(() => {
     const tabs = [];
@@ -267,20 +266,22 @@ const SwapMain: React.FC = () => {
               }}
             >
               <Box margin='0 16px' className='flex items-center'>
-                <Box className='flex items-center' mr={1}>
-                  <span
-                    className='text-secondary text-uppercase'
-                    style={{ marginRight: 8 }}
-                  >
-                    {t('proMode')}
-                  </span>
-                  <ToggleSwitch
-                    toggled={isProMode}
-                    onToggle={() => {
-                      redirectWithProMode(!isProMode);
-                    }}
-                  />
-                </Box>
+                {showProMode && (
+                  <Box className='flex items-center' mr={1}>
+                    <span
+                      className='text-secondary text-uppercase'
+                      style={{ marginRight: 8 }}
+                    >
+                      {t('proMode')}
+                    </span>
+                    <ToggleSwitch
+                      toggled={isProMode}
+                      onToggle={() => {
+                        redirectWithProMode(!isProMode);
+                      }}
+                    />
+                  </Box>
+                )}
                 <Box className='headingItem'>
                   <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
                 </Box>
