@@ -24,6 +24,7 @@ const RewardSlider: React.FC = () => {
   const lprewardItems = useStakingInfo(chainIdOrDefault, null, 0, 2);
   const dualrewardItems = useDualStakingInfo(chainIdOrDefault, null, 0, 1);
   const [bulkPairs, setBulkPairs] = useState<any>(null);
+  const rewardItemsCount = lprewardItems.length + dualrewardItems.length;
 
   const stakingPairListStr = useMemo(() => {
     return lprewardItems
@@ -59,11 +60,14 @@ const RewardSlider: React.FC = () => {
     }
   }, [bulkPairs, stakingPairLists]);
 
+  const slideCount = mobileWindowSize ? 1 : tabletWindowSize ? 2 : 3;
+  const slidesToShow = Math.min(slideCount, rewardItemsCount);
+
   const rewardSliderSettings = {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: mobileWindowSize ? 1 : tabletWindowSize ? 2 : 3,
+    slidesToShow,
     slidesToScroll: 1,
     nextArrow: <ChevronRightIcon />,
     prevArrow: <ChevronLeftIcon />,

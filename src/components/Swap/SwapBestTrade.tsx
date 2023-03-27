@@ -539,21 +539,21 @@ const SwapBestTrade: React.FC<{
       return false;
     }
   }, [
-    account,
-    showWrap,
-    noRoute,
-    userHasSpecifiedInputOutput,
-    showApproveFlow,
-    wrapInputError,
-    isValid,
+    inputCurrencyV3,
     approval,
+    isValid,
     optimalRate,
     isExpertMode,
     paraswapCallbackError,
     parsedAmounts,
     swapInputAmountWithSlippage,
     swapInputBalance,
-    inputCurrencyV3,
+    account,
+    showWrap,
+    noRoute,
+    userHasSpecifiedInputOutput,
+    showApproveFlow,
+    wrapInputError,
   ]);
 
   const [

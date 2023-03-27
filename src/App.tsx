@@ -11,7 +11,6 @@ import {
   CssBaseline,
 } from '@material-ui/core';
 import { Provider } from 'react-redux';
-import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 import store from 'state';
 import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
 const DragonPage = lazy(() => import('./pages/DragonPage'));
@@ -124,7 +123,7 @@ function Updaters() {
 
 const queryClient = new QueryClient();
 
-const AppContent = () => {
+const App: React.FC = () => {
   const { chainId: web3ChainId } = useWeb3React<Web3Provider>();
   const localChainIdStr = localStorage.getItem('quickswap_chainId');
   const localChainId = localChainIdStr
@@ -317,18 +316,6 @@ const AppContent = () => {
         </Web3ProviderNetwork>
       </Web3ReactProvider>
     </QueryClientProvider>
-  );
-};
-
-const App: React.FC = () => {
-  const arcXAPIKey = process.env.REACT_APP_ARCX_API_KEY;
-
-  return arcXAPIKey ? (
-    <ArcxAnalyticsProvider apiKey={arcXAPIKey}>
-      <AppContent />
-    </ArcxAnalyticsProvider>
-  ) : (
-    <AppContent />
   );
 };
 

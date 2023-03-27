@@ -1,8 +1,6 @@
 import React, { lazy, useEffect, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
-import { useArcxAnalytics } from '@arcxmoney/analytics';
-import useParsedQueryString from 'hooks/useParsedQueryString';
 const Header = lazy(() => import('components/Header'));
 const Footer = lazy(() => import('components/Footer'));
 const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
@@ -17,7 +15,7 @@ export interface PageLayoutProps {
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const { chainId, account } = useActiveWeb3React();
   const isProMode = useIsProMode();
-  const arcxSDK = useArcxAnalytics();
+  const arcxSDK = (window as any).arcx;
   const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {
     console.log('getPageWrapperClassName => ', location);
