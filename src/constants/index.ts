@@ -98,6 +98,16 @@ export const WALLCHAIN_PARAMS = {
       apiKey: '',
     },
   },
+  [ChainId.ZKEVM]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+  },
 };
 
 export const BONUS_CUTOFF_AMOUNT = {
@@ -106,6 +116,7 @@ export const BONUS_CUTOFF_AMOUNT = {
   [ChainId.DOEGCHAIN_TESTNET]: 0,
   [ChainId.DOGECHAIN]: 0,
   [ChainId.ZKTESTNET]: 0,
+  [ChainId.ZKEVM]: 0,
 };
 
 export const GlobalConst = {
@@ -214,6 +225,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.DOGECHAIN,
   ChainId.DOEGCHAIN_TESTNET,
   ChainId.ZKTESTNET,
+  ChainId.ZKEVM,
 ];
 
 export interface GammaPair {
@@ -1007,6 +1019,7 @@ export const GammaPairs: {
   [ChainId.DOEGCHAIN_TESTNET]: {},
   [ChainId.DOGECHAIN]: {},
   [ChainId.ZKTESTNET]: {},
+  [ChainId.ZKEVM]: {},
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {

@@ -46,11 +46,15 @@ export const networkInfoMap: NetworkInfoChainMap = {
   },
   [ChainId.DOEGCHAIN_TESTNET]: {
     rpcUrl: 'https://rpc-testnet.dogechain.dog',
-    scanUrl: 'https://explorer-testnet.dogechain.dog',
+    scanUrl: 'https://explorer-testnet.dogechain.dog/',
   },
   [ChainId.ZKTESTNET]: {
     rpcUrl: 'https://rpc.public.zkevm-test.net',
     scanUrl: 'https://testnet-zkevm.polygonscan.com/',
+  },
+  [ChainId.ZKEVM]: {
+    rpcUrl: 'https://zkevm-rpc.com',
+    scanUrl: 'https://zkevm.polygonscan.com/',
   },
 };
 
@@ -100,6 +104,7 @@ const supportedChainIds: number[] = [
   ChainId.MUMBAI,
   ChainId.DOEGCHAIN_TESTNET,
   ChainId.ZKTESTNET,
+  ChainId.ZKEVM,
 ];
 
 export const injected = new InjectedConnector({

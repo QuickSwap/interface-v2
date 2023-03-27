@@ -87,6 +87,7 @@ const EMPTY_LIST: CNTFarmInfoAddressMap = {
   [ChainId.DOGECHAIN]: {},
   [ChainId.DOEGCHAIN_TESTNET]: {},
   [ChainId.ZKTESTNET]: {},
+  [ChainId.ZKEVM]: {},
 };
 
 const farmCache: WeakMap<CNTFarmListInfo, CNTFarmInfoAddressMap> | null =

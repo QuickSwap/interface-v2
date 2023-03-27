@@ -1,10 +1,11 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://rpc.public.zkevm-test.net",
-  "blockExplorer": "https://testnet-zkevm.polygonscan.com",
-  "networkName": "Polygon zkEVM Testnet",
-  "chainId": 1442,
+  "rpc": "https://zkevm-rpc.com",
+  "blockExplorer": "https://zkevm.polygonscan.com",
+  "networkName": "Polygon zkEVM",
+  "chainId": 1101,
+  "isMainnet": true,
   "nativeCurrencyImage": "/ETH.png",
   "nativeCurrency": {
     "name": "Ether",
