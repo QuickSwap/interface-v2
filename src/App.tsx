@@ -7,7 +7,6 @@ import {
   CssBaseline,
 } from '@material-ui/core';
 import { Provider } from 'react-redux';
-import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 import store from 'state';
 import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
 const DragonPage = lazy(() => import('./pages/DragonPage'));
@@ -115,7 +114,7 @@ function Updaters() {
 
 const queryClient = new QueryClient();
 
-const AppContent = () => (
+const App: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <Web3ReactProvider getLibrary={getLibrary}>
       <Route component={GoogleAnalyticsReporter} />
@@ -143,30 +142,30 @@ const AppContent = () => (
                     </PageLayout>
                   </Route>
                   {/* <Route exact path='/lend'>
-                    <PageLayout>
-                      <LendPage />
-                    </PageLayout>
-                  </Route>
-                  <Route exact path='/lend/detail'>
-                    <PageLayout>
-                      <LendDetailPage />
-                    </PageLayout>
-                  </Route> */}
+                <PageLayout>
+                  <LendPage />
+                </PageLayout>
+              </Route>
+              <Route exact path='/lend/detail'>
+                <PageLayout>
+                  <LendDetailPage />
+                </PageLayout>
+              </Route> */}
                   <Route exact path='/pools/:version?'>
                     <PageLayout>
                       <PoolsPage />
                     </PageLayout>
                   </Route>
                   {/* <Route exact path='/migrate'>
-                    <PageLayout>
-                      <MigrateV2LiquidityPage />
-                    </PageLayout>
-                  </Route>
-                  <Route exact path='/migrate/:currencyIdA/:currencyIdB'>
-                    <PageLayout>
-                      <MigrateV2DetailsPage />
-                    </PageLayout>
-                  </Route> */}
+                <PageLayout>
+                  <MigrateV2LiquidityPage />
+                </PageLayout>
+              </Route>
+              <Route exact path='/migrate/:currencyIdA/:currencyIdB'>
+                <PageLayout>
+                  <MigrateV2DetailsPage />
+                </PageLayout>
+              </Route> */}
                   <Route exact strict path='/pool/:tokenId'>
                     <PageLayout>
                       <PositionPage></PositionPage>
@@ -255,17 +254,5 @@ const AppContent = () => (
     </Web3ReactProvider>
   </QueryClientProvider>
 );
-
-const App: React.FC = () => {
-  const arcXAPIKey = process.env.REACT_APP_ARCX_API_KEY;
-
-  return arcXAPIKey ? (
-    <ArcxAnalyticsProvider apiKey={arcXAPIKey}>
-      <AppContent />
-    </ArcxAnalyticsProvider>
-  ) : (
-    <AppContent />
-  );
-};
 
 export default App;
