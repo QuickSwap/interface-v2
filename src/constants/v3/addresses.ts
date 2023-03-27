@@ -605,7 +605,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(DD[ChainId.DOGECHAIN]),
     toV3Token(DC[ChainId.DOGECHAIN]),
   ],
-  [ChainId.DOGECHAIN]: [
+  [ChainId.ZKTESTNET]: [
     WMATIC_EXTENDED[ChainId.ZKTESTNET],
     toV3Token(USDC[ChainId.ZKTESTNET]),
   ],

@@ -244,7 +244,9 @@ export function SelectRange({
                 .quote(
                   CurrencyAmount.fromRawAmount(
                     priceObj.baseCurrency,
-                    JSBI.BigInt(preset.min * 10 ** priceQuoteDecimals),
+                    JSBI.BigInt(
+                      (preset.min * 10 ** priceQuoteDecimals).toFixed(0),
+                    ),
                   ),
                 )
                 .divide(
@@ -261,7 +263,9 @@ export function SelectRange({
                 .quote(
                   CurrencyAmount.fromRawAmount(
                     priceObj.baseCurrency,
-                    JSBI.BigInt(preset.max * 10 ** priceQuoteDecimals),
+                    JSBI.BigInt(
+                      (preset.max * 10 ** priceQuoteDecimals).toFixed(0),
+                    ),
                   ),
                 )
                 .divide(
