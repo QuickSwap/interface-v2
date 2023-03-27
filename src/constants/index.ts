@@ -914,6 +914,86 @@ export const GammaPairs: {
       pid: 66,
     },
   ],
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xc2a45fe7d40bcac8369371b08419ddafd3131b4a': [
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0xc89004ce7becd2b39c44260327a603885da119b5',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xc2a45fe7d40bcac8369371b08419ddafd3131b4a',
+      pid: 67,
+    },
+  ],
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xd125443f38a69d776177c2b9c041f462936f8218': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x9c3e0445559e6de1fe6391e8e018dca02b480836',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xd125443f38a69d776177c2b9c041f462936f8218',
+      pid: 68,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0xfea715ab7e1de3640cd0662f6af0f9b25934e753',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+      pid: 69,
+    },
+  ],
+  '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x34ffbd9db6b9bd8b095a0d156de69a2ad2944666',
+      token0Address: '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      pid: 70,
+    },
+  ],
+  '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x9dfdf32ae82c7e8ebc156ea28e6637b120e00d12',
+      token0Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      pid: 71,
+    },
+  ],
+  '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x9f19ad14cd941e29b0e7ed8f5a1003fae4993dcd',
+      token0Address: '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+      token1Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      pid: 72,
+    },
+  ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0x49dcc56354a5a4875fb5d8bd7e7073c4f8868618',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
+      pid: 73,
+    },
+  ],
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
+    {
+      type: Presets.GAMMA_NARROW,
+      title: 'Narrow',
+      address: '0xc6dd68b546d696d5a31837b05065a151d6b6f892',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
+      pid: 74,
+    },
+  ],
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
