@@ -1,13 +1,7 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { IPresetArgs, PresetRanges } from '../../components/PresetRanges';
 import { RangeSelector } from '../../components/RangeSelector';
-import {
-  Currency,
-  CurrencyAmount,
-  Fraction,
-  Percent,
-  Price,
-} from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import './index.scss';
 import { Bound, updateSelectedPreset } from 'state/mint/v3/actions';
 import {
@@ -24,7 +18,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GammaPairs, GlobalConst, GlobalData } from 'constants/index';
+import { GammaPairs, GlobalConst } from 'constants/index';
 import { Box, ButtonGroup, Button } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
@@ -240,45 +234,59 @@ export function SelectRange({
         const priceQuoteDecimals = Math.max(3, priceObj.baseCurrency.decimals);
         onLeftRangeInput(
           preset
-            ? priceObj
-                .quote(
-                  CurrencyAmount.fromRawAmount(
-                    priceObj.baseCurrency,
-                    JSBI.BigInt(
-                      (preset.min * 10 ** priceQuoteDecimals).toFixed(0),
+            ? liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+              ? String(Number(priceObj.toSignificant()) * preset.min)
+              : priceObj
+                  .quote(
+                    CurrencyAmount.fromRawAmount(
+                      priceObj.baseCurrency,
+                      JSBI.BigInt(
+                        (preset.min * 10 ** priceQuoteDecimals).toFixed(0),
+                      ),
                     ),
-                  ),
-                )
-                .divide(
-                  JSBI.BigInt(
-                    10 ** (priceQuoteDecimals - priceObj.baseCurrency.decimals),
-                  ),
-                )
-                .toSignificant(5)
+                  )
+                  .divide(
+                    JSBI.BigInt(
+                      10 **
+                        (priceQuoteDecimals - priceObj.baseCurrency.decimals),
+                    ),
+                  )
+                  .toSignificant(5)
             : '',
         );
         onRightRangeInput(
           preset
-            ? priceObj
-                .quote(
-                  CurrencyAmount.fromRawAmount(
-                    priceObj.baseCurrency,
-                    JSBI.BigInt(
-                      (preset.max * 10 ** priceQuoteDecimals).toFixed(0),
+            ? GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+              ? String(Number(priceObj.toSignificant()) * preset.max)
+              : priceObj
+                  .quote(
+                    CurrencyAmount.fromRawAmount(
+                      priceObj.baseCurrency,
+                      JSBI.BigInt(
+                        (preset.max * 10 ** priceQuoteDecimals).toFixed(0),
+                      ),
                     ),
-                  ),
-                )
-                .divide(
-                  JSBI.BigInt(
-                    10 ** (priceQuoteDecimals - priceObj.baseCurrency.decimals),
-                  ),
-                )
-                .toSignificant(5)
+                  )
+                  .divide(
+                    JSBI.BigInt(
+                      10 **
+                        (priceQuoteDecimals - priceObj.baseCurrency.decimals),
+                    ),
+                  )
+                  .toSignificant(5)
             : '',
         );
       }
     },
-    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, priceObj],
+    [
+      dispatch,
+      getSetFullRange,
+      onLeftRangeInput,
+      onRightRangeInput,
+      liquidityRangeType,
+      priceObj,
+    ],
   );
 
   const initialUSDPrices = useInitialUSDPrices();
