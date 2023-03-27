@@ -27,6 +27,7 @@ import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
 import { CallMade } from '@material-ui/icons';
+import { getConfig } from 'config';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -43,6 +44,15 @@ const AnalyticsPairDetails: React.FC = () => {
   const isV2 = version === 'v2';
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
+
+  const config = getConfig(chainId);
+  const showAnalytics = config['analytics']['available'];
+  useEffect(() => {
+    if (!showAnalytics) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAnalytics]);
 
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {

@@ -74,6 +74,14 @@ const AnalyticsTokenDetails: React.FC = () => {
   const v3 = config['v3'];
   const v2 = config['v2'];
 
+  const showAnalytics = config['analytics']['available'];
+  useEffect(() => {
+    if (!showAnalytics) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAnalytics]);
+
   const dispatch = useDispatch();
 
   const { updateIsV2 } = useIsV2();
