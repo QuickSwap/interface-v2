@@ -37,7 +37,7 @@ export const networkInfoMap: NetworkInfoChainMap = {
     scanUrl: 'https://polygonscan.com/',
   },
   [ChainId.DOGECHAIN]: {
-    rpcUrl: 'https://dogechain.ankr.com',
+    rpcUrl: 'https://rpc-sg.dogechain.dog/',
     scanUrl: 'https://explorer.dogechain.dog/',
   },
   [ChainId.MUMBAI]: {
@@ -49,8 +49,8 @@ export const networkInfoMap: NetworkInfoChainMap = {
     scanUrl: 'https://explorer-testnet.dogechain.dog',
   },
   [ChainId.ZKTESTNET]: {
-    rpcUrl: 'https://public.zkevm-test.net:2083',
-    scanUrl: 'https://public.zkevm-test.net:8443/',
+    rpcUrl: 'https://rpc.public.zkevm-test.net',
+    scanUrl: 'https://testnet-zkevm.polygonscan.com/',
   },
 };
 

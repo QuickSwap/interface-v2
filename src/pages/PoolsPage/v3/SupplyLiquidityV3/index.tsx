@@ -139,13 +139,16 @@ export function SupplyLiquidityV3() {
 
       let chainSymbol;
 
-      if (chainId === 137) {
+      if (chainId === ChainId.MATIC || chainId === ChainId.MUMBAI) {
         chainSymbol = 'MATIC';
       }
-      if (chainId === 2000) {
+      if (
+        chainId === ChainId.DOGECHAIN ||
+        chainId === ChainId.DOEGCHAIN_TESTNET
+      ) {
         chainSymbol = 'WDOGE';
       }
-      if (chainId === 1402) {
+      if (chainId === ChainId.ZKTESTNET) {
         chainSymbol = 'ETH';
       }
 

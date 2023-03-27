@@ -32,7 +32,7 @@ const FarmPage: React.FC = () => {
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
-  const farms = config['farm']['available'];
+  const farmAvailable = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
   const { isV2 } = useIsV2();
@@ -57,6 +57,13 @@ const FarmPage: React.FC = () => {
 
     return stakingPairLists.concat(dualPairLists).concat(cntPairLists);
   }, [chainIdToUse, lpFarms, dualFarms, cntFarms]);
+
+  useEffect(() => {
+    if (!farmAvailable) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [farmAvailable]);
 
   useEffect(() => {
     if (isV2) {

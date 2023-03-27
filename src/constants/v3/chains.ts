@@ -49,7 +49,7 @@ export const CHAIN_INFO: ChainInfo = {
   },
   [ChainId.ZKTESTNET]: {
     docs: 'https://algebra.finance/',
-    explorer: 'https://public.zkevm-test.net:8443',
+    explorer: 'https://testnet-zkevm.polygonscan.com',
     infoLink: 'https://algebra.finance',
     label: 'ZKTESTNET',
     nativeCurrencySymbol: 'ETH',

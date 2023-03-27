@@ -1,14 +1,15 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://public.zkevm-test.net:2083",
-  "blockExplorer": "https://explorer.public.zkevm-test.net",
-  "networkName": "Polygon zkEVM",
-  "chainId": 1402,
-  "nativeCurrencyImage": "/polygon.svg",
+  "rpc": "https://rpc.public.zkevm-test.net",
+  "blockExplorer": "https://testnet-zkevm.polygonscan.com",
+  "networkName": "Polygon zkEVM Testnet",
+  "chainId": 1442,
+  "isMainnet": true,
+  "nativeCurrencyImage": "/ETH.png",
   "nativeCurrency": {
-    "name": "Matic Token",
-    "symbol": "MATIC",
+    "name": "Ether",
+    "symbol": "ETH",
     "decimals": 18
   },
   "swap": {
