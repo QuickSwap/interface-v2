@@ -212,10 +212,9 @@ const AnalyticsPairDetails: React.FC = () => {
         }
       });
     }
-    if (ethPrice.price) {
-      fetchPairData();
-      fetchTransctions();
-    }
+
+    fetchPairData();
+    fetchTransctions();
   }, [pairAddress, ethPrice.price, isV2, chainIdToUse]);
 
   useEffect(() => {

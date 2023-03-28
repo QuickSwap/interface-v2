@@ -51,6 +51,7 @@ import {
   TOKEN_INFO,
   TOKEN_INFO_OLD,
 } from 'apollo/queries';
+import { getConfig } from 'config';
 
 //Global
 
@@ -997,31 +998,44 @@ export async function getTokenInfoV3(
       chainId,
     );
 
+    let tokens24, tokens48, tokensOneWeek, tokensTwoWeek;
     const tokensCurrent = await fetchTokensByTime(
       undefined,
       [address],
       chainId,
     );
-    const tokens24 = await fetchTokensByTime(
-      oneDayBlock.number,
-      [address],
-      chainId,
-    );
-    const tokens48 = await fetchTokensByTime(
-      twoDayBlock.number,
-      [address],
-      chainId,
-    );
-    const tokensOneWeek = await fetchTokensByTime(
-      oneWeekBlock.number,
-      [address],
-      chainId,
-    );
-    const tokensTwoWeek = await fetchTokensByTime(
-      twoWeekBlock.number,
-      [address],
-      chainId,
-    );
+
+    if (oneDayBlock && oneDayBlock.number) {
+      tokens24 = await fetchTokensByTime(
+        oneDayBlock.number,
+        [address],
+        chainId,
+      );
+    }
+
+    if (twoDayBlock && twoDayBlock.number) {
+      tokens48 = await fetchTokensByTime(
+        twoDayBlock.number,
+        [address],
+        chainId,
+      );
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      tokensOneWeek = await fetchTokensByTime(
+        oneWeekBlock.number,
+        [address],
+        chainId,
+      );
+    }
+
+    if (twoWeekBlock && twoWeekBlock.number) {
+      tokensTwoWeek = await fetchTokensByTime(
+        twoWeekBlock.number,
+        [address],
+        chainId,
+      );
+    }
 
     const parsedTokens = parseTokensData(tokensCurrent);
     const parsedTokens24 = parseTokensData(tokens24);
@@ -1632,22 +1646,29 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
     });
 
     const pairsAddresses = topPairsIds.data.pools.map((el: any) => el.id);
+    let pairs24, pairsWeek;
 
     const pairsCurrent = await fetchPairsByTime(
       undefined,
       pairsAddresses,
       chainId,
     );
-    const pairs24 = await fetchPairsByTime(
-      oneDayBlock.number,
-      pairsAddresses,
-      chainId,
-    );
-    const pairsWeek = await fetchPairsByTime(
-      oneWeekBlock.number,
-      pairsAddresses,
-      chainId,
-    );
+
+    if (oneDayBlock && oneDayBlock.number) {
+      pairs24 = await fetchPairsByTime(
+        oneDayBlock.number,
+        pairsAddresses,
+        chainId,
+      );
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      pairsWeek = await fetchPairsByTime(
+        oneWeekBlock.number,
+        pairsAddresses,
+        chainId,
+      );
+    }
 
     const parsedPairs = parsePairsData(pairsCurrent);
     const parsedPairs24 = parsePairsData(pairs24);
@@ -1962,16 +1983,24 @@ export async function getTopPairsV3ByToken(
       pairsAddresses,
       chainId,
     );
-    const pairs24 = await fetchPairsByTime(
-      oneDayBlock.number,
-      pairsAddresses,
-      chainId,
-    );
-    const pairsWeek = await fetchPairsByTime(
-      oneWeekBlock.number,
-      pairsAddresses,
-      chainId,
-    );
+
+    let pairs24, pairsWeek;
+
+    if (oneDayBlock && oneDayBlock.number) {
+      pairs24 = await fetchPairsByTime(
+        oneDayBlock.number,
+        pairsAddresses,
+        chainId,
+      );
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      pairsWeek = await fetchPairsByTime(
+        oneWeekBlock.number,
+        pairsAddresses,
+        chainId,
+      );
+    }
 
     const parsedPairs = parsePairsData(pairsCurrent);
     const parsedPairs24 = parsePairsData(pairs24);
@@ -2378,22 +2407,28 @@ export async function getTopPairsV3ByTokens(
 }
 
 export async function getPairsAPR(pairAddresses: string[], chainId: ChainId) {
+  const config = getConfig(chainId);
+  const farmEnabled = config['farm']['available'];
   const aprs: any = await fetchPoolsAPR(chainId);
-  const farmAprs: any = await fetchEternalFarmAPR(chainId);
-  const farmingAprs = await fetchEternalFarmingsAPRByPool(
-    pairAddresses,
-    chainId,
-  );
-
-  const _farmingAprs: {
+  let _farmingAprs: {
     [type: string]: number;
-  } = farmingAprs.reduce(
-    (acc: any, el: any) => ({
-      ...acc,
-      [el.pool]: farmAprs[el.id],
-    }),
-    {},
-  );
+  } = {};
+
+  if (farmEnabled) {
+    const farmAprs: any = await fetchEternalFarmAPR(chainId);
+    const farmingAprs = await fetchEternalFarmingsAPRByPool(
+      pairAddresses,
+      chainId,
+    );
+
+    _farmingAprs = farmingAprs.reduce(
+      (acc: any, el: any) => ({
+        ...acc,
+        [el.pool]: farmAprs[el.id],
+      }),
+      {},
+    );
+  }
 
   return pairAddresses.map((address) => {
     const aprPercent = aprs[address] ? aprs[address].toFixed(2) : null;
@@ -2409,8 +2444,10 @@ export async function getPairsAPR(pairAddresses: string[], chainId: ChainId) {
 
 export async function getPairInfoV3(address: string, chainId: ChainId) {
   try {
-    const utcCurrentTime = dayjs();
+    const config = getConfig(chainId);
+    const farmEnabled = config['farm']['available'];
 
+    const utcCurrentTime = dayjs();
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
     const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
     const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
@@ -2426,21 +2463,23 @@ export async function getPairInfoV3(address: string, chainId: ChainId) {
     );
 
     const pairsCurrent = await fetchPairsByTime(undefined, [address], chainId);
-    const pairs24 = await fetchPairsByTime(
-      oneDayBlock.number,
-      [address],
-      chainId,
-    );
-    const pairs48 = await fetchPairsByTime(
-      twoDayBlock.number,
-      [address],
-      chainId,
-    );
-    const pairsWeek = await fetchPairsByTime(
-      oneWeekBlock.number,
-      [address],
-      chainId,
-    );
+    let pairs24, pairs48, pairsWeek;
+
+    if (oneDayBlock && oneDayBlock.number) {
+      pairs24 = await fetchPairsByTime(oneDayBlock.number, [address], chainId);
+    }
+
+    if (twoDayBlock && twoDayBlock.number) {
+      pairs48 = await fetchPairsByTime(twoDayBlock.number, [address], chainId);
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      pairsWeek = await fetchPairsByTime(
+        oneWeekBlock.number,
+        [address],
+        chainId,
+      );
+    }
 
     const parsedPairs = parsePairsData(pairsCurrent);
     const parsedPairs24 = parsePairsData(pairs24);
@@ -2448,7 +2487,10 @@ export async function getPairInfoV3(address: string, chainId: ChainId) {
     const parsedPairsWeek = parsePairsData(pairsWeek);
 
     const aprs: any = await fetchPoolsAPR(chainId);
-    const farmingAprs: any = await fetchEternalFarmAPR(chainId);
+    let farmingAprs: any = {};
+    if (farmEnabled) {
+      farmingAprs = await fetchEternalFarmAPR(chainId);
+    }
 
     const current = parsedPairs[address];
     const oneDay = parsedPairs24[address];

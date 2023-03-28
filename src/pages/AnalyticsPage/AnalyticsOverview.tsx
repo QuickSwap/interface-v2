@@ -34,6 +34,7 @@ import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
+import { getConfig } from 'config';
 
 dayjs.extend(utc);
 
