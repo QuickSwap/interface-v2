@@ -23,6 +23,7 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   const config = getConfig(chainIdToUse);
   const oldLair = config['lair']['oldLair'];
   const newLair = config['lair']['newLair'];
+  const farmEnabled = config['farm']['available'];
   //TODO: Support Multichain
   const totalRewardsUSD = useTotalRewardsDistributed(chainIdToUse);
   const totalRewardsUSDV3 = useV3DistributedRewards(chainIdToUse);
@@ -68,22 +69,25 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         )}
         <p>{t('24hTradingVol')}</p>
       </Box>
-      <Box className='tradingSection'>
-        {(v2 ? totalRewardsUSD : true) &&
-        (v3 ? totalRewardsUSDV3 !== undefined : true) ? (
-          <Box display='flex'>
-            <h6>$</h6>
-            <h3>
-              {formatCompact(
-                (v2 ? totalRewardsUSD : 0) + (v3 ? totalRewardsUSDV3 ?? 0 : 0),
-              )}
-            </h3>
-          </Box>
-        ) : (
-          <Skeleton variant='rect' width={100} height={45} />
-        )}
-        <p>{t('24hRewardsDistributed')}</p>
-      </Box>
+      {farmEnabled && (
+        <Box className='tradingSection'>
+          {(v2 ? totalRewardsUSD : true) &&
+          (v3 ? totalRewardsUSDV3 !== undefined : true) ? (
+            <Box display='flex'>
+              <h6>$</h6>
+              <h3>
+                {formatCompact(
+                  (v2 ? totalRewardsUSD : 0) +
+                    (v3 ? totalRewardsUSDV3 ?? 0 : 0),
+                )}
+              </h3>
+            </Box>
+          ) : (
+            <Skeleton variant='rect' width={100} height={45} />
+          )}
+          <p>{t('24hRewardsDistributed')}</p>
+        </Box>
+      )}
       <Box className='tradingSection'>
         {(v2 ? globalData : true) && (v3 ? v3GlobalData : true) ? (
           <h3>

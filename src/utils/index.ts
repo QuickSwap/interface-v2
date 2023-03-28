@@ -37,6 +37,8 @@ import {
   GLOBAL_ALLDATA,
   ETH_PRICE,
   PAIR_ID,
+  GET_BLOCKS_ZKEVM,
+  GET_BLOCK_ZKEVM,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
@@ -133,7 +135,7 @@ export async function getBlockFromTimestamp(
   chainId: ChainId,
 ): Promise<any> {
   const result = await blockClient[chainId].query({
-    query: GET_BLOCK,
+    query: chainId === ChainId.ZKEVM ? GET_BLOCK_ZKEVM : GET_BLOCK,
     variables: {
       timestampFrom: timestamp,
       timestampTo: timestamp + 600,
@@ -230,7 +232,7 @@ export async function getBlocksFromTimestamps(
   }
 
   const fetchedData: any = await splitQuery(
-    GET_BLOCKS,
+    chainId === ChainId.ZKEVM ? GET_BLOCKS_ZKEVM : GET_BLOCKS,
     blockClient[chainId],
     [],
     timestamps,

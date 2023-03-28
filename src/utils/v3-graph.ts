@@ -273,30 +273,40 @@ export async function getGlobalDataV3(chainId: ChainId): Promise<any> {
       chainId,
     );
 
+    let dataOneDay, dataTwoDay, dataOneWeek, dataTwoWeek;
+
     const dataCurrent = await clientV3[chainId].query({
       query: GLOBAL_DATA_V3(),
       fetchPolicy: 'network-only',
     });
 
-    const dataOneDay = await clientV3[chainId].query({
-      query: GLOBAL_DATA_V3(oneDayBlock.number),
-      fetchPolicy: 'network-only',
-    });
+    if (oneDayBlock && oneDayBlock.number) {
+      dataOneDay = await clientV3[chainId].query({
+        query: GLOBAL_DATA_V3(oneDayBlock.number),
+        fetchPolicy: 'network-only',
+      });
+    }
 
-    const dataTwoDay = await clientV3[chainId].query({
-      query: GLOBAL_DATA_V3(twoDayBlock.number),
-      fetchPolicy: 'network-only',
-    });
+    if (twoDayBlock && twoDayBlock.number) {
+      dataTwoDay = await clientV3[chainId].query({
+        query: GLOBAL_DATA_V3(twoDayBlock.number),
+        fetchPolicy: 'network-only',
+      });
+    }
 
-    const dataOneWeek = await clientV3[chainId].query({
-      query: GLOBAL_DATA_V3(oneWeekBlock.number),
-      fetchPolicy: 'network-only',
-    });
+    if (oneWeekBlock && oneWeekBlock.number) {
+      dataOneWeek = await clientV3[chainId].query({
+        query: GLOBAL_DATA_V3(oneWeekBlock.number),
+        fetchPolicy: 'network-only',
+      });
+    }
 
-    const dataTwoWeek = await clientV3[chainId].query({
-      query: GLOBAL_DATA_V3(twoWeekBlock.number),
-      fetchPolicy: 'network-only',
-    });
+    if (twoWeekBlock && twoWeekBlock.number) {
+      dataTwoWeek = await clientV3[chainId].query({
+        query: GLOBAL_DATA_V3(twoWeekBlock.number),
+        fetchPolicy: 'network-only',
+      });
+    }
 
     const [
       statsCurrent,

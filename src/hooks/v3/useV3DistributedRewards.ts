@@ -1,4 +1,5 @@
 import { ChainId, Token } from '@uniswap/sdk';
+import { getConfig } from 'config';
 import { formatUnits } from 'ethers/lib/utils';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useEffect, useState } from 'react';
@@ -6,13 +7,17 @@ import { useMaticPrice } from 'state/application/hooks';
 import { getTokenInfoV3 } from 'utils/v3-graph';
 
 export function useV3DistributedRewards(chainId: ChainId) {
+  const config = getConfig(chainId);
+  const farmEnabled = config['farm']['available'];
   const {
     fetchEternalFarms: { fetchEternalFarmsFn, eternalFarms },
   } = useFarmingSubgraph() || {};
   useEffect(() => {
-    fetchEternalFarmsFn(true);
+    if (farmEnabled) {
+      fetchEternalFarmsFn(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [farmEnabled]);
   const allRewardTokenAddresses = eternalFarms
     ? eternalFarms
         .map(({ rewardToken }) => rewardToken.id)
@@ -37,6 +42,7 @@ export function useV3DistributedRewards(chainId: ChainId) {
   const { maticPrice } = useMaticPrice();
 
   useEffect(() => {
+    if (!farmEnabled) return;
     (async () => {
       if (chainId && rewardTokenAddressStr) {
         const tokenAddresses = rewardTokenAddressStr.split(',');
@@ -70,6 +76,7 @@ export function useV3DistributedRewards(chainId: ChainId) {
       }
     })();
   }, [
+    farmEnabled,
     rewardTokenAddressStr,
     chainId,
     maticPrice.price,
@@ -116,5 +123,5 @@ export function useV3DistributedRewards(chainId: ChainId) {
         }, 0)
       : undefined;
 
-  return totalRewardsUSD;
+  return farmEnabled ? totalRewardsUSD : undefined;
 }
