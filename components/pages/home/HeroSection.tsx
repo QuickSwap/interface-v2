@@ -6,6 +6,7 @@ import { isSupportedNetwork, addMaticToMetamask } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/pages/Home.module.scss';
 
 const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
@@ -18,7 +19,7 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   const { t } = useTranslation();
 
   return (
-    <Box className='heroSection'>
+    <Box className={styles.heroSection}>
       <small className='text-bold'>{t('totalValueLocked')}</small>
       {globalData && v3GlobalData ? (
         <Box display='flex' pt='5px'>

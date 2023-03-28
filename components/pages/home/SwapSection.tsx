@@ -10,6 +10,7 @@ import {
 import { Swap, AddLiquidity } from 'components';
 import { useTranslation } from 'next-i18next';
 import { useIsV2 } from 'state/application/hooks';
+import styles from 'styles/pages/Home.module.scss';
 
 const SWAP_TAB = 0;
 const LIQUIDITY_TAB = 1;
@@ -44,7 +45,7 @@ const SwapSection: React.FC = () => {
           </Button>
         </ButtonGroup>
       </Box>
-      <Box className='swapContainer'>
+      <Box className={styles.swapContainer}>
         <Grid container spacing={mobileWindowSize ? 0 : 8} alignItems='center'>
           <Grid item sm={12} md={6}>
             {tabIndex === SWAP_TAB ? (
@@ -53,7 +54,7 @@ const SwapSection: React.FC = () => {
               <AddLiquidity currencyBgClass='bg-palette' />
             )}
           </Grid>
-          <Grid item sm={12} md={6} className='swapInfo'>
+          <Grid item sm={12} md={6} className={styles.swapInfo}>
             <h4>
               {tabIndex === SWAP_TAB
                 ? t('swapSectionShortDesc')

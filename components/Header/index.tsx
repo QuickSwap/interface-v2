@@ -178,7 +178,8 @@ const Header: React.FC = () => {
               : '/assets/images/quickLogo.png'
           }
           alt='QuickLogo'
-          fill
+          width={mobileWindowSize ? 60 : 195}
+          height={mobileWindowSize ? 60 : 60}
         />
       </Link>
       {!tabletWindowSize && (
@@ -198,30 +199,39 @@ const Header: React.FC = () => {
               <small>{val.text}</small>
               {val.isNew && (
                 <>
-                  <Image src='/assets/images/NewTag.png' alt='new menu' fill />
+                  <Image
+                    src='/assets/images/NewTag.png'
+                    alt='new menu'
+                    width={46}
+                    height={30}
+                  />
                   <Image
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
                     src='/assets/images/SparkleLeft.svg'
                     alt='menuItem sparkle left'
-                    fill
+                    width={4}
+                    height={5}
                   />
                   <Image
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
                     src='/assets/images/SparkleRight.svg'
                     alt='menuItem sparkle right'
-                    fill
+                    width={4}
+                    height={5}
                   />
                   <Image
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
                     src='/assets/images/SparkleBottom.svg'
                     alt='menuItem sparkle bottom'
-                    fill
+                    width={136}
+                    height={10}
                   />
                   <Image
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
                     src='/assets/images/SparkleTop.svg'
                     alt='menuItem sparkle top'
-                    fill
+                    width={133}
+                    height={11}
                   />
                 </>
               )}

@@ -28,6 +28,7 @@ import StyledThemeProvider from 'theme/index';
 import { Web3ReactManager, Popups } from 'components';
 import dynamic from 'next/dynamic';
 import { appWithTranslation } from 'next-i18next';
+import './index.scss';
 
 const Web3DefaultNetworkProvider = dynamic(
   () => import('components/Web3DefaultNetworkProvider'),

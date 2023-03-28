@@ -83,7 +83,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useEthPrice } from 'state/application/hooks';
 import { formatTokenSymbol, getGlobalDataV3 } from './v3-graph';
-import { TFunction } from 'react-i18next';
+import { TFunction } from 'next-i18next';
 import { TOKENS_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
@@ -1823,7 +1823,7 @@ export function confirmPriceImpactWithoutFee(
           priceImpact: GlobalValue.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
             0,
           ),
-        }),
+        }) ?? undefined,
       ) === 'confirm'
     );
   } else if (
@@ -1834,7 +1834,7 @@ export function confirmPriceImpactWithoutFee(
     return window.confirm(
       translation('confirmSwapPriceImpact', {
         priceImpact: GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(0),
-      }),
+      }) ?? undefined,
     );
   }
   return true;

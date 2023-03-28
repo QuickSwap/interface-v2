@@ -83,31 +83,29 @@
   margin: auto;
 }
 .featureContainer {
-  & > div.MuiGrid-root {
-    margin-top: 32px;
+  margin-top: 32px !important;
+  & > div {
+    & img {
+      width: 150px;
+      max-width: 240px;
+    }
     & > div {
-      & img {
-        width: 150px;
-        max-width: 240px;
-      }
-      & > div {
-        width: calc(100% - 270px);
-      }
-      @include media("screen", "<phone") {
-        flex-direction: column;
-        & img, & > div {
-          width: 100%;
-          text-align: center;
-        }
+      width: calc(100% - 270px);
+    }
+    @include media("screen", "<phone") {
+      flex-direction: column;
+      & img, & > div {
+        width: 100%;
+        text-align: center;
       }
     }
   }
 }
 .featureText {
   margin-left: 8px;
-  & h3 {
+  h5 {
     color: white;
-    margin-bottom: 8;
+    margin-bottom: 8px;
   }
 }
 .communityContainer {
@@ -262,7 +260,6 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 1248px;
   }
   & > div {
     display: flex;
@@ -271,84 +268,79 @@
     height: 100%;
     position: relative;
     z-index: 2;
-    & img {
-      width: 129px;
-      max-width: 320px;
-    }
     @include media("screen", "<phone") {
       flex-direction: column;
       padding: 0
     }
   }
-  & .buyFiatInfo {
-    position: relative;
-    margin-right: 20px;
-    & > h3 {
-      font-size: 22px;
-      margin-bottom: 12px;
+}
+
+.buyFiatInfo {
+  position: relative;
+  margin-right: 20px;
+  & > h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  @include media("screen", "<phone") {
+    flex-direction: column;
+    margin-right: 0;
+    margin-bottom: 32px;
+    & img, & > div {
+      width: 100%;
     }
-    @include media("screen", "<phone") {
-      flex-direction: column;
-      margin-right: 0;
-      margin-bottom: 32px;
-      & img, & > div {
-        width: 100%;
-      }
-      & img {
-        margin: -32px 0;
-      }
-      & div {
-        padding: 0 20px 20px;
-      }
-      & button {
-        width: 100%;
-      }
+    & img {
+      margin: -32px 0;
+    }
+    & div {
+      padding: 0 20px 20px;
     }
     & button {
-      margin-top: 24px;
-      height: 40px;
-      border-radius: 20px;
-      padding: 0 20px;
-      & small {
-        font-size: 16px;
+      width: 100%;
+    }
+  }
+  & button {
+    margin-top: 24px;
+    height: 40px;
+    border-radius: 20px;
+    padding: 0 20px;
+    & small {
+      font-size: 16px;
+    }
+  }
+}
+
+.buyFiatWrapper {
+  width: 408px;
+  position: relative;
+  @include media("screen", "<tablet") {
+    width: calc(100% - 64px);
+    margin-bottom: 32px;
+  }
+  @include media("screen", "<phone") {
+    width: calc(100% - 40px);
+  }
+  & .buyContent {
+    background: $bgColor;
+    border-radius: 20px;
+    padding: 24px;
+    & > div {
+      padding: 0;
+      border: none;
+      background: transparent;
+      & > p {
+        margin-bottom: 8px;
       }
     }
   }
-  & .buyFiatWrapper {
-    width: 408px;
-    position: relative;
-    @include media("screen", "<tablet") {
-      width: calc(100% - 64px);
-      margin-bottom: 32px;
-    }
-    @include media("screen", "<phone") {
-      width: calc(100% - 40px);
-    }
-    & .buyContent {
-      background: $bgColor;
-      border-radius: 20px;
-      padding: 24px;
-      & > div {
-        padding: 0;
-        border: none;
-        background: transparent;
-        & > p {
-          margin-bottom: 8px;
-        }
-      }
-    }
-  }
-  .poweredBySection {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-    height: auto;
-    font-size: 12px;
-    font-weight: 600;
-    color: $textSecondary;
-    & img {
-      height: 20px;
-      width: auto;
-    }
-  }
+}
+
+.poweredBySection {
+  position: absolute !important;
+  bottom: 16px;
+  right: 16px;
+  height: auto !important;
+  font-size: 12px;
+  font-weight: 600;
+  color: $textSecondary;
 }

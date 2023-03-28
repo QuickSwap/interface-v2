@@ -121,7 +121,12 @@ const LandingPage = (
       </Box>
       <Box className={styles.quickInfo}>
         <h4>{t('quickInfoTitle')}</h4>
-        <Image src='/images/Motif.svg' alt='Motif' width={15} height={38} />
+        <Image
+          src='/assets/images/Motif.svg'
+          alt='Motif'
+          width={15}
+          height={38}
+        />
       </Box>
       <SwapSection />
       <Box className={styles.rewardsContainer}>
@@ -149,15 +154,15 @@ const LandingPage = (
           </Grid>
         </Grid>
       </Box>
-      <Box className={styles.featureContainer}>
+      <Box>
         <Box className={styles.featureHeading}>
           <h3>{t('features')}</h3>
           <Box className={styles.featureDivider} />
         </Box>
-        <Grid container spacing={4}>
+        <Grid container spacing={4} className={styles.featureContainer}>
           {features.map((val, index) => (
             <Grid item container alignItems='center' sm={12} md={6} key={index}>
-              <Image src={val.img} alt={val.title} width={200} height={200} />
+              <Image src={val.img} alt={val.title} width={150} height={150} />
               <Box className={styles.featureText}>
                 <h5>{val.title}</h5>
                 <p>{val.desc}</p>
@@ -191,10 +196,12 @@ const LandingPage = (
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => ({
-  props: {
-    ...(await serverSideTranslations(locale ?? 'en', ['common'])),
-  },
-});
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
+};
 
 export default LandingPage;

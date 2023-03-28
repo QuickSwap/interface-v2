@@ -2,16 +2,22 @@ import React from 'react';
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
+import styles from 'styles/pages/Home.module.scss';
 
 const BuySpritzSection: React.FC = () => {
   const { t } = useTranslation();
-  const SPRITZ_LINK = process.env.REACT_APP_SPRITZ_FINANCE_LINK;
+  const SPRITZ_LINK = process.env.NEXT_PUBLIC_SPRITZ_FINANCE_LINK;
 
   return (
-    <Box className='buyFiatContainer'>
-      <Image src='/assets/images/FiatMask.svg' alt='Fiat Mask' fill />
+    <Box className={styles.buyFiatContainer}>
+      <Image
+        src='/assets/images/FiatMask.svg'
+        alt='Fiat Mask'
+        width={1248}
+        height={338}
+      />
       <Box>
-        <Box className='buyFiatInfo'>
+        <Box className={styles.buyFiatInfo}>
           <h3>{t('payBillWithCrypto')}</h3>
           <p>{t('payBillWithCryptoDesc')}</p>
           <Button
@@ -24,16 +30,18 @@ const BuySpritzSection: React.FC = () => {
         <Image
           src='/assets/images/featured/BillPay.png'
           alt='buy with crypto'
-          fill
+          width={129}
+          height={101}
         />
       </Box>
-      <Box className='poweredBySection'>
+      <Box className={styles.poweredBySection}>
         {t('poweredBy')}
         <Image
           className='spritz'
           src='/assets/images/SpritzIcon.png'
           alt='spritz finance'
-          fill
+          width={51}
+          height={20}
         />
       </Box>
     </Box>

@@ -5,7 +5,7 @@ import {
   Trash,
   X,
 } from 'react-feather';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import styled, { keyframes } from 'styled-components/macro';
 import { anonymizeLink } from 'utils/v3/anonymizeLink';
 
@@ -96,26 +96,6 @@ export const StyledInternalLink = styled(Link)`
     :active {
         text-decoration: none;
     }
-`;
-
-const StyledLink = styled.a`
-  text-decoration: none;
-  cursor: pointer;
-  color: ${({ theme }) => theme.winterMainButton};
-  font-weight: 500;
-
-  :hover {
-    // text-decoration: underline;
-  }
-
-  :focus {
-    outline: none;
-    // text-decoration: underline;
-  }
-
-  :active {
-    text-decoration: none;
-  }
 `;
 
 const LinkIconWrapper = styled.a`
@@ -262,7 +242,7 @@ const BackArrowLink = styled(StyledInternalLink)`
 
 export function BackArrow({ to }: { to: string }) {
   return (
-    <BackArrowLink to={to}>
+    <BackArrowLink href={to}>
       <ArrowLeft />
     </BackArrowLink>
   );

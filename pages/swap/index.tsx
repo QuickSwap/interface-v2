@@ -1,8 +1,7 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { SettingsModal } from 'components';
 
 import { useActiveWeb3React } from 'hooks';
-import 'pages/styles/swap.scss';
 import React, { useEffect, useState } from 'react';
 import { useIsProMode, useIsV2 } from 'state/application/hooks';
 import { Field } from 'state/swap/actions';
@@ -10,9 +9,9 @@ import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { useDerivedSwapInfo as useDerivedSwapInfoV3 } from 'state/swap/v3/hooks';
 import { getPairAddress } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-import SwapDefaultMode from './SwapDefaultMode';
-import SwapPageHeader from './SwapPageHeader';
-import SwapProMain from './SwapProMain';
+import SwapDefaultMode from 'components/pages/swap/SwapDefaultMode';
+import SwapPageHeader from 'components/pages/swap/SwapPageHeader';
+import SwapProMain from 'components/pages/swap/SwapProMain';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);

@@ -6,6 +6,7 @@ import { useNewLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
 import { formatCompact, useLairDQUICKAPY } from 'utils';
 import { useTranslation } from 'next-i18next';
 import { ChainId } from '@uniswap/sdk';
+import styles from 'styles/pages/Home.module.scss';
 
 const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
@@ -27,7 +28,7 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
           onClose={() => setOpenStakeModal(false)}
         />
       )}
-      <Box className='tradingSection'>
+      <Box className={styles.tradingSection}>
         {globalData && v3GlobalData ? (
           <h3>
             {(
@@ -39,7 +40,7 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         )}
         <p className='text-uppercase'>{t('24hTxs')}</p>
       </Box>
-      <Box className='tradingSection'>
+      <Box className={styles.tradingSection}>
         {globalData && v3GlobalData ? (
           <Box display='flex'>
             <h6>$</h6>
@@ -55,7 +56,7 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         )}
         <p>{t('24hTradingVol')}</p>
       </Box>
-      <Box className='tradingSection'>
+      <Box className={styles.tradingSection}>
         {totalRewardsUSD ? (
           <Box display='flex'>
             <h6>$</h6>
@@ -66,7 +67,7 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         )}
         <p>{t('24hRewardsDistributed')}</p>
       </Box>
-      <Box className='tradingSection'>
+      <Box className={styles.tradingSection}>
         {globalData && v3GlobalData ? (
           <h3>
             {(
@@ -80,7 +81,7 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         )}
         <p>{t('totalTradingPairs')}</p>
       </Box>
-      <Box className='tradingSection' pt='20px'>
+      <Box className={styles.tradingSection} pt='20px'>
         {dQUICKAPY ? (
           <h3>{dQUICKAPY}%</h3>
         ) : (
