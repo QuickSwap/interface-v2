@@ -143,6 +143,34 @@ export function useUSDCPricesFromAddresses(addresses: string[]) {
           }
         });
         setPrices(prices);
+      } else if (maticPrice.price) {
+        const pricesDataV3 = await clientV3[chainIdToUse].query({
+          query: TOKENPRICES_FROM_ADDRESSES_V3(
+            addresses.map((address) => address.toLowerCase()),
+          ),
+          fetchPolicy: 'network-only',
+        });
+
+        const pricesV3 =
+          pricesDataV3.data &&
+          pricesDataV3.data.tokens &&
+          pricesDataV3.data.tokens.length > 0
+            ? pricesDataV3.data.tokens
+            : [];
+
+        const prices = addresses.map((address) => {
+          const priceV3 = pricesV3.find(
+            (item: any) => item.id.toLowerCase() === address.toLowerCase(),
+          );
+          if (priceV3 && priceV3.derivedMatic && Number(priceV3.derivedMatic)) {
+            return {
+              address,
+              price: (maticPrice.price ?? 0) * Number(priceV3.derivedMatic),
+            };
+          }
+          return { address, price: 0 };
+        });
+        setPrices(prices);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
