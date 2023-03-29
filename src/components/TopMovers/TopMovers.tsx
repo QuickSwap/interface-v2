@@ -71,7 +71,6 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
       }
     })();
   }, [
-    updateTopTokens,
     ethPrice.price,
     ethPrice.oneDayPrice,
     maticPrice.price,

@@ -1,10 +1,7 @@
 import { ChainId } from '@uniswap/sdk';
 
 const getAPIURL = (chainId: ChainId, url: string) => {
-  const apiBaseURL =
-    chainId === ChainId.DOGECHAIN
-      ? process.env.REACT_APP_V3_DOGECHAIN_APR_API_BASE_URL
-      : process.env.REACT_APP_V3_APR_API_BASE_URL;
+  const apiBaseURL = process.env.REACT_APP_V3_APR_API_BASE_URL;
   const networkKey =
     chainId === ChainId.DOGECHAIN
       ? `?network=${process.env.REACT_APP_V3_DOGECHAIN_APR_API_NETWORK}`

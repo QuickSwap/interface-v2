@@ -12,6 +12,7 @@ import {
   getChartStartTime,
   getLimitedData,
   getYAXISValuesAnalytics,
+  getFormattedPercent,
 } from 'utils';
 import { AreaChart, ChartType, MixedChart, ColumnChart } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
@@ -504,7 +505,7 @@ const AnalyticsPairChart: React.FC<{
                       ml={1}
                     >
                       <small>
-                        {getFormattedPrice(Number(currentPercent))}%
+                        {getFormattedPercent(Number(currentPercent))}
                       </small>
                     </Box>
                   </Box>

@@ -26,7 +26,7 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   const farmEnabled = config['farm']['available'];
   //TODO: Support Multichain
   const totalRewardsUSD = useTotalRewardsDistributed(chainIdToUse);
-  const totalRewardsUSDV3 = useV3DistributedRewards(chainIdToUse);
+  const totalRewardsUSDV3 = useV3DistributedRewards(chainId);
   const { t } = useTranslation();
 
   const v2 = config['v2'];

@@ -282,31 +282,39 @@ export async function getGlobalDataV3(chainId: ChainId): Promise<any> {
     });
 
     if (oneDayBlock && oneDayBlock.number) {
-      dataOneDay = await clientV3[chainId].query({
-        query: GLOBAL_DATA_V3(oneDayBlock.number),
-        fetchPolicy: 'network-only',
-      });
+      try {
+        dataOneDay = await clientV3[chainId].query({
+          query: GLOBAL_DATA_V3(oneDayBlock.number),
+          fetchPolicy: 'network-only',
+        });
+      } catch {}
     }
 
     if (twoDayBlock && twoDayBlock.number) {
-      dataTwoDay = await clientV3[chainId].query({
-        query: GLOBAL_DATA_V3(twoDayBlock.number),
-        fetchPolicy: 'network-only',
-      });
+      try {
+        dataTwoDay = await clientV3[chainId].query({
+          query: GLOBAL_DATA_V3(twoDayBlock.number),
+          fetchPolicy: 'network-only',
+        });
+      } catch {}
     }
 
     if (oneWeekBlock && oneWeekBlock.number) {
-      dataOneWeek = await clientV3[chainId].query({
-        query: GLOBAL_DATA_V3(oneWeekBlock.number),
-        fetchPolicy: 'network-only',
-      });
+      try {
+        dataOneWeek = await clientV3[chainId].query({
+          query: GLOBAL_DATA_V3(oneWeekBlock.number),
+          fetchPolicy: 'network-only',
+        });
+      } catch {}
     }
 
     if (twoWeekBlock && twoWeekBlock.number) {
-      dataTwoWeek = await clientV3[chainId].query({
-        query: GLOBAL_DATA_V3(twoWeekBlock.number),
-        fetchPolicy: 'network-only',
-      });
+      try {
+        dataTwoWeek = await clientV3[chainId].query({
+          query: GLOBAL_DATA_V3(twoWeekBlock.number),
+          fetchPolicy: 'network-only',
+        });
+      } catch {}
     }
 
     const [
@@ -3608,7 +3616,8 @@ async function fetchTokensByTime(
 
     return tokens.data.tokens;
   } catch (err) {
-    console.error('Tokens fetching by time ' + err);
+    console.error('Tokens fetching by time in v3 ' + err);
+    return;
   }
 }
 
@@ -3625,7 +3634,8 @@ async function fetchTokensByTimeV2(
 
     return tokens.data.tokens;
   } catch (err) {
-    console.error('Tokens fetching by time ' + err);
+    console.error('Tokens fetching by time in v2 ' + err);
+    return;
   }
 }
 
@@ -3674,6 +3684,7 @@ async function fetchPairsByTime(
     return pairs.data.pools;
   } catch (err) {
     console.error('Pairs by time fetching ' + err);
+    return;
   }
 }
 

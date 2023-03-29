@@ -2313,10 +2313,11 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
   const { ethPrice } = useEthPrice();
 
   useEffect(() => {
+    if (!chainId) return;
     (async () => {
       let feePercent = 0;
       if (v3) {
-        const v3Data = await getGlobalDataV3(chainIdToUse);
+        const v3Data = await getGlobalDataV3(chainId);
         if (v3Data) {
           feePercent += Number(v3Data.feesUSD ?? 0) / 7.5;
         }
@@ -2328,8 +2329,8 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
         const v2data = await getGlobalData(
           ethPrice.price,
           ethPrice.oneDayPrice,
-          V2_FACTORY_ADDRESSES[chainIdToUse],
-          chainIdToUse,
+          V2_FACTORY_ADDRESSES[chainId],
+          chainId,
         );
         if (v2data) {
           feePercent +=
@@ -2341,7 +2342,7 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
         }
       }
     })();
-  }, [ethPrice.oneDayPrice, ethPrice.price, chainIdToUse, v2, v3]);
+  }, [ethPrice.oneDayPrice, ethPrice.price, chainId, v2, v3]);
 
   if (!lair || !quickPrice) return '';
 

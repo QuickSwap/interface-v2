@@ -945,8 +945,11 @@ export function useFarmingSubgraph() {
       for (const farming of eternalFarmings) {
         try {
           const pool = await fetchPool(farming.pool);
-          const rewardToken = await fetchToken(farming.rewardToken);
-          const bonusRewardToken = await fetchToken(farming.bonusRewardToken);
+          const rewardToken = await fetchToken(farming.rewardToken, true);
+          const bonusRewardToken = await fetchToken(
+            farming.bonusRewardToken,
+            true,
+          );
           const wrappedToken0 = getV3TokenFromAddress(
             pool.token0.id,
             chainId ?? ChainId.MATIC,

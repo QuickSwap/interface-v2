@@ -1,87 +1,34 @@
-import { ChainId, Token } from '@uniswap/sdk';
+import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config';
 import { formatUnits } from 'ethers/lib/utils';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
-import { useEffect, useState } from 'react';
-import { useMaticPrice } from 'state/application/hooks';
-import { getTokenInfoV3 } from 'utils/v3-graph';
+import { useEffect } from 'react';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 
-export function useV3DistributedRewards(chainId: ChainId) {
+export function useV3DistributedRewards(chainId?: ChainId) {
   const config = getConfig(chainId);
   const farmEnabled = config['farm']['available'];
   const {
     fetchEternalFarms: { fetchEternalFarmsFn, eternalFarms },
   } = useFarmingSubgraph() || {};
   useEffect(() => {
-    if (farmEnabled) {
+    if (farmEnabled && chainId) {
       fetchEternalFarmsFn(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [farmEnabled]);
   const allRewardTokenAddresses = eternalFarms
     ? eternalFarms
+        .filter((farm) => farm.rewardToken && farm.rewardToken.id)
         .map(({ rewardToken }) => rewardToken.id)
-        .concat(eternalFarms.map(({ bonusRewardToken }) => bonusRewardToken.id))
+        .concat(
+          eternalFarms
+            .filter((farm) => farm.bonusRewardToken && farm.bonusRewardToken.id)
+            .map(({ bonusRewardToken }) => bonusRewardToken.id),
+        )
     : [];
-  const rewardTokenAddressStr =
-    allRewardTokenAddresses.length > 0
-      ? allRewardTokenAddresses
-          .filter(
-            (address, index) =>
-              allRewardTokenAddresses.findIndex(
-                (tokenAddress) =>
-                  address.toLowerCase() === tokenAddress.toLowerCase(),
-              ) === index,
-          )
-          .join(',')
-      : '';
-  const [rewardTokenPrices, setRewardTokenPrices] = useState<
-    { address: string; price: number }[] | undefined
-  >(undefined);
 
-  const { maticPrice } = useMaticPrice();
-
-  useEffect(() => {
-    if (!farmEnabled) return;
-    (async () => {
-      if (chainId && rewardTokenAddressStr) {
-        const tokenAddresses = rewardTokenAddressStr.split(',');
-        const tokenPrices = await Promise.all(
-          tokenAddresses.map(async (tokenAddress) => {
-            if (
-              maticPrice.price === undefined ||
-              maticPrice.oneDayPrice === undefined
-            )
-              return { address: tokenAddress, price: 0 };
-            const tokenInfo = await getTokenInfoV3(
-              maticPrice.price,
-              maticPrice.oneDayPrice,
-              tokenAddress,
-              chainId,
-            );
-            const tokenData =
-              tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
-            return {
-              address: tokenAddress,
-              price: tokenData ? Number(tokenData.priceUSD) : 0,
-            };
-          }),
-        );
-        if (
-          maticPrice.price !== undefined &&
-          maticPrice.oneDayPrice !== undefined
-        ) {
-          setRewardTokenPrices(tokenPrices);
-        }
-      }
-    })();
-  }, [
-    farmEnabled,
-    rewardTokenAddressStr,
-    chainId,
-    maticPrice.price,
-    maticPrice.oneDayPrice,
-  ]);
+  const rewardTokenPrices = useUSDCPricesFromAddresses(allRewardTokenAddresses);
 
   const totalRewardsUSD =
     eternalFarms && rewardTokenPrices

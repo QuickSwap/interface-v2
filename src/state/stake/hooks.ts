@@ -719,7 +719,6 @@ const getOneDayVolumeV3 = async (config: any) => {
   let data: any = {};
   let oneDayData: any = {};
 
-  const current = await web3.eth.getBlockNumber();
   const utcCurrentTime = dayjs();
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
 
@@ -727,7 +726,7 @@ const getOneDayVolumeV3 = async (config: any) => {
   const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
 
   const result = await clientV3[chainId].query({
-    query: GLOBAL_DATA_V3(current),
+    query: GLOBAL_DATA_V3(),
     fetchPolicy: 'network-only',
   });
 
@@ -1430,7 +1429,6 @@ export function useOldLairInfo(): LairInfo | undefined {
     lairAddress,
     quickToken,
     dQuickToken,
-    chainIdToUse,
   );
 }
 
@@ -1449,7 +1447,6 @@ export function useNewLairInfo(): LairInfo | undefined {
     lairAddress,
     quickToken,
     dQuickToken,
-    chainIdToUse,
   );
 }
 
@@ -1459,10 +1456,8 @@ function useLairInfo(
   lairAddress: string,
   quickToken: Token,
   dQuickToken: Token,
-  chainIdToUse: ChainId,
 ) {
-  const { account } = useActiveWeb3React();
-  const config = getConfig(chainIdToUse);
+  const { account, chainId } = useActiveWeb3React();
   let accountArg = useMemo(() => [account ?? undefined], [account]);
   const inputs = ['1000000000000000000'];
   const _dQuickTotalSupply = useSingleCallResult(
@@ -1503,12 +1498,20 @@ function useLairInfo(
   const [oneDayVolume, setOneDayVolume] = useState(0);
 
   useEffect(() => {
+    if (!chainId) return;
     (async () => {
-      const v2OneDayVol = await getOneDayVolume(config);
-      const v3OneDayVol = await getOneDayVolumeV3(config);
+      const config = getConfig(chainId);
+      let v2OneDayVol = 0,
+        v3OneDayVol = 0;
+      if (config['v2']) {
+        v2OneDayVol = await getOneDayVolume(config);
+      }
+      if (config['v3']) {
+        v3OneDayVol = await getOneDayVolumeV3(config);
+      }
       setOneDayVolume(v2OneDayVol + v3OneDayVol);
     })();
-  }, [config]);
+  }, [chainId]);
 
   return useMemo(() => {
     if (!quickToken || !dQuickToQuick) {

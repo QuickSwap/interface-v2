@@ -31,6 +31,7 @@ import {
   USDC,
   USDT,
 } from 'constants/v3/addresses';
+import { getConfig } from 'config';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -71,40 +72,52 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   }, [currency, allowedPairs, amountOut]);
 }
 
-export function useUSDCPricesFromAddresses(addresses: string[]) {
+export function useUSDCPricesFromAddresses(addressArray: string[]) {
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainId);
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
   const [prices, setPrices] = useState<
     { address: string; price: number }[] | undefined
   >();
+  const v2 = config['v2'];
+  const addressStr = addressArray.join(',');
 
   useEffect(() => {
+    if (!chainId) return;
     (async () => {
+      const addresses = addressStr.split(',');
       if (ethPrice.price && maticPrice.price) {
-        const pricesDataV2 = await clientV2[chainIdToUse].query({
-          query: TOKEN_PRICES_V2(addresses),
-          fetchPolicy: 'network-only',
-        });
+        let addressesNotInV2: string[] = [],
+          pricesV2: any[] = [];
+        if (v2) {
+          const pricesDataV2 = await clientV2[chainId].query({
+            query: TOKEN_PRICES_V2(addresses),
+            fetchPolicy: 'network-only',
+          });
 
-        const pricesV2 =
-          pricesDataV2.data &&
-          pricesDataV2.data.tokens &&
-          pricesDataV2.data.tokens.length > 0
-            ? pricesDataV2.data.tokens
-            : [];
+          pricesV2 =
+            pricesDataV2.data &&
+            pricesDataV2.data.tokens &&
+            pricesDataV2.data.tokens.length > 0
+              ? pricesDataV2.data.tokens
+              : [];
 
-        const addressesNotInV2 = addresses.filter((address) => {
-          const priceV2 = pricesV2.find(
-            (item: any) => item.id.toLowerCase() === address.toLowerCase(),
-          );
-          return !priceV2 || !priceV2.derivedETH || !Number(priceV2.derivedETH);
-        });
+          addressesNotInV2 = addresses.filter((address) => {
+            const priceV2 = pricesV2.find(
+              (item: any) => item.id.toLowerCase() === address.toLowerCase(),
+            );
+            return (
+              !priceV2 || !priceV2.derivedETH || !Number(priceV2.derivedETH)
+            );
+          });
+        }
 
-        const pricesDataV3 = await clientV3[chainIdToUse].query({
+        const pricesDataV3 = await clientV3[chainId].query({
           query: TOKENPRICES_FROM_ADDRESSES_V3(
-            addressesNotInV2.map((address) => address.toLowerCase()),
+            (v2 ? addressesNotInV2 : addresses).map((address) =>
+              address.toLowerCase(),
+            ),
           ),
           fetchPolicy: 'network-only',
         });
@@ -144,7 +157,7 @@ export function useUSDCPricesFromAddresses(addresses: string[]) {
         });
         setPrices(prices);
       } else if (maticPrice.price) {
-        const pricesDataV3 = await clientV3[chainIdToUse].query({
+        const pricesDataV3 = await clientV3[chainId].query({
           query: TOKENPRICES_FROM_ADDRESSES_V3(
             addresses.map((address) => address.toLowerCase()),
           ),
@@ -173,8 +186,7 @@ export function useUSDCPricesFromAddresses(addresses: string[]) {
         setPrices(prices);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ethPrice.price, maticPrice.price]);
+  }, [ethPrice.price, maticPrice.price, v2, chainId, addressStr]);
 
   return prices;
 }
