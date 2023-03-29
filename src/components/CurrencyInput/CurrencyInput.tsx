@@ -57,9 +57,9 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   const usdPriceV2 = Number(useUSDCPrice(currency)?.toSignificant() ?? 0);
   const currencyV3 =
     chainId && currency
-      ? currencyEquals(currency, ETHER)
+      ? currencyEquals(currency, ETHER[chainId])
         ? ({
-            ...ETHER,
+            ...ETHER[chainId],
             isNative: true,
             isToken: false,
             wrapped: WMATIC_EXTENDED[chainId],

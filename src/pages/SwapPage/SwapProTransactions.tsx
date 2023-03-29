@@ -64,7 +64,7 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
       const result: any[] = mobileWindowSize ? data.slice(0, 20) : data;
       setFilteredData(result);
     }
-  }, [data, mobileWindowSize]);
+  }, [data, chainId, mobileWindowSize]);
 
   const tokenHeadCells = [
     {

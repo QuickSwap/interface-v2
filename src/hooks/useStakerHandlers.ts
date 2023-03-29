@@ -15,12 +15,12 @@ import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';
 import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { TransactionResponse } from '@ethersproject/providers';
-import { DefaultFarming, DefaultFarmingWithError } from '../models/interfaces';
 import { FarmingType } from '../models/enums';
 import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/src/utils/calldata';
 import { useAppSelector } from 'state';
 import { useV3StakeData } from 'state/farms/hooks';
+import { calculateGasMargin } from 'utils';
 
 export function useFarmingHandlers() {
   const { chainId, account, library } = useActiveWeb3React();
@@ -132,9 +132,12 @@ export function useFarmingHandlers() {
           }
 
           if (isDetached) {
+            const estimatedGas = await farmingCenterContract.estimateGas.multicall(
+              callDatas,
+            );
+
             result = await farmingCenterContract.multicall(callDatas, {
-              gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-              gasLimit: 350000,
+              gasLimit: calculateGasMargin(estimatedGas),
             });
           } else {
             let isSuccessful;
@@ -148,17 +151,21 @@ export function useFarmingHandlers() {
               );
               isSuccessful = true;
             } catch (err) {
+              const estimatedGas = await farmingCenterContract.estimateGas.multicall(
+                [callDatas[0]],
+              );
               result = await farmingCenterContract.multicall([callDatas[0]], {
-                gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-                gasLimit: 350000,
+                gasLimit: calculateGasMargin(estimatedGas),
               });
               console.log(err, result);
             }
 
             if (isSuccessful) {
+              const estimatedGas = await farmingCenterContract.estimateGas.multicall(
+                callDatas,
+              );
               result = await farmingCenterContract.multicall(callDatas, {
-                gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-                gasLimit: 350000,
+                gasLimit: calculateGasMargin(estimatedGas),
               });
             }
           }
@@ -199,9 +206,12 @@ export function useFarmingHandlers() {
             );
           }
 
+          const estimatedGas = await farmingCenterContract.estimateGas.multicall(
+            callDatas,
+          );
+
           result = await farmingCenterContract.multicall(callDatas, {
-            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-            gasLimit: 350000,
+            gasLimit: calculateGasMargin(estimatedGas),
           });
         }
 
@@ -304,14 +314,20 @@ export function useFarmingHandlers() {
           eternalRewardToken.id.toLowerCase() !==
           eternalBonusRewardToken.id.toLowerCase()
         ) {
+          const estimatedGas = await farmingCenterContract.estimateGas.multicall(
+            [collectRewards, claimReward1, claimReward2],
+          );
           result = await farmingCenterContract.multicall(
             [collectRewards, claimReward1, claimReward2],
-            { gasPrice: gasPrice * GAS_PRICE_MULTIPLIER },
+            { gasLimit: calculateGasMargin(estimatedGas) },
           );
         } else {
+          const estimatedGas = await farmingCenterContract.estimateGas.multicall(
+            [collectRewards, claimReward1],
+          );
           result = await farmingCenterContract.multicall(
             [collectRewards, claimReward1],
-            { gasPrice: gasPrice * GAS_PRICE_MULTIPLIER },
+            { gasLimit: calculateGasMargin(estimatedGas) },
           );
         }
 
@@ -340,7 +356,6 @@ export function useFarmingHandlers() {
       addTransaction,
       chainId,
       finalizeTransaction,
-      gasPrice,
       provider,
       updateV3Stake,
       t,
@@ -367,12 +382,18 @@ export function useFarmingHandlers() {
           provider.getSigner(),
         );
 
+        const estimatedGas = await farmingCenterContract.estimateGas.withdrawToken(
+          token,
+          account,
+          0x0,
+        );
+
         const result = await farmingCenterContract.withdrawToken(
           token,
           account,
           0x0,
           {
-            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
+            gasLimit: calculateGasMargin(estimatedGas),
           },
         );
 
@@ -401,7 +422,6 @@ export function useFarmingHandlers() {
       addTransaction,
       chainId,
       finalizeTransaction,
-      gasPrice,
       provider,
       updateV3Stake,
       t,
@@ -438,13 +458,20 @@ export function useFarmingHandlers() {
         if (selectedNFT.onFarmingCenter) {
           current = selectedNFT.id;
 
+          const estimatedGas = await farmingCenterContract.estimateGas.enterFarming(
+            [rewardToken, bonusRewardToken, pool, startTime, endTime],
+            +selectedNFT.id,
+            selectedTier,
+            eventType === FarmingType.LIMIT,
+          );
+
           const result = await farmingCenterContract.enterFarming(
             [rewardToken, bonusRewardToken, pool, startTime, endTime],
             +selectedNFT.id,
             selectedTier,
             eventType === FarmingType.LIMIT,
             {
-              gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
+              gasLimit: calculateGasMargin(estimatedGas),
             },
           );
 
@@ -474,7 +501,6 @@ export function useFarmingHandlers() {
       addTransaction,
       chainId,
       finalizeTransaction,
-      gasPrice,
       provider,
       updateV3Stake,
       t,
@@ -513,8 +539,12 @@ export function useFarmingHandlers() {
             [account, FARMING_CENTER[chainId], selectedNFT.id],
           );
 
+          const estimatedGas = await nonFunPosManContract.estimateGas.multicall(
+            [transferData],
+          );
+
           const result = await nonFunPosManContract.multicall([transferData], {
-            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
+            gasLimit: calculateGasMargin(estimatedGas),
           });
 
           addTransaction(result, {
@@ -543,7 +573,6 @@ export function useFarmingHandlers() {
       addTransaction,
       chainId,
       finalizeTransaction,
-      gasPrice,
       provider,
       updateV3Stake,
       t,

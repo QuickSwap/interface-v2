@@ -56,7 +56,6 @@ export {
   TransactionErrorContent,
 } from './TransactionConfirmationModal';
 export { default as SearchInput } from './SearchInput';
-export { default as SwapTokenDetails } from './SwapTokenDetails';
 export { default as SwapTokenDetailsHorizontal } from './SwapTokenDetailsHorizontal';
 export { default as TopMovers } from './TopMovers';
 export { default as TokensTable } from './TokensTable';
@@ -64,4 +63,5 @@ export { default as PairTable } from './PairsTable';
 export { default as TransactionsTable } from './TransactionsTable';
 export { default as PoolFinderModal } from './PoolFinderModal';
 export { default as BuyFiatButton } from './BuyFiatButton';
+export { default as NetworkSelectionModal } from './NetworkSelectionModal';
 export { default as SortColumns } from './SortColumns';

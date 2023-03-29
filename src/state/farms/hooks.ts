@@ -10,6 +10,7 @@ import { useTokens } from 'hooks/Tokens';
 import { GlobalValue } from 'constants/index';
 import { updateV3Stake } from './actions';
 import { FarmingType } from 'models/enums';
+import { OLD_DQUICK } from 'constants/v3/addresses';
 
 export class WrappedStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -67,7 +68,7 @@ export class WrappedStakingInfo implements StakingBasic {
           tokenAddressMap,
           farmTokens,
         )
-      : GlobalValue.tokens.COMMON.OLD_DQUICK;
+      : OLD_DQUICK[chainId];
   }
 }
 
@@ -85,6 +86,10 @@ export type StakingInfoAddressMap = Readonly<
 const EMPTY_LIST: StakingInfoAddressMap = {
   [ChainId.MUMBAI]: {},
   [ChainId.MATIC]: {},
+  [ChainId.DOGECHAIN]: {},
+  [ChainId.DOEGCHAIN_TESTNET]: {},
+  [ChainId.ZKTESTNET]: {},
+  [ChainId.ZKEVM]: {},
 };
 
 const farmCache: WeakMap<FarmListInfo, StakingInfoAddressMap> | null =

@@ -69,9 +69,9 @@ export default function MyLiquidityPoolsV3() {
     },
   );
 
-  const allGammaPairsToFarm = ([] as GammaPair[]).concat(
-    ...Object.values(GammaPairs),
-  );
+  const allGammaPairsToFarm = chainId
+    ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
+    : [];
 
   const masterChefContracts = useMasterChefContracts();
 
@@ -169,25 +169,27 @@ export default function MyLiquidityPoolsV3() {
     };
   });
 
-  const gammaPositionList = gammaPositions
-    ? Object.keys(gammaPositions)
-        .filter(
-          (value) =>
-            !!Object.values(GammaPairs).find(
-              (pairData) =>
-                !!pairData.find(
-                  (item) => item.address.toLowerCase() === value.toLowerCase(),
-                ),
-            ),
-        )
-        .filter(
-          (pairAddress) =>
-            !stakedPositions.find(
-              (item) =>
-                item.pairAddress.toLowerCase() === pairAddress.toLowerCase(),
-            ),
-        )
-    : [];
+  const gammaPositionList =
+    gammaPositions && chainId
+      ? Object.keys(gammaPositions)
+          .filter(
+            (value) =>
+              !!Object.values(GammaPairs[chainId]).find(
+                (pairData) =>
+                  !!pairData.find(
+                    (item) =>
+                      item.address.toLowerCase() === value.toLowerCase(),
+                  ),
+              ),
+          )
+          .filter(
+            (pairAddress) =>
+              !stakedPositions.find(
+                (item) =>
+                  item.pairAddress.toLowerCase() === pairAddress.toLowerCase(),
+              ),
+          )
+      : [];
 
   return (
     <Box>

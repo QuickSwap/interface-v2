@@ -15,12 +15,14 @@ import {
   getTokenFromAddress,
   getGammaRewards,
   getGammaData,
+  getFormattedPercent,
 } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
 import {
   useBookmarkTokens,
   useEthPrice,
+  useIsV2,
   useMaticPrice,
 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
@@ -42,7 +44,7 @@ import {
 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { useParams } from 'react-router-dom';
+import { getConfig } from 'config';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 const AnalyticsTokenDetails: React.FC = () => {
@@ -54,9 +56,10 @@ const AnalyticsTokenDetails: React.FC = () => {
   const [token, setToken] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const currency = token
-    ? getTokenFromAddress(tokenAddress, chainId ?? ChainId.MATIC, tokenMap, [
-        new Token(ChainId.MATIC, getAddress(token.id), token.decimals),
+    ? getTokenFromAddress(tokenAddress, chainIdToUse, tokenMap, [
+        new Token(chainIdToUse, getAddress(token.id), token.decimals),
       ])
     : undefined;
   const [tokenPairs, updateTokenPairs] = useState<any>(null);
@@ -68,11 +71,28 @@ const AnalyticsTokenDetails: React.FC = () => {
   } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
+  const config = getConfig(chainIdToUse);
+  const v3 = config['v3'];
+  const v2 = config['v2'];
+
+  const showAnalytics = config['analytics']['available'];
+  useEffect(() => {
+    if (!showAnalytics) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAnalytics]);
 
   const dispatch = useDispatch();
 
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const { updateIsV2 } = useIsV2();
+
+  useEffect(() => {
+    if (!v2 && v3) {
+      updateIsV2(false);
+    }
+  }, [updateIsV2, v2, v3]);
+  const version = useAnalyticsVersion();
 
   const tokenTransactionsList = useMemo(() => {
     if (tokenTransactions) {
@@ -130,6 +150,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               maticPrice.price,
               maticPrice.oneDayPrice,
               tokenAddress,
+              chainIdToUse,
             );
             if (tokenInfo) {
               setToken(tokenInfo[0] || tokenInfo);
@@ -142,6 +163,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               ethPrice.price,
               ethPrice.oneDayPrice,
               tokenAddress,
+              chainIdToUse,
             );
             if (tokenInfo) {
               setToken(tokenInfo[0] || tokenInfo);
@@ -161,6 +183,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               ethPrice.price,
               ethPrice.oneDayPrice,
               tokenAddress,
+              chainIdToUse,
             );
             if (tokenInfo) {
               setToken(tokenInfo[0] || tokenInfo);
@@ -174,27 +197,35 @@ const AnalyticsTokenDetails: React.FC = () => {
     }
     async function fetchTransactions() {
       if (version === 'total') {
-        getTokenTransactionsTotal(tokenAddress).then((transactions) => {
-          if (transactions) {
-            updateTokenTransactions(transactions);
-          }
-        });
+        getTokenTransactionsTotal(tokenAddress, chainIdToUse).then(
+          (transactions) => {
+            if (transactions) {
+              updateTokenTransactions(transactions);
+            }
+          },
+        );
       } else {
-        getTokenTransactionsV3(tokenAddress).then((transactions) => {
-          if (transactions) {
-            updateTokenTransactions(transactions);
-          }
-        });
+        getTokenTransactionsV3(tokenAddress, chainIdToUse).then(
+          (transactions) => {
+            if (transactions) {
+              updateTokenTransactions(transactions);
+            }
+          },
+        );
       }
     }
     async function fetchPairs() {
-      const tokenPairs = await getTokenPairs2(tokenAddress);
+      const tokenPairs = await getTokenPairs2(tokenAddress, chainIdToUse);
       const formattedPairs = tokenPairs
         ? tokenPairs.map((pair: any) => {
             return pair.id;
           })
         : [];
-      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
+      const pairData = await getBulkPairData(
+        formattedPairs,
+        ethPrice.price,
+        chainIdToUse,
+      );
       if (pairData) {
         updateTokenPairs(pairData);
       }
@@ -202,41 +233,42 @@ const AnalyticsTokenDetails: React.FC = () => {
     async function fetchPairsV3() {
       let tokenPairs;
       if (version === 'total') {
-        tokenPairs = await getTopPairsTotalByToken(tokenAddress);
+        tokenPairs = await getTopPairsTotalByToken(tokenAddress, chainIdToUse);
       } else {
-        tokenPairs = await getTopPairsV3ByToken(tokenAddress);
+        tokenPairs = await getTopPairsV3ByToken(tokenAddress, chainIdToUse);
       }
       if (tokenPairs) {
         const data = tokenPairs.filter((item: any) => !!item);
         try {
-          const aprs = await getPairsAPR(data.map((item: any) => item.id));
-          const gammaRewards = await getGammaRewards(chainId);
+          const aprs = await getPairsAPR(
+            data.map((item: any) => item.id),
+            chainIdToUse,
+          );
+          const gammaRewards = await getGammaRewards(chainIdToUse);
           const gammaData = await getGammaData();
 
           updateTokenPairs(
             data.map((item: any, ind: number) => {
               const gammaPairs =
-                GammaPairs[
+                GammaPairs[chainIdToUse][
                   item.token0.id.toLowerCase() +
                     '-' +
                     item.token1.id.toLowerCase()
                 ] ??
-                GammaPairs[
+                GammaPairs[chainIdToUse][
                   item.token1.id.toLowerCase() +
                     '-' +
                     item.token0.id.toLowerCase()
                 ];
               const gammaFarmAPRs = gammaPairs
                 ? gammaPairs.map((pair) => {
-                    const masterChefAddress =
-                      chainId &&
-                      GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
-                        chainId
-                      ]
-                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
-                            chainId
-                          ].toLowerCase()
-                        : undefined;
+                    const masterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[
+                      pair.masterChefIndex ?? 0
+                    ][chainIdToUse]
+                      ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                          chainIdToUse
+                        ].toLowerCase()
+                      : undefined;
                     return {
                       title: pair.title,
                       apr:
@@ -326,7 +358,7 @@ const AnalyticsTokenDetails: React.FC = () => {
     maticPrice.price,
     maticPrice.oneDayPrice,
     version,
-    chainId,
+    chainIdToUse,
   ]);
 
   useEffect(() => {
@@ -441,7 +473,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                       Number(token.tvlUSDChange) || 0,
                     )}`}
                   >
-                    {getFormattedPrice(token.tvlUSDChange || 0)}%
+                    {getFormattedPercent(token.tvlUSDChange || 0)}
                   </small>
                 </Box>
               </Box>
@@ -456,7 +488,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                       Number(token.volumeChangeUSD) || 0,
                     )}`}
                   >
-                    {getFormattedPrice(token.volumeChangeUSD || 0)}%
+                    {getFormattedPercent(token.volumeChangeUSD || 0)}
                   </small>
                 </Box>
               </Box>

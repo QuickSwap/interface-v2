@@ -1,4 +1,5 @@
-import { CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
+import { ChainId, CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
+import { Currency as V3Currency } from '@uniswap/sdk-core';
 import React from 'react';
 import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
@@ -12,6 +13,7 @@ import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected
 import { formatNumber, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
 
+//TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {
   return currency instanceof Token
     ? currency.address
@@ -84,16 +86,13 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   const { ethereum } = window as any;
   const { account, chainId } = useActiveWeb3React();
   const key = currencyKey(currency);
-
   const customAdded = useIsUserAddedToken(currency);
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
 
   const removeToken = useRemoveUserAddedToken();
   const addToken = useAddUserToken();
-  const isMetamask =
-    ethereum &&
-    ethereum.isMetaMask &&
-    Number(ethereum.chainId) === 137 &&
-    isOnSelectedList;
+  const isMetamask = ethereum && ethereum.isMetaMask && isOnSelectedList;
 
   const addTokenToMetamask = (
     tokenAddress: any,
@@ -143,23 +142,25 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         <Box ml={1} height={32}>
           <Box className='flex items-center'>
             <small className='currencySymbol'>{currency.symbol}</small>
-            {isMetamask && currency !== ETHER && (
-              <Box
-                className='cursor-pointer'
-                ml='2px'
-                onClick={(event: any) => {
-                  addTokenToMetamask(
-                    currency.address,
-                    currency.symbol,
-                    currency.decimals,
-                    getTokenLogoURL(currency.address),
-                  );
-                  event.stopPropagation();
-                }}
-              >
-                <PlusHelper text={t('addToMetamask')} />
-              </Box>
-            )}
+            {isMetamask &&
+              currency !== nativeCurrency &&
+              !(currency as V3Currency).isNative && (
+                <Box
+                  className='cursor-pointer'
+                  ml='2px'
+                  onClick={(event: any) => {
+                    addTokenToMetamask(
+                      currency.address,
+                      currency.symbol,
+                      currency.decimals,
+                      getTokenLogoURL(currency.address),
+                    );
+                    event.stopPropagation();
+                  }}
+                >
+                  <PlusHelper text={t('addToMetamask')} />
+                </Box>
+              )}
           </Box>
           {isOnSelectedList ? (
             <span className='currencyName'>{currency.name}</span>

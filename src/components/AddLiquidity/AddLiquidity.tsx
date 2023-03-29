@@ -12,8 +12,13 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
-import { ETHER, TokenAmount, currencyEquals } from '@uniswap/sdk';
-import { GlobalConst } from 'constants/index';
+import {
+  currencyEquals,
+  Token,
+  ETHER,
+  TokenAmount,
+  ChainId,
+} from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -44,6 +49,7 @@ import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIc
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { useParams } from 'react-router-dom';
+import { NEW_QUICK, V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
 
 const AddLiquidity: React.FC<{
@@ -55,6 +61,8 @@ const AddLiquidity: React.FC<{
   >(null);
 
   const { account, chainId, library } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = Token.ETHER[chainIdToUse];
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
@@ -118,7 +126,7 @@ const AddLiquidity: React.FC<{
     onFieldAInput,
     onFieldBInput,
     onCurrencySelection,
-  } = useMintActionHandlers(noLiquidity);
+  } = useMintActionHandlers(noLiquidity, chainIdToUse);
 
   const maxAmounts: { [field in Field]?: TokenAmount } = [
     Field.CURRENCY_A,
@@ -126,7 +134,7 @@ const AddLiquidity: React.FC<{
   ].reduce((accumulator, field) => {
     return {
       ...accumulator,
-      [field]: maxAmountSpend(currencyBalances[field]),
+      [field]: maxAmountSpend(chainIdToUse, currencyBalances[field]),
     };
   }, {});
 
@@ -143,11 +151,11 @@ const AddLiquidity: React.FC<{
   const [approvingB, setApprovingB] = useState(false);
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_B],
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
 
   const userPoolBalance = useTokenBalance(
@@ -169,7 +177,7 @@ const AddLiquidity: React.FC<{
 
   const handleCurrencyASelect = useCallback(
     (currencyA: any) => {
-      const isSwichRedirect = currencyEquals(currencyA, ETHER)
+      const isSwichRedirect = currencyEquals(currencyA, ETHER[chainIdToUse])
         ? currency1Id === 'ETH'
         : currency1Id &&
           currencyA &&
@@ -181,7 +189,7 @@ const AddLiquidity: React.FC<{
         redirectWithCurrency(currencyA, true);
       }
     },
-    [redirectWithCurrency, currency1Id, redirectWithSwitch],
+    [redirectWithCurrency, chainIdToUse, currency1Id, redirectWithSwitch],
   );
 
   useEffect(() => {
@@ -193,7 +201,7 @@ const AddLiquidity: React.FC<{
 
   const handleCurrencyBSelect = useCallback(
     (currencyB: any) => {
-      const isSwichRedirect = currencyEquals(currencyB, ETHER)
+      const isSwichRedirect = currencyEquals(currencyB, ETHER[chainIdToUse])
         ? currency0Id === 'ETH'
         : currencyB &&
           currencyB.address &&
@@ -205,7 +213,7 @@ const AddLiquidity: React.FC<{
         redirectWithCurrency(currencyB, false);
       }
     },
-    [redirectWithCurrency, currency0Id, redirectWithSwitch],
+    [redirectWithCurrency, chainIdToUse, currency0Id, redirectWithSwitch],
   );
 
   useEffect(() => {
@@ -260,10 +268,10 @@ const AddLiquidity: React.FC<{
       args: Array<string | string[] | number>,
       value: BigNumber | null;
     if (
-      currencies[Field.CURRENCY_A] === ETHER ||
-      currencies[Field.CURRENCY_B] === ETHER
+      currencies[Field.CURRENCY_A] === nativeCurrency ||
+      currencies[Field.CURRENCY_B] === nativeCurrency
     ) {
-      const tokenBIsETH = currencies[Field.CURRENCY_B] === ETHER;
+      const tokenBIsETH = currencies[Field.CURRENCY_B] === nativeCurrency;
       estimate = router.estimateGas.addLiquidityETH;
       method = router.addLiquidityETH;
       args = [

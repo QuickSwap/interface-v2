@@ -6,12 +6,13 @@ import {
   currencyEquals,
   ETHER,
   Fraction,
+  ChainId,
 } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, NativeCurrency } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
+import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -25,7 +26,7 @@ import {
 import { Field } from 'state/swap/actions';
 import { useHistory } from 'react-router-dom';
 import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
 import {
   ApprovalState,
   useApproveCallbackFromBestTrade,
@@ -68,7 +69,7 @@ const SwapBestTrade: React.FC<{
 }> = ({ currencyBgClass }) => {
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
-  const { isProMode, updateIsProMode } = useIsProMode();
+  const isProMode = useIsProMode();
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -109,6 +110,7 @@ const SwapBestTrade: React.FC<{
   const { t } = useTranslation();
   const { account, chainId, library } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const {
     currencyBalances,
     parsedAmount,
@@ -148,18 +150,27 @@ const SwapBestTrade: React.FC<{
   const outputCurrency = currencies[Field.OUTPUT];
 
   const inputCurrencyV3 = useMemo(() => {
-    if (!inputCurrency) return;
-    return currencyEquals(inputCurrency, ETHER)
-      ? ({ ...ETHER, isNative: true, isToken: false } as NativeCurrency)
-      : ({ ...inputCurrency, isNative: false, isToken: true } as Currency);
-  }, [inputCurrency]);
+    if (!inputCurrency || !chainId) return;
+    if (currencyEquals(inputCurrency, ETHER[chainId])) {
+      return {
+        ...ETHER[chainId],
+        isNative: true,
+        isToken: false,
+      } as NativeCurrency;
+    }
+    return { ...inputCurrency, isNative: false, isToken: true } as Currency;
+  }, [chainId, inputCurrency]);
 
   const outputCurrencyV3 = useMemo(() => {
-    if (!outputCurrency) return;
-    return currencyEquals(outputCurrency, ETHER)
-      ? ({ ...ETHER, isNative: true, isToken: false } as NativeCurrency)
-      : ({ ...outputCurrency, isNative: false, isToken: true } as Currency);
-  }, [outputCurrency]);
+    if (!outputCurrency || !chainId) return;
+    if (currencyEquals(outputCurrency, ETHER[chainId]))
+      return {
+        ...ETHER[chainId],
+        isNative: true,
+        isToken: false,
+      } as NativeCurrency;
+    return { ...outputCurrency, isNative: false, isToken: true } as Currency;
+  }, [chainId, outputCurrency]);
 
   const [optimalRateError, setOptimalRateError] = useState('');
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
@@ -186,7 +197,7 @@ const SwapBestTrade: React.FC<{
   const handleCurrencySelect = useCallback(
     (inputCurrency) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
-      const isSwichRedirect = currencyEquals(inputCurrency, ETHER)
+      const isSwichRedirect = currencyEquals(inputCurrency, ETHER[chainIdToUse])
         ? parsedCurrency1Id === 'ETH'
         : parsedCurrency1Id &&
           inputCurrency &&
@@ -195,11 +206,18 @@ const SwapBestTrade: React.FC<{
             parsedCurrency1Id.toLowerCase();
       if (isSwichRedirect) {
         redirectWithSwitch();
+        setSwapType(swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY);
       } else {
         redirectWithCurrency(inputCurrency, true);
       }
     },
-    [parsedCurrency1Id, redirectWithCurrency, redirectWithSwitch],
+    [
+      chainIdToUse,
+      parsedCurrency1Id,
+      redirectWithSwitch,
+      swapType,
+      redirectWithCurrency,
+    ],
   );
 
   const parsedCurrency0 = useCurrency(parsedCurrency0Id);
@@ -207,14 +225,17 @@ const SwapBestTrade: React.FC<{
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
     } else if (parsedCurrency0 === undefined && !parsedCurrency1Id) {
-      redirectWithCurrency(ETHER, true);
+      redirectWithCurrency(ETHER[chainIdToUse], true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0, parsedCurrency1Id]);
+  }, [parsedCurrency0, parsedCurrency1Id, chainIdToUse]);
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
-      const isSwichRedirect = currencyEquals(outputCurrency, ETHER)
+      const isSwichRedirect = currencyEquals(
+        outputCurrency,
+        ETHER[chainIdToUse],
+      )
         ? parsedCurrency0Id === 'ETH'
         : parsedCurrency0Id &&
           outputCurrency &&
@@ -223,11 +244,18 @@ const SwapBestTrade: React.FC<{
             parsedCurrency0Id.toLowerCase();
       if (isSwichRedirect) {
         redirectWithSwitch();
+        setSwapType(swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY);
       } else {
         redirectWithCurrency(outputCurrency, false);
       }
     },
-    [parsedCurrency0Id, redirectWithCurrency, redirectWithSwitch],
+    [
+      chainIdToUse,
+      parsedCurrency0Id,
+      redirectWithSwitch,
+      swapType,
+      redirectWithCurrency,
+    ],
   );
 
   const parsedCurrency1 = useCurrency(parsedCurrency1Id);
@@ -241,10 +269,10 @@ const SwapBestTrade: React.FC<{
   const paraswap = useParaswap();
 
   const srcToken = inputCurrency
-    ? getBestTradeCurrencyAddress(inputCurrency)
+    ? getBestTradeCurrencyAddress(inputCurrency, chainIdToUse)
     : undefined;
   const destToken = outputCurrency
-    ? getBestTradeCurrencyAddress(outputCurrency)
+    ? getBestTradeCurrencyAddress(outputCurrency, chainIdToUse)
     : undefined;
 
   const srcDecimals = inputCurrency?.decimals;
@@ -569,7 +597,10 @@ const SwapBestTrade: React.FC<{
     [onUserInput],
   );
 
-  const maxAmountInputV2 = maxAmountSpend(currencyBalances[Field.INPUT]);
+  const maxAmountInputV2 = maxAmountSpend(
+    chainIdToUse,
+    currencyBalances[Field.INPUT],
+  );
   const maxAmountInput =
     maxAmountInputV2 && inputCurrencyV3
       ? CurrencyAmount.fromRawAmount(inputCurrencyV3, maxAmountInputV2.raw)
@@ -780,7 +811,7 @@ const SwapBestTrade: React.FC<{
       if (
         swapIsReady &&
         inputCurrency &&
-        !currencyEquals(inputCurrency, ETHER) &&
+        !currencyEquals(inputCurrency, ETHER[chainIdToUse]) &&
         optimalRate &&
         account &&
         library &&

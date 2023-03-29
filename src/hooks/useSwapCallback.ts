@@ -24,7 +24,6 @@ import { useRouterContract } from './useContract';
 import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
-import { RouterTypeParams } from 'state/swap/actions';
 
 export enum SwapCallbackState {
   INVALID,

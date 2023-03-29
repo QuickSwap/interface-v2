@@ -83,7 +83,6 @@ const GammaFarmCardDetails: React.FC<{
       : 0;
   const stakedUSD = Number(stakedAmount) * lpTokenUSD;
   const availableStakeUSD = Number(availableStakeAmount) * lpTokenUSD;
-  const lpTokenBalance = tryParseAmount(availableStakeAmount, lpToken);
 
   const rewards: any[] =
     rewardData && rewardData['rewarders']
@@ -163,7 +162,9 @@ const GammaFarmCardDetails: React.FC<{
     !account ||
     attemptUnstaking;
 
-  const parsedStakeAmount = tryParseAmount(stakeAmount, lpToken);
+  const parsedStakeAmount = chainId
+    ? tryParseAmount(chainId, stakeAmount, lpToken)
+    : undefined;
   const [approval, approveCallback] = useApproveCallback(
     parsedStakeAmount,
     masterChefContract?.address,

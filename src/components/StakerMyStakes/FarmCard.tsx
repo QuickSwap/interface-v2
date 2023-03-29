@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
-import { Token } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
@@ -16,6 +16,7 @@ import TotalAPRTooltip from 'components/TotalAPRToolTip';
 
 interface FarmCardProps {
   el: any;
+  chainId: ChainId;
   poolApr?: number;
   farmApr?: number;
 }
@@ -28,22 +29,28 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const tokenMap = useSelectedTokenList();
+  const poolToken0 = el.pool.token0 as any;
+  const poolToken1 = el.pool.token1 as any;
+  const token0Address = poolToken0.id ?? poolToken0.address;
+  const token1Address = poolToken1.id ?? poolToken1.address;
+
   const token0 =
-    chainId && el.pool.token0
-      ? getTokenFromAddress(el.pool.token0.id, chainId, tokenMap, [
+    chainId && token0Address
+      ? getTokenFromAddress(token0Address, chainId, tokenMap, [
           new Token(
             chainId,
-            getAddress(el.pool.token0.id),
+            getAddress(token0Address),
             Number(el.pool.token0.decimals),
           ),
         ])
       : undefined;
+
   const token1 =
-    chainId && el.pool.token1
-      ? getTokenFromAddress(el.pool.token1.id, chainId, tokenMap, [
+    chainId && token1Address
+      ? getTokenFromAddress(token1Address, chainId, tokenMap, [
           new Token(
             chainId,
-            getAddress(el.pool.token1.id),
+            getAddress(token1Address),
             Number(el.pool.token1.decimals),
           ),
         ])

@@ -153,8 +153,12 @@ const GammaFarmCardDetails: React.FC<{
   const availableStakeAmount = lpBalanceBN ? formatUnits(lpBalanceBN, 18) : '0';
 
   const availableStakeUSD = Number(availableStakeAmount) * lpTokenUSD;
-  const lpTokenBalance = tryParseAmount(availableStakeAmount, lpToken);
-  const parsedStakeAmount = tryParseAmount(stakeAmount, lpToken);
+  const lpTokenBalance = chainId
+    ? tryParseAmount(chainId, availableStakeAmount, lpToken)
+    : undefined;
+  const parsedStakeAmount = chainId
+    ? tryParseAmount(chainId, stakeAmount, lpToken)
+    : undefined;
   const stakeButtonDisabled =
     Number(stakeAmount) <= 0 ||
     !lpTokenBalance ||

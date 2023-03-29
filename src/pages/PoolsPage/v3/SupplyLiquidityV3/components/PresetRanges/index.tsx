@@ -11,6 +11,7 @@ import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import './index.scss';
+import { useActiveWeb3React } from 'hooks';
 import { Interface } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useMultipleContractSingleData } from 'state/multicall/hooks';
@@ -56,13 +57,15 @@ export function PresetRanges({
   isGamma = false,
   gammaPair,
 }: IPresetRanges) {
+  const { chainId } = useActiveWeb3React();
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity);
   const { t } = useTranslation();
   const [aprs, setAprs] = useState<undefined | { [key: string]: number }>();
 
   useEffect(() => {
-    fetchPoolsAPR().then(setAprs);
-  }, []);
+    if (!chainId) return;
+    fetchPoolsAPR(chainId).then(setAprs);
+  }, [chainId]);
 
   const gammaPairAddresses = gammaPair
     ? gammaPair.map((pair) => pair.address)

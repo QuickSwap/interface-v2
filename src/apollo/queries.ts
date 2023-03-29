@@ -583,11 +583,11 @@ export const PRICES_BY_BLOCK: any = (tokenAddress: string, blocks: any[]) => {
   return gql(queryString);
 };
 
-export const GLOBAL_DATA: any = (block?: number) => {
+export const GLOBAL_DATA: any = (factory: string, block?: number) => {
   const queryString = ` query uniswapFactories {
       uniswapFactories(
        ${block ? `block: { number: ${block}}` : ``} 
-       where: { id: "${GlobalConst.addresses.FACTORY_ADDRESS}" }) {
+       where: { id: "${factory}" }) {
         id
         totalVolumeUSD
         totalVolumeETH
@@ -601,11 +601,11 @@ export const GLOBAL_DATA: any = (block?: number) => {
   return gql(queryString);
 };
 
-export const GLOBAL_ALLDATA: any = (reqData: any) => {
+export const GLOBAL_ALLDATA: any = (reqData: any, factory: string) => {
   const queryString = reqData.map((each: any, index: any) => {
     return `${each.index}: uniswapFactories(
     ${each.block ? `block: { number: ${each.block} }` : ``}   
-    where: { id: "${GlobalConst.addresses.FACTORY_ADDRESS}" }) {
+    where: { id: "${factory}" }) {
       id
       totalVolumeUSD
       totalVolumeETH
@@ -654,10 +654,37 @@ export const GET_BLOCK = gql`
   }
 `;
 
+export const GET_BLOCK_ZKEVM = gql`
+  query blocks($timestampFrom: Int!, $timestampTo: Int!) {
+    ethereumBlocks(
+      first: 1
+      orderBy: timestamp
+      orderDirection: asc
+      where: { timestamp_gt: $timestampFrom, timestamp_lt: $timestampTo }
+    ) {
+      id
+      number
+      timestamp
+    }
+  }
+`;
+
 export const GET_BLOCKS: any = (timestamps: number[]) => {
   let queryString = 'query blocks {';
   queryString += timestamps.map((timestamp) => {
     return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${timestamp +
+      600} }) {
+      number
+    }`;
+  });
+  queryString += '}';
+  return gql(queryString);
+};
+
+export const GET_BLOCKS_ZKEVM: any = (timestamps: number[]) => {
+  let queryString = 'query blocks {';
+  queryString += timestamps.map((timestamp) => {
+    return `t${timestamp}:ethereumBlocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${timestamp +
       600} }) {
       number
     }`;

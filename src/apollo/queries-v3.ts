@@ -536,6 +536,36 @@ export const FETCH_TICKS = () => gql`
   }
 `;
 
+export const SWAP_TRANSACTIONS_v3 = gql`
+  query transactions($address: Bytes!, $lastTime: Int!) {
+    swaps(
+      first: 1000
+      orderBy: timestamp
+      orderDirection: desc
+      where: { pool: $address, timestamp_gte: $lastTime }
+    ) {
+      timestamp
+      transaction {
+        id
+      }
+      pool {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      recipient
+      amount0
+      amount1
+      amountUSD
+    }
+  }
+`;
+
 //Transactions
 
 export const PAIR_TRANSACTIONS_v3 = gql`
@@ -876,3 +906,17 @@ export const SWAP_TRANSACTIONS_V3 = gql`
     }
   }
 `;
+
+export const PAIR_ID_V3 = (tokenAddress0: string, tokenAddress1: string) => {
+  const queryString = `
+    query pairs {
+      pairs0: pools(where: {token0: "${tokenAddress0}", token1: "${tokenAddress1}"}){
+        id
+      }
+      pairs1: pools(where: {token0: "${tokenAddress1}", token1: "${tokenAddress0}"}){
+        id
+      }
+    }
+  `;
+  return gql(queryString);
+};

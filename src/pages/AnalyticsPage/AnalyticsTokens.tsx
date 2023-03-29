@@ -13,7 +13,8 @@ import { GlobalConst } from 'constants/index';
 import { getTopTokensTotal, getTopTokensV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { useParams } from 'react-router-dom';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
@@ -25,9 +26,9 @@ const AnalyticsTokens: React.FC = () => {
   const { bookmarkTokens } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
-
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const version = useAnalyticsVersion();
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -50,6 +51,7 @@ const AnalyticsTokens: React.FC = () => {
             maticPrice.price,
             maticPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            chainIdToUse,
           );
           if (data) {
             updateTopTokens(data);
@@ -64,6 +66,7 @@ const AnalyticsTokens: React.FC = () => {
             ethPrice.price,
             ethPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            chainIdToUse,
           );
           if (data) {
             updateTopTokens(data);
@@ -82,6 +85,7 @@ const AnalyticsTokens: React.FC = () => {
             maticPrice.price,
             maticPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            chainIdToUse,
           );
           if (data) {
             updateTopTokens(data);
@@ -95,6 +99,7 @@ const AnalyticsTokens: React.FC = () => {
     maticPrice.price,
     maticPrice.oneDayPrice,
     version,
+    chainIdToUse,
   ]);
 
   useEffect(() => {

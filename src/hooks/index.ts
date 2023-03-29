@@ -5,7 +5,6 @@ import { Web3ReactContextInterface } from '@web3-react/core/dist/types';
 import { ChainId, Pair } from '@uniswap/sdk';
 import { isMobile } from 'react-device-detect';
 import { injected, safeApp } from 'connectors';
-import { GlobalConst } from 'constants/index';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'state';
 /* eslint-disable */
@@ -17,6 +16,11 @@ import { useArgentWalletDetectorContract } from './useContract';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { usePairs } from 'data/Reserves';
+import useParsedQueryString from './useParsedQueryString';
+import { useLocalChainId } from 'state/application/hooks';
+import { GlobalConst } from 'constants/index';
+import { useParams } from 'react-router-dom';
+import { getConfig } from 'config';
 
 export function useActiveWeb3React(): Web3ReactContextInterface<
   Web3Provider
@@ -27,7 +31,12 @@ export function useActiveWeb3React(): Web3ReactContextInterface<
   const contextNetwork = useWeb3ReactCore<Web3Provider>(
     GlobalConst.utils.NetworkContextName,
   );
-  return context.active ? context : contextNetwork;
+  const { localChainId } = useLocalChainId();
+  const contextActive = context.active ? context : contextNetwork;
+  return {
+    ...contextActive,
+    chainId: context.chainId ?? localChainId,
+  };
 }
 
 export function useIsArgentWallet(): boolean {
@@ -233,3 +242,26 @@ export function useV2LiquidityPools(account?: string) {
 
   return { loading: v2IsLoading, pairs: allV2PairsWithLiquidity };
 }
+
+export const useIsProMode = () => {
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const proModeEnabled = config['swap']['proMode'];
+  const parsedQs = useParsedQueryString();
+  const isProMode = Boolean(
+    parsedQs.isProMode && parsedQs.isProMode === 'true',
+  );
+  return proModeEnabled && isProMode;
+};
+
+export const useAnalyticsVersion = () => {
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const v2 = config['v2'];
+  const v3 = config['v3'];
+  const defaultVersion = v2 && v3 ? 'total' : v2 ? 'v2' : 'v3';
+  const params: any = useParams();
+  const version = params && params.version ? params.version : defaultVersion;
+  return version;
+};

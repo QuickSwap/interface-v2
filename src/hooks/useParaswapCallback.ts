@@ -4,7 +4,8 @@ import {
 } from '@ethersproject/providers';
 import { Currency } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { GlobalConst, RouterTypes, SmartRouter } from 'constants/index';
+import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import { RouterTypes, SmartRouter } from 'constants/index';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import {
   isAddress,
@@ -164,7 +165,7 @@ export function useParaswapCallback(
           );
 
           const swapRouterAddress = chainId
-            ? GlobalConst.addresses.SWAP_ROUTER_ADDRESS[chainId]
+            ? SWAP_ROUTER_ADDRESS[chainId]
             : undefined;
           if (
             response &&

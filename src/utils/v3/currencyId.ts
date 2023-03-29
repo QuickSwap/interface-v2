@@ -6,6 +6,12 @@ export function currencyId(currency: Currency, chainId: number): string {
   if (chainId === 137) {
     chainSymbol = 'MATIC';
   }
+  if (chainId === 2000) {
+    chainSymbol = 'WDOGE';
+  }
+  if (chainId === 1402) {
+    chainSymbol = 'ETH';
+  }
 
   if (currency.isNative) return chainSymbol;
   if (currency.isToken) return currency.address;

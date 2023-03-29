@@ -13,13 +13,15 @@ import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { GlobalConst, GlobalData, GlobalValue } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import { ChainId } from '@uniswap/sdk';
 
 const EternalFarmsPage: React.FC<{
   farmFilter: string;
   search: string;
   sortBy: string;
   sortDesc: boolean;
-}> = ({ farmFilter, search, sortBy, sortDesc }) => {
+  chainId: ChainId;
+}> = ({ farmFilter, search, sortBy, sortDesc, chainId }) => {
   const [modalForPool, setModalForPool] = useState(null);
   const { t } = useTranslation();
   const parsedQuery = useParsedQueryString();
@@ -301,6 +303,7 @@ const EternalFarmsPage: React.FC<{
                     tvls={eternalFarmTvls}
                     tvlsLoading={eternalFarmTvlsLoading}
                     event={event}
+                    chainId={chainId}
                   />
                 </Box>
               ),

@@ -44,16 +44,17 @@ import {
   TransactionErrorContent,
 } from 'components';
 import 'pages/styles/lend.scss';
-import { GlobalValue } from 'constants/index';
 import LendDetailAssetStats from './LendDetailAssetStats';
 import AdsSlider from 'components/AdsSlider';
+import { ChainId } from '@uniswap/sdk';
+import { MI, LENDING_QS_POOL_DIRECTORY } from 'constants/v3/addresses';
 
 const LendDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const { chainId, account } = useActiveWeb3React();
-
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const [txLoading, setTxLoading] = useState(false);
   const [openTxModal, setOpenTxModal] = useState(false);
   const [txHash, setTxHash] = useState<string | undefined>(undefined);
@@ -66,7 +67,7 @@ const LendDetailPage: React.FC = () => {
 
   const { sdk } = useMarket();
   const poolId = location && new URLSearchParams(location.search).get('poolId');
-  const poolData = usePoolData(poolId, GlobalValue.marketSDK.QS_PoolDirectory);
+  const poolData = usePoolData(poolId, LENDING_QS_POOL_DIRECTORY[chainIdToUse]);
 
   const extraPoolData = useExtraPoolData(
     poolData?.pool.comptroller,
@@ -564,19 +565,20 @@ const LendDetailPage: React.FC = () => {
                                 </Button>
                               </TableCell>
                             </TableRow>
-                            {asset.underlyingToken.toLowerCase() ===
-                              GlobalValue.tokens.COMMON.MI.address.toLowerCase() && (
-                              <TableRow>
-                                <TableCell colSpan={5}>
-                                  <Box className='maiAlertWrapper'>
-                                    <p>
-                                      <span>{t('pleaseNote')}:</span>{' '}
-                                      {t('maiNote')}
-                                    </p>
-                                  </Box>
-                                </TableCell>
-                              </TableRow>
-                            )}
+                            {chainId &&
+                              asset.underlyingToken.toLowerCase() ===
+                                MI[chainId].address.toLowerCase() && (
+                                <TableRow>
+                                  <TableCell colSpan={5}>
+                                    <Box className='maiAlertWrapper'>
+                                      <p>
+                                        <span>{t('pleaseNote')}:</span>{' '}
+                                        {t('maiNote')}
+                                      </p>
+                                    </Box>
+                                  </TableCell>
+                                </TableRow>
+                              )}
                           </>
                         );
                       })}
