@@ -113,6 +113,7 @@ const Header: React.FC = () => {
       text: 'Gaming Hub',
       id: 'gamehub-page-link',
       isExternal: true,
+      target: '_top',
       externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
       isNew: true,
     },
@@ -288,7 +289,7 @@ const Header: React.FC = () => {
                       return val.isExternal ? (
                         <a
                           href={val.externalLink}
-                          target='_blank'
+                          target={val?.target ? val.target : '_blank'}
                           key={index}
                           rel='noopener noreferrer'
                         >

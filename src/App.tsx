@@ -213,8 +213,10 @@ const App: React.FC = () => (
                     ></RedirectExternal>
                   </Route>
                   <Route exact path='/gamehub'>
+                    {console.log(process.env.REACT_APP_GAMEHUB_URL)}
                     <RedirectExternal
                       to={`${process.env.REACT_APP_GAMEHUB_URL}`}
+                      target={'_top'}
                     ></RedirectExternal>
                   </Route>
                   <Route exact path='/analytics/:version?'>
