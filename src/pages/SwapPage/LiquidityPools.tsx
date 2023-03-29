@@ -9,6 +9,8 @@ import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { getTopPairsV3ByTokens } from 'utils/v3-graph';
+import { useActiveWeb3React } from 'hooks';
+import { getConfig } from 'config';
 
 const LiquidityPools: React.FC<{
   token1: Token;
@@ -17,8 +19,6 @@ const LiquidityPools: React.FC<{
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const isLg = useMediaQuery(breakpoints.only('lg'));
-  const isMd = useMediaQuery(breakpoints.only('md'));
-  const isXl = useMediaQuery(breakpoints.only('xl'));
 
   const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(isMobile);
   const [liquidityFilterIndex, setLiquidityFilterIndex] = useState(0);
@@ -76,39 +76,41 @@ const LiquidityPools: React.FC<{
   useEffect(() => {
     if (!ethPrice.price) return;
     (async () => {
-      const tokenPairs = await getTokenPairs(
-        token1Address,
-        token2Address,
-        token1.chainId ?? ChainId.MATIC,
-      );
+      const config = getConfig(token1.chainId);
+      const v2 = config['v2'];
+      let pairData;
+      if (v2) {
+        const tokenPairs = await getTokenPairs(
+          token1Address,
+          token2Address,
+          token1.chainId ?? ChainId.MATIC,
+        );
+        const formattedPairs = tokenPairs
+          ? tokenPairs
+              .filter((pair: any) => {
+                return (
+                  whiteListAddressList.includes(pair?.token0?.id) &&
+                  whiteListAddressList.includes(pair?.token1?.id)
+                );
+              })
+              .map((pair: any) => {
+                return pair.id;
+              })
+          : [];
+
+        pairData = await getBulkPairData(
+          formattedPairs,
+          ethPrice.price,
+          token1.chainId,
+        );
+      }
       const tokenPairsV3 = await getTopPairsV3ByTokens(
         token1Address.toLowerCase(),
         token2Address.toLowerCase(),
         token1.chainId ?? ChainId.MATIC,
       );
 
-      const formattedPairs = tokenPairs
-        ? tokenPairs
-            .filter((pair: any) => {
-              return (
-                whiteListAddressList.includes(pair?.token0?.id) &&
-                whiteListAddressList.includes(pair?.token1?.id)
-              );
-            })
-            .map((pair: any) => {
-              return pair.id;
-            })
-        : [];
-
-      const pairData = await getBulkPairData(
-        formattedPairs,
-        ethPrice.price,
-        token1.chainId,
-      );
-
-      if (pairData) {
-        updateTokenPairs(pairData.concat(tokenPairsV3));
-      }
+      updateTokenPairs((pairData ?? []).concat(tokenPairsV3));
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token1Address, token2Address, whiteListAddressList, ethPrice.price]);

@@ -8,13 +8,9 @@ import { useEthPrice, useLocalChainId, useMaticPrice } from './hooks';
 import { getEthPrice } from 'utils';
 import { getMaticPrice } from 'utils/v3-graph';
 import { ChainId } from '@uniswap/sdk';
-import { getConfig } from 'config';
 
 export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
-  const config = getConfig(chainId);
-  const v2 = config['v2'];
-  const v3 = config['v3'];
   const { ethereum } = window as any;
   const dispatch = useDispatch();
   const { updateEthPrice } = useEthPrice();
@@ -93,12 +89,8 @@ export default function Updater(): null {
         console.log(e);
       }
     };
-    if (v3) {
-      fetchMaticPrice();
-    }
-    if (v2) {
-      fetchETHPrice();
-    }
+    fetchMaticPrice();
+    fetchETHPrice();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime, chainId, state.chainId]);
 

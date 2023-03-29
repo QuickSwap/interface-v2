@@ -597,7 +597,6 @@ export async function getTopTokensTotal(
     const utcCurrentTime = dayjs();
 
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
 
     const [oneDayBlock] = await getBlocksFromTimestamps(
       [utcOneDayBack],
@@ -786,11 +785,14 @@ export async function getTopTokensV3(
       chainId,
     );
 
-    const tokens24 = await fetchTokensByTime(
-      oneDayBlock.number,
-      tokenAddresses,
-      chainId,
-    );
+    let tokens24;
+    if (oneDayBlock && oneDayBlock.number) {
+      tokens24 = await fetchTokensByTime(
+        oneDayBlock.number,
+        tokenAddresses,
+        chainId,
+      );
+    }
 
     const parsedTokens = parseTokensData(tokensCurrent);
     const parsedTokens24 = parseTokensData(tokens24);
@@ -2323,21 +2325,32 @@ export async function getTopPairsV3ByTokens(
       pairsAddresses,
       chainId,
     );
-    const pairs24 = await fetchPairsByTime(
-      oneDayBlock.number,
-      pairsAddresses,
-      chainId,
-    );
-    const pairs48 = await fetchPairsByTime(
-      twoDayBlock.number,
-      pairsAddresses,
-      chainId,
-    );
-    const pairsWeek = await fetchPairsByTime(
-      oneWeekBlock.number,
-      pairsAddresses,
-      chainId,
-    );
+
+    let pairs24, pairs48, pairsWeek;
+
+    if (oneDayBlock && oneDayBlock.number) {
+      pairs24 = await fetchPairsByTime(
+        oneDayBlock.number,
+        pairsAddresses,
+        chainId,
+      );
+    }
+
+    if (twoDayBlock && twoDayBlock.number) {
+      pairs48 = await fetchPairsByTime(
+        twoDayBlock.number,
+        pairsAddresses,
+        chainId,
+      );
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      pairsWeek = await fetchPairsByTime(
+        oneWeekBlock.number,
+        pairsAddresses,
+        chainId,
+      );
+    }
 
     const parsedPairs = parsePairsData(pairsCurrent);
     const parsedPairs24 = parsePairsData(pairs24);

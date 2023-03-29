@@ -24,8 +24,6 @@ const SwapSection: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
   const v2 = config['v2'];
-  const v3 = config['v3'];
-  const isOnV2 = !!v2 && !v3;
 
   return (
     <>

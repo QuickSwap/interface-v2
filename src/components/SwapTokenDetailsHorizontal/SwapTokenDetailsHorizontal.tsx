@@ -41,6 +41,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
   const config = getConfig(chainId);
+  const v2 = config['v2'];
 
   useEffect(() => {
     (async () => {
@@ -54,13 +55,20 @@ const SwapTokenDetailsHorizontal: React.FC<{
         .subtract(1, 'day')
         .startOf('hour')
         .unix();
-      const tokenPriceDataV2 = await getIntervalTokenData(
-        tokenAddress,
-        startTime,
-        3600,
-        latestBlock,
-        chainIdToUse,
-      );
+
+      let tokenPriceDataV2, tokenPriceIsV2;
+      if (v2) {
+        tokenPriceDataV2 = await getIntervalTokenData(
+          tokenAddress,
+          startTime,
+          3600,
+          latestBlock,
+          chainIdToUse,
+        );
+        tokenPriceIsV2 = !!tokenPriceDataV2.find(
+          (item) => item.open && item.close,
+        );
+      }
       const tokenPriceDataV3 = await getIntervalTokenDataV3(
         tokenAddress.toLowerCase(),
         startTime,
@@ -68,23 +76,21 @@ const SwapTokenDetailsHorizontal: React.FC<{
         latestBlock,
         chainIdToUse,
       );
-      const tokenPriceIsV2 = !!tokenPriceDataV2.find(
-        (item) => item.open && item.close,
-      );
+
       const tokenPriceData = tokenPriceIsV2
         ? tokenPriceDataV2
         : tokenPriceDataV3;
       setPriceData(tokenPriceData);
 
-      if (ethPrice.price && ethPrice.oneDayPrice) {
+      let token0;
+      if (ethPrice.price && ethPrice.oneDayPrice && v2) {
         const tokenInfo = await getTokenInfo(
           ethPrice.price,
           ethPrice.oneDayPrice,
           tokenAddress,
           chainIdToUse,
         );
-        const token0 =
-          tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
+        token0 = tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
         if (token0 && token0.priceUSD) {
           setTokenData(token0);
           const tokenDetailToUpdate = {
@@ -93,7 +99,10 @@ const SwapTokenDetailsHorizontal: React.FC<{
             priceData: tokenPriceData,
           };
           updateTokenDetails(tokenDetailToUpdate);
-        } else if (maticPrice.price && maticPrice.oneDayPrice) {
+        }
+      }
+      if (!token0 || !token0.priceUSD) {
+        if (maticPrice.price && maticPrice.oneDayPrice) {
           const tokenInfoV3 = await getTokenInfoV3(
             maticPrice.price,
             maticPrice.oneDayPrice,
