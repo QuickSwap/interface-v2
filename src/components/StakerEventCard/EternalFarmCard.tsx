@@ -128,7 +128,7 @@ export function EternalFarmCard({
             <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
             <Box className='cursor-pointer'>
               <Link
-                to={`/pools?currency0=${pool.token0.id}&currency1=${pool.token1.id}`}
+                to={`/pools?currency0=${token0Address}&currency1=${token1Address}`}
                 target='_blank'
                 className='no-decoration'
               >

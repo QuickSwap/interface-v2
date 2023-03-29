@@ -358,14 +358,19 @@ export function FarmModal({
     <Box padding='20px 16px'>
       {submitState === 3 ? (
         <Box width='100%'>
-          <button onClick={closeHandler}>
-            <X size={18} stroke={'white'} />
-          </button>
-          <Box className='flex'>
-            <CheckCircle size={55} stroke={'var(--green)'} />
-            <p>
-              {t('positionDepositedSuccessfully', { nftID: selectedNFT?.id })}!
-            </p>
+          <Box className='flex justify-end'>
+            <Box className='cursor-pointer' onClick={closeHandler}>
+              <X size={18} stroke={'white'} />
+            </Box>
+          </Box>
+          <Box className='flex flex-col items-center'>
+            <CheckCircle size={55} />
+            <Box mt={2}>
+              <p>
+                {t('positionDepositedSuccessfully', { nftID: selectedNFT?.id })}
+                !
+              </p>
+            </Box>
           </Box>
         </Box>
       ) : positionsForPoolLoading ? (
