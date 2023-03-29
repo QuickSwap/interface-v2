@@ -436,7 +436,6 @@ export const GammaPairs: {
       address: '0x3e99b86b16f36dcf3b987ebc8b754c54030403b5',
       token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
       token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      ableToFarm: true,
       pid: 20,
     },
     {
@@ -445,7 +444,6 @@ export const GammaPairs: {
       address: '0x5ec3511b49d4fe7798015a26a83abdc01261615b',
       token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
       token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      ableToFarm: true,
       pid: 21,
     },
   ],
@@ -663,7 +661,6 @@ export const GammaPairs: {
       address: '0xee2a89071654333703b3d6c9be9ab8f085f977de',
       token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
       token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-      ableToFarm: true,
       pid: 43,
     },
   ],
@@ -858,18 +855,18 @@ export const GammaPairs: {
       pid: 61,
     },
   ],
-  // '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
-  //   {
-  //     type: Presets.GAMMA_WIDE,
-  //     title: 'Wide',
-  //     address: '0x1ddae2e33c1d68211c5eae05948fd298e72c541a',
-  //     token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-  //     token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
-  //     ableToFarm: true,
-  //     pid: 62,
-  //     masterChefIndex: 1,
-  //   },
-  // ],
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
+    {
+      type: Presets.GAMMA_WIDE,
+      title: 'Wide',
+      address: '0x1ddae2e33c1d68211c5eae05948fd298e72c541a',
+      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
+      ableToFarm: true,
+      pid: 0,
+      masterChefIndex: 1,
+    },
+  ],
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x172370d5cd63279efa6d502dab29171933a610af': [
     {
       type: Presets.GAMMA_NARROW,
