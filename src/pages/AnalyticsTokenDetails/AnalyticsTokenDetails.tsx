@@ -15,6 +15,7 @@ import {
   getTokenFromAddress,
   getGammaRewards,
   getGammaData,
+  getFormattedPercent,
 } from 'utils';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
@@ -472,7 +473,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                       Number(token.tvlUSDChange) || 0,
                     )}`}
                   >
-                    {getFormattedPrice(token.tvlUSDChange || 0)}%
+                    {getFormattedPercent(token.tvlUSDChange || 0)}
                   </small>
                 </Box>
               </Box>
@@ -487,7 +488,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                       Number(token.volumeChangeUSD) || 0,
                     )}`}
                   >
-                    {getFormattedPrice(token.volumeChangeUSD || 0)}%
+                    {getFormattedPercent(token.volumeChangeUSD || 0)}
                   </small>
                 </Box>
               </Box>

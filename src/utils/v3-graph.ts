@@ -2069,18 +2069,36 @@ export async function getTopPairsV3ByToken(
         oneDay && oneDay[manageUntrackedVolume]
           ? Number(oneDay[manageUntrackedVolume])
           : 0;
-      const oneDayVolumeUSD = currentVolume - oneDayVolume;
+      let oneDayVolumeUSD = currentVolume - oneDayVolume;
 
-      const oneWeekVolumeUSD = week
+      let oneWeekVolumeUSD = week
         ? parseFloat(current[manageUntrackedVolume]) -
           parseFloat(week[manageUntrackedVolume])
         : parseFloat(current[manageUntrackedVolume]);
 
-      const tvlUSD = parseFloat(current[manageUntrackedTVL]);
-      const tvlUSDChange = getPercentChange(
-        current[manageUntrackedTVL],
-        oneDay ? oneDay[manageUntrackedTVL] : undefined,
-      );
+      if (oneDayVolumeUSD < 0.000001) {
+        oneDayVolumeUSD = 0;
+      }
+
+      if (oneWeekVolumeUSD < 0.000001) {
+        oneWeekVolumeUSD = 0;
+      }
+
+      let tvlUSD =
+        current && current[manageUntrackedTVL]
+          ? parseFloat(current[manageUntrackedTVL])
+          : 0;
+
+      const oneDayTVLUSD =
+        oneDay && oneDay[manageUntrackedTVL] ? oneDay[manageUntrackedTVL] : 0;
+      let tvlUSDChange = getPercentChange(tvlUSD, oneDayTVLUSD);
+
+      if (tvlUSD < 0.000001) {
+        tvlUSD = 0;
+      }
+      if (tvlUSDChange < 0.000001) {
+        tvlUSDChange = 0;
+      }
 
       return {
         isV3: true,
@@ -2092,7 +2110,7 @@ export async function getTopPairsV3ByToken(
         oneWeekVolumeUSD,
         trackedReserveUSD: tvlUSD,
         tvlUSDChange,
-        totalValueLockedUSD: current[manageUntrackedTVL],
+        totalValueLockedUSD: tvlUSD,
       };
     });
 
@@ -2559,46 +2577,66 @@ export async function getPairInfoV3(address: string, chainId: ChainId) {
         : 'totalValueLockedUSD'
       : '';
 
-    const [oneDayVolumeUSD, oneDayVolumeChangeUSD] =
-      current && oneDay && twoDay
-        ? get2DayPercentChange(
-            current[manageUntrackedVolume],
-            oneDay[manageUntrackedVolume],
-            twoDay[manageUntrackedVolume],
-          )
-        : current && oneDay
-        ? [
-            parseFloat(current[manageUntrackedVolume]) -
-              parseFloat(oneDay[manageUntrackedVolume]),
-            0,
-          ]
-        : current
-        ? [parseFloat(current[manageUntrackedVolume]), 0]
-        : [0, 0];
-
-    const oneWeekVolumeUSD =
-      current && week
-        ? parseFloat(current[manageUntrackedVolume]) -
-          parseFloat(week[manageUntrackedVolume])
-        : current
-        ? parseFloat(current[manageUntrackedVolume])
+    const currentVolume =
+      current && current[manageUntrackedVolume]
+        ? Number(current[manageUntrackedVolume])
+        : 0;
+    const oneDayVolume =
+      oneDay && oneDay[manageUntrackedVolume]
+        ? Number(oneDay[manageUntrackedVolume])
+        : 0;
+    const twoDayVolume =
+      twoDay && twoDay[manageUntrackedVolume]
+        ? Number(twoDay[manageUntrackedVolume])
+        : 0;
+    const oneWeekVolume =
+      week && week[manageUntrackedVolume]
+        ? Number(week[manageUntrackedVolume])
         : 0;
 
-    const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
-    const tvlUSDChange = getPercentChange(
-      current ? current[manageUntrackedTVL] : undefined,
-      oneDay ? oneDay[manageUntrackedTVL] : undefined,
+    let [oneDayVolumeUSD, oneDayVolumeChangeUSD] = get2DayPercentChange(
+      currentVolume,
+      oneDayVolume,
+      twoDayVolume,
     );
+    if (oneDayVolumeUSD < 0.000001) {
+      oneDayVolumeUSD = 0;
+    }
+    if (oneDayVolumeChangeUSD < 0.000001) {
+      oneDayVolumeChangeUSD = 0;
+    }
 
-    const feesUSD = current ? parseFloat(current.feesUSD) : 0;
-    const feesUSDOneDay =
-      current && oneDay
-        ? Number(current.feesUSD ?? 0) - Number(oneDay.feesUSD ?? 0)
+    let oneWeekVolumeUSD = currentVolume - oneWeekVolume;
+    if (oneWeekVolumeUSD < 0.000001) {
+      oneWeekVolumeUSD = 0;
+    }
+
+    const currentTVL =
+      current && current[manageUntrackedTVL]
+        ? Number(current[manageUntrackedTVL])
         : 0;
-    const feesUSDChange = getPercentChange(
-      current ? current.feesUSD : undefined,
-      oneDay ? oneDay.feesUSD : undefined,
-    );
+    const oneDayTVL =
+      oneDay && oneDay[manageUntrackedTVL]
+        ? Number(oneDay[manageUntrackedTVL])
+        : 0;
+    let tvlUSD = currentTVL;
+    if (tvlUSD < 0.000001) {
+      tvlUSD = 0;
+    }
+    const tvlUSDChange = getPercentChange(currentTVL, oneDayTVL);
+
+    const currentFees =
+      current && current.feesUSD ? Number(current.feesUSD) : 0;
+    const oneDayFees = oneDay && oneDay.feesUSD ? Number(oneDay.feesUSD) : 0;
+    let feesUSD = currentFees;
+    if (feesUSD < 0.000001) {
+      feesUSD = 0;
+    }
+    let feesUSDOneDay = currentFees - oneDayFees;
+    if (feesUSDOneDay < 0.000001) {
+      feesUSDOneDay = 0;
+    }
+    const feesUSDChange = getPercentChange(currentFees, oneDayFees);
 
     const poolFeeChange = getPercentChange(
       current ? current.fee : undefined,

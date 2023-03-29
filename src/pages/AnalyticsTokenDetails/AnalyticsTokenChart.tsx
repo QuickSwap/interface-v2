@@ -12,6 +12,7 @@ import {
   getChartStartTime,
   getLimitedData,
   getYAXISValuesAnalytics,
+  getFormattedPercent,
 } from 'utils';
 import { AreaChart, ChartType } from 'components';
 import { getTokenChartData } from 'utils';
@@ -138,7 +139,7 @@ const AnalyticsTokenChart: React.FC<{
                     className={`priceChangeWrapper ${currentPercentClass}`}
                     ml={1}
                   >
-                    <small>{getFormattedPrice(Number(currentPercent))}%</small>
+                    <small>{getFormattedPercent(Number(currentPercent))}</small>
                   </Box>
                 </Box>
                 <Box>

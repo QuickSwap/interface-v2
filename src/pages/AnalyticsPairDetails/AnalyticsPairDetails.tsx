@@ -172,7 +172,7 @@ const AnalyticsPairDetails: React.FC = () => {
       : '-'
     : pairData && pairData.feesUSDOneDay
     ? formatNumber(pairData.feesUSDOneDay)
-    : '-';
+    : '0';
   const { ethPrice } = useEthPrice();
 
   useEffect(() => {

@@ -2077,6 +2077,21 @@ export function getFormattedPrice(price: number) {
   }
 }
 
+export function getFormattedPercent(percent: number) {
+  if (percent < 0.001 && percent > 0) {
+    return '<+0.001%';
+  } else if (percent > -0.001 && percent < 0) {
+    return '>-0.001%';
+  } else if (percent > 10000) {
+    return '>+10000%';
+  } else if (percent < -10000) {
+    return '<-10000%';
+  } else {
+    const beforeSign = percent > 0 ? '+' : '';
+    return beforeSign + percent.toLocaleString('us') + '%';
+  }
+}
+
 // set different bg and text colors for price percent badge according to price.
 export function getPriceClass(price: number, transparent = false) {
   if (price > 0) {
