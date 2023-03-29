@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React, { lazy, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,9 @@ import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg'
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
 import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
 import 'pages/styles/landing.scss';
+import { useIsV2 } from 'state/application/hooks';
+import { getConfig } from 'config';
+import { useActiveWeb3React } from 'hooks';
 const SwapSection = lazy(() => import('./SwapSection'));
 const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
 const GlobalSection = lazy(() => import('./GlobalSection'));
@@ -28,6 +31,9 @@ const RewardSlider = lazy(() => import('components/RewardSlider'));
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const isFarmAvailable = config['farm']['available'];
 
   const features = [
     {
@@ -116,6 +122,11 @@ const LandingPage: React.FC = () => {
   ];
 
   const history = useHistory();
+  const { updateIsV2 } = useIsV2();
+
+  useEffect(() => {
+    updateIsV2(false);
+  }, [updateIsV2]);
 
   return (
     <div id='landing-page' style={{ width: '100%' }}>
@@ -143,22 +154,24 @@ const LandingPage: React.FC = () => {
         <img src={Motif} alt='Motif' />
       </Box>
       <SwapSection />
-      <Box className='rewardsContainer'>
-        <Box maxWidth='480px' width='100%'>
-          <h4>{t('earnRewardsbyDeposit')}</h4>
-          <p style={{ marginTop: '20px' }}>{t('depositLPTokensRewards')}</p>
+      {isFarmAvailable && (
+        <Box className='rewardsContainer'>
+          <Box maxWidth='480px' width='100%'>
+            <h4>{t('earnRewardsbyDeposit')}</h4>
+            <p style={{ marginTop: '20px' }}>{t('depositLPTokensRewards')}</p>
+          </Box>
+          <RewardSlider />
+          <Box
+            className='allRewardPairs'
+            onClick={() => {
+              history.push('/farm');
+            }}
+          >
+            <p>{t('seeAllPairs')}</p>
+          </Box>
         </Box>
-        <RewardSlider />
-        <Box
-          className='allRewardPairs'
-          onClick={() => {
-            history.push('/farm');
-          }}
-        >
-          <p>{t('seeAllPairs')}</p>
-        </Box>
-      </Box>
-      <Box mb='120px'>
+      )}
+      <Box margin='100px 0 120px'>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={6}>
             <BuyFiatSection />

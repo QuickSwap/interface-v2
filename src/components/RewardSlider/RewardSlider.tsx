@@ -20,9 +20,9 @@ const RewardSlider: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
-  const defaultChainId = chainId ?? ChainId.MATIC;
-  const lprewardItems = useStakingInfo(defaultChainId, null, 0, 2);
-  const dualrewardItems = useDualStakingInfo(defaultChainId, null, 0, 1);
+  const chainIdOrDefault = chainId ?? ChainId.MATIC;
+  const lprewardItems = useStakingInfo(chainIdOrDefault, null, 0, 2);
+  const dualrewardItems = useDualStakingInfo(chainIdOrDefault, null, 0, 1);
   const [bulkPairs, setBulkPairs] = useState<any>(null);
   const rewardItemsCount = lprewardItems.length + dualrewardItems.length;
 
@@ -38,9 +38,11 @@ const RewardSlider: React.FC = () => {
   useEffect(() => {
     const stakingPairLists = stakingPairListStr.split(',');
     if (stakingPairListStr) {
-      getBulkPairData(stakingPairLists).then((data) => setBulkPairs(data));
+      getBulkPairData(chainIdOrDefault, stakingPairLists).then((data) =>
+        setBulkPairs(data),
+      );
     }
-  }, [stakingPairListStr]);
+  }, [chainIdOrDefault, stakingPairListStr]);
 
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && stakingPairLists.length > 0) {

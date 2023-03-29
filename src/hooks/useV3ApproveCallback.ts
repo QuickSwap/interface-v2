@@ -17,7 +17,6 @@ import {
 import { useTokenContract } from './useContract';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenAllowance } from './useTokenAllowance';
-import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { useAppSelector } from 'state';
 import { calculateGasMargin } from 'utils';
 
@@ -117,7 +116,6 @@ export function useApproveCallback(
         useExact ? amountToApprove.quotient.toString() : MaxUint256,
         {
           gasLimit: calculateGasMargin(estimatedGas),
-          gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
         },
       )
       .then((response: TransactionResponse) => {
@@ -139,7 +137,6 @@ export function useApproveCallback(
     spender,
     addTransaction,
     chainId,
-    gasPrice,
   ]);
 
   return [approvalState, approve];

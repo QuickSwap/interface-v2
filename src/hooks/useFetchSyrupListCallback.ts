@@ -1,8 +1,6 @@
 import { nanoid } from '@reduxjs/toolkit';
-import { ChainId } from '@uniswap/sdk';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { getNetworkLibrary, NETWORK_CHAIN_ID } from '../connectors';
 import { AppDispatch } from 'state';
 import resolveENSContentHash from 'utils/resolveENSContentHash';
 import { useActiveWeb3React } from 'hooks';

@@ -4,9 +4,10 @@ import { useActiveWeb3React } from 'hooks';
 import useDebounce from 'hooks/useDebounce';
 import useIsWindowVisible from 'hooks/useIsWindowVisible';
 import { updateBlockNumber } from './actions';
-import { useEthPrice, useMaticPrice } from './hooks';
+import { useEthPrice, useLocalChainId, useMaticPrice } from './hooks';
 import { getEthPrice } from 'utils';
 import { getMaticPrice } from 'utils/v3-graph';
+import { ChainId } from '@uniswap/sdk';
 
 export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
@@ -14,6 +15,7 @@ export default function Updater(): null {
   const dispatch = useDispatch();
   const { updateEthPrice } = useEthPrice();
   const { updateMaticPrice } = useMaticPrice();
+  const { updateLocalChainId } = useLocalChainId();
 
   const windowVisible = useIsWindowVisible();
 
@@ -54,13 +56,22 @@ export default function Updater(): null {
   }, []);
 
   useEffect(() => {
-    (async () => {
+    const localChainIdStr = localStorage.getItem('quickswap_chainId');
+    const localChainId = localChainIdStr
+      ? (Number(localChainIdStr) as ChainId)
+      : ChainId.MATIC;
+    updateLocalChainId(localChainId);
+  }, [updateLocalChainId]);
+
+  useEffect(() => {
+    if (!chainId || state.chainId !== chainId) return;
+    const fetchMaticPrice = async () => {
       try {
         const [
           maticPrice,
           maticOneDayPrice,
           maticPriceChange,
-        ] = await getMaticPrice();
+        ] = await getMaticPrice(chainId);
         updateMaticPrice({
           price: maticPrice,
           oneDayPrice: maticOneDayPrice,
@@ -69,17 +80,19 @@ export default function Updater(): null {
       } catch (e) {
         console.log(e);
       }
-    })();
-    (async () => {
+    };
+    const fetchETHPrice = async () => {
       try {
-        const [price, oneDayPrice, ethPriceChange] = await getEthPrice();
+        const [price, oneDayPrice, ethPriceChange] = await getEthPrice(chainId);
         updateEthPrice({ price, oneDayPrice, ethPriceChange });
       } catch (e) {
         console.log(e);
       }
-    })();
+    };
+    fetchMaticPrice();
+    fetchETHPrice();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, chainId, state.chainId]);
 
   // attach/detach listeners
   useEffect(() => {

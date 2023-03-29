@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import { ChainId } from '@uniswap/sdk';
 import { TokenList } from '@uniswap/token-lists';
 import { TokenDetail } from './reducer';
 
@@ -89,10 +90,6 @@ export const updateTokenDetails = createAction<TokenDetail>(
   'application/updateTokenDetail',
 );
 
-export const updateIsProMode = createAction<boolean>(
-  'application/updateIsProMode',
-);
-
 export const updateGasPrice = createAction<{
   fetched: number | null;
   override: boolean;
@@ -102,4 +99,8 @@ export const updateIsV2 = createAction<boolean>('application/updateIsV2');
 
 export const updateUDDomain = createAction<string | undefined>(
   'application/updateUDDomain',
+);
+
+export const updateLocalChainId = createAction<ChainId | undefined>(
+  'application/updateLocalChainId',
 );

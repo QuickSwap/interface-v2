@@ -1,6 +1,7 @@
 //import useENS from 'hooks/useENS';
 import { parseUnits } from '@ethersproject/units';
 import {
+  ChainId,
   Currency,
   CurrencyAmount,
   ETHER,
@@ -36,7 +37,8 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { RouterTypes, SmartRouter, GlobalData } from 'constants/index';
+import { RouterTypes, SmartRouter } from 'constants/index';
+import { StableCoins } from 'constants/v3/addresses';
 import useFindBestRoute from 'hooks/useFindBestRoute';
 
 export function useSwapState(): AppState['swap'] {
@@ -52,7 +54,11 @@ export function useSwapActionHandlers(): {
   onBestRoute: (bestRoute: RouterTypeParams) => void;
 } {
   const dispatch = useDispatch<AppDispatch>();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   const timer = useRef<any>(null);
+
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
@@ -61,13 +67,13 @@ export function useSwapActionHandlers(): {
           currencyId:
             currency instanceof Token
               ? currency.address
-              : currency === ETHER
+              : currency === nativeCurrency
               ? 'ETH'
               : '',
         }),
       );
     },
-    [dispatch],
+    [dispatch, nativeCurrency],
   );
 
   const onSetSwapDelay = useCallback(
@@ -123,6 +129,7 @@ export function useSwapActionHandlers(): {
 
 // try to parse a user entered amount for a given token
 export function tryParseAmount(
+  chainId: ChainId,
   value?: string,
   currency?: Currency,
 ): CurrencyAmount | undefined {
@@ -134,7 +141,7 @@ export function tryParseAmount(
     if (typedValueParsed !== '0') {
       return currency instanceof Token
         ? new TokenAmount(currency, JSBI.BigInt(typedValueParsed))
-        : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed));
+        : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed), chainId); // TODO: CHANGE THIS
     }
   } catch (error) {
     // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
@@ -173,7 +180,8 @@ export function useDerivedSwapInfo(): {
   inputError?: string;
   v1Trade: Trade | undefined;
 } {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedQuery = useParsedQueryString();
   const swapType = parsedQuery ? parsedQuery.swapIndex : undefined;
 
@@ -197,6 +205,7 @@ export function useDerivedSwapInfo(): {
 
   const isExactIn: boolean = independentField === Field.INPUT;
   const parsedAmount = tryParseAmount(
+    chainIdToUse,
     typedValue,
     (isExactIn ? inputCurrency : outputCurrency) ?? undefined,
   );
@@ -266,9 +275,11 @@ export function useDerivedSwapInfo(): {
   }
 
   useEffect(() => {
-    const stableCoinAddresses = GlobalData.stableCoins.map((token) =>
-      token.address.toLowerCase(),
-    );
+    const stableCoins = StableCoins[chainIdToUse];
+    const stableCoinAddresses =
+      stableCoins && stableCoins.length > 0
+        ? stableCoins.map((token) => token.address.toLowerCase())
+        : [];
     if (!slippageManuallySet) {
       if (
         inputCurrencyId &&
@@ -282,10 +293,11 @@ export function useDerivedSwapInfo(): {
       }
     }
   }, [
-    slippageManuallySet,
     inputCurrencyId,
     outputCurrencyId,
     setUserSlippageTolerance,
+    chainIdToUse,
+    slippageManuallySet,
   ]);
 
   return {

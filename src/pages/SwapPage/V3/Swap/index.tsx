@@ -50,7 +50,7 @@ import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router-dom';
-import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
+import { useWalletModalToggle } from 'state/application/hooks';
 import { Field } from 'state/swap/v3/actions';
 import {
   useDefaultsFromURLSearch,
@@ -66,18 +66,19 @@ import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { warningSeverity } from 'utils/v3/prices';
 
 import { Box, Button } from '@material-ui/core';
-import { ETHER } from '@uniswap/sdk';
+import { ChainId, ETHER } from '@uniswap/sdk';
 import { AddressInput } from 'components';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
+import { CHAIN_INFO } from 'constants/v3/chains';
 import { useTranslation } from 'react-i18next';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const history = useHistory();
-  const { isProMode, updateIsProMode } = useIsProMode();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
   const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
@@ -448,10 +449,14 @@ const SwapV3Page: React.FC = () => {
     [redirectWithCurrency, currencies, redirectWithSwitch],
   );
 
+  const chainInfo = CHAIN_INFO[chainIdToUse];
+
   const parsedCurrency0Id = (parsedQs.currency0 ??
     parsedQs.inputCurrency) as string;
   const parsedCurrency0 = useCurrency(
-    parsedCurrency0Id === 'ETH' ? 'MATIC' : parsedCurrency0Id,
+    parsedCurrency0Id === 'ETH'
+      ? chainInfo.nativeCurrencySymbol
+      : parsedCurrency0Id,
   );
   const parsedCurrency1Id = (parsedQs.currency1 ??
     parsedQs.outputCurrency) as string;
@@ -461,7 +466,7 @@ const SwapV3Page: React.FC = () => {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
     } else if (parsedCurrency0 === undefined && !parsedCurrency1Id) {
       const nativeCurrency = {
-        ...ETHER,
+        ...ETHER[chainId],
         isNative: true,
         isToken: false,
         wrapped: WMATIC_EXTENDED[chainId],
@@ -521,7 +526,9 @@ const SwapV3Page: React.FC = () => {
   );
 
   const parsedCurrency1 = useCurrency(
-    parsedCurrency1Id === 'ETH' ? 'MATIC' : parsedCurrency1Id,
+    parsedCurrency1Id === 'ETH'
+      ? chainInfo.nativeCurrencySymbol
+      : parsedCurrency1Id,
   );
   useEffect(() => {
     if (parsedCurrency1) {

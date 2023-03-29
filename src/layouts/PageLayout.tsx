@@ -1,8 +1,6 @@
 import React, { lazy, useEffect, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
-import { useIsProMode } from 'state/application/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
 const Header = lazy(() => import('components/Header'));
 const Footer = lazy(() => import('components/Footer'));
 const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
@@ -15,10 +13,9 @@ export interface PageLayoutProps {
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
-  const history = useHistory();
   const { chainId, account } = useActiveWeb3React();
+  const isProMode = useIsProMode();
   const arcxSDK = (window as any).arcx;
-  const { isProMode, updateIsProMode } = useIsProMode();
   const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {
     console.log('getPageWrapperClassName => ', location);
@@ -29,24 +26,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   };
-  useEffect(() => {
-    const unlisten = history.listen((location) => {
-      const willBeSwapPage = location.pathname === '/swap';
-
-      // disallow the pro mode except for the swap page
-      if (!willBeSwapPage) {
-        updateIsProMode(false);
-      }
-    });
-    return function cleanup() {
-      unlisten();
-    };
-  }, [history, updateIsProMode]);
 
   useEffect(() => {
     if (
       window.location.host !== 'quickswap.exchange' &&
       window.location.host !== 'beta.quickswap.exchange' &&
+      window.location.host !== 'dogechain.quickswap.exchange' &&
       window.location.host !== 'localhost:3000'
     ) {
       setOpenPassModal(true);

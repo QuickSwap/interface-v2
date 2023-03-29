@@ -12,13 +12,15 @@ import {
   getChartStartTime,
   getLimitedData,
   getYAXISValuesAnalytics,
+  getFormattedPercent,
 } from 'utils';
 import { AreaChart, ChartType } from 'components';
 import { getTokenChartData } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getTokenChartDataTotal, getTokenChartDataV3 } from 'utils/v3-graph';
-import { useParams } from 'react-router-dom';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
@@ -37,6 +39,8 @@ const AnalyticsTokenChart: React.FC<{
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const chartData = useMemo(() => {
     if (!tokenChartData) return;
@@ -82,8 +86,7 @@ const AnalyticsTokenChart: React.FC<{
     }
   }, [token, chartIndex]);
 
-  const params: any = useParams();
-  const version = params && params.version ? params.version : 'total';
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
     async function fetchTokenChartData() {
@@ -96,10 +99,10 @@ const AnalyticsTokenChart: React.FC<{
 
       const tokenChartDataFn =
         version === 'v3'
-          ? getTokenChartDataV3(tokenAddress, duration)
+          ? getTokenChartDataV3(tokenAddress, duration, chainIdToUse)
           : version === 'v2'
-          ? getTokenChartData(tokenAddress, duration)
-          : getTokenChartDataTotal(tokenAddress, duration);
+          ? getTokenChartData(tokenAddress, duration, chainIdToUse)
+          : getTokenChartDataTotal(tokenAddress, duration, chainIdToUse);
 
       tokenChartDataFn.then((chartData) => {
         if (chartData) {
@@ -112,8 +115,7 @@ const AnalyticsTokenChart: React.FC<{
       });
     }
     fetchTokenChartData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenAddress, durationIndex, version]);
+  }, [tokenAddress, durationIndex, version, chainIdToUse]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
@@ -137,7 +139,7 @@ const AnalyticsTokenChart: React.FC<{
                     className={`priceChangeWrapper ${currentPercentClass}`}
                     ml={1}
                   >
-                    <small>{getFormattedPrice(Number(currentPercent))}%</small>
+                    <small>{getFormattedPercent(Number(currentPercent))}</small>
                   </Box>
                 </Box>
                 <Box>

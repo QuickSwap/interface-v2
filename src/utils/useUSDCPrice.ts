@@ -22,6 +22,16 @@ import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { clientV2, clientV3 } from 'apollo/client';
 import { TOKEN_PRICES_V2 } from 'apollo/queries';
 import { TOKENPRICES_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
+import {
+  DAI,
+  NEW_DQUICK,
+  NEW_QUICK,
+  OLD_DQUICK,
+  OLD_QUICK,
+  USDC,
+  USDT,
+} from 'constants/v3/addresses';
+import { getConfig } from 'config';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -30,7 +40,7 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const { chainId } = useActiveWeb3React();
 
   const amountOut = chainId
-    ? tryParseAmount('1', GlobalValue.tokens.COMMON.USDC)
+    ? tryParseAmount(chainId, '1', GlobalValue.tokens.COMMON.USDC)
     : undefined;
 
   const allowedPairs = useAllCommonPairs(
@@ -62,38 +72,52 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   }, [currency, allowedPairs, amountOut]);
 }
 
-export function useUSDCPricesFromAddresses(addresses: string[]) {
+export function useUSDCPricesFromAddresses(addressArray: string[]) {
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
   const [prices, setPrices] = useState<
     { address: string; price: number }[] | undefined
   >();
+  const v2 = config['v2'];
+  const addressStr = addressArray.join(',');
 
   useEffect(() => {
+    if (!chainId) return;
     (async () => {
+      const addresses = addressStr.split(',');
       if (ethPrice.price && maticPrice.price) {
-        const pricesDataV2 = await clientV2.query({
-          query: TOKEN_PRICES_V2(addresses),
-          fetchPolicy: 'network-only',
-        });
+        let addressesNotInV2: string[] = [],
+          pricesV2: any[] = [];
+        if (v2) {
+          const pricesDataV2 = await clientV2[chainId].query({
+            query: TOKEN_PRICES_V2(addresses),
+            fetchPolicy: 'network-only',
+          });
 
-        const pricesV2 =
-          pricesDataV2.data &&
-          pricesDataV2.data.tokens &&
-          pricesDataV2.data.tokens.length > 0
-            ? pricesDataV2.data.tokens
-            : [];
+          pricesV2 =
+            pricesDataV2.data &&
+            pricesDataV2.data.tokens &&
+            pricesDataV2.data.tokens.length > 0
+              ? pricesDataV2.data.tokens
+              : [];
 
-        const addressesNotInV2 = addresses.filter((address) => {
-          const priceV2 = pricesV2.find(
-            (item: any) => item.id.toLowerCase() === address.toLowerCase(),
-          );
-          return !priceV2 || !priceV2.derivedETH || !Number(priceV2.derivedETH);
-        });
+          addressesNotInV2 = addresses.filter((address) => {
+            const priceV2 = pricesV2.find(
+              (item: any) => item.id.toLowerCase() === address.toLowerCase(),
+            );
+            return (
+              !priceV2 || !priceV2.derivedETH || !Number(priceV2.derivedETH)
+            );
+          });
+        }
 
-        const pricesDataV3 = await clientV3.query({
+        const pricesDataV3 = await clientV3[chainId].query({
           query: TOKENPRICES_FROM_ADDRESSES_V3(
-            addressesNotInV2.map((address) => address.toLowerCase()),
+            (v2 ? addressesNotInV2 : addresses).map((address) =>
+              address.toLowerCase(),
+            ),
           ),
           fetchPolicy: 'network-only',
         });
@@ -132,30 +156,59 @@ export function useUSDCPricesFromAddresses(addresses: string[]) {
           }
         });
         setPrices(prices);
+      } else if (maticPrice.price) {
+        const pricesDataV3 = await clientV3[chainId].query({
+          query: TOKENPRICES_FROM_ADDRESSES_V3(
+            addresses.map((address) => address.toLowerCase()),
+          ),
+          fetchPolicy: 'network-only',
+        });
+
+        const pricesV3 =
+          pricesDataV3.data &&
+          pricesDataV3.data.tokens &&
+          pricesDataV3.data.tokens.length > 0
+            ? pricesDataV3.data.tokens
+            : [];
+
+        const prices = addresses.map((address) => {
+          const priceV3 = pricesV3.find(
+            (item: any) => item.id.toLowerCase() === address.toLowerCase(),
+          );
+          if (priceV3 && priceV3.derivedMatic && Number(priceV3.derivedMatic)) {
+            return {
+              address,
+              price: (maticPrice.price ?? 0) * Number(priceV3.derivedMatic),
+            };
+          }
+          return { address, price: 0 };
+        });
+        setPrices(prices);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ethPrice.price, maticPrice.price]);
+  }, [ethPrice.price, maticPrice.price, v2, chainId, addressStr]);
 
   return prices;
 }
 
-//TODO: the majority of these functions share alot of common logic,
-//There also seems to be bugs, sometimes the CXETH Pair returns CXEth, sometimes ETH
-//Investigate more fully
+export function useUSDCPriceFromAddress(address: string) {
+  const usdPrices = useUSDCPricesFromAddresses([address]);
+  if (usdPrices) {
+    return usdPrices[0].price;
+  }
+  return;
+}
+
 export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
   const { chainId } = useActiveWeb3React();
-  const oldQuickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
-  const usdcToken = GlobalValue.tokens.COMMON.USDC;
-  const usdtToken = GlobalValue.tokens.COMMON.USDT;
-  const daiToken = GlobalValue.tokens.COMMON.DAI;
-  const cxETHToken = GlobalValue.tokens.COMMON.CXETH;
-  const ETHToken = GlobalValue.tokens.COMMON.CXETH;
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+
+  const oldQuickToken = OLD_QUICK[chainIdToUse];
+  const usdcToken = USDC[chainIdToUse];
+  const usdtToken = USDT[chainIdToUse];
+  const daiToken = DAI[chainIdToUse];
   const wrappedCurrencies = currencies.map((currency) => {
-    let wrapped = wrappedCurrency(currency, chainId);
-    if (wrapped?.equals(cxETHToken)) {
-      wrapped = wrappedCurrency(ETHToken, chainId);
-    }
+    const wrapped = wrappedCurrency(currency, chainId);
     return wrapped;
   });
   const tokenPairs: [Currency | undefined, Currency | undefined][] = [];
@@ -233,14 +286,6 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
     // first try the usdc pair
     if (usdcPairState === PairState.EXISTS && usdcPair) {
       const price = usdcPair.priceOf(wrapped);
-      if (internalWrapped?.equals(cxETHToken)) {
-        return new Price(
-          cxETHToken,
-          usdcToken,
-          price.denominator,
-          price.numerator,
-        );
-      }
       return new Price(currency, usdcToken, price.denominator, price.numerator);
     }
     if (usdtPairState === PairState.EXISTS && usdtPair) {
@@ -297,27 +342,33 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
   });
 }
 
-export function useUSDCPricesToken(tokens: Token[]) {
+export function useUSDCPricesToken(tokens: Token[], chainId?: ChainId) {
   const dQUICKtoQUICK = useDQUICKtoQUICK();
-  const oldQuickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
-  const oldDQuickToken = GlobalValue.tokens.COMMON.OLD_DQUICK;
-  const newQuickToken = GlobalValue.tokens.COMMON.NEW_QUICK;
-  const newDQuickToken = GlobalValue.tokens.COMMON.NEW_DQUICK;
-  const usdcToken = GlobalValue.tokens.COMMON.USDC;
+  const oldQuickToken = chainId ? OLD_QUICK[chainId] : undefined;
+  const oldDQuickToken = chainId ? OLD_DQUICK[chainId] : undefined;
+  const newQuickToken = chainId ? NEW_QUICK[chainId] : undefined;
+  const newDQuickToken = chainId ? NEW_DQUICK[chainId] : undefined;
+  const usdcToken = chainId ? USDC[chainId] : undefined;
   const [, quickUsdcPair] = usePair(oldQuickToken, usdcToken);
   const [, newQuickUsdcPair] = usePair(newQuickToken, usdcToken);
-  const quickPrice = Number(
-    quickUsdcPair?.priceOf(oldQuickToken)?.toSignificant(6) ?? 0,
-  );
-  const newQuickPrice = Number(
-    newQuickUsdcPair?.priceOf(newQuickToken)?.toSignificant(6) ?? 0,
-  );
+  const quickPrice = oldQuickToken
+    ? Number(quickUsdcPair?.priceOf(oldQuickToken)?.toSignificant(6) ?? 0)
+    : 0;
+  const newQuickPrice = newQuickToken
+    ? Number(newQuickUsdcPair?.priceOf(newQuickToken)?.toSignificant(6) ?? 0)
+    : 0;
   const filteredTokens = tokens
     .filter((item, pos, self) => {
-      return self.findIndex((token) => token.equals(item)) == pos;
+      return (
+        self.findIndex((token) => token && item && token.equals(item)) == pos
+      );
     })
     .filter(
       (token) =>
+        oldQuickToken &&
+        newQuickToken &&
+        oldDQuickToken &&
+        newDQuickToken &&
         !token.equals(oldQuickToken) &&
         !token.equals(newQuickToken) &&
         !token.equals(oldDQuickToken) &&
@@ -329,22 +380,22 @@ export function useUSDCPricesToken(tokens: Token[]) {
     return { token, price: Number(usdPrices[index]?.toSignificant(6) ?? 0) };
   });
   return tokens.map((token) => {
-    if (token.equals(oldDQuickToken)) {
+    if (token && oldDQuickToken && token.equals(oldDQuickToken)) {
       return dQUICKtoQUICK * quickPrice;
-    } else if (token.equals(oldQuickToken)) {
+    } else if (token && oldQuickToken && token.equals(oldQuickToken)) {
       return quickPrice;
-    } else if (token.equals(newDQuickToken)) {
-      return dQUICKtoQUICK * newQuickPrice;
-    } else if (token.equals(newQuickToken)) {
+    } else if (token && newDQuickToken && token.equals(newDQuickToken)) {
+      return dQUICKtoQUICK * newQuickPrice * 1000;
+    } else if (token && newQuickToken && token.equals(newQuickToken)) {
       return newQuickPrice;
     } else {
-      const priceObj = usdPricesWithToken.find((item) =>
-        item.token.equals(token),
+      const priceObj = usdPricesWithToken.find(
+        (item) => item.token && token && item.token.equals(token),
       );
       return priceObj?.price ?? 0;
     }
   });
 }
-export function useUSDCPriceToken(token: Token) {
-  return useUSDCPricesToken([token])[0];
+export function useUSDCPriceToken(token: Token, chainId: ChainId) {
+  return useUSDCPricesToken([token], chainId)[0];
 }

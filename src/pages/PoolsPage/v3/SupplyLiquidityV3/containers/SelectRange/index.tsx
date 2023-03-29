@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { IPresetArgs, PresetRanges } from '../../components/PresetRanges';
 import { RangeSelector } from '../../components/RangeSelector';
-import { Currency } from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import './index.scss';
 import { Bound, updateSelectedPreset } from 'state/mint/v3/actions';
 import {
@@ -18,9 +18,12 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GammaPairs, GlobalConst, GlobalData } from 'constants/index';
+import { GammaPairs, GlobalConst } from 'constants/index';
 import { Box, ButtonGroup, Button } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId, JSBI } from '@uniswap/sdk';
+import { StableCoins } from 'constants/v3/addresses';
 import { getEternalFarmFromTokens } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
 import AutomaticImage from 'assets/images/automatic.svg';
@@ -50,6 +53,8 @@ export function SelectRange({
   const { onChangeLiquidityRangeType } = useV3MintActionHandlers(
     mintInfo.noLiquidity,
   );
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
   const dispatch = useAppDispatch();
   const activePreset = useActivePreset();
@@ -67,12 +72,15 @@ export function SelectRange({
     currencyB && currencyB.wrapped
       ? currencyB.wrapped.address.toLowerCase()
       : '';
-  const gammaPair =
-    GammaPairs[currencyAAddress + '-' + currencyBAddress] ??
-    GammaPairs[currencyBAddress + '-' + currencyAAddress];
+  const gammaPair = chainId
+    ? GammaPairs[chainId][currencyAAddress + '-' + currencyBAddress] ??
+      GammaPairs[chainId][currencyBAddress + '-' + currencyAAddress]
+    : [];
 
   const gammaPairReversed = !!(
-    gammaPair && GammaPairs[currencyBAddress + '-' + currencyAAddress]
+    gammaPair &&
+    chainId &&
+    GammaPairs[chainId][currencyBAddress + '-' + currencyAAddress]
   );
 
   const gammaCurrencyA = gammaPairReversed ? currencyB : currencyA;
@@ -90,13 +98,15 @@ export function SelectRange({
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
 
-    const stablecoins = GlobalData.stableCoins.map((token) => token.address);
+    const stablecoins = StableCoins[chainIdToUse]
+      ? StableCoins[chainIdToUse].map((token) => token.address)
+      : [];
 
     return (
       stablecoins.includes(currencyA.wrapped.address) &&
       stablecoins.includes(currencyB.wrapped.address)
     );
-  }, [currencyA, currencyB]);
+  }, [chainIdToUse, currencyA, currencyB]);
 
   // get value and prices at ticks
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
@@ -152,6 +162,12 @@ export function SelectRange({
       : mintInfo.price.toSignificant(5);
   }, [mintInfo]);
 
+  const priceObj = useMemo(() => {
+    if (!mintInfo.price) return;
+
+    return mintInfo.invertPrice ? mintInfo.price.invert() : mintInfo.price;
+  }, [mintInfo]);
+
   const leftPricePercent =
     leftPrice && price
       ? ((Number(leftPrice.toSignificant(5)) - Number(price)) / Number(price)) *
@@ -173,21 +189,22 @@ export function SelectRange({
 
   useEffect(() => {
     setMinRangeLength(undefined);
-    if (!currencyAID || !currencyBID) return;
+    if (!currencyAID || !currencyBID || !chainId) return;
     (async () => {
       const eternalFarm = await getEternalFarmFromTokens(
         currencyAID,
         currencyBID,
+        chainId,
       );
       const minRangeLength = eternalFarm
         ? Number(eternalFarm.minRangeLength) / 100
         : undefined;
       setMinRangeLength(minRangeLength);
     })();
-  }, [currencyAID, currencyBID]);
+  }, [currencyAID, currencyBID, chainId]);
 
   const currentPriceInUSD = useUSDCValue(
-    tryParseAmount(Number(price).toFixed(5), currencyB ?? undefined),
+    tryParseAmount(price, currencyB ?? undefined),
     true,
   );
 
@@ -205,7 +222,7 @@ export function SelectRange({
 
   const handlePresetRangeSelection = useCallback(
     (preset: IPresetArgs | null) => {
-      if (!price) return;
+      if (!priceObj) return;
 
       dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }));
 
@@ -214,11 +231,62 @@ export function SelectRange({
         getSetFullRange();
       } else {
         setFullRangeWarningShown(false);
-        onLeftRangeInput(preset ? String(+price * preset.min) : '');
-        onRightRangeInput(preset ? String(+price * preset.max) : '');
+        const priceQuoteDecimals = Math.max(3, priceObj.baseCurrency.decimals);
+        onLeftRangeInput(
+          preset
+            ? liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+              ? String(Number(priceObj.toSignificant()) * preset.min)
+              : priceObj
+                  .quote(
+                    CurrencyAmount.fromRawAmount(
+                      priceObj.baseCurrency,
+                      JSBI.BigInt(
+                        (preset.min * 10 ** priceQuoteDecimals).toFixed(0),
+                      ),
+                    ),
+                  )
+                  .divide(
+                    JSBI.BigInt(
+                      10 **
+                        (priceQuoteDecimals - priceObj.baseCurrency.decimals),
+                    ),
+                  )
+                  .toSignificant(5)
+            : '',
+        );
+        onRightRangeInput(
+          preset
+            ? GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+              ? String(Number(priceObj.toSignificant()) * preset.max)
+              : priceObj
+                  .quote(
+                    CurrencyAmount.fromRawAmount(
+                      priceObj.baseCurrency,
+                      JSBI.BigInt(
+                        (preset.max * 10 ** priceQuoteDecimals).toFixed(0),
+                      ),
+                    ),
+                  )
+                  .divide(
+                    JSBI.BigInt(
+                      10 **
+                        (priceQuoteDecimals - priceObj.baseCurrency.decimals),
+                    ),
+                  )
+                  .toSignificant(5)
+            : '',
+        );
       }
     },
-    [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, price],
+    [
+      dispatch,
+      getSetFullRange,
+      onLeftRangeInput,
+      onRightRangeInput,
+      liquidityRangeType,
+      priceObj,
+    ],
   );
 
   const initialUSDPrices = useInitialUSDPrices();

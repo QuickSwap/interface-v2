@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
 import { useIsV2 } from 'state/application/hooks';
-import { GlobalConst } from 'constants/index';
+import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
 import { useIsAnalyticsLoaded } from 'state/analytics/hooks';
+import { useAnalyticsVersion } from 'hooks';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
@@ -13,11 +14,12 @@ const VersionToggle: React.FC = () => {
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
+  const analyticsVersion = useAnalyticsVersion();
   const version =
     params && params.version
       ? params.version
       : isAnalyticsPage
-      ? 'total'
+      ? analyticsVersion
       : 'v3';
 
   const analyticsLoaded = useIsAnalyticsLoaded();
@@ -29,7 +31,6 @@ const VersionToggle: React.FC = () => {
   }, [version]);
 
   const redirectWithVersion = (version: string) => {
-    const newQuickAddress = GlobalConst.addresses.NEW_QUICK_ADDRESS;
     const versionParam = params ? params.version : undefined;
     const currencyIdAParam = params ? params.currencyIdA : undefined;
     const currencyIdBParam = params ? params.currencyIdB : undefined;
@@ -38,7 +39,7 @@ const VersionToggle: React.FC = () => {
       : history.location.pathname +
         (history.location.pathname.includes('/add')
           ? (currencyIdAParam ? '' : `/ETH`) +
-            (currencyIdBParam ? '' : `/${newQuickAddress}`)
+            (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
           : '') +
         `/${version}`;
     history.push(

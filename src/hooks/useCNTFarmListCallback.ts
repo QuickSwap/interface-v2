@@ -1,5 +1,5 @@
 import { nanoid } from '@reduxjs/toolkit';
-import { MATIC_CHAIN } from 'constants/index';
+import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
@@ -25,7 +25,7 @@ export function useCNTFarmListCallback(): (url: string) => Promise<any> {
     async (url: string) => {
       const requestId = nanoid();
       dispatch(fetchCNTFarmList.pending({ url, requestId }));
-      return getCNTFarmList(chainId || MATIC_CHAIN, account, ensResolver)
+      return getCNTFarmList(chainId || ChainId.MATIC, account, ensResolver)
         .then((cntFarmList) => {
           dispatch(
             fetchCNTFarmList.fulfilled({

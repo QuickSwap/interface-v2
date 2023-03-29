@@ -1,4 +1,5 @@
 import {
+  ChainId,
   Currency,
   CurrencyAmount,
   JSBI,
@@ -35,6 +36,7 @@ export function useDerivedBurnInfo(
   error?: string;
 } {
   const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const { independentField, typedValue } = useBurnState();
 
@@ -100,7 +102,11 @@ export function useDerivedBurnInfo(
   // user specified a specific amount of liquidity tokens
   else if (independentField === Field.LIQUIDITY) {
     if (pair?.liquidityToken) {
-      const independentAmount = tryParseAmount(typedValue, pair.liquidityToken);
+      const independentAmount = tryParseAmount(
+        chainIdToUse,
+        typedValue,
+        pair.liquidityToken,
+      );
       if (
         independentAmount &&
         userLiquidity &&
@@ -114,6 +120,7 @@ export function useDerivedBurnInfo(
   else {
     if (tokens[independentField]) {
       const independentAmount = tryParseAmount(
+        chainIdToUse,
         typedValue,
         tokens[independentField],
       );
