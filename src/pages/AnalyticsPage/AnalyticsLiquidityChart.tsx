@@ -10,6 +10,7 @@ import {
   getChartDates,
   getChartStartTime,
   getLimitedData,
+  getFormattedPercent,
 } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
@@ -122,11 +123,7 @@ const AnalyticsLiquidityChart: React.FC<{
             className={liquidityPercentClass}
           >
             <span>
-              {`${(globalData.liquidityChangeUSD ?? 0) > 0 ? '+' : ''}
-                      ${(globalData.liquidityChangeUSD ?? 0).toLocaleString(
-                        'us',
-                      )}`}
-              %
+              {getFormattedPercent(globalData.liquidityChangeUSD ?? 0)}
             </span>
           </Box>
         </Box>

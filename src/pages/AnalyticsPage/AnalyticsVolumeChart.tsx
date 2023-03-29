@@ -9,6 +9,7 @@ import {
   getChartDates,
   getChartStartTime,
   getLimitedData,
+  getFormattedPercent,
 } from 'utils';
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
@@ -223,13 +224,7 @@ const AnalyticsVolumeChart: React.FC<{
                   className={volumePercentClass}
                 >
                   <span>
-                    {`${getVolumePercent(volumeIndex) > 0 ? '+' : ''}
-                      ${
-                        getVolumePercent(volumeIndex) !== undefined
-                          ? getVolumePercent(volumeIndex).toLocaleString('us')
-                          : '~'
-                      }`}
-                    %
+                    {getFormattedPercent(getVolumePercent(volumeIndex))}
                   </span>
                 </Box>
               </Box>
