@@ -660,7 +660,7 @@ export async function getTopTokensTotal(
           : 'totalValueLockedUSD'
         : '';
 
-      const oneDayVolumeUSD =
+      let oneDayVolumeUSD =
         Number(
           current && current[manageUntrackedVolume]
             ? current[manageUntrackedVolume]
@@ -703,7 +703,7 @@ export async function getTopTokensTotal(
         v2Current && v2Current.derivedETH ? v2Current.derivedETH * ethPrice : 0;
       const priceUSDOneDayV2 =
         v2OneDay && v2OneDay.derivedETH ? v2OneDay.derivedETH * ethPrice24H : 0;
-      const priceUSD = priceUSDV2 > 0 ? priceUSDV2 : priceUSDV3;
+      let priceUSD = priceUSDV2 > 0 ? priceUSDV2 : priceUSDV3;
       const priceUSDOneDay =
         priceUSDOneDayV2 > 0 ? priceUSDOneDayV2 : priceUSDOneDayV3;
 
@@ -714,7 +714,12 @@ export async function getTopTokensTotal(
               Number(priceUSDOneDay.toString()),
             )
           : 0;
-
+      if (oneDayVolumeUSD < 0.0001) {
+        oneDayVolumeUSD = 0;
+      }
+      if (priceUSD < 0.000001) {
+        priceUSD = 0;
+      }
       return {
         id: address,
         name: formatTokenName(
@@ -822,7 +827,7 @@ export async function getTopTokensV3(
           ? Number(oneDay[manageUntrackedVolume])
           : 0;
 
-      const oneDayVolumeUSD = currentVolume - oneDayVolume;
+      let oneDayVolumeUSD = currentVolume - oneDayVolume;
 
       const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
       const tvlUSDChange = getPercentChange(
@@ -830,7 +835,7 @@ export async function getTopTokensV3(
         oneDay ? oneDay[manageUntrackedTVL] : undefined,
       );
       const tvlToken = current ? parseFloat(current[manageUntrackedTVL]) : 0;
-      const priceUSD = current
+      let priceUSD = current
         ? parseFloat(current.derivedMatic) * maticPrice
         : 0;
       const priceUSDOneDay = oneDay
@@ -857,7 +862,12 @@ export async function getTopTokensV3(
           : current
           ? parseFloat(current.feesUSD)
           : 0;
-
+      if (oneDayVolumeUSD < 0.0001) {
+        oneDayVolumeUSD = 0;
+      }
+      if (priceUSD < 0.000001) {
+        priceUSD = 0;
+      }
       return {
         exists: !!current,
         id: address,
@@ -1062,7 +1072,7 @@ export async function getTokenInfoV3(
         : 'totalValueLockedUSD'
       : '';
 
-    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+    let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
       current && current[manageUntrackedVolume]
         ? Number(current[manageUntrackedVolume])
         : 0,
@@ -1074,7 +1084,7 @@ export async function getTokenInfoV3(
         : 0,
     );
 
-    const [oneWeekVolumeUSD] = get2DayPercentChange(
+    let [oneWeekVolumeUSD] = get2DayPercentChange(
       current && current[manageUntrackedVolume]
         ? Number(current[manageUntrackedVolume])
         : 0,
@@ -1097,9 +1107,7 @@ export async function getTokenInfoV3(
     );
 
     const tvlToken = current ? parseFloat(current[manageUntrackedTVL]) : 0;
-    const priceUSD = current
-      ? parseFloat(current.derivedMatic) * maticPrice
-      : 0;
+    let priceUSD = current ? parseFloat(current.derivedMatic) * maticPrice : 0;
     const priceUSDOneDay = oneDay
       ? parseFloat(oneDay.derivedMatic) * maticPrice24H
       : 0;
@@ -1125,7 +1133,18 @@ export async function getTokenInfoV3(
         : current
         ? parseFloat(current.feesUSD)
         : 0;
-
+    if (oneDayVolumeUSD < 0.000001) {
+      oneDayVolumeUSD = 0;
+    }
+    if (oneWeekVolumeUSD < 0.000001) {
+      oneWeekVolumeUSD = 0;
+    }
+    if (priceUSD < 0.000001) {
+      priceUSD = 0;
+    }
+    if (volumeChangeUSD < 0.0000001) {
+      volumeChangeUSD = 0;
+    }
     return current
       ? {
           id: address,
@@ -1386,13 +1405,13 @@ export async function getTokenInfoTotal(
         ? Number(twoWeekDataV2.tradeVolumeUSD)
         : 0;
 
-    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+    let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
       currentVolumeV3 + currentVolumeV2,
       oneDayVolumeV3 + oneDayVolumeV2,
       twoDayVolumeV3 + twoDayVolumeV2,
     );
 
-    const [oneWeekVolumeUSD] = get2DayPercentChange(
+    let [oneWeekVolumeUSD] = get2DayPercentChange(
       currentVolumeV3 + currentVolumeV2,
       oneWeekVolumeV3 + oneWeekVolumeV2,
       twoWeekVolumeV3 + twoWeekVolumeV2,
@@ -1446,7 +1465,7 @@ export async function getTokenInfoTotal(
         ? Number(oneDayDataV2.derivedETH) * ethPriceOld
         : 0;
 
-    const priceUSD = priceUSDV2 > 0 ? priceUSDV2 : priceUSDV3;
+    let priceUSD = priceUSDV2 > 0 ? priceUSDV2 : priceUSDV3;
     const priceUSDOneDay =
       priceUSDOneDayV2 > 0 ? priceUSDOneDayV2 : priceUSDOneDayV3;
 
@@ -1461,7 +1480,21 @@ export async function getTokenInfoTotal(
     const feesUSD = feesCurrentV3 + feesCurrentV2 - feesOneDayV3 - feesOneDayV2;
 
     const tokenCurrent = current ?? currentV2;
-
+    if (oneDayVolumeUSD < 0.000001) {
+      oneDayVolumeUSD = 0;
+    }
+    if (volumeChangeUSD < 0.000001) {
+      volumeChangeUSD = 0;
+    }
+    if (oneWeekVolumeUSD < 0.000001) {
+      oneWeekVolumeUSD = 0;
+    }
+    if (oneWeekVolumeUSD < 0.000001) {
+      oneWeekVolumeUSD = 0;
+    }
+    if (priceUSD < 0.000001) {
+      priceUSD = 0;
+    }
     return tokenCurrent
       ? {
           id: address,
@@ -1706,16 +1739,21 @@ export async function getTopPairsV3(count = 500, chainId: ChainId) {
           ? Number(week[manageUntrackedVolume])
           : 0;
 
-      const oneDayVolumeUSD = currentVolume - oneDayVolume;
+      let oneDayVolumeUSD = currentVolume - oneDayVolume;
 
-      const oneWeekVolumeUSD = currentVolume - oneWeekVolume;
+      let oneWeekVolumeUSD = currentVolume - oneWeekVolume;
 
       const tvlUSD = parseFloat(current[manageUntrackedTVL]);
       const tvlUSDChange = getPercentChange(
         current[manageUntrackedTVL],
         oneDay ? oneDay[manageUntrackedTVL] : undefined,
       );
-
+      if (oneDayVolumeUSD < 0.00001) {
+        oneDayVolumeUSD = 0;
+      }
+      if (oneWeekVolumeUSD < 0.00001) {
+        oneWeekVolumeUSD = 0;
+      }
       return {
         isV3: true,
         token0: current.token0,
