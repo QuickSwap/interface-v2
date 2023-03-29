@@ -4,6 +4,7 @@
   "rpc": "https://zkevm-rpc.com",
   "blockExplorer": "https://zkevm.polygonscan.com",
   "networkName": "Polygon zkEVM",
+  "aprAPINetwork": "zkevm",
   "chainId": 1101,
   "isMainnet": true,
   "nativeCurrencyImage": "/ETH.png",

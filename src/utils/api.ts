@@ -1,11 +1,11 @@
 import { ChainId } from '@uniswap/sdk';
+import { getConfig } from 'config';
 
 const getAPIURL = (chainId: ChainId, url: string) => {
   const apiBaseURL = process.env.REACT_APP_V3_APR_API_BASE_URL;
-  const networkKey =
-    chainId === ChainId.DOGECHAIN
-      ? `?network=${process.env.REACT_APP_V3_DOGECHAIN_APR_API_NETWORK}`
-      : '';
+  const config = getConfig(chainId);
+  const aprAPINetwork = config['aprAPINetwork'];
+  const networkKey = aprAPINetwork ? `?network=${aprAPINetwork}` : '';
   const apiURL = `${apiBaseURL}${url}${networkKey}`;
   return apiURL;
 };

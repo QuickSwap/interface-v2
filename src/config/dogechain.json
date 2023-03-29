@@ -3,6 +3,7 @@
   "v2": false,
   "rpc": "https://rpc-sg.dogechain.dog",
   "blockExplorer": "https://explorer.dogechain.dog",
+  "aprAPINetwork": "DogeChain",
   "networkName": "DogeChain",
   "isMainnet": true,
   "chainId": 2000,
