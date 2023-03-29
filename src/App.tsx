@@ -273,6 +273,7 @@ const App: React.FC = () => {
                       <Route exact path='/gamehub'>
                         <RedirectExternal
                           to={`${process.env.REACT_APP_GAMEHUB_URL}`}
+                          target={'_top'}
                         ></RedirectExternal>
                       </Route>
                     )}
