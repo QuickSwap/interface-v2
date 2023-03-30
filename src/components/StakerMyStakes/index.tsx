@@ -575,9 +575,12 @@ export const FarmingMyFarms: React.FC<{
   const myGammaFarms = allGammaPairsToFarm
     .map((item) => {
       const masterChefIndex = item.masterChefIndex ?? 0;
-      const sItem = stakedAmounts[masterChefIndex].find(
-        (sAmount) => sAmount.pid === item.pid,
-      );
+      const sItem =
+        stakedAmounts && stakedAmounts.length > masterChefIndex
+          ? stakedAmounts[masterChefIndex].find(
+              (sAmount) => sAmount.pid === item.pid,
+            )
+          : undefined;
       return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
     })
     .filter((item) => {
