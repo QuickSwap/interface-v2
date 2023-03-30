@@ -14,6 +14,7 @@ import { GlobalConst, GlobalData, GlobalValue } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { ChainId } from '@uniswap/sdk';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 
 const EternalFarmsPage: React.FC<{
   farmFilter: string;
@@ -64,6 +65,45 @@ const EternalFarmsPage: React.FC<{
   }, [farmStatus]);
 
   const sortDescKey = sortDesc ? -1 : 1;
+
+  const rewardTokenAddresses = useMemo(() => {
+    if (!eternalFarms || !eternalFarms.length) return [];
+    return eternalFarms.reduce<string[]>((memo, farm) => {
+      const rewardTokenAddress = memo.find(
+        (item) =>
+          farm &&
+          farm.rewardToken &&
+          farm.rewardToken.id &&
+          farm.rewardToken.id.toLowerCase() === item,
+      );
+      const bonusRewardTokenAddress = memo.find(
+        (item) =>
+          farm &&
+          farm.bonusRewardToken &&
+          farm.bonusRewardToken.id &&
+          farm.bonusRewardToken.id.toLowerCase() === item,
+      );
+      if (
+        !rewardTokenAddress &&
+        farm &&
+        farm.rewardToken &&
+        farm.rewardToken.id
+      ) {
+        memo.push(farm.rewardToken.id.toLowerCase());
+      }
+      if (
+        !bonusRewardTokenAddress &&
+        farm.bonusRewardToken &&
+        farm.bonusRewardToken.id &&
+        farm.bonusRewardToken.id
+      ) {
+        memo.push(farm.bonusRewardToken.id.toLowerCase());
+      }
+      return memo;
+    }, []);
+  }, [eternalFarms]);
+
+  const rewardTokenPrices = useUSDCPricesFromAddresses(rewardTokenAddresses);
 
   const eternalFarmsFiltered = useMemo(() => {
     if (!eternalFarms || !eternalFarms.length) return [];
@@ -194,51 +234,81 @@ const EternalFarmsPage: React.FC<{
             ? sortDescKey
             : -1 * sortDescKey;
         } else if (sortBy === v3FarmSortBy.rewards) {
+          const farm1RewardTokenPrice = rewardTokenPrices?.find(
+            (item) =>
+              farm1 &&
+              farm1.rewardToken &&
+              farm1.rewardToken.id &&
+              item.address.toLowerCase() === farm1.rewardToken.id.toLowerCase(),
+          );
+          const farm1BonusRewardTokenPrice = rewardTokenPrices?.find(
+            (item) =>
+              farm1 &&
+              farm1.bonusRewardToken &&
+              farm1.bonusRewardToken.id &&
+              item.address.toLowerCase() ===
+                farm1.bonusRewardToken.id.toLowerCase(),
+          );
+          const farm2RewardTokenPrice = rewardTokenPrices?.find(
+            (item) =>
+              farm2 &&
+              farm2.rewardToken &&
+              farm2.rewardToken.id &&
+              item.address.toLowerCase() === farm2.rewardToken.id.toLowerCase(),
+          );
+          const farm2BonusRewardTokenPrice = rewardTokenPrices?.find(
+            (item) =>
+              farm2 &&
+              farm2.bonusRewardToken &&
+              farm2.bonusRewardToken.id &&
+              item.address.toLowerCase() ===
+                farm2.bonusRewardToken.id.toLowerCase(),
+          );
           const farm1Reward =
             farm1 &&
             farm1.rewardRate &&
             farm1.rewardToken &&
             farm1.rewardToken.decimals &&
-            farm1.rewardToken.derivedMatic
+            farm1RewardTokenPrice
               ? Number(
                   formatUnits(farm1.rewardRate, farm1.rewardToken.decimals),
-                ) * Number(farm1.rewardToken.derivedMatic)
+                ) * farm1RewardTokenPrice.price
               : 0;
           const farm1BonusReward =
             farm1 &&
             farm1.bonusRewardRate &&
             farm1.bonusRewardToken &&
             farm1.bonusRewardToken.decimals &&
-            farm1.bonusRewardToken.derivedMatic
+            farm1BonusRewardTokenPrice
               ? Number(
                   formatUnits(
                     farm1.bonusRewardRate,
                     farm1.bonusRewardToken.decimals,
                   ),
-                ) * Number(farm1.bonusRewardToken.derivedMatic)
+                ) * farm1BonusRewardTokenPrice.price
               : 0;
           const farm2Reward =
             farm2 &&
             farm2.rewardRate &&
             farm2.rewardToken &&
             farm2.rewardToken.decimals &&
-            farm2.rewardToken.derivedMatic
+            farm2RewardTokenPrice
               ? Number(
                   formatUnits(farm2.rewardRate, farm2.rewardToken.decimals),
-                ) * Number(farm2.rewardToken.derivedMatic)
+                ) * farm2RewardTokenPrice.price
               : 0;
           const farm2BonusReward =
             farm2 &&
             farm2.bonusRewardRate &&
             farm2.bonusRewardToken &&
             farm2.bonusRewardToken.decimals &&
-            farm2.bonusRewardToken.derivedMatic
+            farm2BonusRewardTokenPrice
               ? Number(
                   formatUnits(
                     farm2.bonusRewardRate,
                     farm2.bonusRewardToken.decimals,
                   ),
-                ) * Number(farm2.bonusRewardToken.derivedMatic)
+                ) * farm2BonusRewardTokenPrice.price
               : 0;
           return farm1Reward + farm1BonusReward > farm2Reward + farm2BonusReward
             ? sortDescKey
@@ -257,6 +327,7 @@ const EternalFarmsPage: React.FC<{
     v3FarmSortBy,
     v3FarmFilter,
     farmFilter,
+    rewardTokenPrices,
   ]);
 
   return (
