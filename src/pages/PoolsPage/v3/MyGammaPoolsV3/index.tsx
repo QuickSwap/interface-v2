@@ -87,17 +87,38 @@ export default function MyLiquidityPoolsV3() {
       : [],
   );
 
-  const stakedAmounts = stakedAmountData.map((callData) => {
-    return !callData.loading && callData.result && callData.result.length > 0
-      ? formatUnits(callData.result[0], 18)
-      : '0';
+  const stakedAmounts = stakedAmountData.map((callStates, ind) => {
+    const gammaPairsFiltered = allGammaPairsToFarm.filter(
+      (pair) => (pair.masterChefIndex ?? 0) === ind,
+    );
+    return callStates.map((callData, index) => {
+      const amount =
+        !callData.loading && callData.result && callData.result.length > 0
+          ? formatUnits(callData.result[0], 18)
+          : '0';
+      const gPair =
+        gammaPairsFiltered.length > index
+          ? gammaPairsFiltered[index]
+          : undefined;
+      return {
+        amount,
+        pid: gPair?.pid,
+        masterChefIndex: ind,
+      };
+    });
   });
 
-  const stakedLoading = !!stakedAmountData.find((callData) => callData.loading);
+  const stakedLoading = !!stakedAmountData.find(
+    (callStates) => !!callStates.find((callData) => callData.loading),
+  );
 
   const stakedLPs = allGammaPairsToFarm
-    .map((item, index) => {
-      return { ...item, stakedAmount: Number(stakedAmounts[index]) };
+    .map((item) => {
+      const masterChefIndex = item.masterChefIndex ?? 0;
+      const sItem = stakedAmounts[masterChefIndex].find(
+        (sAmount) => sAmount.pid === item.pid,
+      );
+      return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
     })
     .filter((item) => {
       return item.stakedAmount > 0;
