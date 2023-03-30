@@ -741,20 +741,18 @@ const SwapV3Page: React.FC = () => {
                     signatureState === UseERC20PermitState.SIGNED
                   }
                 >
-                  <Box className='flex justify-between'>
+                  <Box className='flex justify-between items-center'>
+                    <CurrencyLogo
+                      currency={currencies[Field.INPUT] as WrappedCurrency}
+                      size={'24px'}
+                    />
                     <span
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        background: theme.winterMainButton,
                         color: 'white',
+                        flex: 1,
+                        marginLeft: 8,
                       }}
                     >
-                      <CurrencyLogo
-                        currency={currencies[Field.INPUT] as WrappedCurrency}
-                        size={'24px'}
-                        style={{ marginRight: '8px', flexShrink: 0 }}
-                      />
                       {/* we need to shorten this string on mobile */}
                       {approvalState === ApprovalState.APPROVED ||
                       signatureState === UseERC20PermitState.SIGNED
