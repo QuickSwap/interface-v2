@@ -476,15 +476,34 @@ export const FarmingMyFarms: React.FC<{
       : [],
   );
 
-  const stakedAmounts = stakedAmountData.map((callData) => {
-    return !callData.loading && callData.result && callData.result.length > 0
-      ? formatUnits(callData.result[0], 18)
-      : '0';
+  const stakedAmounts = stakedAmountData.map((callStates, ind) => {
+    const gammaPairsFiltered = allGammaPairsToFarm.filter(
+      (pair) => (pair.masterChefIndex ?? 0) === ind,
+    );
+    return callStates.map((callData, index) => {
+      const amount =
+        !callData.loading && callData.result && callData.result.length > 0
+          ? formatUnits(callData.result[0], 18)
+          : '0';
+      const gPair =
+        gammaPairsFiltered.length > index
+          ? gammaPairsFiltered[index]
+          : undefined;
+      return {
+        amount,
+        pid: gPair?.pid,
+        masterChefIndex: ind,
+      };
+    });
   });
 
   const myGammaFarms = allGammaPairsToFarm
-    .map((item, index) => {
-      return { ...item, stakedAmount: stakedAmounts[index] };
+    .map((item) => {
+      const masterChefIndex = item.masterChefIndex ?? 0;
+      const sItem = stakedAmounts[masterChefIndex].find(
+        (sAmount) => sAmount.pid === item.pid,
+      );
+      return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
     })
     .filter((item) => {
       return Number(item.stakedAmount) > 0;
