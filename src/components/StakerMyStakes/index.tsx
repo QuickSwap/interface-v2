@@ -510,28 +510,9 @@ export const FarmingMyFarms: React.FC<{
     [],
   );
 
-  const gammaRewardTokens = chainId
-    ? gammaRewardTokenAddresses.map((tokenAddress) => {
-        const tokenData = getTokenFromAddress(
-          tokenAddress,
-          chainId,
-          tokenMap,
-          [],
-        );
-        return new Token(
-          chainId,
-          tokenData.address,
-          tokenData.decimals,
-          tokenData.symbol,
-          tokenData.name,
-        );
-      })
-    : [];
-
-  const rewardUSDPrices = useUSDCPricesToken(gammaRewardTokens, chainId);
-  const gammaRewardsWithUSDPrice = gammaRewardTokens.map((token, ind) => {
-    return { price: rewardUSDPrices[ind], tokenAddress: token.address };
-  });
+  const gammaRewardsWithUSDPrice = useUSDCPricesFromAddresses(
+    gammaRewardTokenAddresses,
+  );
 
   const allGammaPairsToFarm = chainId
     ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
@@ -681,9 +662,9 @@ export const FarmingMyFarms: React.FC<{
           gammaReward0 && gammaReward0['rewarders']
             ? Object.values(gammaReward0['rewarders']).reduce(
                 (total: number, rewarder: any) => {
-                  const rewardUSD = gammaRewardsWithUSDPrice.find(
+                  const rewardUSD = gammaRewardsWithUSDPrice?.find(
                     (item) =>
-                      item.tokenAddress.toLowerCase() ===
+                      item.address.toLowerCase() ===
                       rewarder.rewardToken.toLowerCase(),
                   );
                   return (
@@ -697,9 +678,9 @@ export const FarmingMyFarms: React.FC<{
           gammaReward1 && gammaReward1['rewarders']
             ? Object.values(gammaReward1['rewarders']).reduce(
                 (total: number, rewarder: any) => {
-                  const rewardUSD = gammaRewardsWithUSDPrice.find(
+                  const rewardUSD = gammaRewardsWithUSDPrice?.find(
                     (item) =>
-                      item.tokenAddress.toLowerCase() ===
+                      item.address.toLowerCase() ===
                       rewarder.rewardToken.toLowerCase(),
                   );
                   return (

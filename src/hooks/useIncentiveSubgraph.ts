@@ -390,7 +390,10 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchTransferredPositions(reload?: boolean) {
-    if (!chainId || !account) return;
+    if (!chainId || !account) {
+      setTransferredPositions([]);
+      return;
+    }
 
     if (!provider) throw new Error('No provider');
 
