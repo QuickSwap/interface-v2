@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
@@ -10,9 +10,9 @@ import { useTranslation } from 'react-i18next';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import FarmStakeButtons from './FarmStakeButtons';
 import { formatReward } from 'utils/formatReward';
-import { useMaticPrice } from 'state/application/hooks';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 
 interface FarmCardProps {
   el: any;
@@ -24,7 +24,6 @@ interface FarmCardProps {
 export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const { maticPrice } = useMaticPrice();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
@@ -108,18 +107,31 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
         )
       : undefined;
 
-  const currentMaticPrice = maticPrice.price ?? 0;
+  const rewardTokenAddresses = useMemo(() => {
+    const addresses = [];
+    if (rewardToken && rewardToken.id) addresses.push(rewardToken.id);
+    if (bonusRewardToken && bonusRewardToken.id)
+      addresses.push(bonusRewardToken.id);
+    return addresses;
+  }, [bonusRewardToken, rewardToken]);
+  const rewardTokenUSDPrices = useUSDCPricesFromAddresses(rewardTokenAddresses);
+  const rewardTokenPrice = rewardTokenUSDPrices?.find(
+    (item) =>
+      rewardToken &&
+      rewardToken.id &&
+      item.address.toLowerCase() === rewardToken.id.toLowerCase(),
+  );
+  const bonusRewardTokenPrice = rewardTokenUSDPrices?.find(
+    (item) =>
+      bonusRewardToken &&
+      bonusRewardToken.id &&
+      item.address.toLowerCase() === bonusRewardToken.id.toLowerCase(),
+  );
+
   const usdAmount =
-    currentMaticPrice *
-      Number(earned) *
-      (rewardToken && rewardToken.derivedMatic
-        ? Number(rewardToken.derivedMatic)
-        : 0) +
-    currentMaticPrice *
-      Number(bonusEarned) *
-      (bonusRewardToken && bonusRewardToken.derivedMatic
-        ? Number(bonusRewardToken.derivedMatic)
-        : 0);
+    Number(earned) * (rewardTokenPrice ? rewardTokenPrice.price : 0) +
+    Number(bonusEarned) *
+      (bonusRewardTokenPrice ? bonusRewardTokenPrice.price : 0);
 
   return (
     <Box>

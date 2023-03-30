@@ -25,7 +25,10 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
-import { useUSDCPricesToken } from 'utils/useUSDCPrice';
+import {
+  useUSDCPricesFromAddresses,
+  useUSDCPricesToken,
+} from 'utils/useUSDCPrice';
 import { formatReward } from 'utils/formatReward';
 import { useMultipleContractMultipleData } from 'state/multicall/v3/hooks';
 import { useMasterChefContracts } from 'hooks/useContract';
@@ -95,6 +98,45 @@ export const FarmingMyFarms: React.FC<{
 
   const { hash } = useLocation();
 
+  const rewardTokenAddresses = useMemo(() => {
+    if (!shallowPositions || !shallowPositions.length) return [];
+    return shallowPositions.reduce<string[]>((memo, farm) => {
+      const rewardTokenAddress = memo.find(
+        (item) =>
+          farm &&
+          farm.eternalRewardToken &&
+          farm.eternalRewardToken.id &&
+          farm.eternalRewardToken.id.toLowerCase() === item,
+      );
+      const bonusRewardTokenAddress = memo.find(
+        (item) =>
+          farm &&
+          farm.eternalBonusRewardToken &&
+          farm.eternalBonusRewardToken.id &&
+          farm.eternalBonusRewardToken.id.toLowerCase() === item,
+      );
+      if (
+        !rewardTokenAddress &&
+        farm &&
+        farm.eternalRewardToken &&
+        farm.eternalRewardToken.id
+      ) {
+        memo.push(farm.eternalRewardToken.id.toLowerCase());
+      }
+      if (
+        !bonusRewardTokenAddress &&
+        farm.eternalBonusRewardToken &&
+        farm.eternalBonusRewardToken.id &&
+        farm.eternalBonusRewardToken.id
+      ) {
+        memo.push(farm.eternalBonusRewardToken.id.toLowerCase());
+      }
+      return memo;
+    }, []);
+  }, [shallowPositions]);
+
+  const rewardTokenPrices = useUSDCPricesFromAddresses(rewardTokenAddresses);
+
   const farmedNFTs = useMemo(() => {
     if (!shallowPositions) return;
     const _positions = shallowPositions
@@ -159,41 +201,72 @@ export const FarmingMyFarms: React.FC<{
             ? sortMultiplierQuick
             : -1 * sortMultiplierQuick;
         } else if (sortByQuick === v3FarmSortBy.rewards) {
+          const farm1RewardTokenPrice = rewardTokenPrices?.find(
+            (item) =>
+              farm1 &&
+              farm1.eternalRewardToken &&
+              farm1.eternalRewardToken.id &&
+              item.address.toLowerCase() ===
+                farm1.eternalRewardToken.id.toLowerCase(),
+          );
+          const farm1BonusRewardTokenPrice = rewardTokenPrices?.find(
+            (item) =>
+              farm1 &&
+              farm1.eternalBonusRewardToken &&
+              farm1.eternalBonusRewardToken.id &&
+              item.address.toLowerCase() ===
+                farm1.eternalBonusRewardToken.id.toLowerCase(),
+          );
+          const farm2RewardTokenPrice = rewardTokenPrices?.find(
+            (item) =>
+              farm2 &&
+              farm2.eternalRewardToken &&
+              farm2.eternalRewardToken.id &&
+              item.address.toLowerCase() ===
+                farm2.eternalRewardToken.id.toLowerCase(),
+          );
+          const farm2BonusRewardTokenPrice = rewardTokenPrices?.find(
+            (item) =>
+              farm2 &&
+              farm2.eternalBonusRewardToken &&
+              farm2.eternalBonusRewardToken.id &&
+              item.address.toLowerCase() ===
+                farm2.eternalBonusRewardToken.id.toLowerCase(),
+          );
+
           const farm1Reward =
             farm1 &&
             farm1.eternalEarned &&
             farm1.eternalRewardToken &&
             farm1.eternalRewardToken.decimals &&
-            farm1.eternalRewardToken.derivedMatic
-              ? Number(farm1.eternalEarned) *
-                Number(farm1.eternalRewardToken.derivedMatic)
+            farm1RewardTokenPrice
+              ? Number(farm1.eternalEarned) * farm1RewardTokenPrice.price
               : 0;
           const farm1BonusReward =
             farm1 &&
             farm1.eternalBonusEarned &&
             farm1.eternalBonusRewardToken &&
             farm1.eternalBonusRewardToken.decimals &&
-            farm1.eternalBonusRewardToken.derivedMatic
+            farm1BonusRewardTokenPrice
               ? Number(farm1.eternalBonusEarned) *
-                Number(farm1.eternalBonusRewardToken.derivedMatic)
+                farm1BonusRewardTokenPrice.price
               : 0;
           const farm2Reward =
             farm2 &&
             farm2.eternalEarned &&
             farm2.eternalRewardToken &&
             farm2.eternalRewardToken.decimals &&
-            farm2.eternalRewardToken.derivedMatic
-              ? Number(farm2.eternalEarned) *
-                Number(farm2.eternalRewardToken.derivedMatic)
+            farm2RewardTokenPrice
+              ? Number(farm2.eternalEarned) * farm2RewardTokenPrice.price
               : 0;
           const farm2BonusReward =
             farm2 &&
             farm2.eternalBonusEarned &&
             farm2.eternalBonusRewardToken &&
             farm2.eternalBonusRewardToken.decimals &&
-            farm2.eternalBonusRewardToken.derivedMatic
+            farm2BonusRewardTokenPrice
               ? Number(farm2.eternalBonusEarned) *
-                Number(farm2.eternalBonusRewardToken.derivedMatic)
+                farm2BonusRewardTokenPrice.price
               : 0;
           return farm1Reward + farm1BonusReward > farm2Reward + farm2BonusReward
             ? sortMultiplierQuick
@@ -208,11 +281,13 @@ export const FarmingMyFarms: React.FC<{
   }, [
     eternalFarmAprs,
     eternalFarmPoolAprs,
+    rewardTokenPrices,
     search,
     shallowPositions,
     sortByQuick,
     sortMultiplierQuick,
-    v3FarmSortBy,
+    v3FarmSortBy.apr,
+    v3FarmSortBy.rewards,
   ]);
 
   useEffect(() => {
