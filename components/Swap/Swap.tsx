@@ -209,7 +209,7 @@ const Swap: React.FC<{
     router.query.outputCurrency) as string;
 
   const handleCurrencySelect = useCallback(
-    (inputCurrency) => {
+    (inputCurrency: any) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
       const isSwichRedirect = currencyEquals(inputCurrency, ETHER[chainIdToUse])
         ? parsedCurrency1Id === 'ETH'
@@ -242,7 +242,7 @@ const Swap: React.FC<{
   }, [parsedCurrency0, parsedCurrency1Id, chainIdToUse]);
 
   const handleOtherCurrencySelect = useCallback(
-    (outputCurrency) => {
+    (outputCurrency: any) => {
       const isSwichRedirect = currencyEquals(
         outputCurrency,
         ETHER[chainIdToUse],

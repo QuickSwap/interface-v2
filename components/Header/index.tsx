@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { KeyboardArrowDown } from '@material-ui/icons';
-import { useTheme } from '@material-ui/core/styles';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { KeyboardArrowDown, MoreHoriz } from '@mui/icons-material';
 import {
   useIsV2,
   useUDDomain,
@@ -17,22 +17,22 @@ import { shortenAddress, isSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal, NetworkSelectionModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
-import QuickIcon from 'assets/images/quickIcon.svg';
-import QuickLogo from 'assets/images/quickLogo.png';
-import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
-// import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
-import WalletIcon from 'assets/images/WalletIcon.png';
-import NewTag from 'assets/images/NewTag.png';
-import SparkleLeft from 'assets/images/SparkleLeft.svg';
-import SparkleRight from 'assets/images/SparkleRight.svg';
-import SparkleTop from 'assets/images/SparkleTop.svg';
-import SparkleBottom from 'assets/images/SparkleBottom.svg';
-import 'components/styles/Header.scss';
+import Image from 'next/image';
+import styles from 'styles/components/Header.module.scss';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config/index';
+import { getConfig } from 'config';
 import useDeviceWidth from 'hooks/useDeviceWidth';
 import { USDC, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
+
+const QuickIcon = '/assets/images/quickIcon.svg';
+const QuickLogo = '/assets/images/quickLogo.png';
+const WalletIcon = '/assets/images/WalletIcon.png';
+const NewTag = '/assets/images/NewTag.png';
+const SparkleLeft = '/assets/images/SparkleLeft.svg';
+const SparkleRight = '/assets/images/SparkleRight.svg';
+const SparkleTop = '/assets/images/SparkleTop.svg';
+const SparkleBottom = '/assets/images/SparkleBottom.svg';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -40,7 +40,7 @@ const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
-  const { pathname } = useLocation();
+  const { pathname } = useRouter();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
   const { ENSName } = useENSName(account ?? undefined);
@@ -151,7 +151,7 @@ const Header: React.FC = () => {
       id: 'gamehub-page-link',
       isExternal: true,
       target: '_top',
-      externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
+      externalLink: process?.env?.NEXT_PUBLIC_GAMEHUB_URL || '',
       isNew: true,
     });
   }
@@ -161,7 +161,7 @@ const Header: React.FC = () => {
       text: 'Predictions',
       id: 'predictions-page-link',
       isExternal: true,
-      externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
+      externalLink: process?.env?.NEXT_PUBLIC_PREDICTIONS_URL || '',
     });
   }
   if (showLeaderboard) {
@@ -225,7 +225,7 @@ const Header: React.FC = () => {
   const { updateIsV2 } = useIsV2();
 
   return (
-    <Box className={`header ${tabletWindowSize ? '' : headerClass}`}>
+    <Box className={`${styles.header} ${tabletWindowSize ? '' : headerClass}`}>
       <NetworkSelectionModal
         open={openNetworkSelectionModal}
         onClose={() => setOpenNetworkSelectionModal(false)}
@@ -235,21 +235,22 @@ const Header: React.FC = () => {
         pendingTransactions={pending}
         confirmedTransactions={confirmed}
       />
-      <Link to='/'>
-        <img
+      <Link href='/'>
+        <Image
           src={mobileWindowSize ? QuickIcon : QuickLogo}
           alt='QuickLogo'
+          width={mobileWindowSize ? 40 : 195}
           height={mobileWindowSize ? 40 : 60}
         />
       </Link>
       {!tabletWindowSize && (
-        <Box className='mainMenu'>
+        <Box className={styles.mainMenu}>
           {menuItems.slice(0, menuItemCountToShow).map((val, index) => (
             <Link
-              to={val.link}
+              href={val.link}
               key={index}
               id={val.id}
-              className={`menuItem ${
+              className={`${styles.menuItem} ${
                 pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
               }`}
               onClick={() => {
@@ -259,26 +260,34 @@ const Header: React.FC = () => {
               <small>{val.text}</small>
               {val.isNew && (
                 <>
-                  <img src={NewTag} alt='new menu' width={46} />
-                  <img
-                    className='menuItemSparkle menuItemSparkleLeft'
+                  <Image src={NewTag} alt='new menu' width={46} height={30} />
+                  <Image
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
                     src={SparkleLeft}
                     alt='menuItem sparkle left'
+                    width={4}
+                    height={5}
                   />
-                  <img
-                    className='menuItemSparkle menuItemSparkleRight'
+                  <Image
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
                     src={SparkleRight}
                     alt='menuItem sparkle right'
+                    width={4}
+                    height={5}
                   />
-                  <img
-                    className='menuItemSparkle menuItemSparkleBottom'
+                  <Image
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
                     src={SparkleBottom}
                     alt='menuItem sparkle bottom'
+                    width={136}
+                    height={10}
                   />
-                  <img
-                    className='menuItemSparkle menuItemSparkleTop'
+                  <Image
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
                     src={SparkleTop}
                     alt='menuItem sparkle top'
+                    width={133}
+                    height={11}
                   />
                 </>
               )}
@@ -286,15 +295,15 @@ const Header: React.FC = () => {
           ))}
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
-            <Box display='flex' className='menuItem subMenuItem'>
-              <ThreeDotIcon />
-              <Box className='subMenuWrapper'>
-                <Box className='subMenu'>
+            <Box className={`flex ${styles.menuItem} ${styles.subMenuItem}`}>
+              <MoreHoriz />
+              <Box className={styles.subMenuWrapper}>
+                <Box className={styles.subMenu}>
                   {menuItems
                     .slice(menuItemCountToShow, menuItems.length)
                     .map((val, index) => (
                       <Link
-                        to={val.link}
+                        href={val.link}
                         key={index}
                         onClick={() => {
                           setOpenDetailMenu(false);
@@ -316,11 +325,11 @@ const Header: React.FC = () => {
         </Box>
       )}
       {tabletWindowSize && (
-        <Box className='mobileMenuContainer'>
-          <Box className='mobileMenu'>
+        <Box className={styles.mobileMenuContainer}>
+          <Box className={styles.mobileMenu}>
             {menuItems.slice(0, 4).map((val, index) => (
               <Link
-                to={val.link}
+                href={val.link}
                 key={index}
                 className={
                   pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
@@ -330,13 +339,11 @@ const Header: React.FC = () => {
               </Link>
             ))}
             {menuItems.length > 4 && (
-              <Box className='flex menuItem'>
-                <ThreeDotIcon
-                  onClick={() => setOpenDetailMenu(!openDetailMenu)}
-                />
+              <Box className={`flex ${styles.menuItem}`}>
+                <MoreHoriz onClick={() => setOpenDetailMenu(!openDetailMenu)} />
                 {openDetailMenu && (
-                  <Box className='subMenuWrapper'>
-                    <Box className='subMenu'>
+                  <Box className={styles.subMenuWrapper}>
+                    <Box className={styles.subMenu}>
                       {menuItems
                         .slice(4, menuItems.length)
                         .map((val, index) => {
@@ -351,7 +358,7 @@ const Header: React.FC = () => {
                             </a>
                           ) : (
                             <Link
-                              to={val.link}
+                              href={val.link}
                               key={index}
                               onClick={() => {
                                 setOpenDetailMenu(false);
@@ -381,13 +388,18 @@ const Header: React.FC = () => {
       )}
       <Box>
         <Box
-          className='networkSelection'
+          className={styles.networkSelection}
           onClick={() => setOpenNetworkSelectionModal(true)}
         >
           {(!ethereum || isSupportedNetwork(ethereum)) && (
-            <Box className='networkSelectionImage'>
-              <Box className='styledPollingDot' />
-              <img src={config['nativeCurrencyImage']} alt='network Image' />
+            <Box className={styles.networkSelectionImage}>
+              <Box className={styles.styledPollingDot} />
+              <Image
+                src={config['nativeCurrencyImage']}
+                alt='network Image'
+                width={18}
+                height={18}
+              />
             </Box>
           )}
           <small className='weight-600'>
@@ -400,15 +412,15 @@ const Header: React.FC = () => {
         {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
           <Box
             id='web3-status-connected'
-            className='accountDetails'
+            className={styles.accountDetails}
             onClick={toggleWalletModal}
           >
             <p>{udDomain ?? shortenAddress(account)}</p>
-            <img src={WalletIcon} alt='Wallet' />
+            <Image src={WalletIcon} alt='Wallet' width={20} height={20} />
           </Box>
         ) : !ethereum || isSupportedNetwork(ethereum) ? (
           <Box
-            className='connectButton bg-primary'
+            className={`${styles.connectButton} bg-primary`}
             onClick={() => {
               toggleWalletModal();
             }}

@@ -13,22 +13,23 @@ import {
   zengoconnect,
   phantomconnect,
 } from '../connectors';
-import MetamaskIcon from 'assets/images/metamask.png';
-import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
-import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
-import cypherDIcon from 'assets/images/cypherDIcon.png';
-import BitKeepIcon from 'assets/images/bitkeep.png';
-import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
-import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
-import PortisIcon from 'assets/images/portisIcon.png';
-import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
-import VenlyIcon from 'assets/images/venly.svg';
-import GnosisIcon from 'assets/images/gnosis_safe.png';
-import TrustIcon from 'assets/images/trust.png';
-import ZengoIcon from 'assets/images/zengo.webp';
 import { Presets } from 'state/mint/v3/reducer';
-import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
+
+const MetamaskIcon = '/assets/images/metamask.png';
+const BlockWalletIcon = '/assets/images/blockwalletIcon.svg';
+const BraveWalletIcon = '/assets/images/braveWalletIcon.png';
+const cypherDIcon = '/assets/images/cypherDIcon.png';
+const BitKeepIcon = '/assets/images/bitkeep.png';
+const CoinbaseWalletIcon = '/assets/images/coinbaseWalletIcon.svg';
+const WalletConnectIcon = '/assets/images/walletConnectIcon.svg';
+const PortisIcon = '/assets/images/portisIcon.png';
+const PhantomIcon = '/assets/images/wallets/phantomIconPurple.svg';
+const VenlyIcon = '/assets/images/venly.svg';
+const GnosisIcon = '/assets/images/gnosis_safe.png';
+const TrustIcon = '/assets/images/trust.png';
+const ZengoIcon = '/assets/images/zengo.webp';
+const UnstoppableDomainsIcon = '/assets/images/unstoppableDomains.png';
 
 export enum TxnType {
   SWAP,
@@ -1439,11 +1440,6 @@ export const GlobalData = {
     [GlobalValue.tokens.COMMON.NEW_QUICK, GlobalValue.tokens.COMMON.NEW_DQUICK],
     [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.WSTETH],
   ],
-};
-
-// a list of tokens by chain
-type ChainTokenList = {
-  readonly [chainId in ChainId]: Token[];
 };
 
 export interface WalletInfo {

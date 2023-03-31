@@ -20,9 +20,8 @@ import {
 } from 'components';
 import { getAddress } from '@ethersproject/address';
 import { GlobalConst, TxnType } from 'constants/index';
-import 'pages/styles/analytics.scss';
-import AnalyticsHeader from '../../AnalyticsHeader';
-import AnalyticsPairChart from './AnalyticsPairChart';
+import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
+import AnalyticsPairChart from 'components/pages/analytics/AnalyticsPairChart';
 import { useTranslation } from 'next-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';

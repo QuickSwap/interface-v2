@@ -180,18 +180,12 @@ export function useDerivedSwapInfo(): {
   inputError?: string;
   v1Trade: Trade | undefined;
 } {
-<<<<<<< HEAD:state/swap/hooks.ts
-  const { account } = useActiveWeb3React();
   const router = useRouter();
   const swapType = router.query.swapIndex
     ? (router.query.swapIndex as string)
     : undefined;
-=======
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const parsedQuery = useParsedQueryString();
-  const swapType = parsedQuery ? parsedQuery.swapIndex : undefined;
->>>>>>> dev2:src/state/swap/hooks.ts
 
   const {
     independentField,

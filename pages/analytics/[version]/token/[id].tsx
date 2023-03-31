@@ -27,8 +27,8 @@ import {
 import StarChecked from 'svgs/StarChecked.svg';
 import StarUnchecked from 'svgs/StarUnchecked.svg';
 import { GammaPairs, GlobalConst, TxnType } from 'constants/index';
-import AnalyticsHeader from '../../AnalyticsHeader';
-import AnalyticsTokenChart from './AnalyticsTokenChart';
+import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
+import AnalyticsTokenChart from 'components/pages/analytics/AnalyticsTokenChart';
 import { useTranslation } from 'next-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';

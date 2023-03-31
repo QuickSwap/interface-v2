@@ -1,13 +1,14 @@
 import React from 'react';
 import { CustomModal } from 'components';
-import { Box } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import 'components/styles/NetworkSelectionModal.scss';
+import { Box } from '@mui/material';
+import { Close } from '@mui/icons-material';
+import styles from 'styles/components/NetworkSelectionModal.module.scss';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
 import { isSupportedNetwork, switchNetwork } from 'utils';
 import { useLocalChainId } from 'state/application/hooks';
+import Image from 'next/image';
 
 interface NetworkSelectionModalProps {
   open: boolean;
@@ -30,18 +31,18 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
     <CustomModal
       open={open}
       onClose={onClose}
-      modalWrapper='modalWrapperV3 networkSelectionModalWrapper'
+      modalWrapper={`modalWrapperV3 ${styles.networkSelectionModalWrapper}`}
     >
       <Box className='flex justify-between items-center'>
         <p>Select Network</p>
-        <CloseIcon className='cursor-pointer' onClick={onClose} />
+        <Close className='cursor-pointer' onClick={onClose} />
       </Box>
       <Box mt='20px'>
         {supportedChains.map((chain) => {
           const config = getConfig(chain);
           return (
             <Box
-              className='networkItemWrapper'
+              className={styles.networkItemWrapper}
               key={chain}
               onClick={() => {
                 if (
@@ -54,14 +55,19 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
               }}
             >
               <Box className='flex items-center'>
-                <img src={config['nativeCurrencyImage']} alt='network Image' />
+                <Image
+                  src={config['nativeCurrencyImage']}
+                  alt='network Image'
+                  width={24}
+                  height={24}
+                />
                 <small className='weight-600'>{config['networkName']}</small>
               </Box>
               {(!ethereum || isSupportedNetwork(ethereum)) &&
                 chainId &&
                 chainId === chain && (
                   <Box className='flex items-center'>
-                    <Box className='networkConnectedDot' />
+                    <Box className={styles.networkConnectedDot} />
                     <span>Connected</span>
                   </Box>
                 )}

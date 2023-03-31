@@ -8,7 +8,7 @@ import { useTranslation } from 'next-i18next';
 import { ChainId } from '@uniswap/sdk';
 import styles from 'styles/pages/Home.module.scss';
 import { useActiveWeb3React } from 'hooks';
-import { getConfig } from '../../config/index';
+import { getConfig } from 'config';
 import { useV3DistributedRewards } from 'hooks/v3/useV3DistributedRewards';
 
 const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({

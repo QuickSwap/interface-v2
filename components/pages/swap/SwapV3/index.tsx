@@ -7,7 +7,6 @@ import {
 } from '@uniswap/sdk-core';
 import ExchangeIcon from 'svgs/ExchangeIcon.svg';
 import CurrencyLogo from 'components/CurrencyLogo';
-import Loader from 'components/Loader';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import { AdvancedSwapDetails } from 'components/v3/swap/AdvancedSwapDetails';
 import confirmPriceImpactWithoutFee from 'components/v3/swap/confirmPriceImpactWithoutFee';
@@ -37,7 +36,7 @@ import { useSwapCallback } from 'hooks/v3/useSwapCallback';
 import useToggledVersion, { Version } from 'hooks/v3/useToggledVersion';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import JSBI from 'jsbi';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import { WrappedCurrency } from 'models/types';
 import React, {
   useCallback,
@@ -425,7 +424,7 @@ const SwapV3Page: React.FC = () => {
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
 
   const handleInputSelect = useCallback(
-    (inputCurrency) => {
+    (inputCurrency: any) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
       if (
         (inputCurrency &&
@@ -502,7 +501,7 @@ const SwapV3Page: React.FC = () => {
   }, [maxInputAmount, onUserInput]);
 
   const handleOutputSelect = useCallback(
-    (outputCurrency) => {
+    (outputCurrency: any) => {
       if (
         (outputCurrency &&
           outputCurrency.isNative &&
@@ -541,17 +540,6 @@ const SwapV3Page: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        {/* //TODO */}
-        <meta
-          name={'description'}
-          content={`Quickswap is one of the first concentrated liquidity DEX on Polygon: best rates for traders and liquidity providers on the Polygon Network, with built-in farming and adaptive fees.`}
-        />
-        <meta
-          name={'keywords'}
-          content={`best dex, quickswap exchange, quickswap crypto, quickswap finance, quickswap dex, defi, polygon dex, exchange on polygon, matic exchange`}
-        />
-      </Helmet>
       <TokenWarningModal
         isOpen={importTokensNotInDefault.length > 0 && !dismissTokenWarning}
         tokens={importTokensNotInDefault}
@@ -763,7 +751,8 @@ const SwapV3Page: React.FC = () => {
                           }`}
                     </span>
                     {approvalState === ApprovalState.PENDING ? (
-                      <Loader stroke='white' style={{ marginLeft: '5px' }} />
+                      // <Loader stroke='white' style={{ marginLeft: '5px' }} />
+                      <></>
                     ) : (approvalSubmitted &&
                         approvalState === ApprovalState.APPROVED) ||
                       signatureState === UseERC20PermitState.SIGNED ? (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import Tooltip from '../Tooltip';
-import { TextWrapper } from './styled';
+// import { TextWrapper } from './styled';
 
 interface HoverInlineTextProps {
   text?: string;
@@ -30,7 +30,7 @@ const HoverInlineText = ({
   if (text.length > maxCharacters) {
     return (
       <Tooltip text={text} show={showHover}>
-        <TextWrapper
+        {/* <TextWrapper
           onMouseEnter={() => setShowHover(true)}
           onMouseLeave={() => setShowHover(false)}
           margin={margin}
@@ -40,21 +40,22 @@ const HoverInlineText = ({
           {...rest}
         >
           {' ' + text.slice(0, maxCharacters - 1) + '...'}
-        </TextWrapper>
+        </TextWrapper> */}
       </Tooltip>
     );
   }
 
   return (
-    <TextWrapper
-      margin={margin}
-      adjustSize={adjustSize}
-      link={link}
-      fontSize={fontSize}
-      {...rest}
-    >
-      {text}
-    </TextWrapper>
+    <></>
+    // <TextWrapper
+    //   margin={margin}
+    //   adjustSize={adjustSize}
+    //   link={link}
+    //   fontSize={fontSize}
+    //   {...rest}
+    // >
+    //   {text}
+    // </TextWrapper>
   );
 };
 export default HoverInlineText;

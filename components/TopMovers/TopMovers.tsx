@@ -16,7 +16,7 @@ import { useTranslation } from 'next-i18next';
 import { useEthPrice, useMaticPrice, useIsV2 } from 'state/application/hooks';
 import { getTopTokensV3 } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
-import { getConfig } from '../../config/index';
+import { getConfig } from 'config';
 import { useSelectedTokenList } from 'state/lists/hooks';
 
 interface TopMoversProps {

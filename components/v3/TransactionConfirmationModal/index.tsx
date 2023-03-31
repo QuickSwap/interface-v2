@@ -11,7 +11,7 @@ import {
 import { useActiveWeb3React } from 'hooks';
 import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
 import { CustomModal } from 'components';
-import { CloseIcon, CustomLightSpinner } from 'theme/components';
+// import { CloseIcon, CustomLightSpinner } from 'theme/components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
@@ -36,11 +36,11 @@ function ConfirmationPendingContent({
           <X onClick={onDismiss} />
         </Box>
       )}
-      <CustomLightSpinner
+      {/* <CustomLightSpinner
         src='/images/blue-loader.svg'
         alt='loader'
         size={inline ? '40px' : '90px'}
-      />
+      /> */}
       <Box mt='20px' textAlign='center'>
         <p>{t('waitingConfirm')}</p>
         <Box my='8px'>
@@ -78,7 +78,7 @@ function TransactionSubmittedContent({
       {!inline && (
         <Box className='flex justify-between'>
           <div />
-          <CloseIcon onClick={onDismiss} />
+          <X onClick={onDismiss} />
         </Box>
       )}
       <Box mt={2} className='flex justify-center'>
@@ -158,7 +158,7 @@ export function ConfirmationModalContent({
     <Box width='100%'>
       <Box className='flex items-center justify-between' mb={2}>
         {title}
-        <CloseIcon onClick={onDismiss} />
+        <X onClick={onDismiss} />
       </Box>
       {topContent()}
       {bottomContent && <>{bottomContent()}</>}
@@ -181,7 +181,7 @@ export function TransactionErrorContent({
       <Box>
         <Box className='flex justify-between'>
           <h5>{t('error')}</h5>
-          <CloseIcon onClick={onDismiss} />
+          <X onClick={onDismiss} />
         </Box>
         <Box mt={2} className='flex flex-col items-center'>
           <AlertTriangle color='red' style={{ strokeWidth: 1.5 }} size={64} />

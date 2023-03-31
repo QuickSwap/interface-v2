@@ -16,11 +16,10 @@ import { useArgentWalletDetectorContract } from './useContract';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { usePairs } from 'data/Reserves';
-import useParsedQueryString from './useParsedQueryString';
 import { useLocalChainId } from 'state/application/hooks';
 import { GlobalConst } from 'constants/index';
-import { useParams } from 'react-router-dom';
 import { getConfig } from 'config';
+import { useRouter } from 'next/router';
 
 export function useActiveWeb3React(): Web3ReactContextInterface<
   Web3Provider
@@ -247,9 +246,9 @@ export const useIsProMode = () => {
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
   const proModeEnabled = config['swap']['proMode'];
-  const parsedQs = useParsedQueryString();
+  const router = useRouter();
   const isProMode = Boolean(
-    parsedQs.isProMode && parsedQs.isProMode === 'true',
+    router.query.isProMode && router.query.isProMode === 'true',
   );
   return proModeEnabled && isProMode;
 };
@@ -261,7 +260,10 @@ export const useAnalyticsVersion = () => {
   const v2 = config['v2'];
   const v3 = config['v3'];
   const defaultVersion = v2 && v3 ? 'total' : v2 ? 'v2' : 'v3';
-  const params: any = useParams();
-  const version = params && params.version ? params.version : defaultVersion;
+  const router = useRouter();
+  const version =
+    router && router.query.version
+      ? (router.query.version as string)
+      : defaultVersion;
   return version;
 };

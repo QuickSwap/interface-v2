@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import {
   CurrencyInput,
   TransactionErrorContent,
@@ -45,10 +45,10 @@ import {
   formatTokenAmount,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { ReactComponent as AddLiquidityIcon } from 'svgs/AddLiquidityIcon.svg';
+import AddLiquidityIcon from 'svgs/AddLiquidityIcon.svg';
 import { useCurrency } from 'hooks/Tokens';
-import { useParams } from 'react-router-dom';
-import { NEW_QUICK, V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import { useRouter } from 'next/router';
+import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
 
 const AddLiquidity: React.FC<{
@@ -72,27 +72,29 @@ const AddLiquidity: React.FC<{
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
 
-  // queried currency
-  const params: any = useParams();
-  const parsedQuery = useParsedQueryString();
-  const currency0Id =
-    params && params.currencyIdA
-      ? params.currencyIdA.toLowerCase() === 'matic' ||
-        params.currencyIdA.toLowerCase() === 'eth'
-        ? 'ETH'
-        : params.currencyIdA
-      : parsedQuery && parsedQuery.currency0
-      ? (parsedQuery.currency0 as string)
+  const nextRouter = useRouter();
+  const currency0IdStr =
+    nextRouter.query &&
+    (nextRouter.query.currencyIdA ?? nextRouter.query.currency0)
+      ? ((nextRouter.query.currencyIdA ?? nextRouter.query.currency0) as string)
       : undefined;
-  const currency1Id =
-    params && params.currencyIdB
-      ? params.currencyIdB.toLowerCase() === 'matic' ||
-        params.currencyIdB.toLowerCase() === 'eth'
-        ? 'ETH'
-        : params.currencyIdB
-      : parsedQuery && parsedQuery.currency1
-      ? (parsedQuery.currency1 as string)
+  const currency1IdStr =
+    nextRouter.query &&
+    (nextRouter.query.currencyIdB ?? nextRouter.query.currency1)
+      ? ((nextRouter.query.currencyIdB ?? nextRouter.query.currency1) as string)
       : undefined;
+  const currency0Id = currency0IdStr
+    ? currency0IdStr.toLowerCase() === 'matic' ||
+      currency0IdStr.toLowerCase() === 'eth'
+      ? 'ETH'
+      : currency0IdStr
+    : undefined;
+  const currency1Id = currency1IdStr
+    ? currency1IdStr.toLowerCase() === 'matic' ||
+      currency1IdStr.toLowerCase() === 'eth'
+      ? 'ETH'
+      : currency1IdStr
+    : undefined;
   const currency0 = useCurrency(currency0Id);
   const currency1 = useCurrency(currency1Id);
 

@@ -530,7 +530,7 @@ export const getChartDataV3 = async (
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
     let startIndexWeekly = -1;
     let currentWeek = -1;
-    data.forEach((entry, i) => {
+    data.forEach((_, i) => {
       const week = dayjs.utc(dayjs.unix(data[i].date)).week();
       if (week !== currentWeek) {
         currentWeek = week;

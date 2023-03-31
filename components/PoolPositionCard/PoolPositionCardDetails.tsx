@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
-<<<<<<< HEAD:components/PoolPositionCard/PoolPositionCardDetails.tsx
 import { useRouter } from 'next/router';
 import { Box, Button } from '@mui/material';
-import { Pair, JSBI, Percent } from '@uniswap/sdk';
-=======
-import { useHistory } from 'react-router-dom';
-import { Box, Button } from '@material-ui/core';
 import { Pair, JSBI, Percent, ChainId } from '@uniswap/sdk';
->>>>>>> dev2:src/components/PoolPositionCard/PoolPositionCardDetails.tsx
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';

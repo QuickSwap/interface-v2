@@ -56,7 +56,7 @@ const FarmPage: React.FC = () => {
 
   useEffect(() => {
     if (!farmAvailable) {
-      history.push('/');
+      router.push('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [farmAvailable]);

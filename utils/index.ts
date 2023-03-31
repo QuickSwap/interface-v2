@@ -1750,7 +1750,7 @@ export const getChartData = async (
       const oneDay = 24 * 60 * 60;
 
       // for each day, parse the daily volume and format for chart array
-      data.forEach((dayData, i) => {
+      data.forEach((_, i) => {
         // add the day index to the set of days
         dayIndexSet.add((data[i].date / oneDay).toFixed(0));
         dayIndexArray.push(data[i]);
@@ -1784,7 +1784,7 @@ export const getChartData = async (
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
     let startIndexWeekly = -1;
     let currentWeek = -1;
-    data.forEach((entry, i) => {
+    data.forEach((_, i) => {
       const week = dayjs.utc(dayjs.unix(data[i].date)).week();
       if (week !== currentWeek) {
         currentWeek = week;
