@@ -28,52 +28,50 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
   const { ethereum } = window as any;
 
   return (
-    <CustomModal
-      open={open}
-      onClose={onClose}
-      modalWrapper={`modalWrapperV3 ${styles.networkSelectionModalWrapper}`}
-    >
-      <Box className='flex justify-between items-center'>
-        <p>Select Network</p>
-        <Close className='cursor-pointer' onClick={onClose} />
-      </Box>
-      <Box mt='20px'>
-        {supportedChains.map((chain) => {
-          const config = getConfig(chain);
-          return (
-            <Box
-              className={styles.networkItemWrapper}
-              key={chain}
-              onClick={() => {
-                if (
-                  (ethereum && !isSupportedNetwork(ethereum)) ||
-                  chain !== chainId
-                ) {
-                  switchNetwork(chain, updateLocalChainId);
-                }
-                onClose();
-              }}
-            >
-              <Box className='flex items-center'>
-                <Image
-                  src={config['nativeCurrencyImage']}
-                  alt='network Image'
-                  width={24}
-                  height={24}
-                />
-                <small className='weight-600'>{config['networkName']}</small>
+    <CustomModal open={open} onClose={onClose}>
+      <Box className={styles.networkSelectionModalWrapper}>
+        <Box className='flex justify-between items-center'>
+          <p>Select Network</p>
+          <Close className='cursor-pointer' onClick={onClose} />
+        </Box>
+        <Box mt='20px'>
+          {supportedChains.map((chain) => {
+            const config = getConfig(chain);
+            return (
+              <Box
+                className={styles.networkItemWrapper}
+                key={chain}
+                onClick={() => {
+                  if (
+                    (ethereum && !isSupportedNetwork(ethereum)) ||
+                    chain !== chainId
+                  ) {
+                    switchNetwork(chain, updateLocalChainId);
+                  }
+                  onClose();
+                }}
+              >
+                <Box className='flex items-center'>
+                  <Image
+                    src={config['nativeCurrencyImage']}
+                    alt='network Image'
+                    width={24}
+                    height={24}
+                  />
+                  <small className='weight-600'>{config['networkName']}</small>
+                </Box>
+                {(!ethereum || isSupportedNetwork(ethereum)) &&
+                  chainId &&
+                  chainId === chain && (
+                    <Box className='flex items-center'>
+                      <Box className={styles.networkConnectedDot} />
+                      <span>Connected</span>
+                    </Box>
+                  )}
               </Box>
-              {(!ethereum || isSupportedNetwork(ethereum)) &&
-                chainId &&
-                chainId === chain && (
-                  <Box className='flex items-center'>
-                    <Box className={styles.networkConnectedDot} />
-                    <span>Connected</span>
-                  </Box>
-                )}
-            </Box>
-          );
-        })}
+            );
+          })}
+        </Box>
       </Box>
     </CustomModal>
   );

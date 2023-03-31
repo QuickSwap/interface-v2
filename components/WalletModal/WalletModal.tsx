@@ -250,7 +250,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 header={t('installBrave')}
                 subheader={t('installBraveDesc')}
                 link={'https://brave.com/wallet'}
-                icon='/images/braveWalletIcon.png'
+                icon='/assets/images/braveWalletIcon.png'
               />
             );
           }
@@ -342,7 +342,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               header={t('installBrave')}
               subheader={t('installBraveDesc')}
               link={'https://brave.com/wallet'}
-              icon='/images/braveWalletIcon.png'
+              icon='/assets/images/braveWalletIcon.png'
             />
           );
         }
@@ -467,7 +467,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             getOptions()
           )}
           {walletView !== WALLET_VIEWS.PENDING && (
-            <Box className='blurb'>
+            <Box className={styles.blurb}>
               <small>{t('newToMatic')}</small>
               <a
                 href='https://docs.matic.network/docs/develop/wallets/getting-started'

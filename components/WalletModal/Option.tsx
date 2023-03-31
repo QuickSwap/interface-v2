@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/components/WalletModal.module.scss';
 
 interface OptionProps {
   link?: string | null;
@@ -28,20 +29,20 @@ const Option: React.FC<OptionProps> = ({
 }) => {
   const { t } = useTranslation();
   const content = (
-    <Box className='optionCardClickable' id={id} onClick={onClick}>
+    <Box className={styles.optionCardClickable} id={id} onClick={onClick}>
       <Box className='flex items-center' my={0.5}>
         <img src={icon} alt={'Icon'} width={24} />
         <p style={{ marginLeft: 8 }}>{header}</p>
       </Box>
       {active && (
         <Box className='flex items-center'>
-          <Box className='optionConnectedDot' />
+          <Box className={styles.optionConnectedDot} />
           <small>{t('connected')}</small>
         </Box>
       )}
       {!active && installLink && (
         <Box className='flex items-center'>
-          <small className='installBtn'>{t('install')}</small>
+          <small className={styles.installBtn}>{t('install')}</small>
         </Box>
       )}
       {subheader && (
@@ -57,7 +58,7 @@ const Option: React.FC<OptionProps> = ({
         href={link}
         target='_blank'
         rel='noopener noreferrer'
-        className='optionLink'
+        className={styles.optionLink}
       >
         {content}
       </a>
@@ -70,7 +71,7 @@ const Option: React.FC<OptionProps> = ({
         href={installLink}
         target='_blank'
         rel='noopener noreferrer'
-        className='installLink'
+        className={styles.installLink}
       >
         {content}
       </a>
