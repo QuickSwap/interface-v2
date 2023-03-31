@@ -8,7 +8,6 @@ import {
   GammaPairs,
   GlobalConst,
   GlobalData,
-  GlobalValue,
 } from 'constants/index';
 import { useQuery } from 'react-query';
 import GammaFarmCard from './GammaFarmCard';
@@ -17,7 +16,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
-import { useUSDCPricesToken } from 'utils/useUSDCPrice';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 
 const GammaFarmsPage: React.FC<{
   farmFilter: string;
@@ -90,28 +89,9 @@ const GammaFarmsPage: React.FC<{
     [],
   );
 
-  const gammaRewardTokens = chainId
-    ? gammaRewardTokenAddresses.map((tokenAddress) => {
-        const tokenData = getTokenFromAddress(
-          tokenAddress,
-          chainId,
-          tokenMap,
-          [],
-        );
-        return new Token(
-          chainId,
-          tokenData.address,
-          tokenData.decimals,
-          tokenData.symbol,
-          tokenData.name,
-        );
-      })
-    : [];
-
-  const rewardUSDPrices = useUSDCPricesToken(gammaRewardTokens);
-  const gammaRewardsWithUSDPrice = gammaRewardTokens.map((token, ind) => {
-    return { price: rewardUSDPrices[ind], tokenAddress: token.address };
-  });
+  const gammaRewardsWithUSDPrice = useUSDCPricesFromAddresses(
+    gammaRewardTokenAddresses,
+  );
 
   const filteredFarms = allGammaFarms
     .map((item) => {
@@ -287,9 +267,9 @@ const GammaFarmsPage: React.FC<{
           gammaReward0 && gammaReward0['rewarders']
             ? Object.values(gammaReward0['rewarders']).reduce(
                 (total: number, rewarder: any) => {
-                  const rewardUSD = gammaRewardsWithUSDPrice.find(
+                  const rewardUSD = gammaRewardsWithUSDPrice?.find(
                     (item) =>
-                      item.tokenAddress.toLowerCase() ===
+                      item.address.toLowerCase() ===
                       rewarder.rewardToken.toLowerCase(),
                   );
                   return (
@@ -303,9 +283,9 @@ const GammaFarmsPage: React.FC<{
           gammaReward1 && gammaReward1['rewarders']
             ? Object.values(gammaReward1['rewarders']).reduce(
                 (total: number, rewarder: any) => {
-                  const rewardUSD = gammaRewardsWithUSDPrice.find(
+                  const rewardUSD = gammaRewardsWithUSDPrice?.find(
                     (item) =>
-                      item.tokenAddress.toLowerCase() ===
+                      item.address.toLowerCase() ===
                       rewarder.rewardToken.toLowerCase(),
                   );
                   return (

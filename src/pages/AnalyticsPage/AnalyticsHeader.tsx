@@ -8,7 +8,7 @@ import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import { getConfig } from '../../config/index';
+import { getConfig } from 'config';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useIsV2 } from 'state/application/hooks';

@@ -654,37 +654,10 @@ export const GET_BLOCK = gql`
   }
 `;
 
-export const GET_BLOCK_ZKEVM = gql`
-  query blocks($timestampFrom: Int!, $timestampTo: Int!) {
-    ethereumBlocks(
-      first: 1
-      orderBy: timestamp
-      orderDirection: asc
-      where: { timestamp_gt: $timestampFrom, timestamp_lt: $timestampTo }
-    ) {
-      id
-      number
-      timestamp
-    }
-  }
-`;
-
 export const GET_BLOCKS: any = (timestamps: number[]) => {
   let queryString = 'query blocks {';
   queryString += timestamps.map((timestamp) => {
     return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${timestamp +
-      600} }) {
-      number
-    }`;
-  });
-  queryString += '}';
-  return gql(queryString);
-};
-
-export const GET_BLOCKS_ZKEVM: any = (timestamps: number[]) => {
-  let queryString = 'query blocks {';
-  queryString += timestamps.map((timestamp) => {
-    return `t${timestamp}:ethereumBlocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${timestamp +
       600} }) {
       number
     }`;

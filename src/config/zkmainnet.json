@@ -24,7 +24,7 @@
     "available": true
   },
   "farm": {
-    "available": false
+    "available": true
   },
   "lair": {
     "available": false,

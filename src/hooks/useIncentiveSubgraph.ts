@@ -390,7 +390,10 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchTransferredPositions(reload?: boolean) {
-    if (!chainId || !account) return;
+    if (!chainId || !account) {
+      setTransferredPositions([]);
+      return;
+    }
 
     if (!provider) throw new Error('No provider');
 
@@ -605,8 +608,8 @@ export function useFarmingSubgraph() {
             { from: account },
           );
 
-          const _rewardToken = await fetchToken(rewardToken);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken);
+          const _rewardToken = await fetchToken(rewardToken, true);
+          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
           const _pool = await fetchPool(pool);
 
           const token0 = getV3TokenFromAddress(
@@ -624,7 +627,7 @@ export function useFarmingSubgraph() {
             token0: token0 ? token0.token : _pool.token0,
             token1: token1 ? token1.token : _pool.token1,
           };
-          const _multiplierToken = await fetchToken(multiplierToken);
+          const _multiplierToken = await fetchToken(multiplierToken, true);
 
           _position = {
             ..._position,
