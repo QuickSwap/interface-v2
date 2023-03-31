@@ -14,8 +14,9 @@ import { useEthPrice } from 'state/application/hooks';
 import { getTopPairsV3, getPairsAPR, getTopPairsTotal } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { useRouter } from 'next/router';
-import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();
@@ -25,47 +26,67 @@ const AnalyticsPairs: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const router = useRouter();
-  const version = router.query.version ?? 'total';
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
     (async () => {
       if (version === 'v3') {
         const pairsData = await getTopPairsV3(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+          chainIdToUse,
         );
         if (pairsData) {
           const data = pairsData.filter((item: any) => !!item);
           try {
-            const aprs = await getPairsAPR(data.map((item: any) => item.id));
-            const gammaRewards = await getGammaRewards(chainId);
+            const aprs = await getPairsAPR(
+              data.map((item: any) => item.id),
+              chainIdToUse,
+            );
+            const gammaRewards = await getGammaRewards(chainIdToUse);
             const gammaData = await getGammaData();
 
             updateTopPairs(
               data.map((item: any, ind: number) => {
                 const gammaPairs =
-                  GammaPairs[
+                  GammaPairs[chainIdToUse][
                     item.token0.id.toLowerCase() +
                       '-' +
                       item.token1.id.toLowerCase()
                   ] ??
-                  GammaPairs[
+                  GammaPairs[chainIdToUse][
                     item.token1.id.toLowerCase() +
                       '-' +
                       item.token0.id.toLowerCase()
                   ];
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
+                      const masterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[
+                        pair.masterChefIndex ?? 0
+                      ][chainIdToUse]
+                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                            chainIdToUse
+                          ].toLowerCase()
+                        : undefined;
                       return {
                         title: pair.title,
                         apr:
                           gammaRewards &&
-                          gammaRewards[pair.address.toLowerCase()] &&
-                          gammaRewards[pair.address.toLowerCase()]['apr']
+                          masterChefAddress &&
+                          gammaRewards[masterChefAddress] &&
+                          gammaRewards[masterChefAddress]['pools'] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ]['apr']
                             ? Number(
-                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                                gammaRewards[masterChefAddress]['pools'][
+                                  pair.address.toLowerCase()
+                                ]['apr'],
                               ) * 100
-                            : undefined,
+                            : 0,
                       };
                     })
                   : [];
@@ -121,13 +142,18 @@ const AnalyticsPairs: React.FC = () => {
         if (ethPrice.price) {
           const pairs = await getTopPairs(
             GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+            chainIdToUse,
           );
           const formattedPairs = pairs
             ? pairs.map((pair: any) => {
                 return pair.id;
               })
             : [];
-          const data = await getBulkPairData(formattedPairs, ethPrice.price);
+          const data = await getBulkPairData(
+            formattedPairs,
+            ethPrice.price,
+            chainIdToUse,
+          );
           if (data) {
             updateTopPairs(data);
           }
@@ -135,33 +161,60 @@ const AnalyticsPairs: React.FC = () => {
       } else {
         const pairsData = await getTopPairsTotal(
           GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
+          chainIdToUse,
         );
         if (pairsData) {
           const data = pairsData.filter((item: any) => !!item);
           try {
-            const aprs = await getPairsAPR(data.map((item: any) => item.id));
-            const gammaRewards = await getGammaRewards(chainId);
+            const aprs = await getPairsAPR(
+              data.map((item: any) => item.id),
+              chainIdToUse,
+            );
+            const gammaRewards = await getGammaRewards(chainIdToUse);
             const gammaData = await getGammaData();
 
             updateTopPairs(
               data.map((item: any, ind: number) => {
                 const gammaPairs = item.isV3
-                  ? GammaPairs[
-                      item.token0.id.toLowerCase() + '-' + item.token1.id
+                  ? GammaPairs[chainIdToUse][
+                      item.token0.id.toLowerCase() +
+                        '-' +
+                        item.token1.id.toLowerCase()
+                    ] ??
+                    GammaPairs[chainIdToUse][
+                      item.token1.id.toLowerCase() +
+                        '-' +
+                        item.token0.id.toLowerCase()
                     ]
                   : undefined;
                 const gammaFarmAPRs = gammaPairs
                   ? gammaPairs.map((pair) => {
+                      const masterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[
+                        pair.masterChefIndex ?? 0
+                      ][chainIdToUse]
+                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                            chainIdToUse
+                          ].toLowerCase()
+                        : undefined;
                       return {
                         title: pair.title,
                         apr:
                           gammaRewards &&
-                          gammaRewards[pair.address.toLowerCase()] &&
-                          gammaRewards[pair.address.toLowerCase()]['apr']
+                          masterChefAddress &&
+                          gammaRewards[masterChefAddress] &&
+                          gammaRewards[masterChefAddress]['pools'] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ]['apr']
                             ? Number(
-                                gammaRewards[pair.address.toLowerCase()]['apr'],
+                                gammaRewards[masterChefAddress]['pools'][
+                                  pair.address.toLowerCase()
+                                ]['apr'],
                               ) * 100
-                            : undefined,
+                            : 0,
                       };
                     })
                   : [];
@@ -215,7 +268,7 @@ const AnalyticsPairs: React.FC = () => {
         }
       }
     })();
-  }, [ethPrice.price, version, chainId]);
+  }, [ethPrice.price, version, chainIdToUse]);
 
   useEffect(() => {
     updateTopPairs(null);

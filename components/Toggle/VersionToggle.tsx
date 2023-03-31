@@ -4,18 +4,20 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import styles from './Toggle.module.scss';
 import { useIsV2 } from 'state/application/hooks';
-import { GlobalConst } from 'constants/index';
+import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
 import { useIsAnalyticsLoaded } from 'state/analytics/hooks';
+import { useAnalyticsVersion } from 'hooks';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
   const router = useRouter();
   const isAnalyticsPage = router.pathname.includes('/analytics');
+  const analyticsVersion = useAnalyticsVersion();
   const version = router.query.version
     ? (router.query.version as string)
     : isAnalyticsPage
-    ? 'total'
+    ? analyticsVersion
     : 'v3';
 
   const analyticsLoaded = useIsAnalyticsLoaded();
@@ -27,7 +29,6 @@ const VersionToggle: React.FC = () => {
   }, [version]);
 
   const redirectWithVersion = (version: string) => {
-    const newQuickAddress = GlobalConst.addresses.NEW_QUICK_ADDRESS;
     const versionParam = router.query.version
       ? (router.query.version as string)
       : undefined;
@@ -42,7 +43,7 @@ const VersionToggle: React.FC = () => {
       : router.pathname +
         (router.pathname.includes('/add')
           ? (currencyIdAParam ? '' : `/ETH`) +
-            (currencyIdBParam ? '' : `/${newQuickAddress}`)
+            (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
           : '') +
         `/${version}`;
     router.push(

@@ -111,9 +111,9 @@ const FarmCard: React.FC<{
               <Box width={0.25}>
                 <Box className='flex items-center'>
                   <span className='text-secondary'>{t('apy')}</span>
-                  <Box ml={0.5} height={16}>
+                  {/* <Box ml={0.5} height={16}>
                     <Image src='/images/circleinfo.svg' alt={'arrow up'} />
-                  </Box>
+                  </Box> */}
                 </Box>
                 <Box mt={0.5}>
                   <small className='text-success'>{apyWithFee}%</small>
@@ -146,9 +146,6 @@ const FarmCard: React.FC<{
             </Box>
             <Box width={0.15} className='flex items-center justify-center'>
               <small className='text-success'>{apyWithFee}%</small>
-              <Box ml={0.5} height={16}>
-                <Image src='/images/circleinfo.svg' alt={'arrow up'} />
-              </Box>
             </Box>
             <Box width={0.2} textAlign='right'>
               <small>{earnedUSDStr}</small>

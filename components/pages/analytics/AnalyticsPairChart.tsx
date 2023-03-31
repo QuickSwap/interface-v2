@@ -6,18 +6,20 @@ import dayjs from 'dayjs';
 import {
   formatCompact,
   getPairChartData,
-  getFormattedPrice,
   getPriceClass,
   getChartDates,
   getChartStartTime,
   getLimitedData,
   getYAXISValuesAnalytics,
+  getFormattedPercent,
 } from 'utils';
 import { AreaChart, ChartType, MixedChart, ColumnChart } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'next-i18next';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -43,8 +45,9 @@ const AnalyticsPairChart: React.FC<{
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
-
-  const version = router.query.version ?? 'v3';
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const version = useAnalyticsVersion();
   const isV2 = version === 'v2';
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
@@ -217,12 +220,12 @@ const AnalyticsPairChart: React.FC<{
           : getChartStartTime(durationIndex);
 
       const pairChartDataFn = !isV2
-        ? getPairChartDataV3(pairAddress, duration)
-        : getPairChartData(pairAddress, duration);
+        ? getPairChartDataV3(pairAddress, duration, chainIdToUse)
+        : getPairChartData(pairAddress, duration, chainIdToUse);
 
       Promise.all(
         [pairChartDataFn].concat(
-          !isV2 ? [getPairChartFees(pairAddress, duration)] : [],
+          !isV2 ? [getPairChartFees(pairAddress, duration, chainIdToUse)] : [],
         ),
       ).then(([chartData, feeChartData]) => {
         if (chartData && chartData.length > 0) {
@@ -242,7 +245,7 @@ const AnalyticsPairChart: React.FC<{
       });
     }
     fetchPairChartData();
-  }, [pairAddress, durationIndex, isV2]);
+  }, [pairAddress, durationIndex, isV2, chainIdToUse]);
 
   useEffect(() => {
     if (!apyVisionURL || !apyVisionAccessToken) return;
@@ -499,7 +502,7 @@ const AnalyticsPairChart: React.FC<{
                       ml={1}
                     >
                       <small>
-                        {getFormattedPrice(Number(currentPercent))}%
+                        {getFormattedPercent(Number(currentPercent))}
                       </small>
                     </Box>
                   </Box>

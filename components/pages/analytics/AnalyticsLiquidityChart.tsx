@@ -10,12 +10,14 @@ import {
   getChartDates,
   getChartStartTime,
   getLimitedData,
+  getFormattedPercent,
 } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'next-i18next';
 import { getChartDataV3, getChartDataTotal } from 'utils/v3-graph';
-import { useRouter } from 'next/router';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 dayjs.extend(utc);
 
 const AnalyticsLiquidityChart: React.FC<{
@@ -27,9 +29,9 @@ const AnalyticsLiquidityChart: React.FC<{
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
-
-  const router = useRouter();
-  const version = router.query.version ?? 'total';
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -43,10 +45,10 @@ const AnalyticsLiquidityChart: React.FC<{
 
       const chartDataFn =
         version === 'v2'
-          ? getChartData(duration)
+          ? getChartData(duration, chainIdToUse)
           : version === 'total'
-          ? getChartDataTotal(duration)
-          : getChartDataV3(duration);
+          ? getChartDataTotal(duration, chainIdToUse)
+          : getChartDataV3(duration, chainIdToUse);
 
       chartDataFn.then(([newChartData]) => {
         setDataLoaded(true);
@@ -61,7 +63,7 @@ const AnalyticsLiquidityChart: React.FC<{
     };
     fetchChartData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [durationIndex, version]);
+  }, [durationIndex, version, chainIdToUse]);
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,
@@ -121,11 +123,7 @@ const AnalyticsLiquidityChart: React.FC<{
             className={liquidityPercentClass}
           >
             <span>
-              {`${(globalData.liquidityChangeUSD ?? 0) > 0 ? '+' : ''}
-                      ${(globalData.liquidityChangeUSD ?? 0).toLocaleString(
-                        'us',
-                      )}`}
-              %
+              {getFormattedPercent(globalData.liquidityChangeUSD ?? 0)}
             </span>
           </Box>
         </Box>

@@ -36,7 +36,8 @@ export default function StakeModalFarmingTiers({
   selectTier,
   multiplierToken,
 }: StakeModalFarmingTiersProps) {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const { t } = useTranslation();
 
   const [selectedTier, setSelectedTier] = useState<number | undefined>(0);
@@ -44,7 +45,7 @@ export default function StakeModalFarmingTiers({
   const balance = useCurrencyBalance(
     account ?? undefined,
     new Token(
-      ChainId.MATIC,
+      chainIdToUse,
       multiplierToken.id,
       +multiplierToken.decimals,
       multiplierToken.symbol,
@@ -103,7 +104,7 @@ export default function StakeModalFarmingTiers({
             <CurrencyLogo
               currency={
                 new Token(
-                  ChainId.MATIC,
+                  chainIdToUse,
                   multiplierToken.id,
                   +multiplierToken.decimals,
                   multiplierToken.symbol,

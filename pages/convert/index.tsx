@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { Trans, useTranslation } from 'next-i18next';
@@ -15,7 +15,7 @@ import { formatTokenAmount } from 'utils';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useQUICKConversionContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
@@ -23,10 +23,14 @@ import {
 } from 'state/transactions/hooks';
 import { tryParseAmount } from 'state/swap/hooks';
 import 'pages/styles/convertQUICK.scss';
+import { ChainId } from '@uniswap/sdk';
+import { OLD_QUICK } from 'constants/v3/addresses';
+import { getConfig } from 'config';
+import { useHistory } from 'react-router-dom';
 
 const ConvertQUICKPage: React.FC = () => {
   const { t } = useTranslation();
-  const { account, library } = useActiveWeb3React();
+  const { account, library, chainId } = useActiveWeb3React();
   const [quickAmount, setQUICKAmount] = useState('');
   const [quickV2Amount, setQUICKV2Amount] = useState('');
   const [approving, setApproving] = useState(false);
@@ -35,11 +39,11 @@ const ConvertQUICKPage: React.FC = () => {
   const [txPending, setTxPending] = useState(false);
   const [txHash, setTxHash] = useState('');
   const [txError, setTxError] = useState('');
-
-  const quickToken = GlobalValue.tokens.COMMON.OLD_QUICK;
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const quickToken = OLD_QUICK[chainIdToUse];
   const quickBalance = useTokenBalance(account ?? undefined, quickToken);
   const quickConvertContract = useQUICKConversionContract();
-  const parsedAmount = tryParseAmount(quickAmount, quickToken);
+  const parsedAmount = tryParseAmount(chainIdToUse, quickAmount, quickToken);
   const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
     quickConvertContract?.address,
@@ -128,6 +132,17 @@ const ConvertQUICKPage: React.FC = () => {
         });
     }
   };
+
+  const config = getConfig(chainIdToUse);
+  const showConvert = config['convert']['available'];
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!showConvert) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showConvert]);
 
   return (
     <Box width='100%' maxWidth={488} id='convertQUICKPage'>

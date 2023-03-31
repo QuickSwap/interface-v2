@@ -1,4 +1,4 @@
-import { JSBI } from '@uniswap/sdk';
+import { ChainId, JSBI } from '@uniswap/sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import { Pool, TickMath } from '@uniswap/v3-sdk';
 import { BigNumber } from 'ethers';
@@ -11,6 +11,7 @@ import { Box } from '@mui/material';
 import styles from 'styles/pages/Analytics.module.scss';
 import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'next-i18next';
+import { useActiveWeb3React } from 'hooks';
 
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;
@@ -20,14 +21,16 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
   const [liquidityChartData, updateLiquidtyChartData] = useState<any | null>(
     null,
   );
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   useEffect(() => {
-    getLiquidityChart(pairAddress).then((data) => {
+    getLiquidityChart(pairAddress, chainIdToUse).then((data) => {
       if (!data.error) {
         updateLiquidtyChartData(data);
       }
     });
-  }, [pairAddress]);
+  }, [pairAddress, chainIdToUse]);
 
   const [zoom, setZoom] = useState(5);
 

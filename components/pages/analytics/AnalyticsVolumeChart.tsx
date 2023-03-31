@@ -9,12 +9,14 @@ import {
   getChartDates,
   getChartStartTime,
   getLimitedData,
+  getFormattedPercent,
 } from 'utils';
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'next-i18next';
 import { getChartDataTotal, getChartDataV3 } from 'utils/v3-graph';
-import { useRouter } from 'next/router';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
@@ -33,8 +35,9 @@ const AnalyticsVolumeChart: React.FC<{
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
 
-  const router = useRouter();
-  const version = router.query.version ?? 'total';
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -48,10 +51,10 @@ const AnalyticsVolumeChart: React.FC<{
 
       const chartDataFn =
         version === 'v2'
-          ? getChartData(duration)
+          ? getChartData(duration, chainIdToUse)
           : version === 'total'
-          ? getChartDataTotal(duration)
-          : getChartDataV3(duration);
+          ? getChartDataTotal(duration, chainIdToUse)
+          : getChartDataV3(duration, chainIdToUse);
 
       chartDataFn.then(([newChartData, newWeeklyData]) => {
         setDataLoaded(true);
@@ -70,7 +73,7 @@ const AnalyticsVolumeChart: React.FC<{
     };
     fetchChartData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [durationIndex, version]);
+  }, [durationIndex, version, chainIdToUse]);
 
   const liquidityWeeks = useMemo(() => {
     if (globalChartData) {
@@ -222,13 +225,7 @@ const AnalyticsVolumeChart: React.FC<{
                   className={volumePercentClass}
                 >
                   <span>
-                    {`${getVolumePercent(volumeIndex) > 0 ? '+' : ''}
-                      ${
-                        getVolumePercent(volumeIndex) !== undefined
-                          ? getVolumePercent(volumeIndex).toLocaleString('us')
-                          : '~'
-                      }`}
-                    %
+                    {getFormattedPercent(getVolumePercent(volumeIndex))}
                   </span>
                 </Box>
               </Box>

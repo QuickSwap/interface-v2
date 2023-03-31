@@ -1,6 +1,17 @@
-export async function fetchEternalFarmAPR() {
-  const apiURL =
-    process.env.REACT_APP_V3_APR_API_BASE_URL + '/APR/eternalFarmings/';
+import { ChainId } from '@uniswap/sdk';
+import { getConfig } from 'config';
+
+const getAPIURL = (chainId: ChainId, url: string) => {
+  const apiBaseURL = process.env.REACT_APP_V3_APR_API_BASE_URL;
+  const config = getConfig(chainId);
+  const aprAPINetwork = config['aprAPINetwork'];
+  const networkKey = aprAPINetwork ? `?network=${aprAPINetwork}` : '';
+  const apiURL = `${apiBaseURL}${url}${networkKey}`;
+  return apiURL;
+};
+
+export async function fetchEternalFarmAPR(chainId: ChainId) {
+  const apiURL = getAPIURL(chainId, '/APR/eternalFarmings/');
 
   try {
     return await fetch(apiURL).then((v) => v.json());
@@ -9,8 +20,8 @@ export async function fetchEternalFarmAPR() {
   }
 }
 
-export async function fetchPoolsAPR() {
-  const apiURL = process.env.REACT_APP_V3_APR_API_BASE_URL + '/APR/pools/';
+export async function fetchPoolsAPR(chainId: ChainId) {
+  const apiURL = getAPIURL(chainId, '/APR/pools/');
 
   try {
     return await fetch(apiURL).then((v) => v.json());
@@ -19,9 +30,8 @@ export async function fetchPoolsAPR() {
   }
 }
 
-export async function fetchEternalFarmTVL() {
-  const apiURL =
-    process.env.REACT_APP_V3_APR_API_BASE_URL + '/TVL/eternalFarmings/';
+export async function fetchEternalFarmTVL(chainId: ChainId) {
+  const apiURL = getAPIURL(chainId, '/TVL/eternalFarmings/');
 
   try {
     return await fetch(apiURL).then((v) => v.json());
@@ -30,9 +40,8 @@ export async function fetchEternalFarmTVL() {
   }
 }
 
-export async function fetchLimitFarmAPR() {
-  const apiURL =
-    process.env.REACT_APP_V3_APR_API_BASE_URL + '/APR/limitFarmings/';
+export async function fetchLimitFarmAPR(chainId: ChainId) {
+  const apiURL = getAPIURL(chainId, '/APR/limitFarmings/');
 
   try {
     return await fetch(apiURL).then((v) => v.json());
@@ -41,9 +50,8 @@ export async function fetchLimitFarmAPR() {
   }
 }
 
-export async function fetchLimitFarmTVL() {
-  const apiURL =
-    process.env.REACT_APP_V3_APR_API_BASE_URL + '/TVL/limitFarmings/';
+export async function fetchLimitFarmTVL(chainId: ChainId) {
+  const apiURL = getAPIURL(chainId, '/TVL/limitFarmings/');
 
   try {
     return await fetch(apiURL).then((v) => v.json());

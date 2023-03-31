@@ -40,11 +40,12 @@ import styles from 'styles/components/LendModal.module.scss';
 import { Close } from '@mui/icons-material';
 import { useBorrowLimit } from 'hooks/marketxyz/useBorrowLimit';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import { GlobalValue } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import Link from 'next/link';
 import { useMarket } from 'hooks/marketxyz/useMarket';
+import { ChainId } from '@uniswap/sdk';
+import { LENDING_LENS } from 'constants/v3/addresses';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 
@@ -63,6 +64,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   const { t } = useTranslation();
   const { sdk } = useMarket();
   const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const { ethPrice } = useEthPrice();
   const assetUSDPriceObj = useUSDCPrice(getPoolAssetToken(asset, chainId));
   const assetDecimals = asset.underlyingDecimals.toNumber();
@@ -218,7 +220,7 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
       setMaxAmountError(false);
       const lens = new MarketLensSecondary(
         currentAsset.cToken.sdk,
-        GlobalValue.marketSDK.LENS,
+        LENDING_LENS[chainIdToUse],
       );
       const assetBalanceBN = parseUnits(
         currentAsset.underlyingBalance.toString(),
@@ -495,7 +497,11 @@ export const QuickModalContent: React.FC<QuickModalContentProps> = ({
   useEffect(() => {
     if (!pairAddress || !ethPrice.price) return;
     (async () => {
-      const pairInfo = await getBulkPairData([pairAddress], ethPrice.price);
+      const pairInfo = await getBulkPairData(
+        [pairAddress],
+        ethPrice.price,
+        chainIdToUse,
+      );
       if (pairInfo && pairInfo.length > 0) {
         setPairData(pairInfo[0]);
       }

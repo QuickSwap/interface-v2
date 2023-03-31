@@ -16,6 +16,7 @@ import VersionToggle from 'components/Toggle/VersionToggle';
 import V3Farms from 'components/pages/farms/V3/Farms';
 import { useIsV2 } from 'state/application/hooks';
 import { useRouter } from 'next/router';
+import { getConfig } from 'config/index';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -25,32 +26,48 @@ const FarmPage: React.FC = () => {
     : GlobalConst.v2FarmTab.LPFARM;
   const { t } = useTranslation();
   const [bulkPairs, setBulkPairs] = useState<any>(null);
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const farmAvailable = config['farm']['available'];
+  const v3 = config['v3'];
+  const v2 = config['v2'];
+  const { isV2 } = useIsV2();
 
-  const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const lpFarms = useDefaultFarmList();
-  const cntFarms = useDefaultCNTFarmList(chainIdOrDefault);
+  const cntFarms = useDefaultCNTFarmList(chainIdToUse);
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const OTHER_FARM_LINK = process.env.REACT_APP_OTHER_LP_CREATE_A_FARM_LINK;
+  const OTHER_FARM_LINK = process.env.NEXT_PUBLIC_OTHER_LP_CREATE_A_FARM_LINK;
 
   const pairLists = useMemo(() => {
-    const stakingPairLists = Object.values(lpFarms[chainIdOrDefault]).map(
+    const stakingPairLists = Object.values(lpFarms[chainIdToUse]).map(
       (item) => item.pair,
     );
-    const dualPairLists = Object.values(dualFarms[chainIdOrDefault]).map(
+    const dualPairLists = Object.values(dualFarms[chainIdToUse]).map(
       (item) => item.pair,
     );
-    const cntPairLists = Object.values(cntFarms[chainIdOrDefault]).map(
+    const cntPairLists = Object.values(cntFarms[chainIdToUse]).map(
       (item) => item.pair,
     );
 
     return stakingPairLists.concat(dualPairLists).concat(cntPairLists);
-  }, [chainIdOrDefault, lpFarms, dualFarms, cntFarms]);
+  }, [chainIdToUse, lpFarms, dualFarms, cntFarms]);
 
   useEffect(() => {
-    getBulkPairData(pairLists).then((data) => setBulkPairs(data));
-  }, [pairLists]);
+    if (!farmAvailable) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [farmAvailable]);
+
+  useEffect(() => {
+    if (isV2) {
+      getBulkPairData(chainIdToUse, pairLists).then((data) =>
+        setBulkPairs(data),
+      );
+    }
+  }, [isV2, pairLists, chainIdToUse]);
 
   const redirectWithFarmTab = (tab: string) => {
     const currentPath = router.asPath;
@@ -94,16 +111,16 @@ const FarmPage: React.FC = () => {
   ];
   const helpURL = process.env.REACT_APP_HELP_URL;
 
-  const { isV2 } = useIsV2();
-
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
         <Box className='flex items-center row'>
           <h4>{t('farm')}</h4>
-          <Box ml={2}>
-            <VersionToggle />
-          </Box>
+          {v2 && v3 && (
+            <Box ml={2}>
+              <VersionToggle />
+            </Box>
+          )}
         </Box>
         {helpURL && (
           <Box
@@ -118,7 +135,7 @@ const FarmPage: React.FC = () => {
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='farms' />
       </Box>
-      {isV2 && (
+      {isV2 && v2 && (
         <>
           <Box className='flex flex-wrap justify-between'>
             <CustomSwitch
@@ -158,7 +175,7 @@ const FarmPage: React.FC = () => {
           </Box>
         </>
       )}
-      {!isV2 && <V3Farms />}
+      {!isV2 && v3 && <V3Farms />}
     </Box>
   );
 };

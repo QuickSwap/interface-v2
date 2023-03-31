@@ -7,13 +7,13 @@ import {
   ETHER,
   Fraction,
   Percent,
+  ChainId,
 } from '@uniswap/sdk';
 import {
   CurrencyAmount as CurrencyAmountV3,
   Currency,
 } from '@uniswap/sdk-core';
 import { useCallback, useMemo } from 'react';
-import { GlobalConst } from 'constants/index';
 import { useTokenAllowance, useTokenAllowanceV3 } from 'data/Allowances';
 import { Field } from 'state/swap/actions';
 import {
@@ -24,6 +24,11 @@ import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { calculateGasMargin, calculateGasMarginBonus } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenContract } from './useContract';
+import {
+  PARASWAP_PROXY_ROUTER_ADDRESS,
+  V2_ROUTER_ADDRESS,
+  SWAP_ROUTER_ADDRESS,
+} from 'constants/v3/addresses';
 import { OptimalRate } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
 
@@ -39,7 +44,9 @@ export function useApproveCallback(
   amountToApprove?: CurrencyAmount,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   const token =
     amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined;
   const currentAllowance = useTokenAllowance(
@@ -52,7 +59,8 @@ export function useApproveCallback(
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
     if (!amountToApprove || !spender) return ApprovalState.UNKNOWN;
-    if (amountToApprove.currency === ETHER) return ApprovalState.APPROVED;
+    if (amountToApprove.currency === nativeCurrency)
+      return ApprovalState.APPROVED;
     // we might not have enough data to know whether or not we need to approve
     if (!currentAllowance) return ApprovalState.UNKNOWN;
 
@@ -62,7 +70,13 @@ export function useApproveCallback(
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED;
-  }, [amountToApprove, currentAllowance, pendingApproval, spender]);
+  }, [
+    amountToApprove,
+    currentAllowance,
+    nativeCurrency,
+    pendingApproval,
+    spender,
+  ]);
 
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();
@@ -267,7 +281,7 @@ export function useApproveCallbackFromTrade(
 
   return useApproveCallback(
     amountToApprove,
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
 }
 
@@ -294,8 +308,8 @@ export function useApproveCallbackFromBestTrade(
       : undefined,
     chainId
       ? bonusRouteFound
-        ? GlobalConst.addresses.SWAP_ROUTER_ADDRESS[chainId]
-        : GlobalConst.addresses.PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
+        ? SWAP_ROUTER_ADDRESS[chainId]
+        : PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
       : undefined,
     bonusRouteFound,
   );

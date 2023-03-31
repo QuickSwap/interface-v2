@@ -4,13 +4,14 @@ import {
   JSBI,
   Trade,
   Token,
+  ChainId,
   ETHER,
   currencyEquals,
 } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@mui/material';
-import { useIsProMode, useWalletModalToggle } from 'state/application/hooks';
+import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -28,7 +29,7 @@ import {
   AdvancedSwapDetails,
   AddressInput,
 } from 'components';
-import { useActiveWeb3React } from 'hooks';
+import { useIsProMode, useActiveWeb3React } from 'hooks';
 import {
   ApprovalState,
   useApproveCallbackFromTrade,
@@ -59,7 +60,7 @@ const Swap: React.FC<{
 }> = ({ currencyBgClass }) => {
   const loadedUrlParams = useDefaultsFromURLSearch();
   const router = useRouter();
-  const { isProMode, updateIsProMode } = useIsProMode();
+  const isProMode = useIsProMode();
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -95,7 +96,8 @@ const Swap: React.FC<{
     });
 
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const { independentField, typedValue, recipient, swapDelay } = useSwapState();
   const {
     v1Trade,
@@ -209,7 +211,7 @@ const Swap: React.FC<{
   const handleCurrencySelect = useCallback(
     (inputCurrency) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
-      const isSwichRedirect = currencyEquals(inputCurrency, ETHER)
+      const isSwichRedirect = currencyEquals(inputCurrency, ETHER[chainIdToUse])
         ? parsedCurrency1Id === 'ETH'
         : parsedCurrency1Id &&
           inputCurrency &&
@@ -222,7 +224,7 @@ const Swap: React.FC<{
         redirectWithCurrency(inputCurrency, true);
       }
     },
-    [parsedCurrency1Id, redirectWithCurrency, redirectWithSwitch],
+    [parsedCurrency1Id, redirectWithCurrency, redirectWithSwitch, chainIdToUse],
   );
 
   const parsedCurrency0 = useCurrency(parsedCurrency0Id);
@@ -237,11 +239,14 @@ const Swap: React.FC<{
       redirectWithCurrency(ETHER, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0, parsedCurrency1Id]);
+  }, [parsedCurrency0, parsedCurrency1Id, chainIdToUse]);
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency) => {
-      const isSwichRedirect = currencyEquals(outputCurrency, ETHER)
+      const isSwichRedirect = currencyEquals(
+        outputCurrency,
+        ETHER[chainIdToUse],
+      )
         ? parsedCurrency0Id === 'ETH'
         : parsedCurrency0Id &&
           outputCurrency &&
@@ -254,7 +259,7 @@ const Swap: React.FC<{
         redirectWithCurrency(outputCurrency, false);
       }
     },
-    [parsedCurrency0Id, redirectWithCurrency, redirectWithSwitch],
+    [parsedCurrency0Id, redirectWithCurrency, redirectWithSwitch, chainIdToUse],
   );
 
   const parsedCurrency1 = useCurrency(parsedCurrency1Id);
@@ -325,7 +330,8 @@ const Swap: React.FC<{
       } else {
         return (
           (inputCurrency &&
-            currencyEquals(inputCurrency, ETHER) &&
+            chainId &&
+            currencyEquals(inputCurrency, ETHER[chainId]) &&
             approval === ApprovalState.UNKNOWN) ||
           !isValid ||
           (priceImpactSeverity > 3 && !isExpertMode) ||
@@ -348,6 +354,7 @@ const Swap: React.FC<{
     swapCallbackError,
     isExpertMode,
     currencies,
+    chainId,
   ]);
 
   const [
@@ -390,6 +397,7 @@ const Swap: React.FC<{
   );
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(
+    chainIdToUse,
     currencyBalances[Field.INPUT],
   );
 

@@ -5,6 +5,7 @@ import { ChainId, Token } from '@uniswap/sdk';
 import { Search } from '@mui/icons-material';
 import { CurrencyLogo, CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
+import { useActiveWeb3React } from 'hooks';
 import React, {
   RefObject,
   useCallback,
@@ -31,6 +32,8 @@ const SwapProAssets: React.FC = ({}) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const inputRef = useRef<HTMLInputElement>();
   const handleInput = useCallback((input: string) => {
@@ -50,7 +53,6 @@ const SwapProAssets: React.FC = ({}) => {
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
-  const [filteredTokens, updateFilteredTokens] = useState<any[]>([]);
   const tokenMap = useSelectedTokenList();
   const liquidityHeadCellIndex = 4;
   const oneDayVolumeUSDIndex = 6;
@@ -91,7 +93,7 @@ const SwapProAssets: React.FC = ({}) => {
     if (isV2) {
       const { price, oneDayPrice } = ethPrice;
       if (price !== undefined && oneDayPrice !== undefined) {
-        getTopTokens(price, oneDayPrice, count).then((data) => {
+        getTopTokens(price, oneDayPrice, count, chainIdToUse).then((data) => {
           if (Array.isArray(data)) {
             data.forEach((d) => {
               d.searchVal = (
@@ -113,7 +115,7 @@ const SwapProAssets: React.FC = ({}) => {
       // v3
       const { price, oneDayPrice } = maticPrice;
       if (price !== undefined && oneDayPrice !== undefined) {
-        getTopTokensV3(price, oneDayPrice, count).then((data) => {
+        getTopTokensV3(price, oneDayPrice, count, chainIdToUse).then((data) => {
           if (Array.isArray(data)) {
             data.forEach((d) => {
               d.searchVal = (
@@ -133,33 +135,38 @@ const SwapProAssets: React.FC = ({}) => {
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     ethPrice.price,
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
     isV2,
+    chainIdToUse,
   ]);
 
-  const performFilteration = (data: Array<any>) => {
-    if (Array.isArray(data) && searchQueryInput) {
-      const toSearch = searchQueryInput.toLowerCase().trim();
-      if (toSearch) {
-        const filteredValue = data.filter((d) => {
-          return d.searchVal.indexOf(toSearch) > -1;
-        });
+  const performFilteration = useCallback(
+    (data: Array<any>) => {
+      if (Array.isArray(data) && searchQueryInput) {
+        const toSearch = searchQueryInput.toLowerCase().trim();
+        if (toSearch) {
+          const filteredValue = data.filter((d) => {
+            return d.searchVal.indexOf(toSearch) > -1;
+          });
 
-        // console.log('filteredValue => ', filteredValue);
-        // updateFilteredTokens(filteredValue);
-        return filteredValue;
+          // console.log('filteredValue => ', filteredValue);
+          // updateFilteredTokens(filteredValue);
+          return filteredValue;
+        } else {
+          return data || [];
+        }
       } else {
+        // updateFilteredTokens(data || []);
         return data || [];
       }
-    } else {
-      // updateFilteredTokens(data || []);
-      return data || [];
-    }
-  };
+    },
+    [searchQueryInput],
+  );
 
   const filteredTokensData = useMemo(() => {
     const result: Token[] = performFilteration(topTokens || []);
@@ -169,7 +176,7 @@ const SwapProAssets: React.FC = ({}) => {
     // } else {
     //   return result;
     // }
-  }, [searchQuery, topTokens, mobileWindowSize]);
+  }, [performFilteration, topTokens]);
 
   function toKMB(value: any) {
     const length = (Math.abs(parseInt(value, 10)) + '').length,
@@ -262,17 +269,14 @@ const SwapProAssets: React.FC = ({}) => {
       },
       {
         html: (
-          <Box>
+          <Box width='100%' style={{ wordBreak: 'break-all' }}>
             <p>${formatNumber(token.priceUSD)}</p>
           </Box>
         ),
       },
       {
         html: (
-          <Box
-            className={`priceChangeWrapper ${priceClass} bg-transparent`}
-            mr={2}
-          >
+          <Box className={`priceChangeWrapper ${priceClass} bg-transparent`}>
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         ),

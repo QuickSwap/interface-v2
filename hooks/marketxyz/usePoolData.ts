@@ -4,12 +4,14 @@ import { useActiveWeb3React } from '../index';
 import { fetchPoolData, PoolData } from '../../utils/marketxyz/fetchPoolData';
 import { PoolDirectoryV1 } from 'market-sdk';
 import { useEthPrice } from 'state/application/hooks';
+import { ChainId } from '@uniswap/sdk';
 
 export const usePoolsData = (
   poolAddresses: string[],
   directory: PoolDirectoryV1 | string,
 ) => {
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const { sdk } = useReadOnlyMarket();
   const { ethPrice } = useEthPrice();
   const _directory = sdk
@@ -29,6 +31,7 @@ export const usePoolsData = (
       });
       if (poolId === -1) return;
       const poolData = await fetchPoolData(
+        chainIdToUse,
         poolId.toString(),
         account ?? undefined,
         _directory,
@@ -49,7 +52,8 @@ export const usePoolData = (
   poolId: string | null | undefined,
   directory: PoolDirectoryV1 | string,
 ): PoolData | undefined => {
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const { sdk } = useReadOnlyMarket();
   const { ethPrice } = useEthPrice();
   const _directory = sdk
@@ -60,6 +64,7 @@ export const usePoolData = (
   const getPoolData = async () => {
     if (!_directory) return;
     const poolData = await fetchPoolData(
+      chainIdToUse,
       poolId ?? undefined,
       account ?? undefined,
       _directory,

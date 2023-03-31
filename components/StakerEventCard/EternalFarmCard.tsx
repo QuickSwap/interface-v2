@@ -1,6 +1,5 @@
 import React from 'react';
 import { DoubleCurrencyLogo } from 'components';
-import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
 import { Token } from '@uniswap/sdk';
 import Link from 'next/link';
@@ -40,6 +39,7 @@ interface EternalFarmCardProps {
   tvls: any;
   tvlsLoading: boolean;
   eternal?: boolean;
+  chainId: ChainId;
 }
 
 export function EternalFarmCard({
@@ -58,6 +58,9 @@ export function EternalFarmCard({
   poolAprs,
   poolAprsLoading,
   tvls,
+  tvlsLoading,
+  eternal,
+  chainId,
 }: EternalFarmCardProps) {
   const { t } = useTranslation();
   const apr = aprs ? aprs[id] : undefined;
@@ -65,27 +68,28 @@ export function EternalFarmCard({
   const totalAPR =
     (poolApr && poolApr > 0 ? poolApr : 0) + (apr && apr > 0 ? apr : 0);
   const tvl = tvls ? tvls[id] : undefined;
-  const { chainId } = useActiveWeb3React();
   const { maticPrice } = useMaticPrice();
 
   const tokenMap = useSelectedTokenList();
+  const token0Address = pool.token0.id ?? pool.token0.address;
+  const token1Address = pool.token1.id ?? pool.token1.address;
   const token0 =
-    chainId && pool.token0
-      ? getTokenFromAddress(pool.token0.id, chainId, tokenMap, [
+    chainId && token0Address
+      ? getTokenFromAddress(token0Address, chainId, tokenMap, [
           new Token(
             chainId,
-            getAddress(pool.token0.id),
+            getAddress(token0Address),
             Number(pool.token0.decimals),
           ),
         ])
       : undefined;
 
   const token1 =
-    chainId && pool.token1
-      ? getTokenFromAddress(pool.token1.id, chainId, tokenMap, [
+    chainId && token1Address
+      ? getTokenFromAddress(token1Address, chainId, tokenMap, [
           new Token(
             chainId,
-            getAddress(pool.token1.id),
+            getAddress(token1Address),
             Number(pool.token1.decimals),
           ),
         ])
@@ -122,7 +126,7 @@ export function EternalFarmCard({
             <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
             <Box className='cursor-pointer'>
               <Link
-                href={`/pools?currency0=${pool.token0.id}&currency1=${pool.token1.id}`}
+                href={`/pools?currency0=${token0Address}&currency1=${token1Address}`}
                 target='_blank'
                 className='no-decoration'
               >

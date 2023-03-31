@@ -15,7 +15,7 @@ export default function SwapHeader({
   const { t } = useTranslation();
   return (
     <Box width='100%' mb={1} className='flex justify-between'>
-      <p>{t('swap')}</p>
+      <p className='text-primaryText'>{t('swap')}</p>
       {dynamicFee && (
         <p className='caption'>{t('feeIs', { fee: dynamicFee / 10000 })}</p>
       )}

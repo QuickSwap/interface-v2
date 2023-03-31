@@ -23,3 +23,15 @@
     margin-top: 8px;
   }
 }
+
+.v3-currency-input-usd-value {
+  max-width: 50%;
+  display: flex;
+  margin-left: 8px;
+  & small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-align: right;
+  }
+}

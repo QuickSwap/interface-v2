@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Button } from '@mui/material';
-import { useActiveWeb3React } from 'hooks';
-import { useArcxAnalytics } from '@arcxmoney/analytics';
-import Header from 'components/Header';
-import Footer from 'components/Footer';
-import BetaWarningBanner from 'components/BetaWarningBanner';
-import CustomModal from 'components/CustomModal';
-import Background from './Background';
+import React, { lazy, useEffect, useState } from 'react';
+import { Box, Button } from '@material-ui/core';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
+const Header = lazy(() => import('components/Header'));
+const Footer = lazy(() => import('components/Footer'));
+const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
+const CustomModal = lazy(() => import('components/CustomModal'));
+const Background = lazy(() => import('./Background'));
 
 export interface PageLayoutProps {
   children: any;
@@ -15,8 +14,8 @@ export interface PageLayoutProps {
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const { chainId, account } = useActiveWeb3React();
-  const arcxSDK = useArcxAnalytics();
-  const isProMode = false;
+  const isProMode = useIsProMode();
+  const arcxSDK = (window as any).arcx;
   const [openPassModal, setOpenPassModal] = useState(false);
   const getPageWrapperClassName = () => {
     console.log('getPageWrapperClassName => ', location);
@@ -32,6 +31,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     if (
       window.location.host !== 'quickswap.exchange' &&
       window.location.host !== 'beta.quickswap.exchange' &&
+      window.location.host !== 'dogechain.quickswap.exchange' &&
       window.location.host !== 'localhost:3000'
     ) {
       setOpenPassModal(true);

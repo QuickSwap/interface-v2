@@ -23,6 +23,7 @@ import SyrupTimerLabel from './SyrupTimerLabel';
 import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import Image from 'next/image';
+import { ChainId } from '@uniswap/sdk';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -35,8 +36,9 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   const [attemptingClaim, setAttemptingClaim] = useState(false);
   const [attemptingUnstake, setAttemptingUnstake] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
-
-  const stakingTokenPrice = useUSDCPriceToken(syrup.stakingToken);
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const stakingTokenPrice = useUSDCPriceToken(syrup.stakingToken, chainIdToUse);
   const stakingContract = useStakingContract(syrup?.stakingRewardAddress);
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
@@ -67,11 +69,13 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
           gasLimit: calculateGasMargin(estimatedGas),
         });
         addTransaction(response, {
-          summary: t('claimrewards1', { symbol: syrup.token.symbol }),
+          summary:
+            t('claimrewards1', { symbol: syrup.token.symbol }) ?? undefined,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: t('claimrewards1', { symbol: syrup.token.symbol }),
+          summary:
+            t('claimrewards1', { symbol: syrup.token.symbol }) ?? undefined,
         });
         setAttemptingClaim(false);
       } catch (error) {
@@ -90,11 +94,11 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
           gasLimit: calculateGasMargin(estimatedGas),
         });
         addTransaction(response, {
-          summary: t('withdrawliquidity'),
+          summary: t('withdrawliquidity') ?? undefined,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: t('withdrawliquidity'),
+          summary: t('withdrawliquidity') ?? undefined,
         });
         setAttemptingUnstake(false);
       } catch (error) {

@@ -7,12 +7,16 @@ import { useRouter } from 'next/router';
 import EternalFarmsPage from 'components/pages/farms/EternalFarmsPage';
 import GammaFarmsPage from 'components/pages/farms/GammaFarmsPage';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
 import { SearchInput, SortColumns, CustomSwitch } from 'components';
-import { GlobalConst } from 'constants/index';
+import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
 
 export default function Farms() {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const router = useRouter();
   const farmStatus = router.query.farmStatus
@@ -21,6 +25,19 @@ export default function Farms() {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
+<<<<<<< HEAD:components/pages/farms/V3/Farms.tsx
+=======
+  const history = useHistory();
+
+  const allGammaFarms = useMemo(() => {
+    return chainId
+      ? ([] as GammaPair[])
+          .concat(...Object.values(GammaPairs[chainId]))
+          .filter((item) => item.ableToFarm)
+      : [];
+  }, [chainId]);
+
+>>>>>>> dev2:src/pages/FarmPage/V3/Farms.tsx
   const redirectWithFarmStatus = (status: string) => {
     let redirectPath;
     if (router.query.farmStatus) {
@@ -37,31 +54,52 @@ export default function Farms() {
     router.push(redirectPath);
   };
 
+<<<<<<< HEAD:components/pages/farms/V3/Farms.tsx
   const currentTabQueried = router.query.tab
     ? (router.query.tab as string)
     : 'gamma-farms';
+=======
+  const currentTabQueried =
+    parsedQuery && parsedQuery.tab
+      ? (parsedQuery.tab as string)
+      : allGammaFarms.length > 0
+      ? 'gamma-farms'
+      : 'eternal-farms';
+>>>>>>> dev2:src/pages/FarmPage/V3/Farms.tsx
 
-  const v3FarmCategories = useMemo(
-    () => [
-      {
-        text: t('myFarms'),
-        id: 0,
-        link: 'my-farms',
-      },
-      {
-        text: t('quickswapFarms'),
-        id: 1,
-        link: 'eternal-farms',
-      },
-      {
-        text: t('gammaFarms'),
-        id: 2,
-        link: 'gamma-farms',
-        hasSeparator: true,
-      },
-    ],
-    [t],
-  );
+  const v3FarmCategories = useMemo(() => {
+    return allGammaFarms.length > 0
+      ? [
+          {
+            text: t('myFarms'),
+            id: 0,
+            link: 'my-farms',
+          },
+          {
+            text: t('quickswapFarms'),
+            id: 1,
+            link: 'eternal-farms',
+          },
+          {
+            text: t('gammaFarms'),
+            id: 2,
+            link: 'gamma-farms',
+            hasSeparator: true,
+          },
+        ]
+      : [
+          {
+            text: t('myFarms'),
+            id: 0,
+            link: 'my-farms',
+          },
+          {
+            text: t('quickswapFarms'),
+            id: 1,
+            link: 'eternal-farms',
+          },
+        ];
+  }, [t, allGammaFarms]);
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
       router.push(`?tab=${selected?.link}`);
@@ -228,7 +266,7 @@ export default function Farms() {
       )}
 
       {selectedFarmCategory?.id === 0 && (
-        <FarmingMyFarms search={searchValue} />
+        <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
       )}
       {selectedFarmCategory?.id === 1 && (
         <EternalFarmsPage
@@ -236,6 +274,7 @@ export default function Farms() {
           search={searchValue}
           sortBy={sortBy}
           sortDesc={sortDesc}
+          chainId={chainIdToUse}
         />
       )}
       {selectedFarmCategory?.id === 2 && (

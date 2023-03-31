@@ -11,12 +11,17 @@ import BuySpritzSection from 'components/pages/home/BuySpritzSection';
 import { TopMovers, RewardSlider } from 'components';
 import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useActiveWeb3React } from 'hooks';
+import { getConfig } from 'config';
 
 const LandingPage = (
   _props: InferGetStaticPropsType<typeof getStaticProps>,
 ) => {
   const { t } = useTranslation('common');
   const router = useRouter();
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const isFarmAvailable = config['farm']['available'];
 
   const features = [
     {
@@ -129,22 +134,24 @@ const LandingPage = (
         />
       </Box>
       <SwapSection />
-      <Box className={styles.rewardsContainer}>
-        <Box maxWidth='480px' width='100%'>
-          <h4>{t('earnRewardsbyDeposit')}</h4>
-          <p style={{ marginTop: '20px' }}>{t('depositLPTokensRewards')}</p>
+      {isFarmAvailable && (
+        <Box className={styles.rewardsContainer}>
+          <Box maxWidth='480px' width='100%'>
+            <h4>{t('earnRewardsbyDeposit')}</h4>
+            <p style={{ marginTop: '20px' }}>{t('depositLPTokensRewards')}</p>
+          </Box>
+          <RewardSlider />
+          <Box
+            className={styles.allRewardPairs}
+            onClick={() => {
+              router.push('/farm');
+            }}
+          >
+            <p>{t('seeAllPairs')}</p>
+          </Box>
         </Box>
-        <RewardSlider />
-        <Box
-          className={styles.allRewardPairs}
-          onClick={() => {
-            router.push('/farm');
-          }}
-        >
-          <p>{t('seeAllPairs')}</p>
-        </Box>
-      </Box>
-      <Box mb='120px'>
+      )}
+      <Box margin='100px 0 120px'>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={6}>
             <BuyFiatSection />

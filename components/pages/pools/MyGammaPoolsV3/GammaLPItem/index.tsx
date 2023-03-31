@@ -6,16 +6,18 @@ import { GammaPairs } from 'constants/index';
 import './index.scss';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import GammaLPItemDetails from '../GammaLPItemDetails';
+import { useActiveWeb3React } from 'hooks';
 import { ArrowRight } from 'react-feather';
 import { useRouter } from 'next/router';
 
 const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
   const gammaTokenStr =
     gammaPosition.token0.address.toLowerCase() +
     '-' +
     gammaPosition.token1.address.toLowerCase();
-  const gammaPair = GammaPairs[gammaTokenStr];
+  const gammaPair = chainId ? GammaPairs[chainId][gammaTokenStr] : [];
   const gammaPairInfo = gammaPair
     ? gammaPair.find(
         (item) =>

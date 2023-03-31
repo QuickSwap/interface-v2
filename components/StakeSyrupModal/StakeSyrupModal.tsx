@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@mui/material';
-import { TokenAmount } from '@uniswap/sdk';
+import { ChainId, TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedSyrupInfo } from 'state/stake/hooks';
@@ -20,7 +20,6 @@ import {
   formatTokenAmount,
   maxAmountSpend,
   formatNumber,
-  getSecondsOneDay,
   getExactTokenAmount,
   getValueTokenDecimals,
   getPartialTokenAmount,
@@ -51,7 +50,10 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
   const [approving, setApproving] = useState(false);
-  const maxAmountInput = maxAmountSpend(userLiquidityUnstaked);
+  const maxAmountInput = maxAmountSpend(
+    chainId ? chainId : ChainId.MATIC,
+    userLiquidityUnstaked,
+  );
   const { parsedAmount, error } = useDerivedSyrupInfo(
     typedValue,
     syrup.stakedAmount?.token,
@@ -89,9 +91,10 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   const stakingContract = useStakingContract(syrup.stakingRewardAddress);
 
   const onAttemptToApprove = async () => {
-    if (!library || !deadline) throw new Error(t('missingdependencies'));
+    if (!library || !deadline)
+      throw new Error(t('missingdependencies') ?? undefined);
     const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error(t('missingliquidity'));
+    if (!liquidityAmount) throw new Error(t('missingliquidity') ?? undefined);
     return approveCallback();
   };
 
@@ -143,11 +146,11 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             { gasLimit: calculateGasMargin(estimatedGas) },
           );
           addTransaction(response, {
-            summary: t('depositliquidity'),
+            summary: t('depositliquidity') ?? undefined,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
-            summary: t('depositliquidity'),
+            summary: t('depositliquidity') ?? undefined,
           });
           setAttempting(false);
         } catch (error) {
@@ -156,7 +159,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
         }
       } else {
         setAttempting(false);
-        throw new Error(t('stakewithoutapproval'));
+        throw new Error(t('stakewithoutapproval') ?? undefined);
       }
     }
   };

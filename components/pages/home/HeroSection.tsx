@@ -7,27 +7,33 @@ import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Home.module.scss';
+import { ChainId } from '@uniswap/sdk';
+import { getConfig } from 'config';
 
 const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
   v3GlobalData,
 }) => {
   const router = useRouter();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
   const { t } = useTranslation();
+  const config = getConfig(chainIdToUse);
+  const v2 = config['v2'];
+  const v3 = config['v3'];
 
   return (
     <Box className={styles.heroSection}>
       <small className='text-bold'>{t('totalValueLocked')}</small>
-      {globalData && v3GlobalData ? (
+      {(v2 ? globalData : true) && (v3 ? v3GlobalData : true) ? (
         <Box display='flex' pt='5px'>
           <h3>$</h3>
           <h1>
             {(
-              Number(globalData.totalLiquidityUSD) +
-              Number(v3GlobalData.totalLiquidityUSD)
+              (v2 ? Number(globalData.totalLiquidityUSD) : 0) +
+              (v3 ? Number(v3GlobalData.totalLiquidityUSD) : 0)
             ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}

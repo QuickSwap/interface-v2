@@ -13,12 +13,12 @@ import { GlobalConst } from 'constants/index';
 import { getTopTokensTotal, getTopTokensV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { useRouter } from 'next/router';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
   const [tokensFilter, setTokensFilter] = useState(0);
-  const router = useRouter();
 
   const dispatch = useDispatch();
 
@@ -26,10 +26,9 @@ const AnalyticsTokens: React.FC = () => {
   const { bookmarkTokens } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
-
-  const version = router.query.version
-    ? (router.query.version as string)
-    : 'total';
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const version = useAnalyticsVersion();
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -52,6 +51,7 @@ const AnalyticsTokens: React.FC = () => {
             maticPrice.price,
             maticPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            chainIdToUse,
           );
           if (data) {
             updateTopTokens(data);
@@ -66,6 +66,7 @@ const AnalyticsTokens: React.FC = () => {
             ethPrice.price,
             ethPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            chainIdToUse,
           );
           if (data) {
             updateTopTokens(data);
@@ -84,6 +85,7 @@ const AnalyticsTokens: React.FC = () => {
             maticPrice.price,
             maticPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+            chainIdToUse,
           );
           if (data) {
             updateTopTokens(data);
@@ -97,6 +99,7 @@ const AnalyticsTokens: React.FC = () => {
     maticPrice.price,
     maticPrice.oneDayPrice,
     version,
+    chainIdToUse,
   ]);
 
   useEffect(() => {

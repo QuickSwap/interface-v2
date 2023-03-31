@@ -6,7 +6,6 @@ import { useDerivedLairInfo } from 'state/stake/hooks';
 import { Close } from '@mui/icons-material';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { GlobalValue } from 'constants/index';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { useLairContract, useNewLairContract } from 'hooks/useContract';
 import {
@@ -16,6 +15,8 @@ import {
 import { calculateGasMargin, formatTokenAmount } from 'utils';
 import styles from 'styles/components/StakeModal.module.scss';
 import { useTranslation } from 'next-i18next';
+import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
+import { ChainId } from '@uniswap/sdk';
 
 interface StakeQuickModalProps {
   open: boolean;
@@ -30,12 +31,11 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [attempting, setAttempting] = useState(false);
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const quickToken = isNew
-    ? GlobalValue.tokens.COMMON.NEW_QUICK
-    : GlobalValue.tokens.COMMON.OLD_QUICK;
+  const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
   const quickBalance = useCurrencyBalance(account ?? undefined, quickToken);
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
@@ -60,7 +60,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
   );
 
   const onAttemptToApprove = async () => {
-    if (!lairContract) throw new Error(t('missingdependencies'));
+    if (!lairContractToUse) throw new Error(t('missingdependencies'));
     const liquidityAmount = parsedAmount;
     if (!liquidityAmount) throw new Error(t('missingliquidity'));
     return approveCallback();
@@ -81,11 +81,11 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
             },
           );
           addTransaction(response, {
-            summary: `${t('stake')} QUICK`,
+            summary: `${t('stake')} ${quickToken?.symbol}`,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
-            summary: `${t('stake')} dQUICK`,
+            summary: `${t('stake')} ${quickToken?.symbol}`,
           });
           setAttempting(false);
           setStakePercent(0);
@@ -104,7 +104,9 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box className='flex items-center justify-between'>
-          <h5>{t('stake')} QUICK</h5>
+          <h5>
+            {t('stake')} {quickToken?.symbol}
+          </h5>
           <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
@@ -114,7 +116,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
           padding='16px'
         >
           <Box className='flex items-center justify-between'>
-            <small>QUICK</small>
+            <small>{quickToken?.symbol}</small>
             <small>
               {t('balance')}: {formatTokenAmount(quickBalance)}
             </small>

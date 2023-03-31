@@ -252,7 +252,6 @@ export default function PositionListItemDetails({
         const newTxn = {
           ...txn,
           gasLimit: calculateGasMarginV3(chainId, estimate),
-          gasPrice: gasPrice * 1000000000,
         };
 
         return library
@@ -293,7 +292,6 @@ export default function PositionListItemDetails({
     tokenId,
     library,
     _onFarming,
-    gasPrice,
     addTransaction,
     t,
   ]);

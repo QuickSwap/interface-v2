@@ -16,7 +16,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
-import { useUSDCPricesToken } from 'utils/useUSDCPrice';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 
 const GammaFarmsPage: React.FC<{
   farmFilter: string;
@@ -27,9 +27,11 @@ const GammaFarmsPage: React.FC<{
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
-  const allGammaFarms = ([] as GammaPair[])
-    .concat(...Object.values(GammaPairs))
-    .filter((item) => item.ableToFarm);
+  const allGammaFarms = chainId
+    ? ([] as GammaPair[])
+        .concat(...Object.values(GammaPairs[chainId]))
+        .filter((item) => item.ableToFarm)
+    : [];
   const sortMultiplier = sortDesc ? -1 : 1;
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 
@@ -54,47 +56,42 @@ const GammaFarmsPage: React.FC<{
     },
   );
 
-  const gammaRewardTokens =
-    gammaRewards && chainId
-      ? ([] as string[])
-          .concat(
-            ...Object.values(gammaRewards).map((item: any) =>
-              item && item['rewarders']
-                ? Object.values(item['rewarders'])
-                    .filter(
-                      (rewarder: any) =>
-                        rewarder && Number(rewarder['rewardPerSecond']) > 0,
-                    )
-                    .map((rewarder: any) => rewarder.rewardToken)
-                : [],
-            ),
-          )
-          .filter(
-            (value, index, self) =>
-              index ===
-              self.findIndex((t) => t.toLowerCase() === value.toLowerCase()),
-          )
-          .map((tokenAddress) => {
-            const tokenData = getTokenFromAddress(
-              tokenAddress,
-              chainId,
-              tokenMap,
-              [],
-            );
-            return new Token(
-              chainId,
-              tokenData.address,
-              tokenData.decimals,
-              tokenData.symbol,
-              tokenData.name,
-            );
-          })
-      : [];
+  const gammaRewardTokenAddresses = GAMMA_MASTERCHEF_ADDRESSES.reduce<string[]>(
+    (memo, masterChef) => {
+      const gammaReward =
+        gammaRewards &&
+        chainId &&
+        masterChef[chainId] &&
+        gammaRewards[masterChef[chainId].toLowerCase()]
+          ? gammaRewards[masterChef[chainId].toLowerCase()]['pools']
+          : undefined;
+      if (gammaReward) {
+        const gammaRewardArr: any[] = Object.values(gammaReward);
+        for (const item of gammaRewardArr) {
+          if (item && item['rewarders']) {
+            const rewarders: any[] = Object.values(item['rewarders']);
+            for (const rewarder of rewarders) {
+              if (
+                rewarder &&
+                rewarder['rewardPerSecond'] &&
+                Number(rewarder['rewardPerSecond']) > 0 &&
+                rewarder.rewardToken &&
+                !memo.includes(rewarder.rewardToken)
+              ) {
+                memo.push(rewarder.rewardToken);
+              }
+            }
+          }
+        }
+      }
+      return memo;
+    },
+    [],
+  );
 
-  const rewardUSDPrices = useUSDCPricesToken(gammaRewardTokens);
-  const gammaRewardsWithUSDPrice = gammaRewardTokens.map((token, ind) => {
-    return { price: rewardUSDPrices[ind], tokenAddress: token.address };
-  });
+  const gammaRewardsWithUSDPrice = useUSDCPricesFromAddresses(
+    gammaRewardTokenAddresses,
+  );
 
   const filteredFarms = allGammaFarms
     .map((item) => {
@@ -216,21 +213,35 @@ const GammaFarmsPage: React.FC<{
       const gammaData1 = gammaData
         ? gammaData[farm1.address.toLowerCase()]
         : undefined;
+      const farm0MasterChefAddress =
+        chainId &&
+        GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][chainId]
+          ? GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][
+              chainId
+            ].toLowerCase()
+          : undefined;
+      const farm1MasterChefAddress =
+        chainId &&
+        GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][chainId]
+          ? GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][
+              chainId
+            ].toLowerCase()
+          : undefined;
       const gammaReward0 =
         gammaRewards &&
-        chainId &&
-        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
-          ? gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools'][
+        farm0MasterChefAddress &&
+        gammaRewards[farm0MasterChefAddress] &&
+        gammaRewards[farm0MasterChefAddress]['pools']
+          ? gammaRewards[farm0MasterChefAddress]['pools'][
               farm0.address.toLowerCase()
             ]
           : undefined;
       const gammaReward1 =
         gammaRewards &&
-        chainId &&
-        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]] &&
-        gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools']
-          ? gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[chainId]]['pools'][
+        farm1MasterChefAddress &&
+        gammaRewards[farm1MasterChefAddress] &&
+        gammaRewards[farm1MasterChefAddress]['pools']
+          ? gammaRewards[farm1MasterChefAddress]['pools'][
               farm1.address.toLowerCase()
             ]
           : undefined;
@@ -256,9 +267,9 @@ const GammaFarmsPage: React.FC<{
           gammaReward0 && gammaReward0['rewarders']
             ? Object.values(gammaReward0['rewarders']).reduce(
                 (total: number, rewarder: any) => {
-                  const rewardUSD = gammaRewardsWithUSDPrice.find(
+                  const rewardUSD = gammaRewardsWithUSDPrice?.find(
                     (item) =>
-                      item.tokenAddress.toLowerCase() ===
+                      item.address.toLowerCase() ===
                       rewarder.rewardToken.toLowerCase(),
                   );
                   return (
@@ -272,9 +283,9 @@ const GammaFarmsPage: React.FC<{
           gammaReward1 && gammaReward1['rewarders']
             ? Object.values(gammaReward1['rewarders']).reduce(
                 (total: number, rewarder: any) => {
-                  const rewardUSD = gammaRewardsWithUSDPrice.find(
+                  const rewardUSD = gammaRewardsWithUSDPrice?.find(
                     (item) =>
-                      item.tokenAddress.toLowerCase() ===
+                      item.address.toLowerCase() ===
                       rewarder.rewardToken.toLowerCase(),
                   );
                   return (
@@ -329,23 +340,39 @@ const GammaFarmsPage: React.FC<{
         </div>
       ) : !gammaFarmsLoading && filteredFarms.length > 0 && chainId ? (
         <Box>
-          {filteredFarms.map((farm) => (
-            <Box mb={2} key={farm.address}>
-              <GammaFarmCard
-                token0={farm.token0}
-                token1={farm.token1}
-                pairData={farm}
-                data={
-                  gammaData ? gammaData[farm.address.toLowerCase()] : undefined
-                }
-                rewardData={
-                  gammaRewards
-                    ? gammaRewards[farm.address.toLowerCase()]
-                    : undefined
-                }
-              />
-            </Box>
-          ))}
+          {filteredFarms.map((farm) => {
+            const gfMasterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[
+              farm.masterChefIndex ?? 0
+            ][chainId]
+              ? GAMMA_MASTERCHEF_ADDRESSES[farm.masterChefIndex ?? 0][
+                  chainId
+                ].toLowerCase()
+              : undefined;
+            return (
+              <Box mb={2} key={farm.address}>
+                <GammaFarmCard
+                  token0={farm.token0}
+                  token1={farm.token1}
+                  pairData={farm}
+                  data={
+                    gammaData
+                      ? gammaData[farm.address.toLowerCase()]
+                      : undefined
+                  }
+                  rewardData={
+                    gammaRewards &&
+                    gfMasterChefAddress &&
+                    gammaRewards[gfMasterChefAddress] &&
+                    gammaRewards[gfMasterChefAddress]['pools']
+                      ? gammaRewards[gfMasterChefAddress]['pools'][
+                          farm.address.toLowerCase()
+                        ]
+                      : undefined
+                  }
+                />
+              </Box>
+            );
+          })}
         </Box>
       ) : null}
     </Box>

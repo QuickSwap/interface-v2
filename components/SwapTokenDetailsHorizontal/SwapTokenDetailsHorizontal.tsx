@@ -9,20 +9,24 @@ import {
   useTokenDetails,
 } from 'state/application/hooks';
 import {
-  shortenAddress,
   getTokenInfo,
   getIntervalTokenData,
   formatNumber,
+  shortenAddress,
 } from 'utils';
 import { LineChart } from 'components';
-import { Token } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { getIntervalTokenDataV3, getTokenInfoV3 } from 'utils/v3-graph';
+import { useActiveWeb3React } from 'hooks';
+import { getConfig } from 'config';
 
 const SwapTokenDetailsHorizontal: React.FC<{
   token: Token;
 }> = ({ token }) => {
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
   const { palette } = useTheme();
@@ -35,6 +39,8 @@ const SwapTokenDetailsHorizontal: React.FC<{
   const prices = priceData ? priceData.map((price: any) => price.close) : [];
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
+  const config = getConfig(chainId);
+  const v2 = config['v2'];
 
   useEffect(() => {
     (async () => {
@@ -48,34 +54,42 @@ const SwapTokenDetailsHorizontal: React.FC<{
         .subtract(1, 'day')
         .startOf('hour')
         .unix();
-      const tokenPriceDataV2 = await getIntervalTokenData(
-        tokenAddress,
-        startTime,
-        3600,
-        latestBlock,
-      );
+
+      let tokenPriceDataV2, tokenPriceIsV2;
+      if (v2) {
+        tokenPriceDataV2 = await getIntervalTokenData(
+          tokenAddress,
+          startTime,
+          3600,
+          latestBlock,
+          chainIdToUse,
+        );
+        tokenPriceIsV2 = !!tokenPriceDataV2.find(
+          (item) => item.open && item.close,
+        );
+      }
       const tokenPriceDataV3 = await getIntervalTokenDataV3(
         tokenAddress.toLowerCase(),
         startTime,
         3600,
         latestBlock,
+        chainIdToUse,
       );
-      const tokenPriceIsV2 = !!tokenPriceDataV2.find(
-        (item) => item.open && item.close,
-      );
+
       const tokenPriceData = tokenPriceIsV2
         ? tokenPriceDataV2
         : tokenPriceDataV3;
       setPriceData(tokenPriceData);
 
-      if (ethPrice.price && ethPrice.oneDayPrice) {
+      let token0;
+      if (ethPrice.price && ethPrice.oneDayPrice && v2) {
         const tokenInfo = await getTokenInfo(
           ethPrice.price,
           ethPrice.oneDayPrice,
           tokenAddress,
+          chainIdToUse,
         );
-        const token0 =
-          tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
+        token0 = tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
         if (token0 && token0.priceUSD) {
           setTokenData(token0);
           const tokenDetailToUpdate = {
@@ -84,11 +98,15 @@ const SwapTokenDetailsHorizontal: React.FC<{
             priceData: tokenPriceData,
           };
           updateTokenDetails(tokenDetailToUpdate);
-        } else if (maticPrice.price && maticPrice.oneDayPrice) {
+        }
+      }
+      if (!token0 || !token0.priceUSD) {
+        if (maticPrice.price && maticPrice.oneDayPrice) {
           const tokenInfoV3 = await getTokenInfoV3(
             maticPrice.price,
             maticPrice.oneDayPrice,
             tokenAddress.toLowerCase(),
+            chainIdToUse,
           );
           const tokenV3 =
             tokenInfoV3 && tokenInfoV3.length > 0
@@ -113,6 +131,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
+    chainIdToUse,
   ]);
 
   return (
@@ -169,7 +188,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       <Grid item xs={12}>
         <Box className='flex items-center' py={1}>
           <a
-            href={`${process.env.REACT_APP_SCAN_BASE_URL}/token/${tokenAddress}`}
+            href={`${config.blockExplorer}/token/${tokenAddress}`}
             target='_blank'
             rel='noopener noreferrer'
             className='no-decoration'

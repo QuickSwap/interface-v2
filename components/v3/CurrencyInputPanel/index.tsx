@@ -15,9 +15,7 @@ import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@mui/material';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'next-i18next';
-import JSBI from 'jsbi';
 import styles from './CurrencyInputPanel.module.scss';
-import { parseUnits } from 'ethers/lib/utils';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 
 interface CurrencyInputPanelProps {
@@ -72,10 +70,11 @@ export default function CurrencyInputPanel({
   showETH,
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const { t } = useTranslation();
 
-  const ethBalance = useCurrencyBalanceV2(account ?? undefined, ETHER);
+  const nativeCurrency = chainId ? ETHER[chainId] : undefined;
+  const ethBalance = useCurrencyBalanceV2(account ?? undefined, nativeCurrency);
   const balance = useCurrencyBalance(
     account ?? undefined,
     currency ?? undefined,
@@ -83,57 +82,17 @@ export default function CurrencyInputPanel({
 
   const currentPrice = useUSDCPrice(currency ?? undefined);
 
-  const valueBN = useMemo(() => {
-    if (!currency) return;
-    const digitStr = value.substring(value.indexOf('.'));
-    const decimalStr = value.substring(0, value.indexOf('.'));
-    let valueStr = '0';
-    if (!value.length) {
-      valueStr = '0';
-    } else if (value.indexOf('.') === -1) {
-      valueStr = value;
-    } else if (digitStr.length === 1) {
-      valueStr = decimalStr;
-    } else if (digitStr.length > currency.decimals + 1) {
-      valueStr = decimalStr + digitStr.slice(0, currency.decimals + 1);
-    } else {
-      valueStr = decimalStr + digitStr;
-    }
-    return parseUnits(valueStr, currency.decimals);
-  }, [value, currency]);
-
   const valueAsUsd = useMemo(() => {
-    if (!currentPrice || !valueBN || !currency) {
-      return undefined;
+    if (!currentPrice || !value) {
+      return 0;
     }
 
-    return currentPrice.quote(
-      CurrencyAmount.fromRawAmount(currency, JSBI.BigInt(valueBN)),
-    );
-  }, [currentPrice, currency, valueBN]);
+    return Number(currentPrice.toSignificant()) * Number(value);
+  }, [currentPrice, value]);
 
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false);
   }, [setModalOpen]);
-
-  // const balanceAsUsdc = useMemo(() => {
-  //   if (!balance) return 'Loading...';
-
-  //   const _balance = balance.toFixed();
-
-  //   if (_balance.split('.')[0].length > 10) {
-  //     return _balance.slice(0, 7) + '...';
-  //   }
-
-  //   if (+balance.toFixed() === 0) {
-  //     return '0';
-  //   }
-  //   if (+balance.toFixed() < 0.0001) {
-  //     return '< 0.0001';
-  //   }
-
-  //   return +balance.toFixed(3);
-  // }, [balance]);
 
   return (
     <Box className={styles.v3CurrencyInputPanel}>
@@ -165,7 +124,7 @@ export default function CurrencyInputPanel({
                     {showETH ? (
                       <DoubleCurrencyLogo
                         size={25}
-                        currency0={ETHER}
+                        currency0={nativeCurrency}
                         currency1={currency}
                       />
                     ) : (
@@ -174,13 +133,13 @@ export default function CurrencyInputPanel({
                         currency={currency as WrappedCurrency}
                       ></CurrencyLogo>
                     )}
-                    <p>{`${showETH ? ETHER.symbol + '+' : ''}${
-                      currency?.symbol
-                    }`}</p>
+                    <p className='text-primaryText'>{`${
+                      showETH ? nativeCurrency?.symbol + '+' : ''
+                    }${currency?.symbol}`}</p>
                   </Box>
                 </Box>
               ) : (
-                <p>{t('selectToken')}</p>
+                <p className='text-primaryText'>{t('selectToken')}</p>
               )}
             </Box>
           </Box>
@@ -219,7 +178,11 @@ export default function CurrencyInputPanel({
             )}
           </Box>
 
-          <small className='text-secondary'>${valueAsUsd?.toFixed(2)}</small>
+          <Box className='v3-currency-input-usd-value'>
+            <small className='text-secondary'>
+              ${valueAsUsd.toLocaleString('us')}
+            </small>
+          </Box>
         </Box>
       </Box>
 

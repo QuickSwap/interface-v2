@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { Link, useLocation } from 'react-router-dom';
+import { Box, useMediaQuery } from '@material-ui/core';
+import { KeyboardArrowDown } from '@material-ui/icons';
+import { useTheme } from '@material-ui/core/styles';
 import {
   useIsV2,
   useUDDomain,
@@ -13,29 +13,42 @@ import {
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress, addMaticToMetamask, isSupportedNetwork } from 'utils';
+import { shortenAddress, isSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
-import { WalletModal } from 'components';
+import { WalletModal, NetworkSelectionModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
-import { MoreHoriz } from '@mui/icons-material';
-import LightIcon from 'svgs/LightIcon.svg';
-import styles from 'styles/components/Header.module.scss';
-import { useTranslation } from 'next-i18next';
+import QuickIcon from 'assets/images/quickIcon.svg';
+import QuickLogo from 'assets/images/quickLogo.png';
+import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
+// import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
+import WalletIcon from 'assets/images/WalletIcon.png';
+import NewTag from 'assets/images/NewTag.png';
+import SparkleLeft from 'assets/images/SparkleLeft.svg';
+import SparkleRight from 'assets/images/SparkleRight.svg';
+import SparkleTop from 'assets/images/SparkleTop.svg';
+import SparkleBottom from 'assets/images/SparkleBottom.svg';
+import 'components/styles/Header.scss';
+import { useTranslation } from 'react-i18next';
+import { getConfig } from 'config/index';
 import useDeviceWidth from 'hooks/useDeviceWidth';
-import { GlobalValue } from 'constants/index';
+import { USDC, USDT } from 'constants/v3/addresses';
+import { ChainId } from '@uniswap/sdk';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
 };
 
 const Header: React.FC = () => {
-  const { t } = useTranslation('common');
-  const { pathname } = useRouter();
+  const { t } = useTranslation();
+  const { pathname } = useLocation();
   const { account } = useActiveWeb3React();
   const { ethereum } = window as any;
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
+  const [openNetworkSelectionModal, setOpenNetworkSelectionModal] = useState(
+    false,
+  );
   const theme = useTheme();
   const allTransactions = useAllTransactions();
   const sortedRecentTransactions = useMemo(() => {
@@ -69,70 +82,118 @@ const Header: React.FC = () => {
   }, []);
 
   const menuItemCountToShow = useMemo(() => {
-    if (deviceWidth > 1370) {
+    if (deviceWidth > 1540) {
       return 7;
-    } else if (deviceWidth > 1270) {
+    } else if (deviceWidth > 1430) {
       return 6;
-    } else if (deviceWidth > 1092) {
+    } else if (deviceWidth > 1260) {
       return 5;
-    } else {
+    } else if (deviceWidth > 1080) {
       return 4;
     }
+    return 3;
   }, [deviceWidth]);
 
-  const menuItems = [
-    {
-      link: `/swap?swapIndex=0&currency0=ETH&currency1=${GlobalValue.tokens.COMMON.USDC.address}`,
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const showSwap = config['swap']['available'];
+  const showPool = config['pools']['available'];
+  const showFarm = config['farm']['available'];
+  const showLair = config['lair']['available'];
+  const showConvert = config['convert']['available'];
+  const showPredictions = config['predictions']['available'];
+  const showAnalytics = config['analytics']['available'];
+  const showLending = config['lending']['available'];
+  const showGamingHub = config['gamingHub']['available'];
+  const showLeaderboard = config['leaderboard']['available'];
+
+  const menuItems = [];
+
+  const swapCurrencyStr = useMemo(() => {
+    if (!chainId) return '';
+    if (chainId === ChainId.ZKTESTNET)
+      return `&currency1=${USDT[chainId].address}`;
+    return `&currency1=${USDC[chainId].address}`;
+  }, [chainId]);
+
+  if (showSwap) {
+    menuItems.push({
+      link: `/swap?currency0=ETH${swapCurrencyStr}`,
       text: t('swap'),
       id: 'swap-page-link',
-    },
-    {
+    });
+  }
+  if (showPool) {
+    menuItems.push({
       link: `/pools`,
       text: t('pool'),
       id: 'pools-page-link',
-    },
-    {
+    });
+  }
+  if (showFarm) {
+    menuItems.push({
       link: `/farm`,
       text: t('farm'),
       id: 'farm-page-link',
-    },
-    {
+    });
+  }
+  if (showLair) {
+    menuItems.push({
       link: '/dragons',
       text: t('dragonLair'),
       id: 'dragons-page-link',
-    },
-    {
+    });
+  }
+  if (showGamingHub) {
+    menuItems.push({
       link: '/gamehub',
       text: 'Gaming Hub',
       id: 'gamehub-page-link',
       isExternal: true,
+      target: '_top',
       externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
       isNew: true,
-    },
-    {
+    });
+  }
+  if (showPredictions) {
+    menuItems.push({
       link: '/predictions',
       text: 'Predictions',
       id: 'predictions-page-link',
       isExternal: true,
       externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
-    },
-    // {
-    //   link: '/lend',
-    //   text: t('lend'),
-    //   id: 'lend-page-link',
-    //   isNew: true,
-    // },
-    {
+    });
+  }
+  if (showLeaderboard) {
+    menuItems.push({
+      link: '/leader-board',
+      text: 'Leader Board',
+      id: 'contest-page-link',
+      isNew: true,
+    });
+  }
+  if (showConvert) {
+    menuItems.push({
       link: '/convert',
       text: t('convert'),
       id: 'convert-quick',
-    },
-    {
+    });
+  }
+  if (showLending) {
+    menuItems.push({
+      link: '/lend',
+      text: t('lend'),
+      id: 'lend-page-link',
+      isNew: true,
+    });
+  }
+  if (showAnalytics) {
+    menuItems.push({
       link: `/analytics`,
       text: t('analytics'),
       id: 'analytics-page-link',
-    },
-  ];
+    });
+  }
 
   const outLinks: any[] = [
     // {
@@ -164,32 +225,31 @@ const Header: React.FC = () => {
   const { updateIsV2 } = useIsV2();
 
   return (
-    <Box className={`${styles.header} ${tabletWindowSize ? '' : headerClass}`}>
+    <Box className={`header ${tabletWindowSize ? '' : headerClass}`}>
+      <NetworkSelectionModal
+        open={openNetworkSelectionModal}
+        onClose={() => setOpenNetworkSelectionModal(false)}
+      />
       <WalletModal
         ENSName={ENSName ?? undefined}
         pendingTransactions={pending}
         confirmedTransactions={confirmed}
       />
-      <Link href='/'>
-        <Image
-          src={
-            mobileWindowSize
-              ? '/assets/images/quickIcon.svg'
-              : '/assets/images/quickLogo.png'
-          }
+      <Link to='/'>
+        <img
+          src={mobileWindowSize ? QuickIcon : QuickLogo}
           alt='QuickLogo'
-          width={mobileWindowSize ? 60 : 195}
-          height={mobileWindowSize ? 60 : 60}
+          height={mobileWindowSize ? 40 : 60}
         />
       </Link>
       {!tabletWindowSize && (
-        <Box className={styles.mainMenu}>
+        <Box className='mainMenu'>
           {menuItems.slice(0, menuItemCountToShow).map((val, index) => (
             <Link
-              href={val.link}
+              to={val.link}
               key={index}
               id={val.id}
-              className={`${styles.menuItem} ${
+              className={`menuItem ${
                 pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
               }`}
               onClick={() => {
@@ -199,39 +259,26 @@ const Header: React.FC = () => {
               <small>{val.text}</small>
               {val.isNew && (
                 <>
-                  <Image
-                    src='/assets/images/NewTag.png'
-                    alt='new menu'
-                    width={46}
-                    height={30}
-                  />
-                  <Image
-                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
-                    src='/assets/images/SparkleLeft.svg'
+                  <img src={NewTag} alt='new menu' width={46} />
+                  <img
+                    className='menuItemSparkle menuItemSparkleLeft'
+                    src={SparkleLeft}
                     alt='menuItem sparkle left'
-                    width={4}
-                    height={5}
                   />
-                  <Image
-                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
-                    src='/assets/images/SparkleRight.svg'
+                  <img
+                    className='menuItemSparkle menuItemSparkleRight'
+                    src={SparkleRight}
                     alt='menuItem sparkle right'
-                    width={4}
-                    height={5}
                   />
-                  <Image
-                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
-                    src='/assets/images/SparkleBottom.svg'
+                  <img
+                    className='menuItemSparkle menuItemSparkleBottom'
+                    src={SparkleBottom}
                     alt='menuItem sparkle bottom'
-                    width={136}
-                    height={10}
                   />
-                  <Image
-                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
-                    src='/assets/images/SparkleTop.svg'
+                  <img
+                    className='menuItemSparkle menuItemSparkleTop'
+                    src={SparkleTop}
                     alt='menuItem sparkle top'
-                    width={133}
-                    height={11}
                   />
                 </>
               )}
@@ -239,18 +286,15 @@ const Header: React.FC = () => {
           ))}
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
-            <Box
-              display='flex'
-              className={`${styles.menuItem} ${styles.subMenuItem}`}
-            >
-              <MoreHoriz />
-              <Box className={styles.subMenuWrapper}>
-                <Box className={styles.subMenu}>
+            <Box display='flex' className='menuItem subMenuItem'>
+              <ThreeDotIcon />
+              <Box className='subMenuWrapper'>
+                <Box className='subMenu'>
                   {menuItems
                     .slice(menuItemCountToShow, menuItems.length)
                     .map((val, index) => (
                       <Link
-                        href={val.link}
+                        to={val.link}
                         key={index}
                         onClick={() => {
                           setOpenDetailMenu(false);
@@ -272,104 +316,107 @@ const Header: React.FC = () => {
         </Box>
       )}
       {tabletWindowSize && (
-        <Box className={styles.mobileMenuContainer}>
-          <Box className={styles.mobileMenu}>
+        <Box className='mobileMenuContainer'>
+          <Box className='mobileMenu'>
             {menuItems.slice(0, 4).map((val, index) => (
               <Link
-                href={val.link}
+                to={val.link}
                 key={index}
                 className={
-                  pathname.indexOf(val.link) > -1 ? 'active' : styles.menuItem
+                  pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
                 }
               >
                 <small>{val.text}</small>
               </Link>
             ))}
-            <Box className={`flex ${styles.menuItem}`}>
-              <MoreHoriz onClick={() => setOpenDetailMenu(!openDetailMenu)} />
-              {openDetailMenu && (
-                <Box className={styles.subMenuWrapper}>
-                  <Box className={styles.subMenu}>
-                    {menuItems.slice(4, menuItems.length).map((val, index) => {
-                      return val.isExternal ? (
+            {menuItems.length > 4 && (
+              <Box className='flex menuItem'>
+                <ThreeDotIcon
+                  onClick={() => setOpenDetailMenu(!openDetailMenu)}
+                />
+                {openDetailMenu && (
+                  <Box className='subMenuWrapper'>
+                    <Box className='subMenu'>
+                      {menuItems
+                        .slice(4, menuItems.length)
+                        .map((val, index) => {
+                          return val.isExternal ? (
+                            <a
+                              href={val.externalLink}
+                              target={val?.target ? val.target : '_blank'}
+                              key={index}
+                              rel='noopener noreferrer'
+                            >
+                              <small>{val.text}</small>
+                            </a>
+                          ) : (
+                            <Link
+                              to={val.link}
+                              key={index}
+                              onClick={() => {
+                                setOpenDetailMenu(false);
+                                updateIsV2(false);
+                              }}
+                            >
+                              <small>{val.text}</small>
+                            </Link>
+                          );
+                        })}
+                      {outLinks.map((item, ind) => (
                         <a
-                          href={val.externalLink}
-                          target='_blank'
-                          key={index}
-                          rel='noopener noreferrer'
+                          href={item.link}
+                          key={ind}
+                          onClick={() => setOpenDetailMenu(false)}
                         >
-                          <small>{val.text}</small>
+                          <small>{item.text}</small>
                         </a>
-                      ) : (
-                        <Link
-                          href={val.link}
-                          key={index}
-                          onClick={() => {
-                            setOpenDetailMenu(false);
-                            updateIsV2(false);
-                          }}
-                        >
-                          <small>{val.text}</small>
-                        </Link>
-                      );
-                    })}
-                    {outLinks.map((item, ind) => (
-                      <a
-                        href={item.link}
-                        key={ind}
-                        onClick={() => setOpenDetailMenu(false)}
-                      >
-                        <small>{item.text}</small>
-                      </a>
-                    ))}
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
-              )}
-            </Box>
+                )}
+              </Box>
+            )}
           </Box>
         </Box>
       )}
       <Box>
-        <Box className={styles.headerIconWrapper}>
-          <Box className={styles.styledPollingDot} />
-          <LightIcon />
+        <Box
+          className='networkSelection'
+          onClick={() => setOpenNetworkSelectionModal(true)}
+        >
+          {(!ethereum || isSupportedNetwork(ethereum)) && (
+            <Box className='networkSelectionImage'>
+              <Box className='styledPollingDot' />
+              <img src={config['nativeCurrencyImage']} alt='network Image' />
+            </Box>
+          )}
+          <small className='weight-600'>
+            {ethereum && !isSupportedNetwork(ethereum)
+              ? t('wrongNetwork')
+              : config['networkName']}
+          </small>
+          <KeyboardArrowDown />
         </Box>
         {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
           <Box
             id='web3-status-connected'
-            className={styles.accountDetails}
+            className='accountDetails'
             onClick={toggleWalletModal}
           >
             <p>{udDomain ?? shortenAddress(account)}</p>
-            <Image src='/images/WalletIcon.png' alt='Wallet' />
+            <img src={WalletIcon} alt='Wallet' />
           </Box>
-        ) : (
+        ) : !ethereum || isSupportedNetwork(ethereum) ? (
           <Box
-            className={`${styles.connectButton} ${
-              ethereum && !isSupportedNetwork(ethereum)
-                ? 'bg-error'
-                : 'bg-primary'
-            }`}
+            className='connectButton bg-primary'
             onClick={() => {
-              if (!ethereum || isSupportedNetwork(ethereum)) {
-                toggleWalletModal();
-              }
+              toggleWalletModal();
             }}
           >
-            {ethereum && !isSupportedNetwork(ethereum)
-              ? t('wrongNetwork')
-              : t('connectWallet')}
-            {ethereum && !isSupportedNetwork(ethereum) && (
-              <Box className={styles.wrongNetworkWrapper}>
-                <Box className={styles.wrongNetworkContent}>
-                  <small>{t('switchWalletToPolygon')}</small>
-                  <Box mt={2.5} onClick={addMaticToMetamask}>
-                    {t('switchPolygon')}
-                  </Box>
-                </Box>
-              </Box>
-            )}
+            {t('connectWallet')}
           </Box>
+        ) : (
+          <></>
         )}
       </Box>
     </Box>

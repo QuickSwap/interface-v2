@@ -1,0 +1,47 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.contestCard {
+  background: $secondary1;
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px;
+  @include media('screen', '<phone') {
+    padding: 0;
+    .dailyRateWrapper {
+      margin: 0 16px 16px;
+      width: calc(100% - 32px);
+    }
+  }
+}
+
+.contestCardUp {
+  background: $secondary1;
+  width: 100%;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  cursor: pointer;
+  @include media('screen', '<phone') {
+    padding: 16px;
+  }
+}
+.contestCardDetails {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 1px solid $grey26;
+  align-items: center;
+}
+.contestCardMobileRow {
+  margin-bottom: 16px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import SwapProChart from './SwapProChart';
-import { Token } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import { Box } from '@mui/material';
 import { Height } from '@mui/icons-material';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import { useActiveWeb3React } from 'hooks';
 import { TableVirtuoso } from 'react-virtuoso';
 import { useTranslation } from 'next-i18next';
-import { GlobalConst } from 'constants/index';
+import { V2_MATIC_USDT_PAIR } from 'constants/v3/addresses';
 
 const SwapProChartTrade: React.FC<{
   showChart: boolean;
@@ -119,7 +119,10 @@ const SwapProChartTrade: React.FC<{
           <SwapProChart
             pairName={`${token1?.symbol ?? 'MATIC'}/${token2?.symbol ??
               'USDT'}`}
-            pairAddress={pairAddress ?? GlobalConst.addresses.MATIC_USDT_PAIR}
+            pairAddress={
+              pairAddress ??
+              V2_MATIC_USDT_PAIR[chainId ? chainId : ChainId.MATIC]
+            }
             pairTokenReversed={pairTokenReversed}
           />
         </ReflexElement>

@@ -15,7 +15,7 @@ import { SelectRange } from './containers/SelectRange';
 import { Currency } from '@uniswap/sdk-core';
 
 import './index.scss';
-import { WMATIC_EXTENDED } from 'constants/tokens';
+import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import {
   setInitialTokenPrice,
   setInitialUSDPrices,
@@ -36,6 +36,8 @@ import { Settings } from '@mui/icons-material';
 import { useAppDispatch } from 'state/hooks';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
 import { useTranslation } from 'next-i18next';
+import { CHAIN_INFO } from 'constants/v3/chains';
+import { ChainId } from '@uniswap/sdk';
 import { GlobalConst } from 'constants/index';
 
 export function SupplyLiquidityV3() {
@@ -55,11 +57,12 @@ export function SupplyLiquidityV3() {
       ? 'matic'
       : (currencyId1 as string)
     : undefined;
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const chainInfo = CHAIN_INFO[chainIdToUse];
 
   const [currencyIdA, setCurrencyIdA] = useState(currencyIdAParam);
   const [currencyIdB, setCurrencyIdB] = useState(currencyIdBParam);
-
-  const { account, chainId } = useActiveWeb3React();
 
   const toggleWalletModal = useWalletModalToggle(); // toggle wallet when disconnected
 
@@ -123,8 +126,17 @@ export function SupplyLiquidityV3() {
 
       let chainSymbol;
 
-      if (chainId === 137) {
+      if (chainId === ChainId.MATIC || chainId === ChainId.MUMBAI) {
         chainSymbol = 'MATIC';
+      }
+      if (
+        chainId === ChainId.DOGECHAIN ||
+        chainId === ChainId.DOEGCHAIN_TESTNET
+      ) {
+        chainSymbol = 'WDOGE';
+      }
+      if (chainId === ChainId.ZKTESTNET) {
+        chainSymbol = 'ETH';
       }
 
       resetState();
@@ -159,7 +171,7 @@ export function SupplyLiquidityV3() {
   const handleCurrencyASelect = useCallback(
     (currencyANew: Currency) => {
       const isSwichRedirect = currencyANew.isNative
-        ? currencyIdBParam === 'matic'
+        ? currencyIdBParam === chainInfo.nativeCurrencySymbol.toLowerCase()
         : currencyIdBParam &&
           currencyANew &&
           currencyANew.address &&
@@ -170,7 +182,7 @@ export function SupplyLiquidityV3() {
         redirectWithCurrency(currencyANew, true, false);
       }
     },
-    [redirectWithCurrency, currencyIdBParam, redirectWithSwitch],
+    [redirectWithCurrency, currencyIdBParam, chainInfo, redirectWithSwitch],
   );
 
   useEffect(() => {
@@ -186,7 +198,7 @@ export function SupplyLiquidityV3() {
   const handleCurrencyBSelect = useCallback(
     (currencyBNew: Currency) => {
       const isSwichRedirect = currencyBNew.isNative
-        ? currencyIdAParam === 'matic'
+        ? currencyIdAParam === chainInfo.nativeCurrencySymbol.toLowerCase()
         : currencyIdAParam &&
           currencyBNew &&
           currencyBNew.address &&
@@ -197,7 +209,7 @@ export function SupplyLiquidityV3() {
         redirectWithCurrency(currencyBNew, false, false);
       }
     },
-    [redirectWithCurrency, currencyIdAParam, redirectWithSwitch],
+    [redirectWithCurrency, currencyIdAParam, chainInfo, redirectWithSwitch],
   );
 
   useEffect(() => {
@@ -250,11 +262,12 @@ export function SupplyLiquidityV3() {
           <small
             className='cursor-pointer text-primary'
             onClick={() => {
-              setCurrencyIdA(currencyIdAParam);
-              setCurrencyIdB(currencyIdBParam);
+              setCurrencyIdA('');
+              setCurrencyIdB('');
               resetState();
               onFieldAInput('');
               onFieldBInput('');
+              router.push('/pools');
             }}
           >
             {t('clearAll')}

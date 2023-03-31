@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
 import DragonsLair from 'components/pages/dragons/DragonsLair';
 import DragonsSyrup from 'components/pages/dragons/DragonsSyrup';
@@ -6,14 +6,34 @@ import styles from 'styles/pages/Dragons.module.scss';
 import { useTranslation } from 'next-i18next';
 import AdsSlider from 'components/AdsSlider';
 import Image from 'next/image';
+import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
+import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
+import { getConfig } from 'config';
+import { useRouter } from 'next/router';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
   //showing old dragons lair until we're ready to deploy
-  const showOld = true;
-  const showNew = true;
+
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const quickToken = DLQUICK[chainIdToUse];
+  const dQuickToken = DLDQUICK[chainIdToUse];
+  const config = getConfig(chainIdToUse);
+  const showLair = config['lair']['available'];
+  const showOld = config['lair']['oldLair'];
+  const showNew = config['lair']['newLair'];
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!showLair) {
+      router.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showLair]);
 
   return (
     <Box width='100%' mb={3}>
@@ -31,7 +51,12 @@ const DragonPage: React.FC = () => {
               />
               <Box className={styles.dragonTitle}>
                 <h5>{t('newDragonLair')}</h5>
-                <small>{t('dragonLairTitle')}</small>
+                <small>
+                  {t('dragonLairTitle', {
+                    symbol: quickToken?.symbol,
+                    symbol1: dQuickToken?.symbol,
+                  })}
+                </small>
               </Box>
               <DragonsLair isNew={true} />
             </Box>

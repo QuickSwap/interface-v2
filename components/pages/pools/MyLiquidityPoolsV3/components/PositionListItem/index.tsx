@@ -15,8 +15,7 @@ import useIsTickAtLimit from 'hooks/v3/useIsTickAtLimit';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { Position } from 'v3lib/entities/position';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
-import { GlobalValue } from 'constants/index';
+import { USDC, USDT, WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@mui/material';
 import { useRouter } from 'next/router';
@@ -24,6 +23,7 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import Badge from 'components/v3/Badge';
 import PositionListItemDetails from '../PositionListItemDetails';
 import { useTranslation } from 'next-i18next';
+import { ChainId } from '@uniswap/sdk';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -44,17 +44,22 @@ export function getPriceOrderingFromPositionForUI(
   if (!position) {
     return {};
   }
+  const chainIdToUse = position.pool.token0.chainId
+    ? position.pool.token0.chainId
+    : ChainId.MATIC;
 
   const token0 = position.amount0.currency;
   const token1 = position.amount1.currency;
 
-  const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
-  const USDT = toToken(GlobalValue.tokens.COMMON.USDT);
+  const USDC_TOKEN = toToken(USDC[chainIdToUse]);
+  const USDT_TOKEN = USDT[chainIdToUse]
+    ? toToken(USDT[chainIdToUse])
+    : undefined;
 
   // if token0 is a dollar-stable asset, set it as the quote token
   // const stables = [USDC_BINANCE, USDC_KOVAN]
-  const stables = [USDC, USDT];
-  if (stables.some((stable) => stable.equals(token0))) {
+  const stables = [USDC_TOKEN, USDT_TOKEN];
+  if (stables.some((stable) => stable?.equals(token0))) {
     return {
       priceLower: position.token0PriceUpper.invert(),
       priceUpper: position.token0PriceLower.invert(),

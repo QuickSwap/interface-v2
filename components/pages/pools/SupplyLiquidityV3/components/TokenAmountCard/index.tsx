@@ -1,8 +1,14 @@
 import React, { useMemo } from 'react';
-import { Currency, CurrencyAmount, Token } from '@uniswap/sdk-core';
+import {
+  Currency,
+  CurrencyAmount,
+  Token,
+  NativeCurrency,
+} from '@uniswap/sdk-core';
 
 import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance } from 'state/wallet/hooks';
+import { useCurrencyBalance as useCurrencyBalanceV3 } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
@@ -10,11 +16,12 @@ import './index.scss';
 import { Box } from '@mui/material';
 import { LockOutlined } from '@mui/icons-material';
 import NumericalInput from 'components/NumericalInput';
-import { ETHER, WETH } from '@uniswap/sdk';
 import { useTranslation } from 'next-i18next';
+import { ChainId, ETHER, WETH } from '@uniswap/sdk';
 import { useV3MintState } from 'state/mint/v3/hooks';
 import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo } from 'components';
+import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 
 interface ITokenAmountCard {
   currency: Currency | undefined | null;
@@ -41,15 +48,25 @@ export function TokenAmountCard({
   isMax,
   error,
 }: ITokenAmountCard) {
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = {
+    ...ETHER[chainIdToUse],
+    isNative: true,
+    isToken: false,
+    wrapped: WMATIC_EXTENDED[chainIdToUse],
+  } as NativeCurrency;
   const { t } = useTranslation();
-  const { chainId, account } = useActiveWeb3React();
   const { liquidityRangeType } = useV3MintState();
 
-  const balance = useCurrencyBalance(
+  const balance = useCurrencyBalanceV3(
     account ?? undefined,
-    currency?.isNative ? ETHER : currency ?? undefined,
+    currency?.isNative ? nativeCurrency : currency ?? undefined,
   );
-  const ethBalance = useCurrencyBalance(account ?? undefined, ETHER);
+  const ethBalance = useCurrencyBalance(
+    account ?? undefined,
+    chainId ? ETHER[chainId] : undefined,
+  );
   const wETHBalance = useCurrencyBalance(
     account ?? undefined,
     chainId ? WETH[chainId] : undefined,
@@ -156,7 +173,7 @@ export function TokenAmountCard({
                 WETH[chainId].address.toLowerCase() ? (
                 <DoubleCurrencyLogo
                   size={24}
-                  currency0={ETHER}
+                  currency0={ETHER[chainId]}
                   currency1={WETH[chainId]}
                 />
               ) : (

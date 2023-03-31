@@ -354,11 +354,10 @@ export function useSwapCallback(
             from: account,
             to: address,
             data: calldata,
-            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
             // let the wallet try if we can't estimate the gas
             ...('gasEstimate' in bestCallOption
               ? { gasLimit: calculateGasMargin(bestCallOption.gasEstimate) }
-              : {}),
+              : { gasPrice: gasPrice * GAS_PRICE_MULTIPLIER }),
             ...(value && !isZero(value) ? { value } : {}),
           })
           .then((response) => {

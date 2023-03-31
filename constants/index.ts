@@ -13,15 +13,22 @@ import {
   zengoconnect,
   phantomconnect,
 } from '../connectors';
+import MetamaskIcon from 'assets/images/metamask.png';
+import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
+import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
+import cypherDIcon from 'assets/images/cypherDIcon.png';
+import BitKeepIcon from 'assets/images/bitkeep.png';
+import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
+import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
+import PortisIcon from 'assets/images/portisIcon.png';
+import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
+import VenlyIcon from 'assets/images/venly.svg';
+import GnosisIcon from 'assets/images/gnosis_safe.png';
+import TrustIcon from 'assets/images/trust.png';
+import ZengoIcon from 'assets/images/zengo.webp';
 import { Presets } from 'state/mint/v3/reducer';
-
-const WETH_ONLY: ChainTokenList = {
-  [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
-  [ChainId.MATIC]: [WETH[ChainId.MATIC]],
-};
-
-// TODO: Remove this constant when supporting multichain
-export const MATIC_CHAIN = ChainId.MATIC;
+import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
+import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
 
 export enum TxnType {
   SWAP,
@@ -61,11 +68,55 @@ export const WALLCHAIN_PARAMS = {
       apiKey: '',
     },
   },
+  [ChainId.DOEGCHAIN_TESTNET]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+  },
+  [ChainId.DOGECHAIN]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+  },
+  [ChainId.ZKTESTNET]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+  },
+  [ChainId.ZKEVM]: {
+    [SmartRouter.PARASWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+    [SmartRouter.QUICKSWAP]: {
+      apiURL: '',
+      apiKey: '',
+    },
+  },
 };
 
 export const BONUS_CUTOFF_AMOUNT = {
   [ChainId.MUMBAI]: 0,
   [ChainId.MATIC]: 0,
+  [ChainId.DOEGCHAIN_TESTNET]: 0,
+  [ChainId.DOGECHAIN]: 0,
+  [ChainId.ZKTESTNET]: 0,
+  [ChainId.ZKEVM]: 0,
 };
 
 export const GlobalConst = {
@@ -83,36 +134,7 @@ export const GlobalConst = {
     ],
   },
   addresses: {
-    PARASWAP_PROXY_ROUTER_ADDRESS: {
-      [ChainId.MATIC]: '0x216b4b4ba9f3e719726886d34a177484278bfcae',
-      [ChainId.MUMBAI]: undefined,
-    },
-    PARASWAP_ROUTER_ADDRESS: {
-      [ChainId.MATIC]: '0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57',
-      [ChainId.MUMBAI]: undefined,
-    },
-    SWAP_ROUTER_ADDRESS: {
-      [ChainId.MATIC]: '0xfaa746afc5ff7d5ef0aa469bb26ddd6cd8f13911',
-      [ChainId.MUMBAI]: undefined,
-    },
-    ROUTER_ADDRESS: {
-      [ChainId.MATIC]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
-      [ChainId.MUMBAI]: '0x8954AfA98594b838bda56FE4C12a09D7739D179b',
-    }, //'0x6207A65a8bbc87dD02C3109D2c74a6bCE4af1C8c';//
     ZERO_ADDRESS: '0x0000000000000000000000000000000000000000',
-    LAIR_ADDRESS: '0xf28164a485b0b2c90639e47b0f377b4a438a16b1',
-    NEW_LAIR_ADDRESS: '0x958d208Cdf087843e9AD98d23823d32E17d723A1',
-    QUICK_ADDRESS: '0x831753DD7087CaC61aB5644b308642cc1c33Dc13',
-    NEW_QUICK_ADDRESS: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
-    FACTORY_ADDRESS: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
-    GOVERNANCE_ADDRESS: '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F', //TODO: MATIC
-    MERKLE_DISTRIBUTOR_ADDRESS: {
-      // TODO: specify merkle distributor for mainnet
-      [ChainId.MATIC]: '0x4087F566796b46eEB01A38174c06E2f9924eAea8', //TODO: MATIC
-      [ChainId.MUMBAI]: undefined,
-    },
-    QUICK_CONVERSION: '0x333068d06563a8dfdbf330a0e04a9d128e98bf5a',
-    MATIC_USDT_PAIR: '0x604229c960e5cacf2aaeac8be68ac07ba9df81c3',
   },
   utils: {
     QUICK_CONVERSION_RATE: 1000,
@@ -197,6 +219,15 @@ export const GlobalConst = {
   },
 };
 
+export const SUPPORTED_CHAINIDS = [
+  ChainId.MATIC,
+  ChainId.MUMBAI,
+  ChainId.DOGECHAIN,
+  ChainId.DOEGCHAIN_TESTNET,
+  ChainId.ZKTESTNET,
+  ChainId.ZKEVM,
+];
+
 export interface GammaPair {
   address: string;
   title: string;
@@ -205,610 +236,802 @@ export interface GammaPair {
   token1Address: string;
   ableToFarm?: boolean;
   pid?: number;
+  masterChefIndex?: number;
 }
 
 export const GammaPairs: {
-  [key: string]: GammaPair[];
+  [chainId in ChainId]: {
+    [key: string]: GammaPair[];
+  };
 } = {
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x02203f2351e7ac6ab5051205172d3f772db7d814',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      ableToFarm: true,
-      pid: 0,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x81cec323bf8c4164c66ec066f53cc053a535f03d',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      ableToFarm: true,
-      pid: 1,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x04d521e2c414e6d898c6f2599fdd863edf49e247',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      ableToFarm: true,
-      pid: 2,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x4a83253e88e77e8d518638974530d0cbbbf3b675',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      ableToFarm: true,
-      pid: 3,
-    },
-  ],
-  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x3cc20a6795c4b57d9817399f68e83e71c8626580',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      ableToFarm: true,
-      pid: 4,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x6077177d4c41e114780d9901c9b5c784841c523f',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      ableToFarm: true,
-      pid: 5,
-    },
-  ],
-  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x3f35705479d9d77c619b2aac9dd7a64e57151506',
-      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
-      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      ableToFarm: true,
-      pid: 6,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0xe40a5aa22cbccc8165aedd86f6d03fc5f551c3c6',
-      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
-      token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      ableToFarm: true,
-      pid: 7,
-    },
-  ],
-  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x4b9e26a02121a1c541403a611b542965bd4b68ce',
-      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
-      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      ableToFarm: true,
-      pid: 8,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0xadc7b4096c3059ec578585df36e6e1286d345367',
-      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
-      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      ableToFarm: true,
-      pid: 9,
-    },
-  ],
-  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
-    {
-      type: Presets.GAMMA_STABLE,
-      title: 'Stable',
-      address: '0x9e31214db6931727b7d63a0d2b6236db455c0965',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-      ableToFarm: true,
-      pid: 10,
-    },
-  ],
-  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
-    {
-      type: Presets.GAMMA_STABLE,
-      title: 'Stable',
-      address: '0x795f8c9b0a0da9cd8dea65fc10f9b57abc532e58',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      ableToFarm: true,
-      pid: 11,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x7f09bd2801a7b795df29c273c4afbb0ff15e2d63',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
-      ableToFarm: true,
-      pid: 12,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x543403307bc9f9ec46fd9bc1048b263c9692a26a',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
-      ableToFarm: true,
-      pid: 13,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
-    {
-      type: Presets.GAMMA_DYNAMIC,
-      title: 'Pegged Price',
-      address: '0x8dd3bf71ef18dd88869d128bde058c9d8c270176',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
-      ableToFarm: true,
-      pid: 14,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
-    {
-      type: Presets.GAMMA_DYNAMIC,
-      title: 'Pegged Price',
-      address: '0xccbcaf47e87f50a338fac9bf58e567ed1c87be2b',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
-      ableToFarm: true,
-      pid: 15,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x598cA33b7F5FAB560ddC8E76D94A4b4AA52566d7',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      ableToFarm: true,
-      pid: 16,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x9134f456D33d1288de26271730047AE0c5CB6F71',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      ableToFarm: true,
-      pid: 17,
-    },
-  ],
-  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0xac15baba7bcc532f8727c1a42b23501f59630115',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      ableToFarm: true,
-      pid: 18,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0xccbbb572eb5edc973a90fdc57d07d7740bb027f5',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      ableToFarm: true,
-      pid: 19,
-    },
-  ],
-  '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x3e99b86b16f36dcf3b987ebc8b754c54030403b5',
-      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
-      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      ableToFarm: true,
-      pid: 20,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x5ec3511b49d4fe7798015a26a83abdc01261615b',
-      token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
-      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      ableToFarm: true,
-      pid: 21,
-    },
-  ],
-  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0xf86d6151d03007b1906465b63e36d6f48136bc39',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
-      ableToFarm: true,
-      pid: 22,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x454Ff7780A9A99Ecb3462ab61bA06fe4A886862E',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
-      ableToFarm: true,
-      pid: 23,
-    },
-  ],
-  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0xa1c3e15b3307b04067e843d3bfaf3cead5b51cb7',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
-      ableToFarm: true,
-      pid: 24,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x4f7e090fe185aac68fc58e7fa1b9d4314d357327',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
-      ableToFarm: true,
-      pid: 25,
-    },
-  ],
-  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x5928f9f61902b139e1c40cba59077516734ff09f',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      ableToFarm: true,
-      pid: 26,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x3672d301778750c41a7864980a5ddbc2af99476e',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      ableToFarm: true,
-      pid: 27,
-    },
-  ],
-  '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063-0xe5417af564e4bfda1c483642db72007871397896': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x7ae7fb44c92b4d41abb6e28494f46a2eb3c2a690',
-      token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
-      ableToFarm: true,
-      pid: 28,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0xfd73ce19d3842ad7b551bb184ac6c6256dc2c9ab',
-      token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
-      ableToFarm: true,
-      pid: 29,
-    },
-  ],
-  '0xa3fa99a148fa48d14ed51d610c367c61876997f1-0xe5417af564e4bfda1c483642db72007871397896': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x1c1b4cf2a40810c49a8b42a9da857cb0b76d06e3',
-      token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
-      ableToFarm: true,
-      pid: 30,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x46840e073376178b1e669693c021329b17fb22aa',
-      token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
-      ableToFarm: true,
-      pid: 31,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x14223bb48c8cf3ef49319be44a6e718e4dbf9486',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      ableToFarm: true,
-      pid: 32,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x69b2aaaf08ac9b04cd5b64a1d23ffcb40224fdaf',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      ableToFarm: true,
-      pid: 33,
-    },
-  ],
-  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x683292172e2175bd08e3927a5e72fc301b161300',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-      ableToFarm: true,
-      pid: 34,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x3ae59be14da16183f0a36e23518506c386e63a96',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-      ableToFarm: true,
-      pid: 35,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0xfe4bb996926aca85c9747bbec886ec2a3f510c66',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-      ableToFarm: true,
-      pid: 36,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x2e18b825b049c4994370b0db6c35d0100295b96c',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-      ableToFarm: true,
-      pid: 37,
-    },
-  ],
-  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x2c53dfa65370b2d70975e40172b63210d477e470',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
-      ableToFarm: true,
-      pid: 38,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0xcfd4a6a885c4404a2a5720918a9b4880600876a8',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
-      ableToFarm: true,
-      pid: 39,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x05c731f5f922835796c49412a30615c46cca4d9e',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
-      ableToFarm: true,
-      pid: 40,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x9a4b458a5ae5d96565455d1e1882301fea5c076f',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
-      ableToFarm: true,
-      pid: 41,
-    },
-  ],
-  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0xf6bE87Ae8976f50DCd231d42580e430CF6133400',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-      ableToFarm: true,
-      pid: 42,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0xee2a89071654333703b3d6c9be9ab8f085f977de',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-      ableToFarm: true,
-      pid: 43,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xe5417af564e4bfda1c483642db72007871397896': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x688cb9492bd2c72016f1765d813b2d713aa1f4c7',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
-      ableToFarm: true,
-      pid: 44,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x566452e9d621a1902f9ccf2adaf029cf0f36ec67',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
-      ableToFarm: true,
-      pid: 45,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xbbba073c31bf03b8acf7c28ef0738decf3695683': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0xef4f95d8c252d64308c04f711fb31892cc4c9965',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
-      ableToFarm: true,
-      pid: 46,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x62f88fb208df717b035325d065c6919d7913b937',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
-      ableToFarm: true,
-      pid: 47,
-    },
-  ],
-  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc': [
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x706bae8828c260d5e52ccfa96f1258a2d2f6fdda',
-      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      token1Address: '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc',
-      ableToFarm: true,
-      pid: 48,
-    },
-  ],
-  '0xa3fa99a148fa48d14ed51d610c367c61876997f1-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
-    {
-      type: Presets.GAMMA_STABLE,
-      title: 'Stable',
-      address: '0x1825c76ced3c1625250b8af6204bf4fc4e5b9fcf',
-      token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      ableToFarm: true,
-      pid: 49,
-    },
-  ],
-  '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
-    {
-      type: Presets.GAMMA_STABLE,
-      title: 'Stable',
-      address: '0x3273c153ecc6891a68af60ee0b67c16dd7b2c7e5',
-      token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-      token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      ableToFarm: true,
-      pid: 50,
-    },
-  ],
-  '0xa3fa99a148fa48d14ed51d610c367c61876997f1-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
-    {
-      type: Presets.GAMMA_NARROW,
-      title: 'Narrow',
-      address: '0x0f7e4c66cebb5f5cabd435684946585a917b2f65',
-      token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
-      ableToFarm: true,
-      pid: 51,
-    },
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x535206aaeca58c038ef28ce9924c7782bbb3d94d',
-      token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-      token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
-      ableToFarm: true,
-      pid: 52,
-    },
-  ],
-  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
-    {
-      type: Presets.GAMMA_STABLE,
-      title: 'Stable',
-      address: '0x33b0b883626c21ce5b3aad202bc435f876aee2c4',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
-      ableToFarm: true,
-      pid: 53,
-    },
-  ],
-  '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
-    {
-      type: Presets.STABLE,
-      title: 'Stable',
-      address: '0xe503c1dfd7012e72af4c415f4c5e8abf5b45c25f',
-      token0Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
-      token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
-      ableToFarm: true,
-      pid: 54,
-    },
-  ],
-  '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
-    {
-      type: Presets.STABLE,
-      title: 'Stable',
-      address: '0x45a3a657b834699f5cc902e796c547f826703b79',
-      token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      ableToFarm: true,
-      pid: 55,
-    },
-  ],
-  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x3fb73a554defa86b18f72e543aa2174a4d5f9621',
-      token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-      token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
-      ableToFarm: true,
-      pid: 56,
-    },
-  ],
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
-    {
-      type: Presets.GAMMA_WIDE,
-      title: 'Wide',
-      address: '0x2ef46196d7d25b5111ca1fcba206b248fee32d8d',
-      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
-      ableToFarm: true,
-      pid: 57,
-    },
-  ],
+  [ChainId.MATIC]: {
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x02203f2351e7ac6ab5051205172d3f772db7d814',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 0,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x81cec323bf8c4164c66ec066f53cc053a535f03d',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 1,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x04d521e2c414e6d898c6f2599fdd863edf49e247',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        ableToFarm: true,
+        pid: 2,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x4a83253e88e77e8d518638974530d0cbbbf3b675',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        ableToFarm: true,
+        pid: 3,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x3cc20a6795c4b57d9817399f68e83e71c8626580',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 4,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x6077177d4c41e114780d9901c9b5c784841c523f',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 5,
+      },
+    ],
+    '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x3f35705479d9d77c619b2aac9dd7a64e57151506',
+        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        ableToFarm: true,
+        pid: 6,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xe40a5aa22cbccc8165aedd86f6d03fc5f551c3c6',
+        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        ableToFarm: true,
+        pid: 7,
+      },
+    ],
+    '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x4b9e26a02121a1c541403a611b542965bd4b68ce',
+        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 8,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xadc7b4096c3059ec578585df36e6e1286d345367',
+        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 9,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x9e31214db6931727b7d63a0d2b6236db455c0965',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+        ableToFarm: true,
+        pid: 10,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x795f8c9b0a0da9cd8dea65fc10f9b57abc532e58',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 11,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x7f09bd2801a7b795df29c273c4afbb0ff15e2d63',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 12,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x543403307bc9f9ec46fd9bc1048b263c9692a26a',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 13,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
+      {
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        address: '0x8dd3bf71ef18dd88869d128bde058c9d8c270176',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
+        ableToFarm: true,
+        pid: 14,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
+      {
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        address: '0xccbcaf47e87f50a338fac9bf58e567ed1c87be2b',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+        ableToFarm: true,
+        pid: 15,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x598cA33b7F5FAB560ddC8E76D94A4b4AA52566d7',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 16,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x9134f456D33d1288de26271730047AE0c5CB6F71',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 17,
+      },
+    ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xac15baba7bcc532f8727c1a42b23501f59630115',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        ableToFarm: true,
+        pid: 18,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xccbbb572eb5edc973a90fdc57d07d7740bb027f5',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        ableToFarm: true,
+        pid: 19,
+      },
+    ],
+    '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x3e99b86b16f36dcf3b987ebc8b754c54030403b5',
+        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+        token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        pid: 20,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x5ec3511b49d4fe7798015a26a83abdc01261615b',
+        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+        token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        pid: 21,
+      },
+    ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xf86d6151d03007b1906465b63e36d6f48136bc39',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 22,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x454Ff7780A9A99Ecb3462ab61bA06fe4A886862E',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 23,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xa1c3e15b3307b04067e843d3bfaf3cead5b51cb7',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 24,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x4f7e090fe185aac68fc58e7fa1b9d4314d357327',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 25,
+      },
+    ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x5928f9f61902b139e1c40cba59077516734ff09f',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 26,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x3672d301778750c41a7864980a5ddbc2af99476e',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 27,
+      },
+    ],
+    '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063-0xe5417af564e4bfda1c483642db72007871397896': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x7ae7fb44c92b4d41abb6e28494f46a2eb3c2a690',
+        token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+        token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+        ableToFarm: true,
+        pid: 28,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xfd73ce19d3842ad7b551bb184ac6c6256dc2c9ab',
+        token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+        token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+        pid: 29,
+      },
+    ],
+    '0xa3fa99a148fa48d14ed51d610c367c61876997f1-0xe5417af564e4bfda1c483642db72007871397896': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x1c1b4cf2a40810c49a8b42a9da857cb0b76d06e3',
+        token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+        ableToFarm: true,
+        pid: 30,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x46840e073376178b1e669693c021329b17fb22aa',
+        token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+        pid: 31,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x14223bb48c8cf3ef49319be44a6e718e4dbf9486',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        ableToFarm: true,
+        pid: 32,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x69b2aaaf08ac9b04cd5b64a1d23ffcb40224fdaf',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        ableToFarm: true,
+        pid: 33,
+      },
+    ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x683292172e2175bd08e3927a5e72fc301b161300',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+        ableToFarm: true,
+        pid: 34,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x3ae59be14da16183f0a36e23518506c386e63a96',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+        ableToFarm: true,
+        pid: 35,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xfe4bb996926aca85c9747bbec886ec2a3f510c66',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
+        ableToFarm: true,
+        pid: 36,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x2e18b825b049c4994370b0db6c35d0100295b96c',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
+        ableToFarm: true,
+        pid: 37,
+      },
+    ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x2c53dfa65370b2d70975e40172b63210d477e470',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+        ableToFarm: true,
+        pid: 38,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xcfd4a6a885c4404a2a5720918a9b4880600876a8',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+        ableToFarm: true,
+        pid: 39,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x05c731f5f922835796c49412a30615c46cca4d9e',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+        ableToFarm: true,
+        pid: 40,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x9a4b458a5ae5d96565455d1e1882301fea5c076f',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+        ableToFarm: true,
+        pid: 41,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xf6bE87Ae8976f50DCd231d42580e430CF6133400',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
+        ableToFarm: true,
+        pid: 42,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xee2a89071654333703b3d6c9be9ab8f085f977de',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
+        pid: 43,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xe5417af564e4bfda1c483642db72007871397896': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x688cb9492bd2c72016f1765d813b2d713aa1f4c7',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+        ableToFarm: true,
+        pid: 44,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x566452e9d621a1902f9ccf2adaf029cf0f36ec67',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
+        pid: 45,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xbbba073c31bf03b8acf7c28ef0738decf3695683': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xef4f95d8c252d64308c04f711fb31892cc4c9965',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
+        ableToFarm: true,
+        pid: 46,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x62f88fb208df717b035325d065c6919d7913b937',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
+        ableToFarm: true,
+        pid: 47,
+      },
+    ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x706bae8828c260d5e52ccfa96f1258a2d2f6fdda',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc',
+        ableToFarm: true,
+        pid: 48,
+      },
+    ],
+    '0xa3fa99a148fa48d14ed51d610c367c61876997f1-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x1825c76ced3c1625250b8af6204bf4fc4e5b9fcf',
+        token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 49,
+      },
+    ],
+    '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x3273c153ecc6891a68af60ee0b67c16dd7b2c7e5',
+        token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+        token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        ableToFarm: true,
+        pid: 50,
+      },
+    ],
+    '0xa3fa99a148fa48d14ed51d610c367c61876997f1-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x0f7e4c66cebb5f5cabd435684946585a917b2f65',
+        token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 51,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x535206aaeca58c038ef28ce9924c7782bbb3d94d',
+        token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 52,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x33b0b883626c21ce5b3aad202bc435f876aee2c4',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
+        ableToFarm: true,
+        pid: 53,
+      },
+    ],
+    '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
+      {
+        type: Presets.STABLE,
+        title: 'Stable',
+        address: '0xe503c1dfd7012e72af4c415f4c5e8abf5b45c25f',
+        token0Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+        token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
+        ableToFarm: true,
+        pid: 54,
+      },
+    ],
+    '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.STABLE,
+        title: 'Stable',
+        address: '0x45a3a657b834699f5cc902e796c547f826703b79',
+        token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 55,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x3fb73a554defa86b18f72e543aa2174a4d5f9621',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
+        ableToFarm: true,
+        pid: 56,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x2ef46196d7d25b5111ca1fcba206b248fee32d8d',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
+        ableToFarm: true,
+        pid: 57,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x0e9b89007eee9c958c0eda24ef70723c2c93dd58': [
+      {
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        address: '0x8557dac2a7724712f12952de3dabeef54459bd97',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x0e9b89007eee9c958c0eda24ef70723c2c93dd58',
+        ableToFarm: true,
+        pid: 58,
+      },
+    ],
+    '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        address: '0x6a6d4d17c2e38d076264081676ffcdddf32c9715',
+        token0Address: '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 59,
+      },
+    ],
+    '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x972a53e2ee68d5c2b1614f65061815e06b1cce68',
+        token0Address: '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+        token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+        ableToFarm: true,
+        pid: 60,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x750e4c4984a9e0f12978ea6742bc1c5d248f40ed': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x374c44443553d7eb86b5f77597cc67a507b19179',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x750e4c4984a9e0f12978ea6742bc1c5d248f40ed',
+        ableToFarm: true,
+        pid: 61,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x1ddae2e33c1d68211c5eae05948fd298e72c541a',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
+        ableToFarm: true,
+        pid: 0,
+        masterChefIndex: 1,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x172370d5cd63279efa6d502dab29171933a610af': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x33eeafa7ef22cd4468d65819b2fe30f170db5b69',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x172370d5cd63279efa6d502dab29171933a610af',
+        ableToFarm: true,
+        pid: 63,
+      },
+    ],
+    '0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x3da7e0320c04d88b71e0ada960aad3d21f10cadf',
+        token0Address: '0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 64,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x5f528db1129488083434e1b96e9808e3c4c6ed83',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+        ableToFarm: true,
+        pid: 65,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xec38621e72d86775a89c7422746de1f52bba5320': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x2385cb5590413b2cd1fae63e68886b9f2ce43a9a',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xec38621e72d86775a89c7422746de1f52bba5320',
+        ableToFarm: true,
+        pid: 66,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xc2a45fe7d40bcac8369371b08419ddafd3131b4a': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xc89004ce7becd2b39c44260327a603885da119b5',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0xc2a45fe7d40bcac8369371b08419ddafd3131b4a',
+        ableToFarm: true,
+        pid: 67,
+      },
+    ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xd125443f38a69d776177c2b9c041f462936f8218': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x9c3e0445559e6de1fe6391e8e018dca02b480836',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xd125443f38a69d776177c2b9c041f462936f8218',
+        ableToFarm: true,
+        pid: 68,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xfea715ab7e1de3640cd0662f6af0f9b25934e753',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+        ableToFarm: true,
+        pid: 69,
+      },
+    ],
+    '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x34ffbd9db6b9bd8b095a0d156de69a2ad2944666',
+        token0Address: '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        ableToFarm: true,
+        pid: 70,
+      },
+    ],
+    '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x9dfdf32ae82c7e8ebc156ea28e6637b120e00d12',
+        token0Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 71,
+      },
+    ],
+    '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x9f19ad14cd941e29b0e7ed8f5a1003fae4993dcd',
+        token0Address: '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+        token1Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        ableToFarm: true,
+        pid: 72,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x49dcc56354a5a4875fb5d8bd7e7073c4f8868618',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
+        ableToFarm: true,
+        pid: 73,
+      },
+    ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xc6dd68b546d696d5a31837b05065a151d6b6f892',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
+        ableToFarm: true,
+        pid: 74,
+      },
+    ],
+  },
+  [ChainId.MUMBAI]: {},
+  [ChainId.DOEGCHAIN_TESTNET]: {},
+  [ChainId.DOGECHAIN]: {},
+  [ChainId.ZKTESTNET]: {},
+  [ChainId.ZKEVM]: {},
 };
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   CYPHERD: {
     connector: injected,
     name: GlobalConst.walletName.CYPHERD,
-    iconName: '/images/cypherDIcon.png',
+    iconName: cypherDIcon,
     description: 'CypherD browser extension.',
     href: null,
     color: '#E8831D',
@@ -816,7 +1039,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   METAMASK: {
     connector: metamask,
     name: GlobalConst.walletName.METAMASK,
-    iconName: '/images/metamask.png',
+    iconName: MetamaskIcon,
     description: 'Easy-to-use browser extension.',
     href: null,
     color: '#E8831D',
@@ -824,7 +1047,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   TRUST_WALLET: {
     connector: trustconnect,
     name: GlobalConst.walletName.TRUST_WALLET,
-    iconName: '/images/trust.png',
+    iconName: TrustIcon,
     description: 'Trust wallet extension.',
     href: null,
     color: '#E8831D',
@@ -832,7 +1055,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   PHANTOM_WALLET: {
     connector: phantomconnect,
     name: GlobalConst.walletName.PHANTOM_WALLET,
-    iconName: '/images/wallets/phantomIconPurple.svg',
+    iconName: PhantomIcon,
     description: 'Phantom wallet extension.',
     href: null,
     color: '#E8831D',
@@ -840,7 +1063,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   BLOCKWALLET: {
     connector: injected,
     name: GlobalConst.walletName.BLOCKWALLET,
-    iconName: '/images/blockwalletIcon.svg',
+    iconName: BlockWalletIcon,
     description: 'BlockWallet browser extension.',
     href: null,
     color: '#1673ff',
@@ -848,7 +1071,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   BRAVEWALLET: {
     connector: injected,
     name: GlobalConst.walletName.BRAVEWALLET,
-    iconName: '/images/braveWalletIcon.png',
+    iconName: BraveWalletIcon,
     description: 'Brave browser wallet.',
     href: null,
     color: '#1673ff',
@@ -857,7 +1080,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   BITKEEP: {
     connector: injected,
     name: GlobalConst.walletName.BITKEEP,
-    iconName: '/images/bitkeep.png',
+    iconName: BitKeepIcon,
     description: 'BitKeep browser extension.',
     href: null,
     color: '#E8831D',
@@ -865,7 +1088,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   INJECTED: {
     connector: injected,
     name: GlobalConst.walletName.INJECTED,
-    iconName: '/images/arrow-right.svg',
+    iconName: 'arrow-right.svg',
     description: 'Injected web3 provider.',
     href: null,
     color: '#010101',
@@ -874,7 +1097,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   SAFE_APP: {
     connector: safeApp,
     name: GlobalConst.walletName.SAFE_APP,
-    iconName: '/images/gnosis_safe.png',
+    iconName: GnosisIcon,
     description: 'Login using gnosis safe app',
     href: null,
     color: '#4196FC',
@@ -883,7 +1106,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   WALLET_LINK: {
     connector: walletlink,
     name: GlobalConst.walletName.WALLET_LINK,
-    iconName: '/images/coinbaseWalletIcon.svg',
+    iconName: CoinbaseWalletIcon,
     description: 'Use Coinbase Wallet app on mobile device',
     href: null,
     color: '#315CF5',
@@ -891,7 +1114,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   WALLET_CONNECT: {
     connector: walletconnect,
     name: GlobalConst.walletName.WALLET_CONNECT,
-    iconName: '/images/walletConnectIcon.svg',
+    iconName: WalletConnectIcon,
     description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
     href: null,
     color: '#4196FC',
@@ -900,7 +1123,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   UNSTOPABBLEDOMAINS: {
     connector: unstopabbledomains,
     name: 'Unstoppable Domains',
-    iconName: '/images/unstoppableDomains.png',
+    iconName: UnstoppableDomainsIcon,
     description: 'Unstoppable Domains',
     href: null,
     color: '#E8831D',
@@ -908,7 +1131,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   ARKANE_CONNECT: {
     connector: arkaneconnect,
     name: GlobalConst.walletName.ARKANE_CONNECT,
-    iconName: '/images/venly.svg',
+    iconName: VenlyIcon,
     description: 'Login using Venly hosted wallet.',
     href: null,
     color: '#4196FC',
@@ -916,7 +1139,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   Portis: {
     connector: portis,
     name: GlobalConst.walletName.Portis,
-    iconName: '/images/portisIcon.png',
+    iconName: PortisIcon,
     description: 'Login using Portis hosted wallet',
     href: null,
     color: '#4A6C9B',
@@ -925,7 +1148,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   ZENGO_CONNECT: {
     connector: zengoconnect,
     name: GlobalConst.walletName.ZENGO_CONNECT,
-    iconName: '/images/zengo.webp',
+    iconName: ZengoIcon,
     description: 'Connect to Zengo Wallet',
     href: null,
     color: '#4196FC',
@@ -982,14 +1205,14 @@ export const GlobalValue = {
       ),
       OLD_QUICK: new Token(
         ChainId.MATIC,
-        GlobalConst.addresses.QUICK_ADDRESS,
+        QUICK_ADDRESS[ChainId.MATIC],
         18,
         'QUICK(OLD)',
         'Quickswap(OLD)',
       ),
       NEW_QUICK: new Token(
         ChainId.MATIC,
-        GlobalConst.addresses.NEW_QUICK_ADDRESS,
+        NEW_QUICK_ADDRESS[ChainId.MATIC],
         18,
         'QUICK(NEW)',
         'QuickSwap(NEW)',
@@ -1127,16 +1350,44 @@ export const GlobalValue = {
         'stMatic',
         'Staked MATIC',
       ),
+      WSTETH: new Token(
+        ChainId.MATIC,
+        '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+        18,
+        'wstETH',
+        'Wrapped liquid staked Ether 2.0',
+      ),
+      ANKRMATIC: new Token(
+        ChainId.MATIC,
+        '0x0E9b89007eEE9c958c0EDA24eF70723C2C93dD58',
+        18,
+        'ankrMATIC',
+        'Ankr Staked MATIC',
+      ),
+      CRV: new Token(
+        ChainId.MATIC,
+        '0x172370d5Cd63279eFa6d502DAB29171933a610AF',
+        18,
+        'CRV',
+        'CRV (PoS)',
+      ),
+      DAVOS: new Token(
+        ChainId.MATIC,
+        '0xec38621e72d86775a89c7422746de1f52bba5320',
+        18,
+        'DAVOS',
+        'Davos',
+      ),
+      FBX: new Token(
+        ChainId.MATIC,
+        '0xD125443F38A69d776177c2B9c041f462936F8218',
+        18,
+        'FBX',
+        'FireBotToken',
+      ),
     },
   },
   marketSDK: {
-    QS_PoolDirectory: '0xDeFf0321cD7E62Dccc6df90A3C0720E0a3449CB4',
-    QS_Pools: [
-      '0x627742AaFe82EB5129DD33D237FF318eF5F76CBC',
-      '0x9BE35bc002235e96deC9d3Af374037aAf62BDeF7',
-      '0x1eD65DbBE52553A02b4bb4bF70aCD99e29af09f8',
-    ],
-    LENS: '0x4B1dfA99d53FFA6E4c0123956ec4Ac2a6D9F4c75',
     BLOCKSPERDAY: 0.5 * GlobalConst.utils.ONEDAYSECONDS,
   },
 };
@@ -1148,73 +1399,6 @@ export const paraswapTax: { [key: string]: number } = {
 };
 
 export const GlobalData = {
-  bases: {
-    // used to construct intermediary pairs for trading
-    BASES_TO_CHECK_TRADES_AGAINST: {
-      ...WETH_ONLY,
-      [ChainId.MATIC]: [
-        ...WETH_ONLY[ChainId.MATIC],
-        GlobalValue.tokens.COMMON.USDC,
-        GlobalValue.tokens.COMMON.USDT,
-        GlobalValue.tokens.COMMON.OLD_QUICK,
-        GlobalValue.tokens.COMMON.NEW_QUICK,
-        GlobalValue.tokens.COMMON.ETHER,
-        GlobalValue.tokens.COMMON.WBTC,
-        GlobalValue.tokens.COMMON.DAI,
-        GlobalValue.tokens.COMMON.GHST,
-        GlobalValue.tokens.COMMON.MI,
-        GlobalValue.tokens.COMMON.VERSA,
-      ],
-    },
-    // Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these tokens.
-    CUSTOM_BASES: { [ChainId.MATIC]: undefined, [ChainId.MUMBAI]: undefined },
-    // used for display in the default list when adding liquidity
-    SUGGESTED_BASES: {
-      ...WETH_ONLY,
-      [ChainId.MATIC]: [
-        ...WETH_ONLY[ChainId.MATIC],
-        GlobalValue.tokens.COMMON.DAI,
-        GlobalValue.tokens.COMMON.USDC,
-        GlobalValue.tokens.COMMON.USDT,
-        GlobalValue.tokens.COMMON.OLD_QUICK,
-        GlobalValue.tokens.COMMON.NEW_QUICK,
-        GlobalValue.tokens.COMMON.ETHER,
-        GlobalValue.tokens.COMMON.WBTC,
-        GlobalValue.tokens.COMMON.SAND,
-        GlobalValue.tokens.COMMON.MI,
-      ],
-    },
-    // used to construct the list of all pairs we consider by default in the frontend
-    BASES_TO_TRACK_LIQUIDITY_FOR: {
-      ...WETH_ONLY,
-      [ChainId.MATIC]: [
-        ...WETH_ONLY[ChainId.MATIC],
-        GlobalValue.tokens.COMMON.DAI,
-        GlobalValue.tokens.COMMON.USDC,
-        GlobalValue.tokens.COMMON.USDT,
-        GlobalValue.tokens.COMMON.OLD_QUICK,
-        GlobalValue.tokens.COMMON.NEW_QUICK,
-        GlobalValue.tokens.COMMON.ETHER,
-        GlobalValue.tokens.COMMON.WBTC,
-        GlobalValue.tokens.COMMON.VERSA,
-      ],
-    },
-  },
-  pairs: {
-    PINNED_PAIRS: {
-      [ChainId.MATIC]: [
-        [GlobalValue.tokens.COMMON.USDC, GlobalValue.tokens.COMMON.USDT],
-        [GlobalValue.tokens.COMMON.USDC, GlobalValue.tokens.COMMON.DAI],
-        [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.USDC],
-        [GlobalValue.tokens.COMMON.WBTC, GlobalValue.tokens.COMMON.ETHER],
-        [WETH[ChainId.MATIC], GlobalValue.tokens.COMMON.USDT],
-        [WETH[ChainId.MATIC], GlobalValue.tokens.COMMON.USDC],
-        [WETH[ChainId.MATIC], GlobalValue.tokens.COMMON.ETHER],
-        [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.OLD_QUICK],
-      ],
-      [ChainId.MUMBAI]: undefined,
-    },
-  },
   analytics: {
     CHART_DURATIONS: [
       GlobalConst.analyticChart.ONE_MONTH_CHART,
@@ -1235,6 +1419,7 @@ export const GlobalData = {
     GlobalValue.tokens.COMMON.TUSD,
     GlobalValue.tokens.COMMON.UND,
     GlobalValue.tokens.COMMON.USDD,
+    GlobalValue.tokens.COMMON.DAVOS,
   ],
   blueChips: [
     WETH[ChainId.MATIC],
@@ -1249,8 +1434,10 @@ export const GlobalData = {
       GlobalValue.tokens.MATIC,
       GlobalValue.tokens.COMMON.MATICX,
       GlobalValue.tokens.COMMON.STMATIC,
+      GlobalValue.tokens.COMMON.ANKRMATIC,
     ],
     [GlobalValue.tokens.COMMON.NEW_QUICK, GlobalValue.tokens.COMMON.NEW_DQUICK],
+    [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.WSTETH],
   ],
 };
 
@@ -1271,3 +1458,46 @@ export interface WalletInfo {
   mobileOnly?: true;
   installLink?: string | null;
 }
+
+export const ContestPairs = [
+  {
+    name: 'All',
+    address: 'all',
+  },
+  {
+    name: 'WETH / USDC',
+    address: '0x55caabb0d2b704fd0ef8192a7e35d8837e678207',
+    token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+    token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+  },
+  {
+    name: 'WMATIC / USDC',
+    address: '0xae81fac689a1b4b1e06e7ef4a2ab4cd8ac0a087d',
+    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+    token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+  },
+  {
+    name: 'WMATIC / USDT',
+    address: '0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff',
+    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+    token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+  },
+  {
+    name: 'WMATIC / WETH',
+    address: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
+    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+    token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+  },
+];
+
+export const LeaderBoardAnalytics = {
+  CHART_DURATIONS: [1, 7, 30],
+  CHART_DURATION_TEXTS: ['24H', '7D', '30D'],
+};
+
+// export const ContestPairs = {
+//   ETH_USDC_PAIR: '0x853Ee4b2A13f8a742d64C8F088bE7bA2131f670d',
+//   MATIC_USDC_PAIR: '0x6e7a5FAFcec6BB1e78bAE2A1F0B612012BF14827',
+//   MATIC_USDT_PAIR: '0x604229c960e5cacf2aaeac8be68ac07ba9df81c3',
+//   MATIC_ETH_PAIR: '0xadbf1854e5883eb8aa7baf50705338739e558e5b',
+// };

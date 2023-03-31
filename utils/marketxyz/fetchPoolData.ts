@@ -1,4 +1,5 @@
-import { GlobalValue } from 'constants/index';
+import { ChainId } from '@uniswap/sdk';
+import { MI } from 'constants/v3/addresses';
 import {
   PoolDirectoryV1,
   PoolAsset,
@@ -51,6 +52,7 @@ export interface PoolData {
 }
 
 export const fetchPoolData = async (
+  chainId: ChainId,
   poolId: string | undefined,
   address: string | undefined,
   directory: PoolDirectoryV1,
@@ -141,7 +143,7 @@ export const fetchPoolData = async (
             .replace('/', '-'),
           underlyingSymbol:
             asset.underlyingToken.toLowerCase() ===
-            GlobalValue.tokens.COMMON.MI.address.toLowerCase()
+            MI[chainId].address.toLowerCase()
               ? 'MAI'
               : asset.underlyingSymbol,
         };

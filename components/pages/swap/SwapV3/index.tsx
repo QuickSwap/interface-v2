@@ -66,16 +66,18 @@ import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { warningSeverity } from 'utils/v3/prices';
 
 import { Box, Button } from '@mui/material';
-import { ETHER } from '@uniswap/sdk';
+import { ChainId, ETHER } from '@uniswap/sdk';
 import { AddressInput } from 'components';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import { useTranslation } from 'next-i18next';
+import { CHAIN_INFO } from 'constants/v3/chains';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const router = useRouter();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
   const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
@@ -448,8 +450,12 @@ const SwapV3Page: React.FC = () => {
 
   const parsedCurrency0Id = (router.query.currency0 ??
     router.query.inputCurrency) as string;
+  const chainInfo = CHAIN_INFO[chainIdToUse];
+
   const parsedCurrency0 = useCurrency(
-    parsedCurrency0Id === 'ETH' ? 'MATIC' : parsedCurrency0Id,
+    parsedCurrency0Id === 'ETH'
+      ? chainInfo.nativeCurrencySymbol
+      : parsedCurrency0Id,
   );
   const parsedCurrency1Id = (router.query.currency1 ??
     router.query.outputCurrency) as string;
@@ -459,7 +465,7 @@ const SwapV3Page: React.FC = () => {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
     } else if (parsedCurrency0 === undefined && !parsedCurrency1Id) {
       const nativeCurrency = {
-        ...ETHER,
+        ...ETHER[chainId],
         isNative: true,
         isToken: false,
         wrapped: WMATIC_EXTENDED[chainId],
@@ -519,7 +525,9 @@ const SwapV3Page: React.FC = () => {
   );
 
   const parsedCurrency1 = useCurrency(
-    parsedCurrency1Id === 'ETH' ? 'MATIC' : parsedCurrency1Id,
+    parsedCurrency1Id === 'ETH'
+      ? chainInfo.nativeCurrencySymbol
+      : parsedCurrency1Id,
   );
   useEffect(() => {
     if (parsedCurrency1) {
@@ -732,20 +740,18 @@ const SwapV3Page: React.FC = () => {
                     signatureState === UseERC20PermitState.SIGNED
                   }
                 >
-                  <Box className='flex justify-between'>
+                  <Box className='flex justify-between items-center'>
+                    <CurrencyLogo
+                      currency={currencies[Field.INPUT] as WrappedCurrency}
+                      size={'24px'}
+                    />
                     <span
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        background: theme.winterMainButton,
                         color: 'white',
+                        flex: 1,
+                        marginLeft: 8,
                       }}
                     >
-                      <CurrencyLogo
-                        currency={currencies[Field.INPUT] as WrappedCurrency}
-                        size={'24px'}
-                        style={{ marginRight: '8px', flexShrink: 0 }}
-                      />
                       {/* we need to shorten this string on mobile */}
                       {approvalState === ApprovalState.APPROVED ||
                       signatureState === UseERC20PermitState.SIGNED

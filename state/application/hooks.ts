@@ -15,12 +15,13 @@ import {
   addBookMarkPair,
   removeBookmarkPair,
   updateTokenDetails,
-  updateIsProMode,
   updateMaticPrice,
   updateIsV2,
   updateUDDomain,
+  updateLocalChainId,
 } from './actions';
 import { ETHPrice, MaticPrice, TokenDetail } from './reducer';
+import { ChainId } from '@uniswap/sdk';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
@@ -241,23 +242,6 @@ export function useBookmarkPairs(): {
   };
 }
 
-export function useIsProMode(): {
-  isProMode: boolean;
-  updateIsProMode: (isProMode: boolean) => void;
-} {
-  const isProMode = useSelector(
-    (state: AppState) => state.application.isProMode,
-  );
-  const dispatch = useDispatch();
-  const _updateIsProMode = useCallback(
-    (isProMode: boolean) => {
-      dispatch(updateIsProMode(isProMode));
-    },
-    [dispatch],
-  );
-  return { isProMode, updateIsProMode: _updateIsProMode };
-}
-
 export function useIsV2(): {
   isV2: boolean | undefined;
   updateIsV2: (isV2: boolean) => void;
@@ -286,4 +270,21 @@ export function useUDDomain(): {
     [dispatch],
   );
   return { udDomain, updateUDDomain: _updateUDDomain };
+}
+
+export function useLocalChainId(): {
+  localChainId: ChainId | undefined;
+  updateLocalChainId: (chainId: ChainId | undefined) => void;
+} {
+  const localChainId = useSelector(
+    (state: AppState) => state.application.localChainId,
+  );
+  const dispatch = useDispatch();
+  const _updateLocalChainId = useCallback(
+    (chainId: ChainId | undefined) => {
+      dispatch(updateLocalChainId(chainId));
+    },
+    [dispatch],
+  );
+  return { localChainId, updateLocalChainId: _updateLocalChainId };
 }

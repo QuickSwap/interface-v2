@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
@@ -8,6 +8,10 @@ import styles from 'styles/pages/Analytics.module.scss';
 import { useTranslation } from 'next-i18next';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
+import { getConfig } from 'config/index';
+import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { useIsV2 } from 'state/application/hooks';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -20,18 +24,38 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   type,
   address,
 }) => {
+  const { chainId } = useActiveWeb3React();
   const router = useRouter();
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const version = router.query.version ?? 'total';
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const v3 = config['v3'];
+  const v2 = config['v2'];
+  const showAnalytics = config['analytics']['available'];
+  useEffect(() => {
+    if (!showAnalytics) {
+      router.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAnalytics]);
+
+  const { updateIsV2 } = useIsV2();
+
+  useEffect(() => {
+    if (!v2 && v3) {
+      updateIsV2(false);
+    }
+  }, [updateIsV2, v2, v3]);
+  const version = useAnalyticsVersion();
   const isPairDetails = router.pathname.includes('pair/');
 
   return (
     <Box width='100%' mb={3}>
       <Box mb={4} className='flex items-center'>
         <h4>{t('quickswapAnalytics')}</h4>
-        {!isPairDetails && (
+        {v2 && v3 && !isPairDetails && (
           <Box ml={2}>
             <VersionToggle />
           </Box>

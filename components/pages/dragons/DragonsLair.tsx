@@ -4,15 +4,24 @@ import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
 import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
 import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
 import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
-import { useUSDCPriceToken } from 'utils/useUSDCPrice';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { useTranslation } from 'next-i18next';
-import { GlobalValue } from 'constants/index';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
+import {
+  DLDQUICK,
+  DLQUICK,
+  OLD_DQUICK,
+  OLD_QUICK,
+} from 'constants/v3/addresses';
 
 const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
-  const quickToken = isNew
-    ? GlobalValue.tokens.COMMON.NEW_QUICK
-    : GlobalValue.tokens.COMMON.OLD_QUICK;
-  const quickPrice = useUSDCPriceToken(quickToken);
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+
+  const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
+  const dQuickToken = isNew ? DLDQUICK[chainIdToUse] : OLD_DQUICK[chainIdToUse];
+  const quickPrice = useUSDCPriceFromAddress(quickToken.address);
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
@@ -20,10 +29,10 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
   const newLairInfo = useNewLairInfo();
   const lairInfoToUse = isNew ? newLairInfo : lairInfo;
   const APY = useLairDQUICKAPY(isNew, lairInfoToUse);
-  const dQUICKtoQUICK = lairInfoToUse.dQUICKtoQUICK?.toFixed(4, {
+  const dQUICKtoQUICK = lairInfoToUse?.dQUICKtoQUICK?.toFixed(4, {
     groupSeparator: ',',
   });
-  const QUICKtodQUICK = lairInfoToUse.QUICKtodQUICK?.toFixed(4, {
+  const QUICKtodQUICK = lairInfoToUse?.QUICKtodQUICK?.toFixed(4, {
     groupSeparator: ',',
   });
   const { t } = useTranslation();
@@ -47,12 +56,14 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
       <Box display='flex'>
         <CurrencyLogo currency={quickToken} size='32px' />
         <Box ml={1.5}>
-          <p className='small line-height-1'>QUICK</p>
+          <p className='small line-height-1'>{quickToken?.symbol}</p>
           <span className='text-hint'>{t('stakeQUICKTitle')}</span>
         </Box>
       </Box>
       <Box className='dragonLairRow'>
-        <small>{t('total')} QUICK</small>
+        <small>
+          {t('total')} {quickToken?.symbol}
+        </small>
         <small>
           {lairInfoToUse
             ? lairInfoToUse.totalQuickBalance.toFixed(2, {
@@ -65,9 +76,11 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <small>{t('tvl')}</small>
         <small>
           $
-          {(
-            Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
-          ).toLocaleString('us')}
+          {lairInfoToUse && quickPrice
+            ? (
+                Number(lairInfoToUse.totalQuickBalance.toExact()) * quickPrice
+              ).toLocaleString('us')
+            : 0}
         </small>
       </Box>
 
@@ -80,16 +93,18 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
 
       <Box className='dragonLairRow'>
         <small>{t('yourdeposits')}</small>
-        <small>{formatTokenAmount(lairInfoToUse.QUICKBalance)}</small>
+        <small>{formatTokenAmount(lairInfoToUse?.QUICKBalance)}</small>
       </Box>
       <Box className='quickTodQuick border-secondary1'>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? 1 : Number(dQUICKtoQUICK).toLocaleString('us')} QUICK =
+          {isQUICKRate ? 1 : Number(dQUICKtoQUICK).toLocaleString('us')}{' '}
+          {quickToken?.symbol} =
         </small>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
-          {isQUICKRate ? Number(QUICKtodQUICK).toLocaleString('us') : 1} dQUICK
+          {isQUICKRate ? Number(QUICKtodQUICK).toLocaleString('us') : 1}{' '}
+          {dQuickToken?.symbol}
         </small>
         <PriceExchangeIcon
           className='cursor-pointer'
@@ -111,7 +126,9 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         <small>{t('unstake')}</small>
       </Box>
       <Box mt={3} textAlign='center'>
-        <span className='text-secondary'>{t('unstakeQUICKDesc')}</span>
+        <span className='text-secondary'>
+          {t('unstakeQUICKDesc', { symbol: quickToken.symbol })}
+        </span>
       </Box>
     </Box>
   );

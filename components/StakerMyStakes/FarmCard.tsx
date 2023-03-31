@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
-import { Token } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
@@ -10,12 +10,13 @@ import { useTranslation } from 'next-i18next';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import FarmStakeButtons from './FarmStakeButtons';
 import { formatReward } from 'utils/formatReward';
-import { useMaticPrice } from 'state/application/hooks';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import Image from 'next/image';
 
 interface FarmCardProps {
   el: any;
+  chainId: ChainId;
   poolApr?: number;
   farmApr?: number;
 }
@@ -23,27 +24,32 @@ interface FarmCardProps {
 export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const { maticPrice } = useMaticPrice();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const tokenMap = useSelectedTokenList();
+  const poolToken0 = el.pool.token0 as any;
+  const poolToken1 = el.pool.token1 as any;
+  const token0Address = poolToken0.id ?? poolToken0.address;
+  const token1Address = poolToken1.id ?? poolToken1.address;
+
   const token0 =
-    chainId && el.pool.token0
-      ? getTokenFromAddress(el.pool.token0.id, chainId, tokenMap, [
+    chainId && token0Address
+      ? getTokenFromAddress(token0Address, chainId, tokenMap, [
           new Token(
             chainId,
-            getAddress(el.pool.token0.id),
+            getAddress(token0Address),
             Number(el.pool.token0.decimals),
           ),
         ])
       : undefined;
+
   const token1 =
-    chainId && el.pool.token1
-      ? getTokenFromAddress(el.pool.token1.id, chainId, tokenMap, [
+    chainId && token1Address
+      ? getTokenFromAddress(token1Address, chainId, tokenMap, [
           new Token(
             chainId,
-            getAddress(el.pool.token1.id),
+            getAddress(token1Address),
             Number(el.pool.token1.decimals),
           ),
         ])
@@ -101,18 +107,31 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
         )
       : undefined;
 
-  const currentMaticPrice = maticPrice.price ?? 0;
+  const rewardTokenAddresses = useMemo(() => {
+    const addresses = [];
+    if (rewardToken && rewardToken.id) addresses.push(rewardToken.id);
+    if (bonusRewardToken && bonusRewardToken.id)
+      addresses.push(bonusRewardToken.id);
+    return addresses;
+  }, [bonusRewardToken, rewardToken]);
+  const rewardTokenUSDPrices = useUSDCPricesFromAddresses(rewardTokenAddresses);
+  const rewardTokenPrice = rewardTokenUSDPrices?.find(
+    (item) =>
+      rewardToken &&
+      rewardToken.id &&
+      item.address.toLowerCase() === rewardToken.id.toLowerCase(),
+  );
+  const bonusRewardTokenPrice = rewardTokenUSDPrices?.find(
+    (item) =>
+      bonusRewardToken &&
+      bonusRewardToken.id &&
+      item.address.toLowerCase() === bonusRewardToken.id.toLowerCase(),
+  );
+
   const usdAmount =
-    currentMaticPrice *
-      Number(earned) *
-      (rewardToken && rewardToken.derivedMatic
-        ? Number(rewardToken.derivedMatic)
-        : 0) +
-    currentMaticPrice *
-      Number(bonusEarned) *
-      (bonusRewardToken && bonusRewardToken.derivedMatic
-        ? Number(bonusRewardToken.derivedMatic)
-        : 0);
+    Number(earned) * (rewardTokenPrice ? rewardTokenPrice.price : 0) +
+    Number(bonusEarned) *
+      (bonusRewardTokenPrice ? bonusRewardTokenPrice.price : 0);
 
   return (
     <Box>

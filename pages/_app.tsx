@@ -3,7 +3,6 @@ import React, { Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Provider } from 'react-redux';
 import Head from 'next/head';
-import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 import { PageLayout } from 'layouts';
 import Background from 'layouts/Background';
 import { Web3ReactProvider } from '@web3-react/core';
@@ -35,13 +34,15 @@ const Web3DefaultNetworkProvider = dynamic(
   { ssr: false },
 );
 
-const ThemeProvider: React.FC = ({ children }) => {
+const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const theme = mainTheme;
 
   return <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>;
 };
 
-const Providers: React.FC = ({ children }) => {
+const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Suspense fallback={<Background fallback={true} />}>
       <ThemeProvider>
@@ -74,29 +75,6 @@ function Updaters() {
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const queryClient = new QueryClient();
-  const arcXAPIKey = process.env.NEXT_PUBLIC_ARCX_API_KEY;
-
-  const AppContent = () => (
-    <QueryClientProvider client={queryClient}>
-      <Web3ReactProvider getLibrary={getLibrary}>
-        <Web3DefaultNetworkProvider getLibrary={getLibrary}>
-          <Provider store={store}>
-            <Updaters />
-            <Providers>
-              <Popups />
-              <StyledThemeProvider>
-                <Web3ReactManager>
-                  <PageLayout>
-                    <Component {...pageProps} />
-                  </PageLayout>
-                </Web3ReactManager>
-              </StyledThemeProvider>
-            </Providers>
-          </Provider>
-        </Web3DefaultNetworkProvider>
-      </Web3ReactProvider>
-    </QueryClientProvider>
-  );
 
   return (
     <>
@@ -114,13 +92,25 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <link rel='apple-touch-icon' href='/logo_circle.png' />
         <title>QuickSwap</title>
       </Head>
-      {arcXAPIKey ? (
-        <ArcxAnalyticsProvider apiKey={arcXAPIKey}>
-          <AppContent />
-        </ArcxAnalyticsProvider>
-      ) : (
-        <AppContent />
-      )}
+      <QueryClientProvider client={queryClient}>
+        <Web3ReactProvider getLibrary={getLibrary}>
+          <Web3DefaultNetworkProvider getLibrary={getLibrary}>
+            <Provider store={store}>
+              <Updaters />
+              <Providers>
+                <Popups />
+                <StyledThemeProvider>
+                  <Web3ReactManager>
+                    <PageLayout>
+                      <Component {...pageProps} />
+                    </PageLayout>
+                  </Web3ReactManager>
+                </StyledThemeProvider>
+              </Providers>
+            </Provider>
+          </Web3DefaultNetworkProvider>
+        </Web3ReactProvider>
+      </QueryClientProvider>
     </>
   );
 };

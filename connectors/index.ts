@@ -15,29 +15,82 @@ import {
   TrustWalletConnector,
 } from './TrustWalletConnector';
 import { MetaMaskConnector } from './MetaMaskConnector';
+import { ChainId } from '@uniswap/sdk';
 import { PhantomWalletConnector } from './PhantomWalletConnector';
 
 const POLLING_INTERVAL = 12000;
+
+export interface NetworkInfo {
+  rpcUrl: string;
+  scanUrl: string;
+}
+
+export type NetworkInfoChainMap = Readonly<
+  {
+    [chainId in ChainId]: NetworkInfo;
+  }
+>;
+
+export const networkInfoMap: NetworkInfoChainMap = {
+  [ChainId.MATIC]: {
+    rpcUrl: 'https://polygon-rpc.com/',
+    scanUrl: 'https://polygonscan.com/',
+  },
+  [ChainId.DOGECHAIN]: {
+    rpcUrl: 'https://rpc-sg.dogechain.dog/',
+    scanUrl: 'https://explorer.dogechain.dog/',
+  },
+  [ChainId.MUMBAI]: {
+    rpcUrl: 'https://rpc-mumbai.maticvigil.com/',
+    scanUrl: 'https://mumbai.polygonscan.com/',
+  },
+  [ChainId.DOEGCHAIN_TESTNET]: {
+    rpcUrl: 'https://rpc-testnet.dogechain.dog',
+    scanUrl: 'https://explorer-testnet.dogechain.dog/',
+  },
+  [ChainId.ZKTESTNET]: {
+    rpcUrl: 'https://rpc.public.zkevm-test.net',
+    scanUrl: 'https://testnet-zkevm.polygonscan.com/',
+  },
+  [ChainId.ZKEVM]: {
+    rpcUrl: 'https://zkevm-rpc.com',
+    scanUrl: 'https://zkevm.polygonscan.com/',
+  },
+};
 
 const NETWORK_URL = 'https://polygon-rpc.com/';
 // const FORMATIC_KEY = 'pk_live_F937DF033A1666BF'
 // const PORTIS_ID = 'c0e2bf01-4b08-4fd5-ac7b-8e26b58cd236'
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;
 const PORTIS_ID = process.env.REACT_APP_PORTIS_ID;
+const MAINNET_NETWORK_URL = process.env.REACT_APP_MAINNET_NETWORK_URL;
 
 export const NETWORK_CHAIN_ID: number = parseInt(
-  process.env.REACT_APP_CHAIN_ID ?? '1',
+  process.env.REACT_APP_CHAIN_ID ?? '137',
 );
 
-if (typeof NETWORK_URL === 'undefined') {
-  throw new Error(
-    `REACT_APP_NETWORK_URL must be a defined environment variable`,
-  );
-}
+export const rpcMap = {
+  [ChainId.MATIC]: networkInfoMap[ChainId.MATIC].rpcUrl,
+  [ChainId.MUMBAI]: networkInfoMap[ChainId.MUMBAI].rpcUrl,
+  [ChainId.DOGECHAIN]: networkInfoMap[ChainId.DOGECHAIN].rpcUrl,
+  [ChainId.DOEGCHAIN_TESTNET]: networkInfoMap[ChainId.DOEGCHAIN_TESTNET].rpcUrl,
+  [ChainId.ZKTESTNET]: networkInfoMap[ChainId.ZKTESTNET].rpcUrl,
+};
 
 export const network = new NetworkConnector({
-  urls: { [Number('137')]: NETWORK_URL },
+  urls: rpcMap,
+  defaultChainId: ChainId.MATIC,
 });
+
+export const mainnetNetwork = new NetworkConnector({
+  urls: {
+    [Number('1')]: MAINNET_NETWORK_URL || 'https://rpc.ankr.com/eth',
+  },
+});
+
+export function getMainnetNetworkLibrary(): Web3Provider {
+  return new Web3Provider(mainnetNetwork.provider as any);
+}
 
 let networkLibrary: Web3Provider | undefined;
 export function getNetworkLibrary(): Web3Provider {
@@ -45,12 +98,21 @@ export function getNetworkLibrary(): Web3Provider {
     networkLibrary ?? new Web3Provider(network.provider as any));
 }
 
+const supportedChainIds: number[] = [
+  ChainId.MATIC,
+  ChainId.DOGECHAIN,
+  ChainId.MUMBAI,
+  ChainId.DOEGCHAIN_TESTNET,
+  ChainId.ZKTESTNET,
+  ChainId.ZKEVM,
+];
+
 export const injected = new InjectedConnector({
-  supportedChainIds: [137, 80001],
+  supportedChainIds: supportedChainIds,
 });
 
 export const metamask = new MetaMaskConnector({
-  supportedChainIds: [137, 80001],
+  supportedChainIds: supportedChainIds,
 });
 
 export const safeApp = new SafeAppConnector();
@@ -68,7 +130,7 @@ export const zengoconnect = new WalletConnectConnector({
 
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
-  rpc: { 137: NETWORK_URL },
+  rpc: rpcMap,
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true,
 });

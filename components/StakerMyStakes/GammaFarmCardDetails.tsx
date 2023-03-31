@@ -48,7 +48,9 @@ const GammaFarmCardDetails: React.FC<{
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const masterChefContract = useMasterChefContract();
+  const masterChefContract = useMasterChefContract(
+    pairData.masterChefIndex ?? 0,
+  );
   const hypervisorContract = useGammaHypervisorContract(pairData.address);
   const tokenMap = useSelectedTokenList();
 
@@ -81,7 +83,6 @@ const GammaFarmCardDetails: React.FC<{
       : 0;
   const stakedUSD = Number(stakedAmount) * lpTokenUSD;
   const availableStakeUSD = Number(availableStakeAmount) * lpTokenUSD;
-  const lpTokenBalance = tryParseAmount(availableStakeAmount, lpToken);
 
   const rewards: any[] =
     rewardData && rewardData['rewarders']
@@ -161,7 +162,9 @@ const GammaFarmCardDetails: React.FC<{
     !account ||
     attemptUnstaking;
 
-  const parsedStakeAmount = tryParseAmount(stakeAmount, lpToken);
+  const parsedStakeAmount = chainId
+    ? tryParseAmount(chainId, stakeAmount, lpToken)
+    : undefined;
   const [approval, approveCallback] = useApproveCallback(
     parsedStakeAmount,
     masterChefContract?.address,

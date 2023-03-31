@@ -583,11 +583,11 @@ export const PRICES_BY_BLOCK: any = (tokenAddress: string, blocks: any[]) => {
   return gql(queryString);
 };
 
-export const GLOBAL_DATA: any = (block?: number) => {
+export const GLOBAL_DATA: any = (factory: string, block?: number) => {
   const queryString = ` query uniswapFactories {
       uniswapFactories(
        ${block ? `block: { number: ${block}}` : ``} 
-       where: { id: "${GlobalConst.addresses.FACTORY_ADDRESS}" }) {
+       where: { id: "${factory}" }) {
         id
         totalVolumeUSD
         totalVolumeETH
@@ -601,11 +601,11 @@ export const GLOBAL_DATA: any = (block?: number) => {
   return gql(queryString);
 };
 
-export const GLOBAL_ALLDATA: any = (reqData: any) => {
+export const GLOBAL_ALLDATA: any = (reqData: any, factory: string) => {
   const queryString = reqData.map((each: any, index: any) => {
     return `${each.index}: uniswapFactories(
     ${each.block ? `block: { number: ${each.block} }` : ``}   
-    where: { id: "${GlobalConst.addresses.FACTORY_ADDRESS}" }) {
+    where: { id: "${factory}" }) {
       id
       totalVolumeUSD
       totalVolumeETH
@@ -801,3 +801,17 @@ export const V3_TICKS: any = (poolAddress: string, skips: number) => {
     `;
   return gql(queryStr);
 };
+
+export const GET_LENS_PROFILES = gql`
+  query($ownedBy: [EthereumAddress!]) {
+    profiles(request: { ownedBy: $ownedBy }) {
+      items {
+        name
+        handle
+        ownedBy
+        bio
+        id
+      }
+    }
+  }
+`;

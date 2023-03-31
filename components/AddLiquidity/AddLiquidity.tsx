@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button } from '@material-ui/core';
 import {
   CurrencyInput,
   TransactionErrorContent,
@@ -11,9 +11,14 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
-import { useTranslation } from 'next-i18next';
-import { ETHER, TokenAmount, currencyEquals } from '@uniswap/sdk';
-import { GlobalConst } from 'constants/index';
+import { useTranslation } from 'react-i18next';
+import {
+  currencyEquals,
+  Token,
+  ETHER,
+  TokenAmount,
+  ChainId,
+} from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -40,9 +45,10 @@ import {
   formatTokenAmount,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-import AddLiquidityIcon from 'svgs/AddLiquidityIcon.svg';
+import { ReactComponent as AddLiquidityIcon } from 'svgs/AddLiquidityIcon.svg';
 import { useCurrency } from 'hooks/Tokens';
-import { useRouter } from 'next/router';
+import { useParams } from 'react-router-dom';
+import { NEW_QUICK, V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
 
 const AddLiquidity: React.FC<{
@@ -54,6 +60,8 @@ const AddLiquidity: React.FC<{
   >(null);
 
   const { account, chainId, library } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = Token.ETHER[chainIdToUse];
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
@@ -65,21 +73,26 @@ const AddLiquidity: React.FC<{
   const finalizedTransaction = useTransactionFinalizer();
 
   // queried currency
-  const router = useRouter();
-  const currencyId0 = router.query.currencyIdA ?? router.query.currency0;
-  const currencyId1 = router.query.currencyIdB ?? router.query.currency1;
-  const currency0Id = currencyId0
-    ? (currencyId0 as string).toLowerCase() === 'matic' ||
-      (currencyId0 as string).toLowerCase() === 'eth'
-      ? 'ETH'
-      : (currencyId0 as string)
-    : undefined;
-  const currency1Id = currencyId1
-    ? (currencyId1 as string).toLowerCase() === 'matic' ||
-      (currencyId1 as string).toLowerCase() === 'eth'
-      ? 'ETH'
-      : (currencyId1 as string)
-    : undefined;
+  const params: any = useParams();
+  const parsedQuery = useParsedQueryString();
+  const currency0Id =
+    params && params.currencyIdA
+      ? params.currencyIdA.toLowerCase() === 'matic' ||
+        params.currencyIdA.toLowerCase() === 'eth'
+        ? 'ETH'
+        : params.currencyIdA
+      : parsedQuery && parsedQuery.currency0
+      ? (parsedQuery.currency0 as string)
+      : undefined;
+  const currency1Id =
+    params && params.currencyIdB
+      ? params.currencyIdB.toLowerCase() === 'matic' ||
+        params.currencyIdB.toLowerCase() === 'eth'
+        ? 'ETH'
+        : params.currencyIdB
+      : parsedQuery && parsedQuery.currency1
+      ? (parsedQuery.currency1 as string)
+      : undefined;
   const currency0 = useCurrency(currency0Id);
   const currency1 = useCurrency(currency1Id);
 
@@ -112,7 +125,7 @@ const AddLiquidity: React.FC<{
     onFieldAInput,
     onFieldBInput,
     onCurrencySelection,
-  } = useMintActionHandlers(noLiquidity);
+  } = useMintActionHandlers(noLiquidity, chainIdToUse);
 
   const maxAmounts: { [field in Field]?: TokenAmount } = [
     Field.CURRENCY_A,
@@ -120,7 +133,7 @@ const AddLiquidity: React.FC<{
   ].reduce((accumulator, field) => {
     return {
       ...accumulator,
-      [field]: maxAmountSpend(currencyBalances[field]),
+      [field]: maxAmountSpend(chainIdToUse, currencyBalances[field]),
     };
   }, {});
 
@@ -137,11 +150,11 @@ const AddLiquidity: React.FC<{
   const [approvingB, setApprovingB] = useState(false);
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_B],
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
 
   const userPoolBalance = useTokenBalance(
@@ -163,7 +176,7 @@ const AddLiquidity: React.FC<{
 
   const handleCurrencyASelect = useCallback(
     (currencyA: any) => {
-      const isSwichRedirect = currencyEquals(currencyA, ETHER)
+      const isSwichRedirect = currencyEquals(currencyA, ETHER[chainIdToUse])
         ? currency1Id === 'ETH'
         : currency1Id &&
           currencyA &&
@@ -175,7 +188,7 @@ const AddLiquidity: React.FC<{
         redirectWithCurrency(currencyA, true);
       }
     },
-    [redirectWithCurrency, currency1Id, redirectWithSwitch],
+    [redirectWithCurrency, chainIdToUse, currency1Id, redirectWithSwitch],
   );
 
   useEffect(() => {
@@ -187,7 +200,7 @@ const AddLiquidity: React.FC<{
 
   const handleCurrencyBSelect = useCallback(
     (currencyB: any) => {
-      const isSwichRedirect = currencyEquals(currencyB, ETHER)
+      const isSwichRedirect = currencyEquals(currencyB, ETHER[chainIdToUse])
         ? currency0Id === 'ETH'
         : currencyB &&
           currencyB.address &&
@@ -199,7 +212,7 @@ const AddLiquidity: React.FC<{
         redirectWithCurrency(currencyB, false);
       }
     },
-    [redirectWithCurrency, currency0Id, redirectWithSwitch],
+    [redirectWithCurrency, chainIdToUse, currency0Id, redirectWithSwitch],
   );
 
   useEffect(() => {
@@ -219,10 +232,10 @@ const AddLiquidity: React.FC<{
     }
   };
 
-  const routerContract = useRouterContract();
+  const router = useRouterContract();
 
   const onAddLiquidity = async () => {
-    if (!chainId || !library || !account || !routerContract) return;
+    if (!chainId || !library || !account || !router) return;
 
     const {
       [Field.CURRENCY_A]: parsedAmountA,
@@ -254,12 +267,12 @@ const AddLiquidity: React.FC<{
       args: Array<string | string[] | number>,
       value: BigNumber | null;
     if (
-      currencies[Field.CURRENCY_A] === ETHER ||
-      currencies[Field.CURRENCY_B] === ETHER
+      currencies[Field.CURRENCY_A] === nativeCurrency ||
+      currencies[Field.CURRENCY_B] === nativeCurrency
     ) {
-      const tokenBIsETH = currencies[Field.CURRENCY_B] === ETHER;
-      estimate = routerContract.estimateGas.addLiquidityETH;
-      method = routerContract.addLiquidityETH;
+      const tokenBIsETH = currencies[Field.CURRENCY_B] === nativeCurrency;
+      estimate = router.estimateGas.addLiquidityETH;
+      method = router.addLiquidityETH;
       args = [
         wrappedCurrency(
           tokenBIsETH
@@ -281,8 +294,8 @@ const AddLiquidity: React.FC<{
         (tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString(),
       );
     } else {
-      estimate = routerContract.estimateGas.addLiquidity;
-      method = routerContract.addLiquidity;
+      estimate = router.estimateGas.addLiquidity;
+      method = router.addLiquidity;
       args = [
         wrappedCurrency(currencies[Field.CURRENCY_A], chainId)?.address ?? '',
         wrappedCurrency(currencies[Field.CURRENCY_B], chainId)?.address ?? '',
@@ -513,13 +526,13 @@ const AddLiquidity: React.FC<{
             </Box>
           </Box>
         )}
-      <Box className='flex-wrap swapButtonWrapper'>
+      <Box className='swapButtonWrapper flex-wrap'>
         {(approvalA === ApprovalState.NOT_APPROVED ||
           approvalA === ApprovalState.PENDING ||
           approvalB === ApprovalState.NOT_APPROVED ||
           approvalB === ApprovalState.PENDING) &&
           !error && (
-            <Box className='flex justify-between fullWidth' mb={2}>
+            <Box className='flex fullWidth justify-between' mb={2}>
               {approvalA !== ApprovalState.APPROVED && (
                 <Box
                   width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}

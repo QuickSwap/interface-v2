@@ -67,7 +67,8 @@ export function FarmModal({
   closeHandler,
   farmingType,
 }: FarmModalProps) {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const { t } = useTranslation();
 
   const isTierFarming = useMemo(
@@ -247,7 +248,7 @@ export function FarmModal({
     account ?? undefined,
     multiplierToken
       ? new Token(
-          ChainId.MATIC,
+          chainIdToUse,
           multiplierToken.id,
           +multiplierToken.decimals,
           multiplierToken.symbol,
@@ -332,7 +333,7 @@ export function FarmModal({
 
     return CurrencyAmount.fromRawAmount(
       new Token(
-        ChainId.MATIC,
+        chainIdToUse,
         multiplierToken.id,
         +multiplierToken.decimals,
         multiplierToken.symbol,
@@ -340,30 +341,36 @@ export function FarmModal({
       ),
       selectedTier,
     );
-  }, [selectedTier, multiplierToken]);
+  }, [selectedTier, multiplierToken, chainIdToUse]);
 
   const [approval, approveCallback] = useApproveCallback(
     _amountForApprove,
-    FARMING_CENTER[ChainId.MATIC],
+    FARMING_CENTER[chainIdToUse],
   );
 
   const showApproval =
     approval !== ApprovalState.APPROVED && !!_amountForApprove;
 
-  const linkToProviding = `/add/${pool.token0.id}/${pool.token1.id}/v3`;
+  const linkToProviding = `/add/${pool.token0.id ?? pool.token0.address}/${pool
+    .token1.id ?? pool.token1.address}/v3`;
 
   return (
     <Box padding='20px 16px'>
       {submitState === 3 ? (
         <Box width='100%'>
-          <button onClick={closeHandler}>
-            <X size={18} stroke={'white'} />
-          </button>
-          <Box className='flex'>
-            <CheckCircle size={55} stroke={'var(--green)'} />
-            <p>
-              {t('positionDepositedSuccessfully', { nftID: selectedNFT?.id })}!
-            </p>
+          <Box className='flex justify-end'>
+            <Box className='cursor-pointer' onClick={closeHandler}>
+              <X size={18} stroke={'white'} />
+            </Box>
+          </Box>
+          <Box className='flex flex-col items-center'>
+            <CheckCircle size={55} />
+            <Box mt={2}>
+              <p>
+                {t('positionDepositedSuccessfully', { nftID: selectedNFT?.id })}
+                !
+              </p>
+            </Box>
           </Box>
         </Box>
       ) : positionsForPoolLoading ? (

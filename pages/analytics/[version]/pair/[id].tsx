@@ -28,6 +28,7 @@ import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
 import { CallMade } from '@mui/icons-material';
+import { getConfig } from 'config';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -40,6 +41,17 @@ const AnalyticsPairDetails: React.FC = () => {
 
   const version = router.query.version ?? 'v3';
   const isV2 = version === 'v2';
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+
+  const config = getConfig(chainId);
+  const showAnalytics = config['analytics']['available'];
+  useEffect(() => {
+    if (!showAnalytics) {
+      router.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAnalytics]);
 
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
@@ -87,20 +99,19 @@ const AnalyticsPairDetails: React.FC = () => {
       return null;
     }
   }, [pairTransactions, isV2]);
-  const { chainId } = useActiveWeb3React();
   const currency0 = pairData
-    ? getTokenFromAddress(pairData.token0.id, ChainId.MATIC, tokenMap, [
+    ? getTokenFromAddress(pairData.token0.id, chainIdToUse, tokenMap, [
         new Token(
-          ChainId.MATIC,
+          chainIdToUse,
           getAddress(pairData.token0.id),
           pairData.token0.decimals,
         ),
       ])
     : undefined;
   const currency1 = pairData
-    ? getTokenFromAddress(pairData.token1.id, ChainId.MATIC, tokenMap, [
+    ? getTokenFromAddress(pairData.token1.id, chainIdToUse, tokenMap, [
         new Token(
-          ChainId.MATIC,
+          chainIdToUse,
           getAddress(pairData.token1.id),
           pairData.token1.decimals,
         ),
@@ -160,14 +171,14 @@ const AnalyticsPairDetails: React.FC = () => {
       : '-'
     : pairData && pairData.feesUSDOneDay
     ? formatNumber(pairData.feesUSDOneDay)
-    : '-';
+    : '0';
   const { ethPrice } = useEthPrice();
 
   useEffect(() => {
     async function fetchPairData() {
       try {
         if (!isV2) {
-          const pairInfo = await getPairInfoV3(pairAddress);
+          const pairInfo = await getPairInfoV3(pairAddress, chainIdToUse);
           if (pairInfo && pairInfo.length > 0) {
             setPairData(pairInfo[0]);
           }
@@ -177,6 +188,7 @@ const AnalyticsPairDetails: React.FC = () => {
             const pairInfo = await getBulkPairData(
               [pairAddress],
               ethPrice.price,
+              chainIdToUse,
             );
             if (pairInfo && pairInfo.length > 0) {
               setPairData(pairInfo[0]);
@@ -190,8 +202,8 @@ const AnalyticsPairDetails: React.FC = () => {
     }
     async function fetchTransctions() {
       const pairTransactionsFn = !isV2
-        ? getPairTransactionsV3(pairAddress)
-        : getPairTransactions(pairAddress);
+        ? getPairTransactionsV3(pairAddress, chainIdToUse)
+        : getPairTransactions(pairAddress, chainIdToUse);
 
       pairTransactionsFn.then((transactions) => {
         if (transactions) {
@@ -199,11 +211,10 @@ const AnalyticsPairDetails: React.FC = () => {
         }
       });
     }
-    if (ethPrice.price) {
-      fetchPairData();
-      fetchTransctions();
-    }
-  }, [pairAddress, ethPrice.price, isV2]);
+
+    fetchPairData();
+    fetchTransctions();
+  }, [pairAddress, ethPrice.price, isV2, chainIdToUse]);
 
   useEffect(() => {
     setDataLoading(true);

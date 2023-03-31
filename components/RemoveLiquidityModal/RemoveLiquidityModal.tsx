@@ -2,11 +2,10 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { Contract } from '@ethersproject/contracts';
 import { ArrowLeft, ArrowDown } from 'react-feather';
 import { Box, Button } from '@mui/material';
-import { Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
+import { ChainId, Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionResponse } from '@ethersproject/providers';
-import { GlobalConst } from 'constants/index';
 import {
   CustomModal,
   DoubleCurrencyLogo,
@@ -45,6 +44,7 @@ import { useTotalSupply } from 'data/TotalSupply';
 import { Close } from '@mui/icons-material';
 import styles from 'styles/components/RemoveLiquidityModal.module.scss';
 import { useTranslation } from 'next-i18next';
+import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 
 interface RemoveLiquidityModalProps {
   currency0: Currency;
@@ -77,7 +77,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     ],
     [currency0, currency1, chainId],
   );
-
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   const { independentField, typedValue } = useBurnState();
   const { pair, parsedAmounts, error } = useDerivedBurnInfo(
     currency0,
@@ -173,7 +174,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   );
   const [approval, approveCallback] = useApproveCallback(
     parsedAmounts[Field.LIQUIDITY],
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
   const onAttemptToApprove = async () => {
     if (!pairContract || !pair || !library || !deadline) {
@@ -232,8 +233,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
       throw new Error(t('noLiquidity'));
     }
 
-    const currencyBIsETH = currency1 === ETHER;
-    const oneCurrencyIsETH = currency0 === ETHER || currencyBIsETH;
+    const currencyBIsETH = currency1 === nativeCurrency;
+    const oneCurrencyIsETH = currency0 === nativeCurrency || currencyBIsETH;
 
     if (!tokenA || !tokenB) {
       setRemoveErrorMessage(t('cannotWrap'));

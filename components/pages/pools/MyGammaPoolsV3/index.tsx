@@ -8,10 +8,10 @@ import GammaLPList from './GammaLPList';
 import { useQuery } from 'react-query';
 import { getGammaPositions } from 'utils';
 import { GammaPair, GammaPairs } from 'constants/index';
-import { useMasterChefContract } from 'hooks/useContract';
+import { useMasterChefContracts } from 'hooks/useContract';
 import {
+  useMultipleContractMultipleData,
   useMultipleContractSingleData,
-  useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
@@ -69,29 +69,59 @@ export default function MyLiquidityPoolsV3() {
     },
   );
 
-  const allGammaPairsToFarm = ([] as GammaPair[])
-    .concat(...Object.values(GammaPairs))
-    .filter((item) => item.ableToFarm);
+  const allGammaPairsToFarm = chainId
+    ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
+    : [];
 
-  const masterChefContract = useMasterChefContract();
+  const masterChefContracts = useMasterChefContracts();
 
-  const stakedAmountData = useSingleContractMultipleData(
-    masterChefContract,
+  const stakedAmountData = useMultipleContractMultipleData(
+    account ? masterChefContracts : [],
     'userInfo',
-    account ? allGammaPairsToFarm.map((pair) => [pair.pid, account]) : [],
+    account
+      ? masterChefContracts.map((_, ind) =>
+          allGammaPairsToFarm
+            .filter((pair) => (pair.masterChefIndex ?? 0) === ind)
+            .map((pair) => [pair.pid, account]),
+        )
+      : [],
   );
 
-  const stakedAmounts = stakedAmountData.map((callData) => {
-    return !callData.loading && callData.result && callData.result.length > 0
-      ? formatUnits(callData.result[0], 18)
-      : '0';
+  const stakedAmounts = stakedAmountData.map((callStates, ind) => {
+    const gammaPairsFiltered = allGammaPairsToFarm.filter(
+      (pair) => (pair.masterChefIndex ?? 0) === ind,
+    );
+    return callStates.map((callData, index) => {
+      const amount =
+        !callData.loading && callData.result && callData.result.length > 0
+          ? formatUnits(callData.result[0], 18)
+          : '0';
+      const gPair =
+        gammaPairsFiltered.length > index
+          ? gammaPairsFiltered[index]
+          : undefined;
+      return {
+        amount,
+        pid: gPair?.pid,
+        masterChefIndex: ind,
+      };
+    });
   });
 
-  const stakedLoading = !!stakedAmountData.find((callData) => callData.loading);
+  const stakedLoading = !!stakedAmountData.find(
+    (callStates) => !!callStates.find((callData) => callData.loading),
+  );
 
   const stakedLPs = allGammaPairsToFarm
-    .map((item, index) => {
-      return { ...item, stakedAmount: Number(stakedAmounts[index]) };
+    .map((item) => {
+      const masterChefIndex = item.masterChefIndex ?? 0;
+      const sItem =
+        stakedAmounts && stakedAmounts.length > masterChefIndex
+          ? stakedAmounts[masterChefIndex].find(
+              (sAmount) => sAmount.pid === item.pid,
+            )
+          : undefined;
+      return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
     })
     .filter((item) => {
       return item.stakedAmount > 0;
@@ -163,25 +193,27 @@ export default function MyLiquidityPoolsV3() {
     };
   });
 
-  const gammaPositionList = gammaPositions
-    ? Object.keys(gammaPositions)
-        .filter(
-          (value) =>
-            !!Object.values(GammaPairs).find(
-              (pairData) =>
-                !!pairData.find(
-                  (item) => item.address.toLowerCase() === value.toLowerCase(),
-                ),
-            ),
-        )
-        .filter(
-          (pairAddress) =>
-            !stakedPositions.find(
-              (item) =>
-                item.pairAddress.toLowerCase() === pairAddress.toLowerCase(),
-            ),
-        )
-    : [];
+  const gammaPositionList =
+    gammaPositions && chainId
+      ? Object.keys(gammaPositions)
+          .filter(
+            (value) =>
+              !!Object.values(GammaPairs[chainId]).find(
+                (pairData) =>
+                  !!pairData.find(
+                    (item) =>
+                      item.address.toLowerCase() === value.toLowerCase(),
+                  ),
+              ),
+          )
+          .filter(
+            (pairAddress) =>
+              !stakedPositions.find(
+                (item) =>
+                  item.pairAddress.toLowerCase() === pairAddress.toLowerCase(),
+              ),
+          )
+      : [];
 
   return (
     <Box>

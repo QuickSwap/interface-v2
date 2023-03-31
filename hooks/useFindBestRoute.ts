@@ -34,10 +34,13 @@ const useFindBestRoute = () => {
   const inputCurrency = useCurrency(inputCurrencyId);
   const outputCurrency = useCurrency(outputCurrencyId);
   const isExactIn: boolean = independentField === Field.INPUT;
-  const parsedAmount = tryParseAmount(
-    typedValue,
-    (isExactIn ? inputCurrency : outputCurrency) ?? undefined,
-  );
+  const parsedAmount = chainId
+    ? tryParseAmount(
+        chainId,
+        typedValue,
+        (isExactIn ? inputCurrency : outputCurrency) ?? undefined,
+      )
+    : undefined;
   const bestTradeExactIn = useTradeExactIn(
     isExactIn ? parsedAmount : undefined,
     outputCurrency ?? undefined,

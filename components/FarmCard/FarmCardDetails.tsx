@@ -314,9 +314,6 @@ const FarmCardDetails: React.FC<{
                 <Box className='farmCardMobileRow'>
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apy')}</small>
-                    <Box ml={0.5} height={16}>
-                      <Image src='/images/circleinfo.svg' alt='arrow up' />
-                    </Box>
                   </Box>
                   <small className='text-success'>{apyWithFee}%</small>
                 </Box>

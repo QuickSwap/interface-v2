@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
+<<<<<<< HEAD:components/PoolPositionCard/PoolPositionCardDetails.tsx
 import { useRouter } from 'next/router';
 import { Box, Button } from '@mui/material';
 import { Pair, JSBI, Percent } from '@uniswap/sdk';
+=======
+import { useHistory } from 'react-router-dom';
+import { Box, Button } from '@material-ui/core';
+import { Pair, JSBI, Percent, ChainId } from '@uniswap/sdk';
+>>>>>>> dev2:src/components/PoolPositionCard/PoolPositionCardDetails.tsx
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
@@ -14,7 +20,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
 
   const currency0 = unwrappedToken(pair.token0);
@@ -106,7 +112,11 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
               router.push(
                 `/pools/v2?currency0=${currencyId(
                   currency0,
-                )}&currency1=${currencyId(currency1)}`,
+                  chainId ? chainId : ChainId.MATIC,
+                )}&currency1=${currencyId(
+                  currency1,
+                  chainId ? chainId : ChainId.MATIC,
+                )}`,
               );
             }}
           >
