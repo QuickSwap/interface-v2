@@ -3,6 +3,7 @@ import React, { Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Provider } from 'react-redux';
 import Head from 'next/head';
+import Script from 'next/script';
 import { PageLayout } from 'layouts';
 import Background from 'layouts/Background';
 import { Web3ReactProvider } from '@web3-react/core';
@@ -92,6 +93,28 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <link rel='apple-touch-icon' href='/logo_circle.png' />
         <title>QuickSwap</title>
       </Head>
+      <Script
+        id='arcx-analytics'
+        strategy='afterInteractive'
+        dangerouslySetInnerHTML={{
+          __html: `
+            const script = document.createElement('script'); 
+            const apiKey = 'd29f17e774ac4e67247a2929a02a806f6787ac6cdbbb0fc41f721c6fc621156a'
+            const config = {
+              // We are tracking wallet connections manually
+              trackWalletConnections: false
+            } 
+            script.src = 'https://unpkg.com/@arcxmoney/analytics'
+            script.onload = function () {
+              ArcxAnalyticsSdk.init(apiKey, config)
+                .then(function (sdk) {
+                  window.arcx = sdk
+                })
+            }
+            document.head.appendChild(script)
+          `,
+        }}
+      />
       <QueryClientProvider client={queryClient}>
         <Web3ReactProvider getLibrary={getLibrary}>
           <Web3DefaultNetworkProvider getLibrary={getLibrary}>

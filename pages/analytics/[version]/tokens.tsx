@@ -27,7 +27,6 @@ const AnalyticsTokens: React.FC = () => {
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
   const version = useAnalyticsVersion();
 
   const favoriteTokens = useMemo(() => {
@@ -41,6 +40,7 @@ const AnalyticsTokens: React.FC = () => {
   }, [topTokens, bookmarkTokens]);
 
   useEffect(() => {
+    if (!chainId) return;
     (async () => {
       if (version === 'v3') {
         if (
@@ -51,7 +51,7 @@ const AnalyticsTokens: React.FC = () => {
             maticPrice.price,
             maticPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-            chainIdToUse,
+            chainId,
           );
           if (data) {
             updateTopTokens(data);
@@ -66,7 +66,7 @@ const AnalyticsTokens: React.FC = () => {
             ethPrice.price,
             ethPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-            chainIdToUse,
+            chainId,
           );
           if (data) {
             updateTopTokens(data);
@@ -85,7 +85,7 @@ const AnalyticsTokens: React.FC = () => {
             maticPrice.price,
             maticPrice.oneDayPrice,
             GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-            chainIdToUse,
+            chainId,
           );
           if (data) {
             updateTopTokens(data);
@@ -99,7 +99,7 @@ const AnalyticsTokens: React.FC = () => {
     maticPrice.price,
     maticPrice.oneDayPrice,
     version,
-    chainIdToUse,
+    chainId,
   ]);
 
   useEffect(() => {

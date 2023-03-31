@@ -19,7 +19,6 @@ import { useTranslation } from 'next-i18next';
 import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -46,7 +45,6 @@ const AnalyticsPairChart: React.FC<{
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
   const version = useAnalyticsVersion();
   const isV2 = version === 'v2';
   const { breakpoints } = useTheme();
@@ -212,7 +210,8 @@ const AnalyticsPairChart: React.FC<{
   }, [chartIndex, pairData]);
 
   useEffect(() => {
-    async function fetchPairChartData() {
+    if (!chainId) return;
+    (async () => {
       setPairChartData(null);
       const duration =
         durationIndex === GlobalConst.analyticChart.ALL_CHART
@@ -220,12 +219,12 @@ const AnalyticsPairChart: React.FC<{
           : getChartStartTime(durationIndex);
 
       const pairChartDataFn = !isV2
-        ? getPairChartDataV3(pairAddress, duration, chainIdToUse)
-        : getPairChartData(pairAddress, duration, chainIdToUse);
+        ? getPairChartDataV3(pairAddress, duration, chainId)
+        : getPairChartData(pairAddress, duration, chainId);
 
       Promise.all(
         [pairChartDataFn].concat(
-          !isV2 ? [getPairChartFees(pairAddress, duration, chainIdToUse)] : [],
+          !isV2 ? [getPairChartFees(pairAddress, duration, chainId)] : [],
         ),
       ).then(([chartData, feeChartData]) => {
         if (chartData && chartData.length > 0) {
@@ -243,9 +242,8 @@ const AnalyticsPairChart: React.FC<{
           setPairFeeData(newFeeData);
         }
       });
-    }
-    fetchPairChartData();
-  }, [pairAddress, durationIndex, isV2, chainIdToUse]);
+    })();
+  }, [pairAddress, durationIndex, isV2, chainId]);
 
   useEffect(() => {
     if (!apyVisionURL || !apyVisionAccessToken) return;

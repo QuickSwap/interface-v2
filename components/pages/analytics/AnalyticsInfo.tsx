@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'next-i18next';
 import { useIsV2 } from 'state/application/hooks';
-import { getFormattedPercent, getFormattedPrice, getPriceClass } from 'utils';
+import { getFormattedPercent, getPriceClass } from 'utils';
 
 interface AnalyticsInfoProps {
   data: any;

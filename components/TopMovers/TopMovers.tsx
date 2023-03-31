@@ -41,7 +41,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   );
 
   useEffect(() => {
-    if (isV2 === undefined || !chainId) return;
+    if (!chainId) return;
 
     (async () => {
       if (isV2) {

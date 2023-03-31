@@ -38,16 +38,9 @@ import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import JSBI from 'jsbi';
 import { Trade as V3Trade } from 'lib/trade';
 import { WrappedCurrency } from 'models/types';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
 import ReactGA from 'react-ga';
-import { Helmet } from 'react-helmet';
 import { useRouter } from 'next/router';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { Field } from 'state/swap/v3/actions';
@@ -58,7 +51,6 @@ import {
   useSwapState,
 } from 'state/swap/v3/hooks';
 import { useExpertModeManager } from 'state/user/hooks';
-import { ThemeContext } from 'styled-components/macro';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
@@ -109,8 +101,6 @@ const SwapV3Page: React.FC = () => {
     urlLoadedTokens.filter((token: Token) => {
       return !Boolean(token.address in defaultTokens);
     });
-
-  const theme = useContext(ThemeContext);
 
   // toggle wallet when disconnected
   const toggleWalletModal = useWalletModalToggle();
@@ -756,11 +746,7 @@ const SwapV3Page: React.FC = () => {
                     ) : (approvalSubmitted &&
                         approvalState === ApprovalState.APPROVED) ||
                       signatureState === UseERC20PermitState.SIGNED ? (
-                      <CheckCircle
-                        size='20'
-                        style={{ marginLeft: '5px' }}
-                        color={theme.green1}
-                      />
+                      <CheckCircle size='20' style={{ marginLeft: '5px' }} />
                     ) : (
                       <MouseoverTooltip
                         text={t('mustgiveContractsPermission', {

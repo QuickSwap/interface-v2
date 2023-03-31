@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Grid } from '@mui/material';
 import { Skeleton } from '@mui/lab';
-import { ChainId, Token } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk';
 import {
   shortenAddress,
   getEtherscanLink,
-  getFormattedPrice,
   getPriceClass,
   formatNumber,
   getTokenInfo,
@@ -55,12 +54,12 @@ const AnalyticsTokenDetails: React.FC = () => {
   const [token, setToken] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
-  const currency = token
-    ? getTokenFromAddress(tokenAddress, chainIdToUse, tokenMap, [
-        new Token(chainIdToUse, getAddress(token.id), token.decimals),
-      ])
-    : undefined;
+  const currency =
+    token && chainId
+      ? getTokenFromAddress(tokenAddress, chainId, tokenMap, [
+          new Token(chainId, getAddress(token.id), token.decimals),
+        ])
+      : undefined;
   const [tokenPairs, updateTokenPairs] = useState<any>(null);
   const [tokenTransactions, updateTokenTransactions] = useState<any>(null);
   const {
@@ -70,7 +69,7 @@ const AnalyticsTokenDetails: React.FC = () => {
   } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
-  const config = getConfig(chainIdToUse);
+  const config = getConfig(chainId);
   const v3 = config['v3'];
   const v2 = config['v2'];
 
@@ -142,202 +141,208 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   useEffect(() => {
     async function fetchTokenInfo() {
-      try {
-        if (version === 'v3') {
-          if (maticPrice.price && maticPrice.oneDayPrice) {
-            const tokenInfo = await getTokenInfoV3(
-              maticPrice.price,
-              maticPrice.oneDayPrice,
-              tokenAddress,
-              chainIdToUse,
-            );
-            if (tokenInfo) {
-              setToken(tokenInfo[0] || tokenInfo);
+      if (chainId) {
+        try {
+          if (version === 'v3') {
+            if (maticPrice.price && maticPrice.oneDayPrice) {
+              const tokenInfo = await getTokenInfoV3(
+                maticPrice.price,
+                maticPrice.oneDayPrice,
+                tokenAddress,
+                chainId,
+              );
+              if (tokenInfo) {
+                setToken(tokenInfo[0] || tokenInfo);
+              }
+              setLoadingData(false);
             }
-            setLoadingData(false);
-          }
-        } else if (version === 'v2') {
-          if (ethPrice.price && ethPrice.oneDayPrice) {
-            const tokenInfo = await getTokenInfo(
-              ethPrice.price,
-              ethPrice.oneDayPrice,
-              tokenAddress,
-              chainIdToUse,
-            );
-            if (tokenInfo) {
-              setToken(tokenInfo[0] || tokenInfo);
+          } else if (version === 'v2') {
+            if (ethPrice.price && ethPrice.oneDayPrice) {
+              const tokenInfo = await getTokenInfo(
+                ethPrice.price,
+                ethPrice.oneDayPrice,
+                tokenAddress,
+                chainId,
+              );
+              if (tokenInfo) {
+                setToken(tokenInfo[0] || tokenInfo);
+              }
+              setLoadingData(false);
             }
-            setLoadingData(false);
-          }
-        } else {
-          if (
-            ethPrice.price &&
-            ethPrice.oneDayPrice &&
-            maticPrice.price &&
-            maticPrice.oneDayPrice
-          ) {
-            const tokenInfo = await getTokenInfoTotal(
-              maticPrice.price,
-              maticPrice.oneDayPrice,
-              ethPrice.price,
-              ethPrice.oneDayPrice,
-              tokenAddress,
-              chainIdToUse,
-            );
-            if (tokenInfo) {
-              setToken(tokenInfo[0] || tokenInfo);
+          } else {
+            if (
+              ethPrice.price &&
+              ethPrice.oneDayPrice &&
+              maticPrice.price &&
+              maticPrice.oneDayPrice
+            ) {
+              const tokenInfo = await getTokenInfoTotal(
+                maticPrice.price,
+                maticPrice.oneDayPrice,
+                ethPrice.price,
+                ethPrice.oneDayPrice,
+                tokenAddress,
+                chainId,
+              );
+              if (tokenInfo) {
+                setToken(tokenInfo[0] || tokenInfo);
+              }
+              setLoadingData(false);
             }
-            setLoadingData(false);
           }
+        } catch (e) {
+          setLoadingData(false);
         }
-      } catch (e) {
-        setLoadingData(false);
       }
     }
     async function fetchTransactions() {
-      if (version === 'total') {
-        getTokenTransactionsTotal(tokenAddress, chainIdToUse).then(
-          (transactions) => {
+      if (chainId) {
+        if (version === 'total') {
+          getTokenTransactionsTotal(tokenAddress, chainId).then(
+            (transactions) => {
+              if (transactions) {
+                updateTokenTransactions(transactions);
+              }
+            },
+          );
+        } else {
+          getTokenTransactionsV3(tokenAddress, chainId).then((transactions) => {
             if (transactions) {
               updateTokenTransactions(transactions);
             }
-          },
-        );
-      } else {
-        getTokenTransactionsV3(tokenAddress, chainIdToUse).then(
-          (transactions) => {
-            if (transactions) {
-              updateTokenTransactions(transactions);
-            }
-          },
-        );
+          });
+        }
       }
     }
     async function fetchPairs() {
-      const tokenPairs = await getTokenPairs2(tokenAddress, chainIdToUse);
-      const formattedPairs = tokenPairs
-        ? tokenPairs.map((pair: any) => {
-            return pair.id;
-          })
-        : [];
-      const pairData = await getBulkPairData(
-        formattedPairs,
-        ethPrice.price,
-        chainIdToUse,
-      );
-      if (pairData) {
-        updateTokenPairs(pairData);
+      if (chainId) {
+        const tokenPairs = await getTokenPairs2(tokenAddress, chainId);
+        const formattedPairs = tokenPairs
+          ? tokenPairs.map((pair: any) => {
+              return pair.id;
+            })
+          : [];
+        const pairData = await getBulkPairData(
+          formattedPairs,
+          ethPrice.price,
+          chainId,
+        );
+        if (pairData) {
+          updateTokenPairs(pairData);
+        }
       }
     }
     async function fetchPairsV3() {
-      let tokenPairs;
-      if (version === 'total') {
-        tokenPairs = await getTopPairsTotalByToken(tokenAddress, chainIdToUse);
-      } else {
-        tokenPairs = await getTopPairsV3ByToken(tokenAddress, chainIdToUse);
-      }
-      if (tokenPairs) {
-        const data = tokenPairs.filter((item: any) => !!item);
-        try {
-          const aprs = await getPairsAPR(
-            data.map((item: any) => item.id),
-            chainIdToUse,
-          );
-          const gammaRewards = await getGammaRewards(chainIdToUse);
-          const gammaData = await getGammaData();
+      if (chainId) {
+        let tokenPairs;
+        if (version === 'total') {
+          tokenPairs = await getTopPairsTotalByToken(tokenAddress, chainId);
+        } else {
+          tokenPairs = await getTopPairsV3ByToken(tokenAddress, chainId);
+        }
+        if (tokenPairs) {
+          const data = tokenPairs.filter((item: any) => !!item);
+          try {
+            const aprs = await getPairsAPR(
+              data.map((item: any) => item.id),
+              chainId,
+            );
+            const gammaRewards = await getGammaRewards(chainId);
+            const gammaData = await getGammaData();
 
-          updateTokenPairs(
-            data.map((item: any, ind: number) => {
-              const gammaPairs =
-                GammaPairs[chainIdToUse][
-                  item.token0.id.toLowerCase() +
-                    '-' +
-                    item.token1.id.toLowerCase()
-                ] ??
-                GammaPairs[chainIdToUse][
-                  item.token1.id.toLowerCase() +
-                    '-' +
-                    item.token0.id.toLowerCase()
-                ];
-              const gammaFarmAPRs = gammaPairs
-                ? gammaPairs.map((pair) => {
-                    const masterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[
-                      pair.masterChefIndex ?? 0
-                    ][chainIdToUse]
-                      ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
-                          chainIdToUse
-                        ].toLowerCase()
-                      : undefined;
-                    return {
-                      title: pair.title,
-                      apr:
-                        gammaRewards &&
-                        masterChefAddress &&
-                        gammaRewards[masterChefAddress] &&
-                        gammaRewards[masterChefAddress]['pools'] &&
-                        gammaRewards[masterChefAddress]['pools'][
-                          pair.address.toLowerCase()
-                        ] &&
-                        gammaRewards[masterChefAddress]['pools'][
-                          pair.address.toLowerCase()
-                        ]['apr']
-                          ? Number(
-                              gammaRewards[masterChefAddress]['pools'][
-                                pair.address.toLowerCase()
-                              ]['apr'],
-                            ) * 100
-                          : 0,
-                    };
-                  })
-                : [];
-              const gammaPoolAPRs = gammaPairs
-                ? gammaPairs.map((pair) => {
-                    return {
-                      title: pair.title,
-                      apr:
-                        gammaData &&
-                        gammaData[pair.address.toLowerCase()] &&
-                        gammaData[pair.address.toLowerCase()]['returns'] &&
-                        gammaData[pair.address.toLowerCase()]['returns'][
-                          'allTime'
-                        ] &&
-                        gammaData[pair.address.toLowerCase()]['returns'][
-                          'allTime'
-                        ]['feeApr']
-                          ? Number(
-                              gammaData[pair.address.toLowerCase()]['returns'][
-                                'allTime'
-                              ]['feeApr'],
-                            ) * 100
-                          : 0,
-                    };
-                  })
-                : [];
+            updateTokenPairs(
+              data.map((item: any, ind: number) => {
+                const gammaPairs =
+                  GammaPairs[chainId][
+                    item.token0.id.toLowerCase() +
+                      '-' +
+                      item.token1.id.toLowerCase()
+                  ] ??
+                  GammaPairs[chainId][
+                    item.token1.id.toLowerCase() +
+                      '-' +
+                      item.token0.id.toLowerCase()
+                  ];
+                const gammaFarmAPRs = gammaPairs
+                  ? gammaPairs.map((pair) => {
+                      const masterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[
+                        pair.masterChefIndex ?? 0
+                      ][chainId]
+                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
+                            chainId
+                          ].toLowerCase()
+                        : undefined;
+                      return {
+                        title: pair.title,
+                        apr:
+                          gammaRewards &&
+                          masterChefAddress &&
+                          gammaRewards[masterChefAddress] &&
+                          gammaRewards[masterChefAddress]['pools'] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ] &&
+                          gammaRewards[masterChefAddress]['pools'][
+                            pair.address.toLowerCase()
+                          ]['apr']
+                            ? Number(
+                                gammaRewards[masterChefAddress]['pools'][
+                                  pair.address.toLowerCase()
+                                ]['apr'],
+                              ) * 100
+                            : 0,
+                      };
+                    })
+                  : [];
+                const gammaPoolAPRs = gammaPairs
+                  ? gammaPairs.map((pair) => {
+                      return {
+                        title: pair.title,
+                        apr:
+                          gammaData &&
+                          gammaData[pair.address.toLowerCase()] &&
+                          gammaData[pair.address.toLowerCase()]['returns'] &&
+                          gammaData[pair.address.toLowerCase()]['returns'][
+                            'allTime'
+                          ] &&
+                          gammaData[pair.address.toLowerCase()]['returns'][
+                            'allTime'
+                          ]['feeApr']
+                            ? Number(
+                                gammaData[pair.address.toLowerCase()][
+                                  'returns'
+                                ]['allTime']['feeApr'],
+                              ) * 100
+                            : 0,
+                      };
+                    })
+                  : [];
 
-              const quickFarmingAPR = aprs[ind].farmingApr;
-              const farmingApr = Math.max(
-                quickFarmingAPR ?? 0,
-                ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
-              );
+                const quickFarmingAPR = aprs[ind].farmingApr;
+                const farmingApr = Math.max(
+                  quickFarmingAPR ?? 0,
+                  ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
+                );
 
-              const quickPoolAPR = aprs[ind].apr;
-              const apr = Math.max(
-                quickPoolAPR ?? 0,
-                ...gammaPoolAPRs.map((item) => Number(item.apr ?? 0)),
-              );
-              return {
-                ...item,
-                apr,
-                farmingApr,
-                quickFarmingAPR,
-                quickPoolAPR,
-                gammaFarmAPRs,
-                gammaPoolAPRs,
-              };
-            }),
-          );
-        } catch (e) {
-          console.log(e);
+                const quickPoolAPR = aprs[ind].apr;
+                const apr = Math.max(
+                  quickPoolAPR ?? 0,
+                  ...gammaPoolAPRs.map((item) => Number(item.apr ?? 0)),
+                );
+                return {
+                  ...item,
+                  apr,
+                  farmingApr,
+                  quickFarmingAPR,
+                  quickPoolAPR,
+                  gammaFarmAPRs,
+                  gammaPoolAPRs,
+                };
+              }),
+            );
+          } catch (e) {
+            console.log(e);
+          }
         }
       }
     }
@@ -357,7 +362,7 @@ const AnalyticsTokenDetails: React.FC = () => {
     maticPrice.price,
     maticPrice.oneDayPrice,
     version,
-    chainIdToUse,
+    chainId,
   ]);
 
   useEffect(() => {
@@ -564,7 +569,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                     ml={2}
                   >
                     <small>
-                      {getFormattedPrice(Number(token.priceChangeUSD))}%
+                      {getFormattedPercent(Number(token.priceChangeUSD))}
                     </small>
                   </Box>
                 </Box>

@@ -36,10 +36,10 @@ const AnalyticsVolumeChart: React.FC<{
   const [globalChartData, updateGlobalChartData] = useState<any>(null);
 
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
   const version = useAnalyticsVersion();
 
   useEffect(() => {
+    if (!chainId) return;
     const fetchChartData = async () => {
       updateGlobalChartData(null);
       setDataLoaded(false);
@@ -51,10 +51,10 @@ const AnalyticsVolumeChart: React.FC<{
 
       const chartDataFn =
         version === 'v2'
-          ? getChartData(duration, chainIdToUse)
+          ? getChartData(duration, chainId)
           : version === 'total'
-          ? getChartDataTotal(duration, chainIdToUse)
-          : getChartDataV3(duration, chainIdToUse);
+          ? getChartDataTotal(duration, chainId)
+          : getChartDataV3(duration, chainId);
 
       chartDataFn.then(([newChartData, newWeeklyData]) => {
         setDataLoaded(true);
@@ -73,7 +73,7 @@ const AnalyticsVolumeChart: React.FC<{
     };
     fetchChartData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [durationIndex, version, chainIdToUse]);
+  }, [durationIndex, version, chainId]);
 
   const liquidityWeeks = useMemo(() => {
     if (globalChartData) {
