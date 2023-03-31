@@ -30,10 +30,10 @@ const AnalyticsLiquidityChart: React.FC<{
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
   const version = useAnalyticsVersion();
 
   useEffect(() => {
+    if (!chainId) return;
     const fetchChartData = async () => {
       updateGlobalChartData(null);
       setDataLoaded(false);
@@ -45,10 +45,10 @@ const AnalyticsLiquidityChart: React.FC<{
 
       const chartDataFn =
         version === 'v2'
-          ? getChartData(duration, chainIdToUse)
+          ? getChartData(duration, chainId)
           : version === 'total'
-          ? getChartDataTotal(duration, chainIdToUse)
-          : getChartDataV3(duration, chainIdToUse);
+          ? getChartDataTotal(duration, chainId)
+          : getChartDataV3(duration, chainId);
 
       chartDataFn.then(([newChartData]) => {
         setDataLoaded(true);
@@ -63,7 +63,7 @@ const AnalyticsLiquidityChart: React.FC<{
     };
     fetchChartData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [durationIndex, version, chainIdToUse]);
+  }, [durationIndex, version, chainId]);
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,

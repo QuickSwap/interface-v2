@@ -27,15 +27,15 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     null,
   );
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   useEffect(() => {
-    getLiquidityChart(pairAddress, chainIdToUse).then((data) => {
+    if (!chainId) return;
+    getLiquidityChart(pairAddress, chainId).then((data) => {
       if (!data.error) {
         updateLiquidtyChartData(data);
       }
     });
-  }, [pairAddress, chainIdToUse]);
+  }, [pairAddress, chainId]);
 
   const [zoom, setZoom] = useState(5);
 
