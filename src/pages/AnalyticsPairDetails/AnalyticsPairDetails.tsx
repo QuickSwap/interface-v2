@@ -43,7 +43,6 @@ const AnalyticsPairDetails: React.FC = () => {
   const version = params && params.version ? params.version : 'v3';
   const isV2 = version === 'v2';
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const config = getConfig(chainId);
   const showAnalytics = config['analytics']['available'];
@@ -100,24 +99,26 @@ const AnalyticsPairDetails: React.FC = () => {
       return null;
     }
   }, [pairTransactions, isV2]);
-  const currency0 = pairData
-    ? getTokenFromAddress(pairData.token0.id, chainIdToUse, tokenMap, [
-        new Token(
-          chainIdToUse,
-          getAddress(pairData.token0.id),
-          pairData.token0.decimals,
-        ),
-      ])
-    : undefined;
-  const currency1 = pairData
-    ? getTokenFromAddress(pairData.token1.id, chainIdToUse, tokenMap, [
-        new Token(
-          chainIdToUse,
-          getAddress(pairData.token1.id),
-          pairData.token1.decimals,
-        ),
-      ])
-    : undefined;
+  const currency0 =
+    pairData && chainId
+      ? getTokenFromAddress(pairData.token0.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(pairData.token0.id),
+            pairData.token0.decimals,
+          ),
+        ])
+      : undefined;
+  const currency1 =
+    pairData && chainId
+      ? getTokenFromAddress(pairData.token1.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(pairData.token1.id),
+            pairData.token1.decimals,
+          ),
+        ])
+      : undefined;
 
   const token0Rate = !isV2
     ? // According to the graph Token1Price is the number of token 1s per token 0
@@ -177,45 +178,49 @@ const AnalyticsPairDetails: React.FC = () => {
 
   useEffect(() => {
     async function fetchPairData() {
-      try {
-        if (!isV2) {
-          const pairInfo = await getPairInfoV3(pairAddress, chainIdToUse);
-          if (pairInfo && pairInfo.length > 0) {
-            setPairData(pairInfo[0]);
-          }
-          setDataLoading(false);
-        } else {
-          if (ethPrice.price) {
-            const pairInfo = await getBulkPairData(
-              [pairAddress],
-              ethPrice.price,
-              chainIdToUse,
-            );
+      if (chainId) {
+        try {
+          if (!isV2) {
+            const pairInfo = await getPairInfoV3(pairAddress, chainId);
             if (pairInfo && pairInfo.length > 0) {
               setPairData(pairInfo[0]);
             }
             setDataLoading(false);
+          } else {
+            if (ethPrice.price) {
+              const pairInfo = await getBulkPairData(
+                [pairAddress],
+                ethPrice.price,
+                chainId,
+              );
+              if (pairInfo && pairInfo.length > 0) {
+                setPairData(pairInfo[0]);
+              }
+              setDataLoading(false);
+            }
           }
+        } catch (e) {
+          setDataLoading(false);
         }
-      } catch (e) {
-        setDataLoading(false);
       }
     }
     async function fetchTransctions() {
-      const pairTransactionsFn = !isV2
-        ? getPairTransactionsV3(pairAddress, chainIdToUse)
-        : getPairTransactions(pairAddress, chainIdToUse);
+      if (chainId) {
+        const pairTransactionsFn = !isV2
+          ? getPairTransactionsV3(pairAddress, chainId)
+          : getPairTransactions(pairAddress, chainId);
 
-      pairTransactionsFn.then((transactions) => {
-        if (transactions) {
-          setPairTransactions(transactions);
-        }
-      });
+        pairTransactionsFn.then((transactions) => {
+          if (transactions) {
+            setPairTransactions(transactions);
+          }
+        });
+      }
     }
 
     fetchPairData();
     fetchTransctions();
-  }, [pairAddress, ethPrice.price, isV2, chainIdToUse]);
+  }, [pairAddress, ethPrice.price, isV2, chainId]);
 
   useEffect(() => {
     setDataLoading(true);

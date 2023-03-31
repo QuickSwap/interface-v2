@@ -5,7 +5,6 @@ import { Skeleton } from '@material-ui/lab';
 import dayjs from 'dayjs';
 import {
   formatCompact,
-  getFormattedPrice,
   getPriceClass,
   formatNumber,
   getChartDates,
@@ -20,7 +19,6 @@ import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getTokenChartDataTotal, getTokenChartDataV3 } from 'utils/v3-graph';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
@@ -40,7 +38,6 @@ const AnalyticsTokenChart: React.FC<{
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const chartData = useMemo(() => {
     if (!tokenChartData) return;
@@ -90,32 +87,34 @@ const AnalyticsTokenChart: React.FC<{
 
   useEffect(() => {
     async function fetchTokenChartData() {
-      updateTokenChartData(null);
+      if (chainId) {
+        updateTokenChartData(null);
 
-      const duration =
-        durationIndex === GlobalConst.analyticChart.ALL_CHART
-          ? 0
-          : getChartStartTime(durationIndex);
+        const duration =
+          durationIndex === GlobalConst.analyticChart.ALL_CHART
+            ? 0
+            : getChartStartTime(durationIndex);
 
-      const tokenChartDataFn =
-        version === 'v3'
-          ? getTokenChartDataV3(tokenAddress, duration, chainIdToUse)
-          : version === 'v2'
-          ? getTokenChartData(tokenAddress, duration, chainIdToUse)
-          : getTokenChartDataTotal(tokenAddress, duration, chainIdToUse);
+        const tokenChartDataFn =
+          version === 'v3'
+            ? getTokenChartDataV3(tokenAddress, duration, chainId)
+            : version === 'v2'
+            ? getTokenChartData(tokenAddress, duration, chainId)
+            : getTokenChartDataTotal(tokenAddress, duration, chainId);
 
-      tokenChartDataFn.then((chartData) => {
-        if (chartData) {
-          const newChartData = getLimitedData(
-            chartData,
-            GlobalConst.analyticChart.CHART_COUNT,
-          );
-          updateTokenChartData(newChartData);
-        }
-      });
+        tokenChartDataFn.then((chartData) => {
+          if (chartData) {
+            const newChartData = getLimitedData(
+              chartData,
+              GlobalConst.analyticChart.CHART_COUNT,
+            );
+            updateTokenChartData(newChartData);
+          }
+        });
+      }
     }
     fetchTokenChartData();
-  }, [tokenAddress, durationIndex, version, chainIdToUse]);
+  }, [tokenAddress, durationIndex, version, chainId]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 

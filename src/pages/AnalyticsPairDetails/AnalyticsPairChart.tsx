@@ -48,7 +48,6 @@ const AnalyticsPairChart: React.FC<{
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
   const params: any = useParams();
   const version = params && params.version ? params.version : 'v3';
   const isV2 = version === 'v2';
@@ -215,7 +214,8 @@ const AnalyticsPairChart: React.FC<{
   }, [chartIndex, pairData]);
 
   useEffect(() => {
-    async function fetchPairChartData() {
+    if (!chainId) return;
+    (async () => {
       setPairChartData(null);
       const duration =
         durationIndex === GlobalConst.analyticChart.ALL_CHART
@@ -223,12 +223,12 @@ const AnalyticsPairChart: React.FC<{
           : getChartStartTime(durationIndex);
 
       const pairChartDataFn = !isV2
-        ? getPairChartDataV3(pairAddress, duration, chainIdToUse)
-        : getPairChartData(pairAddress, duration, chainIdToUse);
+        ? getPairChartDataV3(pairAddress, duration, chainId)
+        : getPairChartData(pairAddress, duration, chainId);
 
       Promise.all(
         [pairChartDataFn].concat(
-          !isV2 ? [getPairChartFees(pairAddress, duration, chainIdToUse)] : [],
+          !isV2 ? [getPairChartFees(pairAddress, duration, chainId)] : [],
         ),
       ).then(([chartData, feeChartData]) => {
         if (chartData && chartData.length > 0) {
@@ -246,9 +246,8 @@ const AnalyticsPairChart: React.FC<{
           setPairFeeData(newFeeData);
         }
       });
-    }
-    fetchPairChartData();
-  }, [pairAddress, durationIndex, isV2, chainIdToUse]);
+    })();
+  }, [pairAddress, durationIndex, isV2, chainId]);
 
   useEffect(() => {
     if (!apyVisionURL || !apyVisionAccessToken) return;
