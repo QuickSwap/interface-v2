@@ -28,3 +28,10 @@
 .v3BadgePrimary {
   background-color: $purple;
 }
+
+.activeDot {
+  background-color: $successMain;
+  border-radius: 50%;
+  height: 8px;
+  width: 8px;
+}

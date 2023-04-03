@@ -67,25 +67,25 @@
     & p {
       letter-spacing: normal;
     }
-    &.active {
-      color: $textPrimary;
-      background: $secondary1;
-      .menuItemSparkleTop {
-        top: 0px;
-      }
-      .menuItemSparkleBottom {
-        bottom: 0px;
-      }
-      .menuItemSparkleLeft {
-        left: 4px;
-      }
-      .menuItemSparkleRight {
-        right: 4px;
-      }
-    }
     &:last-child {
       margin-right: 0,
     }
+  }
+}
+.activeMenuItem {
+  color: $textPrimary !important;
+  background: $secondary1;
+  .menuItemSparkleTop {
+    top: 0px;
+  }
+  .menuItemSparkleBottom {
+    bottom: 0px;
+  }
+  .menuItemSparkleLeft {
+    left: 4px;
+  }
+  .menuItemSparkleRight {
+    right: 4px;
   }
 }
 .menuItem {

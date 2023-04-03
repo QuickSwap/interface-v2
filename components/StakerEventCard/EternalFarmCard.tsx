@@ -1,9 +1,14 @@
 import React from 'react';
 import { DoubleCurrencyLogo } from 'components';
-import Loader from '../Loader';
-import { Token } from '@uniswap/sdk';
+import { Token, ChainId } from '@uniswap/sdk';
 import Link from 'next/link';
-import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
+import {
+  Box,
+  Button,
+  useMediaQuery,
+  useTheme,
+  CircularProgress,
+} from '@mui/material';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
 import { formatCompact, formatNumber, getTokenFromAddress } from 'utils';
@@ -189,7 +194,7 @@ export function EternalFarmCard({
             >
               <small className='text-secondary'>{t('poolAPR')}</small>
               <small className='text-success'>
-                {poolAprsLoading && <Loader stroke='#0fc679' />}
+                {poolAprsLoading && <CircularProgress />}
                 {!poolAprsLoading && <>{formatCompact(poolApr ?? 0)}%</>}
               </small>
             </Box>
@@ -200,7 +205,7 @@ export function EternalFarmCard({
             >
               <small className='text-secondary'>{t('farmAPR')}</small>
               <small className='text-success'>
-                {aprsLoading && <Loader stroke='#0fc679' />}
+                {aprsLoading && <CircularProgress />}
                 {!aprsLoading && <>{formatCompact(apr ?? 0)}%</>}
               </small>
             </Box>
@@ -208,7 +213,7 @@ export function EternalFarmCard({
         ) : (
           <Box width='20%' className='flex items-center'>
             <small className='text-success'>
-              {(poolAprsLoading || aprsLoading) && <Loader stroke='#0fc679' />}
+              {(poolAprsLoading || aprsLoading) && <CircularProgress />}
               {!poolAprsLoading && !aprsLoading && (
                 <>{formatCompact(totalAPR)}%</>
               )}

@@ -1,12 +1,11 @@
 import React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle, Frown, X } from 'react-feather';
-import { useFarmingSubgraph } from '../../hooks/useIncentiveSubgraph';
-import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
-import { useChunkedRows } from '../../utils/chunkForRows';
-import Loader from '../Loader';
-import { FarmingType } from '../../models/enums';
-import { NTFInterface } from '../../models/interfaces';
+import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+import { useFarmingHandlers } from 'hooks/useStakerHandlers';
+import { useChunkedRows } from 'utils/chunkForRows';
+import { FarmingType } from 'models/enums';
+import { NTFInterface } from 'models/interfaces';
 import Link from 'next/link';
 import styles from './StakeModal.module.scss';
 import FarmModalFarmingTiers from 'components/StakeModalFarmingTiers';
@@ -21,7 +20,7 @@ import { Token } from '@uniswap/sdk-core';
 import { formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { ChainId } from '@uniswap/sdk';
-import { Box, Button } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { Skeleton } from '@mui/lab';
 import { Check } from '@mui/icons-material';
 import { useV3StakeData } from 'state/farms/hooks';
@@ -144,7 +143,7 @@ export function FarmModal({
   useEffect(() => setChunkedPositions(_chunked), [_chunked]);
 
   const filterNFTs = useCallback(
-    (fn) => {
+    (fn: any) => {
       if (!selectedNFT) return;
 
       const _filtered = [selectedNFT].filter(fn);
@@ -300,7 +299,7 @@ export function FarmModal({
   ]);
 
   const tierSelectionHandler = useCallback(
-    (tier) => {
+    (tier: any) => {
       switch (tier) {
         case 0:
           setSelectedTier(null);
@@ -379,7 +378,7 @@ export function FarmModal({
           width='100%'
           height='400px'
         >
-          <Loader size={'25px'} />
+          <CircularProgress size={'25px'} />
         </Box>
       ) : (
         <div className={styles.v3FarmStakeModalWrapper}>
@@ -495,7 +494,7 @@ export function FarmModal({
               ))
             ) : (
               <Box className='flex'>
-                {[0, 1, 2].map((el, i) => (
+                {[0, 1, 2].map((i) => (
                   <Box
                     padding='8px'
                     borderRadius={12}
@@ -535,7 +534,7 @@ export function FarmModal({
                   >
                     {approval === ApprovalState.PENDING ? (
                       <Box className='flex items-center'>
-                        <Loader stroke={'white'} />
+                        <CircularProgress />
                         <div>{t('approving')}</div>
                       </Box>
                     ) : !showApproval ? (
@@ -553,7 +552,7 @@ export function FarmModal({
                 >
                   {submitLoader && submitState === 0 ? (
                     <Box className='flex items-center'>
-                      <Loader stroke={'white'} />
+                      <CircularProgress />
                       <div>{t('approving')}</div>
                     </Box>
                   ) : NFTsForStake && !NFTsForApprove ? (
@@ -570,7 +569,7 @@ export function FarmModal({
                 >
                   {submitLoader && submitState === 2 ? (
                     <Box className='flex items-center'>
-                      <Loader stroke={'white'} />
+                      <CircularProgress />
                       <div>{t('depositing')}</div>
                     </Box>
                   ) : (

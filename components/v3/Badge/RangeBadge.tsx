@@ -1,15 +1,8 @@
 import React from 'react';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
-import styled from 'styled-components/macro';
 import { Error } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
-
-const ActiveDot = styled.span`
-  background-color: ${({ theme }) => theme.success};
-  border-radius: 50%;
-  height: 8px;
-  width: 8px;
-`;
+import styles from './Badge.module.scss';
 
 interface RangeBadgeProps {
   removed: boolean | undefined;
@@ -27,24 +20,24 @@ export default function RangeBadge({
     <>
       {removed ? (
         <Badge
-          tooltip={withTooltip ? t('v3PositionNoLiquidity') : ''}
+          tooltip={withTooltip ? t('v3PositionNoLiquidity') ?? '' : ''}
           variant={BadgeVariant.WARNING}
           icon={<Error width={14} height={14} />}
-          text={t('closed')}
+          text={t('closed') ?? ''}
         />
       ) : inRange ? (
         <Badge
-          tooltip={withTooltip ? t('v3PoolWithinSelectedRange') : ''}
+          tooltip={withTooltip ? t('v3PoolWithinSelectedRange') ?? '' : ''}
           variant={BadgeVariant.POSITIVE}
-          icon={<ActiveDot />}
-          text={t('inrange')}
+          icon={<span className={styles.activeDot} />}
+          text={t('inrange') ?? ''}
         />
       ) : (
         <Badge
-          tooltip={withTooltip ? t('v3PoolOutsideSelectedRange') : ''}
+          tooltip={withTooltip ? t('v3PoolOutsideSelectedRange') ?? '' : ''}
           variant={BadgeVariant.WARNING}
           icon={<Error width={14} height={14} />}
-          text={t('outrange')}
+          text={t('outrange') ?? ''}
         />
       )}
     </>

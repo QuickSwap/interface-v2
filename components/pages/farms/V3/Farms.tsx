@@ -25,10 +25,6 @@ export default function Farms() {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
-<<<<<<< HEAD:components/pages/farms/V3/Farms.tsx
-=======
-  const history = useHistory();
-
   const allGammaFarms = useMemo(() => {
     return chainId
       ? ([] as GammaPair[])
@@ -37,7 +33,6 @@ export default function Farms() {
       : [];
   }, [chainId]);
 
->>>>>>> dev2:src/pages/FarmPage/V3/Farms.tsx
   const redirectWithFarmStatus = (status: string) => {
     let redirectPath;
     if (router.query.farmStatus) {
@@ -54,18 +49,11 @@ export default function Farms() {
     router.push(redirectPath);
   };
 
-<<<<<<< HEAD:components/pages/farms/V3/Farms.tsx
   const currentTabQueried = router.query.tab
     ? (router.query.tab as string)
-    : 'gamma-farms';
-=======
-  const currentTabQueried =
-    parsedQuery && parsedQuery.tab
-      ? (parsedQuery.tab as string)
-      : allGammaFarms.length > 0
-      ? 'gamma-farms'
-      : 'eternal-farms';
->>>>>>> dev2:src/pages/FarmPage/V3/Farms.tsx
+    : allGammaFarms.length > 0
+    ? 'gamma-farms'
+    : 'eternal-farms';
 
   const v3FarmCategories = useMemo(() => {
     return allGammaFarms.length > 0

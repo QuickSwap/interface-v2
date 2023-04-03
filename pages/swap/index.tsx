@@ -15,9 +15,7 @@ import { wrappedCurrency, wrappedCurrencyV3 } from 'utils/wrappedCurrency';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-const SwapPage: React.FC = (
-  _props: InferGetStaticPropsType<typeof getStaticProps>,
-) => {
+const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isV2 } = useIsV2();
   const isProMode = useIsProMode();

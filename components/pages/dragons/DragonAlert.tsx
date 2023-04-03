@@ -3,6 +3,7 @@ import { Box } from '@mui/material';
 import AlertIcon from 'svgs/AlertIcon.svg';
 import { Close } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/pages/Dragon.module.scss';
 
 const DragonAlert: React.FC = () => {
   const [openAlert, setOpenAlert] = useState(true);
@@ -10,7 +11,7 @@ const DragonAlert: React.FC = () => {
   return (
     <>
       {openAlert && (
-        <Box className='dragonAlertWrapper bg-secondary2'>
+        <Box className={`${styles.dragonAlertWrapper} bg-secondary2`}>
           <AlertIcon />
           <Box mx={2} width='calc(100% - 96px)'>
             <p>{t('dragonAlertDesc')}</p>

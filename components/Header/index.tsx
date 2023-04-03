@@ -251,7 +251,9 @@ const Header: React.FC = () => {
               key={index}
               id={val.id}
               className={`${styles.menuItem} ${
-                pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
+                pathname !== '/' && val.link.includes(pathname)
+                  ? styles.activeMenuItem
+                  : ''
               }`}
               onClick={() => {
                 updateIsV2(false);

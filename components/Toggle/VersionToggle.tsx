@@ -59,7 +59,9 @@ const VersionToggle: React.FC = () => {
       }`}
     >
       <Box
-        className={isV2 && version !== 'total' ? 'version-toggle-active' : ''}
+        className={
+          isV2 && version !== 'total' ? styles.versionToggleActive : ''
+        }
         onClick={() => {
           if (!toggleDisabled) {
             redirectWithVersion('v2');
@@ -70,7 +72,9 @@ const VersionToggle: React.FC = () => {
       </Box>
 
       <Box
-        className={!isV2 && version !== 'total' ? 'version-toggle-active' : ''}
+        className={
+          !isV2 && version !== 'total' ? styles.versionToggleActive : ''
+        }
         onClick={() => {
           if (!toggleDisabled) {
             redirectWithVersion('v3');
@@ -82,7 +86,7 @@ const VersionToggle: React.FC = () => {
 
       {isAnalyticsPage && (
         <Box
-          className={version === 'total' ? 'version-toggle-active' : ''}
+          className={version === 'total' ? styles.versionToggleActive : ''}
           onClick={() => {
             if (!toggleDisabled) {
               redirectWithVersion('total');

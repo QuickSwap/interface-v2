@@ -14,8 +14,10 @@ import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { GammaPairs } from 'constants/index';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-const PoolsPage: React.FC = () => {
+const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation();
   const { isV2 } = useIsV2();
   const { chainId } = useActiveWeb3React();
@@ -74,6 +76,14 @@ const PoolsPage: React.FC = () => {
       </Grid>
     </Box>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
 };
 
 export default PoolsPage;

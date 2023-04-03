@@ -17,8 +17,10 @@ import V3Farms from 'components/pages/farms/V3/Farms';
 import { useIsV2 } from 'state/application/hooks';
 import { useRouter } from 'next/router';
 import { getConfig } from 'config/index';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-const FarmPage: React.FC = () => {
+const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { chainId } = useActiveWeb3React();
   const router = useRouter();
   const currentTab = router.query.tab
@@ -178,6 +180,14 @@ const FarmPage: React.FC = () => {
       {!isV2 && v3 && <V3Farms />}
     </Box>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
 };
 
 export default FarmPage;

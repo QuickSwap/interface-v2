@@ -2760,14 +2760,14 @@ export const switchNetwork = (
 export const getGammaData = async () => {
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
+      `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
     );
     const gammaData = await data.json();
     return gammaData;
   } catch {
     try {
       const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
+        `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
       );
       const gammaData = await data.json();
       return gammaData;
@@ -2782,14 +2782,14 @@ export const getGammaPositions = async (account?: string) => {
   if (!account) return;
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
+      `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
     );
     const positions = await data.json();
     return positions[account.toLowerCase()];
   } catch {
     try {
       const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
+        `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
       );
       const positions = await data.json();
       return positions[account.toLowerCase()];
@@ -2804,14 +2804,14 @@ export const getGammaRewards = async (chainId?: ChainId) => {
   if (!chainId) return;
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
+      `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
     );
     const gammaData = await data.json();
     return gammaData;
   } catch {
     try {
       const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
+        `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
       );
       const gammaData = await data.json();
       return gammaData;

@@ -56,7 +56,7 @@ import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { warningSeverity } from 'utils/v3/prices';
 
-import { Box, Button } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { ChainId, ETHER } from '@uniswap/sdk';
 import { AddressInput } from 'components';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
@@ -718,7 +718,7 @@ const SwapV3Page: React.FC = () => {
                     signatureState === UseERC20PermitState.SIGNED
                   }
                 >
-                  <Box className='flex justify-between items-center'>
+                  <Box className='flex items-center justify-between'>
                     <CurrencyLogo
                       currency={currencies[Field.INPUT] as WrappedCurrency}
                       size={'24px'}
@@ -741,8 +741,7 @@ const SwapV3Page: React.FC = () => {
                           }`}
                     </span>
                     {approvalState === ApprovalState.PENDING ? (
-                      // <Loader stroke='white' style={{ marginLeft: '5px' }} />
-                      <></>
+                      <CircularProgress style={{ marginLeft: '5px' }} />
                     ) : (approvalSubmitted &&
                         approvalState === ApprovalState.APPROVED) ||
                       signatureState === UseERC20PermitState.SIGNED ? (

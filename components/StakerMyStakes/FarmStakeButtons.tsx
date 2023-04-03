@@ -1,8 +1,13 @@
 import React from 'react';
-import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
+import {
+  Box,
+  Button,
+  useMediaQuery,
+  useTheme,
+  CircularProgress,
+} from '@mui/material';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import { FarmingType } from 'models/enums';
-import Loader from 'components/Loader';
 import { useTranslation } from 'next-i18next';
 import { useV3StakeData } from 'state/farms/hooks';
 
@@ -43,7 +48,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
           !txConfirmed &&
           !txError ? (
             <>
-              <Loader size={'1rem'} stroke={'var(--white)'} />
+              <CircularProgress />
               <Box ml='5px'>
                 <small>{t('withdrawing')}</small>
               </Box>
@@ -76,7 +81,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
               !txConfirmed &&
               !txError ? (
                 <>
-                  <Loader size={'18px'} stroke={'var(--white)'} />
+                  <CircularProgress />
                   <Box ml='5px'>
                     <small>{t('claiming')}</small>
                   </Box>
@@ -106,7 +111,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
               !txConfirmed &&
               !txError ? (
                 <>
-                  <Loader size={'18px'} stroke={'var(--white)'} />
+                  <CircularProgress />
                   <Box ml='5px'>
                     <small>{t('undepositing')}</small>
                   </Box>

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
 import DragonsLair from 'components/pages/dragons/DragonsLair';
 import DragonsSyrup from 'components/pages/dragons/DragonsSyrup';
-import styles from 'styles/pages/Dragons.module.scss';
+import styles from 'styles/pages/Dragon.module.scss';
 import { useTranslation } from 'next-i18next';
 import AdsSlider from 'components/AdsSlider';
 import Image from 'next/image';
@@ -11,8 +11,10 @@ import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
 import { useRouter } from 'next/router';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-const DragonPage: React.FC = () => {
+const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
@@ -42,12 +44,19 @@ const DragonPage: React.FC = () => {
           {showNew && (
             <Box className={styles.dragonWrapper}>
               <Box className={styles.dragonBg}>
-                <Image src='/assets/images/DragonBg2.svg' alt='Dragon Lair' />
+                <Image
+                  src='/assets/images/DragonBg2.svg'
+                  alt='Dragon Lair'
+                  width={395}
+                  height={232}
+                />
               </Box>
               <Image
                 src='/assets/images/DragonLairMask.svg'
                 alt='Dragon Mask'
                 className={styles.dragonMask}
+                width={395}
+                height={366}
               />
               <Box className={styles.dragonTitle}>
                 <h5>{t('newDragonLair')}</h5>
@@ -64,12 +73,19 @@ const DragonPage: React.FC = () => {
           {showOld && (
             <Box className={styles.dragonWrapper} mt='10px'>
               <Box className={styles.dragonBg} style={{ maxHeight: 170 }}>
-                <Image src='/assets/images/DragonBg2.svg' alt='Dragon Lair' />
+                <Image
+                  src='/assets/images/DragonBg2.svg'
+                  alt='Dragon Lair'
+                  width={395}
+                  height={232}
+                />
               </Box>
               <Image
                 src='/assets/images/DragonLairMask.svg'
                 alt='Dragon Mask'
                 className={styles.dragonMask}
+                width={395}
+                height={366}
               />
               <Box className={styles.dragonTitle} width='85%'>
                 <h5>{t('dragonLair')}</h5>
@@ -92,6 +108,8 @@ const DragonPage: React.FC = () => {
                     : '/assets/images/DragonBg1.svg'
                 }
                 alt='Dragon Syrup'
+                width={isMobile ? 352 : 821}
+                height={isMobile ? 207 : 151}
               />
             </Box>
             <Box className={styles.dragonTitle}>
@@ -104,6 +122,14 @@ const DragonPage: React.FC = () => {
       </Grid>
     </Box>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
 };
 
 export default DragonPage;

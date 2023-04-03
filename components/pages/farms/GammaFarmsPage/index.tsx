@@ -1,8 +1,7 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'next-i18next';
-import Loader from 'components/Loader';
 import {
   GammaPair,
   GammaPairs,
@@ -328,7 +327,7 @@ const GammaFarmsPage: React.FC<{
     <Box px={2} py={3}>
       {gammaFarmsLoading || gammaRewardsLoading ? (
         <div className='flex justify-center' style={{ padding: '16px 0' }}>
-          <Loader stroke='white' size='1.5rem' />
+          <CircularProgress size='1.5rem' />
         </div>
       ) : filteredFarms.length === 0 ? (
         <div

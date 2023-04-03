@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
 import { ArrowBack } from '@mui/icons-material';
 import { QuestionHelper, PoolFinderModal } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
-import Loader from 'components/Loader';
 import V2PositionCard from './components/V2PositionCard';
 import { useTranslation } from 'next-i18next';
 
@@ -49,7 +48,7 @@ export default function MigrateV2LiquidityPage() {
         <Box mt={3}>
           {v2PairsLoading ? (
             <Box className='flex justify-center'>
-              <Loader stroke='white' size={'2rem'} />
+              <CircularProgress size={'2rem'} />
             </Box>
           ) : allV2PairsWithLiquidity.length > 0 ? (
             allV2PairsWithLiquidity.map((pair) => (

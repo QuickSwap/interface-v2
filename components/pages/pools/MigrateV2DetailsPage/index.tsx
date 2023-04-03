@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
 import {
   ArrowBack,
@@ -13,7 +13,6 @@ import {
   QuestionHelper,
 } from 'components';
 import { useActiveWeb3React } from 'hooks';
-import Loader from 'components/Loader';
 import { useCurrency, useToken } from 'hooks/v3/Tokens';
 import styles from 'styles/pages/Pools.module.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
@@ -650,7 +649,7 @@ export default function MigrateV2DetailsPage() {
             {v3Amount0MinCurrency ? (
               <p>{v3Amount0MinCurrency.toSignificant(2)}</p>
             ) : mintInfo.ticks.LOWER && mintInfo.ticks.UPPER ? (
-              <Loader stroke='white' size='24px' />
+              <CircularProgress size='24px' />
             ) : (
               <></>
             )}
@@ -663,7 +662,7 @@ export default function MigrateV2DetailsPage() {
             {v3Amount1MinCurrency ? (
               <p>{v3Amount1MinCurrency.toSignificant(2)}</p>
             ) : mintInfo.ticks.LOWER && mintInfo.ticks.UPPER ? (
-              <Loader stroke='white' size='24px' />
+              <CircularProgress size='24px' />
             ) : (
               <></>
             )}

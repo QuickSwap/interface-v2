@@ -14,6 +14,7 @@ import {
   OLD_DQUICK,
   OLD_QUICK,
 } from 'constants/v3/addresses';
+import styles from 'styles/pages/Dragon.module.scss';
 
 const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
   const { chainId } = useActiveWeb3React();
@@ -60,7 +61,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           <span className='text-hint'>{t('stakeQUICKTitle')}</span>
         </Box>
       </Box>
-      <Box className='dragonLairRow'>
+      <Box className={styles.dragonLairRow}>
         <small>
           {t('total')} {quickToken?.symbol}
         </small>
@@ -72,7 +73,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
             : 0}
         </small>
       </Box>
-      <Box className='dragonLairRow'>
+      <Box className={styles.dragonLairRow}>
         <small>{t('tvl')}</small>
         <small>
           $
@@ -85,17 +86,17 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
       </Box>
 
       {isNew && (
-        <Box className='dragonLairRow'>
+        <Box className={styles.dragonLairRow}>
           <small>{t('apy')}</small>
           <small className='text-success'> {APY}%</small>
         </Box>
       )}
 
-      <Box className='dragonLairRow'>
+      <Box className={styles.dragonLairRow}>
         <small>{t('yourdeposits')}</small>
         <small>{formatTokenAmount(lairInfoToUse?.QUICKBalance)}</small>
       </Box>
-      <Box className='quickTodQuick border-secondary1'>
+      <Box className={`${styles.quickTodQuick} border-secondary1`}>
         <CurrencyLogo currency={quickToken} />
         <small style={{ margin: '0 8px' }}>
           {isQUICKRate ? 1 : Number(dQUICKtoQUICK).toLocaleString('us')}{' '}
@@ -113,14 +114,14 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
       </Box>
       {isNew && (
         <Box
-          className='stakeButton bg-primary'
+          className={`${styles.stakeButton} bg-primary`}
           onClick={() => setOpenStakeModal(true)}
         >
           <small>{t('stake')}</small>
         </Box>
       )}
       <Box
-        className='bg-transparent stakeButton'
+        className={`bg-transparent ${styles.stakeButton}`}
         onClick={() => setOpenUnstakeModal(true)}
       >
         <small>{t('unstake')}</small>

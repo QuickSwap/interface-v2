@@ -15,13 +15,14 @@
     & small {
       color: $textSecondary;
     }
-    &.version-toggle-active {
-      background-color: $primaryLight;
-      border: 1px solid $primary;
-      & small {
-        color: $textPrimary;
-      }
-    }
+  }
+}
+
+.versionToggleActive {
+  background-color: $primaryLight;
+  border: 1px solid $primary;
+  & small {
+    color: $textPrimary !important;
   }
 }
 

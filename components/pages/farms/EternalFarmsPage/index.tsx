@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { EternalFarmCard } from 'components/StakerEventCard/EternalFarmCard';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'next-i18next';
-import Loader from 'components/Loader';
 import { CustomModal } from 'components';
 import { FarmModal } from 'components/StakeModal';
 import { FarmingType } from 'models/enums';
@@ -12,26 +11,18 @@ import { FormattedEternalFarming } from 'models/interfaces';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
-<<<<<<< HEAD:components/pages/farms/EternalFarmsPage/index.tsx
 import { useRouter } from 'next/router';
-=======
-import useParsedQueryString from 'hooks/useParsedQueryString';
 import { ChainId } from '@uniswap/sdk';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
->>>>>>> dev2:src/pages/EternalFarmsPage/index.tsx
 
 const EternalFarmsPage: React.FC<{
   farmFilter: string;
   search: string;
   sortBy: string;
   sortDesc: boolean;
-<<<<<<< HEAD:components/pages/farms/EternalFarmsPage/index.tsx
-}> = ({ farmFilter, search, sortBy, sortDesc }) => {
-  const router = useRouter();
-=======
   chainId: ChainId;
 }> = ({ farmFilter, search, sortBy, sortDesc, chainId }) => {
->>>>>>> dev2:src/pages/EternalFarmsPage/index.tsx
+  const router = useRouter();
   const [modalForPool, setModalForPool] = useState(null);
   const { t } = useTranslation();
   const farmStatus = router.query.farmStatus
@@ -352,7 +343,7 @@ const EternalFarmsPage: React.FC<{
       <Box px={2} py={3}>
         {eternalFarmsLoading ? (
           <div className={styles.eternalPageLoader}>
-            <Loader stroke='white' size='1.5rem' />
+            <CircularProgress size='1.5rem' />
           </div>
         ) : eternalFarmsFiltered.length === 0 ? (
           <div className={styles.eternalPageLoader}>

@@ -6,9 +6,8 @@ import {
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { BigNumber } from '@ethersproject/bignumber';
-import Loader from 'components/Loader';
 import usePrevious from 'hooks/usePrevious';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import PositionListItem from './MyLiquidityPoolsV3/components/PositionListItem';
 import { useActiveWeb3React } from 'hooks';
 import { PositionPool } from 'models/interfaces';
@@ -73,7 +72,7 @@ export default function PositionPage() {
     <>
       {(loading || positionLoading) && (
         <Box padding={4} className='flex justify-center'>
-          <Loader stroke={'white'} size={'2rem'} />
+          <CircularProgress size={'2rem'} />
         </Box>
       )}
 

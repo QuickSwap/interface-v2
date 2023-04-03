@@ -1,13 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
-import Loader from '../Loader';
-import { Deposit, FormattedRewardInterface } from '../../models/interfaces';
-import { FarmingType } from '../../models/enums';
+import { Deposit, FormattedRewardInterface } from 'models/interfaces';
+import { FarmingType } from 'models/enums';
 import { useRouter } from 'next/router';
 import styles from './StakerMystakes.module.scss';
 import FarmCard from './FarmCard';
-import { Box, Button, Divider, useMediaQuery, useTheme } from '@mui/material';
+import {
+  Box,
+  Button,
+  Divider,
+  useMediaQuery,
+  useTheme,
+  CircularProgress,
+} from '@mui/material';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'next-i18next';
@@ -752,7 +758,7 @@ export const FarmingMyFarms: React.FC<{
                     !txConfirmed &&
                     !txError ? (
                       <>
-                        <Loader size={'1rem'} stroke={'var(--white)'} />
+                        <CircularProgress size={'1rem'} />
                         <Box ml='5px'>
                           <small>{t('claiming')}</small>
                         </Box>
@@ -778,7 +784,7 @@ export const FarmingMyFarms: React.FC<{
       eternalFarmAprsLoading ||
       !shallowPositions ? (
         <Box py={5} className='flex justify-center'>
-          <Loader stroke={'white'} size={'1.5rem'} />
+          <CircularProgress size={'1.5rem'} />
         </Box>
       ) : shallowPositions && shallowPositions.length === 0 ? (
         <Box py={5} className='flex flex-col items-center'>
@@ -841,7 +847,7 @@ export const FarmingMyFarms: React.FC<{
           </Box>
           {gammaFarmsLoading || gammaRewardsLoading ? (
             <Box py={5} className='flex justify-center'>
-              <Loader stroke={'white'} size={'1.5rem'} />
+              <CircularProgress size={'1.5rem'} />
             </Box>
           ) : myGammaFarms.length === 0 ? (
             <Box py={5} className='flex flex-col items-center'>

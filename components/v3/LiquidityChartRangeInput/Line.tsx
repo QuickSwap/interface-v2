@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ScaleLinear } from 'd3';
-import { StyledLine } from './styled';
+import styles from './LiquidityChartRangeInput.module.scss';
 import { useTranslation } from 'next-i18next';
 
 export const Line = ({
@@ -16,7 +16,8 @@ export const Line = ({
   return useMemo(
     () => (
       <>
-        <StyledLine
+        <line
+          className={styles.styledLine}
           x1={xScale(value)}
           y1='0'
           x2={xScale(value)}
