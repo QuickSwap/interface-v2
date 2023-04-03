@@ -33,6 +33,8 @@ import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
 import { getMetaMaskInjectedProvider } from 'connectors/MetaMaskConnector';
+//@ts-ignore
+import okWeb3 from '@okwallet/extension-web3-1.7.0';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -70,6 +72,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const toggleWalletModal = useWalletModalToggle();
 
   const previousAccount = usePrevious(account);
+
+  okWeb3.addListener('walletChanged', (wallet: any) => {
+    if (!wallet || !wallet.length) {
+      deactivate();
+    }
+  });
 
   // close on connection, when logged out before
   useEffect(() => {
