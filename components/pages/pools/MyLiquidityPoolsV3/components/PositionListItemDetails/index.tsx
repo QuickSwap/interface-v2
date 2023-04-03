@@ -33,7 +33,7 @@ import { getRatio } from 'utils/v3/getRatio';
 import { useInverter } from 'hooks/v3/useInverter';
 import { PositionPool } from 'models/interfaces';
 import { Box, Button } from '@mui/material';
-import './index.scss';
+import styles from './PositionListItemDetails.module.scss';
 import RateToggle from 'components/v3/RateToggle';
 import V3IncreaseLiquidityModal from '../V3IncreaseLiquidityModal';
 import V3RemoveLiquidityModal from '../V3RemoveLiquidityModal';
@@ -271,16 +271,17 @@ export default function PositionListItemDetails({
             });
 
             addTransaction(response, {
-              summary: t('collectFees', {
-                symbol1: feeValue0.currency.symbol,
-                symbol2: feeValue1.currency.symbol,
-              }),
+              summary:
+                t('collectFees', {
+                  symbol1: feeValue0.currency.symbol,
+                  symbol2: feeValue1.currency.symbol,
+                }) ?? undefined,
             });
           });
       })
       .catch((error) => {
         setCollecting(false);
-        setCollectErrorMessage(t('errorInTx'));
+        setCollectErrorMessage(t('errorInTx') ?? '');
         console.error(error);
       });
   }, [
@@ -417,7 +418,7 @@ export default function PositionListItemDetails({
           }
         />
       )}
-      <Box className='v3-pool-liquidity-item-details'>
+      <Box className={styles.v3PoolLiquidityItemDetails}>
         <Box className='flex items-center justify-between'>
           <Box>
             <p className='small weight-600'>{t('liquidity')}</p>
@@ -454,7 +455,7 @@ export default function PositionListItemDetails({
             </Box>
           )}
         </Box>
-        <Box mt={2} className='v3-pool-item-details-panel'>
+        <Box mt={2} className={styles.v3PoolItemDetailsPanel}>
           <Box pt='4px' className='flex items-center justify-between'>
             <Box className='flex items-center'>
               <CurrencyLogo currency={currencyQuote} size='24px' />
@@ -528,7 +529,7 @@ export default function PositionListItemDetails({
               </Button>
             )}
         </Box>
-        <Box mt={2} className='v3-pool-item-details-panel'>
+        <Box mt={2} className={styles.v3PoolItemDetailsPanel}>
           <Box pt='4px' className='flex items-center justify-between'>
             <Box className='flex items-center'>
               <CurrencyLogo currency={feeValueUpper?.currency} size='24px' />
@@ -577,7 +578,7 @@ export default function PositionListItemDetails({
           {priceLower && (
             <Box
               width={priceUpper ? '49%' : '100%'}
-              className='v3-pool-item-details-panel v3-pool-item-details-info'
+              className={`${styles.v3PoolItemDetailsPanel} ${styles.v3PoolItemDetailsInfo}`}
             >
               <p>{t('minPrice')}</p>
               <h6>{formatTickPrice(priceLower, tickAtLimit, Bound.LOWER)}</h6>
@@ -597,7 +598,7 @@ export default function PositionListItemDetails({
           {priceUpper && (
             <Box
               width={priceLower ? '49%' : '100%'}
-              className='v3-pool-item-details-panel v3-pool-item-details-info'
+              className={`${styles.v3PoolItemDetailsPanel} ${styles.v3PoolItemDetailsInfo}`}
             >
               <p>{t('maxPrice')}</p>
               <h6>{formatTickPrice(priceUpper, tickAtLimit, Bound.LOWER)}</h6>
@@ -618,7 +619,7 @@ export default function PositionListItemDetails({
         {_pool && (
           <Box
             mt={2}
-            className='v3-pool-item-details-panel v3-pool-item-details-info'
+            className={`${styles.v3PoolItemDetailsPanel} ${styles.v3PoolItemDetailsInfo}`}
           >
             <p>{t('currentPrice')}</p>
             <h6>

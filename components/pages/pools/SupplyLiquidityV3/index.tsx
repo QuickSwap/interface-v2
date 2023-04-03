@@ -11,10 +11,8 @@ import { InitialPrice } from './containers/InitialPrice';
 import { EnterAmounts } from './containers/EnterAmounts';
 import { SelectPair } from './containers/SelectPair';
 import { SelectRange } from './containers/SelectRange';
-
 import { Currency } from '@uniswap/sdk-core';
-
-import './index.scss';
+import styles from './SupplyLiquidityV3.module.scss';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import {
   setInitialTokenPrice,
@@ -298,7 +296,7 @@ export function SupplyLiquidityV3() {
           />
         ) : (
           <Button
-            className='v3-supply-liquidity-button'
+            className={styles.supplyLiquidityButton}
             onClick={toggleWalletModal}
           >
             {t('connectWallet')}
@@ -307,7 +305,7 @@ export function SupplyLiquidityV3() {
       </Box>
       <Box mt={4} position='relative'>
         {(!baseCurrency || !quoteCurrency) && (
-          <Box className='v3-supply-liquidity-overlay' />
+          <Box className={styles.supplyLiquidityOverlay} />
         )}
         {mintInfo.noLiquidity &&
           baseCurrency &&

@@ -1,9 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Box, Button } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { useV3Positions } from 'hooks/v3/useV3Positions';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
-import Loader from 'components/Loader';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import PositionList from './components/PositionList';
 import FilterPanelItem from '../FilterPanelItem';
@@ -113,7 +112,7 @@ export default function MyLiquidityPoolsV3() {
       <Box mt={2}>
         {positionsLoading ? (
           <Box className='flex justify-center'>
-            <Loader stroke='white' size={'2rem'} />
+            <CircularProgress size={'2rem'} />
           </Box>
         ) : _filteredPositions && _filteredPositions.length > 0 ? (
           <PositionList

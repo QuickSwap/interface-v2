@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-button.token-approve-button {
+.tokenApproveButton {
   background-color: $primary;
   cursor: pointer;
   border: none;
@@ -14,7 +14,7 @@ button.token-approve-button {
   }
 }
 
-.token-approve-button-loading {
+.tokenApproveButtonLoading {
   background-color: $primary;
   width: 100%;
   height: 48px;

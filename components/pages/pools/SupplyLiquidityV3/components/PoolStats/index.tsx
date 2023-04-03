@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
-import Loader from 'components/Loader';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import styles from './PoolStats.module.scss';
 import { useTranslation } from 'next-i18next';
 
@@ -16,7 +15,7 @@ export function PoolStats({ fee, apr, noLiquidity, loading }: IPoolStats) {
   if (loading)
     return (
       <Box className='flex items-center justify-center'>
-        <Loader stroke={'white'} />
+        <CircularProgress />
       </Box>
     );
 

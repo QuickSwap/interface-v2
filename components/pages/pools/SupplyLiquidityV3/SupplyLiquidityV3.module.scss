@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.v3-supply-liquidity-overlay {
+.supplyLiquidityOverlay {
   position: absolute;
   width: calc(100% + 48px);
   height: calc(100% + 48px);
@@ -13,7 +13,7 @@
   border-radius: 20px;
 }
 
-button.v3-supply-liquidity-button {
+.supplyLiquidityButton {
   width: 100%;
   height: 48px;
   border-radius: 16px;

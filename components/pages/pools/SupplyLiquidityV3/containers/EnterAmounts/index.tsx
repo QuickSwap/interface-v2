@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
-import './index.scss';
+import styles from './EnterAmounts.module.scss';
 import { Field } from 'state/mint/actions';
 import {
   IDerivedMintInfo,
@@ -16,8 +16,7 @@ import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
-import { Box, Button } from '@mui/material';
-import Loader from 'components/Loader';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { Check } from '@mui/icons-material';
 import { GammaPairs, GlobalConst } from 'constants/index';
 import { useTranslation } from 'next-i18next';
@@ -234,15 +233,15 @@ export function EnterAmounts({
           <Box width={showApprovalB === undefined ? '100%' : '49%'}>
             {showApprovalA ? (
               approvalA === ApprovalState.PENDING ? (
-                <Box className='token-approve-button-loading'>
-                  <Loader stroke='white' />
+                <Box className={styles.tokenApproveButtonLoading}>
+                  <CircularProgress />
                   <p>
                     {t('approving')} {currencyAApproval?.symbol}
                   </p>
                 </Box>
               ) : (
                 <Button
-                  className='token-approve-button'
+                  className={styles.tokenApproveButton}
                   onClick={approveACallback}
                 >
                   <p>
@@ -251,7 +250,7 @@ export function EnterAmounts({
                 </Button>
               )
             ) : (
-              <Box className='token-approve-button-loading'>
+              <Box className={styles.tokenApproveButtonLoading}>
                 <Check />
                 <p>
                   {t('approved')} {currencyAApproval?.symbol}
@@ -264,15 +263,15 @@ export function EnterAmounts({
           <Box width={showApprovalA === undefined ? '100%' : '49%'}>
             {showApprovalB ? (
               approvalB === ApprovalState.PENDING ? (
-                <Box className='token-approve-button-loading'>
-                  <Loader stroke='white' />
+                <Box className={styles.tokenApproveButtonLoading}>
+                  <CircularProgress />
                   <p>
                     {t('approving')} {currencyBApproval?.symbol}
                   </p>
                 </Box>
               ) : (
                 <Button
-                  className='token-approve-button'
+                  className={styles.tokenApproveButton}
                   onClick={approveBCallback}
                 >
                   <p>
@@ -281,7 +280,7 @@ export function EnterAmounts({
                 </Button>
               )
             ) : (
-              <Box className='token-approve-button-loading'>
+              <Box className={styles.tokenApproveButtonLoading}>
                 <Check />
                 <p>
                   {t('approved')} {currencyBApproval?.symbol}

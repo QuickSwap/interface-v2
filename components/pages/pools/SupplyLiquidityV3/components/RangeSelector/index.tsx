@@ -13,7 +13,7 @@ import {
 } from 'state/mint/v3/hooks';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { tryParseAmount } from 'state/swap/v3/hooks';
-import './index.scss';
+import styles from './RangeSelector.module.scss';
 import { Box } from '@mui/material';
 import { Add, Remove } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
@@ -297,7 +297,7 @@ function RangePart({
   return (
     <Box className='text-center price-range-part'>
       <p className='caption text-secondary'>{title}</p>
-      <Box className='price-range-main'>
+      <Box className={styles.priceRangeMain}>
         <button
           onClick={handleDecrement}
           disabled={decrementDisabled || disabled}

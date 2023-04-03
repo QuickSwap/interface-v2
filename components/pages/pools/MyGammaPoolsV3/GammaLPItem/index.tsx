@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { DoubleCurrencyLogo } from 'components';
 import { GammaPairs } from 'constants/index';
-import './index.scss';
+import styles from './GammaLPItem.module.scss';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import GammaLPItemDetails from '../GammaLPItemDetails';
 import { useActiveWeb3React } from 'hooks';
@@ -30,7 +30,7 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
   const farmingLink = `/farm/v3?tab=my-farms`;
 
   return (
-    <Box className='gamma-liquidity-item'>
+    <Box className={styles.gammaLiquidityItem}>
       <Box className='flex items-center justify-between'>
         <Box className='flex items-center'>
           {gammaPosition.token0 && gammaPosition.token1 && (
@@ -48,7 +48,7 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
             </>
           )}
           {gammaPairInfo && (
-            <Box ml={1.5} className='gamma-liquidity-range'>
+            <Box ml={1.5} className={styles.gammaLiquidityRange}>
               <small>
                 {gammaPairInfo.title} {t('range').toLowerCase()}
               </small>
@@ -74,7 +74,7 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
         </Box>
 
         <Box
-          className={`gamma-liquidity-item-expand ${
+          className={`${styles.gammaLiquidityItemExpand} ${
             expanded ? 'text-primary' : ''
           }`}
           onClick={() => setExpanded(!expanded)}

@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.v3-token-amount-card-wrapper {
+.wrapper {
     background-color: $secondary1;
     width: 100%;
     border-radius: 12px;
@@ -15,7 +15,7 @@
     }
 }
 
-.token-amount-card-logo {
+.cardLogo {
     height: 36px;
     padding: 0 8px;
     display: flex;
@@ -27,7 +27,7 @@
     }
 }
 
-.token-amount-card-balance {
+.cardBalance {
     display: flex;
     align-items: center;
     & small {
@@ -49,7 +49,7 @@
     }
 }
 
-.token-amount-select-token {
+.selectToken {
     background-color: $primary;
     padding: 6px 16px;
     border-radius: 20px;
@@ -58,7 +58,7 @@
     }
 }
 
-.token-amount-card-locked {
+.cardLocked {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -78,7 +78,7 @@
     }
 }
 
-.token-amount-card-error {
+.cardError {
     width: 100%;
     padding: 8px;
     bottom: -100%;

@@ -5,15 +5,13 @@ import {
   Token,
   NativeCurrency,
 } from '@uniswap/sdk-core';
-
 import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useCurrencyBalance as useCurrencyBalanceV3 } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
-import Loader from 'components/Loader';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
-import './index.scss';
-import { Box } from '@mui/material';
+import styles from './TokenAmountCard.module.scss';
+import { Box, CircularProgress } from '@mui/material';
 import { LockOutlined } from '@mui/icons-material';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'next-i18next';
@@ -152,9 +150,9 @@ export function TokenAmountCard({
 
   return (
     <>
-      <Box className='v3-token-amount-card-wrapper'>
+      <Box className={styles.wrapper}>
         {locked && (
-          <div className='token-amount-card-locked'>
+          <div className={styles.cardLocked}>
             <LockOutlined />
             <p className='span'>
               {t('priceOutsidePriceRange')}.
@@ -165,7 +163,7 @@ export function TokenAmountCard({
         )}
         {currency ? (
           <Box className='flex flex-col items-start'>
-            <div className='token-amount-card-logo'>
+            <div className={styles.cardLogo}>
               {liquidityRangeType ===
                 GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
               chainId &&
@@ -189,12 +187,12 @@ export function TokenAmountCard({
                   : currency.symbol}
               </p>
             </div>
-            <Box mt={1} className='token-amount-card-balance'>
+            <Box mt={1} className={styles.cardBalance}>
               {balanceString === 'loading' ? (
                 <Box className='flex items-center'>
                   <small className='text-secondary'>{t('balance')}: </small>
                   <Box className='flex' ml='5px'>
-                    <Loader stroke='white' />
+                    <CircularProgress />
                   </Box>
                 </Box>
               ) : (
@@ -216,7 +214,7 @@ export function TokenAmountCard({
             </Box>
           </Box>
         ) : (
-          <Box className='token-amount-select-token'>
+          <Box className={styles.selectToken}>
             <p className='weight-600'>{t('selectToken')}</p>
           </Box>
         )}
@@ -231,7 +229,7 @@ export function TokenAmountCard({
         />
       </Box>
       {error && (
-        <div className='token-amount-card-error'>
+        <div className={styles.cardError}>
           <small>{error}</small>
         </div>
       )}

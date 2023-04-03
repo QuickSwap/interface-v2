@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.v3-supply-liquidity-price-wrapper {
+.priceWrapper {
   padding: 4px 12px;
   background-color: $secondary1;
   border: 1px solid $secondary3;

@@ -35,7 +35,7 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
-import './index.scss';
+import styles from './AddLiquidityButton.module.scss';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { useInverter } from 'hooks/v3/useInverter';
@@ -566,7 +566,7 @@ export function AddLiquidityButton({
         <Box width={1} mt={2} className='flex justify-between'>
           {priceLower && (
             <Box
-              className='v3-supply-liquidity-price-wrapper'
+              className={styles.priceWrapper}
               width={priceUpper ? '49%' : '100%'}
             >
               <p>{t('minPrice')}</p>
@@ -583,7 +583,7 @@ export function AddLiquidityButton({
           )}
           {priceUpper && (
             <Box
-              className='v3-supply-liquidity-price-wrapper'
+              className={styles.priceWrapper}
               width={priceLower ? '49%' : '100%'}
             >
               <p>{t('minPrice')}</p>
@@ -600,7 +600,7 @@ export function AddLiquidityButton({
           )}
         </Box>
         {currentPrice && (
-          <Box mt={2} className='v3-supply-liquidity-price-wrapper'>
+          <Box mt={2} className={styles.priceWrapper}>
             <p>{t('currentPrice')}</p>
             <h6>{currentPrice}</h6>
             <p>

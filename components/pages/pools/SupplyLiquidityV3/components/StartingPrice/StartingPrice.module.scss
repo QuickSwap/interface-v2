@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.v3-pool-liquidity-starting-price {
+.startingPrice {
     background-color: $secondary1;
     border-radius: 10px;
     padding: 16px;
@@ -10,7 +10,7 @@
     }
 }
 
-.v3-pool-starting-token-price {
+.tokenPrice {
     display: flex;
     align-items: center;
     & > div {
@@ -23,7 +23,7 @@
     }
 }
 
-.v3-pool-starting-token-price-input {
+.tokenPriceInput {
     border: 1px solid $primary;
     display: flex;
     height: 100%;

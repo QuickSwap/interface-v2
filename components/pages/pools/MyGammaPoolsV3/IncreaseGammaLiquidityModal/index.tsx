@@ -16,7 +16,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
-import '../GammaLPItemDetails/index.scss';
+import styles from '../GammaLPItemDetails/GammaLPItemDetails.module.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
@@ -308,8 +308,8 @@ export default function IncreaseGammaLiquidityModal({
       setTxPending(false);
       setAddErrorMessage(
         error && error.code && error.code === 4001
-          ? t('txRejected')
-          : t('errorInTx'),
+          ? t('txRejected') ?? ''
+          : t('errorInTx') ?? '',
       );
     }
   };
@@ -474,7 +474,7 @@ export default function IncreaseGammaLiquidityModal({
             }
           />
         </Box>
-        <Box mt={2} className='v3-increase-liquidity-input'>
+        <Box mt={2} className={styles.v3IncreaseLiquidityInput}>
           <CurrencyInputPanel
             value={deposit1}
             onUserInput={(val) => {
@@ -505,7 +505,7 @@ export default function IncreaseGammaLiquidityModal({
         </Box>
         <Box mt={2}>
           <Button
-            className='gamma-liquidity-item-button'
+            className={styles.gammaLiquidityItemButton}
             disabled={buttonDisabled}
             onClick={() => (wrapAmount ? wrapETH() : setShowConfirm(true))}
             fullWidth

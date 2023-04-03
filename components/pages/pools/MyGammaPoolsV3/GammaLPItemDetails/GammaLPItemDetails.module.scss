@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.gamma-liquidity-item-buttons {
+.gammaLiquidityItemButtons {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -16,7 +16,7 @@
   }
 }
 
-.gamma-liquidity-item-button {
+.gammaLiquidityItemButton {
   height: 38px;
   border-radius: 10px;
 }

@@ -1,11 +1,13 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 const Background: React.FC<{ fallback: boolean | undefined }> = ({
   fallback = false,
 }) => {
-  const showDefaultBG = fallback;
+  const router = useRouter();
+  const showDefaultBG = fallback || router.pathname !== '/';
   return (
     <Box className='heroBkg'>
       <Image

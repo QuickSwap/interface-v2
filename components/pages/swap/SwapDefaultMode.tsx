@@ -2,20 +2,11 @@ import { Box, Divider, Grid } from '@mui/material';
 import { NavigateBefore, NavigateNext } from '@mui/icons-material';
 import { AdsSlider, SwapTokenDetailsHorizontal } from 'components';
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
 import LiquidityPools from './LiquidityPools';
 import SwapMain from './SwapMain';
 import SwapNewsWidget from './SwapNewWidget';
-
-type NavParams = {
-  swapIndex: string | undefined;
-};
-
-function useQuery() {
-  const { search } = useLocation();
-  return React.useMemo(() => new URLSearchParams(search), [search]);
-}
 
 const SwapDefaultMode: React.FC<{
   token1: any;
@@ -23,18 +14,21 @@ const SwapDefaultMode: React.FC<{
 }> = ({ token1, token2 }) => {
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
-  const query = useQuery();
+  const router = useRouter();
+  const swapIndex = router.query.swapIndex
+    ? (router.query.swapIndex as string)
+    : '';
   const [disabledLeft, setDisabledLeft] = useState(false);
 
   useEffect(() => {
-    if (query.get('swapIndex') === '4') {
+    if (swapIndex === '4') {
       setDisabledLeft(true);
       setLeftOpen(false);
     } else {
       setLeftOpen(true);
       setDisabledLeft(false);
     }
-  }, [query]);
+  }, [swapIndex]);
 
   return (
     <Grid>

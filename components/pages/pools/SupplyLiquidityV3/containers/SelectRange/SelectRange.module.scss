@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.pool-range-chart-wrapper {
+.poolRangeChartWrapper {
   background-color: $grey31;
   border: 1px solid $secondary1;
   border-radius: 12px;
@@ -10,7 +10,7 @@
   align-items: center;
 }
 
-.pool-range-chart-warning {
+.poolRangeChartWarning {
   background-color: $yellow4;
   display: flex;
   flex-wrap: wrap;
@@ -37,7 +37,7 @@
   }
 }
 
-.pool-range-chart-warning-icon {
+.poolRangeChartWarningIcon {
   background-color: $secondary1;
   width: 32px;
   height: 32px;

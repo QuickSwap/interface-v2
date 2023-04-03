@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Currency, Token, Price } from '@uniswap/sdk-core';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
-import './index.scss';
+import styles from './StartingPrice.module.scss';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import {
   IDerivedMintInfo,
@@ -92,7 +92,7 @@ function TokenPrice({
   }, [basePrice, quotePrice]);
 
   return (
-    <Box className='v3-pool-starting-token-price'>
+    <Box className={styles.tokenPrice}>
       <Box mr={1}>
         <small>1 {baseSymbol}</small>
       </Box>
@@ -107,7 +107,7 @@ function TokenPrice({
               <small>{tokenRatio}</small>
             </Box>
           ) : isSelected ? (
-            <Box className='v3-pool-starting-token-price-input'>
+            <Box className={styles.tokenPriceInput}>
               <Input
                 placeholder={`${baseCurrency?.symbol} in ${quoteCurrency?.symbol}`}
                 value={tokenQuotePrice}
@@ -150,7 +150,7 @@ function USDPriceField({
   const [userUSDVal, setUserUSDVal] = useState(userUSD || '');
 
   return (
-    <Box className='v3-pool-starting-token-price'>
+    <Box className={styles.tokenPrice}>
       <Box mr={1}>
         <small>1 {symbol}</small>
       </Box>
@@ -163,7 +163,7 @@ function USDPriceField({
           <small>{_price}</small>
         ) : isSelected ? (
           <Box flex={1} height='100%' position='relative'>
-            <Box className='v3-pool-starting-token-price-input'>
+            <Box className={styles.tokenPriceInput}>
               <Input
                 value={userUSDVal}
                 onUserInput={(e: string) => setUserUSDVal(e)}
@@ -523,7 +523,7 @@ export default function StartingPrice({
   }, [priceFormat]);
 
   return (
-    <Box className='v3-pool-liquidity-starting-price'>
+    <Box className={styles.startingPrice}>
       <Box mb={2} className='flex'>
         {(isLocked || !basePriceUSD || !quotePriceUSD) && (
           <Badge

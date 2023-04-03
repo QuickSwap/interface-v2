@@ -12,8 +12,12 @@ import SwapPageHeader from 'components/pages/swap/SwapPageHeader';
 import SwapProMain from 'components/pages/swap/SwapProMain';
 import { getPairAddress, getPairAddressV3 } from 'utils';
 import { wrappedCurrency, wrappedCurrencyV3 } from 'utils/wrappedCurrency';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-const SwapPage: React.FC = () => {
+const SwapPage: React.FC = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isV2 } = useIsV2();
   const isProMode = useIsProMode();
@@ -66,7 +70,7 @@ const SwapPage: React.FC = () => {
   ]);
 
   return (
-    <Box width='100%' mb={3} id='swap-page'>
+    <Box width='100%' mb={3} pt='88px'>
       {openSettingsModal && (
         <SettingsModal
           open={openSettingsModal}
@@ -89,6 +93,14 @@ const SwapPage: React.FC = () => {
       )}
     </Box>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
 };
 
 export default SwapPage;

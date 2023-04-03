@@ -2,7 +2,7 @@ import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { IPresetArgs, PresetRanges } from '../../components/PresetRanges';
 import { RangeSelector } from '../../components/RangeSelector';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
-import './index.scss';
+import styles from './SelectRange.module.scss';
 import { Bound, updateSelectedPreset } from 'state/mint/v3/actions';
 import {
   IDerivedMintInfo,
@@ -18,18 +18,12 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-<<<<<<< HEAD:components/pages/pools/SupplyLiquidityV3/containers/SelectRange/index.tsx
-import { GammaPairs, GlobalConst, GlobalData } from 'constants/index';
 import { Box, ButtonGroup, Button } from '@mui/material';
 import { ReportProblemOutlined } from '@mui/icons-material';
-=======
 import { GammaPairs, GlobalConst } from 'constants/index';
-import { Box, ButtonGroup, Button } from '@material-ui/core';
-import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import { StableCoins } from 'constants/v3/addresses';
->>>>>>> dev2:src/pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectRange/index.tsx
 import { getEternalFarmFromTokens } from 'utils';
 import { Trans, useTranslation } from 'next-i18next';
 import Image from 'next/image';
@@ -368,7 +362,7 @@ export function SelectRange({
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
       {gammaPair && (
-        <Box className='buttonGroup poolRangeButtonGroup'>
+        <Box className={`buttonGroup ${styles.poolRangeButtonGroup}`}>
           <ButtonGroup>
             <Button
               className={
@@ -387,8 +381,8 @@ export function SelectRange({
                 src={
                   liquidityRangeType ===
                   GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-                    ? '/images/automaticDark.svg'
-                    : '/images/automatic.svg'
+                    ? '/assets/images/automaticDark.svg'
+                    : '/assets/images/automatic.svg'
                 }
                 alt='gamma range'
               />
@@ -413,9 +407,9 @@ export function SelectRange({
       )}
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
         <>
-          <Box my={1.5} className='poolRangePowerGamma'>
+          <Box my={1.5} className={styles.poolRangePowerGamma}>
             <span className='text-secondary'>{t('poweredBy')}</span>
-            <Image src='/images/gammaLogo.png' alt='Gamma Logo' />
+            <Image src='/assets/images/gammaLogo.png' alt='Gamma Logo' />
           </Box>
           <Box mb={1.5}>
             <small className='weight-600'>{t('selectStrategy')}</small>
@@ -506,9 +500,9 @@ export function SelectRange({
             />
           </Box>
           {activePreset === Presets.FULL && fullRangeWarningShown && (
-            <Box className='pool-range-chart-warning border-yellow5'>
+            <Box className={`${styles.poolRangeChartWarning} border-yellow5`}>
               <Box width={1} className='flex items-center'>
-                <Box className='pool-range-chart-warning-icon'>
+                <Box className={styles.poolRangeChartWarningIcon}>
                   <ReportProblemOutlined />
                 </Box>
                 <small>{t('efficiencyComparison')}</small>
@@ -538,8 +532,8 @@ export function SelectRange({
             rightPrice &&
             minRangeLength !== undefined &&
             rightPricePercent - leftPricePercent < minRangeLength && (
-              <Box className='pool-range-chart-warning'>
-                <Box className='pool-range-chart-warning-icon'>
+              <Box className={styles.poolRangeChartWarning}>
+                <Box className={styles.poolRangeChartWarningIcon}>
                   <ReportProblemOutlined />
                 </Box>
                 <span>

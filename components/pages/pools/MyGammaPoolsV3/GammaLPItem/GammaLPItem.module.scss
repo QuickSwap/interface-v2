@@ -1,27 +1,27 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.v3-pool-liquidity-item {
+.gammaLiquidityItem {
   background-color: $secondary1;
   padding: 20px;
   border-radius: 10px;
-  position: relative;
+  margin-top: 16px;
   @include media("screen", "<phone") {
     padding: 16px 12px;
   }
 }
 
-.v3-pool-liquidity-item-expand {
-  position: absolute;
-  width: 24px;
-  height: 24px;
+.gammaLiquidityRange {
+  background-color: $grey12;
+  height: 22px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background-color: $primaryLight;
-  color: $primary;
-  right: 20px;
-  top: 30px;
+  padding: 0 10px;
+  border-radius: 11px;
+}
+
+.gammaLiquidityItemExpand {
   cursor: pointer;
+  width: 24px;
+  height: 24px;
 }

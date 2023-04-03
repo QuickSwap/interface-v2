@@ -12,7 +12,7 @@ import { Box, Button } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import '../GammaLPItemDetails/index.scss';
+import styles from '../GammaLPItemDetails/GammaLPItemDetails.module.scss';
 import { calculateGasMargin, formatNumber } from 'utils';
 import { BigNumber } from 'ethers';
 import GammaHyperVisorABI from 'constants/abis/gamma-hypervisor.json';
@@ -111,16 +111,16 @@ export default function WithdrawGammaLiquidityModal({
       setTxPending(true);
       setTxnHash(response.hash);
       addTransaction(response, {
-        summary: t('withdrawingGammaLiquidity'),
+        summary: t('withdrawingGammaLiquidity') ?? undefined,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('withdrewGammaLiquidity'),
+        summary: t('withdrewGammaLiquidity') ?? undefined,
       });
       setTxPending(false);
     } catch (e) {
       setAttemptingTxn(false);
-      setRemoveErrorMessage(t('errorInTx'));
+      setRemoveErrorMessage(t('errorInTx') ?? '');
     }
   };
 
@@ -172,7 +172,7 @@ export default function WithdrawGammaLiquidityModal({
         <Box mt={2}>
           <Button
             fullWidth
-            className='gamma-liquidity-item-button'
+            className={styles.gammaLiquidityItemButton}
             onClick={withdrawGammaLiquidity}
           >
             {t('confirm')}
@@ -230,13 +230,13 @@ export default function WithdrawGammaLiquidityModal({
             {position.token0.symbol}-{position.token1.symbol}
           </h5>
         </Box>
-        <Box mt={2} className='v3-remove-liquidity-input-wrapper'>
+        <Box mt={2} className={styles.v3RemoveLiquidityInputWrapper}>
           <Box mb={2} className='flex justify-between'>
             <small className='text-secondary'>{t('amount')}</small>
           </Box>
           <Box mb={2} className='flex items-center justify-between'>
             <h3>{percentForSlider}%</h3>
-            <Box ml={1} className='v3-remove-liquidity-percent-buttons'>
+            <Box ml={1} className={styles.v3RemoveLiquidityPercentButtons}>
               <Button onClick={() => onPercentSelectForSlider(25)}>25%</Button>
               <Button onClick={() => onPercentSelectForSlider(50)}>50%</Button>
               <Button onClick={() => onPercentSelectForSlider(75)}>75%</Button>
@@ -250,7 +250,7 @@ export default function WithdrawGammaLiquidityModal({
             max={100}
             step={1}
             value={percentForSlider}
-            handleChange={(event, value) => {
+            handleChange={(_, value) => {
               onPercentSelectForSlider(value as number);
             }}
           />
@@ -281,7 +281,7 @@ export default function WithdrawGammaLiquidityModal({
         </Box>
         <Box mt={2}>
           <Button
-            className='gamma-liquidity-item-button'
+            className={styles.gammaLiquidityItemButton}
             disabled={buttonDisabled}
             onClick={() => setShowConfirm(true)}
             fullWidth

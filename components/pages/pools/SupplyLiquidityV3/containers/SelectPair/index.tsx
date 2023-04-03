@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Currency } from '@uniswap/sdk-core';
-import './index.scss';
+import styles from './SelectPair.module.scss';
 import { useInfoLiquidity } from 'hooks/subgraph/useInfoLiquidity';
 import { IDerivedMintInfo } from 'state/mint/v3/hooks';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
@@ -47,7 +47,7 @@ export function SelectPair({
             handleCurrencySelect={handleCurrencyASelect}
           />
         </Box>
-        <Box mx={1} className='v3PairPlusIcon'>
+        <Box mx={1} className={styles.v3PairPlusIcon}>
           <Add />
         </Box>
         <Box flex={1}>

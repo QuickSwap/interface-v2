@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
-import Loader from 'components/Loader';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'next-i18next';
 import GammaLPList from './GammaLPList';
@@ -35,14 +34,14 @@ export default function MyLiquidityPoolsV3() {
   const fetchGammaData = async () => {
     try {
       const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
+        `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
       );
       const gammaData = await data.json();
       return gammaData;
     } catch {
       try {
         const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
+          `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
         );
         const gammaData = await data.json();
         return gammaData;
@@ -221,7 +220,7 @@ export default function MyLiquidityPoolsV3() {
       <>
         {positionsLoading || stakedLoading || dataLoading ? (
           <Box mt={2} className='flex justify-center'>
-            <Loader stroke='white' size={'2rem'} />
+            <CircularProgress size={'2rem'} />
           </Box>
         ) : (gammaPositions && gammaPositionList.length > 0) ||
           stakedPositions.length > 0 ? (

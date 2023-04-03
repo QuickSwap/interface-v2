@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'next-i18next';
-import './index.scss';
+import styles from './GammaLPItemDetails.module.scss';
 import { formatNumber } from 'utils';
 import { CurrencyLogo } from 'components';
 import Badge from 'components/v3/Badge';
@@ -105,15 +105,15 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
           </Box>
         </Box>
       </Box>
-      <Box mt={2} className='gamma-liquidity-item-buttons'>
+      <Box mt={2} className={styles.gammaLiquidityItemButtons}>
         <Button
-          className='gamma-liquidity-item-button'
+          className={styles.gammaLiquidityItemButton}
           onClick={() => setShowAddLPModal(true)}
         >
           <small>{t('addLiquidity')}</small>
         </Button>
         <Button
-          className='gamma-liquidity-item-button'
+          className={styles.gammaLiquidityItemButton}
           disabled={
             gammaPosition.farming &&
             (!lpTokenBalance ||

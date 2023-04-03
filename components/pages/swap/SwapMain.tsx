@@ -9,9 +9,10 @@ import { useActiveWeb3React, useIsProMode } from 'hooks';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useIsV2 } from 'state/application/hooks';
-import SwapCrossChain from './SwapCrossChain';
+// import SwapCrossChain from './SwapCrossChain';
 import SwapLimitOrder from './SwapLimitOrder';
 import SwapV3Page from './SwapV3';
+import styles from 'styles/pages/Swap.module.scss';
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
@@ -90,10 +91,9 @@ const SwapMain: React.FC = () => {
         `swapIndex=${swapTypeTo}`,
       );
     } else {
-      redirectPath = '';
-      // redirectPath = `${currentPath}${
-      //   Object.values(parsedQs).length > 0 ? '&' : '?'
-      // }swapIndex=${swapTypeTo}`;
+      redirectPath = `${router.asPath}${
+        Object.values(router.query).length > 0 ? '&' : '?'
+      }swapIndex=${swapTypeTo}`;
     }
     router.push(redirectPath);
   };
@@ -106,7 +106,7 @@ const SwapMain: React.FC = () => {
   };
 
   const handleMenuItemClick = (
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     index: number,
   ) => {
     setSelectedIndex(index);
@@ -153,7 +153,7 @@ const SwapMain: React.FC = () => {
         }
         redirectWithSwapType(availableSwapTypes[0]);
       } else {
-        history.push('/');
+        router.push('/');
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -180,7 +180,7 @@ const SwapMain: React.FC = () => {
       )}
       <Box
         className={`flex flex-wrap items-center justify-between ${
-          isProMode ? ' proModeWrapper' : ''
+          isProMode ? styles.proModeWrapper : ''
         }`}
       >
         <Box display='flex' width={1}>
@@ -212,7 +212,7 @@ const SwapMain: React.FC = () => {
                 }}
               >
                 {SwapDropdownTabs.filter((d) => d.visible !== false).map(
-                  (option, index) => (
+                  (option) => (
                     <MenuItem
                       key={option.key}
                       disabled={option.key === selectedIndex}
@@ -241,7 +241,7 @@ const SwapMain: React.FC = () => {
             </>
           ) : (
             <>
-              {SwapDropdownTabs.map((option, index) => (
+              {SwapDropdownTabs.map((option) => (
                 <Box
                   key={option.key}
                   style={{ textAlign: 'center' }}
@@ -302,9 +302,9 @@ const SwapMain: React.FC = () => {
         )}
         {v2 && Number(swapType) === SWAP_NORMAL && <Swap />}
         {v3 && Number(swapType) === SWAP_V3 && <SwapV3Page />}
-        {showCrossChain && Number(swapType) === SWAP_CROSS_CHAIN && (
+        {/* {showCrossChain && Number(swapType) === SWAP_CROSS_CHAIN && (
           <SwapCrossChain />
-        )}
+        )} */}
         {showLimitOrder && Number(swapType) === SWAP_LIMIT && (
           <SwapLimitOrder />
         )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import Header from 'components/Header';
@@ -6,6 +6,7 @@ import Footer from 'components/Footer';
 import BetaWarningBanner from 'components/BetaWarningBanner';
 import CustomModal from 'components/CustomModal';
 import Background from './Background';
+import { useRouter } from 'next/router';
 
 export interface PageLayoutProps {
   children: any;
@@ -15,17 +16,17 @@ export interface PageLayoutProps {
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const { chainId, account } = useActiveWeb3React();
   const isProMode = useIsProMode();
+  const router = useRouter();
   const arcxSDK = (window as any).arcx;
   const [openPassModal, setOpenPassModal] = useState(false);
-  const getPageWrapperClassName = () => {
-    console.log('getPageWrapperClassName => ', location);
+  const pageWrapperClassName = useMemo(() => {
     if (isProMode) {
       return '';
-    } else if (location.href.indexOf('/swap?') > 0) {
+    } else if (router.asPath.includes('/swap')) {
       return 'pageWrapper-no-max';
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
-  };
+  }, [isProMode, name, router.asPath]);
 
   useEffect(() => {
     if (
@@ -80,7 +81,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       {showBetaBanner && <BetaWarningBanner />}
       <Header />
       {!isProMode && <Background fallback={false} />}
-      <Box className={getPageWrapperClassName()}>{children}</Box>
+      <Box className={pageWrapperClassName}>{children}</Box>
       <Footer />
     </Box>
   );

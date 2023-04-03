@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { PoolState, usePool } from 'hooks/v3/usePools';
 import { useToken } from 'hooks/v3/Tokens';
 import { Price, Token, Percent } from '@uniswap/sdk-core';
-import Loader from 'components/Loader';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { Bound, setShowNewestPosition } from 'state/mint/v3/actions';
 import { ArrowRight } from 'react-feather';
@@ -10,14 +9,14 @@ import usePrevious from 'hooks/usePrevious';
 import { PositionPool } from 'models/interfaces';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import { useAppDispatch } from 'state/hooks';
-import './index.scss';
+import styles from './PositionListItem.module.scss';
 import useIsTickAtLimit from 'hooks/v3/useIsTickAtLimit';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { Position } from 'v3lib/entities/position';
 import { USDC, USDT, WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { toToken } from 'constants/v3/routing';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import Badge from 'components/v3/Badge';
@@ -196,7 +195,7 @@ export default function PositionListItem({
   }, []);
 
   return (
-    <Box className='v3-pool-liquidity-item'>
+    <Box className={styles.v3PoolLiquidityItem}>
       <Box
         width={
           _poolState !== PoolState.LOADING && !hideExpand
@@ -258,7 +257,7 @@ export default function PositionListItem({
             <Box width={1} mt={1}>
               {_poolState === PoolState.LOADING && (
                 <Box width={1} className='flex justify-center'>
-                  <Loader size={'1rem'} stroke={'var(--white)'} />
+                  <CircularProgress size={'1rem'} />
                 </Box>
               )}
               {_poolState !== PoolState.LOADING && priceLower && priceUpper && (
@@ -278,7 +277,7 @@ export default function PositionListItem({
           )}
           {_poolState !== PoolState.LOADING && !hideExpand && (
             <Box
-              className='v3-pool-liquidity-item-expand'
+              className={styles.v3PoolLiquidityItemExpand}
               onClick={() => setExpanded(!expanded)}
             >
               {expanded ? <ExpandLess /> : <ExpandMore />}

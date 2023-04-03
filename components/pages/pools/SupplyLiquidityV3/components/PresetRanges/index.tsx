@@ -3,9 +3,8 @@ import { Currency } from '@uniswap/sdk-core';
 import { PoolStats } from '../PoolStats';
 import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { PoolState } from 'hooks/usePools';
-import Loader from 'components/Loader';
 import { fetchPoolsAPR } from 'utils/api';
 import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
@@ -246,7 +245,7 @@ export function PresetRanges({
       mintInfo.poolState === PoolState.INVALID ||
       mintInfo.poolState === PoolState.LOADING
     )
-      return <Loader stroke='#22cbdc' />;
+      return <CircularProgress />;
 
     if (mintInfo.noLiquidity) return `0.01% ${t('fee').toLowerCase()}`;
 
@@ -256,8 +255,7 @@ export function PresetRanges({
   }, [mintInfo, t]);
 
   const aprString = useMemo(() => {
-    if (!aprs || !baseCurrency || !quoteCurrency)
-      return <Loader stroke='#22dc22' />;
+    if (!aprs || !baseCurrency || !quoteCurrency) return <CircularProgress />;
 
     const poolAddress = computePoolAddress({
       poolDeployer: POOL_DEPLOYER_ADDRESS[137],
@@ -284,7 +282,7 @@ export function PresetRanges({
       <Box mb='10px' className={styles.presetButtons}>
         {isGamma && !gammaValuesLoaded ? (
           <Box width={1} className='flex justify-center'>
-            <Loader />
+            <CircularProgress />
           </Box>
         ) : (
           <>
