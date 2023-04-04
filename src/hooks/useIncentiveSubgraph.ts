@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { Contract, providers } from 'ethers';
 import ERC20_ABI from 'constants/abis/erc20.json';
@@ -916,20 +916,38 @@ export function useFarmingSubgraph() {
     }
   }
 
-  async function fetchEternalFarms(reload: boolean, detached = false) {
+  async function fetchEternalFarms(reload: boolean, ended = false) {
     setEternalFarmsLoading(true);
 
     try {
       const {
-        data: { eternalFarmings },
+        data: { eternalFarmings: eternalFarmingsSubgraph },
         errors,
       } = await farmingClient.query<SubgraphResponse<EternalFarming[]>>({
         query: INFINITE_EVENTS,
-        variables: {
-          detached,
-        },
         fetchPolicy: reload ? 'network-only' : 'cache-first',
       });
+
+      const eternalFarmings =
+        eternalFarmingsSubgraph && eternalFarmingsSubgraph.length > 0
+          ? eternalFarmingsSubgraph.filter((farming) => {
+              if (ended) {
+                return (
+                  farming.isDetached ||
+                  ((!farming.rewardRate || !Number(farming.rewardRate)) &&
+                    (!farming.bonusRewardRate ||
+                      !Number(farming.bonusRewardRate)))
+                );
+              } else {
+                return (
+                  !farming.isDetached &&
+                  ((farming.rewardRate && Number(farming.rewardRate) > 0) ||
+                    (farming.bonusRewardRate &&
+                      Number(farming.bonusRewardRate) > 0))
+                );
+              }
+            })
+          : [];
 
       if (errors) {
         const error = errors[0];
