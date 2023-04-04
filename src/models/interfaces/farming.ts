@@ -42,6 +42,7 @@ export interface EternalFarming {
   tier2Multiplier: string;
   tier3Multiplier: string;
   multiplierToken: string;
+  isDetached: boolean;
 }
 
 export interface DetachedEternalFarming extends EternalFarming {
