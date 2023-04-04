@@ -27,6 +27,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
+  const nativeCurrencyImage = `/${currency?.symbol}.png`;
   const uriLocations = useHttpLocations(
     currency instanceof WrappedTokenInfo ||
       currency instanceof V3WrappedTokenInfo
@@ -73,9 +74,10 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
       >
         <Image
           className={styles.ethereumLogo}
-          src='/images/Currency/PolygonSwap.svg'
+          src={nativeCurrencyImage}
           alt='Ethereum Logo'
-          fill
+          width={100}
+          height={100}
         />
       </Box>
     );

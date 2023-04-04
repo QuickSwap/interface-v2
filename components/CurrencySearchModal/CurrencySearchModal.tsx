@@ -69,12 +69,7 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   }, []);
 
   return (
-    <CustomModal
-      open={isOpen}
-      onClose={onDismiss}
-      modalWrapper={'searchModalWrapper'}
-      hideBackdrop={true}
-    >
+    <CustomModal open={isOpen} onClose={onDismiss} hideBackdrop={true}>
       <CurrencySearch
         isOpen={isOpen}
         onDismiss={onDismiss}

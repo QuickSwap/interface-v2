@@ -1,0 +1,13 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.075);
+  background-color: white;
+  color: black;
+}

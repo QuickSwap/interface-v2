@@ -12,6 +12,7 @@ import { PlusHelper } from 'components/QuestionHelper';
 import TokenSelectedIcon from 'svgs/TokenSelected.svg';
 import { formatNumber, formatTokenAmount } from 'utils';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/components/CurrencySearchModal.module.scss';
 
 //TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {
@@ -134,12 +135,12 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         if (!isSelected && !otherSelected) onSelect();
       }}
     >
-      <Box className='currencyRow'>
+      <Box className={styles.currencyRow}>
         {(otherSelected || isSelected) && <TokenSelectedIcon />}
         <CurrencyLogo currency={currency} size='32px' />
         <Box ml={1} height={32}>
           <Box className='flex items-center'>
-            <small className='currencySymbol'>{currency.symbol}</small>
+            <small className={styles.currencySymbol}>{currency.symbol}</small>
             {isMetamask &&
               currency !== nativeCurrency &&
               !(currency as V3Currency).isNative && (
@@ -161,7 +162,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
               )}
           </Box>
           {isOnSelectedList ? (
-            <span className='currencyName'>{currency.name}</span>
+            <span className={styles.currencyName}>{currency.name}</span>
           ) : (
             <Box className='flex items-center'>
               <span>

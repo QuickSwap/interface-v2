@@ -592,7 +592,7 @@ const Swap: React.FC<{
         color={isProMode ? 'white' : 'secondary'}
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
-      <Box className='exchangeSwap'>
+      <Box className={styles.exchangeSwap}>
         <ExchangeIcon onClick={redirectWithSwitch} />
       </Box>
       <CurrencyInput

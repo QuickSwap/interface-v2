@@ -80,10 +80,9 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
         `tab=${tab}`,
       );
     } else {
-      redirectPath = '';
-      // redirectPath = `${currentPath}${
-      //   router.location.search === '' ? '?' : '&'
-      // }tab=${tab}`;
+      redirectPath = `${currentPath}${
+        Object.keys(router.query).length === 0 ? '?' : '&'
+      }tab=${tab}`;
     }
     router.push(redirectPath);
   };

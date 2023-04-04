@@ -29,7 +29,7 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
-  const helpURL = process.env.REACT_APP_HELP_URL;
+  const helpURL = process.env.NEXT_PUBLIC_HELP_URL;
   const allGammaPairs = chainId ? GammaPairs[chainId] : {};
 
   return (

@@ -915,7 +915,7 @@ const SwapBestTrade: React.FC<{
         color={isProMode ? 'white' : 'secondary'}
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
-      <Box className='exchangeSwap'>
+      <Box className={styles.exchangeSwap}>
         <ExchangeIcon
           onClick={() => {
             setSwapType(
@@ -939,7 +939,7 @@ const SwapBestTrade: React.FC<{
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
       {paraRate && (
-        <Box className='swapPrice'>
+        <Box className={styles.swapPrice}>
           <small>{t('price')}:</small>
           <small>
             1{' '}
@@ -962,7 +962,7 @@ const SwapBestTrade: React.FC<{
       )}
       {!showWrap && isExpertMode && (
         <Box className={styles.recipientInput}>
-          <Box className='recipientInputHeader'>
+          <Box className={styles.recipientInputHeader}>
             {recipient !== null ? (
               <ArrowDown size='16' color='white' />
             ) : (
@@ -991,7 +991,7 @@ const SwapBestTrade: React.FC<{
         inputCurrency={inputCurrency}
         outputCurrency={outputCurrency}
       />
-      <Box className='swapButtonWrapper'>
+      <Box className={styles.swapButtonWrapper}>
         {showApproveFlow && (
           <Box width='48%'>
             <Button

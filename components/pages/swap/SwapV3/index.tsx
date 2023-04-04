@@ -63,6 +63,7 @@ import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import { useTranslation } from 'next-i18next';
 import { CHAIN_INFO } from 'constants/v3/chains';
+import styles from 'styles/components/Swap.module.scss';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
@@ -582,7 +583,7 @@ const SwapV3Page: React.FC = () => {
           />
         </Box>
 
-        <Box className='exchangeSwap'>
+        <Box className={styles.exchangeSwap}>
           <ExchangeIcon
             onClick={() => {
               setApprovalSubmitted(false); // reset 2 step UI for approvals
@@ -619,8 +620,8 @@ const SwapV3Page: React.FC = () => {
           />
         </Box>
         {!showWrap && isExpertMode ? (
-          <Box className='recipientInput' mb={1.5}>
-            <Box className='recipientInputHeader'>
+          <Box className={styles.recipientInput} mb={1.5}>
+            <Box className={styles.recipientInputHeader}>
               {recipient !== null ? (
                 <ArrowDown size='16' color='white' />
               ) : (
@@ -675,7 +676,7 @@ const SwapV3Page: React.FC = () => {
           </div>
         )}
 
-        <Box className='swapButtonWrapper'>
+        <Box className={styles.swapButtonWrapper}>
           {!account ? (
             <Button fullWidth onClick={toggleWalletModal}>
               {t('connectWallet')}

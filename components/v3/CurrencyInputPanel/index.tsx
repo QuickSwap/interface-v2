@@ -16,6 +16,7 @@ import { Box } from '@mui/material';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'next-i18next';
 import styles from './CurrencyInputPanel.module.scss';
+import styles1 from 'styles/components/CurrencyInput.module.scss';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 
 interface CurrencyInputPanelProps {
@@ -105,12 +106,12 @@ export default function CurrencyInputPanel({
         </Box>
       )}
 
-      <Box id={id} className={`swapBox ${bgClass}`}>
+      <Box id={id} className={`${styles1.swapBox} ${bgClass}`}>
         <Box mb={2}>
           <Box>
             <Box
-              className={`currencyButton  ${'token-select-background-v3'}  ${
-                currency ? 'currencySelected' : 'noCurrency'
+              className={`${styles1.currencyButton} ${
+                currency ? styles1.currencySelected : styles1.noCurrency
               }`}
               onClick={() => {
                 if (onCurrencySelect) {
@@ -131,7 +132,7 @@ export default function CurrencyInputPanel({
                       <CurrencyLogo
                         size={'25px'}
                         currency={currency as WrappedCurrency}
-                      ></CurrencyLogo>
+                      />
                     )}
                     <p className='text-primaryText'>{`${
                       showETH ? nativeCurrency?.symbol + '+' : ''
@@ -144,7 +145,7 @@ export default function CurrencyInputPanel({
             </Box>
           </Box>
 
-          <Box className='inputWrapper'>
+          <Box className={styles1.inputWrapper}>
             <NumericalInput
               value={value}
               align='right'
@@ -178,7 +179,7 @@ export default function CurrencyInputPanel({
             )}
           </Box>
 
-          <Box className='v3-currency-input-usd-value'>
+          <Box className={styles.inputUsdValue}>
             <small className='text-secondary'>
               ${valueAsUsd.toLocaleString('us')}
             </small>

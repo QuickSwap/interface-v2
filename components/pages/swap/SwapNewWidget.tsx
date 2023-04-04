@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import styles from 'styles/pages/Swap.module.scss';
 
 const SwapNewsWidget: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -18,7 +19,7 @@ const SwapNewsWidget: React.FC = () => {
   }, []);
   return (
     <div
-      className='tradingview-widget-container wrapper'
+      className={`tradingview-widget-container wrapper ${styles.tradingviewWidget}`}
       ref={ref}
       style={{ height: '400px' }}
     >
