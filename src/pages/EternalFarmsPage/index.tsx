@@ -10,7 +10,7 @@ import { FarmingType } from '../../models/enums';
 import './index.scss';
 import { FormattedEternalFarming } from 'models/interfaces';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
-import { GlobalConst, GlobalData, GlobalValue } from 'constants/index';
+import { GlobalConst, GlobalData } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { ChainId } from '@uniswap/sdk';

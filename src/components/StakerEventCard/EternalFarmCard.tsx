@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { useMaticPrice } from 'state/application/hooks';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -65,6 +66,11 @@ export function EternalFarmCard({
   chainId,
 }: EternalFarmCardProps) {
   const { t } = useTranslation();
+  const parsedQuery = useParsedQueryString();
+  const farmStatus =
+    parsedQuery && parsedQuery.farmStatus
+      ? (parsedQuery.farmStatus as string)
+      : 'active';
   const apr = aprs ? aprs[id] : undefined;
   const poolApr = poolAprs ? poolAprs[pool.id] : undefined;
   const totalAPR =
@@ -225,7 +231,7 @@ export function EternalFarmCard({
       </Box>
 
       <Box width={isMobile ? '100%' : '10%'}>
-        {!isDetached && (
+        {farmStatus === 'active' && (
           <Button
             fullWidth
             style={{ height: 40, borderRadius: 10 }}
