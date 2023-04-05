@@ -25,7 +25,7 @@ import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
-import ZengoIcon from 'assets/images/zengo.webp';
+import ZengoIcon from 'assets/images/zengo.png';
 import { Presets } from 'state/mint/v3/reducer';
 import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
@@ -1128,6 +1128,15 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     href: null,
     color: '#E8831D',
   },
+  ZENGO_CONNECT: {
+    connector: zengoconnect,
+    name: GlobalConst.walletName.ZENGO_CONNECT,
+    iconName: ZengoIcon,
+    description: 'Connect to Zengo Wallet',
+    href: null,
+    color: '#4196FC',
+    mobile: true,
+  },
   ARKANE_CONNECT: {
     connector: arkaneconnect,
     name: GlobalConst.walletName.ARKANE_CONNECT,
@@ -1143,15 +1152,6 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Login using Portis hosted wallet',
     href: null,
     color: '#4A6C9B',
-    mobile: true,
-  },
-  ZENGO_CONNECT: {
-    connector: zengoconnect,
-    name: GlobalConst.walletName.ZENGO_CONNECT,
-    iconName: ZengoIcon,
-    description: 'Connect to Zengo Wallet',
-    href: null,
-    color: '#4196FC',
     mobile: true,
   },
 };
