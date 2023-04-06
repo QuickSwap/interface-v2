@@ -472,7 +472,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             <Box className='blurb'>
               <small>{t('newToMatic')}</small>
               <a
-                href='https://docs.matic.network/docs/develop/wallets/getting-started'
+                href='https://wiki.polygon.technology/docs/home/blockchain-basics/accounts'
                 target='_blank'
                 rel='noopener noreferrer'
               >
