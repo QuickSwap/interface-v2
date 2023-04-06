@@ -1,10 +1,8 @@
 import { Web3Provider } from '@ethersproject/providers';
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
-import { LedgerConnector } from '@web3-react/ledger-connector';
 import { UAuthConnector } from '@uauth/web3-react';
 import { WalletLinkConnector } from './WalletLink';
-import { PortisConnector } from './Portis';
 
 import { FortmaticConnector } from './Fortmatic';
 import { ArkaneConnector } from './Arkane';
@@ -62,7 +60,6 @@ const NETWORK_URL = 'https://polygon-rpc.com/';
 // const FORMATIC_KEY = 'pk_live_F937DF033A1666BF'
 // const PORTIS_ID = 'c0e2bf01-4b08-4fd5-ac7b-8e26b58cd236'
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;
-const PORTIS_ID = process.env.REACT_APP_PORTIS_ID;
 const MAINNET_NETWORK_URL = process.env.REACT_APP_MAINNET_NETWORK_URL;
 
 export const NETWORK_CHAIN_ID: number = parseInt(
@@ -159,28 +156,12 @@ export const fortmatic = new FortmaticConnector({
 });
 
 // mainnet only
-export const portis = new PortisConnector({
-  dAppId: PORTIS_ID ?? '',
-  networks: [137],
-  config: {
-    nodeUrl: NETWORK_URL,
-    chainId: 137,
-  },
-});
-
-// mainnet only
 export const walletlink = new WalletLinkConnector({
   url: NETWORK_URL,
   appName: 'Uniswap',
   appLogoUrl:
     'https://mpng.pngfly.com/20181202/bex/kisspng-emoji-domain-unicorn-pin-badges-sticker-unicorn-tumblr-emoji-unicorn-iphoneemoji-5c046729264a77.5671679315437924251569.jpg',
   supportedChainIds: [137],
-});
-
-export const ledger = new LedgerConnector({
-  chainId: 137,
-  url: NETWORK_URL,
-  pollingInterval: POLLING_INTERVAL,
 });
 
 export const unstopabbledomains = new UAuthConnector({

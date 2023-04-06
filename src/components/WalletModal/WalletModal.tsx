@@ -1,5 +1,5 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
-import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
+import { useWeb3React } from '@web3-react/core';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
@@ -54,7 +54,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
 }) => {
   const { t } = useTranslation();
   // important that these are destructed from the account-specific web3-react context
-  const { active, account, connector, activate, deactivate } = useWeb3React();
+  const { account, connector } = useWeb3React();
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
   const [error, setError] = useState<Error | string | undefined>(undefined);
@@ -76,15 +76,15 @@ const WalletModal: React.FC<WalletModalProps> = ({
     if (account && !previousAccount && walletModalOpen) {
       toggleWalletModal();
     }
-    if (!walletModalOpen && error) {
-      deactivate();
+    if (!walletModalOpen && error && connector.deactivate) {
+      connector.deactivate();
     }
   }, [
     account,
     previousAccount,
     toggleWalletModal,
     walletModalOpen,
-    deactivate,
+    connector,
     error,
   ]);
 
