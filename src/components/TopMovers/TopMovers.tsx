@@ -5,12 +5,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
-import {
-  getTopTokens,
-  getPriceClass,
-  formatNumber,
-  getTokenFromAddress,
-} from 'utils';
+import { getPriceClass, formatNumber, getTokenFromAddress } from 'utils';
 import 'components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice, useMaticPrice, useIsV2 } from 'state/application/hooks';
@@ -46,26 +41,34 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
     (async () => {
       if (isV2) {
         if (v2 && ethPrice.price && ethPrice.oneDayPrice) {
-          const data = await getTopTokens(
-            ethPrice.price,
-            ethPrice.oneDayPrice,
-            5,
-            chainId,
+          const res = await fetch(
+            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v2?chainId=${chainId}&limit=5`,
           );
-          if (data) {
-            updateTopTokens(data);
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText || res.statusText || `Failed to get top tokens`,
+            );
+          }
+          const data = await res.json();
+          if (data.data) {
+            updateTopTokens(data.data);
           }
         }
       } else {
         if (v3 && maticPrice.price && maticPrice.oneDayPrice) {
-          const data = await getTopTokensV3(
-            maticPrice.price,
-            maticPrice.oneDayPrice,
-            5,
-            chainId,
+          const res = await fetch(
+            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v3?chainId=${chainId}&limit=5`,
           );
-          if (data) {
-            updateTopTokens(data);
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText || res.statusText || `Failed to get top tokens`,
+            );
+          }
+          const data = await res.json();
+          if (data.data) {
+            updateTopTokens(data.data);
           }
         }
       }
