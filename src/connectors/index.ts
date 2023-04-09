@@ -1,22 +1,77 @@
 import { Web3Provider } from '@ethersproject/providers';
-import { InjectedConnector } from '@web3-react/injected-connector';
-import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
-import { UAuthConnector } from '@uauth/web3-react';
-import { WalletLinkConnector } from './WalletLink';
+import { initializeConnector, Web3ReactHooks } from '@web3-react/core';
+import { CoinbaseWallet } from '@web3-react/coinbase-wallet';
+import { GnosisSafe } from '@web3-react/gnosis-safe';
+import { MetaMask } from '@web3-react/metamask';
+import { Network } from '@web3-react/network';
+import { Connector } from '@web3-react/types';
+import { WalletConnectPopup } from './WalletConnect';
+// import { UAuthConnector } from '@uauth/web3-react';
 
 import { FortmaticConnector } from './Fortmatic';
 import { ArkaneConnector } from './Arkane';
-import { NetworkConnector } from './NetworkConnector';
-import { SafeAppConnector } from './SafeApp';
 import {
   getTrustWalletInjectedProvider,
   TrustWalletConnector,
 } from './TrustWalletConnector';
-import { MetaMaskConnector } from './MetaMaskConnector';
 import { ChainId } from '@uniswap/sdk';
 import { PhantomWalletConnector } from './PhantomWalletConnector';
+import MetamaskIcon from 'assets/images/metamask.png';
+import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
+import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
+import cypherDIcon from 'assets/images/cypherDIcon.png';
+import BitKeepIcon from 'assets/images/bitkeep.png';
+import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
+import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
+import PortisIcon from 'assets/images/portisIcon.png';
+import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
+import VenlyIcon from 'assets/images/venly.svg';
+import GnosisIcon from 'assets/images/gnosis_safe.png';
+import TrustIcon from 'assets/images/trust.png';
+import ZengoIcon from 'assets/images/zengo.webp';
+import { isMobile } from 'react-device-detect';
+import {
+  getIsCoinbaseWallet,
+  getIsInjected,
+  getIsMetaMaskWallet,
+} from './utils';
 
 const POLLING_INTERVAL = 12000;
+
+const getIsCoinbaseWalletBrowser = () => isMobile && getIsCoinbaseWallet();
+const getIsMetaMaskBrowser = () => isMobile && getIsMetaMaskWallet();
+const getIsInjectedMobileBrowser = () =>
+  getIsCoinbaseWalletBrowser() || getIsMetaMaskBrowser();
+const getShouldAdvertiseMetaMask = () =>
+  !getIsMetaMaskWallet() &&
+  !isMobile &&
+  (!getIsInjected() || getIsCoinbaseWallet());
+const getIsGenericInjector = () =>
+  getIsInjected() && !getIsMetaMaskWallet() && !getIsCoinbaseWallet();
+
+function onError(error: Error) {
+  console.debug(`web3-react error: ${error}`);
+}
+
+export enum ConnectionType {
+  INJECTED = 'INJECTED',
+  COINBASE_WALLET = 'COINBASE_WALLET',
+  WALLET_CONNECT = 'WALLET_CONNECT',
+  NETWORK = 'NETWORK',
+  GNOSIS_SAFE = 'GNOSIS_SAFE',
+}
+
+export interface Connection {
+  getName(): string;
+  connector: Connector;
+  hooks: Web3ReactHooks;
+  type: ConnectionType;
+  // TODO(WEB-3130): add darkmode check for icons
+  getIcon?(): string;
+  shouldDisplay(): boolean;
+  overrideActivate?: () => boolean;
+  isNew?: boolean;
+}
 
 export interface NetworkInfo {
   rpcUrl: string;
@@ -72,27 +127,29 @@ export const rpcMap = {
   [ChainId.DOGECHAIN]: networkInfoMap[ChainId.DOGECHAIN].rpcUrl,
   [ChainId.DOEGCHAIN_TESTNET]: networkInfoMap[ChainId.DOEGCHAIN_TESTNET].rpcUrl,
   [ChainId.ZKTESTNET]: networkInfoMap[ChainId.ZKTESTNET].rpcUrl,
+  [ChainId.ZKEVM]: networkInfoMap[ChainId.ZKEVM].rpcUrl,
 };
 
-export const network = new NetworkConnector({
-  urls: rpcMap,
-  defaultChainId: ChainId.MATIC,
-});
-
-export const mainnetNetwork = new NetworkConnector({
-  urls: {
-    [Number('1')]: MAINNET_NETWORK_URL || 'https://rpc.ankr.com/eth',
-  },
-});
+const [web3Network, web3NetworkHooks] = initializeConnector<Network>(
+  (actions) => new Network({ actions, urlMap: rpcMap, defaultChainId: 137 }),
+);
+export const networkConnection: Connection = {
+  getName: () => 'Network',
+  connector: web3Network,
+  hooks: web3NetworkHooks,
+  type: ConnectionType.NETWORK,
+  shouldDisplay: () => false,
+};
 
 export function getMainnetNetworkLibrary(): Web3Provider {
-  return new Web3Provider(mainnetNetwork.provider as any);
+  return new Web3Provider(networkConnection.connector.provider as any);
 }
 
 let networkLibrary: Web3Provider | undefined;
 export function getNetworkLibrary(): Web3Provider {
   return (networkLibrary =
-    networkLibrary ?? new Web3Provider(network.provider as any));
+    networkLibrary ??
+    new Web3Provider(networkConnection.connector.provider as any));
 }
 
 const supportedChainIds: number[] = [
@@ -104,44 +161,84 @@ const supportedChainIds: number[] = [
   ChainId.ZKEVM,
 ];
 
-export const injected = new InjectedConnector({
-  supportedChainIds: supportedChainIds,
-});
+const [web3GnosisSafe, web3GnosisSafeHooks] = initializeConnector<GnosisSafe>(
+  (actions) => new GnosisSafe({ actions }),
+);
+export const gnosisSafeConnection: Connection = {
+  getName: () => 'Gnosis Safe',
+  connector: web3GnosisSafe,
+  hooks: web3GnosisSafeHooks,
+  type: ConnectionType.GNOSIS_SAFE,
+  getIcon: () => GnosisIcon,
+  shouldDisplay: () => false,
+};
 
-export const metamask = new MetaMaskConnector({
-  supportedChainIds: supportedChainIds,
-});
-
-export const safeApp = new SafeAppConnector();
+const [web3Injected, web3InjectedHooks] = initializeConnector<MetaMask>(
+  (actions) => new MetaMask({ actions, onError }),
+);
+export const injectedConnection: Connection = {
+  getName: () => (getIsGenericInjector() ? 'Browser Wallet' : 'MetaMask'),
+  connector: web3Injected,
+  hooks: web3InjectedHooks,
+  type: ConnectionType.INJECTED,
+  getIcon: () => (getIsGenericInjector() ? 'arrow-right.svg' : MetamaskIcon),
+  shouldDisplay: () =>
+    getIsMetaMaskWallet() ||
+    getShouldAdvertiseMetaMask() ||
+    getIsGenericInjector(),
+  // If on non-injected, non-mobile browser, prompt user to install Metamask
+  overrideActivate: () => {
+    if (getShouldAdvertiseMetaMask()) {
+      window.open('https://metamask.io/', 'inst_metamask');
+      return true;
+    }
+    return false;
+  },
+};
 
 export const phantomconnect = new PhantomWalletConnector({
   supportedChainIds: [137, 80001],
 });
 
-export const zengoconnect = new WalletConnectConnector({
-  rpc: { 137: NETWORK_URL },
-  bridge: 'https://bridge.walletconnect.org',
-  qrcode: true,
-  qrcodeModalOptions: { mobileLinks: ['ZenGo'] },
-});
+const [web3WalletConnect, web3WalletConnectHooks] = initializeConnector<
+  WalletConnectPopup
+>((actions) => new WalletConnectPopup({ actions, onError }));
 
-// mainnet only
-export const walletconnect = new WalletConnectConnector({
-  rpc: rpcMap,
-  bridge: 'https://bridge.walletconnect.org',
-  qrcode: true,
-});
+export const walletConnectConnection: Connection = {
+  getName: () => 'WalletConnect',
+  connector: web3WalletConnect,
+  hooks: web3WalletConnectHooks,
+  type: ConnectionType.WALLET_CONNECT,
+  getIcon: () => WalletConnectIcon,
+  shouldDisplay: () => !getIsInjectedMobileBrowser(),
+};
+
+const [web3ZengoConnect, web3ZengoConnectHooks] = initializeConnector<
+  WalletConnectPopup
+>(
+  (actions) =>
+    new WalletConnectPopup({
+      actions,
+      onError,
+      qrcodeModalOptions: { mobileLinks: ['ZenGo'] },
+    }),
+);
+
+export const zengoConnectConnection: Connection = {
+  getName: () => 'WalletConnect',
+  connector: web3ZengoConnect,
+  hooks: web3ZengoConnectHooks,
+  type: ConnectionType.WALLET_CONNECT,
+  getIcon: () => ZengoIcon,
+  shouldDisplay: () => true,
+};
 
 // mainnet only
 export const trustconnect = !!getTrustWalletInjectedProvider()
   ? new TrustWalletConnector({
       supportedChainIds: [137],
     })
-  : new WalletConnectConnector({
-      rpc: { 137: NETWORK_URL },
-      bridge: 'https://bridge.walletconnect.org',
-      qrcode: true,
-    });
+  : walletConnectConnection;
 
 // mainnet only
 export const arkaneconnect = new ArkaneConnector({
@@ -155,22 +252,62 @@ export const fortmatic = new FortmaticConnector({
   chainId: 137,
 });
 
-// mainnet only
-export const walletlink = new WalletLinkConnector({
-  url: NETWORK_URL,
-  appName: 'Uniswap',
-  appLogoUrl:
-    'https://mpng.pngfly.com/20181202/bex/kisspng-emoji-domain-unicorn-pin-badges-sticker-unicorn-tumblr-emoji-unicorn-iphoneemoji-5c046729264a77.5671679315437924251569.jpg',
-  supportedChainIds: [137],
-});
+const [web3CoinbaseWallet, web3CoinbaseWalletHooks] = initializeConnector<
+  CoinbaseWallet
+>(
+  (actions) =>
+    new CoinbaseWallet({
+      actions,
+      options: {
+        url: rpcMap[ChainId.MATIC],
+        appName: 'QuickSwap',
+        appLogoUrl: CoinbaseWalletIcon,
+        reloadOnDisconnect: false,
+      },
+      onError,
+    }),
+);
 
-export const unstopabbledomains = new UAuthConnector({
-  clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-  redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+export const coinbaseWalletConnection: Connection = {
+  getName: () => 'Coinbase Wallet',
+  connector: web3CoinbaseWallet,
+  hooks: web3CoinbaseWalletHooks,
+  type: ConnectionType.COINBASE_WALLET,
+  getIcon: () => CoinbaseWalletIcon,
+  shouldDisplay: () =>
+    Boolean(
+      (isMobile && !getIsInjectedMobileBrowser()) ||
+        !isMobile ||
+        getIsCoinbaseWalletBrowser(),
+    ),
+  // If on a mobile browser that isn't the coinbase wallet browser, deeplink to the coinbase wallet app
+  overrideActivate: () => {
+    if (isMobile && !getIsInjectedMobileBrowser()) {
+      window.open('https://go.cb-w.com/mtUDhEZPy1', 'cbwallet');
+      return true;
+    }
+    return false;
+  },
+};
 
-  // Scope must include openid and wallet
-  scope: 'openid wallet',
+// export const unstopabbledomains = new UAuthConnector({
+//   clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+//   redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
 
-  // Injected and walletconnect connectors are required.
-  connectors: { injected, walletconnect },
-});
+//   // Scope must include openid and wallet
+//   scope: 'openid wallet',
+
+//   // Injected and walletconnect connectors are required.
+//   connectors: { injected, walletconnect },
+// });
+
+export function getConnections() {
+  return [
+    injectedConnection,
+    walletConnectConnection,
+    zengoConnectConnection,
+    coinbaseWalletConnection,
+    gnosisSafeConnection,
+    networkConnection,
+  ];
+}

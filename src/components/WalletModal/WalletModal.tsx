@@ -1,6 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { useWeb3React } from '@web3-react/core';
-import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
+// import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
@@ -8,9 +8,9 @@ import { Box } from '@material-ui/core';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
-import { fortmatic, injected, metamask, portis, safeApp } from 'connectors';
+// import { fortmatic, injected, metamask, portis, safeApp } from 'connectors';
 import { OVERLAY_READY } from 'connectors/Fortmatic';
-import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import usePrevious from 'hooks/usePrevious';
 import { ApplicationModal } from 'state/application/actions';
 import {
@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { UAuthConnector } from '@uauth/web3-react';
 import UAuth from '@uauth/js';
 
-import { InjectedConnector } from '@web3-react/injected-connector';
+// import { InjectedConnector } from '@web3-react/injected-connector';
 import {
   getTrustWalletInjectedProvider,
   TrustWalletConnector,
@@ -32,7 +32,8 @@ import {
 import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
-import { getMetaMaskInjectedProvider } from 'connectors/MetaMaskConnector';
+import { getConnections } from 'connectors';
+// import { getMetaMaskInjectedProvider } from 'connectors/MetaMaskConnector';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -122,7 +123,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     let name = '';
     let found = false;
 
-    Object.keys(SUPPORTED_WALLETS).map((key) => {
+    getConnections().map((key) => {
       if (connector === SUPPORTED_WALLETS[key].connector) {
         if (found == false) {
           found = true;
@@ -424,18 +425,10 @@ const WalletModal: React.FC<WalletModalProps> = ({
             <Close className='cursor-pointer' onClick={toggleWalletModal} />
           </Box>
           <Box mt={2} textAlign='center'>
-            <h6>
-              {error instanceof UnsupportedChainIdError
-                ? t('wrongNetwork')
-                : t('errorConnect')}
-            </h6>
+            <h6>{t('errorConnect')}</h6>
           </Box>
           <Box mt={3} mb={2} textAlign='center'>
-            <small>
-              {error instanceof UnsupportedChainIdError
-                ? t('connectPolygonNetwork')
-                : t('errorConnectRefresh')}
-            </small>
+            <small>{t('errorConnectRefresh')}</small>
           </Box>
         </Box>
       );
