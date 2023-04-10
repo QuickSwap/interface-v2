@@ -145,6 +145,7 @@ export const FARMING_CENTER: AddressMap = {
 
 export const V2_FACTORY_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
+  [ChainId.DOGECHAIN]: '0xC3550497E591Ac6ed7a7E03ffC711CfB7412E57F',
 };
 
 export const EXCHANGE_FACTORY_ADDRESS_MAPS: ExchangeAddressMap = {
@@ -171,6 +172,7 @@ export const EXCHANGE_PAIR_INIT_HASH_MAPS: ExchangeAddressMap = {
 export const V2_ROUTER_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
   [ChainId.MUMBAI]: '0x8954AfA98594b838bda56FE4C12a09D7739D179b',
+  [ChainId.DOGECHAIN]: '0xAF96E63f965374dB6514e8CF595fB0a3f4d7763c',
 };
 
 export const PARASWAP_PROXY_ROUTER_ADDRESS: AddressMap = {
@@ -568,6 +570,13 @@ export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
     //GHST,
     MI[ChainId.MATIC],
   ],
+  [ChainId.DOGECHAIN]: [
+    WETH[ChainId.DOGECHAIN],
+    USDC[ChainId.DOGECHAIN],
+    USDT[ChainId.DOGECHAIN],
+    DC[ChainId.DOGECHAIN],
+    DD[ChainId.DOGECHAIN],
+  ],
 };
 
 export const StableCoins: { [ChainId: number]: Token[] } = {
@@ -666,6 +675,13 @@ export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
     NEW_QUICK[ChainId.MATIC],
     ETHER[ChainId.MATIC],
     WBTC[ChainId.MATIC],
+  ],
+  [ChainId.DOGECHAIN]: [
+    WETH[ChainId.DOGECHAIN],
+    USDC[ChainId.DOGECHAIN],
+    USDT[ChainId.DOGECHAIN],
+    DC[ChainId.DOGECHAIN],
+    DD[ChainId.DOGECHAIN],
   ],
 };
 

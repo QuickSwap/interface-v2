@@ -32,7 +32,11 @@ import {
   useNewQUICKContract,
   useQUICKContract,
 } from 'hooks/useContract';
-import { useUSDCPrices, useUSDCPricesToken } from 'utils/useUSDCPrice';
+import {
+  useUSDCPrices,
+  useUSDCPricesFromAddresses,
+  useUSDCPricesToken,
+} from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
 import {
@@ -279,20 +283,12 @@ export function useFilteredSyrupInfo(
     'totalSupply',
   );
 
-  const stakingTokenPairs = usePairs(
-    info.map((item) => [
-      unwrappedToken(item.token),
-      unwrappedToken(item.baseToken),
-    ]),
+  const usdTokenPrices = useUSDCPricesFromAddresses(
+    info.map((item) => item.token.address),
   );
 
-  const usdBaseTokenPrices = useUSDCPrices(
-    info.map((item) => unwrappedToken(item.baseToken)),
-  );
-
-  const stakingTokenPrices = useUSDCPricesToken(
-    info.map((item) => item.stakingToken),
-    chainId,
+  const stakingTokenPrices = useUSDCPricesFromAddresses(
+    info.map((item) => item.stakingToken.address),
   );
 
   return useMemo(() => {
@@ -303,11 +299,15 @@ export function useFilteredSyrupInfo(
         // these two are dependent on account
         const balanceState = balances[index];
         const earnedAmountState = earnedAmounts[index];
-        const stakingTokenPrice = stakingTokenPrices[index];
 
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
         const syrupInfo = info[index];
+        const stakingTokenPrice = stakingTokenPrices?.find(
+          (item) =>
+            item.address.toLowerCase() ===
+            syrupInfo.stakingToken.address.toLowerCase(),
+        );
 
         if (
           // these may be undefined if not logged in
@@ -319,14 +319,14 @@ export function useFilteredSyrupInfo(
         ) {
           // get the LP token
           const token = syrupInfo.token;
-          const [, stakingTokenPair] = stakingTokenPairs[index];
-          const tokenPairPrice = stakingTokenPair?.priceOf(token);
-          const usdPriceBaseToken = usdBaseTokenPrices[index];
-          const priceOfRewardTokenInUSD =
-            tokenPairPrice && usdPriceBaseToken
-              ? Number(tokenPairPrice.toSignificant()) *
-                Number(usdPriceBaseToken.toSignificant())
-              : undefined;
+          const usdPriceToken = usdTokenPrices?.find(
+            (item) =>
+              item.address.toLowerCase() ===
+              syrupInfo.token.address.toLowerCase(),
+          );
+          const priceOfRewardTokenInUSD = usdPriceToken
+            ? usdPriceToken.price
+            : 0;
 
           const rewards = syrupInfo.rate * (priceOfRewardTokenInUSD ?? 0);
 
@@ -390,7 +390,8 @@ export function useFilteredSyrupInfo(
             rewards,
             stakingToken: syrupInfo.stakingToken,
             valueOfTotalStakedAmountInUSDC: totalStakedAmount
-              ? Number(totalStakedAmount.toExact()) * stakingTokenPrice
+              ? Number(totalStakedAmount.toExact()) *
+                (stakingTokenPrice ? stakingTokenPrice.price : 0)
               : undefined,
             sponsored: syrupInfo.stakingInfo.sponsored,
             sponsorLink: syrupInfo.stakingInfo.link,
@@ -401,15 +402,14 @@ export function useFilteredSyrupInfo(
       [],
     );
   }, [
-    balances,
     chainId,
-    earnedAmounts,
-    info,
     rewardsAddresses,
+    balances,
+    earnedAmounts,
     totalSupplies,
-    stakingTokenPairs,
-    usdBaseTokenPrices,
+    info,
     stakingTokenPrices,
+    usdTokenPrices,
   ]).filter((syrupInfo) =>
     filter && filter.isStaked
       ? syrupInfo.stakedAmount && syrupInfo.stakedAmount.greaterThan('0')

@@ -219,9 +219,7 @@ const SwapMain: React.FC = () => {
                       key={option.key}
                       disabled={option.key === selectedIndex}
                       selected={option.key === selectedIndex}
-                      onClick={(event) =>
-                        handleMenuItemClick(event, option.key)
-                      }
+                      onClick={(event) => handleMenuItemClick(event, index)}
                     >
                       {t(option.name)}
                     </MenuItem>
