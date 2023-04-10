@@ -12,6 +12,7 @@ import {
   metamask,
   zengoconnect,
   phantomconnect,
+  okxConnect,
 } from '../connectors';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -28,6 +29,7 @@ import TrustIcon from 'assets/images/trust.png';
 import ZengoIcon from 'assets/images/zengo.webp';
 import { Presets } from 'state/mint/v3/reducer';
 import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
+import OKXWALLETIcon from 'assets/images/OKXWallet.svg';
 import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
 
 export enum TxnType {
@@ -211,11 +213,12 @@ export const GlobalConst = {
     BITKEEP: 'BitKeep',
     INJECTED: 'Injected',
     SAFE_APP: 'Gnosis Safe App',
+    ZENGO_CONNECT: 'ZenGo',
+    OKXWALLET: 'OKX wallet',
     ARKANE_CONNECT: 'Venly',
     Portis: 'Portis',
     WALLET_LINK: 'Coinbase Wallet',
     WALLET_CONNECT: 'WalletConnect',
-    ZENGO_CONNECT: 'ZenGo',
   },
 };
 
@@ -1149,6 +1152,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: 'Unstoppable Domains',
     iconName: UnstoppableDomainsIcon,
     description: 'Unstoppable Domains',
+    href: null,
+    color: '#E8831D',
+  },
+  OKXWALLET: {
+    connector: okxConnect,
+    name: GlobalConst.walletName.OKXWALLET,
+    iconName: OKXWALLETIcon,
+    description: 'OKX wallet.',
     href: null,
     color: '#E8831D',
   },
