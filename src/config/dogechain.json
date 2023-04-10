@@ -1,6 +1,6 @@
 {
   "v3": true,
-  "v2": false,
+  "v2": true,
   "rpc": "https://rpc-sg.dogechain.dog",
   "blockExplorer": "https://explorer.dogechain.dog",
   "aprAPINetwork": "DogeChain",
