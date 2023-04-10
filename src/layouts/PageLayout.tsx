@@ -21,7 +21,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     console.log('getPageWrapperClassName => ', location);
     if (isProMode) {
       return '';
-    } else if (location.href.indexOf('/swap?') > 0) {
+    } else if (location.href.indexOf('/swap') > 0) {
       return 'pageWrapper-no-max';
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
