@@ -1,18 +1,23 @@
 export const getIsInjected = () => Boolean(window.ethereum);
 
-// When using Brave browser, `isMetaMask` is set to true when using the built-in wallet
-// This variable should be true only when using the MetaMask extension
-// https://wallet-docs.brave.com/ethereum/wallet-detection#compatability-with-metamask
 type NonMetaMaskFlag =
   | 'isRabby'
   | 'isBraveWallet'
   | 'isTrustWallet'
-  | 'isLedgerConnect';
+  | 'isLedgerConnect'
+  | 'isBlockWallet'
+  | 'isCypherD'
+  | 'isBitKeep'
+  | 'isPhantom';
 const allNonMetamaskFlags: NonMetaMaskFlag[] = [
   'isRabby',
   'isBraveWallet',
   'isTrustWallet',
   'isLedgerConnect',
+  'isBlockWallet',
+  'isCypherD',
+  'isBitKeep',
+  'isPhantom',
 ];
 export const getIsMetaMaskWallet = () => {
   const windowAsAny = window as any;

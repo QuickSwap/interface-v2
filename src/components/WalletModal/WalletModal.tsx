@@ -32,8 +32,9 @@ import {
 import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
-import { getConnections } from 'connectors';
-// import { getMetaMaskInjectedProvider } from 'connectors/MetaMaskConnector';
+import { getConnections, injectedConnection } from 'connectors';
+import { getIsMetaMaskWallet } from 'connectors/utils';
+import { Connector } from '@web3-react/types';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -55,15 +56,13 @@ const WalletModal: React.FC<WalletModalProps> = ({
 }) => {
   const { t } = useTranslation();
   // important that these are destructed from the account-specific web3-react context
-  const { account, connector } = useWeb3React();
+  const { account, connector, isActive } = useWeb3React();
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
   const [error, setError] = useState<Error | string | undefined>(undefined);
   const { updateUDDomain } = useUDDomain();
 
-  const [pendingWallet, setPendingWallet] = useState<
-    AbstractConnector | undefined
-  >();
+  const [pendingWallet, setPendingWallet] = useState<Connector | undefined>();
 
   const [pendingError, setPendingError] = useState<boolean>();
 
@@ -71,6 +70,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const toggleWalletModal = useWalletModalToggle();
 
   const previousAccount = usePrevious(account);
+
+  const connections = getConnections();
 
   // close on connection, when logged out before
   useEffect(() => {
@@ -99,35 +100,35 @@ const WalletModal: React.FC<WalletModalProps> = ({
   }, [walletModalOpen]);
 
   // close modal when a connection is successful
-  const activePrevious = usePrevious(active);
+  const activePrevious = usePrevious(isActive);
   const connectorPrevious = usePrevious(connector);
   useEffect(() => {
     if (
       walletModalOpen &&
-      ((active && !activePrevious) ||
+      ((isActive && !activePrevious) ||
         (connector && connector !== connectorPrevious && !error))
     ) {
       setWalletView(WALLET_VIEWS.ACCOUNT);
     }
   }, [
     setWalletView,
-    active,
     error,
     connector,
     walletModalOpen,
     activePrevious,
     connectorPrevious,
+    isActive,
   ]);
 
-  const tryActivation = async (connector: AbstractConnector | undefined) => {
+  const tryActivation = async (connector: Connector) => {
     let name = '';
     let found = false;
 
-    getConnections().map((key) => {
-      if (connector === SUPPORTED_WALLETS[key].connector) {
+    connections.map((option) => {
+      if (connector === option.connector) {
         if (found == false) {
           found = true;
-          return (name = SUPPORTED_WALLETS[key].name);
+          return (name = option.name);
         } else {
           return true;
         }
@@ -143,79 +144,108 @@ const WalletModal: React.FC<WalletModalProps> = ({
     setPendingWallet(connector); // set wallet for pending view
     setWalletView(WALLET_VIEWS.PENDING);
 
-    if (connector instanceof InjectedConnector) {
-      const { _oldMetaMask } = window as any;
-      if (_oldMetaMask) {
-        window.ethereum = _oldMetaMask;
-        name = GlobalConst.walletName.METAMASK;
+    try {
+      await connector.activate();
+
+      if (
+        connector instanceof UAuthConnector &&
+        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
+      ) {
+        const uauth = new UAuth({
+          clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+          redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+          scope: 'openid wallet',
+        });
+        uauth
+          .user()
+          .then((user) => {
+            updateUDDomain(user.sub);
+          })
+          .catch(() => {
+            setError('User does not exist.');
+          });
+      } else {
+        updateUDDomain(undefined);
       }
+    } catch (e) {
+      setPendingError(true);
     }
+
+    // if (connector instanceof InjectedConnector) {
+    //   const { _oldMetaMask } = window as any;
+    //   if (_oldMetaMask) {
+    //     window.ethereum = _oldMetaMask;
+    //     name = GlobalConst.walletName.METAMASK;
+    //   }
+    // }
 
     // if the connector is walletconnect and the user has already tried to connect, manually reset the connector
-    if (
-      connector instanceof WalletConnectConnector &&
-      connector.walletConnectProvider?.wc?.uri
-    ) {
-      connector.walletConnectProvider = undefined;
-    }
+    // if (
+    //   connector instanceof WalletConnectConnector &&
+    //   connector.walletConnectProvider?.wc?.uri
+    // ) {
+    //   connector.walletConnectProvider = undefined;
+    // }
 
-    if (connector instanceof TrustWalletConnector) {
-      const { trustwallet } = window as any;
-      if (trustwallet) {
-        if (window.ethereum && window.ethereum.isMetaMask) {
-          (window as any)['_oldMetaMask'] = window.ethereum;
-        }
-        window.ethereum = trustwallet;
-      }
-    }
+    // if (connector instanceof TrustWalletConnector) {
+    //   const { trustwallet } = window as any;
+    //   if (trustwallet) {
+    //     if (window.ethereum && window.ethereum.isMetaMask) {
+    //       (window as any)['_oldMetaMask'] = window.ethereum;
+    //     }
+    //     window.ethereum = trustwallet;
+    //   }
+    // }
 
-    connector &&
-      activate(connector, undefined, true)
-        .then(() => {
-          if (
-            connector instanceof UAuthConnector &&
-            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
-            process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
-          ) {
-            const uauth = new UAuth({
-              clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-              redirectUri:
-                process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
-              scope: 'openid wallet',
-            });
-            uauth
-              .user()
-              .then((user) => {
-                updateUDDomain(user.sub);
-              })
-              .catch(() => {
-                setError('User does not exist.');
-              });
-          } else {
-            updateUDDomain(undefined);
-          }
-          setError(undefined);
-        })
-        .catch((error) => {
-          if (error instanceof UnsupportedChainIdError) {
-            setError(error);
-          } else {
-            setPendingError(true);
-          }
-        });
+    // connector &&
+    //   connector
+    //     .activate()
+    //     .then(() => {
+    //       if (
+    //         connector instanceof UAuthConnector &&
+    //         process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+    //         process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
+    //       ) {
+    //         const uauth = new UAuth({
+    //           clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+    //           redirectUri:
+    //             process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+    //           scope: 'openid wallet',
+    //         });
+    //         uauth
+    //           .user()
+    //           .then((user) => {
+    //             updateUDDomain(user.sub);
+    //           })
+    //           .catch(() => {
+    //             setError('User does not exist.');
+    //           });
+    //       } else {
+    //         updateUDDomain(undefined);
+    //       }
+    //       setError(undefined);
+    //     })
+    //     .catch((error) => {
+    //       if (error instanceof UnsupportedChainIdError) {
+    //         setError(error);
+    //       } else {
+    //         setPendingError(true);
+    //       }
+    //     });
   };
 
   // close wallet modal if fortmatic modal is active
-  useEffect(() => {
-    fortmatic.on(OVERLAY_READY, () => {
-      toggleWalletModal();
-    });
-  }, [toggleWalletModal]);
+  // useEffect(() => {
+  //   fortmatic.on(OVERLAY_READY, () => {
+  //     toggleWalletModal();
+  //   });
+  // }, [toggleWalletModal]);
 
   // get wallets user can switch too, depending on device/browser
   function getOptions() {
     const { ethereum, web3, _oldMetaMask } = window as any;
-    const isMetamask = !!getMetaMaskInjectedProvider() || _oldMetaMask;
+    const isMetamask = getIsMetaMaskWallet();
     const isBlockWallet = ethereum && ethereum.isBlockWallet;
     const isCypherD = ethereum && ethereum.isCypherD;
     const isBitKeep = ethereum && ethereum.isBitKeep;
@@ -226,19 +256,17 @@ const WalletModal: React.FC<WalletModalProps> = ({
     // is trust wallet installed?
     const isTrustWalledInstalled = !!trustWallet;
 
-    return Object.keys(SUPPORTED_WALLETS).map((key) => {
-      const option = SUPPORTED_WALLETS[key];
-
+    return connections.map((option) => {
       //disable safe app by in the list
-      if (option.connector === safeApp) {
-        return null;
-      }
+      // if (option.connector === safeApp) {
+      //   return null;
+      // }
       // check for mobile options
       if (isMobile) {
         //disable portis on mobile for now
-        if (option.connector === portis) {
-          return null;
-        }
+        // if (option.connector === portis) {
+        //   return null;
+        // }
 
         if (!web3 && !ethereum && option.mobile) {
           if (
@@ -247,8 +275,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
           ) {
             return (
               <Option
-                id={`connect-${key}`}
-                key={key}
+                id={`connect-${option.key}`}
+                key={option.key}
                 color={'#E8831D'}
                 header={t('installBrave')}
                 subheader={t('installBraveDesc')}
@@ -264,11 +292,11 @@ const WalletModal: React.FC<WalletModalProps> = ({
                   !option.href &&
                   tryActivation(option.connector);
               }}
-              id={`connect-${key}`}
-              key={key}
+              id={`connect-${option.key}`}
+              key={option.key}
               active={
                 option.connector === connector &&
-                (connector !== injected ||
+                (connector !== injectedConnection.connector ||
                   isCypherD ===
                     (option.name === GlobalConst.walletName.CYPHERD) ||
                   isBlockWallet ===
@@ -293,14 +321,14 @@ const WalletModal: React.FC<WalletModalProps> = ({
       }
 
       // overwrite injected when needed
-      if (option.connector === injected || option.connector === metamask) {
+      if (option.connector === injectedConnection.connector) {
         // don't show injected if there's no injected provider
         if (!(web3 || ethereum)) {
           if (option.name === GlobalConst.walletName.METAMASK) {
             return (
               <Option
-                id={`connect-${key}`}
-                key={key}
+                id={`connect-${option.name}`}
+                key={option.name}
                 color={'#E8831D'}
                 header={t('installMetamask')}
                 subheader={null}
@@ -339,8 +367,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
         ) {
           return (
             <Option
-              id={`connect-${key}`}
-              key={key}
+              id={`connect-${option.name}`}
+              key={option.name}
               color={'#E8831D'}
               header={t('installBrave')}
               subheader={t('installBraveDesc')}
@@ -368,8 +396,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
       ) {
         return (
           <Option
-            id={`connect-${key}`}
-            key={key}
+            id={`connect-${option.key}`}
+            key={option.key}
             color={'#E8831D'}
             header={t('installPhantom')}
             subheader={t('installPhantomDesc')}
@@ -384,16 +412,16 @@ const WalletModal: React.FC<WalletModalProps> = ({
         !isMobile &&
         !option.mobileOnly && (
           <Option
-            id={`connect-${key}`}
+            id={`connect-${option.key}`}
             onClick={() => {
               option.connector === connector
                 ? setWalletView(WALLET_VIEWS.ACCOUNT)
                 : !option.href && tryActivation(option.connector);
             }}
-            key={key}
+            key={option.key}
             active={
               option.connector === connector &&
-              (connector !== injected ||
+              (connector !== injectedConnection.connector ||
                 isCypherD ===
                   (option.name === GlobalConst.walletName.CYPHERD) ||
                 isBlockWallet ===

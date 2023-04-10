@@ -8,8 +8,8 @@ import { Connector } from '@web3-react/types';
 import { WalletConnectPopup } from './WalletConnect';
 // import { UAuthConnector } from '@uauth/web3-react';
 
-import { FortmaticConnector } from './Fortmatic';
-import { ArkaneConnector } from './Arkane';
+// import { FortmaticConnector } from './Fortmatic';
+// import { ArkaneConnector } from './Arkane';
 import {
   getTrustWalletInjectedProvider,
   TrustWalletConnector,
@@ -35,6 +35,7 @@ import {
   getIsInjected,
   getIsMetaMaskWallet,
 } from './utils';
+import { GlobalConst } from 'constants/index';
 
 const POLLING_INTERVAL = 12000;
 
@@ -62,15 +63,19 @@ export enum ConnectionType {
 }
 
 export interface Connection {
-  getName(): string;
+  key: string;
   connector: Connector;
   hooks: Web3ReactHooks;
   type: ConnectionType;
-  // TODO(WEB-3130): add darkmode check for icons
-  getIcon?(): string;
-  shouldDisplay(): boolean;
-  overrideActivate?: () => boolean;
-  isNew?: boolean;
+  name: string;
+  iconName: string;
+  description: string;
+  color: string;
+  href?: string;
+  primary?: true;
+  mobile?: true;
+  mobileOnly?: true;
+  installLink?: string | null;
 }
 
 export interface NetworkInfo {
@@ -133,23 +138,26 @@ export const rpcMap = {
 const [web3Network, web3NetworkHooks] = initializeConnector<Network>(
   (actions) => new Network({ actions, urlMap: rpcMap, defaultChainId: 137 }),
 );
+
 export const networkConnection: Connection = {
-  getName: () => 'Network',
+  key: 'NETWORK',
+  name: 'Network',
   connector: web3Network,
   hooks: web3NetworkHooks,
   type: ConnectionType.NETWORK,
-  shouldDisplay: () => false,
+  iconName: '',
+  description: '',
+  color: '',
 };
 
 export function getMainnetNetworkLibrary(): Web3Provider {
-  return new Web3Provider(networkConnection.connector.provider as any);
+  return new Web3Provider(web3Network.provider as any);
 }
 
 let networkLibrary: Web3Provider | undefined;
 export function getNetworkLibrary(): Web3Provider {
   return (networkLibrary =
-    networkLibrary ??
-    new Web3Provider(networkConnection.connector.provider as any));
+    networkLibrary ?? new Web3Provider(web3Network.provider as any));
 }
 
 const supportedChainIds: number[] = [
@@ -165,35 +173,50 @@ const [web3GnosisSafe, web3GnosisSafeHooks] = initializeConnector<GnosisSafe>(
   (actions) => new GnosisSafe({ actions }),
 );
 export const gnosisSafeConnection: Connection = {
-  getName: () => 'Gnosis Safe',
+  key: 'SAFE_APP',
+  name: GlobalConst.walletName.SAFE_APP,
   connector: web3GnosisSafe,
   hooks: web3GnosisSafeHooks,
   type: ConnectionType.GNOSIS_SAFE,
-  getIcon: () => GnosisIcon,
-  shouldDisplay: () => false,
+  iconName: GnosisIcon,
+  color: '#4196FC',
+  description: 'Login using gnosis safe app',
 };
 
 const [web3Injected, web3InjectedHooks] = initializeConnector<MetaMask>(
   (actions) => new MetaMask({ actions, onError }),
 );
 export const injectedConnection: Connection = {
-  getName: () => (getIsGenericInjector() ? 'Browser Wallet' : 'MetaMask'),
+  key: 'INJECTED',
+  name: GlobalConst.walletName.INJECTED,
   connector: web3Injected,
   hooks: web3InjectedHooks,
   type: ConnectionType.INJECTED,
-  getIcon: () => (getIsGenericInjector() ? 'arrow-right.svg' : MetamaskIcon),
-  shouldDisplay: () =>
-    getIsMetaMaskWallet() ||
-    getShouldAdvertiseMetaMask() ||
-    getIsGenericInjector(),
-  // If on non-injected, non-mobile browser, prompt user to install Metamask
-  overrideActivate: () => {
-    if (getShouldAdvertiseMetaMask()) {
-      window.open('https://metamask.io/', 'inst_metamask');
-      return true;
-    }
-    return false;
-  },
+  iconName: 'arrow-right.svg',
+  color: '#010101',
+  description: 'Injected web3 provider.',
+};
+
+export const metamaskConnection: Connection = {
+  key: 'METAMASK',
+  name: GlobalConst.walletName.METAMASK,
+  connector: web3Injected,
+  hooks: web3InjectedHooks,
+  type: ConnectionType.INJECTED,
+  iconName: MetamaskIcon,
+  color: '#E8831D',
+  description: 'Easy-to-use browser extension.',
+};
+
+export const cypherDConnection: Connection = {
+  key: 'CYPHERD',
+  name: GlobalConst.walletName.CYPHERD,
+  connector: web3Injected,
+  hooks: web3InjectedHooks,
+  type: ConnectionType.INJECTED,
+  iconName: cypherDIcon,
+  color: '#E8831D',
+  description: 'CypherD browser extension.',
 };
 
 export const phantomconnect = new PhantomWalletConnector({
@@ -205,12 +228,15 @@ const [web3WalletConnect, web3WalletConnectHooks] = initializeConnector<
 >((actions) => new WalletConnectPopup({ actions, onError }));
 
 export const walletConnectConnection: Connection = {
-  getName: () => 'WalletConnect',
+  key: 'WALLET_CONNECT',
+  name: GlobalConst.walletName.WALLET_CONNECT,
   connector: web3WalletConnect,
   hooks: web3WalletConnectHooks,
   type: ConnectionType.WALLET_CONNECT,
-  getIcon: () => WalletConnectIcon,
-  shouldDisplay: () => !getIsInjectedMobileBrowser(),
+  iconName: WalletConnectIcon,
+  color: '#4196FC',
+  description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
+  mobile: true,
 };
 
 const [web3ZengoConnect, web3ZengoConnectHooks] = initializeConnector<
@@ -225,12 +251,15 @@ const [web3ZengoConnect, web3ZengoConnectHooks] = initializeConnector<
 );
 
 export const zengoConnectConnection: Connection = {
-  getName: () => 'WalletConnect',
+  key: 'ZENGO_CONNECT',
+  name: GlobalConst.walletName.ZENGO_CONNECT,
   connector: web3ZengoConnect,
   hooks: web3ZengoConnectHooks,
   type: ConnectionType.WALLET_CONNECT,
-  getIcon: () => ZengoIcon,
-  shouldDisplay: () => true,
+  iconName: ZengoIcon,
+  color: '#4196FC',
+  description: 'Connect to Zengo Wallet',
+  mobile: true,
 };
 
 // mainnet only
@@ -241,16 +270,16 @@ export const trustconnect = !!getTrustWalletInjectedProvider()
   : walletConnectConnection;
 
 // mainnet only
-export const arkaneconnect = new ArkaneConnector({
-  clientID: 'QuickSwap',
-  chainId: 137,
-});
+// export const arkaneconnect = new ArkaneConnector({
+//   clientID: 'QuickSwap',
+//   chainId: 137,
+// });
 
 // mainnet only
-export const fortmatic = new FortmaticConnector({
-  apiKey: FORMATIC_KEY ?? '',
-  chainId: 137,
-});
+// export const fortmatic = new FortmaticConnector({
+//   apiKey: FORMATIC_KEY ?? '',
+//   chainId: 137,
+// });
 
 const [web3CoinbaseWallet, web3CoinbaseWalletHooks] = initializeConnector<
   CoinbaseWallet
@@ -269,25 +298,14 @@ const [web3CoinbaseWallet, web3CoinbaseWalletHooks] = initializeConnector<
 );
 
 export const coinbaseWalletConnection: Connection = {
-  getName: () => 'Coinbase Wallet',
+  key: 'WALLET_LINK',
+  name: GlobalConst.walletName.WALLET_LINK,
   connector: web3CoinbaseWallet,
   hooks: web3CoinbaseWalletHooks,
   type: ConnectionType.COINBASE_WALLET,
-  getIcon: () => CoinbaseWalletIcon,
-  shouldDisplay: () =>
-    Boolean(
-      (isMobile && !getIsInjectedMobileBrowser()) ||
-        !isMobile ||
-        getIsCoinbaseWalletBrowser(),
-    ),
-  // If on a mobile browser that isn't the coinbase wallet browser, deeplink to the coinbase wallet app
-  overrideActivate: () => {
-    if (isMobile && !getIsInjectedMobileBrowser()) {
-      window.open('https://go.cb-w.com/mtUDhEZPy1', 'cbwallet');
-      return true;
-    }
-    return false;
-  },
+  iconName: CoinbaseWalletIcon,
+  color: '#315CF5',
+  description: 'Use Coinbase Wallet app on mobile device',
 };
 
 // export const unstopabbledomains = new UAuthConnector({
@@ -303,11 +321,12 @@ export const coinbaseWalletConnection: Connection = {
 
 export function getConnections() {
   return [
+    cypherDConnection,
     injectedConnection,
+    metamaskConnection,
     walletConnectConnection,
     zengoConnectConnection,
     coinbaseWalletConnection,
     gnosisSafeConnection,
-    networkConnection,
   ];
 }

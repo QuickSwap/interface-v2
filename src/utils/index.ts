@@ -57,12 +57,7 @@ import {
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
-import {
-  GlobalConst,
-  GlobalValue,
-  SUPPORTED_CHAINIDS,
-  SUPPORTED_WALLETS,
-} from 'constants/index';
+import { GlobalConst, GlobalValue, SUPPORTED_CHAINIDS } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
 import {
@@ -76,8 +71,7 @@ import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
-import { AbstractConnector } from '@web3-react/abstract-connector';
-import { injected } from 'connectors';
+import { Connection, getConnections, injectedConnection } from 'connectors';
 import Web3 from 'web3';
 import { useActiveWeb3React } from 'hooks';
 import { DLQUICK, NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
@@ -96,6 +90,7 @@ import {
   SWAP_TRANSACTIONS_v3,
   TOKENS_FROM_ADDRESSES_V3,
 } from 'apollo/queries-v3';
+import { Connector } from '@web3-react/types';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -2365,9 +2360,7 @@ export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-export function getWalletKeys(
-  connector: AbstractConnector | undefined,
-): string[] {
+export function getWalletKeys(connector: Connector): Connection[] {
   const { ethereum } = window as any;
   const isMetaMask = !!(
     ethereum &&
@@ -2379,15 +2372,16 @@ export function getWalletKeys(
   const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
   const isCypherDWallet = !!(ethereum && ethereum.isCypherD);
   const isBraveWallet = !!(ethereum && ethereum.isBraveWallet);
-  return Object.keys(SUPPORTED_WALLETS).filter(
-    (k) =>
-      SUPPORTED_WALLETS[k].connector === connector &&
-      (connector !== injected ||
-        (isCypherDWallet && k == 'CYPHERD') ||
-        (isBlockWallet && k === 'BLOCKWALLET') ||
-        (isBitkeep && k === 'BITKEEP') ||
-        (isMetaMask && k === 'METAMASK') ||
-        (isBraveWallet && k === 'BRAVEWALLET')),
+  const connections = getConnections();
+  return connections.filter(
+    (option) =>
+      option.connector === connector &&
+      (connector !== injectedConnection.connector ||
+        (isCypherDWallet && option.key == 'CYPHERD') ||
+        (isBlockWallet && option.key === 'BLOCKWALLET') ||
+        (isBitkeep && option.key === 'BITKEEP') ||
+        (isMetaMask && option.key === 'METAMASK') ||
+        (isBraveWallet && option.key === 'BRAVEWALLET')),
   );
 }
 
