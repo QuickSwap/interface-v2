@@ -30,7 +30,6 @@ import {
 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
-import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
@@ -60,7 +59,10 @@ const AnalyticsOverview: React.FC = () => {
           updateGlobalData(data);
         }
       } else if (version === 'total') {
-        if (ethPrice.price && ethPrice.oneDayPrice) {
+        if (
+          ethPrice.price !== undefined &&
+          ethPrice.oneDayPrice !== undefined
+        ) {
           const data = await getGlobalDataTotal(
             ethPrice.price,
             ethPrice.oneDayPrice,
@@ -71,7 +73,10 @@ const AnalyticsOverview: React.FC = () => {
             updateGlobalData(data);
           }
         }
-      } else if (ethPrice.price && ethPrice.oneDayPrice) {
+      } else if (
+        ethPrice.price !== undefined &&
+        ethPrice.oneDayPrice !== undefined
+      ) {
         const data = await getGlobalData(
           ethPrice.price,
           ethPrice.oneDayPrice,
@@ -86,7 +91,10 @@ const AnalyticsOverview: React.FC = () => {
 
     (async () => {
       if (version === 'v3') {
-        if (maticPrice.price && maticPrice.oneDayPrice) {
+        if (
+          maticPrice.price !== undefined &&
+          maticPrice.oneDayPrice !== undefined
+        ) {
           const data = await getTopTokensV3(
             maticPrice.price,
             maticPrice.oneDayPrice,
@@ -98,7 +106,10 @@ const AnalyticsOverview: React.FC = () => {
           }
         }
       } else if (version === 'v2') {
-        if (ethPrice.price && ethPrice.oneDayPrice) {
+        if (
+          ethPrice.price !== undefined &&
+          ethPrice.oneDayPrice !== undefined
+        ) {
           const data = await getTopTokens(
             ethPrice.price,
             ethPrice.oneDayPrice,
@@ -111,10 +122,10 @@ const AnalyticsOverview: React.FC = () => {
         }
       } else {
         if (
-          maticPrice.price &&
-          maticPrice.oneDayPrice &&
-          ethPrice.price &&
-          ethPrice.oneDayPrice
+          maticPrice.price !== undefined &&
+          maticPrice.oneDayPrice !== undefined &&
+          ethPrice.price !== undefined &&
+          ethPrice.oneDayPrice !== undefined
         ) {
           const data = await getTopTokensTotal(
             ethPrice.price,
@@ -240,7 +251,7 @@ const AnalyticsOverview: React.FC = () => {
           }
         }
       } else if (version === 'v2') {
-        if (ethPrice.price) {
+        if (ethPrice.price !== undefined) {
           const pairsData = await getTopPairsV2(
             GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
             chainId,

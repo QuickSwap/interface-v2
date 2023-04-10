@@ -5,9 +5,7 @@ import zkmainnet from './zkmainnet.json';
 import { ChainId } from '@uniswap/sdk';
 const configs: any = {
   [ChainId.MATIC]: polygon,
-  [ChainId.MUMBAI]: polygon,
   [ChainId.DOGECHAIN]: dogechain,
-  [ChainId.DOEGCHAIN_TESTNET]: dogechain,
   [ChainId.ZKTESTNET]: zktestnet,
   [ChainId.ZKEVM]: zkmainnet,
 };

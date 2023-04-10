@@ -85,7 +85,9 @@ let pairs: any = undefined;
 
 let oneDayVol: any = undefined;
 
-export function useTotalRewardsDistributed(chainId: ChainId): number {
+export function useTotalRewardsDistributed(
+  chainId: ChainId,
+): number | undefined {
   const syrupRewardsInfo = Object.values(useDefaultSyrupList()[chainId]);
   const dualStakingRewardsInfo = Object.values(
     useDefaultDualFarmList()[chainId],
@@ -94,51 +96,66 @@ export function useTotalRewardsDistributed(chainId: ChainId): number {
     useDefaultFarmList()[chainId],
   ).filter((x) => !x.ended);
 
-  const syrupTokenPairs = usePairs(
-    syrupRewardsInfo.map((item) => [
-      unwrappedToken(item.token),
-      unwrappedToken(item.baseToken),
-    ]),
-  );
-  const syrupUSDBaseTokenPrices = useUSDCPrices(
-    syrupRewardsInfo.map((item) => unwrappedToken(item.baseToken)),
-  );
-  const syrupRewardsUSD = syrupRewardsInfo.reduce((total, item, index) => {
-    const [, syrupTokenPair] = syrupTokenPairs[index];
-    const tokenPairPrice = syrupTokenPair?.priceOf(item.token);
-    const usdPriceBaseToken = syrupUSDBaseTokenPrices[index];
-    const priceOfRewardTokenInUSD =
-      Number(tokenPairPrice?.toSignificant()) *
-      Number(usdPriceBaseToken?.toSignificant());
-    return total + priceOfRewardTokenInUSD * item.rate;
-  }, 0);
+  const tokenAddresses = syrupRewardsInfo
+    .map((item) => item.token.address)
+    .concat(dualStakingRewardsInfo.map((item) => item.rewardTokenA.address))
+    .concat(dualStakingRewardsInfo.map((item) => item.rewardTokenB.address))
+    .concat(stakingRewardsInfo.map((item) => item.rewardToken.address))
+    .filter(
+      (address, index, self) =>
+        address &&
+        self.findIndex(
+          (item) =>
+            item && address && item.toLowerCase() === address.toLowerCase(),
+        ) === index,
+    );
+  const usdTokenPrices = useUSDCPricesFromAddresses(tokenAddresses);
+  const syrupRewardsUSD = usdTokenPrices
+    ? syrupRewardsInfo.reduce((total, item, index) => {
+        const usdPriceToken = usdTokenPrices.find(
+          (price) =>
+            price.address.toLowerCase() === item.token.address.toLowerCase(),
+        );
+        return total + (usdPriceToken ? usdPriceToken.price : 0) * item.rate;
+      }, 0)
+    : undefined;
 
-  const rewardTokenAPrices = useUSDCPricesToken(
-    dualStakingRewardsInfo.map((item) => item.rewardTokenA),
-    chainId,
-  );
-  const rewardTokenBPrices = useUSDCPricesToken(
-    dualStakingRewardsInfo.map((item) => item.rewardTokenB),
-    chainId,
-  );
-  const dualStakingRewardsUSD = dualStakingRewardsInfo.reduce(
-    (total, item, index) =>
-      total +
-      item.rateA * rewardTokenAPrices[index] +
-      item.rateB * rewardTokenBPrices[index],
-    0,
-  );
+  const dualStakingRewardsUSD = usdTokenPrices
+    ? dualStakingRewardsInfo.reduce((total, item) => {
+        const rewardTokenAPrice = usdTokenPrices.find(
+          (price) =>
+            price.address.toLowerCase() ===
+            item.rewardTokenA.address.toLowerCase(),
+        );
+        const rewardTokenBPrice = usdTokenPrices.find(
+          (price) =>
+            price.address.toLowerCase() ===
+            item.rewardTokenB.address.toLowerCase(),
+        );
+        return (
+          total +
+          item.rateA * (rewardTokenAPrice ? rewardTokenAPrice.price : 0) +
+          item.rateB * (rewardTokenBPrice ? rewardTokenBPrice.price : 0)
+        );
+      }, 0)
+    : undefined;
 
-  const rewardTokenPrices = useUSDCPricesToken(
-    stakingRewardsInfo.map((item) => item.rewardToken),
-    chainId,
-  );
-  const stakingRewardsUSD = stakingRewardsInfo.reduce(
-    (total, item, index) => total + item.rate * rewardTokenPrices[index],
-    0,
-  );
+  const stakingRewardsUSD = usdTokenPrices
+    ? stakingRewardsInfo.reduce((total, item, index) => {
+        const rewardTokenPrice = usdTokenPrices.find(
+          (price) =>
+            price.address.toLowerCase() ===
+            item.rewardToken.address.toLowerCase(),
+        );
+        return (
+          total + item.rate * (rewardTokenPrice ? rewardTokenPrice.price : 0)
+        );
+      }, 0)
+    : undefined;
 
-  return syrupRewardsUSD + dualStakingRewardsUSD + stakingRewardsUSD;
+  return syrupRewardsUSD && dualStakingRewardsUSD && stakingRewardsUSD
+    ? syrupRewardsUSD + dualStakingRewardsUSD + stakingRewardsUSD
+    : 0;
 }
 
 export function useUSDRewardsandFees(
