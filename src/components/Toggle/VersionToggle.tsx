@@ -41,7 +41,7 @@ const VersionToggle: React.FC = () => {
           ? (currencyIdAParam ? '' : `/ETH`) +
             (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
           : '') +
-        `/${version}`;
+        `${history.location.pathname.endsWith('/') ? '' : '/'}${version}`;
     history.push(
       redirectPathName +
         (history.location.pathname.includes('/pools')
