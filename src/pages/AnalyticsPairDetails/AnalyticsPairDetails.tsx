@@ -187,7 +187,7 @@ const AnalyticsPairDetails: React.FC = () => {
             }
             setDataLoading(false);
           } else {
-            if (ethPrice.price) {
+            if (ethPrice.price !== undefined) {
               const pairInfo = await getBulkPairData(
                 [pairAddress],
                 ethPrice.price,

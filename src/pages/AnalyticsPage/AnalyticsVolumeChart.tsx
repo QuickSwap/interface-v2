@@ -133,9 +133,9 @@ const AnalyticsVolumeChart: React.FC<{
     } else if (globalData && selectedVolumeIndex === -1) {
       switch (volumeIndex) {
         case WEEK_VOLUME:
-          return globalData.weeklyVolumeChange;
+          return globalData.weeklyVolumeChange ?? 0;
         case DAY_VOLUME:
-          return globalData.volumeChangeUSD;
+          return globalData.volumeChangeUSD ?? 0;
         default:
           return 0;
       }
@@ -211,8 +211,8 @@ const AnalyticsVolumeChart: React.FC<{
                         : globalChartData.week[selectedVolumeIndex]
                             .weeklyVolumeUSD
                       : volumeIndex === DAY_VOLUME
-                      ? globalData.oneDayVolumeUSD
-                      : globalData.oneWeekVolume,
+                      ? globalData.oneDayVolumeUSD ?? 0
+                      : globalData.oneWeekVolume ?? 0,
                   )}
                 </h5>
                 <Box

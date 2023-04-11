@@ -6,6 +6,7 @@ import {
   getBulkPairData,
   getGammaRewards,
   getGammaData,
+  getTopPairsV2,
 } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';

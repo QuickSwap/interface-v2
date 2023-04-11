@@ -43,6 +43,7 @@ import { GlobalConst, TxnType } from 'constants/index';
 import {
   FILTERED_TRANSACTIONS,
   GLOBAL_ALLDATA,
+  GLOBAL_DATA,
   PAIRS_BULK1,
   PAIRS_CURRENT,
   PAIRS_HISTORICAL_BULK,
@@ -87,107 +88,182 @@ export async function getGlobalDataTotal(
       query: GLOBAL_DATA_V3(),
       fetchPolicy: 'network-only',
     });
-
-    const v3DataOneDay = await clientV3[chainId].query({
-      query: GLOBAL_DATA_V3(oneDayBlock.number),
-      fetchPolicy: 'network-only',
-    });
-
-    const v3DataTwoDay = await clientV3[chainId].query({
-      query: GLOBAL_DATA_V3(twoDayBlock.number),
-      fetchPolicy: 'network-only',
-    });
-
-    const v3DataOneWeek = await clientV3[chainId].query({
-      query: GLOBAL_DATA_V3(oneWeekBlock.number),
-      fetchPolicy: 'network-only',
-    });
-
-    const v3DataTwoWeek = await clientV3[chainId].query({
-      query: GLOBAL_DATA_V3(twoWeekBlock.number),
-      fetchPolicy: 'network-only',
-    });
-
-    const queryReq = [
-      { index: 'result', block: null },
-      { index: 'oneDayData', block: oneDayBlock?.number },
-      { index: 'twoDayData', block: twoDayBlock?.number },
-      { index: 'oneWeekData', block: oneWeekBlock?.number },
-      { index: 'twoWeekData', block: twoWeekBlock?.number },
-    ];
-    const allData = await clientV2[chainId].query({
-      query: GLOBAL_ALLDATA(queryReq, factory),
-      fetchPolicy: 'network-only',
-    });
-
-    const v2DataCurrent = allData.data['result'][0];
-    const v2DataOneDay = allData.data['oneDayData'][0];
-    const v2DataTwoDay = allData.data['twoDayData'][0];
-    const v2OneWeekData = allData.data['oneWeekData'][0];
-    const v2TwoWeekData = allData.data['twoWeekData'][0];
-
-    const [
-      v3StatsCurrent,
-      v3StatsOneDay,
-      v3StatsTwoDay,
-      v3StatsOneWeek,
-      v3StatsTwoWeek,
-    ] = [
+    const v3StatsCurrent =
       v3DataCurrent &&
       v3DataCurrent.data &&
       v3DataCurrent.data.factories &&
       v3DataCurrent.data.factories.length > 0
         ? v3DataCurrent.data.factories[0]
-        : undefined,
-      v3DataOneDay &&
-      v3DataOneDay.data &&
-      v3DataOneDay.data.factories &&
-      v3DataOneDay.data.factories.length > 0
-        ? v3DataOneDay.data.factories[0]
-        : undefined,
-      v3DataTwoDay &&
-      v3DataTwoDay.data &&
-      v3DataTwoDay.data.factories &&
-      v3DataTwoDay.data.factories.length > 0
-        ? v3DataTwoDay.data.factories[0]
-        : undefined,
-      v3DataOneWeek &&
-      v3DataOneWeek.data &&
-      v3DataOneWeek.data.factories &&
-      v3DataOneWeek.data.factories.length > 0
-        ? v3DataOneWeek.data.factories[0]
-        : undefined,
-      v3DataTwoWeek &&
-      v3DataTwoWeek.data &&
-      v3DataTwoWeek.data.factories &&
-      v3DataTwoWeek.data.factories.length > 0
-        ? v3DataTwoWeek.data.factories[0]
-        : undefined,
-    ];
+        : undefined;
+
+    let v3StatsOneDay, v3StatsTwoDay, v3StatsOneWeek, v3StatsTwoWeek;
+    if (oneDayBlock && oneDayBlock.number) {
+      try {
+        const v3DataOneDay = await clientV3[chainId].query({
+          query: GLOBAL_DATA_V3(oneDayBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        v3StatsOneDay =
+          v3DataOneDay &&
+          v3DataOneDay.data &&
+          v3DataOneDay.data.factories &&
+          v3DataOneDay.data.factories.length > 0
+            ? v3DataOneDay.data.factories[0]
+            : undefined;
+      } catch {}
+    }
+
+    if (twoDayBlock && twoDayBlock.number) {
+      try {
+        const v3DataTwoDay = await clientV3[chainId].query({
+          query: GLOBAL_DATA_V3(twoDayBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        v3StatsTwoDay =
+          v3DataTwoDay &&
+          v3DataTwoDay.data &&
+          v3DataTwoDay.data.factories &&
+          v3DataTwoDay.data.factories.length > 0
+            ? v3DataTwoDay.data.factories[0]
+            : undefined;
+      } catch {}
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      try {
+        const v3DataOneWeek = await clientV3[chainId].query({
+          query: GLOBAL_DATA_V3(oneWeekBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        v3StatsOneWeek =
+          v3DataOneWeek &&
+          v3DataOneWeek.data &&
+          v3DataOneWeek.data.factories &&
+          v3DataOneWeek.data.factories.length > 0
+            ? v3DataOneWeek.data.factories[0]
+            : undefined;
+      } catch {}
+    }
+
+    if (twoWeekBlock && twoWeekBlock.number) {
+      try {
+        const v3DataTwoWeek = await clientV3[chainId].query({
+          query: GLOBAL_DATA_V3(twoWeekBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        v3StatsTwoWeek =
+          v3DataTwoWeek &&
+          v3DataTwoWeek.data &&
+          v3DataTwoWeek.data.factories &&
+          v3DataTwoWeek.data.factories.length > 0
+            ? v3DataTwoWeek.data.factories[0]
+            : undefined;
+      } catch {}
+    }
+
+    let v2DataCurrent, v2DataOneDay, v2DataTwoDay, v2OneWeekData, v2TwoWeekData;
+
+    try {
+      const result = await clientV2[chainId].query({
+        query: GLOBAL_DATA(factory),
+        fetchPolicy: 'network-only',
+      });
+      v2DataCurrent = result.data.uniswapFactories[0];
+    } catch {}
+
+    if (oneDayBlock && oneDayBlock.number) {
+      try {
+        const oneDayResult = await clientV2[chainId].query({
+          query: GLOBAL_DATA(factory, oneDayBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        v2DataOneDay = oneDayResult.data.uniswapFactories[0];
+      } catch {}
+    }
+
+    if (twoDayBlock && twoDayBlock.number) {
+      try {
+        const twoDayResult = await clientV2[chainId].query({
+          query: GLOBAL_DATA(factory, twoDayBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        v2DataTwoDay = twoDayResult.data.uniswapFactories[0];
+      } catch {}
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      try {
+        const oneWeekResult = await clientV2[chainId].query({
+          query: GLOBAL_DATA(factory, oneWeekBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        v2OneWeekData = oneWeekResult.data.uniswapFactories[0];
+      } catch {}
+    }
+
+    if (twoWeekBlock && twoWeekBlock.number) {
+      try {
+        const twoWeekResult = await clientV2[chainId].query({
+          query: GLOBAL_DATA(factory, twoWeekBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        v2TwoWeekData = twoWeekResult.data.uniswapFactories[0];
+      } catch {}
+    }
 
     const currentVolumeUSD =
-      (v3StatsCurrent ? Number(v3StatsCurrent.totalVolumeUSD) : 0) +
-      Number(v2DataCurrent.totalVolumeUSD);
+      (v3StatsCurrent && v3StatsCurrent.totalVolumeUSD
+        ? Number(v3StatsCurrent.totalVolumeUSD)
+        : 0) +
+      (v2DataCurrent && v2DataCurrent.totalVolumeUSD
+        ? Number(v2DataCurrent.totalVolumeUSD)
+        : 0);
     const oneDayBeforeVolumeUSD =
-      (v3StatsOneDay ? Number(v3StatsOneDay.totalVolumeUSD) : 0) +
-      Number(v2DataOneDay.totalVolumeUSD);
+      (v3StatsOneDay && v3StatsOneDay.totalVolumeUSD
+        ? Number(v3StatsOneDay.totalVolumeUSD)
+        : 0) +
+      (v2DataOneDay && v2DataOneDay.totalVolumeUSD
+        ? Number(v2DataOneDay.totalVolumeUSD)
+        : 0);
     const twoDayBeforeVolumeUSD =
-      (v3StatsTwoDay ? Number(v3StatsTwoDay.totalVolumeUSD) : 0) +
-      Number(v2DataTwoDay.totalVolumeUSD);
+      (v3StatsTwoDay && v3StatsTwoDay.totalVolumeUSD
+        ? Number(v3StatsTwoDay.totalVolumeUSD)
+        : 0) +
+      (v2DataTwoDay && v2DataTwoDay.totalVolumeUSD
+        ? Number(v2DataTwoDay.totalVolumeUSD)
+        : 0);
     const oneWeekBeforeVolumeUSD =
-      (v3StatsOneWeek ? Number(v3StatsOneWeek.totalVolumeUSD) : 0) +
-      Number(v2OneWeekData.totalVolumeUSD);
+      (v3StatsOneWeek && v3StatsOneWeek.totalVolumeUSD
+        ? Number(v3StatsOneWeek.totalVolumeUSD)
+        : 0) +
+      (v2OneWeekData && v2OneWeekData.totalVolumeUSD
+        ? Number(v2OneWeekData.totalVolumeUSD)
+        : 0);
     const twoWeekBeforeVolumeUSD =
-      (v3StatsTwoWeek ? Number(v3StatsTwoWeek.totalVolumeUSD) : 0) +
-      Number(v2TwoWeekData.totalVolumeUSD);
+      (v3StatsTwoWeek && v3StatsTwoWeek.totalVolumeUSD
+        ? Number(v3StatsTwoWeek.totalVolumeUSD)
+        : 0) +
+      (v2TwoWeekData && v2TwoWeekData.totalVolumeUSD
+        ? Number(v2TwoWeekData.totalVolumeUSD)
+        : 0);
 
     const currentTotalLiquidity =
-      (v3StatsCurrent ? Number(v3StatsCurrent.totalValueLockedUSD) : 0) +
-      v2DataCurrent.totalLiquidityETH * ethPrice;
+      (v3StatsCurrent && v3StatsCurrent.totalValueLockedUSD
+        ? Number(v3StatsCurrent.totalValueLockedUSD)
+        : 0) +
+      (v2DataCurrent && v2DataCurrent.totalLiquidityETH
+        ? Number(v2DataCurrent.totalLiquidityETH)
+        : 0) *
+        ethPrice;
 
     const oneDayTotalLiquidity =
-      (v3StatsOneDay ? Number(v3StatsOneDay.totalValueLockedUSD) : 0) +
-      v2DataOneDay.totalLiquidityETH * oldEthPrice;
+      (v3StatsOneDay && v3StatsOneDay.totalValueLockedUSD
+        ? Number(v3StatsOneDay.totalValueLockedUSD)
+        : 0) +
+      (v2DataOneDay && v2DataOneDay.totalLiquidityETH
+        ? Number(v2DataOneDay.totalLiquidityETH)
+        : 0) *
+        oldEthPrice;
 
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
       currentVolumeUSD,
@@ -207,14 +283,29 @@ export async function getGlobalDataTotal(
     );
 
     const currentFeesUSD =
-      (v3StatsCurrent ? Number(v3StatsCurrent.totalFeesUSD) : 0) +
-      Number(v2DataCurrent.totalVolumeUSD) * GlobalConst.utils.FEEPERCENT;
+      (v3StatsCurrent && v3StatsCurrent.totalFeesUSD
+        ? Number(v3StatsCurrent.totalFeesUSD)
+        : 0) +
+      (v2DataCurrent && v2DataCurrent.totalVolumeUSD
+        ? Number(v2DataCurrent.totalVolumeUSD)
+        : 0) *
+        GlobalConst.utils.FEEPERCENT;
     const oneDayFeesUSD =
-      (v3StatsOneDay ? Number(v3StatsOneDay.totalFeesUSD) : 0) +
-      Number(v2DataOneDay.totalVolumeUSD) * GlobalConst.utils.FEEPERCENT;
+      (v3StatsOneDay && v3StatsOneDay.totalFeesUSD
+        ? Number(v3StatsOneDay.totalFeesUSD)
+        : 0) +
+      (v2DataOneDay && v2DataOneDay.totalVolumeUSD
+        ? Number(v2DataOneDay.totalVolumeUSD)
+        : 0) *
+        GlobalConst.utils.FEEPERCENT;
     const twoDayFeesUSD =
-      (v3StatsTwoDay ? Number(v3StatsTwoDay.totalFeesUSD) : 0) +
-      Number(v2DataTwoDay.totalVolumeUSD) * GlobalConst.utils.FEEPERCENT;
+      (v3StatsTwoDay && v3StatsTwoDay.totalFeesUSD
+        ? Number(v3StatsTwoDay.totalFeesUSD)
+        : 0) +
+      (v2DataTwoDay && v2DataTwoDay.totalVolumeUSD
+        ? Number(v2DataTwoDay.totalVolumeUSD)
+        : 0) *
+        GlobalConst.utils.FEEPERCENT;
 
     const [feesUSD, feesUSDChange] = get2DayPercentChange(
       currentFeesUSD,
@@ -223,11 +314,17 @@ export async function getGlobalDataTotal(
     );
 
     const currentTxns =
-      (v3StatsCurrent ? Number(v3StatsCurrent.txCount) : 0) +
-      v2DataCurrent.txCount;
+      (v3StatsCurrent && v3StatsCurrent.txCount
+        ? Number(v3StatsCurrent.txCount)
+        : 0) +
+      (v2DataCurrent && v2DataCurrent.txCount
+        ? Number(v2DataCurrent.txCount)
+        : 0);
     const oneDayTxns =
-      (v3StatsOneDay ? Number(v3StatsOneDay.txCount) : 0) +
-      v2DataOneDay.txCount;
+      (v3StatsOneDay && v3StatsOneDay.txCount
+        ? Number(v3StatsOneDay.txCount)
+        : 0) +
+      (v2DataOneDay && v2DataOneDay.txCount ? Number(v2DataOneDay.txCount) : 0);
     const txCount = currentTxns - oneDayTxns;
 
     data = {
@@ -1210,51 +1307,124 @@ export async function getTokenInfoTotal(
       [address],
       chainId,
     );
-    const tokens24 = await fetchTokensByTime(
-      oneDayBlock.number,
-      [address],
-      chainId,
-    );
-    const tokens48 = await fetchTokensByTime(
-      twoDayBlock.number,
-      [address],
-      chainId,
-    );
-    const tokensOneWeek = await fetchTokensByTime(
-      oneWeekBlock.number,
-      [address],
-      chainId,
-    );
-    const tokensTwoWeek = await fetchTokensByTime(
-      twoWeekBlock.number,
-      [address],
-      chainId,
-    );
+    let tokens24, tokens48, tokensOneWeek, tokensTwoWeek;
 
-    const currentV2 = await clientV2[chainId].query({
-      query: TOKEN_INFO(address),
-      fetchPolicy: 'network-only',
-    });
+    if (oneDayBlock && oneDayBlock.number) {
+      tokens24 = await fetchTokensByTime(
+        oneDayBlock.number,
+        [address],
+        chainId,
+      );
+    }
 
-    const oneDayResultV2 = await clientV2[chainId].query({
-      query: TOKEN_INFO_OLD(oneDayBlock.number, address),
-      fetchPolicy: 'network-only',
-    });
+    if (twoDayBlock && twoDayBlock.number) {
+      tokens48 = await fetchTokensByTime(
+        twoDayBlock.number,
+        [address],
+        chainId,
+      );
+    }
 
-    const twoDayResultV2 = await clientV2[chainId].query({
-      query: TOKEN_INFO_OLD(twoDayBlock.number, address),
-      fetchPolicy: 'network-only',
-    });
+    if (oneWeekBlock && oneWeekBlock.number) {
+      tokensOneWeek = await fetchTokensByTime(
+        oneWeekBlock.number,
+        [address],
+        chainId,
+      );
+    }
 
-    const oneWeekResultV2 = await clientV2[chainId].query({
-      query: TOKEN_INFO_OLD(oneWeekBlock.number, address),
-      fetchPolicy: 'network-only',
-    });
+    if (twoWeekBlock && twoWeekBlock.number) {
+      tokensTwoWeek = await fetchTokensByTime(
+        twoWeekBlock.number,
+        [address],
+        chainId,
+      );
+    }
 
-    const twoWeekResultV2 = await clientV2[chainId].query({
-      query: TOKEN_INFO_OLD(twoWeekBlock.number, address),
-      fetchPolicy: 'network-only',
-    });
+    let currentV2,
+      currentDataV2,
+      oneDayDataV2,
+      twoDayDataV2,
+      oneWeekDataV2,
+      twoWeekDataV2;
+
+    try {
+      currentV2 = await clientV2[chainId].query({
+        query: TOKEN_INFO(address),
+        fetchPolicy: 'network-only',
+      });
+      currentDataV2 =
+        currentV2 &&
+        currentV2.data &&
+        currentV2.data.tokens &&
+        currentV2.data.tokens.length > 0
+          ? currentV2.data.tokens[0]
+          : undefined;
+    } catch {}
+
+    if (oneDayBlock && oneDayBlock.number) {
+      try {
+        const oneDayResultV2 = await clientV2[chainId].query({
+          query: TOKEN_INFO_OLD(oneDayBlock.number, address),
+          fetchPolicy: 'network-only',
+        });
+        oneDayDataV2 =
+          oneDayResultV2 &&
+          oneDayResultV2.data &&
+          oneDayResultV2.data.tokens &&
+          oneDayResultV2.data.tokens.length > 0
+            ? oneDayResultV2.data.tokens[0]
+            : undefined;
+      } catch {}
+    }
+
+    if (twoDayBlock && twoDayBlock.number) {
+      try {
+        const twoDayResultV2 = await clientV2[chainId].query({
+          query: TOKEN_INFO_OLD(twoDayBlock.number, address),
+          fetchPolicy: 'network-only',
+        });
+        twoDayDataV2 =
+          twoDayResultV2 &&
+          twoDayResultV2.data &&
+          twoDayResultV2.data.tokens &&
+          twoDayResultV2.data.tokens.length > 0
+            ? twoDayResultV2.data.tokens[0]
+            : undefined;
+      } catch {}
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      try {
+        const oneWeekResultV2 = await clientV2[chainId].query({
+          query: TOKEN_INFO_OLD(oneWeekBlock.number, address),
+          fetchPolicy: 'network-only',
+        });
+        oneWeekDataV2 =
+          oneWeekResultV2 &&
+          oneWeekResultV2.data &&
+          oneWeekResultV2.data.tokens &&
+          oneWeekResultV2.data.tokens.length > 0
+            ? oneWeekResultV2.data.tokens[0]
+            : undefined;
+      } catch {}
+    }
+
+    if (twoWeekBlock && twoWeekBlock.number) {
+      try {
+        const twoWeekResultV2 = await clientV2[chainId].query({
+          query: TOKEN_INFO_OLD(twoWeekBlock.number, address),
+          fetchPolicy: 'network-only',
+        });
+        twoWeekDataV2 =
+          twoWeekResultV2 &&
+          twoWeekResultV2.data &&
+          twoWeekResultV2.data.tokens &&
+          twoWeekResultV2.data.tokens.length > 0
+            ? twoWeekResultV2.data.tokens[0]
+            : undefined;
+      } catch {}
+    }
 
     const parsedTokens = parseTokensData(tokensCurrent);
     const parsedTokens24 = parseTokensData(tokens24);
@@ -1267,46 +1437,6 @@ export async function getTokenInfoTotal(
     const twoDay = parsedTokens48[address];
     const oneWeek = parsedTokensOneWeek[address];
     const twoWeek = parsedTokensTwoWeek[address];
-
-    const currentDataV2 =
-      currentV2 &&
-      currentV2.data &&
-      currentV2.data.tokens &&
-      currentV2.data.tokens.length > 0
-        ? currentV2.data.tokens[0]
-        : undefined;
-
-    let oneDayDataV2 =
-      oneDayResultV2 &&
-      oneDayResultV2.data &&
-      oneDayResultV2.data.tokens &&
-      oneDayResultV2.data.tokens.length > 0
-        ? oneDayResultV2.data.tokens[0]
-        : undefined;
-
-    let twoDayDataV2 =
-      twoDayResultV2 &&
-      twoDayResultV2.data &&
-      twoDayResultV2.data.tokens &&
-      twoDayResultV2.data.tokens.length > 0
-        ? twoDayResultV2.data.tokens[0]
-        : undefined;
-
-    let oneWeekDataV2 =
-      oneWeekResultV2 &&
-      oneWeekResultV2.data &&
-      oneWeekResultV2.data.tokens &&
-      oneWeekResultV2.data.tokens.length > 0
-        ? oneWeekResultV2.data.tokens[0]
-        : undefined;
-
-    let twoWeekDataV2 =
-      twoWeekResultV2 &&
-      twoWeekResultV2.data &&
-      twoWeekResultV2.data.tokens &&
-      twoWeekResultV2.data.tokens.length > 0
-        ? twoWeekResultV2.data.tokens[0]
-        : undefined;
 
     if (
       Number(oneDayDataV2?.totalLiquidity ?? 0) ===
@@ -1843,31 +1973,42 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
         ? v2PairsResult.data.pairs
         : [];
 
-    const [v2OneDayResult, v2OneWeekResult] = await Promise.all(
-      [oneDayBlock, oneWeekBlock].map(async (block) => {
-        const result = await clientV2[chainId].query({
-          query: PAIRS_HISTORICAL_BULK(block.number, v2PairsAddresses),
+    let v2PairsOneDay: any[] = [];
+
+    if (oneDayBlock && oneDayBlock.number) {
+      try {
+        const v2OneDayResult = await clientV2[chainId].query({
+          query: PAIRS_HISTORICAL_BULK(oneDayBlock.number, v2PairsAddresses),
           fetchPolicy: 'network-only',
         });
-        return result;
-      }),
-    );
 
-    const v2PairsOneDay =
-      v2OneDayResult &&
-      v2OneDayResult.data &&
-      v2OneDayResult.data.pairs &&
-      v2OneDayResult.data.pairs.length > 0
-        ? v2OneDayResult.data.pairs
-        : [];
+        v2PairsOneDay =
+          v2OneDayResult &&
+          v2OneDayResult.data &&
+          v2OneDayResult.data.pairs &&
+          v2OneDayResult.data.pairs.length > 0
+            ? v2OneDayResult.data.pairs
+            : [];
+      } catch {}
+    }
 
-    const v2PairsOneWeek =
-      v2OneWeekResult &&
-      v2OneWeekResult.data &&
-      v2OneWeekResult.data.pairs &&
-      v2OneWeekResult.data.pairs.length > 0
-        ? v2OneWeekResult.data.pairs
-        : [];
+    let v2PairsOneWeek: any[] = [];
+    if (oneWeekBlock && oneWeekBlock.number) {
+      try {
+        const v2OneWeekResult = await clientV2[chainId].query({
+          query: PAIRS_HISTORICAL_BULK(oneWeekBlock.number, v2PairsAddresses),
+          fetchPolicy: 'network-only',
+        });
+
+        v2PairsOneWeek =
+          v2OneWeekResult &&
+          v2OneWeekResult.data &&
+          v2OneWeekResult.data.pairs &&
+          v2OneWeekResult.data.pairs.length > 0
+            ? v2OneWeekResult.data.pairs
+            : [];
+      } catch {}
+    }
 
     const parsedPairs = parsePairsData(pairsCurrent);
     const parsedPairs24 = parsePairsData(pairs24);
@@ -1997,7 +2138,7 @@ export async function getTopPairsTotal(count = 500, chainId: ChainId) {
 
     return formattedV3.concat(formattedV2).filter((item: any) => !!item);
   } catch (err) {
-    console.error(err);
+    console.log(err);
   }
 }
 
@@ -2166,24 +2307,53 @@ export async function getTopPairsTotalByToken(
       pairsAddresses,
       chainId,
     );
-    const pairs24 = await fetchPairsByTime(
-      oneDayBlock.number,
-      pairsAddresses,
-      chainId,
-    );
-    const pairsWeek = await fetchPairsByTime(
-      oneWeekBlock.number,
-      pairsAddresses,
-      chainId,
-    );
 
-    const v2PairsResult = await clientV2[chainId].query({
-      query: PAIRS_BULK1,
-      variables: {
-        allPairs: v2PairsAddresses,
-      },
-      fetchPolicy: 'network-only',
-    });
+    let pairs24, pairsWeek;
+    if (oneDayBlock && oneDayBlock.number) {
+      pairs24 = await fetchPairsByTime(
+        oneDayBlock.number,
+        pairsAddresses,
+        chainId,
+      );
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      pairsWeek = await fetchPairsByTime(
+        oneWeekBlock.number,
+        pairsAddresses,
+        chainId,
+      );
+    }
+
+    let v2PairsResult, v2OneDayResult, v2OneWeekResult;
+    try {
+      v2PairsResult = await clientV2[chainId].query({
+        query: PAIRS_BULK1,
+        variables: {
+          allPairs: v2PairsAddresses,
+        },
+        fetchPolicy: 'network-only',
+      });
+    } catch {}
+
+    if (oneDayBlock && oneDayBlock.number) {
+      try {
+        v2OneDayResult = await clientV2[chainId].query({
+          query: PAIRS_HISTORICAL_BULK(oneDayBlock.number, v2PairsAddresses),
+          fetchPolicy: 'network-only',
+        });
+      } catch {}
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      try {
+        v2OneWeekResult = await clientV2[chainId].query({
+          query: PAIRS_HISTORICAL_BULK(oneWeekBlock.number, v2PairsAddresses),
+          fetchPolicy: 'network-only',
+        });
+      } catch {}
+    }
+
     const v2PairsCurrent =
       v2PairsResult &&
       v2PairsResult.data &&
@@ -2191,16 +2361,6 @@ export async function getTopPairsTotalByToken(
       v2PairsResult.data.pairs.length > 0
         ? v2PairsResult.data.pairs
         : [];
-
-    const [v2OneDayResult, v2OneWeekResult] = await Promise.all(
-      [oneDayBlock, oneWeekBlock].map(async (block) => {
-        const result = await clientV2[chainId].query({
-          query: PAIRS_HISTORICAL_BULK(block.number, v2PairsAddresses),
-          fetchPolicy: 'network-only',
-        });
-        return result;
-      }),
-    );
 
     const v2PairsOneDay =
       v2OneDayResult &&
