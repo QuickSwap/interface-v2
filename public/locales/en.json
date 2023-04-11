@@ -517,7 +517,7 @@
   "migrateLiquidity": "Migrate V2 Liquidity",
   "liquiditymigrateComment": "This tool will safely migrate your V2 liquidity to V3. The process is completely trust-less thanks to <psmall>Quickswap migration contract</psmall>",
   "migrateRefundComment": "Due to the selected price range at least {{ amount1 }} {{ symbol1 }} and {{ amount2 }} {{ symbol2 }} will be refunded to your wallet",
-  "priceImpactLarger": "Price Impact Larger than 15%",
+  "priceImpactLarger": "Price Impact Larger than 2%",
   "shouldDepositLiquidityatCorrectPrice": "You should only deposit liquidity into Quickswap at a price you believe is correct",
   "estimatedV2Price": "Estimated V2 Spot Price",
   "estimatedV3Price": "Estimated V3 Spot Price",

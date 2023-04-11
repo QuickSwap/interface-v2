@@ -39,18 +39,18 @@ import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp';
 import { PoolState, usePool } from 'hooks/v3/usePools';
 import { useTotalSupply } from 'hooks/v3/useTotalSupply';
 import { useV2Pair } from 'hooks/v3/useV2Pairs';
-import { ChainId, JSBI } from '@uniswap/sdk';
+import { JSBI } from '@uniswap/sdk';
 import { FeeAmount, priceToClosestTick, TickMath, ZERO } from 'v3lib/utils';
 import { Bound } from 'state/mint/v3/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { Pool, Position } from 'v3lib/entities';
 import { V2Exchanges } from 'constants/v3/addresses';
 import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
-import { currencyId } from 'utils/v3/currencyId';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { Trans, useTranslation } from 'react-i18next';
+import { calculateGasMargin } from 'utils';
 
 export default function MigrateV2DetailsPage() {
   const { t } = useTranslation();
@@ -248,14 +248,12 @@ export default function MigrateV2DetailsPage() {
   const v3SpotPrice =
     poolState === PoolState.EXISTS ? pool?.token0Price : undefined;
 
-  let priceDifferenceFraction: Fraction | string | undefined =
+  let priceDifferenceFraction =
     v2SpotPrice && v3SpotPrice
-      ? v2SpotPrice.divide(v3SpotPrice).greaterThan(10000)
-        ? '> 1000'
-        : v3SpotPrice
-            .divide(v2SpotPrice)
-            .subtract(1)
-            .multiply(100)
+      ? v3SpotPrice
+          .divide(v2SpotPrice)
+          .subtract(1)
+          .multiply(100)
       : undefined;
 
   if (
@@ -266,19 +264,12 @@ export default function MigrateV2DetailsPage() {
   }
 
   const largePriceDifference = useMemo(() => {
-    if (!v2SpotPrice || !v3SpotPrice) {
+    if (!priceDifferenceFraction) {
       return false;
     }
 
-    const v2PriceOriginal = v2SpotPrice.asFraction;
-    const v2price = v2PriceOriginal.multiply(100);
-    const v3price = v3SpotPrice.asFraction.multiply(100);
-    const maxPriceDiff = v2PriceOriginal.multiply(15);
-    const ub = v2price.add(maxPriceDiff);
-    const lb = v2price.subtract(maxPriceDiff);
-
-    return v3price.lessThan(lb) || v3price.greaterThan(ub);
-  }, [v2SpotPrice, v3SpotPrice]);
+    return !priceDifferenceFraction.lessThan(JSBI.BigInt(2));
+  }, [priceDifferenceFraction]);
 
   const [allowedSlippage] = useUserSlippageTolerance();
   const allowedSlippagePct = useMemo(
@@ -497,9 +488,9 @@ export default function MigrateV2DetailsPage() {
 
     migrator.estimateGas
       .multicall(data)
-      .then(() => {
+      .then((estimateGas) => {
         return migrator
-          .multicall(data, { gasLimit: 10000000 })
+          .multicall(data, { gasLimit: calculateGasMargin(estimateGas) })
           .then((response: TransactionResponse) => {
             ReactGA.event({
               category: 'Migrate',
