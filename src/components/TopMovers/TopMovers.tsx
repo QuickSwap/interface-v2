@@ -40,7 +40,11 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
 
     (async () => {
       if (isV2) {
-        if (v2 && ethPrice.price && ethPrice.oneDayPrice) {
+        if (
+          v2 &&
+          ethPrice.price !== undefined &&
+          ethPrice.oneDayPrice !== undefined
+        ) {
           const res = await fetch(
             `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v2?chainId=${chainId}&limit=5`,
           );
@@ -56,7 +60,11 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
           }
         }
       } else {
-        if (v3 && maticPrice.price && maticPrice.oneDayPrice) {
+        if (
+          v3 &&
+          maticPrice.price !== undefined &&
+          maticPrice.oneDayPrice !== undefined
+        ) {
           const res = await fetch(
             `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v3?chainId=${chainId}&limit=5`,
           );

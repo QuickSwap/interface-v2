@@ -23,7 +23,12 @@ const GlobalSection: React.FC = () => {
 
   useEffect(() => {
     async function fetchGlobalData() {
-      if (chainId && v2 && ethPrice.price && ethPrice.oneDayPrice) {
+      if (
+        chainId &&
+        v2 &&
+        ethPrice.price !== undefined &&
+        ethPrice.oneDayPrice !== undefined
+      ) {
         const newGlobalData = await getGlobalData(
           ethPrice.price,
           ethPrice.oneDayPrice,
