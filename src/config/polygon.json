@@ -17,6 +17,7 @@
     "bestTrade": true,
     "proMode": true,
     "limitOrder": true,
+    "twapOrder": true,
     "crossChain": true
   },
   "pools": {
