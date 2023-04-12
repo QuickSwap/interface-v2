@@ -40,7 +40,7 @@ export function useActiveWeb3React(): Web3ContextType<Web3Provider> & {
   const { localChainId } = useLocalChainId();
   return {
     ...context,
-    chainId: context.chainId ?? localChainId,
+    chainId: context.chainId ?? localChainId ?? ChainId.MATIC,
     library: context.provider,
   };
 }

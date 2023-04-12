@@ -5,6 +5,7 @@ import Option from './Option';
 import { useTranslation } from 'react-i18next';
 import { Connector } from '@web3-react/types';
 import { getConnections, injectedConnection } from 'connectors';
+import { useActiveWeb3React } from 'hooks';
 
 interface PendingViewProps {
   connector?: Connector;
@@ -56,61 +57,66 @@ const PendingView: React.FC<PendingViewProps> = ({
         )}
       </Box>
       {connections.map((option) => {
-        if (option.connector === injectedConnection.connector) {
-          if (isMetamask && option.name !== GlobalConst.walletName.METAMASK) {
-            return null;
+        if (option.connector === connector) {
+          if (option.connector === injectedConnection.connector) {
+            if (isMetamask && option.name !== GlobalConst.walletName.METAMASK) {
+              return null;
+            }
+            if (
+              !isMetamask &&
+              option.name === GlobalConst.walletName.METAMASK
+            ) {
+              return null;
+            }
+            if (isBitKeep && option.name !== GlobalConst.walletName.BITKEEP) {
+              return null;
+            }
+            if (!isBitKeep && option.name === GlobalConst.walletName.BITKEEP) {
+              return null;
+            }
+            if (isCypherD && option.name !== GlobalConst.walletName.CYPHERD) {
+              return null;
+            }
+            if (!isCypherD && option.name === GlobalConst.walletName.CYPHERD) {
+              return null;
+            }
+            if (
+              isBlockWallet &&
+              option.name !== GlobalConst.walletName.BLOCKWALLET
+            ) {
+              return null;
+            }
+            if (
+              !isBlockWallet &&
+              option.name === GlobalConst.walletName.BLOCKWALLET
+            ) {
+              return null;
+            }
+            if (
+              isBraveWallet &&
+              option.name !== GlobalConst.walletName.BRAVEWALLET
+            ) {
+              return null;
+            }
+            if (
+              !isBraveWallet &&
+              option.name === GlobalConst.walletName.BRAVEWALLET
+            ) {
+              return null;
+            }
           }
-          if (!isMetamask && option.name === GlobalConst.walletName.METAMASK) {
-            return null;
-          }
-          if (isBitKeep && option.name !== GlobalConst.walletName.BITKEEP) {
-            return null;
-          }
-          if (!isBitKeep && option.name === GlobalConst.walletName.BITKEEP) {
-            return null;
-          }
-          if (isCypherD && option.name !== GlobalConst.walletName.CYPHERD) {
-            return null;
-          }
-          if (!isCypherD && option.name === GlobalConst.walletName.CYPHERD) {
-            return null;
-          }
-          if (
-            isBlockWallet &&
-            option.name !== GlobalConst.walletName.BLOCKWALLET
-          ) {
-            return null;
-          }
-          if (
-            !isBlockWallet &&
-            option.name === GlobalConst.walletName.BLOCKWALLET
-          ) {
-            return null;
-          }
-          if (
-            isBraveWallet &&
-            option.name !== GlobalConst.walletName.BRAVEWALLET
-          ) {
-            return null;
-          }
-          if (
-            !isBraveWallet &&
-            option.name === GlobalConst.walletName.BRAVEWALLET
-          ) {
-            return null;
-          }
+          return (
+            <Option
+              id={`connect-${option.key}`}
+              key={option.key}
+              clickable={false}
+              color={option.color}
+              header={option.name}
+              subheader={option.description}
+              icon={option.iconName}
+            />
+          );
         }
-        return (
-          <Option
-            id={`connect-${option.key}`}
-            key={option.key}
-            clickable={false}
-            color={option.color}
-            header={option.name}
-            subheader={option.description}
-            icon={option.iconName}
-          />
-        );
         return null;
       })}
     </Box>

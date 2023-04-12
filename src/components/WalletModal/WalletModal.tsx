@@ -9,7 +9,7 @@ import MetamaskIcon from 'assets/images/metamask.png';
 import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 // import { fortmatic, injected, metamask, portis, safeApp } from 'connectors';
-import { OVERLAY_READY } from 'connectors/Fortmatic';
+// import { OVERLAY_READY } from 'connectors/Fortmatic';
 import { GlobalConst } from 'constants/index';
 import usePrevious from 'hooks/usePrevious';
 import { ApplicationModal } from 'state/application/actions';
@@ -171,68 +171,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
     } catch (e) {
       setPendingError(true);
     }
-
-    // if (connector instanceof InjectedConnector) {
-    //   const { _oldMetaMask } = window as any;
-    //   if (_oldMetaMask) {
-    //     window.ethereum = _oldMetaMask;
-    //     name = GlobalConst.walletName.METAMASK;
-    //   }
-    // }
-
-    // if the connector is walletconnect and the user has already tried to connect, manually reset the connector
-    // if (
-    //   connector instanceof WalletConnectConnector &&
-    //   connector.walletConnectProvider?.wc?.uri
-    // ) {
-    //   connector.walletConnectProvider = undefined;
-    // }
-
-    // if (connector instanceof TrustWalletConnector) {
-    //   const { trustwallet } = window as any;
-    //   if (trustwallet) {
-    //     if (window.ethereum && window.ethereum.isMetaMask) {
-    //       (window as any)['_oldMetaMask'] = window.ethereum;
-    //     }
-    //     window.ethereum = trustwallet;
-    //   }
-    // }
-
-    // connector &&
-    //   connector
-    //     .activate()
-    //     .then(() => {
-    //       if (
-    //         connector instanceof UAuthConnector &&
-    //         process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
-    //         process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
-    //       ) {
-    //         const uauth = new UAuth({
-    //           clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-    //           redirectUri:
-    //             process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
-    //           scope: 'openid wallet',
-    //         });
-    //         uauth
-    //           .user()
-    //           .then((user) => {
-    //             updateUDDomain(user.sub);
-    //           })
-    //           .catch(() => {
-    //             setError('User does not exist.');
-    //           });
-    //       } else {
-    //         updateUDDomain(undefined);
-    //       }
-    //       setError(undefined);
-    //     })
-    //     .catch((error) => {
-    //       if (error instanceof UnsupportedChainIdError) {
-    //         setError(error);
-    //       } else {
-    //         setPendingError(true);
-    //       }
-    //     });
   };
 
   // close wallet modal if fortmatic modal is active
@@ -244,7 +182,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   // get wallets user can switch too, depending on device/browser
   function getOptions() {
-    const { ethereum, web3, _oldMetaMask } = window as any;
+    const { ethereum, web3 } = window as any;
     const isMetamask = getIsMetaMaskWallet();
     const isBlockWallet = ethereum && ethereum.isBlockWallet;
     const isCypherD = ethereum && ethereum.isCypherD;
@@ -258,16 +196,11 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
     return connections.map((option) => {
       //disable safe app by in the list
-      // if (option.connector === safeApp) {
-      //   return null;
-      // }
+      if (option.key === 'SAFE_APP') {
+        return null;
+      }
       // check for mobile options
       if (isMobile) {
-        //disable portis on mobile for now
-        // if (option.connector === portis) {
-        //   return null;
-        // }
-
         if (!web3 && !ethereum && option.mobile) {
           if (
             option.name === GlobalConst.walletName.BRAVEWALLET &&
@@ -295,6 +228,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               id={`connect-${option.key}`}
               key={option.key}
               active={
+                isActive &&
                 option.connector === connector &&
                 (connector !== injectedConnection.connector ||
                   isCypherD ===
@@ -414,12 +348,13 @@ const WalletModal: React.FC<WalletModalProps> = ({
           <Option
             id={`connect-${option.key}`}
             onClick={() => {
-              option.connector === connector
+              isActive && option.connector === connector
                 ? setWalletView(WALLET_VIEWS.ACCOUNT)
                 : !option.href && tryActivation(option.connector);
             }}
             key={option.key}
             active={
+              isActive &&
               option.connector === connector &&
               (connector !== injectedConnection.connector ||
                 isCypherD ===

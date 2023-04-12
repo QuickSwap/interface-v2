@@ -1,5 +1,5 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
-import { ConnectorUpdate } from '@web3-react/types';
+// import { ConnectorUpdate } from '@web3-react/types';
 
 const CHAIN_ID = 137;
 
@@ -63,7 +63,7 @@ export class PhantomWalletConnector extends AbstractConnector {
     this.handleDisconnect = this.handleDisconnect.bind(this);
   }
 
-  public async activate(): Promise<ConnectorUpdate> {
+  public async activate(): Promise<any> {
     this.provider = getPhantomWalletInjectedProvider();
 
     const accounts = await this.provider.request({

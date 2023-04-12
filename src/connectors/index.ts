@@ -208,6 +208,40 @@ export const metamaskConnection: Connection = {
   description: 'Easy-to-use browser extension.',
 };
 
+export const blockWalletConnection: Connection = {
+  key: 'BLOCKWALLET',
+  name: GlobalConst.walletName.BLOCKWALLET,
+  connector: web3Injected,
+  hooks: web3InjectedHooks,
+  type: ConnectionType.INJECTED,
+  iconName: BlockWalletIcon,
+  color: '#1673ff',
+  description: 'BlockWallet browser extension.',
+};
+
+export const braveWalletConnection: Connection = {
+  key: 'BRAVEWALLET',
+  name: GlobalConst.walletName.BRAVEWALLET,
+  connector: web3Injected,
+  hooks: web3InjectedHooks,
+  type: ConnectionType.INJECTED,
+  iconName: BraveWalletIcon,
+  color: '#1673ff',
+  description: 'Brave browser wallet.',
+  mobile: true,
+};
+
+export const bitKeepConnection: Connection = {
+  key: 'BITKEEP',
+  name: GlobalConst.walletName.BITKEEP,
+  connector: web3Injected,
+  hooks: web3InjectedHooks,
+  type: ConnectionType.INJECTED,
+  iconName: BitKeepIcon,
+  color: '#E8831D',
+  description: 'BitKeep browser extension.',
+};
+
 export const cypherDConnection: Connection = {
   key: 'CYPHERD',
   name: GlobalConst.walletName.CYPHERD,
@@ -322,11 +356,14 @@ export const coinbaseWalletConnection: Connection = {
 export function getConnections() {
   return [
     cypherDConnection,
-    injectedConnection,
     metamaskConnection,
+    braveWalletConnection,
+    blockWalletConnection,
+    bitKeepConnection,
+    injectedConnection,
+    gnosisSafeConnection,
+    coinbaseWalletConnection,
     walletConnectConnection,
     zengoConnectConnection,
-    coinbaseWalletConnection,
-    gnosisSafeConnection,
   ];
 }
