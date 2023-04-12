@@ -6,6 +6,7 @@ import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon2.svg';
 import Transak from 'assets/images/Transak.png';
 import BinanceConnect from 'assets/images/binanceConnect.png';
 import CoinbasePay from 'assets/images/coinbasePay.png';
+import MeldHexagon from 'assets/images/meld-hexagon.svg';
 import { CustomModal } from 'components';
 import { useActiveWeb3React, useInitTransak } from 'hooks';
 import 'components/styles/BuyFiatModal.scss';
@@ -18,12 +19,14 @@ interface BuyFiatModalProps {
   onClose: () => void;
   buyMoonpay: () => void;
   buyBinance: () => void;
+  buyMeld: () => void;
 }
 
 const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   open,
   onClose,
   buyBinance,
+  buyMeld,
 }) => {
   const { account } = useActiveWeb3React();
   const [onrampInstance, setOnRampInstance] = useState<
@@ -122,6 +125,15 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
               initTransak(account, mobileWindowSize);
             }}
           >
+            {t('buy')}
+          </Box>
+        </Box>
+        <Box className='paymentBox'>
+          <Box className='payment-meld-logo'>
+            <img src={MeldHexagon} alt='meld' />
+            <p>MELD</p>
+          </Box>
+          <Box className='buyButton' onClick={buyMeld}>
             {t('buy')}
           </Box>
         </Box>
