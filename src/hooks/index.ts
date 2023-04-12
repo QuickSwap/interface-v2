@@ -1,11 +1,10 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   Web3ContextType,
   useWeb3React as useWeb3ReactCore,
 } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 import { ChainId, Pair } from '@uniswap/sdk';
-import { isMobile } from 'react-device-detect';
 import {
   injectedConnection,
   gnosisSafeConnection,
@@ -144,47 +143,6 @@ export function useGetConnection() {
     }
   }, []);
 }
-
-/**
- * Use for network and injected - logs user in
- * and out after checking what network theyre on
- */
-// export function useInactiveListener(suppress = false) {
-//   const { isActive, connector } = useWeb3ReactCore(); // specifically using useWeb3React because of what this hook does
-
-//   useEffect(() => {
-//     const { ethereum } = window;
-
-//     if (ethereum && !active && !error && !suppress) {
-//       const handleChainChanged = () => {
-//         // eat errors
-//         activate(injected, undefined, true).catch((error) => {
-//           console.error('Failed to activate after chain changed', error);
-//         });
-//       };
-
-//       const handleAccountsChanged = (accounts: string[]) => {
-//         if (accounts.length > 0) {
-//           // eat errors
-//           activate(injected, undefined, true).catch((error) => {
-//             console.error('Failed to activate after accounts changed', error);
-//           });
-//         }
-//       };
-
-//       ethereum.on('chainChanged', handleChainChanged);
-//       ethereum.on('accountsChanged', handleAccountsChanged);
-
-//       return () => {
-//         if (ethereum.removeListener) {
-//           ethereum.removeListener('chainChanged', handleChainChanged);
-//           ethereum.removeListener('accountsChanged', handleAccountsChanged);
-//         }
-//       };
-//     }
-//     return undefined;
-//   }, [active, error, suppress, activate]);
-// }
 
 export function useV2LiquidityPools(account?: string) {
   const trackedTokenPairs = useTrackedTokenPairs();

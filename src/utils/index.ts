@@ -2585,14 +2585,19 @@ export function getWalletKeys(connector: Connector): Connection[] {
   const { ethereum } = window as any;
   const isMetaMask = !!(
     ethereum &&
+    ethereum.isMetaMask &&
     !ethereum.isBitKeep &&
+    !ethereum.isBlockWallet &&
+    !ethereum.isCypherD &&
     !ethereum.isBraveWallet &&
-    ethereum.isMetaMask
+    !ethereum.isPhantom
   );
   const isBitkeep = !!(ethereum && ethereum.isBitKeep);
   const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
   const isCypherDWallet = !!(ethereum && ethereum.isCypherD);
   const isBraveWallet = !!(ethereum && ethereum.isBraveWallet);
+  const isPhantomWallet = !!(ethereum && ethereum.isPhantom);
+  const isTrustWallet = !!(ethereum && ethereum.isTrustWallet);
   const connections = getConnections();
   return connections.filter(
     (option) =>
@@ -2602,7 +2607,9 @@ export function getWalletKeys(connector: Connector): Connection[] {
         (isBlockWallet && option.key === 'BLOCKWALLET') ||
         (isBitkeep && option.key === 'BITKEEP') ||
         (isMetaMask && option.key === 'METAMASK') ||
-        (isBraveWallet && option.key === 'BRAVEWALLET')),
+        (isBraveWallet && option.key === 'BRAVEWALLET') ||
+        (isPhantomWallet && option.key === 'PHANTOM_WALLET') ||
+        (isTrustWallet && option.key === 'TRUST_WALLET')),
   );
 }
 

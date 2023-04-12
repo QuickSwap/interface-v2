@@ -21,16 +21,20 @@ const PendingView: React.FC<PendingViewProps> = ({
   tryActivation,
 }) => {
   const { t } = useTranslation();
-  const { ethereum, _oldMetaMask } = window as any;
+  const { ethereum } = window as any;
   const isMetamask =
     ethereum &&
     !ethereum.isBitKeep &&
     !ethereum.isBraveWallet &&
-    (ethereum.isMetaMask || _oldMetaMask);
-  const isBlockWallet = ethereum?.isBlockWallet;
-  const isCypherD = ethereum?.isCypherD;
-  const isBitKeep = ethereum?.isBitKeep;
+    !ethereum.isPhantom &&
+    !ethereum.isTrustWallet;
+  ethereum.isMetaMask;
+  const isBlockWallet = ethereum && ethereum.isBlockWallet;
+  const isCypherD = ethereum && ethereum.isCypherD;
+  const isBitKeep = ethereum && ethereum.isBitKeep;
   const isBraveWallet = ethereum && ethereum.isBraveWallet;
+  const isPhantomWallet = ethereum && ethereum.isPhantom;
+  const isTrustWallet = ethereum && ethereum.isTrustWallet;
   const connections = getConnections();
 
   return (
@@ -101,6 +105,30 @@ const PendingView: React.FC<PendingViewProps> = ({
             if (
               !isBraveWallet &&
               option.name === GlobalConst.walletName.BRAVEWALLET
+            ) {
+              return null;
+            }
+            if (
+              isPhantomWallet &&
+              option.name !== GlobalConst.walletName.PHANTOM_WALLET
+            ) {
+              return null;
+            }
+            if (
+              !isPhantomWallet &&
+              option.name === GlobalConst.walletName.PHANTOM_WALLET
+            ) {
+              return null;
+            }
+            if (
+              isTrustWallet &&
+              option.name !== GlobalConst.walletName.TRUST_WALLET
+            ) {
+              return null;
+            }
+            if (
+              !isTrustWallet &&
+              option.name === GlobalConst.walletName.TRUST_WALLET
             ) {
               return null;
             }

@@ -10,12 +10,7 @@ import { WalletConnectPopup } from './WalletConnect';
 
 // import { FortmaticConnector } from './Fortmatic';
 // import { ArkaneConnector } from './Arkane';
-import {
-  getTrustWalletInjectedProvider,
-  TrustWalletConnector,
-} from './TrustWalletConnector';
 import { ChainId } from '@uniswap/sdk';
-import { PhantomWalletConnector } from './PhantomWalletConnector';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
 import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
@@ -28,26 +23,9 @@ import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
 import ZengoIcon from 'assets/images/zengo.png';
-import { isMobile } from 'react-device-detect';
-import {
-  getIsCoinbaseWallet,
-  getIsInjected,
-  getIsMetaMaskWallet,
-} from './utils';
 import { GlobalConst } from 'constants/index';
 
 const POLLING_INTERVAL = 12000;
-
-const getIsCoinbaseWalletBrowser = () => isMobile && getIsCoinbaseWallet();
-const getIsMetaMaskBrowser = () => isMobile && getIsMetaMaskWallet();
-const getIsInjectedMobileBrowser = () =>
-  getIsCoinbaseWalletBrowser() || getIsMetaMaskBrowser();
-const getShouldAdvertiseMetaMask = () =>
-  !getIsMetaMaskWallet() &&
-  !isMobile &&
-  (!getIsInjected() || getIsCoinbaseWallet());
-const getIsGenericInjector = () =>
-  getIsInjected() && !getIsMetaMaskWallet() && !getIsCoinbaseWallet();
 
 function onError(error: Error) {
   console.debug(`web3-react error: ${error}`);
@@ -116,8 +94,6 @@ export const networkInfoMap: NetworkInfoChainMap = {
 };
 
 const NETWORK_URL = 'https://polygon-rpc.com/';
-// const FORMATIC_KEY = 'pk_live_F937DF033A1666BF'
-// const PORTIS_ID = 'c0e2bf01-4b08-4fd5-ac7b-8e26b58cd236'
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;
 const MAINNET_NETWORK_URL = process.env.REACT_APP_MAINNET_NETWORK_URL;
 
@@ -252,9 +228,27 @@ export const cypherDConnection: Connection = {
   description: 'CypherD browser extension.',
 };
 
-export const phantomconnect = new PhantomWalletConnector({
-  supportedChainIds: [137, 80001],
-});
+export const phantomConnection: Connection = {
+  key: 'PHANTOM_WALLET',
+  name: GlobalConst.walletName.PHANTOM_WALLET,
+  connector: web3Injected,
+  hooks: web3InjectedHooks,
+  type: ConnectionType.INJECTED,
+  iconName: PhantomIcon,
+  color: '#E8831D',
+  description: 'Phantom wallet extension.',
+};
+
+export const trustWalletConnection: Connection = {
+  key: 'TRUST_WALLET',
+  name: GlobalConst.walletName.TRUST_WALLET,
+  connector: web3Injected,
+  hooks: web3InjectedHooks,
+  type: ConnectionType.INJECTED,
+  iconName: TrustIcon,
+  color: '#E8831D',
+  description: 'Trust wallet extension.',
+};
 
 const [web3WalletConnect, web3WalletConnectHooks] = initializeConnector<
   WalletConnectPopup
@@ -294,13 +288,6 @@ export const zengoConnectConnection: Connection = {
   description: 'Connect to Zengo Wallet',
   mobile: true,
 };
-
-// mainnet only
-export const trustconnect = !!getTrustWalletInjectedProvider()
-  ? new TrustWalletConnector({
-      supportedChainIds: [137],
-    })
-  : walletConnectConnection;
 
 // mainnet only
 // export const arkaneconnect = new ArkaneConnector({
@@ -356,6 +343,8 @@ export function getConnections() {
   return [
     cypherDConnection,
     metamaskConnection,
+    trustWalletConnection,
+    phantomConnection,
     braveWalletConnection,
     blockWalletConnection,
     bitKeepConnection,

@@ -203,7 +203,7 @@ export const GlobalConst = {
   },
   walletName: {
     METAMASK: 'Metamask',
-    TRUST_WALLET: 'Trust Wallet',
+    TRUST_WALLET: 'TrustWallet',
     PHANTOM_WALLET: 'Phantom',
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',

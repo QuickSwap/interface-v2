@@ -81,7 +81,9 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                 <small
                   style={{ cursor: 'pointer', marginRight: 8 }}
                   onClick={() => {
-                    connector;
+                    if (connector.deactivate) {
+                      connector.deactivate();
+                    }
                     // if (
                     //   connector ===
                     //   ((unstopabbledomains as any) as AbstractConnector)
