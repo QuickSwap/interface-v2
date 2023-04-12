@@ -5553,10 +5553,10 @@
     tiny-invariant "^1.1.0"
     toformat "^2.0.0"
 
-"@uniswap/sdk@npm:quickswap-sdk@3.0.19":
-  version "3.0.19"
-  resolved "https://registry.yarnpkg.com/quickswap-sdk/-/quickswap-sdk-3.0.19.tgz#8558f4554cd1a505c97fece8bfbbfe056cd53e83"
-  integrity sha512-xtuJsBbPCWw5mdPlVy19bdZtRKdPB+hC7cbbd8sXibFfcg+BQxUMw0Hxy56aoEQC+6JC+ExGQWSWrlWMkI0aBw==
+"@uniswap/sdk@npm:quickswap-sdk@3.0.20":
+  version "3.0.20"
+  resolved "https://registry.yarnpkg.com/quickswap-sdk/-/quickswap-sdk-3.0.20.tgz#d77348945f9a36000223689e2ada3c1bf6abf89d"
+  integrity sha512-HhQmsdMvWnmoETStDne11WYm9iFhEFCxrU0i0zO1kSpPDZDriARNfHfBZRWETSo3SjYHl51zuwXCI3d5RQ53VA==
   dependencies:
     "@uniswap/v2-core" "^1.0.0"
     big.js "^5.2.2"

@@ -25,7 +25,7 @@ import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
 import VenlyIcon from 'assets/images/venly.svg';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
-import ZengoIcon from 'assets/images/zengo.webp';
+import ZengoIcon from 'assets/images/zengo.png';
 import { Presets } from 'state/mint/v3/reducer';
 import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
@@ -1019,6 +1019,30 @@ export const GammaPairs: {
         pid: 74,
       },
     ],
+    '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x2d08b4b4c74d0b2f4144ae7bd86ee40fb654acef',
+        token0Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 1,
+        masterChefIndex: 1,
+      },
+    ],
+    '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xcbb7fae80e4f5c0cbfe1af7bb1f19692f9532cfa',
+        token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+        token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
+        ableToFarm: true,
+        pid: 2,
+        masterChefIndex: 1,
+      },
+    ],
   },
   [ChainId.MUMBAI]: {},
   [ChainId.DOEGCHAIN_TESTNET]: {},
@@ -1128,6 +1152,15 @@ export const GammaPairs: {
 //     href: null,
 //     color: '#E8831D',
 //   },
+//   ZENGO_CONNECT: {
+//     connector: zengoconnect,
+//     name: GlobalConst.walletName.ZENGO_CONNECT,
+//     iconName: ZengoIcon,
+//     description: 'Connect to Zengo Wallet',
+//     href: null,
+//     color: '#4196FC',
+//     mobile: true,
+//   },
 //   ARKANE_CONNECT: {
 //     connector: arkaneconnect,
 //     name: GlobalConst.walletName.ARKANE_CONNECT,
@@ -1143,15 +1176,6 @@ export const GammaPairs: {
 //     description: 'Login using Portis hosted wallet',
 //     href: null,
 //     color: '#4A6C9B',
-//     mobile: true,
-//   },
-//   ZENGO_CONNECT: {
-//     connector: zengoconnect,
-//     name: GlobalConst.walletName.ZENGO_CONNECT,
-//     iconName: ZengoIcon,
-//     description: 'Connect to Zengo Wallet',
-//     href: null,
-//     color: '#4196FC',
 //     mobile: true,
 //   },
 // };

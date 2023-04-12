@@ -14,7 +14,6 @@ import { getTopTokensTotal, getTopTokensV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
@@ -74,10 +73,10 @@ const AnalyticsTokens: React.FC = () => {
         }
       } else {
         if (
-          maticPrice.price &&
-          maticPrice.oneDayPrice &&
-          ethPrice.price &&
-          ethPrice.oneDayPrice
+          maticPrice.price !== undefined &&
+          maticPrice.oneDayPrice !== undefined &&
+          ethPrice.price !== undefined &&
+          ethPrice.oneDayPrice !== undefined
         ) {
           const data = await getTopTokensTotal(
             ethPrice.price,

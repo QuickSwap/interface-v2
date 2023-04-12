@@ -9,7 +9,7 @@ import {
   getPriceClass,
   formatNumber,
   getTokenInfo,
-  getTokenPairs2,
+  getTokenPairsV2,
   getBulkPairData,
   getTokenFromAddress,
   getGammaRewards,
@@ -145,7 +145,10 @@ const AnalyticsTokenDetails: React.FC = () => {
       if (chainId) {
         try {
           if (version === 'v3') {
-            if (maticPrice.price && maticPrice.oneDayPrice) {
+            if (
+              maticPrice.price !== undefined &&
+              maticPrice.oneDayPrice !== undefined
+            ) {
               const tokenInfo = await getTokenInfoV3(
                 maticPrice.price,
                 maticPrice.oneDayPrice,
@@ -158,7 +161,10 @@ const AnalyticsTokenDetails: React.FC = () => {
               setLoadingData(false);
             }
           } else if (version === 'v2') {
-            if (ethPrice.price && ethPrice.oneDayPrice) {
+            if (
+              ethPrice.price !== undefined &&
+              ethPrice.oneDayPrice !== undefined
+            ) {
               const tokenInfo = await getTokenInfo(
                 ethPrice.price,
                 ethPrice.oneDayPrice,
@@ -172,10 +178,10 @@ const AnalyticsTokenDetails: React.FC = () => {
             }
           } else {
             if (
-              ethPrice.price &&
-              ethPrice.oneDayPrice &&
-              maticPrice.price &&
-              maticPrice.oneDayPrice
+              ethPrice.price !== undefined &&
+              ethPrice.oneDayPrice !== undefined &&
+              maticPrice.price !== undefined &&
+              maticPrice.oneDayPrice !== undefined
             ) {
               const tokenInfo = await getTokenInfoTotal(
                 maticPrice.price,
@@ -216,20 +222,10 @@ const AnalyticsTokenDetails: React.FC = () => {
       }
     }
     async function fetchPairs() {
-      if (chainId) {
-        const tokenPairs = await getTokenPairs2(tokenAddress, chainId);
-        const formattedPairs = tokenPairs
-          ? tokenPairs.map((pair: any) => {
-              return pair.id;
-            })
-          : [];
-        const pairData = await getBulkPairData(
-          formattedPairs,
-          ethPrice.price,
-          chainId,
-        );
-        if (pairData) {
-          updateTokenPairs(pairData);
+      if (chainId && ethPrice.price !== undefined) {
+        const tokenPairs = await getTokenPairsV2(tokenAddress, chainId);
+        if (tokenPairs) {
+          updateTokenPairs(tokenPairs);
         }
       }
     }

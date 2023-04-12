@@ -32,7 +32,11 @@ import {
   useNewQUICKContract,
   useQUICKContract,
 } from 'hooks/useContract';
-import { useUSDCPrices, useUSDCPricesToken } from 'utils/useUSDCPrice';
+import {
+  useUSDCPrices,
+  useUSDCPricesFromAddresses,
+  useUSDCPricesToken,
+} from 'utils/useUSDCPrice';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
 import {
@@ -81,7 +85,9 @@ let pairs: any = undefined;
 
 let oneDayVol: any = undefined;
 
-export function useTotalRewardsDistributed(chainId: ChainId): number {
+export function useTotalRewardsDistributed(
+  chainId: ChainId,
+): number | undefined {
   const syrupRewardsInfo = Object.values(useDefaultSyrupList()[chainId]);
   const dualStakingRewardsInfo = Object.values(
     useDefaultDualFarmList()[chainId],
@@ -90,51 +96,66 @@ export function useTotalRewardsDistributed(chainId: ChainId): number {
     useDefaultFarmList()[chainId],
   ).filter((x) => !x.ended);
 
-  const syrupTokenPairs = usePairs(
-    syrupRewardsInfo.map((item) => [
-      unwrappedToken(item.token),
-      unwrappedToken(item.baseToken),
-    ]),
-  );
-  const syrupUSDBaseTokenPrices = useUSDCPrices(
-    syrupRewardsInfo.map((item) => unwrappedToken(item.baseToken)),
-  );
-  const syrupRewardsUSD = syrupRewardsInfo.reduce((total, item, index) => {
-    const [, syrupTokenPair] = syrupTokenPairs[index];
-    const tokenPairPrice = syrupTokenPair?.priceOf(item.token);
-    const usdPriceBaseToken = syrupUSDBaseTokenPrices[index];
-    const priceOfRewardTokenInUSD =
-      Number(tokenPairPrice?.toSignificant()) *
-      Number(usdPriceBaseToken?.toSignificant());
-    return total + priceOfRewardTokenInUSD * item.rate;
-  }, 0);
+  const tokenAddresses = syrupRewardsInfo
+    .map((item) => item.token.address)
+    .concat(dualStakingRewardsInfo.map((item) => item.rewardTokenA.address))
+    .concat(dualStakingRewardsInfo.map((item) => item.rewardTokenB.address))
+    .concat(stakingRewardsInfo.map((item) => item.rewardToken.address))
+    .filter(
+      (address, index, self) =>
+        address &&
+        self.findIndex(
+          (item) =>
+            item && address && item.toLowerCase() === address.toLowerCase(),
+        ) === index,
+    );
+  const usdTokenPrices = useUSDCPricesFromAddresses(tokenAddresses);
+  const syrupRewardsUSD = usdTokenPrices
+    ? syrupRewardsInfo.reduce((total, item, index) => {
+        const usdPriceToken = usdTokenPrices.find(
+          (price) =>
+            price.address.toLowerCase() === item.token.address.toLowerCase(),
+        );
+        return total + (usdPriceToken ? usdPriceToken.price : 0) * item.rate;
+      }, 0)
+    : undefined;
 
-  const rewardTokenAPrices = useUSDCPricesToken(
-    dualStakingRewardsInfo.map((item) => item.rewardTokenA),
-    chainId,
-  );
-  const rewardTokenBPrices = useUSDCPricesToken(
-    dualStakingRewardsInfo.map((item) => item.rewardTokenB),
-    chainId,
-  );
-  const dualStakingRewardsUSD = dualStakingRewardsInfo.reduce(
-    (total, item, index) =>
-      total +
-      item.rateA * rewardTokenAPrices[index] +
-      item.rateB * rewardTokenBPrices[index],
-    0,
-  );
+  const dualStakingRewardsUSD = usdTokenPrices
+    ? dualStakingRewardsInfo.reduce((total, item) => {
+        const rewardTokenAPrice = usdTokenPrices.find(
+          (price) =>
+            price.address.toLowerCase() ===
+            item.rewardTokenA.address.toLowerCase(),
+        );
+        const rewardTokenBPrice = usdTokenPrices.find(
+          (price) =>
+            price.address.toLowerCase() ===
+            item.rewardTokenB.address.toLowerCase(),
+        );
+        return (
+          total +
+          item.rateA * (rewardTokenAPrice ? rewardTokenAPrice.price : 0) +
+          item.rateB * (rewardTokenBPrice ? rewardTokenBPrice.price : 0)
+        );
+      }, 0)
+    : undefined;
 
-  const rewardTokenPrices = useUSDCPricesToken(
-    stakingRewardsInfo.map((item) => item.rewardToken),
-    chainId,
-  );
-  const stakingRewardsUSD = stakingRewardsInfo.reduce(
-    (total, item, index) => total + item.rate * rewardTokenPrices[index],
-    0,
-  );
+  const stakingRewardsUSD = usdTokenPrices
+    ? stakingRewardsInfo.reduce((total, item, index) => {
+        const rewardTokenPrice = usdTokenPrices.find(
+          (price) =>
+            price.address.toLowerCase() ===
+            item.rewardToken.address.toLowerCase(),
+        );
+        return (
+          total + item.rate * (rewardTokenPrice ? rewardTokenPrice.price : 0)
+        );
+      }, 0)
+    : undefined;
 
-  return syrupRewardsUSD + dualStakingRewardsUSD + stakingRewardsUSD;
+  return syrupRewardsUSD && dualStakingRewardsUSD && stakingRewardsUSD
+    ? syrupRewardsUSD + dualStakingRewardsUSD + stakingRewardsUSD
+    : 0;
 }
 
 export function useUSDRewardsandFees(
@@ -279,20 +300,12 @@ export function useFilteredSyrupInfo(
     'totalSupply',
   );
 
-  const stakingTokenPairs = usePairs(
-    info.map((item) => [
-      unwrappedToken(item.token),
-      unwrappedToken(item.baseToken),
-    ]),
+  const usdTokenPrices = useUSDCPricesFromAddresses(
+    info.map((item) => item.token.address),
   );
 
-  const usdBaseTokenPrices = useUSDCPrices(
-    info.map((item) => unwrappedToken(item.baseToken)),
-  );
-
-  const stakingTokenPrices = useUSDCPricesToken(
-    info.map((item) => item.stakingToken),
-    chainId,
+  const stakingTokenPrices = useUSDCPricesFromAddresses(
+    info.map((item) => item.stakingToken.address),
   );
 
   return useMemo(() => {
@@ -303,11 +316,15 @@ export function useFilteredSyrupInfo(
         // these two are dependent on account
         const balanceState = balances[index];
         const earnedAmountState = earnedAmounts[index];
-        const stakingTokenPrice = stakingTokenPrices[index];
 
         // these get fetched regardless of account
         const totalSupplyState = totalSupplies[index];
         const syrupInfo = info[index];
+        const stakingTokenPrice = stakingTokenPrices?.find(
+          (item) =>
+            item.address.toLowerCase() ===
+            syrupInfo.stakingToken.address.toLowerCase(),
+        );
 
         if (
           // these may be undefined if not logged in
@@ -319,14 +336,14 @@ export function useFilteredSyrupInfo(
         ) {
           // get the LP token
           const token = syrupInfo.token;
-          const [, stakingTokenPair] = stakingTokenPairs[index];
-          const tokenPairPrice = stakingTokenPair?.priceOf(token);
-          const usdPriceBaseToken = usdBaseTokenPrices[index];
-          const priceOfRewardTokenInUSD =
-            tokenPairPrice && usdPriceBaseToken
-              ? Number(tokenPairPrice.toSignificant()) *
-                Number(usdPriceBaseToken.toSignificant())
-              : undefined;
+          const usdPriceToken = usdTokenPrices?.find(
+            (item) =>
+              item.address.toLowerCase() ===
+              syrupInfo.token.address.toLowerCase(),
+          );
+          const priceOfRewardTokenInUSD = usdPriceToken
+            ? usdPriceToken.price
+            : 0;
 
           const rewards = syrupInfo.rate * (priceOfRewardTokenInUSD ?? 0);
 
@@ -390,7 +407,8 @@ export function useFilteredSyrupInfo(
             rewards,
             stakingToken: syrupInfo.stakingToken,
             valueOfTotalStakedAmountInUSDC: totalStakedAmount
-              ? Number(totalStakedAmount.toExact()) * stakingTokenPrice
+              ? Number(totalStakedAmount.toExact()) *
+                (stakingTokenPrice ? stakingTokenPrice.price : 0)
               : undefined,
             sponsored: syrupInfo.stakingInfo.sponsored,
             sponsorLink: syrupInfo.stakingInfo.link,
@@ -401,15 +419,14 @@ export function useFilteredSyrupInfo(
       [],
     );
   }, [
-    balances,
     chainId,
-    earnedAmounts,
-    info,
     rewardsAddresses,
+    balances,
+    earnedAmounts,
     totalSupplies,
-    stakingTokenPairs,
-    usdBaseTokenPrices,
+    info,
     stakingTokenPrices,
+    usdTokenPrices,
   ]).filter((syrupInfo) =>
     filter && filter.isStaked
       ? syrupInfo.stakedAmount && syrupInfo.stakedAmount.greaterThan('0')

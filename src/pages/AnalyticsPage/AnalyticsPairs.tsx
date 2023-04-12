@@ -6,6 +6,7 @@ import {
   getBulkPairData,
   getGammaRewards,
   getGammaData,
+  getTopPairsV2,
 } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
@@ -138,23 +139,13 @@ const AnalyticsPairs: React.FC = () => {
           }
         }
       } else if (version === 'v2') {
-        if (ethPrice.price) {
-          const pairs = await getTopPairs(
+        if (ethPrice.price !== undefined) {
+          const pairsData = await getTopPairsV2(
             GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
             chainId,
           );
-          const formattedPairs = pairs
-            ? pairs.map((pair: any) => {
-                return pair.id;
-              })
-            : [];
-          const data = await getBulkPairData(
-            formattedPairs,
-            ethPrice.price,
-            chainId,
-          );
-          if (data) {
-            updateTopPairs(data);
+          if (pairsData) {
+            updateTopPairs(pairsData);
           }
         }
       } else {
