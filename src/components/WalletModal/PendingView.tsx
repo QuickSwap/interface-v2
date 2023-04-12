@@ -21,7 +21,7 @@ const PendingView: React.FC<PendingViewProps> = ({
   tryActivation,
 }) => {
   const { t } = useTranslation();
-  const { ethereum } = window as any;
+  const { ethereum, phantom } = window as any;
   const isMetamask =
     ethereum &&
     !ethereum.isBitKeep &&
@@ -33,7 +33,8 @@ const PendingView: React.FC<PendingViewProps> = ({
   const isCypherD = ethereum && ethereum.isCypherD;
   const isBitKeep = ethereum && ethereum.isBitKeep;
   const isBraveWallet = ethereum && ethereum.isBraveWallet;
-  const isPhantomWallet = ethereum && ethereum.isPhantom;
+  const isPhantomWallet =
+    (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
   const isTrustWallet = ethereum && ethereum.isTrustWallet;
   const connections = getConnections();
 

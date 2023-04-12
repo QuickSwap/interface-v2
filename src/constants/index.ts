@@ -13,21 +13,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 //   zengoconnect,
 //   phantomconnect,
 // } from '../connectors';
-// import MetamaskIcon from 'assets/images/metamask.png';
-// import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
-// import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
-// import cypherDIcon from 'assets/images/cypherDIcon.png';
-// import BitKeepIcon from 'assets/images/bitkeep.png';
-// import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
-// import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
-// import PortisIcon from 'assets/images/portisIcon.png';
-// import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
-// import VenlyIcon from 'assets/images/venly.svg';
-// import GnosisIcon from 'assets/images/gnosis_safe.png';
-// import TrustIcon from 'assets/images/trust.png';
-// import ZengoIcon from 'assets/images/zengo.png';
 import { Presets } from 'state/mint/v3/reducer';
-// import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
 
 export enum TxnType {

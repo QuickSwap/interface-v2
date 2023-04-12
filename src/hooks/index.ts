@@ -1,11 +1,10 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   Web3ContextType,
   useWeb3React as useWeb3ReactCore,
 } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 import { ChainId, Pair } from '@uniswap/sdk';
-import { isMobile } from 'react-device-detect';
 import {
   ConnectionType,
   coinbaseWalletConnection,

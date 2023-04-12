@@ -1,4 +1,4 @@
-import { ConnectorUpdate } from '@web3-react/types';
+// import { ConnectorUpdate } from '@web3-react/types';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import invariant from 'tiny-invariant';
 import { ChainId } from '@uniswap/sdk';
@@ -37,7 +37,7 @@ export class ArkaneConnector extends AbstractConnector {
     this.chainId = chainId;
   }
 
-  public async activate(): Promise<ConnectorUpdate> {
+  public async activate(): Promise<any> {
     const options = {
       clientId: this.clientID,
       secretType: SecretType.MATIC,

@@ -1,6 +1,4 @@
-import { AbstractConnector } from '@web3-react/abstract-connector';
 import { useWeb3React } from '@web3-react/core';
-// import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
@@ -8,8 +6,6 @@ import { Box } from '@material-ui/core';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
-// import { fortmatic, injected, metamask, portis, safeApp } from 'connectors';
-// import { OVERLAY_READY } from 'connectors/Fortmatic';
 import { GlobalConst } from 'constants/index';
 import usePrevious from 'hooks/usePrevious';
 import { ApplicationModal } from 'state/application/actions';
@@ -22,9 +18,6 @@ import { AccountDetails, CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
 import { UAuthConnector } from '@uauth/web3-react';
 import UAuth from '@uauth/js';
-
-// import { InjectedConnector } from '@web3-react/injected-connector';
-
 import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
@@ -95,27 +88,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
     }
   }, [walletModalOpen]);
 
-  // close modal when a connection is successful
-  const activePrevious = usePrevious(isActive);
-  const connectorPrevious = usePrevious(connector);
-  useEffect(() => {
-    if (
-      walletModalOpen &&
-      ((isActive && !activePrevious) ||
-        (connector && connector !== connectorPrevious && !error))
-    ) {
-      setWalletView(WALLET_VIEWS.ACCOUNT);
-    }
-  }, [
-    setWalletView,
-    error,
-    connector,
-    walletModalOpen,
-    activePrevious,
-    connectorPrevious,
-    isActive,
-  ]);
-
   const tryActivation = async (connector: Connector) => {
     let name = '';
     let found = false;
@@ -153,16 +125,17 @@ const WalletModal: React.FC<WalletModalProps> = ({
           redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
           scope: 'openid wallet',
         });
-        uauth
-          .user()
-          .then((user) => {
-            updateUDDomain(user.sub);
-          })
-          .catch(() => {
-            setError('User does not exist.');
-          });
+
+        try {
+          const user = await uauth.user();
+          updateUDDomain(user.sub);
+          setWalletView(WALLET_VIEWS.ACCOUNT);
+        } catch {
+          setError('User does not exist.');
+        }
       } else {
         updateUDDomain(undefined);
+        setWalletView(WALLET_VIEWS.ACCOUNT);
       }
     } catch (e) {
       setPendingError(true);
@@ -178,14 +151,15 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   // get wallets user can switch too, depending on device/browser
   function getOptions() {
-    const { ethereum, web3 } = window as any;
+    const { ethereum, web3, phantom } = window as any;
     const isMetamask = getIsMetaMaskWallet();
     const isBlockWallet = ethereum && ethereum.isBlockWallet;
     const isCypherD = ethereum && ethereum.isCypherD;
     const isBitKeep = ethereum && ethereum.isBitKeep;
     const isTrustWallet = ethereum && ethereum.isTrustWallet;
     const isBraveWallet = ethereum && ethereum.isBraveWallet;
-    const isPhantomWallet = ethereum && ethereum.isPhantom;
+    const isPhantomWallet =
+      (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
 
     return connections.map((option) => {
       //disable safe app by in the list
