@@ -463,10 +463,12 @@ const SwapBestTrade: React.FC<{
         optimalRateError === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT'
       ) {
         return t('priceImpactReached', { maxImpact: maxImpactAllowed });
+      } else if (optimalRateError) {
+        return optimalRateError.includes('<!DOCTYPE')
+          ? t('bestTradeBanned')
+          : optimalRateError;
       } else if (swapInputError) {
         return swapInputError;
-      } else if (optimalRateError) {
-        return t('bestTradeBanned');
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return t('insufficientLiquidityTrade');
       } else if (
