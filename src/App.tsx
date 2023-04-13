@@ -262,13 +262,6 @@ const App: React.FC = () => {
                         </PageLayout>
                       </Route>
                     )}
-                    {showPredictions && (
-                      <Route exact path='/predictions'>
-                        <RedirectExternal
-                          to={`${process.env.REACT_APP_PREDICTIONS_URL}`}
-                        ></RedirectExternal>
-                      </Route>
-                    )}
                     {showGamingHub && (
                       <Route exact path='/gamehub'>
                         <RedirectExternal
