@@ -203,11 +203,6 @@ const App: React.FC = () => {
                     <ConvertQUICKPage />
                   </PageLayout>
                 </Route>
-                <Route exact path='/predictions'>
-                  <RedirectExternal
-                    to={`${process.env.REACT_APP_PREDICTIONS_URL}`}
-                  ></RedirectExternal>
-                </Route>
                 <Route exact path='/gamehub'>
                   <RedirectExternal
                     to={`${process.env.REACT_APP_GAMEHUB_URL}`}
