@@ -101,7 +101,6 @@ const Header: React.FC = () => {
   const showFarm = config['farm']['available'];
   const showLair = config['lair']['available'];
   const showConvert = config['convert']['available'];
-  const showPredictions = config['predictions']['available'];
   const showAnalytics = config['analytics']['available'];
   const showLending = config['lending']['available'];
   const showGamingHub = config['gamingHub']['available'];
@@ -153,15 +152,6 @@ const Header: React.FC = () => {
       target: '_top',
       externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
       isNew: true,
-    });
-  }
-  if (showPredictions) {
-    menuItems.push({
-      link: '/predictions',
-      text: 'Predictions',
-      id: 'predictions-page-link',
-      isExternal: true,
-      externalLink: process?.env?.REACT_APP_PREDICTIONS_URL || '',
     });
   }
   if (showLeaderboard) {
