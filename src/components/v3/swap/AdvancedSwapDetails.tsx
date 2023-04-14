@@ -1,7 +1,6 @@
 import React from 'react';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
-import { Trade as V2Trade } from '@uniswap/v2-sdk';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade } from 'lib/src/trade';
 import { useMemo } from 'react';
 import { computeRealizedLPFeePercent } from 'utils/v3/prices';
 import FormattedPriceImpact from './FormattedPriceImpact';
@@ -10,9 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Box } from '@material-ui/core';
 
 interface AdvancedSwapDetailsProps {
-  trade?:
-    | V2Trade<Currency, Currency, TradeType>
-    | V3Trade<Currency, Currency, TradeType>;
+  trade?: Trade<Currency, Currency, TradeType>;
   allowedSlippage: Percent;
 }
 
@@ -35,7 +32,7 @@ export function AdvancedSwapDetails({
     <Box>
       <Box className='flex justify-between' mb={0.5}>
         <p className='caption'>{t('liquidityProviderFee')}</p>
-        <p className='caption weight-600'>
+        <p className='caption weight-600 ml-1'>
           {realizedLPFee
             ? `${realizedLPFee.toSignificant(4)} ${
                 realizedLPFee.currency.symbol
@@ -46,14 +43,14 @@ export function AdvancedSwapDetails({
 
       <Box className='flex justify-between' mb={0.5}>
         <p className='caption'>{t('route')}</p>
-        <p className='caption weight-600'>
+        <p className='caption weight-600 ml-1'>
           <SwapRoute trade={trade} />
         </p>
       </Box>
 
       <Box className='flex justify-between' mb={0.5}>
         <p className='caption'>{t('priceimpact')}</p>
-        <p className='caption weight-600'>
+        <p className='caption weight-600 ml-1'>
           <FormattedPriceImpact priceImpact={priceImpact} />
         </p>
       </Box>
@@ -64,7 +61,7 @@ export function AdvancedSwapDetails({
             ? t('minReceived')
             : t('maxSold')}
         </p>
-        <p className='caption weight-600'>
+        <p className='caption weight-600 ml-1'>
           {trade.tradeType === TradeType.EXACT_INPUT
             ? `${trade.minimumAmountOut(allowedSlippage).toSignificant(6)} ${
                 trade.outputAmount.currency.symbol
@@ -77,7 +74,7 @@ export function AdvancedSwapDetails({
 
       <Box className='flex justify-between'>
         <p className='caption'>{t('slippageTolerance')}</p>
-        <p className='caption weight-600'>{allowedSlippage.toFixed(2)}%</p>
+        <p className='caption weight-600 ml-1'>{allowedSlippage.toFixed(2)}%</p>
       </Box>
     </Box>
   );

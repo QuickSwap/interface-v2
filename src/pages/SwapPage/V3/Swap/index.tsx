@@ -16,10 +16,6 @@ import SwapCallbackError from 'components/v3/swap/SwapCallbackError';
 import SwapHeader from 'components/v3/swap/SwapHeader';
 import TradePrice from 'components/v3/swap/TradePrice';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
-import {
-  MouseoverTooltip,
-  MouseoverTooltipContent,
-} from 'components/v3/Tooltip';
 import { useActiveWeb3React } from 'hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import {
@@ -39,13 +35,7 @@ import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import JSBI from 'jsbi';
 import { Trade as V3Trade } from 'lib/src/trade';
 import { WrappedCurrency } from 'models/types';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
@@ -66,7 +56,7 @@ import { warningSeverity } from 'utils/v3/prices';
 
 import { Box, Button } from '@material-ui/core';
 import { ChainId, ETHER } from '@uniswap/sdk';
-import { AddressInput } from 'components';
+import { AddressInput, CustomTooltip } from 'components';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
@@ -674,24 +664,24 @@ const SwapV3Page: React.FC = () => {
               showInverted={showInverted}
               setShowInverted={setShowInverted}
             />
-            <MouseoverTooltipContent
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-ignore
+            <CustomTooltip
               onOpen={() => {
                 ReactGA.event({
                   category: 'Swap',
                   action: 'Transaction Details Tooltip Open',
                 });
               }}
-              content={
+              title={
                 <AdvancedSwapDetails
                   trade={trade}
                   allowedSlippage={allowedSlippage}
                 />
               }
             >
-              <Info size={'1rem'} stroke='white' />
-            </MouseoverTooltipContent>
+              <Box padding='0.25rem' className='flex'>
+                <Info size={'1rem'} stroke='white' />
+              </Box>
+            </CustomTooltip>
           </div>
         )}
 
@@ -771,8 +761,8 @@ const SwapV3Page: React.FC = () => {
                         className='text-success'
                       />
                     ) : (
-                      <MouseoverTooltip
-                        text={t('mustgiveContractsPermission', {
+                      <CustomTooltip
+                        title={t('mustgiveContractsPermission', {
                           symbol: currencies[Field.INPUT]?.symbol,
                         })}
                       >
@@ -781,7 +771,7 @@ const SwapV3Page: React.FC = () => {
                           color={'white'}
                           style={{ marginLeft: '8px' }}
                         />
-                      </MouseoverTooltip>
+                      </CustomTooltip>
                     )}
                   </Box>
                 </Button>

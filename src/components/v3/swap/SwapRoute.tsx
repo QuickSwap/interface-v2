@@ -25,7 +25,7 @@ export default memo(function SwapRoute({
         return (
           <Fragment key={i}>
             <div className='flex items-end'>
-              <p style={{ margin: '0 0.145rem' }}>{currency.symbol}</p>
+              <small style={{ margin: '0 0.145rem' }}>{currency.symbol}</small>
             </div>
             {isLastItem ? null : (
               <LabeledArrow fee={trade.route.pools[i].fee} />

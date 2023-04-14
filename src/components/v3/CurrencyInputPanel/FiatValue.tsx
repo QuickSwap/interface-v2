@@ -29,7 +29,6 @@ export function FiatValue({ fiatValue, priceImpact }: FiatValueProps) {
       )}
       {priceImpact ? (
         <span className={priceImpactClass}>
-          {' '}
           ({priceImpact.multiply(-1).toSignificant(3)}%)
         </span>
       ) : null}
