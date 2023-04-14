@@ -52,7 +52,6 @@ const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
 import { PageLayout } from 'layouts';
 import { getLibrary } from 'utils';
-import StyledThemeProvider from 'theme/index';
 import { Web3ReactManager, Popups } from 'components';
 import { GlobalConst } from 'constants/index';
 import ApplicationUpdater from 'state/application/updater';
@@ -153,29 +152,28 @@ const App: React.FC = () => {
             <Updaters />
             <Providers>
               <Popups />
-              <StyledThemeProvider>
-                <Web3ReactManager>
-                  <Switch>
-                    <Route exact path='/'>
+              <Web3ReactManager>
+                <Switch>
+                  <Route exact path='/'>
+                    <PageLayout>
+                      <LandingPage />
+                    </PageLayout>
+                  </Route>
+                  {showSwap && (
+                    <Route exact path='/swap/:version?'>
                       <PageLayout>
-                        <LandingPage />
+                        <SwapPage />
                       </PageLayout>
                     </Route>
-                    {showSwap && (
-                      <Route exact path='/swap/:version?'>
-                        <PageLayout>
-                          <SwapPage />
-                        </PageLayout>
-                      </Route>
-                    )}
-                    {showLeaderboard && (
-                      <Route exact path='/leader-board'>
-                        <PageLayout>
-                          <ContestPage />
-                        </PageLayout>
-                      </Route>
-                    )}
-                    {/* <Route exact path='/lend'>
+                  )}
+                  {showLeaderboard && (
+                    <Route exact path='/leader-board'>
+                      <PageLayout>
+                        <ContestPage />
+                      </PageLayout>
+                    </Route>
+                  )}
+                  {/* <Route exact path='/lend'>
                     <PageLayout>
                       <LendPage />
                     </PageLayout>
@@ -185,49 +183,49 @@ const App: React.FC = () => {
                       <LendDetailPage />
                     </PageLayout>
                   </Route> */}
-                    {showPool && (
-                      <Route exact path='/pools/:version?'>
-                        <PageLayout>
-                          <PoolsPage />
-                        </PageLayout>
-                      </Route>
-                    )}
+                  {showPool && (
+                    <Route exact path='/pools/:version?'>
+                      <PageLayout>
+                        <PoolsPage />
+                      </PageLayout>
+                    </Route>
+                  )}
 
-                    {showPool && v3 && (
-                      <Route exact strict path='/pool/:tokenId'>
-                        <PageLayout>
-                          <PositionPage></PositionPage>
-                        </PageLayout>
-                      </Route>
-                    )}
-                    {showPool && (
-                      <Route
-                        exact
-                        path='/add/:currencyIdA?/:currencyIdB?/:version?'
-                      >
-                        <PageLayout>
-                          <PoolsPage></PoolsPage>
-                        </PageLayout>
-                      </Route>
-                    )}
-                    {showPool && v3 && (
-                      <Route
-                        exact
-                        path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'
-                      >
-                        <PageLayout>
-                          <IncreaseLiquidityV3Page></IncreaseLiquidityV3Page>
-                        </PageLayout>
-                      </Route>
-                    )}
-                    {showPool && v3 && (
-                      <Route exact path='/remove/:tokenId'>
-                        <PageLayout>
-                          <RemoveLiquidityV3Page></RemoveLiquidityV3Page>
-                        </PageLayout>
-                      </Route>
-                    )}
-                    {/* {showMigrate && (
+                  {showPool && v3 && (
+                    <Route exact strict path='/pool/:tokenId'>
+                      <PageLayout>
+                        <PositionPage></PositionPage>
+                      </PageLayout>
+                    </Route>
+                  )}
+                  {showPool && (
+                    <Route
+                      exact
+                      path='/add/:currencyIdA?/:currencyIdB?/:version?'
+                    >
+                      <PageLayout>
+                        <PoolsPage></PoolsPage>
+                      </PageLayout>
+                    </Route>
+                  )}
+                  {showPool && v3 && (
+                    <Route
+                      exact
+                      path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'
+                    >
+                      <PageLayout>
+                        <IncreaseLiquidityV3Page></IncreaseLiquidityV3Page>
+                      </PageLayout>
+                    </Route>
+                  )}
+                  {showPool && v3 && (
+                    <Route exact path='/remove/:tokenId'>
+                      <PageLayout>
+                        <RemoveLiquidityV3Page></RemoveLiquidityV3Page>
+                      </PageLayout>
+                    </Route>
+                  )}
+                  {/* {showMigrate && (
                         <Route exact path='/migrate'>
                           <PageLayout>
                             <MigrateV2LiquidityPage />
@@ -241,77 +239,76 @@ const App: React.FC = () => {
                           </PageLayout>
                         </Route>
                       )} */}
-                    {showFarm && (
-                      <Route exact path='/farm/:version?'>
+                  {showFarm && (
+                    <Route exact path='/farm/:version?'>
+                      <PageLayout>
+                        <FarmPage />
+                      </PageLayout>
+                    </Route>
+                  )}
+                  {showLair && (
+                    <Route exact path='/dragons'>
+                      <PageLayout>
+                        <DragonPage />
+                      </PageLayout>
+                    </Route>
+                  )}
+                  {showConvert && (
+                    <Route exact path='/convert'>
+                      <PageLayout>
+                        <ConvertQUICKPage />
+                      </PageLayout>
+                    </Route>
+                  )}
+                  {showPredictions && (
+                    <Route exact path='/predictions'>
+                      <RedirectExternal
+                        to={`${process.env.REACT_APP_PREDICTIONS_URL}`}
+                      ></RedirectExternal>
+                    </Route>
+                  )}
+                  {showGamingHub && (
+                    <Route exact path='/gamehub'>
+                      <RedirectExternal
+                        to={`${process.env.REACT_APP_GAMEHUB_URL}`}
+                        target={'_top'}
+                      ></RedirectExternal>
+                    </Route>
+                  )}
+                  {showAnalytics && (
+                    <>
+                      <Route exact path='/analytics/:version?'>
                         <PageLayout>
-                          <FarmPage />
+                          <AnalyticsHeader />
+                          <AnalyticsOverview />
                         </PageLayout>
                       </Route>
-                    )}
-                    {showLair && (
-                      <Route exact path='/dragons'>
+                      <Route exact path='/analytics/:version/tokens'>
                         <PageLayout>
-                          <DragonPage />
+                          <AnalyticsHeader />
+                          <AnalyticsTokens />
                         </PageLayout>
                       </Route>
-                    )}
-                    {showConvert && (
-                      <Route exact path='/convert'>
+                      <Route exact path='/analytics/:version/pairs'>
                         <PageLayout>
-                          <ConvertQUICKPage />
+                          <AnalyticsHeader />
+                          <AnalyticsPairs />
                         </PageLayout>
                       </Route>
-                    )}
-                    {showPredictions && (
-                      <Route exact path='/predictions'>
-                        <RedirectExternal
-                          to={`${process.env.REACT_APP_PREDICTIONS_URL}`}
-                        ></RedirectExternal>
+                      <Route exact path='/analytics/:version/token/:id'>
+                        <PageLayout>
+                          <AnalyticsTokenDetails />
+                        </PageLayout>
                       </Route>
-                    )}
-                    {showGamingHub && (
-                      <Route exact path='/gamehub'>
-                        <RedirectExternal
-                          to={`${process.env.REACT_APP_GAMEHUB_URL}`}
-                          target={'_top'}
-                        ></RedirectExternal>
+                      <Route exact path='/analytics/:version/pair/:id'>
+                        <PageLayout>
+                          <AnalyticsPairDetails />
+                        </PageLayout>
                       </Route>
-                    )}
-                    {showAnalytics && (
-                      <>
-                        <Route exact path='/analytics/:version?'>
-                          <PageLayout>
-                            <AnalyticsHeader />
-                            <AnalyticsOverview />
-                          </PageLayout>
-                        </Route>
-                        <Route exact path='/analytics/:version/tokens'>
-                          <PageLayout>
-                            <AnalyticsHeader />
-                            <AnalyticsTokens />
-                          </PageLayout>
-                        </Route>
-                        <Route exact path='/analytics/:version/pairs'>
-                          <PageLayout>
-                            <AnalyticsHeader />
-                            <AnalyticsPairs />
-                          </PageLayout>
-                        </Route>
-                        <Route exact path='/analytics/:version/token/:id'>
-                          <PageLayout>
-                            <AnalyticsTokenDetails />
-                          </PageLayout>
-                        </Route>
-                        <Route exact path='/analytics/:version/pair/:id'>
-                          <PageLayout>
-                            <AnalyticsPairDetails />
-                          </PageLayout>
-                        </Route>
-                      </>
-                    )}
-                  </Switch>
-                </Web3ReactManager>
-              </StyledThemeProvider>
+                    </>
+                  )}
+                </Switch>
+              </Web3ReactManager>
             </Providers>
           </Provider>
         </Web3ProviderNetwork>

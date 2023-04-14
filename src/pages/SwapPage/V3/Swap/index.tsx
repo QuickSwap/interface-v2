@@ -59,7 +59,6 @@ import {
   useSwapState,
 } from 'state/swap/v3/hooks';
 import { useExpertModeManager } from 'state/user/hooks';
-import { ThemeContext } from 'styled-components/macro';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
@@ -111,8 +110,6 @@ const SwapV3Page: React.FC = () => {
     urlLoadedTokens.filter((token: Token) => {
       return !Boolean(token.address in defaultTokens);
     });
-
-  const theme = useContext(ThemeContext);
 
   // toggle wallet when disconnected
   const toggleWalletModal = useWalletModalToggle();
@@ -771,7 +768,7 @@ const SwapV3Page: React.FC = () => {
                       <CheckCircle
                         size='20'
                         style={{ marginLeft: '5px' }}
-                        color={theme.green1}
+                        className='text-success'
                       />
                     ) : (
                       <MouseoverTooltip

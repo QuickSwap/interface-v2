@@ -2,48 +2,6 @@ import styled from 'styled-components/macro';
 import { darken } from 'polished';
 import { TYPE } from 'theme/index';
 
-//index
-export const BaseToggleElement = styled.span<{
-  isActive?: boolean;
-  isOnSwitch?: boolean;
-}>`
-  padding: 0.25rem 0.6rem;
-  border-radius: 9px;
-  background: ${({ theme, isActive, isOnSwitch }) =>
-    isActive
-      ? isOnSwitch
-        ? theme.winterMainButton
-        : theme.winterMainButton
-      : 'none'};
-  color: ${({ theme, isActive }) => (isActive ? theme.white : theme.text2)};
-  font-size: 14px;
-  font-weight: ${({ isOnSwitch }) => (isOnSwitch ? '500' : '400')};
-  :hover {
-    user-select: ${({ isOnSwitch }) => (isOnSwitch ? 'none' : 'initial')};
-    background: ${({ theme, isActive, isOnSwitch }) =>
-      isActive
-        ? isOnSwitch
-          ? darken(0.05, theme.winterMainButton)
-          : darken(0.05, theme.winterMainButton)
-        : 'none'};
-    color: ${({ theme, isActive, isOnSwitch }) =>
-      isActive ? (isOnSwitch ? theme.white : theme.white) : theme.text3};
-  }
-`;
-export const StyledToggle = styled.button<{
-  isActive?: boolean;
-  activeElement?: boolean;
-}>`
-  border-radius: 12px;
-  border: none;
-  background: #2f567b;
-  display: flex;
-  width: fit-content;
-  cursor: pointer;
-  outline: none;
-  padding: 2px;
-`;
-
 //ListToggle
 export const Wrapper = styled.button<{
   isActive?: boolean;
@@ -58,19 +16,6 @@ export const Wrapper = styled.button<{
   outline: none;
   padding: 0.4rem 0.4rem;
   align-items: center;
-`;
-export const ListToggleElement = styled.span<{
-  isActive?: boolean;
-  bgColor?: string;
-}>`
-  border-radius: 50%;
-  height: 24px;
-  width: 24px;
-  background-color: ${({ isActive, bgColor, theme }) =>
-    isActive ? bgColor : theme.bg4};
-  :hover {
-    opacity: 0.8;
-  }
 `;
 export const StatusText = styled(TYPE.main)<{ isActive?: boolean }>`
   margin: 0 10px;

@@ -1,8 +1,6 @@
 import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
 import React, { useMemo } from 'react';
-import { TYPE } from 'theme/index';
 import { warningSeverity } from 'utils/v3/prices';
-import { useTheme } from 'styled-components';
 import HoverInlineText from '../HoverInlineText';
 
 interface FiatValueProps {
@@ -11,18 +9,17 @@ interface FiatValueProps {
 }
 
 export function FiatValue({ fiatValue, priceImpact }: FiatValueProps) {
-  const theme = useTheme();
-  const priceImpactColor = useMemo(() => {
+  const priceImpactClass = useMemo(() => {
     if (!priceImpact) return undefined;
-    if (priceImpact.lessThan('0')) return theme.green1;
+    if (priceImpact.lessThan('0')) return 'text-success';
     const severity = warningSeverity(priceImpact);
-    if (severity < 1) return 'white';
-    if (severity < 3) return theme.yellow1;
-    return theme.red1;
-  }, [priceImpact, theme.green1, theme.red1, theme.yellow1]);
+    if (severity < 1) return 'text-white';
+    if (severity < 3) return 'text-yellow';
+    return 'text-error';
+  }, [priceImpact]);
 
   return (
-    <TYPE.body fontSize={14} color={fiatValue ? 'white' : 'white'}>
+    <p className='text-white'>
       {fiatValue ? (
         <HoverInlineText
           text={'~$ ' + fiatValue?.toSignificant(6, { groupSeparator: ',' })}
@@ -31,11 +28,11 @@ export function FiatValue({ fiatValue, priceImpact }: FiatValueProps) {
         "Can't estimate price"
       )}
       {priceImpact ? (
-        <span style={{ color: priceImpactColor }}>
+        <span className={priceImpactClass}>
           {' '}
           ({priceImpact.multiply(-1).toSignificant(3)}%)
         </span>
       ) : null}
-    </TYPE.body>
+    </p>
   );
 }
