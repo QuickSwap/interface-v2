@@ -1,6 +1,7 @@
 import React, { lazy, useEffect, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
+import IntractAttribution, { trackWalletConnect } from '@intract/attribution';
 const Header = lazy(() => import('components/Header'));
 const Footer = lazy(() => import('components/Footer'));
 const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
@@ -37,6 +38,21 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       setOpenPassModal(true);
     }
   }, []);
+
+  const intractAPIKey = process.env.REACT_APP_INTRACT_KEY;
+  useEffect(() => {
+    if (intractAPIKey) {
+      IntractAttribution(intractAPIKey, {
+        configAllowCookie: true,
+      });
+    }
+  }, [intractAPIKey]);
+
+  useEffect(() => {
+    if (account) {
+      trackWalletConnect();
+    }
+  }, [account]);
 
   useEffect(() => {
     (async () => {
