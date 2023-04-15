@@ -93,7 +93,7 @@ const SwapPage: React.FC = () => {
       )}
 
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto 24px'>
-        <AdsSlider sort='swap' />
+        <AdsSlider sort='analytics' />
       </Box>
     </Box>
   );
