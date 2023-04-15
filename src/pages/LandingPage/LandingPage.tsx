@@ -150,14 +150,14 @@ const LandingPage: React.FC = () => {
         <TopMovers />
       </Box>
       <Box className='quickInfo'>
-        <h4>{t('quickInfoTitle')}</h4>
+        <h1>{t('quickInfoTitle')}</h1>
         <img src={Motif} alt='Motif' />
       </Box>
       <SwapSection />
       {isFarmAvailable && (
         <Box className='rewardsContainer'>
-          <Box maxWidth='480px' width='100%'>
-            <h4>{t('earnRewardsbyDeposit')}</h4>
+          <Box maxWidth='80%' width='100%'>
+            <h1>{t('earnRewardsbyDeposit')}</h1>
             <p style={{ marginTop: '20px' }}>{t('depositLPTokensRewards')}</p>
           </Box>
           <RewardSlider />
