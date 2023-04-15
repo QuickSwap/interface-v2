@@ -249,22 +249,22 @@
     ethers "~4.0.4"
     lodash "^4.17.11"
 
-"@0xsquid/sdk@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@0xsquid/sdk/-/sdk-1.4.0.tgz#ba7c481080b0e84491b5d744656587d96cb12134"
-  integrity sha512-MzmfOGKI5+juGydD8oesUZWFf/REwtdTOZ7dStXsjeWhwGG9wght37FOz6jFhXZ/oBhoR2Jp03sfZ3a7rU7oFA==
+"@0xsquid/sdk@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@0xsquid/sdk/-/sdk-1.4.1.tgz#7a8564d3eb28c9d15266f005fc425ecde1b4849b"
+  integrity sha512-n3m9NuynZlG7CZYNcdLnEnV4WEz8AlhHyGKPhfR0GuunXsAVQ3iin859gWXoNYIZg+h2jdz2UJ93n2XHJpKffA==
   dependencies:
     "@release-it/conventional-changelog" release-it/conventional-changelog
     axios "^0.27.2"
     ethers "^5.7.1"
     release-it "^15.5.0"
 
-"@0xsquid/widget@1.4.62":
-  version "1.4.62"
-  resolved "https://registry.yarnpkg.com/@0xsquid/widget/-/widget-1.4.62.tgz#c0c3cbf5a0a56ba7de93ef7c98d70ea5bbe6e684"
-  integrity sha512-ruFzmbzIHr/npkuuXUevU9PXk3rTfdZKB5e4N7e+l4D83l99gXDuDTzKo8PMUeAcCCGI6abQ4jiL61ssKEiCIw==
+"@0xsquid/widget@1.4.65":
+  version "1.4.65"
+  resolved "https://registry.yarnpkg.com/@0xsquid/widget/-/widget-1.4.65.tgz#2899ce9733d37e46b6e53ec4363831426daf2ec0"
+  integrity sha512-XZwLdl+ApkU8Ouo4gsebYzeXse90pFyoYcht/GT14oVJS2odYg9QFEJEwruXyQe8Y5j1IFlU2ASRNmd6RD/rlw==
   dependencies:
-    "@0xsquid/sdk" "1.4.0"
+    "@0xsquid/sdk" "1.4.1"
     "@cosmjs/stargate" "^0.29.2"
     "@floating-ui/react-dom" "^1.0.1"
     "@floating-ui/react-dom-interactions" "^0.12.0"
@@ -4287,7 +4287,7 @@
     redux-thunk "^2.4.2"
     reselect "^4.1.7"
 
-"@release-it/conventional-changelog@github:release-it/conventional-changelog":
+"@release-it/conventional-changelog@release-it/conventional-changelog":
   version "5.1.1"
   resolved "https://codeload.github.com/release-it/conventional-changelog/tar.gz/ff9f1aae654dc378d5ed4703a2802ef9591e1a96"
   dependencies:
