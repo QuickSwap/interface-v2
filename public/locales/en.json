@@ -652,5 +652,9 @@
   "searchAddress": "Search for address.",
   "searchResult": "Search Result",
   "gammaImproperRatio": "Current asset ratio is expired.  Please refresh page and re-try the transaction",
-  "gammaPriceOverflow": "Market volatility is too high at the moment.  Please re-try deposit in 15 minutes"
+  "gammaPriceOverflow": "Market volatility is too high at the moment.  Please re-try deposit in 15 minutes",
+  "removeV2Liquidity": "Remove V2 Liquidity",
+  "removingV2Liquidity": "Remove V2 Liquidity",
+  "approveV2Removal": "Approve V2 Liquidity Removal",
+  "approvingV2Removal": "Approving V2 Liquidity Removal"
 }

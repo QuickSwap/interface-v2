@@ -14,8 +14,9 @@ import Loader from 'components/Loader';
 import { useCurrency, useToken } from 'hooks/v3/Tokens';
 import './index.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
-import { CurrencyAmount, Fraction, Percent, Price } from '@uniswap/sdk-core';
+import { CurrencyAmount, Percent, Price } from '@uniswap/sdk-core';
 import {
+  useActivePreset,
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
   useV3MintState,
@@ -51,6 +52,10 @@ import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import { calculateGasMargin } from 'utils';
+import { getConfig } from 'config';
+import { GammaPairs, GlobalConst } from 'constants/index';
+import { tryParseAmount } from 'state/swap/v3/hooks';
+import RemoveV2Liquidity from './RemoveV2Liquidity';
 
 export default function MigrateV2DetailsPage() {
   const { t } = useTranslation();
@@ -106,6 +111,7 @@ export default function MigrateV2DetailsPage() {
       ? undefined
       : currency1;
   const { account, chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
 
   const userPoolBalance = useTokenBalance(
     account ?? undefined,
@@ -172,7 +178,7 @@ export default function MigrateV2DetailsPage() {
     mintInfo.noLiquidity,
   );
 
-  const { independentField, typedValue } = useV3MintState();
+  const { independentField, typedValue, liquidityRangeType } = useV3MintState();
 
   const formattedAmounts = {
     [independentField]: typedValue,
@@ -386,6 +392,42 @@ export default function MigrateV2DetailsPage() {
     string | null
   >(null);
 
+  const preset = useActivePreset();
+  const token0Address = token0 ? token0.address.toLowerCase() : '';
+  const token1Address = token1 ? token1.address.toLowerCase() : '';
+  const gammaPair = chainId
+    ? GammaPairs[chainId][token0Address + '-' + token1Address] ??
+      GammaPairs[chainId][token1Address + '-' + token0Address]
+    : [];
+  const gammaPairAddress =
+    gammaPair && gammaPair.length > 0
+      ? gammaPair.find((pair) => pair.type === preset)?.address
+      : undefined;
+  const [approvalAGamma, approveAGammaCallback] = useApproveCallback(
+    mintInfo.parsedAmounts[Field.CURRENCY_A] ||
+      tryParseAmount('1', token0 ?? undefined),
+    chainId ? gammaPairAddress : undefined,
+  );
+  const [approvalBGamma, approveBGammaCallback] = useApproveCallback(
+    mintInfo.parsedAmounts[Field.CURRENCY_B] ||
+      tryParseAmount('1', token1 ?? undefined),
+    chainId ? gammaPairAddress : undefined,
+  );
+  const showApprovalAGamma = useMemo(() => {
+    if (approvalAGamma === ApprovalState.UNKNOWN) return undefined;
+
+    if (approvalAGamma === ApprovalState.NOT_APPROVED) return true;
+
+    return approvalAGamma !== ApprovalState.APPROVED;
+  }, [approvalAGamma]);
+  const showApprovalBGamma = useMemo(() => {
+    if (approvalBGamma === ApprovalState.UNKNOWN) return undefined;
+
+    if (approvalBGamma === ApprovalState.NOT_APPROVED) return true;
+
+    return approvalBGamma !== ApprovalState.APPROVED;
+  }, [approvalBGamma]);
+
   const migrator = useV2ToV3MigratorContract();
 
   // approvals
@@ -559,16 +601,28 @@ export default function MigrateV2DetailsPage() {
         <Box mt={3}>
           <BetaWarningBanner />
         </Box>
-        <Box mt={3}>
-          <small>
-            <Trans
-              i18nKey='liquiditymigrateComment'
-              components={{
-                psmall: <small className='text-primary' />,
-              }}
-            />
-          </small>
-        </Box>
+        {liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+          <Box mt={3}>
+            <small>
+              <Trans
+                i18nKey='liquiditymigrateComment'
+                components={{
+                  psmall: (
+                    <small
+                      className='text-primary cursor-pointer'
+                      onClick={() =>
+                        window.open(
+                          `${config['blockExplorer']}/address/${migrator?.address}`,
+                        )
+                      }
+                    />
+                  ),
+                }}
+              />
+            </small>
+          </Box>
+        )}
         <Box mt={3} className='v3-migrate-details-box'>
           <Box className='flex items-center'>
             <DoubleCurrencyLogo
@@ -671,8 +725,10 @@ export default function MigrateV2DetailsPage() {
               </Box>
             )}
         </Box>
-        <Box>
-          {largePriceDifference && !largePriceDiffDismissed && (
+        {largePriceDifference &&
+          !largePriceDiffDismissed &&
+          liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
             <Box mt={2} className='pool-range-chart-warning border-error'>
               <Box width={1} className='flex items-center'>
                 <Box className='pool-range-chart-warning-icon'>
@@ -705,71 +761,128 @@ export default function MigrateV2DetailsPage() {
               </button>
             </Box>
           )}
-        </Box>
-        <Box mt={3}>
-          <Button
-            className='v3-migrate-details-button'
-            disabled={
-              attemptApproving ||
-              approval === ApprovalState.APPROVED ||
-              approval !== ApprovalState.NOT_APPROVED ||
-              signatureData !== null ||
-              !v3Amount0Min ||
-              !v3Amount1Min ||
-              mintInfo.invalidRange ||
-              confirmingMigration
-            }
-            onClick={() => {
-              setAttemptApproving(true);
-              approve();
-            }}
-          >
-            {attemptApproving || approval === ApprovalState.PENDING ? (
-              <>
-                {t('approving')}
-                <span className='loadingDots' />
-              </>
-            ) : approval === ApprovalState.APPROVED ||
-              signatureData !== null ? (
-              t('allowed')
-            ) : (
-              t('allowLPMigration')
-            )}
-          </Button>
+        <Box mt={3} className='flex justify-between'>
+          {liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
+            <>
+              {showApprovalAGamma !== undefined && (
+                <Box width={showApprovalBGamma === undefined ? '100%' : '49%'}>
+                  {showApprovalAGamma ? (
+                    approvalAGamma === ApprovalState.PENDING ? (
+                      <Button className='v3-migrate-details-button' disabled>
+                        {t('approving')} {token0?.symbol}
+                        <span className='loadingDots' />
+                      </Button>
+                    ) : (
+                      <Button
+                        className='v3-migrate-details-button'
+                        onClick={approveAGammaCallback}
+                      >
+                        {t('approve')} {token0?.symbol}
+                      </Button>
+                    )
+                  ) : (
+                    <Button className='v3-migrate-details-button' disabled>
+                      {t('approved')} {token0?.symbol}
+                    </Button>
+                  )}
+                </Box>
+              )}
+              {showApprovalBGamma !== undefined && (
+                <Box width={showApprovalAGamma === undefined ? '100%' : '49%'}>
+                  {showApprovalBGamma ? (
+                    approvalBGamma === ApprovalState.PENDING ? (
+                      <Button className='v3-migrate-details-button' disabled>
+                        {t('approving')} {token1?.symbol}
+                        <span className='loadingDots' />
+                      </Button>
+                    ) : (
+                      <Button
+                        className='v3-migrate-details-button'
+                        onClick={approveBGammaCallback}
+                      >
+                        {t('approve')} {token1?.symbol}
+                      </Button>
+                    )
+                  ) : (
+                    <Button className='v3-migrate-details-button' disabled>
+                      {t('approved')} {token1?.symbol}
+                    </Button>
+                  )}
+                </Box>
+              )}
+            </>
+          ) : (
+            <Button
+              className='v3-migrate-details-button'
+              disabled={
+                attemptApproving ||
+                approval === ApprovalState.APPROVED ||
+                approval !== ApprovalState.NOT_APPROVED ||
+                signatureData !== null ||
+                !v3Amount0Min ||
+                !v3Amount1Min ||
+                mintInfo.invalidRange ||
+                confirmingMigration
+              }
+              onClick={() => {
+                setAttemptApproving(true);
+                approve();
+              }}
+            >
+              {attemptApproving || approval === ApprovalState.PENDING ? (
+                <>
+                  {t('approving')}
+                  <span className='loadingDots' />
+                </>
+              ) : approval === ApprovalState.APPROVED ||
+                signatureData !== null ? (
+                t('allowed')
+              ) : (
+                t('allowLPMigration')
+              )}
+            </Button>
+          )}
         </Box>
         <Box mt={2}>
-          <Button
-            className='v3-migrate-details-button'
-            disabled={
-              !v3Amount0Min ||
-              !v3Amount1Min ||
-              mintInfo.invalidRange ||
-              (approval !== ApprovalState.APPROVED && signatureData === null) ||
-              confirmingMigration ||
-              isMigrationPending ||
-              (largePriceDifference && !largePriceDiffDismissed)
-            }
-            onClick={() => {
-              if (isSuccessfullyMigrated) {
-                history.push('/pools/v3');
-              } else {
-                migrate();
+          {liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
+            <RemoveV2Liquidity pair={pair} />
+          ) : (
+            <Button
+              className='v3-migrate-details-button'
+              disabled={
+                !v3Amount0Min ||
+                !v3Amount1Min ||
+                mintInfo.invalidRange ||
+                (approval !== ApprovalState.APPROVED &&
+                  signatureData === null) ||
+                confirmingMigration ||
+                isMigrationPending ||
+                (largePriceDifference && !largePriceDiffDismissed)
               }
-            }}
-          >
-            {isSuccessfullyMigrated ? (
-              t('successViewPool')
-            ) : confirmingMigration || isMigrationPending ? (
-              <>
-                {t('migrating')}
-                <span className='loadingDots' />
-              </>
-            ) : networkFailed ? (
-              `${t('connectingNetwork')}...`
-            ) : (
-              t('migrate')
-            )}
-          </Button>
+              onClick={() => {
+                if (isSuccessfullyMigrated) {
+                  history.push('/pools/v3');
+                } else {
+                  migrate();
+                }
+              }}
+            >
+              {isSuccessfullyMigrated ? (
+                t('successViewPool')
+              ) : confirmingMigration || isMigrationPending ? (
+                <>
+                  {t('migrating')}
+                  <span className='loadingDots' />
+                </>
+              ) : networkFailed ? (
+                `${t('connectingNetwork')}...`
+              ) : (
+                t('migrate')
+              )}
+            </Button>
+          )}
         </Box>
       </Box>
     </>
