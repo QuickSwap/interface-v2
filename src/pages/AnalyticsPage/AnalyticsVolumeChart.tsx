@@ -43,32 +43,31 @@ const AnalyticsVolumeChart: React.FC<{
       updateGlobalChartData(null);
       setDataLoaded(false);
 
-      const duration =
-        durationIndex === GlobalConst.analyticChart.ALL_CHART
-          ? 0
-          : getChartStartTime(durationIndex);
-
-      const chartDataFn =
-        version === 'v2'
-          ? getChartData(duration, chainId)
-          : version === 'total'
-          ? getChartDataTotal(duration, chainId)
-          : getChartDataV3(duration, chainId);
-
-      chartDataFn.then(([newChartData, newWeeklyData]) => {
-        setDataLoaded(true);
-        if (newChartData && newWeeklyData) {
-          const dayItems = getLimitedData(
-            newChartData,
-            GlobalConst.analyticChart.CHART_COUNT,
-          );
-          const weekItems = getLimitedData(
-            newWeeklyData,
-            GlobalConst.analyticChart.CHART_COUNT,
-          );
-          updateGlobalChartData({ day: dayItems, week: weekItems });
-        }
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText ||
+            res.statusText ||
+            `Failed to get chart data ${durationIndex} ${version}`,
+        );
+      }
+      const pairsData = await res.json();
+      setDataLoaded(true);
+      const [newChartData, newWeeklyData] = pairsData.data;
+      if (newChartData && newWeeklyData) {
+        const dayItems = getLimitedData(
+          newChartData,
+          GlobalConst.analyticChart.CHART_COUNT,
+        );
+        const weekItems = getLimitedData(
+          newWeeklyData,
+          GlobalConst.analyticChart.CHART_COUNT,
+        );
+        updateGlobalChartData({ day: dayItems, week: weekItems });
+      }
     };
     fetchChartData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -134,9 +133,9 @@ const AnalyticsVolumeChart: React.FC<{
     } else if (globalData && selectedVolumeIndex === -1) {
       switch (volumeIndex) {
         case WEEK_VOLUME:
-          return globalData.weeklyVolumeChange;
+          return globalData.weeklyVolumeChange ?? 0;
         case DAY_VOLUME:
-          return globalData.volumeChangeUSD;
+          return globalData.volumeChangeUSD ?? 0;
         default:
           return 0;
       }
@@ -212,8 +211,8 @@ const AnalyticsVolumeChart: React.FC<{
                         : globalChartData.week[selectedVolumeIndex]
                             .weeklyVolumeUSD
                       : volumeIndex === DAY_VOLUME
-                      ? globalData.oneDayVolumeUSD
-                      : globalData.oneWeekVolume,
+                      ? globalData.oneDayVolumeUSD ?? 0
+                      : globalData.oneWeekVolume ?? 0,
                   )}
                 </h5>
                 <Box

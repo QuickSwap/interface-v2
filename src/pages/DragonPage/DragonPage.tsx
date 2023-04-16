@@ -82,9 +82,9 @@ const DragonPage: React.FC = () => {
               <DragonsLair isNew={false} />
             </Box>
           )}
-          <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
+          {/* <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
             <AdsSlider sort='dragons' />
-          </Box>
+          </Box> */}
         </Grid>
         <Grid item xs={12} sm={12} md={8}>
           <Box className='dragonWrapper'>
@@ -96,6 +96,15 @@ const DragonPage: React.FC = () => {
               <small>{t('dragonSyrupTitle')}</small>
             </Box>
             <DragonsSyrup />
+          </Box>
+        </Grid>
+        <Grid item>
+          <Box
+            id={'addbox-bottom'}
+            maxWidth={isMobile ? '320px' : '1136px'}
+            margin='0 auto 24px'
+          >
+            <AdsSlider sort='analytics' />
           </Box>
         </Grid>
       </Grid>

@@ -6,6 +6,7 @@ import {
   getBulkPairData,
   getGammaRewards,
   getGammaData,
+  getTopPairsV2,
 } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
@@ -30,241 +31,18 @@ const AnalyticsPairs: React.FC = () => {
   useEffect(() => {
     if (!chainId) return;
     (async () => {
-      if (version === 'v3') {
-        const pairsData = await getTopPairsV3(
-          GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
-          chainId,
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pairs/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to get top pairs ${version}`,
         );
-        if (pairsData) {
-          const data = pairsData.filter((item: any) => !!item);
-          try {
-            const aprs = await getPairsAPR(
-              data.map((item: any) => item.id),
-              chainId,
-            );
-            const gammaRewards = await getGammaRewards(chainId);
-            const gammaData = await getGammaData();
-
-            updateTopPairs(
-              data.map((item: any, ind: number) => {
-                const gammaPairs =
-                  GammaPairs[chainId][
-                    item.token0.id.toLowerCase() +
-                      '-' +
-                      item.token1.id.toLowerCase()
-                  ] ??
-                  GammaPairs[chainId][
-                    item.token1.id.toLowerCase() +
-                      '-' +
-                      item.token0.id.toLowerCase()
-                  ];
-                const gammaFarmAPRs = gammaPairs
-                  ? gammaPairs.map((pair) => {
-                      const masterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[
-                        pair.masterChefIndex ?? 0
-                      ][chainId]
-                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
-                            chainId
-                          ].toLowerCase()
-                        : undefined;
-                      return {
-                        title: pair.title,
-                        apr:
-                          gammaRewards &&
-                          masterChefAddress &&
-                          gammaRewards[masterChefAddress] &&
-                          gammaRewards[masterChefAddress]['pools'] &&
-                          gammaRewards[masterChefAddress]['pools'][
-                            pair.address.toLowerCase()
-                          ] &&
-                          gammaRewards[masterChefAddress]['pools'][
-                            pair.address.toLowerCase()
-                          ]['apr']
-                            ? Number(
-                                gammaRewards[masterChefAddress]['pools'][
-                                  pair.address.toLowerCase()
-                                ]['apr'],
-                              ) * 100
-                            : 0,
-                      };
-                    })
-                  : [];
-                const gammaPoolAPRs = gammaPairs
-                  ? gammaPairs.map((pair) => {
-                      return {
-                        title: pair.title,
-                        apr:
-                          gammaData &&
-                          gammaData[pair.address.toLowerCase()] &&
-                          gammaData[pair.address.toLowerCase()]['returns'] &&
-                          gammaData[pair.address.toLowerCase()]['returns'][
-                            'allTime'
-                          ] &&
-                          gammaData[pair.address.toLowerCase()]['returns'][
-                            'allTime'
-                          ]['feeApr']
-                            ? Number(
-                                gammaData[pair.address.toLowerCase()][
-                                  'returns'
-                                ]['allTime']['feeApr'],
-                              ) * 100
-                            : 0,
-                      };
-                    })
-                  : [];
-                const quickFarmingAPR = aprs[ind].farmingApr;
-                const farmingApr = Math.max(
-                  quickFarmingAPR ?? 0,
-                  ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
-                );
-                const quickPoolAPR = aprs[ind].apr;
-                const apr = Math.max(
-                  quickPoolAPR ?? 0,
-                  ...gammaPoolAPRs.map((item) => Number(item.apr ?? 0)),
-                );
-                return {
-                  ...item,
-                  apr,
-                  farmingApr,
-                  quickFarmingAPR,
-                  quickPoolAPR,
-                  gammaFarmAPRs,
-                  gammaPoolAPRs,
-                };
-              }),
-            );
-          } catch (e) {
-            console.log(e);
-          }
-        }
-      } else if (version === 'v2') {
-        if (ethPrice.price) {
-          const pairs = await getTopPairs(
-            GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
-            chainId,
-          );
-          const formattedPairs = pairs
-            ? pairs.map((pair: any) => {
-                return pair.id;
-              })
-            : [];
-          const data = await getBulkPairData(
-            formattedPairs,
-            ethPrice.price,
-            chainId,
-          );
-          if (data) {
-            updateTopPairs(data);
-          }
-        }
-      } else {
-        const pairsData = await getTopPairsTotal(
-          GlobalConst.utils.ANALYTICS_PAIRS_COUNT,
-          chainId,
-        );
-        if (pairsData) {
-          const data = pairsData.filter((item: any) => !!item);
-          try {
-            const aprs = await getPairsAPR(
-              data.map((item: any) => item.id),
-              chainId,
-            );
-            const gammaRewards = await getGammaRewards(chainId);
-            const gammaData = await getGammaData();
-
-            updateTopPairs(
-              data.map((item: any, ind: number) => {
-                const gammaPairs = item.isV3
-                  ? GammaPairs[chainId][
-                      item.token0.id.toLowerCase() +
-                        '-' +
-                        item.token1.id.toLowerCase()
-                    ] ??
-                    GammaPairs[chainId][
-                      item.token1.id.toLowerCase() +
-                        '-' +
-                        item.token0.id.toLowerCase()
-                    ]
-                  : undefined;
-                const gammaFarmAPRs = gammaPairs
-                  ? gammaPairs.map((pair) => {
-                      const masterChefAddress = GAMMA_MASTERCHEF_ADDRESSES[
-                        pair.masterChefIndex ?? 0
-                      ][chainId]
-                        ? GAMMA_MASTERCHEF_ADDRESSES[pair.masterChefIndex ?? 0][
-                            chainId
-                          ].toLowerCase()
-                        : undefined;
-                      return {
-                        title: pair.title,
-                        apr:
-                          gammaRewards &&
-                          masterChefAddress &&
-                          gammaRewards[masterChefAddress] &&
-                          gammaRewards[masterChefAddress]['pools'] &&
-                          gammaRewards[masterChefAddress]['pools'][
-                            pair.address.toLowerCase()
-                          ] &&
-                          gammaRewards[masterChefAddress]['pools'][
-                            pair.address.toLowerCase()
-                          ]['apr']
-                            ? Number(
-                                gammaRewards[masterChefAddress]['pools'][
-                                  pair.address.toLowerCase()
-                                ]['apr'],
-                              ) * 100
-                            : 0,
-                      };
-                    })
-                  : [];
-                const gammaPoolAPRs = gammaPairs
-                  ? gammaPairs.map((pair) => {
-                      return {
-                        title: pair.title,
-                        apr:
-                          gammaData &&
-                          gammaData[pair.address.toLowerCase()] &&
-                          gammaData[pair.address.toLowerCase()]['returns'] &&
-                          gammaData[pair.address.toLowerCase()]['returns'][
-                            'allTime'
-                          ] &&
-                          gammaData[pair.address.toLowerCase()]['returns'][
-                            'allTime'
-                          ]['feeApr']
-                            ? Number(
-                                gammaData[pair.address.toLowerCase()][
-                                  'returns'
-                                ]['allTime']['feeApr'],
-                              ) * 100
-                            : 0,
-                      };
-                    })
-                  : [];
-                const quickFarmingAPR = aprs[ind].farmingApr;
-                const farmingApr = Math.max(
-                  quickFarmingAPR ?? 0,
-                  ...gammaFarmAPRs.map((item) => Number(item.apr ?? 0)),
-                );
-                const quickPoolAPR = aprs[ind].apr;
-                const apr = Math.max(
-                  quickPoolAPR ?? 0,
-                  ...gammaPoolAPRs.map((item) => Number(item.apr ?? 0)),
-                );
-                return {
-                  ...item,
-                  apr,
-                  farmingApr,
-                  quickFarmingAPR,
-                  quickPoolAPR,
-                  gammaFarmAPRs,
-                  gammaPoolAPRs,
-                };
-              }),
-            );
-          } catch (e) {
-            console.log(e);
-          }
-        }
+      }
+      const pairsData = await res.json();
+      if (pairsData.data) {
+        updateTopPairs(pairsData.data);
       }
     })();
   }, [ethPrice.price, version, chainId]);

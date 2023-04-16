@@ -1,6 +1,7 @@
 import React from 'react';
 import { CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
+import 'components/styles/BuyFiatContent.scss';
 
 interface MoonpayModalProps {
   open: boolean;
@@ -16,11 +17,10 @@ const MoonpayModal: React.FC<MoonpayModalProps> = ({ open, onClose }) => {
       background='#fff'
       overflow='hidden'
     >
-      <div style={{ height: '100%', width: '100%', overflowY: 'auto' }}>
+      <div className='buyFiatContent'>
         <iframe
           title='moonpay'
           allow='accelerometer; autoplay; camera; gyroscope; payment'
-          frameBorder='0'
           height='600px'
           src={`https://buy.moonpay.com?apiKey=${process.env.REACT_APP_MOONPAY_KEY}`}
           width='100%'

@@ -14,7 +14,6 @@ import { getTopTokensTotal, getTopTokensV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
@@ -42,55 +41,18 @@ const AnalyticsTokens: React.FC = () => {
   useEffect(() => {
     if (!chainId) return;
     (async () => {
-      if (version === 'v3') {
-        if (
-          maticPrice.price !== undefined &&
-          maticPrice.oneDayPrice !== undefined
-        ) {
-          const data = await getTopTokensV3(
-            maticPrice.price,
-            maticPrice.oneDayPrice,
-            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-            chainId,
-          );
-          if (data) {
-            updateTopTokens(data);
-          }
-        }
-      } else if (version === 'v2') {
-        if (
-          ethPrice.price !== undefined &&
-          ethPrice.oneDayPrice !== undefined
-        ) {
-          const data = await getTopTokens(
-            ethPrice.price,
-            ethPrice.oneDayPrice,
-            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-            chainId,
-          );
-          if (data) {
-            updateTopTokens(data);
-          }
-        }
-      } else {
-        if (
-          maticPrice.price &&
-          maticPrice.oneDayPrice &&
-          ethPrice.price &&
-          ethPrice.oneDayPrice
-        ) {
-          const data = await getTopTokensTotal(
-            ethPrice.price,
-            ethPrice.oneDayPrice,
-            maticPrice.price,
-            maticPrice.oneDayPrice,
-            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-            chainId,
-          );
-          if (data) {
-            updateTopTokens(data);
-          }
-        }
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to get top tokens`,
+        );
+      }
+      const data = await res.json();
+      if (data.data) {
+        updateTopTokens(data.data);
       }
     })();
   }, [
