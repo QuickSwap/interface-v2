@@ -42,7 +42,6 @@ const Header: React.FC = () => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const { account } = useActiveWeb3React();
-  console.log('bbb', account);
   const { ethereum } = window as any;
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
