@@ -1,9 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import {
-  Web3ContextType,
-  useWeb3React as useWeb3ReactCore,
-} from '@web3-react/core';
-import { Web3Provider } from '@ethersproject/providers';
+import { useWeb3React } from '@web3-react/core';
 import { ChainId, Pair } from '@uniswap/sdk';
 import {
   ConnectionType,
@@ -16,7 +12,6 @@ import {
 } from 'connectors';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'state';
-/* eslint-disable */
 // @ts-ignore
 import transakSDK from '@transak/transak-sdk';
 import { addPopup } from 'state/application/actions';
@@ -30,16 +25,24 @@ import { useLocalChainId } from 'state/application/hooks';
 import { useParams } from 'react-router-dom';
 import { getConfig } from 'config';
 import { Connector } from '@web3-react/types';
+import { SUPPORTED_CHAINIDS } from 'constants/index';
 
-export function useActiveWeb3React(): Web3ContextType<Web3Provider> & {
-  chainId?: ChainId;
-  library?: Web3Provider;
-} {
-  const context = useWeb3ReactCore<Web3Provider>();
+export function useActiveWeb3React() {
+  const context = useWeb3React();
   const { localChainId } = useLocalChainId();
+  const { ethereum } = window as any;
+
+  const chainId = useMemo(() => {
+    if (!ethereum) return localChainId;
+    if (context.chainId && !SUPPORTED_CHAINIDS.includes(context.chainId)) {
+      return;
+    }
+    return context.chainId;
+  }, [context.chainId, localChainId, ethereum]);
+
   return {
     ...context,
-    chainId: context.chainId ?? localChainId ?? ChainId.MATIC,
+    chainId,
     library: context.provider,
   };
 }
