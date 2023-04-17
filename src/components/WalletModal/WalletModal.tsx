@@ -207,7 +207,46 @@ const WalletModal: React.FC<WalletModalProps> = ({
                   isMetamask ===
                     (option.name === GlobalConst.walletName.METAMASK) ||
                   isBraveWallet ===
-                    (option.name === GlobalConst.walletName.BRAVEWALLET))
+                    (option.name === GlobalConst.walletName.BRAVEWALLET) ||
+                  isTrustWallet ===
+                    (option.name === GlobalConst.walletName.TRUST_WALLET))
+              }
+              color={option.color}
+              link={option.href}
+              header={option.name}
+              subheader={null}
+              icon={option.iconName}
+              installLink={option.installLink}
+            />
+          );
+        } else if (
+          ethereum &&
+          option.connector === injectedConnection.connector
+        ) {
+          return (
+            <Option
+              onClick={() => {
+                option.connector !== connector &&
+                  !option.href &&
+                  tryActivation(option.connector);
+              }}
+              id={`connect-${option.key}`}
+              key={option.key}
+              active={
+                isActive &&
+                option.connector === connector &&
+                (isCypherD ===
+                  (option.name === GlobalConst.walletName.CYPHERD) ||
+                  isBlockWallet ===
+                    (option.name === GlobalConst.walletName.BLOCKWALLET) ||
+                  isBitKeep ===
+                    (option.name === GlobalConst.walletName.BITKEEP) ||
+                  isMetamask ===
+                    (option.name === GlobalConst.walletName.METAMASK) ||
+                  isBraveWallet ===
+                    (option.name === GlobalConst.walletName.BRAVEWALLET) ||
+                  isTrustWallet ===
+                    (option.name === GlobalConst.walletName.TRUST_WALLET))
               }
               color={option.color}
               link={option.href}
