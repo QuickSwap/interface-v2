@@ -129,14 +129,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           {chainId && account && (
             <a
               className='addressLink'
-              href={
-                chainId &&
-                getEtherscanLink(
-                  chainId,
-                  ENSName ? ENSName : account,
-                  'address',
-                )
-              }
+              href={getEtherscanLink(
+                chainId,
+                ENSName ? ENSName : account,
+                'address',
+              )}
               target='_blank'
               rel='noopener noreferrer'
             >
