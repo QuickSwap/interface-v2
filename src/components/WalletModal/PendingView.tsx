@@ -3,19 +3,17 @@ import { Box, CircularProgress } from '@material-ui/core';
 import { GlobalConst } from 'constants/index';
 import Option from './Option';
 import { useTranslation } from 'react-i18next';
-import { Connector } from '@web3-react/types';
-import { getConnections, injectedConnection } from 'connectors';
-import { useActiveWeb3React } from 'hooks';
+import { Connection, getConnections, injectedConnection } from 'connectors';
 
 interface PendingViewProps {
-  connector?: Connector;
+  connection?: Connection;
   error?: boolean;
   setPendingError: (error: boolean) => void;
-  tryActivation: (connector: Connector) => void;
+  tryActivation: (connector: Connection) => void;
 }
 
 const PendingView: React.FC<PendingViewProps> = ({
-  connector,
+  connection,
   error = false,
   setPendingError,
   tryActivation,
@@ -48,7 +46,7 @@ const PendingView: React.FC<PendingViewProps> = ({
               className='errorButton'
               onClick={() => {
                 setPendingError(false);
-                connector && tryActivation(connector);
+                connection && tryActivation(connection);
               }}
             >
               {t('tryagain')}
@@ -62,7 +60,7 @@ const PendingView: React.FC<PendingViewProps> = ({
         )}
       </Box>
       {connections.map((option) => {
-        if (option.connector === connector) {
+        if (connection && option.connector === connection.connector) {
           if (option.connector === injectedConnection.connector) {
             if (isMetamask && option.name !== GlobalConst.walletName.METAMASK) {
               return null;

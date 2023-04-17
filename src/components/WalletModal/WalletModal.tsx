@@ -21,7 +21,7 @@ import UAuth from '@uauth/js';
 import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
-import { getConnections, injectedConnection } from 'connectors';
+import { Connection, getConnections, injectedConnection } from 'connectors';
 import { getIsMetaMaskWallet } from 'connectors/utils';
 import { Connector } from '@web3-react/types';
 
@@ -51,7 +51,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const [error, setError] = useState<Error | string | undefined>(undefined);
   const { updateUDDomain } = useUDDomain();
 
-  const [pendingWallet, setPendingWallet] = useState<Connector | undefined>();
+  const [pendingWallet, setPendingWallet] = useState<Connection | undefined>();
 
   const [pendingError, setPendingError] = useState<boolean>();
 
@@ -88,12 +88,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
     }
   }, [walletModalOpen]);
 
-  const tryActivation = async (connector: Connector) => {
+  const tryActivation = async (connection: Connection) => {
     let name = '';
     let found = false;
 
     connections.map((option) => {
-      if (connector === option.connector) {
+      if (connection.connector === option.connector) {
         if (found == false) {
           found = true;
           return (name = option.name);
@@ -109,11 +109,11 @@ const WalletModal: React.FC<WalletModalProps> = ({
       action: 'Change Wallet',
       label: name,
     });
-    setPendingWallet(connector); // set wallet for pending view
+    setPendingWallet(connection); // set wallet for pending view
     setWalletView(WALLET_VIEWS.PENDING);
 
     try {
-      await connector.activate();
+      await connection.connector.activate();
 
       if (
         connector instanceof UAuthConnector &&
@@ -190,7 +190,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               onClick={() => {
                 option.connector !== connector &&
                   !option.href &&
-                  tryActivation(option.connector);
+                  tryActivation(option);
               }}
               id={`connect-${option.key}`}
               key={option.key}
@@ -239,7 +239,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
                   setWalletView(WALLET_VIEWS.ACCOUNT);
                 } else {
                   if (!option.href) {
-                    tryActivation(option.connector);
+                    tryActivation(option);
                   }
                 }
               }}
@@ -404,7 +404,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             onClick={() => {
               isActive && option.connector === connector
                 ? setWalletView(WALLET_VIEWS.ACCOUNT)
-                : !option.href && tryActivation(option.connector);
+                : !option.href && tryActivation(option);
             }}
             key={option.key}
             active={
@@ -472,7 +472,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         <Box mt={4}>
           {walletView === WALLET_VIEWS.PENDING ? (
             <PendingView
-              connector={pendingWallet}
+              connection={pendingWallet}
               error={pendingError}
               setPendingError={setPendingError}
               tryActivation={tryActivation}
