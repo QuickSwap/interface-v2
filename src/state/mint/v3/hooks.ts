@@ -41,9 +41,13 @@ import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/Pre
 import { GlobalConst } from 'constants/index';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useGammaUNIProxyContract } from 'hooks/useContract';
-import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
+import {
+  useSingleCallResult,
+  useSingleContractMultipleData,
+} from 'state/multicall/v3/hooks';
 import { ETHER, WETH } from '@uniswap/sdk';
 import { maxAmountSpend } from 'utils';
+import { GammaPairs } from 'constants/index';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -60,6 +64,8 @@ export interface IDerivedMintInfo {
   position: Position | undefined;
   noLiquidity?: boolean;
   errorMessage?: string;
+  token0ErrorMessage?: string;
+  token1ErrorMessage?: string;
   errorCode?: number;
   invalidPool: boolean;
   outOfRange: boolean;
@@ -186,6 +192,8 @@ export function useV3DerivedMintInfo(
   position: Position | undefined;
   noLiquidity?: boolean;
   errorMessage?: string;
+  token0ErrorMessage?: string;
+  token1ErrorMessage?: string;
   errorCode?: number;
   invalidPool: boolean;
   outOfRange: boolean;
@@ -503,6 +511,47 @@ export function useV3DerivedMintInfo(
       : [],
   );
 
+  const depositCapData = useSingleCallResult(
+    presetRange && presetRange.address ? gammaUNIPROXYContract : undefined,
+    'positions',
+    presetRange && presetRange.address ? [presetRange.address] : [],
+  );
+
+  const gammaPairKeyReverted =
+    currencyA && currencyB
+      ? currencyB.wrapped.address.toLowerCase() +
+        '-' +
+        currencyA.wrapped.address.toLowerCase()
+      : '';
+  const gammaPairReverted = !!(
+    chainId && GammaPairs[chainId][gammaPairKeyReverted]
+  );
+  const depositCap = useMemo(() => {
+    if (
+      !depositCapData.loading &&
+      depositCapData.result &&
+      depositCapData.result.length > 0 &&
+      currencyA &&
+      currencyB
+    ) {
+      return {
+        deposit0Max: Number(
+          formatUnits(
+            depositCapData.result['deposit0Max'] ?? 0,
+            (gammaPairReverted ? currencyB : currencyA).wrapped.decimals,
+          ),
+        ),
+        deposit1Max: Number(
+          formatUnits(
+            depositCapData.result['deposit1Max'] ?? 0,
+            (gammaPairReverted ? currencyA : currencyB).wrapped.decimals,
+          ),
+        ),
+      };
+    }
+    return;
+  }, [currencyA, currencyB, depositCapData, gammaPairReverted]);
+
   const quoteDepositAmount = useMemo(() => {
     if (
       depositAmountsData.length > 0 &&
@@ -770,6 +819,8 @@ export function useV3DerivedMintInfo(
   ]);
 
   let errorMessage: string | undefined;
+  let token0ErrorMessage: string | undefined;
+  let token1ErrorMessage: string | undefined;
   let errorCode: number | undefined;
 
   if (!account) {
@@ -804,9 +855,11 @@ export function useV3DerivedMintInfo(
     currencyAAmount &&
     currencyBalances?.[Field.CURRENCY_A]?.lessThan(currencyAAmount)
   ) {
-    errorMessage = `Insufficient ${
-      currencies[Field.CURRENCY_A]?.symbol
+    const msg = `Insufficient ${
+      currencies[Field.CURRENCY_A]?.wrapped.symbol
     } balance`;
+    errorMessage = msg;
+    token0ErrorMessage = msg;
     errorCode = errorCode ?? 4;
   }
 
@@ -814,10 +867,48 @@ export function useV3DerivedMintInfo(
     currencyBAmount &&
     currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount)
   ) {
-    errorMessage = `Insufficient ${
-      currencies[Field.CURRENCY_B]?.symbol
+    const msg = `Insufficient ${
+      currencies[Field.CURRENCY_B]?.wrapped.symbol
     } balance`;
+    errorMessage = msg;
+    token1ErrorMessage = msg;
     errorCode = errorCode ?? 5;
+  }
+
+  if (
+    depositCap &&
+    Number(currencyAAmount?.toExact() ?? 0) >
+      (gammaPairReverted ? depositCap.deposit1Max : depositCap.deposit0Max)
+  ) {
+    const msg = `${
+      currencies[Field.CURRENCY_A]?.wrapped.symbol
+    } deposit cap of ${(gammaPairReverted
+      ? depositCap.deposit1Max
+      : depositCap.deposit0Max
+    ).toLocaleString(
+      'us',
+    )} reached. Please deposit less than this amount.  Multiple deposits are allowed.`;
+    errorMessage = msg;
+    token0ErrorMessage = msg;
+    errorCode = errorCode ?? 6;
+  }
+
+  if (
+    depositCap &&
+    Number(currencyBAmount?.toExact() ?? 0) >
+      (gammaPairReverted ? depositCap.deposit0Max : depositCap.deposit1Max)
+  ) {
+    const msg = `${
+      currencies[Field.CURRENCY_B]?.wrapped.symbol
+    } deposit cap of ${(gammaPairReverted
+      ? depositCap.deposit0Max
+      : depositCap.deposit1Max
+    ).toLocaleString(
+      'us',
+    )} reached. Please deposit less than this amount.  Multiple deposits are allowed.`;
+    errorMessage = msg;
+    token1ErrorMessage = msg;
+    errorCode = errorCode ?? 7;
   }
 
   const invalidPool = poolState === PoolState.INVALID;
@@ -835,6 +926,8 @@ export function useV3DerivedMintInfo(
     position,
     noLiquidity,
     errorMessage,
+    token0ErrorMessage,
+    token1ErrorMessage,
     errorCode,
     invalidPool,
     invalidRange,

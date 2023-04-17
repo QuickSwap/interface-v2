@@ -111,7 +111,7 @@ const SwapMain: React.FC = () => {
     event: React.MouseEvent<HTMLElement>,
     index: number,
   ) => {
-    setSelectedIndex(index);
+    setSelectedIndex(SwapDropdownTabs[index].key);
     setAnchorEl(null);
     redirectWithSwapType(SwapDropdownTabs[index].key);
   };
