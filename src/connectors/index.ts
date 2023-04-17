@@ -376,6 +376,5 @@ export function getConnections() {
     coinbaseWalletConnection,
     walletConnectConnection,
     zengoConnectConnection,
-    arkaneConnection,
   ];
 }
