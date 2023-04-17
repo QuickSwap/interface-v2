@@ -462,9 +462,13 @@ const SwapBestTrade: React.FC<{
       } else if (
         optimalRateError === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT'
       ) {
-        return `Price impact is more than ${maxImpactAllowed}%. Please use v2 or v3.`;
-      } else if (optimalRateError || swapInputError) {
-        return optimalRateError || swapInputError;
+        return t('priceImpactReached', { maxImpact: maxImpactAllowed });
+      } else if (optimalRateError) {
+        return optimalRateError.includes('<!DOCTYPE')
+          ? t('bestTradeBanned')
+          : optimalRateError;
+      } else if (swapInputError) {
+        return swapInputError;
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return t('insufficientLiquidityTrade');
       } else if (
@@ -472,7 +476,9 @@ const SwapBestTrade: React.FC<{
         swapInputBalance &&
         swapInputAmountWithSlippage.greaterThan(swapInputBalance)
       ) {
-        return `Insufficient ${currencies[Field.INPUT]?.symbol} Balance`;
+        return t('insufficientBalance', {
+          symbol: currencies[Field.INPUT]?.symbol,
+        });
       } else if (bonusRouteLoading) {
         return t('fetchingBestRoute');
       } else {
