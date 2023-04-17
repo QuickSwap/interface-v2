@@ -61,7 +61,7 @@ const AddLiquidity: React.FC<{
   >(null);
 
   const { account, chainId, library } = useActiveWeb3React();
-  const chainIdToUse: ChainId = chainId ? chainId : ChainId.MATIC;
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = Token.ETHER[chainIdToUse];
 
   const [showConfirm, setShowConfirm] = useState(false);
