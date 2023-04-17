@@ -153,36 +153,6 @@ export function EnterAmounts({
     return approvalB !== ApprovalState.APPROVED;
   }, [approvalB]);
 
-  const currencyAError = useMemo(() => {
-    if (
-      (mintInfo.errorCode !== 4 && mintInfo.errorCode !== 5) ||
-      !mintInfo.errorMessage ||
-      !currencyA
-    )
-      return;
-
-    const erroredToken = mintInfo.errorMessage.split(' ')[1];
-
-    if (currencyA.wrapped.symbol === erroredToken) return mintInfo.errorMessage;
-
-    return;
-  }, [mintInfo, currencyA]);
-
-  const currencyBError = useMemo(() => {
-    if (
-      (mintInfo.errorCode !== 5 && mintInfo.errorCode !== 4) ||
-      !mintInfo.errorMessage ||
-      !currencyB
-    )
-      return;
-
-    const erroredToken = mintInfo.errorMessage.split(' ')[1];
-
-    if (currencyB.wrapped.symbol === erroredToken) return mintInfo.errorMessage;
-
-    return;
-  }, [mintInfo, currencyB]);
-
   return (
     <Box>
       <small className='weight-600'>{t('depositAmounts')}</small>
@@ -203,7 +173,7 @@ export function EnterAmounts({
           }
           locked={mintInfo.depositADisabled}
           isMax={!!atMaxAmounts[Field.CURRENCY_A]}
-          error={currencyAError}
+          error={mintInfo.token0ErrorMessage}
           priceFormat={priceFormat}
           isBase={false}
         />
@@ -224,7 +194,7 @@ export function EnterAmounts({
         }
         locked={mintInfo.depositBDisabled}
         isMax={!!atMaxAmounts[Field.CURRENCY_B]}
-        error={currencyBError}
+        error={mintInfo.token1ErrorMessage}
         priceFormat={priceFormat}
         isBase={true}
       />
