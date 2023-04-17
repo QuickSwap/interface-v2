@@ -235,9 +235,13 @@ const WalletModal: React.FC<WalletModalProps> = ({
           return (
             <Option
               onClick={() => {
-                option.connector !== connector &&
-                  !option.href &&
-                  tryActivation(option.connector);
+                if (option.connector === connector) {
+                  setWalletView(WALLET_VIEWS.ACCOUNT);
+                } else {
+                  if (!option.href) {
+                    tryActivation(option.connector);
+                  }
+                }
               }}
               id={`connect-${option.key}`}
               key={option.key}
