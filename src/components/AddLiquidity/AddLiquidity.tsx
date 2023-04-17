@@ -49,7 +49,7 @@ import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIc
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { useParams } from 'react-router-dom';
-import { NEW_QUICK, V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
 
 const AddLiquidity: React.FC<{
@@ -61,7 +61,7 @@ const AddLiquidity: React.FC<{
   >(null);
 
   const { account, chainId, library } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const chainIdToUse: ChainId = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = Token.ETHER[chainIdToUse];
 
   const [showConfirm, setShowConfirm] = useState(false);
