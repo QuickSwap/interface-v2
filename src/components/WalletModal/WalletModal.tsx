@@ -221,7 +221,16 @@ const WalletModal: React.FC<WalletModalProps> = ({
           );
         } else if (
           ethereum &&
-          option.connector === injectedConnection.connector
+          option.connector === injectedConnection.connector &&
+          (isCypherD === (option.name === GlobalConst.walletName.CYPHERD) ||
+            isBlockWallet ===
+              (option.name === GlobalConst.walletName.BLOCKWALLET) ||
+            isBitKeep === (option.name === GlobalConst.walletName.BITKEEP) ||
+            isMetamask === (option.name === GlobalConst.walletName.METAMASK) ||
+            isBraveWallet ===
+              (option.name === GlobalConst.walletName.BRAVEWALLET) ||
+            isTrustWallet ===
+              (option.name === GlobalConst.walletName.TRUST_WALLET))
         ) {
           return (
             <Option
