@@ -2099,14 +2099,14 @@ export function calculateSlippageAmountV3(
   return [
     JSBI.divide(
       JSBI.multiply(
-        JSBI.BigInt(value.toExact()),
+        JSBI.BigInt(value.numerator.toString()),
         JSBI.BigInt(10000 - slippage),
       ),
       JSBI.BigInt(10000),
     ),
     JSBI.divide(
       JSBI.multiply(
-        JSBI.BigInt(value.toExact()),
+        JSBI.BigInt(value.numerator.toString()),
         JSBI.BigInt(10000 + slippage),
       ),
       JSBI.BigInt(10000),

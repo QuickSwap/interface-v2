@@ -16,7 +16,6 @@ import './index.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { CurrencyAmount, Percent, Price } from '@uniswap/sdk-core';
 import {
-  useActivePreset,
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
   useV3MintState,
@@ -53,9 +52,9 @@ import { ReportProblemOutlined } from '@material-ui/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import { calculateGasMargin } from 'utils';
 import { getConfig } from 'config';
-import { GammaPairs, GlobalConst } from 'constants/index';
-import { tryParseAmount } from 'state/swap/v3/hooks';
+import { GlobalConst } from 'constants/index';
 import RemoveV2Liquidity from './RemoveV2Liquidity';
+import AddGammaLiquidity from './AddGammaLiquidity';
 
 export default function MigrateV2DetailsPage() {
   const { t } = useTranslation();
@@ -117,6 +116,11 @@ export default function MigrateV2DetailsPage() {
     account ?? undefined,
     pair?.liquidityToken,
   );
+
+  const v2LiquidityRemoved = Boolean(
+    userPoolBalance && JSBI.equal(userPoolBalance.quotient, ZERO),
+  );
+
   const totalPoolTokens = useTotalSupply(pair?.liquidityToken);
   const deadline = useTransactionDeadline(); // custom from users settings
   const blockTimestamp = useCurrentBlockTimestamp();
@@ -216,33 +220,39 @@ export default function MigrateV2DetailsPage() {
   // set up v3 pool
   const noLiquidity = poolState === PoolState.NOT_EXISTS;
 
+  const savedPoolBalance = localStorage.getItem('userPoolBalance');
+  const userPoolLiquidity = v2LiquidityRemoved
+    ? savedPoolBalance
+      ? JSBI.BigInt(savedPoolBalance)
+      : undefined
+    : userPoolBalance?.quotient;
   // this is just getLiquidityValue with the fee off, but for the passed pair
   const token0Value = useMemo(() => {
-    if (!token0 || !reserve0 || !totalPoolTokens || !userPoolBalance) {
+    if (!token0 || !reserve0 || !totalPoolTokens || !userPoolLiquidity) {
       return;
     }
 
     return CurrencyAmount.fromRawAmount(
       token0,
       JSBI.divide(
-        JSBI.multiply(userPoolBalance.quotient, reserve0.quotient),
+        JSBI.multiply(userPoolLiquidity, reserve0.quotient),
         totalPoolTokens.quotient,
       ),
     );
-  }, [token0, userPoolBalance, reserve0, totalPoolTokens]);
+  }, [token0, reserve0, totalPoolTokens, userPoolLiquidity]);
   const token1Value = useMemo(() => {
-    if (!token1 || !reserve1 || !totalPoolTokens || !userPoolBalance) {
+    if (!token1 || !reserve1 || !totalPoolTokens || !userPoolLiquidity) {
       return;
     }
 
     return CurrencyAmount.fromRawAmount(
       token1,
       JSBI.divide(
-        JSBI.multiply(userPoolBalance.quotient, reserve1.quotient),
+        JSBI.multiply(userPoolLiquidity, reserve1.quotient),
         totalPoolTokens.quotient,
       ),
     );
-  }, [token1, userPoolBalance, reserve1, totalPoolTokens]);
+  }, [token1, reserve1, totalPoolTokens, userPoolLiquidity]);
 
   // get spot prices + price difference
   const v2SpotPrice = useMemo(() => {
@@ -391,42 +401,6 @@ export default function MigrateV2DetailsPage() {
   const [pendingMigrationHash, setPendingMigrationHash] = useState<
     string | null
   >(null);
-
-  const preset = useActivePreset();
-  const token0Address = token0 ? token0.address.toLowerCase() : '';
-  const token1Address = token1 ? token1.address.toLowerCase() : '';
-  const gammaPair = chainId
-    ? GammaPairs[chainId][token0Address + '-' + token1Address] ??
-      GammaPairs[chainId][token1Address + '-' + token0Address]
-    : [];
-  const gammaPairAddress =
-    gammaPair && gammaPair.length > 0
-      ? gammaPair.find((pair) => pair.type === preset)?.address
-      : undefined;
-  const [approvalAGamma, approveAGammaCallback] = useApproveCallback(
-    mintInfo.parsedAmounts[Field.CURRENCY_A] ||
-      tryParseAmount('1', token0 ?? undefined),
-    chainId ? gammaPairAddress : undefined,
-  );
-  const [approvalBGamma, approveBGammaCallback] = useApproveCallback(
-    mintInfo.parsedAmounts[Field.CURRENCY_B] ||
-      tryParseAmount('1', token1 ?? undefined),
-    chainId ? gammaPairAddress : undefined,
-  );
-  const showApprovalAGamma = useMemo(() => {
-    if (approvalAGamma === ApprovalState.UNKNOWN) return undefined;
-
-    if (approvalAGamma === ApprovalState.NOT_APPROVED) return true;
-
-    return approvalAGamma !== ApprovalState.APPROVED;
-  }, [approvalAGamma]);
-  const showApprovalBGamma = useMemo(() => {
-    if (approvalBGamma === ApprovalState.UNKNOWN) return undefined;
-
-    if (approvalBGamma === ApprovalState.NOT_APPROVED) return true;
-
-    return approvalBGamma !== ApprovalState.APPROVED;
-  }, [approvalBGamma]);
 
   const migrator = useV2ToV3MigratorContract();
 
@@ -640,7 +614,7 @@ export default function MigrateV2DetailsPage() {
               <p>{currency0?.symbol}</p>
             </Box>
             <p>{`${
-              token0Deposited ? formatCurrencyAmount(token0Deposited, 4) : ''
+              token0Value ? formatCurrencyAmount(token0Value, 4) : ''
             }`}</p>
           </Box>
           <Box mt={1.5} className='v3-migrate-details-row'>
@@ -649,7 +623,7 @@ export default function MigrateV2DetailsPage() {
               <p>{currency1?.symbol}</p>
             </Box>
             <p>{`${
-              token1Deposited ? formatCurrencyAmount(token1Deposited, 4) : ''
+              token1Value ? formatCurrencyAmount(token1Value, 4) : ''
             }`}</p>
           </Box>
         </Box>
@@ -682,172 +656,147 @@ export default function MigrateV2DetailsPage() {
           mintInfo={mintInfo}
           priceFormat={PriceFormats.TOKEN}
         />
-        <Box mt={2} className='v3-migrate-details-box'>
-          <Box className='v3-migrate-details-row'>
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={currency0 ?? undefined} size='20px' />
-              <p>{currency0?.symbol}</p>
+        {liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+          <>
+            <Box mt={2} className='v3-migrate-details-box'>
+              <Box className='v3-migrate-details-row'>
+                <Box className='flex items-center'>
+                  <CurrencyLogo currency={currency0 ?? undefined} size='20px' />
+                  <p>{currency0?.symbol}</p>
+                </Box>
+                {v3Amount0MinCurrency ? (
+                  <p>{v3Amount0MinCurrency.toSignificant(2)}</p>
+                ) : mintInfo.ticks.LOWER && mintInfo.ticks.UPPER ? (
+                  <Loader stroke='white' size='24px' />
+                ) : (
+                  <></>
+                )}
+              </Box>
+              <Box mt={1.5} className='v3-migrate-details-row'>
+                <Box className='flex items-center'>
+                  <CurrencyLogo currency={currency1 ?? undefined} size='20px' />
+                  <p>{currency1?.symbol}</p>
+                </Box>
+                {v3Amount1MinCurrency ? (
+                  <p>{v3Amount1MinCurrency.toSignificant(2)}</p>
+                ) : mintInfo.ticks.LOWER && mintInfo.ticks.UPPER ? (
+                  <Loader stroke='white' size='24px' />
+                ) : (
+                  <></>
+                )}
+              </Box>
+              {v3Amount0Min !== undefined &&
+                v3Amount1Min !== undefined &&
+                refund0 &&
+                refund1 && (
+                  <Box mt={1.5}>
+                    <small className='text-secondary'>
+                      {t('migrateRefundComment', {
+                        amount1: formatCurrencyAmount(refund0, 4),
+                        symbol1: currency0?.symbol,
+                        amount2: formatCurrencyAmount(refund1, 4),
+                        symbol2: currency1?.symbol,
+                      })}
+                    </small>
+                  </Box>
+                )}
             </Box>
-            {v3Amount0MinCurrency ? (
-              <p>{v3Amount0MinCurrency.toSignificant(2)}</p>
-            ) : mintInfo.ticks.LOWER && mintInfo.ticks.UPPER ? (
-              <Loader stroke='white' size='24px' />
-            ) : (
-              <></>
-            )}
-          </Box>
-          <Box mt={1.5} className='v3-migrate-details-row'>
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={currency1 ?? undefined} size='20px' />
-              <p>{currency1?.symbol}</p>
-            </Box>
-            {v3Amount1MinCurrency ? (
-              <p>{v3Amount1MinCurrency.toSignificant(2)}</p>
-            ) : mintInfo.ticks.LOWER && mintInfo.ticks.UPPER ? (
-              <Loader stroke='white' size='24px' />
-            ) : (
-              <></>
-            )}
-          </Box>
-          {v3Amount0Min !== undefined &&
-            v3Amount1Min !== undefined &&
-            refund0 &&
-            refund1 && (
-              <Box mt={1.5}>
-                <small className='text-secondary'>
-                  {t('migrateRefundComment', {
-                    amount1: formatCurrencyAmount(refund0, 4),
-                    symbol1: currency0?.symbol,
-                    amount2: formatCurrencyAmount(refund1, 4),
-                    symbol2: currency1?.symbol,
-                  })}
-                </small>
+            {largePriceDifference && !largePriceDiffDismissed && (
+              <Box mt={2} className='pool-range-chart-warning border-error'>
+                <Box width={1} className='flex items-center'>
+                  <Box className='pool-range-chart-warning-icon'>
+                    <ReportProblemOutlined />
+                  </Box>
+                  <small>{t('priceImpactLarger')}</small>
+                </Box>
+                <Box width={1} mt={1} mb={1.5}>
+                  <span>
+                    {t('shouldDepositLiquidityatCorrectPrice')}. <br />
+                    <br />
+                    {v2SpotPrice && (
+                      <>
+                        {t('estimatedV2Price')}: ${v2SpotPrice?.toFixed(4)}
+                      </>
+                    )}
+                    <br />
+                    {v3SpotPrice && (
+                      <>
+                        {t('estimatedV3Price')}: ${v3SpotPrice?.toFixed(4)}
+                      </>
+                    )}
+                    <br />
+                    <br />
+                    {t('priceIncorrectWarning')}.
+                  </span>
+                </Box>
+                <button onClick={() => setLargePriceDiffDismissed(true)}>
+                  {t('iunderstand')}
+                </button>
               </Box>
             )}
-        </Box>
-        {largePriceDifference &&
-          !largePriceDiffDismissed &&
-          liquidityRangeType ===
-            GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
-            <Box mt={2} className='pool-range-chart-warning border-error'>
-              <Box width={1} className='flex items-center'>
-                <Box className='pool-range-chart-warning-icon'>
-                  <ReportProblemOutlined />
-                </Box>
-                <small>{t('priceImpactLarger')}</small>
-              </Box>
-              <Box width={1} mt={1} mb={1.5}>
-                <span>
-                  {t('shouldDepositLiquidityatCorrectPrice')}. <br />
-                  <br />
-                  {v2SpotPrice && (
-                    <>
-                      {t('estimatedV2Price')}: ${v2SpotPrice?.toFixed(4)}
-                    </>
-                  )}
-                  <br />
-                  {v3SpotPrice && (
-                    <>
-                      {t('estimatedV3Price')}: ${v3SpotPrice?.toFixed(4)}
-                    </>
-                  )}
-                  <br />
-                  <br />
-                  {t('priceIncorrectWarning')}.
-                </span>
-              </Box>
-              <button onClick={() => setLargePriceDiffDismissed(true)}>
-                {t('iunderstand')}
-              </button>
+            <Box mt={3} className='flex justify-between'>
+              <Button
+                className='v3-migrate-details-button'
+                disabled={
+                  attemptApproving ||
+                  approval === ApprovalState.APPROVED ||
+                  approval !== ApprovalState.NOT_APPROVED ||
+                  signatureData !== null ||
+                  !v3Amount0Min ||
+                  !v3Amount1Min ||
+                  mintInfo.invalidRange ||
+                  confirmingMigration
+                }
+                onClick={() => {
+                  setAttemptApproving(true);
+                  approve();
+                }}
+              >
+                {attemptApproving || approval === ApprovalState.PENDING ? (
+                  <>
+                    {t('approving')}
+                    <span className='loadingDots' />
+                  </>
+                ) : approval === ApprovalState.APPROVED ||
+                  signatureData !== null ? (
+                  t('allowed')
+                ) : (
+                  t('allowLPMigration')
+                )}
+              </Button>
             </Box>
-          )}
-        <Box mt={3} className='flex justify-between'>
-          {liquidityRangeType ===
-          GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
-            <>
-              {showApprovalAGamma !== undefined && (
-                <Box width={showApprovalBGamma === undefined ? '100%' : '49%'}>
-                  {showApprovalAGamma ? (
-                    approvalAGamma === ApprovalState.PENDING ? (
-                      <Button className='v3-migrate-details-button' disabled>
-                        {t('approving')} {token0?.symbol}
-                        <span className='loadingDots' />
-                      </Button>
-                    ) : (
-                      <Button
-                        className='v3-migrate-details-button'
-                        onClick={approveAGammaCallback}
-                      >
-                        {t('approve')} {token0?.symbol}
-                      </Button>
-                    )
-                  ) : (
-                    <Button className='v3-migrate-details-button' disabled>
-                      {t('approved')} {token0?.symbol}
-                    </Button>
-                  )}
-                </Box>
-              )}
-              {showApprovalBGamma !== undefined && (
-                <Box width={showApprovalAGamma === undefined ? '100%' : '49%'}>
-                  {showApprovalBGamma ? (
-                    approvalBGamma === ApprovalState.PENDING ? (
-                      <Button className='v3-migrate-details-button' disabled>
-                        {t('approving')} {token1?.symbol}
-                        <span className='loadingDots' />
-                      </Button>
-                    ) : (
-                      <Button
-                        className='v3-migrate-details-button'
-                        onClick={approveBGammaCallback}
-                      >
-                        {t('approve')} {token1?.symbol}
-                      </Button>
-                    )
-                  ) : (
-                    <Button className='v3-migrate-details-button' disabled>
-                      {t('approved')} {token1?.symbol}
-                    </Button>
-                  )}
-                </Box>
-              )}
-            </>
-          ) : (
-            <Button
-              className='v3-migrate-details-button'
-              disabled={
-                attemptApproving ||
-                approval === ApprovalState.APPROVED ||
-                approval !== ApprovalState.NOT_APPROVED ||
-                signatureData !== null ||
-                !v3Amount0Min ||
-                !v3Amount1Min ||
-                mintInfo.invalidRange ||
-                confirmingMigration
-              }
-              onClick={() => {
-                setAttemptApproving(true);
-                approve();
-              }}
-            >
-              {attemptApproving || approval === ApprovalState.PENDING ? (
-                <>
-                  {t('approving')}
-                  <span className='loadingDots' />
-                </>
-              ) : approval === ApprovalState.APPROVED ||
-                signatureData !== null ? (
-                t('allowed')
-              ) : (
-                t('allowLPMigration')
-              )}
-            </Button>
-          )}
-        </Box>
+          </>
+        )}
+
         <Box mt={2}>
           {liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
-            <RemoveV2Liquidity pair={pair} />
+            <>
+              <AddGammaLiquidity
+                token0Value={token0Value}
+                token1Value={token1Value}
+                showAdd={v2LiquidityRemoved}
+                onLiquidityAdded={() => history.push('/pools')}
+              />
+              {!v2LiquidityRemoved && (
+                <Box mt={2}>
+                  <RemoveV2Liquidity
+                    pair={pair}
+                    currency0IsETH={!!_currency0?.isNative}
+                    currency1IsETH={!!_currency1?.isNative}
+                    beforeRemove={() => {
+                      if (userPoolBalance) {
+                        localStorage.setItem(
+                          'userPoolBalance',
+                          userPoolBalance?.quotient.toString(),
+                        );
+                      }
+                    }}
+                  />
+                </Box>
+              )}
+            </>
           ) : (
             <Button
               className='v3-migrate-details-button'
