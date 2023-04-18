@@ -89,25 +89,11 @@ const WalletModal: React.FC<WalletModalProps> = ({
   }, [walletModalOpen]);
 
   const tryActivation = async (connection: Connection) => {
-    let name = '';
-    let found = false;
-
-    connections.map((option) => {
-      if (connection.connector === option.connector) {
-        if (found == false) {
-          found = true;
-          return (name = option.name);
-        } else {
-          return true;
-        }
-      }
-      return true;
-    });
     // log selected wallet
     ReactGA.event({
       category: 'Wallet',
       action: 'Change Wallet',
-      label: name,
+      label: connection.name,
     });
     setPendingWallet(connection); // set wallet for pending view
     setWalletView(WALLET_VIEWS.PENDING);
@@ -115,28 +101,28 @@ const WalletModal: React.FC<WalletModalProps> = ({
     try {
       await connection.connector.activate();
 
-      if (
-        connector instanceof UAuthConnector &&
-        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
-        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
-      ) {
-        const uauth = new UAuth({
-          clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-          redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
-          scope: 'openid wallet',
-        });
+      // if (
+      //   connection.connector instanceof UAuthConnector &&
+      //   process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+      //   process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
+      // ) {
+      //   const uauth = new UAuth({
+      //     clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+      //     redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+      //     scope: 'openid wallet',
+      //   });
 
-        try {
-          const user = await uauth.user();
-          updateUDDomain(user.sub);
-          setWalletView(WALLET_VIEWS.ACCOUNT);
-        } catch {
-          setError('User does not exist.');
-        }
-      } else {
-        updateUDDomain(undefined);
-        setWalletView(WALLET_VIEWS.ACCOUNT);
-      }
+      //   try {
+      //     const user = await uauth.user();
+      //     updateUDDomain(user.sub);
+      //     setWalletView(WALLET_VIEWS.ACCOUNT);
+      //   } catch {
+      //     setError('User does not exist.');
+      //   }
+      // } else {
+      updateUDDomain(undefined);
+      setWalletView(WALLET_VIEWS.ACCOUNT);
+      // }
     } catch (e) {
       setPendingError(true);
     }
