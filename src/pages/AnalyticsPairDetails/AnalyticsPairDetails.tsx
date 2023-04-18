@@ -177,50 +177,26 @@ const AnalyticsPairDetails: React.FC = () => {
   const { ethPrice } = useEthPrice();
 
   useEffect(() => {
-    async function fetchPairData() {
-      if (chainId) {
-        try {
-          if (!isV2) {
-            const pairInfo = await getPairInfoV3(pairAddress, chainId);
-            if (pairInfo && pairInfo.length > 0) {
-              setPairData(pairInfo[0]);
-            }
-            setDataLoading(false);
-          } else {
-            if (ethPrice.price !== undefined) {
-              const pairInfo = await getBulkPairData(
-                [pairAddress],
-                ethPrice.price,
-                chainId,
-              );
-              if (pairInfo && pairInfo.length > 0) {
-                setPairData(pairInfo[0]);
-              }
-              setDataLoading(false);
-            }
-          }
-        } catch (e) {
-          setDataLoading(false);
+    (async () => {
+      if (chainId && version) {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get top pair details`,
+          );
+        }
+        const data = await res.json();
+        setDataLoading(false);
+        if (data?.data?.pairData) {
+          setPairData(data.data.pairData);
+          setPairTransactions(data.data.pairTransactions);
         }
       }
-    }
-    async function fetchTransctions() {
-      if (chainId) {
-        const pairTransactionsFn = !isV2
-          ? getPairTransactionsV3(pairAddress, chainId)
-          : getPairTransactions(pairAddress, chainId);
-
-        pairTransactionsFn.then((transactions) => {
-          if (transactions) {
-            setPairTransactions(transactions);
-          }
-        });
-      }
-    }
-
-    fetchPairData();
-    fetchTransctions();
-  }, [pairAddress, ethPrice.price, isV2, chainId]);
+    })();
+  }, [pairAddress, ethPrice.price, isV2, chainId, version]);
 
   useEffect(() => {
     setDataLoading(true);
