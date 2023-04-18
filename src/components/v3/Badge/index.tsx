@@ -44,7 +44,9 @@ export default function Badge({ variant, icon, text, tooltip }: BadgeProps) {
     <>
       {tooltip ? (
         <CustomTooltip title={tooltip}>
-          <BadgeComponent />
+          <div>
+            <BadgeComponent />
+          </div>
         </CustomTooltip>
       ) : (
         <BadgeComponent />
