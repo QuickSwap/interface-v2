@@ -47,17 +47,19 @@ export default function MigrateV2LiquidityPage() {
         <Box mt={3}>
           <small>{t('migrateLiquidityDesc')}</small>
         </Box>
-        <Box mt={3}>
+        <Box>
           {v2PairsLoading ? (
-            <Box className='flex justify-center'>
+            <Box className='flex justify-center' mt={3}>
               <Loader stroke='white' size={'2rem'} />
             </Box>
           ) : allV2PairsWithLiquidity.length > 0 ? (
             allV2PairsWithLiquidity.map((pair) => (
-              <V2PositionCard key={pair.liquidityToken.address} pair={pair} />
+              <Box mt={3} key={pair.liquidityToken.address}>
+                <V2PositionCard pair={pair} />
+              </Box>
             ))
           ) : (
-            <Box textAlign='center'>
+            <Box textAlign='center' mt={3}>
               <small>{t('noV2LiquidityPools')}</small>
             </Box>
           )}
