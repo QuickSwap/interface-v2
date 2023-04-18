@@ -57,7 +57,7 @@ const SwapSection: React.FC = () => {
             )}
           </Grid>
           <Grid item sm={12} md={6} className='swapInfo'>
-            <h1>
+            <h1 className='h4'>
               {tabIndex === SWAP_TAB
                 ? t('swapSectionShortDesc')
                 : t('liquiditySectionShortDesc')}
