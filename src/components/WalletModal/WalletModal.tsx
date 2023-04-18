@@ -206,15 +206,66 @@ const WalletModal: React.FC<WalletModalProps> = ({
           );
         } else if (
           ethereum &&
-          option.connector === injectedConnection.connector &&
-          (isCypherD === (option.name === GlobalConst.walletName.CYPHERD) ||
-            isBlockWallet ===
-              (option.name === GlobalConst.walletName.BLOCKWALLET) ||
-            isBitKeep === (option.name === GlobalConst.walletName.BITKEEP) ||
-            isMetamask === (option.name === GlobalConst.walletName.METAMASK) ||
-            isTrustWallet ===
-              (option.name === GlobalConst.walletName.TRUST_WALLET))
+          option.connector === injectedConnection.connector
         ) {
+          if (option.name === GlobalConst.walletName.INJECTED) {
+            return null;
+          } else if (
+            option.name === GlobalConst.walletName.METAMASK &&
+            (!isMetamask || isBraveWallet || isPhantomWallet)
+          ) {
+            return null;
+          } else if (
+            option.name === GlobalConst.walletName.TRUST_WALLET &&
+            !isTrustWallet
+          ) {
+            return null;
+          } else if (
+            option.name === GlobalConst.walletName.BITKEEP &&
+            !isBitKeep
+          ) {
+            return null;
+          } else if (
+            option.name === GlobalConst.walletName.BLOCKWALLET &&
+            !isBlockWallet
+          ) {
+            return null;
+          } else if (
+            option.name === GlobalConst.walletName.CYPHERD &&
+            !isCypherD
+          ) {
+            return null;
+          } else if (
+            option.name === GlobalConst.walletName.BRAVEWALLET &&
+            !isBraveWallet
+          ) {
+            return (
+              <Option
+                id={`connect-${option.name}`}
+                key={option.name}
+                color={'#E8831D'}
+                header={t('installBrave')}
+                subheader={t('installBraveDesc')}
+                link={'https://brave.com/wallet'}
+                icon={BraveWalletIcon}
+              />
+            );
+          } else if (
+            option.name === GlobalConst.walletName.PHANTOM_WALLET &&
+            !isPhantomWallet
+          ) {
+            return (
+              <Option
+                id={`connect-${option.key}`}
+                key={option.key}
+                color={option.color}
+                header={t('installPhantom')}
+                subheader={t('installPhantomDesc')}
+                link={'https://phantom.app/'}
+                icon={option.iconName}
+              />
+            );
+          }
           return (
             <Option
               onClick={() => {
