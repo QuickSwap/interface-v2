@@ -25,8 +25,8 @@ const PendingView: React.FC<PendingViewProps> = ({
     !ethereum.isBitKeep &&
     !ethereum.isBraveWallet &&
     !ethereum.isPhantom &&
-    !ethereum.isTrustWallet;
-  ethereum.isMetaMask;
+    !ethereum.isTrustWallet &&
+    ethereum.isMetaMask;
   const isBlockWallet = ethereum && ethereum.isBlockWallet;
   const isCypherD = ethereum && ethereum.isCypherD;
   const isBitKeep = ethereum && ethereum.isBitKeep;

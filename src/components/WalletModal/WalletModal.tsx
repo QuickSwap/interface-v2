@@ -23,7 +23,6 @@ import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
 import { Connection, getConnections, injectedConnection } from 'connectors';
 import { getIsMetaMaskWallet } from 'connectors/utils';
-import { Connector } from '@web3-react/types';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -213,15 +212,13 @@ const WalletModal: React.FC<WalletModalProps> = ({
               (option.name === GlobalConst.walletName.BLOCKWALLET) ||
             isBitKeep === (option.name === GlobalConst.walletName.BITKEEP) ||
             isMetamask === (option.name === GlobalConst.walletName.METAMASK) ||
-            isBraveWallet ===
-              (option.name === GlobalConst.walletName.BRAVEWALLET) ||
             isTrustWallet ===
               (option.name === GlobalConst.walletName.TRUST_WALLET))
         ) {
           return (
             <Option
               onClick={() => {
-                if (option.connector === connector) {
+                if (option.connector === connector && account) {
                   setWalletView(WALLET_VIEWS.ACCOUNT);
                 } else {
                   if (!option.href) {
@@ -242,8 +239,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
                     (option.name === GlobalConst.walletName.BITKEEP) ||
                   isMetamask ===
                     (option.name === GlobalConst.walletName.METAMASK) ||
-                  isBraveWallet ===
-                    (option.name === GlobalConst.walletName.BRAVEWALLET) ||
                   isTrustWallet ===
                     (option.name === GlobalConst.walletName.TRUST_WALLET))
               }
