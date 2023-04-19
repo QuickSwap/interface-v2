@@ -21,7 +21,7 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  const { chainId, connector } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
     const config = getConfig(chain);
     return config && config.isMainnet;
@@ -30,23 +30,40 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
   const { ethereum } = window as any;
 
   const switchNetwork = useCallback(
-    async (chainId: ChainId) => {
+    (chainId: ChainId) => {
       const config = getConfig(chainId);
-      const chainParam = {
-        chainId,
-        chainName: `${config['networkName']} Network`,
-        rpcUrls: [config['rpc']],
-        nativeCurrency: config['nativeCurrency'],
-        blockExplorerUrls: [config['blockExplorer']],
-      };
+      const chainIdHex = chainId.toString(16);
       if (ethereum) {
-        await connector.activate(chainParam);
+        ethereum
+          .send('wallet_switchEthereumChain', [{ chainId: `0x${chainIdHex}` }])
+          .catch((error: any) => {
+            if (error.code === 4902) {
+              ethereum
+                .send('wallet_addEthereumChain', [
+                  {
+                    chainId: `0x${chainIdHex}`,
+                    chainName: `${config['networkName']} Network`,
+                    rpcUrls: [config['rpc']],
+                    iconUrls: [`/${config['nativeCurrencyImage']}`],
+                    blockExplorerUrls: [config['blockExplorer']],
+                    nativeCurrency: config['nativeCurrency'],
+                  },
+                ])
+                .catch((error: any) => {
+                  if (error.code === 4001) {
+                    console.log('We can encrypt anything without the key.');
+                  } else {
+                    console.error(error);
+                  }
+                });
+            }
+          });
       } else {
         localStorage.setItem('quickswap_chainId', chainId.toString());
         updateLocalChainId(chainId);
       }
     },
-    [ethereum, updateLocalChainId, connector],
+    [ethereum, updateLocalChainId],
   );
 
   return (

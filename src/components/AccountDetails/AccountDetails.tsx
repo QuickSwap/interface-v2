@@ -6,7 +6,16 @@ import { AppDispatch } from 'state';
 import { Box } from '@material-ui/core';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
+import { SUPPORTED_WALLETS } from 'constants/index';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
+import {
+  injected,
+  walletlink,
+  safeApp,
+  trustconnect,
+  unstopabbledomains,
+  metamask,
+} from 'connectors';
 import { ExternalLink as LinkIcon } from 'react-feather';
 import 'components/styles/AccountDetails.scss';
 import StatusIcon from './StatusIcon';
@@ -14,11 +23,6 @@ import Copy from './CopyHelper';
 import Transaction from './Transaction';
 import { useTranslation } from 'react-i18next';
 import { useUDDomain } from 'state/application/hooks';
-import {
-  coinbaseWalletConnection,
-  gnosisSafeConnection,
-  injectedConnection,
-} from 'connectors';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -52,7 +56,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 
   function formatConnectorName() {
     const name = getWalletKeys(connector).map(
-      (connection) => connection.name,
+      (k) => SUPPORTED_WALLETS[k].name,
     )[0];
     return (
       <small>
@@ -75,29 +79,28 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <Box className='flex justify-between items-center'>
           {formatConnectorName()}
           <Box className='flex items-center'>
-            {connector !== injectedConnection.connector &&
-              connector !== coinbaseWalletConnection.connector &&
-              connector !== gnosisSafeConnection.connector && (
+            {connector !== injected &&
+              connector !== metamask &&
+              connector !== walletlink &&
+              connector !== trustconnect &&
+              connector !== safeApp && (
                 <small
                   style={{ cursor: 'pointer', marginRight: 8 }}
                   onClick={() => {
-                    if (connector.deactivate) {
-                      connector.deactivate();
+                    if (
+                      connector ===
+                      ((unstopabbledomains as any) as AbstractConnector)
+                    ) {
+                      (connector as any).handleDeactivate();
+                    } else {
+                      (connector as any).close();
                     }
-                    // if (
-                    //   connector ===
-                    //   ((unstopabbledomains as any) as AbstractConnector)
-                    // ) {
-                    //   (connector as any).handleDeactivate();
-                    // } else {
-                    //   (connector as any).close();
-                    // }
                   }}
                 >
                   {t('disconnect')}
                 </small>
               )}
-            {connector !== gnosisSafeConnection.connector && (
+            {connector !== safeApp && (
               <small
                 className='cursor-pointer'
                 onClick={() => {
@@ -129,11 +132,14 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           {chainId && account && (
             <a
               className='addressLink'
-              href={getEtherscanLink(
-                chainId,
-                ENSName ? ENSName : account,
-                'address',
-              )}
+              href={
+                chainId &&
+                getEtherscanLink(
+                  chainId,
+                  ENSName ? ENSName : account,
+                  'address',
+                )
+              }
               target='_blank'
               rel='noopener noreferrer'
             >

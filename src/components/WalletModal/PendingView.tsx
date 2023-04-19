@@ -1,40 +1,35 @@
+import { AbstractConnector } from '@web3-react/abstract-connector';
 import React from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
+import { injected } from 'connectors';
 import Option from './Option';
 import { useTranslation } from 'react-i18next';
-import { Connection, getConnections, injectedConnection } from 'connectors';
 
 interface PendingViewProps {
-  connection?: Connection;
+  connector?: AbstractConnector;
   error?: boolean;
   setPendingError: (error: boolean) => void;
-  tryActivation: (connector: Connection) => void;
+  tryActivation: (connector: AbstractConnector) => void;
 }
 
 const PendingView: React.FC<PendingViewProps> = ({
-  connection,
+  connector,
   error = false,
   setPendingError,
   tryActivation,
 }) => {
   const { t } = useTranslation();
-  const { ethereum, phantom } = window as any;
+  const { ethereum, _oldMetaMask } = window as any;
   const isMetamask =
     ethereum &&
     !ethereum.isBitKeep &&
     !ethereum.isBraveWallet &&
-    !ethereum.isPhantom &&
-    !ethereum.isTrustWallet &&
-    ethereum.isMetaMask;
-  const isBlockWallet = ethereum && ethereum.isBlockWallet;
-  const isCypherD = ethereum && ethereum.isCypherD;
-  const isBitKeep = ethereum && ethereum.isBitKeep;
+    (ethereum.isMetaMask || _oldMetaMask);
+  const isBlockWallet = ethereum?.isBlockWallet;
+  const isCypherD = ethereum?.isCypherD;
+  const isBitKeep = ethereum?.isBitKeep;
   const isBraveWallet = ethereum && ethereum.isBraveWallet;
-  const isPhantomWallet =
-    (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
-  const isTrustWallet = ethereum && ethereum.isTrustWallet;
-  const connections = getConnections();
 
   return (
     <Box className='pendingSection'>
@@ -46,7 +41,7 @@ const PendingView: React.FC<PendingViewProps> = ({
               className='errorButton'
               onClick={() => {
                 setPendingError(false);
-                connection && tryActivation(connection);
+                connector && tryActivation(connector);
               }}
             >
               {t('tryagain')}
@@ -59,9 +54,10 @@ const PendingView: React.FC<PendingViewProps> = ({
           </>
         )}
       </Box>
-      {connections.map((option) => {
-        if (connection && option.connector === connection.connector) {
-          if (option.connector === injectedConnection.connector) {
+      {Object.keys(SUPPORTED_WALLETS).map((key) => {
+        const option = SUPPORTED_WALLETS[key];
+        if (option.connector === connector) {
+          if (option.connector === injected) {
             if (isMetamask && option.name !== GlobalConst.walletName.METAMASK) {
               return null;
             }
@@ -107,35 +103,11 @@ const PendingView: React.FC<PendingViewProps> = ({
             ) {
               return null;
             }
-            if (
-              isPhantomWallet &&
-              option.name !== GlobalConst.walletName.PHANTOM_WALLET
-            ) {
-              return null;
-            }
-            if (
-              !isPhantomWallet &&
-              option.name === GlobalConst.walletName.PHANTOM_WALLET
-            ) {
-              return null;
-            }
-            if (
-              isTrustWallet &&
-              option.name !== GlobalConst.walletName.TRUST_WALLET
-            ) {
-              return null;
-            }
-            if (
-              !isTrustWallet &&
-              option.name === GlobalConst.walletName.TRUST_WALLET
-            ) {
-              return null;
-            }
           }
           return (
             <Option
-              id={`connect-${option.key}`}
-              key={option.key}
+              id={`connect-${key}`}
+              key={key}
               clickable={false}
               color={option.color}
               header={option.name}
