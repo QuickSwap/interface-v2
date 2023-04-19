@@ -6,6 +6,7 @@ import { ChainId, Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionResponse } from '@ethersproject/providers';
+import { GlobalConst } from 'constants/index';
 import {
   CustomModal,
   DoubleCurrencyLogo,
