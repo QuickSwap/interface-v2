@@ -41,7 +41,7 @@ import {
   addMaticToMetamask,
   calculateSlippageAmount,
   calculateGasMargin,
-  isSupportedNetwork,
+  useIsSupportedNetwork,
   formatTokenAmount,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
@@ -60,6 +60,7 @@ const AddLiquidity: React.FC<{
     string | null
   >(null);
 
+  const isSupportedNetwork = useIsSupportedNetwork();
   const { account, chainId, library } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = Token.ETHER[chainIdToUse];
@@ -359,7 +360,7 @@ const AddLiquidity: React.FC<{
   };
 
   const connectWallet = () => {
-    if (ethereum && !isSupportedNetwork(ethereum)) {
+    if (ethereum && isSupportedNetwork) {
       addMaticToMetamask();
     } else {
       toggleWalletModal();
@@ -378,11 +379,11 @@ const AddLiquidity: React.FC<{
   const buttonText = useMemo(() => {
     if (account) {
       return error ?? t('supply');
-    } else if (ethereum && !isSupportedNetwork(ethereum)) {
+    } else if (isSupportedNetwork) {
       return t('switchPolygon');
     }
     return t('connectWallet');
-  }, [account, ethereum, error, t]);
+  }, [account, isSupportedNetwork, t, error]);
 
   const modalHeader = () => {
     return (

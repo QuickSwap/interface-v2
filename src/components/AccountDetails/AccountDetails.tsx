@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { AbstractConnector } from '@web3-react/abstract-connector';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
@@ -14,11 +13,8 @@ import Copy from './CopyHelper';
 import Transaction from './Transaction';
 import { useTranslation } from 'react-i18next';
 import { useUDDomain } from 'state/application/hooks';
-import {
-  coinbaseWalletConnection,
-  gnosisSafeConnection,
-  injectedConnection,
-} from 'connectors';
+import { gnosisSafeConnection } from 'connectors';
+import { useSelectedWallet } from 'state/user/hooks';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -47,6 +43,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
   const { udDomain, updateUDDomain } = useUDDomain();
+  const { updateSelectedWallet } = useSelectedWallet();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
@@ -75,28 +72,26 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <Box className='flex justify-between items-center'>
           {formatConnectorName()}
           <Box className='flex items-center'>
-            {connector !== injectedConnection.connector &&
-              connector !== coinbaseWalletConnection.connector &&
-              connector !== gnosisSafeConnection.connector && (
-                <small
-                  style={{ cursor: 'pointer', marginRight: 8 }}
-                  onClick={() => {
-                    if (connector.deactivate) {
-                      connector.deactivate();
-                    }
-                    // if (
-                    //   connector ===
-                    //   ((unstopabbledomains as any) as AbstractConnector)
-                    // ) {
-                    //   (connector as any).handleDeactivate();
-                    // } else {
-                    //   (connector as any).close();
-                    // }
-                  }}
-                >
-                  {t('disconnect')}
-                </small>
-              )}
+            <small
+              style={{ cursor: 'pointer', marginRight: 8 }}
+              onClick={async () => {
+                if (connector && connector.deactivate) {
+                  await connector.deactivate();
+                }
+                await connector.resetState();
+                updateSelectedWallet(undefined);
+                // if (
+                //   connector ===
+                //   ((unstopabbledomains as any) as AbstractConnector)
+                // ) {
+                //   (connector as any).handleDeactivate();
+                // } else {
+                //   (connector as any).close();
+                // }
+              }}
+            >
+              {t('disconnect')}
+            </small>
             {connector !== gnosisSafeConnection.connector && (
               <small
                 className='cursor-pointer'

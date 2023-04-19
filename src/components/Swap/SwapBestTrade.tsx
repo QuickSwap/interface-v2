@@ -36,7 +36,7 @@ import useENSAddress from 'hooks/useENSAddress';
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import {
   addMaticToMetamask,
-  isSupportedNetwork,
+  useIsSupportedNetwork,
   maxAmountSpend,
   basisPointsToPercent,
   getContract,
@@ -70,6 +70,7 @@ const SwapBestTrade: React.FC<{
   const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const isProMode = useIsProMode();
+  const isSupportedNetwork = useIsSupportedNetwork();
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -174,13 +175,12 @@ const SwapBestTrade: React.FC<{
 
   const [optimalRateError, setOptimalRateError] = useState('');
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
-  const { ethereum } = window as any;
   const [mainPrice, setMainPrice] = useState(true);
   const isValid = !swapInputError && !optimalRateError;
 
   //TODO: move to utils
   const connectWallet = () => {
-    if (ethereum && !isSupportedNetwork(ethereum)) {
+    if (!isSupportedNetwork) {
       addMaticToMetamask();
     } else {
       toggleWalletModal();
@@ -485,9 +485,7 @@ const SwapBestTrade: React.FC<{
         return t('swap');
       }
     } else {
-      return ethereum && !isSupportedNetwork(ethereum)
-        ? t('switchPolygon')
-        : t('connectWallet');
+      return !isSupportedNetwork ? t('switchPolygon') : t('connectWallet');
     }
   }, [
     account,
@@ -500,11 +498,11 @@ const SwapBestTrade: React.FC<{
     userHasSpecifiedInputOutput,
     swapInputAmountWithSlippage,
     swapInputBalance,
+    bonusRouteLoading,
     t,
     wrapType,
     maxImpactAllowed,
-    ethereum,
-    bonusRouteLoading,
+    isSupportedNetwork,
   ]);
 
   const swapButtonDisabled = useMemo(() => {

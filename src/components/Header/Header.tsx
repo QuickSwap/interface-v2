@@ -13,7 +13,7 @@ import {
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress, isSupportedNetwork } from 'utils';
+import { shortenAddress, useIsSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal, NetworkSelectionModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -42,6 +42,7 @@ const Header: React.FC = () => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const { account } = useActiveWeb3React();
+  const isSupportedNetwork = useIsSupportedNetwork();
   const { ethereum } = window as any;
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
@@ -374,20 +375,19 @@ const Header: React.FC = () => {
           className='networkSelection'
           onClick={() => setOpenNetworkSelectionModal(true)}
         >
-          {(!ethereum || isSupportedNetwork(ethereum)) && (
+          {(!ethereum || isSupportedNetwork) && (
             <Box className='networkSelectionImage'>
               <Box className='styledPollingDot' />
               <img src={config['nativeCurrencyImage']} alt='network Image' />
             </Box>
           )}
           <small className='weight-600'>
-            {ethereum && !isSupportedNetwork(ethereum)
-              ? t('wrongNetwork')
-              : config['networkName']}
+            {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
           </small>
           <KeyboardArrowDown />
         </Box>
-        {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
+
+        {account ? (
           <Box
             id='web3-status-connected'
             className='accountDetails'
@@ -396,7 +396,7 @@ const Header: React.FC = () => {
             <p>{udDomain ?? shortenAddress(account)}</p>
             <img src={WalletIcon} alt='Wallet' />
           </Box>
-        ) : !ethereum || isSupportedNetwork(ethereum) ? (
+        ) : (
           <Box
             className='connectButton bg-primary'
             onClick={() => {
@@ -405,8 +405,6 @@ const Header: React.FC = () => {
           >
             {t('connectWallet')}
           </Box>
-        ) : (
-          <></>
         )}
       </Box>
     </Box>

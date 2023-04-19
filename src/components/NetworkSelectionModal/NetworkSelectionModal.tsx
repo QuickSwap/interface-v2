@@ -6,7 +6,7 @@ import 'components/styles/NetworkSelectionModal.scss';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
-import { isSupportedNetwork } from 'utils';
+import { useIsSupportedNetwork } from 'utils';
 import { useLocalChainId } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
@@ -21,6 +21,7 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
+  const isSupportedNetwork = useIsSupportedNetwork();
   const { chainId, connector } = useActiveWeb3React();
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
     const config = getConfig(chain);
@@ -75,7 +76,7 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
                 <img src={config['nativeCurrencyImage']} alt='network Image' />
                 <small className='weight-600'>{config['networkName']}</small>
               </Box>
-              {(!ethereum || isSupportedNetwork(ethereum)) &&
+              {(!ethereum || isSupportedNetwork) &&
                 chainId &&
                 chainId === chain && (
                   <Box className='flex items-center'>

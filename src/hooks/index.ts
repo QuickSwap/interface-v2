@@ -43,6 +43,7 @@ export function useActiveWeb3React() {
   return {
     ...context,
     chainId,
+    currentChainId: context.chainId,
     library: context.provider,
   };
 }

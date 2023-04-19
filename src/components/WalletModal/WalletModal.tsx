@@ -23,6 +23,7 @@ import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
 import { Connection, getConnections, injectedConnection } from 'connectors';
 import { getIsMetaMaskWallet } from 'connectors/utils';
+import { useSelectedWallet } from 'state/user/hooks';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -49,6 +50,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
   const [error, setError] = useState<Error | string | undefined>(undefined);
   const { updateUDDomain } = useUDDomain();
+  const { updateSelectedWallet } = useSelectedWallet();
 
   const [pendingWallet, setPendingWallet] = useState<Connection | undefined>();
 
@@ -98,30 +100,35 @@ const WalletModal: React.FC<WalletModalProps> = ({
     setWalletView(WALLET_VIEWS.PENDING);
 
     try {
+      if (connector.deactivate) {
+        await connector.deactivate();
+      }
+      await connector.resetState();
       await connection.connector.activate();
+      updateSelectedWallet(connection.type);
 
-      // if (
-      //   connection.connector instanceof UAuthConnector &&
-      //   process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
-      //   process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
-      // ) {
-      //   const uauth = new UAuth({
-      //     clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-      //     redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
-      //     scope: 'openid wallet',
-      //   });
+      if (
+        connection.connector instanceof UAuthConnector &&
+        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
+      ) {
+        const uauth = new UAuth({
+          clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+          redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+          scope: 'openid wallet',
+        });
 
-      //   try {
-      //     const user = await uauth.user();
-      //     updateUDDomain(user.sub);
-      //     setWalletView(WALLET_VIEWS.ACCOUNT);
-      //   } catch {
-      //     setError('User does not exist.');
-      //   }
-      // } else {
-      updateUDDomain(undefined);
-      setWalletView(WALLET_VIEWS.ACCOUNT);
-      // }
+        try {
+          const user = await uauth.user();
+          updateUDDomain(user.sub);
+          setWalletView(WALLET_VIEWS.ACCOUNT);
+        } catch {
+          setError('User does not exist.');
+        }
+      } else {
+        updateUDDomain(undefined);
+        setWalletView(WALLET_VIEWS.ACCOUNT);
+      }
     } catch (e) {
       setPendingError(true);
     }

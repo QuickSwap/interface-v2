@@ -6,8 +6,7 @@ import {
 } from 'connectors/index';
 import { useGetConnection } from 'hooks';
 import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from 'state/hooks';
-import { updateSelectedWallet } from 'state/user/actions';
+import { useSelectedWallet } from 'state/user/hooks';
 
 async function connect(connector: Connector) {
   try {
@@ -22,9 +21,7 @@ async function connect(connector: Connector) {
 }
 
 export default function useEagerlyConnect() {
-  const dispatch = useAppDispatch();
-
-  const selectedWallet = useAppSelector((state) => state.user.selectedWallet);
+  const { selectedWallet, updateSelectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
 
   let selectedConnection: Connection | undefined;
@@ -32,7 +29,7 @@ export default function useEagerlyConnect() {
     try {
       selectedConnection = getConnection(selectedWallet);
     } catch {
-      dispatch(updateSelectedWallet({ wallet: undefined }));
+      updateSelectedWallet(undefined);
     }
   }
 
