@@ -32,12 +32,12 @@ export function useActiveWeb3React() {
   const { localChainId } = useLocalChainId();
   const { ethereum } = window as any;
 
-  const chainId: ChainId | undefined = useMemo(() => {
-    if (!ethereum) return localChainId;
+  const chainId: ChainId = useMemo(() => {
+    if (!ethereum) return localChainId ?? ChainId.MATIC;
     if (context.chainId && !SUPPORTED_CHAINIDS.includes(context.chainId)) {
-      return;
+      return ChainId.MATIC;
     }
-    return context.chainId;
+    return context.chainId ?? ChainId.MATIC;
   }, [context.chainId, localChainId, ethereum]);
 
   return {

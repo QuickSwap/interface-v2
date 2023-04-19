@@ -11,7 +11,10 @@ import {
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useWalletModalToggle } from 'state/application/hooks';
+import {
+  useNetworkSelectionModalToggle,
+  useWalletModalToggle,
+} from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -40,7 +43,6 @@ import useENSAddress from 'hooks/useENSAddress';
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import useToggledVersion, { Version } from 'hooks/useToggledVersion';
 import {
-  addMaticToMetamask,
   useIsSupportedNetwork,
   confirmPriceImpactWithoutFee,
   maxAmountSpend,
@@ -189,6 +191,7 @@ const Swap: React.FC<{
     !(priceImpactSeverity > 3 && !isExpertMode);
 
   const toggleWalletModal = useWalletModalToggle();
+  const toggletNetworkSelectionModal = useNetworkSelectionModalToggle();
 
   useEffect(() => {
     if (approval === ApprovalState.PENDING) {
@@ -198,7 +201,7 @@ const Swap: React.FC<{
 
   const connectWallet = () => {
     if (!isSupportedNetwork) {
-      addMaticToMetamask();
+      toggletNetworkSelectionModal();
     } else {
       toggleWalletModal();
     }
@@ -281,6 +284,7 @@ const Swap: React.FC<{
 
   const swapButtonText = useMemo(() => {
     if (account) {
+      if (!isSupportedNetwork) return t('switchNetwork');
       if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
         return t('selectToken');
       } else if (
@@ -300,7 +304,7 @@ const Swap: React.FC<{
         return swapInputError ?? t('swap');
       }
     } else {
-      return !isSupportedNetwork ? t('switchPolygon') : t('connectWallet');
+      return t('connectWallet');
     }
   }, [
     account,
@@ -318,6 +322,7 @@ const Swap: React.FC<{
   const swapButtonDisabled = useMemo(() => {
     const inputCurrency = currencies[Field.INPUT];
     if (account) {
+      if (!isSupportedNetwork) return false;
       if (showWrap) {
         return Boolean(wrapInputError);
       } else if (noRoute && userHasSpecifiedInputOutput) {
@@ -343,19 +348,20 @@ const Swap: React.FC<{
       return false;
     }
   }, [
+    currencies,
     account,
+    isSupportedNetwork,
     showWrap,
-    wrapInputError,
     noRoute,
     userHasSpecifiedInputOutput,
     showApproveFlow,
+    wrapInputError,
+    isValid,
     approval,
     priceImpactSeverity,
-    isValid,
-    swapCallbackError,
     isExpertMode,
-    currencies,
     chainId,
+    swapCallbackError,
   ]);
 
   const [
@@ -704,7 +710,7 @@ const Swap: React.FC<{
           <Button
             fullWidth
             disabled={swapButtonDisabled as boolean}
-            onClick={account ? onSwap : connectWallet}
+            onClick={account && isSupportedNetwork ? onSwap : connectWallet}
           >
             {swapButtonText}
           </Button>

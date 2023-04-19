@@ -95,8 +95,6 @@ import { Connector } from '@web3-react/types';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
-export { default as addMaticToMetamask } from './addMaticToMetamask';
-
 interface BasicData {
   token0?: {
     id: string;

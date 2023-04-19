@@ -12,7 +12,10 @@ import { Currency, CurrencyAmount, NativeCurrency } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useWalletModalToggle } from 'state/application/hooks';
+import {
+  useNetworkSelectionModalToggle,
+  useWalletModalToggle,
+} from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -35,7 +38,6 @@ import { useTransactionFinalizer } from 'state/transactions/hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import {
-  addMaticToMetamask,
   useIsSupportedNetwork,
   maxAmountSpend,
   basisPointsToPercent,
@@ -181,7 +183,7 @@ const SwapBestTrade: React.FC<{
   //TODO: move to utils
   const connectWallet = () => {
     if (!isSupportedNetwork) {
-      addMaticToMetamask();
+      toggleNetworkSelectionModal();
     } else {
       toggleWalletModal();
     }
@@ -399,6 +401,7 @@ const SwapBestTrade: React.FC<{
       (approvalSubmitted && approval === ApprovalState.APPROVED));
 
   const toggleWalletModal = useWalletModalToggle();
+  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
 
   useEffect(() => {
     if (approval === ApprovalState.PENDING) {
@@ -446,6 +449,7 @@ const SwapBestTrade: React.FC<{
 
   const swapButtonText = useMemo(() => {
     if (account) {
+      if (!isSupportedNetwork) return t('switchNetwork');
       if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
         return t('selectToken');
       } else if (
@@ -485,7 +489,7 @@ const SwapBestTrade: React.FC<{
         return t('swap');
       }
     } else {
-      return !isSupportedNetwork ? t('switchPolygon') : t('connectWallet');
+      return t('connectWallet');
     }
   }, [
     account,
@@ -525,6 +529,7 @@ const SwapBestTrade: React.FC<{
         swapInputBalance &&
         swapInputAmountWithSlippage.greaterThan(swapInputBalance));
     if (account) {
+      if (!isSupportedNetwork) return false;
       if (showWrap) {
         return Boolean(wrapInputError);
       } else if (noRoute && userHasSpecifiedInputOutput) {
@@ -553,6 +558,7 @@ const SwapBestTrade: React.FC<{
     swapInputAmountWithSlippage,
     swapInputBalance,
     account,
+    isSupportedNetwork,
     showWrap,
     noRoute,
     userHasSpecifiedInputOutput,
@@ -1036,7 +1042,7 @@ const SwapBestTrade: React.FC<{
                 optimalRateError ||
                 swapButtonDisabled) as boolean
             }
-            onClick={account ? onParaswap : connectWallet}
+            onClick={account && isSupportedNetwork ? onParaswap : connectWallet}
           >
             {swapButtonText}
           </Button>
