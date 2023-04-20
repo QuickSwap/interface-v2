@@ -1,9 +1,5 @@
 import { Connector } from '@web3-react/types';
-import {
-  Connection,
-  gnosisSafeConnection,
-  networkConnection,
-} from 'connectors/index';
+import { Connection } from 'connectors/index';
 import { useGetConnection } from 'hooks';
 import { useEffect } from 'react';
 import { useSelectedWallet } from 'state/user/hooks';
@@ -34,11 +30,8 @@ export default function useEagerlyConnect() {
   }
 
   useEffect(() => {
-    connect(gnosisSafeConnection.connector);
-    connect(networkConnection.connector);
-
     if (selectedConnection) {
       connect(selectedConnection.connector);
-    } // The dependency list is empty so this is only run once on mount
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 }

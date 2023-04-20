@@ -84,7 +84,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   const { t } = useTranslation();
 
   const { ethereum } = window as any;
-  const { account, chainId } = useActiveWeb3React();
+  const { account, chainId, connector } = useActiveWeb3React();
   const key = currencyKey(currency);
   const customAdded = useIsUserAddedToken(currency);
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
@@ -100,28 +100,13 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
     tokenDecimals: any,
     tokenImage: any,
   ) => {
-    if (ethereum) {
-      ethereum
-        .request({
-          method: 'wallet_watchAsset',
-          params: {
-            type: 'ERC20', // Initially only supports ERC20, but eventually more!
-            options: {
-              address: tokenAddress, // The address that the token is at.
-              symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
-              decimals: tokenDecimals, // The number of decimals in the token
-              image: tokenImage, // A string url of the token logo
-            },
-          },
-        })
-        .catch((error: any) => {
-          if (error.code === 4001) {
-            // EIP-1193 userRejectedRequest error
-            console.log('We can encrypt anything without the key.');
-          } else {
-            console.error(error);
-          }
-        });
+    if (connector.watchAsset) {
+      connector.watchAsset({
+        address: tokenAddress,
+        symbol: tokenSymbol,
+        decimals: tokenDecimals,
+        image: tokenImage,
+      });
     }
   };
 
