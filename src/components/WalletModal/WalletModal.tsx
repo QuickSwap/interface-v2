@@ -100,11 +100,11 @@ const WalletModal: React.FC<WalletModalProps> = ({
     setWalletView(WALLET_VIEWS.PENDING);
 
     try {
+      await connection.connector.activate();
       if (connector.deactivate) {
         await connector.deactivate();
       }
       await connector.resetState();
-      await connection.connector.activate();
       updateSelectedWallet(connection.type);
 
       if (
