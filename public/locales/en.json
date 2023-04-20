@@ -18,7 +18,7 @@
   "supplyingliquidity": "Supplying Liquidity",
   "submittedTxLiquidity": "Submitted transaction to add liquidity",
   "successAddedliquidity": "Successfully added liquidity",
-  "switchPolygon": "Switch to Polygon",
+  "switchNetwork": "Switch Network",
   "selectNetwork": "Select Network",
   "connectWallet": "Connect Wallet",
   "errorInTx": "There is an error in transaction.",

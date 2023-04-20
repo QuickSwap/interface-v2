@@ -62,6 +62,10 @@ export function useWalletModalToggle(): () => void {
   return useToggleModal(ApplicationModal.WALLET);
 }
 
+export function useNetworkSelectionModalToggle(): () => void {
+  return useToggleModal(ApplicationModal.NETWORK_SELECTION);
+}
+
 export function useToggleSettingsMenu(): () => void {
   return useToggleModal(ApplicationModal.SETTINGS);
 }

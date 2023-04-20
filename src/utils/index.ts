@@ -95,8 +95,6 @@ import { Connector } from '@web3-react/types';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
-export { default as addMaticToMetamask } from './addMaticToMetamask';
-
 interface BasicData {
   token0?: {
     id: string;
@@ -2804,8 +2802,11 @@ export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
   return `$${earnedUSD.toLocaleString('us')}`;
 }
 
-export function isSupportedNetwork(ethereum: any) {
-  return SUPPORTED_CHAINIDS.includes(Number(ethereum.chainId));
+export function useIsSupportedNetwork() {
+  const { currentChainId, chainId } = useActiveWeb3React();
+  if (currentChainId) return !!SUPPORTED_CHAINIDS.includes(currentChainId);
+  if (!chainId) return true;
+  return !!SUPPORTED_CHAINIDS.includes(chainId);
 }
 
 export function getPageItemsToLoad(index: number, countsPerPage: number) {

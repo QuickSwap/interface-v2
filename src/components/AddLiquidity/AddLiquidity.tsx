@@ -7,7 +7,10 @@ import {
   ConfirmationModalContent,
   DoubleCurrencyLogo,
 } from 'components';
-import { useWalletModalToggle } from 'state/application/hooks';
+import {
+  useNetworkSelectionModalToggle,
+  useWalletModalToggle,
+} from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
@@ -38,10 +41,9 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
 import {
   maxAmountSpend,
-  addMaticToMetamask,
   calculateSlippageAmount,
   calculateGasMargin,
-  isSupportedNetwork,
+  useIsSupportedNetwork,
   formatTokenAmount,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
@@ -60,6 +62,7 @@ const AddLiquidity: React.FC<{
     string | null
   >(null);
 
+  const isSupportedNetwork = useIsSupportedNetwork();
   const { account, chainId, library } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = Token.ETHER[chainIdToUse];
@@ -147,6 +150,7 @@ const AddLiquidity: React.FC<{
 
   const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
+  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const [approvingA, setApprovingA] = useState(false);
   const [approvingB, setApprovingB] = useState(false);
   const [approvalA, approveACallback] = useApproveCallback(
@@ -359,8 +363,8 @@ const AddLiquidity: React.FC<{
   };
 
   const connectWallet = () => {
-    if (ethereum && !isSupportedNetwork(ethereum)) {
-      addMaticToMetamask();
+    if (!isSupportedNetwork) {
+      toggleNetworkSelectionModal();
     } else {
       toggleWalletModal();
     }
@@ -377,12 +381,11 @@ const AddLiquidity: React.FC<{
 
   const buttonText = useMemo(() => {
     if (account) {
+      if (!isSupportedNetwork) return t('switchNetwork');
       return error ?? t('supply');
-    } else if (ethereum && !isSupportedNetwork(ethereum)) {
-      return t('switchPolygon');
     }
     return t('connectWallet');
-  }, [account, ethereum, error, t]);
+  }, [account, isSupportedNetwork, t, error]);
 
   const modalHeader = () => {
     return (
@@ -594,11 +597,12 @@ const AddLiquidity: React.FC<{
           fullWidth
           disabled={
             Boolean(account) &&
+            isSupportedNetwork &&
             (Boolean(error) ||
               approvalA !== ApprovalState.APPROVED ||
               approvalB !== ApprovalState.APPROVED)
           }
-          onClick={account ? onAdd : connectWallet}
+          onClick={account && isSupportedNetwork ? onAdd : connectWallet}
         >
           {buttonText}
         </Button>
