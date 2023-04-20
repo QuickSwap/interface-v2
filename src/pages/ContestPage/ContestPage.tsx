@@ -27,6 +27,7 @@ import { getMainnetNetworkLibrary } from 'connectors';
 import { getLensProfiles } from 'utils/getLensProfile';
 import { getConfig } from 'config';
 import { useHistory } from 'react-router-dom';
+import { ChainId } from '@uniswap/sdk';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
@@ -49,7 +50,9 @@ const ContestPage: React.FC = () => {
     500,
   );
   const { chainId, account } = useActiveWeb3React();
-  const [contestFilter, setContestFilter] = useState(ContestPairs[0]);
+  const [contestFilter, setContestFilter] = useState(
+    chainId ? ContestPairs[chainId][0] : ContestPairs[ChainId.MATIC],
+  );
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const networkLibrary = getMainnetNetworkLibrary();
@@ -74,7 +77,7 @@ const ContestPage: React.FC = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/leaderboard?pool=${contestFilter.address}&days=${durationIndex}`,
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/leaderboard?pool=${contestFilter.address}&days=${durationIndex}&chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -132,9 +135,9 @@ const ContestPage: React.FC = () => {
 
       let pools_in: string[] = [];
       if (contestFilter.address === 'all') {
-        pools_in = ContestPairs.filter((e) => e.address !== 'all').map(
-          (e) => e.address,
-        );
+        pools_in = ContestPairs[chainId]
+          .filter((e: any) => e.address !== 'all')
+          .map((e: any) => e.address);
       } else {
         pools_in = [contestFilter.address];
       }
@@ -243,7 +246,7 @@ const ContestPage: React.FC = () => {
             px={0}
             className='flex flex-wrap items-center pair-options'
           >
-            {ContestPairs.map((pair) => {
+            {ContestPairs[chainId || ChainId.MATIC].map((pair: any) => {
               return (
                 <Box
                   key={pair.address}
