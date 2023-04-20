@@ -4390,23 +4390,23 @@
   integrity sha512-kEUOgPQszC0fSYWpbh2kT94ltOJwj1qfT2DWo+zVttmGmf97JZ99LspePNaeeaLhCImaHVeBbjaQFZQn7+Zc5g==
 
 "@orbs-network/twap-ui-quickswap@0.6.x":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@orbs-network/twap-ui-quickswap/-/twap-ui-quickswap-0.6.3.tgz#dadd54e46b243e7b0ebfc32c8a97b8a8fc825123"
-  integrity sha512-nUd0cGOJVM93X3Lp9AXNyJzsxjb8tD1MC4wXQjjr1MrhSiuJhYPwlAUTDeub67jWnRcMQ7XZ7Nsa4ULw4czoiA==
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/@orbs-network/twap-ui-quickswap/-/twap-ui-quickswap-0.6.4.tgz#d1008c0de7c86c90682385a5fce580a522a821da"
+  integrity sha512-KEeArk9TOhA8V9XUBHaXNg3tdWWeMRLGD6sRz4lQHjjKUR8/fxWqe67FHHZ4CNJz1gYbKoisJN04RpdH15Ytwg==
   dependencies:
     "@defi.org/web3-candies" "4.x"
     "@mui/material" "5.x"
     "@mui/system" "5.x"
     "@orbs-network/twap" "1.x"
-    "@orbs-network/twap-ui" "^0.6.3"
+    "@orbs-network/twap-ui" "^0.6.4"
     lodash "4.x"
     react-icons "4.x"
     web3 "1.x"
 
-"@orbs-network/twap-ui@0.6.x", "@orbs-network/twap-ui@^0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@orbs-network/twap-ui/-/twap-ui-0.6.3.tgz#500fcdb208f966ed92ca109e9738fc5228883a2b"
-  integrity sha512-xwVZuD+9trQ15Ekl/4LAzlkUpvMuzrWhP+xhSQ6l42CuMjoEjOO+9ktFHTaOgxWwH3j30tsLg5Y97eY/k3QFQw==
+"@orbs-network/twap-ui@0.6.x", "@orbs-network/twap-ui@^0.6.4":
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/@orbs-network/twap-ui/-/twap-ui-0.6.4.tgz#f4899c5dc72aa045811e5d6e29ca6972021aae91"
+  integrity sha512-7l7e55tgXEq+zS7UaDbrOS2FNenBAAbLV92e5FFOH0jUBqT16g2k7Wk/JLx04YfMQjGTjDeNUPViTWCL+YJ4fg==
   dependencies:
     "@defi.org/web3-candies" "4.x"
     "@emotion/react" "11.x"
