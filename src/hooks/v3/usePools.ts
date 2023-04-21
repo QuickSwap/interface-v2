@@ -95,7 +95,13 @@ export function usePools(
   return useMemo(() => {
     return poolKeys.map((_key, index) => {
       const [token0, token1] = transformed[index] ?? [];
-      if (!token0 || !token1) return [PoolState.INVALID, null];
+      if (
+        !token0 ||
+        !token1 ||
+        _globalState0s.length < index ||
+        _liquidities.length < index
+      )
+        return [PoolState.INVALID, null];
 
       const {
         result: globalState,
