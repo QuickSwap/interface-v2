@@ -95,24 +95,23 @@ export function usePools(
   return useMemo(() => {
     return poolKeys.map((_key, index) => {
       const [token0, token1] = transformed[index] ?? [];
-      if (
-        !token0 ||
-        !token1 ||
-        _globalState0s.length < index ||
-        _liquidities.length < index
-      )
+      const globalState0s =
+        _globalState0s.length < index ? undefined : _globalState0s[index];
+      const liquidities =
+        _liquidities.length < index ? undefined : _liquidities[index];
+      if (!token0 || !token1 || !globalState0s || !liquidities)
         return [PoolState.INVALID, null];
 
       const {
         result: globalState,
         loading: globalStateLoading,
         valid: globalStateValid,
-      } = _globalState0s[index];
+      } = globalState0s;
       const {
         result: liquidity,
         loading: liquidityLoading,
         valid: liquidityValid,
-      } = _liquidities[index];
+      } = liquidities;
 
       if (!globalStateValid || !liquidityValid)
         return [PoolState.INVALID, null];
