@@ -1,5 +1,4 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk';
-import { AbstractConnector } from '@web3-react/abstract-connector';
 // import {
 //   injected,
 //   walletconnect,
@@ -1450,24 +1449,6 @@ export const GlobalData = {
     [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.WSTETH],
   ],
 };
-
-// a list of tokens by chain
-type ChainTokenList = {
-  readonly [chainId in ChainId]: Token[];
-};
-
-export interface WalletInfo {
-  connector?: AbstractConnector;
-  name: string;
-  iconName: string;
-  description: string;
-  href: string | null;
-  color: string;
-  primary?: true;
-  mobile?: true;
-  mobileOnly?: true;
-  installLink?: string | null;
-}
 
 export const ContestPairs = [
   {
