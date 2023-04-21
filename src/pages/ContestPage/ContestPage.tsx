@@ -51,7 +51,7 @@ const ContestPage: React.FC = () => {
   );
   const { chainId, account } = useActiveWeb3React();
   const [contestFilter, setContestFilter] = useState(
-    chainId ? ContestPairs[chainId][0] : ContestPairs[ChainId.MATIC],
+    chainId ? ContestPairs[chainId][0] : ContestPairs[ChainId.MATIC][0],
   );
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
