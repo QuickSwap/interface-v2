@@ -23,29 +23,39 @@ const GlobalSection: React.FC = () => {
 
   useEffect(() => {
     async function fetchGlobalData() {
-      if (
-        chainId &&
-        v2 &&
-        ethPrice.price !== undefined &&
-        ethPrice.oneDayPrice !== undefined
-      ) {
-        const newGlobalData = await getGlobalData(
-          ethPrice.price,
-          ethPrice.oneDayPrice,
-          V2_FACTORY_ADDRESSES[chainId],
-          chainId,
+      if (chainId && v2) {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/global-data/v2?chainId=${chainId}`,
         );
-        if (newGlobalData) {
-          updateGlobalData(newGlobalData);
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get global data v2`,
+          );
+        }
+        const data = await res.json();
+        if (data.data) {
+          updateGlobalData(data.data);
         }
       }
       if (v3 && chainId) {
-        const globalDataV3 = await getGlobalDataV3(chainId);
-        updateV3GlobalData(globalDataV3);
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/global-data/v3?chainId=${chainId}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get global data v3`,
+          );
+        }
+        const data = await res.json();
+        if (data.data) {
+          updateV3GlobalData(data.data);
+        }
       }
     }
     fetchGlobalData();
-  }, [ethPrice.price, ethPrice.oneDayPrice, chainId, v2, v3]);
+  }, [chainId, v2, v3]);
 
   return (
     <>
