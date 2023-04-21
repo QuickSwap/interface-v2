@@ -126,25 +126,6 @@ export const networkConnection: Connection = {
   color: '',
 };
 
-export function getMainnetNetworkLibrary(): Web3Provider {
-  return new Web3Provider(web3Network.provider as any);
-}
-
-let networkLibrary: Web3Provider | undefined;
-export function getNetworkLibrary(): Web3Provider {
-  return (networkLibrary =
-    networkLibrary ?? new Web3Provider(web3Network.provider as any));
-}
-
-const supportedChainIds: number[] = [
-  ChainId.MATIC,
-  ChainId.DOGECHAIN,
-  ChainId.MUMBAI,
-  ChainId.DOEGCHAIN_TESTNET,
-  ChainId.ZKTESTNET,
-  ChainId.ZKEVM,
-];
-
 const [web3GnosisSafe, web3GnosisSafeHooks] = initializeConnector<GnosisSafe>(
   (actions) => new GnosisSafe({ actions }),
 );

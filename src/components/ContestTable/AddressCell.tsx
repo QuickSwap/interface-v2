@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink, shortenAddress } from 'utils';
-import { getMainnetNetworkLibrary } from 'connectors';
 
 type Props = {
   address: string;
@@ -10,19 +9,18 @@ type Props = {
 };
 
 function AddressCell({ address, displayShortened = false, lensHandle }: Props) {
-  const { chainId } = useActiveWeb3React();
+  const { chainId, library } = useActiveWeb3React();
   const [ENSName, setENSName] = useState<string | null>(null);
 
   const ensResolver = useCallback(async () => {
+    if (!library) return;
     try {
-      const networkLibrary = getMainnetNetworkLibrary();
-
-      const name = await networkLibrary.lookupAddress(address);
+      const name = await library.lookupAddress(address);
       setENSName(name);
     } catch (error) {
       console.error('Error while resolving ens name', error);
     }
-  }, [address]);
+  }, [address, library]);
 
   useEffect(() => {
     ensResolver();
