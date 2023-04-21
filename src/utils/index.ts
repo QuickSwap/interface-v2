@@ -91,6 +91,7 @@ import {
   TOKENS_FROM_ADDRESSES_V3,
 } from 'apollo/queries-v3';
 import { Connector } from '@web3-react/types';
+import { getIsMetaMaskWallet } from 'connectors/utils';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -2581,15 +2582,7 @@ export function escapeRegExp(string: string): string {
 
 export function getWalletKeys(connector: Connector): Connection[] {
   const { ethereum } = window as any;
-  const isMetaMask = !!(
-    ethereum &&
-    ethereum.isMetaMask &&
-    !ethereum.isBitKeep &&
-    !ethereum.isBlockWallet &&
-    !ethereum.isCypherD &&
-    !ethereum.isBraveWallet &&
-    !ethereum.isPhantom
-  );
+  const isMetaMask = getIsMetaMaskWallet();
   const isBitkeep = !!(ethereum && ethereum.isBitKeep);
   const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
   const isCypherDWallet = !!(ethereum && ethereum.isCypherD);

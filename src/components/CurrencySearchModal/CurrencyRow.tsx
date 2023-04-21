@@ -12,6 +12,7 @@ import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
 import { formatNumber, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { getIsMetaMaskWallet } from 'connectors/utils';
 
 //TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {
@@ -83,7 +84,6 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { ethereum } = window as any;
   const { account, chainId, connector } = useActiveWeb3React();
   const key = currencyKey(currency);
   const customAdded = useIsUserAddedToken(currency);
@@ -92,7 +92,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
 
   const removeToken = useRemoveUserAddedToken();
   const addToken = useAddUserToken();
-  const isMetamask = ethereum && ethereum.isMetaMask && isOnSelectedList;
+  const isMetamask = getIsMetaMaskWallet() && isOnSelectedList;
 
   const addTokenToMetamask = (
     tokenAddress: any,
