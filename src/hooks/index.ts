@@ -34,19 +34,17 @@ import { SUPPORTED_CHAINIDS } from 'constants/index';
 export function useActiveWeb3React() {
   const context = useWeb3React();
   const { localChainId } = useLocalChainId();
-  const { ethereum } = window as any;
   const { selectedWallet } = useSelectedWallet();
 
   const chainId: ChainId | undefined = useMemo(() => {
-    if (!ethereum) return localChainId;
     if (
       (context.chainId && !SUPPORTED_CHAINIDS.includes(context.chainId)) ||
       !selectedWallet
     ) {
-      return ChainId.MATIC;
+      return localChainId ?? ChainId.MATIC;
     }
     return context.chainId;
-  }, [ethereum, localChainId, context.chainId, selectedWallet]);
+  }, [context.chainId, localChainId, selectedWallet]);
 
   return {
     ...context,

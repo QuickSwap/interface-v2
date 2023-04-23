@@ -10,8 +10,7 @@ import { getMaticPrice } from 'utils/v3-graph';
 import { ChainId } from '@uniswap/sdk';
 
 export default function Updater(): null {
-  const { library, chainId } = useActiveWeb3React();
-  const { ethereum } = window as any;
+  const { library, chainId, connector } = useActiveWeb3React();
   const dispatch = useDispatch();
   const { updateEthPrice } = useEthPrice();
   const { updateMaticPrice } = useMaticPrice();
@@ -112,12 +111,19 @@ export default function Updater(): null {
 
     library.on('block', blockNumberCallback);
 
-    ethereum?.on('chainChanged', () => {
-      document.location.reload();
-    });
+    if (connector.provider) {
+      connector.provider.on('chainChanged', () => {
+        document.location.reload();
+      });
+    }
 
     return () => {
       library.removeListener('block', blockNumberCallback);
+      if (connector.provider) {
+        connector.provider.removeListener('chainChanged', () => {
+          document.location.reload();
+        });
+      }
     };
   }, [
     dispatch,
@@ -125,7 +131,7 @@ export default function Updater(): null {
     library,
     blockNumberCallback,
     windowVisible,
-    ethereum,
+    connector,
   ]);
 
   const debouncedState = useDebounce(state, 100);
