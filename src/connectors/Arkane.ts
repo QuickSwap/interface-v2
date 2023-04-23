@@ -1,8 +1,8 @@
 import invariant from 'tiny-invariant';
 import { ChainId } from '@uniswap/sdk';
-import { Arkane } from '@arkane-network/web3-arkane-provider';
-import { ArkaneConnect, SecretType } from '@arkane-network/arkane-connect';
-import Web3 from 'web3';
+// import { Arkane } from '@arkane-network/web3-arkane-provider';
+// import { ArkaneConnect, SecretType } from '@arkane-network/arkane-connect';
+// import Web3 from 'web3';
 import { Actions, Connector, Provider } from '@web3-react/types';
 
 type ArkaneSupportedChains = Extract<ChainId, ChainId.MATIC | ChainId.MUMBAI>;
@@ -44,22 +44,20 @@ export class ArkaneConnector extends Connector {
   }
 
   public async activate(chainId: number) {
-    if (!this.arkane) {
-      this.arkane = new ArkaneConnect(this.clientID);
-    }
-
-    const options = {
-      clientId: this.clientID,
-      secretType: SecretType.MATIC,
-      signMethod: 'POPUP',
-      skipAuthentication: false,
-    };
-    const arkaneProvider = await Arkane.createArkaneProviderEngine(options);
-    this.customProvider = arkaneProvider;
-    const web3 = new Web3(arkaneProvider as any);
-    const accounts = await web3.eth.getAccounts();
-
-    this.actions.update({ chainId, accounts });
+    // if (!this.arkane) {
+    //   this.arkane = new ArkaneConnect(this.clientID);
+    // }
+    // const options = {
+    //   clientId: this.clientID,
+    //   secretType: SecretType.MATIC,
+    //   signMethod: 'POPUP',
+    //   skipAuthentication: false,
+    // };
+    // const arkaneProvider = await Arkane.createArkaneProviderEngine(options);
+    // this.customProvider = arkaneProvider;
+    // const web3 = new Web3(arkaneProvider as any);
+    // const accounts = await web3.eth.getAccounts();
+    // this.actions.update({ chainId, accounts });
   }
 
   public deactivate(): void {

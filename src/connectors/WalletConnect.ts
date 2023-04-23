@@ -6,7 +6,6 @@ import { IQRCodeModalOptions } from '@walletconnect/types';
 import { rpcMap } from './index';
 
 export class WalletConnectPopup extends WalletConnect {
-  ANALYTICS_EVENT = 'Wallet Connect QR Scan';
   constructor({
     actions,
     onError,
