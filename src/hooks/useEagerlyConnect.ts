@@ -31,17 +31,11 @@ export default function useEagerlyConnect() {
   }
 
   useEffect(() => {
-    (async () => {
-      try {
-        await connect(networkConnection.connector);
-        if (selectedConnection) {
-          await connect(selectedConnection.connector);
-        }
-        setTried(true);
-      } catch {
-        setTried(true);
-      }
-    })();
+    if (selectedConnection) {
+      connect(selectedConnection.connector).then(() => setTried(true));
+    } else {
+      connect(networkConnection.connector).then(() => setTried(true));
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return tried;

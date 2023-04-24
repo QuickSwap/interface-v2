@@ -20,12 +20,7 @@ import { useTranslation } from 'react-i18next';
 import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
-import {
-  Connection,
-  getConnections,
-  injectedConnection,
-  networkConnection,
-} from 'connectors';
+import { Connection, getConnections, injectedConnection } from 'connectors';
 import { getIsMetaMaskWallet } from 'connectors/utils';
 import { useSelectedWallet } from 'state/user/hooks';
 
