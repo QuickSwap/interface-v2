@@ -1,5 +1,5 @@
 import { ChainId } from '@uniswap/sdk';
-import { AbstractConnector } from '@web3-react/abstract-connector';
+import { Connector, Actions } from '@web3-react/types';
 import invariant from 'tiny-invariant';
 
 export const OVERLAY_READY = 'OVERLAY_READY';
@@ -9,6 +9,8 @@ type FormaticSupportedChains = Extract<ChainId, ChainId.MATIC | ChainId.MUMBAI>;
 interface FortmaticConnectorArguments {
   apiKey: string;
   chainId: number;
+  actions: Actions;
+  onError?: (error: Error) => void;
 }
 
 const CHAIN_ID_NETWORK_ARGUMENT: {
@@ -18,28 +20,29 @@ const CHAIN_ID_NETWORK_ARGUMENT: {
   [ChainId.MATIC]: 'mumbai',
 };
 
-export class FortmaticConnector extends AbstractConnector {
+export class FortmaticConnector extends Connector {
   private readonly apiKey: string;
   private readonly chainId: number;
 
   public fortmatic: any;
 
-  constructor({ apiKey, chainId }: FortmaticConnectorArguments) {
+  constructor({
+    apiKey,
+    chainId,
+    actions,
+    onError,
+  }: FortmaticConnectorArguments) {
     invariant(
       Object.keys(CHAIN_ID_NETWORK_ARGUMENT).includes(chainId.toString()),
       `Unsupported chainId ${chainId}`,
     );
-    super({ supportedChainIds: [chainId] });
+    super(actions, onError);
 
     this.apiKey = apiKey;
     this.chainId = chainId;
   }
 
-  async activate(): Promise<{
-    provider: any;
-    chainId: any;
-    account: any;
-  }> {
+  async activate(chainId: number) {
     if (!this.fortmatic) {
       const { default: Fortmatic } = await import('fortmatic');
 
@@ -56,22 +59,17 @@ export class FortmaticConnector extends AbstractConnector {
       const interval = setInterval(() => {
         if (provider.overlay.overlayReady) {
           clearInterval(interval);
-          this.emit(OVERLAY_READY);
           resolve(OVERLAY_READY);
         }
       }, 200);
     });
 
-    const [account] = await Promise.all([
-      provider.enable().then((accounts: string[]) => accounts[0]),
+    const accounts = await Promise.all([
+      provider.enable().then((accounts: string[]) => accounts),
       pollForOverlayReady,
     ]);
 
-    return {
-      provider: this.fortmatic.getProvider(),
-      chainId: (this as any).chainId,
-      account,
-    };
+    this.actions.update({ chainId, accounts });
   }
 
   public async getProvider(): Promise<any> {
@@ -94,7 +92,9 @@ export class FortmaticConnector extends AbstractConnector {
   }
 
   public async close(): Promise<void> {
+    if (super.deactivate) {
+      super.deactivate();
+    }
     await this.fortmatic.user.logout();
-    this.emitDeactivate();
   }
 }

@@ -18,7 +18,7 @@
   "supplyingliquidity": "Supplying Liquidity",
   "submittedTxLiquidity": "Submitted transaction to add liquidity",
   "successAddedliquidity": "Successfully added liquidity",
-  "switchPolygon": "Switch to Polygon",
+  "switchNetwork": "Switch Network",
   "selectNetwork": "Select Network",
   "connectWallet": "Connect Wallet",
   "errorInTx": "There is an error in transaction.",
@@ -517,7 +517,7 @@
   "migrateLiquidity": "Migrate V2 Liquidity",
   "liquiditymigrateComment": "This tool will safely migrate your V2 liquidity to V3. The process is completely trust-less thanks to <psmall>Quickswap migration contract</psmall>",
   "migrateRefundComment": "Due to the selected price range at least {{ amount1 }} {{ symbol1 }} and {{ amount2 }} {{ symbol2 }} will be refunded to your wallet",
-  "priceImpactLarger": "Price Impact Larger than 15%",
+  "priceImpactLarger": "Price Impact Larger than 2%",
   "shouldDepositLiquidityatCorrectPrice": "You should only deposit liquidity into Quickswap at a price you believe is correct",
   "estimatedV2Price": "Estimated V2 Spot Price",
   "estimatedV3Price": "Estimated V3 Spot Price",
@@ -653,6 +653,10 @@
   "searchResult": "Search Result",
   "gammaImproperRatio": "Current asset ratio is expired.  Please refresh page and re-try the transaction",
   "gammaPriceOverflow": "Market volatility is too high at the moment.  Please re-try deposit in 15 minutes",
+  "removeV2Liquidity": "Remove V2 Liquidity",
+  "removingV2Liquidity": "Removing V2 Liquidity",
+  "approveV2Removal": "Approve V2 Liquidity Removal",
+  "approvingV2Removal": "Approving V2 Liquidity Removal",
   "bestTradeBanned": "Best trade is unavailable in your location. Please use v2 or v3.",
   "priceImpactReached": "Price impact is more than {{maxImpact}}%. Please use v2 or v3."
 }

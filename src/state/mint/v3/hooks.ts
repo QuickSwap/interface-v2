@@ -526,6 +526,7 @@ export function useV3DerivedMintInfo(
   const gammaPairReverted = !!(
     chainId && GammaPairs[chainId][gammaPairKeyReverted]
   );
+
   const depositCap = useMemo(() => {
     if (
       !depositCapData.loading &&
@@ -534,6 +535,8 @@ export function useV3DerivedMintInfo(
       currencyA &&
       currencyB
     ) {
+      const depositOverride = depositCapData.result['depositOverride'];
+      if (!depositOverride) return;
       return {
         deposit0Max: Number(
           formatUnits(

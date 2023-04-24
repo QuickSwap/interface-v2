@@ -18,10 +18,8 @@ import {
   updateMaticPrice,
   updateIsV2,
   updateUDDomain,
-  updateLocalChainId,
 } from './actions';
 import { ETHPrice, MaticPrice, TokenDetail } from './reducer';
-import { ChainId } from '@uniswap/sdk';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
@@ -60,6 +58,10 @@ export function useCloseModals(): () => void {
 
 export function useWalletModalToggle(): () => void {
   return useToggleModal(ApplicationModal.WALLET);
+}
+
+export function useNetworkSelectionModalToggle(): () => void {
+  return useToggleModal(ApplicationModal.NETWORK_SELECTION);
 }
 
 export function useToggleSettingsMenu(): () => void {
@@ -270,21 +272,4 @@ export function useUDDomain(): {
     [dispatch],
   );
   return { udDomain, updateUDDomain: _updateUDDomain };
-}
-
-export function useLocalChainId(): {
-  localChainId: ChainId | undefined;
-  updateLocalChainId: (chainId: ChainId | undefined) => void;
-} {
-  const localChainId = useSelector(
-    (state: AppState) => state.application.localChainId,
-  );
-  const dispatch = useDispatch();
-  const _updateLocalChainId = useCallback(
-    (chainId: ChainId | undefined) => {
-      dispatch(updateLocalChainId(chainId));
-    },
-    [dispatch],
-  );
-  return { localChainId, updateLocalChainId: _updateLocalChainId };
 }

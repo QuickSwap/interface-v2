@@ -19,11 +19,13 @@ import {
   updateUserSingleHopOnly,
   updateUserBonusRouter,
   updateSlippageManuallySet,
+  updateSelectedWallet,
 } from './actions';
 import {
   V2_BASES_TO_TRACK_LIQUIDITY_FOR,
   V2_PINNED_PAIRS,
 } from 'constants/v3/addresses';
+import { ConnectionType } from 'connectors';
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -359,6 +361,23 @@ export function useUserSingleHopOnly(): [
   );
 
   return [singleHopOnly, setSingleHopOnly];
+}
+
+export function useSelectedWallet(): {
+  selectedWallet: ConnectionType | undefined;
+  updateSelectedWallet: (wallet?: ConnectionType) => void;
+} {
+  const selectedWallet = useSelector(
+    (state: AppState) => state.user.selectedWallet,
+  );
+  const dispatch = useDispatch();
+  const _updateSelectedWallet = useCallback(
+    (wallet?: ConnectionType) => {
+      dispatch(updateSelectedWallet({ wallet }));
+    },
+    [dispatch],
+  );
+  return { selectedWallet, updateSelectedWallet: _updateSelectedWallet };
 }
 
 // export function useUserTransactionTTL(): [number, (slippage: number) => void] {

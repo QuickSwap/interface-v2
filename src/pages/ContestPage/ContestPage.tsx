@@ -23,7 +23,6 @@ import {
   getFormattedLeaderBoardData,
 } from 'lib/src/leaderboard';
 import { useActiveWeb3React } from 'hooks';
-import { getMainnetNetworkLibrary } from 'connectors';
 import { getLensProfiles } from 'utils/getLensProfile';
 import { getConfig } from 'config';
 import { useHistory } from 'react-router-dom';
@@ -49,13 +48,12 @@ const ContestPage: React.FC = () => {
     setSearchVal,
     500,
   );
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId, account, library } = useActiveWeb3React();
   const [contestFilter, setContestFilter] = useState(
     chainId ? ContestPairs[chainId][0] : ContestPairs[ChainId.MATIC][0],
   );
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
-  const networkLibrary = getMainnetNetworkLibrary();
   const config = getConfig(chainId);
   const showLeaderBoard = config['leaderboard']['available'];
   const history = useHistory();
@@ -171,8 +169,9 @@ const ContestPage: React.FC = () => {
   };
 
   const lookUpSearchedAddress = async () => {
+    if (!library) return;
     try {
-      const name = await networkLibrary.lookupAddress(searchVal);
+      const name = await library.lookupAddress(searchVal);
       setSearchedEnsName(name);
     } catch (error) {
       setSearchedEnsName('');

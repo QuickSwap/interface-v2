@@ -57,12 +57,7 @@ import {
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
-import {
-  GlobalConst,
-  GlobalValue,
-  SUPPORTED_CHAINIDS,
-  SUPPORTED_WALLETS,
-} from 'constants/index';
+import { GlobalConst, GlobalValue, SUPPORTED_CHAINIDS } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
 import {
@@ -76,8 +71,7 @@ import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
-import { AbstractConnector } from '@web3-react/abstract-connector';
-import { injected } from 'connectors';
+import { Connection, getConnections, injectedConnection } from 'connectors';
 import Web3 from 'web3';
 import { useActiveWeb3React } from 'hooks';
 import { DLQUICK, NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
@@ -96,11 +90,11 @@ import {
   SWAP_TRANSACTIONS_v3,
   TOKENS_FROM_ADDRESSES_V3,
 } from 'apollo/queries-v3';
+import { Connector } from '@web3-react/types';
+import { getIsMetaMaskWallet } from 'connectors/utils';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
-
-export { default as addMaticToMetamask } from './addMaticToMetamask';
 
 interface BasicData {
   token0?: {
@@ -2099,14 +2093,14 @@ export function calculateSlippageAmountV3(
   return [
     JSBI.divide(
       JSBI.multiply(
-        JSBI.BigInt(value.toExact()),
+        JSBI.BigInt(value.numerator.toString()),
         JSBI.BigInt(10000 - slippage),
       ),
       JSBI.BigInt(10000),
     ),
     JSBI.divide(
       JSBI.multiply(
-        JSBI.BigInt(value.toExact()),
+        JSBI.BigInt(value.numerator.toString()),
         JSBI.BigInt(10000 + slippage),
       ),
       JSBI.BigInt(10000),
@@ -2586,29 +2580,28 @@ export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-export function getWalletKeys(
-  connector: AbstractConnector | undefined,
-): string[] {
+export function getWalletKeys(connector: Connector): Connection[] {
   const { ethereum } = window as any;
-  const isMetaMask = !!(
-    ethereum &&
-    !ethereum.isBitKeep &&
-    !ethereum.isBraveWallet &&
-    ethereum.isMetaMask
-  );
+  const isMetaMask = getIsMetaMaskWallet();
   const isBitkeep = !!(ethereum && ethereum.isBitKeep);
   const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
   const isCypherDWallet = !!(ethereum && ethereum.isCypherD);
   const isBraveWallet = !!(ethereum && ethereum.isBraveWallet);
-  return Object.keys(SUPPORTED_WALLETS).filter(
-    (k) =>
-      SUPPORTED_WALLETS[k].connector === connector &&
-      (connector !== injected ||
-        (isCypherDWallet && k == 'CYPHERD') ||
-        (isBlockWallet && k === 'BLOCKWALLET') ||
-        (isBitkeep && k === 'BITKEEP') ||
-        (isMetaMask && k === 'METAMASK') ||
-        (isBraveWallet && k === 'BRAVEWALLET')),
+  const isPhantomWallet = !!(ethereum && ethereum.isPhantom);
+  const isTrustWallet = !!(ethereum && ethereum.isTrustWallet);
+  const connections = getConnections();
+
+  return connections.filter(
+    (option) =>
+      option.connector === connector &&
+      (connector !== injectedConnection.connector ||
+        (isCypherDWallet && option.key == 'CYPHERD') ||
+        (isBlockWallet && option.key === 'BLOCKWALLET') ||
+        (isBitkeep && option.key === 'BITKEEP') ||
+        (isMetaMask && option.key === 'METAMASK') ||
+        (isBraveWallet && option.key === 'BRAVEWALLET') ||
+        (isPhantomWallet && option.key === 'PHANTOM_WALLET') ||
+        (isTrustWallet && option.key === 'TRUST_WALLET')),
   );
 }
 
@@ -2802,8 +2795,11 @@ export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
   return `$${earnedUSD.toLocaleString('us')}`;
 }
 
-export function isSupportedNetwork(ethereum: any) {
-  return SUPPORTED_CHAINIDS.includes(Number(ethereum.chainId));
+export function useIsSupportedNetwork() {
+  const { currentChainId, chainId } = useActiveWeb3React();
+  if (currentChainId) return !!SUPPORTED_CHAINIDS.includes(currentChainId);
+  if (!chainId) return true;
+  return !!SUPPORTED_CHAINIDS.includes(chainId);
 }
 
 export function getPageItemsToLoad(index: number, countsPerPage: number) {
