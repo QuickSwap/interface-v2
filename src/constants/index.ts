@@ -1,17 +1,4 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk';
-// import {
-//   injected,
-//   walletconnect,
-//   walletlink,
-//   portis,
-//   arkaneconnect,
-//   safeApp,
-//   trustconnect,
-//   unstopabbledomains,
-//   metamask,
-//   zengoconnect,
-//   phantomconnect,
-// } from '../connectors';
 import { Presets } from 'state/mint/v3/reducer';
 import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
 
@@ -1416,6 +1403,7 @@ export const paraswapTax: { [key: string]: number } = {
   '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
   '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3': 0,
   '0xf16ec50ec49abc95fa793c7871682833b6bc47e7': 1300,
+  '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
 };
 
 export const GlobalData = {
