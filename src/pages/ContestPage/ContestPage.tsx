@@ -110,6 +110,10 @@ const ContestPage: React.FC = () => {
   };
 
   useEffect(() => {
+    setContestFilter(ContestPairs[chainId][0]);
+  }, [chainId]);
+
+  useEffect(() => {
     (async () => {
       if (contestFilter) {
         getTradingDataForPool();
