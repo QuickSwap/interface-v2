@@ -7,7 +7,6 @@ import MetamaskIcon from 'assets/images/metamask.png';
 import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { GlobalConst } from 'constants/index';
-import usePrevious from 'hooks/usePrevious';
 import { ApplicationModal } from 'state/application/actions';
 import {
   useModalOpen,
@@ -21,7 +20,12 @@ import { useTranslation } from 'react-i18next';
 import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
-import { Connection, getConnections, injectedConnection } from 'connectors';
+import {
+  Connection,
+  getConnections,
+  injectedConnection,
+  networkConnection,
+} from 'connectors';
 import { getIsMetaMaskWallet } from 'connectors/utils';
 import { useSelectedWallet } from 'state/user/hooks';
 
@@ -59,26 +63,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const walletModalOpen = useModalOpen(ApplicationModal.WALLET);
   const toggleWalletModal = useWalletModalToggle();
 
-  const previousAccount = usePrevious(account);
-
   const connections = getConnections();
-
-  // close on connection, when logged out before
-  useEffect(() => {
-    if (account && !previousAccount && walletModalOpen) {
-      toggleWalletModal();
-    }
-    if (!walletModalOpen && error && connector.deactivate) {
-      connector.deactivate();
-    }
-  }, [
-    account,
-    previousAccount,
-    toggleWalletModal,
-    walletModalOpen,
-    connector,
-    error,
-  ]);
 
   // always reset to account view
   useEffect(() => {

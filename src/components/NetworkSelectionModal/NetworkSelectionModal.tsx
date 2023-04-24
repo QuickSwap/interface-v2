@@ -7,7 +7,6 @@ import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
 import {
-  useLocalChainId,
   useModalOpen,
   useNetworkSelectionModalToggle,
 } from 'state/application/hooks';
@@ -15,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { ApplicationModal } from 'state/application/actions';
 import { useIsSupportedNetwork } from 'utils';
+import { networkConnection, walletConnectConnection } from 'connectors';
 
 const NetworkSelectionModal: React.FC = () => {
   const { t } = useTranslation();
@@ -23,8 +23,6 @@ const NetworkSelectionModal: React.FC = () => {
     const config = getConfig(chain);
     return config && config.isMainnet;
   });
-  const { updateLocalChainId } = useLocalChainId();
-  const { ethereum } = window as any;
   const modalOpen = useModalOpen(ApplicationModal.NETWORK_SELECTION);
   const toggleModal = useNetworkSelectionModalToggle();
   const isSupportedNetwork = useIsSupportedNetwork();
@@ -39,14 +37,16 @@ const NetworkSelectionModal: React.FC = () => {
         nativeCurrency: config['nativeCurrency'],
         blockExplorerUrls: [config['blockExplorer']],
       };
-      if (ethereum) {
-        await connector.activate(chainParam);
+      if (
+        connector === walletConnectConnection.connector ||
+        connector === networkConnection.connector
+      ) {
+        await connector.activate(chainId);
       } else {
-        localStorage.setItem('quickswap_chainId', chainId.toString());
-        updateLocalChainId(chainId);
+        await connector.activate(chainParam);
       }
     },
-    [ethereum, updateLocalChainId, connector],
+    [connector],
   );
 
   return (

@@ -24,6 +24,7 @@ import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
 import ZengoIcon from 'assets/images/zengo.png';
 import { GlobalConst } from 'constants/index';
+import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 
 const POLLING_INTERVAL = 12000;
 
@@ -102,17 +103,9 @@ export const NETWORK_CHAIN_ID: number = parseInt(
   process.env.REACT_APP_CHAIN_ID ?? '137',
 );
 
-export const rpcMap = {
-  [ChainId.MATIC]: networkInfoMap[ChainId.MATIC].rpcUrl,
-  [ChainId.MUMBAI]: networkInfoMap[ChainId.MUMBAI].rpcUrl,
-  [ChainId.DOGECHAIN]: networkInfoMap[ChainId.DOGECHAIN].rpcUrl,
-  [ChainId.DOEGCHAIN_TESTNET]: networkInfoMap[ChainId.DOEGCHAIN_TESTNET].rpcUrl,
-  [ChainId.ZKTESTNET]: networkInfoMap[ChainId.ZKTESTNET].rpcUrl,
-  [ChainId.ZKEVM]: networkInfoMap[ChainId.ZKEVM].rpcUrl,
-};
-
 const [web3Network, web3NetworkHooks] = initializeConnector<Network>(
-  (actions) => new Network({ actions, urlMap: rpcMap, defaultChainId: 137 }),
+  (actions) =>
+    new Network({ actions, urlMap: RPC_PROVIDERS, defaultChainId: 137 }),
 );
 
 export const networkConnection: Connection = {

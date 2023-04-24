@@ -3,7 +3,7 @@ import {
   WalletConnectConstructorArgs,
 } from '@web3-react/walletconnect';
 import { IQRCodeModalOptions } from '@walletconnect/types';
-import { rpcMap } from './index';
+import { rpcMap } from 'constants/providers';
 
 export class WalletConnectPopup extends WalletConnect {
   constructor({

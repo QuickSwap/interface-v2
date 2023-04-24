@@ -15,6 +15,17 @@ import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk';
 import { Presets } from 'state/mint/v3/reducer';
 import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
 
+export const AVERAGE_L1_BLOCK_TIME = 12000;
+
+export const CHAIN_IDS_TO_NAMES = {
+  [ChainId.MATIC]: 'matic',
+  [ChainId.MUMBAI]: 'mumbai',
+  [ChainId.DOGECHAIN]: 'dogechain',
+  [ChainId.DOEGCHAIN_TESTNET]: 'dogechain_testnet',
+  [ChainId.ZKEVM]: 'zkevm',
+  [ChainId.ZKTESTNET]: 'zkevm_testnet',
+};
+
 export enum TxnType {
   SWAP,
   ADD,

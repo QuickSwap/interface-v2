@@ -17,15 +17,10 @@ import transakSDK from '@transak/transak-sdk';
 import { addPopup } from 'state/application/actions';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
 import { useArgentWalletDetectorContract } from './useContract';
-import {
-  toV2LiquidityToken,
-  useSelectedWallet,
-  useTrackedTokenPairs,
-} from 'state/user/hooks';
+import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { usePairs } from 'data/Reserves';
 import useParsedQueryString from './useParsedQueryString';
-import { useLocalChainId } from 'state/application/hooks';
 import { useParams } from 'react-router-dom';
 import { getConfig } from 'config';
 import { Connector } from '@web3-react/types';
@@ -33,18 +28,13 @@ import { SUPPORTED_CHAINIDS } from 'constants/index';
 
 export function useActiveWeb3React() {
   const context = useWeb3React();
-  const { localChainId } = useLocalChainId();
-  const { selectedWallet } = useSelectedWallet();
 
   const chainId: ChainId | undefined = useMemo(() => {
-    if (
-      (context.chainId && !SUPPORTED_CHAINIDS.includes(context.chainId)) ||
-      !selectedWallet
-    ) {
-      return localChainId ?? ChainId.MATIC;
+    if (!context.chainId || !SUPPORTED_CHAINIDS.includes(context.chainId)) {
+      return ChainId.MATIC;
     }
     return context.chainId;
-  }, [context.chainId, localChainId, selectedWallet]);
+  }, [context.chainId]);
 
   return {
     ...context,

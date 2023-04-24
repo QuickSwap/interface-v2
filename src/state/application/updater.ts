@@ -1,20 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useActiveWeb3React } from 'hooks';
 import useDebounce from 'hooks/useDebounce';
 import useIsWindowVisible from 'hooks/useIsWindowVisible';
 import { updateBlockNumber } from './actions';
-import { useEthPrice, useLocalChainId, useMaticPrice } from './hooks';
+import { useEthPrice, useMaticPrice } from './hooks';
 import { getEthPrice } from 'utils';
 import { getMaticPrice } from 'utils/v3-graph';
-import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
 
 export default function Updater(): null {
   const { library, chainId, connector } = useActiveWeb3React();
+
   const dispatch = useDispatch();
   const { updateEthPrice } = useEthPrice();
   const { updateMaticPrice } = useMaticPrice();
-  const { updateLocalChainId } = useLocalChainId();
 
   const windowVisible = useIsWindowVisible();
 
@@ -53,14 +52,6 @@ export default function Updater(): null {
     }, 600000);
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    const localChainIdStr = localStorage.getItem('quickswap_chainId');
-    const localChainId = localChainIdStr
-      ? (Number(localChainIdStr) as ChainId)
-      : ChainId.MATIC;
-    updateLocalChainId(localChainId);
-  }, [updateLocalChainId]);
 
   useEffect(() => {
     if (!chainId || state.chainId !== chainId) return;

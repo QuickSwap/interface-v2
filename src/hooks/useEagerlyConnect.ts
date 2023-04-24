@@ -1,7 +1,7 @@
 import { Connector } from '@web3-react/types';
-import { Connection } from 'connectors/index';
+import { Connection, networkConnection } from 'connectors/index';
 import { useGetConnection } from 'hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelectedWallet } from 'state/user/hooks';
 
 async function connect(connector: Connector) {
@@ -19,6 +19,7 @@ async function connect(connector: Connector) {
 export default function useEagerlyConnect() {
   const { selectedWallet, updateSelectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
+  const [tried, setTried] = useState(false);
 
   let selectedConnection: Connection | undefined;
   if (selectedWallet) {
@@ -30,8 +31,18 @@ export default function useEagerlyConnect() {
   }
 
   useEffect(() => {
-    if (selectedConnection) {
-      connect(selectedConnection.connector);
-    }
+    (async () => {
+      try {
+        await connect(networkConnection.connector);
+        if (selectedConnection) {
+          await connect(selectedConnection.connector);
+        }
+        setTried(true);
+      } catch {
+        setTried(true);
+      }
+    })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return tried;
 }
