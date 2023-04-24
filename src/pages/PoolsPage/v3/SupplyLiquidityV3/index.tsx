@@ -27,7 +27,11 @@ import {
   PriceFormatToggler,
 } from 'components/v3/PriceFomatToggler';
 import { AddLiquidityButton } from './containers/AddLiquidityButton';
-import { useWalletModalToggle } from 'state/application/hooks';
+import {
+  useNetworkSelectionModalToggle,
+  useWalletModalToggle,
+} from 'state/application/hooks';
+import { useIsSupportedNetwork } from 'utils';
 import { useIsExpertMode } from 'state/user/hooks';
 import { currencyId } from 'utils/v3/currencyId';
 import { Box, Button } from '@material-ui/core';
@@ -46,6 +50,7 @@ export function SupplyLiquidityV3() {
   const history = useHistory();
   const params: any = useParams();
   const parsedQuery = useParsedQueryString();
+  const isSupportedNetwork = useIsSupportedNetwork();
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const chainInfo = CHAIN_INFO[chainIdToUse];
@@ -78,6 +83,7 @@ export function SupplyLiquidityV3() {
   const [currencyIdB, setCurrencyIdB] = useState(currencyIdBParam);
 
   const toggleWalletModal = useWalletModalToggle(); // toggle wallet when disconnected
+  const toggletNetworkSelectionModal = useNetworkSelectionModalToggle();
 
   const dispatch = useAppDispatch();
 
@@ -299,7 +305,7 @@ export function SupplyLiquidityV3() {
         </Box>
       </Box>
       <Box mt={2}>
-        {account ? (
+        {account && isSupportedNetwork ? (
           <SelectPair
             baseCurrency={baseCurrency}
             quoteCurrency={quoteCurrency}
@@ -312,14 +318,23 @@ export function SupplyLiquidityV3() {
         ) : (
           <Button
             className='v3-supply-liquidity-button'
-            onClick={toggleWalletModal}
+            onClick={() => {
+              if (account) {
+                toggletNetworkSelectionModal();
+              } else {
+                toggleWalletModal();
+              }
+            }}
           >
-            {t('connectWallet')}
+            {account ? t('switchNetwork') : t('connectWallet')}
           </Button>
         )}
       </Box>
       <Box mt={4} position='relative'>
-        {(!baseCurrency || !quoteCurrency) && (
+        {(!baseCurrency ||
+          !quoteCurrency ||
+          !account ||
+          !isSupportedNetwork) && (
           <Box className='v3-supply-liquidity-overlay' />
         )}
         {mintInfo.noLiquidity &&

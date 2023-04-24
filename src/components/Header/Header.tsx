@@ -5,6 +5,7 @@ import { KeyboardArrowDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
 import {
   useIsV2,
+  useNetworkSelectionModalToggle,
   useUDDomain,
   useWalletModalToggle,
 } from 'state/application/hooks';
@@ -13,7 +14,7 @@ import {
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress, isSupportedNetwork } from 'utils';
+import { shortenAddress, useIsSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal, NetworkSelectionModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -42,13 +43,11 @@ const Header: React.FC = () => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const { account } = useActiveWeb3React();
-  const { ethereum } = window as any;
+  const isSupportedNetwork = useIsSupportedNetwork();
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
-  const [openNetworkSelectionModal, setOpenNetworkSelectionModal] = useState(
-    false,
-  );
+
   const theme = useTheme();
   const allTransactions = useAllTransactions();
   const sortedRecentTransactions = useMemo(() => {
@@ -65,6 +64,7 @@ const Header: React.FC = () => {
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
+  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const deviceWidth = useDeviceWidth();
   const [headerClass, setHeaderClass] = useState('');
 
@@ -216,10 +216,7 @@ const Header: React.FC = () => {
 
   return (
     <Box className={`header ${tabletWindowSize ? '' : headerClass}`}>
-      <NetworkSelectionModal
-        open={openNetworkSelectionModal}
-        onClose={() => setOpenNetworkSelectionModal(false)}
-      />
+      <NetworkSelectionModal />
       <WalletModal
         ENSName={ENSName ?? undefined}
         pendingTransactions={pending}
@@ -370,24 +367,20 @@ const Header: React.FC = () => {
         </Box>
       )}
       <Box>
-        <Box
-          className='networkSelection'
-          onClick={() => setOpenNetworkSelectionModal(true)}
-        >
-          {(!ethereum || isSupportedNetwork(ethereum)) && (
+        <Box className='networkSelection' onClick={toggleNetworkSelectionModal}>
+          {isSupportedNetwork && (
             <Box className='networkSelectionImage'>
-              <Box className='styledPollingDot' />
+              {chainId && <Box className='styledPollingDot' />}
               <img src={config['nativeCurrencyImage']} alt='network Image' />
             </Box>
           )}
           <small className='weight-600'>
-            {ethereum && !isSupportedNetwork(ethereum)
-              ? t('wrongNetwork')
-              : config['networkName']}
+            {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
           </small>
           <KeyboardArrowDown />
         </Box>
-        {account && (!ethereum || isSupportedNetwork(ethereum)) ? (
+
+        {account ? (
           <Box
             id='web3-status-connected'
             className='accountDetails'
@@ -396,17 +389,10 @@ const Header: React.FC = () => {
             <p>{udDomain ?? shortenAddress(account)}</p>
             <img src={WalletIcon} alt='Wallet' />
           </Box>
-        ) : !ethereum || isSupportedNetwork(ethereum) ? (
-          <Box
-            className='connectButton bg-primary'
-            onClick={() => {
-              toggleWalletModal();
-            }}
-          >
+        ) : (
+          <Box className='connectButton bg-primary' onClick={toggleWalletModal}>
             {t('connectWallet')}
           </Box>
-        ) : (
-          <></>
         )}
       </Box>
     </Box>

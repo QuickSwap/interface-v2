@@ -1,7 +1,8 @@
-import React, { lazy, useEffect, useState } from 'react';
+import React, { lazy, useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import IntractAttribution, { trackWalletConnect } from '@intract/attribution';
+import { useHistory } from 'react-router-dom';
 const Header = lazy(() => import('components/Header'));
 const Footer = lazy(() => import('components/Footer'));
 const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
@@ -18,15 +19,15 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const isProMode = useIsProMode();
   const arcxSDK = (window as any).arcx;
   const [openPassModal, setOpenPassModal] = useState(false);
-  const getPageWrapperClassName = () => {
-    console.log('getPageWrapperClassName => ', location);
+  const { location } = useHistory();
+  const pageWrapperClassName = useMemo(() => {
     if (isProMode) {
       return '';
-    } else if (location.href.indexOf('/swap?') > 0) {
+    } else if (location.pathname.includes('/swap')) {
       return 'pageWrapper-no-max';
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
-  };
+  }, [isProMode, location, name]);
 
   useEffect(() => {
     if (
@@ -96,7 +97,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       {showBetaBanner && <BetaWarningBanner />}
       <Header />
       {!isProMode && <Background fallback={false} />}
-      <Box className={getPageWrapperClassName()}>{children}</Box>
+      <Box className={pageWrapperClassName}>{children}</Box>
       <Footer />
     </Box>
   );

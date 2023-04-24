@@ -17,7 +17,9 @@ import {
   updateUserSingleHopOnly,
   updateUserBonusRouter,
   updateSlippageManuallySet,
+  updateSelectedWallet,
 } from './actions';
+import { ConnectionType } from 'connectors';
 
 const currentTimestamp = () => new Date().getTime();
 
@@ -55,6 +57,7 @@ export interface UserState {
   URLWarningVisible: boolean;
   // v3 user states
   userSingleHopOnly: boolean; // only allow swaps on direct pairs
+  selectedWallet?: ConnectionType;
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -74,6 +77,7 @@ export const initialState: UserState = {
   timestamp: currentTimestamp(),
   URLWarningVisible: true,
   userSingleHopOnly: false,
+  selectedWallet: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -165,5 +169,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateSlippageManuallySet, (state, action) => {
       state.slippageManuallySet = action.payload.slippageManuallySet;
+    })
+    .addCase(updateSelectedWallet, (state, action) => {
+      state.selectedWallet = action.payload.wallet;
     }),
 );
