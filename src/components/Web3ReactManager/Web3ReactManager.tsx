@@ -3,15 +3,16 @@ import { Web3ReactHooks, Web3ReactProvider } from '@web3-react/core';
 import { Connector } from '@web3-react/types';
 import useEagerlyConnect from 'hooks/useEagerlyConnect';
 import { ReactNode, useMemo } from 'react';
-import { getConnections } from 'connectors';
+import useOrderedConnections from 'hooks/useOrderedConnections';
 
 export default function Web3ReactManager({
   children,
 }: {
   children: ReactNode;
 }) {
-  useEagerlyConnect();
-  const connections = getConnections();
+  const tried = useEagerlyConnect();
+  const connections = useOrderedConnections();
+
   const connectors: [
     Connector,
     Web3ReactHooks,
@@ -21,6 +22,8 @@ export default function Web3ReactManager({
     () => connections.map((connection) => connection.name).join('-'),
     [connections],
   );
+
+  if (!tried) return <></>;
 
   return (
     <Web3ReactProvider connectors={connectors} key={key}>

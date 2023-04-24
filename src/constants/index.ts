@@ -1,5 +1,4 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk';
-import { AbstractConnector } from '@web3-react/abstract-connector';
 // import {
 //   injected,
 //   walletconnect,
@@ -15,6 +14,17 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 // } from '../connectors';
 import { Presets } from 'state/mint/v3/reducer';
 import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
+
+export const AVERAGE_L1_BLOCK_TIME = 12000;
+
+export const CHAIN_IDS_TO_NAMES = {
+  [ChainId.MATIC]: 'matic',
+  [ChainId.MUMBAI]: 'mumbai',
+  [ChainId.DOGECHAIN]: 'dogechain',
+  [ChainId.DOEGCHAIN_TESTNET]: 'dogechain_testnet',
+  [ChainId.ZKEVM]: 'zkevm',
+  [ChainId.ZKTESTNET]: 'zkevm_testnet',
+};
 
 export enum TxnType {
   SWAP,
@@ -1450,24 +1460,6 @@ export const GlobalData = {
     [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.WSTETH],
   ],
 };
-
-// a list of tokens by chain
-type ChainTokenList = {
-  readonly [chainId in ChainId]: Token[];
-};
-
-export interface WalletInfo {
-  connector?: AbstractConnector;
-  name: string;
-  iconName: string;
-  description: string;
-  href: string | null;
-  color: string;
-  primary?: true;
-  mobile?: true;
-  mobileOnly?: true;
-  installLink?: string | null;
-}
 
 export const ContestPairs = [
   {

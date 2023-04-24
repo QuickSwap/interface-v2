@@ -4,6 +4,7 @@ import { GlobalConst } from 'constants/index';
 import Option from './Option';
 import { useTranslation } from 'react-i18next';
 import { Connection, getConnections, injectedConnection } from 'connectors';
+import { getIsMetaMaskWallet } from 'connectors/utils';
 
 interface PendingViewProps {
   connection?: Connection;
@@ -20,13 +21,7 @@ const PendingView: React.FC<PendingViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const { ethereum, phantom } = window as any;
-  const isMetamask =
-    ethereum &&
-    !ethereum.isBitKeep &&
-    !ethereum.isBraveWallet &&
-    !ethereum.isPhantom &&
-    !ethereum.isTrustWallet &&
-    ethereum.isMetaMask;
+  const isMetamask = getIsMetaMaskWallet();
   const isBlockWallet = ethereum && ethereum.isBlockWallet;
   const isCypherD = ethereum && ethereum.isCypherD;
   const isBitKeep = ethereum && ethereum.isBitKeep;

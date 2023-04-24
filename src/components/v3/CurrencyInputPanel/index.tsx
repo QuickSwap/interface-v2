@@ -17,6 +17,7 @@ import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -95,14 +96,17 @@ export default function CurrencyInputPanel({
     currency ?? undefined,
   );
 
-  const currentPrice = useUSDCPrice(currency ?? undefined);
+  const currentPrice = useUSDCPriceFromAddress(
+    currency?.wrapped.address ?? '',
+    true,
+  );
 
   const valueAsUsd = useMemo(() => {
     if (!currentPrice || !value) {
       return 0;
     }
 
-    return Number(currentPrice.toSignificant()) * Number(value);
+    return currentPrice * Number(value);
   }, [currentPrice, value]);
 
   const handleDismissSearch = useCallback(() => {

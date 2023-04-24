@@ -13,7 +13,6 @@ import Copy from './CopyHelper';
 import Transaction from './Transaction';
 import { useTranslation } from 'react-i18next';
 import { useUDDomain } from 'state/application/hooks';
-import { gnosisSafeConnection } from 'connectors';
 import { useSelectedWallet } from 'state/user/hooks';
 
 function renderTransactions(transactions: string[]) {
@@ -92,16 +91,14 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             >
               {t('disconnect')}
             </small>
-            {connector !== gnosisSafeConnection.connector && (
-              <small
-                className='cursor-pointer'
-                onClick={() => {
-                  openOptions();
-                }}
-              >
-                {t('change')}
-              </small>
-            )}
+            <small
+              className='cursor-pointer'
+              onClick={() => {
+                openOptions();
+              }}
+            >
+              {t('change')}
+            </small>
           </Box>
         </Box>
         <Box className='flex items-center' my={1.5}>

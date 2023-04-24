@@ -1,7 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
-import { Contract, providers } from 'ethers';
-import ERC20_ABI from 'constants/abis/erc20.json';
+import { Contract } from 'ethers';
 import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
 import FARMING_CENTER_ABI from 'abis/farming-center.json';
 import FINITE_FARMING_ABI from 'abis/finite-farming.json';
@@ -54,7 +53,7 @@ import { ChainId } from '@uniswap/sdk';
 import { formatTokenSymbol } from 'utils/v3-graph';
 
 export function useFarmingSubgraph() {
-  const { chainId, account, library } = useActiveWeb3React();
+  const { chainId, account, provider } = useActiveWeb3React();
   const { v3Client, farmingClient } = useClients();
   const tokenMap = useSelectedTokenList();
 
@@ -131,10 +130,6 @@ export function useFarmingSubgraph() {
   const [positionsEternalLoading, setPositionsEternalLoading] = useState<
     boolean
   >(false);
-
-  const provider = library
-    ? new providers.Web3Provider(library.provider)
-    : undefined;
 
   async function getEvents(events: any[], farming = false) {
     const _events: any[] = [];

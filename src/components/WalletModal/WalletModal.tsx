@@ -7,7 +7,6 @@ import MetamaskIcon from 'assets/images/metamask.png';
 import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { GlobalConst } from 'constants/index';
-import usePrevious from 'hooks/usePrevious';
 import { ApplicationModal } from 'state/application/actions';
 import {
   useModalOpen,
@@ -16,8 +15,8 @@ import {
 } from 'state/application/hooks';
 import { AccountDetails, CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
-import { UAuthConnector } from '@uauth/web3-react';
-import UAuth from '@uauth/js';
+// import { UAuthConnector } from '@uauth/web3-react';
+// import UAuth from '@uauth/js';
 import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
@@ -59,26 +58,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const walletModalOpen = useModalOpen(ApplicationModal.WALLET);
   const toggleWalletModal = useWalletModalToggle();
 
-  const previousAccount = usePrevious(account);
-
   const connections = getConnections();
-
-  // close on connection, when logged out before
-  useEffect(() => {
-    if (account && !previousAccount && walletModalOpen) {
-      toggleWalletModal();
-    }
-    if (!walletModalOpen && error && connector.deactivate) {
-      connector.deactivate();
-    }
-  }, [
-    account,
-    previousAccount,
-    toggleWalletModal,
-    walletModalOpen,
-    connector,
-    error,
-  ]);
 
   // always reset to account view
   useEffect(() => {
@@ -107,28 +87,28 @@ const WalletModal: React.FC<WalletModalProps> = ({
       await connection.connector.activate();
       updateSelectedWallet(connection.type);
 
-      if (
-        connection.connector instanceof UAuthConnector &&
-        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
-        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
-      ) {
-        const uauth = new UAuth({
-          clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-          redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
-          scope: 'openid wallet',
-        });
+      // if (
+      //   connection.connector instanceof UAuthConnector &&
+      //   process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+      //   process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
+      // ) {
+      //   const uauth = new UAuth({
+      //     clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+      //     redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+      //     scope: 'openid wallet',
+      //   });
 
-        try {
-          const user = await uauth.user();
-          updateUDDomain(user.sub);
-          setWalletView(WALLET_VIEWS.ACCOUNT);
-        } catch {
-          setError('User does not exist.');
-        }
-      } else {
-        updateUDDomain(undefined);
-        setWalletView(WALLET_VIEWS.ACCOUNT);
-      }
+      //   try {
+      //     const user = await uauth.user();
+      //     updateUDDomain(user.sub);
+      //     setWalletView(WALLET_VIEWS.ACCOUNT);
+      //   } catch {
+      //     setError('User does not exist.');
+      //   }
+      // } else {
+      updateUDDomain(undefined);
+      setWalletView(WALLET_VIEWS.ACCOUNT);
+      // }
     } catch (e) {
       setPendingError(true);
     }

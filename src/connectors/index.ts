@@ -7,9 +7,8 @@ import { Network } from '@web3-react/network';
 import { Connector } from '@web3-react/types';
 import { WalletConnectPopup } from './WalletConnect';
 // import { UAuthConnector } from '@uauth/web3-react';
-
 // import { FortmaticConnector } from './Fortmatic';
-import { ArkaneConnector } from './Arkane';
+// import { ArkaneConnector } from './Arkane';
 import { ChainId } from '@uniswap/sdk';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -25,6 +24,7 @@ import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
 import ZengoIcon from 'assets/images/zengo.png';
 import { GlobalConst } from 'constants/index';
+import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 
 const POLLING_INTERVAL = 12000;
 
@@ -103,17 +103,9 @@ export const NETWORK_CHAIN_ID: number = parseInt(
   process.env.REACT_APP_CHAIN_ID ?? '137',
 );
 
-export const rpcMap = {
-  [ChainId.MATIC]: networkInfoMap[ChainId.MATIC].rpcUrl,
-  [ChainId.MUMBAI]: networkInfoMap[ChainId.MUMBAI].rpcUrl,
-  [ChainId.DOGECHAIN]: networkInfoMap[ChainId.DOGECHAIN].rpcUrl,
-  [ChainId.DOEGCHAIN_TESTNET]: networkInfoMap[ChainId.DOEGCHAIN_TESTNET].rpcUrl,
-  [ChainId.ZKTESTNET]: networkInfoMap[ChainId.ZKTESTNET].rpcUrl,
-  [ChainId.ZKEVM]: networkInfoMap[ChainId.ZKEVM].rpcUrl,
-};
-
 const [web3Network, web3NetworkHooks] = initializeConnector<Network>(
-  (actions) => new Network({ actions, urlMap: rpcMap, defaultChainId: 137 }),
+  (actions) =>
+    new Network({ actions, urlMap: RPC_PROVIDERS, defaultChainId: 137 }),
 );
 
 export const networkConnection: Connection = {
@@ -126,25 +118,6 @@ export const networkConnection: Connection = {
   description: '',
   color: '',
 };
-
-export function getMainnetNetworkLibrary(): Web3Provider {
-  return new Web3Provider(web3Network.provider as any);
-}
-
-let networkLibrary: Web3Provider | undefined;
-export function getNetworkLibrary(): Web3Provider {
-  return (networkLibrary =
-    networkLibrary ?? new Web3Provider(web3Network.provider as any));
-}
-
-const supportedChainIds: number[] = [
-  ChainId.MATIC,
-  ChainId.DOGECHAIN,
-  ChainId.MUMBAI,
-  ChainId.DOEGCHAIN_TESTNET,
-  ChainId.ZKTESTNET,
-  ChainId.ZKEVM,
-];
 
 const [web3GnosisSafe, web3GnosisSafeHooks] = initializeConnector<GnosisSafe>(
   (actions) => new GnosisSafe({ actions }),
@@ -303,26 +276,26 @@ export const zengoConnectConnection: Connection = {
 //   chainId: 137,
 // });
 
-const [web3Arkane, web3ArkaneHooks] = initializeConnector<ArkaneConnector>(
-  (actions) =>
-    new ArkaneConnector({
-      clientID: 'QuickSwap',
-      chainId: 137,
-      actions,
-      onError,
-    }),
-);
+// const [web3Arkane, web3ArkaneHooks] = initializeConnector<ArkaneConnector>(
+//   (actions) =>
+//     new ArkaneConnector({
+//       clientID: 'QuickSwap',
+//       chainId: 137,
+//       actions,
+//       onError,
+//     }),
+// );
 
-export const arkaneConnection: Connection = {
-  key: 'ARKANE_CONNECT',
-  name: GlobalConst.walletName.ARKANE_CONNECT,
-  connector: web3Arkane,
-  hooks: web3ArkaneHooks,
-  type: ConnectionType.COINBASE_WALLET,
-  iconName: VenlyIcon,
-  color: '#4196FC',
-  description: 'Login using Venly hosted wallet.',
-};
+// export const arkaneConnection: Connection = {
+//   key: 'ARKANE_CONNECT',
+//   name: GlobalConst.walletName.ARKANE_CONNECT,
+//   connector: web3Arkane,
+//   hooks: web3ArkaneHooks,
+//   type: ConnectionType.COINBASE_WALLET,
+//   iconName: VenlyIcon,
+//   color: '#4196FC',
+//   description: 'Login using Venly hosted wallet.',
+// };
 
 const [web3CoinbaseWallet, web3CoinbaseWalletHooks] = initializeConnector<
   CoinbaseWallet

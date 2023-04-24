@@ -390,12 +390,7 @@ const Header: React.FC = () => {
             <img src={WalletIcon} alt='Wallet' />
           </Box>
         ) : (
-          <Box
-            className='connectButton bg-primary'
-            onClick={() => {
-              toggleWalletModal();
-            }}
-          >
+          <Box className='connectButton bg-primary' onClick={toggleWalletModal}>
             {t('connectWallet')}
           </Box>
         )}
