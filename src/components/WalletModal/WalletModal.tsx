@@ -20,7 +20,12 @@ import { useTranslation } from 'react-i18next';
 import Option from './Option';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
-import { Connection, getConnections, injectedConnection } from 'connectors';
+import {
+  Connection,
+  coinbaseWalletConnection,
+  getConnections,
+  injectedConnection,
+} from 'connectors';
 import { getIsMetaMaskWallet } from 'connectors/utils';
 import { useSelectedWallet } from 'state/user/hooks';
 
@@ -132,6 +137,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isBraveWallet = ethereum && ethereum.isBraveWallet;
     const isPhantomWallet =
       (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
+    const isCoinbaseWallet = ethereum && ethereum.isCoinbaseWallet;
 
     return connections.map((option) => {
       //disable safe app by in the list
@@ -288,7 +294,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
               installLink={option.installLink}
             />
           );
-        } else if (ethereum && option.mobile) {
+        } else if (
+          ethereum &&
+          (option.mobile ||
+            (isCoinbaseWallet &&
+              option.connector === coinbaseWalletConnection.connector))
+        ) {
           return (
             <Option
               onClick={() => {
