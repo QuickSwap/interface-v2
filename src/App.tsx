@@ -46,10 +46,8 @@ const MigrateV2DetailsPage = lazy(() =>
 const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
 import { PageLayout } from 'layouts';
-import { getLibrary } from 'utils';
 import StyledThemeProvider from 'theme/index';
 import { Web3ReactManager, Popups } from 'components';
-import { GlobalConst } from 'constants/index';
 import ApplicationUpdater from 'state/application/updater';
 import TransactionUpdater from 'state/transactions/updater';
 import ListsUpdater from 'state/lists/updater';

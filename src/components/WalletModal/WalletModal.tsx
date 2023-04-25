@@ -288,6 +288,29 @@ const WalletModal: React.FC<WalletModalProps> = ({
               installLink={option.installLink}
             />
           );
+        } else if (ethereum && option.mobile) {
+          return (
+            <Option
+              onClick={() => {
+                if (option.connector === connector && account) {
+                  setWalletView(WALLET_VIEWS.ACCOUNT);
+                } else {
+                  if (!option.href) {
+                    tryActivation(option);
+                  }
+                }
+              }}
+              id={`connect-${option.key}`}
+              key={option.key}
+              active={isActive && option.connector === connector}
+              color={option.color}
+              link={option.href}
+              header={option.name}
+              subheader={null}
+              icon={option.iconName}
+              installLink={option.installLink}
+            />
+          );
         }
         return null;
       }
