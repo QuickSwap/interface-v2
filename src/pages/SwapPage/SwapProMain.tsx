@@ -50,7 +50,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
 
   useEffect(() => {
     (async () => {
-      if (isV2 !== undefined) return;
+      if (isV2 === undefined) return;
       if (pairId && transactions && transactions.length > 0) {
         const txns = await getSwapTransactionsV3(
           chainIdToUse,
@@ -72,7 +72,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
   }, [currentTime, chainIdToUse, isV2]);
 
   useEffect(() => {
-    if (isV2 !== undefined) return;
+    if (isV2 === undefined) return;
     async function getTradesData(pairId: string) {
       setTransactions(undefined);
       const transactions = await getSwapTransactionsV3(
