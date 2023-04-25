@@ -1,8 +1,8 @@
 import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
 import FARMING_CENTER_ABI from 'abis/farming-center.json';
-import { Contract, providers } from 'ethers';
+import { Contract } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback } from 'react';
 import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
@@ -23,13 +23,8 @@ import { useV3StakeData } from 'state/farms/hooks';
 import { calculateGasMargin } from 'utils';
 
 export function useFarmingHandlers() {
-  const { chainId, account, library } = useActiveWeb3React();
+  const { chainId, account, provider } = useActiveWeb3React();
   const { t } = useTranslation();
-
-  const provider = useMemo(() => {
-    if (!library) return;
-    return new providers.Web3Provider(library.provider);
-  }, [library]);
 
   const gasPrice = useAppSelector((state) => {
     if (!state.application.gasPrice.fetched) return 36;

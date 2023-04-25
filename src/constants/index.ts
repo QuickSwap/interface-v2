@@ -1449,45 +1449,74 @@ export const GlobalData = {
   ],
 };
 
-export const ContestPairs = [
-  {
-    name: 'All',
-    address: 'all',
-  },
-  {
-    name: 'WETH / USDC',
-    address: '0x55caabb0d2b704fd0ef8192a7e35d8837e678207',
-    token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-    token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-  },
-  {
-    name: 'WMATIC / USDC',
-    address: '0xae81fac689a1b4b1e06e7ef4a2ab4cd8ac0a087d',
-    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-    token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-  },
-  {
-    name: 'WMATIC / USDT',
-    address: '0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff',
-    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-    token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-  },
-  {
-    name: 'WMATIC / WETH',
-    address: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
-    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-    token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-  },
-];
+export const ContestPairs: any = {
+  [ChainId.MATIC]: [
+    {
+      name: 'All',
+      address: 'all',
+    },
+    {
+      name: 'WETH / USDC',
+      address: '0x55caabb0d2b704fd0ef8192a7e35d8837e678207',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    },
+    {
+      name: 'WMATIC / USDC',
+      address: '0xae81fac689a1b4b1e06e7ef4a2ab4cd8ac0a087d',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    },
+    {
+      name: 'WMATIC / USDT',
+      address: '0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+    },
+    {
+      name: 'WMATIC / WETH',
+      address: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+    },
+  ],
+  [ChainId.ZKEVM]: [
+    {
+      name: 'All',
+      address: 'all',
+    },
+    {
+      name: 'WETH_USDC',
+      address: '0xc44ad482f24fd750caeba387d2726d8653f8c4bb',
+      token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+      token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+    },
+    {
+      name: 'USDT_USDC',
+      address: '0x9591b8a30c3a52256ea93e98da49ee43afa136a8',
+      token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+      token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+    },
+    {
+      name: 'WMATIC_USDC',
+      address: '0xc9853f9f29cdd15ece6965e20ca288a2946c15e6',
+      token0Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+      token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+    },
+    {
+      name: 'WMATIC_WETH',
+      address: '0xb73abfb5a2c89f4038baa476ff3a7942a021c196',
+      token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+      token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+    },
+  ],
+  [ChainId.DOEGCHAIN_TESTNET]: [],
+  [ChainId.DOGECHAIN]: [],
+  [ChainId.ZKTESTNET]: [],
+  [ChainId.MUMBAI]: [],
+};
 
 export const LeaderBoardAnalytics = {
   CHART_DURATIONS: [1, 7, 30],
   CHART_DURATION_TEXTS: ['24H', '7D', '30D'],
 };
-
-// export const ContestPairs = {
-//   ETH_USDC_PAIR: '0x853Ee4b2A13f8a742d64C8F088bE7bA2131f670d',
-//   MATIC_USDC_PAIR: '0x6e7a5FAFcec6BB1e78bAE2A1F0B612012BF14827',
-//   MATIC_USDT_PAIR: '0x604229c960e5cacf2aaeac8be68ac07ba9df81c3',
-//   MATIC_ETH_PAIR: '0xadbf1854e5883eb8aa7baf50705338739e558e5b',
-// };
