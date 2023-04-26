@@ -2,12 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch, Link, useParams } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { ChainId, Token } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk';
 import {
   shortenAddress,
   getEtherscanLink,
-  getPairTransactions,
-  getBulkPairData,
   formatNumber,
   getTokenFromAddress,
 } from 'utils';
@@ -25,7 +23,6 @@ import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
 import { CallMade } from '@material-ui/icons';
 import { getConfig } from 'config';
 
@@ -59,30 +56,12 @@ const AnalyticsPairDetails: React.FC = () => {
         return { ...item, type: TxnType.ADD };
       });
       const swaps = pairTransactions.swaps.map((item: any) => {
-        const amount0 = isV2
-          ? item.amount0Out > 0
-            ? item.amount0Out
-            : item.amount1Out
-          : item.amount0 > 0
-          ? item.amount0
-          : Math.abs(item.amount1);
-        const amount1 = isV2
-          ? item.amount0In > 0
-            ? item.amount0In
-            : item.amount1In
-          : item.amount0 > 0
-          ? Math.abs(item.amount1)
-          : Math.abs(item.amount0);
-        const token0 = (isV2
-        ? item.amount0Out > 0
-        : item.amount0 > 0)
-          ? item.pair.token0
-          : item.pair.token1;
-        const token1 = (isV2
-        ? item.amount0Out > 0
-        : item.amount0 > 0)
-          ? item.pair.token1
-          : item.pair.token0;
+        const amount0 =
+          item.amount0 > 0 ? item.amount0 : Math.abs(item.amount1);
+        const amount1 =
+          item.amount0 > 0 ? Math.abs(item.amount1) : Math.abs(item.amount0);
+        const token0 = item.amount0 > 0 ? item.pair.token0 : item.pair.token1;
+        const token1 = item.amount0 > 0 ? item.pair.token1 : item.pair.token0;
         return {
           ...item,
           amount0,
@@ -98,7 +77,7 @@ const AnalyticsPairDetails: React.FC = () => {
     } else {
       return null;
     }
-  }, [pairTransactions, isV2]);
+  }, [pairTransactions]);
   const currency0 =
     pairData && chainId
       ? getTokenFromAddress(pairData.token0.id, chainId, tokenMap, [
@@ -205,7 +184,7 @@ const AnalyticsPairDetails: React.FC = () => {
   }, [pairAddress, isV2]);
 
   const PairInfo = () => (
-    <Box width={1} mt={4}>
+    <Box width={1} my={4}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={3}>
           <Box className='panel analyticsDetailsInfoV3'>
@@ -402,16 +381,20 @@ const AnalyticsPairDetails: React.FC = () => {
             </Box>
           </Box>
           <PairInfo />
-          <Box width={1} mt={5}>
-            <p>{t('transactions')}</p>
-          </Box>
-          <Box width={1} className='panel' mt={4}>
-            {pairTransactionsList ? (
-              <TransactionsTable data={pairTransactionsList} />
-            ) : (
-              <Skeleton variant='rect' width='100%' height={150} />
-            )}
-          </Box>
+          {!isV2 && (
+            <>
+              <Box width={1}>
+                <p>{t('transactions')}</p>
+              </Box>
+              <Box width={1} className='panel' my={4}>
+                {pairTransactionsList ? (
+                  <TransactionsTable data={pairTransactionsList} />
+                ) : (
+                  <Skeleton variant='rect' width='100%' height={150} />
+                )}
+              </Box>
+            </>
+          )}
         </>
       ) : dataLoading ? (
         <Skeleton width='100%' height={100} />
