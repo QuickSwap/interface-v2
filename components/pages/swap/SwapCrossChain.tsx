@@ -62,6 +62,8 @@ const SwapCrossChain: React.FC = () => {
             companyName: 'Quickswap',
             apiUrl: 'https://api.0xsquid.com',
             style: darkMode ? darkModeStyle : lightModeStyle,
+            initialFromChainId: 137,
+            initialToChainId: 43114,
             loadPreviousStateFromLocalStorage: true,
             preferDex: [QUICKSWAP, QUICKSWAP_V3],
           }}

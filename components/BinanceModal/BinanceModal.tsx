@@ -16,11 +16,10 @@ const BinanceModal: React.FC<BinanceModalProps> = ({ open, onClose }) => {
       background='#fff'
       overflow='hidden'
     >
-      <div style={{ height: '100%', width: '100%', overflowY: 'auto' }}>
+      <div className='buyFiatContent'>
         <iframe
           title='binance connect'
           allow='accelerometer; autoplay; camera; gyroscope; payment'
-          frameBorder='0'
           height='600px'
           src={`${
             process.env.REACT_APP_BINANCE_CNT_URL

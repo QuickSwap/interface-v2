@@ -28,3 +28,4 @@ cypress/screenshots
 cypress/fixtures/example.json
 
 .vercel
+.npmrc

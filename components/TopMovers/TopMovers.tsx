@@ -5,16 +5,10 @@ import { Skeleton } from '@mui/lab';
 import { Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
-import {
-  getTopTokens,
-  getPriceClass,
-  formatNumber,
-  getTokenFromAddress,
-} from 'utils';
+import { getPriceClass, formatNumber, getTokenFromAddress } from 'utils';
 import styles from 'styles/components/TopMovers.module.scss';
 import { useTranslation } from 'next-i18next';
 import { useEthPrice, useMaticPrice, useIsV2 } from 'state/application/hooks';
-import { getTopTokensV3 } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
 import { useSelectedTokenList } from 'state/lists/hooks';
@@ -45,27 +39,43 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
 
     (async () => {
       if (isV2) {
-        if (v2 && ethPrice.price && ethPrice.oneDayPrice) {
-          const data = await getTopTokens(
-            ethPrice.price,
-            ethPrice.oneDayPrice,
-            5,
-            chainId,
+        if (
+          v2 &&
+          ethPrice.price !== undefined &&
+          ethPrice.oneDayPrice !== undefined
+        ) {
+          const res = await fetch(
+            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v2?chainId=${chainId}&limit=5`,
           );
-          if (data) {
-            updateTopTokens(data);
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText || res.statusText || `Failed to get top tokens`,
+            );
+          }
+          const data = await res.json();
+          if (data.data) {
+            updateTopTokens(data.data);
           }
         }
       } else {
-        if (v3 && maticPrice.price && maticPrice.oneDayPrice) {
-          const data = await getTopTokensV3(
-            maticPrice.price,
-            maticPrice.oneDayPrice,
-            5,
-            chainId,
+        if (
+          v3 &&
+          maticPrice.price !== undefined &&
+          maticPrice.oneDayPrice !== undefined
+        ) {
+          const res = await fetch(
+            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v3?chainId=${chainId}&limit=5`,
           );
-          if (data) {
-            updateTopTokens(data);
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText || res.statusText || `Failed to get top tokens`,
+            );
+          }
+          const data = await res.json();
+          if (data.data) {
+            updateTopTokens(data.data);
           }
         }
       }

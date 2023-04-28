@@ -3,7 +3,7 @@ import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import React, { useEffect, useState } from 'react';
 import { useIsV2 } from 'state/application/hooks';
-import { getSwapTransactions, getSwapTransactionsV3 } from 'utils';
+import { getSwapTransactionsV3 } from 'utils';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
 import SwapMain from './SwapMain';
 import SwapProAssets from './SwapProAssets';
@@ -38,7 +38,6 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
     undefined,
   );
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-  const [showChart, setShowChart] = useState(true);
 
   // this is for refreshing data of trades table every 60 seconds
   useEffect(() => {
@@ -53,20 +52,11 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
     (async () => {
       if (isV2 === undefined) return;
       if (pairId && transactions && transactions.length > 0) {
-        let txns;
-        if (isV2) {
-          txns = await getSwapTransactions(
-            chainIdToUse,
-            pairId,
-            Number(transactions[0].transaction.timestamp),
-          );
-        } else {
-          txns = await getSwapTransactionsV3(
-            chainIdToUse,
-            pairId,
-            Number(transactions[0].transaction.timestamp),
-          );
-        }
+        const txns = await getSwapTransactionsV3(
+          chainIdToUse,
+          pairId,
+          Number(transactions[0].transaction.timestamp),
+        );
         if (txns) {
           const filteredTxns = txns.filter(
             (txn) =>
@@ -85,15 +75,10 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
     if (isV2 === undefined) return;
     async function getTradesData(pairId: string) {
       setTransactions(undefined);
-      let transactions;
-      if (isV2) {
-        transactions = await getSwapTransactions(chainIdToUse, pairId);
-      } else {
-        transactions = await getSwapTransactionsV3(
-          chainIdToUse,
-          pairId.toLowerCase(),
-        );
-      }
+      const transactions = await getSwapTransactionsV3(
+        chainIdToUse,
+        pairId.toLowerCase(),
+      );
       setTransactions(transactions);
     }
     if (pairId) {
@@ -123,7 +108,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
               style={{ maxHeight: '100vh', minHeight: '500px', padding: '0' }}
             >
               <SwapProChartTrade
-                showChart={showChart}
+                showChart={true}
                 showTrades={false}
                 token1={token1}
                 token2={token2}

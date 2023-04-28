@@ -1,5 +1,10 @@
 import { Box, Button } from '@mui/material';
-import { BinanceModal, BuyFiatModal, MoonpayModal } from 'components';
+import {
+  BinanceModal,
+  BuyFiatModal,
+  MoonpayModal,
+  MeldModal,
+} from 'components';
 import React, { useState } from 'react';
 import { useTranslation } from 'next-i18next';
 
@@ -15,6 +20,7 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({
   const [openMenu, setOpenMenu] = useState(false);
   const [showMoonPayWidget, setShowMoonPayWidget] = useState(false);
   const [showBinanceWidget, setShowBinanceWidgetWidget] = useState(false);
+  const [showMeldWidget, setShowMeldWidgetWidget] = useState(false);
   const { t } = useTranslation();
 
   return (
@@ -31,6 +37,12 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({
           onClose={() => setShowBinanceWidgetWidget(false)}
         />
       )}
+      {showMeldWidget && (
+        <MeldModal
+          open={showMeldWidget}
+          onClose={() => setShowMeldWidgetWidget(false)}
+        />
+      )}
       <BuyFiatModal
         open={openMenu}
         onClose={() => {
@@ -42,6 +54,10 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({
         }}
         buyBinance={() => {
           setShowBinanceWidgetWidget(true);
+          setOpenMenu(false);
+        }}
+        buyMeld={() => {
+          setShowMeldWidgetWidget(true);
           setOpenMenu(false);
         }}
       />

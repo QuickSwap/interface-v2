@@ -1,21 +1,11 @@
 import React, { useCallback } from 'react';
-import { AbstractConnector } from '@web3-react/abstract-connector';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
 import { Box } from '@mui/material';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
-import { SUPPORTED_WALLETS } from 'constants/index';
 import { Close } from '@mui/icons-material';
-import {
-  injected,
-  walletlink,
-  safeApp,
-  trustconnect,
-  unstopabbledomains,
-  metamask,
-} from 'connectors';
 import { ExternalLink as LinkIcon } from 'react-feather';
 import styles from 'styles/components/AccountDetails.module.scss';
 import StatusIcon from './StatusIcon';
@@ -23,6 +13,7 @@ import Copy from './CopyHelper';
 import Transaction from './Transaction';
 import { useTranslation } from 'next-i18next';
 import { useUDDomain } from 'state/application/hooks';
+import { useSelectedWallet } from 'state/user/hooks';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -50,13 +41,14 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   openOptions,
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
-  const { udDomain } = useUDDomain();
+  const { udDomain, updateUDDomain } = useUDDomain();
+  const { updateSelectedWallet } = useSelectedWallet();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
   function formatConnectorName() {
     const name = getWalletKeys(connector).map(
-      (k) => SUPPORTED_WALLETS[k].name,
+      (connection) => connection.name,
     )[0];
     return (
       <small>
@@ -79,37 +71,34 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <Box className='flex items-center justify-between'>
           {formatConnectorName()}
           <Box className='flex items-center'>
-            {connector !== injected &&
-              connector !== metamask &&
-              connector !== walletlink &&
-              connector !== trustconnect &&
-              connector !== safeApp && (
-                <small
-                  style={{ cursor: 'pointer', marginRight: 8 }}
-                  onClick={() => {
-                    if (
-                      connector ===
-                      ((unstopabbledomains as any) as AbstractConnector)
-                    ) {
-                      (connector as any).handleDeactivate();
-                    } else {
-                      (connector as any).close();
-                    }
-                  }}
-                >
-                  {t('disconnect')}
-                </small>
-              )}
-            {connector !== safeApp && (
-              <small
-                className='cursor-pointer'
-                onClick={() => {
-                  openOptions();
-                }}
-              >
-                {t('change')}
-              </small>
-            )}
+            <small
+              style={{ cursor: 'pointer', marginRight: 8 }}
+              onClick={async () => {
+                if (connector && connector.deactivate) {
+                  await connector.deactivate();
+                }
+                await connector.resetState();
+                updateSelectedWallet(undefined);
+                // if (
+                //   connector ===
+                //   ((unstopabbledomains as any) as AbstractConnector)
+                // ) {
+                //   (connector as any).handleDeactivate();
+                // } else {
+                //   (connector as any).close();
+                // }
+              }}
+            >
+              {t('disconnect')}
+            </small>
+            <small
+              className='cursor-pointer'
+              onClick={() => {
+                openOptions();
+              }}
+            >
+              {t('change')}
+            </small>
           </Box>
         </Box>
         <Box className='flex items-center' my={1.5}>
@@ -132,14 +121,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           {chainId && account && (
             <a
               className={styles.addressLink}
-              href={
-                chainId &&
-                getEtherscanLink(
-                  chainId,
-                  ENSName ? ENSName : account,
-                  'address',
-                )
-              }
+              href={getEtherscanLink(
+                chainId,
+                ENSName ? ENSName : account,
+                'address',
+              )}
               target='_blank'
               rel='noopener noreferrer'
             >

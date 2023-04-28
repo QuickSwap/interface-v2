@@ -86,9 +86,9 @@ const SwapDefaultMode: React.FC<{
           <Box className='wrapper'>
             <SwapMain />
           </Box>
-          <Box sx={{ marginTop: '16px' }}>
+          {/* <Box sx={{ marginTop: '16px' }}>
             <AdsSlider sort='swap' />
-          </Box>
+          </Box> */}
         </Grid>
         <Grid item lg={4}>
           <Grid container justifyContent='flex-start' spacing={2}>

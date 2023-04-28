@@ -213,37 +213,24 @@ const AnalyticsPairChart: React.FC<{
     if (!chainId) return;
     (async () => {
       setPairChartData(null);
-      const duration =
-        durationIndex === GlobalConst.analyticChart.ALL_CHART
-          ? 0
-          : getChartStartTime(durationIndex);
-
-      const pairChartDataFn = !isV2
-        ? getPairChartDataV3(pairAddress, duration, chainId)
-        : getPairChartData(pairAddress, duration, chainId);
-
-      Promise.all(
-        [pairChartDataFn].concat(
-          !isV2 ? [getPairChartFees(pairAddress, duration, chainId)] : [],
-        ),
-      ).then(([chartData, feeChartData]) => {
-        if (chartData && chartData.length > 0) {
-          const newChartData = getLimitedData(
-            chartData,
-            GlobalConst.analyticChart.CHART_COUNT,
-          );
-          setPairChartData(newChartData);
-        }
-        if (feeChartData && feeChartData.length > 0) {
-          const newFeeData = getLimitedData(
-            feeChartData,
-            GlobalConst.analyticChart.CHART_COUNT,
-          );
-          setPairFeeData(newFeeData);
-        }
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-chart-data/${pairAddress}/${durationIndex}/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to get pair chart data`,
+        );
+      }
+      const data = await res.json();
+      if (data?.data?.pairChartData && data?.data?.pairChartData?.length) {
+        setPairChartData(data.data.pairChartData);
+      }
+      if (data?.data?.pairFeeData && data?.data?.pairFeeData?.length) {
+        setPairFeeData(data.data.pairFeeData);
+      }
     })();
-  }, [pairAddress, durationIndex, isV2, chainId]);
+  }, [pairAddress, durationIndex, isV2, chainId, version]);
 
   useEffect(() => {
     if (!apyVisionURL || !apyVisionAccessToken) return;

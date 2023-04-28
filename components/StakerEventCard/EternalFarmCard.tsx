@@ -19,6 +19,7 @@ import { useTranslation } from 'next-i18next';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { useMaticPrice } from 'state/application/hooks';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -69,6 +70,8 @@ export function EternalFarmCard({
 }: EternalFarmCardProps) {
   const { t } = useTranslation();
   const apr = aprs ? aprs[id] : undefined;
+  const router = useRouter();
+  const farmStatus = router.query ? router.query.farmStatus : undefined;
   const poolApr = poolAprs ? poolAprs[pool.id] : undefined;
   const totalAPR =
     (poolApr && poolApr > 0 ? poolApr : 0) + (apr && apr > 0 ? apr : 0);
@@ -228,7 +231,7 @@ export function EternalFarmCard({
       </Box>
 
       <Box width={isMobile ? '100%' : '10%'}>
-        {!isDetached && (
+        {farmStatus === 'active' && (
           <Button
             fullWidth
             style={{ height: 40, borderRadius: 10 }}

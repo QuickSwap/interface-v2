@@ -72,13 +72,13 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
       </Box>
       {farmEnabled && (
         <Box className={styles.tradingSection}>
-          {(v2 ? totalRewardsUSD : true) &&
+         {(v2 ? totalRewardsUSD !== undefined : true) &&
           (v3 ? totalRewardsUSDV3 !== undefined : true) ? (
             <Box display='flex'>
               <h6>$</h6>
               <h3>
                 {formatCompact(
-                  (v2 ? totalRewardsUSD : 0) +
+                  (v2 ? totalRewardsUSD ?? 0 : 0) +
                     (v3 ? totalRewardsUSDV3 ?? 0 : 0),
                 )}
               </h3>

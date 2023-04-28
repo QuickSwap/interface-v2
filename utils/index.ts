@@ -57,12 +57,7 @@ import {
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
-import {
-  GlobalConst,
-  GlobalValue,
-  SUPPORTED_CHAINIDS,
-  SUPPORTED_WALLETS,
-} from 'constants/index';
+import { GlobalConst, GlobalValue, SUPPORTED_CHAINIDS } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
 import {
@@ -76,8 +71,7 @@ import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
-import { AbstractConnector } from '@web3-react/abstract-connector';
-import { injected } from 'connectors';
+import { Connection, getConnections, injectedConnection } from 'connectors';
 import Web3 from 'web3';
 import { useActiveWeb3React } from 'hooks';
 import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
@@ -96,11 +90,11 @@ import {
   SWAP_TRANSACTIONS_v3,
   TOKENS_FROM_ADDRESSES_V3,
 } from 'apollo/queries-v3';
+import { Connector } from '@web3-react/types';
+import { getIsMetaMaskWallet } from 'connectors/utils';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
-
-export { default as addMaticToMetamask } from './addMaticToMetamask';
 
 interface BasicData {
   token0?: {
@@ -286,17 +280,17 @@ export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (
       query: ETH_PRICE(),
       fetchPolicy: 'network-only',
     });
+    const currentPrice = Number(result?.data?.bundles[0]?.ethPrice ?? 0);
+    ethPrice = currentPrice;
     const resultOneDay = await clientV2[chainId].query({
       query: ETH_PRICE(oneDayBlock),
       fetchPolicy: 'network-only',
     });
-    const currentPrice = Number(result?.data?.bundles[0]?.ethPrice ?? 0);
     const oneDayBackPrice = Number(
       resultOneDay?.data?.bundles[0]?.ethPrice ?? 0,
     );
 
     priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
-    ethPrice = currentPrice;
     ethPriceOneDay = oneDayBackPrice;
   } catch (e) {
     console.log(e);
@@ -466,25 +460,34 @@ export const getTokenInfo = async (
       fetchPolicy: 'network-only',
     });
 
-    const oneDayResult = await clientV2[chainId].query({
-      query: TOKEN_INFO_OLD(oneDayBlock, address),
-      fetchPolicy: 'network-only',
-    });
+    let oneDayResult, twoDayResult, oneWeekResult, twoWeekResult;
+    try {
+      oneDayResult = await clientV2[chainId].query({
+        query: TOKEN_INFO_OLD(oneDayBlock, address),
+        fetchPolicy: 'network-only',
+      });
+    } catch {}
 
-    const twoDayResult = await clientV2[chainId].query({
-      query: TOKEN_INFO_OLD(twoDayBlock, address),
-      fetchPolicy: 'network-only',
-    });
+    try {
+      twoDayResult = await clientV2[chainId].query({
+        query: TOKEN_INFO_OLD(twoDayBlock, address),
+        fetchPolicy: 'network-only',
+      });
+    } catch {}
 
-    const oneWeekResult = await clientV2[chainId].query({
-      query: TOKEN_INFO_OLD(oneWeekBlock, address),
-      fetchPolicy: 'network-only',
-    });
+    try {
+      oneWeekResult = await clientV2[chainId].query({
+        query: TOKEN_INFO_OLD(oneWeekBlock, address),
+        fetchPolicy: 'network-only',
+      });
+    } catch {}
 
-    const twoWeekResult = await clientV2[chainId].query({
-      query: TOKEN_INFO_OLD(twoWeekBlock, address),
-      fetchPolicy: 'network-only',
-    });
+    try {
+      twoWeekResult = await clientV2[chainId].query({
+        query: TOKEN_INFO_OLD(twoWeekBlock, address),
+        fetchPolicy: 'network-only',
+      });
+    } catch {}
 
     const currentData =
       current &&
@@ -505,7 +508,7 @@ export const getTokenInfo = async (
         : undefined;
 
     const twoDayData =
-      oneDayResult &&
+      twoDayResult &&
       twoDayResult.data &&
       twoDayResult.data.tokens &&
       twoDayResult.data.tokens.length > 0
@@ -536,15 +539,13 @@ export const getTokenInfo = async (
 
     const bulkResults = await Promise.all(
       currentData &&
-        oneDayData &&
-        twoDayData &&
         currentData.map(async (token: any) => {
           const data = token;
 
-          let oneDayHistory = oneDayData?.[token.id];
-          let twoDayHistory = twoDayData?.[token.id];
-          let oneWeekHistory = oneWeekData?.[token.id];
-          let twoWeekHistory = twoWeekData?.[token.id];
+          let oneDayHistory = oneDayData ? oneDayData[token.id] : undefined;
+          let twoDayHistory = twoDayData ? twoDayData[token.id] : undefined;
+          let oneWeekHistory = oneWeekData ? oneWeekData[token.id] : undefined;
+          let twoWeekHistory = twoWeekData ? twoWeekData[token.id] : undefined;
 
           // this is because old history data returns exact same data as current data when the old data does not exist
           if (
@@ -673,103 +674,101 @@ export const getTopTokens = async (
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
 
+  let current;
   try {
-    const current = await clientV2[chainId].query({
+    current = await clientV2[chainId].query({
       query: TOKENS_CURRENT(count),
       fetchPolicy: 'network-only',
     });
+  } catch {}
 
+  let oneDayData: any = {};
+  try {
     const oneDayResult = await clientV2[chainId].query({
       query: TOKENS_DYNAMIC(oneDayBlock, count),
       fetchPolicy: 'network-only',
     });
+    oneDayData = oneDayResult?.data?.tokens.reduce((obj: any, cur: any) => {
+      return { ...obj, [cur.id]: cur };
+    }, {});
+  } catch {}
 
-    const oneDayData = oneDayResult?.data?.tokens.reduce(
-      (obj: any, cur: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
+  const bulkResults = await Promise.all(
+    current &&
+      oneDayData &&
+      current?.data?.tokens?.map(async (token: any) => {
+        const data = token;
 
-    const bulkResults = await Promise.all(
-      current &&
-        oneDayData &&
-        current?.data?.tokens?.map(async (token: any) => {
-          const data = token;
+        // let liquidityDataThisToken = liquidityData?.[token.id]
+        let oneDayHistory = oneDayData?.[token.id];
 
-          // let liquidityDataThisToken = liquidityData?.[token.id]
-          let oneDayHistory = oneDayData?.[token.id];
+        // this is because old history data returns exact same data as current data when the old data does not exist
+        if (
+          Number(oneDayHistory?.totalLiquidity ?? 0) ===
+            Number(data?.totalLiquidity ?? 0) &&
+          Number(oneDayHistory?.tradeVolume ?? 0) ===
+            Number(data?.tradeVolume ?? 0) &&
+          Number(oneDayHistory?.derivedETH ?? 0) ===
+            Number(data?.derivedETH ?? 0)
+        ) {
+          oneDayHistory = null;
+        }
 
-          // this is because old history data returns exact same data as current data when the old data does not exist
-          if (
-            Number(oneDayHistory?.totalLiquidity ?? 0) ===
-              Number(data?.totalLiquidity ?? 0) &&
-            Number(oneDayHistory?.tradeVolume ?? 0) ===
-              Number(data?.tradeVolume ?? 0) &&
-            Number(oneDayHistory?.derivedETH ?? 0) ===
-              Number(data?.derivedETH ?? 0)
-          ) {
-            oneDayHistory = null;
-          }
+        const oneDayVolumeUSD =
+          (data?.tradeVolumeUSD ?? 0) - (oneDayHistory?.tradeVolumeUSD ?? 0);
 
-          const oneDayVolumeUSD =
-            (data?.tradeVolumeUSD ?? 0) - (oneDayHistory?.tradeVolumeUSD ?? 0);
+        const currentLiquidityUSD =
+          data?.totalLiquidity * ethPrice * data?.derivedETH;
+        const oldLiquidityUSD =
+          (oneDayHistory?.totalLiquidity ?? 0) *
+          ethPriceOld *
+          (oneDayHistory?.derivedETH ?? 0);
 
-          const currentLiquidityUSD =
-            data?.totalLiquidity * ethPrice * data?.derivedETH;
-          const oldLiquidityUSD =
-            (oneDayHistory?.totalLiquidity ?? 0) *
-            ethPriceOld *
-            (oneDayHistory?.derivedETH ?? 0);
+        // percent changes
+        const priceChangeUSD = getPercentChange(
+          data?.derivedETH * ethPrice,
+          oneDayHistory?.derivedETH
+            ? oneDayHistory?.derivedETH * ethPriceOld
+            : 0,
+        );
 
-          // percent changes
-          const priceChangeUSD = getPercentChange(
-            data?.derivedETH * ethPrice,
-            oneDayHistory?.derivedETH
-              ? oneDayHistory?.derivedETH * ethPriceOld
-              : 0,
-          );
+        // set data
+        data.priceUSD = data?.derivedETH * ethPrice;
+        data.totalLiquidityUSD = currentLiquidityUSD;
+        data.oneDayVolumeUSD = oneDayVolumeUSD;
+        data.priceChangeUSD = priceChangeUSD;
+        data.liquidityChangeUSD = getPercentChange(
+          currentLiquidityUSD ?? 0,
+          oldLiquidityUSD ?? 0,
+        );
+        data.symbol = formatTokenSymbol(data.id, data.symbol);
 
-          // set data
-          data.priceUSD = data?.derivedETH * ethPrice;
-          data.totalLiquidityUSD = currentLiquidityUSD;
-          data.oneDayVolumeUSD = oneDayVolumeUSD;
-          data.priceChangeUSD = priceChangeUSD;
-          data.liquidityChangeUSD = getPercentChange(
-            currentLiquidityUSD ?? 0,
-            oldLiquidityUSD ?? 0,
-          );
-          data.symbol = formatTokenSymbol(data.id, data.symbol);
+        // new tokens
+        if (!oneDayHistory && data) {
+          data.oneDayVolumeUSD = data.tradeVolumeUSD;
+          data.oneDayVolumeETH = data.tradeVolume * data.derivedETH;
+        }
 
-          // new tokens
-          if (!oneDayHistory && data) {
-            data.oneDayVolumeUSD = data.tradeVolumeUSD;
-            data.oneDayVolumeETH = data.tradeVolume * data.derivedETH;
-          }
+        // update name data for
+        updateNameData({
+          token0: data,
+        });
 
-          // update name data for
-          updateNameData({
-            token0: data,
+        // HOTFIX for Aave
+        if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
+          const aaveData = await clientV2[chainId].query({
+            query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
+            fetchPolicy: 'network-only',
           });
-
-          // HOTFIX for Aave
-          if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
-            const aaveData = await clientV2[chainId].query({
-              query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
-              fetchPolicy: 'network-only',
-            });
-            const result = aaveData.data.pairs[0];
-            data.totalLiquidityUSD = Number(result.reserveUSD) / 2;
-            data.liquidityChangeUSD = 0;
-            data.priceChangeUSD = 0;
-          }
-          return data;
-        }),
-    );
-    return bulkResults;
-  } catch (e) {
-    console.log(e);
-  }
+          const result = aaveData.data.pairs[0];
+          data.totalLiquidityUSD = Number(result.reserveUSD) / 2;
+          data.liquidityChangeUSD = 0;
+          data.priceChangeUSD = 0;
+        }
+        return data;
+      }),
+  );
+  return bulkResults;
 };
 
 export const getTimestampsForChanges: () => number[] = () => {
@@ -828,6 +827,153 @@ export const getTokenPairs2 = async (
   }
 };
 
+export const getTokenPairsV2 = async (
+  tokenAddress: string,
+  chainId: ChainId,
+) => {
+  try {
+    const utcCurrentTime = dayjs();
+
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
+    const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix();
+
+    const [oneDayBlock, oneWeekBlock] = await getBlocksFromTimestamps(
+      [utcOneDayBack, utcOneWeekBack],
+      undefined,
+      chainId,
+    );
+
+    const result = await clientV2[chainId].query({
+      query: TOKEN_DATA2(tokenAddress),
+      fetchPolicy: 'network-only',
+    });
+    const pairsAddresses =
+      result && result.data
+        ? (result.data['pairs0'] ?? [])
+            .concat(result.data['pairs1'] ?? [])
+            .map((pair: any) => pair.id)
+        : [];
+
+    const pairsResult = await clientV2[chainId].query({
+      query: PAIRS_BULK1,
+      variables: {
+        allPairs: pairsAddresses,
+      },
+      fetchPolicy: 'network-only',
+    });
+    const pairsCurrent =
+      pairsResult &&
+      pairsResult.data &&
+      pairsResult.data.pairs &&
+      pairsResult.data.pairs.length > 0
+        ? pairsResult.data.pairs
+        : [];
+
+    let pairsOneDay: any[] = [];
+    let pairsOneWeek: any[] = [];
+
+    if (oneDayBlock && oneDayBlock.number) {
+      try {
+        const oneDayResult = await clientV2[chainId].query({
+          query: PAIRS_HISTORICAL_BULK(oneDayBlock.number, pairsAddresses),
+          fetchPolicy: 'network-only',
+        });
+        pairsOneDay =
+          oneDayResult &&
+          oneDayResult.data &&
+          oneDayResult.data.pairs &&
+          oneDayResult.data.pairs.length > 0
+            ? oneDayResult.data.pairs
+            : [];
+      } catch {}
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      try {
+        const oneWeekResult = await clientV2[chainId].query({
+          query: PAIRS_HISTORICAL_BULK(oneWeekBlock.number, pairsAddresses),
+          fetchPolicy: 'network-only',
+        });
+        pairsOneWeek =
+          oneWeekResult &&
+          oneWeekResult.data &&
+          oneWeekResult.data.pairs &&
+          oneWeekResult.data.pairs.length > 0
+            ? oneWeekResult.data.pairs
+            : [];
+      } catch {}
+    }
+
+    const pairsCurrentData = pairsCurrent.reduce((obj: any, cur: any) => {
+      return { ...obj, [cur.id]: cur };
+    }, {});
+    const pairsOneDayData = pairsOneDay.reduce((obj: any, cur: any) => {
+      return { ...obj, [cur.id]: cur };
+    }, {});
+    const pairsOneWeekData = pairsOneWeek.reduce((obj: any, cur: any) => {
+      return { ...obj, [cur.id]: cur };
+    }, {});
+
+    const formatted = pairsAddresses.map((address: string) => {
+      const current = pairsCurrentData[address];
+      const oneDay = pairsOneDayData[address];
+      const oneWeek = pairsOneWeekData[address];
+
+      const currentVolume =
+        current && current.volumeUSD ? Number(current.volumeUSD) : 0;
+
+      const oneDayVolume =
+        oneDay && oneDay.volumeUSD ? Number(oneDay.volumeUSD) : 0;
+
+      const weekVolume =
+        oneWeek && oneWeek.volumeUSD ? Number(oneWeek.volumeUSD) : 0;
+
+      const oneDayVolumeUSD = currentVolume - oneDayVolume;
+
+      const oneWeekVolumeUSD = currentVolume - weekVolume;
+
+      const currentTVL = current
+        ? current.trackedReserveUSD
+          ? Number(current.trackedReserveUSD)
+          : current.reserveUSD
+          ? Number(current.reserveUSD)
+          : 0
+        : 0;
+
+      const oneDayTVL = oneDay
+        ? oneDay.trackedReserveUSD
+          ? Number(oneDay.trackedReserveUSD)
+          : oneDay.reserveUSD
+          ? Number(oneDay.reserveUSD)
+          : 0
+        : 0;
+
+      const tvlUSD = currentTVL;
+      const tvlUSDChange = getPercentChange(tvlUSD, oneDayTVL);
+
+      return current
+        ? {
+            isV3: false,
+            token0: current.token0,
+            token1: current.token1,
+            fee: oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT,
+            id: address,
+            oneDayVolumeUSD,
+            oneWeekVolumeUSD,
+            trackedReserveUSD: tvlUSD,
+            tvlUSDChange,
+            totalValueLockedUSD: tvlUSD,
+          }
+        : undefined;
+    });
+
+    return formatted;
+  } catch (e) {
+    console.log(e);
+    return;
+  }
+};
+
 export const getTopPairs = async (count: number, chainId: ChainId) => {
   try {
     // fetch all current and historical data
@@ -876,31 +1022,40 @@ export const getTopPairsV2 = async (count: number, chainId: ChainId) => {
         ? pairsResult.data.pairs
         : [];
 
-    const [oneDayResult, oneWeekResult] = await Promise.all(
-      [oneDayBlock, oneWeekBlock].map(async (block) => {
-        const result = await clientV2[chainId].query({
-          query: PAIRS_HISTORICAL_BULK(block.number, pairsAddresses),
+    let pairsOneDay: any[] = [];
+    let pairsOneWeek: any[] = [];
+
+    if (oneDayBlock && oneDayBlock.number) {
+      try {
+        const oneDayResult = await clientV2[chainId].query({
+          query: PAIRS_HISTORICAL_BULK(oneDayBlock.number, pairsAddresses),
           fetchPolicy: 'network-only',
         });
-        return result;
-      }),
-    );
+        pairsOneDay =
+          oneDayResult &&
+          oneDayResult.data &&
+          oneDayResult.data.pairs &&
+          oneDayResult.data.pairs.length > 0
+            ? oneDayResult.data.pairs
+            : [];
+      } catch {}
+    }
 
-    const pairsOneDay =
-      oneDayResult &&
-      oneDayResult.data &&
-      oneDayResult.data.pairs &&
-      oneDayResult.data.pairs.length > 0
-        ? oneDayResult.data.pairs
-        : [];
-
-    const pairsOneWeek =
-      oneWeekResult &&
-      oneWeekResult.data &&
-      oneWeekResult.data.pairs &&
-      oneWeekResult.data.pairs.length > 0
-        ? oneWeekResult.data.pairs
-        : [];
+    if (oneWeekBlock && oneWeekBlock.number) {
+      try {
+        const oneWeekResult = await clientV2[chainId].query({
+          query: PAIRS_HISTORICAL_BULK(oneWeekBlock.number, pairsAddresses),
+          fetchPolicy: 'network-only',
+        });
+        pairsOneWeek =
+          oneWeekResult &&
+          oneWeekResult.data &&
+          oneWeekResult.data.pairs &&
+          oneWeekResult.data.pairs.length > 0
+            ? oneWeekResult.data.pairs
+            : [];
+      } catch {}
+    }
 
     const pairsCurrentData = pairsCurrent.reduce((obj: any, cur: any) => {
       return { ...obj, [cur.id]: cur };
@@ -1071,7 +1226,7 @@ export const getPairTransactions = async (
   chainId: ChainId,
 ) => {
   try {
-    const result = await txClient[chainId].query({
+    const result = await clientV2[chainId].query({
       query: FILTERED_TRANSACTIONS,
       variables: {
         allPairs: [pairAddress],
@@ -1351,15 +1506,28 @@ export const getBulkPairData: (
       fetchPolicy: 'network-only',
     });
 
-    const [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
-      [b1, b2, bWeek].map(async (block) => {
-        const result = await clientV2[chainId].query({
-          query: PAIRS_HISTORICAL_BULK(block, pairList),
-          fetchPolicy: 'network-only',
-        });
-        return result;
-      }),
-    );
+    let oneDayResult, twoDayResult, oneWeekResult;
+
+    try {
+      oneDayResult = await clientV2[chainId].query({
+        query: PAIRS_HISTORICAL_BULK(b1, pairList),
+        fetchPolicy: 'network-only',
+      });
+    } catch {}
+
+    try {
+      twoDayResult = await clientV2[chainId].query({
+        query: PAIRS_HISTORICAL_BULK(b2, pairList),
+        fetchPolicy: 'network-only',
+      });
+    } catch {}
+
+    try {
+      oneWeekResult = await clientV2[chainId].query({
+        query: PAIRS_HISTORICAL_BULK(bWeek, pairList),
+        fetchPolicy: 'network-only',
+      });
+    } catch {}
 
     const oneDayData = oneDayResult?.data?.pairs.reduce(
       (obj: any, cur: any) => {
@@ -1388,27 +1556,33 @@ export const getBulkPairData: (
           let data = pair;
           let oneDayHistory = oneDayData?.[pair.id];
           if (!oneDayHistory) {
-            const newData = await clientV2[chainId].query({
-              query: PAIR_DATA(pair.id, b1),
-              fetchPolicy: 'network-only',
-            });
-            oneDayHistory = newData.data.pairs[0];
+            try {
+              const newData = await clientV2[chainId].query({
+                query: PAIR_DATA(pair.id, b1),
+                fetchPolicy: 'network-only',
+              });
+              oneDayHistory = newData.data.pairs[0];
+            } catch {}
           }
           let twoDayHistory = twoDayData?.[pair.id];
           if (!twoDayHistory) {
-            const newData = await clientV2[chainId].query({
-              query: PAIR_DATA(pair.id, b2),
-              fetchPolicy: 'network-only',
-            });
-            twoDayHistory = newData.data.pairs[0];
+            try {
+              const newData = await clientV2[chainId].query({
+                query: PAIR_DATA(pair.id, b2),
+                fetchPolicy: 'network-only',
+              });
+              twoDayHistory = newData.data.pairs[0];
+            } catch {}
           }
           let oneWeekHistory = oneWeekData?.[pair.id];
           if (!oneWeekHistory) {
-            const newData = await clientV2[chainId].query({
-              query: PAIR_DATA(pair.id, bWeek),
-              fetchPolicy: 'network-only',
-            });
-            oneWeekHistory = newData.data.pairs[0];
+            try {
+              const newData = await clientV2[chainId].query({
+                query: PAIR_DATA(pair.id, bWeek),
+                fetchPolicy: 'network-only',
+              });
+              oneWeekHistory = newData.data.pairs[0];
+            } catch {}
           }
 
           // this is because old history data returns exact same data as current data when the old data does not exist
@@ -1570,9 +1744,11 @@ export async function getGlobalData(
   chainId: ChainId,
 ): Promise<any> {
   // data for each day , historic data used for % changes
-  let data: any = {};
-  let oneDayData: any = {};
-  let twoDayData: any = {};
+  let data: any;
+  let oneDayData: any;
+  let twoDayData: any;
+  let oneWeekData: any;
+  let twoWeekData: any;
 
   try {
     // get timestamps for the days
@@ -1597,65 +1773,100 @@ export async function getGlobalData(
     );
 
     // fetch the global data
-    const result = await clientV2[chainId].query({
-      query: GLOBAL_DATA(factory),
-      fetchPolicy: 'network-only',
-    });
-    data = result.data.uniswapFactories[0];
+    try {
+      const result = await clientV2[chainId].query({
+        query: GLOBAL_DATA(factory),
+        fetchPolicy: 'network-only',
+      });
+      data = result.data.uniswapFactories[0];
+    } catch {}
 
-    const queryReq = [
-      { index: 'result', block: null },
-      { index: 'oneDayData', block: oneDayBlock?.number },
-      { index: 'twoDayData', block: twoDayBlock?.number },
-      { index: 'oneWeekData', block: oneWeekBlock?.number },
-      { index: 'twoWeekData', block: twoWeekBlock?.number },
-    ];
-    const allData = await clientV2[chainId].query({
-      query: GLOBAL_ALLDATA(queryReq, factory),
-      fetchPolicy: 'network-only',
-    });
-    data = allData.data['result'][0];
-    oneDayData = allData.data['oneDayData'][0];
-    twoDayData = allData.data['twoDayData'][0];
-    const oneWeekData = allData.data['oneWeekData'][0];
-    const twoWeekData = allData.data['twoWeekData'][0];
-
-    if (data && oneDayData && twoDayData && twoWeekData) {
-      const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-        data.totalVolumeUSD,
-        oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
-        twoDayData.totalVolumeUSD ? twoDayData.totalVolumeUSD : 0,
-      );
-
-      const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-        data.totalVolumeUSD,
-        oneWeekData.totalVolumeUSD,
-        twoWeekData.totalVolumeUSD,
-      );
-
-      const [oneDayTxns, txnChange] = get2DayPercentChange(
-        data.txCount,
-        oneDayData.txCount ? oneDayData.txCount : 0,
-        twoDayData.txCount ? twoDayData.txCount : 0,
-      );
-
-      // format the total liquidity in USD
-      const liquidityChangeUSD = getPercentChange(
-        data.totalLiquidityETH * ethPrice,
-        oneDayData.totalLiquidityETH * oldEthPrice,
-      );
-      return {
-        ...data,
-        totalLiquidityUSD: data.totalLiquidityETH * ethPrice,
-        oneDayVolumeUSD,
-        oneWeekVolume,
-        weeklyVolumeChange,
-        volumeChangeUSD,
-        liquidityChangeUSD,
-        oneDayTxns,
-        txnChange,
-      };
+    if (oneDayBlock && oneDayBlock.number) {
+      try {
+        const oneDayResult = await clientV2[chainId].query({
+          query: GLOBAL_DATA(factory, oneDayBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        oneDayData = oneDayResult.data.uniswapFactories[0];
+      } catch {}
     }
+
+    if (twoDayBlock && twoDayBlock.number) {
+      try {
+        const twoDayResult = await clientV2[chainId].query({
+          query: GLOBAL_DATA(factory, twoDayBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        twoDayData = twoDayResult.data.uniswapFactories[0];
+      } catch {}
+    }
+
+    if (oneWeekBlock && oneWeekBlock.number) {
+      try {
+        const oneWeekResult = await clientV2[chainId].query({
+          query: GLOBAL_DATA(factory, oneWeekBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        oneWeekData = oneWeekResult.data.uniswapFactories[0];
+      } catch {}
+    }
+
+    if (twoWeekBlock && twoWeekBlock.number) {
+      try {
+        const twoWeekResult = await clientV2[chainId].query({
+          query: GLOBAL_DATA(factory, twoWeekBlock.number),
+          fetchPolicy: 'network-only',
+        });
+        twoWeekData = twoWeekResult.data.uniswapFactories[0];
+      } catch {}
+    }
+
+    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+      data && data.totalVolumeUSD ? Number(data.totalVolumeUSD) : 0,
+      oneDayData && oneDayData.totalVolumeUSD
+        ? Number(oneDayData.totalVolumeUSD)
+        : 0,
+      twoDayData && twoDayData.totalVolumeUSD
+        ? Number(twoDayData.totalVolumeUSD)
+        : 0,
+    );
+
+    const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
+      data && data.totalVolumeUSD ? Number(data.totalVolumeUSD) : 0,
+      oneWeekData && oneWeekData.totalVolumeUSD
+        ? Number(oneWeekData.totalVolumeUSD)
+        : 0,
+      twoWeekData && twoWeekData.totalVolumeUSD
+        ? Number(twoWeekData.totalVolumeUSD)
+        : 0,
+    );
+
+    const [oneDayTxns, txnChange] = get2DayPercentChange(
+      data && data.txCount ? Number(data.txCount) : 0,
+      oneDayData && oneDayData.txCount ? Number(oneDayData.txCount) : 0,
+      twoDayData && twoDayData.txCount ? Number(twoDayData.txCount) : 0,
+    );
+
+    const totalLiquidityEth =
+      data && data.totalLiquidityETH ? Number(data.totalLiquidityETH) : 0;
+    // format the total liquidity in USD
+    const liquidityChangeUSD = getPercentChange(
+      totalLiquidityEth * ethPrice,
+      (oneDayData && oneDayData.totalLiquidityETH
+        ? Number(oneDayData.totalLiquidityETH)
+        : 0) * oldEthPrice,
+    );
+    return {
+      ...data,
+      totalLiquidityUSD: totalLiquidityEth * ethPrice,
+      oneDayVolumeUSD,
+      oneWeekVolume,
+      weeklyVolumeChange,
+      volumeChangeUSD,
+      liquidityChangeUSD,
+      oneDayTxns,
+      txnChange,
+    };
   } catch (e) {
     console.log(e);
   }
@@ -1882,14 +2093,14 @@ export function calculateSlippageAmountV3(
   return [
     JSBI.divide(
       JSBI.multiply(
-        JSBI.BigInt(value.toExact()),
+        JSBI.BigInt(value.numerator.toString()),
         JSBI.BigInt(10000 - slippage),
       ),
       JSBI.BigInt(10000),
     ),
     JSBI.divide(
       JSBI.multiply(
-        JSBI.BigInt(value.toExact()),
+        JSBI.BigInt(value.numerator.toString()),
         JSBI.BigInt(10000 + slippage),
       ),
       JSBI.BigInt(10000),
@@ -2323,7 +2534,11 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
           setFeesPercent(feePercent);
         }
       }
-      if (ethPrice.price && ethPrice.oneDayPrice && v2) {
+      if (
+        v2 &&
+        ethPrice.price !== undefined &&
+        ethPrice.oneDayPrice !== undefined
+      ) {
         const v2data = await getGlobalData(
           ethPrice.price,
           ethPrice.oneDayPrice,
@@ -2365,29 +2580,28 @@ export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-export function getWalletKeys(
-  connector: AbstractConnector | undefined,
-): string[] {
+export function getWalletKeys(connector: Connector): Connection[] {
   const { ethereum } = window as any;
-  const isMetaMask = !!(
-    ethereum &&
-    !ethereum.isBitKeep &&
-    !ethereum.isBraveWallet &&
-    ethereum.isMetaMask
-  );
+  const isMetaMask = getIsMetaMaskWallet();
   const isBitkeep = !!(ethereum && ethereum.isBitKeep);
   const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
   const isCypherDWallet = !!(ethereum && ethereum.isCypherD);
   const isBraveWallet = !!(ethereum && ethereum.isBraveWallet);
-  return Object.keys(SUPPORTED_WALLETS).filter(
-    (k) =>
-      SUPPORTED_WALLETS[k].connector === connector &&
-      (connector !== injected ||
-        (isCypherDWallet && k == 'CYPHERD') ||
-        (isBlockWallet && k === 'BLOCKWALLET') ||
-        (isBitkeep && k === 'BITKEEP') ||
-        (isMetaMask && k === 'METAMASK') ||
-        (isBraveWallet && k === 'BRAVEWALLET')),
+  const isPhantomWallet = !!(ethereum && ethereum.isPhantom);
+  const isTrustWallet = !!(ethereum && ethereum.isTrustWallet);
+  const connections = getConnections();
+
+  return connections.filter(
+    (option) =>
+      option.connector === connector &&
+      (connector !== injectedConnection.connector ||
+        (isCypherDWallet && option.key == 'CYPHERD') ||
+        (isBlockWallet && option.key === 'BLOCKWALLET') ||
+        (isBitkeep && option.key === 'BITKEEP') ||
+        (isMetaMask && option.key === 'METAMASK') ||
+        (isBraveWallet && option.key === 'BRAVEWALLET') ||
+        (isPhantomWallet && option.key === 'PHANTOM_WALLET') ||
+        (isTrustWallet && option.key === 'TRUST_WALLET')),
   );
 }
 
@@ -2581,8 +2795,11 @@ export function getEarnedUSDDualFarm(stakingInfo: DualStakingInfo | undefined) {
   return `$${earnedUSD.toLocaleString('us')}`;
 }
 
-export function isSupportedNetwork(ethereum: any) {
-  return SUPPORTED_CHAINIDS.includes(Number(ethereum.chainId));
+export function useIsSupportedNetwork() {
+  const { currentChainId, chainId } = useActiveWeb3React();
+  if (currentChainId) return !!SUPPORTED_CHAINIDS.includes(currentChainId);
+  if (!chainId) return true;
+  return !!SUPPORTED_CHAINIDS.includes(chainId);
 }
 
 export function getPageItemsToLoad(index: number, countsPerPage: number) {
@@ -2719,41 +2936,6 @@ export const getEternalFarmFromTokens = async (
     return eternalFarm;
   } catch (e) {
     return;
-  }
-};
-
-export const switchNetwork = (
-  chainId: ChainId,
-  updateLocalChainId: (chainId: ChainId) => void,
-) => {
-  const config = getConfig(chainId);
-  const { ethereum } = window as any;
-  const chainIdHex = chainId.toString(16);
-  if (ethereum) {
-    ethereum
-      .request({
-        method: 'wallet_addEthereumChain',
-        params: [
-          {
-            chainId: `0x${chainIdHex}`,
-            chainName: `${config['networkName']} Network`,
-            rpcUrls: [config['rpc']],
-            iconUrls: [`/${config['nativeCurrencyImage']}`],
-            blockExplorerUrls: [config['blockExplorer']],
-            nativeCurrency: config['nativeCurrency'],
-          },
-        ], // you must have access to the specified account
-      })
-      .catch((error: any) => {
-        if (error.code === 4001) {
-          console.log('We can encrypt anything without the key.');
-        } else {
-          console.error(error);
-        }
-      });
-  } else {
-    localStorage.setItem('quickswap_chainId', chainId.toString());
-    updateLocalChainId(chainId);
   }
 };
 

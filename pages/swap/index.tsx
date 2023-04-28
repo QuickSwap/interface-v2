@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
-import { SettingsModal } from 'components';
+import { Box, useTheme, useMediaQuery } from '@mui/material';
+import { SettingsModal, AdsSlider } from 'components';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import React, { useEffect, useState } from 'react';
@@ -29,6 +29,8 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const token1 = wrappedCurrency(currencies[Field.INPUT], chainIdToUse);
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainIdToUse);
 
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainIdToUse);
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainIdToUse);
 
@@ -89,6 +91,10 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           token2={isV2 ? token2 : token2V3}
         />
       )}
+
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto 24px'>
+        <AdsSlider sort='analytics' />
+      </Box>
     </Box>
   );
 };

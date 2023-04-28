@@ -18,6 +18,7 @@ import { useTranslation } from 'next-i18next';
 import styles from './CurrencyInputPanel.module.scss';
 import styles1 from 'styles/components/CurrencyInput.module.scss';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -81,14 +82,17 @@ export default function CurrencyInputPanel({
     currency ?? undefined,
   );
 
-  const currentPrice = useUSDCPrice(currency ?? undefined);
+  const currentPrice = useUSDCPriceFromAddress(
+    currency?.wrapped.address ?? '',
+    true,
+  );
 
   const valueAsUsd = useMemo(() => {
     if (!currentPrice || !value) {
       return 0;
     }
 
-    return Number(currentPrice.toSignificant()) * Number(value);
+    return currentPrice * Number(value);
   }, [currentPrice, value]);
 
   const handleDismissSearch = useCallback(() => {

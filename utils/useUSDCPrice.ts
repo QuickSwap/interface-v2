@@ -72,7 +72,10 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   }, [currency, allowedPairs, amountOut]);
 }
 
-export function useUSDCPricesFromAddresses(addressArray: string[]) {
+export function useUSDCPricesFromAddresses(
+  addressArray: string[],
+  onlyV3?: boolean,
+) {
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
   const { ethPrice } = useEthPrice();
@@ -80,7 +83,7 @@ export function useUSDCPricesFromAddresses(addressArray: string[]) {
   const [prices, setPrices] = useState<
     { address: string; price: number }[] | undefined
   >();
-  const v2 = config['v2'];
+  const v2 = config['v2'] && !onlyV3;
   const addressStr = addressArray.join(',');
 
   useEffect(() => {
@@ -191,8 +194,8 @@ export function useUSDCPricesFromAddresses(addressArray: string[]) {
   return prices;
 }
 
-export function useUSDCPriceFromAddress(address: string) {
-  const usdPrices = useUSDCPricesFromAddresses([address]);
+export function useUSDCPriceFromAddress(address: string, onlyV3?: boolean) {
+  const usdPrices = useUSDCPricesFromAddresses([address], onlyV3);
   if (usdPrices) {
     return usdPrices[0].price;
   }

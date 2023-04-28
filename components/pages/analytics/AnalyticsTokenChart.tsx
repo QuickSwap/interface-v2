@@ -92,27 +92,19 @@ const AnalyticsTokenChart: React.FC<{
       if (chainId && tokenAddress) {
         updateTokenChartData(null);
 
-        const duration =
-          durationIndex === GlobalConst.analyticChart.ALL_CHART
-            ? 0
-            : getChartStartTime(durationIndex);
-
-        const tokenChartDataFn =
-          version === 'v3'
-            ? getTokenChartDataV3(tokenAddress, duration, chainId)
-            : version === 'v2'
-            ? getTokenChartData(tokenAddress, duration, chainId)
-            : getTokenChartDataTotal(tokenAddress, duration, chainId);
-
-        tokenChartDataFn.then((chartData) => {
-          if (chartData) {
-            const newChartData = getLimitedData(
-              chartData,
-              GlobalConst.analyticChart.CHART_COUNT,
-            );
-            updateTokenChartData(newChartData);
-          }
-        });
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-chart-data/${tokenAddress}/${durationIndex}/${version}?chainId=${chainId}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get token chart data`,
+          );
+        }
+        const data = await res.json();
+        if (data?.data?.tokenChartData) {
+          updateTokenChartData(data?.data?.tokenChartData);
+        }
       }
     }
     fetchTokenChartData();

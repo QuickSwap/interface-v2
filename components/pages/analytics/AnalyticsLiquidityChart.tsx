@@ -5,19 +5,15 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import {
   formatCompact,
-  getChartData,
   getPriceClass,
   getChartDates,
-  getChartStartTime,
   getLimitedData,
   getFormattedPercent,
 } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'next-i18next';
-import { getChartDataV3, getChartDataTotal } from 'utils/v3-graph';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
 dayjs.extend(utc);
 
 const AnalyticsLiquidityChart: React.FC<{
@@ -38,28 +34,24 @@ const AnalyticsLiquidityChart: React.FC<{
       updateGlobalChartData(null);
       setDataLoaded(false);
 
-      const duration =
-        durationIndex === GlobalConst.analyticChart.ALL_CHART
-          ? 0
-          : getChartStartTime(durationIndex);
-
-      const chartDataFn =
-        version === 'v2'
-          ? getChartData(duration, chainId)
-          : version === 'total'
-          ? getChartDataTotal(duration, chainId)
-          : getChartDataV3(duration, chainId);
-
-      chartDataFn.then(([newChartData]) => {
-        setDataLoaded(true);
-        if (newChartData) {
-          const chartData = getLimitedData(
-            newChartData,
-            GlobalConst.analyticChart.CHART_COUNT,
-          );
-          updateGlobalChartData(chartData);
-        }
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText ||
+            res.statusText ||
+            `Failed to get chart data ${durationIndex} ${version}`,
+        );
+      }
+      const pairsData = await res.json();
+      setDataLoaded(true);
+      const chartData = getLimitedData(
+        pairsData.data[0],
+        GlobalConst.analyticChart.CHART_COUNT,
+      );
+      updateGlobalChartData(chartData);
     };
     fetchChartData();
     // eslint-disable-next-line react-hooks/exhaustive-deps

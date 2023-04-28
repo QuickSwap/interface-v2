@@ -23,6 +23,7 @@ export type PopupContent =
 
 export enum ApplicationModal {
   WALLET,
+  NETWORK_SELECTION,
   SETTINGS,
   SETTINGSV3,
   SELF_CLAIM,
@@ -99,8 +100,4 @@ export const updateIsV2 = createAction<boolean>('application/updateIsV2');
 
 export const updateUDDomain = createAction<string | undefined>(
   'application/updateUDDomain',
-);
-
-export const updateLocalChainId = createAction<ChainId | undefined>(
-  'application/updateLocalChainId',
 );

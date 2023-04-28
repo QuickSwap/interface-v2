@@ -12,7 +12,10 @@ import { Currency, CurrencyAmount, NativeCurrency } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@mui/material';
-import { useWalletModalToggle } from 'state/application/hooks';
+import {
+  useNetworkSelectionModalToggle,
+  useWalletModalToggle,
+} from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -35,8 +38,7 @@ import { useTransactionFinalizer } from 'state/transactions/hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import {
-  addMaticToMetamask,
-  isSupportedNetwork,
+  useIsSupportedNetwork,
   maxAmountSpend,
   basisPointsToPercent,
   getContract,
@@ -69,6 +71,7 @@ const SwapBestTrade: React.FC<{
   const router = useRouter();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const isProMode = useIsProMode();
+  const isSupportedNetwork = useIsSupportedNetwork();
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -173,14 +176,13 @@ const SwapBestTrade: React.FC<{
 
   const [optimalRateError, setOptimalRateError] = useState('');
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
-  const { ethereum } = window as any;
   const [mainPrice, setMainPrice] = useState(true);
   const isValid = !swapInputError && !optimalRateError;
 
   //TODO: move to utils
   const connectWallet = () => {
-    if (ethereum && !isSupportedNetwork(ethereum)) {
-      addMaticToMetamask();
+    if (!isSupportedNetwork) {
+      toggleNetworkSelectionModal();
     } else {
       toggleWalletModal();
     }
@@ -398,6 +400,7 @@ const SwapBestTrade: React.FC<{
       (approvalSubmitted && approval === ApprovalState.APPROVED));
 
   const toggleWalletModal = useWalletModalToggle();
+  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
 
   useEffect(() => {
     if (approval === ApprovalState.PENDING) {
@@ -445,6 +448,7 @@ const SwapBestTrade: React.FC<{
 
   const swapButtonText = useMemo(() => {
     if (account) {
+      if (!isSupportedNetwork) return t('switchNetwork');
       if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
         return t('selectToken');
       } else if (
@@ -461,9 +465,13 @@ const SwapBestTrade: React.FC<{
       } else if (
         optimalRateError === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT'
       ) {
-        return `Price impact is more than ${maxImpactAllowed}%. Please use v2 or v3.`;
-      } else if (optimalRateError || swapInputError) {
-        return optimalRateError || swapInputError;
+        return t('priceImpactReached', { maxImpact: maxImpactAllowed });
+      } else if (optimalRateError) {
+        return optimalRateError.includes('<!DOCTYPE')
+          ? t('bestTradeBanned')
+          : optimalRateError;
+      } else if (swapInputError) {
+        return swapInputError;
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return t('insufficientLiquidityTrade');
       } else if (
@@ -471,16 +479,16 @@ const SwapBestTrade: React.FC<{
         swapInputBalance &&
         swapInputAmountWithSlippage.greaterThan(swapInputBalance)
       ) {
-        return `Insufficient ${currencies[Field.INPUT]?.symbol} Balance`;
+        return t('insufficientBalance', {
+          symbol: currencies[Field.INPUT]?.symbol,
+        });
       } else if (bonusRouteLoading) {
         return t('fetchingBestRoute');
       } else {
         return t('swap');
       }
     } else {
-      return ethereum && !isSupportedNetwork(ethereum)
-        ? t('switchPolygon')
-        : t('connectWallet');
+      return t('connectWallet');
     }
   }, [
     account,
@@ -493,11 +501,11 @@ const SwapBestTrade: React.FC<{
     userHasSpecifiedInputOutput,
     swapInputAmountWithSlippage,
     swapInputBalance,
+    bonusRouteLoading,
     t,
     wrapType,
     maxImpactAllowed,
-    ethereum,
-    bonusRouteLoading,
+    isSupportedNetwork,
   ]);
 
   const swapButtonDisabled = useMemo(() => {
@@ -520,6 +528,7 @@ const SwapBestTrade: React.FC<{
         swapInputBalance &&
         swapInputAmountWithSlippage.greaterThan(swapInputBalance));
     if (account) {
+      if (!isSupportedNetwork) return false;
       if (showWrap) {
         return Boolean(wrapInputError);
       } else if (noRoute && userHasSpecifiedInputOutput) {
@@ -548,6 +557,7 @@ const SwapBestTrade: React.FC<{
     swapInputAmountWithSlippage,
     swapInputBalance,
     account,
+    isSupportedNetwork,
     showWrap,
     noRoute,
     userHasSpecifiedInputOutput,
@@ -1031,7 +1041,7 @@ const SwapBestTrade: React.FC<{
                 optimalRateError ||
                 swapButtonDisabled) as boolean
             }
-            onClick={account ? onParaswap : connectWallet}
+            onClick={account && isSupportedNetwork ? onParaswap : connectWallet}
           >
             {swapButtonText}
           </Button>
