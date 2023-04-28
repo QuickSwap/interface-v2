@@ -1,5 +1,4 @@
 import { getAddress } from '@ethersproject/address';
-import BN from 'bn.js';
 import { ApolloClient } from 'apollo-client';
 import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
@@ -2874,28 +2873,6 @@ export function getCallStateResult(callState?: CallState) {
   if (callState && callState.result) return callState.result[0];
   return;
 }
-
-export const convertBNToNumber = (value: BN, decimals: BN) => {
-  return Number(
-    formatUnits(BigNumber.from(value.toString()), Number(decimals)),
-  );
-};
-
-export const convertNumbertoBN = (
-  value: number,
-  decimals: number,
-  web3: Web3,
-) => {
-  const valueWithoutDecimal = Math.floor(value);
-  const decimalNumber = value - valueWithoutDecimal;
-
-  return web3.utils
-    .toBN(valueWithoutDecimal)
-    .mul(web3.utils.toBN(10 ** decimals))
-    .add(
-      web3.utils.toBN(Math.floor(decimalNumber * 10 ** decimals).toString()),
-    );
-};
 
 export const getEternalFarmFromTokens = async (
   token0: string,

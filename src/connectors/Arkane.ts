@@ -39,29 +39,32 @@ export class Venly extends Connector {
   private async isomorphicInitialize(): Promise<void> {
     if (this.eagerConnection) return;
 
-    await (this.eagerConnection = this.Venly.createProviderEngine(
-      this.options,
-    ).then((provider) => {
-      this.provider = provider;
+    await (this.eagerConnection = this.Venly.createProvider(this.options).then(
+      (provider) => {
+        this.provider = provider;
 
-      this.provider.on('connect', ({ chainId }: ProviderConnectInfo): void => {
-        this.actions.update({ chainId: parseChainId(chainId) });
-      });
+        this.provider.on(
+          'connect',
+          ({ chainId }: ProviderConnectInfo): void => {
+            this.actions.update({ chainId: parseChainId(chainId) });
+          },
+        );
 
-      this.provider.on('disconnect', (error: ProviderRpcError): void => {
-        this.actions.resetState();
-        this.onError?.(error);
-      });
+        this.provider.on('disconnect', (error: ProviderRpcError): void => {
+          this.actions.resetState();
+          this.onError?.(error);
+        });
 
-      this.provider.on('chainChanged', (chainId: string): void => {
-        this.actions.update({ chainId: parseChainId(chainId) });
-      });
+        this.provider.on('chainChanged', (chainId: string): void => {
+          this.actions.update({ chainId: parseChainId(chainId) });
+        });
 
-      this.provider.on('accountsChanged', (accounts: string[]): void => {
-        if (accounts.length === 0) this.actions.resetState();
-        else this.actions.update({ accounts });
-      });
-    }));
+        this.provider.on('accountsChanged', (accounts: string[]): void => {
+          if (accounts.length === 0) this.actions.resetState();
+          else this.actions.update({ accounts });
+        });
+      },
+    ));
   }
 
   /** {@inheritdoc Connector.connectEagerly} */

@@ -12,7 +12,6 @@ import invariant from 'tiny-invariant';
 import { Position } from './entities/position';
 import { MethodParameters, toHex } from './utils/calldata';
 import { Interface } from '@ethersproject/abi';
-// import { abi } from '@uniswap/v3-periphery/artifacts/contracts/NonfungiblePositionManager.sol/NonfungiblePositionManager.json'
 import nonFunPosMan from 'abis/non-fun-pos-man.json';
 import { PermitOptions, SelfPermit } from './selfPermit';
 import { Pool } from './entities';

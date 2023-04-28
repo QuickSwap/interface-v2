@@ -11,7 +11,6 @@ import invariant from 'tiny-invariant';
 import { Trade } from './trade';
 import { PermitOptions, SelfPermit } from './selfPermit';
 import { MethodParameters, toHex } from './utils/calldata';
-// import { abi } from '@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json'
 import abi from 'constants/abis/v3/swap-router.json';
 import { ADDRESS_ZERO } from 'v3lib/utils/v3constants';
 import { encodeRouteToPath } from './utils/encodeRouteToPath';

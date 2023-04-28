@@ -1,6 +1,7 @@
 import { ChainId, JSBI } from '@uniswap/sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
-import { Pool, TickMath } from '@uniswap/v3-sdk';
+import { Pool } from 'v3lib/entities/pool';
+import { TickMath } from 'v3lib/utils/tickMath';
 import { BigNumber } from 'ethers';
 import React, {
   useCallback,
