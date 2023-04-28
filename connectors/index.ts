@@ -1,4 +1,3 @@
-import { Web3Provider } from '@ethersproject/providers';
 import { initializeConnector, Web3ReactHooks } from '@web3-react/core';
 import { CoinbaseWallet } from '@web3-react/coinbase-wallet';
 import { GnosisSafe } from '@web3-react/gnosis-safe';
@@ -10,23 +9,22 @@ import { WalletConnectPopup } from './WalletConnect';
 // import { FortmaticConnector } from './Fortmatic';
 // import { ArkaneConnector } from './Arkane';
 import { ChainId } from '@uniswap/sdk';
-import MetamaskIcon from 'assets/images/metamask.png';
-import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
-import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
-import cypherDIcon from 'assets/images/cypherDIcon.png';
-import BitKeepIcon from 'assets/images/bitkeep.png';
-import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
-import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
-import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
-import VenlyIcon from 'assets/images/venly.svg';
-import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
-import GnosisIcon from 'assets/images/gnosis_safe.png';
-import TrustIcon from 'assets/images/trust.png';
-import ZengoIcon from 'assets/images/zengo.png';
 import { GlobalConst } from 'constants/index';
 import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 
-const POLLING_INTERVAL = 12000;
+const MetamaskIcon = 'assets/images/metamask.png';
+const BlockWalletIcon = 'assets/images/blockwalletIcon.svg';
+const BraveWalletIcon = 'assets/images/braveWalletIcon.png';
+const cypherDIcon = 'assets/images/cypherDIcon.png';
+const BitKeepIcon = 'assets/images/bitkeep.png';
+const CoinbaseWalletIcon = 'assets/images/coinbaseWalletIcon.svg';
+const WalletConnectIcon = 'assets/images/walletConnectIcon.svg';
+const PhantomIcon = 'assets/images/wallets/phantomIconPurple.svg';
+const VenlyIcon = 'assets/images/venly.svg';
+const UnstoppableDomainsIcon = 'assets/images/unstoppableDomains.png';
+const GnosisIcon = 'assets/images/gnosis_safe.png';
+const TrustIcon = 'assets/images/trust.png';
+const ZengoIcon = 'assets/images/zengo.png';
 
 function onError(error: Error) {
   console.debug(`web3-react error: ${error}`);

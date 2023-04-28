@@ -6,8 +6,6 @@ import Head from 'next/head';
 import Script from 'next/script';
 import { PageLayout } from 'layouts';
 import Background from 'layouts/Background';
-import { Web3ReactProvider } from '@web3-react/core';
-import { getLibrary } from 'utils';
 import { mainTheme } from 'styles/theme';
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
 import store from 'state';
@@ -26,14 +24,8 @@ import AdsUpdater from 'state/ads/updater';
 import GasUpdater from 'state/application/gasUpdater';
 import StyledThemeProvider from 'theme/index';
 import { Web3ReactManager, Popups } from 'components';
-import dynamic from 'next/dynamic';
 import { appWithTranslation } from 'next-i18next';
 import './index.scss';
-
-const Web3DefaultNetworkProvider = dynamic(
-  () => import('components/Web3DefaultNetworkProvider'),
-  { ssr: false },
-);
 
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -116,23 +108,19 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         }}
       />
       <QueryClientProvider client={queryClient}>
-        <Web3ReactProvider getLibrary={getLibrary}>
-          <Web3DefaultNetworkProvider getLibrary={getLibrary}>
-            <Provider store={store}>
-              <Updaters />
-              <Providers>
-                <Popups />
-                <StyledThemeProvider>
-                  <Web3ReactManager>
-                    <PageLayout>
-                      <Component {...pageProps} />
-                    </PageLayout>
-                  </Web3ReactManager>
-                </StyledThemeProvider>
-              </Providers>
-            </Provider>
-          </Web3DefaultNetworkProvider>
-        </Web3ReactProvider>
+        <Provider store={store}>
+          <Web3ReactManager>
+            <Updaters />
+            <Providers>
+              <Popups />
+              <StyledThemeProvider>
+                <PageLayout>
+                  <Component {...pageProps} />
+                </PageLayout>
+              </StyledThemeProvider>
+            </Providers>
+          </Web3ReactManager>
+        </Provider>
       </QueryClientProvider>
     </>
   );
