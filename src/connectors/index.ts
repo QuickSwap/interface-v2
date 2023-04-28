@@ -1,4 +1,3 @@
-import { Web3Provider } from '@ethersproject/providers';
 import { initializeConnector, Web3ReactHooks } from '@web3-react/core';
 import { CoinbaseWallet } from '@web3-react/coinbase-wallet';
 import { GnosisSafe } from '@web3-react/gnosis-safe';
@@ -8,7 +7,7 @@ import { Connector } from '@web3-react/types';
 import { WalletConnectPopup } from './WalletConnect';
 // import { UAuthConnector } from '@uauth/web3-react';
 // import { FortmaticConnector } from './Fortmatic';
-// import { ArkaneConnector } from './Arkane';
+import { Venly } from './Arkane';
 import { ChainId } from '@uniswap/sdk';
 import MetamaskIcon from 'assets/images/metamask.png';
 import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
@@ -265,37 +264,32 @@ export const zengoConnectConnection: Connection = {
 };
 
 // mainnet only
-// export const arkaneconnect = new ArkaneConnector({
-//   clientID: 'QuickSwap',
-//   chainId: 137,
-// });
-
-// mainnet only
 // export const fortmatic = new FortmaticConnector({
 //   apiKey: FORMATIC_KEY ?? '',
 //   chainId: 137,
 // });
 
-// const [web3Arkane, web3ArkaneHooks] = initializeConnector<ArkaneConnector>(
-//   (actions) =>
-//     new ArkaneConnector({
-//       clientID: 'QuickSwap',
-//       chainId: 137,
-//       actions,
-//       onError,
-//     }),
-// );
+const [web3Arkane, web3ArkaneHooks] = initializeConnector<Venly>(
+  (actions) =>
+    new Venly({
+      actions,
+      options: {
+        clientId: 'QuickSwap',
+        skipAuthentication: false,
+      },
+    }),
+);
 
-// export const arkaneConnection: Connection = {
-//   key: 'ARKANE_CONNECT',
-//   name: GlobalConst.walletName.ARKANE_CONNECT,
-//   connector: web3Arkane,
-//   hooks: web3ArkaneHooks,
-//   type: ConnectionType.COINBASE_WALLET,
-//   iconName: VenlyIcon,
-//   color: '#4196FC',
-//   description: 'Login using Venly hosted wallet.',
-// };
+export const arkaneConnection: Connection = {
+  key: 'ARKANE_CONNECT',
+  name: GlobalConst.walletName.ARKANE_CONNECT,
+  connector: web3Arkane,
+  hooks: web3ArkaneHooks,
+  type: ConnectionType.COINBASE_WALLET,
+  iconName: VenlyIcon,
+  color: '#4196FC',
+  description: 'Login using Venly hosted wallet.',
+};
 
 const [web3CoinbaseWallet, web3CoinbaseWalletHooks] = initializeConnector<
   CoinbaseWallet
@@ -349,5 +343,6 @@ export function getConnections() {
     coinbaseWalletConnection,
     walletConnectConnection,
     zengoConnectConnection,
+    arkaneConnection,
   ];
 }

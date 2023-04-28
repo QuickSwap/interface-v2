@@ -1,69 +1,137 @@
-import invariant from 'tiny-invariant';
-import { ChainId } from '@uniswap/sdk';
-// import { Arkane } from '@arkane-network/web3-arkane-provider';
-// import { ArkaneConnect, SecretType } from '@arkane-network/arkane-connect';
-// import Web3 from 'web3';
-import { Actions, Connector, Provider } from '@web3-react/types';
+import {
+  Actions,
+  AddEthereumChainParameter,
+  ProviderConnectInfo,
+  ProviderRpcError,
+} from '@web3-react/types';
+import { Connector } from '@web3-react/types';
+import { VenlyProvider, VenlyProviderOptions } from '@venly/web3-provider';
 
-type ArkaneSupportedChains = Extract<ChainId, ChainId.MATIC | ChainId.MUMBAI>;
+function parseChainId(chainId: string | number) {
+  return typeof chainId === 'number'
+    ? chainId
+    : Number.parseInt(chainId, chainId.startsWith('0x') ? 16 : 10);
+}
 
-const CHAIN_ID_NETWORK_ARGUMENT: {
-  readonly [chainId in ArkaneSupportedChains]: string | undefined;
-} = {
-  [ChainId.MUMBAI]: 'mumbai',
-  [ChainId.MATIC]: 'matic',
-};
-
-interface ArkaneConnectorArguments {
-  clientID: string;
-  chainId: number;
+/**
+ * @param options - Options to pass to VenlyProvider.
+ * @param onError - Handler to report errors thrown from eventListeners.
+ */
+export interface VenlyConstructorArgs {
   actions: Actions;
+  options: VenlyProviderOptions;
   onError?: (error: Error) => void;
 }
 
-export class ArkaneConnector extends Connector {
-  private readonly clientID: string;
-  private readonly chainId: number;
+export class Venly extends Connector {
+  /** {@inheritdoc Connector.provider} */
+  public provider: any;
 
-  public arkane: any;
+  private readonly options: VenlyProviderOptions;
+  private eagerConnection?: Promise<void>;
+  private Venly = new VenlyProvider();
 
-  constructor({
-    clientID,
-    chainId,
-    actions,
-    onError,
-  }: ArkaneConnectorArguments) {
-    invariant(
-      Object.keys(CHAIN_ID_NETWORK_ARGUMENT).includes(chainId.toString()),
-      `Unsupported chainId ${chainId}`,
-    );
+  constructor({ actions, options, onError }: VenlyConstructorArgs) {
     super(actions, onError);
-
-    this.clientID = clientID;
-    this.chainId = chainId;
+    this.options = options;
   }
 
-  public async activate(chainId: number) {
-    // if (!this.arkane) {
-    //   this.arkane = new ArkaneConnect(this.clientID);
-    // }
-    // const options = {
-    //   clientId: this.clientID,
-    //   secretType: SecretType.MATIC,
-    //   signMethod: 'POPUP',
-    //   skipAuthentication: false,
-    // };
-    // const arkaneProvider = await Arkane.createArkaneProviderEngine(options);
-    // this.customProvider = arkaneProvider;
-    // const web3 = new Web3(arkaneProvider as any);
-    // const accounts = await web3.eth.getAccounts();
-    // this.actions.update({ chainId, accounts });
+  private async isomorphicInitialize(): Promise<void> {
+    if (this.eagerConnection) return;
+
+    await (this.eagerConnection = this.Venly.createProviderEngine(
+      this.options,
+    ).then((provider) => {
+      this.provider = provider;
+
+      this.provider.on('connect', ({ chainId }: ProviderConnectInfo): void => {
+        this.actions.update({ chainId: parseChainId(chainId) });
+      });
+
+      this.provider.on('disconnect', (error: ProviderRpcError): void => {
+        this.actions.resetState();
+        this.onError?.(error);
+      });
+
+      this.provider.on('chainChanged', (chainId: string): void => {
+        this.actions.update({ chainId: parseChainId(chainId) });
+      });
+
+      this.provider.on('accountsChanged', (accounts: string[]): void => {
+        if (accounts.length === 0) this.actions.resetState();
+        else this.actions.update({ accounts });
+      });
+    }));
   }
 
-  public deactivate(): void {
-    if (super.deactivate) {
-      super.deactivate();
+  /** {@inheritdoc Connector.connectEagerly} */
+  public async connectEagerly(): Promise<void> {
+    const cancelActivation = this.actions.startActivation();
+
+    try {
+      await this.isomorphicInitialize();
+      if (!this.provider) throw new Error('No existing connection');
+
+      // Wallets may resolve eth_chainId and hang on eth_accounts pending user interaction, which may include changing
+      // chains; they should be requested serially, with accounts first, so that the chainId can settle.
+      const [accounts, chainId] = await Promise.all([
+        this.provider.request({ method: 'eth_accounts' }),
+        this.provider.request({ method: 'eth_chainId' }),
+      ]);
+      if (!accounts.length) throw new Error('No accounts returned');
+      this.actions.update({ chainId: parseChainId(chainId), accounts });
+    } catch (error) {
+      cancelActivation();
+      throw error;
     }
-    this.arkane.logout();
+  }
+
+  /**
+   * Initiates a connection.
+   *
+   * @param desiredChainIdOrChainParameters - If defined, indicates the desired chain to connect to. If the user is
+   * already connected to this chain, no additional steps will be taken. Otherwise, the user will be prompted to switch
+   * to the chain, if one of two conditions is met: either they already have it added, or the argument is of type
+   * AddEthereumChainParameter, in which case the user will be prompted to add the chain with the specified parameters
+   * first, before being prompted to switch.
+   */
+  public async activate(
+    desiredChainIdOrChainParameters?: number | AddEthereumChainParameter,
+  ): Promise<void> {
+    const desiredChainId =
+      typeof desiredChainIdOrChainParameters === 'number'
+        ? desiredChainIdOrChainParameters
+        : desiredChainIdOrChainParameters?.chainId;
+
+    const cancelActivation = this.actions.startActivation();
+
+    try {
+      await this.isomorphicInitialize();
+      if (!this.provider) throw new Error('No provider');
+
+      // Wallets may resolve eth_chainId and hang on eth_accounts pending user interaction, which may include changing
+      // chains; they should be requested serially, with accounts first, so that the chainId can settle.
+      const [accounts, chainId] = await Promise.all([
+        this.provider.request({ method: 'eth_accounts' }),
+        this.provider.request({ method: 'eth_chainId' }),
+      ]);
+      const receivedChainId = parseChainId(chainId);
+
+      if (!desiredChainId || desiredChainId === receivedChainId)
+        return this.actions.update({ chainId: receivedChainId, accounts });
+
+      //if we're here, we can try to switch networks
+      const desiredChainIdHex = `0x${desiredChainId.toString(16)}`;
+      await this.provider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: desiredChainIdHex }],
+      });
+
+      this.provider = this.Venly._provider;
+      this.activate(desiredChainId);
+    } catch (error) {
+      cancelActivation();
+      throw error;
+    }
   }
 }
