@@ -22,7 +22,6 @@ import SyrupUpdater from 'state/syrups/updater';
 import AnalyticsUpdater from 'state/analytics/updater';
 import AdsUpdater from 'state/ads/updater';
 import GasUpdater from 'state/application/gasUpdater';
-import StyledThemeProvider from 'theme/index';
 import { Web3ReactManager, Popups } from 'components';
 import { appWithTranslation } from 'next-i18next';
 import './index.scss';
@@ -113,11 +112,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
             <Updaters />
             <Providers>
               <Popups />
-              <StyledThemeProvider>
-                <PageLayout>
-                  <Component {...pageProps} />
-                </PageLayout>
-              </StyledThemeProvider>
+              <PageLayout>
+                <Component {...pageProps} />
+              </PageLayout>
             </Providers>
           </Web3ReactManager>
         </Provider>

@@ -742,15 +742,11 @@ const SwapV3Page: React.FC = () => {
                     ) : (approvalSubmitted &&
                         approvalState === ApprovalState.APPROVED) ||
                       signatureState === UseERC20PermitState.SIGNED ? (
-<<<<<<< HEAD:components/pages/swap/SwapV3/index.tsx
-                      <CheckCircle size='20' style={{ marginLeft: '5px' }} />
-=======
                       <CheckCircle
                         size='20'
                         style={{ marginLeft: '5px' }}
                         className='text-success'
                       />
->>>>>>> testing/orbs:src/pages/SwapPage/V3/Swap/index.tsx
                     ) : (
                       <CustomTooltip
                         title={t('mustgiveContractsPermission', {
