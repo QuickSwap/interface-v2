@@ -15,10 +15,6 @@ import SwapCallbackError from 'components/v3/swap/SwapCallbackError';
 import SwapHeader from 'components/v3/swap/SwapHeader';
 import TradePrice from 'components/v3/swap/TradePrice';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
-import {
-  MouseoverTooltip,
-  MouseoverTooltipContent,
-} from 'components/v3/Tooltip';
 import { useActiveWeb3React } from 'hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import {
@@ -58,7 +54,7 @@ import { warningSeverity } from 'utils/v3/prices';
 
 import { Box, Button, CircularProgress } from '@mui/material';
 import { ChainId, ETHER } from '@uniswap/sdk';
-import { AddressInput } from 'components';
+import { AddressInput, CustomTooltip } from 'components';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import { useTranslation } from 'next-i18next';
@@ -655,24 +651,24 @@ const SwapV3Page: React.FC = () => {
               showInverted={showInverted}
               setShowInverted={setShowInverted}
             />
-            <MouseoverTooltipContent
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-ignore
+            <CustomTooltip
               onOpen={() => {
                 ReactGA.event({
                   category: 'Swap',
                   action: 'Transaction Details Tooltip Open',
                 });
               }}
-              content={
+              title={
                 <AdvancedSwapDetails
                   trade={trade}
                   allowedSlippage={allowedSlippage}
                 />
               }
             >
-              <Info size={'1rem'} stroke='white' />
-            </MouseoverTooltipContent>
+              <Box padding='0.25rem' className='flex'>
+                <Info size={'1rem'} stroke='white' />
+              </Box>
+            </CustomTooltip>
           </div>
         )}
 
@@ -746,10 +742,18 @@ const SwapV3Page: React.FC = () => {
                     ) : (approvalSubmitted &&
                         approvalState === ApprovalState.APPROVED) ||
                       signatureState === UseERC20PermitState.SIGNED ? (
+<<<<<<< HEAD:components/pages/swap/SwapV3/index.tsx
                       <CheckCircle size='20' style={{ marginLeft: '5px' }} />
+=======
+                      <CheckCircle
+                        size='20'
+                        style={{ marginLeft: '5px' }}
+                        className='text-success'
+                      />
+>>>>>>> testing/orbs:src/pages/SwapPage/V3/Swap/index.tsx
                     ) : (
-                      <MouseoverTooltip
-                        text={t('mustgiveContractsPermission', {
+                      <CustomTooltip
+                        title={t('mustgiveContractsPermission', {
                           symbol: currencies[Field.INPUT]?.symbol,
                         })}
                       >
@@ -758,7 +762,7 @@ const SwapV3Page: React.FC = () => {
                           color={'white'}
                           style={{ marginLeft: '8px' }}
                         />
-                      </MouseoverTooltip>
+                      </CustomTooltip>
                     )}
                   </Box>
                 </Button>

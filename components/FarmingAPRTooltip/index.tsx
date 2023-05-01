@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
 import { formatNumber } from 'utils';
 import styles from 'styles/components/FarmingAPRToolTip.module.scss';
-import Popover from 'components/v3/Popover';
+import { CustomTooltip } from 'components';
 
 interface FarmingAPRTooltipProps {
   qsAPR: number;
@@ -15,14 +15,12 @@ const FarmingAPRTooltip: React.FC<FarmingAPRTooltipProps> = ({
   gammaAPRs,
   children,
 }) => {
-  const [show, setShow] = useState(false);
   return (
-    <Popover
-      show={show}
+    <CustomTooltip
+      padding='0'
       placement='top'
       color='#12131a'
-      borderRadius='10px'
-      content={
+      title={
         <Box className={styles.farmingAPRTooltipWrapper}>
           <Box
             className='flex justify-between'
@@ -40,13 +38,8 @@ const FarmingAPRTooltip: React.FC<FarmingAPRTooltipProps> = ({
         </Box>
       }
     >
-      <div
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-      >
-        {children}
-      </div>
-    </Popover>
+      {children}
+    </CustomTooltip>
   );
 };
 

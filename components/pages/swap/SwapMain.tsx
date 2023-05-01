@@ -9,16 +9,17 @@ import { useActiveWeb3React, useIsProMode } from 'hooks';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useIsV2 } from 'state/application/hooks';
-// import SwapCrossChain from './SwapCrossChain';
-import SwapLimitOrder from './SwapLimitOrder';
-import SwapV3Page from './SwapV3';
+import { Limit, TWAP } from './LimitAndTWAP/LimitAndTWAP';
+import SwapCrossChain from './SwapCrossChain';
+import SwapV3Page from './V3/Swap';
 import styles from 'styles/pages/Swap.module.scss';
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
 const SWAP_V3 = 2;
 const SWAP_LIMIT = 3;
-const SWAP_CROSS_CHAIN = 4;
+const SWAP_TWAP = 4;
+const SWAP_CROSS_CHAIN = 5;
 
 const SwapMain: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -41,6 +42,7 @@ const SwapMain: React.FC = () => {
   const v3 = config['v3'];
   const showBestTrade = config['swap']['bestTrade'];
   const showLimitOrder = config['swap']['limitOrder'];
+  const showTwapOrder = config['swap']['twapOrder'];
   const showCrossChain = config['swap']['crossChain'];
   const showProMode = config['swap']['proMode'];
 
@@ -58,6 +60,9 @@ const SwapMain: React.FC = () => {
     if (showLimitOrder) {
       tabs.push({ name: 'limit', key: SWAP_LIMIT });
     }
+    if (showTwapOrder) {
+      tabs.push({ name: 'twap', key: SWAP_TWAP });
+    }
     if (showCrossChain) {
       tabs.push({
         name: 'crossChain',
@@ -66,7 +71,7 @@ const SwapMain: React.FC = () => {
       });
     }
     return tabs;
-  }, [showBestTrade, showLimitOrder, v2, v3, showCrossChain]);
+  }, [showBestTrade, showLimitOrder, showTwapOrder, v2, v3, showCrossChain]);
 
   const dropDownMenuText = useMemo(() => {
     if (!swapType) return;
@@ -129,13 +134,15 @@ const SwapMain: React.FC = () => {
       (Number(swapType) === SWAP_BEST_TRADE && !showBestTrade) ||
       (Number(swapType) === SWAP_NORMAL && !v2) ||
       (Number(swapType) === SWAP_V3 && !v3) ||
-      (Number(swapType) === SWAP_LIMIT && !showLimitOrder)
+      (Number(swapType) === SWAP_LIMIT && !showLimitOrder) ||
+      (Number(swapType) === SWAP_TWAP && !showTwapOrder)
     ) {
       const availableSwapTypes = [
         SWAP_BEST_TRADE,
         SWAP_V3,
         SWAP_NORMAL,
         SWAP_LIMIT,
+        SWAP_TWAP,
       ].filter((sType) =>
         sType === SWAP_BEST_TRADE
           ? showBestTrade
@@ -143,7 +150,9 @@ const SwapMain: React.FC = () => {
           ? v2
           : sType === SWAP_V3
           ? v3
-          : showLimitOrder,
+          : sType === SWAP_LIMIT
+          ? showLimitOrder
+          : showTwapOrder,
       );
       if (availableSwapTypes.length > 0) {
         const aSwapType = availableSwapTypes[0];
@@ -158,7 +167,7 @@ const SwapMain: React.FC = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swapType, v2, v3, showBestTrade, showLimitOrder]);
+  }, [swapType, v2, v3, showBestTrade, showLimitOrder, showTwapOrder]);
 
   useEffect(() => {
     if (swapType) {
@@ -301,12 +310,11 @@ const SwapMain: React.FC = () => {
         )}
         {v2 && Number(swapType) === SWAP_NORMAL && <Swap />}
         {v3 && Number(swapType) === SWAP_V3 && <SwapV3Page />}
-        {/* {showCrossChain && Number(swapType) === SWAP_CROSS_CHAIN && (
+        {showCrossChain && Number(swapType) === SWAP_CROSS_CHAIN && (
           <SwapCrossChain />
-        )} */}
-        {showLimitOrder && Number(swapType) === SWAP_LIMIT && (
-          <SwapLimitOrder />
         )}
+        {showLimitOrder && Number(swapType) === SWAP_LIMIT && <Limit />}
+        {swapType === SWAP_TWAP.toString() && <TWAP />}
       </Box>
     </>
   );

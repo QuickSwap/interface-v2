@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
 import { Currency, TradeType } from '@uniswap/sdk-core';
-import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/trade';
 import SwapCallbackError from './SwapCallbackError';
 import { useTranslation } from 'next-i18next';
@@ -11,9 +10,7 @@ export default function SwapModalFooter({
   swapErrorMessage,
   disabledConfirm,
 }: {
-  trade:
-    | V2Trade<Currency, Currency, TradeType>
-    | V3Trade<Currency, Currency, TradeType>;
+  trade: V3Trade<Currency, Currency, TradeType>;
   onConfirm: () => void;
   swapErrorMessage: ReactNode | undefined;
   disabledConfirm: boolean;

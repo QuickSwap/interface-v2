@@ -29,7 +29,12 @@ export default function RangeBadge({
         <Badge
           tooltip={withTooltip ? t('v3PoolWithinSelectedRange') ?? '' : ''}
           variant={BadgeVariant.POSITIVE}
-          icon={<span className={styles.activeDot} />}
+          icon={
+            <div
+              className='bg-success'
+              style={{ width: 8, height: 8, borderRadius: 4 }}
+            />
+          }
           text={t('inrange') ?? ''}
         />
       ) : (

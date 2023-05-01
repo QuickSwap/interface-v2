@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { formatNumber } from 'utils';
 import { useTranslation } from 'next-i18next';
 import styles from 'styles/components/TotalAPRToolTip.module.scss';
-import Popover from 'components/v3/Popover';
+import { CustomTooltip } from 'components';
 
 interface TotalAPRToolTipProps {
   poolAPR: number;
@@ -16,15 +16,10 @@ const TotalAPRTooltip: React.FC<TotalAPRToolTipProps> = ({
   farmAPR,
   children,
 }) => {
-  const [show, setShow] = useState(false);
   const { t } = useTranslation();
   return (
-    <Popover
-      show={show}
-      placement='top'
-      color='#12131a'
-      borderRadius='10px'
-      content={
+    <CustomTooltip
+      title={
         <Box className={styles.totalAPRTooltipWrapper}>
           <Box
             className='flex items-center justify-between bg-grey29'
@@ -46,13 +41,8 @@ const TotalAPRTooltip: React.FC<TotalAPRToolTipProps> = ({
         </Box>
       }
     >
-      <div
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-      >
-        {children}
-      </div>
-    </Popover>
+      {children}
+    </CustomTooltip>
   );
 };
 

@@ -6,7 +6,6 @@ import {
   Percent,
   TradeType,
 } from '@uniswap/sdk-core';
-import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/trade';
 import { useCallback, useMemo } from 'react';
 import { SWAP_ROUTER_ADDRESSES } from '../constants/v3/addresses';
@@ -144,10 +143,7 @@ export function useApproveCallback(
 
 // wraps useApproveCallback in the context of a swap
 export function useApproveCallbackFromTrade(
-  trade:
-    | V2Trade<Currency, Currency, TradeType>
-    | V3Trade<Currency, Currency, TradeType>
-    | undefined,
+  trade: V3Trade<Currency, Currency, TradeType> | undefined,
   allowedSlippage: Percent,
 ) {
   const { chainId } = useActiveWeb3React();

@@ -6,7 +6,6 @@ import {
   Token,
   TradeType,
 } from '@uniswap/sdk-core';
-import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/trade';
 import { splitSignature } from 'ethers/lib/utils';
 import { useMemo, useState } from 'react';
@@ -280,10 +279,7 @@ export function useV2LiquidityTokenPermit(
 }
 
 export function useERC20PermitFromTrade(
-  trade:
-    | V2Trade<Currency, Currency, TradeType>
-    | V3Trade<Currency, Currency, TradeType>
-    | undefined,
+  trade: V3Trade<Currency, Currency, TradeType> | undefined,
   allowedSlippage: Percent,
 ) {
   const { chainId } = useActiveWeb3React();
@@ -298,11 +294,7 @@ export function useERC20PermitFromTrade(
   return useERC20Permit(
     amountToApprove,
     // v2 router does not support
-    trade instanceof V2Trade
-      ? undefined
-      : trade instanceof V3Trade
-      ? swapRouterAddress
-      : undefined,
+    trade instanceof V3Trade ? swapRouterAddress : undefined,
     null,
   );
 }
