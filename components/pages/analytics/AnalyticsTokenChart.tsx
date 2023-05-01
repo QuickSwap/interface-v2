@@ -8,16 +8,12 @@ import {
   getPriceClass,
   formatNumber,
   getChartDates,
-  getChartStartTime,
-  getLimitedData,
   getYAXISValuesAnalytics,
   getFormattedPercent,
 } from 'utils';
 import { AreaChart, ChartType } from 'components';
-import { getTokenChartData } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'next-i18next';
-import { getTokenChartDataTotal, getTokenChartDataV3 } from 'utils/v3-graph';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 
 const CHART_VOLUME = 0;
@@ -93,7 +89,7 @@ const AnalyticsTokenChart: React.FC<{
         updateTokenChartData(null);
 
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-chart-data/${tokenAddress}/${durationIndex}/${version}?chainId=${chainId}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-chart-data/${tokenAddress}/${durationIndex}/${version}?chainId=${chainId}`,
         );
         if (!res.ok) {
           const errorText = await res.text();

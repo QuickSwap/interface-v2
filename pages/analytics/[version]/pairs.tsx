@@ -1,22 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import { PairTable } from 'components';
-import {
-  getTopPairs,
-  getBulkPairData,
-  getGammaRewards,
-  getGammaData,
-  getTopPairsV2,
-} from 'utils';
 import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'next-i18next';
-import { GammaPairs, GlobalConst } from 'constants/index';
 import { useEthPrice } from 'state/application/hooks';
-import { getTopPairsV3, getPairsAPR, getTopPairsTotal } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();

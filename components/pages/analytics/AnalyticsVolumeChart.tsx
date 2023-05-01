@@ -3,20 +3,16 @@ import { Box } from '@mui/material';
 import { Skeleton } from '@mui/lab';
 import {
   formatCompact,
-  getChartData,
   formatDateFromTimeStamp,
   getPriceClass,
   getChartDates,
-  getChartStartTime,
   getLimitedData,
   getFormattedPercent,
 } from 'utils';
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'next-i18next';
-import { getChartDataTotal, getChartDataV3 } from 'utils/v3-graph';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
@@ -45,7 +41,7 @@ const AnalyticsVolumeChart: React.FC<{
       setDataLoaded(false);
 
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();

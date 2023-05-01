@@ -62,7 +62,7 @@ const NetworkSelectionModal: React.FC = () => {
             const config = getConfig(chain);
             return (
               <Box
-                className='networkItemWrapper'
+                className={styles.networkItemWrapper}
                 key={chain}
                 onClick={() => {
                   switchNetwork(chain);
@@ -80,7 +80,7 @@ const NetworkSelectionModal: React.FC = () => {
                 </Box>
                 {isSupportedNetwork && chainId && chainId === chain && (
                   <Box className='flex items-center'>
-                    <Box className='networkConnectedDot' />
+                    <Box className={styles.networkConnectedDot} />
                     <span>{t('connected')}</span>
                   </Box>
                 )}

@@ -45,7 +45,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
           ethPrice.oneDayPrice !== undefined
         ) {
           const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v2?chainId=${chainId}&limit=5`,
+            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/v2?chainId=${chainId}&limit=5`,
           );
           if (!res.ok) {
             const errorText = await res.text();
@@ -65,7 +65,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
           maticPrice.oneDayPrice !== undefined
         ) {
           const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v3?chainId=${chainId}&limit=5`,
+            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/v3?chainId=${chainId}&limit=5`,
           );
           if (!res.ok) {
             const errorText = await res.text();

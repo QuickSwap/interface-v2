@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Box, Grid } from '@mui/material';
 import { Skeleton } from '@mui/lab';
-import { ChainId, Token } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk';
 import {
   shortenAddress,
   getEtherscanLink,
@@ -388,7 +388,7 @@ const AnalyticsPairDetails: React.FC = () => {
                 {pairTransactionsList ? (
                   <TransactionsTable data={pairTransactionsList} />
                 ) : (
-                  <Skeleton variant='rect' width='100%' height={150} />
+                  <Skeleton variant='rectangular' width='100%' height={150} />
                 )}
               </Box>
             </>

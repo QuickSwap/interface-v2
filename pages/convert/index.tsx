@@ -22,11 +22,11 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { tryParseAmount } from 'state/swap/hooks';
-import 'pages/styles/convertQUICK.scss';
+import styles from 'styles/pages/Convert.module.scss';
 import { ChainId } from '@uniswap/sdk';
 import { OLD_QUICK } from 'constants/v3/addresses';
 import { getConfig } from 'config';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 const ConvertQUICKPage: React.FC = () => {
   const { t } = useTranslation();
@@ -121,42 +121,42 @@ const ConvertQUICKPage: React.FC = () => {
             setTxHash(tx.transactionHash);
           } catch (err) {
             setTxPending(false);
-            setTxError(t('errorInTx'));
+            setTxError(t('errorInTx') ?? '');
           }
         })
         .catch(() => {
           setAttemptConverting(false);
           setTxPending(false);
           setTxHash('');
-          setTxError(t('txRejected'));
+          setTxError(t('txRejected') ?? '');
         });
     }
   };
 
   const config = getConfig(chainIdToUse);
   const showConvert = config['convert']['available'];
-  const history = useHistory();
+  const router = useRouter();
 
   useEffect(() => {
     if (!showConvert) {
-      history.push('/');
+      router.push('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showConvert]);
 
   return (
-    <Box width='100%' maxWidth={488} id='convertQUICKPage'>
+    <Box width='100%' maxWidth={488}>
       <h4>{t('convert')} QUICK</h4>
-      <Box className='convertQUICKWrapper'>
+      <Box className={styles.convertQUICKWrapper}>
         <Box className='flex items-center' mb={3}>
-          <Box className='iconWrapper'>
+          <Box className={styles.iconWrapper}>
             <img src={QUICKIcon} alt='QUICK' />
           </Box>
           <p className='weight-600'>QUICK(OLD)</p>
-          <Box mx={1.5} className='convertArrow'>
+          <Box mx={1.5} className={styles.convertArrow}>
             <ArrowForward />
           </Box>
-          <Box className='iconWrapper'>
+          <Box className={styles.iconWrapper}>
             <QUICKV2Icon />
           </Box>
           <p className='weight-600'>QUICK(NEW)</p>
@@ -175,7 +175,7 @@ const ConvertQUICKPage: React.FC = () => {
             }}
           />
         </small>
-        <Box className='conversionRate'>
+        <Box className={styles.conversionRate}>
           <span>
             {t('conversionRate')}: 1 QUICK(OLD) ={' '}
             {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK(NEW)
@@ -186,8 +186,8 @@ const ConvertQUICKPage: React.FC = () => {
             {t('yourbalance')}: {formatTokenAmount(quickBalance)}
           </small>
           <Box
-            className={`currencyInput${
-              isInsufficientQUICK ? ' errorInput' : ''
+            className={`${styles.currencyInput} ${
+              isInsufficientQUICK ? styles.errorInput : ''
             }`}
           >
             <NumericalInput
@@ -214,7 +214,7 @@ const ConvertQUICKPage: React.FC = () => {
             />
             <Box
               mr={1}
-              className='maxButton'
+              className={styles.maxButton}
               onClick={() => {
                 if (quickBalance) {
                   setQUICKAmount(quickBalance.toExact());
@@ -237,12 +237,12 @@ const ConvertQUICKPage: React.FC = () => {
             </small>
           )}
         </Box>
-        <Box ml={2} className='convertArrow'>
+        <Box ml={2} className={styles.convertArrow}>
           <ArrowDownward />
         </Box>
         <Box mt={2} mb={4}>
           <small className='text-secondary'>{t('youwillreceive')}:</small>
-          <Box className='currencyInput'>
+          <Box className={styles.currencyInput}>
             <NumericalInput
               placeholder='0.00'
               value={quickV2Amount}
@@ -270,7 +270,7 @@ const ConvertQUICKPage: React.FC = () => {
               !quickAmount ||
               !Number(quickAmount)
             }
-            className='convertButton'
+            className={styles.convertButton}
             onClick={() => {
               if (approval === ApprovalState.APPROVED) {
                 convertQUICK();

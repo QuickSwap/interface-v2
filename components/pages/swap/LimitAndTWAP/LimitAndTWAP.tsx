@@ -1,8 +1,4 @@
-import {
-  Limit as QuickSwapLimit,
-  TWAP as QuickSwapTWAP,
-  Orders as QuickSwapOrders,
-} from '@orbs-network/twap-ui-quickswap';
+import dynamic from 'next/dynamic';
 import { CurrencySearchModal } from 'components';
 import { useIsProMode, useActiveWeb3React } from 'hooks';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
@@ -15,6 +11,27 @@ import {
 } from 'state/swap/hooks';
 import { Field } from 'state/swap/v3/actions';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
+
+const QuickSwapTWAP = dynamic(
+  () => import('@orbs-network/twap-ui-quickswap').then((twap) => twap.TWAP),
+  {
+    ssr: false,
+  },
+);
+
+const QuickSwapLimit = dynamic(
+  () => import('@orbs-network/twap-ui-quickswap').then((twap) => twap.Limit),
+  {
+    ssr: false,
+  },
+);
+
+const QuickSwapOrders = dynamic(
+  () => import('@orbs-network/twap-ui-quickswap').then((twap) => twap.Orders),
+  {
+    ssr: false,
+  },
+);
 
 const getLogo = (value: string) => {
   return getTokenLogoURL(value).find((it) => it !== 'error') as any;

@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, useMediaQuery } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { ContestPairs, LeaderBoardAnalytics } from 'constants/index';
 import 'pages/styles/contest.scss';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
+import HelpIcon from 'svgs/HelpIcon1.svg';
 import { ContestLeaderBoard, SwapDataV3 } from 'models/interfaces/contest';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import SearchIcon from 'svgs/SearchIcon.svg';
 import { isAddress, shortenAddress } from 'utils';
-import { useTheme } from '@material-ui/core/styles';
 import 'components/styles/SearchWidget.scss';
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import ContestTable from 'components/ContestTable/ContestTable';
 import { ChartType } from 'components';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
@@ -21,11 +20,11 @@ import { formatNumber } from 'utils';
 import {
   getTradingDataBetweenDates,
   getFormattedLeaderBoardData,
-} from 'lib/src/leaderboard';
+} from 'lib/leaderboard';
 import { useActiveWeb3React } from 'hooks';
 import { getLensProfiles } from 'utils/getLensProfile';
 import { getConfig } from 'config';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { ChainId } from '@uniswap/sdk';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -56,11 +55,11 @@ const ContestPage: React.FC = () => {
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const config = getConfig(chainId);
   const showLeaderBoard = config['leaderboard']['available'];
-  const history = useHistory();
+  const router = useRouter();
 
   useEffect(() => {
     if (!showLeaderBoard) {
-      history.push('/');
+      router.push('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showLeaderBoard]);
@@ -75,7 +74,7 @@ const ContestPage: React.FC = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/leaderboard?pool=${contestFilter.address}&days=${durationIndex}&chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/leaderboard?pool=${contestFilter.address}&days=${durationIndex}&chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -102,7 +101,8 @@ const ContestPage: React.FC = () => {
       setContestLeaderBoard(result);
       setLoading(false);
       setError(null);
-    } catch (error) {
+    } catch (err) {
+      const error = err as any;
       setLoading(false);
       console.error(error, 'message', error.message);
       setError(error.message);
@@ -266,7 +266,7 @@ const ContestPage: React.FC = () => {
           <Box className='searchWidgetWrapper'>
             <Box className='searchWidgetInput'>
               <input
-                placeholder={t('searchAddress')}
+                placeholder={t('searchAddress') ?? undefined}
                 value={searchValInput}
                 onChange={(evt) => setSearchValInput(evt.target.value)}
               />
@@ -328,7 +328,7 @@ const ContestPage: React.FC = () => {
                 </>
               ) : (
                 <Box my={2} textAlign={'center'} width={1}>
-                  <Skeleton variant='rect' width='100%' height={60} />
+                  <Skeleton variant='rectangular' width='100%' height={60} />
                 </Box>
               )}
             </Box>
@@ -354,7 +354,7 @@ const ContestPage: React.FC = () => {
               )}
             </>
           ) : (
-            <Skeleton variant='rect' width='100%' height={150} />
+            <Skeleton variant='rectangular' width='100%' height={150} />
           )}
         </Box>
       </Box>

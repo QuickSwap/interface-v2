@@ -53,7 +53,7 @@ const AnalyticsOverview: React.FC = () => {
 
     (async () => {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/${version}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -69,7 +69,7 @@ const AnalyticsOverview: React.FC = () => {
 
     (async () => {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pairs/${version}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-pairs/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();

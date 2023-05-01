@@ -9,6 +9,11 @@ const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
   swcMinify: true,
+  transpilePackages: [
+    '@0xsquid/widget',
+    '@orbs-network/twap-ui',
+    '@orbs-network/twap-ui-quickswap',
+  ],
   i18n,
   webpack(config, { isServer }) {
     if (!isServer) {

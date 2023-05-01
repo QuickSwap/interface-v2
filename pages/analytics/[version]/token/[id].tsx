@@ -7,12 +7,7 @@ import {
   getEtherscanLink,
   getPriceClass,
   formatNumber,
-  getTokenInfo,
-  getTokenPairsV2,
-  getBulkPairData,
   getTokenFromAddress,
-  getGammaRewards,
-  getGammaData,
   getFormattedPercent,
 } from 'utils';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
@@ -25,26 +20,16 @@ import {
 } from 'state/application/hooks';
 import StarChecked from 'svgs/StarChecked.svg';
 import StarUnchecked from 'svgs/StarUnchecked.svg';
-import { GammaPairs, GlobalConst, TxnType } from 'constants/index';
+import { GlobalConst, TxnType } from 'constants/index';
 import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
 import AnalyticsTokenChart from 'components/pages/analytics/AnalyticsTokenChart';
 import { useTranslation } from 'next-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import {
-  getPairsAPR,
-  getTokenInfoTotal,
-  getTokenInfoV3,
-  getTokenTransactionsTotal,
-  getTokenTransactionsV3,
-  getTopPairsTotalByToken,
-  getTopPairsV3ByToken,
-} from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useRouter } from 'next/router';
 import { getConfig } from 'config';
-import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();

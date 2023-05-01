@@ -5,18 +5,14 @@ import { Skeleton } from '@mui/lab';
 import dayjs from 'dayjs';
 import {
   formatCompact,
-  getPairChartData,
   getPriceClass,
   getChartDates,
-  getChartStartTime,
-  getLimitedData,
   getYAXISValuesAnalytics,
   getFormattedPercent,
 } from 'utils';
 import { AreaChart, ChartType, MixedChart, ColumnChart } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'next-i18next';
-import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 
@@ -214,7 +210,7 @@ const AnalyticsPairChart: React.FC<{
     (async () => {
       setPairChartData(null);
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-chart-data/${pairAddress}/${durationIndex}/${version}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-pair-chart-data/${pairAddress}/${durationIndex}/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();

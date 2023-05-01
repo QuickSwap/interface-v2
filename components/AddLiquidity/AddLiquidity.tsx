@@ -149,7 +149,6 @@ const AddLiquidity: React.FC<{
       : parsedAmounts[dependentField]?.toExact() ?? '',
   };
 
-  const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
   const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const [approvingA, setApprovingA] = useState(false);
