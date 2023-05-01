@@ -39,7 +39,7 @@ const AnalyticsTokens: React.FC = () => {
     if (!chainId) return;
     (async () => {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/${version}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();

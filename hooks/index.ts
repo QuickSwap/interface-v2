@@ -59,7 +59,7 @@ export function useInitTransak() {
   const dispatch = useDispatch<AppDispatch>();
   const initTransak = (account: any, mobileWindowSize: boolean) => {
     const transak = new transakSDK({
-      apiKey: process.env.REACT_APP_TRANSAK_KEY, // Your API Key
+      apiKey: process.env.NEXT_PUBLIC_TRANSAK_KEY, // Your API Key
       environment: 'PRODUCTION', // STAGING/PRODUCTION
       defaultCryptoCurrency: 'MATIC',
       walletAddress: account, // Your customer's wallet address

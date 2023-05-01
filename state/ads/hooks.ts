@@ -51,7 +51,7 @@ export function useAdsList(url: string | undefined): AdsListMap {
 }
 
 export function useDefaultAdsList(): AdsListMap {
-  return useAdsList(process.env.REACT_APP_ADS_LIST_DEFAULT_URL);
+  return useAdsList(process.env.NEXT_PUBLIC_ADS_LIST_DEFAULT_URL);
 }
 
 // returns all downloaded current lists

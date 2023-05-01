@@ -4,17 +4,22 @@ import styles from 'styles/pages/Swap.module.scss';
 const SwapNewsWidget: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const refElement = ref.current;
     const script = document.createElement('script');
     script.src =
       'https://s3.tradingview.com/external-embedding/embed-widget-timeline.js';
     script.async = true;
     script.innerHTML =
       '{"feedMode":"market", "market":"crypto", "colorTheme": "dark", "isTransparent": "true", "displayMode": "regular", "locale": "en"}';
-    ref.current?.appendChild(script);
+    if (refElement) {
+      refElement.appendChild(script);
+    }
 
     // let's do the memory clean up on destruction of component.
     return () => {
-      // document.removeChild(script);
+      if (refElement && refElement.contains(script)) {
+        refElement.removeChild(script);
+      }
     };
   }, []);
   return (

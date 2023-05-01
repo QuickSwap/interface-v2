@@ -93,12 +93,8 @@ export const networkInfoMap: NetworkInfoChainMap = {
   },
 };
 
-const NETWORK_URL = 'https://polygon-rpc.com/';
-const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;
-const MAINNET_NETWORK_URL = process.env.REACT_APP_MAINNET_NETWORK_URL;
-
 export const NETWORK_CHAIN_ID: number = parseInt(
-  process.env.REACT_APP_CHAIN_ID ?? '137',
+  process.env.NEXT_PUBLIC_CHAIN_ID ?? '137',
 );
 
 const [web3Network, web3NetworkHooks] = initializeConnector<Network>(
@@ -323,8 +319,8 @@ export const coinbaseWalletConnection: Connection = {
 };
 
 // export const unstopabbledomains = new UAuthConnector({
-//   clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-//   redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+//   clientID: process.env.NEXT_PUBLIC_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+//   redirectUri: process.env.NEXT_PUBLIC_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
 
 //   // Scope must include openid and wallet
 //   scope: 'openid wallet',

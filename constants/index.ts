@@ -142,15 +142,15 @@ export const GlobalConst = {
     ),
     // the Uniswap Default token list lives here
     // we add '' to remove the possibility of nulls
-    DEFAULT_ADS_LIST_URL: process.env.REACT_APP_ADS_LIST_DEFAULT_URL + '',
-    DEFAULT_TOKEN_LIST_URL: process.env.REACT_APP_TOKEN_LIST_DEFAULT_URL + '',
+    DEFAULT_ADS_LIST_URL: process.env.NEXT_PUBLIC_ADS_LIST_DEFAULT_URL + '',
+    DEFAULT_TOKEN_LIST_URL: process.env.NEXT_PUBLIC_TOKEN_LIST_DEFAULT_URL + '',
     DEFAULT_LP_FARMS_LIST_URL:
-      process.env.REACT_APP_STAKING_LIST_DEFAULT_URL + '',
+      process.env.NEXT_PUBLIC_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_CNT_FARMS_LIST_URL:
-      process.env.REACT_APP_CNT_STAKING_LIST_DEFAULT_URL + '',
+      process.env.NEXT_PUBLIC_CNT_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_DUAL_FARMS_LIST_URL:
-      process.env.REACT_APP_DUAL_STAKING_LIST_DEFAULT_URL + '',
-    DEFAULT_SYRUP_LIST_URL: process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL + '',
+      process.env.NEXT_PUBLIC_DUAL_STAKING_LIST_DEFAULT_URL + '',
+    DEFAULT_SYRUP_LIST_URL: process.env.NEXT_PUBLIC_SYRUP_LIST_DEFAULT_URL + '',
     ANALYTICS_TOKENS_COUNT: 200,
     ANALYTICS_PAIRS_COUNT: 400,
     v3FarmSortBy: {

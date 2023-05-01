@@ -5,6 +5,7 @@ import { DoubleCurrencyLogo } from 'components';
 import { formatCompact, getDaysCurrentYear } from 'utils';
 import { useCurrency } from 'hooks/Tokens';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/pages/Swap.module.scss';
 
 const LiquidityPoolRow: React.FC<{
   pair: any;
@@ -38,7 +39,7 @@ const LiquidityPoolRow: React.FC<{
   const token0 = useCurrency(pair.token0.id);
   const token1 = useCurrency(pair.token1.id);
   return (
-    <Box className='liquidityContent'>
+    <Box className={styles.liquidityContent}>
       <Box
         className='flex items-center'
         width={isMobile ? 1 : isLg ? 0.7 : 0.5}

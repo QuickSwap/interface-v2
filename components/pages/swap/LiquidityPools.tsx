@@ -8,8 +8,8 @@ import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'next-i18next';
 import { useEthPrice } from 'state/application/hooks';
 import { getTopPairsV3ByTokens } from 'utils/v3-graph';
-import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
+import styles from 'styles/pages/Swap.module.scss';
 
 const LiquidityPools: React.FC<{
   token1: Token;
@@ -145,8 +145,8 @@ const LiquidityPools: React.FC<{
         <>
           <Divider />
           <Box width={1}>
-            <Box padding={2} className='flex liquidityMain'>
-              <Box width={0.5} className='flex liquidityFilter'>
+            <Box padding={2} className={`flex ${styles.liquidityMain}`}>
+              <Box width={0.5} className={`flex ${styles.liquidityFilter}`}>
                 <small
                   className={liquidityFilterIndex === 0 ? 'active' : ''}
                   onClick={() => setLiquidityFilterIndex(0)}

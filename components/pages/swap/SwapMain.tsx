@@ -106,8 +106,8 @@ const SwapMain: React.FC = () => {
 
   const swapTabClass = (currentSwapType: number) => {
     return `${
-      swapType === currentSwapType.toString() ? 'activeSwap' : ''
-    } swapItem headingItem
+      swapType === currentSwapType.toString() ? styles.activeSwap : ''
+    } ${styles.swapItem} ${styles.headingItem}
     `;
   };
 
@@ -288,7 +288,7 @@ const SwapMain: React.FC = () => {
                     />
                   </Box>
                 )}
-                <Box className='headingItem'>
+                <Box className={styles.headingItem}>
                   <Settings onClick={() => setOpenSettingsModal(true)} />
                 </Box>
               </Box>

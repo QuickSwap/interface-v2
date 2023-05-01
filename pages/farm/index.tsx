@@ -110,7 +110,7 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
       condition: currentTab === GlobalConst.v2FarmTab.OTHER_LP,
     },
   ];
-  const helpURL = process.env.REACT_APP_HELP_URL;
+  const helpURL = process.env.NEXT_PUBLIC_HELP_URL;
 
   return (
     <Box width='100%' mb={3} id='farmPage'>
