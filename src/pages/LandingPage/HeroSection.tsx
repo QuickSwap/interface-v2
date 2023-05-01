@@ -2,9 +2,12 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { isSupportedNetwork, addMaticToMetamask } from 'utils';
+import { useIsSupportedNetwork } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { useWalletModalToggle } from 'state/application/hooks';
+import {
+  useWalletModalToggle,
+  useNetworkSelectionModalToggle,
+} from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config';
@@ -14,10 +17,11 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   v3GlobalData,
 }) => {
   const history = useHistory();
+  const isSupportedNetwork = useIsSupportedNetwork();
   const { chainId, account } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
+  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const { t } = useTranslation();
   const config = getConfig(chainIdToUse);
   const v2 = config['v2'];
@@ -53,15 +57,15 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
             height: '100%',
           }}
           onClick={() => {
-            ethereum && !isSupportedNetwork(ethereum)
-              ? addMaticToMetamask()
+            !isSupportedNetwork
+              ? toggleNetworkSelectionModal()
               : account
               ? history.push('/swap')
               : toggleWalletModal();
           }}
         >
-          {ethereum && !isSupportedNetwork(ethereum)
-            ? t('switchPolygon')
+          {!isSupportedNetwork
+            ? t('switchNetwork')
             : account
             ? t('enterApp')
             : t('connectWallet')}

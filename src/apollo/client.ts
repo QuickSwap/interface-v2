@@ -168,7 +168,7 @@ export const txClient: ApolloChainMap = {
 export const blockClient: ApolloChainMap = {
   [ChainId.MATIC]: new ApolloClient({
     link: new HttpLink({
-      uri: process.env.REACT_APP_GRAPH_V2_137_API_URL,
+      uri: process.env.REACT_APP_GRAPH_137_BLOCK_CLIENT_API_URL,
     }),
     cache: new InMemoryCache(),
   }),

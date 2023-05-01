@@ -17,9 +17,10 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org
-
       - name: Install dependencies
         run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Build the bundle
         run: yarn build

@@ -1,34 +1,17 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk';
-import { AbstractConnector } from '@web3-react/abstract-connector';
-import {
-  injected,
-  walletconnect,
-  walletlink,
-  portis,
-  arkaneconnect,
-  safeApp,
-  trustconnect,
-  unstopabbledomains,
-  metamask,
-  zengoconnect,
-  phantomconnect,
-} from '../connectors';
-import MetamaskIcon from 'assets/images/metamask.png';
-import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
-import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
-import cypherDIcon from 'assets/images/cypherDIcon.png';
-import BitKeepIcon from 'assets/images/bitkeep.png';
-import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
-import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
-import PortisIcon from 'assets/images/portisIcon.png';
-import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
-import VenlyIcon from 'assets/images/venly.svg';
-import GnosisIcon from 'assets/images/gnosis_safe.png';
-import TrustIcon from 'assets/images/trust.png';
-import ZengoIcon from 'assets/images/zengo.png';
 import { Presets } from 'state/mint/v3/reducer';
-import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 import { NEW_QUICK_ADDRESS, QUICK_ADDRESS } from './v3/addresses';
+
+export const AVERAGE_L1_BLOCK_TIME = 12000;
+
+export const CHAIN_IDS_TO_NAMES = {
+  [ChainId.MATIC]: 'matic',
+  [ChainId.MUMBAI]: 'mumbai',
+  [ChainId.DOGECHAIN]: 'dogechain',
+  [ChainId.DOEGCHAIN_TESTNET]: 'dogechain_testnet',
+  [ChainId.ZKEVM]: 'zkevm',
+  [ChainId.ZKTESTNET]: 'zkevm_testnet',
+};
 
 export enum TxnType {
   SWAP,
@@ -203,7 +186,7 @@ export const GlobalConst = {
   },
   walletName: {
     METAMASK: 'Metamask',
-    TRUST_WALLET: 'Trust Wallet',
+    TRUST_WALLET: 'TrustWallet',
     PHANTOM_WALLET: 'Phantom',
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
@@ -1051,134 +1034,134 @@ export const GammaPairs: {
   [ChainId.ZKEVM]: {},
 };
 
-export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
-  CYPHERD: {
-    connector: injected,
-    name: GlobalConst.walletName.CYPHERD,
-    iconName: cypherDIcon,
-    description: 'CypherD browser extension.',
-    href: null,
-    color: '#E8831D',
-  },
-  METAMASK: {
-    connector: metamask,
-    name: GlobalConst.walletName.METAMASK,
-    iconName: MetamaskIcon,
-    description: 'Easy-to-use browser extension.',
-    href: null,
-    color: '#E8831D',
-  },
-  TRUST_WALLET: {
-    connector: trustconnect,
-    name: GlobalConst.walletName.TRUST_WALLET,
-    iconName: TrustIcon,
-    description: 'Trust wallet extension.',
-    href: null,
-    color: '#E8831D',
-  },
-  PHANTOM_WALLET: {
-    connector: phantomconnect,
-    name: GlobalConst.walletName.PHANTOM_WALLET,
-    iconName: PhantomIcon,
-    description: 'Phantom wallet extension.',
-    href: null,
-    color: '#E8831D',
-  },
-  BLOCKWALLET: {
-    connector: injected,
-    name: GlobalConst.walletName.BLOCKWALLET,
-    iconName: BlockWalletIcon,
-    description: 'BlockWallet browser extension.',
-    href: null,
-    color: '#1673ff',
-  },
-  BRAVEWALLET: {
-    connector: injected,
-    name: GlobalConst.walletName.BRAVEWALLET,
-    iconName: BraveWalletIcon,
-    description: 'Brave browser wallet.',
-    href: null,
-    color: '#1673ff',
-    mobile: true,
-  },
-  BITKEEP: {
-    connector: injected,
-    name: GlobalConst.walletName.BITKEEP,
-    iconName: BitKeepIcon,
-    description: 'BitKeep browser extension.',
-    href: null,
-    color: '#E8831D',
-  },
-  INJECTED: {
-    connector: injected,
-    name: GlobalConst.walletName.INJECTED,
-    iconName: 'arrow-right.svg',
-    description: 'Injected web3 provider.',
-    href: null,
-    color: '#010101',
-    primary: true,
-  },
-  SAFE_APP: {
-    connector: safeApp,
-    name: GlobalConst.walletName.SAFE_APP,
-    iconName: GnosisIcon,
-    description: 'Login using gnosis safe app',
-    href: null,
-    color: '#4196FC',
-    mobile: true,
-  },
-  WALLET_LINK: {
-    connector: walletlink,
-    name: GlobalConst.walletName.WALLET_LINK,
-    iconName: CoinbaseWalletIcon,
-    description: 'Use Coinbase Wallet app on mobile device',
-    href: null,
-    color: '#315CF5',
-  },
-  WALLET_CONNECT: {
-    connector: walletconnect,
-    name: GlobalConst.walletName.WALLET_CONNECT,
-    iconName: WalletConnectIcon,
-    description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
-    href: null,
-    color: '#4196FC',
-    mobile: true,
-  },
-  UNSTOPABBLEDOMAINS: {
-    connector: unstopabbledomains,
-    name: 'Unstoppable Domains',
-    iconName: UnstoppableDomainsIcon,
-    description: 'Unstoppable Domains',
-    href: null,
-    color: '#E8831D',
-  },
-  ZENGO_CONNECT: {
-    connector: zengoconnect,
-    name: GlobalConst.walletName.ZENGO_CONNECT,
-    iconName: ZengoIcon,
-    description: 'Connect to Zengo Wallet',
-    href: null,
-    color: '#4196FC',
-    mobile: true,
-  },
-  ARKANE_CONNECT: {
-    connector: arkaneconnect,
-    name: GlobalConst.walletName.ARKANE_CONNECT,
-    iconName: VenlyIcon,
-    description: 'Login using Venly hosted wallet.',
-    href: null,
-    color: '#4196FC',
-  },
-  Portis: {
-    connector: portis,
-    name: GlobalConst.walletName.Portis,
-    iconName: PortisIcon,
-    description: 'Login using Portis hosted wallet',
-    href: null,
-    color: '#4A6C9B',
-    mobile: true,
-  },
-};
+// export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
+//   CYPHERD: {
+//     connector: injected,
+//     name: GlobalConst.walletName.CYPHERD,
+//     iconName: cypherDIcon,
+//     description: 'CypherD browser extension.',
+//     href: null,
+//     color: '#E8831D',
+//   },
+//   METAMASK: {
+//     connector: metamask,
+//     name: GlobalConst.walletName.METAMASK,
+//     iconName: MetamaskIcon,
+//     description: 'Easy-to-use browser extension.',
+//     href: null,
+//     color: '#E8831D',
+//   },
+//   TRUST_WALLET: {
+//     connector: trustconnect,
+//     name: GlobalConst.walletName.TRUST_WALLET,
+//     iconName: TrustIcon,
+//     description: 'Trust wallet extension.',
+//     href: null,
+//     color: '#E8831D',
+//   },
+//   PHANTOM_WALLET: {
+//     connector: phantomconnect,
+//     name: GlobalConst.walletName.PHANTOM_WALLET,
+//     iconName: PhantomIcon,
+//     description: 'Phantom wallet extension.',
+//     href: null,
+//     color: '#E8831D',
+//   },
+//   BLOCKWALLET: {
+//     connector: injected,
+//     name: GlobalConst.walletName.BLOCKWALLET,
+//     iconName: BlockWalletIcon,
+//     description: 'BlockWallet browser extension.',
+//     href: null,
+//     color: '#1673ff',
+//   },
+//   BRAVEWALLET: {
+//     connector: injected,
+//     name: GlobalConst.walletName.BRAVEWALLET,
+//     iconName: BraveWalletIcon,
+//     description: 'Brave browser wallet.',
+//     href: null,
+//     color: '#1673ff',
+//     mobile: true,
+//   },
+//   BITKEEP: {
+//     connector: injected,
+//     name: GlobalConst.walletName.BITKEEP,
+//     iconName: BitKeepIcon,
+//     description: 'BitKeep browser extension.',
+//     href: null,
+//     color: '#E8831D',
+//   },
+//   INJECTED: {
+//     connector: injected,
+//     name: GlobalConst.walletName.INJECTED,
+//     iconName: 'arrow-right.svg',
+//     description: 'Injected web3 provider.',
+//     href: null,
+//     color: '#010101',
+//     primary: true,
+//   },
+//   SAFE_APP: {
+//     connector: safeApp,
+//     name: GlobalConst.walletName.SAFE_APP,
+//     iconName: GnosisIcon,
+//     description: 'Login using gnosis safe app',
+//     href: null,
+//     color: '#4196FC',
+//     mobile: true,
+//   },
+//   WALLET_LINK: {
+//     connector: walletlink,
+//     name: GlobalConst.walletName.WALLET_LINK,
+//     iconName: CoinbaseWalletIcon,
+//     description: 'Use Coinbase Wallet app on mobile device',
+//     href: null,
+//     color: '#315CF5',
+//   },
+//   WALLET_CONNECT: {
+//     connector: walletconnect,
+//     name: GlobalConst.walletName.WALLET_CONNECT,
+//     iconName: WalletConnectIcon,
+//     description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
+//     href: null,
+//     color: '#4196FC',
+//     mobile: true,
+//   },
+//   UNSTOPABBLEDOMAINS: {
+//     connector: unstopabbledomains,
+//     name: 'Unstoppable Domains',
+//     iconName: UnstoppableDomainsIcon,
+//     description: 'Unstoppable Domains',
+//     href: null,
+//     color: '#E8831D',
+//   },
+//   ZENGO_CONNECT: {
+//     connector: zengoconnect,
+//     name: GlobalConst.walletName.ZENGO_CONNECT,
+//     iconName: ZengoIcon,
+//     description: 'Connect to Zengo Wallet',
+//     href: null,
+//     color: '#4196FC',
+//     mobile: true,
+//   },
+//   ARKANE_CONNECT: {
+//     connector: arkaneconnect,
+//     name: GlobalConst.walletName.ARKANE_CONNECT,
+//     iconName: VenlyIcon,
+//     description: 'Login using Venly hosted wallet.',
+//     href: null,
+//     color: '#4196FC',
+//   },
+//   Portis: {
+//     connector: portis,
+//     name: GlobalConst.walletName.Portis,
+//     iconName: PortisIcon,
+//     description: 'Login using Portis hosted wallet',
+//     href: null,
+//     color: '#4A6C9B',
+//     mobile: true,
+//   },
+// };
 
 export const GlobalValue = {
   percents: {
@@ -1420,6 +1403,7 @@ export const paraswapTax: { [key: string]: number } = {
   '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
   '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3': 0,
   '0xf16ec50ec49abc95fa793c7871682833b6bc47e7': 1300,
+  '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
 };
 
 export const GlobalData = {
@@ -1465,63 +1449,74 @@ export const GlobalData = {
   ],
 };
 
-// a list of tokens by chain
-type ChainTokenList = {
-  readonly [chainId in ChainId]: Token[];
+export const ContestPairs: any = {
+  [ChainId.MATIC]: [
+    {
+      name: 'All',
+      address: 'all',
+    },
+    {
+      name: 'WETH / USDC',
+      address: '0x55caabb0d2b704fd0ef8192a7e35d8837e678207',
+      token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    },
+    {
+      name: 'WMATIC / USDC',
+      address: '0xae81fac689a1b4b1e06e7ef4a2ab4cd8ac0a087d',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    },
+    {
+      name: 'WMATIC / USDT',
+      address: '0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+    },
+    {
+      name: 'WMATIC / WETH',
+      address: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
+      token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+    },
+  ],
+  [ChainId.ZKEVM]: [
+    {
+      name: 'All',
+      address: 'all',
+    },
+    {
+      name: 'WETH_USDC',
+      address: '0xc44ad482f24fd750caeba387d2726d8653f8c4bb',
+      token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+      token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+    },
+    {
+      name: 'USDT_USDC',
+      address: '0x9591b8a30c3a52256ea93e98da49ee43afa136a8',
+      token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+      token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+    },
+    {
+      name: 'WMATIC_USDC',
+      address: '0xc9853f9f29cdd15ece6965e20ca288a2946c15e6',
+      token0Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+      token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+    },
+    {
+      name: 'WMATIC_WETH',
+      address: '0xb73abfb5a2c89f4038baa476ff3a7942a021c196',
+      token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+      token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+    },
+  ],
+  [ChainId.DOEGCHAIN_TESTNET]: [],
+  [ChainId.DOGECHAIN]: [],
+  [ChainId.ZKTESTNET]: [],
+  [ChainId.MUMBAI]: [],
 };
-
-export interface WalletInfo {
-  connector?: AbstractConnector;
-  name: string;
-  iconName: string;
-  description: string;
-  href: string | null;
-  color: string;
-  primary?: true;
-  mobile?: true;
-  mobileOnly?: true;
-  installLink?: string | null;
-}
-
-export const ContestPairs = [
-  {
-    name: 'All',
-    address: 'all',
-  },
-  {
-    name: 'WETH / USDC',
-    address: '0x55caabb0d2b704fd0ef8192a7e35d8837e678207',
-    token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-    token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-  },
-  {
-    name: 'WMATIC / USDC',
-    address: '0xae81fac689a1b4b1e06e7ef4a2ab4cd8ac0a087d',
-    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-    token1Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-  },
-  {
-    name: 'WMATIC / USDT',
-    address: '0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff',
-    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-    token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-  },
-  {
-    name: 'WMATIC / WETH',
-    address: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
-    token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-    token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-  },
-];
 
 export const LeaderBoardAnalytics = {
   CHART_DURATIONS: [1, 7, 30],
   CHART_DURATION_TEXTS: ['24H', '7D', '30D'],
 };
-
-// export const ContestPairs = {
-//   ETH_USDC_PAIR: '0x853Ee4b2A13f8a742d64C8F088bE7bA2131f670d',
-//   MATIC_USDC_PAIR: '0x6e7a5FAFcec6BB1e78bAE2A1F0B612012BF14827',
-//   MATIC_USDT_PAIR: '0x604229c960e5cacf2aaeac8be68ac07ba9df81c3',
-//   MATIC_ETH_PAIR: '0xadbf1854e5883eb8aa7baf50705338739e558e5b',
-// };

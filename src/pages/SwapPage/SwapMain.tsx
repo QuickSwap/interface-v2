@@ -86,7 +86,7 @@ const SwapMain: React.FC = () => {
   }, [SwapDropdownTabs, swapType]);
 
   const [selectedIndex, setSelectedIndex] = React.useState(
-    parseInt(swapType?.toString() || '0', 0),
+    Number(swapType?.toString() ?? '0'),
   );
 
   const redirectWithSwapType = (swapTypeTo: number) => {
@@ -102,6 +102,7 @@ const SwapMain: React.FC = () => {
         Object.values(parsedQs).length > 0 ? '&' : '?'
       }swapIndex=${swapTypeTo}`;
     }
+    setSelectedIndex(swapTypeTo);
     history.push(redirectPath);
   };
 
@@ -116,7 +117,7 @@ const SwapMain: React.FC = () => {
     event: React.MouseEvent<HTMLElement>,
     index: number,
   ) => {
-    setSelectedIndex(index);
+    setSelectedIndex(SwapDropdownTabs[index].key);
     setAnchorEl(null);
     redirectWithSwapType(SwapDropdownTabs[index].key);
   };
@@ -140,8 +141,8 @@ const SwapMain: React.FC = () => {
     ) {
       const availableSwapTypes = [
         SWAP_BEST_TRADE,
-        SWAP_NORMAL,
         SWAP_V3,
+        SWAP_NORMAL,
         SWAP_LIMIT,
         SWAP_TWAP,
       ].filter((sType) =>

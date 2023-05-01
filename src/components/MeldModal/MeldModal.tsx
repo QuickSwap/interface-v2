@@ -1,14 +1,13 @@
 import React from 'react';
 import { CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
-import 'components/styles/BuyFiatContent.scss';
 
-interface BinanceModalProps {
+interface MeldModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-const BinanceModal: React.FC<BinanceModalProps> = ({ open, onClose }) => {
+const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
   const { t } = useTranslation();
   return (
     <CustomModal
@@ -19,14 +18,10 @@ const BinanceModal: React.FC<BinanceModalProps> = ({ open, onClose }) => {
     >
       <div className='buyFiatContent'>
         <iframe
-          title='binance connect'
+          title='meld widget'
           allow='accelerometer; autoplay; camera; gyroscope; payment'
           height='600px'
-          src={`${
-            process.env.REACT_APP_BINANCE_CNT_URL
-          }/en/pre-connect?merchantCode=${
-            process.env.REACT_APP_BINANCE_MERCHANT_CODE
-          }&timestamp=${new Date().getTime()}`}
+          src={`${process.env.REACT_APP_MELD_URL}/?publicKey=${process.env.REACT_APP_MELD_KEY}`}
           width='100%'
         >
           <p>{t('notSupportIframe')}</p>
@@ -36,4 +31,4 @@ const BinanceModal: React.FC<BinanceModalProps> = ({ open, onClose }) => {
   );
 };
 
-export default BinanceModal;
+export default MeldModal;
