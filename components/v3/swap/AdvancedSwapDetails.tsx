@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { Trade } from 'lib/trade';
 import { computeRealizedLPFeePercent } from 'utils/v3/prices';

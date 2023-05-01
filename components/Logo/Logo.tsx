@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { stringToColour } from 'utils/stringToColour';
+import Image from 'next/image'
 
 const BAD_SRCS: { [tokenAddress: string]: true } = {};
 
@@ -47,7 +48,6 @@ const Logo: React.FC<LogoProps> = ({
         background: stringToColour(alt ?? '').background,
         color: stringToColour(alt ?? '').text,
         border: stringToColour(alt ?? '').border,
-        fontSize: fontSize ?? '12px',
         fontWeight: 600,
       }}
     >

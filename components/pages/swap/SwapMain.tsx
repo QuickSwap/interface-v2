@@ -11,7 +11,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useIsV2 } from 'state/application/hooks';
 import { Limit, TWAP } from './LimitAndTWAP/LimitAndTWAP';
 import SwapCrossChain from './SwapCrossChain';
-import SwapV3Page from './V3/Swap';
+import SwapV3Page from './SwapV3';
 import styles from 'styles/pages/Swap.module.scss';
 
 const SWAP_BEST_TRADE = 0;
@@ -222,7 +222,7 @@ const SwapMain: React.FC = () => {
                 }}
               >
                 {SwapDropdownTabs.filter((d) => d.visible !== false).map(
-                  (option) => (
+                  (option, index) => (
                     <MenuItem
                       key={option.key}
                       disabled={option.key === selectedIndex}
