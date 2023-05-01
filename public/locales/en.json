@@ -479,7 +479,7 @@
   "collectFeeFromThisPosition": "You will also collect fees earned from this position",
   "feeEarned": "Fees Earned",
   "amount": "Amount",
-  "collectAsWmatic": "Collect as WMATIC",
+  "collectAsWmatic": "Collect as {{ symbol }}",
   "typeConfirmSwapPriceImpact": "This swap has a price impact of at least {{ priceImpact }}%. Please type the word 'confirm' to continue with this swap.",
   "confirmSwapPriceImpact": "This swap has a price impact of at least {{ priceImpact }}%. Please confirm that you would like to continue with this swap.",
   "feeIs": "Fee is {{ fee }}%",

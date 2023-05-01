@@ -5,7 +5,7 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
-import { Box, Button, Divider } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { PositionPool } from 'models/interfaces';
 import { useTranslation } from 'react-i18next';
 import {
@@ -25,7 +25,6 @@ import {
 import { Percent } from '@uniswap/sdk-core';
 
 import ReactGA from 'react-ga';
-import { useAppSelector } from 'state/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { calculateGasMarginV3 } from 'utils';
 import usePrevious from 'hooks/usePrevious';
@@ -36,7 +35,7 @@ import { WrappedCurrency } from 'models/types';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import ColoredSlider from 'components/ColoredSlider';
-import { JSBI } from '@uniswap/sdk';
+import { JSBI, WETH } from '@uniswap/sdk';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import './index.scss';
 
@@ -50,13 +49,6 @@ export default function RemoveLiquidityV3({
   const { t } = useTranslation();
 
   const tokenId = position.tokenId;
-
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
 
   // flag for receiving WETH
   const [receiveWETH, setReceiveWETH] = useState(false);
@@ -325,7 +317,7 @@ export default function RemoveLiquidityV3({
   }
 
   const showCollectAsWeth = Boolean(
-    !chainId &&
+    chainId &&
       liquidityValue0?.currency &&
       liquidityValue1?.currency &&
       (liquidityValue0.currency.isNative ||
@@ -453,7 +445,11 @@ export default function RemoveLiquidityV3({
       {showCollectAsWeth && (
         <Box mb={2} className='flex items-center'>
           <Box mr={1}>
-            <p>{t('collectAsWmatic')}</p>
+            <p>
+              {t('collectAsWmatic', {
+                symbol: chainId ? WETH[chainId].symbol : '',
+              })}
+            </p>
           </Box>
           <ToggleSwitch
             toggled={receiveWETH}
