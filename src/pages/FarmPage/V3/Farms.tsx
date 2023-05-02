@@ -214,7 +214,7 @@ export default function Farms() {
           className='flex items-center flex-wrap'
           width={isMobile ? '100%' : 'auto'}
         >
-          {selectedFarmCategory.id === 1 && (
+          {selectedFarmCategory.id !== 0 && (
             <Box mt={isMobile ? 2 : 0} width={isMobile ? '100%' : 160}>
               <CustomSwitch width='100%' height={40} items={farmStatusItems} />
             </Box>
