@@ -777,7 +777,6 @@ export const GammaPairs: {
         address: '0xe503c1dfd7012e72af4c415f4c5e8abf5b45c25f',
         token0Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
         token1Address: '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6',
-        ableToFarm: true,
         pid: 54,
       },
     ],
@@ -1002,6 +1001,17 @@ export const GammaPairs: {
         pid: 74,
       },
     ],
+    '0x0c9c7712c83b3c70e7c5e11100d33d9401bdf9dd-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x8Bb9247c8eFf487F7A13AB7E704F50904e91430D',
+        token0Address: '0x0c9c7712c83b3c70e7c5e11100d33d9401bdf9dd',
+        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        ableToFarm: true,
+        pid: 75,
+      },
+    ],
     '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
       {
         type: Presets.GAMMA_WIDE,
@@ -1009,7 +1019,6 @@ export const GammaPairs: {
         address: '0x2d08b4b4c74d0b2f4144ae7bd86ee40fb654acef',
         token0Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
         token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-        ableToFarm: true,
         pid: 1,
         masterChefIndex: 1,
       },
@@ -1021,7 +1030,6 @@ export const GammaPairs: {
         address: '0xcbb7fae80e4f5c0cbfe1af7bb1f19692f9532cfa',
         token0Address: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
         token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
-        ableToFarm: true,
         pid: 2,
         masterChefIndex: 1,
       },
