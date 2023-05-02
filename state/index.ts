@@ -1,6 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { save, load } from 'redux-localstorage-simple';
-
 import application from 'state/application/reducer';
 import { updateVersion } from './global/actions';
 import user from './user/reducer';
@@ -22,17 +20,6 @@ import multicallV3 from './multicall/v3/reducer';
 import swapV3 from './swap/v3/reducer';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { api as dataApi } from './data/slice';
-
-const PERSISTED_KEYS: string[] = [
-  'user',
-  'transactions',
-  'lists',
-  'farms',
-  'cntFarms',
-  'dualFarms',
-  'syrups',
-  'analytics',
-];
 
 const store = configureStore({
   reducer: {
@@ -60,9 +47,8 @@ const store = configureStore({
     ...getDefaultMiddleware({ serializableCheck: false, thunk: true }).concat(
       dataApi.middleware,
     ),
-    save({ states: PERSISTED_KEYS }),
   ],
-  preloadedState: load({ states: PERSISTED_KEYS }),
+  preloadedState: {},
 });
 
 store.dispatch(updateVersion());

@@ -1,5 +1,4 @@
 import { createReducer, nanoid } from '@reduxjs/toolkit';
-import { ChainId } from '@uniswap/sdk';
 import {
   addPopup,
   PopupContent,

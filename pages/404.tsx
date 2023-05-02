@@ -1,17 +1,24 @@
 import React from 'react';
 import Head from 'next/head';
-// import Page from "components/pages/error";
-import { NextPage } from 'next';
+import { NextPage, GetStaticProps } from 'next';
 
 const Custom404Page: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Error Page</title>
+        <title>404 Page</title>
       </Head>
-      {/* <Page statusCode={404} /> */}
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  return {
+    redirect: {
+      destination: '/',
+      permanent: true,
+    },
+  };
 };
 
 export default Custom404Page;

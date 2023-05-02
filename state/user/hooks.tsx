@@ -1,6 +1,6 @@
 import { ChainId, Pair, Token } from '@uniswap/sdk';
 import flatMap from 'lodash.flatmap';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTokens } from 'hooks/Tokens';
@@ -367,9 +367,15 @@ export function useSelectedWallet(): {
   selectedWallet: ConnectionType | undefined;
   updateSelectedWallet: (wallet?: ConnectionType) => void;
 } {
-  const selectedWallet = useSelector(
+  const [savedWallet, setSavedWallet] = useState<ConnectionType | undefined>();
+  useEffect(() => {
+    const wallet = localStorage.getItem('selectedWallet');
+    setSavedWallet(wallet ? (wallet as ConnectionType) : undefined);
+  }, []);
+  const stateWallet = useSelector(
     (state: AppState) => state.user.selectedWallet,
   );
+  const selectedWallet = stateWallet ?? savedWallet;
   const dispatch = useDispatch();
   const _updateSelectedWallet = useCallback(
     (wallet?: ConnectionType) => {
@@ -377,7 +383,10 @@ export function useSelectedWallet(): {
     },
     [dispatch],
   );
-  return { selectedWallet, updateSelectedWallet: _updateSelectedWallet };
+  return {
+    selectedWallet,
+    updateSelectedWallet: _updateSelectedWallet,
+  };
 }
 
 // export function useUserTransactionTTL(): [number, (slippage: number) => void] {

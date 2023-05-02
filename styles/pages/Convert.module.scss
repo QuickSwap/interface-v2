@@ -11,7 +11,7 @@
 .iconWrapper {
   display: flex;
   margin-right: 6px;
-  & svg, & img {
+  & svg, & svg rect {
     width: 24px;
     height: 24px;
   }

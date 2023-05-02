@@ -71,7 +71,16 @@ import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
-import { Connection, getConnections, injectedConnection } from 'connectors';
+import {
+  Connection,
+  ConnectionType,
+  coinbaseWalletConnection,
+  getConnections,
+  gnosisSafeConnection,
+  injectedConnection,
+  networkConnection,
+  walletConnectConnection,
+} from 'connectors';
 import Web3 from 'web3';
 import { useActiveWeb3React } from 'hooks';
 import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
@@ -3003,3 +3012,30 @@ export const getGammaRewards = async (chainId?: ChainId) => {
     }
   }
 };
+
+export function getConnection(c: Connector | string) {
+  if (c instanceof Connector) {
+    const connection = getConnections().find(
+      (connection) => connection.connector === c,
+    );
+    if (!connection) {
+      throw Error('unsupported connector');
+    }
+    return connection;
+  } else {
+    switch (c) {
+      case ConnectionType.INJECTED:
+        return injectedConnection;
+      case ConnectionType.COINBASE_WALLET:
+        return coinbaseWalletConnection;
+      case ConnectionType.WALLET_CONNECT:
+        return walletConnectConnection;
+      case ConnectionType.NETWORK:
+        return networkConnection;
+      case ConnectionType.GNOSIS_SAFE:
+        return gnosisSafeConnection;
+      default:
+        return;
+    }
+  }
+}

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { Trans, useTranslation } from 'next-i18next';
-import QUICKIcon from 'assets/images/quickIcon.svg';
+import QUICKIcon from 'svgs/quickIcon.svg';
 import QUICKV2Icon from 'svgs/QUICKV2.svg';
 import { ArrowForward, ArrowDownward } from '@mui/icons-material';
 import {
@@ -27,8 +27,12 @@ import { ChainId } from '@uniswap/sdk';
 import { OLD_QUICK } from 'constants/v3/addresses';
 import { getConfig } from 'config';
 import { useRouter } from 'next/router';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-const ConvertQUICKPage: React.FC = () => {
+const ConvertQUICKPage = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation();
   const { account, library, chainId } = useActiveWeb3React();
   const [quickAmount, setQUICKAmount] = useState('');
@@ -150,7 +154,7 @@ const ConvertQUICKPage: React.FC = () => {
       <Box className={styles.convertQUICKWrapper}>
         <Box className='flex items-center' mb={3}>
           <Box className={styles.iconWrapper}>
-            <img src={QUICKIcon} alt='QUICK' />
+            <QUICKIcon />
           </Box>
           <p className='weight-600'>QUICK(OLD)</p>
           <Box mx={1.5} className={styles.convertArrow}>
@@ -319,6 +323,14 @@ const ConvertQUICKPage: React.FC = () => {
       )}
     </Box>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
 };
 
 export default ConvertQUICKPage;

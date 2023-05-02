@@ -25,6 +25,8 @@ import GasUpdater from 'state/application/gasUpdater';
 import { Web3ReactManager, Popups } from 'components';
 import { appWithTranslation } from 'next-i18next';
 import './index.scss';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
