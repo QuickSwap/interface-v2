@@ -109,7 +109,6 @@ const AnalyticsLiquidityChart: React.FC<{
           <h5>${formatCompact(globalData.totalLiquidityUSD)}</h5>
           <Box
             ml={1}
-            height={23}
             px={1}
             borderRadius={40}
             className={liquidityPercentClass}

@@ -10,14 +10,20 @@ import { TokensTable, PairTable } from 'components';
 import AnalyticsInfo from 'components/pages/analytics/AnalyticsInfo';
 import AnalyticsLiquidityChart from 'components/pages/analytics/AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from 'components/pages/analytics/AnalyticsVolumeChart';
+import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
 import { useTranslation } from 'next-i18next';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import styles from 'styles/pages/Analytics.module.scss';
 
 dayjs.extend(utc);
 
-const AnalyticsOverview: React.FC = () => {
+const AnalyticsPage = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const router = useRouter();
@@ -121,9 +127,10 @@ const AnalyticsOverview: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
+      <AnalyticsHeader />
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
-          <Box className='panel' width={1}>
+          <Box className='panel'>
             <AnalyticsLiquidityChart
               globalData={globalData}
               setDataLoaded={setLiquidityChartLoaded}
@@ -131,7 +138,7 @@ const AnalyticsOverview: React.FC = () => {
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
-          <Box className='analyticsVolumeChart panel'>
+          <Box className='panel'>
             <AnalyticsVolumeChart
               globalData={globalData}
               setDataLoaded={setVolumeChartLoaded}
@@ -150,11 +157,11 @@ const AnalyticsOverview: React.FC = () => {
       </Box>
       <Box mt={4}>
         <Box className='flex items-center justify-between'>
-          <Box className='headingWrapper'>
+          <Box className={styles.headingWrapper}>
             <p className='weight-600'>{t('topTokens')}</p>
           </Box>
           <Box
-            className='cursor-pointer headingWrapper'
+            className={`cursor-pointer ${styles.headingWrapper}`}
             onClick={() => router.push(`/analytics/${version}/tokens`)}
           >
             <p className='weight-600'>{t('seeAll')}</p>
@@ -180,11 +187,11 @@ const AnalyticsOverview: React.FC = () => {
       </Box>
       <Box mt={4}>
         <Box className='flex items-center justify-between'>
-          <Box className='headingWrapper'>
+          <Box className={styles.headingWrapper}>
             <p className='weight-600'>{t('topPairs')}</p>
           </Box>
           <Box
-            className='cursor-pointer headingWrapper'
+            className={`cursor-pointer ${styles.headingWrapper}`}
             onClick={() => router.push(`/analytics/${version}/pairs`)}
           >
             <p className='weight-600'>{t('seeAll')}</p>
@@ -216,4 +223,25 @@ const AnalyticsOverview: React.FC = () => {
   );
 };
 
-export default AnalyticsOverview;
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const versions = ['v2', 'v3', 'total'];
+  const paths =
+    versions?.map((version) => ({
+      params: { version },
+    })) || [];
+
+  return {
+    paths,
+    fallback: 'blocking',
+  };
+};
+
+export default AnalyticsPage;

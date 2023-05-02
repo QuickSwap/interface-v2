@@ -67,7 +67,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <h5 className='text-bold'>{t('account')}</h5>
         <Close className='cursor-pointer' onClick={toggleWalletModal} />
       </Box>
-      <Box mt={2} padding={2} borderRadius={10} className='bg-secondary2'>
+      <Box mt={2} padding={2} borderRadius='10px' className='bg-secondary2'>
         <Box className='flex items-center justify-between'>
           {formatConnectorName()}
           <Box className='flex items-center'>

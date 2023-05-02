@@ -12,19 +12,19 @@ import { ChainId } from '@uniswap/sdk';
 import { GlobalConst } from 'constants/index';
 import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 
-const MetamaskIcon = 'assets/images/metamask.png';
-const BlockWalletIcon = 'assets/images/blockwalletIcon.svg';
-const BraveWalletIcon = 'assets/images/braveWalletIcon.png';
-const cypherDIcon = 'assets/images/cypherDIcon.png';
-const BitKeepIcon = 'assets/images/bitkeep.png';
-const CoinbaseWalletIcon = 'assets/images/coinbaseWalletIcon.svg';
-const WalletConnectIcon = 'assets/images/walletConnectIcon.svg';
-const PhantomIcon = 'assets/images/wallets/phantomIconPurple.svg';
-const VenlyIcon = 'assets/images/venly.svg';
-const UnstoppableDomainsIcon = 'assets/images/unstoppableDomains.png';
-const GnosisIcon = 'assets/images/gnosis_safe.png';
-const TrustIcon = 'assets/images/trust.png';
-const ZengoIcon = 'assets/images/zengo.png';
+const MetamaskIcon = '/assets/images/metamask.png';
+const BlockWalletIcon = '/assets/images/blockwalletIcon.svg';
+const BraveWalletIcon = '/assets/images/braveWalletIcon.png';
+const cypherDIcon = '/assets/images/cypherDIcon.png';
+const BitKeepIcon = '/assets/images/bitkeep.png';
+const CoinbaseWalletIcon = '/assets/images/coinbaseWalletIcon.svg';
+const WalletConnectIcon = '/assets/images/walletConnectIcon.svg';
+const PhantomIcon = '/assets/images/wallets/phantomIconPurple.svg';
+const VenlyIcon = '/assets/images/venly.svg';
+const UnstoppableDomainsIcon = '/assets/images/unstoppableDomains.png';
+const GnosisIcon = '/assets/images/gnosis_safe.png';
+const TrustIcon = '/assets/images/trust.png';
+const ZengoIcon = '/assets/images/zengo.png';
 
 function onError(error: Error) {
   console.debug(`web3-react error: ${error}`);

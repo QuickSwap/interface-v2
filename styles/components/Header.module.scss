@@ -102,7 +102,10 @@
   }
   &.subMenuItem {
     padding: 0;
+    width: 36px;
+    justify-content: center;
     overflow: visible;
+    color: $textSecondary;
   }
   .menuItemSparkle {
     position: absolute;

@@ -11,8 +11,13 @@ import { useTranslation } from 'next-i18next';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
 
-const AnalyticsTokens: React.FC = () => {
+const AnalyticsTokens = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation();
   const [tokensFilter, setTokensFilter] = useState(0);
 
@@ -75,6 +80,7 @@ const AnalyticsTokens: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
+      <AnalyticsHeader />
       <TopMovers hideArrow={true} />
       <Box my={4} px={2} className='flex flex-wrap items-center'>
         <Box
@@ -111,6 +117,27 @@ const AnalyticsTokens: React.FC = () => {
       </Box>
     </Box>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const versions = ['v2', 'v3', 'total'];
+  const paths =
+    versions?.map((version) => ({
+      params: { version },
+    })) || [];
+
+  return {
+    paths,
+    fallback: 'blocking',
+  };
 };
 
 export default AnalyticsTokens;

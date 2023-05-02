@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { Box } from '@mui/material';
-import SearchIcon from 'svgs/SearchIcon.svg';
+import { Search } from '@mui/icons-material';
 import { clientV2, clientV3 } from 'apollo/client';
 import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
 import {
@@ -303,7 +303,7 @@ const AnalyticsSearch: React.FC = () => {
           onChange={(evt) => setSearchValInput(evt.target.value)}
         />
         <Box display='flex'>
-          <SearchIcon />
+          <Search />
         </Box>
       </Box>
       {menuOpen && (
@@ -339,7 +339,7 @@ const AnalyticsSearch: React.FC = () => {
                 key={ind}
                 className={styles.searchWidgetRow}
                 onClick={() => {
-                  router.push(`/analytics/${version}/pair/${val.id}`);
+                  router.push(`/analytics/${version}/pair?id=${val.id}`);
                   setMenuOpen(false);
                 }}
               >
@@ -373,7 +373,7 @@ const AnalyticsSearch: React.FC = () => {
                 key={ind}
                 className={styles.searchWidgetRow}
                 onClick={() => {
-                  router.push(`/analytics/${version}/token/${val.id}`);
+                  router.push(`/analytics/${version}/token?id=${val.id}`);
                   setMenuOpen(false);
                 }}
               >

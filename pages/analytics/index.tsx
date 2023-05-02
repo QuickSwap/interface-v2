@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react';
-import { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import React from 'react';
+import { NextPage, GetStaticProps } from 'next';
 
 const AnalyticsPage: NextPage = () => {
-  const router = useRouter();
-  useEffect(() => {
-    router.push('/analytics/total');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return <></>;
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  return {
+    redirect: {
+      destination: '/analytics/total',
+      permanent: true,
+    },
+  };
 };
 
 export default AnalyticsPage;

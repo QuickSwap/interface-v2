@@ -284,7 +284,7 @@ const Header: React.FC = () => {
           ))}
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
-            <Box className={`flex ${styles.menuItem} ${styles.subMenuItem}`}>
+            <Box className={`${styles.menuItem} ${styles.subMenuItem}`}>
               <MoreHoriz />
               <Box className={styles.subMenuWrapper}>
                 <Box className={styles.subMenu}>

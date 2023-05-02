@@ -12,6 +12,15 @@ body {
   }
 }
 
+.panel {
+  background: $grey3;
+  border-radius: 20px;
+  padding: 24px;
+  @include media('screen', '<phone') {
+    padding: 12px;
+  }
+}
+
 .loadingDots {
   &::after {
     display: inline-block;

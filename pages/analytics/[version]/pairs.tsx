@@ -7,8 +7,13 @@ import { useEthPrice } from 'state/application/hooks';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
 
-const AnalyticsPairs: React.FC = () => {
+const AnalyticsPairs = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const [topPairs, updateTopPairs] = useState<any[] | null>(null);
@@ -51,6 +56,7 @@ const AnalyticsPairs: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
+      <AnalyticsHeader />
       <p>{t('allPairs')}</p>
       <Box mt={4} className='panel'>
         {topPairs ? (
@@ -61,6 +67,27 @@ const AnalyticsPairs: React.FC = () => {
       </Box>
     </Box>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const versions = ['v2', 'v3', 'total'];
+  const paths =
+    versions?.map((version) => ({
+      params: { version },
+    })) || [];
+
+  return {
+    paths,
+    fallback: 'blocking',
+  };
 };
 
 export default AnalyticsPairs;

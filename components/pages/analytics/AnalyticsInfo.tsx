@@ -4,6 +4,7 @@ import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'next-i18next';
 import { useIsV2 } from 'state/application/hooks';
 import { getFormattedPercent, getPriceClass } from 'utils';
+import styles from 'styles/pages/Analytics.module.scss';
 
 interface AnalyticsInfoProps {
   data: any;
@@ -77,7 +78,7 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
           {item.percentChange !== null ? (
             <Box
               ml={2}
-              className={`priceChangeWrapper ${getPriceClass(
+              className={`${styles.priceChangeWrapper} ${getPriceClass(
                 Number(item.percentChange),
               )}`}
             >

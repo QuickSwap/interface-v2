@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Divider } from '@mui/material';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
@@ -26,7 +25,6 @@ const PairTable: React.FC<PairsTableProps> = ({
   showPagination = true,
 }) => {
   const { t } = useTranslation();
-  const router = useRouter();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const version = useAnalyticsVersion();
@@ -181,7 +179,7 @@ const PairTable: React.FC<PairsTableProps> = ({
             </Box>
             <Link
               className='no-decoration'
-              href={`/analytics/${version}/pair/${pair.id}`}
+              href={`/analytics/${version}/pair?id=${pair.id}`}
             >
               <Box className='flex items-center'>
                 <DoubleCurrencyLogo
@@ -389,7 +387,9 @@ const PairTable: React.FC<PairsTableProps> = ({
               </Box>
               <Link
                 className='no-decoration'
-                href={`/analytics/${pair.isV3 ? 'v3' : 'v2'}/pair/${pair.id}`}
+                href={`/analytics/${pair.isV3 ? 'v3' : 'v2'}/pair?id=${
+                  pair.id
+                }`}
               >
                 <Box className='flex items-center'>
                   <DoubleCurrencyLogo

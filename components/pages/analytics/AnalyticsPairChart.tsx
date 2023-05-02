@@ -15,6 +15,7 @@ import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'next-i18next';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import styles from 'styles/pages/Analytics.module.scss';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -479,7 +480,7 @@ const AnalyticsPairChart: React.FC<{
                       }${chartYTicker === '%' ? chartYTicker : ''}`}
                     </h4>
                     <Box
-                      className={`priceChangeWrapper ${currentPercentClass}`}
+                      className={`${styles.priceChangeWrapper} ${currentPercentClass}`}
                       ml={1}
                     >
                       <small>
@@ -514,17 +515,29 @@ const AnalyticsPairChart: React.FC<{
               )}
               {chartIndex === CHART_PRICE ? (
                 <Box
-                  className='flex analyticsPriceChartToggler'
-                  position={'absolute'}
+                  className={`flex ${styles.analyticsPriceChartToggler}`}
+                  position='absolute'
                   right={40}
                   onClick={() =>
                     setPriceChartTokenIdx(Number(!priceChartTokenIdx))
                   }
                 >
-                  <Box className={`${!priceChartTokenIdx && 'active'}`}>
+                  <Box
+                    className={`${styles.analyticsPriceChartToggleInner} ${
+                      !priceChartTokenIdx
+                        ? styles.activeAnalyticsPriceChartToggleInner
+                        : ''
+                    }`}
+                  >
                     {pairData.token0.symbol}
                   </Box>
-                  <Box className={`${priceChartTokenIdx && 'active'}`}>
+                  <Box
+                    className={`${styles.analyticsPriceChartToggleInner} ${
+                      priceChartTokenIdx
+                        ? styles.activeAnalyticsPriceChartToggleInner
+                        : ''
+                    }`}
+                  >
                     {pairData.token1.symbol}
                   </Box>
                 </Box>

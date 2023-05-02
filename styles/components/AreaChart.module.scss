@@ -18,6 +18,16 @@
   }
 }
 
+.categoryValues {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 8px;
+  & p {
+    font-size: 12px;
+    color: $textDisabled;
+  }
+}
+
 .areaChartTooltip {
   display: flex;
   flex-direction: column;

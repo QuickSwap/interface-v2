@@ -49,7 +49,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
     }
   }, [updateIsV2, v2, v3]);
   const version = useAnalyticsVersion();
-  const isPairDetails = router.pathname.includes('pair/');
+  const isPairDetails = router.pathname === '/analytics/[version]/pair';
 
   return (
     <Box width='100%' mb={3}>
@@ -73,7 +73,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
           {type && (
             <Box className='flex items-center text-hint'>
               <span
-                className='link'
+                className={styles.link}
                 onClick={() => {
                   router.push(`/analytics/${version}`);
                 }}
@@ -82,7 +82,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
               </span>
               <ArrowForwardIos style={{ width: 16 }} />
               <span
-                className='link'
+                className={styles.link}
                 onClick={() => {
                   router.push(`/analytics/${version}/${type}s`);
                 }}

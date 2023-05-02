@@ -39,13 +39,13 @@ const VersionToggle: React.FC = () => {
       ? (router.query.currencyIdB as string)
       : undefined;
     const redirectPathName = versionParam
-      ? router.pathname.replace('/' + versionParam, `/${version}`)
+      ? router.pathname.replace('/[version]', `/${version}`)
       : router.pathname +
         (router.pathname.includes('/add')
           ? (currencyIdAParam ? '' : `/ETH`) +
             (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
           : '') +
-        `${router.pathname.endsWith('/') ? '' : '/'}${version}`;
+        `/${version}`;
     router.push(
       redirectPathName +
         (router.pathname.includes('/pools') ? router.asPath : ''),

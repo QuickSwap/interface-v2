@@ -25,11 +25,16 @@ import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { CallMade } from '@mui/icons-material';
 import { getConfig } from 'config';
+import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import styles from 'styles/pages/Analytics.module.scss';
 
-const AnalyticsPairDetails: React.FC = () => {
+const AnalyticsPairDetails = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const pairAddress = router.query.id as string;
+  const pairAddress = router.query.id ? (router.query.id as string) : undefined;
   const tokenMap = useSelectedTokenList();
   const [dataLoading, setDataLoading] = useState(false);
   const [pairData, setPairData] = useState<any>(null);
@@ -155,7 +160,7 @@ const AnalyticsPairDetails: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      if (chainId && version) {
+      if (chainId && version && pairAddress) {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
         );
@@ -185,7 +190,7 @@ const AnalyticsPairDetails: React.FC = () => {
     <Box width={1} my={4}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={3}>
-          <Box className='panel analyticsDetailsInfoV3'>
+          <Box className={`panel ${styles.analyticsDetailsInfoV3}`}>
             <Box>
               <span className='text-disabled'>{t('totalTokensLocked')}</span>
               <Box mt={1.5} className='bg-gray2' borderRadius={8} padding={1.5}>
@@ -193,7 +198,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   className='flex items-center justify-between cursor-pointer'
                   onClick={() => {
                     router.push(
-                      `/analytics/${version}/token/${pairData.token0.id}`,
+                      `/analytics/${version}/token?id=${pairData.token0.id}`,
                     );
                   }}
                 >
@@ -210,7 +215,7 @@ const AnalyticsPairDetails: React.FC = () => {
                   className='flex items-center justify-between cursor-pointer'
                   onClick={() => {
                     router.push(
-                      `/analytics/${version}/token/${pairData.token1.id}`,
+                      `/analytics/${version}/token?id=${pairData.token1.id}`,
                     );
                   }}
                 >
@@ -292,15 +297,15 @@ const AnalyticsPairDetails: React.FC = () => {
                   size={32}
                 />
                 <Box ml={1}>
-                  <p className='heading1'>
+                  <p className={styles.heading1}>
                     <Link
-                      href={`/analytics/${version}/token/${pairData.token0.id}`}
+                      href={`/analytics/${version}/token?id=${pairData.token0.id}`}
                     >
                       {pairData.token0.symbol}
                     </Link>{' '}
                     /{' '}
                     <Link
-                      href={`/analytics/${version}/token/${pairData.token1.id}`}
+                      href={`/analytics/${version}/token?id=${pairData.token1.id}`}
                     >
                       {pairData.token1.symbol}
                     </Link>
@@ -320,10 +325,10 @@ const AnalyticsPairDetails: React.FC = () => {
               </Box>
               <Box mt={2} display='flex'>
                 <Box
-                  className='analyticsPairRate'
+                  className={styles.analyticsPairRate}
                   onClick={() => {
                     router.push(
-                      `/analytics/${version}/token/${pairData.token0.id}`,
+                      `/analytics/${version}/token?id=${pairData.token0.id}`,
                     );
                   }}
                 >
@@ -335,10 +340,10 @@ const AnalyticsPairDetails: React.FC = () => {
                 </Box>
                 <Box
                   ml={1}
-                  className='analyticsPairRate'
+                  className={styles.analyticsPairRate}
                   onClick={() => {
                     router.push(
-                      `/analytics/${version}/token/${pairData.token1.id}`,
+                      `/analytics/${version}/token?id=${pairData.token1.id}`,
                     );
                   }}
                 >
@@ -352,7 +357,7 @@ const AnalyticsPairDetails: React.FC = () => {
             </Box>
             <Box my={2} display='flex'>
               <Box
-                className='button border-primary'
+                className={`${styles.button} border-primary`}
                 mr={1.5}
                 onClick={() => {
                   router.push(
@@ -365,7 +370,7 @@ const AnalyticsPairDetails: React.FC = () => {
                 <small>{t('addLiquidity')}</small>
               </Box>
               <Box
-                className='button filledButton'
+                className={`${styles.button} ${styles.filledButton}`}
                 onClick={() => {
                   router.push(
                     `/swap${isV2 ? '/v2' : '/v3'}?currency0=${
@@ -403,6 +408,27 @@ const AnalyticsPairDetails: React.FC = () => {
       )}
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const versions = ['v2', 'v3', 'total'];
+  const paths =
+    versions?.map((version) => ({
+      params: { version },
+    })) || [];
+
+  return {
+    paths,
+    fallback: 'blocking',
+  };
 };
 
 export default AnalyticsPairDetails;
