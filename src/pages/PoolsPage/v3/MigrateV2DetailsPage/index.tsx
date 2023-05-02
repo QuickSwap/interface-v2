@@ -553,6 +553,15 @@ export default function MigrateV2DetailsPage() {
     userPoolBalance &&
     JSBI.equal(userPoolBalance.quotient, ZERO);
 
+  const isMigrateAvailable = config['migrate']['available'];
+
+  useEffect(() => {
+    if (!isMigrateAvailable) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMigrateAvailable]);
+
   return (
     <>
       <Box className='wrapper' maxWidth='464px' width='100%'>

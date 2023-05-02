@@ -6,16 +6,19 @@ import { PoolFinderModal, PoolPositionCard } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import { getConfig } from 'config';
 
 const YourLiquidityPools: React.FC = () => {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const history = useHistory();
   const [openPoolFinder, setOpenPoolFinder] = useState(false);
   const {
     loading: v2IsLoading,
     pairs: allV2PairsWithLiquidity,
   } = useV2LiquidityPools(account ?? undefined);
+  const config = getConfig(chainId);
+  const isMigrateAvailable = config['migrate']['available'];
 
   return (
     <>
@@ -27,14 +30,16 @@ const YourLiquidityPools: React.FC = () => {
       )}
       <Box className='pageHeading'>
         <p className='weight-600'>{t('yourliquidityPools')}</p>
-        {!v2IsLoading && allV2PairsWithLiquidity.length > 0 && (
-          <Box
-            className='v3-manage-v2liquidity-button'
-            onClick={() => history.push('/migrate')}
-          >
-            <small className='text-primary'>Migrate Liquidity to V3</small>
-          </Box>
-        )}
+        {!v2IsLoading &&
+          allV2PairsWithLiquidity.length > 0 &&
+          isMigrateAvailable && (
+            <Box
+              className='v3-manage-v2liquidity-button'
+              onClick={() => history.push('/migrate')}
+            >
+              <small className='text-primary'>Migrate Liquidity to V3</small>
+            </Box>
+          )}
       </Box>
 
       <Box mt={3}>

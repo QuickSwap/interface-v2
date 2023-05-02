@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as ArrowLeft } from 'assets/images/ArrowLeft.svg';
@@ -8,16 +8,27 @@ import Loader from 'components/Loader';
 import V2PositionCard from './components/V2PositionCard';
 import './index.scss';
 import { useTranslation } from 'react-i18next';
+import { getConfig } from 'config';
 
 export default function MigrateV2LiquidityPage() {
   const { t } = useTranslation();
   const history = useHistory();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const {
     loading: v2PairsLoading,
     pairs: allV2PairsWithLiquidity,
   } = useV2LiquidityPools(account ?? undefined);
   const [openPoolFinder, setOpenPoolFinder] = useState(false);
+
+  const config = getConfig(chainId);
+  const isMigrateAvailable = config['migrate']['available'];
+
+  useEffect(() => {
+    if (!isMigrateAvailable) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMigrateAvailable]);
 
   return (
     <>

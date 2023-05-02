@@ -2,6 +2,7 @@ import React, { lazy, useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import { useHistory } from 'react-router-dom';
+import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
 const Header = lazy(() => import('components/Header'));
 const Footer = lazy(() => import('components/Footer'));
 const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
@@ -27,6 +28,21 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   }, [isProMode, location, name]);
+
+  const intractKey = process.env.REACT_APP_INTRACT_KEY;
+  useEffect(() => {
+    if (intractKey) {
+      IntractAttribution(intractKey, {
+        configAllowCookie: true,
+      });
+    }
+  }, [intractKey]);
+
+  useEffect(() => {
+    if (account) {
+      trackCustomWallet(account);
+    }
+  }, [account]);
 
   useEffect(() => {
     if (
