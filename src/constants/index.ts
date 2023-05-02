@@ -1002,6 +1002,17 @@ export const GammaPairs: {
         pid: 74,
       },
     ],
+    '0x0c9c7712c83b3c70e7c5e11100d33d9401bdf9dd-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x8Bb9247c8eFf487F7A13AB7E704F50904e91430D',
+        token0Address: '0x0c9c7712c83b3c70e7c5e11100d33d9401bdf9dd',
+        token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        ableToFarm: true,
+        pid: 75,
+      },
+    ],
     '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
       {
         type: Presets.GAMMA_WIDE,
