@@ -5,13 +5,7 @@ import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import {
-  blockClient,
-  clientV2,
-  txClient,
-  clientV3,
-  farmingClient,
-} from 'apollo/client';
+import { blockClient, clientV2, clientV3, farmingClient } from 'apollo/client';
 import {
   GET_BLOCK,
   GLOBAL_DATA,
@@ -126,7 +120,9 @@ export async function getBlockFromTimestamp(
   timestamp: number,
   chainId: ChainId,
 ): Promise<any> {
-  const result = await blockClient[chainId].query({
+  const client = blockClient[chainId];
+  if (!client) return;
+  const result = await client.query({
     query: GET_BLOCK,
     variables: {
       timestampFrom: timestamp,
@@ -1290,8 +1286,10 @@ export const getSwapTransactions = async (
     .subtract(1, 'day')
     .unix();
   const sTimestamp = startTime ?? oneDayAgo;
+  const client = clientV2[chainId];
+  if (!client) return;
   try {
-    const result = await txClient[chainId].query({
+    const result = await client.query({
       query: SWAP_TRANSACTIONS,
       variables: {
         allPairs: [pairId],
