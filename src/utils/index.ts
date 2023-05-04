@@ -265,29 +265,31 @@ export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (
   let ethPriceOneDay = 0;
   let priceChangeETH = 0;
   const client = clientV2[chainId];
-  if (!client) return [];
 
-  try {
-    const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
+  if (client) {
+    try {
+      const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
 
-    const result = await client.query({
-      query: ETH_PRICE(),
-      fetchPolicy: 'network-only',
-    });
-    const currentPrice = Number(result?.data?.bundles[0]?.ethPrice ?? 0);
-    ethPrice = currentPrice;
-    const resultOneDay = await client.query({
-      query: ETH_PRICE(oneDayBlock),
-      fetchPolicy: 'network-only',
-    });
-    const oneDayBackPrice = Number(
-      resultOneDay?.data?.bundles[0]?.ethPrice ?? 0,
-    );
+      const result = await client.query({
+        query: ETH_PRICE(),
+        fetchPolicy: 'network-only',
+      });
+      const currentPrice = Number(result?.data?.bundles[0]?.ethPrice ?? 0);
+      ethPrice = currentPrice;
+      let oneDayBackPrice = 0;
+      if (oneDayBlock) {
+        const resultOneDay = await client.query({
+          query: ETH_PRICE(oneDayBlock),
+          fetchPolicy: 'network-only',
+        });
+        oneDayBackPrice = Number(resultOneDay?.data?.bundles[0]?.ethPrice ?? 0);
+      }
 
-    priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
-    ethPriceOneDay = oneDayBackPrice;
-  } catch (e) {
-    console.log(e);
+      priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
+      ethPriceOneDay = oneDayBackPrice;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   return [ethPrice, ethPriceOneDay, priceChangeETH];

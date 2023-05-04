@@ -50,28 +50,32 @@ export const getMaticPrice: (chainId: ChainId) => Promise<number[]> = async (
   let maticPriceOneDay = 0;
   let priceChangeMatic = 0;
   const client = clientV3[chainId];
-  if (!client) return [];
 
-  try {
-    const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
-    const result = await client.query({
-      query: MATIC_PRICE_V3(),
-      fetchPolicy: 'network-only',
-    });
-    const resultOneDay = await client.query({
-      query: MATIC_PRICE_V3(oneDayBlock),
-      fetchPolicy: 'network-only',
-    });
-    const currentPrice = Number(result?.data?.bundles[0]?.maticPriceUSD ?? 0);
-    const oneDayBackPrice = Number(
-      resultOneDay?.data?.bundles[0]?.maticPriceUSD ?? 0,
-    );
+  if (client) {
+    try {
+      const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
+      const result = await client.query({
+        query: MATIC_PRICE_V3(),
+        fetchPolicy: 'network-only',
+      });
+      let oneDayBackPrice = 0;
+      if (oneDayBlock) {
+        const resultOneDay = await client.query({
+          query: MATIC_PRICE_V3(oneDayBlock),
+          fetchPolicy: 'network-only',
+        });
+        oneDayBackPrice = Number(
+          resultOneDay?.data?.bundles[0]?.maticPriceUSD ?? 0,
+        );
+      }
+      const currentPrice = Number(result?.data?.bundles[0]?.maticPriceUSD ?? 0);
 
-    priceChangeMatic = getPercentChange(currentPrice, oneDayBackPrice);
-    maticPrice = currentPrice;
-    maticPriceOneDay = oneDayBackPrice;
-  } catch (e) {
-    console.log(e);
+      priceChangeMatic = getPercentChange(currentPrice, oneDayBackPrice);
+      maticPrice = currentPrice;
+      maticPriceOneDay = oneDayBackPrice;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   return [maticPrice, maticPriceOneDay, priceChangeMatic];
