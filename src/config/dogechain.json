@@ -52,5 +52,8 @@
   },
   "leaderboard": {
     "available": false
+  },
+  "safe": {
+    "available": false
   }
 }

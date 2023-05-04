@@ -105,6 +105,7 @@ const Header: React.FC = () => {
   const showLending = config['lending']['available'];
   const showGamingHub = config['gamingHub']['available'];
   const showLeaderboard = config['leaderboard']['available'];
+  const showSafe = config['safe']['available'];
 
   const menuItems = [];
 
@@ -134,6 +135,17 @@ const Header: React.FC = () => {
       link: `/farm`,
       text: t('farm'),
       id: 'farm-page-link',
+    });
+  }
+  if (showSafe) {
+    menuItems.push({
+      link: '/safe',
+      text: 'Safe',
+      id: 'safe-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_SAFE_URL || '',
+      isNew: true,
     });
   }
   if (showLair) {
@@ -231,46 +243,90 @@ const Header: React.FC = () => {
       </Link>
       {!tabletWindowSize && (
         <Box className='mainMenu'>
-          {menuItems.slice(0, menuItemCountToShow).map((val, index) => (
-            <Link
-              to={val.link}
-              key={index}
-              id={val.id}
-              className={`menuItem ${
-                pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
-              }`}
-              onClick={() => {
-                updateIsV2(false);
-              }}
-            >
-              <small>{val.text}</small>
-              {val.isNew && (
-                <>
-                  <img src={NewTag} alt='new menu' width={46} />
-                  <img
-                    className='menuItemSparkle menuItemSparkleLeft'
-                    src={SparkleLeft}
-                    alt='menuItem sparkle left'
-                  />
-                  <img
-                    className='menuItemSparkle menuItemSparkleRight'
-                    src={SparkleRight}
-                    alt='menuItem sparkle right'
-                  />
-                  <img
-                    className='menuItemSparkle menuItemSparkleBottom'
-                    src={SparkleBottom}
-                    alt='menuItem sparkle bottom'
-                  />
-                  <img
-                    className='menuItemSparkle menuItemSparkleTop'
-                    src={SparkleTop}
-                    alt='menuItem sparkle top'
-                  />
-                </>
-              )}
-            </Link>
-          ))}
+          {menuItems.slice(0, menuItemCountToShow).map((val, index) =>
+            val.isExternal ? (
+              <a
+                href={val.externalLink}
+                target={val?.target ? val.target : '_blank'}
+                key={index}
+                id={val.id}
+                rel='noopener noreferrer'
+                className={`menuItem ${
+                  pathname !== '/' && val.link.includes(pathname)
+                    ? 'active'
+                    : ''
+                }`}
+              >
+                <small>{val.text}</small>
+                {val.isNew && (
+                  <>
+                    <img src={NewTag} alt='new menu' width={46} />
+                    <img
+                      className='menuItemSparkle menuItemSparkleLeft'
+                      src={SparkleLeft}
+                      alt='menuItem sparkle left'
+                    />
+                    <img
+                      className='menuItemSparkle menuItemSparkleRight'
+                      src={SparkleRight}
+                      alt='menuItem sparkle right'
+                    />
+                    <img
+                      className='menuItemSparkle menuItemSparkleBottom'
+                      src={SparkleBottom}
+                      alt='menuItem sparkle bottom'
+                    />
+                    <img
+                      className='menuItemSparkle menuItemSparkleTop'
+                      src={SparkleTop}
+                      alt='menuItem sparkle top'
+                    />
+                  </>
+                )}
+              </a>
+            ) : (
+              <Link
+                to={val.link}
+                key={index}
+                id={val.id}
+                className={`menuItem ${
+                  pathname !== '/' && val.link.includes(pathname)
+                    ? 'active'
+                    : ''
+                }`}
+                onClick={() => {
+                  updateIsV2(false);
+                }}
+              >
+                <small>{val.text}</small>
+                {val.isNew && (
+                  <>
+                    <img src={NewTag} alt='new menu' width={46} />
+                    <img
+                      className='menuItemSparkle menuItemSparkleLeft'
+                      src={SparkleLeft}
+                      alt='menuItem sparkle left'
+                    />
+                    <img
+                      className='menuItemSparkle menuItemSparkleRight'
+                      src={SparkleRight}
+                      alt='menuItem sparkle right'
+                    />
+                    <img
+                      className='menuItemSparkle menuItemSparkleBottom'
+                      src={SparkleBottom}
+                      alt='menuItem sparkle bottom'
+                    />
+                    <img
+                      className='menuItemSparkle menuItemSparkleTop'
+                      src={SparkleTop}
+                      alt='menuItem sparkle top'
+                    />
+                  </>
+                )}
+              </Link>
+            ),
+          )}
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
             <Box display='flex' className='menuItem subMenuItem'>
