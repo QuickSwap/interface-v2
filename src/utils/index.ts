@@ -396,126 +396,126 @@ export const getTokenInfo = async (
           }, {})
         : undefined;
 
+    if (!currentData) return;
     const bulkResults = await Promise.all(
-      currentData &&
-        currentData.map(async (token: any) => {
-          const data = token;
+      currentData.map(async (token: any) => {
+        const data = token;
 
-          let oneDayHistory = oneDayData ? oneDayData[token.id] : undefined;
-          let twoDayHistory = twoDayData ? twoDayData[token.id] : undefined;
-          let oneWeekHistory = oneWeekData ? oneWeekData[token.id] : undefined;
-          let twoWeekHistory = twoWeekData ? twoWeekData[token.id] : undefined;
+        let oneDayHistory = oneDayData ? oneDayData[token.id] : undefined;
+        let twoDayHistory = twoDayData ? twoDayData[token.id] : undefined;
+        let oneWeekHistory = oneWeekData ? oneWeekData[token.id] : undefined;
+        let twoWeekHistory = twoWeekData ? twoWeekData[token.id] : undefined;
 
-          // this is because old history data returns exact same data as current data when the old data does not exist
-          if (
-            Number(oneDayHistory?.totalLiquidity ?? 0) ===
-              Number(data?.totalLiquidity ?? 0) &&
-            Number(oneDayHistory?.tradeVolume ?? 0) ===
-              Number(data?.tradeVolume ?? 0) &&
-            Number(oneDayHistory?.derivedETH ?? 0) ===
-              Number(data?.derivedETH ?? 0)
-          ) {
-            oneDayHistory = null;
-          }
+        // this is because old history data returns exact same data as current data when the old data does not exist
+        if (
+          Number(oneDayHistory?.totalLiquidity ?? 0) ===
+            Number(data?.totalLiquidity ?? 0) &&
+          Number(oneDayHistory?.tradeVolume ?? 0) ===
+            Number(data?.tradeVolume ?? 0) &&
+          Number(oneDayHistory?.derivedETH ?? 0) ===
+            Number(data?.derivedETH ?? 0)
+        ) {
+          oneDayHistory = null;
+        }
 
-          if (
-            Number(twoDayHistory?.totalLiquidity ?? 0) ===
-              Number(data?.totalLiquidity ?? 0) &&
-            Number(twoDayHistory?.tradeVolume ?? 0) ===
-              Number(data?.tradeVolume ?? 0) &&
-            Number(twoDayHistory?.derivedETH ?? 0) ===
-              Number(data?.derivedETH ?? 0)
-          ) {
-            twoDayHistory = null;
-          }
+        if (
+          Number(twoDayHistory?.totalLiquidity ?? 0) ===
+            Number(data?.totalLiquidity ?? 0) &&
+          Number(twoDayHistory?.tradeVolume ?? 0) ===
+            Number(data?.tradeVolume ?? 0) &&
+          Number(twoDayHistory?.derivedETH ?? 0) ===
+            Number(data?.derivedETH ?? 0)
+        ) {
+          twoDayHistory = null;
+        }
 
-          if (
-            Number(oneWeekHistory?.totalLiquidity ?? 0) ===
-              Number(data?.totalLiquidity ?? 0) &&
-            Number(oneWeekHistory?.tradeVolume ?? 0) ===
-              Number(data?.tradeVolume ?? 0) &&
-            Number(oneWeekHistory?.derivedETH ?? 0) ===
-              Number(data?.derivedETH ?? 0)
-          ) {
-            oneWeekHistory = null;
-          }
+        if (
+          Number(oneWeekHistory?.totalLiquidity ?? 0) ===
+            Number(data?.totalLiquidity ?? 0) &&
+          Number(oneWeekHistory?.tradeVolume ?? 0) ===
+            Number(data?.tradeVolume ?? 0) &&
+          Number(oneWeekHistory?.derivedETH ?? 0) ===
+            Number(data?.derivedETH ?? 0)
+        ) {
+          oneWeekHistory = null;
+        }
 
-          if (
-            Number(twoWeekHistory?.totalLiquidity ?? 0) ===
-              Number(data?.totalLiquidity ?? 0) &&
-            Number(twoWeekHistory?.tradeVolume ?? 0) ===
-              Number(data?.tradeVolume ?? 0) &&
-            Number(twoWeekHistory?.derivedETH ?? 0) ===
-              Number(data?.derivedETH ?? 0)
-          ) {
-            twoWeekHistory = null;
-          }
+        if (
+          Number(twoWeekHistory?.totalLiquidity ?? 0) ===
+            Number(data?.totalLiquidity ?? 0) &&
+          Number(twoWeekHistory?.tradeVolume ?? 0) ===
+            Number(data?.tradeVolume ?? 0) &&
+          Number(twoWeekHistory?.derivedETH ?? 0) ===
+            Number(data?.derivedETH ?? 0)
+        ) {
+          twoWeekHistory = null;
+        }
 
-          // calculate percentage changes and daily changes
-          const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-            data.tradeVolumeUSD,
-            oneDayHistory?.tradeVolumeUSD ?? 0,
-            twoDayHistory?.tradeVolumeUSD ?? 0,
-          );
+        // calculate percentage changes and daily changes
+        const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+          data.tradeVolumeUSD,
+          oneDayHistory?.tradeVolumeUSD ?? 0,
+          twoDayHistory?.tradeVolumeUSD ?? 0,
+        );
 
-          const [oneWeekVolumeUSD] = get2DayPercentChange(
-            data.tradeVolumeUSD,
-            oneWeekHistory?.tradeVolumeUSD ?? 0,
-            twoWeekHistory?.tradeVolumeUSD ?? 0,
-          );
+        const [oneWeekVolumeUSD] = get2DayPercentChange(
+          data.tradeVolumeUSD,
+          oneWeekHistory?.tradeVolumeUSD ?? 0,
+          twoWeekHistory?.tradeVolumeUSD ?? 0,
+        );
 
-          const currentLiquidityUSD =
-            data?.totalLiquidity * ethPrice * data?.derivedETH;
-          const oldLiquidityUSD =
-            (oneDayHistory?.totalLiquidity ?? 0) *
-            ethPriceOld *
-            (oneDayHistory?.derivedETH ?? 0);
+        const currentLiquidityUSD =
+          data?.totalLiquidity * ethPrice * data?.derivedETH;
+        const oldLiquidityUSD =
+          (oneDayHistory?.totalLiquidity ?? 0) *
+          ethPriceOld *
+          (oneDayHistory?.derivedETH ?? 0);
 
-          // percent changes
-          const priceChangeUSD = getPercentChange(
-            data?.derivedETH * ethPrice,
-            oneDayHistory?.derivedETH
-              ? oneDayHistory?.derivedETH * ethPriceOld
-              : 0,
-          );
+        // percent changes
+        const priceChangeUSD = getPercentChange(
+          data?.derivedETH * ethPrice,
+          oneDayHistory?.derivedETH
+            ? oneDayHistory?.derivedETH * ethPriceOld
+            : 0,
+        );
 
-          // set data
-          data.priceUSD = data?.derivedETH * ethPrice;
-          data.totalLiquidityUSD = currentLiquidityUSD;
-          data.oneDayVolumeUSD = oneDayVolumeUSD;
-          data.oneWeekVolumeUSD = oneWeekVolumeUSD;
-          data.volumeChangeUSD = volumeChangeUSD;
-          data.priceChangeUSD = priceChangeUSD;
-          data.liquidityChangeUSD = getPercentChange(
-            currentLiquidityUSD ?? 0,
-            oldLiquidityUSD ?? 0,
-          );
-          data.symbol = formatTokenSymbol(data.id, data.symbol);
+        // set data
+        data.priceUSD = data?.derivedETH * ethPrice;
+        data.totalLiquidityUSD = currentLiquidityUSD;
+        data.oneDayVolumeUSD = oneDayVolumeUSD;
+        data.oneWeekVolumeUSD = oneWeekVolumeUSD;
+        data.volumeChangeUSD = volumeChangeUSD;
+        data.priceChangeUSD = priceChangeUSD;
+        data.liquidityChangeUSD = getPercentChange(
+          currentLiquidityUSD ?? 0,
+          oldLiquidityUSD ?? 0,
+        );
+        data.symbol = formatTokenSymbol(data.id, data.symbol);
 
-          // new tokens
-          if (!oneDayHistory && data) {
-            data.oneDayVolumeUSD = data.tradeVolumeUSD;
-            data.oneDayVolumeETH = data.tradeVolume * data.derivedETH;
-          }
+        // new tokens
+        if (!oneDayHistory && data) {
+          data.oneDayVolumeUSD = data.tradeVolumeUSD;
+          data.oneDayVolumeETH = data.tradeVolume * data.derivedETH;
+        }
 
-          // update name data for
-          updateNameData({
-            token0: data,
+        // update name data for
+        updateNameData({
+          token0: data,
+        });
+
+        // HOTFIX for Aave
+        if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
+          const aaveData = await client.query({
+            query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
+            fetchPolicy: 'network-only',
           });
-
-          // HOTFIX for Aave
-          if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
-            const aaveData = await client.query({
-              query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
-              fetchPolicy: 'network-only',
-            });
-            const result = aaveData.data.pairs[0];
-            data.totalLiquidityUSD = Number(result.reserveUSD) / 2;
-            data.liquidityChangeUSD = 0;
-            data.priceChangeUSD = 0;
-          }
-          return data;
-        }),
+          const result = aaveData.data.pairs[0];
+          data.totalLiquidityUSD = Number(result.reserveUSD) / 2;
+          data.liquidityChangeUSD = 0;
+          data.priceChangeUSD = 0;
+        }
+        return data;
+      }),
     );
     return bulkResults;
   } catch (e) {

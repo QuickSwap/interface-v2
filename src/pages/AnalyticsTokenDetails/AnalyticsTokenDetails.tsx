@@ -43,7 +43,7 @@ const AnalyticsTokenDetails: React.FC = () => {
   const currency =
     token && chainId
       ? getTokenFromAddress(tokenAddress, chainId, tokenMap, [
-          new Token(chainId, getAddress(token.id), token.decimals),
+          new Token(chainId, getAddress(token.id), token.decimals ?? 18),
         ])
       : undefined;
   const [tokenPairs, updateTokenPairs] = useState<any>(null);
