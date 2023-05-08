@@ -196,7 +196,7 @@ const AnalyticsSearch: React.FC = () => {
             query: tokenSearchQuery,
             variables: {
               value: searchVal ? searchVal.toUpperCase() : '',
-              id: searchVal,
+              id: searchVal.toLowerCase(),
             },
           });
 
@@ -204,7 +204,7 @@ const AnalyticsSearch: React.FC = () => {
             query: pairSearchQuery,
             variables: {
               tokens: tokens.data.asSymbol?.map((t: any) => t.id),
-              id: searchVal,
+              id: searchVal.toLowerCase(),
             },
           });
 
