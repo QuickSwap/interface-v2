@@ -24,6 +24,7 @@ import TrustIcon from 'assets/images/trust.png';
 import ZengoIcon from 'assets/images/zengo.png';
 import { GlobalConst } from 'constants/index';
 import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
+import { SecretType } from '@venly/web3-provider';
 
 const POLLING_INTERVAL = 12000;
 
@@ -276,6 +277,7 @@ const [web3Arkane, web3ArkaneHooks] = initializeConnector<Venly>(
       options: {
         clientId: 'QuickSwap',
         skipAuthentication: false,
+        secretType: SecretType.MATIC,
       },
     }),
 );
@@ -285,7 +287,7 @@ export const arkaneConnection: Connection = {
   name: GlobalConst.walletName.ARKANE_CONNECT,
   connector: web3Arkane,
   hooks: web3ArkaneHooks,
-  type: ConnectionType.COINBASE_WALLET,
+  type: ConnectionType.ARKANE,
   iconName: VenlyIcon,
   color: '#4196FC',
   description: 'Login using Venly hosted wallet.',

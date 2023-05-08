@@ -42,7 +42,6 @@ export class Venly extends Connector {
     await (this.eagerConnection = this.Venly.createProvider(this.options).then(
       (provider) => {
         this.provider = provider;
-
         this.provider.on(
           'connect',
           ({ chainId }: ProviderConnectInfo): void => {

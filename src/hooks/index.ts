@@ -3,6 +3,7 @@ import { useWeb3React } from '@web3-react/core';
 import { ChainId, Pair } from '@uniswap/sdk';
 import {
   ConnectionType,
+  arkaneConnection,
   coinbaseWalletConnection,
   getConnections,
   gnosisSafeConnection,
@@ -139,6 +140,8 @@ export function useGetConnection() {
           return networkConnection;
         case ConnectionType.GNOSIS_SAFE:
           return gnosisSafeConnection;
+        case ConnectionType.ARKANE:
+          return arkaneConnection;
       }
     }
   }, []);
