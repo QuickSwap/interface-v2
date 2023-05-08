@@ -41,6 +41,7 @@ const AnalyticsSearch: React.FC = () => {
   const [searchValInput, setSearchValInput] = useDebouncedChangeHandler(
     searchVal,
     setSearchVal,
+    500,
   );
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<any>(null);
