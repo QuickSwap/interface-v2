@@ -5,8 +5,6 @@ import { MetaMask } from '@web3-react/metamask';
 import { Network } from '@web3-react/network';
 import { Connector } from '@web3-react/types';
 import { WalletConnectPopup } from './WalletConnect';
-// import { UAuthConnector } from '@uauth/web3-react';
-// import { FortmaticConnector } from './Fortmatic';
 import { Venly } from './Arkane';
 import { ChainId } from '@uniswap/sdk';
 import MetamaskIcon from 'assets/images/metamask.png';
@@ -264,12 +262,6 @@ export const zengoConnectConnection: Connection = {
   mobile: true,
 };
 
-// mainnet only
-// export const fortmatic = new FortmaticConnector({
-//   apiKey: FORMATIC_KEY ?? '',
-//   chainId: 137,
-// });
-
 const [web3Arkane, web3ArkaneHooks] = initializeConnector<Venly>(
   (actions) =>
     new Venly({
@@ -319,17 +311,6 @@ export const coinbaseWalletConnection: Connection = {
   color: '#315CF5',
   description: 'Use Coinbase Wallet app on mobile device',
 };
-
-// export const unstopabbledomains = new UAuthConnector({
-//   clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-//   redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
-
-//   // Scope must include openid and wallet
-//   scope: 'openid wallet',
-
-//   // Injected and walletconnect connectors are required.
-//   connectors: { injected, walletconnect },
-// });
 
 export function getConnections() {
   return [
