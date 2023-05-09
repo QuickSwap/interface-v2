@@ -215,8 +215,9 @@ const AnalyticsVolumeChart: React.FC<{
                 <Box
                   ml={1}
                   px={1}
+                  height='24px'
                   borderRadius={40}
-                  className={volumePercentClass}
+                  className={`flex items-center ${volumePercentClass}`}
                 >
                   <span>
                     {getFormattedPercent(getVolumePercent(volumeIndex))}

@@ -220,7 +220,7 @@ export default function IncreaseLiquidityV3({
         .then((estimate) => {
           const newTxn = {
             ...txn,
-            gasLimit: calculateGasMarginV3(chainId, estimate),
+            gasLimit: calculateGasMarginV3(estimate),
           };
 
           return library
@@ -259,7 +259,7 @@ export default function IncreaseLiquidityV3({
                 setTxPending(false);
               } catch (error) {
                 setTxPending(false);
-                setIncreaseErrorMessage(t('errorInTx'));
+                setIncreaseErrorMessage(t('errorInTx') ?? '');
               }
             });
         })
@@ -267,7 +267,7 @@ export default function IncreaseLiquidityV3({
           console.error('Failed to send transaction', error);
           setAttemptingTxn(false);
           setTxPending(false);
-          setIncreaseErrorMessage(t('errorInTx'));
+          setIncreaseErrorMessage(t('errorInTx') ?? '');
           // we only care if the error is something _other_ than the user rejected the tx
           if (error?.code !== 4001) {
             console.error(error);

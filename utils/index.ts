@@ -34,7 +34,6 @@ import {
   TOKEN_INFO_OLD,
   FILTERED_TRANSACTIONS,
   SWAP_TRANSACTIONS,
-  GLOBAL_ALLDATA,
   ETH_PRICE,
   PAIR_ID,
 } from 'apollo/queries';
@@ -2261,7 +2260,6 @@ export function calculateGasMarginBonus(value: BigNumber): BigNumber {
 }
 
 export function calculateGasMarginV3(
-  chainId: number,
   value: BigNumber,
   swap?: boolean,
 ): BigNumber {

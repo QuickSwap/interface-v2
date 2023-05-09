@@ -497,7 +497,7 @@ export function FarmModal({
                 {[0, 1, 2].map((i) => (
                   <Box
                     padding='8px'
-                    borderRadius={12}
+                    borderRadius='12px'
                     mr={1}
                     position='relative'
                     className='flex items-center border'

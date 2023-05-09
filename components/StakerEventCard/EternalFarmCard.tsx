@@ -57,15 +57,12 @@ export function EternalFarmCard({
     bonusRewardToken,
     rewardRate,
     bonusRewardRate,
-    isDetached,
   } = {},
   aprs,
   aprsLoading,
   poolAprs,
   poolAprsLoading,
   tvls,
-  tvlsLoading,
-  eternal,
   chainId,
 }: EternalFarmCardProps) {
   const { t } = useTranslation();
@@ -110,7 +107,7 @@ export function EternalFarmCard({
     <Box
       padding={1.5}
       width='100%'
-      borderRadius={16}
+      borderRadius='16px'
       className='flex flex-wrap items-center bg-secondary1'
     >
       <Box
@@ -221,9 +218,14 @@ export function EternalFarmCard({
                 <>{formatCompact(totalAPR)}%</>
               )}
             </small>
-            <Box ml={0.5} height={16}>
+            <Box ml={0.5} className='flex'>
               <TotalAPRTooltip farmAPR={apr ?? 0} poolAPR={poolApr ?? 0}>
-                <Image src='/images/circleinfo.svg' alt='arrow up' />
+                <Image
+                  src='/assets/images/circleinfo.svg'
+                  alt='info'
+                  width={16}
+                  height={16}
+                />
               </TotalAPRTooltip>
             </Box>
           </Box>

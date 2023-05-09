@@ -18,7 +18,6 @@ const FarmingAPRTooltip: React.FC<FarmingAPRTooltipProps> = ({
   return (
     <CustomTooltip
       padding='0'
-      placement='top'
       color='#12131a'
       title={
         <Box className={styles.farmingAPRTooltipWrapper}>

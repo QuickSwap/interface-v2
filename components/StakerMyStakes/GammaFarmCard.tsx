@@ -29,7 +29,7 @@ const GammaFarmCard: React.FC<{
   return (
     <Box
       width='100%'
-      borderRadius={16}
+      borderRadius='16px'
       className={`bg-secondary1${showDetails ? ' border-primary' : ''}`}
     >
       <Box padding={1.5} className='flex items-center'>
@@ -99,7 +99,7 @@ const GammaFarmCard: React.FC<{
                       )}
                       %
                     </small>
-                    <Box ml={0.5} height={16}>
+                    <Box ml={0.5} className='flex'>
                       <TotalAPRTooltip
                         farmAPR={Number(rewardData['apr'] ?? 0) * 100}
                         poolAPR={
@@ -107,7 +107,12 @@ const GammaFarmCard: React.FC<{
                           100
                         }
                       >
-                        <Image src='/images/circleinfo.svg' alt='info' />
+                        <Image
+                          src='/assets/images/circleinfo.svg'
+                          alt='info'
+                          width={16}
+                          height={16}
+                        />
                       </TotalAPRTooltip>
                     </Box>
                   </>

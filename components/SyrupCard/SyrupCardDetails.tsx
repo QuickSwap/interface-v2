@@ -181,8 +181,13 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <Box className='flex justify-between' mb={2}>
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apr')}:</small>
-                    <Box ml={0.5} height={16}>
-                      <Image src='/images/circleinfo.svg' alt='info' />
+                    <Box ml={0.5} className='flex'>
+                      <Image
+                        src='/assets/images/circleinfo.svg'
+                        alt='info'
+                        width={16}
+                        height={16}
+                      />
                     </Box>
                   </Box>
                   <Box textAlign='right'>

@@ -214,11 +214,11 @@ const GammaFarmCardDetails: React.FC<{
       },
     );
     addTransaction(response, {
-      summary: t('depositliquidity'),
+      summary: t('depositliquidity') ?? undefined,
     });
     const receipt = await response.wait();
     finalizedTransaction(receipt, {
-      summary: t('depositliquidity'),
+      summary: t('depositliquidity') ?? undefined,
     });
   };
 
@@ -244,11 +244,11 @@ const GammaFarmCardDetails: React.FC<{
         },
       );
       addTransaction(response, {
-        summary: t('withdrawliquidity'),
+        summary: t('withdrawliquidity') ?? undefined,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('withdrawliquidity'),
+        summary: t('withdrawliquidity') ?? undefined,
       });
       setAttemptUnstaking(false);
     } catch (e) {
@@ -273,11 +273,11 @@ const GammaFarmCardDetails: React.FC<{
         },
       );
       addTransaction(response, {
-        summary: t('claimrewards'),
+        summary: t('claimrewards') ?? undefined,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('claimrewards'),
+        summary: t('claimrewards') ?? undefined,
       });
       setAttemptClaiming(false);
     } catch (e) {

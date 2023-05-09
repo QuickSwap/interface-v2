@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
+import { IPresetArgs } from 'components/pages/pools/SupplyLiquidityV3/components/PresetRanges';
 import { Presets } from './reducer';
 
 export enum Field {

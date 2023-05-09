@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
 import { formatNumber } from 'utils';
 import { useTranslation } from 'next-i18next';
@@ -19,6 +19,8 @@ const TotalAPRTooltip: React.FC<TotalAPRToolTipProps> = ({
   const { t } = useTranslation();
   return (
     <CustomTooltip
+      padding='0'
+      color='#12131a'
       title={
         <Box className={styles.totalAPRTooltipWrapper}>
           <Box

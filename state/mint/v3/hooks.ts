@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import JSBI from 'jsbi';
 import {
   Currency,
@@ -6,7 +6,6 @@ import {
   Price,
   Rounding,
   Token,
-  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
 import { AppState } from '../../index';
@@ -37,7 +36,7 @@ import { FeeAmount } from 'v3lib/utils';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
-import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
+import { IPresetArgs } from 'components/pages/pools/SupplyLiquidityV3/components/PresetRanges';
 import { GlobalConst } from 'constants/index';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useGammaUNIProxyContract } from 'hooks/useContract';

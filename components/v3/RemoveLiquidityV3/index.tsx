@@ -5,7 +5,7 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
-import { Box, Button, Divider } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { PositionPool } from 'models/interfaces';
 import { useTranslation } from 'next-i18next';
 import {
@@ -25,7 +25,6 @@ import {
 import { Percent } from '@uniswap/sdk-core';
 
 import ReactGA from 'react-ga';
-import { useAppSelector } from 'state/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { calculateGasMarginV3 } from 'utils';
 import usePrevious from 'hooks/usePrevious';
@@ -50,13 +49,6 @@ export default function RemoveLiquidityV3({
   const { t } = useTranslation();
 
   const tokenId = position.tokenId;
-
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
 
   // flag for receiving WETH
   const [receiveWETH, setReceiveWETH] = useState(false);
@@ -168,7 +160,7 @@ export default function RemoveLiquidityV3({
       .then((estimate) => {
         const newTxn = {
           ...txn,
-          gasLimit: calculateGasMarginV3(chainId, estimate),
+          gasLimit: calculateGasMarginV3(estimate),
         };
 
         return library
@@ -202,14 +194,14 @@ export default function RemoveLiquidityV3({
               setTxPending(false);
             } catch (error) {
               setTxPending(false);
-              setRemoveErrorMessage(t('errorInTx'));
+              setRemoveErrorMessage(t('errorInTx') ?? '');
             }
           });
       })
       .catch((error) => {
         setTxPending(false);
         setAttemptingTxn(false);
-        setRemoveErrorMessage(t('errorInTx'));
+        setRemoveErrorMessage(t('errorInTx') ?? '');
         console.error(error);
       });
   }, [
@@ -401,7 +393,7 @@ export default function RemoveLiquidityV3({
           max={100}
           step={1}
           value={percentForSlider}
-          handleChange={(event, value) => {
+          handleChange={(_, value) => {
             onPercentSelectForSlider(value as number);
           }}
         />

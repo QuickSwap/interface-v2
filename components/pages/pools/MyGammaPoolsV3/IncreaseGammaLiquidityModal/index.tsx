@@ -421,7 +421,7 @@ export default function IncreaseGammaLiquidityModal({
           <p className='weight-600'>{t('addLiquidity')}</p>
           <Close className='cursor-pointer' onClick={onClose} />
         </Box>
-        <Box mt={2} className='bg-secondary1' borderRadius={10} p={2}>
+        <Box mt={2} className='bg-secondary1' borderRadius='10px' p={2}>
           <Box className='flex justify-between'>
             <p>
               {t('pooled')} {position.token0.symbol}

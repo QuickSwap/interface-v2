@@ -243,7 +243,7 @@ export default function PositionListItemDetails({
       .then((estimate) => {
         const newTxn = {
           ...txn,
-          gasLimit: calculateGasMarginV3(chainId, estimate),
+          gasLimit: calculateGasMarginV3(estimate),
         };
 
         return library

@@ -111,7 +111,8 @@ const AnalyticsLiquidityChart: React.FC<{
             ml={1}
             px={1}
             borderRadius={40}
-            className={liquidityPercentClass}
+            height='24px'
+            className={`flex items-center ${liquidityPercentClass}`}
           >
             <span>
               {getFormattedPercent(globalData.liquidityChangeUSD ?? 0)}

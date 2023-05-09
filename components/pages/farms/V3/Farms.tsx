@@ -197,7 +197,7 @@ export default function Farms() {
   });
 
   return (
-    <Box className='bg-palette' borderRadius={10}>
+    <Box className='bg-palette' borderRadius='10px'>
       <Box pt={2} px={2} className='flex flex-wrap justify-between'>
         <CustomSelector
           height={36}

@@ -193,7 +193,12 @@ const AnalyticsPairDetails = (
           <Box className={`panel ${styles.analyticsDetailsInfoV3}`}>
             <Box>
               <span className='text-disabled'>{t('totalTokensLocked')}</span>
-              <Box mt={1.5} className='bg-gray2' borderRadius={8} padding={1.5}>
+              <Box
+                mt={1.5}
+                className='bg-gray2'
+                borderRadius='8px'
+                padding={1.5}
+              >
                 <Box
                   className='flex items-center justify-between cursor-pointer'
                   onClick={() => {
@@ -316,10 +321,10 @@ const AnalyticsPairDetails = (
                     ml={2}
                     paddingY={0.5}
                     paddingX={1}
-                    borderRadius={6}
+                    borderRadius='6px'
                     className='text-primaryText bg-gray30'
                   >
-                    {pairData.fee / 10000}% Fee
+                    <small>{pairData.fee / 10000}% Fee</small>
                   </Box>
                 )}
               </Box>

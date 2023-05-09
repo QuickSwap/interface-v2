@@ -137,7 +137,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
     <Box>
       <Box
         className='flex flex-wrap items-center justify-between'
-        borderRadius={10}
+        borderRadius='10px'
       >
         {isMobile && (
           <Box mb={1}>
@@ -212,9 +212,14 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
               <small className='text-success'>
                 {formatNumber((poolApr ?? 0) + (farmApr ?? 0))}%
               </small>
-              <Box ml={0.5} height={16}>
+              <Box ml={0.5} className='flex'>
                 <TotalAPRTooltip farmAPR={farmApr ?? 0} poolAPR={poolApr ?? 0}>
-                  <Image src='/images/circleinfo.svg' alt='info' />
+                  <Image
+                    src='/assets/images/circleinfo.svg'
+                    alt='info'
+                    width={16}
+                    height={16}
+                  />
                 </TotalAPRTooltip>
               </Box>
             </Box>
