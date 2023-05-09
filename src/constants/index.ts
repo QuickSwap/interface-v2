@@ -1012,6 +1012,39 @@ export const GammaPairs: {
         pid: 75,
       },
     ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x6e4e624106cb12e168e6533f8ec7c82263358940': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x550fac19d0ff06725dcaf7721b2c97aba268e11f',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x6e4e624106cb12e168e6533f8ec7c82263358940',
+        ableToFarm: true,
+        pid: 76,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x9f28e2455f9ffcfac9ebd6084853417362bc5dbb': [
+      {
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        address: '0x8089f11dadbabf175aea2415194a6a3a0575539d',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x9f28e2455f9ffcfac9ebd6084853417362bc5dbb',
+        ableToFarm: true,
+        pid: 77,
+      },
+    ],
+    '0x4b4327db1600b8b1440163f667e199cef35385f5-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        address: '0x0668331b4606beb78a1c8314e08d8b07653fbd3c',
+        token0Address: '0x4b4327db1600b8b1440163f667e199cef35385f5',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 78,
+      },
+    ],
     '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
       {
         type: Presets.GAMMA_WIDE,
@@ -1399,6 +1432,13 @@ export const GlobalValue = {
         18,
         'FBX',
         'FireBotToken',
+      ),
+      FXCBETH: new Token(
+        ChainId.MATIC,
+        '0x4b4327db1600b8b1440163f667e199cef35385f5',
+        18,
+        'fxcbETH',
+        'Coinbase Wrapped Staked ETH (FXERC20)',
       ),
     },
   },

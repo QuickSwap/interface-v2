@@ -95,13 +95,7 @@ export const networkInfoMap: NetworkInfoChainMap = {
   },
 };
 
-const NETWORK_URL = 'https://polygon-rpc.com/';
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;
-const MAINNET_NETWORK_URL = process.env.REACT_APP_MAINNET_NETWORK_URL;
-
-export const NETWORK_CHAIN_ID: number = parseInt(
-  process.env.REACT_APP_CHAIN_ID ?? '137',
-);
 
 const [web3Network, web3NetworkHooks] = initializeConnector<Network>(
   (actions) =>
