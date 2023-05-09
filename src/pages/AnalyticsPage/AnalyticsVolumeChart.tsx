@@ -3,11 +3,9 @@ import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import {
   formatCompact,
-  getChartData,
   formatDateFromTimeStamp,
   getPriceClass,
   getChartDates,
-  getChartStartTime,
   getLimitedData,
   getFormattedPercent,
 } from 'utils';
@@ -15,8 +13,6 @@ import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
-import { getChartDataTotal, getChartDataV3 } from 'utils/v3-graph';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;

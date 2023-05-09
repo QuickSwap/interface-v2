@@ -658,5 +658,6 @@
   "approveV2Removal": "Approve V2 Liquidity Removal",
   "approvingV2Removal": "Approving V2 Liquidity Removal",
   "bestTradeBanned": "Best trade is unavailable in your location. Please use v2 or v3.",
-  "priceImpactReached": "Price impact is more than {{maxImpact}}%. Please use v2 or v3."
+  "priceImpactReached": "Price impact is more than {{maxImpact}}%. Please use v2 or v3.",
+  "priceImpactReachedV2": "Price impact is more than {{maxImpact}}%. Please use best trade or v3."
 }

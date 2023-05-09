@@ -166,13 +166,13 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchToken(tokenId: string, farming = false) {
+    const client = farming ? farmingClient : v3Client;
+    if (!client) throw new Error('subgraph client does not exist');
     try {
       const {
         data: { tokens },
         errors,
-      } = await (farming ? farmingClient : v3Client).query<
-        SubgraphResponse<TokenSubgraph[]>
-      >({
+      } = await client.query<SubgraphResponse<TokenSubgraph[]>>({
         query: farming ? FETCH_TOKEN_FARM() : FETCH_TOKEN(),
         variables: { tokenId },
       });
@@ -189,6 +189,7 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchPool(poolId: string) {
+    if (!v3Client) throw new Error('subgraph client does not exist');
     try {
       const {
         data: { pools },
@@ -220,6 +221,7 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchLimit(limitFarmingId: string) {
+    if (!farmingClient) throw new Error('subgraph client does not exist');
     try {
       const {
         data: { limitFarmings },
@@ -241,6 +243,7 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchEternalFarming(farmId: string) {
+    if (!farmingClient) throw new Error('subgraph client does not exist');
     try {
       const {
         data: { eternalFarmings },
@@ -264,7 +267,7 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchRewards(reload?: boolean) {
-    if (!account || !chainId) return;
+    if (!account || !chainId || !farmingClient) return;
 
     try {
       setRewardsLoading(true);
@@ -292,17 +295,18 @@ export function useFarmingSubgraph() {
 
         const rewardAmount =
           +reward.amount > 0
-            ? (+reward.amount / Math.pow(10, +rewardToken.decimals)).toFixed(
-                +rewardToken.decimals,
-              )
+            ? (
+                +reward.amount /
+                Math.pow(10, rewardToken ? +rewardToken.decimals : 0)
+              ).toFixed(rewardToken ? +rewardToken.decimals : 0)
             : 0;
 
         const newReward = {
           ...reward,
           amount: rewardAmount,
           trueAmount: +reward.amount,
-          symbol: rewardToken.symbol,
-          name: rewardToken.name,
+          symbol: rewardToken?.symbol,
+          name: rewardToken?.name,
         };
 
         newRewards.push(newReward);
@@ -320,6 +324,7 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchFutureEvents(reload?: boolean) {
+    if (!farmingClient) return;
     try {
       setFutureEventsLoading(true);
 
@@ -352,7 +357,7 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchHasTransferredPositions() {
-    if (!chainId || !account) return;
+    if (!chainId || !account || !farmingClient) return;
 
     if (!provider) throw new Error('No provider');
 
@@ -385,7 +390,7 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchTransferredPositions(reload?: boolean) {
-    if (!chainId || !account) {
+    if (!chainId || !account || !farmingClient) {
       setTransferredPositions([]);
       return;
     }
@@ -447,24 +452,26 @@ export function useFarmingSubgraph() {
           typeof position.pool === 'string'
         ) {
           const _pool = await fetchPool(position.pool);
-          const token0 = getV3TokenFromAddress(
-            _pool.token0.id,
-            chainId,
-            tokenMap,
-          );
-          const token1 = getV3TokenFromAddress(
-            _pool.token1.id,
-            chainId,
-            tokenMap,
-          );
-          const newPool = {
-            ..._pool,
-            token0: token0 ? token0.token : _pool.token0,
-            token1: token1 ? token1.token : _pool.token1,
-          };
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          _position = { ..._position, pool: newPool };
+          if (_pool) {
+            const token0 = getV3TokenFromAddress(
+              _pool.token0.id,
+              chainId,
+              tokenMap,
+            );
+            const token1 = getV3TokenFromAddress(
+              _pool.token1.id,
+              chainId,
+              tokenMap,
+            );
+            const newPool = {
+              ..._pool,
+              token0: token0 ? token0.token : _pool.token0,
+              token1: token1 ? token1.token : _pool.token1,
+            };
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            _position = { ..._position, pool: newPool };
+          }
         }
 
         if (position.limitFarming) {
@@ -689,7 +696,7 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchPositionsOnEternalFarming(reload?: boolean) {
-    if (!chainId || !account) return;
+    if (!chainId || !account || !farmingClient) return;
 
     if (!provider) throw new Error('No provider');
 
@@ -776,7 +783,7 @@ export function useFarmingSubgraph() {
     pool: PoolChartSubgraph,
     minRangeLength: string,
   ) {
-    if (!chainId || !account) return;
+    if (!chainId || !account || !farmingClient) return;
 
     try {
       setPositionsForPoolLoading(true);
@@ -815,6 +822,7 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchPositionsOnFarmer(account: string) {
+    if (!farmingClient) throw new Error('subgraph client does not exist');
     try {
       setPositionsOnFarmerLoading(true);
 
@@ -912,8 +920,8 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchEternalFarms(reload: boolean, ended = false) {
+    if (!farmingClient) throw new Error('subgraph client does not exist');
     setEternalFarmsLoading(true);
-
     try {
       const {
         data: { eternalFarmings: eternalFarmingsSubgraph },

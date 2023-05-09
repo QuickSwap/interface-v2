@@ -25,9 +25,11 @@ export const getSwapTransactionsV3 = async (
     .unix();
   const fromTimestamp = fromTime ?? oneDayAgo;
   const toTimestamp = toTime ?? today;
+  const client = clientV3[chainId];
+  if (!client) return [];
 
   try {
-    const result = await clientV3[chainId].query({
+    const result = await client.query({
       query: SWAP_TRANSACTIONS_V3,
       variables: {
         pool_in: pool_in,
