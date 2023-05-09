@@ -258,7 +258,7 @@ export const zengoConnectConnection: Connection = {
   type: ConnectionType.WALLET_CONNECT,
   iconName: ZengoIcon,
   color: '#4196FC',
-  description: 'Connect to Zengo Wallet',
+  description: 'Connect to ZenGo Wallet',
   mobile: true,
 };
 
