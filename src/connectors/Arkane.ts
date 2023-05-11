@@ -39,8 +39,8 @@ export class Venly extends Connector {
   private async isomorphicInitialize(): Promise<void> {
     if (this.eagerConnection) return;
 
-    await (this.eagerConnection = this.Venly.createProvider(this.options).then(
-      (provider) => {
+    await (this.eagerConnection = this.Venly.createProvider(this.options)
+      .then((provider) => {
         this.provider = provider;
         this.provider.on(
           'connect',
@@ -62,8 +62,10 @@ export class Venly extends Connector {
           if (accounts.length === 0) this.actions.resetState();
           else this.actions.update({ accounts });
         });
-      },
-    ));
+      })
+      .catch(() => {
+        this.eagerConnection = undefined;
+      }));
   }
 
   /** {@inheritdoc Connector.connectEagerly} */
