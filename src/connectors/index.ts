@@ -270,6 +270,9 @@ const [web3Arkane, web3ArkaneHooks] = initializeConnector<Venly>(
         clientId: 'QuickSwap',
         skipAuthentication: false,
         secretType: SecretType.MATIC,
+        authenticationOptions: {
+          idpHint: 'password',
+        },
       },
     }),
 );
