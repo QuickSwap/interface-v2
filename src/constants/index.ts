@@ -1072,7 +1072,88 @@ export const GammaPairs: {
   [ChainId.DOEGCHAIN_TESTNET]: {},
   [ChainId.DOGECHAIN]: {},
   [ChainId.ZKTESTNET]: {},
-  [ChainId.ZKEVM]: {},
+  [ChainId.ZKEVM]: {
+    '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x04c6b11e1ffe1f1032bd62adb343c9d07767489c',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        ableToFarm: true,
+        pid: 0,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xfb3a24c0f289e695ceb87b32fc18a2b8bd896167',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        ableToFarm: true,
+        pid: 1,
+      },
+    ],
+    '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa2036f0538221a77a3937f1379699f44945018d0': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x2f39293c9ed046822c014143fb18d5ae0479be93',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        ableToFarm: true,
+        pid: 2,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x5ada298913d53aa823824de69b4a6e790aed9327',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        ableToFarm: true,
+        pid: 3,
+      },
+    ],
+    '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x1cc4ee0cb063e9db36e51f5d67218ff1f8dbfa0f',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1',
+        ableToFarm: true,
+        pid: 4,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x64e78e990b2a45fad8b64b43e62a67d69a156042',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1',
+        ableToFarm: true,
+        pid: 5,
+      },
+    ],
+    '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x9783c45564232c0aff8dc550a9c247c42e8c8b98',
+        token0Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        token1Address: '0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1',
+        ableToFarm: true,
+        pid: 6,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x83de646a7125ac04950fea7e322481d4be66c71d',
+        token0Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        token1Address: '0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1',
+        ableToFarm: true,
+        pid: 7,
+      },
+    ],
+  },
 };
 
 // export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
@@ -1437,7 +1518,7 @@ export const GlobalValue = {
         ChainId.MATIC,
         '0x4b4327db1600b8b1440163f667e199cef35385f5',
         18,
-        'fxcbETH',
+        'cbEth',
         'Coinbase Wrapped Staked ETH (FXERC20)',
       ),
     },
@@ -1493,7 +1574,11 @@ export const GlobalData = {
       GlobalValue.tokens.COMMON.ANKRMATIC,
     ],
     [GlobalValue.tokens.COMMON.NEW_QUICK, GlobalValue.tokens.COMMON.NEW_DQUICK],
-    [GlobalValue.tokens.COMMON.ETHER, GlobalValue.tokens.COMMON.WSTETH],
+    [
+      GlobalValue.tokens.COMMON.ETHER,
+      GlobalValue.tokens.COMMON.WSTETH,
+      GlobalValue.tokens.COMMON.FXCBETH,
+    ],
   ],
 };
 

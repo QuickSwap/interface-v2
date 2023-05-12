@@ -2131,17 +2131,30 @@ export const getEternalFarmFromTokens = async (
   }
 };
 
-export const getGammaData = async () => {
+const gammaChainName = (chainId?: ChainId) => {
+  switch (chainId) {
+    case ChainId.ZKEVM:
+      return 'polygon-zkevm';
+    default:
+      return 'polygon';
+  }
+};
+
+export const getGammaData = async (chainId?: ChainId) => {
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
+      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
+        chainId,
+      )}/hypervisors/allData`,
     );
     const gammaData = await data.json();
     return gammaData;
   } catch {
     try {
       const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
+        `${
+          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
+        }/quickswap/${gammaChainName(chainId)}/hypervisors/allData`,
       );
       const gammaData = await data.json();
       return gammaData;
@@ -2152,18 +2165,25 @@ export const getGammaData = async () => {
   }
 };
 
-export const getGammaPositions = async (account?: string) => {
+export const getGammaPositions = async (
+  account?: string,
+  chainId?: ChainId,
+) => {
   if (!account) return;
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/user/${account}`,
+      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
+        chainId,
+      )}/user/${account}`,
     );
     const positions = await data.json();
     return positions[account.toLowerCase()];
   } catch {
     try {
       const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/user/${account}`,
+        `${
+          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
+        }/quickswap/${gammaChainName(chainId)}/user/${account}`,
       );
       const positions = await data.json();
       return positions[account.toLowerCase()];
@@ -2178,14 +2198,18 @@ export const getGammaRewards = async (chainId?: ChainId) => {
   if (!chainId) return;
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/allRewards2`,
+      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
+        chainId,
+      )}/allRewards2`,
     );
     const gammaData = await data.json();
     return gammaData;
   } catch {
     try {
       const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/allRewards2`,
+        `${
+          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
+        }/quickswap/${gammaChainName(chainId)}/allRewards2`,
       );
       const gammaData = await data.json();
       return gammaData;
