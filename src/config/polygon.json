@@ -54,5 +54,8 @@
   },
   "safe": {
     "available": false
+  },
+  "perps": {
+    "available": false
   }
 }
