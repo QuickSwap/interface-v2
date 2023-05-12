@@ -15,8 +15,6 @@ import abi from 'constants/abis/v3/swap-router.json';
 import { ADDRESS_ZERO } from 'v3lib/utils/v3constants';
 import { encodeRouteToPath } from './utils/encodeRouteToPath';
 
-// import abi from './swapRouterTestABI.json'
-
 export interface FeeOptions {
   /**
    * The percent of the output that will be taken as a fee.
