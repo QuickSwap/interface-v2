@@ -7,10 +7,11 @@ import { useEthPrice, useMaticPrice } from './hooks';
 import { getEthPrice } from 'utils';
 import { getMaticPrice } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
-
+import { getConfig } from 'config/index';
 export default function Updater(): null {
   const { library, chainId, connector } = useActiveWeb3React();
-
+  const config = getConfig(chainId);
+  const isV2 = config['v2'];
   const dispatch = useDispatch();
   const { updateEthPrice } = useEthPrice();
   const { updateMaticPrice } = useMaticPrice();
@@ -80,7 +81,9 @@ export default function Updater(): null {
       }
     };
     fetchMaticPrice();
-    fetchETHPrice();
+    if (isV2) {
+      fetchETHPrice();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime, chainId, state.chainId]);
 
