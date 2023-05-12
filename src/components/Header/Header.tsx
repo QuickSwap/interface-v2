@@ -106,7 +106,7 @@ const Header: React.FC = () => {
   const showGamingHub = config['gamingHub']['available'];
   const showLeaderboard = config['leaderboard']['available'];
   const showSafe = config['safe']['available'];
-  const showPerps = config['perps']['available'];
+
   const menuItems = [];
 
   const swapCurrencyStr = useMemo(() => {
@@ -121,17 +121,6 @@ const Header: React.FC = () => {
       link: `/swap?currency0=ETH${swapCurrencyStr}`,
       text: t('swap'),
       id: 'swap-page-link',
-    });
-  }
-  if (showPerps) {
-    menuItems.push({
-      link: '/perps',
-      text: 'Perps',
-      id: 'perps-page-link',
-      isExternal: true,
-      target: '_blank',
-      externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-      isNew: true,
     });
   }
   if (showPool) {
