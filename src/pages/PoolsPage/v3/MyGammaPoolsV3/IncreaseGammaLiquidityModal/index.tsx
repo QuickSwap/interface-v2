@@ -187,19 +187,24 @@ export default function IncreaseGammaLiquidityModal({
   ]);
 
   const buttonText = useMemo(() => {
-    if (wrappingETH) return t('wrappingMATIC');
+    if (wrappingETH)
+      return t('wrappingMATIC', { symbol: ETHER[chainId].symbol });
     if (!account) return t('connectWallet');
     if (!depositRange) return t('fetchingGammaDepositRange');
     if (JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI))
       return t('insufficientBalance', {
-        symbol: token0isWETH ? 'MATIC+' : '' + position.token0.symbol,
+        symbol:
+          (token0isWETH ? `${ETHER[chainId].symbol}+` : '') +
+          position.token0.symbol,
       });
     if (JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI))
       return t('insufficientBalance', {
-        symbol: token1isWETH ? 'MATIC+' : '' + position.token1.symbol,
+        symbol:
+          (token1isWETH ? `${ETHER[chainId].symbol}+` : '') +
+          position.token1.symbol,
       });
     if (!Number(deposit0) || !Number(deposit1)) return t('enterAmount');
-    if (wrapAmount) return t('wrapMATIC');
+    if (wrapAmount) return t('wrapMATIC', { symbol: ETHER[chainId].symbol });
     return t('addLiquidity');
   }, [
     account,
@@ -217,6 +222,7 @@ export default function IncreaseGammaLiquidityModal({
     deposit1,
     wrapAmount,
     wrappingETH,
+    chainId,
   ]);
 
   const handleDismissConfirmation = useCallback(() => {
