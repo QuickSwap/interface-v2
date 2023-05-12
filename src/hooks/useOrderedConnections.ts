@@ -7,6 +7,7 @@ const SELECTABLE_WALLETS = [
   ConnectionType.INJECTED,
   ConnectionType.WALLET_CONNECT,
   ConnectionType.COINBASE_WALLET,
+  ConnectionType.ARKANE,
 ];
 
 export default function useOrderedConnections() {
