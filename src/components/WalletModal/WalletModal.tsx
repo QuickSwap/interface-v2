@@ -201,21 +201,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
             />
           );
         } else if (
-          option.name === GlobalConst.walletName.CYPHERD &&
-          !isCypherD
-        ) {
-          return null;
-        } else if (
-          option.name === GlobalConst.walletName.BITKEEP &&
-          !isBitKeep
-        ) {
-          return null;
-        } else if (
-          option.name === GlobalConst.walletName.BLOCKWALLET &&
-          !isBlockWallet
-        ) {
-          return null;
-        } else if (
           ethereum &&
           (option.mobile ||
             (isCypherD && option.connector === cypherDConnection.connector) ||
