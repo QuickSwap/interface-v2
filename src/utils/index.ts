@@ -7,27 +7,19 @@ import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { blockClient, clientV2, clientV3, farmingClient } from 'apollo/client';
 import {
   GET_BLOCK,
-  GLOBAL_DATA,
-  GLOBAL_CHART,
   GET_BLOCKS,
   TOKENS_CURRENT,
   TOKENS_DYNAMIC,
-  TOKEN_CHART,
   TOKEN_DATA1,
-  TOKEN_DATA2,
-  PAIR_CHART,
   PAIR_DATA,
   PAIRS_BULK1,
   PAIRS_HISTORICAL_BULK,
   PRICES_BY_BLOCK,
-  PAIRS_CURRENT,
   ALL_PAIRS,
   ALL_TOKENS,
   TOKEN_INFO,
   TOKEN_INFO_OLD,
-  FILTERED_TRANSACTIONS,
   SWAP_TRANSACTIONS,
-  GLOBAL_ALLDATA,
   ETH_PRICE,
   PAIR_ID,
 } from 'apollo/queries';
@@ -64,10 +56,9 @@ import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
-import { Connection, getConnections, injectedConnection } from 'connectors';
-import Web3 from 'web3';
+import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
-import { DLQUICK, NEW_QUICK, OLD_QUICK } from 'constants/v3/addresses';
+import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
 import { getConfig } from 'config';
 import {
   FETCH_ETERNAL_FARM_FROM_POOL,
@@ -79,7 +70,6 @@ import { formatTokenSymbol } from './v3-graph';
 import { TFunction } from 'react-i18next';
 import { PAIR_ID_V3, SWAP_TRANSACTIONS_v3 } from 'apollo/queries-v3';
 import { Connector } from '@web3-react/types';
-import { getIsMetaMaskWallet } from 'connectors/utils';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -1769,27 +1759,9 @@ export function escapeRegExp(string: string): string {
 
 export function getWalletKeys(connector: Connector): Connection[] {
   const { ethereum } = window as any;
-  const isMetaMask = getIsMetaMaskWallet();
-  const isBitkeep = !!(ethereum && ethereum.isBitKeep);
-  const isBlockWallet = !!(ethereum && ethereum.isBlockWallet);
-  const isCypherDWallet = !!(ethereum && ethereum.isCypherD);
-  const isBraveWallet = !!(ethereum && ethereum.isBraveWallet);
-  const isPhantomWallet = !!(ethereum && ethereum.isPhantom);
-  const isTrustWallet = !!(ethereum && ethereum.isTrustWallet);
   const connections = getConnections();
 
-  return connections.filter(
-    (option) =>
-      option.connector === connector &&
-      (connector !== injectedConnection.connector ||
-        (isCypherDWallet && option.key == 'CYPHERD') ||
-        (isBlockWallet && option.key === 'BLOCKWALLET') ||
-        (isBitkeep && option.key === 'BITKEEP') ||
-        (isMetaMask && option.key === 'METAMASK') ||
-        (isBraveWallet && option.key === 'BRAVEWALLET') ||
-        (isPhantomWallet && option.key === 'PHANTOM_WALLET') ||
-        (isTrustWallet && option.key === 'TRUST_WALLET')),
-  );
+  return connections.filter((option) => option.connector === connector);
 }
 
 export function getTokenAddress(token: Token | undefined) {

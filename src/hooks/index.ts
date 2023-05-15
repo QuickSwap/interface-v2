@@ -4,11 +4,17 @@ import { ChainId, Pair } from '@uniswap/sdk';
 import {
   ConnectionType,
   arkaneConnection,
+  bitKeepConnection,
+  blockWalletConnection,
+  braveWalletConnection,
   coinbaseWalletConnection,
+  cypherDConnection,
   getConnections,
   gnosisSafeConnection,
-  injectedConnection,
+  metamaskConnection,
   networkConnection,
+  phantomConnection,
+  trustWalletConnection,
   walletConnectConnection,
 } from 'connectors';
 import { useDispatch } from 'react-redux';
@@ -130,8 +136,8 @@ export function useGetConnection() {
       return connection;
     } else {
       switch (c) {
-        case ConnectionType.INJECTED:
-          return injectedConnection;
+        case ConnectionType.METAMASK:
+          return metamaskConnection;
         case ConnectionType.COINBASE_WALLET:
           return coinbaseWalletConnection;
         case ConnectionType.WALLET_CONNECT:
@@ -142,6 +148,18 @@ export function useGetConnection() {
           return gnosisSafeConnection;
         case ConnectionType.ARKANE:
           return arkaneConnection;
+        case ConnectionType.PHATOM:
+          return phantomConnection;
+        case ConnectionType.TRUSTWALLET:
+          return trustWalletConnection;
+        case ConnectionType.BITKEEP:
+          return bitKeepConnection;
+        case ConnectionType.BLOCKWALLET:
+          return blockWalletConnection;
+        case ConnectionType.BRAVEWALLET:
+          return braveWalletConnection;
+        case ConnectionType.CYPHERD:
+          return cypherDConnection;
       }
     }
   }, []);
