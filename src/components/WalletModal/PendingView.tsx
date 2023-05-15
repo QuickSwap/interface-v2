@@ -103,18 +103,6 @@ const PendingView: React.FC<PendingViewProps> = ({
               return null;
             }
             if (
-              isPhantomWallet &&
-              option.name !== GlobalConst.walletName.PHANTOM_WALLET
-            ) {
-              return null;
-            }
-            if (
-              !isPhantomWallet &&
-              option.name === GlobalConst.walletName.PHANTOM_WALLET
-            ) {
-              return null;
-            }
-            if (
               isTrustWallet &&
               option.name !== GlobalConst.walletName.TRUST_WALLET
             ) {

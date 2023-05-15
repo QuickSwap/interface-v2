@@ -8,6 +8,7 @@ const SELECTABLE_WALLETS = [
   ConnectionType.WALLET_CONNECT,
   ConnectionType.COINBASE_WALLET,
   ConnectionType.ARKANE,
+  ConnectionType.PHATOM,
 ];
 
 export default function useOrderedConnections() {

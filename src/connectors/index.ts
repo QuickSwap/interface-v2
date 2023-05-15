@@ -1,7 +1,7 @@
 import { initializeConnector, Web3ReactHooks } from '@web3-react/core';
 import { CoinbaseWallet } from '@web3-react/coinbase-wallet';
 import { GnosisSafe } from '@web3-react/gnosis-safe';
-import { MetaMask } from '@web3-react/metamask';
+import { MetaMask } from './Metamask';
 import { Network } from '@web3-react/network';
 import { Connector } from '@web3-react/types';
 import { WalletConnectPopup } from './WalletConnect';
@@ -23,6 +23,7 @@ import ZengoIcon from 'assets/images/zengo.png';
 import { GlobalConst } from 'constants/index';
 import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 import { SecretType } from '@venly/web3-provider';
+import { Phantom } from './Phantom';
 
 const POLLING_INTERVAL = 12000;
 
@@ -37,6 +38,7 @@ export enum ConnectionType {
   WALLET_CONNECT = 'WALLET_CONNECT',
   NETWORK = 'NETWORK',
   GNOSIS_SAFE = 'GNOSIS_SAFE',
+  PHATOM = 'PHANTOM',
 }
 
 export interface Connection {
@@ -195,12 +197,20 @@ export const cypherDConnection: Connection = {
   description: 'CypherD browser extension.',
 };
 
+const [web3Phantom, web3PhantomHooks] = initializeConnector<Phantom>(
+  (actions) =>
+    new Phantom({
+      actions,
+      onError,
+    }),
+);
+
 export const phantomConnection: Connection = {
   key: 'PHANTOM_WALLET',
   name: GlobalConst.walletName.PHANTOM_WALLET,
-  connector: web3Injected,
-  hooks: web3InjectedHooks,
-  type: ConnectionType.INJECTED,
+  connector: web3Phantom,
+  hooks: web3PhantomHooks,
+  type: ConnectionType.PHATOM,
   iconName: PhantomIcon,
   color: '#E8831D',
   description: 'Phantom wallet extension.',
@@ -214,7 +224,7 @@ export const trustWalletConnection: Connection = {
   type: ConnectionType.INJECTED,
   iconName: TrustIcon,
   color: '#E8831D',
-  description: 'Trust wallet extension.',
+  description: 'TrustWallet extension.',
 };
 
 const [web3WalletConnect, web3WalletConnectHooks] = initializeConnector<

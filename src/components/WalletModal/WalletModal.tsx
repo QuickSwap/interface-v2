@@ -25,6 +25,7 @@ import {
   coinbaseWalletConnection,
   getConnections,
   injectedConnection,
+  phantomConnection,
 } from 'connectors';
 import { getIsMetaMaskWallet } from 'connectors/utils';
 import { useSelectedWallet } from 'state/user/hooks';
@@ -144,6 +145,24 @@ const WalletModal: React.FC<WalletModalProps> = ({
       if (option.key === 'SAFE_APP') {
         return null;
       }
+
+      if (
+        option.name === GlobalConst.walletName.PHANTOM_WALLET &&
+        !isPhantomWallet
+      ) {
+        return (
+          <Option
+            id={`connect-${option.key}`}
+            key={option.key}
+            color={option.color}
+            header={t('installPhantom')}
+            subheader={t('installPhantomDesc')}
+            link={'https://phantom.app/'}
+            icon={option.iconName}
+          />
+        );
+      }
+
       // check for mobile options
       if (isMobile) {
         if (!web3 && !ethereum && option.mobile) {
@@ -205,7 +224,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             return null;
           } else if (
             option.name === GlobalConst.walletName.METAMASK &&
-            (!isMetamask || isBraveWallet || isPhantomWallet)
+            !isMetamask
           ) {
             return null;
           } else if (
@@ -241,21 +260,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 subheader={t('installBraveDesc')}
                 link={'https://brave.com/wallet'}
                 icon={BraveWalletIcon}
-              />
-            );
-          } else if (
-            option.name === GlobalConst.walletName.PHANTOM_WALLET &&
-            !isPhantomWallet
-          ) {
-            return (
-              <Option
-                id={`connect-${option.key}`}
-                key={option.key}
-                color={option.color}
-                header={t('installPhantom')}
-                subheader={t('installPhantomDesc')}
-                link={'https://phantom.app/'}
-                icon={option.iconName}
               />
             );
           }
@@ -297,6 +301,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
         } else if (
           ethereum &&
           (option.mobile ||
+            (isPhantomWallet &&
+              option.connector === phantomConnection.connector) ||
             (isCoinbaseWallet &&
               option.connector === coinbaseWalletConnection.connector))
         ) {
@@ -357,21 +363,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 icon={BraveWalletIcon}
               />
             );
-          } else if (
-            option.name === GlobalConst.walletName.PHANTOM_WALLET &&
-            !isPhantomWallet
-          ) {
-            return (
-              <Option
-                id={`connect-${option.key}`}
-                key={option.key}
-                color={option.color}
-                header={t('installPhantom')}
-                subheader={t('installPhantomDesc')}
-                link={'https://phantom.app/'}
-                icon={option.iconName}
-              />
-            );
           } else {
             return null; //dont want to return install twice
           }
@@ -379,7 +370,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         // don't return metamask if injected provider isn't metamask
         else if (
           option.name === GlobalConst.walletName.METAMASK &&
-          (!isMetamask || isBraveWallet || isPhantomWallet)
+          !isMetamask
         ) {
           return null;
         } else if (
@@ -417,21 +408,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
               icon={BraveWalletIcon}
             />
           );
-        } else if (
-          option.name === GlobalConst.walletName.PHANTOM_WALLET &&
-          !isPhantomWallet
-        ) {
-          return (
-            <Option
-              id={`connect-${option.key}`}
-              key={option.key}
-              color={option.color}
-              header={t('installPhantom')}
-              subheader={t('installPhantomDesc')}
-              link={'https://phantom.app/'}
-              icon={option.iconName}
-            />
-          );
         }
         // likewise for generic
         else if (
@@ -441,7 +417,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
             isBlockWallet ||
             isBraveWallet ||
             isCypherD ||
-            isPhantomWallet ||
             isTrustWallet)
         ) {
           return null;

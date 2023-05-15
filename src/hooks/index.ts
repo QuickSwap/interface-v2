@@ -9,6 +9,7 @@ import {
   gnosisSafeConnection,
   injectedConnection,
   networkConnection,
+  phantomConnection,
   walletConnectConnection,
 } from 'connectors';
 import { useDispatch } from 'react-redux';
@@ -142,6 +143,8 @@ export function useGetConnection() {
           return gnosisSafeConnection;
         case ConnectionType.ARKANE:
           return arkaneConnection;
+        case ConnectionType.PHATOM:
+          return phantomConnection;
       }
     }
   }, []);
