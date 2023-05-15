@@ -9,19 +9,19 @@ import {
 } from '@web3-react/types';
 import { Connector } from '@web3-react/types';
 
-type TrustWalletProvider = Provider & {
-  isTrust?: boolean;
+type BitKeepProvider = Provider & {
+  isBitKeep?: boolean;
   isConnected?: () => boolean;
-  detected?: TrustWalletProvider[];
-  providers?: TrustWalletProvider[];
-  chainId?: string;
+  detected?: BitKeepProvider[];
+  providers?: BitKeepProvider[];
+  chainId: string;
 };
 
-export class NoTrustWalletError extends Error {
+export class NoBitKeepError extends Error {
   public constructor() {
-    super('TrustWallet not installed');
-    this.name = NoTrustWalletError.name;
-    Object.setPrototypeOf(this, NoTrustWalletError.prototype);
+    super('BitKeep not installed');
+    this.name = NoBitKeepError.name;
+    Object.setPrototypeOf(this, NoBitKeepError.prototype);
   }
 }
 
@@ -33,20 +33,20 @@ function parseChainId(chainId: string) {
  * @param options - Options to pass to `@metamask/detect-provider`
  * @param onError - Handler to report errors thrown from eventListeners.
  */
-export interface TrustWalletConstructorArgs {
+export interface BitKeepConstructorArgs {
   actions: Actions;
   options?: Parameters<typeof detectEthereumProvider>[0];
   onError?: (error: Error) => void;
 }
 
-export class TrustWallet extends Connector {
+export class BitKeep extends Connector {
   /** {@inheritdoc Connector.provider} */
-  public provider?: TrustWalletProvider;
+  public provider?: BitKeepProvider;
 
   private readonly options?: Parameters<typeof detectEthereumProvider>[0];
   private eagerConnection?: Promise<void>;
 
-  constructor({ actions, options, onError }: TrustWalletConstructorArgs) {
+  constructor({ actions, options, onError }: BitKeepConstructorArgs) {
     super(actions, onError);
     this.options = options;
   }
@@ -58,16 +58,16 @@ export class TrustWallet extends Connector {
       async (m) => {
         const provider = window.ethereum;
         if (provider) {
-          this.provider = provider as TrustWalletProvider;
+          this.provider = provider as BitKeepProvider;
 
           // handle the case when e.g. metamask and coinbase wallet are both installed
           if (this.provider.detected?.length) {
             this.provider =
-              this.provider.detected.find((p) => p.isTrust) ??
+              this.provider.detected.find((p) => p.isBitKeep) ??
               this.provider.detected[0];
           } else if (this.provider.providers?.length) {
             this.provider =
-              this.provider.providers.find((p) => p.isTrust) ??
+              this.provider.providers.find((p) => p.isBitKeep) ??
               this.provider.providers[0];
           }
 
@@ -153,7 +153,7 @@ export class TrustWallet extends Connector {
 
     return this.isomorphicInitialize()
       .then(async () => {
-        if (!this.provider) throw new NoTrustWalletError();
+        if (!this.provider) throw new NoBitKeepError();
 
         // Wallets may resolve eth_chainId and hang on eth_accounts pending user interaction, which may include changing
         // chains; they should be requested serially, with accounts first, so that the chainId can settle.

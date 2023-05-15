@@ -4,12 +4,16 @@ import { useMemo } from 'react';
 import { useAppSelector } from 'state/hooks';
 
 const SELECTABLE_WALLETS = [
-  ConnectionType.INJECTED,
+  ConnectionType.METAMASK,
   ConnectionType.WALLET_CONNECT,
   ConnectionType.COINBASE_WALLET,
   ConnectionType.ARKANE,
   ConnectionType.PHATOM,
   ConnectionType.TRUSTWALLET,
+  ConnectionType.BITKEEP,
+  ConnectionType.BLOCKWALLET,
+  ConnectionType.BRAVEWALLET,
+  ConnectionType.CYPHERD,
 ];
 
 export default function useOrderedConnections() {
