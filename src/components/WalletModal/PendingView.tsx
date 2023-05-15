@@ -4,7 +4,7 @@ import { GlobalConst } from 'constants/index';
 import Option from './Option';
 import { useTranslation } from 'react-i18next';
 import { Connection, getConnections, injectedConnection } from 'connectors';
-import { getIsMetaMaskWallet } from 'connectors/utils';
+import { getIsMetaMaskWallet, getIsTrustWallet } from 'connectors/utils';
 
 interface PendingViewProps {
   connection?: Connection;
@@ -20,15 +20,12 @@ const PendingView: React.FC<PendingViewProps> = ({
   tryActivation,
 }) => {
   const { t } = useTranslation();
-  const { ethereum, phantom } = window as any;
+  const { ethereum } = window as any;
   const isMetamask = getIsMetaMaskWallet();
   const isBlockWallet = ethereum && ethereum.isBlockWallet;
   const isCypherD = ethereum && ethereum.isCypherD;
   const isBitKeep = ethereum && ethereum.isBitKeep;
   const isBraveWallet = ethereum && ethereum.isBraveWallet;
-  const isPhantomWallet =
-    (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
-  const isTrustWallet = ethereum && ethereum.isTrustWallet;
   const connections = getConnections();
 
   return (
@@ -99,18 +96,6 @@ const PendingView: React.FC<PendingViewProps> = ({
             if (
               !isBraveWallet &&
               option.name === GlobalConst.walletName.BRAVEWALLET
-            ) {
-              return null;
-            }
-            if (
-              isTrustWallet &&
-              option.name !== GlobalConst.walletName.TRUST_WALLET
-            ) {
-              return null;
-            }
-            if (
-              !isTrustWallet &&
-              option.name === GlobalConst.walletName.TRUST_WALLET
             ) {
               return null;
             }

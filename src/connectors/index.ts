@@ -24,6 +24,7 @@ import { GlobalConst } from 'constants/index';
 import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 import { SecretType } from '@venly/web3-provider';
 import { Phantom } from './Phantom';
+import { TrustWallet } from './TrustWallet';
 
 const POLLING_INTERVAL = 12000;
 
@@ -39,6 +40,7 @@ export enum ConnectionType {
   NETWORK = 'NETWORK',
   GNOSIS_SAFE = 'GNOSIS_SAFE',
   PHATOM = 'PHANTOM',
+  TRUSTWALLET = 'TRUSTWALLET',
 }
 
 export interface Connection {
@@ -216,12 +218,22 @@ export const phantomConnection: Connection = {
   description: 'Phantom wallet extension.',
 };
 
+const [web3TrustWallet, web3TrustWalletHooks] = initializeConnector<
+  TrustWallet
+>(
+  (actions) =>
+    new TrustWallet({
+      actions,
+      onError,
+    }),
+);
+
 export const trustWalletConnection: Connection = {
   key: 'TRUST_WALLET',
   name: GlobalConst.walletName.TRUST_WALLET,
-  connector: web3Injected,
-  hooks: web3InjectedHooks,
-  type: ConnectionType.INJECTED,
+  connector: web3TrustWallet,
+  hooks: web3TrustWalletHooks,
+  type: ConnectionType.TRUSTWALLET,
   iconName: TrustIcon,
   color: '#E8831D',
   description: 'TrustWallet extension.',
@@ -328,7 +340,6 @@ export function getConnections() {
     braveWalletConnection,
     blockWalletConnection,
     bitKeepConnection,
-    injectedConnection,
     gnosisSafeConnection,
     coinbaseWalletConnection,
     walletConnectConnection,

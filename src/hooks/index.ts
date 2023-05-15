@@ -10,6 +10,7 @@ import {
   injectedConnection,
   networkConnection,
   phantomConnection,
+  trustWalletConnection,
   walletConnectConnection,
 } from 'connectors';
 import { useDispatch } from 'react-redux';
@@ -145,6 +146,8 @@ export function useGetConnection() {
           return arkaneConnection;
         case ConnectionType.PHATOM:
           return phantomConnection;
+        case ConnectionType.TRUSTWALLET:
+          return trustWalletConnection;
       }
     }
   }, []);

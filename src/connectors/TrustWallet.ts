@@ -9,19 +9,19 @@ import {
 } from '@web3-react/types';
 import { Connector } from '@web3-react/types';
 
-type MetaMaskProvider = Provider & {
-  isMetaMask?: boolean;
+type TrustWalletProvider = Provider & {
+  isTrust?: boolean;
   isConnected?: () => boolean;
-  detected?: MetaMaskProvider[];
-  providers?: MetaMaskProvider[];
-  chainId?: string;
+  detected?: TrustWalletProvider[];
+  chainId(): string;
+  accounts(): string[];
 };
 
-export class NoMetaMaskError extends Error {
+export class NoTrustWalletError extends Error {
   public constructor() {
-    super('MetaMask not installed');
-    this.name = NoMetaMaskError.name;
-    Object.setPrototypeOf(this, NoMetaMaskError.prototype);
+    super('TrustWallet not installed');
+    this.name = NoTrustWalletError.name;
+    Object.setPrototypeOf(this, NoTrustWalletError.prototype);
   }
 }
 
@@ -33,20 +33,20 @@ function parseChainId(chainId: string) {
  * @param options - Options to pass to `@metamask/detect-provider`
  * @param onError - Handler to report errors thrown from eventListeners.
  */
-export interface MetaMaskConstructorArgs {
+export interface TrustWalletConstructorArgs {
   actions: Actions;
   options?: Parameters<typeof detectEthereumProvider>[0];
   onError?: (error: Error) => void;
 }
 
-export class MetaMask extends Connector {
+export class TrustWallet extends Connector {
   /** {@inheritdoc Connector.provider} */
-  public provider?: MetaMaskProvider;
+  public provider?: TrustWalletProvider;
 
   private readonly options?: Parameters<typeof detectEthereumProvider>[0];
   private eagerConnection?: Promise<void>;
 
-  constructor({ actions, options, onError }: MetaMaskConstructorArgs) {
+  constructor({ actions, options, onError }: TrustWalletConstructorArgs) {
     super(actions, onError);
     this.options = options;
   }
@@ -58,18 +58,13 @@ export class MetaMask extends Connector {
       async (m) => {
         const provider = window.ethereum;
         if (provider) {
-          this.provider = provider as MetaMaskProvider;
+          this.provider = provider as TrustWalletProvider;
 
           // handle the case when e.g. metamask and coinbase wallet are both installed
           if (this.provider.detected?.length) {
             this.provider =
-              this.provider.detected.find((p) => p.isMetaMask && !p.detected) ??
+              this.provider.detected.find((p) => p.isTrust) ??
               this.provider.detected[0];
-          } else if (this.provider.providers?.length) {
-            this.provider =
-              this.provider.providers.find(
-                (p) => p.isMetaMask && !p.providers,
-              ) ?? this.provider.providers[0];
           }
 
           this.provider.on(
@@ -154,7 +149,7 @@ export class MetaMask extends Connector {
 
     return this.isomorphicInitialize()
       .then(async () => {
-        if (!this.provider) throw new NoMetaMaskError();
+        if (!this.provider) throw new NoTrustWalletError();
 
         // Wallets may resolve eth_chainId and hang on eth_accounts pending user interaction, which may include changing
         // chains; they should be requested serially, with accounts first, so that the chainId can settle.
