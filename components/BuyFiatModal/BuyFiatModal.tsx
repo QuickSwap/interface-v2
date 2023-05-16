@@ -36,12 +36,12 @@ const BuyFiatModal: React.FC<BuyFiatModalProps> = ({
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!account || !process.env.REACT_APP_COINBASE_APP_ID || !open) return;
+    if (!account || !process.env.NEXT_PUBLIC_COINBASE_APP_ID || !open) return;
 
     if (!coinbaseReady) {
       initOnRamp(
         {
-          appId: process.env.REACT_APP_COINBASE_APP_ID,
+          appId: process.env.NEXT_PUBLIC_COINBASE_APP_ID,
           widgetParameters: {
             destinationWallets: [
               {

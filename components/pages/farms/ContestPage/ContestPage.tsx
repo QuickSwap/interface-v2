@@ -31,7 +31,7 @@ dayjs.extend(weekOfYear);
 
 const ContestPage: React.FC = () => {
   const { t } = useTranslation();
-  const helpURL = process.env.REACT_APP_HELP_URL;
+  const helpURL = process.env.NEXT_PUBLIC_HELP_URL;
   const [durationIndex, setDurationIndex] = useState(1);
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);

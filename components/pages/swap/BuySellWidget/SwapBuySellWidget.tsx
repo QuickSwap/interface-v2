@@ -7,7 +7,7 @@ import Image from 'next/image';
 
 export const SwapBuySellWidget: React.FC = ({}) => {
   const { t } = useTranslation();
-  const SPRITZ_LINK = process.env.REACT_APP_SPRITZ_FINANCE_LINK;
+  const SPRITZ_LINK = process.env.NEXT_PUBLIC_SPRITZ_FINANCE_LINK;
 
   return (
     <Box className={`${styles.wrapper} ${styles.buySellWidgetContainer}`}>

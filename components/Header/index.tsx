@@ -130,7 +130,7 @@ const Header: React.FC = () => {
       id: 'perps-page-link',
       isExternal: true,
       target: '_blank',
-      externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+      externalLink: process?.env?.NEXT_PUBLIC_PERPS_URL || '',
       isNew: true,
     });
   }
@@ -155,7 +155,7 @@ const Header: React.FC = () => {
       id: 'safe-page-link',
       isExternal: true,
       target: '_blank',
-      externalLink: process?.env?.REACT_APP_SAFE_URL || '',
+      externalLink: process?.env?.NEXT_PUBLIC_SAFE_URL || '',
       isNew: true,
     });
   }
@@ -254,7 +254,7 @@ const Header: React.FC = () => {
         />
       </Link>
       {!tabletWindowSize && (
-        <Box className='mainMenu'>
+        <Box className={styles.mainMenu}>
           {menuItems.slice(0, menuItemCountToShow).map((val, index) =>
             val.isExternal ? (
               <a
@@ -306,12 +306,12 @@ const Header: React.FC = () => {
               </a>
             ) : (
               <Link
-                to={val.link}
+                href={val.link}
                 key={index}
                 id={val.id}
-                className={`menuItem ${
+                className={`${styles.menuItem} ${
                   pathname !== '/' && val.link.includes(pathname)
-                    ? 'active'
+                    ? styles.activeMenuItem
                     : ''
                 }`}
                 onClick={() => {
@@ -357,15 +357,15 @@ const Header: React.FC = () => {
           )}
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
-            <Box display='flex' className='menuItem subMenuItem'>
-              <ThreeDotIcon />
-              <Box className='subMenuWrapper'>
-                <Box className='subMenu'>
+            <Box className={`${styles.menuItem} ${styles.subMenuItem}`}>
+              <MoreHoriz />
+              <Box className={styles.subMenuWrapper}>
+                <Box className={styles.subMenu}>
                   {menuItems
                     .slice(menuItemCountToShow, menuItems.length)
                     .map((val, index) => (
                       <Link
-                        to={val.link}
+                        href={val.link}
                         key={index}
                         onClick={() => {
                           setOpenDetailMenu(false);
@@ -394,7 +394,9 @@ const Header: React.FC = () => {
                 href={val.link}
                 key={index}
                 className={
-                  pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
+                  pathname.indexOf(val.link) > -1
+                    ? styles.activeMenuItem
+                    : styles.menuItem
                 }
               >
                 <small>{val.text}</small>

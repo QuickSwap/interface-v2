@@ -159,6 +159,8 @@ export function useGetConnection() {
           return braveWalletConnection;
         case ConnectionType.CYPHERD:
           return cypherDConnection;
+        default:
+          throw Error('Unsupported connector');
       }
     }
   }, []);

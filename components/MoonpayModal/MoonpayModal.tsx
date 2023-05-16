@@ -22,7 +22,7 @@ const MoonpayModal: React.FC<MoonpayModalProps> = ({ open, onClose }) => {
           title='moonpay'
           allow='accelerometer; autoplay; camera; gyroscope; payment'
           height='600px'
-          src={`https://buy.moonpay.com?apiKey=${process.env.REACT_APP_MOONPAY_KEY}`}
+          src={`https://buy.moonpay.com?apiKey=${process.env.NEXT_PUBLIC_MOONPAY_KEY}`}
           width='100%'
         >
           <p>{t('notSupportIframe')}</p>

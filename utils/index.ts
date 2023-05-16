@@ -1663,7 +1663,7 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
 export const getGlobalData = async (chainId: ChainId, version: string) => {
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/global-data/${version}?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/global-data/${version}?chainId=${chainId}`,
     );
     if (!res.ok) {
       const errorText = await res.text();

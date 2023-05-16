@@ -22,9 +22,9 @@ const BinanceModal: React.FC<BinanceModalProps> = ({ open, onClose }) => {
           allow='accelerometer; autoplay; camera; gyroscope; payment'
           height='600px'
           src={`${
-            process.env.REACT_APP_BINANCE_CNT_URL
+            process.env.NEXT_PUBLIC_BINANCE_CNT_URL
           }/en/pre-connect?merchantCode=${
-            process.env.REACT_APP_BINANCE_MERCHANT_CODE
+            process.env.NEXT_PUBLIC_BINANCE_MERCHANT_CODE
           }&timestamp=${new Date().getTime()}`}
           width='100%'
         >

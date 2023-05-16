@@ -29,7 +29,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   }, [isProMode, name, router.asPath]);
 
-  const intractKey = process.env.REACT_APP_INTRACT_KEY;
+  const intractKey = process.env.NEXT_PUBLIC_INTRACT_KEY;
   useEffect(() => {
     if (intractKey) {
       IntractAttribution(intractKey, {

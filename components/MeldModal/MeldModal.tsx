@@ -21,7 +21,7 @@ const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
           title='meld widget'
           allow='accelerometer; autoplay; camera; gyroscope; payment'
           height='600px'
-          src={`${process.env.REACT_APP_MELD_URL}/?publicKey=${process.env.REACT_APP_MELD_KEY}`}
+          src={`${process.env.NEXT_PUBLIC_MELD_URL}/?publicKey=${process.env.NEXT_PUBLIC_MELD_KEY}`}
           width='100%'
         >
           <p>{t('notSupportIframe')}</p>
