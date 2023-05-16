@@ -52,5 +52,11 @@
   },
   "leaderboard": {
     "available": true
+  },
+  "safe": {
+    "available": true
+  },
+  "perps": {
+    "available": true
   }
 }

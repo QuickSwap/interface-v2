@@ -14,6 +14,7 @@ import { useActiveWeb3React } from 'hooks';
 import { Interface } from 'ethers/lib/utils';
 import { useTranslation } from 'next-i18next';
 import { useMultipleContractSingleData } from 'state/multicall/hooks';
+import { GlobalConst } from 'constants/index';
 
 export interface IPresetArgs {
   type: Presets;
@@ -268,14 +269,18 @@ export function PresetRanges({
 
   const gammaValuesLoaded =
     mintInfo.price && gammaValues.filter((value) => !value).length === 0;
+  const { liquidityRangeType } = mintInfo;
 
   useEffect(() => {
-    if (gammaValuesLoaded) {
+    if (
+      gammaValuesLoaded &&
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+    ) {
       handlePresetRangeSelection(ranges[0]);
       onChangePresetRange(ranges[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gammaValuesLoaded, baseCurrency, quoteCurrency]);
+  }, [gammaValuesLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
 
   return (
     <Box>

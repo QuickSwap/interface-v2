@@ -183,7 +183,7 @@ export function TokenAmountCard({
                 chainId &&
                 currency.wrapped.address.toLowerCase() ===
                   WETH[chainId].address.toLowerCase()
-                  ? 'MATIC+WMATIC'
+                  ? `${ETHER[chainId].symbol}+${WETH[chainId].symbol}`
                   : currency.symbol}
               </p>
             </div>

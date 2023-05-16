@@ -50,6 +50,7 @@
   & small {
     margin-left: 8px;
     color: $textPrimary;
+    flex: 1;
   }
   &:hover {
     background-color: $secondary1;

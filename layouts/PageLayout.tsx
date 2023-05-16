@@ -7,6 +7,7 @@ import BetaWarningBanner from 'components/BetaWarningBanner';
 import CustomModal from 'components/CustomModal';
 import Background from './Background';
 import { useRouter } from 'next/router';
+import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
 
 export interface PageLayoutProps {
   children: any;
@@ -27,6 +28,21 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   }, [isProMode, name, router.asPath]);
+
+  const intractKey = process.env.REACT_APP_INTRACT_KEY;
+  useEffect(() => {
+    if (intractKey) {
+      IntractAttribution(intractKey, {
+        configAllowCookie: true,
+      });
+    }
+  }, [intractKey]);
+
+  useEffect(() => {
+    if (account) {
+      trackCustomWallet(account);
+    }
+  }, [account]);
 
   useEffect(() => {
     if (

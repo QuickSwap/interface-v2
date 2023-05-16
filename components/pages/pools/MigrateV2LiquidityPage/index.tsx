@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
 import { ArrowBack } from '@mui/icons-material';
@@ -6,16 +6,27 @@ import { QuestionHelper, PoolFinderModal } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import V2PositionCard from './components/V2PositionCard';
 import { useTranslation } from 'next-i18next';
+import { getConfig } from 'config';
 
 export default function MigrateV2LiquidityPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const {
     loading: v2PairsLoading,
     pairs: allV2PairsWithLiquidity,
   } = useV2LiquidityPools(account ?? undefined);
   const [openPoolFinder, setOpenPoolFinder] = useState(false);
+
+  const config = getConfig(chainId);
+  const isMigrateAvailable = config['migrate']['available'];
+
+  useEffect(() => {
+    if (!isMigrateAvailable) {
+      router.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMigrateAvailable]);
 
   return (
     <>

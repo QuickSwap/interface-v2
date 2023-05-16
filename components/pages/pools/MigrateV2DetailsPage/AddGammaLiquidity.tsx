@@ -3,7 +3,7 @@ import './index.scss';
 import { useTranslation } from 'react-i18next';
 import { useActivePreset } from 'state/mint/v3/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
-import { JSBI, WETH } from '@uniswap/sdk';
+import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { GammaPairs } from 'constants/index';
 import { Box, Button } from '@material-ui/core';
@@ -417,15 +417,15 @@ const AddGammaLiquidity: React.FC<{
             >
               {amountToWrap
                 ? wrappingETH
-                  ? t('wrappingMATIC')
-                  : t('wrapMATIC')
+                  ? t('wrappingMATIC', { symbol: ETHER[chainId].symbol })
+                  : t('wrapMATIC', { symbol: ETHER[chainId].symbol })
                 : addingLiquidity
                 ? t('addingLiquidity')
                 : t('addLiquidity')}
             </Button>
             {errorMessage && (
               <Box mt={1}>
-                <p className='text-error text-center'>{errorMessage}</p>
+                <p className='text-center text-error'>{errorMessage}</p>
               </Box>
             )}
           </Box>

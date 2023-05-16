@@ -9,10 +9,11 @@ import FilterPanelItem from '../FilterPanelItem';
 import { PositionPool } from 'models/interfaces';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'next-i18next';
+import { getConfig } from 'config';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const router = useRouter();
   const [userHideClosedPositions, setUserHideClosedPositions] = useState(true);
   const [hideFarmingPositions, setHideFarmingPositions] = useState(false);
@@ -87,6 +88,9 @@ export default function MyLiquidityPoolsV3() {
     account ?? undefined,
   );
 
+  const config = getConfig(chainId);
+  const isMigrateAvailable = config['migrate']['available'];
+
   return (
     <Box>
       <p className='weight-600'>{t('myQuickSwapLP')}</p>
@@ -99,10 +103,10 @@ export default function MyLiquidityPoolsV3() {
               </Box>
             ))}
           </Box>
-          {allV2PairsWithLiquidity.length > 0 && (
+          {allV2PairsWithLiquidity.length > 0 && isMigrateAvailable && (
             <Box
               className='v3-manage-v2liquidity-button'
-              onClick={() => history.push('/migrate')}
+              onClick={() => router.push('/migrate')}
             >
               <small className='text-primary'>Migrate V2 Liquidity</small>
             </Box>

@@ -9,7 +9,7 @@ import { Pair } from 'utils/v3/computePairAddress';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useTotalSupply } from 'hooks/v3/useTotalSupply';
-import { JSBI } from '@uniswap/sdk';
+import { ETHER, JSBI } from '@uniswap/sdk';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import { useToken } from 'hooks/TokensV3';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -215,9 +215,9 @@ const RemoveV2Liquidity: React.FC<{
         .then(async (response: TransactionResponse) => {
           const summary = t('removeLiquidityMsg', {
             amount1: formatNumber(token0Value.toExact()),
-            symbol1: currency0IsETH ? 'MATIC' : token0.symbol,
+            symbol1: currency0IsETH ? ETHER[chainId].symbol : token0.symbol,
             amount2: formatNumber(token1Value.toExact()),
-            symbol2: currency1IsETH ? 'MATIC' : token1.symbol,
+            symbol2: currency1IsETH ? ETHER[chainId].symbol : token1.symbol,
           });
           addTransaction(response, {
             summary,

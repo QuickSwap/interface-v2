@@ -457,9 +457,14 @@ export const FarmingMyFarms: React.FC<{
     return gammaRewards;
   };
 
+  const fetchGammaData = async () => {
+    const gammaData = await getGammaData(chainId);
+    return gammaData;
+  };
+
   const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
     'fetchGammaData',
-    getGammaData,
+    fetchGammaData,
     {
       refetchInterval: 30000,
     },

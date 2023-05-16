@@ -633,16 +633,17 @@ export const getBulkPairData = async (chainId: ChainId, pairList: any) => {
     .unix();
 
   const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
-
+  const client = clientV2[chainId];
+  if (!client) return;
   try {
-    const current = await clientV2[chainId].query({
+    const current = await client.query({
       query: PAIRS_BULK(pairList),
       fetchPolicy: 'network-only',
     });
 
     const [oneDayResult] = await Promise.all(
       [oneDayOldBlock].map(async (block) => {
-        const cResult = await clientV2[chainId].query({
+        const cResult = await client.query({
           query: PAIRS_HISTORICAL_BULK(block, pairList),
           fetchPolicy: 'network-only',
         });
@@ -705,7 +706,9 @@ const getOneDayVolume = async (config: any) => {
   );
 
   const chainId: ChainId = config.chainId;
-  const result = await clientV2[chainId].query({
+  const client = clientV2[chainId];
+  if (!client) return;
+  const result = await client.query({
     query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], current),
     fetchPolicy: 'network-only',
   });
@@ -713,11 +716,13 @@ const getOneDayVolume = async (config: any) => {
   data = result.data.uniswapFactories[0];
 
   // fetch the historical data
-  const oneDayResult = await clientV2[chainId].query({
-    query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], oneDayOldBlock),
-    fetchPolicy: 'network-only',
-  });
-  oneDayData = oneDayResult.data.uniswapFactories[0];
+  if (oneDayOldBlock) {
+    const oneDayResult = await client.query({
+      query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], oneDayOldBlock),
+      fetchPolicy: 'network-only',
+    });
+    oneDayData = oneDayResult.data.uniswapFactories[0];
+  }
 
   let oneDayVolumeUSD: any = 0;
 
@@ -742,7 +747,9 @@ const getOneDayVolumeV3 = async (config: any) => {
   const chainId: ChainId = config.chainId;
   const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
 
-  const result = await clientV3[chainId].query({
+  const client = clientV3[chainId];
+  if (!client) return;
+  const result = await client.query({
     query: GLOBAL_DATA_V3(),
     fetchPolicy: 'network-only',
   });
@@ -756,17 +763,19 @@ const getOneDayVolumeV3 = async (config: any) => {
       : undefined;
 
   // fetch the historical data
-  const oneDayResult = await clientV3[chainId].query({
-    query: GLOBAL_DATA_V3(oneDayOldBlock),
-    fetchPolicy: 'network-only',
-  });
-  oneDayData =
-    oneDayResult &&
-    oneDayResult.data &&
-    oneDayResult.data.factories &&
-    oneDayResult.data.factories.length > 0
-      ? oneDayResult.data.factories[0]
-      : undefined;
+  if (oneDayOldBlock) {
+    const oneDayResult = await client.query({
+      query: GLOBAL_DATA_V3(oneDayOldBlock),
+      fetchPolicy: 'network-only',
+    });
+    oneDayData =
+      oneDayResult &&
+      oneDayResult.data &&
+      oneDayResult.data.factories &&
+      oneDayResult.data.factories.length > 0
+        ? oneDayResult.data.factories[0]
+        : undefined;
+  }
 
   let oneDayVolumeUSD: any = 0;
 

@@ -35,7 +35,7 @@ import { WrappedCurrency } from 'models/types';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import ColoredSlider from 'components/ColoredSlider';
-import { JSBI } from '@uniswap/sdk';
+import { JSBI, WETH } from '@uniswap/sdk';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import styles from './RemoveLiquidityV3.module.scss';
 
@@ -316,7 +316,7 @@ export default function RemoveLiquidityV3({
   }
 
   const showCollectAsWeth = Boolean(
-    !chainId &&
+    chainId &&
       liquidityValue0?.currency &&
       liquidityValue1?.currency &&
       (liquidityValue0.currency.isNative ||
@@ -444,7 +444,11 @@ export default function RemoveLiquidityV3({
       {showCollectAsWeth && (
         <Box mb={2} className='flex items-center'>
           <Box mr={1}>
-            <p>{t('collectAsWmatic')}</p>
+            <p>
+              {t('collectAsWmatic', {
+                symbol: chainId ? WETH[chainId].symbol : '',
+              })}
+            </p>
           </Box>
           <ToggleSwitch
             toggled={receiveWETH}

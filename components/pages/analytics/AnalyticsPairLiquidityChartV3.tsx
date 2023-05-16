@@ -1,6 +1,7 @@
 import { JSBI } from '@uniswap/sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
-import { Pool, TickMath } from '@uniswap/v3-sdk';
+import { Pool } from 'v3lib/entities/pool';
+import { TickMath } from 'v3lib/utils/tickMath';
 import { BigNumber } from 'ethers';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { isAddress } from 'utils';
@@ -26,7 +27,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
   useEffect(() => {
     if (!chainId) return;
     getLiquidityChart(pairAddress, chainId).then((data) => {
-      if (!data.error) {
+      if (data && !data.error) {
         updateLiquidtyChartData(data);
       }
     });

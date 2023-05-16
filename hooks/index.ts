@@ -1,6 +1,22 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { ChainId, Pair } from '@uniswap/sdk';
+import {
+  ConnectionType,
+  arkaneConnection,
+  bitKeepConnection,
+  blockWalletConnection,
+  braveWalletConnection,
+  coinbaseWalletConnection,
+  cypherDConnection,
+  getConnections,
+  gnosisSafeConnection,
+  metamaskConnection,
+  networkConnection,
+  phantomConnection,
+  trustWalletConnection,
+  walletConnectConnection,
+} from 'connectors';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'state';
 // @ts-ignore
@@ -14,6 +30,7 @@ import { usePairs } from 'data/Reserves';
 import { useRouter } from 'next/router';
 import { getConfig } from 'config';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { Connector } from '@web3-react/types';
 
 export function useActiveWeb3React() {
   const context = useWeb3React();
@@ -104,6 +121,47 @@ export function useInitTransak() {
   };
 
   return { initTransak };
+}
+
+export function useGetConnection() {
+  return useCallback((c: Connector | ConnectionType) => {
+    if (c instanceof Connector) {
+      const connection = getConnections().find(
+        (connection) => connection.connector === c,
+      );
+      if (!connection) {
+        throw Error('unsupported connector');
+      }
+      return connection;
+    } else {
+      switch (c) {
+        case ConnectionType.METAMASK:
+          return metamaskConnection;
+        case ConnectionType.COINBASE_WALLET:
+          return coinbaseWalletConnection;
+        case ConnectionType.WALLET_CONNECT:
+          return walletConnectConnection;
+        case ConnectionType.NETWORK:
+          return networkConnection;
+        case ConnectionType.GNOSIS_SAFE:
+          return gnosisSafeConnection;
+        case ConnectionType.ARKANE:
+          return arkaneConnection;
+        case ConnectionType.PHATOM:
+          return phantomConnection;
+        case ConnectionType.TRUSTWALLET:
+          return trustWalletConnection;
+        case ConnectionType.BITKEEP:
+          return bitKeepConnection;
+        case ConnectionType.BLOCKWALLET:
+          return blockWalletConnection;
+        case ConnectionType.BRAVEWALLET:
+          return braveWalletConnection;
+        case ConnectionType.CYPHERD:
+          return cypherDConnection;
+      }
+    }
+  }, []);
 }
 
 export function useV2LiquidityPools(account?: string) {

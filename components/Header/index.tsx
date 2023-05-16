@@ -105,7 +105,8 @@ const Header: React.FC = () => {
   const showLending = config['lending']['available'];
   const showGamingHub = config['gamingHub']['available'];
   const showLeaderboard = config['leaderboard']['available'];
-
+  const showSafe = config['safe']['available'];
+  const showPerps = config['perps']['available'];
   const menuItems = [];
 
   const swapCurrencyStr = useMemo(() => {
@@ -122,6 +123,17 @@ const Header: React.FC = () => {
       id: 'swap-page-link',
     });
   }
+  if (showPerps) {
+    menuItems.push({
+      link: '/perps',
+      text: 'Perps',
+      id: 'perps-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+      isNew: true,
+    });
+  }
   if (showPool) {
     menuItems.push({
       link: `/pools`,
@@ -134,6 +146,17 @@ const Header: React.FC = () => {
       link: `/farm`,
       text: t('farm'),
       id: 'farm-page-link',
+    });
+  }
+  if (showSafe) {
+    menuItems.push({
+      link: '/safe',
+      text: 'Safe',
+      id: 'safe-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_SAFE_URL || '',
+      isNew: true,
     });
   }
   if (showLair) {
@@ -231,68 +254,118 @@ const Header: React.FC = () => {
         />
       </Link>
       {!tabletWindowSize && (
-        <Box className={styles.mainMenu}>
-          {menuItems.slice(0, menuItemCountToShow).map((val, index) => (
-            <Link
-              href={val.link}
-              key={index}
-              id={val.id}
-              className={`${styles.menuItem} ${
-                pathname !== '/' && val.link.includes(pathname)
-                  ? styles.activeMenuItem
-                  : ''
-              }`}
-              onClick={() => {
-                updateIsV2(false);
-              }}
-            >
-              <small>{val.text}</small>
-              {val.isNew && (
-                <>
-                  <Image src={NewTag} alt='new menu' width={46} height={30} />
-                  <Image
-                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
-                    src={SparkleLeft}
-                    alt='menuItem sparkle left'
-                    width={4}
-                    height={5}
-                  />
-                  <Image
-                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
-                    src={SparkleRight}
-                    alt='menuItem sparkle right'
-                    width={4}
-                    height={5}
-                  />
-                  <Image
-                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
-                    src={SparkleBottom}
-                    alt='menuItem sparkle bottom'
-                    width={136}
-                    height={10}
-                  />
-                  <Image
-                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
-                    src={SparkleTop}
-                    alt='menuItem sparkle top'
-                    width={133}
-                    height={11}
-                  />
-                </>
-              )}
-            </Link>
-          ))}
+        <Box className='mainMenu'>
+          {menuItems.slice(0, menuItemCountToShow).map((val, index) =>
+            val.isExternal ? (
+              <a
+                href={val.externalLink}
+                target={val?.target ? val.target : '_blank'}
+                key={index}
+                id={val.id}
+                rel='noopener noreferrer'
+                className={`${styles.menuItem} ${
+                  pathname !== '/' && val.link.includes(pathname)
+                    ? styles.activeMenuItem
+                    : ''
+                }`}
+              >
+                <small>{val.text}</small>
+                {val.isNew && (
+                  <>
+                    <Image src={NewTag} alt='new menu' width={46} height={30} />
+                    <Image
+                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
+                      src={SparkleLeft}
+                      alt='menuItem sparkle left'
+                      width={4}
+                      height={5}
+                    />
+                    <Image
+                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
+                      src={SparkleRight}
+                      alt='menuItem sparkle right'
+                      width={4}
+                      height={5}
+                    />
+                    <Image
+                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
+                      src={SparkleBottom}
+                      alt='menuItem sparkle bottom'
+                      width={136}
+                      height={10}
+                    />
+                    <Image
+                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
+                      src={SparkleTop}
+                      alt='menuItem sparkle top'
+                      width={133}
+                      height={11}
+                    />
+                  </>
+                )}
+              </a>
+            ) : (
+              <Link
+                to={val.link}
+                key={index}
+                id={val.id}
+                className={`menuItem ${
+                  pathname !== '/' && val.link.includes(pathname)
+                    ? 'active'
+                    : ''
+                }`}
+                onClick={() => {
+                  updateIsV2(false);
+                }}
+              >
+                <small>{val.text}</small>
+                {val.isNew && (
+                  <>
+                    <Image src={NewTag} alt='new menu' width={46} height={30} />
+                    <Image
+                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
+                      src={SparkleLeft}
+                      alt='menuItem sparkle left'
+                      width={4}
+                      height={5}
+                    />
+                    <Image
+                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
+                      src={SparkleRight}
+                      alt='menuItem sparkle right'
+                      width={4}
+                      height={5}
+                    />
+                    <Image
+                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
+                      src={SparkleBottom}
+                      alt='menuItem sparkle bottom'
+                      width={136}
+                      height={10}
+                    />
+                    <Image
+                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
+                      src={SparkleTop}
+                      alt='menuItem sparkle top'
+                      width={133}
+                      height={11}
+                    />
+                  </>
+                )}
+              </Link>
+            ),
+          )}
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
-            <Box className={`${styles.menuItem} ${styles.subMenuItem}`}>
-              <MoreHoriz />
-              <Box className={styles.subMenuWrapper}>
-                <Box className={styles.subMenu}>
+            <Box display='flex' className='menuItem subMenuItem'>
+              <ThreeDotIcon />
+              <Box className='subMenuWrapper'>
+                <Box className='subMenu'>
                   {menuItems
                     .slice(menuItemCountToShow, menuItems.length)
                     .map((val, index) => (
                       <Link
-                        href={val.link}
+                        to={val.link}
                         key={index}
                         onClick={() => {
                           setOpenDetailMenu(false);

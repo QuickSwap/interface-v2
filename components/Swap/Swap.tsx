@@ -56,6 +56,7 @@ import TokenWarningModal from 'components/v3/TokenWarningModal';
 import { useRouter } from 'next/router';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import useSwapRedirects from 'hooks/useSwapRedirect';
+import { GlobalValue } from 'constants/index';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
@@ -297,23 +298,34 @@ const Swap: React.FC<{
           : '';
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return t('insufficientLiquidityTrade');
+      } else if (priceImpactSeverity > 3 && !isExpertMode) {
+        return t('priceImpactReachedV2', {
+          maxImpact: Number(
+            GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH.multiply(
+              '100',
+            ).toFixed(4),
+          ),
+        });
       } else {
-        return swapInputError ?? t('swap');
+        return swapInputError ?? swapCallbackError ?? t('swap');
       }
     } else {
       return t('connectWallet');
     }
   }, [
     account,
+    isSupportedNetwork,
+    t,
     currencies,
     formattedAmounts,
     showWrap,
     noRoute,
     userHasSpecifiedInputOutput,
-    t,
+    priceImpactSeverity,
+    isExpertMode,
     wrapType,
     swapInputError,
-    isSupportedNetwork,
+    swapCallbackError,
   ]);
 
   const swapButtonDisabled = useMemo(() => {

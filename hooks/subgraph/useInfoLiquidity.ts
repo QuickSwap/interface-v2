@@ -14,6 +14,7 @@ export function useInfoLiquidity() {
   );
 
   async function fetchPopularPools() {
+    if (!v3Client) return;
     try {
       setPopularPoolsLoading(true);
 

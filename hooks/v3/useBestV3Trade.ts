@@ -9,6 +9,7 @@ import { useV3Quoter } from 'hooks/useContract';
 import { Route } from 'lib/route';
 import { Trade } from 'lib/trade';
 import { encodeRouteToPath } from 'lib/utils/encodeRouteToPath';
+import { ChainId } from '@uniswap/sdk';
 
 export enum V3TradeState {
   LOADING,
@@ -17,6 +18,10 @@ export enum V3TradeState {
   VALID,
   SYNCING,
 }
+
+const QUOTE_GAS_OVERRIDES: { [chainId: number]: number } = {
+  [ChainId.ZKEVM]: 25_000_000,
+};
 
 const DEFAULT_GAS_QUOTE = 2_000_000;
 
@@ -52,7 +57,9 @@ export function useBestV3TradeExactIn(
     'quoteExactInput',
     quoteExactInInputs,
     {
-      //gasRequired: chainId ? DEFAULT_GAS_QUOTE : undefined
+      gasRequired: chainId
+        ? QUOTE_GAS_OVERRIDES[chainId] ?? DEFAULT_GAS_QUOTE
+        : undefined,
     },
   );
 
@@ -162,7 +169,9 @@ export function useBestV3TradeExactOut(
     'quoteExactOutput',
     quoteExactOutInputs,
     {
-      //gasRequired: chainId ? DEFAULT_GAS_QUOTE : undefined
+      gasRequired: chainId
+        ? QUOTE_GAS_OVERRIDES[chainId] ?? DEFAULT_GAS_QUOTE
+        : undefined,
     },
   );
 

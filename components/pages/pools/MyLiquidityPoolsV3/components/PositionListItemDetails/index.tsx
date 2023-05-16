@@ -44,6 +44,7 @@ import {
   TransactionErrorContent,
 } from 'components';
 import { useTranslation } from 'next-i18next';
+import { WETH } from '@uniswap/sdk';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -548,7 +549,11 @@ export default function PositionListItemDetails({
         {showCollectAsWeth && (
           <Box mt={2} className='flex items-center'>
             <Box mr={1}>
-              <p>{t('collectAsWmatic')}</p>
+              <p>
+                {t('collectAsWmatic', {
+                  symbol: chainId ? WETH[chainId].symbol : '',
+                })}
+              </p>
             </Box>
             <ToggleSwitch
               toggled={receiveWETH}

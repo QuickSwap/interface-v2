@@ -49,8 +49,8 @@ const AnalyticsPairChart: React.FC<{
 
   const [priceChartTokenIdx, setPriceChartTokenIdx] = useState(0);
   const [apyVisionData, setAPYVisionData] = useState<any>(undefined);
-  const apyVisionURL = process.env.REACT_APP_APY_VISION_BASE_URL;
-  const apyVisionAccessToken = process.env.REACT_APP_APY_VISION_ACCESS_TOKEN;
+  const apyVisionURL = process.env.NEXT_PUBLIC_APY_VISION_BASE_URL;
+  const apyVisionAccessToken = process.env.NEXT_PUBLIC_APY_VISION_ACCESS_TOKEN;
 
   const usingUtVolume =
     pairData &&

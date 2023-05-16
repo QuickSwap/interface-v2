@@ -41,6 +41,7 @@ const AnalyticsSearch: React.FC = () => {
   const [searchValInput, setSearchValInput] = useDebouncedChangeHandler(
     searchVal,
     setSearchVal,
+    500,
   );
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<any>(null);
@@ -178,11 +179,12 @@ const AnalyticsSearch: React.FC = () => {
 
   useEffect(() => {
     async function fetchData() {
+      const client = isV2 ? clientV2[chainIdToUse] : clientV3[chainIdToUse];
+      if (!client) return;
       try {
         const allTokensFn = isV2 && v2 ? getAllTokensOnUniswap : getAllTokensV3;
         const allPairsFn = isV2 && v2 ? getAllPairsOnUniswap : getAllPairsV3;
 
-        const client = isV2 ? clientV2[chainIdToUse] : clientV3[chainIdToUse];
         const tokenSearchQuery = isV2 && v2 ? TOKEN_SEARCH : TOKEN_SEARCH_V3;
         const pairSearchQuery = isV2 && v2 ? PAIR_SEARCH : PAIR_SEARCH_V3;
 
@@ -195,7 +197,7 @@ const AnalyticsSearch: React.FC = () => {
             query: tokenSearchQuery,
             variables: {
               value: searchVal ? searchVal.toUpperCase() : '',
-              id: searchVal,
+              id: searchVal.toLowerCase(),
             },
           });
 
@@ -203,7 +205,7 @@ const AnalyticsSearch: React.FC = () => {
             query: pairSearchQuery,
             variables: {
               tokens: tokens.data.asSymbol?.map((t: any) => t.id),
-              id: searchVal,
+              id: searchVal.toLowerCase(),
             },
           });
 

@@ -877,6 +877,7 @@ const SwapBestTrade: React.FC<{
     inputCurrencyAddress,
     outputCurrencySymbol,
     outputCurrencyAddress,
+    typedValue,
   ]);
 
   useEffect(() => {

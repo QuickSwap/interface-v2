@@ -43,7 +43,7 @@ import { useGammaUNIProxyContract } from 'hooks/useContract';
 import {
   useSingleCallResult,
   useSingleContractMultipleData,
-} from 'state/multicall/v3/hooks';
+} from 'state/multicall/hooks';
 import { ETHER, WETH } from '@uniswap/sdk';
 import { maxAmountSpend } from 'utils';
 import { GammaPairs } from 'constants/index';

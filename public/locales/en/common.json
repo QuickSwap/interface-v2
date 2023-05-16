@@ -480,7 +480,7 @@
   "collectFeeFromThisPosition": "You will also collect fees earned from this position",
   "feeEarned": "Fees Earned",
   "amount": "Amount",
-  "collectAsWmatic": "Collect as WMATIC",
+  "collectAsWmatic": "Collect as {{ symbol }}",
   "typeConfirmSwapPriceImpact": "This swap has a price impact of at least {{ priceImpact }}%. Please type the word 'confirm' to continue with this swap.",
   "confirmSwapPriceImpact": "This swap has a price impact of at least {{ priceImpact }}%. Please confirm that you would like to continue with this swap.",
   "feeIs": "Fee is {{ fee }}%",
@@ -641,8 +641,8 @@
   "stableLPs": "Stable LPs",
   "otherLPs": "Other LPs",
   "totalAPR": "Total APR",
-  "wrapMATIC": "Wrap MATIC",
-  "wrappingMATIC": "Wrapping MATIC",
+  "wrapMATIC": "Wrap {{ symbol }}",
+  "wrappingMATIC": "Wrapping {{ symbol }}",
   "fetchingBestRoute": "Fetching Best Route",
   "contest": "Contest",
   "leaderBoard": "Leader Board",
@@ -659,5 +659,6 @@
   "approveV2Removal": "Approve V2 Liquidity Removal",
   "approvingV2Removal": "Approving V2 Liquidity Removal",
   "bestTradeBanned": "Best trade is unavailable in your location. Please use v2 or v3.",
-  "priceImpactReached": "Price impact is more than {{maxImpact}}%. Please use v2 or v3."
+  "priceImpactReached": "Price impact is more than {{maxImpact}}%. Please use v2 or v3.",
+  "priceImpactReachedV2": "Price impact is more than {{maxImpact}}%. Please use best trade or v3."
 }
