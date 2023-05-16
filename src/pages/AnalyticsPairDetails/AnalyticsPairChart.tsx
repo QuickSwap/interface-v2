@@ -5,23 +5,17 @@ import { Skeleton } from '@material-ui/lab';
 import dayjs from 'dayjs';
 import {
   formatCompact,
-  getPairChartData,
-  getFormattedPrice,
   getPriceClass,
   getChartDates,
-  getChartStartTime,
-  getLimitedData,
   getYAXISValuesAnalytics,
   getFormattedPercent,
 } from 'utils';
 import { AreaChart, ChartType, MixedChart, ColumnChart } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { getPairChartDataV3, getPairChartFees } from 'utils/v3-graph';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
 import { useActiveWeb3React } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;

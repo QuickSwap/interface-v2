@@ -23,7 +23,7 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
 }) => {
   const { t } = useTranslation();
   return (
-    <Box padding={4}>
+    <Box padding={4} overflow='hidden'>
       <Box className='txModalHeader'>
         <CloseIcon onClick={onDismiss} />
       </Box>

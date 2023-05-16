@@ -6,7 +6,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import GammaLPList from './GammaLPList';
 import { useQuery } from 'react-query';
-import { getGammaPositions } from 'utils';
+import { getGammaData, getGammaPositions } from 'utils';
 import { GammaPair, GammaPairs } from 'constants/index';
 import { useMasterChefContracts } from 'hooks/useContract';
 import {
@@ -27,30 +27,14 @@ export default function MyLiquidityPoolsV3() {
   const toggleWalletModal = useWalletModalToggle();
 
   const fetchGammaPositions = async () => {
-    if (!account) return;
-    const gammaPositions = await getGammaPositions(account);
+    if (!account || !chainId) return;
+    const gammaPositions = await getGammaPositions(account, chainId);
     return gammaPositions;
   };
 
   const fetchGammaData = async () => {
-    try {
-      const data = await fetch(
-        `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/polygon/hypervisors/allData`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch {
-      try {
-        const data = await fetch(
-          `${process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP}/quickswap/polygon/hypervisors/allData`,
-        );
-        const gammaData = await data.json();
-        return gammaData;
-      } catch (e) {
-        console.log(e);
-        return;
-      }
-    }
+    const gammaData = await getGammaData(chainId);
+    return gammaData;
   };
 
   const { isLoading: positionsLoading, data: gammaPositions } = useQuery(

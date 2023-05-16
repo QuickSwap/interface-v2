@@ -17,6 +17,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 const GammaFarmsPage: React.FC<{
   farmFilter: string;
@@ -27,10 +28,15 @@ const GammaFarmsPage: React.FC<{
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
+  const parsedQuery = useParsedQueryString();
+  const farmStatus =
+    parsedQuery && parsedQuery.farmStatus
+      ? (parsedQuery.farmStatus as string)
+      : 'active';
   const allGammaFarms = chainId
     ? ([] as GammaPair[])
         .concat(...Object.values(GammaPairs[chainId]))
-        .filter((item) => item.ableToFarm)
+        .filter((item) => !!item.ableToFarm === (farmStatus === 'active'))
     : [];
   const sortMultiplier = sortDesc ? -1 : 1;
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
@@ -40,9 +46,14 @@ const GammaFarmsPage: React.FC<{
     return gammaRewards;
   };
 
+  const fetchGammaData = async () => {
+    const gammaData = await getGammaData(chainId);
+    return gammaData;
+  };
+
   const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
     'fetchGammaData',
-    getGammaData,
+    fetchGammaData,
     {
       refetchInterval: 30000,
     },

@@ -1,10 +1,8 @@
 import React from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
-import { GlobalConst } from 'constants/index';
 import Option from './Option';
 import { useTranslation } from 'react-i18next';
-import { Connection, getConnections, injectedConnection } from 'connectors';
-import { getIsMetaMaskWallet } from 'connectors/utils';
+import { Connection, getConnections } from 'connectors';
 
 interface PendingViewProps {
   connection?: Connection;
@@ -20,15 +18,6 @@ const PendingView: React.FC<PendingViewProps> = ({
   tryActivation,
 }) => {
   const { t } = useTranslation();
-  const { ethereum, phantom } = window as any;
-  const isMetamask = getIsMetaMaskWallet();
-  const isBlockWallet = ethereum && ethereum.isBlockWallet;
-  const isCypherD = ethereum && ethereum.isCypherD;
-  const isBitKeep = ethereum && ethereum.isBitKeep;
-  const isBraveWallet = ethereum && ethereum.isBraveWallet;
-  const isPhantomWallet =
-    (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
-  const isTrustWallet = ethereum && ethereum.isTrustWallet;
   const connections = getConnections();
 
   return (
@@ -56,77 +45,6 @@ const PendingView: React.FC<PendingViewProps> = ({
       </Box>
       {connections.map((option) => {
         if (connection && option.connector === connection.connector) {
-          if (option.connector === injectedConnection.connector) {
-            if (isMetamask && option.name !== GlobalConst.walletName.METAMASK) {
-              return null;
-            }
-            if (
-              !isMetamask &&
-              option.name === GlobalConst.walletName.METAMASK
-            ) {
-              return null;
-            }
-            if (isBitKeep && option.name !== GlobalConst.walletName.BITKEEP) {
-              return null;
-            }
-            if (!isBitKeep && option.name === GlobalConst.walletName.BITKEEP) {
-              return null;
-            }
-            if (isCypherD && option.name !== GlobalConst.walletName.CYPHERD) {
-              return null;
-            }
-            if (!isCypherD && option.name === GlobalConst.walletName.CYPHERD) {
-              return null;
-            }
-            if (
-              isBlockWallet &&
-              option.name !== GlobalConst.walletName.BLOCKWALLET
-            ) {
-              return null;
-            }
-            if (
-              !isBlockWallet &&
-              option.name === GlobalConst.walletName.BLOCKWALLET
-            ) {
-              return null;
-            }
-            if (
-              isBraveWallet &&
-              option.name !== GlobalConst.walletName.BRAVEWALLET
-            ) {
-              return null;
-            }
-            if (
-              !isBraveWallet &&
-              option.name === GlobalConst.walletName.BRAVEWALLET
-            ) {
-              return null;
-            }
-            if (
-              isPhantomWallet &&
-              option.name !== GlobalConst.walletName.PHANTOM_WALLET
-            ) {
-              return null;
-            }
-            if (
-              !isPhantomWallet &&
-              option.name === GlobalConst.walletName.PHANTOM_WALLET
-            ) {
-              return null;
-            }
-            if (
-              isTrustWallet &&
-              option.name !== GlobalConst.walletName.TRUST_WALLET
-            ) {
-              return null;
-            }
-            if (
-              !isTrustWallet &&
-              option.name === GlobalConst.walletName.TRUST_WALLET
-            ) {
-              return null;
-            }
-          }
           return (
             <Option
               id={`connect-${option.key}`}
