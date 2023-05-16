@@ -2,4 +2,19 @@
 
 .termsConditionsWrapper {
   padding: 20px;
+  & .MuiCheckbox-root {
+    padding: 0;
+    margin-right: 16px;
+    color: $textPrimary;
+    &.Mui-checked {
+      color: $textPrimary;
+    }
+  }
+  & a {
+    text-decoration: none;
+  }
+  & button {
+    height: 50px;
+    border-radius: 16px;
+  }
 }
