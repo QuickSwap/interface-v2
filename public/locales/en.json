@@ -659,5 +659,8 @@
   "approvingV2Removal": "Approving V2 Liquidity Removal",
   "bestTradeBanned": "Best trade is unavailable in your location. Please use v2 or v3.",
   "priceImpactReached": "Price impact is more than {{maxImpact}}%. Please use v2 or v3.",
-  "priceImpactReachedV2": "Price impact is more than {{maxImpact}}%. Please use best trade or v3."
+  "priceImpactReachedV2": "Price impact is more than {{maxImpact}}%. Please use best trade or v3.",
+  "goBack": "Go Back",
+  "pageNotFound": "Page not found",
+  "pageNotFoundDesc": "Oh dear dragon friend, it seems like the treasure you seek is not to be found. We encourage you to spread your wings and fly back to start your quest a new."
 }

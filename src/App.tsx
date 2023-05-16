@@ -65,6 +65,7 @@ import { mainTheme } from './theme';
 import Background from 'layouts/Background';
 import GasUpdater from 'state/application/gasUpdater';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
+import NotFound404Page from 'pages/NotFound404Page';
 
 const ThemeProvider: React.FC = ({ children }) => {
   const theme = mainTheme;
@@ -217,6 +218,11 @@ const App: React.FC = () => {
                 <Route exact path='/analytics/:version/pair/:id'>
                   <PageLayout>
                     <AnalyticsPairDetails />
+                  </PageLayout>
+                </Route>
+                <Route path='*'>
+                  <PageLayout>
+                    <NotFound404Page />
                   </PageLayout>
                 </Route>
               </Switch>
