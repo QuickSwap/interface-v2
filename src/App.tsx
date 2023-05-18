@@ -44,8 +44,7 @@ const MigrateV2DetailsPage = lazy(() =>
 const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
 import { PageLayout } from 'layouts';
-import StyledThemeProvider from 'theme/index';
-import { Web3ReactManager, Popups } from 'components';
+import { Web3ReactManager, Popups, TermsWrapper } from 'components';
 import ApplicationUpdater from 'state/application/updater';
 import TransactionUpdater from 'state/transactions/updater';
 import ListsUpdater from 'state/lists/updater';
@@ -65,6 +64,7 @@ import { mainTheme } from './theme';
 import Background from 'layouts/Background';
 import GasUpdater from 'state/application/gasUpdater';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
+import NotFound404Page from 'pages/NotFound404Page';
 
 const ThemeProvider: React.FC = ({ children }) => {
   const theme = mainTheme;
@@ -111,10 +111,10 @@ const App: React.FC = () => {
       <Route component={GoogleAnalyticsReporter} />
       <Provider store={store}>
         <Providers>
-          <Web3ReactManager>
-            <Updaters />
-            <Popups />
-            <StyledThemeProvider>
+          <TermsWrapper>
+            <Web3ReactManager>
+              <Updaters />
+              <Popups />
               <Switch>
                 <Route exact path='/'>
                   <PageLayout>
@@ -136,7 +136,6 @@ const App: React.FC = () => {
                     <PoolsPage />
                   </PageLayout>
                 </Route>
-
                 <Route exact strict path='/pool/:tokenId'>
                   <PageLayout>
                     <PositionPage></PositionPage>
@@ -219,9 +218,14 @@ const App: React.FC = () => {
                     <AnalyticsPairDetails />
                   </PageLayout>
                 </Route>
+                <Route path='*'>
+                  <PageLayout>
+                    <NotFound404Page />
+                  </PageLayout>
+                </Route>
               </Switch>
-            </StyledThemeProvider>
-          </Web3ReactManager>
+            </Web3ReactManager>
+          </TermsWrapper>
         </Providers>
       </Provider>
     </QueryClientProvider>

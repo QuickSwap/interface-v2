@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.scss';
 import { Box } from '@material-ui/core';
-import { MouseoverTooltip } from '../Tooltip';
+import { CustomTooltip } from 'components';
 
 export enum BadgeVariant {
   DEFAULT = 'DEFAULT',
@@ -43,9 +43,11 @@ export default function Badge({ variant, icon, text, tooltip }: BadgeProps) {
   return (
     <>
       {tooltip ? (
-        <MouseoverTooltip text={tooltip}>
-          <BadgeComponent />
-        </MouseoverTooltip>
+        <CustomTooltip title={tooltip}>
+          <div>
+            <BadgeComponent />
+          </div>
+        </CustomTooltip>
       ) : (
         <BadgeComponent />
       )}

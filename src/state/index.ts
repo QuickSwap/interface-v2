@@ -1,9 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { save, load } from 'redux-localstorage-simple';
-import {
-  gelatoReducers,
-  GELATO_PERSISTED_KEYS,
-} from '@gelatonetwork/limit-orders-react';
 
 import application from 'state/application/reducer';
 import { updateVersion } from './global/actions';
@@ -36,7 +32,6 @@ const PERSISTED_KEYS: string[] = [
   'dualFarms',
   'syrups',
   'analytics',
-  ...GELATO_PERSISTED_KEYS,
 ];
 
 const store = configureStore({
@@ -60,7 +55,6 @@ const store = configureStore({
     analytics,
     ads,
     [dataApi.reducerPath]: dataApi.reducer,
-    ...gelatoReducers,
   },
   middleware: (getDefaultMiddleware) => [
     ...getDefaultMiddleware({ serializableCheck: false, thunk: true }).concat(

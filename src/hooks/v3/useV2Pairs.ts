@@ -16,7 +16,6 @@ import flatMap from 'lodash.flatmap';
 import { useAppSelector } from 'state';
 import { useAllTokens } from './Tokens';
 import { SerializedToken } from 'state/user/actions';
-// import { Pair } from "@uniswap/v2-sdk"
 
 const PAIR_INTERFACE = new Interface(IUniswapV2PairABI.abi);
 

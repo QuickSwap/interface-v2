@@ -6,7 +6,6 @@ import {
   ScaleLinear,
   select,
 } from 'd3';
-import { StyledGroup } from './styled';
 
 const Axis = ({ axisGenerator }: { axisGenerator: d3Axis<NumberValue> }) => {
   const axisRef = (axis: SVGGElement) => {
@@ -27,13 +26,16 @@ export const AxisBottom = ({
 }) => {
   return useMemo(
     () => (
-      <StyledGroup transform={`translate(0, ${innerHeight + offset})`}>
+      <g
+        className='liquidityStyledGroup'
+        transform={`translate(0, ${innerHeight + offset})`}
+      >
         <Axis
           axisGenerator={axisBottom(xScale)
             .ticks(6)
             .tickSizeOuter(0)}
         />
-      </StyledGroup>
+      </g>
     ),
     [innerHeight, offset, xScale],
   );

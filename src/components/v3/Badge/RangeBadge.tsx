@@ -1,15 +1,7 @@
 import React from 'react';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
-import styled from 'styled-components/macro';
 import { Error } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-
-const ActiveDot = styled.span`
-  background-color: ${({ theme }) => theme.success};
-  border-radius: 50%;
-  height: 8px;
-  width: 8px;
-`;
 
 interface RangeBadgeProps {
   removed: boolean | undefined;
@@ -36,7 +28,12 @@ export default function RangeBadge({
         <Badge
           tooltip={withTooltip ? t('v3PoolWithinSelectedRange') : ''}
           variant={BadgeVariant.POSITIVE}
-          icon={<ActiveDot />}
+          icon={
+            <div
+              className='bg-success'
+              style={{ width: 8, height: 8, borderRadius: 4 }}
+            />
+          }
           text={t('inrange')}
         />
       ) : (

@@ -2,7 +2,6 @@ import {
   WalletConnect,
   WalletConnectConstructorArgs,
 } from '@web3-react/walletconnect';
-import { IQRCodeModalOptions } from '@walletconnect/types';
 import { rpcMap } from 'constants/providers';
 
 export class WalletConnectPopup extends WalletConnect {
@@ -13,7 +12,7 @@ export class WalletConnectPopup extends WalletConnect {
     qrcodeModalOptions,
   }: Omit<WalletConnectConstructorArgs, 'options'> & {
     qrcode?: boolean;
-    qrcodeModalOptions?: IQRCodeModalOptions;
+    qrcodeModalOptions?: any;
   }) {
     super({
       actions,

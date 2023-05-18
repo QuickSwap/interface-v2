@@ -129,7 +129,7 @@ const Header: React.FC = () => {
       text: 'Perps',
       id: 'perps-page-link',
       isExternal: true,
-      target: '_blank',
+      target: '_self',
       externalLink: process?.env?.REACT_APP_PERPS_URL || '',
       isNew: true,
     });
@@ -372,17 +372,28 @@ const Header: React.FC = () => {
       {tabletWindowSize && (
         <Box className='mobileMenuContainer'>
           <Box className='mobileMenu'>
-            {menuItems.slice(0, 4).map((val, index) => (
-              <Link
-                to={val.link}
-                key={index}
-                className={
-                  pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
-                }
-              >
-                <small>{val.text}</small>
-              </Link>
-            ))}
+            {menuItems.slice(0, 4).map((val, index) => {
+              return val.isExternal ? (
+                <a
+                  href={val.externalLink}
+                  target={val?.target ? val.target : '_blank'}
+                  key={index}
+                  rel='noopener noreferrer'
+                >
+                  <small>{val.text}</small>
+                </a>
+              ) : (
+                <Link
+                  to={val.link}
+                  key={index}
+                  className={
+                    pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
+                  }
+                >
+                  <small>{val.text}</small>
+                </Link>
+              );
+            })}
             {menuItems.length > 4 && (
               <Box className='flex menuItem'>
                 <ThreeDotIcon

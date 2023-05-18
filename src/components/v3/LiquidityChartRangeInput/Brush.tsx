@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { BrushBehavior, brushX, D3BrushEvent, ScaleLinear, select } from 'd3';
 import usePrevious from 'hooks/usePrevious';
-import { LabelGroup, Tooltip, TooltipBackground } from './styled';
 
 // flips the handles draggers when close to the container edges
 const FLIP_HANDLE_THRESHOLD_PX = 20;
@@ -257,28 +256,30 @@ export const Brush = ({
                   ></line>
                 </g>
 
-                <LabelGroup
-                  visible={true}
+                <g
+                  className='liquidityLabelGroup'
                   transform={`translate(0,${-innerHeight + 30}), scale(${
                     flipWestHandle ? '1' : '-1'
                   }, 1)`}
                 >
-                  <TooltipBackground
+                  <rect
+                    className='liquidityTooltipBackground'
                     y='0'
                     x='12'
                     height='15'
                     width='30'
                     rx='4'
                   />
-                  <Tooltip
+                  <text
+                    className='liquidityTooltip'
                     y='8'
                     x='-27'
                     transform={`scale(-1, 1)`}
                     dominantBaseline='middle'
                   >
                     {brushLabelValue('e', localBrushExtent[0])}
-                  </Tooltip>
-                </LabelGroup>
+                  </text>
+                </g>
               </g>
             ) : null}
 
@@ -302,23 +303,29 @@ export const Brush = ({
                   ></line>
                 </g>
 
-                <LabelGroup
+                <g
+                  className='liquidityLabelGroup'
                   transform={`translate(0,${-innerHeight + 30}), scale(${
                     flipEastHandle ? '-1' : '1'
                   }, 1)`}
-                  visible={true}
                 >
-                  <TooltipBackground
+                  <rect
+                    className='liquidityTooltipBackground'
                     y='0'
                     x='12'
                     height='15'
                     width='30'
                     rx='4'
                   />
-                  <Tooltip y='8' x='27' dominantBaseline='middle'>
+                  <text
+                    className='liquidityTooltip'
+                    y='8'
+                    x='27'
+                    dominantBaseline='middle'
+                  >
                     {brushLabelValue('e', localBrushExtent[1])}
-                  </Tooltip>
-                </LabelGroup>
+                  </text>
+                </g>
               </g>
             ) : null}
             {/* will host the d3 brush */}

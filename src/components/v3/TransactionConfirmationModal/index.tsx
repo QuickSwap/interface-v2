@@ -8,12 +8,11 @@ import {
   ExternalLink,
   X,
 } from 'react-feather';
-import Circle from 'assets/images/blue-loader.svg';
+import SpinnerImage from 'assets/images/spinner.svg';
 import MetaMaskLogo from 'assets/images/metamask-logo.svg';
 import { useActiveWeb3React } from 'hooks';
 import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
 import { CustomModal } from 'components';
-import { CloseIcon, CustomLightSpinner } from 'theme/components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
 import { useTranslation } from 'react-i18next';
 
@@ -34,14 +33,12 @@ function ConfirmationPendingContent({
       {!inline && (
         <Box width='100%' className='flex justify-between'>
           <Box />
-          <X onClick={onDismiss} />
+          <X className='cursor-pointer' onClick={onDismiss} />
         </Box>
       )}
-      <CustomLightSpinner
-        src={Circle}
-        alt='loader'
-        size={inline ? '40px' : '90px'}
-      />
+      <Box className='flex justify-center spinner'>
+        <img src={SpinnerImage} alt='Spinner' />
+      </Box>
       <Box mt='20px' textAlign='center'>
         <p>{t('waitingConfirm')}</p>
         <Box my='8px'>
@@ -79,7 +76,7 @@ function TransactionSubmittedContent({
       {!inline && (
         <Box className='flex justify-between'>
           <div />
-          <CloseIcon onClick={onDismiss} />
+          <X className='cursor-pointer' onClick={onDismiss} />
         </Box>
       )}
       <Box mt={2} className='flex justify-center'>
@@ -159,7 +156,7 @@ export function ConfirmationModalContent({
     <Box width='100%'>
       <Box className='flex items-center justify-between' mb={2}>
         {title}
-        <CloseIcon onClick={onDismiss} />
+        <X className='cursor-pointer' onClick={onDismiss} />
       </Box>
       {topContent()}
       {bottomContent && <>{bottomContent()}</>}
@@ -182,7 +179,7 @@ export function TransactionErrorContent({
       <Box>
         <Box className='flex justify-between'>
           <h5>{t('error')}</h5>
-          <CloseIcon onClick={onDismiss} />
+          <X className='cursor-pointer' onClick={onDismiss} />
         </Box>
         <Box mt={2} className='flex flex-col items-center'>
           <AlertTriangle color='red' style={{ strokeWidth: 1.5 }} size={64} />
