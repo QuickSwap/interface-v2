@@ -160,7 +160,7 @@ export function useGetConnection() {
         case ConnectionType.CYPHERD:
           return cypherDConnection;
         default:
-          throw Error('Unsupported connector');
+          throw Error('unsupported connector');
       }
     }
   }, []);

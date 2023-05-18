@@ -4,7 +4,7 @@ import styles from 'styles/components/CustomModal.module.scss';
 
 interface CustomModalProps {
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   children: any;
   background?: string;
   overflow?: string;

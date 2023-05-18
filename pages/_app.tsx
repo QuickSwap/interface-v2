@@ -22,7 +22,7 @@ import SyrupUpdater from 'state/syrups/updater';
 import AnalyticsUpdater from 'state/analytics/updater';
 import AdsUpdater from 'state/ads/updater';
 import GasUpdater from 'state/application/gasUpdater';
-import { Web3ReactManager, Popups } from 'components';
+import { Web3ReactManager, Popups, TermsWrapper } from 'components';
 import { appWithTranslation } from 'next-i18next';
 import './index.scss';
 import 'slick-carousel/slick/slick.css';
@@ -110,15 +110,17 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       />
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
-          <Web3ReactManager>
-            <Updaters />
-            <Providers>
-              <Popups />
-              <PageLayout>
-                <Component {...pageProps} />
-              </PageLayout>
-            </Providers>
-          </Web3ReactManager>
+          <Providers>
+            <TermsWrapper>
+              <Web3ReactManager>
+                <Updaters />
+                <Popups />
+                <PageLayout>
+                  <Component {...pageProps} />
+                </PageLayout>
+              </Web3ReactManager>
+            </TermsWrapper>
+          </Providers>
         </Provider>
       </QueryClientProvider>
     </>
