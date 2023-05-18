@@ -1,14 +1,5 @@
 @use 'styles/variables' as *;
 
-@keyframes spinnerAnimation {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .txModalHeader {
   display: flex;
   align-items: center;
@@ -26,10 +17,7 @@
     z-index: 3
   }
 }
-.spinner {
-  display: flex;
-  animation: spinnerAnimation 1s infinite linear;
-}
+
 .txModalBG {
   position: absolute;
   top: 100px;

@@ -128,6 +128,7 @@
   "market": "Market (V2)",
   "marketV3": "Market (V3)",
   "limit": "Limit",
+  "twap": "TWAP",
   "proMode": "Pro Mode",
   "limitOrderDisclaimer": "<bold>* Disclaimer:</bold> Limit Orders on QuickSwap are provided by Gelato, a 3rd party protocol and should be considered in beta. DYOR and use at your own risk. QuickSwap is not responsible. More info can be found <alink>here</alink>.",
   "date": "date",
@@ -663,5 +664,8 @@
   "disclaimer": "Disclaimer",
   "disclaimerText1": "Please check the boxes below to confirm your agreement to the <alink>QuickSwap Terms and Conditions</alink>",
   "disclaimerText2": "I have read and understood, and do hereby agree to be legally bound as a ‘User’ under, the Terms, including all future amendments thereto. Such agreement is irrevocable and will apply to all of my uses of the Site without me providing confirmation in each specific instance.",
-  "disclaimerText3": "I acknowledge and agree that the Site solely provides information about data on the applicable blockchains. I accept that the Site operators have no custody over my funds, ability or duty to transact on my behalf or power to reverse my transactions. The Site operators do not endorse or provide any warranty with respect to any tokens."
+  "disclaimerText3": "I acknowledge and agree that the Site solely provides information about data on the applicable blockchains. I accept that the Site operators have no custody over my funds, ability or duty to transact on my behalf or power to reverse my transactions. The Site operators do not endorse or provide any warranty with respect to any tokens.",
+  "goBack": "Go Back",
+  "pageNotFound": "Page not found",
+  "pageNotFoundDesc": "Oh dear dragon friend, it seems like the treasure you seek is not to be found. We encourage you to spread your wings and fly back to start your quest a new."
 }

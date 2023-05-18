@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { stringToColour } from 'utils/stringToColour';
-import { StyledLogo } from './styled';
 
 const BAD_SRCS: { [tokenAddress: string]: true } = {};
 
@@ -37,17 +36,22 @@ const Logo: React.FC<LogoProps> = ({
     );
   }
   return (
-    <StyledLogo
-      size={size}
+    <div
+      className='flex items-center justify-center'
       style={{
+        width: size,
+        height: size,
+        borderRadius: size,
+        boxShadow: '0 6px 10px rgba(0, 0, 0, 0.075)',
         background: stringToColour(alt ?? '').background,
         color: stringToColour(alt ?? '').text,
         border: stringToColour(alt ?? '').border,
-        fontSize: fontSize,
+        fontSize: fontSize ?? '12px',
+        fontWeight: 600,
       }}
     >
       {displaySymbol}
-    </StyledLogo>
+    </div>
   );
 };
 
