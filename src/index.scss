@@ -39,6 +39,20 @@ w3m-modal {
   }
 }
 
+@keyframes spinnerAnimation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: flex;
+  animation: spinnerAnimation 1s infinite linear;
+}
+
 [data-reach-dialog-overlay] {
   position: fixed;
   top: 0;

@@ -66,3 +66,4 @@ export { default as PoolFinderModal } from './PoolFinderModal';
 export { default as BuyFiatButton } from './BuyFiatButton';
 export { default as NetworkSelectionModal } from './NetworkSelectionModal';
 export { default as SortColumns } from './SortColumns';
+export { default as TermsWrapper } from './TermsWrapper';

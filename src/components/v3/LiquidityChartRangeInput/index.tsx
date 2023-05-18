@@ -12,6 +12,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { format } from 'd3';
 import { Chart } from './Chart';
 import { useTranslation } from 'react-i18next';
+import './index.scss';
 
 const ZOOM_LEVEL: ZoomLevels = {
   initialMin: 0.5,
