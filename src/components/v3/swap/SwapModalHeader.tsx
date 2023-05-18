@@ -1,10 +1,8 @@
 import React from 'react';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
-import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
 import { useState } from 'react';
 import { AlertTriangle, ArrowDown } from 'react-feather';
-import { Text } from 'rebass';
 import { FiatValue } from '../CurrencyInputPanel/FiatValue';
 
 import { AdvancedSwapDetails } from './AdvancedSwapDetails';
@@ -20,9 +18,7 @@ import { useTranslation } from 'react-i18next';
 import 'components/styles/v3/swap.scss';
 
 interface SwapModalHeaderProps {
-  trade:
-    | V2Trade<Currency, Currency, TradeType>
-    | V3Trade<Currency, Currency, TradeType>;
+  trade: V3Trade<Currency, Currency, TradeType>;
   allowedSlippage: Percent;
   recipient: string | null;
   showAcceptChanges: boolean;

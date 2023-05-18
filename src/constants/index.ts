@@ -1403,6 +1403,13 @@ export const GlobalValue = {
         'cbEth',
         'Coinbase Wrapped Staked ETH (FXERC20)',
       ),
+      RMATIC: new Token(
+        ChainId.MATIC,
+        '0x9f28e2455f9ffcfac9ebd6084853417362bc5dbb',
+        18,
+        'rMATIC',
+        'StaFi rMATIC (PoS)',
+      ),
     },
   },
   marketSDK: {
@@ -1454,6 +1461,7 @@ export const GlobalData = {
       GlobalValue.tokens.COMMON.MATICX,
       GlobalValue.tokens.COMMON.STMATIC,
       GlobalValue.tokens.COMMON.ANKRMATIC,
+      GlobalValue.tokens.COMMON.RMATIC,
     ],
     [GlobalValue.tokens.COMMON.NEW_QUICK, GlobalValue.tokens.COMMON.NEW_DQUICK],
     [

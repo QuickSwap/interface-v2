@@ -8,7 +8,7 @@ import {
   Percent,
   TradeType,
 } from '@uniswap/sdk-core';
-import { Trade as V2Trade } from '@uniswap/v2-sdk';
+import { Trade as V2Trade } from '@uniswap/sdk';
 import { ParsedQs } from 'qs';
 import {
   Field,
@@ -141,7 +141,7 @@ export function useDerivedSwapInfo(): {
   currencyBalances: { [field in Field]?: CurrencyAmount<Currency> };
   parsedAmount: CurrencyAmount<Currency> | undefined;
   inputError?: string;
-  v2Trade: V2Trade<Currency, Currency, TradeType> | undefined;
+  v2Trade: V2Trade | undefined;
   v3TradeState: {
     trade: V3Trade<Currency, Currency, TradeType> | null;
     state: V3TradeState;
