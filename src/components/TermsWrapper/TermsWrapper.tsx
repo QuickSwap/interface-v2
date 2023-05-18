@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { CustomModal } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import 'components/styles/TermsWrapper.scss';
@@ -8,7 +8,24 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [readTerms, setReadTerms] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const [showTerms, setShowTerms] = useState(true);
+  const [showTerms, setShowTerms] = useState(false);
+  const currentTOSVersion = process.env.REACT_APP_TOS_VERSION;
+
+  useEffect(() => {
+    const savedTermsVersion = localStorage.getItem('tosVersion');
+    if (
+      !savedTermsVersion ||
+      !currentTOSVersion ||
+      savedTermsVersion !== currentTOSVersion
+    ) {
+      setShowTerms(true);
+    }
+  }, [currentTOSVersion]);
+
+  const confirmTOS = () => {
+    localStorage.setItem('tosVersion', currentTOSVersion ?? '');
+    setShowTerms(false);
+  };
 
   if (showTerms)
     return (
@@ -49,7 +66,7 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
           <Button
             fullWidth
             disabled={!readTerms || !agreeTerms}
-            onClick={() => setShowTerms(false)}
+            onClick={confirmTOS}
           >
             {t('confirm')}
           </Button>
