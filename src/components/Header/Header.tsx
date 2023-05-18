@@ -129,7 +129,7 @@ const Header: React.FC = () => {
       text: 'Perps',
       id: 'perps-page-link',
       isExternal: true,
-      target: '_blank',
+      target: '_self',
       externalLink: process?.env?.REACT_APP_PERPS_URL || '',
       isNew: true,
     });
