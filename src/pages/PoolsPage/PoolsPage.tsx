@@ -56,27 +56,14 @@ const PoolsPage: React.FC = () => {
         </Grid>
       </Grid>
       {isMobile ? (
-        <Box className='flex justify-center' mt={2}>
-          <div
-            className='_0cbf1c3d417e250a'
-            data-zone='568de4b313b74ec694986be82e600aa6'
-            style={{
-              width: 320,
-              height: 50,
-              display: 'inline-block',
-              margin: '0 auto',
-            }}
-          />
-        </Box>
-      ) : (
         <>
           <Box className='flex justify-center' mt={2}>
             <div
               className='_0cbf1c3d417e250a'
-              data-zone='5545e36b39a24be28cb2ca0095bb4ce1'
+              data-placement='0d0cfcd486a34feaa39ee2bf22c383ce'
               style={{
-                width: 728,
-                height: 90,
+                width: 320,
+                height: 50,
                 display: 'inline-block',
                 margin: '0 auto',
               }}
@@ -85,16 +72,29 @@ const PoolsPage: React.FC = () => {
           <Box className='flex justify-center' mt={2}>
             <div
               className='_0cbf1c3d417e250a'
-              data-zone='906ff59e07f044ecb8fbf6f8237e1d2e'
+              data-placement='8ded245cf3b74591963cc80217ffe4c0'
               style={{
-                width: 970,
-                height: 90,
+                width: 320,
+                height: 100,
                 display: 'inline-block',
                 margin: '0 auto',
               }}
             />
           </Box>
         </>
+      ) : (
+        <Box className='flex justify-center' mt={2}>
+          <div
+            className='_0cbf1c3d417e250a'
+            data-placement='b694dc6256a744bdb31467ccec38def3'
+            style={{
+              width: 970,
+              height: 90,
+              display: 'inline-block',
+              margin: '0 auto',
+            }}
+          />
+        </Box>
       )}
     </Box>
   );
