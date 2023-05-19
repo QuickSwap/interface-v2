@@ -17,11 +17,6 @@ import {
   trustWalletConnection,
   walletConnectConnection,
 } from 'connectors';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from 'state';
-// @ts-ignore
-import transakSDK from '@transak/transak-sdk';
-import { addPopup } from 'state/application/actions';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
 import { useArgentWalletDetectorContract } from './useContract';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
@@ -61,67 +56,6 @@ export function useIsArgentWallet(): boolean {
     NEVER_RELOAD,
   );
   return call?.result?.[0] ?? false;
-}
-
-export function useInitTransak() {
-  const dispatch = useDispatch<AppDispatch>();
-  const initTransak = (account: any, mobileWindowSize: boolean) => {
-    const transak = new transakSDK({
-      apiKey: process.env.REACT_APP_TRANSAK_KEY, // Your API Key
-      environment: 'PRODUCTION', // STAGING/PRODUCTION
-      defaultCryptoCurrency: 'MATIC',
-      walletAddress: account, // Your customer's wallet address
-      themeColor: '2891f9', // App theme color
-      redirectURL: 'window.location.origin',
-      hostURL: window.location.origin,
-      widgetHeight: mobileWindowSize ? '450px' : '600px',
-      widgetWidth: mobileWindowSize ? '360px' : '450px',
-      networks: 'matic',
-    });
-
-    transak.init();
-
-    // To get all the events
-    transak.on(transak.TRANSAK_ORDER_FAILED, (data: any) => {
-      dispatch(
-        addPopup({
-          key: 'abc',
-          content: {
-            txn: { hash: '', summary: 'Buy order failed', success: false },
-          },
-        }),
-      );
-      console.log(data);
-    });
-
-    // This will trigger when the user marks payment is made.
-    transak.on(transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, (orderData: any) => {
-      dispatch(
-        addPopup({
-          key: 'abc',
-          content: {
-            txn: {
-              hash: '',
-              summary:
-                'Buy ' +
-                orderData.status.cryptoAmount +
-                ' ' +
-                orderData.status.cryptocurrency +
-                ' for ' +
-                orderData.status.fiatAmount +
-                ' ' +
-                orderData.status.fiatCurrency,
-              success: true,
-            },
-          },
-        }),
-      );
-      console.log(orderData);
-      transak.close();
-    });
-  };
-
-  return { initTransak };
 }
 
 export function useGetConnection() {
