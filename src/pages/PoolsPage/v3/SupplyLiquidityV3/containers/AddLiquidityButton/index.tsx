@@ -1,25 +1,32 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import {
+  useGammaUNIProxyContract,
+  useV3NFTPositionManagerContract,
+  useWETHContract,
+} from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useActiveWeb3React } from 'hooks';
 import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
 import { Percent, Currency } from '@uniswap/sdk-core';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
-import { GAS_PRICE_MULTIPLIER } from 'hooks/useGasPrice';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { IDerivedMintInfo, useAddLiquidityTxHash } from 'state/mint/v3/hooks';
+import {
+  IDerivedMintInfo,
+  useActivePreset,
+  useAddLiquidityTxHash,
+} from 'state/mint/v3/hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
-import { JSBI } from '@uniswap/sdk';
+import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
-import { calculateGasMarginV3 } from 'utils';
+import { calculateGasMargin, calculateGasMarginV3 } from 'utils';
 import { Button, Box } from '@material-ui/core';
 import {
   ConfirmationModalContent,
@@ -32,6 +39,10 @@ import './index.scss';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { useInverter } from 'hooks/v3/useInverter';
+import { GammaPairs, GlobalConst } from 'constants/index';
+import { useTranslation } from 'react-i18next';
+import { useCurrencyBalance } from 'state/wallet/hooks';
+import { formatUnits } from 'ethers/lib/utils';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -51,6 +62,7 @@ export function AddLiquidityButton({
   title,
   setRejected,
 }: IAddLiquidityButton) {
+  const { t } = useTranslation();
   const { chainId, library, account } = useActiveWeb3React();
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
@@ -59,8 +71,11 @@ export function AddLiquidityButton({
     string | null
   >(null);
   const [manuallyInverted, setManuallyInverted] = useState(false);
+  const preset = useActivePreset();
 
   const positionManager = useV3NFTPositionManagerContract();
+  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+  const wethContract = useWETHContract();
 
   const deadline = useTransactionDeadline();
 
@@ -77,23 +92,97 @@ export function AddLiquidityButton({
     return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
   }, [allowedSlippage]);
 
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
-
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
 
+  const baseCurrencyAddress =
+    baseCurrency && baseCurrency.wrapped
+      ? baseCurrency.wrapped.address.toLowerCase()
+      : '';
+  const quoteCurrencyAddress =
+    quoteCurrency && quoteCurrency.wrapped
+      ? quoteCurrency.wrapped.address.toLowerCase()
+      : '';
+  const gammaPair = chainId
+    ? GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
+      GammaPairs[chainId][quoteCurrencyAddress + '-' + baseCurrencyAddress]
+    : [];
+  const gammaPairAddress =
+    gammaPair && gammaPair.length > 0
+      ? gammaPair.find((pair) => pair.type === preset)?.address
+      : undefined;
+  const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A];
+  const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B];
+  const wmaticBalance = useCurrencyBalance(
+    account ?? undefined,
+    chainId ? WETH[chainId] : undefined,
+  );
+
+  const [wrappingETH, setWrappingETH] = useState(false);
+  const amountToWrap = useMemo(() => {
+    if (
+      !baseCurrency ||
+      !quoteCurrency ||
+      !amountA ||
+      !amountB ||
+      !chainId ||
+      mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+    )
+      return;
+    if (
+      baseCurrency.isNative ||
+      baseCurrency.wrapped.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase()
+    ) {
+      if (
+        wmaticBalance &&
+        JSBI.greaterThan(amountA.numerator, wmaticBalance.numerator)
+      ) {
+        return JSBI.subtract(amountA.numerator, wmaticBalance.numerator);
+      }
+      return;
+    } else if (
+      quoteCurrency.isNative ||
+      quoteCurrency.wrapped.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase()
+    ) {
+      if (
+        wmaticBalance &&
+        JSBI.greaterThan(amountB.numerator, wmaticBalance.numerator)
+      ) {
+        return JSBI.subtract(amountB.numerator, wmaticBalance.numerator);
+      }
+      return;
+    }
+    return;
+  }, [
+    amountA,
+    amountB,
+    baseCurrency,
+    chainId,
+    mintInfo.liquidityRangeType,
+    quoteCurrency,
+    wmaticBalance,
+  ]);
+
   const [approvalA] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A],
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? gammaPairAddress
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
   const [approvalB] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_B],
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? gammaPairAddress
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
 
   const isReady = useMemo(() => {
@@ -107,7 +196,8 @@ export function AddLiquidityButton({
         !mintInfo.errorMessage &&
         !mintInfo.invalidRange &&
         !txHash &&
-        !isNetworkFailed,
+        !isNetworkFailed &&
+        (amountToWrap ? !wrappingETH : true),
     );
   }, [
     mintInfo.depositADisabled,
@@ -118,6 +208,8 @@ export function AddLiquidityButton({
     approvalB,
     txHash,
     isNetworkFailed,
+    amountToWrap,
+    wrappingETH,
   ]);
 
   const onAddLiquidity = () => {
@@ -136,109 +228,236 @@ export function AddLiquidityButton({
     dispatch(setAddLiquidityTxHash({ txHash: '' }));
   }, [dispatch]);
 
+  async function onWrapMatic() {
+    if (!chainId || !library || !account || !wethContract || !amountToWrap)
+      return;
+
+    setWrappingETH(true);
+    try {
+      const wrapEstimateGas = await wethContract.estimateGas.deposit({
+        value: `0x${amountToWrap.toString(16)}`,
+      });
+      const wrapResponse: TransactionResponse = await wethContract.deposit({
+        gasLimit: calculateGasMargin(wrapEstimateGas),
+        value: `0x${amountToWrap.toString(16)}`,
+      });
+      setAttemptingTxn(false);
+      setTxPending(true);
+      const summary = `Wrap ${formatUnits(
+        amountToWrap.toString(),
+        18,
+      )} ETH to WETH`;
+      addTransaction(wrapResponse, {
+        summary,
+      });
+      const receipt = await wrapResponse.wait();
+      finalizedTransaction(receipt, {
+        summary,
+      });
+      setWrappingETH(false);
+    } catch (e) {
+      console.error(e);
+      setWrappingETH(false);
+    }
+  }
+
   async function onAdd() {
     if (!chainId || !library || !account) return;
 
-    if (!positionManager || !baseCurrency || !quoteCurrency) {
+    if (!baseCurrency || !quoteCurrency) {
       return;
     }
 
-    if (mintInfo.position && account && deadline) {
-      const useNative = baseCurrency.isNative
-        ? baseCurrency
-        : quoteCurrency.isNative
-        ? quoteCurrency
-        : undefined;
-
-      const { calldata, value } = NonFunPosMan.addCallParameters(
-        mintInfo.position,
-        {
-          slippageTolerance: allowedSlippagePercent,
-          recipient: account,
-          deadline: deadline.toString(),
-          useNative,
-          createPool: mintInfo.noLiquidity,
-        },
-      );
-
-      const txn: { to: string; data: string; value: string } = {
-        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
-        data: calldata,
-        value,
-      };
+    if (
+      mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+    ) {
+      if (!gammaUNIPROXYContract) return;
+      const baseCurrencyAddress = baseCurrency.wrapped
+        ? baseCurrency.wrapped.address.toLowerCase()
+        : '';
+      const quoteCurrencyAddress = quoteCurrency.wrapped
+        ? quoteCurrency.wrapped.address.toLowerCase()
+        : '';
+      const gammaPair =
+        GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
+        GammaPairs[chainId][quoteCurrencyAddress + '-' + baseCurrencyAddress];
+      const gammaPairAddress =
+        gammaPair && gammaPair.length > 0
+          ? gammaPair.find((pair) => pair.type === preset)?.address
+          : undefined;
+      if (!amountA || !amountB || !gammaPairAddress) return;
 
       setRejected && setRejected(false);
 
       setAttemptingTxn(true);
+      try {
+        const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
+          (GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            ? amountA
+            : amountB
+          ).numerator.toString(),
+          (GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            ? amountB
+            : amountA
+          ).numerator.toString(),
+          account,
+          gammaPairAddress,
+          [0, 0, 0, 0],
+        );
+        const response: TransactionResponse = await gammaUNIPROXYContract.deposit(
+          (GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            ? amountA
+            : amountB
+          ).numerator.toString(),
+          (GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress]
+            ? amountB
+            : amountA
+          ).numerator.toString(),
+          account,
+          gammaPairAddress,
+          [0, 0, 0, 0],
+          {
+            gasLimit: calculateGasMargin(estimatedGas),
+          },
+        );
+        const summary = mintInfo.noLiquidity
+          ? t('createPoolandaddLiquidity', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            })
+          : t('addLiquidityWithTokens', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            });
+        setAttemptingTxn(false);
+        setTxPending(true);
+        addTransaction(response, {
+          summary,
+        });
+        dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary,
+        });
+        setTxPending(false);
+        handleAddLiquidity();
+      } catch (error) {
+        console.error('Failed to send transaction', error);
+        const errorMsg =
+          error && error.message
+            ? error.message.toLowerCase()
+            : error && error.data && error.data.message
+            ? error.data.message.toLowerCase()
+            : '';
+        setAttemptingTxn(false);
+        setTxPending(false);
+        setAddLiquidityErrorMessage(
+          errorMsg.indexOf('improper ratio') > -1
+            ? t('gammaImproperRatio')
+            : errorMsg.indexOf('price change overflow') > -1
+            ? t('gammaPriceOverflow')
+            : error?.code === 4001
+            ? t('txRejected')
+            : t('errorInTx'),
+        );
+      }
+    } else {
+      if (mintInfo.position && account && deadline) {
+        if (!positionManager) return;
+        const useNative = baseCurrency.isNative
+          ? baseCurrency
+          : quoteCurrency.isNative
+          ? quoteCurrency
+          : undefined;
 
-      library
-        .getSigner()
-        .estimateGas(txn)
-        .then((estimate) => {
-          const newTxn = {
-            ...txn,
-            gasLimit: calculateGasMarginV3(chainId, estimate),
-            gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
-          };
+        const { calldata, value } = NonFunPosMan.addCallParameters(
+          mintInfo.position,
+          {
+            slippageTolerance: allowedSlippagePercent,
+            recipient: account,
+            deadline: deadline.toString(),
+            useNative,
+            createPool: mintInfo.noLiquidity,
+          },
+        );
 
-          return library
-            .getSigner()
-            .sendTransaction(newTxn)
-            .then(async (response: TransactionResponse) => {
-              setAttemptingTxn(false);
-              setTxPending(true);
-              const summary = mintInfo.noLiquidity
-                ? `Create pool and add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`
-                : `Add ${baseCurrency?.symbol}/${quoteCurrency?.symbol} liquidity`;
-              addTransaction(response, {
-                summary,
-              });
+        const txn: { to: string; data: string; value: string } = {
+          to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+          data: calldata,
+          value,
+        };
 
-              dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+        setRejected && setRejected(false);
 
-              try {
-                const receipt = await response.wait();
-                finalizedTransaction(receipt, {
+        setAttemptingTxn(true);
+
+        library
+          .getSigner()
+          .estimateGas(txn)
+          .then((estimate) => {
+            const newTxn = {
+              ...txn,
+              gasLimit: calculateGasMarginV3(chainId, estimate),
+            };
+
+            return library
+              .getSigner()
+              .sendTransaction(newTxn)
+              .then(async (response: TransactionResponse) => {
+                setAttemptingTxn(false);
+                setTxPending(true);
+                const summary = mintInfo.noLiquidity
+                  ? t('createPoolandaddLiquidity', {
+                      symbolA: baseCurrency?.symbol,
+                      symbolB: quoteCurrency?.symbol,
+                    })
+                  : t('addLiquidityWithTokens', {
+                      symbolA: baseCurrency?.symbol,
+                      symbolB: quoteCurrency?.symbol,
+                    });
+                addTransaction(response, {
                   summary,
                 });
-                setTxPending(false);
-                handleAddLiquidity();
-              } catch (error) {
-                console.error('Failed to send transaction', error);
-                setTxPending(false);
+
+                dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+
+                try {
+                  const receipt = await response.wait();
+                  finalizedTransaction(receipt, {
+                    summary,
+                  });
+                  setTxPending(false);
+                  handleAddLiquidity();
+                } catch (error) {
+                  console.error('Failed to send transaction', error);
+                  setTxPending(false);
+                  setAddLiquidityErrorMessage(
+                    error?.code === 4001 ? t('txRejected') : t('errorInTx'),
+                  );
+                }
+              })
+              .catch((err) => {
+                console.error('Failed to send transaction', err);
+                setAttemptingTxn(false);
                 setAddLiquidityErrorMessage(
-                  error?.code === 4001
-                    ? 'Transaction Rejected.'
-                    : 'There is an error in the transaction.',
+                  err?.code === 4001 ? t('txRejected') : t('errorInTx'),
                 );
-              }
-            })
-            .catch((err) => {
-              console.error('Failed to send transaction', err);
-              setAttemptingTxn(false);
-              setAddLiquidityErrorMessage(
-                err?.code === 4001
-                  ? 'Transaction Rejected.'
-                  : 'There is an error in the transaction.',
-              );
-            });
-        })
-        .catch((error) => {
-          console.error('Failed to send transaction', error);
-          // we only care if the error is something _other_ than the user rejected the tx
-          setRejected && setRejected(true);
-          setAttemptingTxn(false);
-          setAddLiquidityErrorMessage(
-            error?.code === 4001
-              ? 'Transaction Rejected.'
-              : 'There is an error in the transaction.',
-          );
-          if (error?.code !== 4001) {
-            console.error(error);
-          }
-        });
-    } else {
-      return;
+              });
+          })
+          .catch((error) => {
+            console.error('Failed to send transaction', error);
+            // we only care if the error is something _other_ than the user rejected the tx
+            setRejected && setRejected(true);
+            setAttemptingTxn(false);
+            setAddLiquidityErrorMessage(
+              error?.code === 4001 ? t('txRejected') : t('errorInTx'),
+            );
+            if (error?.code !== 4001) {
+              console.error(error);
+            }
+          });
+      }
     }
   }
 
@@ -287,7 +506,7 @@ export function AddLiquidityButton({
   const modalHeader = () => {
     return (
       <Box>
-        <Box mt={3} className='flex justify-between items-center'>
+        <Box mt={3} className='flex items-center justify-between'>
           <Box className='flex items-center'>
             <Box className='flex' mr={1}>
               <DoubleCurrencyLogo
@@ -332,8 +551,8 @@ export function AddLiquidityButton({
           </Box>
         </Box>
         <Box mt={3}>
-          <Box className='flex justify-between items-center'>
-            <p>Selected Range</p>
+          <Box className='flex items-center justify-between'>
+            <p>{t('selectedRange')}</p>
             {currencyBase && currencyQuote && (
               <RateToggle
                 currencyA={currencyBase}
@@ -349,14 +568,15 @@ export function AddLiquidityButton({
               className='v3-supply-liquidity-price-wrapper'
               width={priceUpper ? '49%' : '100%'}
             >
-              <p>Min Price</p>
+              <p>{t('minPrice')}</p>
               <h6>{priceLower.toSignificant()}</h6>
               <p>
-                {currencyQuote?.symbol} per {currencyBase?.symbol}
+                {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
               </p>
               <p>
-                Your position will be 100% Composed of {currencyBase?.symbol} at
-                this price
+                {t('positionComposedAtThisPrice', {
+                  symbol: currencyBase?.symbol,
+                })}
               </p>
             </Box>
           )}
@@ -365,41 +585,43 @@ export function AddLiquidityButton({
               className='v3-supply-liquidity-price-wrapper'
               width={priceLower ? '49%' : '100%'}
             >
-              <p>Min Price</p>
+              <p>{t('minPrice')}</p>
               <h6>{priceUpper.toSignificant()}</h6>
               <p>
-                {currencyQuote?.symbol} per {currencyBase?.symbol}
+                {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
               </p>
               <p>
-                Your position will be 100% Composed of {currencyQuote?.symbol}{' '}
-                at this price
+                {t('positionComposedAtThisPrice', {
+                  symbol: currencyQuote?.symbol,
+                })}
               </p>
             </Box>
           )}
         </Box>
         {currentPrice && (
           <Box mt={2} className='v3-supply-liquidity-price-wrapper'>
-            <p>Current Price</p>
+            <p>{t('currentPrice')}</p>
             <h6>{currentPrice}</h6>
             <p>
-              {currencyQuote?.symbol} per {currencyBase?.symbol}
+              {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
             </p>
           </Box>
         )}
         <Box mt={2}>
           <Button className='v3-supply-liquidity-button' onClick={onAdd}>
-            Confirm
+            {t('confirm')}
           </Button>
         </Box>
       </Box>
     );
   };
 
-  const pendingText = `Adding ${mintInfo.parsedAmounts[
-    Field.CURRENCY_A
-  ]?.toSignificant()} ${baseCurrency?.symbol} and ${mintInfo.parsedAmounts[
-    Field.CURRENCY_B
-  ]?.toSignificant()} ${quoteCurrency?.symbol} liquidity`;
+  const pendingText = t('addingLiquidityTokens', {
+    amountA: mintInfo.parsedAmounts[Field.CURRENCY_A]?.toSignificant(),
+    symbolA: baseCurrency?.symbol,
+    amountB: mintInfo.parsedAmounts[Field.CURRENCY_B]?.toSignificant(),
+    symbolB: quoteCurrency?.symbol,
+  });
 
   return (
     <>
@@ -418,7 +640,7 @@ export function AddLiquidityButton({
               />
             ) : (
               <ConfirmationModalContent
-                title={'Supplying Liquidity'}
+                title={t('supplyingliquidity')}
                 onDismiss={handleDismissConfirmation}
                 content={modalHeader}
               />
@@ -427,17 +649,21 @@ export function AddLiquidityButton({
           pendingText={pendingText}
           modalContent={
             txPending
-              ? 'Submitted Adding Liquidity'
-              : 'Liquidity Added successfully'
+              ? t('submittedAddingLiquidity')
+              : t('liquidityAddedSuccessfully')
           }
         />
       )}
       <Button
         className='v3-supply-liquidity-button'
         disabled={!isReady}
-        onClick={onAddLiquidity}
+        onClick={amountToWrap ? onWrapMatic : onAddLiquidity}
       >
-        {title}
+        {amountToWrap
+          ? wrappingETH
+            ? t('wrappingMATIC', { symbol: ETHER[chainId].symbol })
+            : t('wrapMATIC', { symbol: ETHER[chainId].symbol })
+          : title}
       </Button>
     </>
   );

@@ -1,14 +1,7 @@
 import React from 'react';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
-import styled from 'styled-components/macro';
 import { Error } from '@material-ui/icons';
-
-const ActiveDot = styled.span`
-  background-color: ${({ theme }) => theme.success};
-  border-radius: 50%;
-  height: 8px;
-  width: 8px;
-`;
+import { useTranslation } from 'react-i18next';
 
 interface RangeBadgeProps {
   removed: boolean | undefined;
@@ -21,40 +14,34 @@ export default function RangeBadge({
   inRange,
   withTooltip = true,
 }: RangeBadgeProps) {
+  const { t } = useTranslation();
   return (
     <>
       {removed ? (
         <Badge
-          tooltip={
-            withTooltip
-              ? 'Your position has 0 liquidity, and is not earning fees.'
-              : ''
-          }
+          tooltip={withTooltip ? t('v3PositionNoLiquidity') : ''}
           variant={BadgeVariant.WARNING}
           icon={<Error width={14} height={14} />}
-          text='Closed'
+          text={t('closed')}
         />
       ) : inRange ? (
         <Badge
-          tooltip={
-            withTooltip
-              ? 'The price of this pool is within your selected range. Your position is currently earning fees.'
-              : ''
-          }
+          tooltip={withTooltip ? t('v3PoolWithinSelectedRange') : ''}
           variant={BadgeVariant.POSITIVE}
-          icon={<ActiveDot />}
-          text='In range'
+          icon={
+            <div
+              className='bg-success'
+              style={{ width: 8, height: 8, borderRadius: 4 }}
+            />
+          }
+          text={t('inrange')}
         />
       ) : (
         <Badge
-          tooltip={
-            withTooltip
-              ? 'The price of this pool is outside of your selected range. Your position is not currently earning fees.'
-              : ''
-          }
+          tooltip={withTooltip ? t('v3PoolOutsideSelectedRange') : ''}
           variant={BadgeVariant.WARNING}
           icon={<Error width={14} height={14} />}
-          text='Out of range'
+          text={t('outrange')}
         />
       )}
     </>

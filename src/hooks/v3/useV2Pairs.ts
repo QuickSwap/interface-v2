@@ -6,21 +6,16 @@ import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { computePairAddress, Pair } from 'utils/v3/computePairAddress';
 import {
-  EXCHANGE_FACTORY_ADDRESS_MAPS,
-  EXCHANGE_PAIR_INIT_HASH_MAPS,
   V2Exchanges,
   V2_FACTORY_ADDRESSES,
+  V3_BASES_TO_TRACK_LIQUIDITY_FOR,
+  V3_PINNED_PAIRS,
 } from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
 import flatMap from 'lodash.flatmap';
-import {
-  BASES_TO_TRACK_LIQUIDITY_FOR,
-  PINNED_PAIRS,
-} from 'constants/v3/routing';
 import { useAppSelector } from 'state';
 import { useAllTokens } from './Tokens';
 import { SerializedToken } from 'state/user/actions';
-// import { Pair } from "@uniswap/v2-sdk"
 
 const PAIR_INTERFACE = new Interface(IUniswapV2PairABI.abi);
 
@@ -127,7 +122,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
 
   // pinned pairs
   const pinnedPairs = useMemo(
-    () => (chainId ? PINNED_PAIRS[chainId] ?? [] : []),
+    () => (chainId ? V3_PINNED_PAIRS[chainId] ?? [] : []),
     [chainId],
   );
 
@@ -140,7 +135,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
             // for each token on the current chain,
             return (
               // loop though all bases on the current chain
-              (BASES_TO_TRACK_LIQUIDITY_FOR[chainId] ?? [])
+              (V3_BASES_TO_TRACK_LIQUIDITY_FOR[chainId] ?? [])
                 // to construct pairs of the given token with each base
                 .map((base) => {
                   if (base.address === token.address) {
@@ -181,7 +176,6 @@ export function useTrackedTokenPairs(): [Token, Token][] {
     // dedupes pairs of tokens in the combined list
     const keyed = combinedList.reduce<{ [key: string]: [Token, Token] }>(
       (memo, [tokenA, tokenB]) => {
-        // console.log(tokenA, tokenB, 'kekeke')
         const sorted = tokenA.sortsBefore(tokenB);
         const key = sorted
           ? `${tokenA.address}:${tokenB.address}`

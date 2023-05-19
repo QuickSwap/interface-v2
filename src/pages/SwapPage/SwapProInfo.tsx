@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Divider } from '@material-ui/core';
 import { SwapHoriz } from '@material-ui/icons';
-import { Currency, Token } from '@uniswap/sdk';
+import { ChainId, Currency, Token } from '@uniswap/sdk';
 import { CurrencyLogo } from 'components';
 import { getTokenInfo, formatNumber } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';
 import { useTranslation } from 'react-i18next';
-import { useEthPrice } from 'state/application/hooks';
+import { useEthPrice, useMaticPrice } from 'state/application/hooks';
+import { useActiveWeb3React } from 'hooks';
+import { getTokenInfoV3 } from 'utils/v3-graph';
 
 const SwapProInfo: React.FC<{
   token1?: Token;
   token2?: Token;
   transactions?: any[];
-}> = ({ token1, token2, transactions }) => {
+  showHeading?: boolean;
+}> = ({ token1, token2, transactions, showHeading = true }) => {
   const { t } = useTranslation();
   const [token1Data, setToken1Data] = useState<any>(null);
   const [token2Data, setToken2Data] = useState<any>(null);
@@ -23,6 +26,9 @@ const SwapProInfo: React.FC<{
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
   const currency2 = token2 ? unwrappedToken(token2) : undefined;
   const { ethPrice } = useEthPrice();
+  const { maticPrice } = useMaticPrice();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   useEffect(() => {
     (async () => {
@@ -32,9 +38,26 @@ const SwapProInfo: React.FC<{
             ethPrice.price,
             ethPrice.oneDayPrice,
             token1Address,
+            chainIdToUse,
           );
-          if (tokenInfo) {
-            setToken1Data(tokenInfo[0]);
+          const token =
+            tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
+          if (token && token.priceUSD) {
+            setToken1Data(token);
+          } else if (maticPrice.price && maticPrice.oneDayPrice) {
+            const tokenInfoV3 = await getTokenInfoV3(
+              maticPrice.price,
+              maticPrice.oneDayPrice,
+              token1Address.toLowerCase(),
+              chainIdToUse,
+            );
+            const tokenV3 =
+              tokenInfoV3 && tokenInfoV3.length > 0
+                ? tokenInfoV3[0]
+                : tokenInfoV3;
+            if (tokenV3) {
+              setToken1Data(tokenV3);
+            }
           }
         }
         if (token2Address) {
@@ -42,14 +65,39 @@ const SwapProInfo: React.FC<{
             ethPrice.price,
             ethPrice.oneDayPrice,
             token2Address,
+            chainIdToUse,
           );
-          if (tokenInfo) {
-            setToken2Data(tokenInfo[0]);
+          const token =
+            tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
+          if (token && token.priceUSD) {
+            setToken2Data(token);
+          } else if (maticPrice.price && maticPrice.oneDayPrice) {
+            const tokenInfoV3 = await getTokenInfoV3(
+              maticPrice.price,
+              maticPrice.oneDayPrice,
+              token2Address.toLowerCase(),
+              chainIdToUse,
+            );
+            const tokenV3 =
+              tokenInfoV3 && tokenInfoV3.length > 0
+                ? tokenInfoV3[0]
+                : tokenInfoV3;
+            if (tokenV3) {
+              setToken2Data(tokenV3);
+            }
           }
         }
       }
     })();
-  }, [token1Address, token2Address, ethPrice.price, ethPrice.oneDayPrice]);
+  }, [
+    token1Address,
+    token2Address,
+    ethPrice.price,
+    ethPrice.oneDayPrice,
+    chainIdToUse,
+    maticPrice.price,
+    maticPrice.oneDayPrice,
+  ]);
 
   const TokenInfo: React.FC<{ currency: Currency; tokenData: any }> = ({
     currency,
@@ -90,10 +138,14 @@ const SwapProInfo: React.FC<{
 
   return (
     <>
-      <Box p={1}>
-        <p className='text-uppercase'>{t('info')}:</p>
-      </Box>
-      <Divider />
+      {showHeading && (
+        <Box>
+          <Box p={1}>
+            <p className='text-uppercase'>{t('info')}:</p>
+          </Box>
+          <Divider />
+        </Box>
+      )}
       {currency1 && <TokenInfo currency={currency1} tokenData={token1Data} />}
       {currency2 && <TokenInfo currency={currency2} tokenData={token2Data} />}
       {currency1 && currency2 && (

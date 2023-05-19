@@ -43,6 +43,18 @@ export const FETCH_TOKEN = () => gql`
       symbol
       name
       decimals
+      derivedMatic
+    }
+  }
+`;
+
+export const FETCH_TOKEN_FARM = () => gql`
+  query fetchToken($tokenId: ID) {
+    tokens(where: { id: $tokenId }) {
+      id
+      symbol
+      name
+      decimals
     }
   }
 `;
@@ -656,7 +668,7 @@ export const FULL_POSITIONS = (
 
 export const INFINITE_EVENTS = gql`
   query infiniteFarms {
-    eternalFarmings(where: { isDetached: false }) {
+    eternalFarmings {
       id
       rewardToken
       bonusRewardToken
@@ -675,6 +687,7 @@ export const INFINITE_EVENTS = gql`
       tier3Multiplier
       multiplierToken
       minRangeLength
+      isDetached
     }
   }
 `;

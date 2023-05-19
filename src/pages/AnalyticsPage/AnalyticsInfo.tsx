@@ -3,7 +3,7 @@ import { Box } from '@material-ui/core';
 import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useIsV2 } from 'state/application/hooks';
-import { getFormattedPrice, getPriceClass } from 'utils';
+import { getFormattedPercent, getPriceClass } from 'utils';
 
 interface AnalyticsInfoProps {
   data: any;
@@ -83,9 +83,9 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
             >
               <small>{`${
                 item.percentChange
-                  ? getFormattedPrice(Number(item.percentChange))
-                  : '~'
-              }%`}</small>
+                  ? getFormattedPercent(Number(item.percentChange))
+                  : '~%'
+              }`}</small>
             </Box>
           ) : null}
         </Box>

@@ -4,46 +4,92 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
 import { useIsV2 } from 'state/application/hooks';
+import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
+import { useIsAnalyticsLoaded } from 'state/analytics/hooks';
+import { useAnalyticsVersion } from 'hooks';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
-  const version = params ? params.version : 'v3';
+  const isAnalyticsPage = history.location.pathname.includes('/analytics');
+  const analyticsVersion = useAnalyticsVersion();
+  const version =
+    params && params.version
+      ? params.version
+      : isAnalyticsPage
+      ? analyticsVersion
+      : 'v3';
+
+  const analyticsLoaded = useIsAnalyticsLoaded();
+  const toggleDisabled = isAnalyticsPage && !analyticsLoaded;
 
   useEffect(() => {
     updateIsV2(version === 'v2');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
 
+  const redirectWithVersion = (version: string) => {
+    const versionParam = params ? params.version : undefined;
+    const currencyIdAParam = params ? params.currencyIdA : undefined;
+    const currencyIdBParam = params ? params.currencyIdB : undefined;
+    const redirectPathName = versionParam
+      ? history.location.pathname.replace('/' + versionParam, `/${version}`)
+      : history.location.pathname +
+        (history.location.pathname.includes('/add')
+          ? (currencyIdAParam ? '' : `/ETH`) +
+            (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
+          : '') +
+        `${history.location.pathname.endsWith('/') ? '' : '/'}${version}`;
+    history.push(
+      redirectPathName +
+        (history.location.pathname.includes('/pools')
+          ? history.location.search
+          : ''),
+    );
+  };
+
   return (
-    <Box className='version-toggle-container'>
+    <Box
+      className={`version-toggle-container${
+        toggleDisabled ? ' version-toggle-disabled' : ''
+      }`}
+    >
       <Box
-        className={isV2 ? 'version-toggle-active' : ''}
+        className={isV2 && version !== 'total' ? 'version-toggle-active' : ''}
         onClick={() => {
-          history.push(
-            params && params.version
-              ? history.location.pathname.replace('/' + params.version, '/v2')
-              : history.location.pathname + '/v2',
-          );
+          if (!toggleDisabled) {
+            redirectWithVersion('v2');
+          }
         }}
       >
         <small>{t('V2')}</small>
       </Box>
 
       <Box
-        className={!isV2 ? 'version-toggle-active' : ''}
+        className={!isV2 && version !== 'total' ? 'version-toggle-active' : ''}
         onClick={() => {
-          history.push(
-            params && params.version
-              ? history.location.pathname.replace('/' + params.version, '/v3')
-              : history.location.pathname + '/v3',
-          );
+          if (!toggleDisabled) {
+            redirectWithVersion('v3');
+          }
         }}
       >
         <small>{t('V3')}</small>
       </Box>
+
+      {isAnalyticsPage && (
+        <Box
+          className={version === 'total' ? 'version-toggle-active' : ''}
+          onClick={() => {
+            if (!toggleDisabled) {
+              redirectWithVersion('total');
+            }
+          }}
+        >
+          <small>{t('total')}</small>
+        </Box>
+      )}
     </Box>
   );
 };

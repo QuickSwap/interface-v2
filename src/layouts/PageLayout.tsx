@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
 import { useHistory } from 'react-router-dom';
-import { Header, Footer, BetaWarningBanner, CustomModal } from 'components';
-import Background from './Background';
-import { useIsProMode } from 'state/application/hooks';
+import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
+const Header = lazy(() => import('components/Header'));
+const Footer = lazy(() => import('components/Footer'));
+const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
+const CustomModal = lazy(() => import('components/CustomModal'));
+const Background = lazy(() => import('./Background'));
 
 export interface PageLayoutProps {
   children: any;
@@ -11,38 +15,63 @@ export interface PageLayoutProps {
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
-  const history = useHistory();
-  const { isProMode, updateIsProMode } = useIsProMode();
+  const { chainId, account } = useActiveWeb3React();
+  const isProMode = useIsProMode();
+  const arcxSDK = (window as any).arcx;
   const [openPassModal, setOpenPassModal] = useState(false);
-  const getPageWrapperClassName = () => {
+  const { location } = useHistory();
+  const pageWrapperClassName = useMemo(() => {
     if (isProMode) {
       return '';
+    } else if (location.pathname.includes('/swap')) {
+      return 'pageWrapper-no-max';
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
-  };
+  }, [isProMode, location, name]);
+
+  const intractKey = process.env.REACT_APP_INTRACT_KEY;
   useEffect(() => {
-    const unlisten = history.listen((location) => {
-      updateIsProMode(false);
-    });
-    return function cleanup() {
-      unlisten();
-    };
-  }, [history, updateIsProMode]);
+    if (intractKey) {
+      IntractAttribution(intractKey, {
+        configAllowCookie: true,
+      });
+    }
+  }, [intractKey]);
+
+  useEffect(() => {
+    if (account) {
+      trackCustomWallet(account);
+    }
+  }, [account]);
 
   useEffect(() => {
     if (
       window.location.host !== 'quickswap.exchange' &&
       window.location.host !== 'beta.quickswap.exchange' &&
-      window.location.host !== 'localhost:3000'
+      window.location.host !== 'dogechain.quickswap.exchange' &&
+      window.location.host !== 'localhost:3000' &&
+      window.location.host !== 'testing-orbs.interface-v2-01.pages.dev'
     ) {
       setOpenPassModal(true);
     }
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      if (arcxSDK && account && chainId) {
+        await arcxSDK.connectWallet({ account, chain: chainId });
+      }
+    })();
+  }, [account, chainId, arcxSDK]);
+
   const PasswordModal = () => {
     const [devPass, setDevPass] = useState('');
     const confirmPassword = () => {
-      if (devPass === 'testPass') {
+      if (
+        devPass === 'testPass' ||
+        devPass === 'gammaPass' ||
+        devPass === 'devPass'
+      ) {
         setOpenPassModal(false);
       }
     };
@@ -73,7 +102,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       {showBetaBanner && <BetaWarningBanner />}
       <Header />
       {!isProMode && <Background fallback={false} />}
-      <Box className={getPageWrapperClassName()}>{children}</Box>
+      <Box className={pageWrapperClassName}>{children}</Box>
       <Footer />
     </Box>
   );

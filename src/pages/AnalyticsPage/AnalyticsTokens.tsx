@@ -5,15 +5,12 @@ import {
   useBookmarkTokens,
   useEthPrice,
   useMaticPrice,
-  useIsV2,
 } from 'state/application/hooks';
-import { getTopTokens } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
-import { GlobalConst } from 'constants/index';
-import { getTopTokensV3 } from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
@@ -25,8 +22,8 @@ const AnalyticsTokens: React.FC = () => {
   const { bookmarkTokens } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
-
-  const { isV2 } = useIsV2();
+  const { chainId } = useActiveWeb3React();
+  const version = useAnalyticsVersion();
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -39,38 +36,20 @@ const AnalyticsTokens: React.FC = () => {
   }, [topTokens, bookmarkTokens]);
 
   useEffect(() => {
-    if (isV2 === undefined) return;
-    updateTopTokens(null);
-
+    if (!chainId) return;
     (async () => {
-      if (!isV2) {
-        if (
-          maticPrice.price !== undefined &&
-          maticPrice.oneDayPrice !== undefined
-        ) {
-          const data = await getTopTokensV3(
-            maticPrice.price,
-            maticPrice.oneDayPrice,
-            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-          );
-          if (data) {
-            updateTopTokens(data);
-          }
-        }
-      } else {
-        if (
-          ethPrice.price !== undefined &&
-          ethPrice.oneDayPrice !== undefined
-        ) {
-          const data = await getTopTokens(
-            ethPrice.price,
-            ethPrice.oneDayPrice,
-            GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
-          );
-          if (data) {
-            updateTopTokens(data);
-          }
-        }
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to get top tokens`,
+        );
+      }
+      const data = await res.json();
+      if (data.data) {
+        updateTopTokens(data.data);
       }
     })();
   }, [
@@ -78,14 +57,21 @@ const AnalyticsTokens: React.FC = () => {
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
-    isV2,
+    version,
+    chainId,
   ]);
 
   useEffect(() => {
     if (topTokens) {
       dispatch(setAnalyticsLoaded(true));
+    } else {
+      dispatch(setAnalyticsLoaded(false));
     }
   }, [topTokens, dispatch]);
+
+  useEffect(() => {
+    updateTopTokens(null);
+  }, [version]);
 
   return (
     <Box width='100%' mb={3}>

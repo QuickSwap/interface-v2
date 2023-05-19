@@ -11,6 +11,8 @@ import { Box } from '@material-ui/core';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { format } from 'd3';
 import { Chart } from './Chart';
+import { useTranslation } from 'react-i18next';
+import './index.scss';
 
 const ZOOM_LEVEL: ZoomLevels = {
   initialMin: 0.5,
@@ -46,6 +48,7 @@ export default function LiquidityChartRangeInput({
   interactive,
   priceFormat,
 }: LiquidityChartRangeInputProps) {
+  const { t } = useTranslation();
   const {
     isLoading,
     isUninitialized,
@@ -243,11 +246,11 @@ export default function LiquidityChartRangeInput({
       className='flex justify-center items-center'
     >
       {isUninitialized ? (
-        <p>Your position will appear here.</p>
+        <p>{t('yourPositionAppearHere')}.</p>
       ) : isLoading ? (
-        <p>Loading...</p>
+        <p>{t('loading')}...</p>
       ) : isError ? (
-        <p>Liquidity data not available.</p>
+        <p>{t('liquidityDataNotAvailable')}.</p>
       ) : !formattedData || formattedData.length === 0 || !price ? (
         <Chart
           data={{ series: mockData, current: mockPrice }}

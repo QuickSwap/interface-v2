@@ -2,8 +2,6 @@ import { ChainId, Pair, Token } from '@uniswap/sdk';
 import flatMap from 'lodash.flatmap';
 import { useCallback, useMemo } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { GlobalData } from 'constants/index';
-
 import { useActiveWeb3React } from 'hooks';
 import { useAllTokens } from 'hooks/Tokens';
 import { AppDispatch, AppState } from 'state';
@@ -19,8 +17,15 @@ import {
   updateUserSlippageTolerance,
   toggleURLWarning,
   updateUserSingleHopOnly,
+  updateUserBonusRouter,
+  updateSlippageManuallySet,
+  updateSelectedWallet,
 } from './actions';
-import { basisPointsToPercent } from 'utils';
+import {
+  V2_BASES_TO_TRACK_LIQUIDITY_FOR,
+  V2_PINNED_PAIRS,
+} from 'constants/v3/addresses';
+import { ConnectionType } from 'connectors';
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -93,6 +98,24 @@ export function useExpertModeManager(): [boolean, () => void] {
   return [expertMode, toggleSetExpertMode];
 }
 
+export function useBonusRouterManager(): [boolean, () => void] {
+  const dispatch = useDispatch<AppDispatch>();
+  const bonusRouterDisabled = useSelector<
+    AppState,
+    AppState['user']['userBonusRouterDisabled']
+  >((state) => {
+    return state.user.userBonusRouterDisabled;
+  });
+
+  const toggleSetBonusRouter = useCallback(() => {
+    dispatch(
+      updateUserBonusRouter({ userBonusRouterDisabled: !bonusRouterDisabled }),
+    );
+  }, [bonusRouterDisabled, dispatch]);
+
+  return [bonusRouterDisabled, toggleSetBonusRouter];
+}
+
 export function useUserSlippageTolerance(): [
   number,
   (slippage: number) => void,
@@ -113,6 +136,28 @@ export function useUserSlippageTolerance(): [
   );
 
   return [userSlippageTolerance, setUserSlippageTolerance];
+}
+
+export function useSlippageManuallySet(): [
+  boolean,
+  (manuallySetSlippage: boolean) => void,
+] {
+  const dispatch = useDispatch<AppDispatch>();
+  const slippageManuallySet = useSelector<
+    AppState,
+    AppState['user']['slippageManuallySet']
+  >((state) => {
+    return state.user.slippageManuallySet;
+  });
+
+  const setSlippageManuallySet = useCallback(
+    (slippageManuallySet: boolean) => {
+      dispatch(updateSlippageManuallySet({ slippageManuallySet }));
+    },
+    [dispatch],
+  );
+
+  return [slippageManuallySet, setSlippageManuallySet];
 }
 
 export function useUserTransactionTTL(): [number, (slippage: number) => void] {
@@ -221,7 +266,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
 
   // pinned pairs
   const pinnedPairs = useMemo(
-    () => (chainId ? GlobalData.pairs.PINNED_PAIRS[chainId] ?? [] : []),
+    () => (chainId ? V2_PINNED_PAIRS[chainId] ?? [] : []),
     [chainId],
   ) as [Token, Token][];
 
@@ -234,7 +279,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
             // for each token on the current chain,
             return (
               // loop though all bases on the current chain
-              (GlobalData.bases.BASES_TO_TRACK_LIQUIDITY_FOR[chainId] ?? [])
+              (V2_BASES_TO_TRACK_LIQUIDITY_FOR[chainId] ?? [])
                 // to construct pairs of the given token with each base
                 .map((base) => {
                   if (base.address === token.address) {
@@ -316,6 +361,23 @@ export function useUserSingleHopOnly(): [
   );
 
   return [singleHopOnly, setSingleHopOnly];
+}
+
+export function useSelectedWallet(): {
+  selectedWallet: ConnectionType | undefined;
+  updateSelectedWallet: (wallet?: ConnectionType) => void;
+} {
+  const selectedWallet = useSelector(
+    (state: AppState) => state.user.selectedWallet,
+  );
+  const dispatch = useDispatch();
+  const _updateSelectedWallet = useCallback(
+    (wallet?: ConnectionType) => {
+      dispatch(updateSelectedWallet({ wallet }));
+    },
+    [dispatch],
+  );
+  return { selectedWallet, updateSelectedWallet: _updateSelectedWallet };
 }
 
 // export function useUserTransactionTTL(): [number, (slippage: number) => void] {

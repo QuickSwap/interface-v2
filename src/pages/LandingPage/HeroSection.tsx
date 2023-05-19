@@ -2,31 +2,41 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { isSupportedNetwork, addMaticToMetamask } from 'utils';
+import { useIsSupportedNetwork } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { useWalletModalToggle } from 'state/application/hooks';
+import {
+  useWalletModalToggle,
+  useNetworkSelectionModalToggle,
+} from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
+import { ChainId } from '@uniswap/sdk';
+import { getConfig } from 'config';
 
-export const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
+const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
   v3GlobalData,
 }) => {
   const history = useHistory();
-  const { account } = useActiveWeb3React();
-  const { ethereum } = window as any;
+  const isSupportedNetwork = useIsSupportedNetwork();
+  const { chainId, account } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const toggleWalletModal = useWalletModalToggle();
+  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const { t } = useTranslation();
+  const config = getConfig(chainIdToUse);
+  const v2 = config['v2'];
+  const v3 = config['v3'];
 
   return (
     <Box className='heroSection'>
       <small className='text-bold'>{t('totalValueLocked')}</small>
-      {globalData && v3GlobalData ? (
+      {(v2 ? globalData : true) && (v3 ? v3GlobalData : true) ? (
         <Box display='flex' pt='5px'>
           <h3>$</h3>
           <h1>
             {(
-              Number(globalData.totalLiquidityUSD) +
-              Number(v3GlobalData.totalLiquidityUSD)
+              (v2 ? Number(globalData.totalLiquidityUSD) : 0) +
+              (v3 ? Number(v3GlobalData.totalLiquidityUSD) : 0)
             ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}
@@ -47,15 +57,15 @@ export const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
             height: '100%',
           }}
           onClick={() => {
-            ethereum && !isSupportedNetwork(ethereum)
-              ? addMaticToMetamask()
+            !isSupportedNetwork
+              ? toggleNetworkSelectionModal()
               : account
               ? history.push('/swap')
               : toggleWalletModal();
           }}
         >
-          {ethereum && !isSupportedNetwork(ethereum)
-            ? t('switchPolygon')
+          {!isSupportedNetwork
+            ? t('switchNetwork')
             : account
             ? t('enterApp')
             : t('connectWallet')}
@@ -64,3 +74,5 @@ export const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
     </Box>
   );
 };
+
+export default HeroSection;

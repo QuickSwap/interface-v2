@@ -1,0 +1,491 @@
+[
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "CustomDeposit",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_deltaScale",
+        "type": "uint256"
+      }
+    ],
+    "name": "DeltaScaleSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_depositDelta",
+        "type": "uint256"
+      }
+    ],
+    "name": "DepositDeltaSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pos",
+        "type": "address"
+      }
+    ],
+    "name": "DepositFreeOverrideToggled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "DepositFreeToggled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pos",
+        "type": "address"
+      }
+    ],
+    "name": "DepositOverrideToggled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pos",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "listed",
+        "type": "address[]"
+      }
+    ],
+    "name": "ListAppended",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pos",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "listed",
+        "type": "address"
+      }
+    ],
+    "name": "ListRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      { "indexed": false, "internalType": "uint8", "name": "", "type": "uint8" }
+    ],
+    "name": "PositionAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pos",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_priceThreshold",
+        "type": "uint256"
+      }
+    ],
+    "name": "PriceThresholdPosSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_priceThreshold",
+        "type": "uint256"
+      }
+    ],
+    "name": "PriceThresholdSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "_twapInterval",
+        "type": "uint32"
+      }
+    ],
+    "name": "TwapIntervalSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pos",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "twapOverride",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "_twapInterval",
+        "type": "uint32"
+      }
+    ],
+    "name": "TwapOverrideSet",
+    "type": "event"
+  },
+  { "anonymous": false, "inputs": [], "name": "TwapToggled", "type": "event" },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pos", "type": "address" },
+      { "internalType": "uint8", "name": "version", "type": "uint8" }
+    ],
+    "name": "addPosition",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pos", "type": "address" },
+      { "internalType": "address[]", "name": "listed", "type": "address[]" }
+    ],
+    "name": "appendList",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pos", "type": "address" },
+      { "internalType": "uint32", "name": "_twapInterval", "type": "uint32" },
+      {
+        "internalType": "uint256",
+        "name": "_priceThreshold",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkPriceChange",
+    "outputs": [
+      { "internalType": "uint256", "name": "price", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pos", "type": "address" },
+      { "internalType": "uint256", "name": "deposit0Max", "type": "uint256" },
+      { "internalType": "uint256", "name": "deposit1Max", "type": "uint256" },
+      { "internalType": "uint256", "name": "maxTotalSupply", "type": "uint256" }
+    ],
+    "name": "customDeposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "deltaScale",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "deposit0", "type": "uint256" },
+      { "internalType": "uint256", "name": "deposit1", "type": "uint256" },
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "address", "name": "pos", "type": "address" },
+      { "internalType": "uint256[4]", "name": "minIn", "type": "uint256[4]" }
+    ],
+    "name": "deposit",
+    "outputs": [
+      { "internalType": "uint256", "name": "shares", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "depositDelta",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "freeDeposit",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pos", "type": "address" },
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "uint256", "name": "_deposit", "type": "uint256" }
+    ],
+    "name": "getDepositAmount",
+    "outputs": [
+      { "internalType": "uint256", "name": "amountStart", "type": "uint256" },
+      { "internalType": "uint256", "name": "amountEnd", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pos", "type": "address" },
+      { "internalType": "uint32", "name": "_twapInterval", "type": "uint32" }
+    ],
+    "name": "getSqrtTwapX96",
+    "outputs": [
+      { "internalType": "uint160", "name": "sqrtPriceX96", "type": "uint160" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "positions",
+    "outputs": [
+      { "internalType": "uint8", "name": "version", "type": "uint8" },
+      { "internalType": "bool", "name": "twapOverride", "type": "bool" },
+      { "internalType": "uint32", "name": "twapInterval", "type": "uint32" },
+      {
+        "internalType": "uint256",
+        "name": "priceThreshold",
+        "type": "uint256"
+      },
+      { "internalType": "bool", "name": "depositOverride", "type": "bool" },
+      { "internalType": "uint256", "name": "deposit0Max", "type": "uint256" },
+      { "internalType": "uint256", "name": "deposit1Max", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "maxTotalSupply",
+        "type": "uint256"
+      },
+      { "internalType": "bool", "name": "freeDeposit", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "priceThreshold",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pos", "type": "address" },
+      { "internalType": "address", "name": "listed", "type": "address" }
+    ],
+    "name": "removeListed",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_deltaScale", "type": "uint256" }
+    ],
+    "name": "setDeltaScale",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_depositDelta", "type": "uint256" }
+    ],
+    "name": "setDepositDelta",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_priceThreshold",
+        "type": "uint256"
+      }
+    ],
+    "name": "setPriceThreshold",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pos", "type": "address" },
+      {
+        "internalType": "uint256",
+        "name": "_priceThreshold",
+        "type": "uint256"
+      }
+    ],
+    "name": "setPriceThresholdPos",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint32", "name": "_twapInterval", "type": "uint32" }
+    ],
+    "name": "setTwapInterval",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pos", "type": "address" },
+      { "internalType": "bool", "name": "twapOverride", "type": "bool" },
+      { "internalType": "uint32", "name": "_twapInterval", "type": "uint32" }
+    ],
+    "name": "setTwapOverride",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "toggleDepositFree",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "pos", "type": "address" }],
+    "name": "toggleDepositFreeOverride",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "pos", "type": "address" }],
+    "name": "toggleDepositOverride",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "toggleTwap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "twapCheck",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "twapInterval",
+    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

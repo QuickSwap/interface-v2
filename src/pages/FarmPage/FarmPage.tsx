@@ -16,74 +16,114 @@ import { ChainId } from '@uniswap/sdk';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import V3Farms from 'pages/FarmPage/V3';
 import { useIsV2 } from 'state/application/hooks';
+import { getConfig } from '../../config/index';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useHistory } from 'react-router-dom';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
+  const history = useHistory();
+  const parsedQuery = useParsedQueryString();
+  const currentTab =
+    parsedQuery && parsedQuery.tab
+      ? (parsedQuery.tab as string)
+      : GlobalConst.v2FarmTab.LPFARM;
   const { t } = useTranslation();
   const [bulkPairs, setBulkPairs] = useState<any>(null);
-  const [farmIndex, setFarmIndex] = useState(
-    GlobalConst.farmIndex.LPFARM_INDEX,
-  );
-  const chainIdOrDefault = chainId ?? ChainId.MATIC;
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const farmAvailable = config['farm']['available'];
+  const v3 = config['v3'];
+  const v2 = config['v2'];
+  const { isV2 } = useIsV2();
+
   const lpFarms = useDefaultFarmList();
-  const cntFarms = useDefaultCNTFarmList(chainIdOrDefault);
+  const cntFarms = useDefaultCNTFarmList(chainIdToUse);
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const OTHER_FARM_LINK = process.env.REACT_APP_OTHER_LP_CREATE_A_FARM_LINK;
 
   const pairLists = useMemo(() => {
-    const stakingPairLists = Object.values(lpFarms[chainIdOrDefault]).map(
+    const stakingPairLists = Object.values(lpFarms[chainIdToUse]).map(
       (item) => item.pair,
     );
-    const dualPairLists = Object.values(dualFarms[chainIdOrDefault]).map(
+    const dualPairLists = Object.values(dualFarms[chainIdToUse]).map(
       (item) => item.pair,
     );
-    const cntPairLists = Object.values(cntFarms[chainIdOrDefault]).map(
+    const cntPairLists = Object.values(cntFarms[chainIdToUse]).map(
       (item) => item.pair,
     );
 
     return stakingPairLists.concat(dualPairLists).concat(cntPairLists);
-  }, [chainIdOrDefault, lpFarms, dualFarms, cntFarms]);
+  }, [chainIdToUse, lpFarms, dualFarms, cntFarms]);
 
   useEffect(() => {
-    getBulkPairData(pairLists).then((data) => setBulkPairs(data));
-  }, [pairLists]);
+    if (!farmAvailable) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [farmAvailable]);
+
+  useEffect(() => {
+    if (isV2) {
+      getBulkPairData(chainIdToUse, pairLists).then((data) =>
+        setBulkPairs(data),
+      );
+    }
+  }, [isV2, pairLists, chainIdToUse]);
+
+  const redirectWithFarmTab = (tab: string) => {
+    const currentPath = history.location.pathname + history.location.search;
+    let redirectPath;
+    if (parsedQuery && parsedQuery.tab) {
+      redirectPath = currentPath.replace(
+        `tab=${parsedQuery.tab}`,
+        `tab=${tab}`,
+      );
+    } else {
+      redirectPath = `${currentPath}${
+        history.location.search === '' ? '?' : '&'
+      }tab=${tab}`;
+    }
+    history.push(redirectPath);
+  };
 
   const farmCategories = [
     {
       text: t('lpMining'),
       onClick: () => {
-        setFarmIndex(GlobalConst.farmIndex.LPFARM_INDEX);
+        redirectWithFarmTab(GlobalConst.v2FarmTab.LPFARM);
       },
-      condition: farmIndex === GlobalConst.farmIndex.LPFARM_INDEX,
+      condition: currentTab === GlobalConst.v2FarmTab.LPFARM,
     },
-    // {
-    //   text: t('otherLPMining'),
-    //   onClick: () => {
-    //     setFarmIndex(GlobalConst.farmIndex.OTHER_LP_INDEX);
-    //   },
-    //   condition: farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX,
-    // },
     {
       text: t('dualMining'),
       onClick: () => {
-        setFarmIndex(GlobalConst.farmIndex.DUALFARM_INDEX);
+        redirectWithFarmTab(GlobalConst.v2FarmTab.DUALFARM);
       },
-      condition: farmIndex === GlobalConst.farmIndex.DUALFARM_INDEX,
+      condition: currentTab === GlobalConst.v2FarmTab.DUALFARM,
+    },
+    {
+      text: t('otherLPMining'),
+      onClick: () => {
+        redirectWithFarmTab(GlobalConst.v2FarmTab.OTHER_LP);
+      },
+      condition: currentTab === GlobalConst.v2FarmTab.OTHER_LP,
     },
   ];
   const helpURL = process.env.REACT_APP_HELP_URL;
-
-  const { isV2 } = useIsV2();
 
   return (
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
           <h4>{t('farm')}</h4>
-          <Box ml={2}>
-            <VersionToggle />
-          </Box>
+          {v2 && v3 && (
+            <Box ml={2}>
+              <VersionToggle />
+            </Box>
+          )}
         </Box>
         {helpURL && (
           <Box
@@ -98,37 +138,48 @@ const FarmPage: React.FC = () => {
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='farms' />
       </Box>
-      {isV2 && (
+      {isV2 && v2 && (
         <>
           {/* Custom switch layer */}
           <Box className='flex flex-wrap justify-between'>
             <CustomSwitch
-              width={300}
+              width={450}
               height={48}
               items={farmCategories}
-              isLarge={true}
+              isLarge={!isMobile}
             />
-            {farmIndex === GlobalConst.farmIndex.OTHER_LP_INDEX && (
-              <Box className='flex'>
-                <Button className='btn-xl'>Create A Farm</Button>
+            {currentTab === GlobalConst.v2FarmTab.OTHER_LP && (
+              <Box
+                className={`flex ${isMobile ? 'mx-auto mt-1 fullWidth' : ''}`}
+              >
+                <a
+                  className={`button ${
+                    isMobile ? 'rounded-md fullWidth' : 'rounded'
+                  }`}
+                  target='_blank'
+                  rel='noreferrer'
+                  href={OTHER_FARM_LINK}
+                >
+                  <p className='text-center fullWidth'>{t('createAFarm')}</p>
+                </a>
               </Box>
             )}
           </Box>
 
           {/* Rewards */}
           <Box my={3}>
-            {farmIndex !== GlobalConst.farmIndex.OTHER_LP_INDEX && (
-              <FarmRewards bulkPairs={bulkPairs} farmIndex={farmIndex} />
+            {currentTab !== GlobalConst.v2FarmTab.OTHER_LP && (
+              <FarmRewards bulkPairs={bulkPairs} />
             )}
           </Box>
 
           {/* Farms List */}
           <Box className='farmsWrapper'>
-            <FarmsList bulkPairs={bulkPairs} farmIndex={farmIndex} />
+            <FarmsList bulkPairs={bulkPairs} />
           </Box>
         </>
       )}
-      {!isV2 && <V3Farms />}
+      {!isV2 && v3 && <V3Farms />}
       {isMobile ? (
         <>
           <Box className='flex justify-center' mt={2}>

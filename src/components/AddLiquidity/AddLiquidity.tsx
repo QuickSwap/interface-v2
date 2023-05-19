@@ -7,13 +7,21 @@ import {
   ConfirmationModalContent,
   DoubleCurrencyLogo,
 } from 'components';
-import { useWalletModalToggle } from 'state/application/hooks';
+import {
+  useNetworkSelectionModalToggle,
+  useWalletModalToggle,
+} from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
-import { Currency, Token, ETHER, TokenAmount } from '@uniswap/sdk';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import {
+  currencyEquals,
+  Token,
+  ETHER,
+  TokenAmount,
+  ChainId,
+} from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -33,10 +41,9 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
 import {
   maxAmountSpend,
-  addMaticToMetamask,
   calculateSlippageAmount,
   calculateGasMargin,
-  isSupportedNetwork,
+  useIsSupportedNetwork,
   formatTokenAmount,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
@@ -44,6 +51,8 @@ import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIc
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
 import { useParams } from 'react-router-dom';
+import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import usePoolsRedirect from 'hooks/usePoolsRedirect';
 
 const AddLiquidity: React.FC<{
   currencyBgClass?: string;
@@ -53,7 +62,10 @@ const AddLiquidity: React.FC<{
     string | null
   >(null);
 
+  const isSupportedNetwork = useIsSupportedNetwork();
   const { account, chainId, library } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = Token.ETHER[chainIdToUse];
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
@@ -67,7 +79,7 @@ const AddLiquidity: React.FC<{
   // queried currency
   const params: any = useParams();
   const parsedQuery = useParsedQueryString();
-  const currency0 = useCurrency(
+  const currency0Id =
     params && params.currencyIdA
       ? params.currencyIdA.toLowerCase() === 'matic' ||
         params.currencyIdA.toLowerCase() === 'eth'
@@ -75,9 +87,8 @@ const AddLiquidity: React.FC<{
         : params.currencyIdA
       : parsedQuery && parsedQuery.currency0
       ? (parsedQuery.currency0 as string)
-      : undefined,
-  );
-  const currency1 = useCurrency(
+      : undefined;
+  const currency1Id =
     params && params.currencyIdB
       ? params.currencyIdB.toLowerCase() === 'matic' ||
         params.currencyIdB.toLowerCase() === 'eth'
@@ -85,8 +96,9 @@ const AddLiquidity: React.FC<{
         : params.currencyIdB
       : parsedQuery && parsedQuery.currency1
       ? (parsedQuery.currency1 as string)
-      : undefined,
-  );
+      : undefined;
+  const currency0 = useCurrency(currency0Id);
+  const currency1 = useCurrency(currency1Id);
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
   const expertMode = useIsExpertMode();
@@ -117,7 +129,7 @@ const AddLiquidity: React.FC<{
     onFieldAInput,
     onFieldBInput,
     onCurrencySelection,
-  } = useMintActionHandlers(noLiquidity);
+  } = useMintActionHandlers(noLiquidity, chainIdToUse);
 
   const maxAmounts: { [field in Field]?: TokenAmount } = [
     Field.CURRENCY_A,
@@ -125,7 +137,7 @@ const AddLiquidity: React.FC<{
   ].reduce((accumulator, field) => {
     return {
       ...accumulator,
-      [field]: maxAmountSpend(currencyBalances[field]),
+      [field]: maxAmountSpend(chainIdToUse, currencyBalances[field]),
     };
   }, {});
 
@@ -138,15 +150,16 @@ const AddLiquidity: React.FC<{
 
   const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
+  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const [approvingA, setApprovingA] = useState(false);
   const [approvingB, setApprovingB] = useState(false);
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_B],
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
 
   const userPoolBalance = useTokenBalance(
@@ -164,35 +177,55 @@ const AddLiquidity: React.FC<{
     };
   }, {});
 
-  const handleCurrencyASelect = useCallback(
-    (currencyA: Currency) => {
-      onCurrencySelection(Field.CURRENCY_A, currencyA);
-    },
-    [onCurrencySelection],
-  );
+  const { redirectWithCurrency, redirectWithSwitch } = usePoolsRedirect();
 
-  const handleCurrencyBSelect = useCallback(
-    (currencyB: Currency) => {
-      onCurrencySelection(Field.CURRENCY_B, currencyB);
+  const handleCurrencyASelect = useCallback(
+    (currencyA: any) => {
+      const isSwichRedirect = currencyEquals(currencyA, ETHER[chainIdToUse])
+        ? currency1Id === 'ETH'
+        : currency1Id &&
+          currencyA &&
+          currencyA.address &&
+          currencyA.address.toLowerCase() === currency1Id.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch(currencyA, true);
+      } else {
+        redirectWithCurrency(currencyA, true);
+      }
     },
-    [onCurrencySelection],
+    [redirectWithCurrency, chainIdToUse, currency1Id, redirectWithSwitch],
   );
 
   useEffect(() => {
     if (currency0) {
       onCurrencySelection(Field.CURRENCY_A, currency0);
-    } else {
-      onCurrencySelection(Field.CURRENCY_A, Token.ETHER);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency0Id]);
+
+  const handleCurrencyBSelect = useCallback(
+    (currencyB: any) => {
+      const isSwichRedirect = currencyEquals(currencyB, ETHER[chainIdToUse])
+        ? currency0Id === 'ETH'
+        : currencyB &&
+          currencyB.address &&
+          currency0Id &&
+          currencyB.address.toLowerCase() === currency0Id.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch(currencyB, false);
+      } else {
+        redirectWithCurrency(currencyB, false);
+      }
+    },
+    [redirectWithCurrency, chainIdToUse, currency0Id, redirectWithSwitch],
+  );
+
+  useEffect(() => {
     if (currency1) {
       onCurrencySelection(Field.CURRENCY_B, currency1);
-    } else {
-      onCurrencySelection(
-        Field.CURRENCY_B,
-        GlobalValue.tokens.COMMON.OLD_QUICK,
-      );
     }
-  }, [onCurrencySelection, currency0, currency1]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency1Id]);
 
   const onAdd = () => {
     setAddLiquidityErrorMessage(null);
@@ -239,10 +272,10 @@ const AddLiquidity: React.FC<{
       args: Array<string | string[] | number>,
       value: BigNumber | null;
     if (
-      currencies[Field.CURRENCY_A] === ETHER ||
-      currencies[Field.CURRENCY_B] === ETHER
+      currencies[Field.CURRENCY_A] === nativeCurrency ||
+      currencies[Field.CURRENCY_B] === nativeCurrency
     ) {
-      const tokenBIsETH = currencies[Field.CURRENCY_B] === ETHER;
+      const tokenBIsETH = currencies[Field.CURRENCY_B] === nativeCurrency;
       estimate = router.estimateGas.addLiquidityETH;
       method = router.addLiquidityETH;
       args = [
@@ -330,8 +363,8 @@ const AddLiquidity: React.FC<{
   };
 
   const connectWallet = () => {
-    if (ethereum && !isSupportedNetwork(ethereum)) {
-      addMaticToMetamask();
+    if (!isSupportedNetwork) {
+      toggleNetworkSelectionModal();
     } else {
       toggleWalletModal();
     }
@@ -348,12 +381,11 @@ const AddLiquidity: React.FC<{
 
   const buttonText = useMemo(() => {
     if (account) {
+      if (!isSupportedNetwork) return t('switchNetwork');
       return error ?? t('supply');
-    } else if (ethereum && !isSupportedNetwork(ethereum)) {
-      return t('switchPolygon');
     }
     return t('connectWallet');
-  }, [account, ethereum, error, t]);
+  }, [account, isSupportedNetwork, t, error]);
 
   const modalHeader = () => {
     return (
@@ -565,11 +597,12 @@ const AddLiquidity: React.FC<{
           fullWidth
           disabled={
             Boolean(account) &&
+            isSupportedNetwork &&
             (Boolean(error) ||
               approvalA !== ApprovalState.APPROVED ||
               approvalB !== ApprovalState.APPROVED)
           }
-          onClick={account ? onAdd : connectWallet}
+          onClick={account && isSupportedNetwork ? onAdd : connectWallet}
         >
           {buttonText}
         </Button>

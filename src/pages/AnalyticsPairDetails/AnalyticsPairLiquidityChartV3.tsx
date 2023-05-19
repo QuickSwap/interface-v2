@@ -1,6 +1,7 @@
 import { JSBI } from '@uniswap/sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
-import { Pool, TickMath } from '@uniswap/v3-sdk';
+import { Pool } from 'v3lib/entities/pool';
+import { TickMath } from 'v3lib/utils/tickMath';
 import { BigNumber } from 'ethers';
 import React, {
   useCallback,
@@ -14,22 +15,28 @@ import { getLiquidityChart } from 'utils/v3-graph';
 import Chart from 'react-apexcharts';
 import { Box } from '@material-ui/core';
 import '../styles/analytics.scss';
+import { useActiveWeb3React } from 'hooks';
+import { Skeleton } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;
   pairAddress: string;
 }> = ({ pairData, pairAddress }) => {
+  const { t } = useTranslation();
   const [liquidityChartData, updateLiquidtyChartData] = useState<any | null>(
     null,
   );
+  const { chainId } = useActiveWeb3React();
 
   useEffect(() => {
-    getLiquidityChart(pairAddress).then((data) => {
-      if (!data.error) {
+    if (!chainId) return;
+    getLiquidityChart(pairAddress, chainId).then((data) => {
+      if (data && !data.error) {
         updateLiquidtyChartData(data);
       }
     });
-  }, [pairData, pairAddress]);
+  }, [pairAddress, chainId]);
 
   const [zoom, setZoom] = useState(5);
 
@@ -59,7 +66,12 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
   }, [formattedAddress0, formattedAddress1, pairData]);
 
   useEffect(() => {
-    if (!pairData || !liquidityChartData || !liquidityChartData.ticksProcessed)
+    if (
+      !pairData ||
+      !liquidityChartData ||
+      !liquidityChartData.ticksProcessed ||
+      !liquidityChartData.ticksProcessed.length
+    )
       return;
 
     async function processTicks() {
@@ -131,14 +143,8 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     }
 
     processTicks();
-  }, [
-    liquidityChartData,
-    pairAddress,
-    pairData,
-    MAX_UINT128,
-    _token0,
-    _token1,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liquidityChartData, pairData, _token0, _token1]);
 
   const formattedData = useMemo(() => {
     if (!processedData) return undefined;
@@ -179,141 +185,149 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
   }, [zoom]);
 
   return (
-    <Box position={'relative'}>
-      <Chart
-        type={'bar'}
-        height={275}
-        series={[
-          {
-            name: 'Liquidty',
-            data: formattedData
-              ? formattedData.map((v) =>
-                  v.activeLiquidity >= 0 ? v.activeLiquidity : 0,
-                )
-              : [],
-          },
-          {
-            name: 'Liquidty 2',
-            data: formattedData
-              ? formattedData.map((v) => (v.isCurrent ? v.activeLiquidity : 0))
-              : [],
-          },
-        ]}
-        options={{
-          chart: {
-            type: 'bar',
-            height: 100,
-            toolbar: {
-              show: false,
-            },
-            animations: {
-              enabled: false,
-            },
-          },
-          legend: {
-            show: false,
-          },
-          fill: {
-            opacity: 1,
-          },
-          plotOptions: {
-            bar: {
-              horizontal: false,
-            },
-          },
-          dataLabels: {
-            enabled: false,
-          },
-          stroke: {
-            show: false,
-          },
-          grid: {
-            show: false,
-          },
-          yaxis: {
-            labels: {
-              show: false,
-            },
-            axisTicks: {
-              show: false,
-            },
-            axisBorder: {
-              show: false,
-            },
-          },
-          xaxis: {
-            axisBorder: {
-              show: true,
-            },
-            axisTicks: {
-              show: false,
-            },
-            labels: {
-              show: false,
-            },
-            categories: formattedData ? formattedData.map((v) => v.price0) : [],
-          },
-          tooltip: {
-            enabled: true,
-            theme: 'dark',
-            fillSeriesColor: false,
-            custom: ({ dataPointIndex }: any) => {
-              return `<div class="areaChartTooltipLiquidity">
-              <small>Tick stats</small>
-              <small>${pairData.token0.symbol} Price: ${
-                formattedData
-                  ? Number(formattedData[dataPointIndex].price0).toLocaleString(
-                      undefined,
-                      {
-                        minimumSignificantDigits: 1,
-                      },
+    <Box position={'relative'} height='100%'>
+      {formattedData ? (
+        <>
+          <Chart
+            type={'bar'}
+            height={275}
+            series={[
+              {
+                name: 'Liquidty',
+                data: formattedData
+                  ? formattedData.map((v) =>
+                      v.activeLiquidity >= 0 ? v.activeLiquidity : 0,
                     )
-                  : '-'
-              } ${pairData.token1.symbol}</small>
-              <small>${pairData.token1.symbol} Price: ${
-                formattedData
-                  ? Number(formattedData[dataPointIndex].price1).toLocaleString(
-                      undefined,
-                      {
-                        minimumSignificantDigits: 1,
-                      },
+                  : [],
+              },
+              {
+                name: 'Liquidty 2',
+                data: formattedData
+                  ? formattedData.map((v) =>
+                      v.isCurrent ? v.activeLiquidity : 0,
                     )
-                  : '-'
-              } ${pairData.token0.symbol}</small>
+                  : [],
+              },
+            ]}
+            options={{
+              chart: {
+                type: 'bar',
+                height: 100,
+                toolbar: {
+                  show: false,
+                },
+                animations: {
+                  enabled: false,
+                },
+              },
+              legend: {
+                show: false,
+              },
+              fill: {
+                opacity: 1,
+              },
+              plotOptions: {
+                bar: {
+                  horizontal: false,
+                },
+              },
+              dataLabels: {
+                enabled: false,
+              },
+              stroke: {
+                show: false,
+              },
+              grid: {
+                show: false,
+              },
+              yaxis: {
+                labels: {
+                  show: false,
+                },
+                axisTicks: {
+                  show: false,
+                },
+                axisBorder: {
+                  show: false,
+                },
+              },
+              xaxis: {
+                axisBorder: {
+                  show: true,
+                },
+                axisTicks: {
+                  show: false,
+                },
+                labels: {
+                  show: false,
+                },
+                categories: formattedData
+                  ? formattedData.map((v) => v.price0)
+                  : [],
+              },
+              tooltip: {
+                enabled: true,
+                theme: 'dark',
+                fillSeriesColor: false,
+                custom: ({ dataPointIndex }: any) => {
+                  return `<div class="areaChartTooltipLiquidity">
+              <small>${t('tickStats')}</small>
+              <small>${pairData.token0.symbol} ${t('price')}: ${
+                    formattedData
+                      ? Number(
+                          formattedData[dataPointIndex].price0,
+                        ).toLocaleString(undefined, {
+                          minimumSignificantDigits: 1,
+                        })
+                      : '-'
+                  } ${pairData.token1.symbol}</small>
+              <small>${pairData.token1.symbol} ${t('price')}: ${
+                    formattedData
+                      ? Number(
+                          formattedData[dataPointIndex].price1,
+                        ).toLocaleString(undefined, {
+                          minimumSignificantDigits: 1,
+                        })
+                      : '-'
+                  } ${pairData.token0.symbol}</small>
               ${
                 activeTickIdx && dataPointIndex > activeTickIdx
-                  ? `<small>${pairData.token0.symbol} Locked: ${
+                  ? `<small>${pairData.token0.symbol} ${t('locked')}: ${
                       formattedData
                         ? formattedData[dataPointIndex].tvlToken0
                         : '-'
                     } ${pairData.token0.symbol}</small>`
-                  : `<small>${pairData.token1.symbol} Locked: ${
+                  : `<small>${pairData.token1.symbol} ${t('locked')}: ${
                       formattedData
                         ? formattedData[dataPointIndex].tvlToken1
                         : '-'
                     } ${pairData.token1.symbol}</small>`
               }
               </div>`;
-            },
-          },
-        }}
-      />
-      <Box className='flex' position={'absolute'} right={16} bottom={0}>
-        <button
-          disabled={zoom === MAX_ZOOM}
-          className='liquidityChartButton'
-          onClick={handleZoomIn}
-        >
-          +
-        </button>
-        <button
-          disabled={zoom === 2}
-          className='liquidityChartButton'
-          onClick={handleZoomOut}
-        >
-          -
-        </button>
-      </Box>
+                },
+              },
+            }}
+          />
+          <Box className='flex' position={'absolute'} right={16} bottom={0}>
+            <button
+              disabled={zoom === MAX_ZOOM}
+              className='liquidityChartButton'
+              onClick={handleZoomIn}
+            >
+              +
+            </button>
+            <button
+              disabled={zoom === 2}
+              className='liquidityChartButton'
+              onClick={handleZoomOut}
+            >
+              -
+            </button>
+          </Box>
+        </>
+      ) : (
+        <Skeleton variant='rect' width='100%' height='100%' />
+      )}
     </Box>
   );
 };

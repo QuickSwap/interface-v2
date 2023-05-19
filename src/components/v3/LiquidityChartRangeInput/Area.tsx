@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { area, curveStepAfter, ScaleLinear } from 'd3';
-import { Path } from './styled';
 import { ChartEntry } from './types';
 import inRange from 'lodash/inRange';
 import { PriceFormats } from '../PriceFomatToggler';
@@ -24,8 +23,8 @@ export const Area = ({
 }) =>
   useMemo(
     () => (
-      <Path
-        fill={fill}
+      <path
+        className={`liquidityPath${fill ? ' liquidityPathFilled' : ''}`}
         d={
           area()
             .curve(curveStepAfter)

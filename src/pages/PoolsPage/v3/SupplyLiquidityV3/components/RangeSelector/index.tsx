@@ -17,6 +17,10 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import './index.scss';
 import { Box } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
+import { USDC } from 'constants/v3/addresses';
+import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React } from 'hooks';
+import { useTranslation } from 'react-i18next';
 
 interface IRangeSelector {
   priceLower: Price<Token, Token> | undefined;
@@ -74,6 +78,7 @@ export function RangeSelector({
   priceFormat,
   mintInfo,
 }: IRangeSelector) {
+  const { t } = useTranslation();
   const tokenA = (currencyA ?? undefined)?.wrapped;
   const tokenB = (currencyB ?? undefined)?.wrapped;
 
@@ -111,7 +116,7 @@ export function RangeSelector({
           tokenB={currencyB ?? undefined}
           initialPrice={mintInfo.price}
           disabled={disabled}
-          title={`Min price`}
+          title={t('minPrice')}
           priceFormat={priceFormat}
         />
       </Box>
@@ -132,7 +137,7 @@ export function RangeSelector({
           tokenB={currencyB ?? undefined}
           initialPrice={mintInfo.price}
           disabled={disabled}
-          title={`Max price`}
+          title={t('maxPrice')}
           priceFormat={priceFormat}
         />
       </Box>
@@ -156,8 +161,10 @@ function RangePart({
   title,
   priceFormat,
 }: IRangePart) {
+  const { t } = useTranslation();
   const [localUSDValue, setLocalUSDValue] = useState('');
   const [localTokenValue, setLocalTokenValue] = useState('');
+  const { chainId } = useActiveWeb3React();
 
   const dispatch = useAppDispatch();
 
@@ -165,7 +172,9 @@ function RangePart({
     return priceFormat === PriceFormats.USD;
   }, [priceFormat]);
 
-  const USDC = toToken(GlobalValue.tokens.COMMON.USDC);
+  const USDC_TOKEN = toToken(
+    USDC[tokenA?.chainId ? tokenA.chainId : chainId ?? ChainId.MATIC],
+  );
   const valueUSD = useUSDCValue(
     tryParseAmount(
       value === '∞' || value === '0' ? undefined : Number(value).toFixed(5),
@@ -173,7 +182,10 @@ function RangePart({
     ),
     true,
   );
-  const tokenValue = useBestV3TradeExactIn(tryParseAmount('1', USDC), tokenB);
+  const tokenValue = useBestV3TradeExactIn(
+    tryParseAmount('1', USDC_TOKEN),
+    tokenB,
+  );
   const usdPriceA = useUSDCPrice(tokenA ?? undefined);
   const usdPriceB = useUSDCPrice(tokenB ?? undefined);
 
@@ -182,7 +194,7 @@ function RangePart({
 
   const handleOnBlur = useCallback(() => {
     if (isUSD && usdPriceB) {
-      if (tokenB?.wrapped.address === USDC.address) {
+      if (tokenB?.wrapped.address === USDC_TOKEN.address) {
         onUserInput(localUSDValue);
       } else {
         if (tokenValue && tokenValue.trade) {
@@ -200,7 +212,7 @@ function RangePart({
         }
       }
     } else if (isUSD && initialUSDPrices.CURRENCY_B) {
-      if (tokenB?.wrapped.address === USDC.address) {
+      if (tokenB?.wrapped.address === USDC_TOKEN.address) {
         onUserInput(localUSDValue);
       } else {
         onUserInput(String(+localUSDValue / +initialUSDPrices.CURRENCY_B));
@@ -209,7 +221,7 @@ function RangePart({
         );
       }
     } else if (isUSD && initialTokenPrice && usdPriceA) {
-      if (tokenB?.wrapped.address === USDC.address) {
+      if (tokenB?.wrapped.address === USDC_TOKEN.address) {
         onUserInput(localUSDValue);
       } else {
         onUserInput(
@@ -242,7 +254,7 @@ function RangePart({
     initialTokenPrice,
     usdPriceA,
     tokenB?.wrapped.address,
-    USDC.address,
+    USDC_TOKEN.address,
     onUserInput,
     localUSDValue,
     tokenValue,
@@ -258,6 +270,9 @@ function RangePart({
     onUserInput(increment());
   }, [increment, onUserInput]);
 
+  const usdPriceAValue = usdPriceA?.toSignificant(5);
+  const usdPriceBValue = usdPriceB?.toSignificant(5);
+
   useEffect(() => {
     if (value) {
       setLocalTokenValue(value);
@@ -265,20 +280,24 @@ function RangePart({
         setLocalUSDValue(value);
         return;
       }
-      if (usdPriceB) {
-        setLocalUSDValue(String(+value * +usdPriceB.toSignificant(5)));
+      if (usdPriceBValue) {
+        setLocalUSDValue(String(+value * +usdPriceBValue));
       } else if (initialUSDPrices.CURRENCY_B) {
         setLocalUSDValue(String(+value * +initialUSDPrices.CURRENCY_B));
-      } else if (initialTokenPrice && usdPriceA) {
-        setLocalUSDValue(
-          String(+value * +initialTokenPrice * +usdPriceA.toSignificant(5)),
-        );
+      } else if (initialTokenPrice && usdPriceAValue) {
+        setLocalUSDValue(String(+value * +initialTokenPrice * +usdPriceAValue));
       }
     } else if (value === '') {
       setLocalTokenValue('');
       setLocalUSDValue('');
     }
-  }, [usdPriceB, initialTokenPrice, initialUSDPrices, value, usdPriceA]);
+  }, [
+    usdPriceAValue,
+    initialTokenPrice,
+    initialUSDPrices,
+    value,
+    usdPriceBValue,
+  ]);
 
   return (
     <Box className='price-range-part text-center'>
@@ -318,7 +337,7 @@ function RangePart({
       {tokenA && tokenB && (
         <Box mt={1}>
           <p className='text-secondary caption'>
-            {tokenB?.symbol} per {tokenA?.symbol}
+            {tokenB?.symbol} {t('per')} {tokenA?.symbol}
           </p>
         </Box>
       )}

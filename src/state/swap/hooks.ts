@@ -1,6 +1,7 @@
 //import useENS from 'hooks/useENS';
 import { parseUnits } from '@ethersproject/units';
 import {
+  ChainId,
   Currency,
   CurrencyAmount,
   ETHER,
@@ -10,11 +11,10 @@ import {
   Trade,
 } from '@uniswap/sdk';
 import { ParsedQs } from 'qs';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency } from 'hooks/Tokens';
-import { useTradeExactIn, useTradeExactOut } from 'hooks/Trades';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { isAddress } from 'utils';
 import { AppDispatch, AppState } from 'state';
@@ -22,14 +22,24 @@ import { useCurrencyBalances } from 'state/wallet/hooks';
 import {
   Field,
   replaceSwapState,
+  RouterTypeParams,
   selectCurrency,
+  setBestRoute,
   setRecipient,
+  setSwapDelay,
+  SwapDelay,
   switchCurrencies,
   typeInput,
 } from './actions';
 import { SwapState } from './reducer';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useSlippageManuallySet,
+  useUserSlippageTolerance,
+} from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
+import { RouterTypes, SmartRouter } from 'constants/index';
+import { StableCoins } from 'constants/v3/addresses';
+import useFindBestRoute from 'hooks/useFindBestRoute';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -40,8 +50,15 @@ export function useSwapActionHandlers(): {
   onSwitchTokens: () => void;
   onUserInput: (field: Field, typedValue: string) => void;
   onChangeRecipient: (recipient: string | null) => void;
+  onSetSwapDelay: (swapDelay: SwapDelay) => void;
+  onBestRoute: (bestRoute: RouterTypeParams) => void;
 } {
   const dispatch = useDispatch<AppDispatch>();
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
+  const timer = useRef<any>(null);
+
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
@@ -50,11 +67,18 @@ export function useSwapActionHandlers(): {
           currencyId:
             currency instanceof Token
               ? currency.address
-              : currency === ETHER
+              : currency === nativeCurrency
               ? 'ETH'
               : '',
         }),
       );
+    },
+    [dispatch, nativeCurrency],
+  );
+
+  const onSetSwapDelay = useCallback(
+    (swapDelay: SwapDelay) => {
+      dispatch(setSwapDelay({ swapDelay }));
     },
     [dispatch],
   );
@@ -66,8 +90,17 @@ export function useSwapActionHandlers(): {
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
       dispatch(typeInput({ field, typedValue }));
+      if (!typedValue) {
+        onSetSwapDelay(SwapDelay.INIT);
+        return;
+      }
+      onSetSwapDelay(SwapDelay.USER_INPUT);
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => {
+        onSetSwapDelay(SwapDelay.USER_INPUT_COMPLETE);
+      }, 300);
     },
-    [dispatch],
+    [dispatch, onSetSwapDelay],
   );
 
   const onChangeRecipient = useCallback(
@@ -77,16 +110,26 @@ export function useSwapActionHandlers(): {
     [dispatch],
   );
 
+  const onBestRoute = useCallback(
+    (bestRoute: RouterTypeParams) => {
+      dispatch(setBestRoute({ bestRoute }));
+    },
+    [dispatch],
+  );
+
   return {
     onSwitchTokens,
     onCurrencySelection,
     onUserInput,
     onChangeRecipient,
+    onSetSwapDelay,
+    onBestRoute,
   };
 }
 
 // try to parse a user entered amount for a given token
 export function tryParseAmount(
+  chainId: ChainId,
   value?: string,
   currency?: Currency,
 ): CurrencyAmount | undefined {
@@ -98,7 +141,7 @@ export function tryParseAmount(
     if (typedValueParsed !== '0') {
       return currency instanceof Token
         ? new TokenAmount(currency, JSBI.BigInt(typedValueParsed))
-        : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed));
+        : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed), chainId); // TODO: CHANGE THIS
     }
   } catch (error) {
     // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
@@ -137,7 +180,10 @@ export function useDerivedSwapInfo(): {
   inputError?: string;
   v1Trade: Trade | undefined;
 } {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const parsedQuery = useParsedQueryString();
+  const swapType = parsedQuery ? parsedQuery.swapIndex : undefined;
 
   const {
     independentField,
@@ -159,20 +205,12 @@ export function useDerivedSwapInfo(): {
 
   const isExactIn: boolean = independentField === Field.INPUT;
   const parsedAmount = tryParseAmount(
+    chainIdToUse,
     typedValue,
     (isExactIn ? inputCurrency : outputCurrency) ?? undefined,
   );
 
-  const bestTradeExactIn = useTradeExactIn(
-    isExactIn ? parsedAmount : undefined,
-    outputCurrency ?? undefined,
-  );
-  const bestTradeExactOut = useTradeExactOut(
-    inputCurrency ?? undefined,
-    !isExactIn ? parsedAmount : undefined,
-  );
-
-  const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut;
+  const { v2Trade, bestTradeExactIn, bestTradeExactOut } = useFindBestRoute();
 
   const currencyBalances = {
     [Field.INPUT]: relevantTokenBalances[0],
@@ -210,7 +248,11 @@ export function useDerivedSwapInfo(): {
     }
   }
 
-  const [allowedSlippage] = useUserSlippageTolerance();
+  const [
+    allowedSlippage,
+    setUserSlippageTolerance,
+  ] = useUserSlippageTolerance();
+  const [slippageManuallySet] = useSlippageManuallySet();
 
   const slippageAdjustedAmounts =
     v2Trade &&
@@ -223,9 +265,40 @@ export function useDerivedSwapInfo(): {
     slippageAdjustedAmounts ? slippageAdjustedAmounts[Field.INPUT] : null,
   ];
 
-  if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {
+  if (
+    swapType !== '0' &&
+    balanceIn &&
+    amountIn &&
+    balanceIn.lessThan(amountIn)
+  ) {
     inputError = 'Insufficient ' + amountIn.currency.symbol + ' balance';
   }
+
+  useEffect(() => {
+    const stableCoins = StableCoins[chainIdToUse];
+    const stableCoinAddresses =
+      stableCoins && stableCoins.length > 0
+        ? stableCoins.map((token) => token.address.toLowerCase())
+        : [];
+    if (!slippageManuallySet) {
+      if (
+        inputCurrencyId &&
+        outputCurrencyId &&
+        stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
+        stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
+      ) {
+        setUserSlippageTolerance(10);
+      } else {
+        setUserSlippageTolerance(50);
+      }
+    }
+  }, [
+    inputCurrencyId,
+    outputCurrencyId,
+    setUserSlippageTolerance,
+    chainIdToUse,
+    slippageManuallySet,
+  ]);
 
   return {
     currencies,
@@ -244,7 +317,7 @@ function parseCurrencyFromURLParameter(urlParam: any): string {
     if (urlParam.toUpperCase() === 'ETH') return 'ETH';
     if (valid === false) return 'ETH';
   }
-  return 'ETH' ?? '';
+  return '';
 }
 
 function parseTokenAmountURLParameter(urlParam: any): string {
@@ -297,6 +370,11 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
     independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
     recipient,
+    swapDelay: SwapDelay.INIT,
+    bestRoute: {
+      routerType: RouterTypes.QUICKSWAP,
+      smartRouter: SmartRouter.QUICKSWAP,
+    },
   };
 }
 
@@ -329,6 +407,11 @@ export function useDefaultsFromURLSearch():
         inputCurrencyId: parsed[Field.INPUT].currencyId,
         outputCurrencyId: parsed[Field.OUTPUT].currencyId,
         recipient: parsed.recipient,
+        swapDelay: SwapDelay.INIT,
+        bestRoute: {
+          routerType: RouterTypes.QUICKSWAP,
+          smartRouter: SmartRouter.QUICKSWAP,
+        },
       }),
     );
 

@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHistory, useRouteMatch, Link } from 'react-router-dom';
+import { useHistory, useRouteMatch, Link, useParams } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { ChainId, Token } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk';
 import {
   shortenAddress,
   getEtherscanLink,
-  getPairTransactions,
-  getBulkPairData,
   formatNumber,
   getTokenFromAddress,
 } from 'utils';
@@ -23,11 +21,10 @@ import 'pages/styles/analytics.scss';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
-import { useEthPrice, useIsV2 } from 'state/application/hooks';
+import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { getPairInfoV3, getPairTransactionsV3 } from 'utils/v3-graph';
-import { useDispatch } from 'react-redux';
-import { setAnalyticsLoaded } from 'state/analytics/actions';
+import { CallMade } from '@material-ui/icons';
+import { getConfig } from 'config';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -39,8 +36,19 @@ const AnalyticsPairDetails: React.FC = () => {
   const [pairData, setPairData] = useState<any>(null);
   const [pairTransactions, setPairTransactions] = useState<any>(null);
 
-  const { isV2 } = useIsV2();
-  const version = useMemo(() => `${!isV2 ? `v3` : 'v2'}`, [isV2]);
+  const params: any = useParams();
+  const version = params && params.version ? params.version : 'v3';
+  const isV2 = version === 'v2';
+  const { chainId } = useActiveWeb3React();
+
+  const config = getConfig(chainId);
+  const showAnalytics = config['analytics']['available'];
+  useEffect(() => {
+    if (!showAnalytics) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAnalytics]);
 
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
@@ -48,12 +56,12 @@ const AnalyticsPairDetails: React.FC = () => {
         return { ...item, type: TxnType.ADD };
       });
       const swaps = pairTransactions.swaps.map((item: any) => {
-        const amount0 = item.amount0Out > 0 ? item.amount0Out : item.amount1Out;
-        const amount1 = item.amount0In > 0 ? item.amount0In : item.amount1In;
-        const token0 =
-          item.amount0Out > 0 ? item.pair.token0 : item.pair.token1;
-        const token1 =
-          item.amount0Out > 0 ? item.pair.token1 : item.pair.token0;
+        const amount0 =
+          item.amount0 > 0 ? item.amount0 : Math.abs(item.amount1);
+        const amount1 =
+          item.amount0 > 0 ? Math.abs(item.amount1) : Math.abs(item.amount0);
+        const token0 = item.amount0 > 0 ? item.pair.token0 : item.pair.token1;
+        const token1 = item.amount0 > 0 ? item.pair.token1 : item.pair.token0;
         return {
           ...item,
           amount0,
@@ -70,25 +78,26 @@ const AnalyticsPairDetails: React.FC = () => {
       return null;
     }
   }, [pairTransactions]);
-  const { chainId } = useActiveWeb3React();
-  const currency0 = pairData
-    ? getTokenFromAddress(pairData.token0.id, ChainId.MATIC, tokenMap, [
-        new Token(
-          ChainId.MATIC,
-          getAddress(pairData.token0.id),
-          pairData.token0.decimals,
-        ),
-      ])
-    : undefined;
-  const currency1 = pairData
-    ? getTokenFromAddress(pairData.token1.id, ChainId.MATIC, tokenMap, [
-        new Token(
-          ChainId.MATIC,
-          getAddress(pairData.token1.id),
-          pairData.token1.decimals,
-        ),
-      ])
-    : undefined;
+  const currency0 =
+    pairData && chainId
+      ? getTokenFromAddress(pairData.token0.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(pairData.token0.id),
+            pairData.token0.decimals,
+          ),
+        ])
+      : undefined;
+  const currency1 =
+    pairData && chainId
+      ? getTokenFromAddress(pairData.token1.id, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(pairData.token1.id),
+            pairData.token1.decimals,
+          ),
+        ])
+      : undefined;
 
   const token0Rate = !isV2
     ? // According to the graph Token1Price is the number of token 1s per token 0
@@ -130,8 +139,8 @@ const AnalyticsPairDetails: React.FC = () => {
     pairData &&
     pairData.oneDayVolumeUSD === 0 &&
     !!pairData.oneDayVolumeUntracked;
-  const fees =
-    pairData && (pairData.oneDayVolumeUSD || pairData.oneDayVolumeUSD === 0)
+  const fees = isV2
+    ? pairData && (pairData.oneDayVolumeUSD || pairData.oneDayVolumeUSD === 0)
       ? usingUtVolume
         ? formatNumber(
             Number(pairData.oneDayVolumeUntracked) *
@@ -140,165 +149,56 @@ const AnalyticsPairDetails: React.FC = () => {
         : formatNumber(
             Number(pairData.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT,
           )
-      : '-';
+      : '-'
+    : pairData && pairData.feesUSDOneDay
+    ? formatNumber(pairData.feesUSDOneDay)
+    : '0';
   const { ethPrice } = useEthPrice();
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    (async () => {
+      if (chainId && version) {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get top pair details`,
+          );
+        }
+        const data = await res.json();
+        setDataLoading(false);
+        if (data?.data?.pairData) {
+          setPairData(data.data.pairData);
+          setPairTransactions(data.data.pairTransactions);
+        }
+      }
+    })();
+  }, [pairAddress, ethPrice.price, isV2, chainId, version]);
 
   useEffect(() => {
     setDataLoading(true);
     setPairData(null);
     setPairTransactions(null);
+  }, [pairAddress, isV2]);
 
-    async function fetchPairData() {
-      try {
-        if (!isV2) {
-          const pairInfo = await getPairInfoV3(pairAddress);
-          if (pairInfo && pairInfo.length > 0) {
-            setPairData(pairInfo[0]);
-          }
-        } else {
-          if (ethPrice.price) {
-            const pairInfo = await getBulkPairData(
-              [pairAddress],
-              ethPrice.price,
-            );
-            if (pairInfo && pairInfo.length > 0) {
-              setPairData(pairInfo[0]);
-            }
-          }
-        }
-        setDataLoading(false);
-      } catch (e) {
-        setDataLoading(false);
-      }
-    }
-    async function fetchTransctions() {
-      const pairTransactionsFn = !isV2
-        ? getPairTransactionsV3(pairAddress)
-        : getPairTransactions(pairAddress);
-
-      pairTransactionsFn.then((transactions) => {
-        if (transactions) {
-          setPairTransactions(transactions);
-        }
-      });
-    }
-    if (isV2 !== undefined) {
-      fetchPairData();
-      fetchTransctions();
-    }
-  }, [pairAddress, ethPrice.price, isV2]);
-
-  useEffect(() => {
-    setPairData(null);
-    setPairTransactions(null);
-  }, [pairAddress]);
-
-  useEffect(() => {
-    //TODO v2 Subgraph for txs is not working, for now always true
-    if (pairData && (!isV2 ? pairTransactions : true)) {
-      dispatch(setAnalyticsLoaded(true));
-    }
-  }, [pairData, pairTransactions, isV2, dispatch]);
-
-  const V2PairInfo = () => (
-    <Box width={1} className='panel' mt={4}>
-      <Grid container>
-        <Grid item xs={12} sm={12} md={6}>
-          <AnalyticsPairChart pairData={pairData} />
-        </Grid>
-        <Grid item xs={12} sm={12} md={6}>
-          <Box className='analyticsDetailsInfo'>
-            <Box>
-              <Box width={212}>
-                <Box>
-                  <span className='text-disabled'>
-                    {t('totalTokensLocked')}
-                  </span>
-                  <Box
-                    mt={1.5}
-                    className='bg-gray2'
-                    borderRadius={8}
-                    padding={1.5}
-                  >
-                    <Box className='flex items-center justify-between'>
-                      <Box className='flex items-center'>
-                        <CurrencyLogo currency={currency0} size='16px' />
-                        <span style={{ marginLeft: 6 }}>
-                          {pairData.token0.symbol} :
-                        </span>
-                      </Box>
-                      <span>{formatNumber(pairData.reserve0)}</span>
-                    </Box>
-                    <Box mt={1} className='flex items-center justify-between'>
-                      <Box className='flex items-center'>
-                        <CurrencyLogo currency={currency1} size='16px' />
-                        <span style={{ marginLeft: 6 }}>
-                          {pairData.token1.symbol} :
-                        </span>
-                      </Box>
-                      <span>{formatNumber(pairData.reserve1)}</span>
-                    </Box>
-                  </Box>
-                </Box>
-                <Box mt={4}>
-                  <span className='text-disabled'>{t('7dTradingVol')}</span>
-                  <h5>${formatNumber(pairData.oneWeekVolumeUSD)}</h5>
-                </Box>
-                <Box mt={4}>
-                  <span className='text-disabled'>{t('24hFees')}</span>
-                  <h5>${fees}</h5>
-                </Box>
-              </Box>
-              <Box width={140}>
-                <span className='text-disabled'>{t('totalLiquidity')}</span>
-                <h5>
-                  $
-                  {formatNumber(
-                    pairData.reserveUSD
-                      ? pairData.reserveUSD
-                      : pairData.trackedReserveUSD,
-                  )}
-                </h5>
-                <Box mt={4}>
-                  <span className='text-disabled'>{t('24hTradingVol1')}</span>
-                  <h5>${formatNumber(pairData.oneDayVolumeUSD)}</h5>
-                </Box>
-                <Box mt={4}>
-                  <span className='text-disabled'>{t('contractAddress')}</span>
-                  <h5 className='text-primary'>
-                    {chainId ? (
-                      <a
-                        href={getEtherscanLink(chainId, pairData.id, 'address')}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='text-primary no-decoration'
-                      >
-                        {shortenAddress(pairData.id)}
-                      </a>
-                    ) : (
-                      shortenAddress(pairData.id)
-                    )}
-                  </h5>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
-    </Box>
-  );
-
-  const V3PairInfo = () => (
-    <Box width={1} mt={4}>
+  const PairInfo = () => (
+    <Box width={1} my={4}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={3}>
           <Box className='panel analyticsDetailsInfoV3'>
             <Box>
               <span className='text-disabled'>{t('totalTokensLocked')}</span>
               <Box mt={1.5} className='bg-gray2' borderRadius={8} padding={1.5}>
-                <Box className='flex items-center justify-between'>
+                <Box
+                  className='flex items-center justify-between cursor-pointer'
+                  onClick={() => {
+                    history.push(
+                      `/analytics/${version}/token/${pairData.token0.id}`,
+                    );
+                  }}
+                >
                   <Box className='flex items-center'>
                     <CurrencyLogo currency={currency0} size='16px' />
                     <span style={{ marginLeft: 6 }}>
@@ -307,7 +207,15 @@ const AnalyticsPairDetails: React.FC = () => {
                   </Box>
                   <span>{formatNumber(pairData.reserve0)}</span>
                 </Box>
-                <Box mt={1} className='flex items-center justify-between'>
+                <Box
+                  mt={1}
+                  className='flex items-center justify-between cursor-pointer'
+                  onClick={() => {
+                    history.push(
+                      `/analytics/${version}/token/${pairData.token1.id}`,
+                    );
+                  }}
+                >
                   <Box className='flex items-center'>
                     <CurrencyLogo currency={currency1} size='16px' />
                     <span style={{ marginLeft: 6 }}>
@@ -320,22 +228,42 @@ const AnalyticsPairDetails: React.FC = () => {
             </Box>
             <Box width={140}>
               <span className='text-disabled'>{t('totalLiquidity')}</span>
-              <h5>
+              <h6>
                 $
                 {formatNumber(
                   pairData.reserveUSD
                     ? pairData.reserveUSD
                     : pairData.trackedReserveUSD,
                 )}
-              </h5>
+              </h6>
             </Box>
             <Box mt={4}>
               <span className='text-disabled'>{t('24hTradingVol1')}</span>
-              <h5>${formatNumber(pairData.oneDayVolumeUSD)}</h5>
+              <h6>${formatNumber(pairData.oneDayVolumeUSD)}</h6>
             </Box>
             <Box mt={4}>
               <span className='text-disabled'>{t('24hFees')}</span>
-              <h5>${fees}</h5>
+              <h6>${fees}</h6>
+            </Box>
+            <Box mt={4}>
+              <span className='text-disabled'>{t('contractAddress')}</span>
+              <h6>
+                {chainId ? (
+                  <a
+                    href={getEtherscanLink(chainId, pairData.id, 'address')}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-primaryText no-decoration'
+                  >
+                    <Box className='flex items-center'>
+                      {shortenAddress(pairData.id)}
+                      <CallMade />
+                    </Box>
+                  </a>
+                ) : (
+                  shortenAddress(pairData.id)
+                )}
+              </h6>
             </Box>
           </Box>
         </Grid>
@@ -393,14 +321,29 @@ const AnalyticsPairDetails: React.FC = () => {
                 )}
               </Box>
               <Box mt={2} display='flex'>
-                <Box className='analyticsPairRate'>
+                <Box
+                  className='analyticsPairRate'
+                  onClick={() => {
+                    history.push(
+                      `/analytics/${version}/token/${pairData.token0.id}`,
+                    );
+                  }}
+                >
                   <CurrencyLogo currency={currency0} size='16px' />
                   <small style={{ marginLeft: 6 }}>
                     1 {pairData.token0.symbol} = {token0Rate}{' '}
                     {pairData.token1.symbol}
                   </small>
                 </Box>
-                <Box ml={1} className='analyticsPairRate'>
+                <Box
+                  ml={1}
+                  className='analyticsPairRate'
+                  onClick={() => {
+                    history.push(
+                      `/analytics/${version}/token/${pairData.token1.id}`,
+                    );
+                  }}
+                >
                   <CurrencyLogo currency={currency1} size='16px' />
                   <small style={{ marginLeft: 6 }}>
                     1 {pairData.token1.symbol} = {token1Rate}{' '}
@@ -437,23 +380,27 @@ const AnalyticsPairDetails: React.FC = () => {
               </Box>
             </Box>
           </Box>
-          {!isV2 ? <V3PairInfo /> : <V2PairInfo />}
-          <Box width={1} mt={5}>
-            <p>{t('transactions')}</p>
-          </Box>
-          <Box width={1} className='panel' mt={4}>
-            {pairTransactionsList ? (
-              <TransactionsTable data={pairTransactionsList} />
-            ) : (
-              <Skeleton variant='rect' width='100%' height={150} />
-            )}
-          </Box>
+          <PairInfo />
+          {!isV2 && (
+            <>
+              <Box width={1}>
+                <p>{t('transactions')}</p>
+              </Box>
+              <Box width={1} className='panel' my={4}>
+                {pairTransactionsList ? (
+                  <TransactionsTable data={pairTransactionsList} />
+                ) : (
+                  <Skeleton variant='rect' width='100%' height={150} />
+                )}
+              </Box>
+            </>
+          )}
         </>
       ) : dataLoading ? (
         <Skeleton width='100%' height={100} />
       ) : (
         <Box py={4}>
-          <h5>This pair does not exist</h5>
+          <h5>{t('pairNotExist')}</h5>
         </Box>
       )}
     </>

@@ -6,7 +6,6 @@ import {
   Percent,
   TradeType,
 } from '@uniswap/sdk-core';
-import { Trade as V2Trade } from '@uniswap/v2-sdk';
 import { Trade as V3Trade } from 'lib/src/trade';
 import { useCallback, useMemo } from 'react';
 import { SWAP_ROUTER_ADDRESSES } from '../constants/v3/addresses';
@@ -17,7 +16,6 @@ import {
 import { useTokenContract } from './useContract';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenAllowance } from './useTokenAllowance';
-import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { useAppSelector } from 'state';
 import { calculateGasMargin } from 'utils';
 
@@ -117,7 +115,6 @@ export function useApproveCallback(
         useExact ? amountToApprove.quotient.toString() : MaxUint256,
         {
           gasLimit: calculateGasMargin(estimatedGas),
-          gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
         },
       )
       .then((response: TransactionResponse) => {
@@ -139,7 +136,6 @@ export function useApproveCallback(
     spender,
     addTransaction,
     chainId,
-    gasPrice,
   ]);
 
   return [approvalState, approve];
@@ -147,10 +143,7 @@ export function useApproveCallback(
 
 // wraps useApproveCallback in the context of a swap
 export function useApproveCallbackFromTrade(
-  trade:
-    | V2Trade<Currency, Currency, TradeType>
-    | V3Trade<Currency, Currency, TradeType>
-    | undefined,
+  trade: V3Trade<Currency, Currency, TradeType> | undefined,
   allowedSlippage: Percent,
 ) {
   const { chainId } = useActiveWeb3React();

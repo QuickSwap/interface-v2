@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
@@ -6,9 +6,12 @@ import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
 import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
+import { getConfig } from 'config';
+import { ChainId } from '@uniswap/sdk';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { useIsV2 } from 'state/application/hooks';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -21,22 +24,43 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   type,
   address,
 }) => {
+  const { chainId } = useActiveWeb3React();
   const history = useHistory();
   const { pathname } = useLocation();
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainIdToUse);
+  const v3 = config['v3'];
+  const v2 = config['v2'];
+  const showAnalytics = config['analytics']['available'];
+  useEffect(() => {
+    if (!showAnalytics) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAnalytics]);
 
-  const { isV2 } = useIsV2();
-  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
+  const { updateIsV2 } = useIsV2();
+
+  useEffect(() => {
+    if (!v2 && v3) {
+      updateIsV2(false);
+    }
+  }, [updateIsV2, v2, v3]);
+  const version = useAnalyticsVersion();
+  const isPairDetails = history.location.pathname.includes('pair/');
 
   return (
     <Box width='100%' mb={3}>
       <Box mb={4} className='flex items-center'>
         <h4>{t('quickswapAnalytics')}</h4>
-        <Box ml={2}>
-          <VersionToggle />
-        </Box>
+        {v2 && v3 && !isPairDetails && (
+          <Box ml={2}>
+            <VersionToggle />
+          </Box>
+        )}
       </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
         <AdsSlider sort='analytics' />

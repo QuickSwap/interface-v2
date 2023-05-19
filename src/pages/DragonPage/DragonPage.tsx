@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import DragonBg1 from 'assets/images/DragonBg1.svg';
@@ -10,14 +10,34 @@ import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
 import AdsSlider from 'components/AdsSlider';
+import { getConfig } from 'config';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
+import { useHistory } from 'react-router-dom';
+import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
   //showing old dragons lair until we're ready to deploy
-  const showOld = true;
-  const showNew = true;
+
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const quickToken = DLQUICK[chainIdToUse];
+  const dQuickToken = DLDQUICK[chainIdToUse];
+  const config = getConfig(chainIdToUse);
+  const showLair = config['lair']['available'];
+  const showOld = config['lair']['oldLair'];
+  const showNew = config['lair']['newLair'];
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!showLair) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showLair]);
 
   return (
     <Box width='100%' mb={3}>
@@ -35,7 +55,12 @@ const DragonPage: React.FC = () => {
               />
               <Box className='dragonTitle'>
                 <h5>{t('newDragonLair')}</h5>
-                <small>{t('dragonLairTitle')}</small>
+                <small>
+                  {t('dragonLairTitle', {
+                    symbol: quickToken?.symbol,
+                    symbol1: dQuickToken?.symbol,
+                  })}
+                </small>
               </Box>
               <DragonsLair isNew={true} />
             </Box>
@@ -57,9 +82,9 @@ const DragonPage: React.FC = () => {
               <DragonsLair isNew={false} />
             </Box>
           )}
-          <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
+          {/* <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
             <AdsSlider sort='dragons' />
-          </Box>
+          </Box> */}
         </Grid>
         <Grid item xs={12} sm={12} md={8}>
           <Box className='dragonWrapper'>
@@ -71,6 +96,15 @@ const DragonPage: React.FC = () => {
               <small>{t('dragonSyrupTitle')}</small>
             </Box>
             <DragonsSyrup />
+          </Box>
+        </Grid>
+        <Grid item>
+          <Box
+            id={'addbox-bottom'}
+            maxWidth={isMobile ? '320px' : '1136px'}
+            margin='0 auto 24px'
+          >
+            <AdsSlider sort='analytics' />
           </Box>
         </Grid>
       </Grid>

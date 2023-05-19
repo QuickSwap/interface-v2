@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { lazy, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import Motif from 'assets/images/Motif.svg';
-import BuyWithFiat from 'assets/images/featured/BuywithFiat.svg';
+import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
 import Analytics from 'assets/images/featured/Analytics.svg';
 import DragonsLair from 'assets/images/featured/DragonsLair.svg';
 import ProvideLiquidity from 'assets/images/featured/ProvideLiquidity.svg';
@@ -17,14 +17,23 @@ import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.sv
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
-import { RewardSlider, TopMovers } from 'components';
+import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
 import 'pages/styles/landing.scss';
-import { SwapSection } from './SwapSection';
-import { BuyFiatSection } from './BuyFiatSection';
-import { GlobalSection } from './GlobalSection';
+import { useIsV2 } from 'state/application/hooks';
+import { getConfig } from 'config';
+import { useActiveWeb3React } from 'hooks';
+const SwapSection = lazy(() => import('./SwapSection'));
+const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
+const GlobalSection = lazy(() => import('./GlobalSection'));
+const BuySpritzSection = lazy(() => import('./BuySpritzSection'));
+const TopMovers = lazy(() => import('components/TopMovers'));
+const RewardSlider = lazy(() => import('components/RewardSlider'));
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const isFarmAvailable = config['farm']['available'];
 
   const features = [
     {
@@ -100,59 +109,78 @@ const LandingPage: React.FC = () => {
       icon: <GeckoterminalIcon />,
       title: 'GeckoTerminal',
     },
+    {
+      link: 'https://www.tiktok.com/@quickswapofficial',
+      icon: <img src={TikTokIcon} alt='TikTok' />,
+      title: 'TikTok',
+    },
+    {
+      link: 'https://t.me/QuickSwapAnnouncements',
+      icon: <TelegramIcon />,
+      title: 'Announcement',
+    },
   ];
 
   const history = useHistory();
+  const { updateIsV2 } = useIsV2();
+
+  useEffect(() => {
+    updateIsV2(false);
+  }, [updateIsV2]);
 
   return (
     <div id='landing-page' style={{ width: '100%' }}>
       <GlobalSection />
       <Box className='smallCommunityContainer'>
         {socialicons.map((val, ind) => (
-          <a
-            href={val.link}
-            target='_blank'
+          <Box
             key={ind}
-            rel='noopener noreferrer'
+            mx={1.5}
+            className={
+              val.title.toLowerCase() === 'geckoterminal' ? 'noFill' : 'svgFill'
+            }
           >
-            <Box
-              display='flex'
-              mx={1.5}
-              className={
-                val.title.toLowerCase() === 'geckoterminal'
-                  ? 'noFill'
-                  : 'svgFill'
-              }
-            >
+            <a href={val.link} target='_blank' rel='noopener noreferrer'>
               {val.icon}
-            </Box>
-          </a>
+            </a>
+          </Box>
         ))}
       </Box>
       <Box mt={2} width={1}>
         <TopMovers />
       </Box>
       <Box className='quickInfo'>
-        <h4>{t('quickInfoTitle')}</h4>
+        <h1 className='h4'>{t('quickInfoTitle')}</h1>
         <img src={Motif} alt='Motif' />
       </Box>
       <SwapSection />
-      <Box className='rewardsContainer'>
-        <Box maxWidth='480px' width='100%'>
-          <h4>{t('earnRewardsbyDeposit')}</h4>
-          <p style={{ marginTop: '20px' }}>{t('depositLPTokensRewards')}</p>
+      {isFarmAvailable && (
+        <Box className='rewardsContainer'>
+          <Box maxWidth='80%' width='100%'>
+            <h1 className='h4'>{t('earnRewardsbyDeposit')}</h1>
+            <p style={{ marginTop: '20px' }}>{t('depositLPTokensRewards')}</p>
+          </Box>
+          <RewardSlider />
+          <Box
+            className='allRewardPairs'
+            onClick={() => {
+              history.push('/farm');
+            }}
+          >
+            <p>{t('seeAllPairs')}</p>
+          </Box>
         </Box>
-        <RewardSlider />
-        <Box
-          className='allRewardPairs'
-          onClick={() => {
-            history.push('/farm');
-          }}
-        >
-          <p>{t('seeAllPairs')}</p>
-        </Box>
+      )}
+      <Box margin='100px 0 120px'>
+        <Grid container spacing={4}>
+          <Grid item xs={12} sm={12} md={6}>
+            <BuyFiatSection />
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <BuySpritzSection />
+          </Grid>
+        </Grid>
       </Box>
-      <BuyFiatSection />
       <Box className='featureContainer'>
         <Box className='featureHeading'>
           <h3>{t('features')}</h3>

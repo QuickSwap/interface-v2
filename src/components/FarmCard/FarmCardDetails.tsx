@@ -315,9 +315,9 @@ const FarmCardDetails: React.FC<{
                 <Box className='farmCardMobileRow'>
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apy')}</small>
-                    <Box ml={0.5} height={16}>
+                    {/* <Box ml={0.5} height={16}>
                       <img src={CircleInfoIcon} alt={'arrow up'} />
-                    </Box>
+                    </Box> */}
                   </Box>
                   <small className='text-success'>{apyWithFee}%</small>
                 </Box>
@@ -333,9 +333,10 @@ const FarmCardDetails: React.FC<{
                       {getUSDString(stakedAmounts?.unStakedUSD)})
                     </small>
                     <Link
-                      to={`/pools?currency0=${getTokenAddress(
+                      to={`/pools/v2?currency0=${getTokenAddress(
                         token0,
                       )}&currency1=${getTokenAddress(token1)}`}
+                      target='_blank'
                       className='text-primary'
                     >
                       {t('get')} {currency0?.symbol} / {currency1?.symbol}{' '}

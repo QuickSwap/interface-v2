@@ -1,4 +1,5 @@
 import { createReducer, nanoid } from '@reduxjs/toolkit';
+import { ChainId } from '@uniswap/sdk';
 import {
   addPopup,
   PopupContent,
@@ -7,7 +8,6 @@ import {
   ApplicationModal,
   setOpenModal,
   updateEthPrice,
-  updateGlobalData,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
@@ -15,10 +15,10 @@ import {
   removeBookmarkPair,
   updateBookmarkPairs,
   updateTokenDetails,
-  updateIsProMode,
   updateMaticPrice,
   updateGasPrice,
   updateIsV2,
+  updateUDDomain,
 } from './actions';
 
 type PopupList = Array<{
@@ -58,9 +58,9 @@ export interface ApplicationState {
   readonly analyticToken: any;
   readonly tokenChartData: any;
   readonly tokenDetails: TokenDetail[];
-  readonly isProMode: boolean;
   readonly gasPrice: { fetched: number | null; override: boolean };
   readonly isV2: boolean | undefined;
+  readonly udDomain: string | undefined;
 }
 
 const initialState: ApplicationState = {
@@ -75,9 +75,9 @@ const initialState: ApplicationState = {
   analyticToken: null,
   tokenChartData: null,
   tokenDetails: [],
-  isProMode: false,
   gasPrice: { fetched: 70, override: true },
   isV2: undefined,
+  udDomain: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -142,9 +142,6 @@ export default createReducer(initialState, (builder) =>
         };
       },
     )
-    .addCase(updateGlobalData, (state, { payload: { data } }) => {
-      state.globalData = data;
-    })
     .addCase(addBookMarkToken, (state, { payload }) => {
       const tokens = state.bookmarkedTokens;
       tokens.push(payload);
@@ -197,10 +194,10 @@ export default createReducer(initialState, (builder) =>
       }
       state.tokenDetails = updatedTokenDetails;
     })
-    .addCase(updateIsProMode, (state, { payload }) => {
-      state.isProMode = payload;
-    })
     .addCase(updateIsV2, (state, { payload }) => {
       state.isV2 = payload;
+    })
+    .addCase(updateUDDomain, (state, { payload }) => {
+      state.udDomain = payload;
     }),
 );

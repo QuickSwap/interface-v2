@@ -8,7 +8,7 @@ import {
   Percent,
   TradeType,
 } from '@uniswap/sdk-core';
-import { Trade as V2Trade } from '@uniswap/v2-sdk';
+import { Trade as V2Trade } from '@uniswap/sdk';
 import { ParsedQs } from 'qs';
 import {
   Field,
@@ -32,11 +32,18 @@ import { AppState } from 'state';
 import { isAddress } from 'utils';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
-import { useUserSlippageTolerance } from 'state/user/hooks';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import {
+  useSlippageManuallySet,
+  useUserSlippageTolerance,
+} from 'state/user/hooks';
+import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+import { StableCoins } from 'constants/v3/addresses';
+import { ChainId } from '@uniswap/sdk';
 
 export function useSwapState(): AppState['swapV3'] {
-  return useAppSelector((state) => state.swapV3);
+  return useAppSelector((state) => {
+    return state.swapV3;
+  });
 }
 
 export function useSwapActionHandlers(): {
@@ -47,14 +54,6 @@ export function useSwapActionHandlers(): {
 } {
   const dispatch = useAppDispatch();
 
-  const { chainId } = useActiveWeb3React();
-
-  let symbol: string;
-
-  if (chainId === 137) {
-    symbol = 'MATIC';
-  }
-
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
@@ -62,8 +61,14 @@ export function useSwapActionHandlers(): {
           field,
           currencyId: currency.isToken
             ? currency.address
+              ? currency.address
+              : currency instanceof WrappedTokenInfo
+              ? currency.tokenInfo.address
+              : ''
             : currency.isNative
-            ? 'MATIC'
+            ? currency.symbol
+              ? currency.symbol
+              : ''
             : '',
         }),
       );
@@ -106,7 +111,10 @@ export function tryParseAmount<T extends Currency>(
     return undefined;
   }
   try {
-    const typedValueParsed = parseUnits(value, currency.decimals).toString();
+    const typedValueParsed = parseUnits(
+      value !== 'NaN' ? value : '0',
+      currency.decimals,
+    ).toString();
     if (typedValueParsed !== '0') {
       return CurrencyAmount.fromRawAmount(
         currency,
@@ -133,7 +141,7 @@ export function useDerivedSwapInfo(): {
   currencyBalances: { [field in Field]?: CurrencyAmount<Currency> };
   parsedAmount: CurrencyAmount<Currency> | undefined;
   inputError?: string;
-  v2Trade: V2Trade<Currency, Currency, TradeType> | undefined;
+  v2Trade: V2Trade | undefined;
   v3TradeState: {
     trade: V3Trade<Currency, Currency, TradeType> | null;
     state: V3TradeState;
@@ -143,7 +151,8 @@ export function useDerivedSwapInfo(): {
   V3Trade<Currency, Currency, TradeType> | undefined;
   allowedSlippage: Percent;
 } {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const {
     independentField,
@@ -220,7 +229,11 @@ export function useDerivedSwapInfo(): {
   }
 
   const toggledTrade = v3Trade.trade ?? undefined;
-  const [allowedSlippageNum] = useUserSlippageTolerance();
+  const [
+    allowedSlippageNum,
+    setUserSlippageTolerance,
+  ] = useUserSlippageTolerance();
+  const [slippageManuallySet] = useSlippageManuallySet();
   const allowedSlippage = new Percent(
     JSBI.BigInt(allowedSlippageNum),
     JSBI.BigInt(10000),
@@ -236,6 +249,32 @@ export function useDerivedSwapInfo(): {
     inputError = `Insufficient ${amountIn.currency.symbol} balance`;
   }
 
+  useEffect(() => {
+    const stableCoins = StableCoins[chainIdToUse];
+    const stableCoinAddresses =
+      stableCoins && stableCoins.length > 0
+        ? stableCoins.map((token) => token.address.toLowerCase())
+        : [];
+    if (!slippageManuallySet) {
+      if (
+        inputCurrencyId &&
+        outputCurrencyId &&
+        stableCoinAddresses.includes(inputCurrencyId.toLowerCase()) &&
+        stableCoinAddresses.includes(outputCurrencyId.toLowerCase())
+      ) {
+        setUserSlippageTolerance(10);
+      } else {
+        setUserSlippageTolerance(50);
+      }
+    }
+  }, [
+    inputCurrencyId,
+    outputCurrencyId,
+    setUserSlippageTolerance,
+    chainIdToUse,
+    slippageManuallySet,
+  ]);
+
   return {
     currencies,
     currencyBalances,
@@ -249,16 +288,12 @@ export function useDerivedSwapInfo(): {
 }
 
 function parseCurrencyFromURLParameter(urlParam: any, chainId: number): string {
-  let chainSymbol;
-
-  if (chainId === 137) {
-    chainSymbol = 'MATIC';
-  }
-
   if (typeof urlParam === 'string') {
     const valid = isAddress(urlParam);
     if (valid) return valid;
-    if (urlParam.toUpperCase() === chainSymbol) return chainSymbol;
+    if (urlParam.toUpperCase() === 'ETH' || urlParam.toUpperCase() === 'MATIC')
+      return 'ETH';
+    if (!valid) return 'ETH';
   }
   return '';
 }
@@ -299,11 +334,9 @@ export function queryParametersToSwapState(
     parsedQs.currency1 ?? parsedQs.outputCurrency,
     chainId,
   );
-  if (inputCurrency === '' && outputCurrency === '') {
+  if (!inputCurrency && !outputCurrency) {
     // default to ETH input
-    if (chainId === 137) {
-      inputCurrency = 'MATIC';
-    }
+    inputCurrency = 'ETH';
   } else if (inputCurrency === outputCurrency) {
     // clear output if identical
     outputCurrency = '';

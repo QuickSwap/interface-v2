@@ -1,43 +1,186 @@
-import React, { useEffect, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Button, Menu, MenuItem } from '@material-ui/core';
+import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import { useIsProMode, useIsV2 } from 'state/application/hooks';
-import { Swap, SettingsModal, ToggleSwitch } from 'components';
-import {
-  GelatoLimitOrderPanel,
-  GelatoLimitOrdersHistoryPanel,
-} from '@gelatonetwork/limit-orders-react';
-import { Trans, useTranslation } from 'react-i18next';
+import { SettingsModal, Swap, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
+import { getConfig } from 'config';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import useSwapRedirects from 'hooks/useSwapRedirect';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
+import { useIsV2 } from 'state/application/hooks';
+import { Limit, TWAP } from './LimitAndTWAP/LimitAndTWAP';
+import SwapCrossChain from './SwapCrossChain';
 import SwapV3Page from './V3/Swap';
-import { useParams } from 'react-router-dom';
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
 const SWAP_V3 = 2;
 const SWAP_LIMIT = 3;
+const SWAP_TWAP = 4;
+const SWAP_CROSS_CHAIN = 5;
 
 const SwapMain: React.FC = () => {
-  const [swapIndex, setSwapIndex] = useState(SWAP_BEST_TRADE);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
+
+  const parsedQs = useParsedQueryString();
+  const swapType = parsedQs.swapIndex;
+  const isProMode = useIsProMode();
+  const history = useHistory();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
-  const { isProMode, updateIsProMode } = useIsProMode();
+  const { chainId } = useActiveWeb3React();
 
   const { updateIsV2 } = useIsV2();
-  const params: any = useParams();
-  const isOnV3 = params ? params.version === 'v3' : false;
-  const isOnV2 = params ? params.version === 'v2' : false;
+  const { redirectWithProMode } = useSwapRedirects();
 
   const { t } = useTranslation();
+  const config = getConfig(chainId);
+  const v2 = config['v2'];
+  const v3 = config['v3'];
+  const showBestTrade = config['swap']['bestTrade'];
+  const showLimitOrder = config['swap']['limitOrder'];
+  const showTwapOrder = config['swap']['twapOrder'];
+  const showCrossChain = config['swap']['crossChain'];
+  const showProMode = config['swap']['proMode'];
+
+  const SwapDropdownTabs = useMemo(() => {
+    const tabs = [];
+    if (showBestTrade) {
+      tabs.push({ name: 'bestTrade', key: SWAP_BEST_TRADE });
+    }
+    if (v2) {
+      tabs.push({ name: 'market', key: SWAP_NORMAL });
+    }
+    if (v3) {
+      tabs.push({ name: 'marketV3', key: SWAP_V3 });
+    }
+    if (showLimitOrder) {
+      tabs.push({ name: 'limit', key: SWAP_LIMIT });
+    }
+    if (showTwapOrder) {
+      tabs.push({ name: 'twap', key: SWAP_TWAP });
+    }
+    if (showCrossChain) {
+      tabs.push({
+        name: 'crossChain',
+        key: SWAP_CROSS_CHAIN,
+        visible: false,
+      });
+    }
+    return tabs;
+  }, [showBestTrade, showLimitOrder, showTwapOrder, v2, v3, showCrossChain]);
+
+  const dropDownMenuText = useMemo(() => {
+    if (!swapType) return;
+    const dropdownTab = SwapDropdownTabs.find(
+      (item) =>
+        item.key ===
+        (Number(swapType) === SWAP_CROSS_CHAIN ? 0 : Number(swapType)),
+    );
+    if (!dropdownTab) return;
+    return dropdownTab.name;
+  }, [SwapDropdownTabs, swapType]);
+
+  const [selectedIndex, setSelectedIndex] = React.useState(
+    Number(swapType?.toString() ?? '0'),
+  );
+
+  const redirectWithSwapType = (swapTypeTo: number) => {
+    const currentPath = history.location.pathname + history.location.search;
+    let redirectPath = '';
+    if (swapType) {
+      redirectPath = currentPath.replace(
+        `swapIndex=${swapType}`,
+        `swapIndex=${swapTypeTo}`,
+      );
+    } else {
+      redirectPath = `${currentPath}${
+        Object.values(parsedQs).length > 0 ? '&' : '?'
+      }swapIndex=${swapTypeTo}`;
+    }
+    setSelectedIndex(swapTypeTo);
+    history.push(redirectPath);
+  };
+
+  const swapTabClass = (currentSwapType: number) => {
+    return `${
+      swapType === currentSwapType.toString() ? 'activeSwap' : ''
+    } swapItem headingItem
+    `;
+  };
+
+  const handleMenuItemClick = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number,
+  ) => {
+    setSelectedIndex(SwapDropdownTabs[index].key);
+    setAnchorEl(null);
+    redirectWithSwapType(SwapDropdownTabs[index].key);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   useEffect(() => {
-    updateIsV2(!isOnV2 && !isOnV3 ? true : isOnV2);
-    if (isOnV3) {
-      setSwapIndex(SWAP_V3);
-    } else if (isOnV2) {
-      setSwapIndex(SWAP_NORMAL);
+    if (
+      !swapType ||
+      (Number(swapType) === SWAP_BEST_TRADE && !showBestTrade) ||
+      (Number(swapType) === SWAP_NORMAL && !v2) ||
+      (Number(swapType) === SWAP_V3 && !v3) ||
+      (Number(swapType) === SWAP_LIMIT && !showLimitOrder) ||
+      (Number(swapType) === SWAP_TWAP && !showTwapOrder)
+    ) {
+      const availableSwapTypes = [
+        SWAP_BEST_TRADE,
+        SWAP_V3,
+        SWAP_NORMAL,
+        SWAP_LIMIT,
+        SWAP_TWAP,
+      ].filter((sType) =>
+        sType === SWAP_BEST_TRADE
+          ? showBestTrade
+          : sType === SWAP_NORMAL
+          ? v2
+          : sType === SWAP_V3
+          ? v3
+          : sType === SWAP_LIMIT
+          ? showLimitOrder
+          : showTwapOrder,
+      );
+      if (availableSwapTypes.length > 0) {
+        const aSwapType = availableSwapTypes[0];
+        if (aSwapType === SWAP_V3) {
+          updateIsV2(false);
+        } else {
+          updateIsV2(true);
+        }
+        redirectWithSwapType(availableSwapTypes[0]);
+      } else {
+        history.push('/');
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnV3, isOnV2]);
+  }, [swapType, v2, v3, showBestTrade, showLimitOrder, showTwapOrder]);
+
+  useEffect(() => {
+    if (swapType) {
+      if (Number(swapType) === SWAP_V3) {
+        updateIsV2(false);
+      } else {
+        updateIsV2(true);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swapType]);
 
   return (
     <>
@@ -53,104 +196,127 @@ const SwapMain: React.FC = () => {
         }`}
       >
         <Box display='flex' width={1}>
-          <Box
-            //TODO: Active class resolution should come from from a func
-            className={`${
-              swapIndex === SWAP_BEST_TRADE ? 'activeSwap' : ''
-            } swapItem headingItem
-            `}
-            onClick={() => {
-              updateIsV2(true);
-              setSwapIndex(SWAP_BEST_TRADE);
-            }}
-          >
-            <p>{t('bestTrade')}</p>
-          </Box>
-          <Box
-            className={`${
-              swapIndex === SWAP_NORMAL ? 'activeSwap' : ''
-            } swapItem headingItem
-            `}
-            onClick={() => {
-              updateIsV2(true);
-              setSwapIndex(SWAP_NORMAL);
-            }}
-          >
-            <p>{t('market')}</p>
-          </Box>
-          <Box
-            className={`${
-              swapIndex === SWAP_V3 ? 'activeSwap' : ''
-            } swapItem headingItem
-            `}
-            onClick={() => {
-              updateIsV2(false);
-              setSwapIndex(SWAP_V3);
-            }}
-          >
-            <p>{t('marketV3')}</p>
-          </Box>
-          <Box
-            className={`${
-              swapIndex === SWAP_LIMIT ? 'activeSwap' : ''
-            } swapItem headingItem`}
-            onClick={() => {
-              updateIsV2(false);
-              setSwapIndex(SWAP_LIMIT);
-            }}
-          >
-            <p>{t('limit')}</p>
-          </Box>
-        </Box>
-        {!isProMode && (
-          <Box margin='8px 16px 0' className='flex items-center'>
-            <Box className='flex items-center' mr={1}>
-              <span
-                className='text-secondary text-uppercase'
-                style={{ marginRight: 8 }}
-              >
-                {t('proMode')}
-              </span>
-              <ToggleSwitch
-                toggled={false}
-                onToggle={() => {
-                  updateIsProMode(true);
+          {!isProMode ? (
+            <>
+              {dropDownMenuText && (
+                <Button
+                  id='swap-button'
+                  aria-controls={open ? 'swap-menu' : undefined}
+                  aria-haspopup='true'
+                  aria-expanded={open ? 'true' : undefined}
+                  variant='text'
+                  style={{ background: 'transparent' }}
+                  disableElevation
+                  onClick={handleClickListItem}
+                  endIcon={<KeyboardArrowDown />}
+                >
+                  {t(dropDownMenuText)}
+                </Button>
+              )}
+              <Menu
+                id='swap-menu'
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'swap-button',
+                  role: 'listbox',
                 }}
-              />
-            </Box>
-            <Box className='headingItem'>
-              <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
-            </Box>
-          </Box>
-        )}
-      </Box>
-      <Box padding={isProMode ? '0 24px' : '0'} mt={3.5}>
-        {swapIndex === SWAP_BEST_TRADE && <SwapBestTrade />}
-        {swapIndex === SWAP_NORMAL && <Swap />}
-        {swapIndex === SWAP_V3 && <SwapV3Page />}
-        {swapIndex === SWAP_LIMIT && (
-          <Box className='limitOrderPanel'>
-            <GelatoLimitOrderPanel />
-            <GelatoLimitOrdersHistoryPanel />
-            <Box mt={2} textAlign='center'>
-              <small>
-                <Trans
-                  i18nKey='limitOrderDisclaimer'
-                  components={{
-                    bold: <b />,
-                    alink: (
-                      <a
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        href='https://www.certik.org/projects/gelato'
-                      />
-                    ),
+              >
+                {SwapDropdownTabs.filter((d) => d.visible !== false).map(
+                  (option, index) => (
+                    <MenuItem
+                      key={option.key}
+                      disabled={option.key === selectedIndex}
+                      selected={option.key === selectedIndex}
+                      onClick={(event) => handleMenuItemClick(event, index)}
+                    >
+                      {t(option.name)}
+                    </MenuItem>
+                  ),
+                )}
+              </Menu>
+              {showCrossChain && (
+                <Box
+                  className={swapTabClass(SWAP_CROSS_CHAIN)}
+                  onClick={() => {
+                    setSelectedIndex(SWAP_CROSS_CHAIN);
+                    setAnchorEl(null);
+                    redirectWithSwapType(SWAP_CROSS_CHAIN);
                   }}
-                />
-              </small>
+                >
+                  <p>{t('crossChain')}</p>
+                </Box>
+              )}
+            </>
+          ) : (
+            <>
+              {SwapDropdownTabs.map((option, index) => (
+                <Box
+                  key={option.key}
+                  style={{ textAlign: 'center' }}
+                  className={swapTabClass(option.key)}
+                  onClick={() => {
+                    redirectWithSwapType(option.key);
+                  }}
+                >
+                  <p>{t(option.name)}</p>
+                </Box>
+              ))}
+            </>
+          )}
+          {
+            <Box
+              style={{
+                marginLeft: 'auto',
+                marginTop: 'auto',
+                marginBottom: 'auto',
+              }}
+            >
+              <Box margin='0 16px' className='flex items-center'>
+                {showProMode && (
+                  <Box className='flex items-center' mr={1}>
+                    <span
+                      className='text-secondary text-uppercase'
+                      style={{ marginRight: 8 }}
+                    >
+                      {t('proMode')}
+                    </span>
+                    <ToggleSwitch
+                      toggled={isProMode}
+                      onToggle={() => {
+                        redirectWithProMode(!isProMode);
+                      }}
+                    />
+                  </Box>
+                )}
+                <Box className='headingItem'>
+                  <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+                </Box>
+              </Box>
             </Box>
-          </Box>
+          }
+        </Box>
+      </Box>
+      <Box
+        style={{
+          backgroundImage: isProMode
+            ? 'linear-gradient(to bottom, #282d3d, #1b1e29)'
+            : '',
+        }}
+        padding={isProMode ? '0 24px 24px' : '0'}
+        pt={3.5}
+      >
+        {showBestTrade && Number(swapType) === SWAP_BEST_TRADE && (
+          <SwapBestTrade />
         )}
+        {v2 && Number(swapType) === SWAP_NORMAL && <Swap />}
+        {v3 && Number(swapType) === SWAP_V3 && <SwapV3Page />}
+        {showCrossChain && Number(swapType) === SWAP_CROSS_CHAIN && (
+          <SwapCrossChain />
+        )}
+        {showLimitOrder && Number(swapType) === SWAP_LIMIT && <Limit />}
+        {swapType === SWAP_TWAP.toString() && <TWAP />}
       </Box>
     </>
   );

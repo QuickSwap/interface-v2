@@ -5,26 +5,24 @@ import { Skeleton } from '@material-ui/lab';
 import dayjs from 'dayjs';
 import {
   formatCompact,
-  getFormattedPrice,
   getPriceClass,
   formatNumber,
   getChartDates,
-  getChartStartTime,
-  getLimitedData,
   getYAXISValuesAnalytics,
+  getFormattedPercent,
 } from 'utils';
 import { AreaChart, ChartType } from 'components';
-import { getTokenChartData } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
-import { getTokenChartDataV3 } from 'utils/v3-graph';
-import { useIsV2 } from 'state/application/hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
 const CHART_PRICE = 2;
 
-const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
+const AnalyticsTokenChart: React.FC<{
+  token: any;
+}> = ({ token }) => {
   const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id;
@@ -35,6 +33,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
+  const { chainId } = useActiveWeb3React();
 
   const chartData = useMemo(() => {
     if (!tokenChartData) return;
@@ -80,35 +79,30 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
     }
   }, [token, chartIndex]);
 
-  const { isV2 } = useIsV2();
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
     async function fetchTokenChartData() {
-      updateTokenChartData(null);
+      if (chainId) {
+        updateTokenChartData(null);
 
-      const duration =
-        durationIndex === GlobalConst.analyticChart.ALL_CHART
-          ? 0
-          : getChartStartTime(durationIndex);
-
-      const tokenChartDataFn = !isV2
-        ? getTokenChartDataV3(tokenAddress, duration)
-        : getTokenChartData(tokenAddress, duration);
-
-      tokenChartDataFn.then((chartData) => {
-        if (chartData) {
-          const newChartData = getLimitedData(
-            chartData,
-            GlobalConst.analyticChart.CHART_COUNT,
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-chart-data/${tokenAddress}/${durationIndex}/${version}?chainId=${chainId}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get token chart data`,
           );
-          updateTokenChartData(newChartData);
         }
-      });
+        const data = await res.json();
+        if (data?.data?.tokenChartData) {
+          updateTokenChartData(data?.data?.tokenChartData);
+        }
+      }
     }
-    if (isV2 !== undefined) {
-      fetchTokenChartData();
-    }
-  }, [tokenAddress, durationIndex, isV2]);
+    fetchTokenChartData();
+  }, [tokenAddress, durationIndex, version, chainId]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
@@ -132,7 +126,7 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
                     className={`priceChangeWrapper ${currentPercentClass}`}
                     ml={1}
                   >
-                    <small>{getFormattedPrice(Number(currentPercent))}%</small>
+                    <small>{getFormattedPercent(Number(currentPercent))}</small>
                   </Box>
                 </Box>
                 <Box>
@@ -170,9 +164,9 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
             yAxisValues={getYAXISValuesAnalytics(chartData)}
             dates={tokenChartData.map((value: any) => value.date)}
             width='100%'
-            strokeColor={!isV2 ? '#3e92fe' : '#00dced'}
-            gradientColor={!isV2 ? '#448aff' : undefined}
-            height={!isV2 ? 275 : 240}
+            strokeColor={version !== 'v2' ? '#3e92fe' : '#00dced'}
+            gradientColor={version !== 'v2' ? '#448aff' : undefined}
+            height={version !== 'v2' ? 275 : 240}
             categories={getChartDates(tokenChartData, durationIndex)}
           />
         ) : (
@@ -183,4 +177,4 @@ const AnalyticsTokenChart: React.FC<{ token: any }> = ({ token }) => {
   );
 };
 
-export default AnalyticsTokenChart;
+export default React.memo(AnalyticsTokenChart);

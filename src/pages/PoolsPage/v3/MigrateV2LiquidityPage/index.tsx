@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as ArrowLeft } from 'assets/images/ArrowLeft.svg';
@@ -7,15 +7,28 @@ import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import Loader from 'components/Loader';
 import V2PositionCard from './components/V2PositionCard';
 import './index.scss';
+import { useTranslation } from 'react-i18next';
+import { getConfig } from 'config';
 
 export default function MigrateV2LiquidityPage() {
+  const { t } = useTranslation();
   const history = useHistory();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const {
     loading: v2PairsLoading,
     pairs: allV2PairsWithLiquidity,
   } = useV2LiquidityPools(account ?? undefined);
   const [openPoolFinder, setOpenPoolFinder] = useState(false);
+
+  const config = getConfig(chainId);
+  const isMigrateAvailable = config['migrate']['available'];
+
+  useEffect(() => {
+    if (!isMigrateAvailable) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMigrateAvailable]);
 
   return (
     <>
@@ -33,7 +46,7 @@ export default function MigrateV2LiquidityPage() {
           >
             <ArrowLeft />
           </Box>
-          <p className='weight-600'>Migrate V2 Liquidity</p>
+          <p className='weight-600'>{t('migrateLiquidity')}</p>
           <Box
             width={28}
             height={28}
@@ -43,34 +56,33 @@ export default function MigrateV2LiquidityPage() {
           </Box>
         </Box>
         <Box mt={3}>
-          <small>
-            For each pool shown below, click ‘Migrate liquidity’ to remove
-            liquidity from Quickswap V2 and deposit it into Quickswap V3.
-          </small>
+          <small>{t('migrateLiquidityDesc')}</small>
         </Box>
-        <Box mt={3}>
+        <Box>
           {v2PairsLoading ? (
-            <Box className='flex justify-center'>
+            <Box className='flex justify-center' mt={3}>
               <Loader stroke='white' size={'2rem'} />
             </Box>
           ) : allV2PairsWithLiquidity.length > 0 ? (
             allV2PairsWithLiquidity.map((pair) => (
-              <V2PositionCard key={pair.liquidityToken.address} pair={pair} />
+              <Box mt={3} key={pair.liquidityToken.address}>
+                <V2PositionCard pair={pair} />
+              </Box>
             ))
           ) : (
-            <Box textAlign='center'>
-              <small>There are no v2 liquidity pools</small>
+            <Box textAlign='center' mt={3}>
+              <small>{t('noV2LiquidityPools')}</small>
             </Box>
           )}
         </Box>
         <Box mt={2} textAlign='center'>
           <small className='text-secondary'>
-            Don‘t see your V2 liquidity?{' '}
+            {t('dontseeV2Liquidity')}?{' '}
             <small
               className='text-primary cursor-pointer'
               onClick={() => setOpenPoolFinder(true)}
             >
-              Import it
+              {t('importIt')}
             </small>
           </small>
         </Box>

@@ -3,6 +3,7 @@ import {
   ALLOWED_PRICE_IMPACT_HIGH,
   PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
 } from 'constants/v3/misc';
+import { TFunction } from 'react-i18next';
 
 /**
  * Given the price impact, get user confirmation.
@@ -11,20 +12,21 @@ import {
  */
 export default function confirmPriceImpactWithoutFee(
   priceImpactWithoutFee: Percent,
+  translation: TFunction,
 ): boolean {
   if (!priceImpactWithoutFee.lessThan(PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN)) {
     return (
       window.prompt(
-        `This swap has a price impact of at least ${PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
-          0,
-        )}%. Please type the word "confirm" to continue with this swap.`,
+        translation('typeConfirmSwapPriceImpact', {
+          priceImpact: PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(0),
+        }),
       ) === 'confirm'
     );
   } else if (!priceImpactWithoutFee.lessThan(ALLOWED_PRICE_IMPACT_HIGH)) {
     return window.confirm(
-      `This swap has a price impact of at least ${ALLOWED_PRICE_IMPACT_HIGH.toFixed(
-        0,
-      )}%. Please confirm that you would like to continue with this swap.`,
+      translation('confirmSwapPriceImpact', {
+        priceImpact: ALLOWED_PRICE_IMPACT_HIGH.toFixed(0),
+      }),
     );
   }
   return true;

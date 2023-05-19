@@ -3,58 +3,59 @@ import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { useGlobalData } from 'state/application/hooks';
 import {
   formatCompact,
-  getChartData,
   getPriceClass,
   getChartDates,
-  getChartStartTime,
   getLimitedData,
+  getFormattedPercent,
 } from 'utils';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
-import { getChartDataV3 } from 'utils/v3-graph';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 dayjs.extend(utc);
 
-const AnalyticsLiquidityChart: React.FC = () => {
+const AnalyticsLiquidityChart: React.FC<{
+  globalData: any;
+  setDataLoaded: (loaded: boolean) => void;
+}> = ({ globalData, setDataLoaded }) => {
   const { t } = useTranslation();
-  const { globalData } = useGlobalData();
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
-
-  const { isV2 } = useIsV2();
+  const { chainId } = useActiveWeb3React();
+  const version = useAnalyticsVersion();
 
   useEffect(() => {
-    if (isV2 === undefined) return;
+    if (!chainId) return;
     const fetchChartData = async () => {
       updateGlobalChartData(null);
+      setDataLoaded(false);
 
-      const duration =
-        durationIndex === GlobalConst.analyticChart.ALL_CHART
-          ? 0
-          : getChartStartTime(durationIndex);
-
-      const chartDataFn = isV2
-        ? getChartData(duration)
-        : getChartDataV3(duration);
-
-      chartDataFn.then(([newChartData]) => {
-        if (newChartData) {
-          const chartData = getLimitedData(
-            newChartData,
-            GlobalConst.analyticChart.CHART_COUNT,
-          );
-          updateGlobalChartData(chartData);
-        }
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText ||
+            res.statusText ||
+            `Failed to get chart data ${durationIndex} ${version}`,
+        );
+      }
+      const pairsData = await res.json();
+      setDataLoaded(true);
+      const chartData = getLimitedData(
+        pairsData.data[0],
+        GlobalConst.analyticChart.CHART_COUNT,
+      );
+      updateGlobalChartData(chartData);
     };
     fetchChartData();
-  }, [updateGlobalChartData, durationIndex, isV2]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [durationIndex, version, chainId]);
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,
@@ -114,11 +115,7 @@ const AnalyticsLiquidityChart: React.FC = () => {
             className={liquidityPercentClass}
           >
             <span>
-              {`${(globalData.liquidityChangeUSD ?? 0) > 0 ? '+' : ''}
-                      ${(globalData.liquidityChangeUSD ?? 0).toLocaleString(
-                        'us',
-                      )}`}
-              %
+              {getFormattedPercent(globalData.liquidityChangeUSD ?? 0)}
             </span>
           </Box>
         </Box>
@@ -138,8 +135,8 @@ const AnalyticsLiquidityChart: React.FC = () => {
             data={globalChartData.map((value: any) =>
               Number(value.totalLiquidityUSD),
             )}
-            strokeColor={isV2 ? '#00dced' : '#3e92fe'}
-            gradientColor={isV2 ? undefined : '#448aff'}
+            strokeColor={version === 'v2' ? '#00dced' : '#3e92fe'}
+            gradientColor={version === 'v2' ? undefined : '#448aff'}
             yAxisValues={yAxisValues}
             dates={globalChartData.map((value: any) => value.date)}
             width='100%'

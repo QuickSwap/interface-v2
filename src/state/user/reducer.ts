@@ -15,7 +15,11 @@ import {
   updateUserDeadline,
   toggleURLWarning,
   updateUserSingleHopOnly,
+  updateUserBonusRouter,
+  updateSlippageManuallySet,
+  updateSelectedWallet,
 } from './actions';
+import { ConnectionType } from 'connectors';
 
 const currentTimestamp = () => new Date().getTime();
 
@@ -27,9 +31,11 @@ export interface UserState {
   matchesDarkMode: boolean; // whether the dark mode media query matches
 
   userExpertMode: boolean;
+  userBonusRouterDisabled: boolean;
 
   // user defined slippage tolerance in bips, used in all txns
   userSlippageTolerance: number;
+  slippageManuallySet: boolean;
 
   // deadline set by user in minutes, used in all txns
   userDeadline: number;
@@ -51,6 +57,7 @@ export interface UserState {
   URLWarningVisible: boolean;
   // v3 user states
   userSingleHopOnly: boolean; // only allow swaps on direct pairs
+  selectedWallet?: ConnectionType;
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -61,13 +68,16 @@ export const initialState: UserState = {
   userDarkMode: null,
   matchesDarkMode: false,
   userExpertMode: false,
+  userBonusRouterDisabled: false,
   userSlippageTolerance: GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE,
+  slippageManuallySet: false,
   userDeadline: GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW,
   tokens: {},
   pairs: {},
   timestamp: currentTimestamp(),
   URLWarningVisible: true,
   userSingleHopOnly: false,
+  selectedWallet: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -153,5 +163,14 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUserSingleHopOnly, (state, action) => {
       state.userSingleHopOnly = action.payload.userSingleHopOnly;
+    })
+    .addCase(updateUserBonusRouter, (state, action) => {
+      state.userBonusRouterDisabled = action.payload.userBonusRouterDisabled;
+    })
+    .addCase(updateSlippageManuallySet, (state, action) => {
+      state.slippageManuallySet = action.payload.slippageManuallySet;
+    })
+    .addCase(updateSelectedWallet, (state, action) => {
+      state.selectedWallet = action.payload.wallet;
     }),
 );

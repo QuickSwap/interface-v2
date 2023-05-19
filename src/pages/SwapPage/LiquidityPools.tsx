@@ -3,11 +3,14 @@ import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
 import { getTokenPairs, getBulkPairData } from 'utils';
-import { Token } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice } from 'state/application/hooks';
+import { getTopPairsV3ByTokens } from 'utils/v3-graph';
+import { useActiveWeb3React } from 'hooks';
+import { getConfig } from 'config';
 
 const LiquidityPools: React.FC<{
   token1: Token;
@@ -15,7 +18,9 @@ const LiquidityPools: React.FC<{
 }> = ({ token1, token2 }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(false);
+  const isLg = useMediaQuery(breakpoints.only('lg'));
+
+  const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(isMobile);
   const [liquidityFilterIndex, setLiquidityFilterIndex] = useState(0);
   const [tokenPairs, updateTokenPairs] = useState<any[] | null>(null);
   const token1Address = token1.address.toLowerCase();
@@ -28,6 +33,16 @@ const LiquidityPools: React.FC<{
     () =>
       tokenPairs
         ? tokenPairs
+            .filter(
+              (item: any, pos: number, self: any[]) =>
+                self.findIndex(
+                  (item1: any) =>
+                    item &&
+                    item1 &&
+                    item.token0.symbol === item1.token0.symbol &&
+                    item.token1.symbol === item1.token1.symbol,
+                ) === pos,
+            )
             .filter((pair: any) => {
               if (liquidityFilterIndex === 0) {
                 return true;
@@ -43,6 +58,11 @@ const LiquidityPools: React.FC<{
                 );
               }
             })
+            .sort((pair1: any, pair2: any) =>
+              Number(pair1.trackedReserveUSD) > Number(pair2.trackedReserveUSD)
+                ? -1
+                : 1,
+            )
             .slice(0, 5)
         : [],
     [tokenPairs, liquidityFilterIndex, token1Address, token2Address],
@@ -56,29 +76,50 @@ const LiquidityPools: React.FC<{
   useEffect(() => {
     if (!ethPrice.price) return;
     (async () => {
-      const tokenPairs = await getTokenPairs(token1Address, token2Address);
+      const config = getConfig(token1.chainId);
+      const v2 = config['v2'];
+      let pairData;
+      if (v2) {
+        const tokenPairs = await getTokenPairs(
+          token1Address,
+          token2Address,
+          token1.chainId ?? ChainId.MATIC,
+        );
+        const formattedPairs = tokenPairs
+          ? tokenPairs
+              .filter((pair: any) => {
+                return (
+                  whiteListAddressList.includes(pair?.token0?.id) &&
+                  whiteListAddressList.includes(pair?.token1?.id)
+                );
+              })
+              .map((pair: any) => {
+                return pair.id;
+              })
+          : [];
 
-      const formattedPairs = tokenPairs
-        ? tokenPairs
-            .filter((pair: any) => {
-              return (
-                whiteListAddressList.includes(pair?.token0?.id) &&
-                whiteListAddressList.includes(pair?.token1?.id)
-              );
-            })
-            .map((pair: any) => {
-              return pair.id;
-            })
-        : [];
-
-      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
-
-      if (pairData) {
-        updateTokenPairs(pairData);
+        pairData = await getBulkPairData(
+          formattedPairs,
+          ethPrice.price,
+          token1.chainId,
+        );
       }
+      const tokenPairsV3 = await getTopPairsV3ByTokens(
+        token1Address.toLowerCase(),
+        token2Address.toLowerCase(),
+        token1.chainId ?? ChainId.MATIC,
+      );
+
+      updateTokenPairs((pairData ?? []).concat(tokenPairsV3));
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token1Address, token2Address, whiteListAddressList, ethPrice.price]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLiquidityPoolClosed(isMobile);
+    }, 300);
+  }, [isMobile]);
 
   return (
     <>
@@ -126,7 +167,12 @@ const LiquidityPools: React.FC<{
                   {token2.symbol?.toUpperCase()}
                 </small>
               </Box>
-              {!isMobile && (
+              {isLg && (
+                <Box style={{ textAlign: 'right' }} width={0.5}>
+                  <small>{t('24hVol')}</small>
+                </Box>
+              )}
+              {!isMobile && !isLg && (
                 <>
                   <Box width={0.2}>
                     <small>{t('tvl')}</small>

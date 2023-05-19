@@ -150,6 +150,7 @@
   display: flex;
   align-items: center;
   background-color: $grey3;
+  cursor: pointer;
 }
 
 //V3
@@ -188,8 +189,6 @@
     flex-wrap: wrap;
     &:not(:first-child) {
       margin-top: 32px;
-    }
-    & > small {
     }
     @include media('screen', '<tablet') {
       width: 100%;

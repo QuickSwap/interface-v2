@@ -1,0 +1,62 @@
+{
+  "v3": true,
+  "v2": true,
+  "rpc": "https://polygon-rpc.com/",
+  "blockExplorer": "https://polygonscan.com",
+  "chainId": 137,
+  "isMainnet": true,
+  "networkName": "Polygon",
+  "nativeCurrencyImage": "/polygon.svg",
+  "nativeCurrency": {
+    "name": "Matic Token",
+    "symbol": "MATIC",
+    "decimals": 18
+  },
+  "swap": {
+    "available": true,
+    "bestTrade": true,
+    "proMode": true,
+    "limitOrder": true,
+    "twapOrder": true,
+    "crossChain": true
+  },
+  "pools": {
+    "available": true
+  },
+  "farm": {
+    "available": true
+  },
+  "lair": {
+    "available": true,
+    "oldLair": true,
+    "newLair": true,
+    "syrup": true
+  },
+  "convert": {
+    "available": true
+  },
+  "predictions": {
+    "available": true
+  },
+  "analytics": {
+    "available": true
+  },
+  "lending": {
+    "available": false
+  },
+  "migrate": {
+    "available": true
+  },
+  "gamingHub": {
+    "available": true
+  },
+  "leaderboard": {
+    "available": true
+  },
+  "safe": {
+    "available": false
+  },
+  "perps": {
+    "available": false
+  }
+}

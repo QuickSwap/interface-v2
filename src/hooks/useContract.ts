@@ -1,12 +1,8 @@
 import { Contract } from '@ethersproject/contracts';
-import { abi as GOVERNANCE_ABI } from '@uniswap/governance/build/GovernorAlpha.json';
-import { abi as UNI_ABI } from '@uniswap/governance/build/Uni.json';
 import { abi as STAKING_REWARDS_ABI } from '@uniswap/liquidity-staker/build/StakingRewards.json';
-import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json';
 import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { useMemo } from 'react';
-import { GlobalConst, GlobalValue } from '../constants';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS,
@@ -19,7 +15,7 @@ import V2ToV3MigratorABI from 'constants/abis/v3/migrator.json';
 import { STAKING_DUAL_REWARDS_INTERFACE } from 'constants/abis/staking-rewards';
 import UNISOCKS_ABI from 'constants/abis/unisocks.json';
 import WETH_ABI from 'constants/abis/weth.json';
-import { MULTICALL_ABI, MULTICALL_NETWORKS } from 'constants/multicall';
+import { MULTICALL_ABI } from 'constants/multicall';
 import {
   V1_EXCHANGE_ABI,
   V1_FACTORY_ABI,
@@ -31,14 +27,26 @@ import { abi as LairABI } from 'abis/DragonLair.json';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
 import {
+  GAMMA_MASTERCHEF_ADDRESSES,
+  GAMMA_UNIPROXY_ADDRESSES,
   MULTICALL_ADDRESS,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   QUOTER_ADDRESSES,
   V3_MIGRATOR_ADDRESSES,
+  MULTICALL_NETWORKS,
+  V2_ROUTER_ADDRESS,
+  LAIR_ADDRESS,
+  QUICK_ADDRESS,
+  NEW_LAIR_ADDRESS,
+  QUICK_CONVERSION,
+  DL_QUICK_ADDRESS,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
+import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
+import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
+import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -74,28 +82,65 @@ export function useContract<T extends Contract = Contract>(
   ]) as T;
 }
 
-export function useLairContract(): Contract | null {
-  return useContract(GlobalConst.addresses.LAIR_ADDRESS, LairABI, true);
+export function useContracts<T extends Contract = Contract>(
+  addressOrAddressMaps: string[] | { [chainId: number]: string }[] | undefined,
+  ABI: any,
+  withSignerIfPossible = true,
+): (T | null)[] {
+  const { library, account, chainId } = useActiveWeb3React();
+
+  return useMemo(() => {
+    if (!addressOrAddressMaps || !ABI || !library || !chainId) return [];
+    return addressOrAddressMaps.map((addressOrAddressMap) => {
+      let address: string | undefined;
+      if (typeof addressOrAddressMap === 'string')
+        address = addressOrAddressMap;
+      else address = addressOrAddressMap[chainId];
+      if (!address) return null;
+      try {
+        return getContract(
+          address,
+          ABI,
+          library,
+          withSignerIfPossible && account ? account : undefined,
+        );
+      } catch (error) {
+        console.error('Failed to get contract', error);
+        return null;
+      }
+    });
+  }, [
+    addressOrAddressMaps,
+    ABI,
+    library,
+    chainId,
+    withSignerIfPossible,
+    account,
+  ]) as (T | null)[];
+}
+
+export function useLairContract(chainId?: ChainId): Contract | null {
+  return useContract(
+    chainId ? LAIR_ADDRESS[chainId] : LAIR_ADDRESS,
+    LairABI,
+    true,
+  );
 }
 
 export function useQUICKContract(): Contract | null {
-  return useContract(GlobalConst.addresses.QUICK_ADDRESS, ERC20_ABI, true);
+  return useContract(QUICK_ADDRESS, ERC20_ABI, true);
 }
 
 export function useNewLairContract(): Contract | null {
-  return useContract(GlobalConst.addresses.NEW_LAIR_ADDRESS, LairABI, true);
+  return useContract(NEW_LAIR_ADDRESS, LairABI, true);
 }
 
 export function useNewQUICKContract(): Contract | null {
-  return useContract(GlobalConst.addresses.NEW_QUICK_ADDRESS, ERC20_ABI, true);
+  return useContract(DL_QUICK_ADDRESS, ERC20_ABI, true);
 }
 
 export function useQUICKConversionContract(): Contract | null {
-  return useContract(
-    GlobalConst.addresses.QUICK_CONVERSION,
-    QUICKConversionABI,
-    true,
-  );
+  return useContract(QUICK_CONVERSION, QUICKConversionABI, true);
 }
 
 export function useV1FactoryContract(): Contract | null {
@@ -200,25 +245,6 @@ export function useMulticall2Contract() {
   return useContract(MULTICALL_ADDRESS, MULTICALL2_ABI, false);
 }
 
-export function useMerkleDistributorContract(): Contract | null {
-  const { chainId } = useActiveWeb3React();
-  return useContract(
-    chainId
-      ? GlobalConst.addresses.MERKLE_DISTRIBUTOR_ADDRESS[chainId]
-      : undefined,
-    MERKLE_DISTRIBUTOR_ABI,
-    true,
-  );
-}
-
-export function useGovernanceContract(): Contract | null {
-  return useContract(
-    GlobalConst.addresses.GOVERNANCE_ADDRESS,
-    GOVERNANCE_ABI,
-    true,
-  );
-}
-
 export function useStakingContract(
   stakingAddress?: string,
   withSignerIfPossible?: boolean,
@@ -249,7 +275,7 @@ export function useSocksController(): Contract | null {
 export function useRouterContract(): Contract | null {
   const { chainId, account } = useActiveWeb3React();
   return useContract(
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
     IUniswapV2Router02ABI,
     Boolean(account),
   );
@@ -267,4 +293,38 @@ export function useV3NFTPositionManagerContract(
     NFTPosMan,
     withSignerIfPossible,
   );
+}
+
+export function useGammaUNIProxyContract(withSignerIfPossible?: boolean) {
+  return useContract(
+    GAMMA_UNIPROXY_ADDRESSES,
+    GammaUniProxy,
+    withSignerIfPossible,
+  );
+}
+
+export function useMasterChefContract(
+  index?: number,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(
+    GAMMA_MASTERCHEF_ADDRESSES[index ?? 0],
+    GammaMasterChef,
+    withSignerIfPossible,
+  );
+}
+
+export function useMasterChefContracts(withSignerIfPossible?: boolean) {
+  return useContracts(
+    GAMMA_MASTERCHEF_ADDRESSES,
+    GammaMasterChef,
+    withSignerIfPossible,
+  );
+}
+
+export function useGammaHypervisorContract(
+  address: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, GammaPairABI, withSignerIfPossible);
 }

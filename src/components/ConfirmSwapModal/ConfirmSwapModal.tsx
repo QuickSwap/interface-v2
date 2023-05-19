@@ -1,4 +1,4 @@
-import { currencyEquals, Trade } from '@uniswap/sdk';
+import { Currency, currencyEquals, Trade } from '@uniswap/sdk';
 import React, { useCallback, useMemo } from 'react';
 import {
   TransactionConfirmationModal,
@@ -9,6 +9,7 @@ import SwapModalHeader from './SwapModalHeader';
 import { formatTokenAmount } from 'utils';
 import 'components/styles/ConfirmSwapModal.scss';
 import { useTranslation } from 'react-i18next';
+import { OptimalRate } from '@paraswap/sdk';
 
 /**
  * Returns true if the trade requires a confirmation of details before we can submit it
@@ -30,8 +31,11 @@ function tradeMeaningfullyDiffers(tradeA: Trade, tradeB: Trade): boolean {
 
 interface ConfirmSwapModalProps {
   isOpen: boolean;
-  trade: Trade | undefined;
-  originalTrade: Trade | undefined;
+  optimalRate?: OptimalRate;
+  trade?: Trade;
+  originalTrade?: Trade;
+  inputCurrency?: Currency;
+  outputCurrency?: Currency;
   attemptingTxn: boolean;
   txPending?: boolean;
   txHash: string | undefined;
@@ -45,6 +49,9 @@ interface ConfirmSwapModalProps {
 
 const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   trade,
+  optimalRate,
+  inputCurrency,
+  outputCurrency,
   originalTrade,
   onAcceptChanges,
   allowedSlippage,
@@ -60,31 +67,52 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   const showAcceptChanges = useMemo(
     () =>
       Boolean(
-        trade &&
+        !optimalRate &&
+          trade &&
           originalTrade &&
           tradeMeaningfullyDiffers(trade, originalTrade),
       ),
-    [originalTrade, trade],
+    [originalTrade, trade, optimalRate],
   );
 
   const modalHeader = useCallback(() => {
-    return trade ? (
+    return optimalRate ?? trade ? (
       <SwapModalHeader
         trade={trade}
+        optimalRate={optimalRate}
+        inputCurrency={inputCurrency}
+        outputCurrency={outputCurrency}
         allowedSlippage={allowedSlippage}
         onConfirm={onConfirm}
         showAcceptChanges={showAcceptChanges}
         onAcceptChanges={onAcceptChanges}
       />
     ) : null;
-  }, [allowedSlippage, onAcceptChanges, showAcceptChanges, trade, onConfirm]);
+  }, [
+    allowedSlippage,
+    onAcceptChanges,
+    optimalRate,
+    showAcceptChanges,
+    trade,
+    onConfirm,
+    inputCurrency,
+    outputCurrency,
+  ]);
 
   // text to show while loading
   const pendingText = t('swappingFor', {
-    amount1: formatTokenAmount(trade?.inputAmount),
-    symbol1: trade?.inputAmount?.currency?.symbol,
-    amount2: formatTokenAmount(trade?.outputAmount),
-    symbol2: trade?.outputAmount?.currency?.symbol,
+    amount1: optimalRate
+      ? Number(optimalRate.srcAmount) / 10 ** optimalRate.srcDecimals
+      : formatTokenAmount(trade?.inputAmount),
+    symbol1: trade
+      ? trade?.inputAmount?.currency?.symbol
+      : inputCurrency?.symbol,
+    amount2: optimalRate
+      ? Number(optimalRate.destAmount) / 10 ** optimalRate.destDecimals
+      : formatTokenAmount(trade?.outputAmount),
+    symbol2: trade
+      ? trade?.outputAmount?.currency?.symbol
+      : outputCurrency?.symbol,
   });
 
   const confirmationContent = useCallback(

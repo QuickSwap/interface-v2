@@ -5,7 +5,7 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
-import { Box, Button, Divider } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { PositionPool } from 'models/interfaces';
 import { useTranslation } from 'react-i18next';
 import {
@@ -25,19 +25,17 @@ import {
 import { Percent } from '@uniswap/sdk-core';
 
 import ReactGA from 'react-ga';
-import { useAppSelector } from 'state/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { calculateGasMarginV3 } from 'utils';
 import usePrevious from 'hooks/usePrevious';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import { GAS_PRICE_MULTIPLIER } from 'hooks/useGasPrice';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { NonfungiblePositionManager } from 'v3lib/nonfungiblePositionManager';
 import { WrappedCurrency } from 'models/types';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import ColoredSlider from 'components/ColoredSlider';
-import { JSBI } from '@uniswap/sdk';
+import { JSBI, WETH } from '@uniswap/sdk';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import './index.scss';
 
@@ -51,13 +49,6 @@ export default function RemoveLiquidityV3({
   const { t } = useTranslation();
 
   const tokenId = position.tokenId;
-
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
 
   // flag for receiving WETH
   const [receiveWETH, setReceiveWETH] = useState(false);
@@ -171,7 +162,6 @@ export default function RemoveLiquidityV3({
         const newTxn = {
           ...txn,
           gasLimit: calculateGasMarginV3(chainId, estimate),
-          gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
         };
 
         return library
@@ -189,7 +179,10 @@ export default function RemoveLiquidityV3({
               ].join('/'),
             });
             setTxnHash(response.hash);
-            const summary = `Remove ${liquidityValue0.currency.symbol}/${liquidityValue1.currency.symbol} liquidity`;
+            const summary = t('removeLiquidityWithTokens', {
+              symbol0: liquidityValue0.currency.symbol,
+              symbol1: liquidityValue1.currency.symbol,
+            });
             addTransaction(response, {
               summary,
             });
@@ -226,7 +219,6 @@ export default function RemoveLiquidityV3({
     library,
     tokenId,
     allowedSlippagePercent,
-    gasPrice,
     addTransaction,
     finalizedTransaction,
     t,
@@ -244,17 +236,20 @@ export default function RemoveLiquidityV3({
     setRemoveErrorMessage('');
   }, [onPercentSelectForSlider, txnHash]);
 
-  const pendingText = `Removing ${liquidityValue0?.toSignificant(6)} ${
-    liquidityValue0?.currency?.symbol
-  } and ${liquidityValue1?.toSignificant(6)} ${
-    liquidityValue1?.currency?.symbol
-  }`;
+  const pendingText = t('removingLiquidityMsg', {
+    amount1: liquidityValue0?.toSignificant(6),
+    symbol1: liquidityValue0?.currency?.symbol,
+    amount2: liquidityValue1?.toSignificant(6),
+    symbol2: liquidityValue1?.currency?.symbol,
+  });
 
   function modalHeader() {
     return (
       <Box>
         <Box mt={3} className='flex justify-between'>
-          <p>Pooled {liquidityValue0?.currency?.symbol}</p>
+          <p>
+            {t('pooled')} {liquidityValue0?.currency?.symbol}
+          </p>
           <Box className='flex items-center'>
             <p>{liquidityValue0?.toSignificant()}</p>
             <Box className='flex' ml={1}>
@@ -266,7 +261,9 @@ export default function RemoveLiquidityV3({
           </Box>
         </Box>
         <Box mt={2} className='flex justify-between'>
-          <p>Pooled {liquidityValue1?.currency?.symbol}</p>
+          <p>
+            {t('pooled')} {liquidityValue1?.currency?.symbol}
+          </p>
           <Box className='flex items-center'>
             <p>{liquidityValue1?.toSignificant()}</p>
             <Box className='flex' ml={1}>
@@ -279,9 +276,11 @@ export default function RemoveLiquidityV3({
         </Box>
         {(feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) && (
           <Box mt={2}>
-            <p>You will also collect fees earned from this position.</p>
+            <p>{t('collectFeeFromThisPosition')}.</p>
             <Box mt={2} className='flex justify-between'>
-              <p>{feeValue0?.currency?.symbol} Fees Earned:</p>
+              <p>
+                {feeValue0?.currency?.symbol} {t('feeEarned')}:
+              </p>
               <Box className='flex items-center'>
                 <p>{feeValue0?.toSignificant()}</p>
                 <Box className='flex' ml={1}>
@@ -293,7 +292,9 @@ export default function RemoveLiquidityV3({
               </Box>
             </Box>
             <Box mt={2} className='flex justify-between'>
-              <p>{feeValue1?.currency?.symbol} Fees Earned:</p>
+              <p>
+                {feeValue1?.currency?.symbol} {t('feeEarned')}:
+              </p>
               <Box className='flex items-center'>
                 <p>{feeValue1?.toSignificant()}</p>
                 <Box className='flex' ml={1}>
@@ -308,7 +309,7 @@ export default function RemoveLiquidityV3({
         )}
         <Box mt={2}>
           <Button className='v3-remove-liquidity-button' onClick={burn}>
-            Confirm
+            {t('confirm')}
           </Button>
         </Box>
       </Box>
@@ -316,7 +317,7 @@ export default function RemoveLiquidityV3({
   }
 
   const showCollectAsWeth = Boolean(
-    !chainId &&
+    chainId &&
       liquidityValue0?.currency &&
       liquidityValue1?.currency &&
       (liquidityValue0.currency.isNative ||
@@ -377,7 +378,7 @@ export default function RemoveLiquidityV3({
       </Box>
       <Box mt={2} className='v3-remove-liquidity-input-wrapper'>
         <Box mb={2} className='flex justify-between'>
-          <small className='text-secondary'>Amount</small>
+          <small className='text-secondary'>{t('amount')}</small>
         </Box>
         <Box mb={2} className='flex items-center justify-between'>
           <h3>{percentForSlider}%</h3>
@@ -400,14 +401,18 @@ export default function RemoveLiquidityV3({
       </Box>
       <Box my={2} className='v3-remove-liquidity-info-wrapper'>
         <Box>
-          <p>Pooled {liquidityValue0?.currency?.symbol}</p>
+          <p>
+            {t('pooled')} {liquidityValue0?.currency?.symbol}
+          </p>
           <Box className='flex items-center'>
             <p>{liquidityValue0?.toSignificant()}</p>
             <CurrencyLogo currency={liquidityValue0?.currency} size='20px' />
           </Box>
         </Box>
         <Box mt={2}>
-          <p>Pooled {liquidityValue1?.currency?.symbol}</p>
+          <p>
+            {t('pooled')} {liquidityValue1?.currency?.symbol}
+          </p>
           <Box className='flex items-center'>
             <p>{liquidityValue1?.toSignificant()}</p>
             <CurrencyLogo currency={liquidityValue1?.currency} size='20px' />
@@ -417,14 +422,18 @@ export default function RemoveLiquidityV3({
           <>
             <Box mt={2} width='100%' height='1px' className='border' />
             <Box my={2}>
-              <p>{feeValue0?.currency?.symbol} Fees Earned:</p>
+              <p>
+                {feeValue0?.currency?.symbol} {t('feeEarned')}:
+              </p>
               <Box className='flex items-center'>
                 <p>{feeValue0?.toSignificant()}</p>
                 <CurrencyLogo currency={feeValue0?.currency} size='20px' />
               </Box>
             </Box>
             <Box>
-              <p>{feeValue1?.currency?.symbol} Fees Earned:</p>
+              <p>
+                {feeValue1?.currency?.symbol} {t('feeEarned')}:
+              </p>
               <Box className='flex items-center'>
                 <p>{feeValue1?.toSignificant()}</p>
                 <CurrencyLogo currency={feeValue1?.currency} size='20px' />
@@ -436,7 +445,11 @@ export default function RemoveLiquidityV3({
       {showCollectAsWeth && (
         <Box mb={2} className='flex items-center'>
           <Box mr={1}>
-            <p>Collect as WMATIC</p>
+            <p>
+              {t('collectAsWmatic', {
+                symbol: chainId ? WETH[chainId].symbol : '',
+              })}
+            </p>
           </Box>
           <ToggleSwitch
             toggled={receiveWETH}
@@ -449,7 +462,7 @@ export default function RemoveLiquidityV3({
         disabled={removed || percent === 0 || !liquidityValue0}
         onClick={() => setShowConfirm(true)}
       >
-        {percent ? 'Remove' : 'Enter Amount'}
+        {percent ? t('remove') : t('enterAmount')}
       </Button>
     </>
   );

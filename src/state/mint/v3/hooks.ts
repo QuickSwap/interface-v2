@@ -6,6 +6,7 @@ import {
   Price,
   Rounding,
   Token,
+  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
 import { AppState } from '../../index';
@@ -17,6 +18,8 @@ import {
   typeLeftRangeInput,
   typeRightRangeInput,
   typeStartPriceInput,
+  updateLiquidityRangeType,
+  updatePresetRange,
 } from './actions';
 import { tryParseTick } from './utils';
 import { PoolState, usePool } from 'hooks/v3/usePools';
@@ -32,7 +35,19 @@ import { getTickToPrice } from 'v3lib/utils/getTickToPrice';
 import { BIG_INT_ZERO } from 'constants/v3/misc';
 import { FeeAmount } from 'v3lib/utils';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
+import { useCurrencyBalance } from 'state/wallet/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
+import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
+import { GlobalConst } from 'constants/index';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { useGammaUNIProxyContract } from 'hooks/useContract';
+import {
+  useSingleCallResult,
+  useSingleContractMultipleData,
+} from 'state/multicall/hooks';
+import { ETHER, WETH } from '@uniswap/sdk';
+import { maxAmountSpend } from 'utils';
+import { GammaPairs } from 'constants/index';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -49,6 +64,8 @@ export interface IDerivedMintInfo {
   position: Position | undefined;
   noLiquidity?: boolean;
   errorMessage?: string;
+  token0ErrorMessage?: string;
+  token1ErrorMessage?: string;
   errorCode?: number;
   invalidPool: boolean;
   outOfRange: boolean;
@@ -60,6 +77,8 @@ export interface IDerivedMintInfo {
   dynamicFee: number;
   lowerPrice: any;
   upperPrice: any;
+  liquidityRangeType: string | undefined;
+  presetRange: IPresetArgs | undefined;
 }
 
 export function useV3MintState(): AppState['mintV3'] {
@@ -74,6 +93,8 @@ export function useV3MintActionHandlers(
   onLeftRangeInput: (typedValue: string) => void;
   onRightRangeInput: (typedValue: string) => void;
   onStartPriceInput: (typedValue: string) => void;
+  onChangeLiquidityRangeType: (value: string) => void;
+  onChangePresetRange: (value: IPresetArgs) => void;
 } {
   const dispatch = useAppDispatch();
 
@@ -124,12 +145,28 @@ export function useV3MintActionHandlers(
     [dispatch],
   );
 
+  const onChangeLiquidityRangeType = useCallback(
+    (value: string) => {
+      dispatch(updateLiquidityRangeType({ liquidityRangeType: value }));
+    },
+    [dispatch],
+  );
+
+  const onChangePresetRange = useCallback(
+    (value: IPresetArgs) => {
+      dispatch(updatePresetRange({ presetRange: value }));
+    },
+    [dispatch],
+  );
+
   return {
     onFieldAInput,
     onFieldBInput,
     onLeftRangeInput,
     onRightRangeInput,
     onStartPriceInput,
+    onChangeLiquidityRangeType,
+    onChangePresetRange,
   };
 }
 
@@ -155,6 +192,8 @@ export function useV3DerivedMintInfo(
   position: Position | undefined;
   noLiquidity?: boolean;
   errorMessage?: string;
+  token0ErrorMessage?: string;
+  token1ErrorMessage?: string;
   errorCode?: number;
   invalidPool: boolean;
   outOfRange: boolean;
@@ -166,8 +205,10 @@ export function useV3DerivedMintInfo(
   dynamicFee: number;
   lowerPrice: any;
   upperPrice: any;
+  liquidityRangeType: string | undefined;
+  presetRange: IPresetArgs | undefined;
 } {
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
 
   const {
     independentField,
@@ -175,6 +216,8 @@ export function useV3DerivedMintInfo(
     leftRangeTypedValue,
     rightRangeTypedValue,
     startPriceTypedValue,
+    liquidityRangeType,
+    presetRange,
   } = useV3MintState();
 
   const dependentField =
@@ -205,14 +248,50 @@ export function useV3DerivedMintInfo(
     [tokenA, tokenB],
   );
 
+  const ethBalance = useCurrencyBalance(
+    account ?? undefined,
+    chainId ? ETHER[chainId] : undefined,
+  );
+  const wethBalance = useCurrencyBalance(
+    account ?? undefined,
+    chainId ? WETH[chainId] : undefined,
+  );
+  const maxSpendETH = chainId ? maxAmountSpend(chainId, ethBalance) : undefined;
   // balances
   const balances = useCurrencyBalances(account ?? undefined, [
     currencies[Field.CURRENCY_A],
     currencies[Field.CURRENCY_B],
   ]);
+
   const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
-    [Field.CURRENCY_A]: balances[0],
-    [Field.CURRENCY_B]: balances[1],
+    [Field.CURRENCY_A]:
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      currencyA &&
+      chainId &&
+      currencyA.wrapped.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase()
+        ? CurrencyAmount.fromRawAmount(
+            currencyA,
+            JSBI.ADD(
+              JSBI.BigInt(wethBalance ? wethBalance.numerator.toString() : '0'),
+              JSBI.BigInt(maxSpendETH ? maxSpendETH.numerator.toString() : '0'),
+            ),
+          )
+        : balances[0],
+    [Field.CURRENCY_B]:
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      currencyB &&
+      chainId &&
+      currencyB.wrapped.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase()
+        ? CurrencyAmount.fromRawAmount(
+            currencyB,
+            JSBI.ADD(
+              JSBI.BigInt(wethBalance ? wethBalance.numerator.toString() : '0'),
+              JSBI.BigInt(maxSpendETH ? maxSpendETH.numerator.toString() : '0'),
+            ),
+          )
+        : balances[1],
   };
 
   // pool
@@ -403,11 +482,170 @@ export function useV3DerivedMintInfo(
       (price.lessThan(lowerPrice) || price.greaterThan(upperPrice)),
   );
 
+  const independentCurrency = currencies[independentField];
+
   const independentAmount:
     | CurrencyAmount<Currency>
-    | undefined = tryParseAmount(typedValue, currencies[independentField]);
+    | undefined = tryParseAmount(
+    typedValue,
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      independentCurrency &&
+      independentCurrency.isNative
+      ? independentCurrency.wrapped
+      : independentCurrency,
+  );
+
+  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+  const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : [];
+  const depositAmountsData = useSingleContractMultipleData(
+    presetRange && presetRange.address && gammaCurrencies.length > 0
+      ? gammaUNIPROXYContract
+      : undefined,
+    'getDepositAmount',
+    presetRange && presetRange.address
+      ? gammaCurrencies.map((currency) => [
+          presetRange?.address,
+          currency?.wrapped.address,
+          parseUnits('1', currency?.wrapped.decimals ?? 0),
+        ])
+      : [],
+  );
+
+  const depositCapData = useSingleCallResult(
+    presetRange && presetRange.address ? gammaUNIPROXYContract : undefined,
+    'positions',
+    presetRange && presetRange.address ? [presetRange.address] : [],
+  );
+
+  const gammaPairKeyReverted =
+    currencyA && currencyB
+      ? currencyB.wrapped.address.toLowerCase() +
+        '-' +
+        currencyA.wrapped.address.toLowerCase()
+      : '';
+  const gammaPairReverted = !!(
+    chainId && GammaPairs[chainId][gammaPairKeyReverted]
+  );
+
+  const depositCap = useMemo(() => {
+    if (
+      !depositCapData.loading &&
+      depositCapData.result &&
+      depositCapData.result.length > 0 &&
+      currencyA &&
+      currencyB
+    ) {
+      const depositOverride = depositCapData.result['depositOverride'];
+      if (!depositOverride) return;
+      return {
+        deposit0Max: Number(
+          formatUnits(
+            depositCapData.result['deposit0Max'] ?? 0,
+            (gammaPairReverted ? currencyB : currencyA).wrapped.decimals,
+          ),
+        ),
+        deposit1Max: Number(
+          formatUnits(
+            depositCapData.result['deposit1Max'] ?? 0,
+            (gammaPairReverted ? currencyA : currencyB).wrapped.decimals,
+          ),
+        ),
+      };
+    }
+    return;
+  }, [currencyA, currencyB, depositCapData, gammaPairReverted]);
+
+  const quoteDepositAmount = useMemo(() => {
+    if (
+      depositAmountsData.length > 0 &&
+      !depositAmountsData[0].loading &&
+      depositAmountsData[0].result &&
+      depositAmountsData[0].result.length > 1 &&
+      currencyB
+    ) {
+      return {
+        amountMin: Number(
+          formatUnits(
+            depositAmountsData[0].result[0],
+            currencyB.wrapped.decimals,
+          ),
+        ),
+        amountMax: Number(
+          formatUnits(
+            depositAmountsData[0].result[1],
+            currencyB.wrapped.decimals,
+          ),
+        ),
+      };
+    }
+    return;
+  }, [currencyB, depositAmountsData]);
+
+  const baseDepositAmount = useMemo(() => {
+    if (
+      depositAmountsData.length > 1 &&
+      !depositAmountsData[1].loading &&
+      depositAmountsData[1].result &&
+      depositAmountsData[1].result.length > 1 &&
+      currencyA
+    ) {
+      return {
+        amountMin: Number(
+          formatUnits(
+            depositAmountsData[1].result[0],
+            currencyA.wrapped.decimals,
+          ),
+        ),
+        amountMax: Number(
+          formatUnits(
+            depositAmountsData[1].result[1],
+            currencyA.wrapped.decimals,
+          ),
+        ),
+      };
+    }
+    return;
+  }, [currencyA, depositAmountsData]);
 
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
+    if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE) {
+      if (
+        !independentAmount ||
+        !presetRange ||
+        !presetRange.address ||
+        !quoteDepositAmount ||
+        !baseDepositAmount ||
+        !currencyA ||
+        !currencyB
+      )
+        return;
+      if (independentField === Field.CURRENCY_A) {
+        const quoteDeposit = parseUnits(
+          (
+            ((quoteDepositAmount.amountMin + quoteDepositAmount.amountMax) /
+              2) *
+            Number(independentAmount.toSignificant())
+          ).toFixed(currencyB.wrapped.decimals),
+          currencyB.wrapped.decimals,
+        );
+        return CurrencyAmount.fromRawAmount(
+          currencyB.isNative ? currencyB.wrapped : currencyB,
+          JSBI.BigInt(quoteDeposit),
+        );
+      } else {
+        const baseDeposit = parseUnits(
+          (
+            ((baseDepositAmount.amountMin + baseDepositAmount.amountMax) / 2) *
+            Number(independentAmount.toSignificant())
+          ).toFixed(currencyA.wrapped.decimals),
+          currencyA.wrapped.decimals,
+        );
+        return CurrencyAmount.fromRawAmount(
+          currencyA.isNative ? currencyA.wrapped : currencyA,
+          JSBI.BigInt(baseDeposit),
+        );
+      }
+    }
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
     const dependentCurrency =
@@ -459,14 +697,19 @@ export function useV3DerivedMintInfo(
 
     return undefined;
   }, [
+    liquidityRangeType,
     independentAmount,
-    outOfRange,
     dependentField,
     currencyB,
     currencyA,
     tickLower,
     tickUpper,
     poolForPosition,
+    presetRange,
+    quoteDepositAmount,
+    baseDepositAmount,
+    independentField,
+    outOfRange,
     invalidRange,
   ]);
 
@@ -499,29 +742,31 @@ export function useV3DerivedMintInfo(
 
   // sorted for token order
   const depositADisabled =
-    invalidRange ||
-    Boolean(
-      (deposit0Disabled &&
-        poolForPosition &&
-        tokenA &&
-        poolForPosition.token0.equals(tokenA)) ||
-        (deposit1Disabled &&
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+    (invalidRange ||
+      Boolean(
+        (deposit0Disabled &&
           poolForPosition &&
           tokenA &&
-          poolForPosition.token1.equals(tokenA)),
-    );
+          poolForPosition.token0.equals(tokenA)) ||
+          (deposit1Disabled &&
+            poolForPosition &&
+            tokenA &&
+            poolForPosition.token1.equals(tokenA)),
+      ));
   const depositBDisabled =
-    invalidRange ||
-    Boolean(
-      (deposit0Disabled &&
-        poolForPosition &&
-        tokenB &&
-        poolForPosition.token0.equals(tokenB)) ||
-        (deposit1Disabled &&
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+    (invalidRange ||
+      Boolean(
+        (deposit0Disabled &&
           poolForPosition &&
           tokenB &&
-          poolForPosition.token1.equals(tokenB)),
-    );
+          poolForPosition.token0.equals(tokenB)) ||
+          (deposit1Disabled &&
+            poolForPosition &&
+            tokenB &&
+            poolForPosition.token1.equals(tokenB)),
+      ));
 
   // create position entity based on users selection
   const position: Position | undefined = useMemo(() => {
@@ -577,6 +822,8 @@ export function useV3DerivedMintInfo(
   ]);
 
   let errorMessage: string | undefined;
+  let token0ErrorMessage: string | undefined;
+  let token1ErrorMessage: string | undefined;
   let errorCode: number | undefined;
 
   if (!account) {
@@ -611,9 +858,11 @@ export function useV3DerivedMintInfo(
     currencyAAmount &&
     currencyBalances?.[Field.CURRENCY_A]?.lessThan(currencyAAmount)
   ) {
-    errorMessage = `Insufficient ${
-      currencies[Field.CURRENCY_A]?.symbol
+    const msg = `Insufficient ${
+      currencies[Field.CURRENCY_A]?.wrapped.symbol
     } balance`;
+    errorMessage = msg;
+    token0ErrorMessage = msg;
     errorCode = errorCode ?? 4;
   }
 
@@ -621,10 +870,48 @@ export function useV3DerivedMintInfo(
     currencyBAmount &&
     currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount)
   ) {
-    errorMessage = `Insufficient ${
-      currencies[Field.CURRENCY_B]?.symbol
+    const msg = `Insufficient ${
+      currencies[Field.CURRENCY_B]?.wrapped.symbol
     } balance`;
+    errorMessage = msg;
+    token1ErrorMessage = msg;
     errorCode = errorCode ?? 5;
+  }
+
+  if (
+    depositCap &&
+    Number(currencyAAmount?.toExact() ?? 0) >
+      (gammaPairReverted ? depositCap.deposit1Max : depositCap.deposit0Max)
+  ) {
+    const msg = `${
+      currencies[Field.CURRENCY_A]?.wrapped.symbol
+    } deposit cap of ${(gammaPairReverted
+      ? depositCap.deposit1Max
+      : depositCap.deposit0Max
+    ).toLocaleString(
+      'us',
+    )} reached. Please deposit less than this amount.  Multiple deposits are allowed.`;
+    errorMessage = msg;
+    token0ErrorMessage = msg;
+    errorCode = errorCode ?? 6;
+  }
+
+  if (
+    depositCap &&
+    Number(currencyBAmount?.toExact() ?? 0) >
+      (gammaPairReverted ? depositCap.deposit0Max : depositCap.deposit1Max)
+  ) {
+    const msg = `${
+      currencies[Field.CURRENCY_B]?.wrapped.symbol
+    } deposit cap of ${(gammaPairReverted
+      ? depositCap.deposit0Max
+      : depositCap.deposit1Max
+    ).toLocaleString(
+      'us',
+    )} reached. Please deposit less than this amount.  Multiple deposits are allowed.`;
+    errorMessage = msg;
+    token1ErrorMessage = msg;
+    errorCode = errorCode ?? 7;
   }
 
   const invalidPool = poolState === PoolState.INVALID;
@@ -642,6 +929,8 @@ export function useV3DerivedMintInfo(
     position,
     noLiquidity,
     errorMessage,
+    token0ErrorMessage,
+    token1ErrorMessage,
     errorCode,
     invalidPool,
     invalidRange,
@@ -653,6 +942,8 @@ export function useV3DerivedMintInfo(
     dynamicFee,
     lowerPrice,
     upperPrice,
+    liquidityRangeType,
+    presetRange,
   };
 }
 

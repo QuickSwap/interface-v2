@@ -6,6 +6,7 @@ import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
 import { Box } from '@material-ui/core';
 
 import './index.scss';
+import { useTranslation } from 'react-i18next';
 
 interface IInitialPrice {
   currencyA: Currency | undefined;
@@ -20,6 +21,7 @@ export function InitialPrice({
   mintInfo,
   priceFormat,
 }: IInitialPrice) {
+  const { t } = useTranslation();
   // may be needed when we enabled token, usd toggler
   // const currencyAUSDC = useUSDCPrice(currencyA ?? undefined);
   // const currencyBUSDC = useUSDCPrice(currencyB ?? undefined);
@@ -28,7 +30,7 @@ export function InitialPrice({
 
   return (
     <Box>
-      <small className='weight-600'>Set Initial Price</small>
+      <small className='weight-600'>{t('setInitialPrice')}</small>
       <Box mt={1}>
         <StartingPrice
           currencyA={currencyA}

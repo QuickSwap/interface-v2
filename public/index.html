@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/logo_circle.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="QuickSwap is a next-gen #DEX for #DeFi. Trade at lightning-fast speeds with near-zero gas fees."
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo_circle.png" />
     <!--
@@ -28,6 +28,23 @@
     -->
     <title>QuickSwap</title>
     <script type="text/javascript" src="https://app.web3ads.net/main.js" async></script>
+    <script>
+      const script = document.createElement('script');
+      const apiKey = 'd29f17e774ac4e67247a2929a02a806f6787ac6cdbbb0fc41f721c6fc621156a'
+      const config = {
+        // We are tracking wallet connections manually
+        trackWalletConnections: false
+      } 
+      script.src = 'https://unpkg.com/@arcxmoney/analytics'
+      script.onload = function () {
+        ArcxAnalyticsSdk.init(apiKey, config)
+          .then(function (sdk) {
+            window.arcx = sdk
+          })
+      }
+
+      document.head.appendChild(script)
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

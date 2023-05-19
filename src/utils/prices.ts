@@ -7,6 +7,7 @@ import {
   TokenAmount,
   Trade,
 } from '@uniswap/sdk';
+import { Percent as PercentV3 } from '@uniswap/sdk-core';
 import { Field } from 'state/swap/actions';
 import { basisPointsToPercent } from 'utils';
 import { OptimalRate } from '@paraswap/sdk';
@@ -63,6 +64,7 @@ export function computeTradePriceBreakdown(
         )
       : CurrencyAmount.ether(
           realizedLPFee.multiply(trade.inputAmount.raw).quotient,
+          trade.route.pairs[0].chainId,
         ));
 
   return {

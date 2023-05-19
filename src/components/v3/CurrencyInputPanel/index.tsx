@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pair } from '@uniswap/v2-sdk';
+import { ETHER, Pair } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { LockOutlined } from '@material-ui/icons';
@@ -8,14 +8,15 @@ import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { WrappedCurrency } from 'models/types/Currency';
 import CurrencyLogo from 'components/CurrencyLogo';
+import { useCurrencyBalance as useCurrencyBalanceV2 } from 'state/wallet/hooks';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@material-ui/core';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'react-i18next';
-import JSBI from 'jsbi';
 import './index.scss';
-import { parseUnits } from 'ethers/lib/utils';
+import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -46,6 +47,9 @@ interface CurrencyInputPanelProps {
   shallow: boolean;
   swap: boolean;
   page?: string;
+  bgClass?: string;
+  color?: string;
+  showETH?: boolean;
 }
 
 export default function CurrencyInputPanel({
@@ -75,70 +79,38 @@ export default function CurrencyInputPanel({
   shallow = false,
   swap = false,
   page,
+  bgClass,
+  color,
+  showETH,
   ...rest
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const { t } = useTranslation();
 
+  const nativeCurrency = chainId ? ETHER[chainId] : undefined;
+  const ethBalance = useCurrencyBalanceV2(account ?? undefined, nativeCurrency);
   const balance = useCurrencyBalance(
     account ?? undefined,
     currency ?? undefined,
   );
 
-  const currentPrice = useUSDCPrice(currency ?? undefined);
-
-  const valueBN = useMemo(() => {
-    if (!currency) return;
-    const digitStr = value.substring(value.indexOf('.'));
-    const decimalStr = value.substring(0, value.indexOf('.'));
-    let valueStr = '0';
-    if (!value.length) {
-      valueStr = '0';
-    } else if (value.indexOf('.') === -1) {
-      valueStr = value;
-    } else if (digitStr.length === 1) {
-      valueStr = decimalStr;
-    } else if (digitStr.length > currency.decimals + 1) {
-      valueStr = decimalStr + digitStr.slice(0, currency.decimals + 1);
-    } else {
-      valueStr = decimalStr + digitStr;
-    }
-    return parseUnits(valueStr, currency.decimals);
-  }, [value, currency]);
+  const currentPrice = useUSDCPriceFromAddress(
+    currency?.wrapped.address ?? '',
+    true,
+  );
 
   const valueAsUsd = useMemo(() => {
-    if (!currentPrice || !valueBN || !currency) {
-      return undefined;
+    if (!currentPrice || !value) {
+      return 0;
     }
 
-    return currentPrice.quote(
-      CurrencyAmount.fromRawAmount(currency, JSBI.BigInt(valueBN)),
-    );
-  }, [currentPrice, currency, valueBN]);
+    return currentPrice * Number(value);
+  }, [currentPrice, value]);
 
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false);
   }, [setModalOpen]);
-
-  const balanceAsUsdc = useMemo(() => {
-    if (!balance) return 'Loading...';
-
-    const _balance = balance.toFixed();
-
-    if (_balance.split('.')[0].length > 10) {
-      return _balance.slice(0, 7) + '...';
-    }
-
-    if (+balance.toFixed() === 0) {
-      return '0';
-    }
-    if (+balance.toFixed() < 0.0001) {
-      return '< 0.0001';
-    }
-
-    return +balance.toFixed(3);
-  }, [balance]);
 
   return (
     <Box className='v3-currency-input-panel'>
@@ -151,7 +123,7 @@ export default function CurrencyInputPanel({
         </Box>
       )}
 
-      <Box id={id} className='bg-secondary2 swapBox'>
+      <Box id={id} className={`swapBox ${bgClass}`}>
         <Box mb={2}>
           <Box>
             <Box
@@ -167,15 +139,25 @@ export default function CurrencyInputPanel({
               {currency ? (
                 <Box className='flex w-100 justify-between items-center'>
                   <Box className='flex'>
-                    <CurrencyLogo
-                      size={'25px'}
-                      currency={currency as WrappedCurrency}
-                    ></CurrencyLogo>
-                    <p>{currency?.symbol}</p>
+                    {showETH ? (
+                      <DoubleCurrencyLogo
+                        size={25}
+                        currency0={nativeCurrency}
+                        currency1={currency}
+                      />
+                    ) : (
+                      <CurrencyLogo
+                        size={'25px'}
+                        currency={currency as WrappedCurrency}
+                      ></CurrencyLogo>
+                    )}
+                    <p className='text-primaryText'>{`${
+                      showETH ? nativeCurrency?.symbol + '+' : ''
+                    }${currency?.symbol}`}</p>
                   </Box>
                 </Box>
               ) : (
-                <p>{t('selectToken')}</p>
+                <p className='text-primaryText'>{t('selectToken')}</p>
               )}
             </Box>
           </Box>
@@ -184,6 +166,7 @@ export default function CurrencyInputPanel({
             <NumericalInput
               value={value}
               align='right'
+              color={color}
               placeholder='0.00'
               onUserInput={(val) => {
                 if (val === '.') val = '0.';
@@ -195,7 +178,10 @@ export default function CurrencyInputPanel({
         <Box className='flex justify-between'>
           <Box display='flex'>
             <small className='text-secondary'>
-              {t('balance')}: {balance?.toSignificant(5)}
+              {t('balance')}:{' '}
+              {(showETH && ethBalance
+                ? Number(ethBalance.toSignificant(5))
+                : 0) + (balance ? Number(balance.toSignificant(5)) : 0)}
             </small>
 
             {account && currency && showHalfButton && (
@@ -210,7 +196,11 @@ export default function CurrencyInputPanel({
             )}
           </Box>
 
-          <small className='text-secondary'>${valueAsUsd?.toFixed(2)}</small>
+          <Box className='v3-currency-input-usd-value'>
+            <small className='text-secondary'>
+              ${valueAsUsd.toLocaleString('us')}
+            </small>
+          </Box>
         </Box>
       </Box>
 

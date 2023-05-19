@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import { ChainId } from '@uniswap/sdk';
 import { TokenList } from '@uniswap/token-lists';
 import { TokenDetail } from './reducer';
 
@@ -22,6 +23,7 @@ export type PopupContent =
 
 export enum ApplicationModal {
   WALLET,
+  NETWORK_SELECTION,
   SETTINGS,
   SETTINGSV3,
   SELF_CLAIM,
@@ -61,10 +63,6 @@ export const updateMaticPrice = createAction<{
   maticPriceChange: number;
 }>('application/updateMaticPrice');
 
-export const updateGlobalData = createAction<{ data: any }>(
-  'application/updateGlobalData',
-);
-
 export const addBookMarkToken = createAction<string>(
   'application/addBookMarkedToken',
 );
@@ -93,13 +91,13 @@ export const updateTokenDetails = createAction<TokenDetail>(
   'application/updateTokenDetail',
 );
 
-export const updateIsProMode = createAction<boolean>(
-  'application/updateIsProMode',
-);
-
 export const updateGasPrice = createAction<{
   fetched: number | null;
   override: boolean;
 }>('application/updateGasPrice');
 
 export const updateIsV2 = createAction<boolean>('application/updateIsV2');
+
+export const updateUDDomain = createAction<string | undefined>(
+  'application/updateUDDomain',
+);

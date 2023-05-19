@@ -1,0 +1,62 @@
+{
+  "v3": true,
+  "v2": true,
+  "rpc": "https://rpc-sg.dogechain.dog",
+  "blockExplorer": "https://explorer.dogechain.dog",
+  "aprAPINetwork": "DogeChain",
+  "networkName": "DogeChain",
+  "isMainnet": true,
+  "chainId": 2000,
+  "nativeCurrencyImage": "/doge.png",
+  "nativeCurrency": {
+    "name": "Wrapped Doge",
+    "symbol": "WDOGE",
+    "decimals": 18
+  },
+  "swap": {
+    "available": true,
+    "bestTrade": false,
+    "proMode": true,
+    "limitOrder": false,
+    "crossChain": false
+  },
+  "pools": {
+    "available": true
+  },
+  "farm": {
+    "available": true
+  },
+  "lair": {
+    "available": true,
+    "oldLair": false,
+    "newLair": true,
+    "syrup": false
+  },
+  "convert": {
+    "available": false
+  },
+  "predictions": {
+    "available": false
+  },
+  "analytics": {
+    "available": true
+  },
+  "lending": {
+    "available": false
+  },
+  "migrate": {
+    "available": false
+  },
+  "gamingHub": {
+    "available": false
+  },
+  "leaderboard": {
+    "available": false
+  },
+  "safe": {
+    "available": false
+  },
+  "perps": {
+    "available": false
+  }
+}

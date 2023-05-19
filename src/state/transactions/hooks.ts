@@ -22,9 +22,10 @@ export function useTransactionAdder(): (
 ) => void {
   const { chainId, account } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
+  const arcxSDK = (window as any).arcx;
 
   return useCallback(
-    (
+    async (
       response: TransactionResponse,
       {
         summary,
@@ -36,12 +37,17 @@ export function useTransactionAdder(): (
         approval?: { tokenAddress: string; spender: string };
       } = {},
     ) => {
-      if (!account) return;
-      if (!chainId) return;
+      if (!account || !chainId) return;
 
       const { hash } = response;
       if (!hash) {
         throw Error('No transaction hash found.');
+      }
+      if (arcxSDK) {
+        await arcxSDK.transaction({
+          chain: chainId,
+          transactionHash: hash,
+        });
       }
       dispatch(
         addTransaction({
@@ -54,7 +60,7 @@ export function useTransactionAdder(): (
         }),
       );
     },
-    [dispatch, chainId, account],
+    [account, chainId, arcxSDK, dispatch],
   );
 }
 

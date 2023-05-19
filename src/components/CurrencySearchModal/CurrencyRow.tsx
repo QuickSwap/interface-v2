@@ -1,19 +1,20 @@
-import { CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
+import { ChainId, CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
+import { Currency as V3Currency } from '@uniswap/sdk-core';
 import React from 'react';
 import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';
-import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useIsUserAddedToken } from 'hooks/Tokens';
 import { CurrencyLogo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { PlusHelper } from 'components/QuestionHelper';
 import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
-import useUSDCPrice from 'utils/useUSDCPrice';
-import { formatTokenAmount } from 'utils';
+import { formatNumber, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { getIsMetaMaskWallet } from 'connectors/utils';
 
+//TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {
   return currency instanceof Token
     ? currency.address
@@ -67,6 +68,8 @@ interface CurrenyRowProps {
   otherSelected: boolean;
   style: any;
   isOnSelectedList?: boolean;
+  balance: CurrencyAmount | undefined;
+  usdPrice: number;
 }
 
 const CurrencyRow: React.FC<CurrenyRowProps> = ({
@@ -76,24 +79,20 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   otherSelected,
   style,
   isOnSelectedList,
+  balance,
+  usdPrice,
 }) => {
   const { t } = useTranslation();
 
-  const { ethereum } = window as any;
-  const { account, chainId } = useActiveWeb3React();
+  const { account, chainId, connector } = useActiveWeb3React();
   const key = currencyKey(currency);
-
-  const usdPrice = useUSDCPrice(currency);
-  const balance = useCurrencyBalance(account ?? undefined, currency);
   const customAdded = useIsUserAddedToken(currency);
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
 
   const removeToken = useRemoveUserAddedToken();
   const addToken = useAddUserToken();
-  const isMetamask =
-    ethereum &&
-    ethereum.isMetaMask &&
-    Number(ethereum.chainId) === 137 &&
-    isOnSelectedList;
+  const isMetamask = getIsMetaMaskWallet() && isOnSelectedList;
 
   const addTokenToMetamask = (
     tokenAddress: any,
@@ -101,28 +100,13 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
     tokenDecimals: any,
     tokenImage: any,
   ) => {
-    if (ethereum) {
-      ethereum
-        .request({
-          method: 'wallet_watchAsset',
-          params: {
-            type: 'ERC20', // Initially only supports ERC20, but eventually more!
-            options: {
-              address: tokenAddress, // The address that the token is at.
-              symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
-              decimals: tokenDecimals, // The number of decimals in the token
-              image: tokenImage, // A string url of the token logo
-            },
-          },
-        })
-        .catch((error: any) => {
-          if (error.code === 4001) {
-            // EIP-1193 userRejectedRequest error
-            console.log('We can encrypt anything without the key.');
-          } else {
-            console.error(error);
-          }
-        });
+    if (connector.watchAsset) {
+      connector.watchAsset({
+        address: tokenAddress,
+        symbol: tokenSymbol,
+        decimals: tokenDecimals,
+        image: tokenImage,
+      });
     }
   };
 
@@ -143,23 +127,25 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         <Box ml={1} height={32}>
           <Box className='flex items-center'>
             <small className='currencySymbol'>{currency.symbol}</small>
-            {isMetamask && currency !== ETHER && (
-              <Box
-                className='cursor-pointer'
-                ml='2px'
-                onClick={(event: any) => {
-                  addTokenToMetamask(
-                    currency.address,
-                    currency.symbol,
-                    currency.decimals,
-                    getTokenLogoURL(currency.address),
-                  );
-                  event.stopPropagation();
-                }}
-              >
-                <PlusHelper text={t('addToMetamask')} />
-              </Box>
-            )}
+            {isMetamask &&
+              currency !== nativeCurrency &&
+              !(currency as V3Currency).isNative && (
+                <Box
+                  className='cursor-pointer'
+                  ml='2px'
+                  onClick={(event: any) => {
+                    addTokenToMetamask(
+                      currency.address,
+                      currency.symbol,
+                      currency.decimals,
+                      getTokenLogoURL(currency.address),
+                    );
+                    event.stopPropagation();
+                  }}
+                >
+                  <PlusHelper text={t('addToMetamask')} />
+                </Box>
+              )}
           </Box>
           {isOnSelectedList ? (
             <span className='currencyName'>{currency.name}</span>
@@ -196,11 +182,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
             <>
               <Balance balance={balance} />
               <span className='text-secondary'>
-                $
-                {(
-                  Number(balance.toExact()) *
-                  (usdPrice ? Number(usdPrice.toSignificant()) : 0)
-                ).toLocaleString('us')}
+                ${formatNumber(Number(balance.toExact()) * usdPrice)}
               </span>
             </>
           ) : account ? (

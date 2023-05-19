@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactGA from 'react-ga';
-import './assets/styles/index.scss';
 import { isMobile } from 'react-device-detect';
 import './index.scss';
 import App from './App';
 import { HashRouter } from 'react-router-dom';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import './constants/index';
 
 const GOOGLE_ANALYTICS_ID: string | undefined =
   process.env.REACT_APP_GOOGLE_ANALYTICS_ID;

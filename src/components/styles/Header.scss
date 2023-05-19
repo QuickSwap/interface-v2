@@ -2,8 +2,10 @@
 @use 'styles/breakpoints' as *;
 
 .header {
+  top: 0px;
   padding: 0 24px;
-  position: relative;
+  position: fixed;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   min-height: 88px;
@@ -41,9 +43,11 @@
   }
   @include media("screen", "<tablet") {
     align-items: center;
+    position: relative;
   }
   @include media("screen", "<phone") {
     padding: 0 16px;
+    position: relative;
   }
 }
 .mainMenu {
@@ -122,7 +126,7 @@
   }
   & a {
     text-decoration: none;
-    margin-right: 8px;
+    margin-right: 6px;
     color: $textSecondary;
     border-radius: 10px;
     display: flex;
@@ -206,10 +210,10 @@
   top: 36px;
   width: 272px;
   right: 0;
-  padding-top: 18px
 }
 .wrongNetworkContent {
   background: $bgColor;
+  margin-top: 18px;
   border-radius: 10px;
   padding: 24px;
   display: none;
@@ -270,8 +274,8 @@
 }
 
 .styledPollingDot {
-  width: 15px;
-  height: 15px;
+  width: 6px;
+  height: 6px;
   min-height: 8px;
   min-width: 8px;
   margin-left: 0rem;
@@ -279,4 +283,32 @@
   border-radius: 50%;
   position: relative;
   background-color: $successMain;
+  position: absolute;
+  right: -2px;
+  top: -2px;
+}
+
+.networkSelection {
+  background-color: $secondary1;
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+  height: 36px;
+  border-radius: 10px;
+  padding: 0 8px 0 12px;
+  cursor: pointer;
+  img {
+    width: 18px;
+  }
+  svg {
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+  }
+}
+
+.networkSelectionImage {
+  position: relative;
+  display: flex;
+  margin-right: 8px;
 }

@@ -2,25 +2,22 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { ChainId, Token } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk';
 import {
   shortenAddress,
   getEtherscanLink,
-  getFormattedPrice,
   getPriceClass,
   formatNumber,
-  getTokenInfo,
-  getTokenPairs2,
-  getBulkPairData,
   getTokenFromAddress,
+  getFormattedPercent,
 } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
 import {
   useBookmarkTokens,
   useEthPrice,
-  useMaticPrice,
   useIsV2,
+  useMaticPrice,
 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
@@ -30,14 +27,9 @@ import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import {
-  getPairsAPR,
-  getTokenInfoV3,
-  getTokenTransactionsV3,
-  getTopPairsV3ByToken,
-} from 'utils/v3-graph';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
+import { getConfig } from 'config';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -48,11 +40,12 @@ const AnalyticsTokenDetails: React.FC = () => {
   const [token, setToken] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
-  const currency = token
-    ? getTokenFromAddress(tokenAddress, chainId ?? ChainId.MATIC, tokenMap, [
-        new Token(ChainId.MATIC, getAddress(token.id), token.decimals),
-      ])
-    : undefined;
+  const currency =
+    token && chainId
+      ? getTokenFromAddress(tokenAddress, chainId, tokenMap, [
+          new Token(chainId, getAddress(token.id), token.decimals ?? 18),
+        ])
+      : undefined;
   const [tokenPairs, updateTokenPairs] = useState<any>(null);
   const [tokenTransactions, updateTokenTransactions] = useState<any>(null);
   const {
@@ -62,10 +55,28 @@ const AnalyticsTokenDetails: React.FC = () => {
   } = useBookmarkTokens();
   const { ethPrice } = useEthPrice();
   const { maticPrice } = useMaticPrice();
+  const config = getConfig(chainId);
+  const v3 = config['v3'];
+  const v2 = config['v2'];
+
+  const showAnalytics = config['analytics']['available'];
+  useEffect(() => {
+    if (!showAnalytics) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAnalytics]);
 
   const dispatch = useDispatch();
 
-  const { isV2 } = useIsV2();
+  const { updateIsV2 } = useIsV2();
+
+  useEffect(() => {
+    if (!v2 && v3) {
+      updateIsV2(false);
+    }
+  }, [updateIsV2, v2, v3]);
+  const version = useAnalyticsVersion();
 
   const tokenTransactionsList = useMemo(() => {
     if (tokenTransactions) {
@@ -73,12 +84,30 @@ const AnalyticsTokenDetails: React.FC = () => {
         return { ...item, type: TxnType.ADD };
       });
       const swaps = tokenTransactions.swaps.map((item: any) => {
-        const amount0 = item.amount0Out > 0 ? item.amount0Out : item.amount1Out;
-        const amount1 = item.amount0In > 0 ? item.amount0In : item.amount1In;
-        const token0 =
-          item.amount0Out > 0 ? item.pair.token0 : item.pair.token1;
-        const token1 =
-          item.amount0Out > 0 ? item.pair.token1 : item.pair.token0;
+        const amount0 = item.isV2
+          ? item.amount0Out > 0
+            ? item.amount0Out
+            : item.amount1Out
+          : item.amount0 > 0
+          ? item.amount0
+          : Math.abs(item.amount1);
+        const amount1 = item.isV2
+          ? item.amount0In > 0
+            ? item.amount0In
+            : item.amount1In
+          : item.amount0 > 0
+          ? Math.abs(item.amount1)
+          : Math.abs(item.amount0);
+        const token0 = (item.isV2
+        ? item.amount0Out > 0
+        : item.amount0 > 0)
+          ? item.pair.token0
+          : item.pair.token1;
+        const token1 = (item.isV2
+        ? item.amount0Out > 0
+        : item.amount0 > 0)
+          ? item.pair.token1
+          : item.pair.token0;
         return {
           ...item,
           amount0,
@@ -97,117 +126,50 @@ const AnalyticsTokenDetails: React.FC = () => {
   }, [tokenTransactions]);
 
   useEffect(() => {
-    if (isV2 === undefined) return;
-    setLoadingData(true);
-    setToken(null);
-    updateTokenPairs(null);
-    updateTokenTransactions(null);
-
-    async function fetchTokenInfo() {
-      try {
-        if (!isV2) {
-          if (
-            maticPrice.price !== undefined &&
-            maticPrice.oneDayPrice !== undefined
-          ) {
-            const tokenInfo = await getTokenInfoV3(
-              maticPrice.price,
-              maticPrice.oneDayPrice,
-              tokenAddress,
-            );
-            if (tokenInfo) {
-              setToken(tokenInfo[0] || tokenInfo);
-            }
-          }
-        } else {
-          if (
-            ethPrice.price !== undefined &&
-            ethPrice.oneDayPrice !== undefined
-          ) {
-            const tokenInfo = await getTokenInfo(
-              ethPrice.price,
-              ethPrice.oneDayPrice,
-              tokenAddress,
-            );
-            if (tokenInfo) {
-              setToken(tokenInfo[0] || tokenInfo);
-            }
-          }
-        }
-        setLoadingData(false);
-      } catch (e) {
-        setLoadingData(false);
-      }
-    }
-    async function fetchTransactions() {
-      getTokenTransactionsV3(tokenAddress).then((transactions) => {
-        if (transactions) {
-          updateTokenTransactions(transactions);
-        }
-      });
-    }
-    async function fetchPairs() {
-      const tokenPairs = await getTokenPairs2(tokenAddress);
-      const formattedPairs = tokenPairs
-        ? tokenPairs.map((pair: any) => {
-            return pair.id;
-          })
-        : [];
-      const pairData = await getBulkPairData(formattedPairs, ethPrice.price);
-      if (pairData) {
-        updateTokenPairs(pairData);
-      }
-    }
-    async function fetchPairsV3() {
-      const tokenPairs = await getTopPairsV3ByToken(tokenAddress);
-      if (tokenPairs) {
-        const data = tokenPairs.filter((item: any) => !!item);
-        updateTokenPairs(data);
-        try {
-          const aprs = await getPairsAPR(data.map((item: any) => item.id));
-
-          updateTokenPairs(
-            data.map((item: any, ind: number) => {
-              return {
-                ...item,
-                apr: aprs[ind].apr,
-                farmingApr: aprs[ind].farmingApr,
-              };
-            }),
+    (async () => {
+      if (chainId && version) {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/${version}?chainId=${chainId}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get top token details`,
           );
-        } catch (e) {
-          console.log(e);
+        }
+        const data = await res.json();
+        setLoadingData(false);
+        if (data?.data?.token) {
+          setToken(data.data.token);
+          updateTokenPairs(data.data.tokenPairs);
+          updateTokenTransactions(data.data.tokenTransactions);
         }
       }
-    }
-    fetchTokenInfo();
-    if (!isV2) {
-      fetchPairsV3();
-      fetchTransactions();
-    } else {
-      if (ethPrice.price) {
-        fetchPairs();
-      }
-    }
+    })();
   }, [
     tokenAddress,
     ethPrice.price,
     ethPrice.oneDayPrice,
     maticPrice.price,
     maticPrice.oneDayPrice,
-    isV2,
+    version,
+    chainId,
   ]);
 
   useEffect(() => {
+    setLoadingData(true);
     setToken(null);
     updateTokenPairs(null);
-  }, [tokenAddress]);
+    updateTokenTransactions(null);
+  }, [tokenAddress, version]);
 
   useEffect(() => {
-    if (token && (!isV2 ? tokenTransactions : tokenPairs)) {
+    if (!loadingData) {
       dispatch(setAnalyticsLoaded(true));
+    } else {
+      dispatch(setAnalyticsLoaded(false));
     }
-  }, [token, tokenPairs, tokenTransactions, isV2, dispatch]);
+  }, [loadingData, dispatch]);
 
   const tokenPercentClass = getPriceClass(
     token ? Number(token.priceChangeUSD) : 0,
@@ -297,21 +259,33 @@ const AnalyticsTokenDetails: React.FC = () => {
             <Box className='panel analyticsDetailsInfoV3'>
               <Box>
                 <span className='text-disabled'>{t('tvl')}</span>
-                <h5>${formatNumber(token.tvlUSD)}</h5>
-                <small
-                  className={getPriceClass(Number(token.tvlUSDChange) || 0)}
-                >
-                  {getFormattedPrice(token.tvlUSDChange || 0)}%
-                </small>
+                <Box className='flex flex-wrap items-center'>
+                  <Box mr='6px'>
+                    <h5>${formatNumber(token.tvlUSD)}</h5>
+                  </Box>
+                  <small
+                    className={`priceChangeWrapper ${getPriceClass(
+                      Number(token.tvlUSDChange) || 0,
+                    )}`}
+                  >
+                    {getFormattedPercent(token.tvlUSDChange || 0)}
+                  </small>
+                </Box>
               </Box>
               <Box>
                 <span className='text-disabled'>{t('24hTradingVol1')}</span>
-                <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
-                <small
-                  className={getPriceClass(Number(token.volumeChangeUSD) || 0)}
-                >
-                  {getFormattedPrice(token.volumeChangeUSD || 0)}%
-                </small>
+                <Box className='flex flex-wrap items-center'>
+                  <Box mr='6px'>
+                    <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
+                  </Box>
+                  <small
+                    className={`priceChangeWrapper ${getPriceClass(
+                      Number(token.volumeChangeUSD) || 0,
+                    )}`}
+                  >
+                    {getFormattedPercent(token.volumeChangeUSD || 0)}
+                  </small>
+                </Box>
               </Box>
               <Box>
                 <span className='text-disabled'>{t('7dTradingVol')}</span>
@@ -386,7 +360,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                     ml={2}
                   >
                     <small>
-                      {getFormattedPrice(Number(token.priceChangeUSD))}%
+                      {getFormattedPercent(Number(token.priceChangeUSD))}
                     </small>
                   </Box>
                 </Box>
@@ -398,7 +372,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                 mr={1.5}
                 onClick={() => {
                   history.push(
-                    `/pools${isV2 ? '/v2' : '/v3'}?currency0=${
+                    `/pools${version === 'v2' ? '/v2' : '/v3'}?currency0=${
                       token.id
                     }&currency1=ETH`,
                   );
@@ -410,7 +384,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                 className='button filledButton'
                 onClick={() => {
                   history.push(
-                    `/swap${isV2 ? '/v2' : ''}?currency0=${
+                    `/swap${version === 'v2' ? '/v2' : ''}?currency0=${
                       token.id
                     }&currency1=ETH`,
                   );
@@ -420,24 +394,24 @@ const AnalyticsTokenDetails: React.FC = () => {
               </Box>
             </Box>
           </Box>
-          {!isV2 ? (
+          {version === 'v2' ? (
+            <V2TokenInfo token={token} tokenPairs={tokenPairs} />
+          ) : (
             <V3TokenInfo
               token={token}
               tokenTransactions={tokenTransactionsList}
             />
-          ) : (
-            <V2TokenInfo token={token} tokenPairs={tokenPairs} />
           )}
         </>
       ) : loadingData ? (
         <Skeleton width='100%' height={100} />
       ) : (
         <Box py={4}>
-          <h5>This token does not exist</h5>
+          <h5>{t('tokenNotExist')}</h5>
         </Box>
       )}
     </>
   );
 };
 
-export default AnalyticsTokenDetails;
+export default React.memo(AnalyticsTokenDetails);

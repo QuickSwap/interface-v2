@@ -31,7 +31,7 @@ async function fetchChunk(
   chunk: Call[],
   blockNumber: number,
 ): Promise<{ success: boolean; returnData: string }[]> {
-  console.debug('Fetching chunk', chunk, blockNumber);
+  //console.debug('Fetching chunk', chunk, blockNumber);
   try {
     const { returnData } = await multicall.callStatic.tryBlockAndAggregate(
       false,
@@ -47,7 +47,9 @@ async function fetchChunk(
       returnData.forEach(({ gasUsed, returnData, success }: any, i: number) => {
         if (
           !success &&
+          gasUsed &&
           returnData.length === 2 &&
+          gasUsed &&
           gasUsed.gte(
             Math.floor((chunk[i].gasRequired ?? DEFAULT_GAS_REQUIRED) * 0.95),
           )

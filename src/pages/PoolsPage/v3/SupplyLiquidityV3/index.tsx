@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useActiveWeb3React } from 'hooks';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import {
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
+  useV3MintState,
 } from 'state/mint/v3/hooks';
 import { InitialPrice } from './containers/InitialPrice';
 import { EnterAmounts } from './containers/EnterAmounts';
@@ -14,7 +15,7 @@ import { SelectRange } from './containers/SelectRange';
 import { Currency } from '@uniswap/sdk-core';
 
 import './index.scss';
-import { WMATIC_EXTENDED } from 'constants/tokens';
+import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import {
   setInitialTokenPrice,
   setInitialUSDPrices,
@@ -26,7 +27,11 @@ import {
   PriceFormatToggler,
 } from 'components/v3/PriceFomatToggler';
 import { AddLiquidityButton } from './containers/AddLiquidityButton';
-import { useWalletModalToggle } from 'state/application/hooks';
+import {
+  useNetworkSelectionModalToggle,
+  useWalletModalToggle,
+} from 'state/application/hooks';
+import { useIsSupportedNetwork } from 'utils';
 import { useIsExpertMode } from 'state/user/hooks';
 import { currencyId } from 'utils/v3/currencyId';
 import { Box, Button } from '@material-ui/core';
@@ -34,41 +39,51 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { SettingsModal } from 'components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { useAppDispatch } from 'state/hooks';
+import usePoolsRedirect from 'hooks/usePoolsRedirect';
+import { CHAIN_INFO } from 'constants/v3/chains';
+import { ChainId } from '@uniswap/sdk';
+import { useTranslation } from 'react-i18next';
+import { GlobalConst } from 'constants/index';
 
 export function SupplyLiquidityV3() {
+  const { t } = useTranslation();
+  const history = useHistory();
   const params: any = useParams();
   const parsedQuery = useParsedQueryString();
+  const isSupportedNetwork = useIsSupportedNetwork();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const chainInfo = CHAIN_INFO[chainIdToUse];
   const currencyIdAParam =
     params && params.currencyIdA
       ? params.currencyIdA.toLowerCase() === 'matic' ||
         params.currencyIdA.toLowerCase() === 'eth'
-        ? 'matic'
+        ? chainInfo.nativeCurrencySymbol.toLowerCase()
         : params.currencyIdA
       : parsedQuery && parsedQuery.currency0
       ? (parsedQuery.currency0 as string).toLowerCase() === 'eth' ||
         (parsedQuery.currency0 as string).toLowerCase() === 'matic'
-        ? 'matic'
+        ? chainInfo.nativeCurrencySymbol.toLowerCase()
         : (parsedQuery.currency0 as string)
       : undefined;
   const currencyIdBParam =
     params && params.currencyIdB
       ? params.currencyIdB.toLowerCase() === 'matic' ||
         params.currencyIdB.toLowerCase() === 'eth'
-        ? 'matic'
+        ? chainInfo.nativeCurrencySymbol.toLowerCase()
         : params.currencyIdB
       : parsedQuery && parsedQuery.currency1
       ? (parsedQuery.currency1 as string).toLowerCase() === 'eth' ||
         (parsedQuery.currency1 as string).toLowerCase() === 'matic'
-        ? 'matic'
+        ? chainInfo.nativeCurrencySymbol.toLowerCase()
         : (parsedQuery.currency1 as string)
       : undefined;
 
   const [currencyIdA, setCurrencyIdA] = useState(currencyIdAParam);
   const [currencyIdB, setCurrencyIdB] = useState(currencyIdBParam);
 
-  const { account, chainId } = useActiveWeb3React();
-
   const toggleWalletModal = useWalletModalToggle(); // toggle wallet when disconnected
+  const toggletNetworkSelectionModal = useNetworkSelectionModalToggle();
 
   const dispatch = useAppDispatch();
 
@@ -104,6 +119,7 @@ export function SupplyLiquidityV3() {
     undefined,
   );
 
+  const { liquidityRangeType } = useV3MintState();
   const {
     onFieldAInput,
     onFieldBInput,
@@ -129,8 +145,17 @@ export function SupplyLiquidityV3() {
 
       let chainSymbol;
 
-      if (chainId === 137) {
+      if (chainId === ChainId.MATIC || chainId === ChainId.MUMBAI) {
         chainSymbol = 'MATIC';
+      }
+      if (
+        chainId === ChainId.DOGECHAIN ||
+        chainId === ChainId.DOEGCHAIN_TESTNET
+      ) {
+        chainSymbol = 'WDOGE';
+      }
+      if (chainId === ChainId.ZKTESTNET) {
+        chainSymbol = 'ETH';
       }
 
       resetState();
@@ -160,21 +185,61 @@ export function SupplyLiquidityV3() {
     [chainId, resetState],
   );
 
+  const { redirectWithCurrency, redirectWithSwitch } = usePoolsRedirect();
+
   const handleCurrencyASelect = useCallback(
     (currencyANew: Currency) => {
-      const [idA] = handleCurrencySelect(currencyANew);
-      setCurrencyIdA(idA);
+      const isSwichRedirect = currencyANew.isNative
+        ? currencyIdBParam === chainInfo.nativeCurrencySymbol.toLowerCase()
+        : currencyIdBParam &&
+          currencyANew &&
+          currencyANew.address &&
+          currencyANew.address.toLowerCase() === currencyIdBParam.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch(currencyANew, true, false);
+      } else {
+        redirectWithCurrency(currencyANew, true, false);
+      }
     },
-    [handleCurrencySelect],
+    [redirectWithCurrency, currencyIdBParam, chainInfo, redirectWithSwitch],
   );
+
+  useEffect(() => {
+    if (currencyIdAParam) {
+      setCurrencyIdA(currencyIdAParam);
+      if (baseCurrency) {
+        handleCurrencySelect(baseCurrency);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currencyIdAParam]);
 
   const handleCurrencyBSelect = useCallback(
     (currencyBNew: Currency) => {
-      const [idB] = handleCurrencySelect(currencyBNew);
-      setCurrencyIdB(idB);
+      const isSwichRedirect = currencyBNew.isNative
+        ? currencyIdAParam === chainInfo.nativeCurrencySymbol.toLowerCase()
+        : currencyIdAParam &&
+          currencyBNew &&
+          currencyBNew.address &&
+          currencyBNew.address.toLowerCase() === currencyIdAParam.toLowerCase();
+      if (isSwichRedirect) {
+        redirectWithSwitch(currencyBNew, false, false);
+      } else {
+        redirectWithCurrency(currencyBNew, false, false);
+      }
     },
-    [handleCurrencySelect],
+    [redirectWithCurrency, currencyIdAParam, chainInfo, redirectWithSwitch],
   );
+
+  useEffect(() => {
+    if (currencyIdBParam) {
+      setCurrencyIdB(currencyIdBParam);
+      if (currencyB) {
+        handleCurrencySelect(currencyB);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currencyIdBParam]);
 
   const handlePriceFormat = useCallback((priceFormat: PriceFormats) => {
     setPriceFormat(priceFormat);
@@ -211,19 +276,20 @@ export function SupplyLiquidityV3() {
         />
       )}
       <Box className='flex justify-between items-center'>
-        <p className='weight-600'>Supply Liquidity</p>
+        <p className='weight-600'>{t('supplyLiquidity')}</p>
         <Box className='flex items-center'>
           <small
             className='cursor-pointer text-primary'
             onClick={() => {
-              setCurrencyIdA(currencyIdAParam);
-              setCurrencyIdB(currencyIdBParam);
+              setCurrencyIdA('');
+              setCurrencyIdB('');
               resetState();
               onFieldAInput('');
               onFieldBInput('');
+              history.push('/pools');
             }}
           >
-            Clear all
+            {t('clearAll')}
           </small>
           {!hidePriceFormatter && (
             <Box className='flex' ml={1}>
@@ -239,7 +305,7 @@ export function SupplyLiquidityV3() {
         </Box>
       </Box>
       <Box mt={2}>
-        {account ? (
+        {account && isSupportedNetwork ? (
           <SelectPair
             baseCurrency={baseCurrency}
             quoteCurrency={quoteCurrency}
@@ -252,26 +318,39 @@ export function SupplyLiquidityV3() {
         ) : (
           <Button
             className='v3-supply-liquidity-button'
-            onClick={toggleWalletModal}
+            onClick={() => {
+              if (account) {
+                toggletNetworkSelectionModal();
+              } else {
+                toggleWalletModal();
+              }
+            }}
           >
-            Connect Wallet
+            {account ? t('switchNetwork') : t('connectWallet')}
           </Button>
         )}
       </Box>
       <Box mt={4} position='relative'>
-        {(!baseCurrency || !quoteCurrency) && (
+        {(!baseCurrency ||
+          !quoteCurrency ||
+          !account ||
+          !isSupportedNetwork) && (
           <Box className='v3-supply-liquidity-overlay' />
         )}
-        {mintInfo.noLiquidity && baseCurrency && quoteCurrency && (
-          <Box mb={2}>
-            <InitialPrice
-              currencyA={baseCurrency ?? undefined}
-              currencyB={currencyB ?? undefined}
-              mintInfo={mintInfo}
-              priceFormat={priceFormat}
-            />
-          </Box>
-        )}
+        {mintInfo.noLiquidity &&
+          baseCurrency &&
+          quoteCurrency &&
+          liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+            <Box mb={2}>
+              <InitialPrice
+                currencyA={baseCurrency ?? undefined}
+                currencyB={currencyB ?? undefined}
+                mintInfo={mintInfo}
+                priceFormat={priceFormat}
+              />
+            </Box>
+          )}
         <SelectRange
           currencyA={baseCurrency}
           currencyB={quoteCurrency}
@@ -297,7 +376,7 @@ export function SupplyLiquidityV3() {
               onFieldAInput('');
               onFieldBInput('');
             }}
-            title={expertMode ? `Add liquidity` : 'Preview'}
+            title={expertMode ? t('addLiquidity') : t('preview')}
           />
         </Box>
       </Box>

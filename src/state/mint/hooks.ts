@@ -8,6 +8,7 @@ import {
   Percent,
   Price,
   TokenAmount,
+  ChainId,
 } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -42,7 +43,8 @@ export function useDerivedMintInfo(): {
   error?: string;
 } {
   const { account, chainId } = useActiveWeb3React();
-
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   const {
     independentField,
     typedValue,
@@ -89,13 +91,18 @@ export function useDerivedMintInfo(): {
 
   // amounts
   const independentAmount: CurrencyAmount | undefined = tryParseAmount(
+    chainIdToUse,
     typedValue,
     currencies[independentField],
   );
   const dependentAmount: CurrencyAmount | undefined = useMemo(() => {
     if (noLiquidity) {
       if (otherTypedValue && currencies[dependentField]) {
-        return tryParseAmount(otherTypedValue, currencies[dependentField]);
+        return tryParseAmount(
+          chainIdToUse,
+          otherTypedValue,
+          currencies[dependentField],
+        );
       }
       return undefined;
     } else if (independentAmount) {
@@ -119,8 +126,8 @@ export function useDerivedMintInfo(): {
           const dependentTokenAmount = independentPrice.quote(
             wrappedIndependentAmount,
           );
-          return dependentCurrency === ETHER
-            ? CurrencyAmount.ether(dependentTokenAmount.raw)
+          return dependentCurrency === nativeCurrency
+            ? CurrencyAmount.ether(dependentTokenAmount.raw, chainIdToUse)
             : dependentTokenAmount;
         } catch (error) {
           // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
@@ -133,14 +140,16 @@ export function useDerivedMintInfo(): {
     }
   }, [
     noLiquidity,
+    independentAmount,
     otherTypedValue,
     currencies,
     dependentField,
-    independentAmount,
-    currencyA,
+    chainIdToUse,
     chainId,
+    currencyA,
     currencyB,
     pair,
+    nativeCurrency,
   ]);
   const parsedAmounts: {
     [field in Field]: CurrencyAmount | undefined;
@@ -257,6 +266,7 @@ export function useDerivedMintInfo(): {
 
 export function useMintActionHandlers(
   noLiquidity: boolean | undefined,
+  chainId: ChainId,
 ): {
   onFieldAInput: (typedValue: string) => void;
   onFieldBInput: (typedValue: string) => void;
@@ -297,13 +307,13 @@ export function useMintActionHandlers(
           currencyId:
             currency instanceof Token
               ? currency.address
-              : currency === ETHER
+              : currency === ETHER[chainId]
               ? 'ETH'
               : '',
         }),
       );
     },
-    [dispatch],
+    [chainId, dispatch],
   );
 
   return {

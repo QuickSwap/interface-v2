@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import { ConnectionType } from 'connectors';
 
 export interface SerializedToken {
   chainId: number;
@@ -25,6 +26,9 @@ export const updateUserExpertMode = createAction<{ userExpertMode: boolean }>(
 export const updateUserSlippageTolerance = createAction<{
   userSlippageTolerance: number;
 }>('user/updateUserSlippageTolerance');
+export const updateSlippageManuallySet = createAction<{
+  slippageManuallySet: boolean;
+}>('user/updateSlippageManuallySet');
 export const updateUserDeadline = createAction<{ userDeadline: number }>(
   'user/updateUserDeadline',
 );
@@ -48,3 +52,9 @@ export const toggleURLWarning = createAction<void>('app/toggleURLWarning');
 export const updateUserSingleHopOnly = createAction<{
   userSingleHopOnly: boolean;
 }>('user/updateUserSingleHopOnly');
+export const updateUserBonusRouter = createAction<{
+  userBonusRouterDisabled: boolean;
+}>('user/updateUserBonusRouter');
+export const updateSelectedWallet = createAction<{
+  wallet?: ConnectionType;
+}>('user/updateSelectedWallet');

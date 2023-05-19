@@ -1,4 +1,9 @@
-import { Currency, currencyEquals, ETHER, WETH } from '@uniswap/sdk';
+import { ChainId, Currency, currencyEquals, ETHER, WETH } from '@uniswap/sdk';
+import {
+  Token as V3Token,
+  NativeCurrency,
+  Currency as V3Currency,
+} from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { tryParseAmount } from 'state/swap/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -6,6 +11,9 @@ import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useWETHContract } from './useContract';
 import { formatTokenAmount } from 'utils';
+import { toV3Token } from 'constants/v3/addresses';
+import { useIsV2 } from 'state/application/hooks';
+import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 
 export enum WrapType {
   NOT_APPLICABLE,
@@ -29,14 +37,17 @@ export default function useWrapCallback(
   execute?: undefined | (() => Promise<void>);
   inputError?: string;
 } {
+  const { isV2 } = useIsV2();
   const { chainId, account } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   const wethContract = useWETHContract();
   const balance = useCurrencyBalance(account ?? undefined, inputCurrency);
   // we can always parse the amount typed as the input currency, since wrapping is 1:1
-  const inputAmount = useMemo(() => tryParseAmount(typedValue, inputCurrency), [
-    inputCurrency,
-    typedValue,
-  ]);
+  const inputAmount = useMemo(
+    () => tryParseAmount(chainIdToUse, typedValue, inputCurrency),
+    [chainIdToUse, inputCurrency, typedValue],
+  );
   const addTransaction = useTransactionAdder();
 
   return useMemo(() => {
@@ -46,9 +57,37 @@ export default function useWrapCallback(
     const sufficientBalance =
       inputAmount && balance && !balance.lessThan(inputAmount);
 
+    const wETHV3 = toV3Token({
+      chainId,
+      address: WETH[chainId].address,
+      decimals: WETH[chainId].decimals,
+      symbol: WETH[chainId].symbol,
+      name: WETH[chainId].name,
+    });
+
+    const outputCurrencyAddress =
+      (outputCurrency as WrappedTokenInfo).tokenInfo &&
+      (outputCurrency as WrappedTokenInfo).tokenInfo.address
+        ? (outputCurrency as WrappedTokenInfo).tokenInfo.address
+        : (outputCurrency as V3Token).address
+        ? (outputCurrency as V3Token).address
+        : undefined;
+
+    const inputCurrencyAddress =
+      (inputCurrency as WrappedTokenInfo).tokenInfo &&
+      (inputCurrency as WrappedTokenInfo).tokenInfo.address
+        ? (inputCurrency as WrappedTokenInfo).tokenInfo.address
+        : (inputCurrency as V3Token).address
+        ? (inputCurrency as V3Token).address
+        : undefined;
+
     if (
-      inputCurrency === ETHER &&
-      currencyEquals(WETH[chainId], outputCurrency)
+      isV2
+        ? inputCurrency === nativeCurrency &&
+          currencyEquals(WETH[chainId], outputCurrency)
+        : (inputCurrency as V3Currency).isNative &&
+          outputCurrencyAddress &&
+          wETHV3.address.toLowerCase() === outputCurrencyAddress.toLowerCase()
     ) {
       return {
         wrapType: WrapType.WRAP,
@@ -72,8 +111,12 @@ export default function useWrapCallback(
         inputError: sufficientBalance ? undefined : 'Insufficient ETH balance',
       };
     } else if (
-      currencyEquals(WETH[chainId], inputCurrency) &&
-      outputCurrency === ETHER
+      isV2
+        ? currencyEquals(WETH[chainId], inputCurrency) &&
+          outputCurrency === nativeCurrency
+        : inputCurrencyAddress &&
+          wETHV3.address.toLowerCase() === inputCurrencyAddress.toLowerCase() &&
+          (outputCurrency as V3Currency).isNative
     ) {
       return {
         wrapType: WrapType.UNWRAP,
@@ -106,6 +149,8 @@ export default function useWrapCallback(
     outputCurrency,
     inputAmount,
     balance,
+    nativeCurrency,
     addTransaction,
+    isV2,
   ]);
 }

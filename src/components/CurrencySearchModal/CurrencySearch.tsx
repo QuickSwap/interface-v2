@@ -1,4 +1,4 @@
-import { Currency, ETHER, Token } from '@uniswap/sdk';
+import { ChainId, Currency, ETHER, Token } from '@uniswap/sdk';
 import React, {
   KeyboardEvent,
   RefObject,
@@ -26,6 +26,9 @@ import { isAddress } from 'utils';
 import { filterTokens } from 'utils/filtering';
 import { useTokenComparator } from 'utils/sorting';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
+import { useCurrencyBalances } from 'state/wallet/hooks';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
 
 interface CurrencySearchProps {
   isOpen: boolean;
@@ -46,9 +49,10 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   isOpen,
 }) => {
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
-
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   const handleInput = useCallback((input: string) => {
     const checksummedInput = isAddress(input);
     setSearchQuery(checksummedInput || input);
@@ -109,6 +113,24 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     ];
   }, [filteredTokens, searchQuery, searchToken, tokenComparator]);
 
+  const allCurrencies = showETH
+    ? [nativeCurrency, ...filteredSortedTokens]
+    : filteredSortedTokens;
+
+  const currencyBalances = useCurrencyBalances(
+    account || undefined,
+    allCurrencies,
+  );
+
+  const tokenAddresses = allCurrencies
+    .map((currency) => {
+      const token = wrappedCurrency(currency, chainId);
+      return token ? token.address.toLowerCase() : '';
+    })
+    .filter((address, ind, self) => self.indexOf(address) === ind);
+
+  const usdPrices = useUSDCPricesFromAddresses(tokenAddresses);
+
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
       onCurrencySelect(currency);
@@ -127,7 +149,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       if (e.key === 'Enter') {
         const s = searchQuery.toLowerCase().trim();
         if (s === 'eth') {
-          handleCurrencySelect(ETHER);
+          handleCurrencySelect(nativeCurrency);
         } else if (filteredSortedTokens.length > 0) {
           if (
             filteredSortedTokens[0].symbol?.toLowerCase() ===
@@ -139,7 +161,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         }
       }
     },
-    [filteredSortedTokens, handleCurrencySelect, searchQuery],
+    [filteredSortedTokens, handleCurrencySelect, nativeCurrency, searchQuery],
   );
 
   // manage focus on modal show
@@ -172,7 +194,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       </Box>
       {showCommonBases && (
         <CommonBases
-          chainId={chainId}
+          chainId={chainIdToUse}
           onSelect={handleCurrencySelect}
           selectedCurrency={selectedCurrency}
         />
@@ -182,11 +204,14 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
       <Box flex={1}>
         <CurrencyList
+          chainId={chainIdToUse}
           showETH={showETH}
           currencies={filteredSortedTokens}
           onCurrencySelect={handleCurrencySelect}
           otherCurrency={otherSelectedCurrency}
           selectedCurrency={selectedCurrency}
+          balances={currencyBalances}
+          usdPrices={usdPrices}
         />
       </Box>
 

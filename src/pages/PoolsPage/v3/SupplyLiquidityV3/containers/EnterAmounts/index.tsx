@@ -4,6 +4,7 @@ import './index.scss';
 import { Field } from 'state/mint/actions';
 import {
   IDerivedMintInfo,
+  useActivePreset,
   useV3MintActionHandlers,
   useV3MintState,
 } from 'state/mint/v3/hooks';
@@ -18,6 +19,8 @@ import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box, Button } from '@material-ui/core';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
+import { GammaPairs, GlobalConst } from 'constants/index';
+import { useTranslation } from 'react-i18next';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;
@@ -32,7 +35,9 @@ export function EnterAmounts({
   mintInfo,
   priceFormat,
 }: IEnterAmounts) {
+  const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
+  const preset = useActivePreset();
 
   const { independentField, typedValue } = useV3MintState();
 
@@ -79,14 +84,57 @@ export function EnterAmounts({
     };
   }, {});
 
+  const baseCurrencyAddress =
+    currencyA && currencyA.wrapped
+      ? currencyA.wrapped.address.toLowerCase()
+      : '';
+  const quoteCurrencyAddress =
+    currencyB && currencyB.wrapped
+      ? currencyB.wrapped.address.toLowerCase()
+      : '';
+  const gammaPair = chainId
+    ? GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
+      GammaPairs[chainId][quoteCurrencyAddress + '-' + baseCurrencyAddress]
+    : [];
+  const gammaPairAddress =
+    gammaPair && gammaPair.length > 0
+      ? gammaPair.find((pair) => pair.type === preset)?.address
+      : undefined;
+
   // check whether the user has approved the router on the tokens
+  const currencyAApproval =
+    mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+    currencyA &&
+    currencyA.isNative
+      ? currencyA.wrapped
+      : currencyA;
+  const currencyBApproval =
+    mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+    currencyB &&
+    currencyB.isNative
+      ? currencyB.wrapped
+      : currencyB;
   const [approvalA, approveACallback] = useApproveCallback(
-    mintInfo.parsedAmounts[Field.CURRENCY_A] || tryParseAmount('1', currencyA),
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    mintInfo.parsedAmounts[Field.CURRENCY_A] ||
+      tryParseAmount('1', currencyAApproval),
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? gammaPairAddress
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
-    mintInfo.parsedAmounts[Field.CURRENCY_B] || tryParseAmount('1', currencyB),
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    mintInfo.parsedAmounts[Field.CURRENCY_B] ||
+      tryParseAmount('1', currencyBApproval),
+    chainId
+      ? mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+        ? gammaPairAddress
+        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+      : undefined,
   );
 
   const showApprovalA = useMemo(() => {
@@ -105,39 +153,9 @@ export function EnterAmounts({
     return approvalB !== ApprovalState.APPROVED;
   }, [approvalB]);
 
-  const currencyAError = useMemo(() => {
-    if (
-      (mintInfo.errorCode !== 4 && mintInfo.errorCode !== 5) ||
-      !mintInfo.errorMessage ||
-      !currencyA
-    )
-      return;
-
-    const erroredToken = mintInfo.errorMessage.split(' ')[1];
-
-    if (currencyA.wrapped.symbol === erroredToken) return mintInfo.errorMessage;
-
-    return;
-  }, [mintInfo, currencyA]);
-
-  const currencyBError = useMemo(() => {
-    if (
-      (mintInfo.errorCode !== 5 && mintInfo.errorCode !== 4) ||
-      !mintInfo.errorMessage ||
-      !currencyB
-    )
-      return;
-
-    const erroredToken = mintInfo.errorMessage.split(' ')[1];
-
-    if (currencyB.wrapped.symbol === erroredToken) return mintInfo.errorMessage;
-
-    return;
-  }, [mintInfo, currencyB]);
-
   return (
     <Box>
-      <small className='weight-600'>Deposit Amounts</small>
+      <small className='weight-600'>{t('depositAmounts')}</small>
       <Box my={2}>
         <TokenAmountCard
           currency={currencyA}
@@ -155,7 +173,7 @@ export function EnterAmounts({
           }
           locked={mintInfo.depositADisabled}
           isMax={!!atMaxAmounts[Field.CURRENCY_A]}
-          error={currencyAError}
+          error={mintInfo.token0ErrorMessage}
           priceFormat={priceFormat}
           isBase={false}
         />
@@ -176,7 +194,7 @@ export function EnterAmounts({
         }
         locked={mintInfo.depositBDisabled}
         isMax={!!atMaxAmounts[Field.CURRENCY_B]}
-        error={currencyBError}
+        error={mintInfo.token1ErrorMessage}
         priceFormat={priceFormat}
         isBase={true}
       />
@@ -188,20 +206,26 @@ export function EnterAmounts({
               approvalA === ApprovalState.PENDING ? (
                 <Box className='token-approve-button-loading'>
                   <Loader stroke='white' />
-                  <p>Approving {currencyA?.symbol}</p>
+                  <p>
+                    {t('approving')} {currencyAApproval?.symbol}
+                  </p>
                 </Box>
               ) : (
                 <Button
                   className='token-approve-button'
                   onClick={approveACallback}
                 >
-                  <p>Approve {currencyA?.symbol}</p>
+                  <p>
+                    {t('approve')} {currencyAApproval?.symbol}
+                  </p>
                 </Button>
               )
             ) : (
               <Box className='token-approve-button-loading'>
                 <Check />
-                <p>Approved {currencyA?.symbol}</p>
+                <p>
+                  {t('approved')} {currencyAApproval?.symbol}
+                </p>
               </Box>
             )}
           </Box>
@@ -212,20 +236,26 @@ export function EnterAmounts({
               approvalB === ApprovalState.PENDING ? (
                 <Box className='token-approve-button-loading'>
                   <Loader stroke='white' />
-                  <p>Approving {currencyB?.symbol}</p>
+                  <p>
+                    {t('approving')} {currencyBApproval?.symbol}
+                  </p>
                 </Box>
               ) : (
                 <Button
                   className='token-approve-button'
                   onClick={approveBCallback}
                 >
-                  <p>Approve {currencyB?.symbol}</p>
+                  <p>
+                    {t('approve')} {currencyBApproval?.symbol}
+                  </p>
                 </Button>
               )
             ) : (
               <Box className='token-approve-button-loading'>
                 <Check />
-                <p>Approved {currencyB?.symbol}</p>
+                <p>
+                  {t('approved')} {currencyBApproval?.symbol}
+                </p>
               </Box>
             )}
           </Box>

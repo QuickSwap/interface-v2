@@ -1,25 +1,30 @@
-import { Button } from '@material-ui/core';
-import { BinanceModal, BuyFiatModal, MoonpayModal } from 'components';
+import { Box, Button } from '@material-ui/core';
+import {
+  BinanceModal,
+  BuyFiatModal,
+  MoonpayModal,
+  MeldModal,
+} from 'components';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface BuyFiatButtonProps {
   fullWidth?: boolean;
+  textOnly?: boolean;
 }
 
-const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({ fullWidth }) => {
+const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({
+  fullWidth,
+  textOnly,
+}) => {
   const [openMenu, setOpenMenu] = useState(false);
   const [showMoonPayWidget, setShowMoonPayWidget] = useState(false);
   const [showBinanceWidget, setShowBinanceWidgetWidget] = useState(false);
+  const [showMeldWidget, setShowMeldWidgetWidget] = useState(false);
   const { t } = useTranslation();
 
   return (
-    <Button
-      className={`rounded ${fullWidth ? 'fullWidth' : ''} `}
-      onClick={() => {
-        setOpenMenu(true);
-      }}
-    >
+    <>
       {showMoonPayWidget && (
         <MoonpayModal
           open={showMoonPayWidget}
@@ -32,26 +37,50 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({ fullWidth }) => {
           onClose={() => setShowBinanceWidgetWidget(false)}
         />
       )}
-      {openMenu && (
-        <BuyFiatModal
-          open={openMenu}
-          onClose={() => {
-            setTimeout(() => {
-              setOpenMenu(false);
-            }, 10);
-          }}
-          buyMoonpay={() => {
-            setShowMoonPayWidget(true);
-            setOpenMenu(false);
-          }}
-          buyBinance={() => {
-            setShowBinanceWidgetWidget(true);
-            setOpenMenu(false);
-          }}
+      {showMeldWidget && (
+        <MeldModal
+          open={showMeldWidget}
+          onClose={() => setShowMeldWidgetWidget(false)}
         />
       )}
-      <small>{t('buyNow')}</small>
-    </Button>
+      <BuyFiatModal
+        open={openMenu}
+        onClose={() => {
+          setOpenMenu(false);
+        }}
+        buyMoonpay={() => {
+          setShowMoonPayWidget(true);
+          setOpenMenu(false);
+        }}
+        buyBinance={() => {
+          setShowBinanceWidgetWidget(true);
+          setOpenMenu(false);
+        }}
+        buyMeld={() => {
+          setShowMeldWidgetWidget(true);
+          setOpenMenu(false);
+        }}
+      />
+      {textOnly ? (
+        <Box
+          className='text-link text-primary cursor-pointer'
+          onClick={() => {
+            setOpenMenu(true);
+          }}
+        >
+          <small>{t('payWithFiatArrow')}</small>
+        </Box>
+      ) : (
+        <Button
+          className={`rounded ${fullWidth ? 'fullWidth' : ''} `}
+          onClick={() => {
+            setOpenMenu(true);
+          }}
+        >
+          <small>{t('buyNow')}</small>
+        </Button>
+      )}
+    </>
   );
 };
 

@@ -7,6 +7,7 @@ import { AppState } from 'state';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { CNTFarmListInfo, StakingBasic, StakingRaw } from 'types';
 import { getTokenFromAddress } from 'utils';
+import { OLD_DQUICK } from 'constants/v3/addresses';
 
 export class WrappedCNTStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -65,7 +66,7 @@ export class WrappedCNTStakingInfo implements StakingBasic {
           tokenAddressMap,
           farmTokens,
         )
-      : GlobalValue.tokens.COMMON.OLD_DQUICK;
+      : OLD_DQUICK[chainId];
   }
 }
 
@@ -83,6 +84,10 @@ export type CNTFarmInfoAddressMap = Readonly<
 const EMPTY_LIST: CNTFarmInfoAddressMap = {
   [ChainId.MUMBAI]: {},
   [ChainId.MATIC]: {},
+  [ChainId.DOGECHAIN]: {},
+  [ChainId.DOEGCHAIN_TESTNET]: {},
+  [ChainId.ZKTESTNET]: {},
+  [ChainId.ZKEVM]: {},
 };
 
 const farmCache: WeakMap<CNTFarmListInfo, CNTFarmInfoAddressMap> | null =
@@ -164,8 +169,6 @@ export function useCNTFarmList(
               ) === ind,
           )
       : [];
-
-  // console.log('#farmTokenAddresses => ', farmTokenAddresses);
 
   const farmTokens = useTokens(farmTokenAddresses);
   return useMemo(() => {

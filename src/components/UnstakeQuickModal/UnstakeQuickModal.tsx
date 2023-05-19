@@ -12,6 +12,9 @@ import { useLairContract, useNewLairContract } from 'hooks/useContract';
 import Web3 from 'web3';
 import { calculateGasMargin, formatTokenAmount } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
+import { DLDQUICK, OLD_DQUICK } from 'constants/v3/addresses';
 
 const web3 = new Web3();
 
@@ -33,15 +36,19 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
   const lairInfo = useOldLairInfo();
   const newLairInfo = useNewLairInfo();
   const laifInfoToUse = isNew ? newLairInfo : lairInfo;
-  const dQuickBalance = laifInfoToUse.dQUICKBalance;
+  const dQuickBalance = laifInfoToUse?.dQUICKBalance;
   const [typedValue, setTypedValue] = useState('');
   const [stakePercent, setStakePercent] = useState(0);
+
+  const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const dQuickToken = isNew ? DLDQUICK[chainIdToUse] : OLD_DQUICK[chainIdToUse];
 
   const lairContract = useLairContract();
   const newLairContract = useNewLairContract();
   const lairContractToUse = isNew ? newLairContract : lairContract;
   const error =
-    Number(typedValue) > Number(dQuickBalance.toExact()) || !typedValue;
+    Number(typedValue) > Number(dQuickBalance?.toExact()) || !typedValue;
 
   const onWithdraw = async () => {
     if (lairContractToUse && laifInfoToUse?.dQUICKBalance) {
@@ -56,11 +63,11 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
           { gasLimit: calculateGasMargin(estimatedGas) },
         );
         addTransaction(response, {
-          summary: `${t('unstake')} dQUICK`,
+          summary: `${t('unstake')} ${dQuickToken?.symbol}`,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: `${t('unstake')} dQUICK`,
+          summary: `${t('unstake')} ${dQuickToken?.symbol}`,
         });
         setAttempting(false);
       } catch (error) {
@@ -74,7 +81,9 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
         <Box className='flex items-center justify-between'>
-          <h5>{t('unstake')} dQUICK</h5>
+          <h5>
+            {t('unstake')} {dQuickToken?.symbol}
+          </h5>
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
@@ -84,7 +93,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
           padding='16px'
         >
           <Box className='flex items-center justify-between'>
-            <small>dQUICK</small>
+            <small>{dQuickToken?.symbol}</small>
             <small>
               {t('balance')}: {formatTokenAmount(dQuickBalance)}
             </small>

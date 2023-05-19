@@ -9,16 +9,15 @@ import {
   removePopup,
   setOpenModal,
   updateEthPrice,
-  updateGlobalData,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
   addBookMarkPair,
   removeBookmarkPair,
   updateTokenDetails,
-  updateIsProMode,
   updateMaticPrice,
   updateIsV2,
+  updateUDDomain,
 } from './actions';
 import { ETHPrice, MaticPrice, TokenDetail } from './reducer';
 
@@ -59,6 +58,10 @@ export function useCloseModals(): () => void {
 
 export function useWalletModalToggle(): () => void {
   return useToggleModal(ApplicationModal.WALLET);
+}
+
+export function useNetworkSelectionModalToggle(): () => void {
+  return useToggleModal(ApplicationModal.NETWORK_SELECTION);
 }
 
 export function useToggleSettingsMenu(): () => void {
@@ -152,23 +155,6 @@ export function useMaticPrice(): {
   return { maticPrice, updateMaticPrice: _updateMaticPrice };
 }
 
-export function useGlobalData(): {
-  globalData: any;
-  updateGlobalData: ({ data }: any) => void;
-} {
-  const globalData = useSelector(
-    (state: AppState) => state.application.globalData,
-  );
-  const dispatch = useDispatch();
-  const _updateGlobalData = useCallback(
-    ({ data }) => {
-      dispatch(updateGlobalData({ data }));
-    },
-    [dispatch],
-  );
-  return { globalData, updateGlobalData: _updateGlobalData };
-}
-
 export function useTokenDetails(): {
   tokenDetails: TokenDetail[];
   updateTokenDetails: (data: TokenDetail) => void;
@@ -258,23 +244,6 @@ export function useBookmarkPairs(): {
   };
 }
 
-export function useIsProMode(): {
-  isProMode: boolean;
-  updateIsProMode: (isProMode: boolean) => void;
-} {
-  const isProMode = useSelector(
-    (state: AppState) => state.application.isProMode,
-  );
-  const dispatch = useDispatch();
-  const _updateIsProMode = useCallback(
-    (isProMode: boolean) => {
-      dispatch(updateIsProMode(isProMode));
-    },
-    [dispatch],
-  );
-  return { isProMode, updateIsProMode: _updateIsProMode };
-}
-
 export function useIsV2(): {
   isV2: boolean | undefined;
   updateIsV2: (isV2: boolean) => void;
@@ -288,4 +257,19 @@ export function useIsV2(): {
     [dispatch],
   );
   return { isV2, updateIsV2: _updateIsV2 };
+}
+
+export function useUDDomain(): {
+  udDomain: string | undefined;
+  updateUDDomain: (udDomain: string | undefined) => void;
+} {
+  const udDomain = useSelector((state: AppState) => state.application.udDomain);
+  const dispatch = useDispatch();
+  const _updateUDDomain = useCallback(
+    (udDomain: string | undefined) => {
+      dispatch(updateUDDomain(udDomain));
+    },
+    [dispatch],
+  );
+  return { udDomain, updateUDDomain: _updateUDDomain };
 }

@@ -13,6 +13,8 @@ import {
   useExpertModeManager,
   useUserTransactionTTL,
   useUserSlippageTolerance,
+  useBonusRouterManager,
+  useSlippageManuallySet,
 } from 'state/user/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/SettingsModal.scss';
@@ -39,9 +41,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
     userSlippageTolerance,
     setUserslippageTolerance,
   ] = useUserSlippageTolerance();
+  const [
+    slippageManuallySet,
+    setSlippageManuallySet,
+  ] = useSlippageManuallySet();
   const [ttl, setTtl] = useUserTransactionTTL();
   const { onChangeRecipient } = useSwapActionHandlers();
   const [expertMode, toggleExpertMode] = useExpertModeManager();
+  const [bonusRouterDisabled, toggleSetBonusRouter] = useBonusRouterManager();
   const [slippageInput, setSlippageInput] = useState('');
   const [deadlineInput, setDeadlineInput] = useState('');
   const [expertConfirm, setExpertConfirm] = useState(false);
@@ -91,6 +98,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         valueAsIntFromRoundedFloat < 5000
       ) {
         setUserslippageTolerance(valueAsIntFromRoundedFloat);
+        if (userSlippageTolerance !== valueAsIntFromRoundedFloat) {
+          setSlippageManuallySet(true);
+        }
       }
     } catch {}
   };
@@ -110,7 +120,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
     <CustomModal open={open} onClose={onClose}>
       <CustomModal open={expertConfirm} onClose={() => setExpertConfirm(false)}>
         <Box paddingX={3} paddingY={4}>
-          <Box mb={3} className='flex justify-between items-center'>
+          <Box mb={3} className='flex items-center justify-between'>
             <h5>{t('areyousure')}</h5>
             <CloseIcon
               className='cursor-pointer'
@@ -149,7 +159,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         </Box>
       </CustomModal>
       <Box paddingX={3} paddingY={4}>
-        <Box mb={3} className='flex justify-between items-center'>
+        <Box mb={3} className='flex items-center justify-between'>
           <h5>{t('settings')}</h5>
           <CloseIcon onClick={onClose} />
         </Box>
@@ -169,6 +179,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(10);
+                if (userSlippageTolerance !== 10) {
+                  setSlippageManuallySet(true);
+                }
               }}
             >
               <small>0.1%</small>
@@ -180,6 +193,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(50);
+                if (userSlippageTolerance !== 50) {
+                  setSlippageManuallySet(true);
+                }
               }}
             >
               <small>0.5%</small>
@@ -191,6 +207,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(100);
+                if (userSlippageTolerance !== 100) {
+                  setSlippageManuallySet(true);
+                }
               }}
             >
               <small>1%</small>
@@ -257,7 +276,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           </Box>
         )}
         <Divider />
-        <Box my={2.5} className='flex justify-between items-center'>
+        <Box my={2.5} className='flex items-center justify-between'>
           <Box className='flex items-center'>
             <p style={{ marginRight: 6 }}>{t('expertMode')}</p>
             <QuestionHelper size={20} text={t('expertModeHelper')} />
@@ -275,7 +294,17 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           />
         </Box>
         <Divider />
-        <Box mt={2.5} className='flex justify-between items-center'>
+        <Box my={2.5} className='flex items-center justify-between'>
+          <Box className='flex items-center'>
+            <p style={{ marginRight: 6 }}>{t('disableBonusRouter')}</p>
+          </Box>
+          <ToggleSwitch
+            toggled={bonusRouterDisabled}
+            onToggle={toggleSetBonusRouter}
+          />
+        </Box>
+        <Divider />
+        <Box mt={2.5} className='flex items-center justify-between'>
           <p>{t('language')}</p>
           <Box className='flex items-center'>
             <p>

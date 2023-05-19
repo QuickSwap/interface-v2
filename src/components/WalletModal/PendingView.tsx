@@ -1,30 +1,24 @@
-import { AbstractConnector } from '@web3-react/abstract-connector';
 import React from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
-import { GlobalConst, SUPPORTED_WALLETS } from 'constants/index';
-import { injected } from 'connectors';
 import Option from './Option';
 import { useTranslation } from 'react-i18next';
+import { Connection, getConnections } from 'connectors';
 
 interface PendingViewProps {
-  connector?: AbstractConnector;
+  connection?: Connection;
   error?: boolean;
   setPendingError: (error: boolean) => void;
-  tryActivation: (connector: AbstractConnector) => void;
+  tryActivation: (connector: Connection) => void;
 }
 
 const PendingView: React.FC<PendingViewProps> = ({
-  connector,
+  connection,
   error = false,
   setPendingError,
   tryActivation,
 }) => {
   const { t } = useTranslation();
-  const { ethereum } = window as any;
-  const isMetamask = ethereum?.isMetaMask;
-  const isBlockWallet = ethereum?.isBlockWallet;
-  const isCypherD = ethereum?.isCypherD;
-  const isBitKeep = ethereum?.isBitKeep;
+  const connections = getConnections();
 
   return (
     <Box className='pendingSection'>
@@ -36,7 +30,7 @@ const PendingView: React.FC<PendingViewProps> = ({
               className='errorButton'
               onClick={() => {
                 setPendingError(false);
-                connector && tryActivation(connector);
+                connection && tryActivation(connection);
               }}
             >
               {t('tryagain')}
@@ -49,48 +43,12 @@ const PendingView: React.FC<PendingViewProps> = ({
           </>
         )}
       </Box>
-      {Object.keys(SUPPORTED_WALLETS).map((key) => {
-        const option = SUPPORTED_WALLETS[key];
-        if (option.connector === connector) {
-          if (option.connector === injected) {
-            if (isMetamask && option.name !== GlobalConst.walletName.METAMASK) {
-              return null;
-            }
-            if (
-              !isMetamask &&
-              option.name === GlobalConst.walletName.METAMASK
-            ) {
-              return null;
-            }
-            if (isBitKeep && option.name !== GlobalConst.walletName.BITKEEP) {
-              return null;
-            }
-            if (!isBitKeep && option.name === GlobalConst.walletName.BITKEEP) {
-              return null;
-            }
-            if (isCypherD && option.name !== GlobalConst.walletName.CYPHERD) {
-              return null;
-            }
-            if (!isCypherD && option.name === GlobalConst.walletName.CYPHERD) {
-              return null;
-            }
-            if (
-              isBlockWallet &&
-              option.name !== GlobalConst.walletName.BLOCKWALLET
-            ) {
-              return null;
-            }
-            if (
-              !isBlockWallet &&
-              option.name === GlobalConst.walletName.BLOCKWALLET
-            ) {
-              return null;
-            }
-          }
+      {connections.map((option) => {
+        if (connection && option.connector === connection.connector) {
           return (
             <Option
-              id={`connect-${key}`}
-              key={key}
+              id={`connect-${option.key}`}
+              key={option.key}
               clickable={false}
               color={option.color}
               header={option.name}

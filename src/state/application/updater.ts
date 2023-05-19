@@ -1,23 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useActiveWeb3React } from 'hooks';
 import useDebounce from 'hooks/useDebounce';
 import useIsWindowVisible from 'hooks/useIsWindowVisible';
 import { updateBlockNumber } from './actions';
-import { useEthPrice, useIsV2, useMaticPrice } from './hooks';
+import { useEthPrice, useMaticPrice } from './hooks';
 import { getEthPrice } from 'utils';
 import { getMaticPrice } from 'utils/v3-graph';
-import { useParams } from 'react-router-dom';
+import { useActiveWeb3React } from 'hooks';
 
 export default function Updater(): null {
-  const { library, chainId } = useActiveWeb3React();
-  const { ethereum } = window as any;
+  const { library, chainId, connector } = useActiveWeb3React();
+
   const dispatch = useDispatch();
-  const { ethPrice, updateEthPrice } = useEthPrice();
-  const { maticPrice, updateMaticPrice } = useMaticPrice();
-  const { updateIsV2 } = useIsV2();
-  const params: any = useParams();
-  const isOnV2 = params && params.version ? params.version === 'v2' : false;
+  const { updateEthPrice } = useEthPrice();
+  const { updateMaticPrice } = useMaticPrice();
 
   const windowVisible = useIsWindowVisible();
 
@@ -48,12 +44,6 @@ export default function Updater(): null {
     [chainId, setState],
   );
 
-  // update version when loading app according to router param
-  useEffect(() => {
-    updateIsV2(isOnV2);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnV2]);
-
   // this is for refreshing eth price every 10 mins
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,13 +54,14 @@ export default function Updater(): null {
   }, []);
 
   useEffect(() => {
-    (async () => {
+    if (!chainId || state.chainId !== chainId) return;
+    const fetchMaticPrice = async () => {
       try {
         const [
           maticPrice,
           maticOneDayPrice,
           maticPriceChange,
-        ] = await getMaticPrice();
+        ] = await getMaticPrice(chainId);
         updateMaticPrice({
           price: maticPrice,
           oneDayPrice: maticOneDayPrice,
@@ -79,17 +70,19 @@ export default function Updater(): null {
       } catch (e) {
         console.log(e);
       }
-    })();
-    (async () => {
+    };
+    const fetchETHPrice = async () => {
       try {
-        const [price, oneDayPrice, ethPriceChange] = await getEthPrice();
+        const [price, oneDayPrice, ethPriceChange] = await getEthPrice(chainId);
         updateEthPrice({ price, oneDayPrice, ethPriceChange });
       } catch (e) {
         console.log(e);
       }
-    })();
+    };
+    fetchMaticPrice();
+    fetchETHPrice();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, chainId, state.chainId]);
 
   // attach/detach listeners
   useEffect(() => {
@@ -109,12 +102,19 @@ export default function Updater(): null {
 
     library.on('block', blockNumberCallback);
 
-    ethereum?.on('chainChanged', () => {
-      document.location.reload();
-    });
+    if (connector.provider) {
+      connector.provider.on('chainChanged', () => {
+        document.location.reload();
+      });
+    }
 
     return () => {
       library.removeListener('block', blockNumberCallback);
+      if (connector.provider) {
+        connector.provider.removeListener('chainChanged', () => {
+          document.location.reload();
+        });
+      }
     };
   }, [
     dispatch,
@@ -122,7 +122,7 @@ export default function Updater(): null {
     library,
     blockNumberCallback,
     windowVisible,
-    ethereum,
+    connector,
   ]);
 
   const debouncedState = useDebounce(state, 100);

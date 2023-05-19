@@ -1,9 +1,19 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Trade, TokenAmount, CurrencyAmount, ETHER } from '@uniswap/sdk';
-import { CurrencyAmount as CurrencyAmountV3 } from '@uniswap/sdk-core';
+import {
+  Trade,
+  TokenAmount,
+  CurrencyAmount,
+  ETHER,
+  Fraction,
+  Percent,
+  ChainId,
+} from '@uniswap/sdk';
+import {
+  CurrencyAmount as CurrencyAmountV3,
+  Currency,
+} from '@uniswap/sdk-core';
 import { useCallback, useMemo } from 'react';
-import { GlobalConst } from 'constants/index';
 import { useTokenAllowance, useTokenAllowanceV3 } from 'data/Allowances';
 import { Field } from 'state/swap/actions';
 import {
@@ -11,10 +21,16 @@ import {
   useHasPendingApproval,
 } from 'state/transactions/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { calculateGasMargin } from 'utils';
+import { calculateGasMargin, calculateGasMarginBonus } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenContract } from './useContract';
-import { Currency } from '@uniswap/sdk-core';
+import {
+  PARASWAP_PROXY_ROUTER_ADDRESS,
+  V2_ROUTER_ADDRESS,
+  SWAP_ROUTER_ADDRESS,
+} from 'constants/v3/addresses';
+import { OptimalRate } from '@paraswap/sdk';
+import { ONE } from 'v3lib/utils';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -28,7 +44,9 @@ export function useApproveCallback(
   amountToApprove?: CurrencyAmount,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
   const token =
     amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined;
   const currentAllowance = useTokenAllowance(
@@ -41,7 +59,8 @@ export function useApproveCallback(
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
     if (!amountToApprove || !spender) return ApprovalState.UNKNOWN;
-    if (amountToApprove.currency === ETHER) return ApprovalState.APPROVED;
+    if (amountToApprove.currency === nativeCurrency)
+      return ApprovalState.APPROVED;
     // we might not have enough data to know whether or not we need to approve
     if (!currentAllowance) return ApprovalState.UNKNOWN;
 
@@ -51,7 +70,13 @@ export function useApproveCallback(
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED;
-  }, [amountToApprove, currentAllowance, pendingApproval, spender]);
+  }, [
+    amountToApprove,
+    currentAllowance,
+    nativeCurrency,
+    pendingApproval,
+    spender,
+  ]);
 
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();
@@ -133,6 +158,7 @@ export function useApproveCallback(
 export function useApproveCallbackV3(
   amountToApprove?: CurrencyAmountV3<Currency>,
   spender?: string,
+  isBonusRoute?: boolean,
 ): [ApprovalState, () => Promise<void>] {
   const { account, chainId } = useActiveWeb3React();
   const token = amountToApprove?.currency?.isToken
@@ -210,7 +236,9 @@ export function useApproveCallbackV3(
         spender,
         useExact ? amountToApprove.quotient.toString() : MaxUint256,
         {
-          gasLimit: calculateGasMargin(estimatedGas),
+          gasLimit: isBonusRoute
+            ? calculateGasMarginBonus(estimatedGas)
+            : calculateGasMargin(estimatedGas),
         },
       )
       .then((response: TransactionResponse) => {
@@ -231,6 +259,7 @@ export function useApproveCallbackV3(
     spender,
     addTransaction,
     chainId,
+    isBonusRoute,
   ]);
 
   return [approvalState, approve];
@@ -252,28 +281,36 @@ export function useApproveCallbackFromTrade(
 
   return useApproveCallback(
     amountToApprove,
-    chainId ? GlobalConst.addresses.ROUTER_ADDRESS[chainId] : undefined,
+    chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
 }
 
 // wraps useApproveCallback in the context of a swap
 export function useApproveCallbackFromBestTrade(
-  trade?: Trade,
-  allowedSlippage = 0,
+  allowedSlippage: Percent,
+  currency?: Currency,
+  optimalRate?: OptimalRate,
+  bonusRouteFound?: boolean,
 ): [ApprovalState, () => Promise<void>] {
   const { chainId } = useActiveWeb3React();
   const amountToApprove = useMemo(
     () =>
-      trade
-        ? computeSlippageAdjustedAmounts(trade, allowedSlippage)[Field.INPUT]
+      optimalRate
+        ? new Fraction(ONE).add(allowedSlippage).multiply(optimalRate.srcAmount)
+            .quotient
         : undefined,
-    [trade, allowedSlippage],
+    [optimalRate, allowedSlippage],
   );
 
-  return useApproveCallback(
-    amountToApprove,
-    chainId
-      ? GlobalConst.addresses.PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
+  return useApproveCallbackV3(
+    amountToApprove && currency
+      ? CurrencyAmountV3.fromRawAmount(currency, amountToApprove)
       : undefined,
+    chainId
+      ? bonusRouteFound
+        ? SWAP_ROUTER_ADDRESS[chainId]
+        : PARASWAP_PROXY_ROUTER_ADDRESS[chainId]
+      : undefined,
+    bonusRouteFound,
   );
 }
