@@ -6,7 +6,7 @@
   "chainId": 137,
   "isMainnet": true,
   "networkName": "Polygon",
-  "nativeCurrencyImage": "/polygon.svg",
+  "nativeCurrencyImage": "/polygon-pos.svg",
   "nativeCurrency": {
     "name": "Matic Token",
     "symbol": "MATIC",
