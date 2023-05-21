@@ -5,6 +5,7 @@ import SpritzIcon from 'assets/images/SpritzIcon.png';
 import { BuyFiatButton } from 'components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import MeldIcon from 'assets/images/meldIcon.png';
 
 const SwapBuySellMiniWidget: React.FC = () => {
   const { t } = useTranslation();
@@ -16,7 +17,16 @@ const SwapBuySellMiniWidget: React.FC = () => {
           <img className='wallet' src={BuyWithFiat} alt='buy with fiat' />
         </Box>
         <Box className='p-1'>
-          <Box className='text-white text-lg'>Buy or sell crypto with fiat</Box>
+          <Box className='text-white text-lg'>{t('buyOrSellCryptoFiat')}</Box>
+          <Box className='flex items-center'>
+            <small>{t('poweredBy')}</small>
+            <img
+              className='meldLogo'
+              src={MeldIcon}
+              alt='MELD'
+              style={{ height: 15, marginLeft: 6 }}
+            />
+          </Box>
           <Box>
             <BuyFiatButton textOnly={true} />
           </Box>
@@ -28,12 +38,12 @@ const SwapBuySellMiniWidget: React.FC = () => {
           <img className='bill' src={BillPay} alt='bill pay' />
         </Box>
         <Box className='p-1'>
-          <Box className='text-white text-lg'>Pay your bills with crypto</Box>
-          <Box>
-            <small>Powered by </small>
+          <Box className='text-white text-lg'>{t('payBills')}</Box>
+          <Box className='flex items-center'>
+            <small>{t('poweredBy')}</small>
             <img
               className='spritz'
-              style={{ height: '20px' }}
+              style={{ height: 20, marginLeft: 2 }}
               src={SpritzIcon}
               alt='spritz finance'
             />

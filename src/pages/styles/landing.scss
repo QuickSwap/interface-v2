@@ -355,6 +355,10 @@
     & img {
       height: 20px;
       width: auto;
+      &.meldLogo {
+        height: 15px;
+        margin: 0 3px 0 6px;
+      }
     }
   }
 }
