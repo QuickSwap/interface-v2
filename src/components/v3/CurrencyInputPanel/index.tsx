@@ -8,8 +8,7 @@ import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { WrappedCurrency } from 'models/types/Currency';
 import CurrencyLogo from 'components/CurrencyLogo';
-import { useCurrencyBalance as useCurrencyBalanceV2 } from 'state/wallet/hooks';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
+import { useCurrencyBalance } from 'state/wallet/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@material-ui/core';
 import NumericalInput from 'components/NumericalInput';
@@ -89,10 +88,10 @@ export default function CurrencyInputPanel({
   const { t } = useTranslation();
 
   const nativeCurrency = chainId ? ETHER[chainId] : undefined;
-  const ethBalance = useCurrencyBalanceV2(account ?? undefined, nativeCurrency);
+  const ethBalance = useCurrencyBalance(account ?? undefined, nativeCurrency);
   const balance = useCurrencyBalance(
     account ?? undefined,
-    currency ?? undefined,
+    currency?.isNative ? nativeCurrency : currency ?? undefined,
   );
 
   const currentPrice = useUSDCPriceFromAddress(
