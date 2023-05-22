@@ -110,11 +110,6 @@ export default function Updater(): null {
 
     return () => {
       library.removeListener('block', blockNumberCallback);
-      if (connector.provider) {
-        connector.provider.removeListener('chainChanged', () => {
-          document.location.reload();
-        });
-      }
     };
   }, [
     dispatch,
