@@ -1,0 +1,23 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.meldModalWrapper {
+  max-width: 450px;
+  background-color: rgb(12, 17, 42) !important;
+}
+
+.meldModalClose {
+  margin: 8px 8px 0 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.buyFiatContent {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  & iframe {
+    border: none;
+  }
+}
