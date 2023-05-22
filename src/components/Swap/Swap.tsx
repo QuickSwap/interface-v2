@@ -679,7 +679,7 @@ const Swap: React.FC<{
           )}
         </Box>
       )}
-      {fetchingBestRoute ? (
+      {!showWrap && fetchingBestRoute ? (
         <Box mt={2} className='flex justify-center'>
           <p>{t('fetchingBestRoute')}...</p>
         </Box>
