@@ -1,17 +1,18 @@
-import { WETH } from '@uniswap/sdk';
+import { WETH, ETHER } from '@uniswap/sdk';
 import { Currency } from '@uniswap/sdk-core';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useWETHContract } from './useContract';
-import { formatTokenAmount } from 'utils';
 
 export enum WrapType {
   NOT_APPLICABLE,
   WRAP,
   UNWRAP,
+  WRAPPING,
+  UNWRAPPING,
 }
 
 const NOT_APPLICABLE = { wrapType: WrapType.NOT_APPLICABLE };
@@ -39,10 +40,18 @@ export default function useWrapCallback(
     typedValue,
   ]);
   const addTransaction = useTransactionAdder();
+  const [wrapping, setWrapping] = useState(false);
+  const [unwrapping, setUnWrapping] = useState(false);
 
   return useMemo(() => {
     if (!wethContract || !chainId || !inputCurrency || !outputCurrency)
       return NOT_APPLICABLE;
+
+    if (!inputAmount)
+      return {
+        wrapType: WrapType.NOT_APPLICABLE,
+        inputError: 'Enter an amount',
+      };
 
     const sufficientBalance =
       inputAmount && balance && !balance.lessThan(inputAmount);
@@ -55,23 +64,31 @@ export default function useWrapCallback(
         WETH[chainId].address.toLowerCase()
     ) {
       return {
-        wrapType: WrapType.WRAP,
+        wrapType: wrapping ? WrapType.WRAPPING : WrapType.WRAP,
         execute:
           sufficientBalance && inputAmount
             ? async () => {
+                setWrapping(true);
                 try {
                   const txReceipt = await wethContract.deposit({
                     value: `0x${inputAmount.numerator.toString(16)}`,
                   });
                   addTransaction(txReceipt, {
-                    summary: `Wrap ${inputAmount.toSignificant(2)} ETH to WETH`,
+                    summary: `Wrap ${inputAmount.toSignificant(2)} ${
+                      ETHER[chainId].symbol
+                    } to ${WETH[chainId].symbol}`,
                   });
+                  await txReceipt.wait();
+                  setWrapping(false);
                 } catch (error) {
+                  setWrapping(false);
                   console.error('Could not deposit', error);
                 }
               }
             : undefined,
-        inputError: sufficientBalance ? undefined : 'Insufficient ETH balance',
+        inputError: sufficientBalance
+          ? undefined
+          : `Insufficient ${ETHER[chainId].symbol}`,
       };
     } else if (
       inputCurrency.wrapped &&
@@ -81,25 +98,31 @@ export default function useWrapCallback(
       outputCurrency.isNative
     ) {
       return {
-        wrapType: WrapType.UNWRAP,
+        wrapType: unwrapping ? WrapType.UNWRAPPING : WrapType.UNWRAP,
         execute:
           sufficientBalance && inputAmount
             ? async () => {
                 try {
+                  setUnWrapping(true);
                   const txReceipt = await wethContract.withdraw(
                     `0x${inputAmount.numerator.toString(16)}`,
                   );
                   addTransaction(txReceipt, {
-                    summary: `Unwrap ${inputAmount.toSignificant(
-                      2,
-                    )} WETH to ETH`,
+                    summary: `Unwrap ${inputAmount.toSignificant(2)} ${
+                      WETH[chainId].symbol
+                    } to ${ETHER[chainId].symbol}`,
                   });
+                  await txReceipt.wait();
+                  setUnWrapping(false);
                 } catch (error) {
+                  setUnWrapping(false);
                   console.error('Could not withdraw', error);
                 }
               }
             : undefined,
-        inputError: sufficientBalance ? undefined : 'Insufficient WETH balance',
+        inputError: sufficientBalance
+          ? undefined
+          : `Insufficient ${WETH[chainId].symbol}`,
       };
     } else {
       return NOT_APPLICABLE;
@@ -111,6 +134,8 @@ export default function useWrapCallback(
     outputCurrency,
     inputAmount,
     balance,
+    wrapping,
+    unwrapping,
     addTransaction,
   ]);
 }

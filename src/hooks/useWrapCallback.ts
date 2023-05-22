@@ -1,18 +1,18 @@
 import { ChainId, Currency, currencyEquals, ETHER, WETH } from '@uniswap/sdk';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { tryParseAmount } from 'state/swap/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useWETHContract } from './useContract';
 import { formatTokenAmount } from 'utils';
-import { toV3Token } from 'constants/v3/addresses';
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 
 export enum WrapType {
   NOT_APPLICABLE,
   WRAP,
   UNWRAP,
+  WRAPPING,
+  UNWRAPPING,
 }
 
 const NOT_APPLICABLE = { wrapType: WrapType.NOT_APPLICABLE };
@@ -42,6 +42,8 @@ export default function useWrapCallback(
     [chainIdToUse, inputCurrency, typedValue],
   );
   const addTransaction = useTransactionAdder();
+  const [wrapping, setWrapping] = useState(false);
+  const [unwrapping, setUnWrapping] = useState(false);
 
   return useMemo(() => {
     if (!wethContract || !chainId || !inputCurrency || !outputCurrency)
@@ -55,50 +57,62 @@ export default function useWrapCallback(
       currencyEquals(WETH[chainId], outputCurrency)
     ) {
       return {
-        wrapType: WrapType.WRAP,
+        wrapType: wrapping ? WrapType.WRAPPING : WrapType.WRAP,
         execute:
           sufficientBalance && inputAmount
             ? async () => {
+                setWrapping(true);
                 try {
                   const txReceipt = await wethContract.deposit({
                     value: `0x${inputAmount.raw.toString(16)}`,
                   });
                   addTransaction(txReceipt, {
-                    summary: `Wrap ${formatTokenAmount(
-                      inputAmount,
-                    )} ETH to WETH`,
+                    summary: `Wrap ${formatTokenAmount(inputAmount)} ${
+                      ETHER[chainId].symbol
+                    } to ${WETH[chainId].symbol}`,
                   });
+                  await txReceipt.wait();
+                  setWrapping(false);
                 } catch (error) {
+                  setWrapping(false);
                   console.error('Could not deposit', error);
                 }
               }
             : undefined,
-        inputError: sufficientBalance ? undefined : 'Insufficient ETH balance',
+        inputError: sufficientBalance
+          ? undefined
+          : `Insufficient ${ETHER[chainId].symbol}`,
       };
     } else if (
       currencyEquals(WETH[chainId], inputCurrency) &&
       outputCurrency === nativeCurrency
     ) {
       return {
-        wrapType: WrapType.UNWRAP,
+        wrapType: unwrapping ? WrapType.UNWRAPPING : WrapType.UNWRAP,
         execute:
           sufficientBalance && inputAmount
             ? async () => {
+                setUnWrapping(true);
                 try {
                   const txReceipt = await wethContract.withdraw(
                     `0x${inputAmount.raw.toString(16)}`,
                   );
                   addTransaction(txReceipt, {
-                    summary: `Unwrap ${formatTokenAmount(
-                      inputAmount,
-                    )} WETH to ETH`,
+                    summary: `Unwrap ${formatTokenAmount(inputAmount)} ${
+                      WETH[chainId].symbol
+                    } to ${ETHER[chainId].symbol}`,
                   });
+                  await txReceipt.wait();
+                  setUnWrapping(false);
                 } catch (error) {
+                  setUnWrapping(false);
                   console.error('Could not withdraw', error);
                 }
               }
             : undefined,
-        inputError: sufficientBalance ? undefined : 'Insufficient WETH balance',
+        inputError: sufficientBalance
+          ? undefined
+          : `Insufficient ${WETH[chainId].symbol}`,
       };
     } else {
       return NOT_APPLICABLE;
@@ -111,6 +125,8 @@ export default function useWrapCallback(
     inputAmount,
     balance,
     nativeCurrency,
+    wrapping,
     addTransaction,
+    unwrapping,
   ]);
 }

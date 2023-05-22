@@ -55,7 +55,7 @@ import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { warningSeverity } from 'utils/v3/prices';
 
 import { Box, Button } from '@material-ui/core';
-import { ChainId, ETHER } from '@uniswap/sdk';
+import { ChainId, ETHER, WETH } from '@uniswap/sdk';
 import { AddressInput, CustomTooltip } from 'components';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -695,14 +695,22 @@ const SwapV3Page: React.FC = () => {
           ) : showWrap ? (
             <Button
               fullWidth
-              disabled={Boolean(wrapInputError)}
+              disabled={
+                Boolean(wrapInputError) ||
+                wrapType === WrapType.WRAPPING ||
+                wrapType === WrapType.UNWRAPPING
+              }
               onClick={onWrap}
             >
               {wrapInputError ??
                 (wrapType === WrapType.WRAP
-                  ? t('wrap')
+                  ? t('wrapMATIC', { symbol: ETHER[chainId].symbol })
                   : wrapType === WrapType.UNWRAP
-                  ? t('unWrap')
+                  ? t('unwrapMATIC', { symbol: WETH[chainId].symbol })
+                  : wrapType === WrapType.WRAPPING
+                  ? t('wrappingMATIC', { symbol: ETHER[chainId].symbol })
+                  : wrapType === WrapType.UNWRAPPING
+                  ? t('unwrappingMATIC', { symbol: WETH[chainId].symbol })
                   : null)}
             </Button>
           ) : routeNotFound && userHasSpecifiedInputOutput ? (
