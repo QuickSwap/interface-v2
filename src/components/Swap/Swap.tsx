@@ -7,6 +7,7 @@ import {
   ChainId,
   ETHER,
   currencyEquals,
+  WETH,
 } from '@uniswap/sdk';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
@@ -294,10 +295,15 @@ const Swap: React.FC<{
       ) {
         return t('enterAmount');
       } else if (showWrap) {
+        if (wrapInputError) return wrapInputError;
         return wrapType === WrapType.WRAP
-          ? t('wrap')
+          ? t('wrapMATIC', { symbol: ETHER[chainId].symbol })
           : wrapType === WrapType.UNWRAP
-          ? t('unWrap')
+          ? t('unwrapMATIC', { symbol: WETH[chainId].symbol })
+          : wrapType === WrapType.WRAPPING
+          ? t('wrappingMATIC', { symbol: ETHER[chainId].symbol })
+          : wrapType === WrapType.UNWRAPPING
+          ? t('unwrappingMATIC', { symbol: WETH[chainId].symbol })
           : '';
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return t('insufficientLiquidityTrade');
@@ -326,7 +332,9 @@ const Swap: React.FC<{
     userHasSpecifiedInputOutput,
     priceImpactSeverity,
     isExpertMode,
+    wrapInputError,
     wrapType,
+    chainId,
     swapInputError,
     swapCallbackError,
   ]);
@@ -336,7 +344,11 @@ const Swap: React.FC<{
     if (account) {
       if (!isSupportedNetwork) return false;
       if (showWrap) {
-        return Boolean(wrapInputError);
+        return (
+          Boolean(wrapInputError) ||
+          wrapType === WrapType.WRAPPING ||
+          wrapType === WrapType.UNWRAPPING
+        );
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return true;
       } else if (showApproveFlow) {
@@ -368,6 +380,7 @@ const Swap: React.FC<{
     userHasSpecifiedInputOutput,
     showApproveFlow,
     wrapInputError,
+    wrapType,
     isValid,
     approval,
     priceImpactSeverity,
@@ -679,7 +692,7 @@ const Swap: React.FC<{
           )}
         </Box>
       )}
-      {fetchingBestRoute ? (
+      {!showWrap && fetchingBestRoute ? (
         <Box mt={2} className='flex justify-center'>
           <p>{t('fetchingBestRoute')}...</p>
         </Box>
