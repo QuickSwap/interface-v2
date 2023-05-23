@@ -1049,7 +1049,7 @@ export const GammaPairs: {
       {
         type: Presets.GAMMA_WIDE,
         title: 'Wide',
-        address: '0x0668331b4606beb78a1c8314e08d8b07653fbd3c',
+        address: '0xc491c1b173e932e97d9f739ccd9ae5b6d5fce4ce',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xffa188493c15dfaf2c206c97d8633377847b6a52',
         ableToFarm: true,
