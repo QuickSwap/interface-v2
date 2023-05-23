@@ -1045,6 +1045,17 @@ export const GammaPairs: {
         pid: 78,
       },
     ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xffa188493c15dfaf2c206c97d8633377847b6a52': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x0668331b4606beb78a1c8314e08d8b07653fbd3c',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xffa188493c15dfaf2c206c97d8633377847b6a52',
+        ableToFarm: true,
+        pid: 80,
+      },
+    ],
     '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
       {
         type: Presets.GAMMA_WIDE,
@@ -1162,6 +1173,28 @@ export const GammaPairs: {
         token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
         ableToFarm: true,
         pid: 8,
+      },
+    ],
+    '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0xafad6e114cfbc8a19e91b8d7d04da740a7698595',
+        token0Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        token1Address: '0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4',
+        ableToFarm: true,
+        pid: 9,
+      },
+    ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0xcd36b8a47a072e3e05e894b6ec89d294bec3d3ed',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4',
+        ableToFarm: true,
+        pid: 10,
       },
     ],
   },
@@ -1409,6 +1442,13 @@ export const GlobalValue = {
         18,
         'rMATIC',
         'StaFi rMATIC (PoS)',
+      ),
+      WEFI: new Token(
+        ChainId.MATIC,
+        '0xffa188493c15dfaf2c206c97d8633377847b6a52',
+        18,
+        'WEFI',
+        'WeFi',
       ),
     },
   },
