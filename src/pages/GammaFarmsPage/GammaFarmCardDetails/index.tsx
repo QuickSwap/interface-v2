@@ -31,6 +31,7 @@ import {
 } from 'state/multicall/v3/hooks';
 import GammaRewarder from 'constants/abis/gamma-rewarder.json';
 import { Interface } from '@ethersproject/abi';
+import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 
 const GammaFarmCardDetails: React.FC<{
   data: any;
@@ -53,6 +54,8 @@ const GammaFarmCardDetails: React.FC<{
 
   const masterChefContract = useMasterChefContract(
     pairData.masterChefIndex ?? 0,
+    undefined,
+    pairData.masterChefIndex === 2 ? QIGammaMasterChef : undefined,
   );
   const hypervisorContract = useGammaHypervisorContract(pairData.address);
 
@@ -78,15 +81,26 @@ const GammaFarmCardDetails: React.FC<{
       ? Object.values(rewardData['rewarders'])
       : [];
   const rewarderAddresses =
-    rewardData && rewardData['rewarders']
+    pairData.masterChefIndex !== 2 && rewardData && rewardData['rewarders']
       ? Object.keys(rewardData['rewarders'])
       : [];
-  const pendingRewardsData = useMultipleContractSingleData(
+  const gammaPendingRewardsData = useMultipleContractSingleData(
     rewarderAddresses,
     new Interface(GammaRewarder),
     'pendingToken',
     [pairData.pid, account ?? undefined],
   );
+  const qipendingRewardData = useSingleCallResult(
+    pairData.masterChefIndex === 2 ? masterChefContract : undefined,
+    'pending',
+    [pairData.pid, account ?? undefined],
+  );
+
+  const pendingRewardsData =
+    pairData.masterChefIndex === 2
+      ? [qipendingRewardData]
+      : gammaPendingRewardsData;
+
   const pendingRewards = pendingRewardsData
     .reduce<{ token: Token; amount: number }[]>(
       (rewardArray, callData, index) => {
@@ -196,23 +210,43 @@ const GammaFarmCardDetails: React.FC<{
 
   const stakeLP = async () => {
     if (!masterChefContract || !account || !lpBalanceBN) return;
-    const estimatedGas = await masterChefContract.estimateGas.deposit(
-      pairData.pid,
-      stakeAmount === availableStakeAmount
-        ? lpBalanceBN
-        : parseUnits(Number(stakeAmount).toFixed(18), 18),
-      account,
-    );
-    const response: TransactionResponse = await masterChefContract.deposit(
-      pairData.pid,
-      stakeAmount === availableStakeAmount
-        ? lpBalanceBN
-        : parseUnits(Number(stakeAmount).toFixed(18), 18),
-      account,
-      {
-        gasLimit: calculateGasMargin(estimatedGas),
-      },
-    );
+    let response: TransactionResponse;
+    if (pairData.masterChefIndex === 2) {
+      const estimatedGas = await masterChefContract.estimateGas.deposit(
+        pairData.pid,
+        stakeAmount === availableStakeAmount
+          ? lpBalanceBN
+          : parseUnits(Number(stakeAmount).toFixed(18), 18),
+      );
+      response = await masterChefContract.deposit(
+        pairData.pid,
+        stakeAmount === availableStakeAmount
+          ? lpBalanceBN
+          : parseUnits(Number(stakeAmount).toFixed(18), 18),
+        {
+          gasLimit: calculateGasMargin(estimatedGas),
+        },
+      );
+    } else {
+      const estimatedGas = await masterChefContract.estimateGas.deposit(
+        pairData.pid,
+        stakeAmount === availableStakeAmount
+          ? lpBalanceBN
+          : parseUnits(Number(stakeAmount).toFixed(18), 18),
+        account,
+      );
+      response = await masterChefContract.deposit(
+        pairData.pid,
+        stakeAmount === availableStakeAmount
+          ? lpBalanceBN
+          : parseUnits(Number(stakeAmount).toFixed(18), 18),
+        account,
+        {
+          gasLimit: calculateGasMargin(estimatedGas),
+        },
+      );
+    }
+
     addTransaction(response, {
       summary: t('depositliquidity'),
     });
@@ -226,23 +260,43 @@ const GammaFarmCardDetails: React.FC<{
     if (!masterChefContract || !account || !stakedAmountBN) return;
     setAttemptUnstaking(true);
     try {
-      const estimatedGas = await masterChefContract.estimateGas.withdraw(
-        pairData.pid,
-        unStakeAmount === stakedAmount
-          ? stakedAmountBN
-          : parseUnits(Number(unStakeAmount).toFixed(18), 18),
-        account,
-      );
-      const response: TransactionResponse = await masterChefContract.withdraw(
-        pairData.pid,
-        unStakeAmount === stakedAmount
-          ? stakedAmountBN
-          : parseUnits(Number(unStakeAmount).toFixed(18), 18),
-        account,
-        {
-          gasLimit: calculateGasMargin(estimatedGas),
-        },
-      );
+      let response: TransactionResponse;
+      if (pairData.masterChefIndex === 2) {
+        const estimatedGas = await masterChefContract.estimateGas.withdraw(
+          pairData.pid,
+          unStakeAmount === stakedAmount
+            ? stakedAmountBN
+            : parseUnits(Number(unStakeAmount).toFixed(18), 18),
+        );
+        response = await masterChefContract.withdraw(
+          pairData.pid,
+          unStakeAmount === stakedAmount
+            ? stakedAmountBN
+            : parseUnits(Number(unStakeAmount).toFixed(18), 18),
+          {
+            gasLimit: calculateGasMargin(estimatedGas),
+          },
+        );
+      } else {
+        const estimatedGas = await masterChefContract.estimateGas.withdraw(
+          pairData.pid,
+          unStakeAmount === stakedAmount
+            ? stakedAmountBN
+            : parseUnits(Number(unStakeAmount).toFixed(18), 18),
+          account,
+        );
+        response = await masterChefContract.withdraw(
+          pairData.pid,
+          unStakeAmount === stakedAmount
+            ? stakedAmountBN
+            : parseUnits(Number(unStakeAmount).toFixed(18), 18),
+          account,
+          {
+            gasLimit: calculateGasMargin(estimatedGas),
+          },
+        );
+      }
+
       addTransaction(response, {
         summary: t('withdrawliquidity'),
       });
@@ -261,17 +315,24 @@ const GammaFarmCardDetails: React.FC<{
     if (!masterChefContract || !account) return;
     setAttemptClaiming(true);
     try {
-      const estimatedGas = await masterChefContract.estimateGas.harvest(
-        pairData.pid,
-        account,
-      );
-      const response: TransactionResponse = await masterChefContract.harvest(
-        pairData.pid,
-        account,
-        {
+      let response: TransactionResponse;
+      if (pairData.masterChefIndex === 2) {
+        const estimatedGas = await masterChefContract.estimateGas.deposit(
+          pairData.pid,
+          '0',
+        );
+        response = await masterChefContract.deposit(pairData.pid, '0', {
           gasLimit: calculateGasMargin(estimatedGas),
-        },
-      );
+        });
+      } else {
+        const estimatedGas = await masterChefContract.estimateGas.harvest(
+          pairData.pid,
+          account,
+        );
+        response = await masterChefContract.harvest(pairData.pid, account, {
+          gasLimit: calculateGasMargin(estimatedGas),
+        });
+      }
       addTransaction(response, {
         summary: t('claimrewards'),
       });
