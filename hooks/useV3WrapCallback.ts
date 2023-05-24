@@ -1,11 +1,11 @@
-import { ChainId, Currency, currencyEquals, ETHER, WETH } from '@uniswap/sdk';
+import { WETH, ETHER } from '@uniswap/sdk';
+import { Currency } from '@uniswap/sdk-core';
 import { useMemo, useState } from 'react';
-import { tryParseAmount } from 'state/swap/hooks';
+import { tryParseAmount } from 'state/swap/v3/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
-import { useCurrencyBalance } from 'state/wallet/hooks';
+import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useWETHContract } from './useContract';
-import { formatTokenAmount } from 'utils';
 
 export enum WrapType {
   NOT_APPLICABLE,
@@ -32,15 +32,13 @@ export default function useWrapCallback(
   inputError?: string;
 } {
   const { chainId, account } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = ETHER[chainIdToUse];
   const wethContract = useWETHContract();
   const balance = useCurrencyBalance(account ?? undefined, inputCurrency);
   // we can always parse the amount typed as the input currency, since wrapping is 1:1
-  const inputAmount = useMemo(
-    () => tryParseAmount(chainIdToUse, typedValue, inputCurrency),
-    [chainIdToUse, inputCurrency, typedValue],
-  );
+  const inputAmount = useMemo(() => tryParseAmount(typedValue, inputCurrency), [
+    inputCurrency,
+    typedValue,
+  ]);
   const addTransaction = useTransactionAdder();
   const [wrapping, setWrapping] = useState(false);
   const [unwrapping, setUnWrapping] = useState(false);
@@ -49,12 +47,21 @@ export default function useWrapCallback(
     if (!wethContract || !chainId || !inputCurrency || !outputCurrency)
       return NOT_APPLICABLE;
 
+    if (!inputAmount)
+      return {
+        wrapType: WrapType.NOT_APPLICABLE,
+        inputError: 'Enter an amount',
+      };
+
     const sufficientBalance =
       inputAmount && balance && !balance.lessThan(inputAmount);
 
     if (
-      inputCurrency === nativeCurrency &&
-      currencyEquals(WETH[chainId], outputCurrency)
+      inputCurrency.isNative &&
+      outputCurrency.wrapped &&
+      outputCurrency.wrapped.address &&
+      outputCurrency.wrapped.address.toLowerCase() ===
+        WETH[chainId].address.toLowerCase()
     ) {
       return {
         wrapType: wrapping ? WrapType.WRAPPING : WrapType.WRAP,
@@ -64,10 +71,10 @@ export default function useWrapCallback(
                 setWrapping(true);
                 try {
                   const txReceipt = await wethContract.deposit({
-                    value: `0x${inputAmount.raw.toString(16)}`,
+                    value: `0x${inputAmount.numerator.toString(16)}`,
                   });
                   addTransaction(txReceipt, {
-                    summary: `Wrap ${formatTokenAmount(inputAmount)} ${
+                    summary: `Wrap ${inputAmount.toSignificant(2)} ${
                       ETHER[chainId].symbol
                     } to ${WETH[chainId].symbol}`,
                   });
@@ -84,21 +91,24 @@ export default function useWrapCallback(
           : `Insufficient ${ETHER[chainId].symbol}`,
       };
     } else if (
-      currencyEquals(WETH[chainId], inputCurrency) &&
-      outputCurrency === nativeCurrency
+      inputCurrency.wrapped &&
+      inputCurrency.wrapped.address &&
+      WETH[chainId].address.toLowerCase() ===
+        inputCurrency.wrapped.address.toLowerCase() &&
+      outputCurrency.isNative
     ) {
       return {
         wrapType: unwrapping ? WrapType.UNWRAPPING : WrapType.UNWRAP,
         execute:
           sufficientBalance && inputAmount
             ? async () => {
-                setUnWrapping(true);
                 try {
+                  setUnWrapping(true);
                   const txReceipt = await wethContract.withdraw(
-                    `0x${inputAmount.raw.toString(16)}`,
+                    `0x${inputAmount.numerator.toString(16)}`,
                   );
                   addTransaction(txReceipt, {
-                    summary: `Unwrap ${formatTokenAmount(inputAmount)} ${
+                    summary: `Unwrap ${inputAmount.toSignificant(2)} ${
                       WETH[chainId].symbol
                     } to ${ETHER[chainId].symbol}`,
                   });
@@ -124,9 +134,8 @@ export default function useWrapCallback(
     outputCurrency,
     inputAmount,
     balance,
-    nativeCurrency,
     wrapping,
-    addTransaction,
     unwrapping,
+    addTransaction,
   ]);
 }

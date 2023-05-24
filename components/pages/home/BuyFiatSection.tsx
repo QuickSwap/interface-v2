@@ -29,6 +29,16 @@ const BuyFiatSection: React.FC = () => {
           height={129}
         />
       </Box>
+      <Box className={styles.poweredBySection}>
+        {t('poweredBy')}
+        <img
+          className={styles.meldLogo}
+          src='/assets/images/meldIcon.png'
+          alt='MELD'
+          width={48}
+          height={15}
+        />
+      </Box>
     </Box>
   );
 };

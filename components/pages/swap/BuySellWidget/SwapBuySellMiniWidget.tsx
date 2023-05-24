@@ -20,7 +20,16 @@ const SwapBuySellMiniWidget: React.FC = () => {
           />
         </Box>
         <Box className='p-1'>
-          <Box className='text-lg text-white'>Buy or sell crypto with fiat</Box>
+          <Box className='text-white text-lg'>{t('buyOrSellCryptoFiat')}</Box>
+          <Box className='flex items-center'>
+            <small>{t('poweredBy')}</small>
+            <img
+              className='meldLogo'
+              src='assets/images/meldIcon.png'
+              alt='MELD'
+              style={{ height: 15, marginLeft: 6 }}
+            />
+          </Box>
           <Box>
             <BuyFiatButton textOnly={true} />
           </Box>
@@ -38,11 +47,12 @@ const SwapBuySellMiniWidget: React.FC = () => {
           />
         </Box>
         <Box className='p-1'>
-          <Box className='text-lg text-white'>Pay your bills with crypto</Box>
-          <Box>
-            <small>Powered by </small>
+          <Box className='text-white text-lg'>{t('payBills')}</Box>
+          <Box className='flex items-center'>
+            <small>{t('poweredBy')}</small>
             <Image
               className='spritz'
+              style={{ height: 20, marginLeft: 2 }}
               src='/assets/images/SpritzIcon.png'
               alt='spritz finance'
               width={51}

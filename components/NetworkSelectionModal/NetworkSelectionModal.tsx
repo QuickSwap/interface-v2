@@ -51,43 +51,45 @@ const NetworkSelectionModal: React.FC = () => {
   );
 
   return (
-    <CustomModal open={modalOpen} onClose={toggleModal}>
-      <Box className={styles.networkSelectionModalWrapper}>
-        <Box className='flex items-center justify-between'>
-          <p>{t('selectNetwork')}</p>
-          <Close className='cursor-pointer' onClick={toggleModal} />
-        </Box>
-        <Box mt='20px'>
-          {supportedChains.map((chain) => {
-            const config = getConfig(chain);
-            return (
-              <Box
-                className={styles.networkItemWrapper}
-                key={chain}
-                onClick={() => {
-                  switchNetwork(chain);
-                  toggleModal();
-                }}
-              >
-                <Box className='flex items-center'>
-                  <Image
-                    src={config['nativeCurrencyImage']}
-                    alt='network Image'
-                    width={24}
-                    height={24}
-                  />
-                  <small className='weight-600'>{config['networkName']}</small>
-                </Box>
-                {isSupportedNetwork && chainId && chainId === chain && (
-                  <Box className='flex items-center'>
-                    <Box className={styles.networkConnectedDot} />
-                    <span>{t('connected')}</span>
-                  </Box>
-                )}
+    <CustomModal
+      open={modalOpen}
+      onClose={toggleModal}
+      modalWrapper={styles.networkSelectionModalWrapper}
+    >
+      <Box className='flex items-center justify-between'>
+        <p>{t('selectNetwork')}</p>
+        <Close className='cursor-pointer' onClick={toggleModal} />
+      </Box>
+      <Box mt='20px'>
+        {supportedChains.map((chain) => {
+          const config = getConfig(chain);
+          return (
+            <Box
+              className={styles.networkItemWrapper}
+              key={chain}
+              onClick={() => {
+                switchNetwork(chain);
+                toggleModal();
+              }}
+            >
+              <Box className='flex items-center'>
+                <Image
+                  src={config['nativeCurrencyImage']}
+                  alt='network Image'
+                  width={24}
+                  height={24}
+                />
+                <small className='weight-600'>{config['networkName']}</small>
               </Box>
-            );
-          })}
-        </Box>
+              {isSupportedNetwork && chainId && chainId === chain && (
+                <Box className='flex items-center'>
+                  <Box className={styles.networkConnectedDot} />
+                  <span>{t('connected')}</span>
+                </Box>
+              )}
+            </Box>
+          );
+        })}
       </Box>
     </CustomModal>
   );

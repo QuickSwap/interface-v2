@@ -7,6 +7,7 @@ import {
   ETHER,
   Fraction,
   ChainId,
+  WETH,
 } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, NativeCurrency } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
@@ -457,10 +458,15 @@ const SwapBestTrade: React.FC<{
       ) {
         return t('enterAmount');
       } else if (showWrap) {
+        if (wrapInputError) return wrapInputError;
         return wrapType === WrapType.WRAP
-          ? t('wrap')
+          ? t('wrapMATIC', { symbol: ETHER[chainId].symbol })
           : wrapType === WrapType.UNWRAP
-          ? t('unWrap')
+          ? t('unwrapMATIC', { symbol: WETH[chainId].symbol })
+          : wrapType === WrapType.WRAPPING
+          ? t('wrappingMATIC', { symbol: ETHER[chainId].symbol })
+          : wrapType === WrapType.UNWRAPPING
+          ? t('unwrappingMATIC', { symbol: WETH[chainId].symbol })
           : '';
       } else if (
         optimalRateError === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT'
@@ -492,6 +498,8 @@ const SwapBestTrade: React.FC<{
     }
   }, [
     account,
+    isSupportedNetwork,
+    t,
     currencies,
     formattedAmounts,
     showWrap,
@@ -502,10 +510,10 @@ const SwapBestTrade: React.FC<{
     swapInputAmountWithSlippage,
     swapInputBalance,
     bonusRouteLoading,
-    t,
+    wrapInputError,
     wrapType,
+    chainId,
     maxImpactAllowed,
-    isSupportedNetwork,
   ]);
 
   const swapButtonDisabled = useMemo(() => {
@@ -530,7 +538,11 @@ const SwapBestTrade: React.FC<{
     if (account) {
       if (!isSupportedNetwork) return false;
       if (showWrap) {
-        return Boolean(wrapInputError);
+        return (
+          Boolean(wrapInputError) ||
+          wrapType === WrapType.WRAPPING ||
+          wrapType === WrapType.UNWRAPPING
+        );
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return true;
       } else if (showApproveFlow) {
@@ -563,6 +575,7 @@ const SwapBestTrade: React.FC<{
     userHasSpecifiedInputOutput,
     showApproveFlow,
     wrapInputError,
+    wrapType,
   ]);
 
   const [

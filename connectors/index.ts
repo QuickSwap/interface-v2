@@ -4,7 +4,7 @@ import { GnosisSafe } from '@web3-react/gnosis-safe';
 import { MetaMask } from './Metamask';
 import { Network } from '@web3-react/network';
 import { Connector } from '@web3-react/types';
-import { WalletConnectPopup } from './WalletConnect';
+import { WalletConnectPopup } from './WalletConnectPopup';
 import { Venly } from './Arkane';
 import { ChainId } from '@uniswap/sdk';
 import { GlobalConst } from 'constants/index';
@@ -295,7 +295,19 @@ const [web3ZengoConnect, web3ZengoConnectHooks] = initializeConnector<
     new WalletConnectPopup({
       actions,
       onError,
-      qrcodeModalOptions: { mobileLinks: ['ZenGo'] },
+      qrModalOptions: {
+        mobileWallets: [
+          {
+            id:
+              '4ff5b6816dd118b8c362939cfb7332f667ff071a1828aa96c760871e1b5634fd',
+            name: 'ZenGo',
+            links: {
+              native: '',
+              universal: 'https://get.zengo.com',
+            },
+          },
+        ],
+      },
     }),
 );
 

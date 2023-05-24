@@ -320,19 +320,6 @@
   @include media("screen", "<phone") {
     width: calc(100% - 40px);
   }
-  & .buyContent {
-    background: $bgColor;
-    border-radius: 20px;
-    padding: 24px;
-    & > div {
-      padding: 0;
-      border: none;
-      background: transparent;
-      & > p {
-        margin-bottom: 8px;
-      }
-    }
-  }
 }
 
 .poweredBySection {
@@ -343,4 +330,8 @@
   font-size: 12px;
   font-weight: 600;
   color: $textSecondary;
+}
+
+.meldLogo {
+  margin: 0 3px 0 6px;
 }
