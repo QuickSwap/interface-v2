@@ -65,6 +65,7 @@ import Background from 'layouts/Background';
 import GasUpdater from 'state/application/gasUpdater';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
+import PastWinnersPage from 'pages/PastWinnersPage/PastWinnersPage';
 
 const ThemeProvider: React.FC = ({ children }) => {
   const theme = mainTheme;
@@ -129,6 +130,11 @@ const App: React.FC = () => {
                 <Route exact path='/leader-board'>
                   <PageLayout>
                     <ContestPage />
+                  </PageLayout>
+                </Route>
+                <Route exact path='/past-winners'>
+                  <PageLayout>
+                    <PastWinnersPage />
                   </PageLayout>
                 </Route>
                 <Route exact path='/pools/:version?'>

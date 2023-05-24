@@ -105,6 +105,7 @@ const Header: React.FC = () => {
   const showLending = config['lending']['available'];
   const showGamingHub = config['gamingHub']['available'];
   const showLeaderboard = config['leaderboard']['available'];
+  const showPastWinners = config['pastwinners']['available'];
   const showSafe = config['safe']['available'];
   const showPerps = config['perps']['available'];
   const menuItems = [];
@@ -182,6 +183,14 @@ const Header: React.FC = () => {
       link: '/leader-board',
       text: 'Leader Board',
       id: 'contest-page-link',
+      isNew: true,
+    });
+  }
+  if (showPastWinners) {
+    menuItems.push({
+      link: '/past-winners',
+      text: 'Past winners',
+      id: 'past-winners',
       isNew: true,
     });
   }

@@ -53,6 +53,9 @@
   "leaderboard": {
     "available": true
   },
+  "pastwinners": {
+    "available": true
+  },
   "safe": {
     "available": false
   },
