@@ -9,7 +9,6 @@ import { getPriceClass, formatNumber, getTokenFromAddress } from 'utils';
 import 'components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice, useMaticPrice, useIsV2 } from 'state/application/hooks';
-import { getTopTokensV3 } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from '../../config/index';
 import { useSelectedTokenList } from 'state/lists/hooks';

@@ -1,18 +1,12 @@
-import { clientV2, clientV3, farmingClient } from 'apollo/client';
+import { clientV3 } from 'apollo/client';
 import {
   ALL_PAIRS_V3,
   ALL_TOKENS_V3,
-  FETCH_ETERNAL_FARM_FROM_POOL_V3,
   FETCH_TICKS,
-  GLOBAL_TRANSACTIONS_V3,
   MATIC_PRICE_V3,
   PAIRS_FROM_ADDRESSES_V3,
-  PAIR_FEE_CHART_V3,
-  PAIR_TRANSACTIONS_v3,
   TOKENS_FROM_ADDRESSES_V3,
-  TOP_POOLS_V3_TOKEN,
   TOP_POOLS_V3_TOKENS,
-  TOP_TOKENS_V3,
   PRICES_BY_BLOCK_V3,
 } from 'apollo/queries-v3';
 import {
@@ -29,16 +23,6 @@ import { TickMath } from 'v3lib/utils/tickMath';
 import { tickToPrice } from 'v3lib/utils/priceTickConversions';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import keyBy from 'lodash.keyby';
-import { GlobalConst, TxnType } from 'constants/index';
-import {
-  GLOBAL_DATA,
-  PAIRS_BULK1,
-  PAIRS_HISTORICAL_BULK,
-  TOKENS_FROM_ADDRESSES_V2,
-  TOKEN_DATA2,
-  TOKEN_INFO,
-  TOKEN_INFO_OLD,
-} from 'apollo/queries';
 import { getConfig } from 'config';
 
 export const getMaticPrice: (chainId: ChainId) => Promise<number[]> = async (
@@ -81,145 +65,6 @@ export const getMaticPrice: (chainId: ChainId) => Promise<number[]> = async (
 
   return [maticPrice, maticPriceOneDay, priceChangeMatic];
 };
-
-export async function getTopTokensV3(
-  maticPrice: number,
-  maticPrice24H: number,
-  count = 500,
-  chainId: ChainId,
-): Promise<any> {
-  const client = clientV3[chainId];
-  if (!client) return;
-  try {
-    const utcCurrentTime = dayjs();
-
-    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-
-    const [oneDayBlock] = await getBlocksFromTimestamps(
-      [utcOneDayBack],
-      500,
-      chainId,
-    );
-
-    const topTokensIds = await client.query({
-      query: TOP_TOKENS_V3(count),
-      fetchPolicy: 'network-only',
-    });
-
-    const tokenAddresses: string[] = topTokensIds.data.tokens.map(
-      (el: any) => el.id,
-    );
-
-    const tokensCurrent = await fetchTokensByTime(
-      undefined,
-      tokenAddresses,
-      chainId,
-    );
-
-    let tokens24;
-    if (oneDayBlock && oneDayBlock.number) {
-      tokens24 = await fetchTokensByTime(
-        oneDayBlock.number,
-        tokenAddresses,
-        chainId,
-      );
-    }
-
-    const parsedTokens = parseTokensData(tokensCurrent);
-    const parsedTokens24 = parseTokensData(tokens24);
-
-    const formatted = tokenAddresses.map((address: string) => {
-      const current = parsedTokens[address];
-      const oneDay = parsedTokens24[address];
-
-      const manageUntrackedVolume = current
-        ? +current.volumeUSD <= 1
-          ? 'untrackedVolumeUSD'
-          : 'volumeUSD'
-        : '';
-      const manageUntrackedTVL = current
-        ? +current.totalValueLockedUSD <= 1
-          ? 'totalValueLockedUSDUntracked'
-          : 'totalValueLockedUSD'
-        : '';
-
-      const currentVolume =
-        current && current[manageUntrackedVolume]
-          ? Number(current[manageUntrackedVolume])
-          : 0;
-
-      const oneDayVolume =
-        oneDay && oneDay[manageUntrackedVolume]
-          ? Number(oneDay[manageUntrackedVolume])
-          : 0;
-
-      let oneDayVolumeUSD = currentVolume - oneDayVolume;
-
-      const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
-      const tvlUSDChange = getPercentChange(
-        current ? current[manageUntrackedTVL] : undefined,
-        oneDay ? oneDay[manageUntrackedTVL] : undefined,
-      );
-      const tvlToken = current ? parseFloat(current[manageUntrackedTVL]) : 0;
-      let priceUSD = current
-        ? parseFloat(current.derivedMatic) * maticPrice
-        : 0;
-      const priceUSDOneDay = oneDay
-        ? parseFloat(oneDay.derivedMatic) * maticPrice24H
-        : 0;
-
-      const priceChangeUSD =
-        priceUSD && priceUSDOneDay
-          ? getPercentChange(
-              Number(priceUSD.toString()),
-              Number(priceUSDOneDay.toString()),
-            )
-          : 0;
-
-      const txCount =
-        current && oneDay
-          ? parseFloat(current.txCount) - parseFloat(oneDay.txCount)
-          : current
-          ? parseFloat(current.txCount)
-          : 0;
-      const feesUSD =
-        current && oneDay
-          ? parseFloat(current.feesUSD) - parseFloat(oneDay.feesUSD)
-          : current
-          ? parseFloat(current.feesUSD)
-          : 0;
-      if (oneDayVolumeUSD < 0.0001) {
-        oneDayVolumeUSD = 0;
-      }
-      if (priceUSD < 0.000001) {
-        priceUSD = 0;
-      }
-      return {
-        exists: !!current,
-        id: address,
-        name: current ? formatTokenName(address, current.name) : '',
-        symbol: current ? formatTokenSymbol(address, current.symbol) : '',
-        decimals: current ? current.decimals : 18,
-        oneDayVolumeUSD,
-        txCount,
-        totalLiquidityUSD: tvlUSD,
-        liquidityChangeUSD: tvlUSDChange,
-        feesUSD,
-        tvlToken,
-        priceUSD,
-        priceChangeUSD,
-      };
-    });
-
-    const filtered = formatted.filter((token: any) => {
-      return token !== undefined;
-    });
-
-    return filtered;
-  } catch (err) {
-    console.error(err);
-  }
-}
 
 export const getIntervalTokenDataV3 = async (
   tokenAddress: string,
@@ -657,42 +502,6 @@ export async function getTopPairsV3ByTokens(
   } catch (err) {
     console.error(err);
   }
-}
-
-export async function getPairsAPR(pairAddresses: string[], chainId: ChainId) {
-  const config = getConfig(chainId);
-  const farmEnabled = config['farm']['available'];
-  const aprs: any = await fetchPoolsAPR(chainId);
-  let _farmingAprs: {
-    [type: string]: number;
-  } = {};
-
-  if (farmEnabled) {
-    const farmAprs: any = await fetchEternalFarmAPR(chainId);
-    const farmingAprs = await fetchEternalFarmingsAPRByPool(
-      pairAddresses,
-      chainId,
-    );
-
-    _farmingAprs = farmingAprs.reduce(
-      (acc: any, el: any) => ({
-        ...acc,
-        [el.pool]: farmAprs[el.id],
-      }),
-      {},
-    );
-  }
-
-  return pairAddresses.map((address) => {
-    const aprPercent = aprs[address] ? aprs[address].toFixed(2) : null;
-    const farmingApr = _farmingAprs[address]
-      ? Number(_farmingAprs[address].toFixed(2))
-      : null;
-    return {
-      apr: aprPercent,
-      farmingApr: farmingApr && farmingApr > 0 ? farmingApr : null,
-    };
-  });
 }
 
 export async function getPairInfoV3(address: string, chainId: ChainId) {
@@ -1134,26 +943,6 @@ export async function getLiquidityChart(address: string, chainId: ChainId) {
   //     token0,
   //     token1
   // })
-}
-
-//Farming
-
-export async function fetchEternalFarmingsAPRByPool(
-  poolAddresses: string[],
-  chainId: ChainId,
-): Promise<any> {
-  const client = farmingClient[chainId];
-  if (!client) return;
-  try {
-    const eternalFarmings = await client.query({
-      query: FETCH_ETERNAL_FARM_FROM_POOL_V3(poolAddresses),
-      fetchPolicy: 'network-only',
-    });
-
-    return eternalFarmings.data.eternalFarmings;
-  } catch (err) {
-    throw new Error('Eternal fetch error ' + err);
-  }
 }
 
 //Token Helpers

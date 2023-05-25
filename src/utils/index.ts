@@ -8,8 +8,6 @@ import { blockClient, clientV2, clientV3, farmingClient } from 'apollo/client';
 import {
   GET_BLOCK,
   GET_BLOCKS,
-  TOKENS_CURRENT,
-  TOKENS_DYNAMIC,
   TOKEN_DATA1,
   PAIR_DATA,
   PAIRS_BULK1,
@@ -510,114 +508,6 @@ export const getTokenInfo = async (
   } catch (e) {
     console.log(e);
   }
-};
-
-export const getTopTokens = async (
-  ethPrice: number,
-  ethPriceOld: number,
-  count = 500,
-  chainId: ChainId,
-) => {
-  const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-  const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
-  const client = clientV2[chainId];
-  if (!client) return;
-  let current;
-  try {
-    current = await client.query({
-      query: TOKENS_CURRENT(count),
-      fetchPolicy: 'network-only',
-    });
-  } catch {}
-
-  let oneDayData: any = {};
-  try {
-    const oneDayResult = await client.query({
-      query: TOKENS_DYNAMIC(oneDayBlock, count),
-      fetchPolicy: 'network-only',
-    });
-    oneDayData = oneDayResult?.data?.tokens.reduce((obj: any, cur: any) => {
-      return { ...obj, [cur.id]: cur };
-    }, {});
-  } catch {}
-
-  const bulkResults = await Promise.all(
-    current &&
-      oneDayData &&
-      current?.data?.tokens?.map(async (token: any) => {
-        const data = token;
-
-        // let liquidityDataThisToken = liquidityData?.[token.id]
-        let oneDayHistory = oneDayData?.[token.id];
-
-        // this is because old history data returns exact same data as current data when the old data does not exist
-        if (
-          Number(oneDayHistory?.totalLiquidity ?? 0) ===
-            Number(data?.totalLiquidity ?? 0) &&
-          Number(oneDayHistory?.tradeVolume ?? 0) ===
-            Number(data?.tradeVolume ?? 0) &&
-          Number(oneDayHistory?.derivedETH ?? 0) ===
-            Number(data?.derivedETH ?? 0)
-        ) {
-          oneDayHistory = null;
-        }
-
-        const oneDayVolumeUSD =
-          (data?.tradeVolumeUSD ?? 0) - (oneDayHistory?.tradeVolumeUSD ?? 0);
-
-        const currentLiquidityUSD =
-          data?.totalLiquidity * ethPrice * data?.derivedETH;
-        const oldLiquidityUSD =
-          (oneDayHistory?.totalLiquidity ?? 0) *
-          ethPriceOld *
-          (oneDayHistory?.derivedETH ?? 0);
-
-        // percent changes
-        const priceChangeUSD = getPercentChange(
-          data?.derivedETH * ethPrice,
-          oneDayHistory?.derivedETH
-            ? oneDayHistory?.derivedETH * ethPriceOld
-            : 0,
-        );
-
-        // set data
-        data.priceUSD = data?.derivedETH * ethPrice;
-        data.totalLiquidityUSD = currentLiquidityUSD;
-        data.oneDayVolumeUSD = oneDayVolumeUSD;
-        data.priceChangeUSD = priceChangeUSD;
-        data.liquidityChangeUSD = getPercentChange(
-          currentLiquidityUSD ?? 0,
-          oldLiquidityUSD ?? 0,
-        );
-        data.symbol = formatTokenSymbol(data.id, data.symbol);
-
-        // new tokens
-        if (!oneDayHistory && data) {
-          data.oneDayVolumeUSD = data.tradeVolumeUSD;
-          data.oneDayVolumeETH = data.tradeVolume * data.derivedETH;
-        }
-
-        // update name data for
-        updateNameData({
-          token0: data,
-        });
-
-        // HOTFIX for Aave
-        if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
-          const aaveData = await client.query({
-            query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
-            fetchPolicy: 'network-only',
-          });
-          const result = aaveData.data.pairs[0];
-          data.totalLiquidityUSD = Number(result.reserveUSD) / 2;
-          data.liquidityChangeUSD = 0;
-          data.priceChangeUSD = 0;
-        }
-        return data;
-      }),
-  );
-  return bulkResults;
 };
 
 export const getTimestampsForChanges: () => number[] = () => {
