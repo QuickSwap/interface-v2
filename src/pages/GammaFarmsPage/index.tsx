@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +18,9 @@ import { Token } from '@uniswap/sdk';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useMasterChefContract } from 'hooks/useContract';
+import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
 
 const GammaFarmsPage: React.FC<{
   farmFilter: string;
@@ -67,6 +70,54 @@ const GammaFarmsPage: React.FC<{
     },
   );
 
+  const qiTokenAddress = '0x580a84c73811e1839f75d86d75d88cca0c241ff4';
+  const qiGammaFarm = '0x25B186eEd64ca5FDD1bc33fc4CFfd6d34069BAec';
+  const qimasterChefContract = useMasterChefContract(
+    2,
+    undefined,
+    QIGammaMasterChef,
+  );
+
+  const qiPoolData = useSingleCallResult(qimasterChefContract, 'poolInfo', [2]);
+
+  const qiAllocPointBN =
+    !qiPoolData.loading && qiPoolData.result && qiPoolData.result.length > 0
+      ? qiPoolData.result.allocPoint
+      : undefined;
+
+  const qiRewardPerSecondData = useSingleCallResult(
+    qimasterChefContract,
+    'rewardPerSecond',
+    [],
+  );
+
+  const qiRewardPerSecondBN =
+    !qiRewardPerSecondData.loading &&
+    qiRewardPerSecondData.result &&
+    qiRewardPerSecondData.result.length > 0
+      ? qiRewardPerSecondData.result[0]
+      : undefined;
+
+  const qiTotalAllocPointData = useSingleCallResult(
+    qimasterChefContract,
+    'totalAllocPoint',
+    [],
+  );
+
+  const qiTotalAllocPointBN =
+    !qiTotalAllocPointData.loading &&
+    qiTotalAllocPointData.result &&
+    qiTotalAllocPointData.result.length > 0
+      ? qiTotalAllocPointData.result[0]
+      : undefined;
+
+  const qiRewardPerSecond =
+    qiAllocPointBN && qiRewardPerSecondBN && qiTotalAllocPointBN
+      ? ((Number(qiAllocPointBN) / Number(qiTotalAllocPointBN)) *
+          Number(qiRewardPerSecondBN)) /
+        10 ** 18
+      : undefined;
+
   const gammaRewardTokenAddresses = GAMMA_MASTERCHEF_ADDRESSES.reduce<string[]>(
     (memo, masterChef) => {
       const gammaReward =
@@ -100,9 +151,53 @@ const GammaFarmsPage: React.FC<{
     [],
   );
 
+  const gammaRewardTokenAddressesWithQI = useMemo(() => {
+    const containsQI = !!gammaRewardTokenAddresses.find(
+      (address) => address.toLowerCase() === qiTokenAddress.toLowerCase(),
+    );
+    if (containsQI) {
+      return gammaRewardTokenAddresses;
+    }
+    return gammaRewardTokenAddresses.concat([qiTokenAddress]);
+  }, [gammaRewardTokenAddresses]);
+
   const gammaRewardsWithUSDPrice = useUSDCPricesFromAddresses(
-    gammaRewardTokenAddresses,
+    gammaRewardTokenAddressesWithQI,
   );
+
+  const qiPrice = gammaRewardsWithUSDPrice?.find(
+    (item) => item.address.toLowerCase() === qiTokenAddress.toLowerCase(),
+  )?.price;
+
+  const qiAPR =
+    qiRewardPerSecond &&
+    qiPrice &&
+    gammaData &&
+    gammaData[qiGammaFarm.toLowerCase()] &&
+    gammaData[qiGammaFarm.toLowerCase()]['tvlUSD']
+      ? (qiRewardPerSecond * qiPrice * 3600 * 24 * 365) /
+        gammaData[qiGammaFarm.toLowerCase()]['tvlUSD']
+      : undefined;
+
+  if (gammaRewards && GAMMA_MASTERCHEF_ADDRESSES[2][chainId] && qiAPR) {
+    const qiRewardsData = {
+      apr: qiAPR,
+      rewarders: {
+        rewarder: {
+          rewardToken: qiTokenAddress,
+          rewardTokenDecimals: 18,
+          rewardTokenSymbol: 'QI',
+          rewardPerSecond: qiRewardPerSecond,
+          apr: qiAPR,
+          allocPoint: qiAllocPointBN.toString(),
+        },
+      },
+    };
+    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[2][chainId]] = { pools: {} };
+    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[2][chainId]]['pools'][
+      qiGammaFarm.toLowerCase()
+    ] = qiRewardsData;
+  }
 
   const filteredFarms = allGammaFarms
     .map((item) => {

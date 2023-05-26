@@ -1067,6 +1067,18 @@ export const GammaPairs: {
         masterChefIndex: 1,
       },
     ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x25B186eEd64ca5FDD1bc33fc4CFfd6d34069BAec',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
+        pid: 2,
+        masterChefIndex: 2,
+        ableToFarm: true,
+      },
+    ],
   },
   [ChainId.MUMBAI]: {},
   [ChainId.DOEGCHAIN_TESTNET]: {},
