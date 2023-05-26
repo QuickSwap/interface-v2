@@ -51,6 +51,7 @@ export class TrustWallet extends Connector {
         const provider = windowAsAny.trustWallet;
         if (provider) {
           this.provider = provider;
+          this.provider.removeListener = provider.off;
 
           this.provider.on(
             'connect',

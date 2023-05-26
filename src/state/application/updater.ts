@@ -112,6 +112,13 @@ export default function Updater(): null {
 
     return () => {
       library.removeListener('block', blockNumberCallback);
+      if (connector.provider) {
+        connector.provider.removeListener('chainChanged', () => {
+          setTimeout(() => {
+            document.location.reload();
+          }, 1500);
+        });
+      }
     };
   }, [
     dispatch,
