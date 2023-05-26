@@ -28,11 +28,7 @@ import {
   trustWalletConnection,
   cypherDConnection,
 } from 'connectors';
-import {
-  getIsBitKeepWallet,
-  getIsMetaMaskWallet,
-  getIsTrustWallet,
-} from 'connectors/utils';
+import { getIsMetaMaskWallet, getIsTrustWallet } from 'connectors/utils';
 import { useSelectedWallet } from 'state/user/hooks';
 
 const WALLET_VIEWS = {
@@ -138,7 +134,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isMetamask = getIsMetaMaskWallet();
     const isBlockWallet = ethereum && ethereum.isBlockWallet;
     const isCypherD = ethereum && ethereum.isCypherD;
-    const isBitKeep = getIsBitKeepWallet();
+    const isBitKeep = ethereum && ethereum.isBitKeep;
     const isTrustWallet = getIsTrustWallet();
     const isBraveWallet = ethereum && ethereum.isBraveWallet;
     const isPhantomWallet =
@@ -178,49 +174,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={t('installBrave')}
             subheader={t('installBraveDesc')}
             link={'https://brave.com/wallet'}
-            icon={option.iconName}
-          />
-        );
-      } else if (option.name === GlobalConst.walletName.BITKEEP && !isBitKeep) {
-        return (
-          <Option
-            id={`connect-${option.name}`}
-            key={option.name}
-            color={'#E8831D'}
-            header={t('installBitKeep')}
-            subheader={null}
-            link={'https://bitkeep.com/en/download'}
-            icon={option.iconName}
-          />
-        );
-      } else if (
-        option.name === GlobalConst.walletName.TRUST_WALLET &&
-        !isTrustWallet
-      ) {
-        return (
-          <Option
-            id={`connect-${option.name}`}
-            key={option.name}
-            color={'#E8831D'}
-            header={t('installTrustWallet')}
-            subheader={null}
-            link={'https://trustwallet.com/'}
-            icon={option.iconName}
-          />
-        );
-      } else if (
-        option.name === GlobalConst.walletName.METAMASK &&
-        !isMetamask
-      ) {
-        return (
-          <Option
-            id={`connect-${option.name}`}
-            key={option.name}
-            color={'#E8831D'}
-            header={t('installMetamask')}
-            subheader={null}
-            link={'https://metamask.io/'}
-            icon={MetamaskIcon}
+            icon={BraveWalletIcon}
           />
         );
       }
@@ -282,7 +236,35 @@ const WalletModal: React.FC<WalletModalProps> = ({
         return null;
       }
 
-      if (option.name === GlobalConst.walletName.CYPHERD && !isCypherD) {
+      if (!(web3 || ethereum)) {
+        if (option.name === GlobalConst.walletName.METAMASK) {
+          return (
+            <Option
+              id={`connect-${option.name}`}
+              key={option.name}
+              color={'#E8831D'}
+              header={t('installMetamask')}
+              subheader={null}
+              link={'https://metamask.io/'}
+              icon={MetamaskIcon}
+            />
+          );
+        } else {
+          return null; //dont want to return install twice
+        }
+      } else if (
+        option.name === GlobalConst.walletName.METAMASK &&
+        !isMetamask
+      ) {
+        return null;
+      } else if (option.name === GlobalConst.walletName.CYPHERD && !isCypherD) {
+        return null;
+      } else if (
+        !isTrustWallet &&
+        option.name === GlobalConst.walletName.TRUST_WALLET
+      ) {
+        return null;
+      } else if (option.name === GlobalConst.walletName.BITKEEP && !isBitKeep) {
         return null;
       } else if (
         option.name === GlobalConst.walletName.BLOCKWALLET &&

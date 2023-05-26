@@ -1,13 +1,14 @@
 import React from 'react';
 import { CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
+import 'components/styles/BuyFiatContent.scss';
 
-interface MeldModalProps {
+interface MoonpayModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
+const MoonpayModal: React.FC<MoonpayModalProps> = ({ open, onClose }) => {
   const { t } = useTranslation();
   return (
     <CustomModal
@@ -18,10 +19,10 @@ const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
     >
       <div className='buyFiatContent'>
         <iframe
-          title='meld widget'
+          title='moonpay'
           allow='accelerometer; autoplay; camera; gyroscope; payment'
           height='600px'
-          src={`${process.env.REACT_APP_MELD_URL}/?publicKey=${process.env.REACT_APP_MELD_KEY}`}
+          src={`https://buy.moonpay.com?apiKey=${process.env.REACT_APP_MOONPAY_KEY}`}
           width='100%'
         >
           <p>{t('notSupportIframe')}</p>
@@ -31,4 +32,4 @@ const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
   );
 };
 
-export default MeldModal;
+export default MoonpayModal;

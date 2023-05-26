@@ -2,11 +2,20 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import {
   Actions,
   AddEthereumChainParameter,
+  Provider,
   ProviderConnectInfo,
   ProviderRpcError,
   WatchAssetParameters,
 } from '@web3-react/types';
 import { Connector } from '@web3-react/types';
+
+type BitKeepProvider = Provider & {
+  isBitKeep?: boolean;
+  isConnected?: () => boolean;
+  detected?: BitKeepProvider[];
+  providers?: BitKeepProvider[];
+  chainId: string;
+};
 
 export class NoBitKeepError extends Error {
   public constructor() {
@@ -32,7 +41,7 @@ export interface BitKeepConstructorArgs {
 
 export class BitKeep extends Connector {
   /** {@inheritdoc Connector.provider} */
-  public provider: any;
+  public provider?: BitKeepProvider;
 
   private readonly options?: Parameters<typeof detectEthereumProvider>[0];
   private eagerConnection?: Promise<void>;
@@ -47,10 +56,20 @@ export class BitKeep extends Connector {
 
     return (this.eagerConnection = import('@metamask/detect-provider').then(
       async (m) => {
-        const windowAsAny = window as any;
-        const provider = windowAsAny.bitkeep?.ethereum;
+        const provider = window.ethereum;
         if (provider) {
-          this.provider = provider;
+          this.provider = provider as BitKeepProvider;
+
+          // handle the case when e.g. metamask and coinbase wallet are both installed
+          if (this.provider.detected?.length) {
+            this.provider =
+              this.provider.detected.find((p) => p.isBitKeep) ??
+              this.provider.detected[0];
+          } else if (this.provider.providers?.length) {
+            this.provider =
+              this.provider.providers.find((p) => p.isBitKeep) ??
+              this.provider.providers[0];
+          }
 
           this.provider.on(
             'connect',
@@ -217,7 +236,7 @@ export class BitKeep extends Connector {
           },
         },
       })
-      .then((success: any) => {
+      .then((success) => {
         if (!success) throw new Error('Rejected');
         return true;
       });

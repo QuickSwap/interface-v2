@@ -104,9 +104,7 @@ export default function Updater(): null {
 
     if (connector.provider) {
       connector.provider.on('chainChanged', () => {
-        setTimeout(() => {
-          document.location.reload();
-        }, 1500);
+        document.location.reload();
       });
     }
 
@@ -114,9 +112,7 @@ export default function Updater(): null {
       library.removeListener('block', blockNumberCallback);
       if (connector.provider) {
         connector.provider.removeListener('chainChanged', () => {
-          setTimeout(() => {
-            document.location.reload();
-          }, 1500);
+          document.location.reload();
         });
       }
     };

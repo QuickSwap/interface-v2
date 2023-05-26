@@ -1,5 +1,10 @@
 import { Box, Button } from '@material-ui/core';
-import { MeldModal } from 'components';
+import {
+  BinanceModal,
+  BuyFiatModal,
+  MoonpayModal,
+  MeldModal,
+} from 'components';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,22 +17,55 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({
   fullWidth,
   textOnly,
 }) => {
+  const [openMenu, setOpenMenu] = useState(false);
+  const [showMoonPayWidget, setShowMoonPayWidget] = useState(false);
+  const [showBinanceWidget, setShowBinanceWidgetWidget] = useState(false);
   const [showMeldWidget, setShowMeldWidgetWidget] = useState(false);
   const { t } = useTranslation();
 
   return (
     <>
+      {showMoonPayWidget && (
+        <MoonpayModal
+          open={showMoonPayWidget}
+          onClose={() => setShowMoonPayWidget(false)}
+        />
+      )}
+      {showBinanceWidget && (
+        <BinanceModal
+          open={showBinanceWidget}
+          onClose={() => setShowBinanceWidgetWidget(false)}
+        />
+      )}
       {showMeldWidget && (
         <MeldModal
           open={showMeldWidget}
           onClose={() => setShowMeldWidgetWidget(false)}
         />
       )}
+      <BuyFiatModal
+        open={openMenu}
+        onClose={() => {
+          setOpenMenu(false);
+        }}
+        buyMoonpay={() => {
+          setShowMoonPayWidget(true);
+          setOpenMenu(false);
+        }}
+        buyBinance={() => {
+          setShowBinanceWidgetWidget(true);
+          setOpenMenu(false);
+        }}
+        buyMeld={() => {
+          setShowMeldWidgetWidget(true);
+          setOpenMenu(false);
+        }}
+      />
       {textOnly ? (
         <Box
           className='text-link text-primary cursor-pointer'
           onClick={() => {
-            setShowMeldWidgetWidget(true);
+            setOpenMenu(true);
           }}
         >
           <small>{t('payWithFiatArrow')}</small>
@@ -36,7 +74,7 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({
         <Button
           className={`rounded ${fullWidth ? 'fullWidth' : ''} `}
           onClick={() => {
-            setShowMeldWidgetWidget(true);
+            setOpenMenu(true);
           }}
         >
           <small>{t('buyNow')}</small>
