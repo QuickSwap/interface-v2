@@ -385,11 +385,11 @@ export function getConnections() {
     phantomConnection,
     braveWalletConnection,
     blockWalletConnection,
+    bitKeepConnection,
     gnosisSafeConnection,
     coinbaseWalletConnection,
     walletConnectConnection,
     zengoConnectConnection,
     arkaneConnection,
-    bitKeepConnection,
   ];
 }

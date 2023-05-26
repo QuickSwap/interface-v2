@@ -1,6 +1,7 @@
 export const getIsInjected = () => Boolean(window.ethereum);
 
 type NonMetaMaskFlag =
+  | 'isRabby'
   | 'isBraveWallet'
   | 'isTrustWallet'
   | 'isLedgerConnect'
@@ -9,6 +10,7 @@ type NonMetaMaskFlag =
   | 'isBitKeep'
   | 'isPhantom';
 const allNonMetamaskFlags: NonMetaMaskFlag[] = [
+  'isRabby',
   'isBraveWallet',
   'isTrustWallet',
   'isLedgerConnect',
@@ -49,13 +51,15 @@ export const getIsCoinbaseWallet = () => {
 };
 
 export const getIsTrustWallet = () => {
-  const windowAsAny = window as any;
-  return Boolean(windowAsAny.trustWallet);
-};
-
-export const getIsBitKeepWallet = () => {
-  const windowAsAny = window as any;
-  return Boolean(windowAsAny.bitkeep && windowAsAny.bitkeep.ethereum);
+  const { ethereum } = window as any;
+  return Boolean(
+    ethereum &&
+      (ethereum.isTrust ||
+        (ethereum.detected &&
+          ethereum.detected.find(
+            (provider: any) => provider && provider.isTrust,
+          ))),
+  );
 };
 
 async function getBestUrl(
