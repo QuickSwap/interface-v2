@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
@@ -34,6 +34,7 @@ import { getConfig } from 'config/index';
 import useDeviceWidth from 'hooks/useDeviceWidth';
 import { USDC, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
+import { networkConnection, walletConnectConnection } from 'connectors';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -41,6 +42,7 @@ const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
+  const history = useHistory();
   const { pathname } = useLocation();
   const { account } = useActiveWeb3React();
   const isSupportedNetwork = useIsSupportedNetwork();
@@ -82,19 +84,23 @@ const Header: React.FC = () => {
   }, []);
 
   const menuItemCountToShow = useMemo(() => {
-    if (deviceWidth > 1540) {
+    if (deviceWidth > 1580) {
       return 7;
-    } else if (deviceWidth > 1430) {
+    } else if (deviceWidth > 1500) {
       return 6;
-    } else if (deviceWidth > 1260) {
+    } else if (deviceWidth > 1320) {
       return 5;
-    } else if (deviceWidth > 1080) {
+    } else if (deviceWidth > 1190) {
       return 4;
+    } else if (deviceWidth > 1100) {
+      return 3;
+    } else if (deviceWidth > 1020) {
+      return 2;
     }
-    return 3;
+    return 1;
   }, [deviceWidth]);
 
-  const { chainId } = useActiveWeb3React();
+  const { chainId, connector } = useActiveWeb3React();
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
   const showPool = config['pools']['available'];
@@ -129,9 +135,31 @@ const Header: React.FC = () => {
       text: 'Perps',
       id: 'perps-page-link',
       isExternal: true,
-      target: '_self',
       externalLink: process?.env?.REACT_APP_PERPS_URL || '',
       isNew: true,
+      onClick: async () => {
+        if (chainId !== ChainId.ZKEVM) {
+          const zkEVMconfig = getConfig(ChainId.ZKEVM);
+          const chainParam = {
+            chainId: ChainId.ZKEVM,
+            chainName: `${zkEVMconfig['networkName']} Network`,
+            rpcUrls: [zkEVMconfig['rpc']],
+            nativeCurrency: zkEVMconfig['nativeCurrency'],
+            blockExplorerUrls: [zkEVMconfig['blockExplorer']],
+          };
+          if (
+            connector === walletConnectConnection.connector ||
+            connector === networkConnection.connector
+          ) {
+            await connector.activate(ChainId.ZKEVM);
+          } else {
+            await connector.activate(chainParam);
+          }
+        }
+        if (process.env.REACT_APP_PERPS_URL) {
+          window.open(process.env.REACT_APP_PERPS_URL, '_self');
+        }
+      },
     });
   }
   if (showPool) {
@@ -254,90 +282,53 @@ const Header: React.FC = () => {
       </Link>
       {!tabletWindowSize && (
         <Box className='mainMenu'>
-          {menuItems.slice(0, menuItemCountToShow).map((val, index) =>
-            val.isExternal ? (
-              <a
-                href={val.externalLink}
-                target={val?.target ? val.target : '_blank'}
-                key={index}
-                id={val.id}
-                rel='noopener noreferrer'
-                className={`menuItem ${
-                  pathname !== '/' && val.link.includes(pathname)
-                    ? 'active'
-                    : ''
-                }`}
-              >
-                <small>{val.text}</small>
-                {val.isNew && (
-                  <>
-                    <img src={NewTag} alt='new menu' width={46} />
-                    <img
-                      className='menuItemSparkle menuItemSparkleLeft'
-                      src={SparkleLeft}
-                      alt='menuItem sparkle left'
-                    />
-                    <img
-                      className='menuItemSparkle menuItemSparkleRight'
-                      src={SparkleRight}
-                      alt='menuItem sparkle right'
-                    />
-                    <img
-                      className='menuItemSparkle menuItemSparkleBottom'
-                      src={SparkleBottom}
-                      alt='menuItem sparkle bottom'
-                    />
-                    <img
-                      className='menuItemSparkle menuItemSparkleTop'
-                      src={SparkleTop}
-                      alt='menuItem sparkle top'
-                    />
-                  </>
-                )}
-              </a>
-            ) : (
-              <Link
-                to={val.link}
-                key={index}
-                id={val.id}
-                className={`menuItem ${
-                  pathname !== '/' && val.link.includes(pathname)
-                    ? 'active'
-                    : ''
-                }`}
-                onClick={() => {
-                  updateIsV2(false);
-                }}
-              >
-                <small>{val.text}</small>
-                {val.isNew && (
-                  <>
-                    <img src={NewTag} alt='new menu' width={46} />
-                    <img
-                      className='menuItemSparkle menuItemSparkleLeft'
-                      src={SparkleLeft}
-                      alt='menuItem sparkle left'
-                    />
-                    <img
-                      className='menuItemSparkle menuItemSparkleRight'
-                      src={SparkleRight}
-                      alt='menuItem sparkle right'
-                    />
-                    <img
-                      className='menuItemSparkle menuItemSparkleBottom'
-                      src={SparkleBottom}
-                      alt='menuItem sparkle bottom'
-                    />
-                    <img
-                      className='menuItemSparkle menuItemSparkleTop'
-                      src={SparkleTop}
-                      alt='menuItem sparkle top'
-                    />
-                  </>
-                )}
-              </Link>
-            ),
-          )}
+          {menuItems.slice(0, menuItemCountToShow).map((val) => (
+            <Box
+              key={val.id}
+              id={val.id}
+              className={`menuItem ${
+                pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
+              }`}
+              onClick={() => {
+                if (val.onClick) {
+                  val.onClick();
+                } else {
+                  if (val.isExternal) {
+                    window.open(val.externalLink, val.target);
+                  } else {
+                    history.push(val.link);
+                  }
+                }
+              }}
+            >
+              <small>{val.text}</small>
+              {val.isNew && (
+                <>
+                  <img src={NewTag} alt='new menu' width={46} />
+                  <img
+                    className='menuItemSparkle menuItemSparkleLeft'
+                    src={SparkleLeft}
+                    alt='menuItem sparkle left'
+                  />
+                  <img
+                    className='menuItemSparkle menuItemSparkleRight'
+                    src={SparkleRight}
+                    alt='menuItem sparkle right'
+                  />
+                  <img
+                    className='menuItemSparkle menuItemSparkleBottom'
+                    src={SparkleBottom}
+                    alt='menuItem sparkle bottom'
+                  />
+                  <img
+                    className='menuItemSparkle menuItemSparkleTop'
+                    src={SparkleTop}
+                    alt='menuItem sparkle top'
+                  />
+                </>
+              )}
+            </Box>
+          ))}
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
             <Box display='flex' className='menuItem subMenuItem'>
@@ -346,17 +337,30 @@ const Header: React.FC = () => {
                 <Box className='subMenu'>
                   {menuItems
                     .slice(menuItemCountToShow, menuItems.length)
-                    .map((val, index) => (
-                      <Link
-                        to={val.link}
-                        key={index}
+                    .map((val) => (
+                      <Box
+                        className={`subMenuItem ${
+                          pathname !== '/' && val.link.includes(pathname)
+                            ? 'active'
+                            : ''
+                        }`}
+                        key={val.id}
+                        id={val.id}
                         onClick={() => {
                           setOpenDetailMenu(false);
-                          updateIsV2(false);
+                          if (val.onClick) {
+                            val.onClick();
+                          } else {
+                            if (val.isExternal) {
+                              window.open(val.externalLink, val.target);
+                            } else {
+                              history.push(val.link);
+                            }
+                          }
                         }}
                       >
                         <small>{val.text}</small>
-                      </Link>
+                      </Box>
                     ))}
                   {outLinks.map((item, ind) => (
                     <a href={item.link} key={ind}>
@@ -372,28 +376,30 @@ const Header: React.FC = () => {
       {tabletWindowSize && (
         <Box className='mobileMenuContainer'>
           <Box className='mobileMenu'>
-            {menuItems.slice(0, 4).map((val, index) => {
-              return val.isExternal ? (
-                <a
-                  href={val.externalLink}
-                  target={val?.target ? val.target : '_blank'}
-                  key={index}
-                  rel='noopener noreferrer'
-                >
-                  <small>{val.text}</small>
-                </a>
-              ) : (
-                <Link
-                  to={val.link}
-                  key={index}
-                  className={
-                    pathname.indexOf(val.link) > -1 ? 'active' : 'menuItem'
+            {menuItems.slice(0, 4).map((val) => (
+              <Box
+                key={val.id}
+                id={val.id}
+                className={`menuItem ${
+                  pathname !== '/' && val.link.includes(pathname)
+                    ? 'active'
+                    : ''
+                }`}
+                onClick={() => {
+                  if (val.onClick) {
+                    val.onClick();
+                  } else {
+                    if (val.isExternal) {
+                      window.open(val.externalLink, val.target ?? '_blank');
+                    } else {
+                      history.push(val.link);
+                    }
                   }
-                >
-                  <small>{val.text}</small>
-                </Link>
-              );
-            })}
+                }}
+              >
+                <small>{val.text}</small>
+              </Box>
+            ))}
             {menuItems.length > 4 && (
               <Box className='flex menuItem'>
                 <ThreeDotIcon
@@ -402,31 +408,31 @@ const Header: React.FC = () => {
                 {openDetailMenu && (
                   <Box className='subMenuWrapper'>
                     <Box className='subMenu'>
-                      {menuItems
-                        .slice(4, menuItems.length)
-                        .map((val, index) => {
-                          return val.isExternal ? (
-                            <a
-                              href={val.externalLink}
-                              target={val?.target ? val.target : '_blank'}
-                              key={index}
-                              rel='noopener noreferrer'
-                            >
-                              <small>{val.text}</small>
-                            </a>
-                          ) : (
-                            <Link
-                              to={val.link}
-                              key={index}
-                              onClick={() => {
-                                setOpenDetailMenu(false);
-                                updateIsV2(false);
-                              }}
-                            >
-                              <small>{val.text}</small>
-                            </Link>
-                          );
-                        })}
+                      {menuItems.slice(4, menuItems.length).map((val) => (
+                        <Box
+                          className={`subMenuItem ${
+                            pathname !== '/' && val.link.includes(pathname)
+                              ? 'active'
+                              : ''
+                          }`}
+                          key={val.id}
+                          id={val.id}
+                          onClick={() => {
+                            setOpenDetailMenu(false);
+                            if (val.onClick) {
+                              val.onClick();
+                            } else {
+                              if (val.isExternal) {
+                                window.open(val.externalLink, val.target);
+                              } else {
+                                history.push(val.link);
+                              }
+                            }
+                          }}
+                        >
+                          <small>{val.text}</small>
+                        </Box>
+                      ))}
                       {outLinks.map((item, ind) => (
                         <a
                           href={item.link}

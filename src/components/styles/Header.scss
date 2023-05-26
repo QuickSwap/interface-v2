@@ -64,8 +64,10 @@
     align-items: center;
     height: 36px;
     padding: 0 24px;
+    margin-right: 6px;
     overflow: hidden;
     border-radius: 10px;
+    color: $textSecondary;
     & small {
       white-space: nowrap;
     }
@@ -91,15 +93,35 @@
     .menuItemSparkleRight {
       right: -20px;
     }
+    &.active {
+      color: $textPrimary;
+      background: $secondary1;
+      .menuItemSparkleTop {
+        top: 0px;
+      }
+      .menuItemSparkleBottom {
+        bottom: 0px;
+      }
+      .menuItemSparkleLeft {
+        left: 4px;
+      }
+      .menuItemSparkleRight {
+        right: 4px;
+      }
+    }
     & .subMenu {
       display: none;
       background-color: $secondary2;
       border-radius: 10px;
       margin-top: 12px;
-      & > a {
+      & .subMenuItem {
+        color: $textSecondary;
         padding: 10px 24px;
         white-space: unset;
         &:hover {
+          color: $textPrimary;
+        }
+        &.active {
           color: $textPrimary;
         }
       }
@@ -122,36 +144,6 @@
       & .subMenu {
         display: block;
       }
-    }
-  }
-  & a {
-    text-decoration: none;
-    margin-right: 6px;
-    color: $textSecondary;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    & p {
-      letter-spacing: normal;
-    }
-    &.active {
-      color: $textPrimary;
-      background: $secondary1;
-      .menuItemSparkleTop {
-        top: 0px;
-      }
-      .menuItemSparkleBottom {
-        bottom: 0px;
-      }
-      .menuItemSparkleLeft {
-        left: 4px;
-      }
-      .menuItemSparkleRight {
-        right: 4px;
-      }
-    }
-    &:last-child {
-      margin-right: 0,
     }
   }
 }
@@ -253,13 +245,13 @@
   justify-content: space-between;
   max-width: 375px;
   width: 100%;
-  & a {
-    text-decoration: none;
+  & .menuItem, & .subMenuItem {
     padding: 8px 12px;
     color: $textSecondary;
     font-weight: bold;
+    cursor: pointer;
     &.active {
-      color: $primary;
+      color: $textPrimary;
     }
   }
 }
