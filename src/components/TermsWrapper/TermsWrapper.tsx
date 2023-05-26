@@ -3,6 +3,7 @@ import { CustomModal } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import 'components/styles/TermsWrapper.scss';
 import { Box, Button, Checkbox } from '@material-ui/core';
+import PerpsBanner from 'assets/images/perpsBanner.png';
 
 export default function TermsWrapper({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
@@ -62,6 +63,24 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
               onClick={() => setAgreeTerms(!agreeTerms)}
             />
             <p>{t('disclaimerText2')}</p>
+          </Box>
+          <img src={PerpsBanner} alt='perps banner' width='100%' />
+          <Box my={2}>
+            <p className='caption text-secondary'>
+              <Trans
+                i18nKey='perpsBannerText'
+                components={{
+                  alink: (
+                    <a
+                      className='text-primary'
+                      href={process.env.REACT_APP_PERPS_URL}
+                      rel='noreferrer'
+                      target='_blank'
+                    />
+                  ),
+                }}
+              />
+            </p>
           </Box>
           <Button
             fullWidth
