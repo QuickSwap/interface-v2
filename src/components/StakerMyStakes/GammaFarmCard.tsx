@@ -26,16 +26,6 @@ const GammaFarmCard: React.FC<{
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
-  const farmAPR =
-    rewardData && rewardData['apr'] ? Number(rewardData['apr']) : 0;
-  const poolAPR =
-    data &&
-    data['returns'] &&
-    data['returns']['allTime'] &&
-    data['returns']['allTime']['feeApr']
-      ? Number(data['returns']['allTime']['feeApr'])
-      : 0;
-
   return (
     <Box
       width='100%'
@@ -96,17 +86,32 @@ const GammaFarmCard: React.FC<{
 
           {(!isMobile || !showDetails) && (
             <Box width={isMobile ? '30%' : '20%'} className='flex items-center'>
-              <small className='text-success'>
-                {formatNumber((poolAPR + farmAPR) * 100)}%
-              </small>
-              <Box ml={0.5} height={16}>
-                <TotalAPRTooltip
-                  farmAPR={farmAPR * 100}
-                  poolAPR={poolAPR * 100}
-                >
-                  <img src={CircleInfoIcon} alt={'arrow up'} />
-                </TotalAPRTooltip>
-              </Box>
+              {data &&
+                data['returns'] &&
+                data['returns']['allTime'] &&
+                rewardData && (
+                  <>
+                    <small className='text-success'>
+                      {formatNumber(
+                        (Number(data['returns']['allTime']['feeApr'] ?? 0) +
+                          Number(rewardData['apr'] ?? 0)) *
+                          100,
+                      )}
+                      %
+                    </small>
+                    <Box ml={0.5} height={16}>
+                      <TotalAPRTooltip
+                        farmAPR={Number(rewardData['apr'] ?? 0) * 100}
+                        poolAPR={
+                          Number(data['returns']['allTime']['feeApr'] ?? 0) *
+                          100
+                        }
+                      >
+                        <img src={CircleInfoIcon} alt={'arrow up'} />
+                      </TotalAPRTooltip>
+                    </Box>
+                  </>
+                )}
             </Box>
           )}
         </Box>
