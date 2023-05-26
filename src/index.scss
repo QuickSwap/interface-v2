@@ -12,11 +12,6 @@ body {
   }
 }
 
-w3m-modal {
-  z-index: 10000;
-  position: relative;
-}
-
 .loadingDots {
   &::after {
     display: inline-block;
