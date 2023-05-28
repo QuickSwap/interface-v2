@@ -3,7 +3,6 @@ import {
   ALL_PAIRS_V3,
   ALL_TOKENS_V3,
   FETCH_TICKS,
-  MATIC_PRICE_V3,
   PAIRS_FROM_ADDRESSES_V3,
   TOKENS_FROM_ADDRESSES_V3,
   TOP_POOLS_V3_TOKENS,
@@ -11,7 +10,6 @@ import {
 } from 'apollo/queries-v3';
 import {
   get2DayPercentChange,
-  getBlockFromTimestamp,
   getBlocksFromTimestamps,
   getPercentChange,
   splitQuery,
@@ -28,39 +26,24 @@ import { getConfig } from 'config';
 export const getMaticPrice: (chainId: ChainId) => Promise<number[]> = async (
   chainId: ChainId,
 ) => {
-  const utcCurrentTime = dayjs();
-
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   let maticPrice = 0;
   let maticPriceOneDay = 0;
   let priceChangeMatic = 0;
-  const client = clientV3[chainId];
 
-  if (client) {
-    try {
-      const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
-      const result = await client.query({
-        query: MATIC_PRICE_V3(),
-        fetchPolicy: 'network-only',
-      });
-      let oneDayBackPrice = 0;
-      if (oneDayBlock) {
-        const resultOneDay = await client.query({
-          query: MATIC_PRICE_V3(oneDayBlock),
-          fetchPolicy: 'network-only',
-        });
-        oneDayBackPrice = Number(
-          resultOneDay?.data?.bundles[0]?.maticPriceUSD ?? 0,
-        );
-      }
-      const currentPrice = Number(result?.data?.bundles[0]?.maticPriceUSD ?? 0);
-
-      priceChangeMatic = getPercentChange(currentPrice, oneDayBackPrice);
-      maticPrice = currentPrice;
-      maticPriceOneDay = oneDayBackPrice;
-    } catch (e) {
-      console.log(e);
-    }
+  const res = await fetch(
+    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/matic-price?chainId=${chainId}`,
+  );
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(
+      errorText || res.statusText || `Failed to get global data v2`,
+    );
+  }
+  const data = await res.json();
+  if (data && data.data) {
+    maticPrice = data.data.maticPrice;
+    maticPriceOneDay = data.data.maticPriceOneDay;
+    priceChangeMatic = data.data.priceChangeMatic;
   }
 
   return [maticPrice, maticPriceOneDay, priceChangeMatic];
@@ -156,191 +139,6 @@ export const getIntervalTokenDataV3 = async (
     return [];
   }
 };
-
-export async function getTokenInfoV3(
-  maticPrice: number,
-  maticPrice24H: number,
-  address: string,
-  chainId: ChainId,
-): Promise<any> {
-  try {
-    const utcCurrentTime = dayjs();
-
-    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
-    const utcOneWeekBack = utcCurrentTime.subtract(7, 'day').unix();
-    const utcTwoWeekBack = utcCurrentTime.subtract(14, 'day').unix();
-
-    const [
-      oneDayBlock,
-      twoDayBlock,
-      oneWeekBlock,
-      twoWeekBlock,
-    ] = await getBlocksFromTimestamps(
-      [utcOneDayBack, utcTwoDaysBack, utcOneWeekBack, utcTwoWeekBack],
-      500,
-      chainId,
-    );
-
-    let tokens24, tokens48, tokensOneWeek, tokensTwoWeek;
-    const tokensCurrent = await fetchTokensByTime(
-      undefined,
-      [address],
-      chainId,
-    );
-
-    if (oneDayBlock && oneDayBlock.number) {
-      tokens24 = await fetchTokensByTime(
-        oneDayBlock.number,
-        [address],
-        chainId,
-      );
-    }
-
-    if (twoDayBlock && twoDayBlock.number) {
-      tokens48 = await fetchTokensByTime(
-        twoDayBlock.number,
-        [address],
-        chainId,
-      );
-    }
-
-    if (oneWeekBlock && oneWeekBlock.number) {
-      tokensOneWeek = await fetchTokensByTime(
-        oneWeekBlock.number,
-        [address],
-        chainId,
-      );
-    }
-
-    if (twoWeekBlock && twoWeekBlock.number) {
-      tokensTwoWeek = await fetchTokensByTime(
-        twoWeekBlock.number,
-        [address],
-        chainId,
-      );
-    }
-
-    const parsedTokens = parseTokensData(tokensCurrent);
-    const parsedTokens24 = parseTokensData(tokens24);
-    const parsedTokens48 = parseTokensData(tokens48);
-    const parsedTokensOneWeek = parseTokensData(tokensOneWeek);
-    const parsedTokensTwoWeek = parseTokensData(tokensTwoWeek);
-
-    const current = parsedTokens[address];
-    const oneDay = parsedTokens24[address];
-    const twoDay = parsedTokens48[address];
-    const oneWeek = parsedTokensOneWeek[address];
-    const twoWeek = parsedTokensTwoWeek[address];
-
-    const manageUntrackedVolume = current
-      ? +current.volumeUSD <= 1
-        ? 'untrackedVolumeUSD'
-        : 'volumeUSD'
-      : '';
-    const manageUntrackedTVL = current
-      ? +current.totalValueLockedUSD <= 1
-        ? 'totalValueLockedUSDUntracked'
-        : 'totalValueLockedUSD'
-      : '';
-
-    let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-      current && current[manageUntrackedVolume]
-        ? Number(current[manageUntrackedVolume])
-        : 0,
-      oneDay && oneDay[manageUntrackedVolume]
-        ? Number(oneDay[manageUntrackedVolume])
-        : 0,
-      twoDay && twoDay[manageUntrackedVolume]
-        ? Number(twoDay[manageUntrackedVolume])
-        : 0,
-    );
-
-    let [oneWeekVolumeUSD] = get2DayPercentChange(
-      current && current[manageUntrackedVolume]
-        ? Number(current[manageUntrackedVolume])
-        : 0,
-      oneWeek && oneWeek[manageUntrackedVolume]
-        ? Number(oneWeek[manageUntrackedVolume])
-        : 0,
-      twoWeek && twoWeek[manageUntrackedVolume]
-        ? Number(twoWeek[manageUntrackedVolume])
-        : 0,
-    );
-
-    const tvlUSD = current ? parseFloat(current[manageUntrackedTVL]) : 0;
-    const tvlUSDChange = getPercentChange(
-      current && current[manageUntrackedTVL]
-        ? Number(current[manageUntrackedTVL])
-        : 0,
-      oneDay && oneDay[manageUntrackedTVL]
-        ? Number(oneDay[manageUntrackedTVL])
-        : 0,
-    );
-
-    const tvlToken = current ? parseFloat(current[manageUntrackedTVL]) : 0;
-    let priceUSD = current ? parseFloat(current.derivedMatic) * maticPrice : 0;
-    const priceUSDOneDay = oneDay
-      ? parseFloat(oneDay.derivedMatic) * maticPrice24H
-      : 0;
-
-    const priceChangeUSD =
-      priceUSD && priceUSDOneDay
-        ? getPercentChange(
-            Number(priceUSD.toString()),
-            Number(priceUSDOneDay.toString()),
-          )
-        : 0;
-
-    const txCount =
-      current && oneDay
-        ? parseFloat(current.txCount) - parseFloat(oneDay.txCount)
-        : current
-        ? parseFloat(current.txCount)
-        : 0;
-
-    const feesUSD =
-      current && oneDay
-        ? parseFloat(current.feesUSD) - parseFloat(oneDay.feesUSD)
-        : current
-        ? parseFloat(current.feesUSD)
-        : 0;
-    if (oneDayVolumeUSD < 0.000001) {
-      oneDayVolumeUSD = 0;
-    }
-    if (oneWeekVolumeUSD < 0.000001) {
-      oneWeekVolumeUSD = 0;
-    }
-    if (priceUSD < 0.000001) {
-      priceUSD = 0;
-    }
-    if (volumeChangeUSD < 0.0000001) {
-      volumeChangeUSD = 0;
-    }
-    return current
-      ? {
-          id: address,
-          name: current ? formatTokenName(address, current.name) : '',
-          symbol: current ? formatTokenSymbol(address, current.symbol) : '',
-          decimals: current ? current.decimals : 18,
-          oneDayVolumeUSD,
-          oneWeekVolumeUSD,
-          volumeChangeUSD,
-          txCount,
-          tvlUSD,
-          tvlUSDChange,
-          feesUSD,
-          tvlToken,
-          priceUSD,
-          priceChangeUSD,
-          liquidityChangeUSD: tvlUSDChange,
-          totalLiquidityUSD: tvlUSD,
-        }
-      : undefined;
-  } catch (err) {
-    console.error(err);
-  }
-}
 
 export async function getAllTokensV3(chainId: ChainId) {
   const client = clientV3[chainId];

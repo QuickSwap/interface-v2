@@ -1,7 +1,6 @@
 import React, { lazy, useEffect, useState } from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { useEthPrice } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
 const HeroSection = lazy(() => import('./HeroSection'));
@@ -12,7 +11,6 @@ const GlobalSection: React.FC = () => {
   const { breakpoints } = useTheme();
   const mobileWindowSize = useMediaQuery(breakpoints.down('sm'));
   const [v3GlobalData, updateV3GlobalData] = useState<any>(undefined);
-  const { ethPrice } = useEthPrice();
   const { chainId } = useActiveWeb3React();
   const config = chainId ? getConfig(chainId) : undefined;
   const v2 = config ? config['v2'] : undefined;

@@ -10,8 +10,8 @@ import dayjs from 'dayjs';
 import { useMemo, useEffect, useState } from 'react';
 import { usePairs } from 'data/Reserves';
 
-import { clientV2, clientV3 } from 'apollo/client';
-import { GLOBAL_DATA, PAIRS_BULK, PAIRS_HISTORICAL_BULK } from 'apollo/queries';
+import { clientV2 } from 'apollo/client';
+import { PAIRS_BULK, PAIRS_HISTORICAL_BULK } from 'apollo/queries';
 import { GlobalConst, GlobalValue } from 'constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
@@ -69,10 +69,8 @@ import {
   NEW_QUICK,
   OLD_DQUICK,
   OLD_QUICK,
-  V2_FACTORY_ADDRESSES,
 } from 'constants/v3/addresses';
 import { getConfig } from '../../config/index';
-import { GLOBAL_DATA_V3 } from 'apollo/queries-v3';
 import { useDefaultCNTFarmList } from 'state/cnt/hooks';
 
 const web3 = new Web3('https://polygon-rpc.com/');
@@ -692,101 +690,24 @@ export const getBulkPairData = async (chainId: ChainId, pairList: any) => {
   }
 };
 
-const getOneDayVolume = async (config: any) => {
-  let data: any = {};
-  let oneDayData: any = {};
-  const web3 = new Web3(config.rpc);
-  const current = await web3.eth.getBlockNumber();
-  const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-
-  const oneDayOldBlock = await getBlockFromTimestamp(
-    utcOneDayBack,
-    config.chainId,
+const getOneDayVolume = async (version: string, chainId: ChainId) => {
+  const res = await fetch(
+    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/oneDayVolume?chainId=${chainId}`,
   );
-
-  const chainId: ChainId = config.chainId;
-  const client = clientV2[chainId];
-  if (!client) return;
-  const result = await client.query({
-    query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], current),
-    fetchPolicy: 'network-only',
-  });
-
-  data = result.data.uniswapFactories[0];
-
-  // fetch the historical data
-  if (oneDayOldBlock) {
-    const oneDayResult = await client.query({
-      query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], oneDayOldBlock),
-      fetchPolicy: 'network-only',
-    });
-    oneDayData = oneDayResult.data.uniswapFactories[0];
-  }
-
-  let oneDayVolumeUSD: any = 0;
-
-  if (data && oneDayData) {
-    oneDayVolumeUSD = get2DayPercentChange(
-      data.totalVolumeUSD,
-      oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
-    );
-    oneDayVol = oneDayVolumeUSD;
-  }
-
-  return oneDayVolumeUSD;
-};
-
-const getOneDayVolumeV3 = async (config: any) => {
-  let data: any = {};
-  let oneDayData: any = {};
-
-  const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-
-  const chainId: ChainId = config.chainId;
-  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
-
-  const client = clientV3[chainId];
-  if (!client) return;
-  const result = await client.query({
-    query: GLOBAL_DATA_V3(),
-    fetchPolicy: 'network-only',
-  });
-
-  data =
-    result &&
-    result.data &&
-    result.data.factories &&
-    result.data.factories.length > 0
-      ? result.data.factories[0]
-      : undefined;
-
-  // fetch the historical data
-  if (oneDayOldBlock) {
-    const oneDayResult = await client.query({
-      query: GLOBAL_DATA_V3(oneDayOldBlock),
-      fetchPolicy: 'network-only',
-    });
-    oneDayData =
-      oneDayResult &&
-      oneDayResult.data &&
-      oneDayResult.data.factories &&
-      oneDayResult.data.factories.length > 0
-        ? oneDayResult.data.factories[0]
-        : undefined;
-  }
-
-  let oneDayVolumeUSD: any = 0;
-
-  if (data && oneDayData) {
-    oneDayVolumeUSD = get2DayPercentChange(
-      data.totalVolumeUSD,
-      oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(
+      errorText || res.statusText || `Failed to get global data v2`,
     );
   }
 
-  return oneDayVolumeUSD;
+  const data = await res.json();
+  if (!data || !data.data) return;
+
+  const oneDayVolume = version === 'v2' ? data.data.v2 : data.data.v3;
+  oneDayVol = oneDayVolume;
+
+  return oneDayVolume;
 };
 
 const convertArrayToObject = (array: any, key: any) => {
@@ -1530,10 +1451,10 @@ function useLairInfo(
       let v2OneDayVol = 0,
         v3OneDayVol = 0;
       if (config['v2']) {
-        v2OneDayVol = await getOneDayVolume(config);
+        v2OneDayVol = await getOneDayVolume('v2', chainId);
       }
       if (config['v3']) {
-        v3OneDayVol = await getOneDayVolumeV3(config);
+        v3OneDayVol = await getOneDayVolume('v3', chainId);
       }
       setOneDayVolume(v2OneDayVol + v3OneDayVol);
     })();

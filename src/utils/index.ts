@@ -18,7 +18,6 @@ import {
   TOKEN_INFO,
   TOKEN_INFO_OLD,
   SWAP_TRANSACTIONS,
-  ETH_PRICE,
   PAIR_ID,
 } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
@@ -246,268 +245,27 @@ export const get2DayPercentChange = (
 export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (
   chainId: ChainId,
 ) => {
-  const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
   let ethPrice = 0;
   let ethPriceOneDay = 0;
   let priceChangeETH = 0;
-  const client = clientV2[chainId];
 
-  if (client) {
-    try {
-      const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
-
-      const result = await client.query({
-        query: ETH_PRICE(),
-        fetchPolicy: 'network-only',
-      });
-      const currentPrice = Number(result?.data?.bundles[0]?.ethPrice ?? 0);
-      ethPrice = currentPrice;
-      let oneDayBackPrice = 0;
-      if (oneDayBlock) {
-        const resultOneDay = await client.query({
-          query: ETH_PRICE(oneDayBlock),
-          fetchPolicy: 'network-only',
-        });
-        oneDayBackPrice = Number(resultOneDay?.data?.bundles[0]?.ethPrice ?? 0);
-      }
-
-      priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice);
-      ethPriceOneDay = oneDayBackPrice;
-    } catch (e) {
-      console.log(e);
-    }
+  const res = await fetch(
+    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/eth-price?chainId=${chainId}`,
+  );
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(
+      errorText || res.statusText || `Failed to get global data v2`,
+    );
+  }
+  const data = await res.json();
+  if (data && data.data) {
+    ethPrice = data.data.ethPrice;
+    ethPriceOneDay = data.data.ethPriceOneDay;
+    priceChangeETH = data.data.priceChangeETH;
   }
 
   return [ethPrice, ethPriceOneDay, priceChangeETH];
-};
-
-export const getTokenInfo = async (
-  ethPrice: number,
-  ethPriceOld: number,
-  address: string,
-  chainId: ChainId,
-) => {
-  const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-  const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix();
-  const utcOneWeekBack = utcCurrentTime.subtract(7, 'day').unix();
-  const utcTwoWeekBack = utcCurrentTime.subtract(14, 'day').unix();
-  const oneDayBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
-  const twoDayBlock = await getBlockFromTimestamp(utcTwoDaysBack, chainId);
-  const oneWeekBlock = await getBlockFromTimestamp(utcOneWeekBack, chainId);
-  const twoWeekBlock = await getBlockFromTimestamp(utcTwoWeekBack, chainId);
-  const client = clientV2[chainId];
-  if (!client) return;
-
-  try {
-    const current = await client.query({
-      query: TOKEN_INFO(address),
-      fetchPolicy: 'network-only',
-    });
-
-    let oneDayResult, twoDayResult, oneWeekResult, twoWeekResult;
-    try {
-      oneDayResult = await client.query({
-        query: TOKEN_INFO_OLD(oneDayBlock, address),
-        fetchPolicy: 'network-only',
-      });
-    } catch {}
-
-    try {
-      twoDayResult = await client.query({
-        query: TOKEN_INFO_OLD(twoDayBlock, address),
-        fetchPolicy: 'network-only',
-      });
-    } catch {}
-
-    try {
-      oneWeekResult = await client.query({
-        query: TOKEN_INFO_OLD(oneWeekBlock, address),
-        fetchPolicy: 'network-only',
-      });
-    } catch {}
-
-    try {
-      twoWeekResult = await client.query({
-        query: TOKEN_INFO_OLD(twoWeekBlock, address),
-        fetchPolicy: 'network-only',
-      });
-    } catch {}
-
-    const currentData =
-      current &&
-      current.data &&
-      current.data.tokens &&
-      current.data.tokens.length > 0
-        ? current.data.tokens
-        : undefined;
-
-    const oneDayData =
-      oneDayResult &&
-      oneDayResult.data &&
-      oneDayResult.data.tokens &&
-      oneDayResult.data.tokens.length > 0
-        ? oneDayResult.data.tokens.reduce((obj: any, cur: any) => {
-            return { ...obj, [cur.id]: cur };
-          }, {})
-        : undefined;
-
-    const twoDayData =
-      twoDayResult &&
-      twoDayResult.data &&
-      twoDayResult.data.tokens &&
-      twoDayResult.data.tokens.length > 0
-        ? twoDayResult.data.tokens.reduce((obj: any, cur: any) => {
-            return { ...obj, [cur.id]: cur };
-          }, {})
-        : undefined;
-
-    const oneWeekData =
-      oneWeekResult &&
-      oneWeekResult.data &&
-      oneWeekResult.data.tokens &&
-      oneWeekResult.data.tokens.length > 0
-        ? oneWeekResult.data.tokens.reduce((obj: any, cur: any) => {
-            return { ...obj, [cur.id]: cur };
-          }, {})
-        : undefined;
-
-    const twoWeekData =
-      twoWeekResult &&
-      twoWeekResult.data &&
-      twoWeekResult.data.tokens &&
-      twoWeekResult.data.tokens.length > 0
-        ? twoWeekResult.data.tokens.reduce((obj: any, cur: any) => {
-            return { ...obj, [cur.id]: cur };
-          }, {})
-        : undefined;
-
-    if (!currentData) return;
-    const bulkResults = await Promise.all(
-      currentData.map(async (token: any) => {
-        const data = token;
-
-        let oneDayHistory = oneDayData ? oneDayData[token.id] : undefined;
-        let twoDayHistory = twoDayData ? twoDayData[token.id] : undefined;
-        let oneWeekHistory = oneWeekData ? oneWeekData[token.id] : undefined;
-        let twoWeekHistory = twoWeekData ? twoWeekData[token.id] : undefined;
-
-        // this is because old history data returns exact same data as current data when the old data does not exist
-        if (
-          Number(oneDayHistory?.totalLiquidity ?? 0) ===
-            Number(data?.totalLiquidity ?? 0) &&
-          Number(oneDayHistory?.tradeVolume ?? 0) ===
-            Number(data?.tradeVolume ?? 0) &&
-          Number(oneDayHistory?.derivedETH ?? 0) ===
-            Number(data?.derivedETH ?? 0)
-        ) {
-          oneDayHistory = null;
-        }
-
-        if (
-          Number(twoDayHistory?.totalLiquidity ?? 0) ===
-            Number(data?.totalLiquidity ?? 0) &&
-          Number(twoDayHistory?.tradeVolume ?? 0) ===
-            Number(data?.tradeVolume ?? 0) &&
-          Number(twoDayHistory?.derivedETH ?? 0) ===
-            Number(data?.derivedETH ?? 0)
-        ) {
-          twoDayHistory = null;
-        }
-
-        if (
-          Number(oneWeekHistory?.totalLiquidity ?? 0) ===
-            Number(data?.totalLiquidity ?? 0) &&
-          Number(oneWeekHistory?.tradeVolume ?? 0) ===
-            Number(data?.tradeVolume ?? 0) &&
-          Number(oneWeekHistory?.derivedETH ?? 0) ===
-            Number(data?.derivedETH ?? 0)
-        ) {
-          oneWeekHistory = null;
-        }
-
-        if (
-          Number(twoWeekHistory?.totalLiquidity ?? 0) ===
-            Number(data?.totalLiquidity ?? 0) &&
-          Number(twoWeekHistory?.tradeVolume ?? 0) ===
-            Number(data?.tradeVolume ?? 0) &&
-          Number(twoWeekHistory?.derivedETH ?? 0) ===
-            Number(data?.derivedETH ?? 0)
-        ) {
-          twoWeekHistory = null;
-        }
-
-        // calculate percentage changes and daily changes
-        const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-          data.tradeVolumeUSD,
-          oneDayHistory?.tradeVolumeUSD ?? 0,
-          twoDayHistory?.tradeVolumeUSD ?? 0,
-        );
-
-        const [oneWeekVolumeUSD] = get2DayPercentChange(
-          data.tradeVolumeUSD,
-          oneWeekHistory?.tradeVolumeUSD ?? 0,
-          twoWeekHistory?.tradeVolumeUSD ?? 0,
-        );
-
-        const currentLiquidityUSD =
-          data?.totalLiquidity * ethPrice * data?.derivedETH;
-        const oldLiquidityUSD =
-          (oneDayHistory?.totalLiquidity ?? 0) *
-          ethPriceOld *
-          (oneDayHistory?.derivedETH ?? 0);
-
-        // percent changes
-        const priceChangeUSD = getPercentChange(
-          data?.derivedETH * ethPrice,
-          oneDayHistory?.derivedETH
-            ? oneDayHistory?.derivedETH * ethPriceOld
-            : 0,
-        );
-
-        // set data
-        data.priceUSD = data?.derivedETH * ethPrice;
-        data.totalLiquidityUSD = currentLiquidityUSD;
-        data.oneDayVolumeUSD = oneDayVolumeUSD;
-        data.oneWeekVolumeUSD = oneWeekVolumeUSD;
-        data.volumeChangeUSD = volumeChangeUSD;
-        data.priceChangeUSD = priceChangeUSD;
-        data.liquidityChangeUSD = getPercentChange(
-          currentLiquidityUSD ?? 0,
-          oldLiquidityUSD ?? 0,
-        );
-        data.symbol = formatTokenSymbol(data.id, data.symbol);
-
-        // new tokens
-        if (!oneDayHistory && data) {
-          data.oneDayVolumeUSD = data.tradeVolumeUSD;
-          data.oneDayVolumeETH = data.tradeVolume * data.derivedETH;
-        }
-
-        // update name data for
-        updateNameData({
-          token0: data,
-        });
-
-        // HOTFIX for Aave
-        if (data.id === '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9') {
-          const aaveData = await client.query({
-            query: PAIR_DATA('0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f'),
-            fetchPolicy: 'network-only',
-          });
-          const result = aaveData.data.pairs[0];
-          data.totalLiquidityUSD = Number(result.reserveUSD) / 2;
-          data.liquidityChangeUSD = 0;
-          data.priceChangeUSD = 0;
-        }
-        return data;
-      }),
-    );
-    return bulkResults;
-  } catch (e) {
-    console.log(e);
-  }
 };
 
 export const getTimestampsForChanges: () => number[] = () => {
