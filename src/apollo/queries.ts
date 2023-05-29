@@ -1,5 +1,4 @@
 import gql from 'graphql-tag';
-import { GlobalConst } from 'constants/index';
 
 export const TOKEN_SEARCH = gql`
   query tokens($value: String, $id: String) {
@@ -223,42 +222,6 @@ export const TOKEN_PRICES_V2 = (tokens: string[], blockNumber?: number) => {
   return gql(queryString);
 };
 
-export const TOKEN_INFO: any = (address: string) => {
-  const queryString = `
-    ${TokenFields}
-    query tokens {
-      tokens(first: 1, where: {id: "${address}"}) {
-        ...TokenFields
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
-export const TOKEN_INFO_OLD: any = (block: number, address: string) => {
-  const queryString = `
-    ${TokenFields}
-    query tokens {
-      tokens(block: {number: ${block}} first: 1, where: {id: "${address}"}) {
-        ...TokenFields
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
-export const TOKENS_DYNAMIC: any = (block: number, count: number) => {
-  const queryString = `
-    ${TokenFields}
-    query tokens {
-      tokens(block: {number: ${block}} first: ${count}, orderBy: tradeVolumeUSD, orderDirection: desc) {
-        ...TokenFields
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
 export const PAIR_ID: any = (tokenAddress0: string, tokenAddress1: string) => {
   const queryString = `
     query tokens {
@@ -267,62 +230,6 @@ export const PAIR_ID: any = (tokenAddress0: string, tokenAddress1: string) => {
       }
       pairs1: pairs(where: {token0: "${tokenAddress1}", token1: "${tokenAddress0}"}){
         id
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
-export const TOKEN_DATA1: any = (
-  tokenAddress: string,
-  tokenAddress1: string,
-) => {
-  const queryString = `
-    query tokens {
-      pairs0: pairs(where: {token0: "${tokenAddress}", token1: "${tokenAddress1}"}){
-        id
-        token0 {
-          id
-        }
-        token1{
-          id
-        }
-      }
-      pairs1: pairs(where: {token0: "${tokenAddress}", token1_not: "${tokenAddress1}"}, first: 2, orderBy: trackedReserveETH, orderDirection: desc){
-        id
-        token0 {
-          id
-        }
-        token1{
-          id
-        }
-      }
-      pairs2: pairs(where: {token1: "${tokenAddress}", token0_not: "${tokenAddress1}"}, first: 2, orderBy: trackedReserveETH, orderDirection: desc){
-        id
-        token0 {
-          id
-        }
-        token1{
-          id
-        }
-      }
-      pairs3: pairs(where: {token0: "${tokenAddress1}", token1_not: "${tokenAddress}"}, first: 2, orderBy: trackedReserveETH, orderDirection: desc){
-        id
-        token0 {
-          id
-        }
-        token1{
-          id
-        }
-      }
-      pairs4: pairs(where: {token1: "${tokenAddress1}", token0_not: "${tokenAddress}"}, first: 2, orderBy: trackedReserveETH, orderDirection: desc){
-        id
-        token0 {
-          id
-        }
-        token1{
-          id
-        }
       }
     }
   `;
@@ -339,26 +246,6 @@ export const PAIR_DATA: any = (pairAddress: string, block?: number) => {
         ...PairFields
       }
     }`;
-  return gql(queryString);
-};
-
-export const ETH_PRICE: any = (block?: number) => {
-  const queryString = block
-    ? `
-    query bundles {
-      bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} } block: {number: ${block}}) {
-        id
-        ethPrice
-      }
-    }
-  `
-    : ` query bundles {
-      bundles(where: { id: ${GlobalConst.utils.BUNDLE_ID} }) {
-        id
-        ethPrice
-      }
-    }
-  `;
   return gql(queryString);
 };
 
@@ -380,46 +267,6 @@ export const PAIRS_HISTORICAL_BULK: any = (block: number, pairs: any[]) => {
     }
   }
   `;
-  return gql(queryString);
-};
-
-export const PRICES_BY_BLOCK: any = (tokenAddress: string, blocks: any[]) => {
-  let queryString = 'query blocks {';
-  queryString += blocks.map(
-    (block) => `
-      t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${block.number} }) { 
-        derivedETH
-      }
-    `,
-  );
-  queryString += ',';
-  queryString += blocks.map(
-    (block) => `
-      b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
-        ethPrice
-      }
-    `,
-  );
-
-  queryString += '}';
-  return gql(queryString);
-};
-
-export const GLOBAL_DATA: any = (factory: string, block?: number) => {
-  const queryString = ` query uniswapFactories {
-      uniswapFactories(
-       ${block ? `block: { number: ${block}}` : ``} 
-       where: { id: "${factory}" }) {
-        id
-        totalVolumeUSD
-        totalVolumeETH
-        untrackedVolumeUSD
-        totalLiquidityUSD
-        totalLiquidityETH
-        txCount
-        pairCount
-      }
-    }`;
   return gql(queryString);
 };
 

@@ -8,15 +8,11 @@ import { blockClient, clientV2, clientV3, farmingClient } from 'apollo/client';
 import {
   GET_BLOCK,
   GET_BLOCKS,
-  TOKEN_DATA1,
   PAIR_DATA,
   PAIRS_BULK1,
   PAIRS_HISTORICAL_BULK,
-  PRICES_BY_BLOCK,
   ALL_PAIRS,
   ALL_TOKENS,
-  TOKEN_INFO,
-  TOKEN_INFO_OLD,
   SWAP_TRANSACTIONS,
   PAIR_ID,
 } from 'apollo/queries';
@@ -286,124 +282,9 @@ export const getTimestampsForChanges: () => number[] = () => {
   return [t1, t2, tWeek];
 };
 
-export const getTokenPairs = async (
-  tokenAddress: string,
-  tokenAddress1: string,
-  chainId: ChainId,
-) => {
-  const client = clientV2[chainId];
-  if (!client) return;
-  try {
-    // fetch all current and historical data
-    const result = await client.query({
-      query: TOKEN_DATA1(tokenAddress, tokenAddress1),
-      fetchPolicy: 'network-only',
-    });
-    return result.data?.['pairs0']
-      .concat(result.data?.['pairs1'])
-      .concat(result.data?.['pairs2'])
-      .concat(result.data?.['pairs3'])
-      .concat(result.data?.['pairs4']);
-  } catch (e) {
-    console.log(e);
-  }
-};
-
 export function getSecondsOneDay() {
   return 60 * 60 * 24;
 }
-
-export const getIntervalTokenData = async (
-  tokenAddress: string,
-  startTime: number,
-  interval = 3600,
-  latestBlock: number | undefined,
-  chainId: ChainId,
-) => {
-  const utcEndTime = dayjs.utc();
-  let time = startTime;
-
-  // create an array of hour start times until we reach current hour
-  // buffer by half hour to catch case where graph isnt synced to latest block
-  const timestamps = [];
-  while (time < utcEndTime.unix()) {
-    timestamps.push(time);
-    time += interval;
-  }
-
-  const client = clientV2[chainId];
-
-  // backout if invalid timestamp format
-  if (timestamps.length === 0 || !client) {
-    return [];
-  }
-
-  // once you have all the timestamps, get the blocks for each timestamp in a bulk query
-  let blocks;
-  try {
-    blocks = await getBlocksFromTimestamps(timestamps, 100, chainId);
-
-    // catch failing case
-    if (!blocks || blocks.length === 0) {
-      return [];
-    }
-
-    if (latestBlock) {
-      blocks = blocks.filter((b) => {
-        return Number(b.number) <= latestBlock;
-      });
-    }
-
-    const result: any = await splitQuery(
-      PRICES_BY_BLOCK,
-      client,
-      [tokenAddress],
-      blocks,
-      50,
-    );
-
-    // format token ETH price results
-    const values: any[] = [];
-    for (const row in result) {
-      const timestamp = row.split('t')[1];
-      const derivedETH = Number(result[row]?.derivedETH ?? 0);
-      if (timestamp) {
-        values.push({
-          timestamp,
-          derivedETH,
-        });
-      }
-    }
-
-    // go through eth usd prices and assign to original values array
-    let index = 0;
-    for (const brow in result) {
-      const timestamp = brow.split('b')[1];
-      if (timestamp) {
-        values[index].priceUSD =
-          result[brow].ethPrice * values[index].derivedETH;
-        index += 1;
-      }
-    }
-
-    const formattedHistory = [];
-
-    // for each hour, construct the open and close price
-    for (let i = 0; i < values.length - 1; i++) {
-      formattedHistory.push({
-        timestamp: values[i].timestamp,
-        open: Number(values[i].priceUSD),
-        close: Number(values[i + 1].priceUSD),
-      });
-    }
-
-    return formattedHistory;
-  } catch (e) {
-    console.log(e);
-    console.log('error fetching blocks');
-    return [];
-  }
-};
 
 export const getPairAddress = async (
   token0Address: string,

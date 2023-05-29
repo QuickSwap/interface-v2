@@ -3,18 +3,11 @@ import { Box, Grid } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useTheme } from '@material-ui/core/styles';
 import { CurrencyLogo, CopyHelper } from 'components';
-import {
-  useBlockNumber,
-  useEthPrice,
-  useMaticPrice,
-  useTokenDetails,
-} from 'state/application/hooks';
-import { getIntervalTokenData, formatNumber, shortenAddress } from 'utils';
+import { useTokenDetails } from 'state/application/hooks';
+import { formatNumber, shortenAddress } from 'utils';
 import { LineChart } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
-import dayjs from 'dayjs';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import { getIntervalTokenDataV3 } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
 
@@ -26,15 +19,12 @@ const SwapTokenDetailsHorizontal: React.FC<{
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
   const { palette } = useTheme();
-  const latestBlock = useBlockNumber();
   const { tokenDetails, updateTokenDetails } = useTokenDetails();
   const [tokenData, setTokenData] = useState<any>(null);
   const [priceData, setPriceData] = useState<any>(null);
   const priceUp = Number(tokenData?.priceChangeUSD) > 0;
   const priceUpPercent = Number(tokenData?.priceChangeUSD).toFixed(2);
   const prices = priceData ? priceData.map((price: any) => price.close) : [];
-  const { ethPrice } = useEthPrice();
-  const { maticPrice } = useMaticPrice();
   const config = getConfig(chainId);
   const v2 = config['v2'];
 
@@ -45,32 +35,42 @@ const SwapTokenDetailsHorizontal: React.FC<{
       );
       setTokenData(tokenDetail?.tokenData);
       setPriceData(tokenDetail?.priceData);
-      const currentTime = dayjs.utc();
-      const startTime = currentTime
-        .subtract(1, 'day')
-        .startOf('hour')
-        .unix();
 
       let tokenPriceDataV2, tokenPriceIsV2;
       if (v2) {
-        tokenPriceDataV2 = await getIntervalTokenData(
-          tokenAddress,
-          startTime,
-          3600,
-          latestBlock,
-          chainIdToUse,
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v2?chainId=${chainId}`,
         );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get top token details`,
+          );
+        }
+        const data = await res.json();
+        tokenPriceDataV2 =
+          data && data.data && data.data.intervalTokenData
+            ? data.data.intervalTokenData
+            : undefined;
         tokenPriceIsV2 = !!tokenPriceDataV2.find(
-          (item) => item.open && item.close,
+          (item: any) => item.open && item.close,
         );
       }
-      const tokenPriceDataV3 = await getIntervalTokenDataV3(
-        tokenAddress.toLowerCase(),
-        startTime,
-        3600,
-        latestBlock,
-        chainIdToUse,
+
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v3?chainId=${chainId}`,
       );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to get top token details`,
+        );
+      }
+      const data = await res.json();
+      const tokenPriceDataV3 =
+        data && data.data && data.data.intervalTokenData
+          ? data.data.intervalTokenData
+          : undefined;
 
       const tokenPriceData = tokenPriceIsV2
         ? tokenPriceDataV2
@@ -78,7 +78,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       setPriceData(tokenPriceData);
 
       let token0;
-      if (ethPrice.price && ethPrice.oneDayPrice && v2) {
+      if (v2) {
         const res = await fetch(
           `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
         );
@@ -102,40 +102,31 @@ const SwapTokenDetailsHorizontal: React.FC<{
         }
       }
       if (!token0 || !token0.priceUSD) {
-        if (maticPrice.price && maticPrice.oneDayPrice) {
-          const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get top token details`,
           );
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(
-              errorText || res.statusText || `Failed to get top token details`,
-            );
-          }
-          const data = await res.json();
-          const tokenV3 =
-            data && data.data && data.data.token ? data.data.token : undefined;
-          if (tokenV3) {
-            setTokenData(tokenV3);
-            const tokenDetailToUpdate = {
-              address: tokenAddress,
-              tokenData: tokenV3,
-              priceData: tokenPriceData,
-            };
-            updateTokenDetails(tokenDetailToUpdate);
-          }
+        }
+        const data = await res.json();
+        const tokenV3 =
+          data && data.data && data.data.token ? data.data.token : undefined;
+        if (tokenV3) {
+          setTokenData(tokenV3);
+          const tokenDetailToUpdate = {
+            address: tokenAddress,
+            tokenData: tokenV3,
+            priceData: tokenPriceData,
+          };
+          updateTokenDetails(tokenDetailToUpdate);
         }
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    tokenAddress,
-    ethPrice.price,
-    ethPrice.oneDayPrice,
-    maticPrice.price,
-    maticPrice.oneDayPrice,
-    chainIdToUse,
-  ]);
+  }, [tokenAddress, chainIdToUse]);
 
   return (
     <Grid container spacing={1}>

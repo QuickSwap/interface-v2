@@ -23,41 +23,6 @@ export const TOKENPRICES_FROM_ADDRESSES_V3 = (
   return gql(queryString);
 };
 
-export const TOKENS_FROM_ADDRESSES_V3 = (
-  blockNumber: number | undefined,
-  tokens: string[],
-) => {
-  let tokenString = `[`;
-  tokens.map((address) => {
-    return (tokenString += `"${address}",`);
-  });
-  tokenString += ']';
-  const queryString =
-    `
-        query tokens {
-          tokens(where: {id_in: ${tokenString}},` +
-    (blockNumber ? `block: {number: ${blockNumber}} ,` : ``) +
-    ` orderBy: totalValueLockedUSD, orderDirection: desc, subgraphError: allow) {
-            id
-            symbol
-            name
-            decimals
-            derivedMatic
-            volumeUSD
-            volume
-            txCount
-            totalValueLocked
-            untrackedVolumeUSD
-            feesUSD
-            totalValueLockedUSD
-            totalValueLockedUSDUntracked
-          }
-        }
-        `;
-
-  return gql(queryString);
-};
-
 export const ALL_TOKENS_V3 = gql`
   query tokens($skip: Int!) {
     tokens(first: 10, skip: $skip) {
@@ -113,55 +78,6 @@ export const TOKEN_SEARCH_V3 = gql`
 `;
 
 //Pairs
-
-export const TOP_POOLS_V3_TOKENS = (address: string, address1: string) => gql`
-  query topPools {
-    pools0: pools(
-      where: {token0_contains_nocase: "${address}", token1_contains_nocase: "${address1}"}
-      orderBy: totalValueLockedUSD
-      orderDirection: desc
-      subgraphError: allow
-    ) {
-      id
-    }
-    pools1: pools(
-      first: 5
-      where: {token0_contains_nocase: "${address}", token1_not_contains_nocase: "${address1}"}
-      orderBy: totalValueLockedUSD
-      orderDirection: desc
-      subgraphError: allow
-    ) {
-      id
-    }
-    pools2: pools(
-      first: 5
-      where: {token0_not_contains_nocase: "${address}", token1_contains_nocase: "${address1}"}
-      orderBy: totalValueLockedUSD
-      orderDirection: desc
-      subgraphError: allow
-    ) {
-      id
-    }
-    pools3: pools(
-      first: 5
-      where: {token0_contains_nocase: "${address1}", token1_not_contains_nocase: "${address}"}
-      orderBy: totalValueLockedUSD
-      orderDirection: desc
-      subgraphError: allow
-    ) {
-      id
-    }
-    pools4: pools(
-      first: 5
-      where: {token0_not_contains_nocase: "${address1}", token1_contains_nocase: "${address}"}
-      orderBy: totalValueLockedUSD
-      orderDirection: desc
-      subgraphError: allow
-    ) {
-      id
-    }
-  }
-`;
 
 export const PAIRS_FROM_ADDRESSES_V3 = (
   blockNumber: undefined | number,
