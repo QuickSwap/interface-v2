@@ -48,7 +48,15 @@ export class TrustWallet extends Connector {
     return (this.eagerConnection = import('@metamask/detect-provider').then(
       async (m) => {
         const windowAsAny = window as any;
-        const provider = windowAsAny.trustWallet;
+        let provider;
+        if (windowAsAny.trustWallet) {
+          provider = windowAsAny.trustWallet;
+        } else if (
+          windowAsAny.ethereum &&
+          (windowAsAny.ethereum.isTrust || windowAsAny.ethereum.isTrustWallet)
+        ) {
+          provider = windowAsAny.ethereum;
+        }
         if (provider) {
           this.provider = provider;
           this.provider.removeListener = provider.off;
