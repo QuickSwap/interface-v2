@@ -7,7 +7,8 @@ type NonMetaMaskFlag =
   | 'isBlockWallet'
   | 'isCypherD'
   | 'isBitKeep'
-  | 'isPhantom';
+  | 'isPhantom'
+  | 'isTrust';
 const allNonMetamaskFlags: NonMetaMaskFlag[] = [
   'isBraveWallet',
   'isTrustWallet',
@@ -16,6 +17,7 @@ const allNonMetamaskFlags: NonMetaMaskFlag[] = [
   'isCypherD',
   'isBitKeep',
   'isPhantom',
+  'isTrust',
 ];
 export const getIsMetaMaskWallet = () => {
   const { ethereum } = window as any;
@@ -50,7 +52,11 @@ export const getIsCoinbaseWallet = () => {
 
 export const getIsTrustWallet = () => {
   const windowAsAny = window as any;
-  return Boolean(windowAsAny.trustWallet);
+  return Boolean(
+    windowAsAny.trustWallet ||
+      (windowAsAny.ethereum &&
+        (windowAsAny.ethereum.isTrust || windowAsAny.ethereum.isTrustWallet)),
+  );
 };
 
 export const getIsBitKeepWallet = () => {

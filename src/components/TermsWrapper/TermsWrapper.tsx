@@ -62,7 +62,7 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
               checked={agreeTerms}
               onClick={() => setAgreeTerms(!agreeTerms)}
             />
-            <p>{t('disclaimerText2')}</p>
+            <p>{t('disclaimerText3')}</p>
           </Box>
           <img src={PerpsBanner} alt='perps banner' width='100%' />
           <Box my={2}>
