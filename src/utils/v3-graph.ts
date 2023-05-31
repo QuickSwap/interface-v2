@@ -1,10 +1,5 @@
 import { clientV3 } from 'apollo/client';
-import {
-  ALL_PAIRS_V3,
-  ALL_TOKENS_V3,
-  FETCH_TICKS,
-  PAIRS_FROM_ADDRESSES_V3,
-} from 'apollo/queries-v3';
+import { FETCH_TICKS, PAIRS_FROM_ADDRESSES_V3 } from 'apollo/queries-v3';
 import { Token } from '@uniswap/sdk-core';
 import { TickMath } from 'v3lib/utils/tickMath';
 import { tickToPrice } from 'v3lib/utils/priceTickConversions';
@@ -36,60 +31,6 @@ export const getMaticPrice: (chainId: ChainId) => Promise<number[]> = async (
 
   return [maticPrice, maticPriceOneDay, priceChangeMatic];
 };
-
-export async function getAllTokensV3(chainId: ChainId) {
-  const client = clientV3[chainId];
-  if (!client) return;
-  try {
-    let allFound = false;
-    let skipCount = 0;
-    let tokens: any[] = [];
-    while (!allFound) {
-      const result = await client.query({
-        query: ALL_TOKENS_V3,
-        variables: {
-          skip: skipCount,
-        },
-        fetchPolicy: 'network-only',
-      });
-      tokens = tokens.concat(result?.data?.tokens);
-      if (result?.data?.tokens?.length < 10 || tokens.length > 10) {
-        allFound = true;
-      }
-      skipCount = skipCount += 10;
-    }
-    return tokens;
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-export async function getAllPairsV3(chainId: ChainId) {
-  const client = clientV3[chainId];
-  if (!client) return;
-  try {
-    let allFound = false;
-    let pairs: any[] = [];
-    let skipCount = 0;
-    while (!allFound) {
-      const result = await client.query({
-        query: ALL_PAIRS_V3,
-        variables: {
-          skip: skipCount,
-        },
-        fetchPolicy: 'network-only',
-      });
-      skipCount = skipCount + 10;
-      pairs = pairs.concat(result?.data?.pools);
-      if (result?.data?.pools.length < 10 || pairs.length > 10) {
-        allFound = true;
-      }
-    }
-    return pairs;
-  } catch (e) {
-    console.log(e);
-  }
-}
 
 export async function getLiquidityChart(address: string, chainId: ChainId) {
   const numSurroundingTicks = 300;
