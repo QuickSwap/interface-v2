@@ -1,6 +1,7 @@
 export const getIsInjected = () => Boolean(window.ethereum);
 
 type NonMetaMaskFlag =
+  | 'isRabby'
   | 'isBraveWallet'
   | 'isTrustWallet'
   | 'isLedgerConnect'
@@ -10,6 +11,7 @@ type NonMetaMaskFlag =
   | 'isPhantom'
   | 'isTrust';
 const allNonMetamaskFlags: NonMetaMaskFlag[] = [
+  'isRabby',
   'isBraveWallet',
   'isTrustWallet',
   'isLedgerConnect',

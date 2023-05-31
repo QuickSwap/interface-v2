@@ -6,7 +6,7 @@
   "chainId": 137,
   "isMainnet": true,
   "networkName": "Polygon",
-  "nativeCurrencyImage": "/polygon-pos.svg",
+  "nativeCurrencyImage": "/polygon.svg",
   "nativeCurrency": {
     "name": "Matic Token",
     "symbol": "MATIC",
@@ -57,6 +57,6 @@
     "available": false
   },
   "perps": {
-    "available": true
+    "available": false
   }
 }

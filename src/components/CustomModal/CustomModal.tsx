@@ -34,7 +34,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
     >
       <Fade in={open}>
         <Box
-          className={`${modalWrapper ? modalWrapper : ''} modalWrapperV3`}
+          className={modalWrapper ? modalWrapper : 'modalWrapperV3'}
           bgcolor={background}
           overflow={overflow}
         >
