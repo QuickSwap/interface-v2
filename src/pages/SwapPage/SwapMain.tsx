@@ -197,7 +197,7 @@ const SwapMain: React.FC = () => {
       >
         <Box display='flex' width={1}>
           {!isProMode ? (
-            <>
+            <Box display={'flex'} className='tabContainer'>
               {dropDownMenuText && (
                 <Button
                   id='swap-button'
@@ -205,10 +205,12 @@ const SwapMain: React.FC = () => {
                   aria-haspopup='true'
                   aria-expanded={open ? 'true' : undefined}
                   variant='text'
-                  style={{ background: 'transparent' }}
                   disableElevation
                   onClick={handleClickListItem}
                   endIcon={<KeyboardArrowDown />}
+                  className={`tab tabMenu ${
+                    selectedIndex !== SWAP_CROSS_CHAIN ? 'activeTab' : ''
+                  }`}
                 >
                   {t(dropDownMenuText)}
                 </Button>
@@ -238,17 +240,19 @@ const SwapMain: React.FC = () => {
               </Menu>
               {showCrossChain && (
                 <Box
-                  className={swapTabClass(SWAP_CROSS_CHAIN)}
+                  className={`tab ${
+                    selectedIndex === SWAP_CROSS_CHAIN ? 'activeTab' : ''
+                  }`}
                   onClick={() => {
                     setSelectedIndex(SWAP_CROSS_CHAIN);
                     setAnchorEl(null);
                     redirectWithSwapType(SWAP_CROSS_CHAIN);
                   }}
                 >
-                  <p>{t('crossChain')}</p>
+                  <p className='trade-btn'>{t('crossChain')}</p>
                 </Box>
               )}
-            </>
+            </Box>
           ) : (
             <>
               {SwapDropdownTabs.map((option, index) => (
