@@ -19,7 +19,9 @@ const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isV2 } = useIsV2();
   const isProMode = useIsProMode();
-  const [pairId, setPairId] = useState<string | undefined>(undefined);
+  const [pairId, setPairId] = useState<
+    { v2: string | undefined; v3: string | undefined } | undefined
+  >(undefined);
   const [pairTokenReversed, setPairTokenReversed] = useState(false);
 
   const { currencies } = useDerivedSwapInfo();
@@ -38,24 +40,28 @@ const SwapPage: React.FC = () => {
     const token1Address = isV2 ? token1?.address : token1V3?.address;
     const token2Address = isV2 ? token2?.address : token2V3?.address;
     async function getPairId(token1Address: string, token2Address: string) {
-      let pairData;
-      if (isV2) {
-        pairData = await getPairAddress(
-          token1Address,
-          token2Address,
-          chainIdToUse,
-        );
-      } else {
-        pairData = await getPairAddressV3(
-          token1Address,
-          token2Address,
-          chainIdToUse,
-        );
-      }
-      if (pairData) {
-        setPairTokenReversed(pairData.tokenReversed);
-        setPairId(pairData.pairId);
-      }
+      const v2PairData = await getPairAddress(
+        token1Address,
+        token2Address,
+        chainIdToUse,
+      );
+      const v3PairData = await getPairAddressV3(
+        token1Address,
+        token2Address,
+        chainIdToUse,
+      );
+
+      setPairTokenReversed(
+        isV2
+          ? v2PairData
+            ? v2PairData.tokenReversed
+            : false
+          : v3PairData
+          ? v3PairData.tokenReversed
+          : false,
+      );
+
+      setPairId({ v2: v2PairData?.pairId, v3: v3PairData?.pairId });
     }
     if (token1Address && token2Address) {
       getPairId(token1Address, token2Address);

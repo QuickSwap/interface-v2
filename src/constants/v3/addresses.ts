@@ -106,6 +106,9 @@ export const GAMMA_MASTERCHEF_ADDRESSES: AddressMap[] = [
   {
     [ChainId.MATIC]: '0x68678Cf174695fc2D27bd312DF67A3984364FFDd',
   },
+  {
+    [ChainId.MATIC]: '0xcc54afcecd0d89e0b2db58f5d9e58468e7ad20dc',
+  },
 ];
 
 export const MULTICALL_ADDRESS: AddressMap = {

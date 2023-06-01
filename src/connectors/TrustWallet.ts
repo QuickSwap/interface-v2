@@ -2,20 +2,11 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import {
   Actions,
   AddEthereumChainParameter,
-  Provider,
   ProviderConnectInfo,
   ProviderRpcError,
   WatchAssetParameters,
 } from '@web3-react/types';
 import { Connector } from '@web3-react/types';
-
-type TrustWalletProvider = Provider & {
-  isTrust?: boolean;
-  isConnected?: () => boolean;
-  detected?: TrustWalletProvider[];
-  providers?: TrustWalletProvider[];
-  chainId?: string;
-};
 
 export class NoTrustWalletError extends Error {
   public constructor() {
@@ -41,7 +32,7 @@ export interface TrustWalletConstructorArgs {
 
 export class TrustWallet extends Connector {
   /** {@inheritdoc Connector.provider} */
-  public provider?: TrustWalletProvider;
+  public provider: any;
 
   private readonly options?: Parameters<typeof detectEthereumProvider>[0];
   private eagerConnection?: Promise<void>;
@@ -56,20 +47,19 @@ export class TrustWallet extends Connector {
 
     return (this.eagerConnection = import('@metamask/detect-provider').then(
       async (m) => {
-        const provider = window.ethereum;
+        const windowAsAny = window as any;
+        let provider;
+        if (windowAsAny.trustWallet) {
+          provider = windowAsAny.trustWallet;
+        } else if (
+          windowAsAny.ethereum &&
+          (windowAsAny.ethereum.isTrust || windowAsAny.ethereum.isTrustWallet)
+        ) {
+          provider = windowAsAny.ethereum;
+        }
         if (provider) {
-          this.provider = provider as TrustWalletProvider;
-
-          // handle the case when e.g. metamask and coinbase wallet are both installed
-          if (this.provider.detected?.length) {
-            this.provider =
-              this.provider.detected.find((p) => p.isTrust) ??
-              this.provider.detected[0];
-          } else if (this.provider.providers?.length) {
-            this.provider =
-              this.provider.providers.find((p) => p.isTrust) ??
-              this.provider.providers[0];
-          }
+          this.provider = provider;
+          this.provider.removeListener = provider.off;
 
           this.provider.on(
             'connect',
@@ -236,7 +226,7 @@ export class TrustWallet extends Connector {
           },
         },
       })
-      .then((success) => {
+      .then((success: any) => {
         if (!success) throw new Error('Rejected');
         return true;
       });

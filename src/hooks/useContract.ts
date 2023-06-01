@@ -306,10 +306,11 @@ export function useGammaUNIProxyContract(withSignerIfPossible?: boolean) {
 export function useMasterChefContract(
   index?: number,
   withSignerIfPossible?: boolean,
+  abi?: any,
 ) {
   return useContract(
     GAMMA_MASTERCHEF_ADDRESSES[index ?? 0],
-    GammaMasterChef,
+    abi ?? GammaMasterChef,
     withSignerIfPossible,
   );
 }
