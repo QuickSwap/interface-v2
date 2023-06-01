@@ -3,7 +3,7 @@ import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import React, { useEffect, useState } from 'react';
 import { useIsV2 } from 'state/application/hooks';
-import { getSwapTransactionsV3 } from 'utils';
+import { getSwapTransactions, getSwapTransactionsV3 } from 'utils';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
 import SwapMain from './SwapMain';
 import SwapProAssets from './SwapProAssets';
@@ -50,41 +50,63 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
 
   useEffect(() => {
     (async () => {
-      if (isV2 === undefined) return;
       if (pairId && transactions && transactions.length > 0) {
-        const txns = await getSwapTransactionsV3(
-          chainIdToUse,
-          pairId,
-          Number(transactions[0].transaction.timestamp),
-        );
-        if (txns) {
-          const filteredTxns = txns.filter(
-            (txn) =>
-              !transactions.find(
-                (tx) => tx.transaction.id === txn.transaction.id,
-              ),
+        let txns: any[] = [];
+        if (pairId.v2) {
+          const v2Txns = await getSwapTransactions(
+            chainIdToUse,
+            pairId.v2.toLowerCase(),
+            Number(transactions[0].transaction.timestamp),
           );
-          setTransactions([...filteredTxns, ...transactions]);
+          txns = txns.concat(v2Txns ?? []);
         }
+        if (pairId.v3) {
+          const v3Txns = await getSwapTransactionsV3(
+            chainIdToUse,
+            pairId.v3.toLowerCase(),
+            Number(transactions[0].transaction.timestamp),
+          );
+          txns = txns.concat(v3Txns ?? []);
+        }
+        const filteredTxns = txns.filter(
+          (txn) =>
+            !transactions.find(
+              (tx) => tx.transaction.id === txn.transaction.id,
+            ),
+        );
+        setTransactions([...filteredTxns, ...transactions]);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, chainIdToUse, isV2]);
+  }, [currentTime, chainIdToUse]);
 
   useEffect(() => {
-    if (isV2 === undefined) return;
-    async function getTradesData(pairId: string) {
+    async function getTradesData(pairId: any) {
       setTransactions(undefined);
-      const transactions = await getSwapTransactionsV3(
-        chainIdToUse,
-        pairId.toLowerCase(),
-      );
+      let transactions: any[] = [];
+
+      if (pairId.v2) {
+        const v2Transactions = await getSwapTransactions(
+          chainIdToUse,
+          pairId.v2.toLowerCase(),
+        );
+        transactions = transactions.concat(v2Transactions ?? []);
+      }
+
+      if (pairId.v3) {
+        const v3Transactions = await getSwapTransactionsV3(
+          chainIdToUse,
+          pairId.v3.toLowerCase(),
+        );
+        transactions = transactions.concat(v3Transactions ?? []);
+      }
+
       setTransactions(transactions);
     }
     if (pairId) {
       getTradesData(pairId);
     }
-  }, [pairId, chainIdToUse, isV2]);
+  }, [pairId, chainIdToUse]);
 
   return (
     <Box>
@@ -112,7 +134,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
                 showTrades={false}
                 token1={token1}
                 token2={token2}
-                pairAddress={pairId}
+                pairAddress={isV2 ? pairId?.v2 : pairId?.v3}
                 pairTokenReversed={pairTokenReversed}
                 transactions={transactions}
               />
