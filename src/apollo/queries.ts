@@ -61,20 +61,6 @@ export const TOKEN_PRICES_V2 = (tokens: string[], blockNumber?: number) => {
   return gql(queryString);
 };
 
-export const PAIR_ID: any = (tokenAddress0: string, tokenAddress1: string) => {
-  const queryString = `
-    query tokens {
-      pairs0: pairs(where: {token0: "${tokenAddress0}", token1: "${tokenAddress1}"}){
-        id
-      }
-      pairs1: pairs(where: {token0: "${tokenAddress1}", token1: "${tokenAddress0}"}){
-        id
-      }
-    }
-  `;
-  return gql(queryString);
-};
-
 export const PAIRS_HISTORICAL_BULK: any = (block: number, pairs: any[]) => {
   let pairsString = `[`;
   pairs.map((pair) => {
@@ -122,38 +108,6 @@ export const GET_BLOCKS: any = (timestamps: number[]) => {
   queryString += '}';
   return gql(queryString);
 };
-
-export const SWAP_TRANSACTIONS = gql`
-  query($allPairs: [Bytes]!, $lastTime: Int!) {
-    swaps(
-      first: 1000
-      where: { pair_in: $allPairs, timestamp_gte: $lastTime }
-      orderBy: timestamp
-      orderDirection: desc
-    ) {
-      transaction {
-        id
-        timestamp
-      }
-      pair {
-        token0 {
-          id
-          symbol
-        }
-        token1 {
-          id
-          symbol
-        }
-      }
-      amount0In
-      amount0Out
-      amount1In
-      amount1Out
-      amountUSD
-      to
-    }
-  }
-`;
 
 export const GET_LENS_PROFILES = gql`
   query($ownedBy: [EthereumAddress!]) {

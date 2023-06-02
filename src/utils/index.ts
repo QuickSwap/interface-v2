@@ -4,13 +4,8 @@ import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { blockClient, clientV2, clientV3, farmingClient } from 'apollo/client';
-import {
-  GET_BLOCK,
-  GET_BLOCKS,
-  SWAP_TRANSACTIONS,
-  PAIR_ID,
-} from 'apollo/queries';
+import { blockClient, clientV3, farmingClient } from 'apollo/client';
+import { GET_BLOCK, GET_BLOCKS } from 'apollo/queries';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
   CurrencyAmount,
@@ -54,9 +49,7 @@ import {
 } from './graphql-queries';
 import { useEffect, useState } from 'react';
 import { useEthPrice } from 'state/application/hooks';
-import { formatTokenSymbol } from './v3-graph';
 import { TFunction } from 'react-i18next';
-import { PAIR_ID_V3, SWAP_TRANSACTIONS_v3 } from 'apollo/queries-v3';
 import { Connector } from '@web3-react/types';
 
 dayjs.extend(utc);
@@ -280,116 +273,6 @@ export const getTimestampsForChanges: () => number[] = () => {
 export function getSecondsOneDay() {
   return 60 * 60 * 24;
 }
-
-export const getPairAddress = async (
-  token0Address: string,
-  token1Address: string,
-  chainId: ChainId,
-) => {
-  const client = clientV2[chainId];
-  if (!client) return;
-  const pairData = await client.query({
-    query: PAIR_ID(token0Address.toLowerCase(), token1Address.toLowerCase()),
-  });
-  const pairs =
-    pairData && pairData.data
-      ? pairData.data.pairs0.concat(pairData.data.pairs1)
-      : undefined;
-  if (!pairs || pairs.length === 0) return;
-  const pairId = pairs[0].id;
-  const tokenReversed = pairData.data.pairs1.length > 0;
-  return { pairId, tokenReversed };
-};
-
-export const getPairAddressV3 = async (
-  token0Address: string,
-  token1Address: string,
-  chainId: ChainId,
-) => {
-  const client = clientV3[chainId];
-  if (!client) return;
-  const pairData = await client.query({
-    query: PAIR_ID_V3(token0Address.toLowerCase(), token1Address.toLowerCase()),
-  });
-  const pairs =
-    pairData && pairData.data
-      ? pairData.data.pairs0.concat(pairData.data.pairs1)
-      : undefined;
-  if (!pairs || pairs.length === 0) return;
-  const pairId = pairs[0].id;
-  const tokenReversed = pairData.data.pairs1.length > 0;
-  return { pairId, tokenReversed };
-};
-
-export const getSwapTransactions = async (
-  chainId: ChainId,
-  pairId: string,
-  startTime?: number,
-) => {
-  const oneDayAgo = dayjs
-    .utc()
-    .subtract(1, 'day')
-    .unix();
-  const sTimestamp = startTime ?? oneDayAgo;
-  const client = clientV2[chainId];
-  if (!client) return;
-  try {
-    const result = await client.query({
-      query: SWAP_TRANSACTIONS,
-      variables: {
-        allPairs: [pairId],
-        lastTime: sTimestamp,
-      },
-      fetchPolicy: 'network-only',
-    });
-    const swaps: any[] = result.data.swaps;
-
-    return swaps;
-  } catch (e) {
-    return;
-  }
-};
-
-export const getSwapTransactionsV3 = async (
-  chainId: ChainId,
-  pairId: string,
-  startTime?: number,
-) => {
-  const oneDayAgo = dayjs
-    .utc()
-    .subtract(1, 'day')
-    .unix();
-  const sTimestamp = startTime ?? oneDayAgo;
-  const client = clientV3[chainId];
-  if (!client) return;
-  try {
-    const result = await client.query({
-      query: SWAP_TRANSACTIONS_v3,
-      variables: {
-        address: pairId,
-        lastTime: sTimestamp,
-      },
-      fetchPolicy: 'network-only',
-    });
-    const swaps: any[] = result.data.swaps.map((swap: any) => {
-      return {
-        transaction: { id: swap.transaction.id, timestamp: swap.timestamp },
-        pair: swap.pool,
-        to: swap.recipient,
-        amount0In: swap.amount0,
-        amount0Out: Number(swap.amount0) * -1,
-        amount1In: swap.amount1,
-        amount1Out: Number(swap.amount1) * -1,
-        amountUSD: swap.amountUSD,
-      };
-    });
-
-    return swaps;
-  } catch (e) {
-    console.log('error: ', e);
-    return;
-  }
-};
 
 export function updateNameData(data: BasicData): BasicData | undefined {
   if (
