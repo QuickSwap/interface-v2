@@ -271,18 +271,22 @@ const LeaderboardWrapper: React.FC<Props> = (props: Props) => {
             px={0}
             className='flex flex-wrap items-center pair-options'
           >
-            {ContestPairs[chainId || ChainId.MATIC].map((pair: any) => {
-              return (
-                <Box
-                  key={pair.address}
-                  className={`topTab ${contestFilter.address === pair.address &&
-                    'selectedTab'}`}
-                  onClick={() => setContestFilter(pair)}
-                >
-                  <p className='weight-600'>{pair.name}</p>
-                </Box>
-              );
-            })}
+            {!showPastWinners && (
+              <>
+                {ContestPairs[chainId || ChainId.MATIC].map((pair: any) => {
+                  return (
+                    <Box
+                      key={pair.address}
+                      className={`topTab ${contestFilter.address ===
+                        pair.address && 'selectedTab'}`}
+                      onClick={() => setContestFilter(pair)}
+                    >
+                      <p className='weight-600'>{pair.name}</p>
+                    </Box>
+                  );
+                })}
+              </>
+            )}
           </Box>
 
           <Box className='searchWidgetWrapper'>
