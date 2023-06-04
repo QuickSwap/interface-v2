@@ -4,8 +4,7 @@ import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { blockClient, clientV3, farmingClient } from 'apollo/client';
-import { GET_BLOCK, GET_BLOCKS } from 'apollo/queries';
+import { clientV3, farmingClient } from 'apollo/client';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
   CurrencyAmount,
@@ -81,23 +80,6 @@ const TOKEN_OVERRIDES: {
   },
 };
 
-export async function getBlockFromTimestamp(
-  timestamp: number,
-  chainId: ChainId,
-): Promise<any> {
-  const client = blockClient[chainId];
-  if (!client) return;
-  const result = await client.query({
-    query: GET_BLOCK,
-    variables: {
-      timestampFrom: timestamp,
-      timestampTo: timestamp + 600,
-    },
-    fetchPolicy: 'network-only',
-  });
-  return result?.data?.blocks?.[0]?.number;
-}
-
 export function formatCompact(
   unformatted: number | string | BigNumber | BigNumberish | undefined | null,
   decimals = 18,
@@ -168,44 +150,6 @@ export async function splitQuery(
   }
 
   return fetchedData;
-}
-
-export async function getBlocksFromTimestamps(
-  timestamps: number[],
-  skipCount = 500,
-  chainId: ChainId,
-): Promise<
-  {
-    timestamp: string;
-    number: any;
-  }[]
-> {
-  const client = blockClient[chainId];
-  if (timestamps?.length === 0 || !client) {
-    return [];
-  }
-
-  const fetchedData: any = await splitQuery(
-    GET_BLOCKS,
-    client,
-    [],
-    timestamps,
-    skipCount,
-  );
-
-  const blocks = [];
-  if (fetchedData) {
-    for (const t in fetchedData) {
-      if (fetchedData[t].length > 0) {
-        blocks.push({
-          timestamp: t.split('t')[1],
-          number: Number(fetchedData[t][0]['number']),
-        });
-      }
-    }
-  }
-
-  return blocks;
 }
 
 export const get2DayPercentChange = (

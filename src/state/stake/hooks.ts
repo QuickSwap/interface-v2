@@ -9,9 +9,6 @@ import {
 import dayjs from 'dayjs';
 import { useMemo, useEffect, useState } from 'react';
 import { usePairs } from 'data/Reserves';
-
-import { clientV2 } from 'apollo/client';
-import { PAIRS_BULK, PAIRS_HISTORICAL_BULK } from 'apollo/queries';
 import { GlobalConst, GlobalValue } from 'constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
@@ -40,7 +37,6 @@ import {
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
 import {
-  getBlockFromTimestamp,
   getDaysCurrentYear,
   getFarmLPToken,
   getOneYearFee,
@@ -620,74 +616,30 @@ export function useOldSyrupInfo(
   );
 }
 
-export const getBulkPairData = async (chainId: ChainId, pairList: any) => {
-  // if (pairs !== undefined) {
-  //   return;
-  // }
-  const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime
-    .subtract(1, 'day')
-    .startOf('minute')
-    .unix();
-
-  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
-  const client = clientV2[chainId];
-  if (!client) return;
-  try {
-    const current = await client.query({
-      query: PAIRS_BULK(pairList),
-      fetchPolicy: 'network-only',
-    });
-
-    const [oneDayResult] = await Promise.all(
-      [oneDayOldBlock].map(async (block) => {
-        const cResult = await client.query({
-          query: PAIRS_HISTORICAL_BULK(block, pairList),
-          fetchPolicy: 'network-only',
-        });
-
-        return cResult;
-      }),
+export const getBulkPairData = async (
+  chainId: ChainId,
+  pairListStr: string,
+) => {
+  const res = await fetch(
+    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/bulk-pair-data?chainId=${chainId}&addresses=${pairListStr}`,
+  );
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(
+      errorText || res.statusText || `Failed to get global data v2`,
     );
-
-    const oneDayData = oneDayResult?.data?.pairs.reduce(
-      (obj: any, cur: any, i: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
-
-    const pairData =
-      current &&
-      current.data.pairs.map((pair: any) => {
-        let data = pair;
-        let oneDayHistory = oneDayData?.[pair.id];
-
-        if (
-          Number(oneDayHistory?.reserveUSD ?? 0) ===
-            Number(data?.reserveUSD ?? 0) &&
-          Number(oneDayHistory?.volumeUSD ?? 0) ===
-            Number(data?.volumeUSD ?? 0) &&
-          Number(oneDayHistory?.totalSupply ?? 0) ===
-            Number(data?.totalSupply ?? 0)
-        ) {
-          oneDayHistory = null;
-        }
-
-        data = parseData(data, oneDayHistory);
-        return data;
-      });
-
-    const object = convertArrayToObject(pairData, 'id');
-    if (Object.keys(object).length > 0) {
-      pairs = object;
-      return object;
-    }
-    return object;
-  } catch (e) {
-    console.log(e);
-    return;
   }
+  const data = await res.json();
+  if (data && data.data) {
+    const items = data.data.map((item: any) => item.pairData);
+    const objects = convertArrayToObject(items, 'id');
+    if (Object.keys(objects).length > 0) {
+      pairs = objects;
+      return objects;
+    }
+    return objects;
+  }
+  return;
 };
 
 const getOneDayVolume = async (version: string, chainId: ChainId) => {

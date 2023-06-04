@@ -65,13 +65,14 @@ const FarmPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [farmAvailable]);
 
+  const pairListStr = pairLists.join('_');
   useEffect(() => {
     if (isV2) {
-      getBulkPairData(chainIdToUse, pairLists).then((data) =>
+      getBulkPairData(chainIdToUse, pairListStr).then((data) =>
         setBulkPairs(data),
       );
     }
-  }, [isV2, pairLists, chainIdToUse]);
+  }, [isV2, pairListStr, chainIdToUse]);
 
   const redirectWithFarmTab = (tab: string) => {
     const currentPath = history.location.pathname + history.location.search;
