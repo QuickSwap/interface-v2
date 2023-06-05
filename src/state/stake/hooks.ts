@@ -626,7 +626,7 @@ export const getBulkPairData = async (
   if (!res.ok) {
     const errorText = await res.text();
     throw new Error(
-      errorText || res.statusText || `Failed to get global data v2`,
+      errorText || res.statusText || `Failed to get bulk data for pair`,
     );
   }
   const data = await res.json();
