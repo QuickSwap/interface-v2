@@ -18,10 +18,7 @@ import ContestTable from 'components/ContestTable/ContestTable';
 import { ChartType } from 'components';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { formatNumber } from 'utils';
-import {
-  getTradingDataBetweenDates,
-  getFormattedLeaderBoardData,
-} from 'lib/src/leaderboard';
+import { getFormattedLeaderBoardData } from 'lib/src/leaderboard';
 import { useActiveWeb3React } from 'hooks';
 import { getLensProfiles } from 'utils/getLensProfile';
 import { getConfig } from 'config';
@@ -126,14 +123,6 @@ const ContestPage: React.FC = () => {
     if (!chainId) return;
     try {
       setSearchLoading(true);
-      const today = dayjs()
-        .utc()
-        .unix();
-
-      const firstTradeDay = dayjs
-        .utc()
-        .subtract(durationIndex, 'day')
-        .unix();
 
       let pools_in: string[] = [];
       if (contestFilter.address === 'all') {
@@ -145,13 +134,19 @@ const ContestPage: React.FC = () => {
       }
       console.log('pools_in', pools_in);
 
-      const swapData: SwapDataV3[] = await getTradingDataBetweenDates(
-        pools_in,
-        firstTradeDay * 1000,
-        today * 1000,
-        searchVal,
-        chainId,
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/get-snap-shot/by-origin?chainId=${chainId}&days=${durationIndex}&pool=${contestFilter.address}&origin=${searchVal}`,
       );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to get top token details`,
+        );
+      }
+      const data = await res.json();
+
+      const swapData: SwapDataV3[] =
+        data && data.lastCompititionData ? data.lastCompititionData : [];
 
       if (swapData) {
         const formattedLeaderBoardData = getFormattedLeaderBoardData(swapData);
@@ -195,7 +190,7 @@ const ContestPage: React.FC = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchVal, contestLeaderBoard]);
+  }, [searchVal, contestLeaderBoard, durationIndex]);
 
   const searchCardColumns = [
     {
