@@ -20,7 +20,6 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { formatNumber } from 'utils';
 import { getFormattedLeaderBoardData } from 'lib/src/leaderboard';
 import { useActiveWeb3React } from 'hooks';
-import { getLensProfiles } from 'utils/getLensProfile';
 import { getConfig } from 'config';
 import { useHistory } from 'react-router-dom';
 import { ChainId } from '@uniswap/sdk';
@@ -82,16 +81,34 @@ const ContestPage: React.FC = () => {
       }
 
       const data = await res.json();
-      // Fetch lens handles of all the addresses
-      const lensProfileResult = await getLensProfiles(
-        data.leaderboardData.map((e: any) => e.origin),
+
+      const lensRes = await fetch(
+        `${
+          process.env.REACT_APP_LEADERBOARD_APP_URL
+        }/utils/lens-profiles?addresses=${data.leaderboardData
+          .map((e: any) => e.origin)
+          .join('_')}`,
       );
+      if (!lensRes.ok) {
+        const errorText = await lensRes.text();
+        throw new Error(
+          errorText || lensRes.statusText || `Failed to get leaderboard`,
+        );
+      }
+      const lensData = await lensRes.json();
+
+      console.log('ccc', lensData);
+
+      // Fetch lens handles of all the addresses
       let result = data.leaderboardData;
-      if (lensProfileResult) {
+      if (lensData && lensData.data) {
         result = result.map((d: ContestLeaderBoard, i: number) => {
           return {
             ...d,
-            lensHandle: lensProfileResult[i]?.handle,
+            lensHandle:
+              lensData.data[i] && lensData.data[i].length > 0
+                ? lensData.data[i][0].handle
+                : undefined,
           };
         });
       }
