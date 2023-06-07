@@ -98,7 +98,7 @@ const SwapPage: React.FC = () => {
         {isMobile ? (
           <div
             className='_0cbf1c3d417e250a'
-            data-placement='07f1261aa50548a79cadcc02cb8ea265'
+            data-placement='0d0cfcd486a34feaa39ee2bf22c383ce'
             style={{
               width: 320,
               height: 50,
@@ -109,7 +109,7 @@ const SwapPage: React.FC = () => {
         ) : (
           <div
             className='_0cbf1c3d417e250a'
-            data-placement='130767a7f78c4f9fbd2530a4941db115'
+            data-placement='b694dc6256a744bdb31467ccec38def3'
             style={{
               width: 970,
               height: 90,
