@@ -534,7 +534,6 @@ export const GammaPairs: {
         address: '0x1c1b4cf2a40810c49a8b42a9da857cb0b76d06e3',
         token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
         token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
-        ableToFarm: true,
         pid: 30,
       },
       {
@@ -553,7 +552,6 @@ export const GammaPairs: {
         address: '0x14223bb48c8cf3ef49319be44a6e718e4dbf9486',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-        ableToFarm: true,
         pid: 32,
       },
       {
@@ -562,7 +560,6 @@ export const GammaPairs: {
         address: '0x69b2aaaf08ac9b04cd5b64a1d23ffcb40224fdaf',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-        ableToFarm: true,
         pid: 33,
       },
     ],
@@ -631,7 +628,6 @@ export const GammaPairs: {
         address: '0x05c731f5f922835796c49412a30615c46cca4d9e',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
-        ableToFarm: true,
         pid: 40,
       },
       {
@@ -640,7 +636,6 @@ export const GammaPairs: {
         address: '0x9a4b458a5ae5d96565455d1e1882301fea5c076f',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
-        ableToFarm: true,
         pid: 41,
       },
     ],
@@ -742,7 +737,6 @@ export const GammaPairs: {
         address: '0x0f7e4c66cebb5f5cabd435684946585a917b2f65',
         token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
         token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
-        ableToFarm: true,
         pid: 51,
       },
       {
@@ -751,7 +745,6 @@ export const GammaPairs: {
         address: '0x535206aaeca58c038ef28ce9924c7782bbb3d94d',
         token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
         token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
-        ableToFarm: true,
         pid: 52,
       },
     ],
