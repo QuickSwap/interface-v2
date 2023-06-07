@@ -91,11 +91,11 @@ const SwapPage: React.FC = () => {
           token2={isV2 ? token2 : token2V3}
         />
       )}
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto 24px'>
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto 0'>
         <AdsSlider sort='analytics' />
       </Box>
-      {isMobile ? (
-        <Box className='flex justify-center' mt={2}>
+      <Box className='flex justify-center' margin='16px auto 24px'>
+        {isMobile ? (
           <div
             className='_0cbf1c3d417e250a'
             data-placement='07f1261aa50548a79cadcc02cb8ea265'
@@ -106,9 +106,7 @@ const SwapPage: React.FC = () => {
               margin: '0 auto',
             }}
           />
-        </Box>
-      ) : (
-        <Box className='flex justify-center' mt={2}>
+        ) : (
           <div
             className='_0cbf1c3d417e250a'
             data-placement='130767a7f78c4f9fbd2530a4941db115'
@@ -119,8 +117,8 @@ const SwapPage: React.FC = () => {
               margin: '0 auto',
             }}
           />
-        </Box>
-      )}
+        )}
+      </Box>
     </Box>
   );
 };

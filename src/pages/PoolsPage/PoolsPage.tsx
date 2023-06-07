@@ -77,8 +77,8 @@ const PoolsPage: React.FC = () => {
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto 24px'>
         <AdsSlider sort='analytics' />
       </Box>
-      {isMobile ? (
-        <Box className='flex justify-center' mt={2}>
+      <Box className='flex justify-center' mt={2}>
+        {isMobile ? (
           <div
             className='_0cbf1c3d417e250a'
             data-placement='07f1261aa50548a79cadcc02cb8ea265'
@@ -89,9 +89,7 @@ const PoolsPage: React.FC = () => {
               margin: '0 auto',
             }}
           />
-        </Box>
-      ) : (
-        <Box className='flex justify-center' mt={2}>
+        ) : (
           <div
             className='_0cbf1c3d417e250a'
             data-placement='130767a7f78c4f9fbd2530a4941db115'
@@ -102,8 +100,8 @@ const PoolsPage: React.FC = () => {
               margin: '0 auto',
             }}
           />
-        </Box>
-      )}
+        )}
+      </Box>
     </Box>
   );
 };
