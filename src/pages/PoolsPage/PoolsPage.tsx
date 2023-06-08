@@ -74,7 +74,7 @@ const PoolsPage: React.FC = () => {
           )}
         </Grid>
       </Grid>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto 24px'>
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
         <AdsSlider sort='analytics' />
       </Box>
     </Box>
