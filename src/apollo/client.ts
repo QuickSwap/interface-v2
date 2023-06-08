@@ -9,25 +9,6 @@ export type ApolloChainMap = Readonly<
   }
 >;
 
-export const clientV2: ApolloChainMap = {
-  [ChainId.MATIC]: new ApolloClient({
-    link: new HttpLink({
-      uri: process.env.REACT_APP_GRAPH_V2_137_API_URL,
-    }),
-    cache: new InMemoryCache(),
-  }),
-  [ChainId.DOGECHAIN]: new ApolloClient({
-    link: new HttpLink({
-      uri: process.env.REACT_APP_GRAPH_V2_2000_API_URL,
-    }),
-    cache: new InMemoryCache(),
-  }),
-  [ChainId.MUMBAI]: undefined,
-  [ChainId.ZKEVM]: undefined,
-  [ChainId.ZKTESTNET]: undefined,
-  [ChainId.DOEGCHAIN_TESTNET]: undefined,
-};
-
 export const clientV3: ApolloChainMap = {
   [ChainId.MATIC]: new ApolloClient({
     link: new HttpLink({

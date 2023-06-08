@@ -18,10 +18,7 @@ import {
   FETCH_REWARDS,
   FETCH_TOKEN,
   FETCH_TOKEN_FARM,
-  FUTURE_EVENTS,
-  HAS_TRANSFERED_POSITIONS,
   INFINITE_EVENTS,
-  POSITIONS_ON_ETERNAL_FARMING,
   TRANSFERED_POSITIONS,
   TRANSFERED_POSITIONS_FOR_POOL,
 } from '../utils/graphql-queries';
@@ -37,7 +34,6 @@ import {
   PoolSubgraph,
   Position,
   SubgraphResponse,
-  TickFarming,
   TokenSubgraph,
   Aprs,
   FutureFarmingEvent,
@@ -72,25 +68,10 @@ export function useFarmingSubgraph() {
     setTransferredPositionsLoading,
   ] = useState<boolean>(false);
 
-  const [hasTransferredPositions, setHasTransferredPositions] = useState<
-    boolean | null
-  >(null);
-  const [
-    hasTransferredPositionsLoading,
-    setHasTransferredPositionsLoading,
-  ] = useState<boolean>(false);
-
   const [rewardsResult, setRewardsResult] = useState<
     FormattedRewardInterface[]
   >([]);
   const [rewardsLoading, setRewardsLoading] = useState<boolean>(false);
-
-  const [futureEvents, setFutureEvents] = useState<FutureFarmingEvent[] | null>(
-    null,
-  );
-  const [futureEventsLoading, setFutureEventsLoading] = useState<boolean>(
-    false,
-  );
 
   const [positionsOnFarmer, setPositionsOnFarmer] = useState<{
     transferredPositionsIds: string[];
@@ -123,47 +104,6 @@ export function useFarmingSubgraph() {
   const [eternalFarmTvlsLoading, setEternalFarmTvlsLoading] = useState<boolean>(
     false,
   );
-
-  const [positionsEternal, setPositionsEternal] = useState<
-    TickFarming[] | null
-  >(null);
-  const [positionsEternalLoading, setPositionsEternalLoading] = useState<
-    boolean
-  >(false);
-
-  async function getEvents(events: any[], farming = false) {
-    const _events: any[] = [];
-
-    for (let i = 0; i < events.length; i++) {
-      const pool = await fetchPool(events[i].pool);
-      const rewardToken = await fetchToken(events[i].rewardToken, farming);
-      const bonusRewardToken = await fetchToken(
-        events[i].bonusRewardToken,
-        farming,
-      );
-      const multiplierToken = await fetchToken(
-        events[i].multiplierToken,
-        farming,
-      );
-
-      const _event: any = {
-        ...events[i],
-        pool,
-        rewardToken,
-        bonusRewardToken,
-        multiplierToken,
-        reward: formatUnits(events[i].reward, rewardToken.decimals),
-        bonusReward: formatUnits(
-          events[i].bonusReward,
-          bonusRewardToken.decimals,
-        ),
-      };
-
-      _events.push({ ..._event });
-    }
-
-    return _events;
-  }
 
   async function fetchToken(tokenId: string, farming = false) {
     const client = farming ? farmingClient : v3Client;
@@ -321,72 +261,6 @@ export function useFarmingSubgraph() {
     }
 
     setRewardsLoading(false);
-  }
-
-  async function fetchFutureEvents(reload?: boolean) {
-    if (!farmingClient) return;
-    try {
-      setFutureEventsLoading(true);
-
-      const {
-        data: { limitFarmings: futureEvents },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<FutureFarmingEvent[]>>({
-        query: FUTURE_EVENTS(),
-        fetchPolicy: reload ? 'network-only' : 'cache-first',
-        variables: { timestamp: Math.round(Date.now() / 1000) },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
-      }
-
-      if (futureEvents.length === 0) {
-        setFutureEvents([]);
-        setFutureEventsLoading(false);
-        return;
-      }
-
-      setFutureEvents(await getEvents(futureEvents, true));
-    } catch (err) {
-      throw new Error('Future limit farmings fetching ' + err);
-    } finally {
-      setFutureEventsLoading(false);
-    }
-  }
-
-  async function fetchHasTransferredPositions() {
-    if (!chainId || !account || !farmingClient) return;
-
-    if (!provider) throw new Error('No provider');
-
-    try {
-      setHasTransferredPositionsLoading(true);
-
-      const {
-        data: { deposits: positionsTransferred },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<Deposit[]>>({
-        query: HAS_TRANSFERED_POSITIONS(),
-        fetchPolicy: 'network-only',
-        variables: { account },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
-      }
-
-      setHasTransferredPositions(Boolean(positionsTransferred.length));
-      setHasTransferredPositionsLoading(false);
-    } catch (err) {
-      throw new Error(
-        'Has transferred positions ' + err.code + ' ' + err.message,
-      );
-    } finally {
-      setHasTransferredPositionsLoading(false);
-    }
   }
 
   async function fetchTransferredPositions(reload?: boolean) {
@@ -695,90 +569,6 @@ export function useFarmingSubgraph() {
     }
   }
 
-  async function fetchPositionsOnEternalFarming(reload?: boolean) {
-    if (!chainId || !account || !farmingClient) return;
-
-    if (!provider) throw new Error('No provider');
-
-    setPositionsEternalLoading(true);
-
-    try {
-      const {
-        data: { deposits: eternalPositions },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<Position[]>>({
-        query: POSITIONS_ON_ETERNAL_FARMING(),
-        fetchPolicy: reload ? 'network-only' : 'cache-first',
-        variables: { account },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
-      }
-
-      if (eternalPositions.length === 0) {
-        setPositionsEternal([]);
-        setPositionsEternalLoading(false);
-        return;
-      }
-
-      const _positions: TickFarming[] = [];
-
-      for (const position of eternalPositions) {
-        const nftContract = new Contract(
-          NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
-          NON_FUN_POS_MAN,
-          provider.getSigner(),
-        );
-
-        const {
-          tickLower,
-          tickUpper,
-          liquidity,
-          token0,
-          token1,
-        } = await nftContract.positions(+position.id);
-
-        let _position: TickFarming = {
-          tickLower,
-          tickUpper,
-          liquidity,
-          token0,
-          token1,
-        };
-
-        const {
-          rewardToken,
-          bonusRewardToken,
-          pool,
-          startTime,
-          endTime,
-        } = await fetchEternalFarming(String(position.eternalFarming));
-
-        const _pool = await fetchPool(pool);
-        const _rewardToken = await fetchToken(rewardToken);
-        const _bonusRewardToken = await fetchToken(bonusRewardToken);
-
-        _position = {
-          ..._position,
-          ...position,
-          pool: _pool,
-          rewardToken: _rewardToken,
-          bonusRewardToken: _bonusRewardToken,
-          startTime,
-          endTime,
-        };
-
-        _positions.push(_position);
-      }
-
-      setPositionsEternal(_positions);
-    } catch (error) {
-      throw new Error('Eternal farms loading' + error.code + error.message);
-    }
-  }
-
   async function fetchPositionsForPool(
     pool: PoolChartSubgraph,
     minRangeLength: string,
@@ -1030,11 +820,6 @@ export function useFarmingSubgraph() {
       rewardsLoading,
       fetchRewardsFn: fetchRewards,
     },
-    fetchFutureEvents: {
-      futureEvents,
-      futureEventsLoading,
-      fetchFutureEventsFn: fetchFutureEvents,
-    },
     fetchPositionsForPool: {
       positionsForPool,
       positionsForPoolLoading,
@@ -1044,11 +829,6 @@ export function useFarmingSubgraph() {
       transferredPositions,
       transferredPositionsLoading,
       fetchTransferredPositionsFn: fetchTransferredPositions,
-    },
-    fetchHasTransferredPositions: {
-      hasTransferredPositions,
-      hasTransferredPositionsLoading,
-      fetchHasTransferredPositionsFn: fetchHasTransferredPositions,
     },
     fetchPositionsOnFarmer: {
       positionsOnFarmer,
@@ -1074,11 +854,6 @@ export function useFarmingSubgraph() {
       eternalFarmTvls,
       eternalFarmTvlsLoading,
       fetchEternalFarmTvlsFn: fetchEternalFarmTvls,
-    },
-    fetchPositionsOnEternalFarmings: {
-      positionsEternal,
-      positionsEternalLoading,
-      fetchPositionsOnEternalFarmingFn: fetchPositionsOnEternalFarming,
     },
   };
 }

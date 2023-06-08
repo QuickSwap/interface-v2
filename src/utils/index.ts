@@ -1,5 +1,4 @@
 import { getAddress } from '@ethersproject/address';
-import { ApolloClient } from 'apollo-client';
 import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -54,32 +53,6 @@ import { Connector } from '@web3-react/types';
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
-interface BasicData {
-  token0?: {
-    id: string;
-    name: string;
-    symbol: string;
-  };
-  token1?: {
-    id: string;
-    name: string;
-    symbol: string;
-  };
-}
-
-const TOKEN_OVERRIDES: {
-  [address: string]: { name: string; symbol: string };
-} = {
-  '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': {
-    name: 'Ether (Wrapped)',
-    symbol: 'ETH',
-  },
-  '0x1416946162b1c2c871a73b07e932d2fb6c932069': {
-    name: 'Energi',
-    symbol: 'NRGE',
-  },
-};
-
 export function formatCompact(
   unformatted: number | string | BigNumber | BigNumberish | undefined | null,
   decimals = 18,
@@ -103,72 +76,6 @@ export function formatCompact(
 
   return formatter.format(Number(formatted.toPrecision(maxPrecision)));
 }
-
-export const getPercentChange = (valueNow: number, value24HoursAgo: number) => {
-  const adjustedPercentChange =
-    ((valueNow - value24HoursAgo) / value24HoursAgo) * 100;
-  if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
-    return 0;
-  }
-  return adjustedPercentChange;
-};
-
-export async function splitQuery(
-  query: any,
-  localClient: ApolloClient<any>,
-  vars: any[],
-  list: any[],
-  skipCount = 100,
-): Promise<any> {
-  let fetchedData = {};
-  let allFound = false;
-  let skip = 0;
-
-  while (!allFound) {
-    let end = list.length;
-    if (skip + skipCount < list.length) {
-      end = skip + skipCount;
-    }
-    const sliced = list.slice(skip, end);
-    const queryStr = query(...vars, sliced);
-    const result = await localClient.query({
-      query: queryStr,
-      fetchPolicy: 'network-only',
-    });
-    fetchedData = {
-      ...fetchedData,
-      ...result.data,
-    };
-    if (
-      Object.keys(result.data).length < skipCount ||
-      skip + skipCount > list.length
-    ) {
-      allFound = true;
-    } else {
-      skip += skipCount;
-    }
-  }
-
-  return fetchedData;
-}
-
-export const get2DayPercentChange = (
-  valueNow: number,
-  value24HoursAgo: number,
-  value48HoursAgo: number,
-) => {
-  // get volume info for both 24 hour periods
-  const currentChange = valueNow - value24HoursAgo;
-  const previousChange = value24HoursAgo - value48HoursAgo;
-
-  const adjustedPercentChange =
-    ((currentChange - previousChange) / previousChange) * 100;
-
-  if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
-    return [currentChange, 0];
-  }
-  return [currentChange, adjustedPercentChange];
-};
 
 export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (
   chainId: ChainId,
@@ -196,46 +103,8 @@ export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (
   return [ethPrice, ethPriceOneDay, priceChangeETH];
 };
 
-export const getTimestampsForChanges: () => number[] = () => {
-  const utcCurrentTime = dayjs();
-  //utcCurrentTime = utcCurrentTime.subtract(0.3,  'day');
-  const t1 = utcCurrentTime
-    .subtract(1, 'day')
-    .startOf('minute')
-    .unix();
-  const t2 = utcCurrentTime
-    .subtract(2, 'day')
-    .startOf('minute')
-    .unix();
-  const tWeek = utcCurrentTime
-    .subtract(1, 'week')
-    .startOf('minute')
-    .unix();
-  return [t1, t2, tWeek];
-};
-
 export function getSecondsOneDay() {
   return 60 * 60 * 24;
-}
-
-export function updateNameData(data: BasicData): BasicData | undefined {
-  if (
-    data?.token0?.id &&
-    Object.keys(TOKEN_OVERRIDES).includes(data.token0.id)
-  ) {
-    data.token0.name = TOKEN_OVERRIDES[data.token0.id].name;
-    data.token0.symbol = TOKEN_OVERRIDES[data.token0.id].symbol;
-  }
-
-  if (
-    data?.token1?.id &&
-    Object.keys(TOKEN_OVERRIDES).includes(data.token1.id)
-  ) {
-    data.token1.name = TOKEN_OVERRIDES[data.token1.id].name;
-    data.token1.symbol = TOKEN_OVERRIDES[data.token1.id].symbol;
-  }
-
-  return data;
 }
 
 export function isAddress(value: string | null | undefined): string | false {

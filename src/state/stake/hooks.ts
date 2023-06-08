@@ -672,31 +672,6 @@ const convertArrayToObject = (array: any, key: any) => {
   }, initialValue);
 };
 
-export const get2DayPercentChange = (valueNow: any, value24HoursAgo: any) => {
-  // get volume info for both 24 hour periods
-  return Number(valueNow) - Number(value24HoursAgo);
-};
-
-function parseData(data: any, oneDayData: any) {
-  // get volume changes
-  const volumeKey =
-    data && data.volumeUSD && Number(data.volumeUSD)
-      ? 'volumeUSD'
-      : 'untrackedVolumeUSD';
-  const oneDayVolumeUSD = get2DayPercentChange(
-    data && data[volumeKey] ? Number(data[volumeKey]) : 0,
-    oneDayData && oneDayData[volumeKey] ? Number(oneDayData[volumeKey]) : 0,
-  );
-  return {
-    id: data.id,
-    token0: data.token0,
-    token1: data.token1,
-    oneDayVolumeUSD,
-    reserveUSD: data.reserveUSD,
-    totalSupply: data.totalSupply,
-  };
-}
-
 function getSearchFiltered(info: any, search: string) {
   const searchLowered = search.toLowerCase();
   if (info.tokens) {

@@ -180,36 +180,6 @@ export const FETCH_POOL_FROM_TOKENS = () => gql`
   }
 `;
 
-export const FUTURE_EVENTS = () => gql`
-  query futureEvents($timestamp: BigInt) {
-    limitFarmings(
-      orderBy: startTime
-      orderDirection: asc
-      where: { startTime_gt: $timestamp, isDetached: false }
-    ) {
-      id
-      createdAtTimestamp
-      rewardToken
-      bonusReward
-      bonusRewardToken
-      pool
-      startTime
-      endTime
-      reward
-      tier1Multiplier
-      tier2Multiplier
-      tier3Multiplier
-      tokenAmountForTier1
-      tokenAmountForTier2
-      tokenAmountForTier3
-      multiplierToken
-      enterStartTime
-      isDetached
-      minRangeLength
-    }
-  }
-`;
-
 export const FETCH_FINITE_FARM_FROM_POOL = (pools: string[]) => {
   let poolString = `[`;
   pools.map((address) => {
@@ -275,28 +245,6 @@ export const HAS_TRANSFERED_POSITIONS = () => gql`
   query hasTransferedPositions($account: Bytes) {
     deposits(first: 1, where: { owner: $account, onFarmingCenter: true }) {
       id
-    }
-  }
-`;
-
-export const POSITIONS_ON_ETERNAL_FARMING = () => gql`
-  query positionsOnEternalFarming($account: Bytes) {
-    deposits(
-      orderBy: id
-      orderDirection: desc
-      where: {
-        owner: $account
-        onFarmingCenter: true
-        eternalFarming_not: null
-      }
-    ) {
-      id
-      owner
-      pool
-      L2tokenId
-      eternalFarming
-      onFarmingCenter
-      enteredInEternalFarming
     }
   }
 `;
