@@ -355,7 +355,12 @@ const GammaFarmCardDetails: React.FC<{
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('tvl')}</small>
             <small className='weight-600'>
-              ${formatNumber(data && data['tvlUSD'] ? data['tvlUSD'] : 0)}
+              $
+              {formatNumber(
+                rewardData && rewardData['stakedAmountUSD']
+                  ? rewardData['stakedAmountUSD']
+                  : 0,
+              )}
             </small>
           </Box>
           <Box className='flex justify-between' mb={2}>
