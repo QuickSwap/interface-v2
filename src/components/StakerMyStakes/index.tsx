@@ -25,16 +25,14 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
-import {
-  useUSDCPricesFromAddresses,
-  useUSDCPricesToken,
-} from 'utils/useUSDCPrice';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { formatReward } from 'utils/formatReward';
 import {
   useMultipleContractMultipleData,
   useSingleCallResult,
 } from 'state/multicall/v3/hooks';
 import {
+  useGammaHypervisorContract,
   useMasterChefContract,
   useMasterChefContracts,
 } from 'hooks/useContract';
@@ -496,8 +494,32 @@ export const FarmingMyFarms: React.FC<{
     undefined,
     QIGammaMasterChef,
   );
+  const qiHypeContract = useGammaHypervisorContract(qiGammaFarm);
 
   const qiPoolData = useSingleCallResult(qimasterChefContract, 'poolInfo', [2]);
+  const qiGammaStakedAmountData = useSingleCallResult(
+    qiHypeContract,
+    'balanceOf',
+    [qimasterChefContract?.address],
+  );
+  const qiGammaStakedAmount =
+    !qiGammaStakedAmountData.loading &&
+    qiGammaStakedAmountData.result &&
+    qiGammaStakedAmountData.result.length > 0
+      ? Number(formatUnits(qiGammaStakedAmountData.result[0], 18))
+      : 0;
+  const qiGammaData =
+    gammaData && gammaData[qiGammaFarm.toLowerCase()]
+      ? gammaData[qiGammaFarm.toLowerCase()]
+      : undefined;
+  const qiLPTokenUSD =
+    qiGammaData &&
+    qiGammaData.totalSupply &&
+    Number(qiGammaData.totalSupply) > 0
+      ? (Number(qiGammaData.tvlUSD) / Number(qiGammaData.totalSupply)) *
+        10 ** 18
+      : 0;
+  const qiGammaStakedAmountUSD = qiGammaStakedAmount * qiLPTokenUSD;
 
   const qiAllocPointBN =
     !qiPoolData.loading && qiPoolData.result && qiPoolData.result.length > 0
@@ -589,18 +611,15 @@ export const FarmingMyFarms: React.FC<{
   )?.price;
 
   const qiAPR =
-    qiRewardPerSecond &&
-    qiPrice &&
-    gammaData &&
-    gammaData[qiGammaFarm.toLowerCase()] &&
-    gammaData[qiGammaFarm.toLowerCase()]['tvlUSD']
-      ? (qiRewardPerSecond * qiPrice * 3600 * 24 * 365) /
-        gammaData[qiGammaFarm.toLowerCase()]['tvlUSD']
+    qiRewardPerSecond && qiPrice && qiGammaStakedAmountUSD
+      ? (qiRewardPerSecond * qiPrice * 3600 * 24 * 365) / qiGammaStakedAmountUSD
       : undefined;
 
   if (gammaRewards && GAMMA_MASTERCHEF_ADDRESSES[2][chainId] && qiAPR) {
     const qiRewardsData = {
       apr: qiAPR,
+      stakedAmount: qiGammaStakedAmount,
+      stakedAmountUSD: qiGammaStakedAmountUSD,
       rewarders: {
         rewarder: {
           rewardToken: qiTokenAddress,
@@ -757,9 +776,13 @@ export const FarmingMyFarms: React.FC<{
           : -1 * sortMultiplierGamma;
       } else if (sortByGamma === v3FarmSortBy.tvl) {
         const tvl0 =
-          gammaData0 && gammaData0['tvlUSD'] ? Number(gammaData0['tvlUSD']) : 0;
+          gammaReward0 && gammaReward0['stakedAmountUSD']
+            ? Number(gammaReward0['stakedAmountUSD'])
+            : 0;
         const tvl1 =
-          gammaData1 && gammaData1['tvlUSD'] ? Number(gammaData1['tvlUSD']) : 0;
+          gammaReward1 && gammaReward1['stakedAmountUSD']
+            ? Number(gammaReward1['stakedAmountUSD'])
+            : 0;
         return tvl0 > tvl1 ? sortMultiplierGamma : -1 * sortMultiplierGamma;
       } else if (sortByGamma === v3FarmSortBy.rewards) {
         const farm0RewardUSD =
