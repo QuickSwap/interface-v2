@@ -271,29 +271,29 @@ const GammaFarmsPage: React.FC<{
           item.token1.address.toLowerCase().includes(search.toLowerCase())) ||
         item.title.toLowerCase().includes(search.toLowerCase());
       const blueChipCondition =
-        !!GlobalData.blueChips.find(
+        !!GlobalData.blueChips[chainId].find(
           (token) =>
             item.token0 &&
             token.address.toLowerCase() === item.token0.address.toLowerCase(),
         ) &&
-        !!GlobalData.blueChips.find(
+        !!GlobalData.blueChips[chainId].find(
           (token) =>
             item.token1 &&
             token.address.toLowerCase() === item.token1.address.toLowerCase(),
         );
       const stableCoinCondition =
-        !!GlobalData.stableCoins.find(
+        !!GlobalData.stableCoins[chainId].find(
           (token) =>
             item.token0 &&
             token.address.toLowerCase() === item.token0.address.toLowerCase(),
         ) &&
-        !!GlobalData.stableCoins.find(
+        !!GlobalData.stableCoins[chainId].find(
           (token) =>
             item.token1 &&
             token.address.toLowerCase() === item.token1.address.toLowerCase(),
         );
 
-      const stablePair0 = GlobalData.stablePairs.find(
+      const stablePair0 = GlobalData.stablePairs[chainId].find(
         (tokens) =>
           !!tokens.find(
             (token) =>
@@ -301,7 +301,7 @@ const GammaFarmsPage: React.FC<{
               token.address.toLowerCase() === item.token0.address.toLowerCase(),
           ),
       );
-      const stablePair1 = GlobalData.stablePairs.find(
+      const stablePair1 = GlobalData.stablePairs[chainId].find(
         (tokens) =>
           !!tokens.find(
             (token) =>
