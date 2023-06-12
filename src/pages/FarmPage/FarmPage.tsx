@@ -136,7 +136,7 @@ const FarmPage: React.FC = () => {
         )}
       </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <AdsSlider sort='farms' />
+        <AdsSlider sort='analytics' />
       </Box>
       {isV2 && v2 && (
         <>
