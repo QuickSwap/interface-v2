@@ -135,6 +135,7 @@ export const gnosisSafeConnection: Connection = {
   iconName: GnosisIcon,
   color: '#4196FC',
   description: 'Login using gnosis safe app',
+  mobile: true,
 };
 
 const [web3Metamask, web3MetamaskHooks] = initializeConnector<MetaMask>(

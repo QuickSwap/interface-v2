@@ -613,6 +613,12 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
   [ChainId.MATIC]: [
     WMATIC_EXTENDED[ChainId.MATIC],
     toV3Token(USDC[ChainId.MATIC]),
+    toV3Token(USDT[ChainId.MATIC]),
+    toV3Token(ETHER[ChainId.MATIC]),
+    toV3Token(DAI[ChainId.MATIC]),
+    toV3Token(MI[ChainId.MATIC]),
+    toV3Token(WBTC[ChainId.MATIC]),
+    toV3Token(NEW_QUICK[ChainId.MATIC]),
   ],
   [ChainId.DOGECHAIN]: [
     WMATIC_EXTENDED[ChainId.DOGECHAIN],
