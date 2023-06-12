@@ -146,11 +146,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isCoinbaseWallet = ethereum && ethereum.isCoinbaseWallet;
 
     return connections.map((option) => {
-      //disable safe app by in the list
-      if (option.key === 'SAFE_APP') {
-        return null;
-      }
-
       if (
         option.name === GlobalConst.walletName.PHANTOM_WALLET &&
         !isPhantomWallet
