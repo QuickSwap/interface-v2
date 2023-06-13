@@ -3,7 +3,6 @@ import { Contract } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { clientV3, farmingClient } from 'apollo/client';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import {
   CurrencyAmount,
@@ -41,10 +40,6 @@ import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
 import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
 import { getConfig } from 'config';
-import {
-  FETCH_ETERNAL_FARM_FROM_POOL,
-  FETCH_POOL_FROM_TOKENS,
-} from './graphql-queries';
 import { useEffect, useState } from 'react';
 import { useEthPrice } from 'state/application/hooks';
 import { TFunction } from 'react-i18next';
@@ -971,39 +966,20 @@ export const getEternalFarmFromTokens = async (
   token1: string,
   chainId: ChainId,
 ) => {
-  const v3Client = clientV3[chainId];
-  if (!v3Client) return;
   try {
-    const result = await v3Client.query({
-      query: FETCH_POOL_FROM_TOKENS(),
-      variables: { token0, token1 },
-      fetchPolicy: 'network-only',
-    });
-    const poolID =
-      result &&
-      result.data &&
-      result.data.pools0 &&
-      result.data.pools0.length > 0
-        ? result.data.pools0[0].id
-        : result &&
-          result.data &&
-          result.data.pools1 &&
-          result.data.pools1.length > 0
-        ? result.data.pools1[0].id
-        : undefined;
-    if (!poolID) return;
-    const clientFarming = farmingClient[chainId];
-    if (!clientFarming) return;
-    const eternalFarmResult = await clientFarming.query({
-      query: FETCH_ETERNAL_FARM_FROM_POOL([poolID]),
-      fetchPolicy: 'network-only',
-    });
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farm-tokens?chainId=${chainId}&token0=${token0}&token1=${token1}`,
+    );
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(
+        errorText || res.statusText || `Failed to fetch eternal farms`,
+      );
+    }
+    const data = await res.json();
     const eternalFarm =
-      eternalFarmResult &&
-      eternalFarmResult.data &&
-      eternalFarmResult.data.eternalFarmings &&
-      eternalFarmResult.data.eternalFarmings.length > 0
-        ? eternalFarmResult.data.eternalFarmings[0]
+      data && data.data && data.data.eternalFarm
+        ? data.data.eternalFarm
         : undefined;
 
     return eternalFarm;
