@@ -1196,6 +1196,37 @@ export const GammaPairs: {
         pid: 10,
       },
     ],
+    '0x83b874c1e09d316059d929da402dcb1a98e92082-0xa2036f0538221a77a3937f1379699f44945018d0': [
+      {
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        address: '0x9616052273a598bc04bd1ad7f7a753157c24f77e',
+        token0Address: '0x83b874c1e09d316059d929da402dcb1a98e92082',
+        token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        ableToFarm: true,
+        pid: 11,
+      },
+    ],
+    '0xa2036f0538221a77a3937f1379699f44945018d0-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x19f4ebc0a1744b93a355c2320899276ae7f79ee5',
+        token0Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        ableToFarm: true,
+        pid: 12,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x8462e4173d63f8769f94bf7ae5bc1ac7ab5d96e3',
+        token0Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        ableToFarm: true,
+        pid: 13,
+      },
+    ],
   },
 };
 
