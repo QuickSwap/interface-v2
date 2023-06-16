@@ -6,7 +6,6 @@ import {
   Price,
   Rounding,
   Token,
-  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
 import { AppState } from '../../index';

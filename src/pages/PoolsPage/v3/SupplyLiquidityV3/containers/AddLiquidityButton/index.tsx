@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   useGammaUNIProxyContract,
+  useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
   useWETHContract,
 } from 'hooks/useContract';
@@ -74,6 +75,7 @@ export function AddLiquidityButton({
   const preset = useActivePreset();
 
   const positionManager = useV3NFTPositionManagerContract();
+  const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
   const gammaUNIPROXYContract = useGammaUNIProxyContract();
   const wethContract = useWETHContract();
 
