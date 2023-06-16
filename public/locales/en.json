@@ -670,5 +670,12 @@
   "goBack": "Go Back",
   "pageNotFound": "Page not found",
   "pageNotFoundDesc": "Oh dear dragon friend, it seems like the treasure you seek is not to be found. We encourage you to spread your wings and fly back to start your quest a new.",
-  "perpsBannerText": "QuickPerps is a Decentralized Perpetual Exchange designed to provide a range of trading features and deep liquidity for blue chip crypto assets. <alink>View</alink>"
+  "perpsBannerText": "QuickPerps is a Decentralized Perpetual Exchange designed to provide a range of trading features and deep liquidity for blue chip crypto assets. <alink>View</alink>",
+  "selectFeeTier": "Select Fee Tier",
+  "bestForVeryStablePair": "Best for very stable pairs.",
+  "bestForStablePair": "Best for stable pairs.",
+  "bestForMostPair": "Best for most pairs.",
+  "bestForExoticPair": "Best for exotic pairs.",
+  "edit": "Edit",
+  "feeTier": "Fee Tier"
 }

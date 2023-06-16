@@ -1,0 +1,50 @@
+@use 'styles/variables' as *;
+
+.feeTierWrapper {
+  background-color: $secondary1;
+  border-radius: 10px;
+}
+
+.editFeeTier {
+  padding: 3px 6px;
+  background-color: $grey12;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.feeSelectionWrapper {
+  border-top: 1px solid $bgColor;
+  padding: 0 12px 16px;
+}
+
+.feeSelectPercent {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background-color: $grey12;
+}
+
+.feeSelectionItem {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.feeTierCheck {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  border: 2px solid $grey12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.feeTierCheckSelected {
+  background-color: $primary;
+  border: 2px solid $primary;
+}

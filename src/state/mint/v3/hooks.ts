@@ -20,6 +20,7 @@ import {
   typeStartPriceInput,
   updateLiquidityRangeType,
   updatePresetRange,
+  updateFeeTier,
 } from './actions';
 import { tryParseTick } from './utils';
 import { PoolState, usePool } from 'hooks/v3/usePools';
@@ -48,6 +49,7 @@ import {
 import { ETHER, WETH } from '@uniswap/sdk';
 import { maxAmountSpend } from 'utils';
 import { GammaPairs } from 'constants/index';
+import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -79,6 +81,7 @@ export interface IDerivedMintInfo {
   upperPrice: any;
   liquidityRangeType: string | undefined;
   presetRange: IPresetArgs | undefined;
+  feeTier: IFeeTier | undefined;
 }
 
 export function useV3MintState(): AppState['mintV3'] {
@@ -95,6 +98,7 @@ export function useV3MintActionHandlers(
   onStartPriceInput: (typedValue: string) => void;
   onChangeLiquidityRangeType: (value: string) => void;
   onChangePresetRange: (value: IPresetArgs) => void;
+  onChangeFeeTier: (value: IFeeTier) => void;
 } {
   const dispatch = useAppDispatch();
 
@@ -159,6 +163,13 @@ export function useV3MintActionHandlers(
     [dispatch],
   );
 
+  const onChangeFeeTier = useCallback(
+    (value: IFeeTier) => {
+      dispatch(updateFeeTier({ feeTier: value }));
+    },
+    [dispatch],
+  );
+
   return {
     onFieldAInput,
     onFieldBInput,
@@ -167,6 +178,7 @@ export function useV3MintActionHandlers(
     onStartPriceInput,
     onChangeLiquidityRangeType,
     onChangePresetRange,
+    onChangeFeeTier,
   };
 }
 
@@ -207,6 +219,7 @@ export function useV3DerivedMintInfo(
   upperPrice: any;
   liquidityRangeType: string | undefined;
   presetRange: IPresetArgs | undefined;
+  feeTier: IFeeTier | undefined;
 } {
   const { chainId, account } = useActiveWeb3React();
 
@@ -218,6 +231,7 @@ export function useV3DerivedMintInfo(
     startPriceTypedValue,
     liquidityRangeType,
     presetRange,
+    feeTier,
   } = useV3MintState();
 
   const dependentField =
@@ -944,6 +958,7 @@ export function useV3DerivedMintInfo(
     upperPrice,
     liquidityRangeType,
     presetRange,
+    feeTier,
   };
 }
 

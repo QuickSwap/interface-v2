@@ -44,6 +44,7 @@ import { CHAIN_INFO } from 'constants/v3/chains';
 import { ChainId } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
+import SelectFeeTier from './containers/SelectFeeTier';
 
 export function SupplyLiquidityV3() {
   const { t } = useTranslation();
@@ -351,6 +352,9 @@ export function SupplyLiquidityV3() {
               />
             </Box>
           )}
+        <Box my={2}>
+          <SelectFeeTier mintInfo={mintInfo} />
+        </Box>
         <SelectRange
           currencyA={baseCurrency}
           currencyB={quoteCurrency}
