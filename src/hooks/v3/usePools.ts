@@ -1,4 +1,4 @@
-import { POOL_DEPLOYER_ADDRESS } from '../../constants/v3/addresses';
+import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { useActiveWeb3React } from 'hooks';
@@ -9,6 +9,7 @@ import { computePoolAddress } from './computePoolAddress';
 import { useToken } from './Tokens';
 import { Pool } from 'v3lib/entities/pool';
 import { usePreviousNonErroredArray } from 'hooks/usePrevious';
+import { FeeAmount } from 'v3lib/utils';
 
 const POOL_STATE_INTERFACE = new Interface(abi);
 
@@ -20,7 +21,11 @@ export enum PoolState {
 }
 
 export function usePools(
-  poolKeys: [Currency | undefined, Currency | undefined][],
+  poolKeys: [
+    Currency | undefined,
+    Currency | undefined,
+    FeeAmount | undefined,
+  ][],
 ): [PoolState, Pool | null][] {
   const { chainId } = useActiveWeb3React();
 
@@ -43,6 +48,7 @@ export function usePools(
 
     return transformed.map((value) => {
       if (!poolDeployerAddress || !value) return undefined;
+
       return computePoolAddress({
         poolDeployer: poolDeployerAddress,
         tokenA: value[0],
@@ -57,6 +63,8 @@ export function usePools(
     'globalState',
   );
 
+  // TODO: This is a bug, if all of the pool addresses error out, and the last call to use pools was from a different hook
+  // You will get the results which don't match the pool keys
   const prevGlobalState0s = usePreviousNonErroredArray(globalState0s);
 
   const _globalState0s = useMemo(() => {
@@ -145,12 +153,17 @@ export function usePools(
 export function usePool(
   currencyA: Currency | undefined,
   currencyB: Currency | undefined,
-  // feeAmount: FeeAmount | undefined
+  feeAmount?: FeeAmount,
 ): [PoolState, Pool | null] {
   const poolKeys: [
     Currency | undefined,
     Currency | undefined,
-  ][] = useMemo(() => [[currencyA, currencyB]], [currencyA, currencyB]);
+    FeeAmount | undefined,
+  ][] = useMemo(() => [[currencyA, currencyB, feeAmount]], [
+    currencyA,
+    currencyB,
+    feeAmount,
+  ]);
 
   return usePools(poolKeys)[0];
 }

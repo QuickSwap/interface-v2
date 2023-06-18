@@ -4,7 +4,7 @@ import { PoolStats } from '../PoolStats';
 import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { Box } from '@material-ui/core';
-import { PoolState } from 'hooks/usePools';
+import { PoolState } from 'hooks/v3/usePools';
 import Loader from 'components/Loader';
 import { fetchPoolsAPR } from 'utils/api';
 import { computePoolAddress } from 'hooks/v3/computePoolAddress';

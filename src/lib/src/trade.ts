@@ -10,8 +10,8 @@ import {
 } from '@uniswap/sdk-core';
 import invariant from 'tiny-invariant';
 import { ONE, ZERO } from './internalConstants';
-import { Pool } from './pool';
-import { Route } from './route';
+import { Pool } from 'v3lib/entities/pool';
+import { Route } from 'v3lib/entities/route';
 
 /**
  * Trades comparator, an extension of the input output comparator that also considers other dimensions of the trade in ranking them

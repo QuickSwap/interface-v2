@@ -13,7 +13,7 @@ import { PermitOptions, SelfPermit } from './selfPermit';
 import { MethodParameters, toHex } from './utils/calldata';
 import abi from 'constants/abis/v3/swap-router.json';
 import { ADDRESS_ZERO } from 'v3lib/utils/v3constants';
-import { encodeRouteToPath } from './utils/encodeRouteToPath';
+import { encodeRouteToPath } from 'v3lib/utils/encodeRouteToPath';
 
 export interface FeeOptions {
   /**
