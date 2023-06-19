@@ -7,8 +7,11 @@ import { Box } from '@material-ui/core';
 import { PoolState } from 'hooks/v3/usePools';
 import Loader from 'components/Loader';
 import { fetchPoolsAPR } from 'utils/api';
-import { computePoolAddress } from 'hooks/v3/computePoolAddress';
-import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
+import { computePoolAddress } from 'v3lib/utils/computePoolAddress';
+import {
+  POOL_DEPLOYER_ADDRESS,
+  UNI_V3_FACTORY_ADDRESS,
+} from 'constants/v3/addresses';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import './index.scss';
 import { useActiveWeb3React } from 'hooks';
@@ -261,13 +264,16 @@ export function PresetRanges({
       return <Loader stroke='#22dc22' />;
 
     const poolAddress = computePoolAddress({
-      poolDeployer: POOL_DEPLOYER_ADDRESS[137],
+      poolDeployer:
+        mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')
+          ? UNI_V3_FACTORY_ADDRESS[chainId]
+          : POOL_DEPLOYER_ADDRESS[chainId],
       tokenA: baseCurrency.wrapped,
       tokenB: quoteCurrency.wrapped,
     }).toLowerCase();
 
     return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
-  }, [baseCurrency, quoteCurrency, aprs]);
+  }, [aprs, baseCurrency, quoteCurrency, mintInfo.feeTier, chainId]);
 
   const gammaValuesLoaded =
     mintInfo.price && gammaValues.filter((value) => !value).length === 0;

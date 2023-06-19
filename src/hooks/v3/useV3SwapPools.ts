@@ -43,7 +43,24 @@ export function useV3SwapPools(
     [allCurrencyCombinations],
   );
 
-  const pools = usePools(allCurrencyCombinationsWithAllFees);
+  const allCurrencyCombinationsWithoutFees: [
+    Token,
+    Token,
+    undefined,
+  ][] = useMemo(
+    () =>
+      allCurrencyCombinations.reduce<[Token, Token, undefined][]>(
+        (list, [tokenA, tokenB]) => {
+          return list.concat([[tokenA, tokenB, undefined]]);
+        },
+        [],
+      ),
+    [allCurrencyCombinations],
+  );
+
+  const uniPools = usePools(allCurrencyCombinationsWithAllFees, true);
+  const algebrapools = usePools(allCurrencyCombinationsWithoutFees);
+  const pools = uniPools.concat(algebrapools);
 
   return useMemo(() => {
     return {

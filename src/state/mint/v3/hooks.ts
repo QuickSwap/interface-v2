@@ -307,11 +307,29 @@ export function useV3DerivedMintInfo(
         : balances[1],
   };
 
+  const fee = useMemo(() => {
+    if (!feeTier) return;
+    switch (feeTier.id) {
+      case 'uni-0.01':
+        return FeeAmount.LOWEST;
+      case 'uni-0.05':
+        return FeeAmount.LOW;
+      case 'uni-0.3':
+        return FeeAmount.MEDIUM;
+      case 'uni-1':
+        return FeeAmount.HIGH;
+      default:
+        return;
+    }
+  }, [feeTier]);
+
   // pool
   //TODO
   const [poolState, pool] = usePool(
     currencies[Field.CURRENCY_A],
     currencies[Field.CURRENCY_B],
+    fee,
+    !!fee,
   );
   const noLiquidity = poolState === PoolState.NOT_EXISTS;
 

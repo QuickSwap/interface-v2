@@ -1,17 +1,22 @@
-import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
+import {
+  POOL_DEPLOYER_ADDRESS,
+  UNI_V3_FACTORY_ADDRESS,
+} from 'constants/v3/addresses';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import { Interface } from '@ethersproject/abi';
 import abi from 'constants/abis/v3/pool.json';
-import { computePoolAddress } from './computePoolAddress';
+import uniV3ABI from 'constants/abis/v3/univ3Pool.json';
+import { computePoolAddress } from 'v3lib/utils/computePoolAddress';
 import { useToken } from './Tokens';
 import { Pool } from 'v3lib/entities/pool';
 import { usePreviousNonErroredArray } from 'hooks/usePrevious';
 import { FeeAmount } from 'v3lib/utils';
 
 const POOL_STATE_INTERFACE = new Interface(abi);
+const UNIV3POOL_STATE_INTERFACE = new Interface(uniV3ABI);
 
 export enum PoolState {
   LOADING,
@@ -26,11 +31,15 @@ export function usePools(
     Currency | undefined,
     FeeAmount | undefined,
   ][],
+  isUni?: boolean,
 ): [PoolState, Pool | null][] {
   const { chainId } = useActiveWeb3React();
 
-  const transformed: ([Token, Token] | null)[] = useMemo(() => {
-    return poolKeys.map(([currencyA, currencyB]) => {
+  const transformed: (
+    | [Token, Token, FeeAmount | undefined]
+    | null
+  )[] = useMemo(() => {
+    return poolKeys.map(([currencyA, currencyB, feeAmount]) => {
       if (!chainId || !currencyA || !currencyB) return null;
 
       const tokenA = currencyA?.wrapped;
@@ -39,28 +48,31 @@ export function usePools(
       const [token0, token1] = tokenA.sortsBefore(tokenB)
         ? [tokenA, tokenB]
         : [tokenB, tokenA];
-      return [token0, token1];
+      return [token0, token1, feeAmount];
     });
   }, [chainId, poolKeys]);
 
   const poolAddresses: (string | undefined)[] = useMemo(() => {
-    const poolDeployerAddress = chainId && POOL_DEPLOYER_ADDRESS[chainId];
-
     return transformed.map((value) => {
+      const poolDeployerAddress =
+        chainId && value && value[2]
+          ? UNI_V3_FACTORY_ADDRESS[chainId]
+          : POOL_DEPLOYER_ADDRESS[chainId];
       if (!poolDeployerAddress || !value) return undefined;
 
       return computePoolAddress({
         poolDeployer: poolDeployerAddress,
         tokenA: value[0],
         tokenB: value[1],
+        fee: value[2],
       });
     });
   }, [chainId, transformed]);
 
   const globalState0s = useMultipleContractSingleData(
     poolAddresses,
-    POOL_STATE_INTERFACE,
-    'globalState',
+    isUni ? UNIV3POOL_STATE_INTERFACE : POOL_STATE_INTERFACE,
+    isUni ? 'slot0' : 'globalState',
   );
 
   // TODO: This is a bug, if all of the pool addresses error out, and the last call to use pools was from a different hook
@@ -82,7 +94,7 @@ export function usePools(
 
   const liquidities = useMultipleContractSingleData(
     poolAddresses,
-    POOL_STATE_INTERFACE,
+    isUni ? UNIV3POOL_STATE_INTERFACE : POOL_STATE_INTERFACE,
     'liquidity',
   );
   const prevLiquidities = usePreviousNonErroredArray(liquidities);
@@ -154,6 +166,7 @@ export function usePool(
   currencyA: Currency | undefined,
   currencyB: Currency | undefined,
   feeAmount?: FeeAmount,
+  isUni?: boolean,
 ): [PoolState, Pool | null] {
   const poolKeys: [
     Currency | undefined,
@@ -165,7 +178,7 @@ export function usePool(
     feeAmount,
   ]);
 
-  return usePools(poolKeys)[0];
+  return usePools(poolKeys, isUni)[0];
 }
 
 export function useTokensSymbols(token0: string, token1: string) {
