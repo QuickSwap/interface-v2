@@ -5,6 +5,7 @@ import {
   FeeAmount,
   nearestUsableTick,
   priceToClosestTick,
+  TICK_SPACINGS,
   TickMath,
 } from 'v3lib/utils';
 
@@ -43,7 +44,7 @@ export function tryParseTick(
   feeAmount?: FeeAmount,
   value?: string,
 ): number | undefined {
-  if (!baseToken || !quoteToken || !feeAmount || !value) {
+  if (!baseToken || !quoteToken || !value) {
     return undefined;
   }
 
@@ -67,5 +68,5 @@ export function tryParseTick(
     tick = priceToClosestTick(price);
   }
 
-  return nearestUsableTick(tick, 60);
+  return nearestUsableTick(tick, feeAmount ? TICK_SPACINGS[feeAmount] : 60);
 }

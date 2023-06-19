@@ -60,7 +60,6 @@ export default function MigrateV2DetailsPage() {
   const { t } = useTranslation();
   const v2Exchange = V2Exchanges.Quickswap;
   const percentageToMigrate = 100;
-  const feeAmount = FeeAmount.MEDIUM;
   const [largePriceDiffDismissed, setLargePriceDiffDismissed] = useState(false);
   const [attemptApproving, setAttemptApproving] = useState(false);
 
@@ -151,7 +150,6 @@ export default function MigrateV2DetailsPage() {
   const derivedMintInfo = useV3DerivedMintInfo(
     currency0 ?? undefined,
     quoteCurrency ?? undefined,
-    feeAmount,
     currency0 ?? undefined,
     undefined,
   );
@@ -324,7 +322,8 @@ export default function MigrateV2DetailsPage() {
     ) {
       return Position.fromAmounts({
         pool:
-          pool ?? new Pool(token0, token1, feeAmount, sqrtPrice, 0, tick, []),
+          pool ??
+          new Pool(token0, token1, FeeAmount.LOW, sqrtPrice, 0, tick, []),
         tickLower,
         tickUpper,
         amount0: token0Value.quotient,
@@ -344,7 +343,6 @@ export default function MigrateV2DetailsPage() {
     token1Value,
     mintInfo.invalidRange,
     pool,
-    feeAmount,
   ]);
 
   const { amount0: v3Amount0Min, amount1: v3Amount1Min } = useMemo(

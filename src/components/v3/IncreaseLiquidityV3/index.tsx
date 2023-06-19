@@ -58,7 +58,6 @@ export default function IncreaseLiquidityV3({
   const { position: existingPosition } = useDerivedPositionInfo(
     positionDetails,
   );
-  const feeAmount = 100;
 
   const token0Id = positionDetails.token0;
   const token1Id = positionDetails.token1;
@@ -97,11 +96,9 @@ export default function IncreaseLiquidityV3({
     depositADisabled,
     depositBDisabled,
     ticksAtLimit,
-    dynamicFee,
   } = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,
-    feeAmount,
     baseCurrency ?? undefined,
     existingPosition,
   );

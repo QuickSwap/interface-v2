@@ -254,9 +254,9 @@ export function PresetRanges({
 
     if (mintInfo.noLiquidity) return `0.01% ${t('fee').toLowerCase()}`;
 
-    return `${(mintInfo.dynamicFee / 10000).toFixed(3)}% ${t(
-      'fee',
-    ).toLowerCase()}`;
+    return `${(mintInfo.feeAmount ?? mintInfo.dynamicFee / 10000).toFixed(
+      3,
+    )}% ${t('fee').toLowerCase()}`;
   }, [mintInfo, t]);
 
   const aprString = useMemo(() => {

@@ -88,8 +88,6 @@ export function SupplyLiquidityV3() {
 
   const dispatch = useAppDispatch();
 
-  const feeAmount = 100;
-
   const expertMode = useIsExpertMode();
 
   const [priceFormat, setPriceFormat] = useState(PriceFormats.TOKEN);
@@ -115,7 +113,6 @@ export function SupplyLiquidityV3() {
   const mintInfo = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,
-    feeAmount,
     baseCurrency ?? undefined,
     undefined,
   );
