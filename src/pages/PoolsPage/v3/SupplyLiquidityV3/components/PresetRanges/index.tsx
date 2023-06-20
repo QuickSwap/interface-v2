@@ -252,11 +252,9 @@ export function PresetRanges({
     )
       return <Loader stroke='#22cbdc' />;
 
-    if (mintInfo.noLiquidity) return `0.01% ${t('fee').toLowerCase()}`;
-
-    return `${(mintInfo.feeAmount ?? mintInfo.dynamicFee / 10000).toFixed(
-      3,
-    )}% ${t('fee').toLowerCase()}`;
+    return `${(
+      (mintInfo.feeAmount ?? mintInfo.dynamicFee) / 10000
+    ).toLocaleString()}% ${t('fee').toLowerCase()}`;
   }, [mintInfo, t]);
 
   const aprString = useMemo(() => {

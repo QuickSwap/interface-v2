@@ -227,6 +227,7 @@ export abstract class UniV3NonfungiblePositionManager extends SelfPermit {
           {
             token0: position.pool.token0.address,
             token1: position.pool.token1.address,
+            fee: position.pool.fee,
             tickLower: position.tickLower,
             tickUpper: position.tickUpper,
             amount0Desired: toHex(amount0Desired),
@@ -275,7 +276,7 @@ export abstract class UniV3NonfungiblePositionManager extends SelfPermit {
       if (JSBI.greaterThan(wrappedValue, ZERO)) {
         calldatas.push(
           UniV3NonfungiblePositionManager.INTERFACE.encodeFunctionData(
-            'refundNativeToken',
+            'refundETH',
           ),
         );
       }
@@ -426,7 +427,12 @@ export abstract class UniV3NonfungiblePositionManager extends SelfPermit {
   private static encodeCreate(pool: Pool): string {
     return UniV3NonfungiblePositionManager.INTERFACE.encodeFunctionData(
       'createAndInitializePoolIfNecessary',
-      [pool.token0.address, pool.token1.address, toHex(pool.sqrtRatioX96)],
+      [
+        pool.token0.address,
+        pool.token1.address,
+        pool.fee,
+        toHex(pool.sqrtRatioX96),
+      ],
     );
   }
 
@@ -466,7 +472,7 @@ export abstract class UniV3NonfungiblePositionManager extends SelfPermit {
 
       calldatas.push(
         UniV3NonfungiblePositionManager.INTERFACE.encodeFunctionData(
-          'unwrapWNativeToken',
+          'unwrapWETH9',
           [toHex(ethAmount), recipient],
         ),
       );
