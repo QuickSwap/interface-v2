@@ -22,11 +22,15 @@ import {
 } from 'state/mint/v3/hooks';
 import { useDerivedPositionInfo } from 'hooks/v3/useDerivedPositionInfo';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
+import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
 import './index.scss';
 import ReactGA from 'react-ga';
 import { WrappedCurrency } from 'models/types';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
+import {
+  NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+  UNI_NFT_POSITION_MANAGER_ADDRESS,
+} from 'constants/v3/addresses';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
@@ -96,12 +100,20 @@ export default function IncreaseLiquidityV3({
     depositADisabled,
     depositBDisabled,
     ticksAtLimit,
+    feeTier,
   } = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,
     baseCurrency ?? undefined,
     existingPosition,
   );
+
+  const positionManagerAddress = useMemo(() => {
+    if (feeTier && feeTier.id.includes('uni')) {
+      return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
+    }
+    return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
+  }, [chainId, feeTier]);
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(noLiquidity);
 
@@ -153,11 +165,11 @@ export default function IncreaseLiquidityV3({
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId ? positionManagerAddress : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_B],
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId ? positionManagerAddress : undefined,
   );
 
   const [allowedSlippage] = useUserSlippageTolerance();
@@ -192,14 +204,18 @@ export default function IncreaseLiquidityV3({
         ? quoteCurrency
         : undefined;
 
+      const PositionManager =
+        feeTier && feeTier.id.includes('uni')
+          ? UniV3NonFunPosMan
+          : NonFunPosMan;
       const { calldata, value } = tokenId
-        ? NonFunPosMan.addCallParameters(position, {
+        ? PositionManager.addCallParameters(position, {
             tokenId,
             slippageTolerance: allowedSlippagePercent,
             deadline: deadline.toString(),
             useNative,
           })
-        : NonFunPosMan.addCallParameters(position, {
+        : PositionManager.addCallParameters(position, {
             slippageTolerance: allowedSlippagePercent,
             recipient: account,
             deadline: deadline.toString(),
@@ -208,7 +224,7 @@ export default function IncreaseLiquidityV3({
           });
 
       const txn: { to: string; data: string; value: string } = {
-        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+        to: positionManagerAddress,
         data: calldata,
         value,
       };
