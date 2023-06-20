@@ -6,7 +6,14 @@ import {
 } from 'constants/v3/addresses';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
-import { FeeAmount, NEGATIVE_ONE, ONE, Q192, ZERO } from 'v3lib/utils';
+import {
+  FeeAmount,
+  NEGATIVE_ONE,
+  ONE,
+  Q192,
+  TICK_SPACINGS,
+  ZERO,
+} from 'v3lib/utils';
 import { computePoolAddress } from '../utils/computePoolAddress';
 import { LiquidityMath } from '../utils/liquidityMath';
 import { SwapMath } from '../utils/swapMath';
@@ -84,7 +91,7 @@ export class Pool {
     this.liquidity = JSBI.BigInt(liquidity);
     this.tickCurrent = tickCurrent;
     this.tickDataProvider = Array.isArray(ticks)
-      ? new TickListDataProvider(ticks, 60)
+      ? new TickListDataProvider(ticks, TICK_SPACINGS[fee])
       : ticks;
   }
 
@@ -130,7 +137,7 @@ export class Pool {
   }
 
   public get tickSpacing(): number {
-    return 60;
+    return TICK_SPACINGS[this.fee];
   }
 
   public static getAddress(
