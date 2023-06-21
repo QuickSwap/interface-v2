@@ -6,7 +6,7 @@ import { Box } from '@material-ui/core';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { FeeAmount } from 'v3lib/utils/v3constants';
 
-function LabeledArrow({}: { fee: FeeAmount }) {
+function LabeledArrow({}: { fee: FeeAmount | undefined }) {
   // todo: render the fee in the label
   return <ChevronRight size={14} className='text-secondary' />;
 }

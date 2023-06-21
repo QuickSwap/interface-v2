@@ -339,7 +339,7 @@ export function useV3DerivedMintInfo(
   );
   const noLiquidity = poolState === PoolState.NOT_EXISTS;
 
-  const dynamicFee = pool ? pool.fee : 100;
+  const dynamicFee = pool && pool.fee ? pool.fee : 100;
 
   // note to parse inputs in reverse
   const invertPrice = Boolean(baseToken && token0 && !baseToken.equals(token0));
@@ -395,7 +395,7 @@ export function useV3DerivedMintInfo(
       return new Pool(
         tokenA,
         tokenB,
-        feeAmount ?? FeeAmount.LOW,
+        feeAmount,
         currentSqrt,
         JSBI.BigInt(0),
         currentTick,
