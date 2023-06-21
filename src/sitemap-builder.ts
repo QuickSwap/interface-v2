@@ -50,6 +50,8 @@ const dynamic_paths = [
 
 const static_paths = [
   '/',
+  '/swap/',
+  '/swap?isProMode=true',
   '/leader-board',
   '/migrate',
   '/dragons',
@@ -67,7 +69,7 @@ const fetchTopPairs = async (version: string, chainId: number) => {
 
     const tokenIds = pairsData?.data?.map((pair: any) => pair.id);
     const paths = tokenIds.map(
-      (tokenId: string) => `/analytics/${version}/tokens/${tokenId}`,
+      (tokenId: string) => `/analytics/${version}/pair/${tokenId}`,
     );
     return paths;
   } catch (error) {
@@ -79,15 +81,40 @@ const fetchTopPairs = async (version: string, chainId: number) => {
   }
 };
 
+const fetchTopTokens = async (version: string, chainId: number) => {
+  try {
+    const URL = `${REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/${version}?chainId=${chainId}`;
+    console.log('URL = ', URL);
+    const response = await axios.get(URL);
+    const tokensData = response.data;
+
+    const tokenIds = tokensData?.data?.map((token: any) => token.id);
+    const paths = tokenIds.map(
+      (tokenId: string) => `/analytics/${version}/token/${tokenId}`,
+    );
+    return paths;
+  } catch (error) {
+    console.error(
+      `Failed to get top tokens ${version}:`,
+      error.response?.data || error.message || error,
+    );
+    return [];
+  }
+};
+
 const additional_analytics_paths: string[] = [];
 
 const generateDynamicPaths = async () => {
-  for (const chainId of chain_ids) {
-    for (const version of ['v2', 'v3', 'total']) {
-      const paths = await fetchTopPairs(version, chainId);
-      additional_analytics_paths.push(...paths);
-    }
+  // for (const chainId of chain_ids) {
+  const chainId = ChainId.MATIC;
+  for (const version of ['v2', 'v3', 'total']) {
+    const paths = await fetchTopPairs(version, chainId);
+    additional_analytics_paths.push(...paths);
+
+    const tokenPaths = await fetchTopTokens(version, chainId);
+    additional_analytics_paths.push(...tokenPaths);
   }
+  // }
 };
 
 generateDynamicPaths()
