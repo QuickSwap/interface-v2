@@ -29,6 +29,7 @@ import { BitKeep } from './BitKeep';
 import { BlockWallet } from './BlockWallet';
 import { BraveWallet } from './BraveWallet';
 import { CypherD } from './CypherD';
+import { isMobile } from 'react-device-detect';
 
 const POLLING_INTERVAL = 12000;
 
@@ -367,18 +368,33 @@ export const coinbaseWalletConnection: Connection = {
 };
 
 export function getConnections() {
-  return [
-    cypherDConnection,
-    metamaskConnection,
-    trustWalletConnection,
-    phantomConnection,
-    braveWalletConnection,
-    blockWalletConnection,
-    gnosisSafeConnection,
-    coinbaseWalletConnection,
-    walletConnectConnection,
-    zengoConnectConnection,
-    arkaneConnection,
-    bitKeepConnection,
-  ];
+  return isMobile
+    ? [
+        walletConnectConnection,
+        cypherDConnection,
+        metamaskConnection,
+        trustWalletConnection,
+        phantomConnection,
+        braveWalletConnection,
+        blockWalletConnection,
+        gnosisSafeConnection,
+        coinbaseWalletConnection,
+        zengoConnectConnection,
+        arkaneConnection,
+        bitKeepConnection,
+      ]
+    : [
+        cypherDConnection,
+        metamaskConnection,
+        trustWalletConnection,
+        phantomConnection,
+        braveWalletConnection,
+        blockWalletConnection,
+        gnosisSafeConnection,
+        coinbaseWalletConnection,
+        walletConnectConnection,
+        zengoConnectConnection,
+        arkaneConnection,
+        bitKeepConnection,
+      ];
 }
