@@ -2,7 +2,8 @@ export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
 export const POOL_INIT_CODE_HASH =
   process.env.REACT_APP_POOL_INIT_CODE_HASH ?? '';
-
+export const UNI_POOL_INIT_CODE_HASH =
+  process.env.REACT_APP_UNI_POOL_INIT_CODE_HASH ?? '';
 /**
  * The default factory enabled fee amounts, denominated in hundredths of bips.
  */

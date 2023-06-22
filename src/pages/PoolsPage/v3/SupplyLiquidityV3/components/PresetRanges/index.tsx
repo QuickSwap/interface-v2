@@ -268,10 +268,11 @@ export function PresetRanges({
           : POOL_DEPLOYER_ADDRESS[chainId],
       tokenA: baseCurrency.wrapped,
       tokenB: quoteCurrency.wrapped,
+      fee: mintInfo.feeAmount,
     }).toLowerCase();
 
     return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
-  }, [aprs, baseCurrency, quoteCurrency, mintInfo.feeTier, chainId]);
+  }, [aprs, baseCurrency, quoteCurrency, mintInfo, chainId]);
 
   const gammaValuesLoaded =
     mintInfo.price && gammaValues.filter((value) => !value).length === 0;

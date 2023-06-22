@@ -2,7 +2,11 @@ import { defaultAbiCoder } from '@ethersproject/abi';
 import { getCreate2Address } from '@ethersproject/address';
 import { keccak256 } from '@ethersproject/solidity';
 import { Token } from '@uniswap/sdk-core';
-import { FeeAmount, POOL_INIT_CODE_HASH } from './v3constants';
+import {
+  FeeAmount,
+  POOL_INIT_CODE_HASH,
+  UNI_POOL_INIT_CODE_HASH,
+} from './v3constants';
 
 /**
  * Computes a pool address
@@ -45,6 +49,8 @@ export function computePoolAddress({
             ),
       ],
     ),
-    initCodeHashManualOverride ?? POOL_INIT_CODE_HASH,
+    initCodeHashManualOverride ?? fee
+      ? UNI_POOL_INIT_CODE_HASH
+      : POOL_INIT_CODE_HASH,
   );
 }

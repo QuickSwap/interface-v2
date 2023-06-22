@@ -146,6 +146,7 @@ export default function PositionListItem({
     _fee,
     _isUni,
   );
+
   const [prevPoolState, prevPool] = usePrevious([poolState, pool]) || [];
   const [_poolState, _pool] = useMemo(() => {
     if (!pool && prevPool && prevPoolState) {
