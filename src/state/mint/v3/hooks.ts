@@ -495,7 +495,30 @@ export function useV3DerivedMintInfo(
       : independentCurrency,
   );
 
-  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+  const gammaPairKeyReverted =
+    currencyA && currencyB
+      ? currencyB.wrapped.address.toLowerCase() +
+        '-' +
+        currencyA.wrapped.address.toLowerCase()
+      : '';
+  const gammaPairReverted = !!(
+    chainId && GammaPairs[chainId][gammaPairKeyReverted]
+  );
+  const gammaPairs =
+    currencyA && currencyB
+      ? GammaPairs[chainId][
+          currencyA.wrapped.address.toLowerCase() +
+            currencyB.wrapped.address.toLowerCase()
+        ] ??
+        GammaPairs[chainId][
+          currencyB.wrapped.address.toLowerCase() +
+            currencyA.wrapped.address.toLowerCase()
+        ]
+      : undefined;
+
+  const gammaPairAddress =
+    gammaPairs && gammaPairs.length > 0 ? gammaPairs[0].address : undefined;
+  const gammaUNIPROXYContract = useGammaUNIProxyContract(gammaPairAddress);
   const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : [];
   const depositAmountsData = useSingleContractMultipleData(
     presetRange && presetRange.address && gammaCurrencies.length > 0
@@ -515,16 +538,6 @@ export function useV3DerivedMintInfo(
     presetRange && presetRange.address ? gammaUNIPROXYContract : undefined,
     'positions',
     presetRange && presetRange.address ? [presetRange.address] : [],
-  );
-
-  const gammaPairKeyReverted =
-    currencyA && currencyB
-      ? currencyB.wrapped.address.toLowerCase() +
-        '-' +
-        currencyA.wrapped.address.toLowerCase()
-      : '';
-  const gammaPairReverted = !!(
-    chainId && GammaPairs[chainId][gammaPairKeyReverted]
   );
 
   const depositCap = useMemo(() => {

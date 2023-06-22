@@ -39,7 +39,7 @@ export default function IncreaseGammaLiquidityModal({
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
-  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+  const gammaUNIPROXYContract = useGammaUNIProxyContract(position.pairAddress);
 
   const tokens = [position.token0, position.token1];
 
