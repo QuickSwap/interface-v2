@@ -126,12 +126,12 @@ const EternalFarmsPage: React.FC<{
             ? farm.pool.token1.symbol
             : '';
         const farmToken0Id =
-          farm && farm.pool && farm.pool.token0 && farm.pool.token0.id
-            ? farm.pool.token0.id
+          farm && farm.pool && farm.pool.token0
+            ? farm.pool.token0.id ?? farm.pool.token0.address ?? ''
             : '';
         const farmToken1Id =
-          farm && farm.pool && farm.pool.token1 && farm.pool.token1.id
-            ? farm.pool.token1.id
+          farm && farm.pool && farm.pool.token1
+            ? farm.pool.token1.id ?? farm.pool.token1.address ?? ''
             : '';
         const searchCondition =
           farmToken0Name.toLowerCase().includes(search) ||
@@ -142,31 +142,31 @@ const EternalFarmsPage: React.FC<{
           farmToken1Id.toLowerCase().includes(search);
 
         const blueChipCondition =
-          !!GlobalData.blueChips.find(
+          !!GlobalData.blueChips[chainId].find(
             (token) =>
               token.address.toLowerCase() === farmToken0Id.toLowerCase(),
           ) &&
-          !!GlobalData.blueChips.find(
+          !!GlobalData.blueChips[chainId].find(
             (token) =>
               token.address.toLowerCase() === farmToken1Id.toLowerCase(),
           );
         const stableCoinCondition =
-          !!GlobalData.stableCoins.find(
+          !!GlobalData.stableCoins[chainId].find(
             (token) =>
               token.address.toLowerCase() === farmToken0Id.toLowerCase(),
           ) &&
-          !!GlobalData.stableCoins.find(
+          !!GlobalData.stableCoins[chainId].find(
             (token) =>
               token.address.toLowerCase() === farmToken1Id.toLowerCase(),
           );
-        const stablePair0 = GlobalData.stablePairs.find(
+        const stablePair0 = GlobalData.stablePairs[chainId].find(
           (tokens) =>
             !!tokens.find(
               (token) =>
                 token.address.toLowerCase() === farmToken0Id.toLowerCase(),
             ),
         );
-        const stablePair1 = GlobalData.stablePairs.find(
+        const stablePair1 = GlobalData.stablePairs[chainId].find(
           (tokens) =>
             !!tokens.find(
               (token) =>
@@ -328,6 +328,7 @@ const EternalFarmsPage: React.FC<{
     v3FarmFilter,
     farmFilter,
     rewardTokenPrices,
+    chainId,
   ]);
 
   return (
