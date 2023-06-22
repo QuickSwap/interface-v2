@@ -352,6 +352,7 @@ export function useV3DerivedMintInfo(
         startPriceTypedValue,
         invertPrice ? token0 : token1,
       );
+
       if (parsedQuoteAmount && token0 && token1) {
         const baseAmount = tryParseAmount('1', invertPrice ? token1 : token0);
         const price =

@@ -112,7 +112,7 @@ export function tryParseAmount<T extends Currency>(
   }
   try {
     const typedValueParsed = parseUnits(
-      value !== 'NaN' ? value : '0',
+      value !== 'NaN' ? Number(value).toFixed(currency.decimals) : '0',
       currency.decimals,
     ).toString();
     if (typedValueParsed !== '0') {
