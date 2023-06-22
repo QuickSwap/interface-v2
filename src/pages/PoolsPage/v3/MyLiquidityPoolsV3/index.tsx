@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Button } from '@material-ui/core';
-import { useV3Positions } from 'hooks/v3/useV3Positions';
+import { useUniV3Positions, useV3Positions } from 'hooks/v3/useV3Positions';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import Loader from 'components/Loader';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
@@ -18,7 +18,17 @@ export default function MyLiquidityPoolsV3() {
   const history = useHistory();
   const [userHideClosedPositions, setUserHideClosedPositions] = useState(true);
   const [hideFarmingPositions, setHideFarmingPositions] = useState(false);
-  const { positions, loading: positionsLoading } = useV3Positions(account);
+  const {
+    positions: algebraPositions,
+    loading: algebraPositionsLoading,
+  } = useV3Positions(account);
+  const {
+    positions: uniV3Positions,
+    loading: uniV3PositionsLoading,
+  } = useUniV3Positions(account);
+  const positionsLoading = algebraPositionsLoading || uniV3PositionsLoading;
+  const positions = (algebraPositions ?? []).concat(uniV3Positions ?? []);
+
   const prevAccount = usePrevious(account);
 
   const [openPositions, closedPositions] = positions?.reduce<

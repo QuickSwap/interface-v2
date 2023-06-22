@@ -83,6 +83,8 @@ export default function PositionListItemDetails({
     tickLower: _tickLower,
     tickUpper: _tickUpper,
     onFarming: _onFarming,
+    fee: _fee,
+    isUni: _isUni,
   } = useMemo(() => {
     if (
       !positionDetails &&
@@ -106,7 +108,12 @@ export default function PositionListItemDetails({
   const [receiveWETH, setReceiveWETH] = useState(false);
 
   // construct Position from details returned
-  const [poolState, pool] = usePool(token0 ?? undefined, token1 ?? undefined);
+  const [poolState, pool] = usePool(
+    token0 ?? undefined,
+    token1 ?? undefined,
+    _fee,
+    _isUni,
+  );
   const [prevPoolState, prevPool] = usePrevious([poolState, pool]) || [];
   const [_poolState, _pool] = useMemo(() => {
     if (!pool && prevPool && prevPoolState) {

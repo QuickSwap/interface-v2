@@ -7,7 +7,10 @@ import {
 import { useEffect, useMemo } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useActiveWeb3React } from 'hooks';
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import {
+  useUNIV3NFTPositionManagerContract,
+  useV3NFTPositionManagerContract,
+} from 'hooks/useContract';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
@@ -19,15 +22,18 @@ interface UseV3PositionsResults {
 
 function useV3PositionsFromTokenIds(
   tokenIds: BigNumber[] | undefined,
+  isUni?: boolean,
 ): UseV3PositionsResults {
   const positionManager = useV3NFTPositionManagerContract();
+  const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
+
   const inputs = useMemo(
     () =>
       tokenIds ? tokenIds.map((tokenId) => [BigNumber.from(tokenId)]) : [],
     [tokenIds],
   );
   const results = useSingleContractMultipleData(
-    positionManager,
+    isUni ? uniV3PositionManager : positionManager,
     'positions',
     inputs,
   );
@@ -131,8 +137,12 @@ interface UseV3PositionResults {
 
 export function useV3PositionFromTokenId(
   tokenId: BigNumber | undefined,
+  isUni?: boolean,
 ): UseV3PositionResults {
-  const position = useV3PositionsFromTokenIds(tokenId ? [tokenId] : undefined);
+  const position = useV3PositionsFromTokenIds(
+    tokenId ? [tokenId] : undefined,
+    isUni,
+  );
   return {
     loading: position.loading,
     position: position.positions?.[0],
@@ -269,5 +279,62 @@ export function useV3Positions(
       positionsLoading ||
       _positionsOnFarmerLoading,
     positions: combinedPositions,
+  };
+}
+
+export function useUniV3Positions(
+  account: string | null | undefined,
+): UseV3PositionsResults {
+  const positionManager = useUNIV3NFTPositionManagerContract();
+
+  const {
+    loading: balanceLoading,
+    result: balanceResult,
+  } = useSingleCallResult(positionManager, 'balanceOf', [account ?? undefined]);
+
+  // we don't expect any account balance to ever exceed the bounds of max safe int
+  const accountBalance: number | undefined = balanceResult?.[0]?.toNumber();
+
+  const tokenIdsArgs = useMemo(() => {
+    if (accountBalance && account) {
+      const tokenRequests: any[] = [];
+      for (let i = 0; i < accountBalance; i++) {
+        tokenRequests.push([account, i]);
+      }
+      return tokenRequests;
+    }
+    return [];
+  }, [account, accountBalance]);
+
+  const tokenIdResults = useSingleContractMultipleData(
+    positionManager,
+    'tokenOfOwnerByIndex',
+    tokenIdsArgs,
+  );
+  const someTokenIdsLoading = useMemo(
+    () => tokenIdResults.some(({ loading }) => loading),
+    [tokenIdResults],
+  );
+
+  const tokenIds = useMemo(() => {
+    if (account) {
+      return tokenIdResults
+        .map(({ result }) => result)
+        .filter((result): result is Result => !!result)
+        .map((result) => BigNumber.from(result[0]));
+    }
+    return [];
+  }, [account, tokenIdResults]);
+
+  const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
+    tokenIds,
+    true,
+  );
+
+  return {
+    loading: someTokenIdsLoading || balanceLoading || positionsLoading,
+    positions: positions?.map((position) => {
+      return { ...position, isUni: true };
+    }),
   };
 }
