@@ -114,7 +114,7 @@ export function usePools(
 
   return useMemo(() => {
     return poolKeys.map((_key, index) => {
-      const [token0, token1] = transformed[index] ?? [];
+      const [token0, token1, fee] = transformed[index] ?? [];
       const globalState0s =
         _globalState0s.length < index ? undefined : _globalState0s[index];
       const liquidities =
@@ -140,8 +140,12 @@ export function usePools(
 
       if (!globalState || !liquidity) return [PoolState.NOT_EXISTS, null];
 
-      if (!globalState.price || globalState.price.eq(0))
-        return [PoolState.NOT_EXISTS, null];
+      const poolPrice = globalState
+        ? isUni
+          ? globalState.sqrtPriceX96
+          : globalState.price
+        : undefined;
+      if (!poolPrice || poolPrice.eq(0)) return [PoolState.NOT_EXISTS, null];
 
       try {
         return [
@@ -149,17 +153,19 @@ export function usePools(
           new Pool(
             token0,
             token1,
-            globalState.fee,
-            globalState.price,
+            isUni ? fee : globalState.fee,
+            poolPrice,
             liquidity[0],
             globalState.tick,
+            undefined,
+            isUni,
           ),
         ];
       } catch (error) {
         return [PoolState.NOT_EXISTS, null];
       }
     });
-  }, [_liquidities, poolKeys, _globalState0s, transformed]);
+  }, [poolKeys, transformed, _globalState0s, _liquidities, isUni]);
 }
 
 export function usePool(

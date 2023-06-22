@@ -401,6 +401,7 @@ export function useV3DerivedMintInfo(
         JSBI.BigInt(0),
         currentTick,
         [],
+        !!feeAmount,
       );
     } else {
       return undefined;

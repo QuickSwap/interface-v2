@@ -48,6 +48,7 @@ export class Pool {
   public readonly liquidity: JSBI;
   public readonly tickCurrent: number;
   public readonly tickDataProvider: TickDataProvider;
+  public readonly isUni: boolean | undefined;
 
   /**
    * Construct a pool
@@ -69,9 +70,9 @@ export class Pool {
     ticks:
       | TickDataProvider
       | (Tick | TickConstructorArgs)[] = NO_TICK_DATA_PROVIDER_DEFAULT,
+    isUni: boolean | undefined,
   ) {
-    const currentFee = fee ?? FeeAmount.LOWEST;
-    invariant(Number.isInteger(currentFee) && currentFee < 1_000_000, 'FEE');
+    invariant(fee && Number.isInteger(fee) && fee < 1_000_000, 'FEE');
 
     const tickCurrentSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent);
     const nextTickSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent + 1);
@@ -88,11 +89,12 @@ export class Pool {
       ? [tokenA, tokenB]
       : [tokenB, tokenA];
     this.fee = fee;
+    this.isUni = isUni;
     this.sqrtRatioX96 = JSBI.BigInt(sqrtRatioX96);
     this.liquidity = JSBI.BigInt(liquidity);
     this.tickCurrent = tickCurrent;
     this.tickDataProvider = Array.isArray(ticks)
-      ? new TickListDataProvider(ticks, fee ? TICK_SPACINGS[fee] : 60)
+      ? new TickListDataProvider(ticks, isUni ? TICK_SPACINGS[fee] : 60)
       : ticks;
   }
 
@@ -138,7 +140,7 @@ export class Pool {
   }
 
   public get tickSpacing(): number {
-    return this.fee ? TICK_SPACINGS[this.fee] ?? 60 : 60;
+    return this.isUni && this.fee ? TICK_SPACINGS[this.fee] : 60;
   }
 
   public static getAddress(
@@ -211,6 +213,7 @@ export class Pool {
         liquidity,
         tickCurrent,
         this.tickDataProvider,
+        this.isUni,
       ),
     ];
   }
@@ -254,6 +257,7 @@ export class Pool {
         liquidity,
         tickCurrent,
         this.tickDataProvider,
+        this.isUni,
       ),
     ];
   }

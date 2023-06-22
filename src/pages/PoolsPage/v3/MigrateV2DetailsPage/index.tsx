@@ -323,7 +323,16 @@ export default function MigrateV2DetailsPage() {
       return Position.fromAmounts({
         pool:
           pool ??
-          new Pool(token0, token1, FeeAmount.LOW, sqrtPrice, 0, tick, []),
+          new Pool(
+            token0,
+            token1,
+            FeeAmount.LOW,
+            sqrtPrice,
+            0,
+            tick,
+            [],
+            undefined,
+          ),
         tickLower,
         tickUpper,
         amount0: token0Value.quotient,
