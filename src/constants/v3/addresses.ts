@@ -463,6 +463,13 @@ export const MATIC: { [chainId: number]: Token } = {
     'MATIC',
     'Matic',
   ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98',
+    18,
+    'MATIC',
+    'Matic',
+  ),
 };
 
 export const MI: { [chainId: number]: Token } = {
@@ -559,6 +566,166 @@ export const USDD: { [chainId: number]: Token } = {
     18,
     'USDD',
     'Decentralized USD',
+  ),
+};
+
+export const CXETH: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xfe4546feFe124F30788c4Cc1BB9AA6907A7987F9',
+    18,
+    'cxETH',
+    'CelsiusX Wrapped ETH',
+  ),
+};
+
+export const VERSA: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x8497842420cFdbc97896C2353D75d89Fc8D5Be5D',
+    18,
+    'VERSA',
+    'VersaGames',
+  ),
+};
+
+export const SAND: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683',
+    18,
+    'SAND',
+    'SAND',
+  ),
+};
+
+export const MAUSDC: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x9719d867A500Ef117cC201206B8ab51e794d3F82',
+    6,
+    'maUSDC',
+    'Matic Aave interest bearing USDC',
+  ),
+};
+
+export const FRAX: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89',
+    18,
+    'FRAX',
+    'FRAX',
+  ),
+};
+
+export const GHST: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
+    18,
+    'GHST',
+    'Aavegotchi GHST Token',
+  ),
+};
+
+export const MATICX: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xfa68FB4628DFF1028CFEc22b4162FCcd0d45efb6',
+    18,
+    'MaticX',
+    'Liquid Staking Matic',
+  ),
+};
+
+export const STMATIC: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4',
+    18,
+    'stMatic',
+    'Staked MATIC',
+  ),
+};
+
+export const WSTETH: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd',
+    18,
+    'wstETH',
+    'Wrapped liquid staked Ether 2.0',
+  ),
+};
+
+export const ANKRMATIC: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x0E9b89007eEE9c958c0EDA24eF70723C2C93dD58',
+    18,
+    'ankrMATIC',
+    'Ankr Staked MATIC',
+  ),
+};
+
+export const CRV: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x172370d5Cd63279eFa6d502DAB29171933a610AF',
+    18,
+    'CRV',
+    'CRV (PoS)',
+  ),
+};
+
+export const DAVOS: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xec38621e72d86775a89c7422746de1f52bba5320',
+    18,
+    'DAVOS',
+    'Davos',
+  ),
+};
+
+export const FBX: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xD125443F38A69d776177c2B9c041f462936F8218',
+    18,
+    'FBX',
+    'FireBotToken',
+  ),
+};
+
+export const FXCBETH: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x4b4327db1600b8b1440163f667e199cef35385f5',
+    18,
+    'cbEth',
+    'Coinbase Wrapped Staked ETH (FXERC20)',
+  ),
+};
+
+export const RMATIC: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x9f28e2455f9ffcfac9ebd6084853417362bc5dbb',
+    18,
+    'rMATIC',
+    'StaFi rMATIC (PoS)',
+  ),
+};
+
+export const WEFI: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xffa188493c15dfaf2c206c97d8633377847b6a52',
+    18,
+    'WEFI',
+    'WeFi',
   ),
 };
 

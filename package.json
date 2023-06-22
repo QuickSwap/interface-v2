@@ -115,7 +115,8 @@
     "format": "prettier --write \"**/*.{ts,js,tsx,json,md}\"",
     "eject": "react-scripts eject",
     "integration-test": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run'",
-    "ipfs-deploy": "ipfs-deploy build"
+    "ipfs-deploy": "ipfs-deploy build",
+    "sitemap": "NODE_PATH=./src npx ts-node --project tsconfig.node.json ./src/sitemap-builder.ts"
   },
   "eslintConfig": {
     "extends": "react-app",
