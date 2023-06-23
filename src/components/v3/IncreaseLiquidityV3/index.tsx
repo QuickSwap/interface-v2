@@ -1,7 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import {
+  useUNIV3NFTPositionManagerContract,
+  useV3NFTPositionManagerContract,
+} from 'hooks/useContract';
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
   TransactionErrorContent,
@@ -76,7 +79,11 @@ export default function IncreaseLiquidityV3({
       ? undefined
       : currencyB;
 
-  const positionManager = useV3NFTPositionManagerContract();
+  const algebrapositionManager = useV3NFTPositionManagerContract();
+  const uniPositionManager = useUNIV3NFTPositionManagerContract();
+  const positionManager = positionDetails.isUni
+    ? uniPositionManager
+    : algebrapositionManager;
   const tokenId = positionDetails.tokenId.toString();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
@@ -109,11 +116,11 @@ export default function IncreaseLiquidityV3({
   );
 
   const positionManagerAddress = useMemo(() => {
-    if (feeTier && feeTier.id.includes('uni')) {
+    if (positionDetails.isUni) {
       return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
     }
     return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
-  }, [chainId, feeTier]);
+  }, [chainId, positionDetails]);
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(noLiquidity);
 
@@ -204,10 +211,9 @@ export default function IncreaseLiquidityV3({
         ? quoteCurrency
         : undefined;
 
-      const PositionManager =
-        feeTier && feeTier.id.includes('uni')
-          ? UniV3NonFunPosMan
-          : NonFunPosMan;
+      const PositionManager = positionDetails.isUni
+        ? UniV3NonFunPosMan
+        : NonFunPosMan;
       const { calldata, value } = tokenId
         ? PositionManager.addCallParameters(position, {
             tokenId,

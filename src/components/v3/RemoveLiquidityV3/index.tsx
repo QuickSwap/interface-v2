@@ -15,7 +15,10 @@ import {
 } from 'state/burn/v3/hooks';
 import CurrencyLogo from 'components/CurrencyLogo';
 
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import {
+  useUNIV3NFTPositionManagerContract,
+  useV3NFTPositionManagerContract,
+} from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
@@ -30,7 +33,8 @@ import { calculateGasMarginV3 } from 'utils';
 import usePrevious from 'hooks/usePrevious';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
-import { NonfungiblePositionManager } from 'v3lib/nonfungiblePositionManager';
+import { NonfungiblePositionManager as AlgebraNonfungiblePositionManager } from 'v3lib/nonfungiblePositionManager';
+import { UniV3NonfungiblePositionManager } from 'v3lib/uniV3NonfungiblePositionManager';
 import { WrappedCurrency } from 'models/types';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
@@ -113,7 +117,11 @@ export default function RemoveLiquidityV3({
   const [txPending, setTxPending] = useState(false);
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const positionManager = useV3NFTPositionManagerContract();
+  const algebrapositionManager = useV3NFTPositionManagerContract();
+  const uniPositionManager = useUNIV3NFTPositionManagerContract();
+  const positionManager = position.isUni
+    ? uniPositionManager
+    : algebrapositionManager;
 
   const burn = useCallback(async () => {
     if (
@@ -132,6 +140,9 @@ export default function RemoveLiquidityV3({
       return;
     }
 
+    const NonfungiblePositionManager = position.isUni
+      ? UniV3NonfungiblePositionManager
+      : AlgebraNonfungiblePositionManager;
     const { calldata, value } = NonfungiblePositionManager.removeCallParameters(
       positionSDK,
       {
@@ -217,11 +228,12 @@ export default function RemoveLiquidityV3({
     positionSDK,
     liquidityPercentage,
     library,
+    position.isUni,
     tokenId,
     allowedSlippagePercent,
+    t,
     addTransaction,
     finalizedTransaction,
-    t,
   ]);
 
   const handleDismissConfirmation = useCallback(() => {

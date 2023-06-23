@@ -21,7 +21,6 @@ import useIsTickAtLimit from 'hooks/v3/useIsTickAtLimit';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
 import usePrevious from 'hooks/usePrevious';
 import ReactGA from 'react-ga';
-import { useAppSelector } from 'state/hooks';
 import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
@@ -65,13 +64,6 @@ export default function PositionListItemDetails({
   const [openIncreaseLiquidityModal, setOpenIncreaseLiquidityModal] = useState(
     false,
   );
-
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
 
   const { tokenId } = positionDetails || {};
 

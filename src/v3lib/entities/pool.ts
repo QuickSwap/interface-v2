@@ -72,7 +72,7 @@ export class Pool {
       | (Tick | TickConstructorArgs)[] = NO_TICK_DATA_PROVIDER_DEFAULT,
     isUni: boolean | undefined,
   ) {
-    invariant(fee && Number.isInteger(fee) && fee < 1_000_000, 'FEE');
+    invariant(!fee || (Number.isInteger(fee) && fee < 1_000_000), 'FEE');
 
     const tickCurrentSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent);
     const nextTickSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent + 1);
@@ -94,7 +94,10 @@ export class Pool {
     this.liquidity = JSBI.BigInt(liquidity);
     this.tickCurrent = tickCurrent;
     this.tickDataProvider = Array.isArray(ticks)
-      ? new TickListDataProvider(ticks, isUni ? TICK_SPACINGS[fee] : 60)
+      ? new TickListDataProvider(
+          ticks,
+          isUni ? (fee ? TICK_SPACINGS[fee] : 60) : 60,
+        )
       : ticks;
   }
 

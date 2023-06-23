@@ -314,6 +314,8 @@ export function useV3DerivedMintInfo(
   };
 
   const feeAmount = useMemo(() => {
+    if (existingPosition && existingPosition.pool.isUni)
+      return existingPosition.pool.fee;
     if (!feeTier) return;
     switch (feeTier.id) {
       case 'uni-0.01':
@@ -327,7 +329,7 @@ export function useV3DerivedMintInfo(
       default:
         return;
     }
-  }, [feeTier]);
+  }, [feeTier, existingPosition]);
 
   // pool
   //TODO
