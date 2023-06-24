@@ -1,0 +1,144 @@
+a.btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.btn-center {
+  justify-content: center;
+}
+.btn-left {
+  justify-content: start;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  color: white;
+  font-size: 14px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.btn-sm {
+  padding: 5px 14px;
+}
+
+@media (max-width: 1046px) {
+  .connect2 {
+    padding: 6px 24px !important;
+    font-weight: 600;
+  }
+}
+
+.btn-lg,
+.btn-xl {
+  padding: 0.5rem 1rem;
+}
+
+.btn-sm .btn-label {
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 23px;
+  letter-spacing: -0.02em;
+}
+
+.btn-sm .btn-label1 {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+.btn-lg .btn-label {
+  margin-left: 0.75rem;
+  font-size: 1.1875rem;
+  font-weight: normal;
+  line-height: 1.5rem;
+  letter-spacing: 0;
+}
+.btn-xl .btn-label {
+  margin-left: 0.75rem;
+  font-size: 1.1875rem;
+  font-weight: normal;
+  line-height: 1.5rem;
+  letter-spacing: 0;
+}
+
+.btn-sm .btn-image {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+.btn-lg .btn-image {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 23px;
+}
+.btn-xl .btn-image {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+}
+
+.btn-primary {
+  background: #448AFB;
+  border-radius: 8px;
+  padding: 15px 30px;
+}
+
+.btn-primary:hover {
+  background: #8783f5 !important;
+}
+.btn-primary:active {
+  /* background: #4b494a; */
+  /* border: 1px solid #4b494a; */
+  box-shadow: 0 0 0 0.25rem rgb(35 31 32 / 100%);
+}
+.btn-check:focus + .btn-primary,
+.btn-primary:focus {
+  color: #fff;
+  background-color: #231f20;
+  border-color: #231f20;
+  box-shadow: 0 0 0 0.75rem rgb(35 31 32 / 100%);
+}
+.connect-wallet {
+  background: #448AFB;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border: none;
+}
+.connect-wallet:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 450px) {
+  .connect-wallet {
+    padding: 5px 8px;
+  }
+}
+@media (max-width: 350px) {
+  .connect-wallet .btn-image {
+    display: none;
+  }
+  .connect-wallet .btn-label {
+    margin-left: 0px;
+  }
+  .connect-wallet {
+    height: 36px;
+  }
+}
+.btn-check:active + .btn-primary:focus,
+.btn-check:checked + .btn-primary:focus,
+.btn-primary.active:focus,
+.btn-primary:active:focus,
+.show > .btn-primary.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.25rem rgba(179, 154, 49, 0.5);
+}

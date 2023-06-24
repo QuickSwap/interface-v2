@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <g id="Group_25324" data-name="Group 25324" transform="translate(16 16) rotate(180)">
+    <g id="invisible_box" data-name="invisible box">
+      <rect id="Rectangle_21638" data-name="Rectangle 21638" width="16" height="16" fill="none"/>
+    </g>
+    <path id="Path_11462" data-name="Path 11462" d="M4-1a1,1,0,0,0-.707.293l-4,4a1,1,0,0,0,0,1.414,1,1,0,0,0,1.414,0L4,1.414,7.293,4.707A1,1,0,1,0,8.707,3.293l-4-4A1,1,0,0,0,4-1Z" transform="translate(4 6)" fill="#448aff"/>
+  </g>
+</svg>

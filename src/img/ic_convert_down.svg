@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <g id="group_25419" data-name="group 25419" transform="translate(-151 -371)">
+    <g id="rect_22014" data-name="rect 22014" transform="translate(153 373)" fill="#1b1e29" stroke="#282d3d" stroke-width="2">
+      <rect width="24" height="24" rx="4" stroke="none"/>
+      <rect x="-1" y="-1" width="26" height="26" rx="5" fill="none"/>
+    </g>
+    <g id="group_24647" data-name="group 24647" transform="translate(16 4)">
+      <g id="invisible_box" data-name="invisible box" transform="translate(141 373)">
+        <rect id="rect_21638" data-name="rect 21638" width="16" height="16" fill="none"/>
+      </g>
+      <g id="group_24708" data-name="group 24708" transform="translate(142.672 387.001) rotate(-90)">
+        <path id="path_12008" data-name="path 12008" d="M9.16.2a.7.7,0,0,0-.9-.067.633.633,0,0,0-.067,1L9.726,2.664H.666A.666.666,0,1,0,.666,4h9.06L8.194,5.529a.633.633,0,0,0,.067,1,.7.7,0,0,0,.9-.067L11.791,3.8a.633.633,0,0,0,0-.933Z" transform="translate(0.005 5.996)" fill="#fff"/>
+        <path id="path_12009" data-name="path 12009" d="M2.836,6.462a.7.7,0,0,0,.9.067.633.633,0,0,0,.067-1L2.27,4h9.06a.666.666,0,0,0,0-1.332H2.27L3.8,1.132a.633.633,0,0,0-.067-1,.7.7,0,0,0-.9.067L.205,2.864a.633.633,0,0,0,0,.933Z" transform="translate(0 0)" fill="#fff"/>
+      </g>
+    </g>
+  </g>
+</svg>

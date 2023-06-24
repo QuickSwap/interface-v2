@@ -1,0 +1,12 @@
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <g id="invisible_box" data-name="invisible box">
+    <rect id="Rectangle_22201" data-name="Rectangle 22201" width="16" height="16" fill="none"/>
+  </g>
+  <g id="icons_Q2" data-name="icons Q2" transform="translate(1 0.667)">
+    <g id="Group_25759" data-name="Group 25759">
+      <path id="Path_15966" data-name="Path 15966" d="M8.333,26a.667.667,0,0,0-.667.667v4H4.333v-4a.667.667,0,1,0-1.333,0v4.667A.667.667,0,0,0,3.667,32H8.333A.667.667,0,0,0,9,31.333V26.667A.667.667,0,0,0,8.333,26Z" transform="translate(-3 -18)" fill="#c7cad9"/>
+      <path id="Path_15967" data-name="Path 15967" d="M32.333,26a.667.667,0,0,0-.667.667v4H28.333v-4a.667.667,0,1,0-1.333,0v4.667a.667.667,0,0,0,.667.667h4.667A.667.667,0,0,0,33,31.333V26.667A.667.667,0,0,0,32.333,26Z" transform="translate(-19 -18)" fill="#c7cad9"/>
+      <path id="Path_15968" data-name="Path 15968" d="M18,6.667v.4L17.133,6.2a.633.633,0,0,0-1,.067.7.7,0,0,0,.067.9l2,1.967a.633.633,0,0,0,.933,0l2-1.967a.7.7,0,0,0,.067-.9.633.633,0,0,0-1-.067l-.867.867v-.4a4.667,4.667,0,1,0-9.333,0v2a.667.667,0,0,0,1.333,0v-2a3.333,3.333,0,1,1,6.667,0Z" transform="translate(-7.667 -2)" fill="#c7cad9"/>
+    </g>
+  </g>
+</svg>

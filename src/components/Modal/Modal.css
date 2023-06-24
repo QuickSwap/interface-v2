@@ -1,0 +1,105 @@
+.Modal {
+  position: fixed;
+  z-index: 900;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+}
+
+.Modal-backdrop {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #08090D 0% 0% no-repeat padding-box;
+  opacity: 0.8;
+}
+
+.Modal-content {
+  z-index: 20;
+  position: relative;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow: auto;
+  background: #1B1E29;
+  border-radius: 20px;
+}
+
+@media screen and (max-width:768px){
+  .Modal-content {
+   overflow-y:scroll;
+  }
+}
+
+.divider {
+  border-bottom: 1px solid #ffffff29;
+  margin-bottom: 1rem;
+}
+
+.Modal.non-scrollable .Modal-content {
+  overflow: hidden;
+}
+
+.Modal-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* background: #393761; */
+  padding: 22px 24px;
+}
+.Modal-body {
+}
+.Modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.Modal-body::-webkit-scrollbar-track {
+  background-color: #1c1c1c;
+  border-radius: 100rem;
+}
+
+.Modal-body::-webkit-scrollbar-thumb {
+  background-color: #949393;
+  border-radius: 100rem;
+}
+
+.Modal-title {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  color: #CACAD9;
+}
+
+.Modal-close-button {
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  line-height: 22px;
+  background: #282D3D 0% 0% no-repeat padding-box;
+  border-radius: 12px;
+  opacity: 1;
+}
+
+.Modal-close-icon {
+  opacity: 0.6;
+  cursor: pointer;
+  text-align: right;
+  display: inline-block;
+}
+
+.Modal-close-icon:hover {
+  opacity: 0.9;
+}
+
+.Modal-note {
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  padding: 0 10px;
+}

@@ -1,0 +1,30 @@
+.AppOrder-ball-container {
+  position: relative;
+  z-index: 2;
+}
+
+.AppOrder-ball-icon {
+  text-align: center;
+  display: block;
+  font-size: 1.5rem;
+  opacity: 0.7;
+}
+
+.AppOrder-ball {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  left: 50%;
+  top: -0.9rem;
+  border-radius: 4px;
+  user-select: none;
+  cursor: pointer;
+  border: 2px solid #282D3D;
+  opacity: 0.7;
+}
+.AppOrder-ball:hover {
+  opacity: 1;
+}

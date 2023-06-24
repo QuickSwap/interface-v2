@@ -1,0 +1,26 @@
+.Actions {
+  padding: 0 2.3rem;
+  padding-top: 2rem;
+}
+
+.Actions-section {
+  padding-bottom: 3rem;
+}
+
+.Actions-title {
+  margin-bottom: 1rem;
+}
+
+.Actions input {
+  font-size: 1rem;
+  padding: 0;
+  margin-left: 0.5rem;
+}
+
+.Actions .PositionsList .Exchange-list-action {
+  display: none;
+}
+
+.Actions .PositionsList .App-button-option {
+  display: none;
+}

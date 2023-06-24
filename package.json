@@ -146,6 +146,7 @@
     "react-ga": "^3.3.0",
     "react-helmet": "^6.1.0",
     "react-reflex": "^4.0.6",
+    "react-shepherd": "^4.2.0",
     "react-slick": "^0.28.1",
     "react-virtuoso": "^4.1.0",
     "sass": "^1.51.0",

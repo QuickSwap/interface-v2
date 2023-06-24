@@ -1,0 +1,20 @@
+.Disclaimer .Modal-content {
+  width: 560px !important;
+}
+
+.Disclaimer-row {
+  font-size: 0.875rem;
+  color: #C7CAD9;
+}
+
+.Disclaimer-checkbox {
+  display: flex;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .Disclaimer .Modal-content {
+    overflow-y: hidden;
+  }
+}
