@@ -1,0 +1,9 @@
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <g id="invisible_box" data-name="invisible box">
+    <rect id="矩形_22156" data-name="矩形 22156" width="16" height="16" fill="none"/>
+  </g>
+  <g id="Q3_icons" data-name="Q3 icons" transform="translate(1.333 1.333)">
+    <path id="路径_15917" data-name="路径 15917" d="M16.667,41.333h-12a.667.667,0,0,1,0-1.333h12a.667.667,0,0,1,0,1.333Z" transform="translate(-4 -28)" fill="#ebecf2"/>
+    <path id="路径_15918" data-name="路径 15918" d="M16.2,12.5l2,1.967a.633.633,0,0,0,.933,0l2-1.967a.7.7,0,0,0,.067-.9.633.633,0,0,0-1-.067l-.867.867V4.667a.667.667,0,0,0-1.333,0V12.4l-.867-.867a.633.633,0,0,0-1,.067A.7.7,0,0,0,16.2,12.5Z" transform="translate(-12.001 -4)" fill="#ebecf2"/>
+  </g>
+</svg>

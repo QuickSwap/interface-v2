@@ -1,0 +1,51 @@
+name: Release
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build the bundle
+        run: yarn build
+        env:
+          REACT_APP_POLYGON_RPC_URLS: ${{ secrets.REACT_APP_POLYGON_RPC_URLS }}
+          REACT_APP_POLYGON_FALLBACK_PROVIDERS: ${{ secrets.REACT_APP_POLYGON_FALLBACK_PROVIDERS }}
+          REACT_APP_POLYGON_WS: ${{ secrets.REACT_APP_POLYGON_WS }}
+          REACT_APP_STATS_API_URL: ${{ secrets.REACT_APP_STATS_API_URL }}
+          REACT_APP_EXPLORER_POLYGON_URL: ${{ secrets.REACT_APP_EXPLORER_POLYGON_URL }}
+          REACT_APP_QPX_API_POLYGON_URL: ${{ secrets.REACT_APP_QPX_API_POLYGON_URL }}
+          REACT_APP_QPX_CORE_SUBGRAPH: ${{ secrets.REACT_APP_QPX_CORE_SUBGRAPH }}
+          REACT_APP_PRICE_SUBGRAPH: ${{ secrets.REACT_APP_PRICE_SUBGRAPH }}
+          REACT_APP_QPX_REFERRAL_SUBGRAPH: ${{ secrets.REACT_APP_QPX_REFERRAL_SUBGRAPH }}
+          REACT_APP_JSON_RPC_PROVIDER_URL_FOR_ADDRESS: ${{ secrets.REACT_APP_JSON_RPC_PROVIDER_URL_FOR_ADDRESS }}
+          REACT_APP_GAS_API_URL: ${{ secrets.REACT_APP_GAS_API_URL }}
+          REACT_APP_PRICE_API_WS_URL: ${{ secrets.REACT_APP_PRICE_API_WS_URL }}
+          REACT_APP_CLOUDINARY_CLOUD_NAME: ${{ secrets.REACT_APP_CLOUDINARY_CLOUD_NAME }}
+          REACT_APP_GRAPH_QUICK_API_URL: ${{ secrets.REACT_APP_GRAPH_QUICK_API_URL }}
+          GENERATE_SOURCEMAP: ${{ secrets.GENERATE_SOURCEMAP }}
+          CI: false
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.ACCOUNT_ID }}
+          projectName: ${{ secrets.PROJECT_NAME }}
+          directory: './build'
+          # Optional: Enable this if you want to have GitHub Deployments triggered
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

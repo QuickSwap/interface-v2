@@ -1,0 +1,46 @@
+.trade-failed-modal .Modal-content .Modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    padding: 0 20px 20px 20px;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.trade-failed-modal .failed-img {
+    width: 92px;
+    height: 147px;
+}
+
+.trade-failed-modal .warn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 24px;
+}
+
+.trade-failed-modal .text {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.trade-failed-modal .second {
+    color: #696C80;
+}
+
+.trade-failed-modal .btn-ok {
+    width: 340px;
+    height: 50px;
+    border-radius: 10px;
+    margin-top: 36px;
+    background: #EBECF2;
+    color: #1B1E29;
+    font-weight: 500;
+    border-style: none !important;
+}
+
+.trade-failed-modal .btn-ok:hover {
+    opacity: 0.9;
+}

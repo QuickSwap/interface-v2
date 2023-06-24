@@ -1,0 +1,106 @@
+.Tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.Tooltip-popup {
+  font-size: 14px;
+  line-height: 1.032rem;
+  position: absolute;
+  border-radius: 8px;
+  padding: 15px;
+  letter-spacing: 0.4px;
+  min-width: 250px;
+  text-align: left;
+  background: #282D3D;
+  z-index: 1000;
+  box-shadow: 0px 16px 16px #12131A4D;
+  color: #c7cad9;
+}
+
+.Tooltip-popup a {
+  color: #448aff;
+}
+
+.Tooltip-popup a:hover {
+  opacity: 0.8;
+}
+
+.Tooltip.nowrap .Tooltip-popup {
+  min-width: auto;
+  white-space: nowrap;
+}
+
+.Tooltip-popup :first-child {
+  margin-top: 0;
+}
+
+.Tooltip-popup :last-child {
+  margin-bottom: 0;
+}
+
+.Tooltip-popup.left-bottom {
+  left: 0;
+  transform: translateY(0.5rem);
+  top: 100%;
+}
+
+.Tooltip-popup.right-bottom {
+  right: 0;
+  transform: translateY(0.5rem);
+  top: 100%;
+}
+
+.Tooltip-popup.right-top {
+  right: 0;
+  transform: translateY(-0.5rem);
+  bottom: 100%;
+}
+.Tooltip-popup.right {
+  left: 30px;
+  transform: translateY(50%);
+  bottom: 100%;
+}
+
+.Tooltip-popup.left-top {
+  left: 0;
+  transform: translateY(-0.5rem);
+  bottom: 100%;
+}
+
+.Tooltip-popup.center-bottom {
+  left: 50%;
+  transform: translateY(0.5rem) translateX(-50%);
+  top: 100%;
+}
+
+.Tooltip-popup.center-top {
+  left: 50%;
+  transform: translateY(-0.5rem) translateX(-50%);
+  bottom: 100%;
+}
+
+.Tooltip-handle {
+  cursor: help;
+  position: relative;
+  display: inline-flex;
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(255, 255, 255, 0.6);
+}
+
+.Tooltip-handle.plain:after {
+  border-bottom: none;
+}
+
+.Tooltip.no-underline .Tooltip-handle::after {
+  content: unset;
+}
+
+@media (max-width: 700px) {
+  .Tooltip-popup {
+    min-width: 200px;
+  }
+}

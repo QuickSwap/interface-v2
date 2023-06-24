@@ -1,0 +1,38 @@
+.chart-token-selector {
+    padding-top: 0!important;
+    padding-bottom: 0!important;
+    cursor: pointer;
+}
+
+.chart-token-selector--current {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-right: 1rem;
+    color: #EBECF2;
+}
+
+.chart-token-menu-items.menu-items {
+    width: 212px;
+    top: 72px;
+    right: unset;
+    left: 0;
+    padding: 8px 0;
+    border-radius: 0.5rem;
+    background: #282D3D 0% 0% no-repeat padding-box;
+    box-shadow: 0px 16px 16px #12131A4D;
+    opacity: 1;
+}
+
+.chart-token-menu-item.menu-item {
+    height: 32px;
+}
+
+.token-label {
+    text-align: left;
+    font-weight: medium;
+    font-size: 14px;
+    line-height: 38px;
+    letter-spacing: 0px;
+    color: #C7CAD9;
+    opacity: 1;
+}

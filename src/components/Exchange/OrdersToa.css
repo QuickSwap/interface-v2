@@ -1,0 +1,49 @@
+.Orders-toa .Modal-content {
+  width: 22rem;
+  overflow-y: scroll;
+ 
+}
+
+@media screen and (max-width: 768px) {
+  .Orders-toa .Modal-content {
+    font-size: 0.6rem;
+    
+  }
+
+  .Orders-toa-accept-rules {
+    margin-top: 0rem;
+  }
+
+  .Orders-toa-accept-rules .Checkbox {
+     margin: 0;
+  }
+
+  #root > div.App > div > div > div.Exchange-content > div.Exchange-right > div.Exchange-swap-box > div.Modal.Orders-toa > div.Modal-content > div.Modal-body > div > div.Orders-toa-accept-rules > div > span.Checkbox-label > span{
+    font-size: 0.8rem;
+    line-height: -0.02em !important;
+  }
+
+
+  .enable-order-button {
+    margin-top: 0rem !important;
+  }
+}
+  
+
+
+.Orders-toa-accept-rules {
+  margin-top: 0.2rem;
+}
+
+.Orders-toa-accept-rules .Checkbox {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  direction: rtl;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.Orders-toa-accept-rules .Checkbox-label {
+  margin-right: 0.5rem;
+}

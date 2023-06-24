@@ -1,0 +1,161 @@
+.Selector.disabled {
+  pointer-events: none;
+}
+
+.Selector.disabled .Selector-caret {
+  display: none;
+}
+
+.Selector .Modal-backdrop {
+  height: 100vh;
+  backdrop-filter: blur(4px);
+  background: #231f2074;
+}
+
+.Selector-box {
+  width: 72px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 7px 8px;
+}
+
+.Selector-box.Polygon {
+  /* background-color: #1d446b; */
+  border: 1px solid #ffffff17;
+ 
+}
+
+.Selector-caret {
+  vertical-align: middle;
+  display: inline-block;
+  font-size: 1.5rem;
+  margin-top: -0.2rem;
+}
+
+.Selector-option {
+  cursor: pointer;
+  /* background: var(--dark-blue); */
+  border: 1px solid var(--dark-blue-border);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.Selector-option:hover {
+  background: var(--dark-blue-hover);
+}
+
+.Selector-option + .Selector-option {
+  margin-top: 0.5rem;
+}
+
+.Selector-option .Selector-option_icon {
+  width: 32px;
+  margin-right: 1rem;
+}
+
+.Selector-option .Selector-option_label {
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.29px;
+  color: #ffffff;
+}
+
+.Selector-option.Polygon:hover {
+  background: #4b494a !important;
+  border: 1px solid #4b494a;
+}
+
+
+.Selector-option .selected-icon {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  right: 1rem;
+}
+
+.Selector-option.Polygon .selected-icon {
+  background-color: #b39a31;
+}
+
+
+.selected-icon {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  right: 1rem;
+}
+
+.Selector .Modal {
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.Selector .Modal-title {
+  color: white;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.25px;
+  opacity: 1;
+}
+
+.Selector .Modal-content {
+  width: 100%;
+  max-width: 19.1rem;
+  margin: auto;
+/*   background: #16182e 0% 0% no-repeat padding-box; */
+  border: 1px solid #231f20;
+  border-radius: 4px;
+}
+
+.react-select__option {
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.react-select__option.polygon:hover {
+  border: 1px solid #4b494a;
+  border-radius: 4px;
+  color: #eee;
+}
+.react-select__option.polygon:active {
+  background: #4b494a !important;
+}
+
+.react-select__indicator {
+  border-radius: 4px;
+}
+.network-select {
+  background: transparent;
+}
+.network-select:hover {
+  background: #4b494a;
+  border-radius: 4px;
+}
+.network-select:active {
+  background: #4b494a;
+  border-radius: 4px;
+}
+.App-header-user-settings:hover {
+  background: #2c2d45;
+    border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+  .Selector .network-label {
+    display: none;
+  }
+}

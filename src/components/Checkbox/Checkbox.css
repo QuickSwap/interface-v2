@@ -1,0 +1,40 @@
+.Checkbox {
+  user-select: none;
+  cursor: pointer;
+}
+
+.Checkbox.disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+.Checkbox-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  position: relative;
+  top: 0.05rem;
+}
+
+.Checkbox .Checkbox-icon {
+  font-size: 0.8rem;
+  color: #625df5;
+  margin-right: 0.4rem;
+  margin-bottom: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.Checkbox.disabled .Checkbox-icon {
+  color: #fff;
+}
+
+.Checkbox-icon.inactive {
+  color: #696C80;
+}
+
+.Checkbox-label {
+  display: inline-block;
+  vertical-align: middle;
+  /* margin-left: 5px; */
+}

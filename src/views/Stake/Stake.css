@@ -1,0 +1,339 @@
+.Stake .Page-title-section {
+  position: relative;
+  z-index: 2;
+}
+
+.VesterDepositModal-info-rows {
+  margin-bottom: 0.5rem;
+  padding: 0 10px;
+}
+
+.CompoundModal-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 0;
+  padding: 16px;
+}
+
+.CompoundModal-menu .Checkbox {
+  margin-bottom: 0;
+}
+
+.Stake-address-input {
+  padding: 1rem 2.2rem;
+  padding-bottom: 0;
+}
+
+.Stake-buy-qpx-modal .Modal-content {
+  max-width: 30rem;
+}
+
+.Stake-address-input input {
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 1.1rem;
+}
+
+.Stake-boost-bar {
+  overflow: hidden;
+  vertical-align: middle;
+  margin-left: 0.2rem;
+  border-radius: 2px;
+  width: 1rem;
+  height: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: inline-block;
+  position: relative;
+}
+
+.Stake-boost-icon {
+  font-size: 0.7rem;
+  z-index: 2;
+}
+
+.Stake-boost-bar-fill {
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.Stake-cards {
+  background: #1B1E29;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem;
+  margin-top: 1rem;
+  padding: 24px;
+}
+
+.Stake-card-title{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 23px;
+}
+
+.Stake-card-title-mark {
+  font-size: 20px;
+  line-height: 30px;
+  color: #EBECF2;
+}
+.Stake-card-title-mark-label{
+  color: #C7CAD9;
+}
+.Stake-card-action{
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  gap: 16px;
+}
+.Stake-card-option{
+  border: none;
+  border-radius: 12px;
+  color: #F5F6F8;
+  line-height: 24px;
+  padding: 12px;
+  width: 144px;
+  height: 50px;
+}
+.Stake-card-option:disabled{
+  border: none;
+  border-radius: 12px;
+  color: #696C80;
+  line-height: 24px;
+  padding: 12px;
+  width: 144px;
+  height: 50px;
+}
+.Stake-card-option:hover:enabled{
+  opacity: 0.8;
+}
+.StakeModal .Modal-content {
+  border-radius: 16px;
+  border: 1px solid #282D3D;
+}
+.StakeModal .Modal-content .Modal-title-bar{
+  background: #282D3D;
+  padding: 16px;
+}
+
+.StakeModal .Modal-content .Modal-title-bar .Modal-title{
+ color: #C7CAD9;
+ font-size: 16px;
+ font-weight: 400;
+ line-height: 30px;
+}
+
+.StakeModal .Checkbox-label{
+  font-size: 14px;
+  color: #C7CAD9;
+}
+.StakeModal .query-modal{
+  width: 336px !important;
+  font-weight: 500;
+  padding-top: 13px !important;
+  padding-bottom: 13px !important;
+}
+.StakeModal .Exchange-swap-button{
+  color: #F5F6F8;
+}
+
+.StakeModal .Exchange-swap-button-container{
+  padding: 16px 16px 24px 16px;
+}
+.stake-cta2 {
+  display: flex;
+  align-items: center;
+  padding: 30px 0 0 0;
+  gap: 15px;
+}
+
+.stake-cta3 {
+  background: #625df5;
+  color: #fff;
+  flex: 1 0 76px;
+  margin: 0;
+}
+
+.stake-cta4 {
+  flex: 1 0 212px;
+  margin: 0;
+}
+
+.total-cta {
+  display: flex;
+  align-items: center;
+  padding-right: 30px;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .stake-cta2 {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stake-cta3,
+  .stake-cta4 {
+    width: 100%;
+    flex: 0;
+  }
+
+  .total-cta {
+    flex-direction: column;
+  }
+}
+
+.Stake-content {
+}
+
+@media (max-width: 900px) {
+  .Stake-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .Stake-content {
+    min-height: 100vh;
+  }
+
+  .Stake-total-rewards-card {
+    grid-row: 4;
+  }
+  .Stake-card-action {
+    flex-direction: column-reverse;
+    /* padding: 0px 16px; */
+  }
+  .Stake-card-option{
+    width: 100%;
+  }
+  .Stake-card-option:disabled{
+    width: 100%;
+  }
+}
+.ahreftextcolor {
+  color: #448aff;
+}
+.ahreftextcolor:hover {
+  opacity: .8;
+}
+.btnwt {
+  width: 35%;
+}
+@media (max-width: 900px) {
+  .btnwt {
+    width: 38%;
+  }
+}
+@media (max-width: 425px) {
+  .btnwt {
+    width: 46%;
+  }
+}
+@media (max-width: 366px) {
+  .btnwt {
+    width: 53%;
+  }
+}
+.mb-6 {
+  margin-bottom: 42px;
+}
+.marginbottommedia {
+  margin-bottom: -20px;
+}
+@media (max-width: 767px) {
+  .marginbottommedia {
+    margin-bottom: 10px;
+  }
+}
+
+.options-2 {
+  padding-right: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .options-2 {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.withdraw {
+  background: #625df5 !important;
+  color: #fff !important;
+}
+
+.secondary-color {
+  background: #625df5 !important;
+  color: #fff !important;
+}
+
+.gradient {
+  background: linear-gradient(89.76deg, #ffaa27 -1.81%, #6461ff 74.59%) !important;
+  color: #000 !important;
+}
+
+.gradient:hover {
+  background: #ffaa27 !important;
+  color: #000 !important;
+}
+
+.purple-hover:hover {
+  background: #8783f5 !important;
+  color: #fff !important;
+}
+
+.critical-divider {
+  height: 4px;
+  background: #0b083c;
+  width: 100%;
+}
+
+.query-modal {
+  /* width: 377px !important; */
+}
+
+@media (max-width: 400px) {
+  /* .query-modal {
+    width: 274.85px !important;
+  } */
+}
+
+@media (max-width: 1039px) and (min-width: 900px) {
+  .query-button {
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 660px) {
+  .query-actions {
+    grid-template-columns: 1fr !important;
+    width: 100%;
+  }
+}
+
+.buy-qpx--btn {
+  background: #ffaa27;
+  color: #141414;
+  text-decoration: none;
+  padding: 6.5px 12px;
+  border-radius: 36px;
+  font-size: 15px;
+  line-height: 23px;
+  font-weight: 600;
+  transition: background 0.2s ease-in-out;
+}
+
+.buy-qpx--btn:hover {
+  background: #ffc56b;
+  color: #141414;
+}

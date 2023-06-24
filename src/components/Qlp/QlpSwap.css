@@ -1,0 +1,353 @@
+.QlpSwap-content {
+  display: flex;
+  justify-content: space-between;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  gap: 15px;
+}
+
+.Tab-title-section {
+  padding: 2rem 1rem 0;
+  margin-bottom: 24px;
+}
+
+.Tab-title {
+  letter-spacing: 0px;
+  color: #ffffff;
+  font-size: 2.2rem;
+  font-weight: 500;
+  font-family: "Relative Bold";
+}
+
+.Tab-description {
+  letter-spacing: 0px;
+  color: #a9a9b0;
+  margin-top: 0.5rem;
+}
+
+.Tab-description span {
+  color: #f89191;
+}
+
+.QlpSwap-from-token .Modal {
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.QlpSwap-from-token .Modal .Modal-content {
+  /* width: 27rem; */
+}
+
+.basis-mobile {
+  flex-basis: 50%;
+}
+
+.QlpSwap-from-token .Modal-content {
+  /* position: absolute; */
+  width: 25rem;
+  max-height: 100vh;
+  overflow: hidden;
+  border: none;
+  top: 0;
+  bottom: 0;
+}
+.QlpSwap-from-token .Modal-content .Modal-body {
+  padding-right: 5px;
+  max-height: calc(100vh - 5rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: auto;
+}
+
+.QlpSwap-content .QlpSwap-stats-card,
+.QlpSwap-content .QlpSwap-box {
+  width: 100%;
+}
+
+.QlpSwap-content .QlpSwap-stats-card {
+  max-width: 45.935rem;
+  /* margin-right: 1rem; */
+}
+.QlpSwap-content .Exchange-swap-button-container {
+  padding: 0px;
+}
+
+.QlpSwap-stats-card .App-card-row .label {
+  color: #696C80;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.QlpSwap-stats-card .App-card-row .value {
+  color: #C7CAD9;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: right;
+}
+
+.QlpSwap-content .QlpSwap-box {
+  /* max-width: 30.935rem; */
+  border-radius: 15px;
+
+  padding: 24px;
+  padding-top: 0;
+}
+
+.QlpSwap-box .Exchange-swap-option-tabs {
+  margin: 1rem 0;
+}
+
+.App-card-title-mark-icon {
+  position: relative;
+  margin-right: 0.5rem;
+  display: flex;
+}
+
+.App-card-title-mark-icon .selected-network-symbol {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border: 1px solid #4b494a;
+  border-radius: 50%;
+}
+
+.App-card-title-mark {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.App-card-title-mark .App-card-title-mark-title {
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: bold;
+  letter-spacing: 0px;
+  color: #EBECF2;
+}
+
+.App-card-title-mark .App-card-title-mark-subtitle {
+  font-size: 0.774rem;
+  line-height: 1rem;
+  letter-spacing: 0px;
+  color: #fff;
+}
+
+.QlpSwap-token-list {
+  /* border: 1px solid #4b494a; */
+  border-radius: 12px;
+  background: #1B1E29;
+  /* padding: 1rem; */
+  padding-top: 0;
+  text-align: left;
+  padding-bottom: 30px;
+  margin-bottom: 40px;
+}
+
+.QlpSwap-eraned-card{
+  margin-top: 16px;
+  padding: 24px;
+  /* margin-bottom: 0.7rem; */
+  border-radius: 12px;
+  box-shadow: inset 0px 0px 30px 5px rgba(35, 31, 32, 0.01);
+  background: #1B1E29;
+}
+
+.QlpSwap-token-list-content {
+  display: grid;
+  padding: 1rem;
+  padding-top: 0;
+  text-align: left;
+}
+
+.QlpSwap-box .App-card-title {
+  margin-bottom: 0.5rem;
+}
+
+.QlpSwap-box .Exchange-info-row {
+  height: 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.QlpSwap-box .Exchange-info-row .Exchange-info-label {
+  margin-right: 0.5rem;
+  color: #696C80;
+  opacity: 1;
+}
+
+.QlpSwap-box .Exchange-info-row .fee-block {
+  color: #C7CAD9;
+  letter-spacing: 0px;
+  opacity: 1;
+}
+
+.QlpSwap-cta {
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 0;
+}
+
+.QlpSwap-cta .Exchange-swap-button {
+  margin: 0 auto;
+  justify-content: center;
+  min-height: 3.097rem;
+  font-size: 1rem;
+  color: #F5F6F8;
+}
+
+.QlpSwap .Exchange-swap-button {
+  margin-top: 12px;
+  font-size: 1rem;
+  line-height: 18px;
+  color: #F5F6F8;
+}
+
+.QlpSwap .Exchange-swap-button:disabled {
+  color: #696C80;
+  opacity:  1;
+}
+
+.token-table {
+  border-spacing: 0;
+  white-space: nowrap;
+}
+
+.token-grid {
+  display: none;
+}
+
+.token-table td,
+.token-table th {
+  padding-top: 30px;
+}
+
+.token-table td:nth-child(2),
+.token-table th:nth-child(2) {
+  width: 110px;
+}
+
+.token-table td:nth-child(3),
+.token-table th:nth-child(3) {
+  width: 320px;
+}
+
+.token-table td:nth-child(4),
+.token-table th:nth-child(4) {
+  width: 200px;
+}
+
+.token-table td:nth-child(5),
+.token-table th:nth-child(5) {
+  width: 130px;
+}
+
+.token-table td {
+  /* letter-spacing: 0.25px; */
+  color: #EBECF2;
+}
+
+.token-table th:first-child,
+.token-table td:first-child {
+  padding-left: 32px;
+  width: 17rem;
+}
+
+.token-table th:last-child,
+.token-table td:last-child {
+  padding-right: 24px;
+  text-align: right;
+  width: 170px;
+}
+
+.token-table tr:last-child {
+  /* margin-bottom: 16px; */
+  padding-bottom: 16px;
+}
+
+.token-table th {
+  font-size: 14px;
+  font-weight: normal;
+  color: #696C80;
+}
+
+.token-table .action-btn {
+  width: 100%;
+  justify-content: center;
+}
+.cap-reached {
+  margin-left: 8px;
+}
+
+@media (max-width: 900px) {
+  .QlpSwap-content {
+    flex-wrap: wrap;
+  }
+
+  .basis-mobile {
+    flex-basis: 100%;
+  }
+
+  .QlpSwap-content .QlpSwap-stats-card {
+    margin: 0;
+    margin-bottom: 2rem;
+    max-width: 100%;
+  }
+
+  .QlpSwap-content .QlpSwap-box {
+    margin: 0;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .QlpSwap-from-token .Modal {
+    align-items: center;
+    justify-content: center;
+  }
+  .QlpSwap-from-token .Modal .Modal-content {
+    width: 27rem;
+    position: absolute;
+    max-height: 80vh;
+    overflow: hidden;
+    border: none;
+    top: auto;
+    bottom: auto;
+  }
+  .QlpSwap-from-token .Modal .Modal-content .Modal-body {
+    overflow-y: auto;
+    max-height: calc(80vh - 5.5rem);
+    padding-right: 5px;
+    margin: 1rem calc(1rem - 5px) 1rem 1rem;
+  }
+
+  .QlpSwap-token-list {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+  }
+
+  .QlpSwap-token-list-content {
+    padding: 0;
+  }
+
+  .token-table {
+    display: none;
+  }
+
+  .token-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1rem;
+    margin-top: 0.5rem;
+  }
+}
+@media (max-width: 510px) {
+  .token-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 1rem;
+    margin-top: 0.5rem;
+  }
+}

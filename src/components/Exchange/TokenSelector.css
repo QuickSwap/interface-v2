@@ -1,0 +1,190 @@
+.TokenSelector .Modal .Modal-content {
+  width: 23rem;
+  margin: auto;
+  max-height: 100vh;
+}
+
+.TokenSelector-token-name {
+  margin-right: 1rem;
+}
+
+.TokenSelector.disabled {
+  pointer-events: none;
+}
+
+.TokenSelector.disabled .TokenSelector-caret {
+  display: none;
+}
+
+.TokenSelector-box {
+  display: block;
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.TokenSelector-box:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.Token-with-info {
+  display:flex;
+  align-items: center;
+  gap: 6px;
+  background:#404557;
+  border-radius:28px;
+  padding:8px;
+  padding-right: 12px;
+  font-size: 16px;
+  letter-spacing: 0;
+  color: #C7CAD9;
+}
+
+.Token-with-info:hover{
+  opacity: 0.8;
+}
+
+.Token-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.Token-info .Token-symbol {
+  margin-left: 8px;
+  display: flex;
+  flex-direction: column;
+}
+.Token-balance {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+.Token-info .token-logo {
+  display: block !important;
+  width: 24px;
+  height: 24px;
+  margin-right: 2px;
+  margin-left: 0 !important;
+}
+
+.TokenSelector-caret {
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: 0.3rem;
+  font-size: 1.5rem;
+  margin-top: -0.3rem;
+}
+
+.TokenSelector-token-row {
+  cursor: pointer;
+  /* border: 1px solid #ffffff29; */
+  position: relative;
+  background: transparent;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  /* margin-bottom: 8px; */
+}
+
+.TokenSelector-tooltip.Tooltip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+}
+
+.TokenSelector-tooltip-backing {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.TokenSelector-token-row.disabled {
+  cursor: not-allowed;
+}
+
+.TokenSelector-token-row.disabled .Token-info {
+  opacity: 0.3;
+}
+
+.TokenSelector-token-row.disabled .Token-balance {
+  opacity: 0.3;
+}
+
+.TokenSelector-token-row.TokenSelector-token-input-row {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid #282D3D;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.TokenSelector-token-row input {
+  padding: 0px;
+  width: 100%;
+  font-size: 14px;
+  color: #696C80;
+}
+
+.TokenSelector-token-row .Token-text {
+  font-size: 14px;
+  color: #EBECF2;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 24px;
+}
+
+.TokenSelector-token-row .Token-zero {
+  font-size: 14px;
+  color: #404557;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 27px;
+}
+.TokenSelector-token-row:hover {
+  background: rgba(118, 118, 128, 0.24);
+}
+
+.TokenSelector.right .Modal {
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+.text-accent {
+  color: #EBECF2;
+  font-size: 12px;
+  /* line-height: 1.5; */
+  /* letter-spacing: 0; */
+}
+
+.TokenSelector.right .Modal-content {
+  position: absolute;
+  width: 23rem;
+  top: 0;
+  bottom: 0;
+  overflow: auto;
+  border: none;
+}
+
+@media (max-width: 700px) {
+  .TokenSelector.right .Modal {
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: 2rem;
+    top: 0;
+    right: 2rem;
+    bottom: 0;
+  }
+  .Token-info .token-logo {
+    width: 24px;
+    height: 24px;
+    margin-right: 0.5rem;
+  }
+}

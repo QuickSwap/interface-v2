@@ -1,0 +1,599 @@
+.Referrals {
+  padding-top: 2rem;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.ref-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-direction: row;
+  max-width: 1136px;
+  margin: auto;
+}
+
+.section-center {
+  margin: 0 auto;
+  text-align: center;
+}
+.mt-large {
+  margin-top: 2rem;
+}
+.mt-medium {
+  margin-top: 1rem;
+}
+.referral-tab-container {
+  margin: 1rem auto 2rem auto;
+}
+.referral-card {
+  position: relative;
+  text-align: center;
+}
+.referral-card .title {
+  font-weight: 500;
+  font-size: 1.25rem;
+  letter-spacing: 0px;
+  color: #EBECF2;
+  opacity: 1;
+  margin: 0 auto;
+}
+.referral-card .sub-title {
+  font-size: 1rem;
+  letter-spacing: 0px;
+  color: #EBECF2;
+  margin-top: 0.5rem;
+}
+.referral-card .card-action {
+  margin-top: 1.5rem;
+}
+
+.referral-card .card-action input {
+  border: 1px solid #404557;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin-right: 1rem;
+}
+
+button.action-button {
+  display: block;
+  width: 100%;
+  color: #F5F6F8;
+  font-size: 1rem;
+}
+
+.ref-link {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+  min-width: 555px;
+  width: 100%;
+  height: 4rem;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 26px;
+  letter-spacing: 0px;
+  color: #EBECF2;
+  background-color: #1B1E29;
+  border-radius: 1rem;
+  opacity: 1;
+}
+
+.referral-body-container .list {
+  margin-top: 1rem;
+}
+.reward-history {
+  margin-top: 2rem;
+  padding-bottom: 30px;
+}
+.active-referral-code .edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 15px;
+  padding-bottom: 17px;
+}
+.active-referral-code .edit span {
+  margin-right: 1rem;
+  font-size: 16px;
+}
+.active-referral-code .edit svg {
+  cursor: pointer;
+  font-size: 16px;
+}
+.active-referral-code .edit svg:hover {
+  opacity: 0.75;
+}
+.active-referral-code .tier {
+  /*   margin-top: 0.5rem; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.active-referral-code .tier span {
+  font-size: 0.85rem;
+  color: #bfbfbe;
+  margin-right: 0.5rem;
+}
+.active-referral-code .tier a {
+  text-decoration: none;
+  font-size: 0;
+}
+.mb-sm {
+  margin-bottom: 1rem;
+}
+.edit-referral-modal {
+  width: 20rem;
+  padding: 10px;
+  margin: 0 auto;
+}
+.referral-code-edit span {
+  margin-right: 0.5rem;
+}
+.referral-code-edit svg {
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+.referral-code-edit svg:hover {
+  opacity: 1;
+}
+.create-referrar-code {
+  text-align: center;
+  max-width: 500px;
+  margin: 2rem auto;
+}
+@media (max-width: 425px) {
+  .transparent-btnmargintop {
+    margin-top: 10px;
+  }
+}
+
+.transparent-btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  color: white;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.transparent-btn:hover {
+  background: rgba(118, 118, 128, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.referral-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+@media (max-width: 425px) {
+  .referral-table-header {
+    display: block;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.referral-table-header .title {
+  margin: 0;
+}
+.referral-table-header .sub-title {
+  color: #bfbfbe;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+}
+
+.referral-table-header .ml-small {
+  margin-left: 0.5rem;
+}
+.create-referrar-code form {
+  display: flex;
+  align-items: inherit;
+  justify-content: center;
+  margin: 2rem 0;
+}
+.create-referrar-code form input {
+  border: 1px solid #4b494a;
+  border-radius: 4px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  width: 400px;
+}
+.create-referrar-code form button {
+  margin-left: 1rem;
+}
+
+.referral-stats {
+  margin: 0 auto;
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.text-center {
+  text-align: center;
+}
+
+.info-card {
+  background: #282D3D;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.info-card .label {
+  font-size: 1rem;
+  line-height: 1.355rem;
+  font-weight: normal;
+  letter-spacing: 0px;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.info-card .data {
+  font-size: 1.5rem;
+  font-weight: normal;
+  text-align: center;
+  padding: 0;
+  margin: 1rem 0;
+}
+.info-card .info-card-question-icon {
+  vertical-align: middle;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.table-referral-code {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.table-referral-code .copy-icon:hover {
+  opacity: 0.75;
+}
+
+.referral-code {
+  display: flex;
+}
+.referral-code span {
+  margin-right: 0.5rem;
+  font-family: monospace;
+}
+.table-referral-code .info {
+  margin-left: 0.5rem;
+}
+.referral-table {
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+.referral-table th {
+  font-weight: normal;
+  letter-spacing: 0.25px;
+  color: #EBECF2;
+  text-transform: uppercase;
+}
+.referral-table th,
+.referral-table td {
+  padding: 0.625em;
+  text-align: left;
+}
+
+.table-referral-code p {
+  margin: 0;
+  margin-left: 0.5rem;
+  padding: 0;
+}
+.error {
+  margin: 0;
+  padding: 0.5rem 0 1rem;
+  color: #fa3c58;
+  font-size: 0.9rem;
+}
+
+.table-wrapper {
+  display: block;
+  width: 100%;
+}
+
+.empty-message {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #282D3D;
+  margin-top: 1rem;
+}
+.confirm-checkbox .Checkbox {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  direction: rtl;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 800px) {
+  .referral-table {
+    width: auto;
+    margin-bottom: 1rem;
+  }
+  .table-wrapper {
+    overflow-x: auto;
+  }
+  .table-head {
+    white-space: nowrap;
+  }
+}
+.ahreftextcolor {
+  color: #448aff;
+}
+.ahreftextcolor:hover {
+  opacity: .8;
+}
+.card-details {
+  padding-top: 20px;
+}
+
+.referrals-header-big {
+  background-image: url("./../../img/ref-bg.svg");
+  height: 360px;
+}
+
+.referrals-header {
+  background-image: url("https://res.cloudinary.com/quickperp/image/upload/v1673248008/website-assets/illustration/ref-fg.png");
+  background-repeat: no-repeat;
+  height: 360px;
+  display: flex;
+  align-items: center;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+@media screen and (min-width: 1600px) {
+  .referrals-header {
+    border-radius: 0 0 30px 30px;
+    -webkit-border-radius: 0 0 30px 30px;
+    -moz-border-radius: 0 0 30px 30px;
+    -ms-border-radius: 0 0 30px 30px;
+    -o-border-radius: 0 0 30px 30px;
+  }
+}
+
+.referrals-header h3 {
+  font-weight: 700;
+  font-size: 2.5rem;
+  line-height: 48px;
+  letter-spacing: 0px;
+  color:#EBECF2;
+}
+
+.referrals-header--text {
+  max-width: 550px;
+  margin-left: 240px;
+}
+
+@media screen and (max-width: 406px) {
+  .referrals-header--text h3 {
+    margin-left: 0;
+    font-size: 50px;
+  }
+}
+
+.referrals-header--text p {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 26px;
+  letter-spacing: 0px;
+  color:#EBECF2;
+}
+
+.refer-texts {
+  text-align: center;
+}
+
+.refer-texts h4 {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 38px;
+  line-height: 46px;
+  /* identical to box height */
+
+  letter-spacing: -0.01em;
+}
+
+.refer-texts p {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 32px;
+  /* identical to box height, or 160% */
+
+  letter-spacing: -0.02em;
+
+  /* Text %80 */
+
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.instructions-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0px;
+  gap: 1rem;
+  max-width: 560px;
+  left: 0px;
+  width: 100%;
+}
+
+.instruction-container {
+  display: flex;
+  flex: none;
+  flex-grow: 0;
+  background: #1B1E29;
+  border-radius: 1rem;
+  opacity: 1;
+  padding: 0 0 0 0;
+  flex-basis: 100%;
+  min-width: 560px;
+  width: 100%;
+}
+
+.instruction-container--header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 1.5rem 0 2rem 1.25rem;
+}
+
+.instruction-container--header span {
+  font-size: 2.5rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 3rem;
+  letter-spacing: 0px;
+  color: #FDAA29;
+}
+
+.instruction-container--header p {
+  max-width: 368px;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 26px;
+  letter-spacing: 0px;
+  margin-bottom: 0px;
+}
+
+.instruction-container--icon {
+  margin: 2rem 2rem auto auto;
+}
+
+.refs-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 1rem;
+  max-width: 960px;
+  width: 100%;
+  min-height: 434px;
+  flex-grow: 1;
+}
+
+.ref-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 30px;
+  min-width: 555px;
+  background: #1B1E29;
+  border-radius: 1rem;
+  width: 100%;
+  padding: 24px 24px 40px 24px;
+}
+
+.ref-container .Tab.block {
+  width: 100%;
+  height: 48px;
+  border-radius: 0.5rem;
+  opacity: 1;
+}
+
+.ref-container .Tab-option {
+  height: 44px;
+  border-radius: 7px;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  letter-spacing: 0px;
+  color: #696C80;
+  opacity: 1;
+}
+
+@media screen and (max-width: 1272px) {
+  .referrals-header {
+    background-image: none;
+  }
+
+  .referrals-header--text {
+    max-width: 100%;
+    text-align: center;
+    margin: 0 auto;
+  }
+}
+
+@media screen and (max-width: 1140px) {
+  .ref-layout {
+    flex-direction: column;
+  }
+  .instructions-container {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .refs-container {
+    margin-top: 0px !important;
+    width: 100% !important;
+    max-width: 560px !important;
+  }
+  .referral-card .card-action {
+    display: flex;
+    justify-content: center;
+  }
+  .referral-card .sub-title {
+    justify-content: center;
+  }
+  .referral-card .title {
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .instruction-container {
+    min-width: 380px;
+  }
+  .ref-container {
+    min-width: 380px;
+  }
+  .ref-link {
+    min-width: 380px;
+  }
+}
+
+.empty-message .Tooltip-popup,
+.referral-stats .Tooltip-popup {
+  background-color: #1B1E29;
+}
+
+@media screen and (max-width: 400px) {
+  .instruction-container--icon {
+    display: none;
+  }
+  .ref-link-icon {
+    display: none;
+  }
+}

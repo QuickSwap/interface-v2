@@ -1,0 +1,23 @@
+.SellQlp-content {
+  display: grid;
+  grid-template-columns: 1fr 28rem;
+  grid-gap: 1rem;
+  margin-top: 0.5rem;
+  padding: 2rem;
+  padding-top: 1rem;
+}
+
+.SellQlp-box {
+  padding: 1rem;
+}
+
+.SellQlp-cta {
+  margin-top: 0.5rem;
+}
+
+
+@media (max-width: 900px) {
+  .SellQlp-content {
+    grid-template-columns: 1fr;
+  }
+}

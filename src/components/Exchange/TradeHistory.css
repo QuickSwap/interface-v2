@@ -1,0 +1,20 @@
+.TradeHistory-row {
+  font-size: 0.875rem;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.TradeHistory-time {
+  font-size: 0.8rem;
+  margin-bottom: 0.1rem;
+}
+.textcolor {
+  color: rgba(255, 255, 255, 0.8);
+}
+.textcolor:hover {
+  color: white !important;
+}
+
+.TokenSelector-tokens {
+  padding: 10px 16px;
+}

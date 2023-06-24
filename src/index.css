@@ -1,0 +1,231 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.skt-w.mt-3\.5
+  > div.skt-w.flex.items-center.justify-between.mt-2\.5.overflow-hidden.pb-\[1\.125rem\]
+  > div:nth-child(2)
+  > div
+  > div
+  > div.skt-w.h-full.overflow-y-auto.p-1\.5 {
+  width: 100%;
+}
+
+/* Widget select token width */
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.skt-w.mt-6
+  > div.skt-w.flex.items-center.justify-between.mt-2\.5.overflow-hidden.pb-\[1\.125rem\]
+  > div:nth-child(2)
+  > div
+  > div
+  > div.skt-w.h-full.overflow-y-auto.p-1\.5 {
+  width: 100%;
+}
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.flex.items-center.justify-between.skt-w.text-widget-primary
+  > div
+  > div
+  > div
+  > div.skt-w.px-3.flex.items-center.mt-2.gap-2 {
+  width: 100%;
+}
+
+/* Socket widget From chains list START */
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.skt-w.mt-3\.5
+  > div:nth-child(1)
+  > div
+  > div
+  > div.skt-w.pt-1.z-10.left-0.absolute.bg-widget-interactive.flex.flex-col.w-full.max-h-\[150px\].overflow-y-auto.overflow-hidden {
+  overflow-y: auto !important;
+}
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.skt-w.mt-3\.5
+  > div:nth-child(1)
+  > div
+  > div
+  > div.skt-w.pt-1.z-10.left-0.absolute.bg-widget-interactive.flex.flex-col.w-full.max-h-\[150px\].overflow-y-auto.overflow-hidden::-webkit-scrollbar {
+  width: 10px;
+}
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.skt-w.mt-3\.5
+  > div:nth-child(1)
+  > div
+  > div
+  > div.skt-w.pt-1.z-10.left-0.absolute.bg-widget-interactive.flex.flex-col.w-full.max-h-\[150px\].overflow-y-auto.overflow-hidden::-webkit-scrollbar-thumb {
+  background-color: #ffaa27;
+}
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.skt-w.mt-3\.5
+  > div:nth-child(1)
+  > div
+  > div
+  > div.skt-w.pt-1.z-10.left-0.absolute.bg-widget-interactive.flex.flex-col.w-full.max-h-\[150px\].overflow-y-auto.overflow-hidden::-webkit-scrollbar-track {
+  background-color: black;
+  border-radius: 1px;
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
+  -ms-border-radius: 1px;
+  -o-border-radius: 1px;
+}
+
+/* Socket widget From chains list END */
+
+/* Socket widget TO chains list START */
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.skt-w.mt-6
+  > div:nth-child(1)
+  > div
+  > div
+  > div.skt-w.pt-1.z-10.left-0.absolute.bg-widget-interactive.flex.flex-col.w-full.max-h-\[150px\].overflow-y-auto.overflow-hidden {
+  overflow-y: auto !important;
+}
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.skt-w.mt-6
+  > div:nth-child(1)
+  > div
+  > div
+  > div.skt-w.pt-1.z-10.left-0.absolute.bg-widget-interactive.flex.flex-col.w-full.max-h-\[150px\].overflow-y-auto.overflow-hidden::-webkit-scrollbar {
+  width: 10px;
+}
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.skt-w.mt-6
+  > div:nth-child(1)
+  > div
+  > div
+  > div.skt-w.pt-1.z-10.left-0.absolute.bg-widget-interactive.flex.flex-col.w-full.max-h-\[150px\].overflow-y-auto.overflow-hidden::-webkit-scrollbar-thumb {
+  background-color: #ffaa27;
+}
+
+#root
+  > div.App
+  > div
+  > div
+  > div.DashboardV2-content
+  > div
+  > div:nth-child(1)
+  > div.App-card-content
+  > div
+  > div.relative.p-1.overflow-hidden.skt-w.skt-w-container.bg-widget-primary
+  > div.skt-w.p-3.pt-2\.5.pb-3\.5
+  > div.skt-w.mt-6
+  > div:nth-child(1)
+  > div
+  > div
+  > div.skt-w.pt-1.z-10.left-0.absolute.bg-widget-interactive.flex.flex-col.w-full.max-h-\[150px\].overflow-y-auto.overflow-hidden::-webkit-scrollbar-track {
+  background-color: black;
+  border-radius: 1px;
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
+  -ms-border-radius: 1px;
+  -o-border-radius: 1px;
+}
+/* Socket widget TO chains list END */
