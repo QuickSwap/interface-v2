@@ -508,10 +508,12 @@ export function useV3DerivedMintInfo(
     currencyA && currencyB
       ? GammaPairs[chainId][
           currencyA.wrapped.address.toLowerCase() +
+            '-' +
             currencyB.wrapped.address.toLowerCase()
         ] ??
         GammaPairs[chainId][
           currencyB.wrapped.address.toLowerCase() +
+            '-' +
             currencyA.wrapped.address.toLowerCase()
         ]
       : undefined;
