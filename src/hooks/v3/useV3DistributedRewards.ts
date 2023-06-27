@@ -16,7 +16,7 @@ export function useV3DistributedRewards(chainId?: ChainId) {
       fetchEternalFarmsFn();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [farmEnabled]);
+  }, [farmEnabled, chainId]);
   const allRewardTokenAddresses = eternalFarms
     ? eternalFarms
         .filter((farm) => farm.rewardToken && farm.rewardToken.id)

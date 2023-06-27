@@ -37,13 +37,10 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const { chainId } = useActiveWeb3React();
 
   const amountOut = chainId
-    ? tryParseAmount(chainId, '1', GlobalValue.tokens.COMMON.USDC)
+    ? tryParseAmount(chainId, '1', USDC[chainId])
     : undefined;
 
-  const allowedPairs = useAllCommonPairs(
-    currency,
-    GlobalValue.tokens.COMMON.USDC,
-  );
+  const allowedPairs = useAllCommonPairs(currency, USDC[chainId]);
 
   return useMemo(() => {
     if (!currency || !amountOut || !allowedPairs.length) {
@@ -60,13 +57,8 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
 
     const { numerator, denominator } = trade.route.midPrice;
 
-    return new Price(
-      currency,
-      GlobalValue.tokens.COMMON.USDC,
-      denominator,
-      numerator,
-    );
-  }, [currency, allowedPairs, amountOut]);
+    return new Price(currency, USDC[chainId], denominator, numerator);
+  }, [currency, allowedPairs, amountOut, chainId]);
 }
 
 export function useUSDCPricesFromAddresses(

@@ -32,6 +32,7 @@ const SwapPage: React.FC = () => {
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const tabletWindowSize = useMediaQuery(breakpoints.down('sm'));
   const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainIdToUse);
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainIdToUse);
 
@@ -68,7 +69,12 @@ const SwapPage: React.FC = () => {
   }, [chainIdToUse, isV2, token1?.address, token2?.address]);
 
   return (
-    <Box width='100%' mb={3} id='swap-page'>
+    <Box
+      width='100%'
+      mb={3}
+      id='swap-page'
+      style={{ paddingTop: tabletWindowSize ? '0px' : '88px' }}
+    >
       {openSettingsModal && (
         <SettingsModal
           open={openSettingsModal}

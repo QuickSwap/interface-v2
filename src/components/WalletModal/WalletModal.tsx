@@ -27,6 +27,7 @@ import {
   metamaskConnection,
   trustWalletConnection,
   cypherDConnection,
+  phantomConnection,
 } from 'connectors';
 import {
   getIsBitKeepWallet,
@@ -146,11 +147,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isCoinbaseWallet = ethereum && ethereum.isCoinbaseWallet;
 
     return connections.map((option) => {
-      //disable safe app by in the list
-      if (option.key === 'SAFE_APP') {
-        return null;
-      }
-
       if (
         option.name === GlobalConst.walletName.PHANTOM_WALLET &&
         !isPhantomWallet
@@ -161,8 +157,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
             key={option.key}
             color={option.color}
             header={t('installPhantom')}
-            subheader={t('installPhantomDesc')}
-            link={'https://phantom.app/'}
+            subheader={null}
+            link={'https://phantom.app/download'}
             icon={option.iconName}
           />
         );
@@ -251,6 +247,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
           (option.mobile ||
             (isCypherD && option.connector === cypherDConnection.connector) ||
             (isMetamask && option.connector === metamaskConnection.connector) ||
+            (isPhantomWallet &&
+              option.connector === phantomConnection.connector) ||
             (isTrustWallet &&
               option.connector === trustWalletConnection.connector) ||
             (isCoinbaseWallet &&
