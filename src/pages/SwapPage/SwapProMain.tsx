@@ -3,7 +3,6 @@ import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import React, { useEffect, useState } from 'react';
 import { useIsV2 } from 'state/application/hooks';
-import { getSwapTransactions, getSwapTransactionsV3 } from 'utils';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
 import SwapMain from './SwapMain';
 import SwapProAssets from './SwapProAssets';
@@ -53,19 +52,53 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
       if (pairId && transactions && transactions.length > 0) {
         let txns: any[] = [];
         if (pairId.v2) {
-          const v2Txns = await getSwapTransactions(
-            chainIdToUse,
-            pairId.v2.toLowerCase(),
-            Number(transactions[0].transaction.timestamp),
+          const res = await fetch(
+            `${
+              process.env.REACT_APP_LEADERBOARD_APP_URL
+            }/utils/swap-transactions/${
+              pairId.v2
+            }/v2?chainId=${chainIdToUse}&startTime=${Number(
+              transactions[0].transaction.timestamp,
+            )}`,
           );
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText ||
+                res.statusText ||
+                `Failed to get v2 swap transactions`,
+            );
+          }
+          const data = await res.json();
+          const v2Txns =
+            data && data.data && data.data.transactions
+              ? data.data.transactions
+              : [];
           txns = txns.concat(v2Txns ?? []);
         }
         if (pairId.v3) {
-          const v3Txns = await getSwapTransactionsV3(
-            chainIdToUse,
-            pairId.v3.toLowerCase(),
-            Number(transactions[0].transaction.timestamp),
+          const res = await fetch(
+            `${
+              process.env.REACT_APP_LEADERBOARD_APP_URL
+            }/utils/swap-transactions/${
+              pairId.v3
+            }/v3?chainId=${chainIdToUse}&startTime=${Number(
+              transactions[0].transaction.timestamp,
+            )}`,
           );
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText ||
+                res.statusText ||
+                `Failed to get v3 swap transactions`,
+            );
+          }
+          const data = await res.json();
+          const v3Txns =
+            data && data.data && data.data.transactions
+              ? data.data.transactions
+              : [];
           txns = txns.concat(v3Txns ?? []);
         }
         const filteredTxns = txns.filter(
@@ -86,18 +119,38 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
       let transactions: any[] = [];
 
       if (pairId.v2) {
-        const v2Transactions = await getSwapTransactions(
-          chainIdToUse,
-          pairId.v2.toLowerCase(),
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v2}/v2?chainId=${chainIdToUse}`,
         );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get v2 swap transactions`,
+          );
+        }
+        const data = await res.json();
+        const v2Transactions =
+          data && data.data && data.data.transactions
+            ? data.data.transactions
+            : [];
         transactions = transactions.concat(v2Transactions ?? []);
       }
 
       if (pairId.v3) {
-        const v3Transactions = await getSwapTransactionsV3(
-          chainIdToUse,
-          pairId.v3.toLowerCase(),
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v3}/v3?chainId=${chainIdToUse}`,
         );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get v3 swap transactions`,
+          );
+        }
+        const data = await res.json();
+        const v3Transactions =
+          data && data.data && data.data.transactions
+            ? data.data.transactions
+            : [];
         transactions = transactions.concat(v3Transactions ?? []);
       }
 

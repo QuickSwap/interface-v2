@@ -9,7 +9,6 @@ import { useIsV2 } from 'state/application/hooks';
 import { Field } from 'state/swap/actions';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { useDerivedSwapInfo as useDerivedSwapInfoV3 } from 'state/swap/v3/hooks';
-import { getPairAddress, getPairAddressV3 } from 'utils';
 import { wrappedCurrency, wrappedCurrencyV3 } from 'utils/wrappedCurrency';
 import SwapDefaultMode from './SwapDefaultMode';
 import SwapPageHeader from './SwapPageHeader';
@@ -33,50 +32,49 @@ const SwapPage: React.FC = () => {
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const tabletWindowSize = useMediaQuery(breakpoints.down('sm'));
   const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainIdToUse);
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainIdToUse);
 
   useEffect(() => {
-    const token1Address = isV2 ? token1?.address : token1V3?.address;
-    const token2Address = isV2 ? token2?.address : token2V3?.address;
     async function getPairId(token1Address: string, token2Address: string) {
-      const v2PairData = await getPairAddress(
-        token1Address,
-        token2Address,
-        chainIdToUse,
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/pair-address/${token1Address}/${token2Address}?chainId=${chainIdToUse}`,
       );
-      const v3PairData = await getPairAddressV3(
-        token1Address,
-        token2Address,
-        chainIdToUse,
-      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to get top token details`,
+        );
+      }
+      const data = await res.json();
 
-      setPairTokenReversed(
-        isV2
-          ? v2PairData
-            ? v2PairData.tokenReversed
-            : false
-          : v3PairData
-          ? v3PairData.tokenReversed
-          : false,
-      );
+      if (data && data.data) {
+        setPairTokenReversed(
+          isV2
+            ? data.data.v2
+              ? data.data.v2.tokenReversed
+              : false
+            : data.data.v3
+            ? data.data.v3.tokenReversed
+            : false,
+        );
 
-      setPairId({ v2: v2PairData?.pairId, v3: v3PairData?.pairId });
+        setPairId({ v2: data.data.v2?.pairId, v3: data.data.v3?.pairId });
+      }
     }
-    if (token1Address && token2Address) {
-      getPairId(token1Address, token2Address);
+    if (token1?.address && token2?.address) {
+      getPairId(token1?.address, token2?.address);
     }
-  }, [
-    chainIdToUse,
-    isV2,
-    token1?.address,
-    token2?.address,
-    token1V3?.address,
-    token2V3?.address,
-  ]);
+  }, [chainIdToUse, isV2, token1?.address, token2?.address]);
 
   return (
-    <Box width='100%' mb={3} id='swap-page'>
+    <Box
+      width='100%'
+      mb={3}
+      id='swap-page'
+      style={{ paddingTop: tabletWindowSize ? '0px' : '88px' }}
+    >
       {openSettingsModal && (
         <SettingsModal
           open={openSettingsModal}
