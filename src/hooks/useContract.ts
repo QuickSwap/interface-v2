@@ -44,6 +44,7 @@ import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
 import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
+import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
@@ -310,7 +311,15 @@ export function useGammaUNIProxyContract(
     uniProxyResult.result.length > 0
       ? uniProxyResult.result[0]
       : undefined;
-  return useContract(uniProxyAddress, GammaUniProxy, withSignerIfPossible);
+  return useContract(
+    uniProxyAddress,
+    uniProxyAddress &&
+      uniProxyAddress.toLowerCase() ===
+        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? GammaUniProxy1
+      : GammaUniProxy,
+    withSignerIfPossible,
+  );
 }
 
 export function useMasterChefContract(
