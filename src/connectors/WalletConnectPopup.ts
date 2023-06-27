@@ -17,8 +17,8 @@ export class WalletConnectPopup extends WalletConnect {
       actions,
       options: {
         showQrModal: qrcode,
-        rpcMap,
-        chains: SUPPORTED_CHAINIDS,
+        chains: [1],
+        optionalChains: SUPPORTED_CHAINIDS,
         projectId: 'a6cc11517a10f6f12953fd67b1eb67e7',
         qrModalOptions,
       },
