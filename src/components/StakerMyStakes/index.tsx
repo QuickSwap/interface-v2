@@ -296,7 +296,7 @@ export const FarmingMyFarms: React.FC<{
   ]);
 
   useEffect(() => {
-    fetchTransferredPositionsFn(true);
+    fetchTransferredPositionsFn();
     fetchEternalFarmPoolAprsFn();
     fetchEternalFarmAprsFn();
     fetchRewardsFn();
@@ -305,7 +305,7 @@ export const FarmingMyFarms: React.FC<{
 
   useEffect(() => {
     if (txType === 'farm' && txConfirmed) {
-      fetchTransferredPositionsFn(true);
+      fetchTransferredPositionsFn();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txType, txConfirmed]);

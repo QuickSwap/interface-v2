@@ -13,7 +13,7 @@ export function useV3DistributedRewards(chainId?: ChainId) {
   } = useFarmingSubgraph() || {};
   useEffect(() => {
     if (farmEnabled && chainId) {
-      fetchEternalFarmsFn(true);
+      fetchEternalFarmsFn();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [farmEnabled, chainId]);
