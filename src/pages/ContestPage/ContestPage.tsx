@@ -82,36 +82,41 @@ const ContestPage: React.FC = () => {
 
       const data = await res.json();
 
-      const lensRes = await fetch(
-        `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
-        }/utils/lens-profiles?addresses=${data.leaderboardData
-          .map((e: any) => e.origin)
-          .join('_')}`,
-      );
-      if (!lensRes.ok) {
-        const errorText = await lensRes.text();
-        throw new Error(
-          errorText || lensRes.statusText || `Failed to get leaderboard`,
+      let lensArray: any[] = [];
+      for (const ind of Array.from(
+        { length: Math.ceil(data.leaderboardData.length / 150) },
+        (_, i) => i,
+      )) {
+        const lensRes = await fetch(
+          `${
+            process.env.REACT_APP_LEADERBOARD_APP_URL
+          }/utils/lens-profiles?addresses=${data.leaderboardData
+            .slice(ind * 150, (ind + 1) * 150)
+            .map((e: any) => e.origin)
+            .join('_')}`,
         );
+        if (!lensRes.ok) {
+          const errorText = await lensRes.text();
+          throw new Error(
+            errorText || lensRes.statusText || `Failed to get leaderboard`,
+          );
+        }
+        const lensData = await lensRes.json();
+        lensArray = lensArray.concat(lensData.data);
       }
-      const lensData = await lensRes.json();
-
-      console.log('ccc', lensData);
 
       // Fetch lens handles of all the addresses
-      let result = data.leaderboardData;
-      if (lensData && lensData.data) {
-        result = result.map((d: ContestLeaderBoard, i: number) => {
+      const result = data.leaderboardData.map(
+        (d: ContestLeaderBoard, i: number) => {
           return {
             ...d,
             lensHandle:
-              lensData.data[i] && lensData.data[i].length > 0
-                ? lensData.data[i][0].handle
+              lensArray[i] && lensArray[i].length > 0
+                ? lensArray[i][0].handle
                 : undefined,
           };
-        });
-      }
+        },
+      );
 
       setContestLeaderBoard(result);
       setLoading(false);

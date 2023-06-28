@@ -1249,6 +1249,39 @@ export const GammaPairs: {
         pid: 13,
       },
     ],
+    '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0x68286607a1d43602d880d349187c3c48c0fd05e6': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x686cfe074dd4ac97cac25f37552178b422041a1a',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0x68286607a1d43602d880d349187c3c48c0fd05e6',
+        ableToFarm: true,
+        pid: 14,
+      },
+    ],
+    '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-0xff8544fed5379d9ffa8d47a74ce6b91e632ac44d': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x5158a66cA7181CbDca98491D3182cd4b8b3f8A2F',
+        token0Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        token1Address: '0xff8544fed5379d9ffa8d47a74ce6b91e632ac44d',
+        ableToFarm: true,
+        pid: 15,
+      },
+    ],
+    '0xcf7ecee185f19e2e970a301ee37f93536ed66179-0xff8544fed5379d9ffa8d47a74ce6b91e632ac44d': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xe8A6565e7f395f551Fe3F98Bd674a922cB552524',
+        token0Address: '0xcf7ecee185f19e2e970a301ee37f93536ed66179',
+        token1Address: '0xff8544fed5379d9ffa8d47a74ce6b91e632ac44d',
+        ableToFarm: true,
+        pid: 16,
+      },
+    ],
   },
 };
 
