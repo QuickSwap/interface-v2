@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { CustomModal } from 'components';
 import { Box } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -27,6 +27,18 @@ const NetworkSelectionModal: React.FC = () => {
   const toggleModal = useNetworkSelectionModalToggle();
   const isSupportedNetwork = useIsSupportedNetwork();
 
+  useEffect(() => {
+    const localChainId = localStorage.getItem('localChainId');
+    if (
+      localChainId &&
+      Number(localChainId) !== chainId &&
+      connector === networkConnection.connector
+    ) {
+      connector.activate(Number(localChainId));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const switchNetwork = useCallback(
     async (chainId: ChainId) => {
       const config = getConfig(chainId);
@@ -45,6 +57,7 @@ const NetworkSelectionModal: React.FC = () => {
       } else {
         await connector.activate(chainParam);
       }
+      localStorage.setItem('localChainId', chainId.toString());
     },
     [connector],
   );
