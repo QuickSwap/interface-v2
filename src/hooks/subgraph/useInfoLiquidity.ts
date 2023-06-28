@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { SubgraphResponse } from 'models/interfaces';
-import { FETCH_POPULAR_POOLS } from 'utils/graphql-queries';
-import { useClients } from './useClients';
+import { useActiveWeb3React } from 'hooks';
 
 export function useInfoLiquidity() {
-  const { v3Client } = useClients();
+  const { chainId } = useActiveWeb3React();
 
   const [popularPools, setPopularPools] = useState<
     [string, string][] | undefined
@@ -14,21 +12,22 @@ export function useInfoLiquidity() {
   );
 
   async function fetchPopularPools() {
-    if (!v3Client) return;
+    if (!chainId) return;
     try {
       setPopularPoolsLoading(true);
 
-      const {
-        data: { pools },
-        errors: errors,
-      } = await v3Client.query<SubgraphResponse<any[]>>({
-        query: FETCH_POPULAR_POOLS(),
-        fetchPolicy: 'network-only',
-      });
-
-      if (errors) {
-        return;
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/popular-pools?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to fetch popular pools`,
+        );
       }
+      const data = await res.json();
+      const pools: any[] =
+        data && data.data && data.data.pools ? data.data.pools : [];
 
       setPopularPools(
         pools.map(({ token0, token1 }) => [
