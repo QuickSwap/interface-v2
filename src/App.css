@@ -5,6 +5,11 @@
   background: url('./img/heroBkg.svg') no-repeat;
 }
 
+
+.shepherd-element{
+  max-width: 550px !important;
+}
+
 @media (max-width: 1200px) {
   .App {
     padding: 0 8px;

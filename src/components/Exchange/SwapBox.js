@@ -1847,7 +1847,7 @@ export default function SwapBox(props) {
         </div>
         {showFromAndToSection && (
           <React.Fragment>
-            <div className="Exchange-swap-section">
+            <div className="Exchange-swap-section pay-exchange">
               <div className="Exchange-swap-section-top">
                 <div>
                   {fromUsdMin && (
@@ -1899,7 +1899,7 @@ export default function SwapBox(props) {
                 <img src={arrowIcon} alt="arrowIcon"/>
               </div>
             </div>
-            <div className="Exchange-swap-section">
+            <div className="Exchange-swap-section long-exchange">
               <div className="Exchange-swap-section-top">
                 <div>
                   {toUsdMax && (
@@ -2229,7 +2229,7 @@ export default function SwapBox(props) {
             .
           </div>
         )}
-        <div className="Exchange-swap-button-container">
+        <div className="Exchange-swap-button-container leverage-btn">
           <button
             className="App-cta Exchange-swap-button"
             onClick={onClickPrimary}
