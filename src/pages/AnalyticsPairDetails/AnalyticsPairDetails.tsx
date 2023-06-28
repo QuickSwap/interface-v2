@@ -25,6 +25,7 @@ import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { CallMade } from '@material-ui/icons';
 import { getConfig } from 'config';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -40,6 +41,12 @@ const AnalyticsPairDetails: React.FC = () => {
   const version = params && params.version ? params.version : 'v3';
   const isV2 = version === 'v2';
   const { chainId } = useActiveWeb3React();
+
+  const parsedQuery = useParsedQueryString();
+  const isUni =
+    parsedQuery && parsedQuery.isUni && parsedQuery.isUni === 'true'
+      ? true
+      : false;
 
   const config = getConfig(chainId);
   const showAnalytics = config['analytics']['available'];
@@ -159,7 +166,11 @@ const AnalyticsPairDetails: React.FC = () => {
     (async () => {
       if (chainId && version) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
+          `${
+            process.env.REACT_APP_LEADERBOARD_APP_URL
+          }/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}${
+            isUni ? '&isUni=true' : ''
+          }`,
         );
         if (!res.ok) {
           const errorText = await res.text();
@@ -175,7 +186,7 @@ const AnalyticsPairDetails: React.FC = () => {
         }
       }
     })();
-  }, [pairAddress, ethPrice.price, isV2, chainId, version]);
+  }, [pairAddress, ethPrice.price, isV2, chainId, version, isUni]);
 
   useEffect(() => {
     setDataLoading(true);
@@ -273,6 +284,7 @@ const AnalyticsPairDetails: React.FC = () => {
               pairData={pairData}
               token0Rate={token0Rate}
               token1Rate={token1Rate}
+              isUni={isUni}
             />
           </Box>
         </Grid>
@@ -316,7 +328,7 @@ const AnalyticsPairDetails: React.FC = () => {
                     borderRadius={6}
                     className='text-primaryText bg-gray30'
                   >
-                    {pairData.fee / 10000}% Fee
+                    {pairData.fee / 10000}% {isUni ? '(F)' : 'Fee'}
                   </Box>
                 )}
               </Box>

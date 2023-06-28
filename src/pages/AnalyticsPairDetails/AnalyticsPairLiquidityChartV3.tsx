@@ -21,7 +21,8 @@ import { useTranslation } from 'react-i18next';
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;
   pairAddress: string;
-}> = ({ pairData, pairAddress }) => {
+  isUni?: boolean;
+}> = ({ pairData, pairAddress, isUni }) => {
   const { t } = useTranslation();
   const [liquidityChartData, updateLiquidtyChartData] = useState<any | null>(
     null,
@@ -32,7 +33,11 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     if (!chainId) return;
     (async () => {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}`,
+        `${
+          process.env.REACT_APP_LEADERBOARD_APP_URL
+        }/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}${
+          isUni ? '&isUni=true' : ''
+        }`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -45,7 +50,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
         updateLiquidtyChartData(data.data.chartData);
       }
     })();
-  }, [pairAddress, chainId]);
+  }, [pairAddress, chainId, isUni]);
 
   const [zoom, setZoom] = useState(5);
 
