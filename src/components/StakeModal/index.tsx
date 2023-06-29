@@ -222,9 +222,9 @@ export function FarmModal({
       farmHandler(
         selectedNFT,
         {
-          pool: pool.id,
-          rewardToken: rewardToken.id,
-          bonusRewardToken: bonusRewardToken.id,
+          pool: pool?.id,
+          rewardToken: rewardToken?.id,
+          bonusRewardToken: bonusRewardToken?.id,
           startTime,
           endTime,
         },
@@ -235,9 +235,9 @@ export function FarmModal({
     [
       farmHandler,
       selectedNFT,
-      pool.id,
-      rewardToken.id,
-      bonusRewardToken.id,
+      pool,
+      rewardToken,
+      bonusRewardToken,
       startTime,
       endTime,
       selectedTier,
@@ -268,7 +268,7 @@ export function FarmModal({
           +_balance >=
           +formatUnits(
             BigNumber.from(tokenAmountForTier1),
-            multiplierToken.decimals,
+            multiplierToken?.decimals,
           )
         );
       case tokenAmountForTier2:
@@ -276,7 +276,7 @@ export function FarmModal({
           +_balance >=
           +formatUnits(
             BigNumber.from(tokenAmountForTier2),
-            multiplierToken.decimals,
+            multiplierToken?.decimals,
           )
         );
       case tokenAmountForTier3:
@@ -284,7 +284,7 @@ export function FarmModal({
           +_balance >=
           +formatUnits(
             BigNumber.from(tokenAmountForTier3),
-            multiplierToken.decimals,
+            multiplierToken?.decimals,
           )
         );
       default:
@@ -292,7 +292,7 @@ export function FarmModal({
     }
   }, [
     balance,
-    multiplierToken.decimals,
+    multiplierToken?.decimals,
     selectedTier,
     tokenAmountForTier1,
     tokenAmountForTier2,
@@ -375,7 +375,7 @@ export function FarmModal({
         </Box>
       ) : positionsForPoolLoading ? (
         <Box
-          className='flex justify-center items-center'
+          className='flex items-center justify-center'
           width='100%'
           height='400px'
         >
@@ -418,7 +418,7 @@ export function FarmModal({
                   <p>{t('noNFTForPool')}</p>
                 </Box>
                 <p>{t('takePartinFarmNeedTo')}</p>
-                <Box mt={1} className='flex justify-center items-center'>
+                <Box mt={1} className='flex items-center justify-center'>
                   <NavLink
                     className='v3-stake-liquidity-link'
                     to={linkToProviding}
