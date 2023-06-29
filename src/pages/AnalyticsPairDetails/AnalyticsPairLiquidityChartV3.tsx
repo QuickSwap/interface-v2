@@ -118,7 +118,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
                   t.liquidityActive,
                   t.tickIdx,
                   mockTicks,
-                  false,
+                  isUni,
                 )
               : undefined;
           const nextSqrtX96 = liquidityChartData.ticksProcessed[i - 1]

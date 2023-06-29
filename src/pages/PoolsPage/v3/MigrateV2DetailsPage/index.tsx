@@ -326,7 +326,7 @@ export default function MigrateV2DetailsPage() {
           new Pool(
             token0,
             token1,
-            FeeAmount.LOW,
+            undefined,
             sqrtPrice,
             0,
             tick,

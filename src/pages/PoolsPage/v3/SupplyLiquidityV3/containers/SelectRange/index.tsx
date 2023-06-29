@@ -582,6 +582,7 @@ export function SelectRange({
           onRightRangeInput={onRightRangeInput}
           interactive={false}
           priceFormat={priceFormat}
+          feeAmount={mintInfo.feeAmount}
         />
       </Box>
     </Box>
