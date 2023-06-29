@@ -441,15 +441,6 @@ export function useFarmingSubgraph() {
             provider.getSigner(),
           );
 
-          const {
-            reward,
-            bonusReward,
-          } = await farmingCenterContract.callStatic.collectRewards(
-            [rewardToken, bonusRewardToken, pool, startTime, endTime],
-            +position.id,
-            { from: account },
-          );
-
           const _rewardToken = await fetchToken(rewardToken, true);
           const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
           const _pool = await fetchPool(pool);
@@ -471,6 +462,15 @@ export function useFarmingSubgraph() {
           };
           const _multiplierToken = await fetchToken(multiplierToken, true);
 
+          let rewardRes: any;
+          try {
+            rewardRes = await farmingCenterContract.callStatic.collectRewards(
+              [rewardToken, bonusRewardToken, pool, startTime, endTime],
+              +position.id,
+              { from: account },
+            );
+          } catch (e) {}
+
           _position = {
             ..._position,
             farmId: id,
@@ -489,11 +489,12 @@ export function useFarmingSubgraph() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: newPool,
-            eternalEarned: formatUnits(reward, _rewardToken.decimals),
-            eternalBonusEarned: formatUnits(
-              bonusReward,
-              _bonusRewardToken.decimals,
-            ),
+            eternalEarned: rewardRes
+              ? formatUnits(rewardRes.reward, _rewardToken.decimals)
+              : 0,
+            eternalBonusEarned: rewardRes
+              ? formatUnits(rewardRes.bonusReward, _bonusRewardToken.decimals)
+              : 0,
           };
         } else {
           const res = await fetch(
