@@ -491,10 +491,10 @@ export function useFarmingSubgraph() {
             pool: newPool,
             eternalEarned: rewardRes
               ? formatUnits(rewardRes.reward, _rewardToken.decimals)
-              : undefined,
+              : 0,
             eternalBonusEarned: rewardRes
               ? formatUnits(rewardRes.bonusReward, _bonusRewardToken.decimals)
-              : undefined,
+              : 0,
           };
         } else {
           const res = await fetch(
