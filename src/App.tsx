@@ -62,7 +62,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import { mainTheme } from './theme';
 import Background from 'layouts/Background';
-import GasUpdater from 'state/application/gasUpdater';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 
@@ -98,7 +97,6 @@ function Updaters() {
       <SyrupUpdater />
       <AnalyticsUpdater />
       <AdsUpdater />
-      <GasUpdater />
     </>
   );
 }
