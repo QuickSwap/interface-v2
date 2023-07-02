@@ -49,7 +49,7 @@ const newSteps = [
     title: 'Usage',
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
-        document.querySelector('.Connect-wallet-modal').style.opacity = "0"
+        // document.querySelector('.Connect-wallet-modal').style.opacity = "0"
         resolve();
       });
     },
@@ -84,10 +84,10 @@ const newSteps = [
     attachTo: { element: '.tradePage', on: 'left' },
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
-        [...document.querySelector('.tradePage').children].forEach((element,index) => {
-          if(index == 1){
+        [...document.querySelector('.tradePage').children].forEach((element, index) => {
+          if (index == 1) {
             element.classList.add('active')
-          }else{
+          } else {
             element.classList.remove('active')
           }
         });
@@ -119,7 +119,7 @@ const newSteps = [
         text: 'Next',
       },
     ],
-   
+
   },
   {
     id: 'swap',
@@ -127,10 +127,10 @@ const newSteps = [
     attachTo: { element: '.tradePage', on: 'left' },
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
-        [...document.querySelector('.tradePage').children].forEach((element,index) => {
-          if(index == 2){
+        [...document.querySelector('.tradePage').children].forEach((element, index) => {
+          if (index == 2) {
             element.classList.add('active')
-          }else{
+          } else {
             element.classList.remove('active')
           }
         });
@@ -197,10 +197,10 @@ const newSteps = [
     title: 'Learn more',
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
-        [...document.querySelector('.Exchange-swap-order-type-tabs').children].forEach((element,index) => {
-          if(index == 1){
+        [...document.querySelector('.Exchange-swap-order-type-tabs').children].forEach((element, index) => {
+          if (index == 1) {
             element.classList.add('active')
-          }else{
+          } else {
             element.classList.remove('active')
           }
         });
@@ -239,10 +239,10 @@ const newSteps = [
     title: 'Learn more',
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
-        [...document.querySelector('.Exchange-swap-order-type-tabs').children].forEach((element,index) => {
-          if(index == 2){
+        [...document.querySelector('.Exchange-swap-order-type-tabs').children].forEach((element, index) => {
+          if (index == 2) {
             element.classList.add('active')
-          }else{
+          } else {
             element.classList.remove('active')
           }
         });
@@ -365,6 +365,113 @@ const newSteps = [
       {
         type: 'next',
         text: 'Done',
+      },
+    ],
+  },
+  {
+    id: 'usage',
+    title: 'Usage',
+    beforeShowPromise: function () {
+      return new Promise(function (resolve) {
+        if(document.querySelector('.leverage-btn').innerText.indexOf("Long") !== -1){
+          resolve();
+        }
+      });
+    },
+    text: `
+    </div>
+    <div style="width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">
+    Click on Long ETH.<br/></div>
+            `,
+    attachTo: { element: '.leverage-btn', on: 'left' },
+    buttons: [
+      {
+        type: 'back',
+        classes: 'shepherd-button-secondary',
+        text: 'Back',
+      },
+      {
+        type: 'next',
+        text: 'Next',
+      },
+    ],
+  },
+  {
+    id: 'usage',
+    title: 'Usage',
+    text: `
+    <div>
+    <div style="color: #061341; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Check the paperwork<br/>to Long</div>
+    <div style="width: 100%"><span
+    style="color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 700; line-height: 24px; word-wrap: break-word">Leverage:
+</span><span
+    style="color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Shows
+    your chosen leverage<br /></span><span
+    style="color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 700; line-height: 24px; word-wrap: break-word">Entry
+    Price: </span><span
+    style="color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">The
+    price at which the trade will initiate<br /></span><span
+    style="color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 700; line-height: 24px; word-wrap: break-word">Liquidity
+    Price:</span><span
+    style="color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">
+    If the token price reaches here, you will lose all the tokens.<br /></span><span
+    style="color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 700; line-height: 24px; word-wrap: break-word">Fees:
+</span><span
+    style="color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">The
+    fees you are paying to execute the trade.<br /></span><span
+    style="color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word"><br />Click
+    on Long and sign the transaction to initiate the Long trade.</span>
+</div>
+</div>
+            `,
+    attachTo: { element: '.Modal-content', on: 'right' },
+    buttons: [
+      {
+        type: 'back',
+        classes: 'shepherd-button-secondary',
+        text: 'Back',
+      },
+      {
+        type: 'next',
+        text: 'Next',
+      },
+    ],
+  },
+  {
+    id: 'position',
+    title: 'Step 11',
+    text: `
+    <div><span style="color: #213062; font-size: 10px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word"><br/></span><span style="color: #213062; font-size: 25px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">You can track your position<br/>here.</span></div>
+            `,
+    attachTo: { element: '.Exchange-list-header', on: 'top' },
+    buttons: [
+      {
+        type: 'back',
+        classes: 'shepherd-button-secondary',
+        text: 'Back',
+      },
+      {
+        type: 'next',
+        text: 'Next',
+      },
+    ],
+  },
+  {
+    id: 'positionClose',
+    title: 'Step 11',
+    text: `
+    <div style="width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">You can either close an order on market price or set a trigger to automatically close the order. </div>
+             `,
+    attachTo: { element: '.close-action', on: 'top' },
+    buttons: [
+      {
+        type: 'back',
+        classes: 'shepherd-button-secondary',
+        text: 'Back',
+      },
+      {
+        type: 'next',
+        text: 'Next',
       },
     ],
   },
