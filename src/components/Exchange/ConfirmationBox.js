@@ -771,7 +771,7 @@ export default function ConfirmationBox(props) {
         <div className="Confirmation-box-row">
           <button
             onClick={onConfirmationClick}
-            className="App-cta Confirmation-box-button"
+            className="App-cta Confirmation-box-button long-btn-confirm"
             disabled={!isPrimaryEnabled()}
           >
             {getPrimaryText()}
