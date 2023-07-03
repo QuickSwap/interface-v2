@@ -16,6 +16,27 @@
   }
 }
 
+.shepherd-button {
+  background: transparent;
+  border: 0px;
+  color: inherit !important;
+  margin-right: 0.5rem;
+}
+
+.shepherd-button:hover {
+  background: transparent !important;
+}
+
+.shepherd-has-title .shepherd-content .shepherd-header {
+  background: transparent !important;
+}
+
+.shepherd-arrow:before {
+  background: #fff !important;
+  content: "";
+  transform: rotate(45deg);
+}
+
 .App-header-backdrop {
   position: fixed;
   z-index: 10;
