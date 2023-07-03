@@ -40,7 +40,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
 import { GlobalConst } from 'constants/index';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useGammaUNIProxyContract } from 'hooks/useContract';
+import { useContract, useGammaUNIProxyContract } from 'hooks/useContract';
 import {
   useSingleCallResult,
   useSingleContractMultipleData,
@@ -48,6 +48,7 @@ import {
 import { ETHER, WETH } from '@uniswap/sdk';
 import { maxAmountSpend } from 'utils';
 import { GammaPairs } from 'constants/index';
+import GammaClearingABI from 'constants/abis/gamma-clearing.json';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -536,14 +537,60 @@ export function useV3DerivedMintInfo(
       : [],
   );
 
-  const depositCapData = useSingleCallResult(
-    presetRange && presetRange.address ? gammaUNIPROXYContract : undefined,
+  const depositCapData1 = useSingleCallResult(
+    presetRange &&
+      presetRange.address &&
+      gammaUNIPROXYContract &&
+      gammaUNIPROXYContract.address.toLowerCase() !==
+        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? gammaUNIPROXYContract
+      : undefined,
     'positions',
     presetRange && presetRange.address ? [presetRange.address] : [],
   );
 
+  const clearanceResult = useSingleCallResult(
+    presetRange &&
+      presetRange.address &&
+      gammaUNIPROXYContract &&
+      gammaUNIPROXYContract.address.toLowerCase() ===
+        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? gammaUNIPROXYContract
+      : undefined,
+    'clearance',
+  );
+
+  const clearanceAddress =
+    !clearanceResult.loading &&
+    clearanceResult.result &&
+    clearanceResult.result.length > 0
+      ? clearanceResult.result[0]
+      : undefined;
+
+  const clearanceContract = useContract(clearanceAddress, GammaClearingABI);
+
+  const depositCapData2 = useSingleCallResult(
+    presetRange &&
+      presetRange.address &&
+      gammaUNIPROXYContract &&
+      gammaUNIPROXYContract.address.toLowerCase() ===
+        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? clearanceContract
+      : undefined,
+    'positions',
+    presetRange && presetRange.address ? [presetRange.address] : [],
+  );
+
+  const depositCapData = gammaUNIPROXYContract
+    ? gammaUNIPROXYContract.address.toLowerCase() ===
+      '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? depositCapData2
+      : depositCapData1
+    : undefined;
+
   const depositCap = useMemo(() => {
     if (
+      depositCapData &&
       !depositCapData.loading &&
       depositCapData.result &&
       depositCapData.result.length > 0 &&
