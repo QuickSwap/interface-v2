@@ -1,6 +1,6 @@
 import { Box, Divider, Grid } from '@material-ui/core';
 import { NavigateBefore, NavigateNext } from '@material-ui/icons';
-import { AdsSlider, SwapTokenDetailsHorizontal } from 'components';
+import { SwapTokenDetailsHorizontal } from 'components';
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
@@ -92,9 +92,6 @@ const SwapDefaultMode: React.FC<{
           <Box className='wrapper'>
             <SwapMain />
           </Box>
-          {/* <Box sx={{ marginTop: '16px' }}>
-            <AdsSlider sort='swap' />
-          </Box> */}
         </Grid>
         <Grid item lg={4}>
           <Grid container justifyContent='flex-start' spacing={2}>

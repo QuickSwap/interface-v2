@@ -6,12 +6,12 @@ import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
-import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import { getConfig } from 'config';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useIsV2 } from 'state/application/hooks';
+import { Adshares } from 'components';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -63,7 +63,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
         )}
       </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <AdsSlider sort='analytics' />
+        <Adshares />
       </Box>
       <Box
         mb={4}
