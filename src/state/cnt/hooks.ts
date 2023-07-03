@@ -157,7 +157,7 @@ export function useCNTFarmList(
           .filter((address) => !tokenMap[ChainId.MATIC][address])
           .filter(
             (address) =>
-              !Object.values(GlobalValue.tokens.COMMON).find(
+              !GlobalValue.tokens.COMMON[chainId].find(
                 (token) =>
                   token.address.toLowerCase() === address.toLowerCase(),
               ),

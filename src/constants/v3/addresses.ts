@@ -717,6 +717,30 @@ export const WEFI: { [chainId: number]: Token } = {
   ),
 };
 
+export const EMPTY: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x0000000000000000000000000000000000000000',
+    0,
+    'EMPTY',
+    'EMPTY',
+  ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0x0000000000000000000000000000000000000000',
+    0,
+    'EMPTY',
+    'EMPTY',
+  ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x0000000000000000000000000000000000000000',
+    0,
+    'EMPTY',
+    'EMPTY',
+  ),
+};
+
 export const DLQUICK: { [chainId: number]: Token } = {
   [ChainId.MATIC]: NEW_QUICK[ChainId.MATIC],
   [ChainId.DOGECHAIN]: DD[ChainId.DOGECHAIN],
