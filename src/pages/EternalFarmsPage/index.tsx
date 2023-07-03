@@ -57,7 +57,7 @@ const EternalFarmsPage: React.FC<{
   } = useFarmingSubgraph() || {};
 
   useEffect(() => {
-    fetchEternalFarmsFn(true, farmStatus === 'ended');
+    fetchEternalFarmsFn(farmStatus === 'ended');
     fetchEternalFarmPoolAprsFn();
     fetchEternalFarmAprsFn();
     fetchEternalFarmTvlsFn();

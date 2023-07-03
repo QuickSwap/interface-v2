@@ -25,7 +25,6 @@ const SwapCrossChain: React.FC = () => {
     roundedBtn: '26px',
     roundedBox: '1rem',
     roundedDropDown: '20rem',
-    displayDivider: true,
   };
   const lightModeStyle: ConfigTheme = {
     baseContent: '#070002',
@@ -43,7 +42,6 @@ const SwapCrossChain: React.FC = () => {
     roundedBtn: '26px',
     roundedBox: '1rem',
     roundedDropDown: '20rem',
-    displayDivider: true,
   };
   useEffect(() => {
     // console.log('SwapCrossChain #init');
@@ -59,6 +57,7 @@ const SwapCrossChain: React.FC = () => {
       >
         <SquidWidget
           config={{
+            integratorId: 'quickswap-swap-widget',
             companyName: 'Quickswap',
             apiUrl: 'https://api.0xsquid.com',
             style: darkMode ? darkModeStyle : lightModeStyle,

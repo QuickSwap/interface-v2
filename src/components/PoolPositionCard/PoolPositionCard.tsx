@@ -38,8 +38,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const pairId = pair.liquidityToken.address;
 
   useEffect(() => {
-    const pairLists = [pairId];
-    getBulkPairData(chainIdOrDefault, pairLists).then((data) =>
+    getBulkPairData(chainIdOrDefault, pairId).then((data) =>
       setBulkPairData(data),
     );
     return () => setBulkPairData(null);
