@@ -64,6 +64,8 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     })();
   }, [account, chainId, arcxSDK]);
 
+  console.log(account);
+
   const PasswordModal = () => {
     const [devPass, setDevPass] = useState('');
     const confirmPassword = () => {
