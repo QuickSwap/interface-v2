@@ -292,6 +292,7 @@ export function AddLiquidityButton({
       setRejected && setRejected(false);
 
       setAttemptingTxn(true);
+
       try {
         const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
           (GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress]

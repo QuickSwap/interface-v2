@@ -41,10 +41,7 @@ import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/Pre
 import { GlobalConst } from 'constants/index';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useContract, useGammaUNIProxyContract } from 'hooks/useContract';
-import {
-  useSingleCallResult,
-  useSingleContractMultipleData,
-} from 'state/multicall/hooks';
+import { useSingleCallResult } from 'state/multicall/hooks';
 import { ETHER, WETH } from '@uniswap/sdk';
 import { maxAmountSpend } from 'utils';
 import { GammaPairs } from 'constants/index';
@@ -522,19 +519,14 @@ export function useV3DerivedMintInfo(
   const gammaPairAddress =
     gammaPairs && gammaPairs.length > 0 ? gammaPairs[0].address : undefined;
   const gammaUNIPROXYContract = useGammaUNIProxyContract(gammaPairAddress);
-  const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : [];
-  const depositAmountsData = useSingleContractMultipleData(
-    presetRange && presetRange.address && gammaCurrencies.length > 0
-      ? gammaUNIPROXYContract
-      : undefined,
+  const depositAmountsData = useSingleCallResult(
+    presetRange && presetRange.address ? gammaUNIPROXYContract : undefined,
     'getDepositAmount',
-    presetRange && presetRange.address
-      ? gammaCurrencies.map((currency) => [
-          presetRange?.address,
-          currency?.wrapped.address,
-          parseUnits('1', currency?.wrapped.decimals ?? 0),
-        ])
-      : [],
+    [
+      presetRange?.address,
+      independentCurrency?.wrapped.address,
+      independentAmount?.numerator.toString(),
+    ],
   );
 
   const depositCapData1 = useSingleCallResult(
@@ -617,25 +609,26 @@ export function useV3DerivedMintInfo(
     return;
   }, [currencyA, currencyB, depositCapData, gammaPairReverted]);
 
-  const quoteDepositAmount = useMemo(() => {
+  const depositAmount = useMemo(() => {
+    const dependentCurrency =
+      independentField === Field.CURRENCY_A ? currencyB : currencyA;
     if (
-      depositAmountsData.length > 0 &&
-      !depositAmountsData[0].loading &&
-      depositAmountsData[0].result &&
-      depositAmountsData[0].result.length > 1 &&
-      currencyB
+      !depositAmountsData.loading &&
+      depositAmountsData.result &&
+      depositAmountsData.result.length > 1 &&
+      dependentCurrency
     ) {
       return {
         amountMin: Number(
           formatUnits(
-            depositAmountsData[0].result[0],
-            currencyB.wrapped.decimals,
+            depositAmountsData.result[0],
+            dependentCurrency.wrapped.decimals,
           ),
         ),
         amountMax: Number(
           formatUnits(
-            depositAmountsData[0].result[1],
-            currencyB.wrapped.decimals,
+            depositAmountsData.result[1],
+            dependentCurrency.wrapped.decimals,
           ),
         ),
       };
@@ -643,75 +636,33 @@ export function useV3DerivedMintInfo(
     return;
   }, [currencyB, depositAmountsData]);
 
-  const baseDepositAmount = useMemo(() => {
-    if (
-      depositAmountsData.length > 1 &&
-      !depositAmountsData[1].loading &&
-      depositAmountsData[1].result &&
-      depositAmountsData[1].result.length > 1 &&
-      currencyA
-    ) {
-      return {
-        amountMin: Number(
-          formatUnits(
-            depositAmountsData[1].result[0],
-            currencyA.wrapped.decimals,
-          ),
-        ),
-        amountMax: Number(
-          formatUnits(
-            depositAmountsData[1].result[1],
-            currencyA.wrapped.decimals,
-          ),
-        ),
-      };
-    }
-    return;
-  }, [currencyA, depositAmountsData]);
-
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
+    const dependentCurrency =
+      dependentField === Field.CURRENCY_B ? currencyB : currencyA;
     if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE) {
       if (
         !independentAmount ||
         !presetRange ||
         !presetRange.address ||
-        !quoteDepositAmount ||
-        !baseDepositAmount ||
-        !currencyA ||
-        !currencyB
+        !depositAmount ||
+        !dependentCurrency
       )
         return;
-      if (independentField === Field.CURRENCY_A) {
-        const quoteDeposit = parseUnits(
-          (
-            ((quoteDepositAmount.amountMin + quoteDepositAmount.amountMax) /
-              2) *
-            Number(independentAmount.toSignificant())
-          ).toFixed(currencyB.wrapped.decimals),
-          currencyB.wrapped.decimals,
-        );
-        return CurrencyAmount.fromRawAmount(
-          currencyB.isNative ? currencyB.wrapped : currencyB,
-          JSBI.BigInt(quoteDeposit),
-        );
-      } else {
-        const baseDeposit = parseUnits(
-          (
-            ((baseDepositAmount.amountMin + baseDepositAmount.amountMax) / 2) *
-            Number(independentAmount.toSignificant())
-          ).toFixed(currencyA.wrapped.decimals),
-          currencyA.wrapped.decimals,
-        );
-        return CurrencyAmount.fromRawAmount(
-          currencyA.isNative ? currencyA.wrapped : currencyA,
-          JSBI.BigInt(baseDeposit),
-        );
-      }
+      const dependentDeposit = parseUnits(
+        ((depositAmount.amountMin + depositAmount.amountMax) / 2).toFixed(
+          dependentCurrency.wrapped.decimals,
+        ),
+        dependentCurrency.wrapped.decimals,
+      );
+      return CurrencyAmount.fromRawAmount(
+        dependentCurrency.isNative
+          ? dependentCurrency.wrapped
+          : dependentCurrency,
+        JSBI.BigInt(dependentDeposit),
+      );
     }
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
-    const dependentCurrency =
-      dependentField === Field.CURRENCY_B ? currencyB : currencyA;
     if (
       independentAmount &&
       wrappedIndependentAmount &&
@@ -768,8 +719,7 @@ export function useV3DerivedMintInfo(
     tickUpper,
     poolForPosition,
     presetRange,
-    quoteDepositAmount,
-    baseDepositAmount,
+    depositAmount,
     independentField,
     outOfRange,
     invalidRange,
