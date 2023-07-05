@@ -41,11 +41,11 @@
       }
     }
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     align-items: center;
     position: relative;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 0 16px;
     position: relative;
   }
@@ -57,18 +57,93 @@
   display: flex;
   align-items: center;
   height: 100%;
-  & a {
-    text-decoration: none;
-    margin-right: 6px;
-    color: $textSecondary;
-    border-radius: 10px;
+  & .menuItem {
+    cursor: pointer;
+    position: relative;
     display: flex;
     align-items: center;
-    & p {
-      letter-spacing: normal;
+    height: 36px;
+    padding: 0 24px;
+    margin-right: 6px;
+    overflow: hidden;
+    border-radius: 10px;
+    color: $textSecondary;
+    & small {
+      white-space: nowrap;
     }
-    &:last-child {
-      margin-right: 0,
+    &.subMenuItem {
+      padding: 0;
+      overflow: visible;
+    }
+    .menuItemSparkle {
+      position: absolute;
+      transition: all 0.5s;
+    }
+    .menuItemSparkleTop {
+      top: -20px;
+      margin-left: -10px;
+    }
+    .menuItemSparkleBottom {
+      bottom: -20px;
+      margin-left: -12px;
+    }
+    .menuItemSparkleLeft {
+      left: -20px;
+    }
+    .menuItemSparkleRight {
+      right: -20px;
+    }
+    &.active {
+      color: $textPrimary;
+      background: $secondary1;
+      .menuItemSparkleTop {
+        top: 0px;
+      }
+      .menuItemSparkleBottom {
+        bottom: 0px;
+      }
+      .menuItemSparkleLeft {
+        left: 4px;
+      }
+      .menuItemSparkleRight {
+        right: 4px;
+      }
+    }
+    & .subMenu {
+      display: none;
+      background-color: $secondary2;
+      border-radius: 10px;
+      margin-top: 12px;
+      & .subMenuItem {
+        color: $textSecondary;
+        padding: 10px 24px;
+        white-space: unset;
+        &:hover {
+          color: $textPrimary;
+        }
+        &.active {
+          color: $textPrimary;
+        }
+      }
+    }
+    &:hover {
+      color: $textPrimary;
+      background: $secondary1;
+      .menuItemSparkleTop {
+        top: 0px;
+      }
+      .menuItemSparkleBottom {
+        bottom: 0px;
+      }
+      .menuItemSparkleLeft {
+        left: 4px;
+      }
+      .menuItemSparkleRight {
+        right: 4px;
+      }
+      & .subMenu {
+        display: block;
+      }
     }
   }
 }
@@ -164,7 +239,7 @@
   left: 0;
   border-radius: 10px;
   top: 32px;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     left: unset;
     top: unset;
     background-color: $secondary2;
@@ -189,7 +264,7 @@
   }
   & img {
     width: 20px;
-    margin-left: 8px
+    margin-left: 8px;
   }
 }
 .connectButton {
@@ -235,7 +310,7 @@
     border: solid 1px $primary;
     color: $primary;
     font-size: 14px;
-    font-weight: 600
+    font-weight: 600;
   }
 }
 .mobileMenuContainer {
@@ -256,13 +331,14 @@
   justify-content: space-between;
   max-width: 375px;
   width: 100%;
-  & a {
-    text-decoration: none;
+  & .menuItem,
+  & .subMenuItem {
     padding: 8px 12px;
     color: $textSecondary;
     font-weight: bold;
+    cursor: pointer;
     &.active {
-      color: $primary;
+      color: $textPrimary;
     }
   }
 }

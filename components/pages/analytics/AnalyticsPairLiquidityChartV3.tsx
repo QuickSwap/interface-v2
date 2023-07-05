@@ -5,7 +5,6 @@ import { TickMath } from 'v3lib/utils/tickMath';
 import { BigNumber } from 'ethers';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { isAddress } from 'utils';
-import { getLiquidityChart } from 'utils/v3-graph';
 import dynamic from 'next/dynamic';
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 import { Box } from '@mui/material';
@@ -26,11 +25,21 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
 
   useEffect(() => {
     if (!chainId) return;
-    getLiquidityChart(pairAddress, chainId).then((data) => {
-      if (data && !data.error) {
-        updateLiquidtyChartData(data);
+    (async () => {
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to get top pair details`,
+        );
       }
-    });
+      const data = await res.json();
+      if (data && data.data && data.data.chartData) {
+        updateLiquidtyChartData(data.data.chartData);
+      }
+    })();
   }, [pairAddress, chainId]);
 
   const [zoom, setZoom] = useState(5);
@@ -76,13 +85,16 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
           const mockTicks = [
             {
               index: t.tickIdx - 60,
-              liquidityGross: t.liquidityGross,
-              liquidityNet: JSBI.multiply(t.liquidityNet, JSBI.BigInt('-1')),
+              liquidityGross: JSBI.BigInt(t.liquidityGross),
+              liquidityNet: JSBI.multiply(
+                JSBI.BigInt(t.liquidityNet),
+                JSBI.BigInt('-1'),
+              ),
             },
             {
               index: t.tickIdx,
-              liquidityGross: t.liquidityGross,
-              liquidityNet: t.liquidityNet,
+              liquidityGross: JSBI.BigInt(t.liquidityGross),
+              liquidityNet: JSBI.BigInt(t.liquidityNet),
             },
           ];
           const pool =

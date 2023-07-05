@@ -15,7 +15,6 @@ import burn from './burn/reducer';
 import burnV3 from './burn/v3/reducer';
 import multicall from './multicall/reducer';
 import analytics from './analytics/reducer';
-import ads from './ads/reducer';
 import multicallV3 from './multicall/v3/reducer';
 import swapV3 from './swap/v3/reducer';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
@@ -40,7 +39,6 @@ const store = configureStore({
     dualFarms,
     syrups,
     analytics,
-    ads,
     [dataApi.reducerPath]: dataApi.reducer,
   },
   middleware: (getDefaultMiddleware) => [

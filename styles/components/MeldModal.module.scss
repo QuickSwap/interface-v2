@@ -4,6 +4,8 @@
 .meldModalWrapper {
   max-width: 450px;
   background-color: rgb(12, 17, 42) !important;
+  display: flex;
+  flex-direction: column;
 }
 
 .meldModalClose {
@@ -13,10 +15,8 @@
 }
 
 .buyFiatContent {
-  height: 100%;
-  width: 100%;
+  flex: 1;
   overflow-y: auto;
-  display: flex;
   & iframe {
     border: none;
   }

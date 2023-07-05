@@ -4,7 +4,6 @@ import { HelpOutline } from '@mui/icons-material';
 import SupplyLiquidity from 'components/pages/pools/SupplyLiquidity';
 import { useTranslation } from 'next-i18next';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import AdsSlider from 'components/AdsSlider';
 import { useIsV2 } from 'state/application/hooks';
 import { SupplyLiquidityV3 } from 'components/pages/pools/SupplyLiquidityV3';
 import YourLiquidityPools from 'components/pages/pools/YourLiquidityPools';
@@ -16,6 +15,7 @@ import { ChainId } from '@uniswap/sdk';
 import { GammaPairs } from 'constants/index';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { Adshares } from 'components';
 
 const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation();
@@ -59,9 +59,6 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           <Box className='wrapper'>
             {!isV2 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
           </Box>
-          {/* <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
-            <AdsSlider sort='pools' />
-          </Box> */}
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
           <Box className='wrapper'>
@@ -74,8 +71,8 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           )}
         </Grid>
       </Grid>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto 24px'>
-        <AdsSlider sort='analytics' />
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
+        <Adshares />
       </Box>
     </Box>
   );

@@ -16,6 +16,7 @@ import { BitKeep } from './BitKeep';
 import { BlockWallet } from './BlockWallet';
 import { BraveWallet } from './BraveWallet';
 import { CypherD } from './CypherD';
+import { isMobile } from 'react-device-detect';
 
 const MetamaskIcon = '/assets/images/metamask.png';
 const BlockWalletIcon = '/assets/images/blockwalletIcon.svg';
@@ -134,6 +135,7 @@ export const gnosisSafeConnection: Connection = {
   iconName: GnosisIcon,
   color: '#4196FC',
   description: 'Login using gnosis safe app',
+  mobile: true,
 };
 
 const [web3Metamask, web3MetamaskHooks] = initializeConnector<MetaMask>(
@@ -377,18 +379,33 @@ export const coinbaseWalletConnection: Connection = {
 };
 
 export function getConnections() {
-  return [
-    cypherDConnection,
-    metamaskConnection,
-    trustWalletConnection,
-    phantomConnection,
-    braveWalletConnection,
-    blockWalletConnection,
-    bitKeepConnection,
-    gnosisSafeConnection,
-    coinbaseWalletConnection,
-    walletConnectConnection,
-    zengoConnectConnection,
-    arkaneConnection,
-  ];
+  return isMobile
+    ? [
+        walletConnectConnection,
+        cypherDConnection,
+        metamaskConnection,
+        trustWalletConnection,
+        phantomConnection,
+        braveWalletConnection,
+        blockWalletConnection,
+        gnosisSafeConnection,
+        coinbaseWalletConnection,
+        zengoConnectConnection,
+        arkaneConnection,
+        bitKeepConnection,
+      ]
+    : [
+        cypherDConnection,
+        metamaskConnection,
+        trustWalletConnection,
+        phantomConnection,
+        braveWalletConnection,
+        blockWalletConnection,
+        gnosisSafeConnection,
+        coinbaseWalletConnection,
+        walletConnectConnection,
+        zengoConnectConnection,
+        arkaneConnection,
+        bitKeepConnection,
+      ];
 }

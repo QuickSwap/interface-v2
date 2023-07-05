@@ -22,11 +22,9 @@ import {
   getFormattedPrice,
   getPriceClass,
   getTokenFromAddress,
-  getTopTokens,
   isAddress,
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import { getTopTokensV3 } from 'utils/v3-graph';
 
 const SwapProAssets: React.FC = ({}) => {
   const { t } = useTranslation();
@@ -93,46 +91,56 @@ const SwapProAssets: React.FC = ({}) => {
     if (isV2) {
       const { price, oneDayPrice } = ethPrice;
       if (price !== undefined && oneDayPrice !== undefined) {
-        getTopTokens(price, oneDayPrice, count, chainIdToUse).then((data) => {
-          if (Array.isArray(data)) {
-            data.forEach((d) => {
-              d.searchVal = (
-                (d.symbol || '') + '-' + ('' || d.name) || ''
-              ).toLowerCase();
-              d.numericVol = Number(d.oneDayVolumeUSD);
-              d.kmbVol = toKMB(d.totalLiquidityUSD);
-            });
+        fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v2?chainId=${chainIdToUse}&limit=${count}`,
+        ).then((res) =>
+          res.json().then((res) => {
+            const data = res.data;
+            if (Array.isArray(data)) {
+              data.forEach((d) => {
+                d.searchVal = (
+                  (d.symbol || '') + '-' + ('' || d.name) || ''
+                ).toLowerCase();
+                d.numericVol = Number(d.oneDayVolumeUSD);
+                d.kmbVol = toKMB(d.totalLiquidityUSD);
+              });
 
-            data.sort((a, b) => b.totalLiquidityUSD - a.totalLiquidityUSD);
-          }
-          updateTopTokens(data || []);
-          setTimeout(() => {
-            performFilteration(data || []);
-          }, 100);
-        });
+              data.sort((a, b) => b.totalLiquidityUSD - a.totalLiquidityUSD);
+            }
+            updateTopTokens(data || []);
+            setTimeout(() => {
+              performFilteration(data || []);
+            }, 100);
+          }),
+        );
       }
     } else {
       // v3
       const { price, oneDayPrice } = maticPrice;
       if (price !== undefined && oneDayPrice !== undefined) {
-        getTopTokensV3(price, oneDayPrice, count, chainIdToUse).then((data) => {
-          if (Array.isArray(data)) {
-            data.forEach((d) => {
-              d.searchVal = (
-                (d.symbol || '') + '-' + ('' || d.name) || ''
-              ).toLowerCase();
-              d.numericVol = Number(d.totalLiquidityUSD);
-              d.kmbVol = toKMB(d.numericVol);
-            });
+        fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v3?chainId=${chainId}&limit=${count}`,
+        ).then((res) =>
+          res.json().then((res) => {
+            const data = res.data;
+            if (Array.isArray(data)) {
+              data.forEach((d) => {
+                d.searchVal = (
+                  (d.symbol || '') + '-' + ('' || d.name) || ''
+                ).toLowerCase();
+                d.numericVol = Number(d.totalLiquidityUSD);
+                d.kmbVol = toKMB(d.numericVol);
+              });
 
-            data.sort((a, b) => b.totalLiquidityUSD - a.totalLiquidityUSD);
-          }
+              data.sort((a, b) => b.totalLiquidityUSD - a.totalLiquidityUSD);
+            }
 
-          updateTopTokens(data || []);
-          setTimeout(() => {
-            performFilteration(data);
-          }, 100);
-        });
+            updateTopTokens(data || []);
+            setTimeout(() => {
+              performFilteration(data);
+            }, 100);
+          }),
+        );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

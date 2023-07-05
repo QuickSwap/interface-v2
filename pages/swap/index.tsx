@@ -1,6 +1,6 @@
 import { Box, useTheme, useMediaQuery } from '@mui/material';
-import { SettingsModal, AdsSlider } from 'components';
 import { ChainId } from '@uniswap/sdk';
+import { Adshares, SettingsModal } from 'components';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import React, { useEffect, useState } from 'react';
 import { useIsV2 } from 'state/application/hooks';
@@ -10,7 +10,6 @@ import { useDerivedSwapInfo as useDerivedSwapInfoV3 } from 'state/swap/v3/hooks'
 import SwapDefaultMode from 'components/pages/swap/SwapDefaultMode';
 import SwapPageHeader from 'components/pages/swap/SwapPageHeader';
 import SwapProMain from 'components/pages/swap/SwapProMain';
-import { getPairAddress, getPairAddressV3 } from 'utils';
 import { wrappedCurrency, wrappedCurrencyV3 } from 'utils/wrappedCurrency';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -19,7 +18,9 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isV2 } = useIsV2();
   const isProMode = useIsProMode();
-  const [pairId, setPairId] = useState<string | undefined>(undefined);
+  const [pairId, setPairId] = useState<
+    { v2: string | undefined; v3: string | undefined } | undefined
+  >(undefined);
   const [pairTokenReversed, setPairTokenReversed] = useState(false);
 
   const { currencies } = useDerivedSwapInfo();
@@ -35,39 +36,36 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainIdToUse);
 
   useEffect(() => {
-    const token1Address = isV2 ? token1?.address : token1V3?.address;
-    const token2Address = isV2 ? token2?.address : token2V3?.address;
     async function getPairId(token1Address: string, token2Address: string) {
-      let pairData;
-      if (isV2) {
-        pairData = await getPairAddress(
-          token1Address,
-          token2Address,
-          chainIdToUse,
-        );
-      } else {
-        pairData = await getPairAddressV3(
-          token1Address,
-          token2Address,
-          chainIdToUse,
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/pair-address/${token1Address}/${token2Address}?chainId=${chainIdToUse}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to get top token details`,
         );
       }
-      if (pairData) {
-        setPairTokenReversed(pairData.tokenReversed);
-        setPairId(pairData.pairId);
+      const data = await res.json();
+
+      if (data && data.data) {
+        setPairTokenReversed(
+          isV2
+            ? data.data.v2
+              ? data.data.v2.tokenReversed
+              : false
+            : data.data.v3
+            ? data.data.v3.tokenReversed
+            : false,
+        );
+
+        setPairId({ v2: data.data.v2?.pairId, v3: data.data.v3?.pairId });
       }
     }
-    if (token1Address && token2Address) {
-      getPairId(token1Address, token2Address);
+    if (token1?.address && token2?.address) {
+      getPairId(token1?.address, token2?.address);
     }
-  }, [
-    chainIdToUse,
-    isV2,
-    token1?.address,
-    token2?.address,
-    token1V3?.address,
-    token2V3?.address,
-  ]);
+  }, [chainIdToUse, isV2, token1?.address, token2?.address]);
 
   return (
     <Box width='100%' mb={3} pt='88px'>
@@ -91,9 +89,8 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           token2={isV2 ? token2 : token2V3}
         />
       )}
-
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto 24px'>
-        <AdsSlider sort='analytics' />
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
+        <Adshares />
       </Box>
     </Box>
   );

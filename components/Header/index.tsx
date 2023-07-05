@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { KeyboardArrowDown, MoreHoriz } from '@mui/icons-material';
 import {
-  useIsV2,
   useNetworkSelectionModalToggle,
   useUDDomain,
   useWalletModalToggle,
@@ -25,6 +24,7 @@ import { getConfig } from 'config';
 import useDeviceWidth from 'hooks/useDeviceWidth';
 import { USDC, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
+import { networkConnection, walletConnectConnection } from 'connectors';
 
 const QuickIcon = '/assets/images/quickIcon.svg';
 const QuickLogo = '/assets/images/quickLogo.png';
@@ -41,7 +41,8 @@ const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
-  const { pathname } = useRouter();
+  const router = useRouter();
+  const { pathname } = router;
   const { account } = useActiveWeb3React();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { ENSName } = useENSName(account ?? undefined);
@@ -82,19 +83,23 @@ const Header: React.FC = () => {
   }, []);
 
   const menuItemCountToShow = useMemo(() => {
-    if (deviceWidth > 1540) {
+    if (deviceWidth > 1580) {
       return 7;
-    } else if (deviceWidth > 1430) {
+    } else if (deviceWidth > 1500) {
       return 6;
-    } else if (deviceWidth > 1260) {
+    } else if (deviceWidth > 1320) {
       return 5;
-    } else if (deviceWidth > 1080) {
+    } else if (deviceWidth > 1190) {
       return 4;
+    } else if (deviceWidth > 1100) {
+      return 3;
+    } else if (deviceWidth > 1020) {
+      return 2;
     }
-    return 3;
+    return 1;
   }, [deviceWidth]);
 
-  const { chainId } = useActiveWeb3React();
+  const { chainId, connector } = useActiveWeb3React();
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
   const showPool = config['pools']['available'];
@@ -129,9 +134,31 @@ const Header: React.FC = () => {
       text: 'Perps',
       id: 'perps-page-link',
       isExternal: true,
-      target: '_self',
       externalLink: process?.env?.NEXT_PUBLIC_PERPS_URL || '',
       isNew: true,
+      onClick: async () => {
+        if (chainId !== ChainId.ZKEVM) {
+          const zkEVMconfig = getConfig(ChainId.ZKEVM);
+          const chainParam = {
+            chainId: ChainId.ZKEVM,
+            chainName: `${zkEVMconfig['networkName']} Network`,
+            rpcUrls: [zkEVMconfig['rpc']],
+            nativeCurrency: zkEVMconfig['nativeCurrency'],
+            blockExplorerUrls: [zkEVMconfig['blockExplorer']],
+          };
+          if (
+            connector === walletConnectConnection.connector ||
+            connector === networkConnection.connector
+          ) {
+            await connector.activate(ChainId.ZKEVM);
+          } else {
+            await connector.activate(chainParam);
+          }
+        }
+        if (process.env.NEXT_PUBLIC_PERPS_URL) {
+          window.open(process.env.NEXT_PUBLIC_PERPS_URL, '_self');
+        }
+      },
     });
   }
   if (showPool) {
@@ -235,8 +262,6 @@ const Header: React.FC = () => {
     // },
   ];
 
-  const { updateIsV2 } = useIsV2();
-
   return (
     <Box className={`${styles.header} ${tabletWindowSize ? '' : headerClass}`}>
       <NetworkSelectionModal />
@@ -255,106 +280,61 @@ const Header: React.FC = () => {
       </Link>
       {!tabletWindowSize && (
         <Box className={styles.mainMenu}>
-          {menuItems.slice(0, menuItemCountToShow).map((val, index) =>
-            val.isExternal ? (
-              <a
-                href={val.externalLink}
-                target={val?.target ? val.target : '_blank'}
-                key={index}
-                id={val.id}
-                rel='noopener noreferrer'
-                className={`${styles.menuItem} ${
-                  pathname !== '/' && val.link.includes(pathname)
-                    ? styles.activeMenuItem
-                    : ''
-                }`}
-              >
-                <small>{val.text}</small>
-                {val.isNew && (
-                  <>
-                    <Image src={NewTag} alt='new menu' width={46} height={30} />
-                    <Image
-                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
-                      src={SparkleLeft}
-                      alt='menuItem sparkle left'
-                      width={4}
-                      height={5}
-                    />
-                    <Image
-                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
-                      src={SparkleRight}
-                      alt='menuItem sparkle right'
-                      width={4}
-                      height={5}
-                    />
-                    <Image
-                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
-                      src={SparkleBottom}
-                      alt='menuItem sparkle bottom'
-                      width={136}
-                      height={10}
-                    />
-                    <Image
-                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
-                      src={SparkleTop}
-                      alt='menuItem sparkle top'
-                      width={133}
-                      height={11}
-                    />
-                  </>
-                )}
-              </a>
-            ) : (
-              <Link
-                href={val.link}
-                key={index}
-                id={val.id}
-                className={`${styles.menuItem} ${
-                  pathname !== '/' && val.link.includes(pathname)
-                    ? styles.activeMenuItem
-                    : ''
-                }`}
-                onClick={() => {
-                  updateIsV2(false);
-                }}
-              >
-                <small>{val.text}</small>
-                {val.isNew && (
-                  <>
-                    <Image src={NewTag} alt='new menu' width={46} height={30} />
-                    <Image
-                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
-                      src={SparkleLeft}
-                      alt='menuItem sparkle left'
-                      width={4}
-                      height={5}
-                    />
-                    <Image
-                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
-                      src={SparkleRight}
-                      alt='menuItem sparkle right'
-                      width={4}
-                      height={5}
-                    />
-                    <Image
-                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
-                      src={SparkleBottom}
-                      alt='menuItem sparkle bottom'
-                      width={136}
-                      height={10}
-                    />
-                    <Image
-                      className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
-                      src={SparkleTop}
-                      alt='menuItem sparkle top'
-                      width={133}
-                      height={11}
-                    />
-                  </>
-                )}
-              </Link>
-            ),
-          )}
+          {menuItems.slice(0, menuItemCountToShow).map((val) => (
+            <Box
+              key={val.id}
+              id={val.id}
+              className={`menuItem ${
+                pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
+              }`}
+              onClick={() => {
+                if (val.onClick) {
+                  val.onClick();
+                } else {
+                  if (val.isExternal) {
+                    window.open(val.externalLink, val.target);
+                  } else {
+                    router.push(val.link);
+                  }
+                }
+              }}
+            >
+              <small>{val.text}</small>
+              {val.isNew && (
+                <>
+                  <Image src={NewTag} alt='new menu' width={46} height={30} />
+                  <Image
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
+                    src={SparkleLeft}
+                    alt='menuItem sparkle left'
+                    width={4}
+                    height={5}
+                  />
+                  <Image
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
+                    src={SparkleRight}
+                    alt='menuItem sparkle right'
+                    width={4}
+                    height={5}
+                  />
+                  <Image
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
+                    src={SparkleBottom}
+                    alt='menuItem sparkle bottom'
+                    width={136}
+                    height={10}
+                  />
+                  <Image
+                    className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
+                    src={SparkleTop}
+                    alt='menuItem sparkle top'
+                    width={133}
+                    height={11}
+                  />
+                </>
+              )}
+            </Box>
+          ))}
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
             <Box className={`${styles.menuItem} ${styles.subMenuItem}`}>
@@ -363,17 +343,30 @@ const Header: React.FC = () => {
                 <Box className={styles.subMenu}>
                   {menuItems
                     .slice(menuItemCountToShow, menuItems.length)
-                    .map((val, index) => (
-                      <Link
-                        href={val.link}
-                        key={index}
+                    .map((val) => (
+                      <Box
+                        className={`subMenuItem ${
+                          pathname !== '/' && val.link.includes(pathname)
+                            ? 'active'
+                            : ''
+                        }`}
+                        key={val.id}
+                        id={val.id}
                         onClick={() => {
                           setOpenDetailMenu(false);
-                          updateIsV2(false);
+                          if (val.onClick) {
+                            val.onClick();
+                          } else {
+                            if (val.isExternal) {
+                              window.open(val.externalLink, val.target);
+                            } else {
+                              router.push(val.link);
+                            }
+                          }
                         }}
                       >
                         <small>{val.text}</small>
-                      </Link>
+                      </Box>
                     ))}
                   {outLinks.map((item, ind) => (
                     <a href={item.link} key={ind}>
@@ -389,61 +382,61 @@ const Header: React.FC = () => {
       {tabletWindowSize && (
         <Box className={styles.mobileMenuContainer}>
           <Box className={styles.mobileMenu}>
-            {menuItems.slice(0, 4).map((val, index) => {
-              return val.isExternal ? (
-                <a
-                  href={val.externalLink}
-                  target={val?.target ? val.target : '_blank'}
-                  key={index}
-                  rel='noopener noreferrer'
-                >
-                  <small>{val.text}</small>
-                </a>
-              ) : (
-                <Link
-                  href={val.link}
-                  key={index}
-                  className={
-                    pathname.indexOf(val.link) > -1
-                      ? styles.activeMenuItem
-                      : styles.menuItem
+            {menuItems.slice(0, 4).map((val) => (
+              <Box
+                key={val.id}
+                id={val.id}
+                className={`menuItem ${
+                  pathname !== '/' && val.link.includes(pathname)
+                    ? 'active'
+                    : ''
+                }`}
+                onClick={() => {
+                  if (val.onClick) {
+                    val.onClick();
+                  } else {
+                    if (val.isExternal) {
+                      window.open(val.externalLink, val.target ?? '_blank');
+                    } else {
+                      router.push(val.link);
+                    }
                   }
-                >
-                  <small>{val.text}</small>
-                </Link>
-              );
-            })}
+                }}
+              >
+                <small>{val.text}</small>
+              </Box>
+            ))}
             {menuItems.length > 4 && (
               <Box className={`flex ${styles.menuItem}`}>
                 <MoreHoriz onClick={() => setOpenDetailMenu(!openDetailMenu)} />
                 {openDetailMenu && (
                   <Box className={styles.subMenuWrapper}>
                     <Box className={styles.subMenu}>
-                      {menuItems
-                        .slice(4, menuItems.length)
-                        .map((val, index) => {
-                          return val.isExternal ? (
-                            <a
-                              href={val.externalLink}
-                              target={val?.target ? val.target : '_blank'}
-                              key={index}
-                              rel='noopener noreferrer'
-                            >
-                              <small>{val.text}</small>
-                            </a>
-                          ) : (
-                            <Link
-                              href={val.link}
-                              key={index}
-                              onClick={() => {
-                                setOpenDetailMenu(false);
-                                updateIsV2(false);
-                              }}
-                            >
-                              <small>{val.text}</small>
-                            </Link>
-                          );
-                        })}
+                      {menuItems.slice(4, menuItems.length).map((val) => (
+                        <Box
+                          className={`subMenuItem ${
+                            pathname !== '/' && val.link.includes(pathname)
+                              ? 'active'
+                              : ''
+                          }`}
+                          key={val.id}
+                          id={val.id}
+                          onClick={() => {
+                            setOpenDetailMenu(false);
+                            if (val.onClick) {
+                              val.onClick();
+                            } else {
+                              if (val.isExternal) {
+                                window.open(val.externalLink, val.target);
+                              } else {
+                                router.push(val.link);
+                              }
+                            }
+                          }}
+                        >
+                          <small>{val.text}</small>
+                        </Box>
+                      ))}
                       {outLinks.map((item, ind) => (
                         <a
                           href={item.link}

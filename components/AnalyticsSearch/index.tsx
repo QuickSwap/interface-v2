@@ -2,13 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { Box } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import { clientV2, clientV3 } from 'apollo/client';
-import { TOKEN_SEARCH, PAIR_SEARCH } from 'apollo/queries';
-import {
-  getAllTokensOnUniswap,
-  getAllPairsOnUniswap,
-  getTokenFromAddress,
-} from 'utils';
+import { getTokenFromAddress } from 'utils';
 import { GlobalConst } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
@@ -20,14 +14,8 @@ import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useIsV2 } from 'state/application/hooks';
-import {
-  formatTokenSymbol,
-  getAllPairsV3,
-  getAllTokensV3,
-} from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
-import { PAIR_SEARCH_V3, TOKEN_SEARCH_V3 } from 'apollo/queries-v3';
 dayjs.extend(utc);
 
 const AnalyticsSearch: React.FC = () => {
@@ -179,94 +167,28 @@ const AnalyticsSearch: React.FC = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const client = isV2 ? clientV2[chainIdToUse] : clientV3[chainIdToUse];
-      if (!client) return;
       try {
-        const allTokensFn = isV2 && v2 ? getAllTokensOnUniswap : getAllTokensV3;
-        const allPairsFn = isV2 && v2 ? getAllPairsOnUniswap : getAllPairsV3;
-
-        const tokenSearchQuery = isV2 && v2 ? TOKEN_SEARCH : TOKEN_SEARCH_V3;
-        const pairSearchQuery = isV2 && v2 ? PAIR_SEARCH : PAIR_SEARCH_V3;
-
-        const allTokensUniswap = await allTokensFn(chainIdToUse);
-        const allPairsUniswap = await allPairsFn(chainIdToUse);
-        let allTokens = allTokensUniswap ?? [];
-        let allPairs = allPairsUniswap ?? [];
-        if (searchVal.length > 0) {
-          const tokens = await client.query({
-            query: tokenSearchQuery,
-            variables: {
-              value: searchVal ? searchVal.toUpperCase() : '',
-              id: searchVal.toLowerCase(),
-            },
-          });
-
-          const pairs = await client.query({
-            query: pairSearchQuery,
-            variables: {
-              tokens: tokens.data.asSymbol?.map((t: any) => t.id),
-              id: searchVal.toLowerCase(),
-            },
-          });
-
-          const foundPairs = pairs.data.as0
-            .concat(pairs.data.as1)
-            .concat(pairs.data.asAddress);
-
-          allPairs = allPairs
-            .concat(
-              foundPairs.filter((searchedPair: any) => {
-                let included = false;
-                allPairs.map((pair) => {
-                  if (pair.id === searchedPair.id) {
-                    included = true;
-                  }
-                  return true;
-                });
-                return !included;
-              }),
-            )
-            .map((pair: any) => {
-              return {
-                ...pair,
-                token0: {
-                  ...pair.token0,
-                  symbol: formatTokenSymbol(pair.token0.id, pair.token0.symbol),
-                },
-                token1: {
-                  ...pair.token1,
-                  symbol: formatTokenSymbol(pair.token1.id, pair.token1.symbol),
-                },
-              };
-            });
-
-          const foundTokens = tokens.data.asSymbol
-            .concat(tokens.data.asAddress)
-            .concat(tokens.data.asName);
-
-          allTokens = allTokens
-            .concat(
-              foundTokens.filter((searchedToken: any) => {
-                let included = false;
-                allTokens.map((token) => {
-                  if (token.id === searchedToken.id) {
-                    included = true;
-                  }
-                  return true;
-                });
-                return !included;
-              }),
-            )
-            .map((token: any) => {
-              return {
-                ...token,
-                symbol: formatTokenSymbol(token.id, token.symbol),
-              };
-            });
+        const res = await fetch(
+          `${
+            process.env.REACT_APP_LEADERBOARD_APP_URL
+          }/utils/search-token-pair/${
+            isV2 && v2 ? 'v2' : 'v3'
+          }?chainId=${chainIdToUse}&search=${searchVal}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get top token details`,
+          );
         }
+        const data = await res.json();
 
-        setSearchedTokens(allTokens);
-        setSearchedPairs(allPairs);
+        setSearchedTokens(
+          data && data.data && data.data.tokens ? data.data.tokens : [],
+        );
+        setSearchedPairs(
+          data && data.data && data.data.pairs ? data.data.pairs : [],
+        );
       } catch (e) {
         console.log(e);
       }

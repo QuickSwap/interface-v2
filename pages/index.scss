@@ -7,8 +7,8 @@
 body {
   margin: 0;
 
-  iframe[style*="z-index: 2147483647"] {
-    display: none!important;
+  iframe[style*='z-index: 2147483647'] {
+    display: none !important;
   }
 }
 
@@ -21,7 +21,7 @@ body {
   }
 }
 
-w3m-modal {
+wcm-modal {
   z-index: 10000;
   position: relative;
 }
@@ -72,7 +72,7 @@ w3m-modal {
 }
 
 [data-reach-dialog-content] {
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     transform: translateY(-90px) !important;
     max-height: calc(100vh - 120px) !important;
     min-height: calc(100vh - 120px) !important;
@@ -84,8 +84,8 @@ w3m-modal {
   padding: 24px;
   background: $bgPalette;
   border-radius: 20px;
-  @include media("screen", "<phone") {
-    padding: 16px 12px
+  @include media('screen', '<phone') {
+    padding: 16px 12px;
   }
 }
 
@@ -102,7 +102,6 @@ w3m-modal {
     }
   }
 }
-
 
 .buttonGroup {
   text-align: center;
@@ -143,7 +142,7 @@ w3m-modal {
       }
     }
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     & .MuiGrid-item {
       width: 100%;
       margin-bottom: 32px;
@@ -167,14 +166,14 @@ w3m-modal {
   flex-direction: column;
   margin: 0 auto;
   padding: 112px 32px 0;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     padding: 24px 12px 0;
   }
 }
 
 .pageProModeWrapper {
   padding-top: 88px;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     padding-top: 0;
   }
 }
@@ -187,7 +186,7 @@ w3m-modal {
   flex-direction: column;
   margin: 24px auto;
   padding: 0 32px;
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 0 12px;
   }
 }
@@ -377,7 +376,8 @@ w3m-modal {
   & p {
     font-size: 8px;
   }
-  & p, & span {
+  & p,
+  & span {
     color: $secondary1;
     font-weight: 600;
   }

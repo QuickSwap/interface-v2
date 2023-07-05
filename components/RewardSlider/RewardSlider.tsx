@@ -28,15 +28,14 @@ const RewardSlider: React.FC = () => {
     return lprewardItems
       .map((item) => item.pair)
       .concat(dualrewardItems.map((item) => item.pair))
-      .join(',');
+      .join('_');
   }, [dualrewardItems, lprewardItems]);
 
-  const stakingPairLists = stakingPairListStr.split(',');
+  const stakingPairLists = stakingPairListStr.split('_');
 
   useEffect(() => {
-    const stakingPairLists = stakingPairListStr.split(',');
     if (stakingPairListStr) {
-      getBulkPairData(chainIdOrDefault, stakingPairLists).then((data) =>
+      getBulkPairData(chainIdOrDefault, stakingPairListStr).then((data) =>
         setBulkPairs(data),
       );
     }

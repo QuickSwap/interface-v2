@@ -9,38 +9,14 @@ import {
   FINITE_FARMING,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
 } from '../constants/v3/addresses';
-import {
-  FETCH_ETERNAL_FARM,
-  FETCH_ETERNAL_FARM_FROM_POOL,
-  FETCH_FINITE_FARM_FROM_POOL,
-  FETCH_LIMIT,
-  FETCH_POOL,
-  FETCH_REWARDS,
-  FETCH_TOKEN,
-  FETCH_TOKEN_FARM,
-  FUTURE_EVENTS,
-  HAS_TRANSFERED_POSITIONS,
-  INFINITE_EVENTS,
-  POSITIONS_ON_ETERNAL_FARMING,
-  TRANSFERED_POSITIONS,
-  TRANSFERED_POSITIONS_FOR_POOL,
-} from '../utils/graphql-queries';
-import { useClients } from './subgraph/useClients';
 import { formatUnits } from '@ethersproject/units';
 import {
   Deposit,
-  DetachedEternalFarming,
-  EternalFarming,
   FormattedEternalFarming,
   FormattedRewardInterface,
   PoolChartSubgraph,
-  PoolSubgraph,
   Position,
-  SubgraphResponse,
-  TickFarming,
-  TokenSubgraph,
   Aprs,
-  FutureFarmingEvent,
 } from '../models/interfaces';
 import {
   fetchEternalFarmAPR,
@@ -54,7 +30,6 @@ import { formatTokenSymbol } from 'utils/v3-graph';
 
 export function useFarmingSubgraph() {
   const { chainId, account, provider } = useActiveWeb3React();
-  const { v3Client, farmingClient } = useClients();
   const tokenMap = useSelectedTokenList();
 
   const [positionsForPool, setPositionsForPool] = useState<Position[] | null>(
@@ -72,25 +47,10 @@ export function useFarmingSubgraph() {
     setTransferredPositionsLoading,
   ] = useState<boolean>(false);
 
-  const [hasTransferredPositions, setHasTransferredPositions] = useState<
-    boolean | null
-  >(null);
-  const [
-    hasTransferredPositionsLoading,
-    setHasTransferredPositionsLoading,
-  ] = useState<boolean>(false);
-
   const [rewardsResult, setRewardsResult] = useState<
     FormattedRewardInterface[]
   >([]);
   const [rewardsLoading, setRewardsLoading] = useState<boolean>(false);
-
-  const [futureEvents, setFutureEvents] = useState<FutureFarmingEvent[] | null>(
-    null,
-  );
-  const [futureEventsLoading, setFutureEventsLoading] = useState<boolean>(
-    false,
-  );
 
   const [positionsOnFarmer, setPositionsOnFarmer] = useState<{
     transferredPositionsIds: string[];
@@ -124,167 +84,112 @@ export function useFarmingSubgraph() {
     false,
   );
 
-  const [positionsEternal, setPositionsEternal] = useState<
-    TickFarming[] | null
-  >(null);
-  const [positionsEternalLoading, setPositionsEternalLoading] = useState<
-    boolean
-  >(false);
-
-  async function getEvents(events: any[], farming = false) {
-    const _events: any[] = [];
-
-    for (let i = 0; i < events.length; i++) {
-      const pool = await fetchPool(events[i].pool);
-      const rewardToken = await fetchToken(events[i].rewardToken, farming);
-      const bonusRewardToken = await fetchToken(
-        events[i].bonusRewardToken,
-        farming,
-      );
-      const multiplierToken = await fetchToken(
-        events[i].multiplierToken,
-        farming,
-      );
-
-      const _event: any = {
-        ...events[i],
-        pool,
-        rewardToken,
-        bonusRewardToken,
-        multiplierToken,
-        reward: formatUnits(events[i].reward, rewardToken.decimals),
-        bonusReward: formatUnits(
-          events[i].bonusReward,
-          bonusRewardToken.decimals,
-        ),
-      };
-
-      _events.push({ ..._event });
-    }
-
-    return _events;
-  }
-
   async function fetchToken(tokenId: string, farming = false) {
-    const client = farming ? farmingClient : v3Client;
-    if (!client) throw new Error('subgraph client does not exist');
     try {
-      const {
-        data: { tokens },
-        errors,
-      } = await client.query<SubgraphResponse<TokenSubgraph[]>>({
-        query: farming ? FETCH_TOKEN_FARM() : FETCH_TOKEN(),
-        variables: { tokenId },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/token-details/${tokenId}?chainId=${chainId}&farming=${farming}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || res.statusText || `Failed to fetch token`);
       }
-
-      return tokens[0];
+      const data = await res.json();
+      return data && data.data && data.data.token ? data.data.token : undefined;
     } catch (err) {
-      throw new Error('Fetch token ' + err);
+      throw new Error('Token fetching ' + err.message);
     }
   }
 
   async function fetchPool(poolId: string) {
-    if (!v3Client) throw new Error('subgraph client does not exist');
     try {
-      const {
-        data: { pools },
-        errors,
-      } = await v3Client.query<SubgraphResponse<PoolSubgraph[]>>({
-        query: FETCH_POOL(),
-        variables: { poolId },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/pool-details/${poolId}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || res.statusText || `Failed to fetch pool`);
       }
+      const data = await res.json();
+
+      const pool =
+        data && data.data && data.data.pool ? data.data.pool : undefined;
+
+      if (!pool) return;
 
       return {
-        ...pools[0],
+        ...pool,
         token0: {
-          ...pools[0].token0,
-          symbol: formatTokenSymbol(pools[0].token0.id, pools[0].token0.symbol),
+          ...pool.token0,
+          symbol: formatTokenSymbol(pool.token0.id, pool.token0.symbol),
         },
         token1: {
-          ...pools[0].token1,
-          symbol: formatTokenSymbol(pools[0].token1.id, pools[0].token1.symbol),
+          ...pool.token1,
+          symbol: formatTokenSymbol(pool.token1.id, pool.token1.symbol),
         },
       };
     } catch (err) {
-      throw new Error('Fetch pools ' + err);
+      throw new Error('Pool fetching ' + err.message);
     }
   }
 
   async function fetchLimit(limitFarmingId: string) {
-    if (!farmingClient) throw new Error('subgraph client does not exist');
     try {
-      const {
-        data: { limitFarmings },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<FutureFarmingEvent[]>>({
-        query: FETCH_LIMIT(),
-        variables: { limitFarmingId },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/limit-farming/${limitFarmingId}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to fetch limit farm`,
+        );
       }
-
-      return limitFarmings[0];
+      const data = await res.json();
+      return data && data.data && data.data.limitFarm
+        ? data.data.limitFarm
+        : undefined;
     } catch (err) {
-      throw new Error('Fetch limit farmings ' + err);
+      throw new Error('Limitfarming fetching ' + err.message);
     }
   }
 
   async function fetchEternalFarming(farmId: string) {
-    if (!farmingClient) throw new Error('subgraph client does not exist');
     try {
-      const {
-        data: { eternalFarmings },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<DetachedEternalFarming[]>>(
-        {
-          query: FETCH_ETERNAL_FARM(),
-          variables: { farmId },
-        },
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farming/${farmId}?chainId=${chainId}`,
       );
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to fetch eternal farm`,
+        );
       }
-
-      return eternalFarmings[0];
+      const data = await res.json();
+      return data && data.data && data.data.eternalFarm
+        ? data.data.eternalFarm
+        : undefined;
     } catch (err) {
-      throw new Error('Fetch eternal farming ' + err.message);
+      throw new Error('Eternalfarming fetching ' + err.message);
     }
   }
 
-  async function fetchRewards(reload?: boolean) {
-    if (!account || !chainId || !farmingClient) return;
+  async function fetchRewards() {
+    if (!account || !chainId) return;
 
     try {
       setRewardsLoading(true);
 
-      const {
-        data: { rewards },
-        errors,
-      } = await farmingClient.query({
-        query: FETCH_REWARDS(),
-        fetchPolicy: reload ? 'network-only' : 'cache-first',
-        variables: { account },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/farm-rewards/${account}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to fetch eternal farm`,
+        );
       }
+      const data = await res.json();
+      const rewards =
+        data && data.data && data.data.rewards ? data.data.rewards : [];
 
       if (!provider) throw new Error('No provider');
 
@@ -323,74 +228,8 @@ export function useFarmingSubgraph() {
     setRewardsLoading(false);
   }
 
-  async function fetchFutureEvents(reload?: boolean) {
-    if (!farmingClient) return;
-    try {
-      setFutureEventsLoading(true);
-
-      const {
-        data: { limitFarmings: futureEvents },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<FutureFarmingEvent[]>>({
-        query: FUTURE_EVENTS(),
-        fetchPolicy: reload ? 'network-only' : 'cache-first',
-        variables: { timestamp: Math.round(Date.now() / 1000) },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
-      }
-
-      if (futureEvents.length === 0) {
-        setFutureEvents([]);
-        setFutureEventsLoading(false);
-        return;
-      }
-
-      setFutureEvents(await getEvents(futureEvents, true));
-    } catch (err) {
-      throw new Error('Future limit farmings fetching ' + err);
-    } finally {
-      setFutureEventsLoading(false);
-    }
-  }
-
-  async function fetchHasTransferredPositions() {
-    if (!chainId || !account || !farmingClient) return;
-
-    if (!provider) throw new Error('No provider');
-
-    try {
-      setHasTransferredPositionsLoading(true);
-
-      const {
-        data: { deposits: positionsTransferred },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<Deposit[]>>({
-        query: HAS_TRANSFERED_POSITIONS(),
-        fetchPolicy: 'network-only',
-        variables: { account },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
-      }
-
-      setHasTransferredPositions(Boolean(positionsTransferred.length));
-      setHasTransferredPositionsLoading(false);
-    } catch (err) {
-      throw new Error(
-        'Has transferred positions ' + err.code + ' ' + err.message,
-      );
-    } finally {
-      setHasTransferredPositionsLoading(false);
-    }
-  }
-
-  async function fetchTransferredPositions(reload?: boolean) {
-    if (!chainId || !account || !farmingClient) {
+  async function fetchTransferredPositions() {
+    if (!chainId || !account) {
       setTransferredPositions([]);
       return;
     }
@@ -400,19 +239,20 @@ export function useFarmingSubgraph() {
     try {
       setTransferredPositionsLoading(true);
 
-      const {
-        data: { deposits: positionsTransferred },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<Deposit[]>>({
-        query: TRANSFERED_POSITIONS(true),
-        fetchPolicy: reload ? 'network-only' : 'cache-first',
-        variables: { account },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText ||
+            res.statusText ||
+            `Failed to fetch transferred positions`,
+        );
       }
+      const data = await res.json();
+      const positionsTransferred =
+        data && data.data && data.data.positions ? data.data.positions : [];
 
       if (positionsTransferred.length === 0) {
         setTransferredPositions([]);
@@ -550,20 +390,20 @@ export function useFarmingSubgraph() {
             tier3Multiplier,
           };
         } else {
-          const {
-            data: { limitFarmings },
-            errors,
-          } = await farmingClient.query({
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            query: FETCH_FINITE_FARM_FROM_POOL([position.pool]),
-            fetchPolicy: 'network-only',
-          });
-
-          if (errors) {
-            const error = errors[0];
-            throw new Error(`${error.name} ${error.message}`);
+          const res = await fetch(
+            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/limit-farms-pool/${position.pool}?chainId=${chainId}`,
+          );
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText || res.statusText || `Failed to fetch limit farms`,
+            );
           }
+          const data = await res.json();
+          const limitFarmings =
+            data && data.data && data.data.limitFarms
+              ? data.data.limitFarms
+              : [];
 
           if (
             limitFarmings.filter(
@@ -601,15 +441,6 @@ export function useFarmingSubgraph() {
             provider.getSigner(),
           );
 
-          const {
-            reward,
-            bonusReward,
-          } = await farmingCenterContract.callStatic.collectRewards(
-            [rewardToken, bonusRewardToken, pool, startTime, endTime],
-            +position.id,
-            { from: account },
-          );
-
           const _rewardToken = await fetchToken(rewardToken, true);
           const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
           const _pool = await fetchPool(pool);
@@ -631,6 +462,15 @@ export function useFarmingSubgraph() {
           };
           const _multiplierToken = await fetchToken(multiplierToken, true);
 
+          let rewardRes: any;
+          try {
+            rewardRes = await farmingCenterContract.callStatic.collectRewards(
+              [rewardToken, bonusRewardToken, pool, startTime, endTime],
+              +position.id,
+              { from: account },
+            );
+          } catch (e) {}
+
           _position = {
             ..._position,
             farmId: id,
@@ -649,27 +489,28 @@ export function useFarmingSubgraph() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: newPool,
-            eternalEarned: formatUnits(reward, _rewardToken.decimals),
-            eternalBonusEarned: formatUnits(
-              bonusReward,
-              _bonusRewardToken.decimals,
-            ),
+            eternalEarned: rewardRes
+              ? formatUnits(rewardRes.reward, _rewardToken.decimals)
+              : 0,
+            eternalBonusEarned: rewardRes
+              ? formatUnits(rewardRes.bonusReward, _bonusRewardToken.decimals)
+              : 0,
           };
         } else {
-          const {
-            data: { eternalFarmings },
-            errors,
-          } = await farmingClient.query({
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            query: FETCH_ETERNAL_FARM_FROM_POOL([position.pool]),
-            fetchPolicy: 'network-only',
-          });
-
-          if (errors) {
-            const error = errors[0];
-            throw new Error(`${error.name} ${error.message}`);
+          const res = await fetch(
+            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms-pool/${position.pool}?chainId=${chainId}`,
+          );
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText || res.statusText || `Failed to fetch eternal farms`,
+            );
           }
+          const data = await res.json();
+          const eternalFarmings =
+            data && data.data && data.data.eternalFarms
+              ? data.data.eternalFarms
+              : [];
 
           if (
             eternalFarmings.filter(
@@ -695,112 +536,27 @@ export function useFarmingSubgraph() {
     }
   }
 
-  async function fetchPositionsOnEternalFarming(reload?: boolean) {
-    if (!chainId || !account || !farmingClient) return;
-
-    if (!provider) throw new Error('No provider');
-
-    setPositionsEternalLoading(true);
-
-    try {
-      const {
-        data: { deposits: eternalPositions },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<Position[]>>({
-        query: POSITIONS_ON_ETERNAL_FARMING(),
-        fetchPolicy: reload ? 'network-only' : 'cache-first',
-        variables: { account },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
-      }
-
-      if (eternalPositions.length === 0) {
-        setPositionsEternal([]);
-        setPositionsEternalLoading(false);
-        return;
-      }
-
-      const _positions: TickFarming[] = [];
-
-      for (const position of eternalPositions) {
-        const nftContract = new Contract(
-          NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
-          NON_FUN_POS_MAN,
-          provider.getSigner(),
-        );
-
-        const {
-          tickLower,
-          tickUpper,
-          liquidity,
-          token0,
-          token1,
-        } = await nftContract.positions(+position.id);
-
-        let _position: TickFarming = {
-          tickLower,
-          tickUpper,
-          liquidity,
-          token0,
-          token1,
-        };
-
-        const {
-          rewardToken,
-          bonusRewardToken,
-          pool,
-          startTime,
-          endTime,
-        } = await fetchEternalFarming(String(position.eternalFarming));
-
-        const _pool = await fetchPool(pool);
-        const _rewardToken = await fetchToken(rewardToken);
-        const _bonusRewardToken = await fetchToken(bonusRewardToken);
-
-        _position = {
-          ..._position,
-          ...position,
-          pool: _pool,
-          rewardToken: _rewardToken,
-          bonusRewardToken: _bonusRewardToken,
-          startTime,
-          endTime,
-        };
-
-        _positions.push(_position);
-      }
-
-      setPositionsEternal(_positions);
-    } catch (error) {
-      throw new Error('Eternal farms loading' + error.code + error.message);
-    }
-  }
-
   async function fetchPositionsForPool(
     pool: PoolChartSubgraph,
     minRangeLength: string,
   ) {
-    if (!chainId || !account || !farmingClient) return;
+    if (!chainId || !account) return;
 
     try {
       setPositionsForPoolLoading(true);
 
-      const {
-        data: { deposits: positionsTransferred },
-        errors: errorsTransferred,
-      } = await farmingClient.query<SubgraphResponse<Position[]>>({
-        query: TRANSFERED_POSITIONS_FOR_POOL(),
-        fetchPolicy: 'network-only',
-        variables: { account, pool: pool.id, minRangeLength },
-      });
-
-      if (errorsTransferred) {
-        const error = errorsTransferred[0];
-        throw new Error(`${error.name} ${error.message}`);
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/pool-positions/${account}?chainId=${chainId}&poolId=${pool.id}&minRangeLength=${minRangeLength}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to fetch eternal farms`,
+        );
       }
+      const data = await res.json();
+      const positionsTransferred =
+        data && data.data && data.data.positions ? data.data.positions : [];
 
       const _positions: Position[] = [];
 
@@ -822,23 +578,23 @@ export function useFarmingSubgraph() {
   }
 
   async function fetchPositionsOnFarmer(account: string) {
-    if (!farmingClient) throw new Error('subgraph client does not exist');
     try {
       setPositionsOnFarmerLoading(true);
 
-      const {
-        data: { deposits: positionsTransferred },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<Position[]>>({
-        query: TRANSFERED_POSITIONS(true),
-        fetchPolicy: 'network-only',
-        variables: { account },
-      });
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText ||
+            res.statusText ||
+            `Failed to fetch transferred positions`,
+        );
       }
+      const data = await res.json();
+      const positionsTransferred =
+        data && data.data && data.data.positions ? data.data.positions : [];
 
       if (positionsTransferred.length === 0) {
         setPositionsOnFarmer({
@@ -850,7 +606,7 @@ export function useFarmingSubgraph() {
       }
 
       const transferredPositionsIds = positionsTransferred.map(
-        (position) => position.id,
+        (position: any) => position.id,
       );
 
       const oldTransferredPositionsIds: string[] = [];
@@ -919,21 +675,25 @@ export function useFarmingSubgraph() {
     }
   }
 
-  async function fetchEternalFarms(reload: boolean, ended = false) {
-    if (!farmingClient) throw new Error('subgraph client does not exist');
+  async function fetchEternalFarms(ended = false) {
     setEternalFarmsLoading(true);
     try {
-      const {
-        data: { eternalFarmings: eternalFarmingsSubgraph },
-        errors,
-      } = await farmingClient.query<SubgraphResponse<EternalFarming[]>>({
-        query: INFINITE_EVENTS,
-        fetchPolicy: reload ? 'network-only' : 'cache-first',
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to fetch eternal farms`,
+        );
+      }
+      const data = await res.json();
+      const eternalFarmingsSubgraph =
+        data && data.data && data.data.farms ? data.data.farms : [];
 
       const eternalFarmings =
         eternalFarmingsSubgraph && eternalFarmingsSubgraph.length > 0
-          ? eternalFarmingsSubgraph.filter((farming) => {
+          ? eternalFarmingsSubgraph.filter((farming: any) => {
               if (ended) {
                 return (
                   farming.isDetached ||
@@ -951,11 +711,6 @@ export function useFarmingSubgraph() {
               }
             })
           : [];
-
-      if (errors) {
-        const error = errors[0];
-        throw new Error(`${error.name} ${error.message}`);
-      }
 
       if (eternalFarmings.length === 0) {
         setEternalFarms([]);
@@ -1030,11 +785,6 @@ export function useFarmingSubgraph() {
       rewardsLoading,
       fetchRewardsFn: fetchRewards,
     },
-    fetchFutureEvents: {
-      futureEvents,
-      futureEventsLoading,
-      fetchFutureEventsFn: fetchFutureEvents,
-    },
     fetchPositionsForPool: {
       positionsForPool,
       positionsForPoolLoading,
@@ -1044,11 +794,6 @@ export function useFarmingSubgraph() {
       transferredPositions,
       transferredPositionsLoading,
       fetchTransferredPositionsFn: fetchTransferredPositions,
-    },
-    fetchHasTransferredPositions: {
-      hasTransferredPositions,
-      hasTransferredPositionsLoading,
-      fetchHasTransferredPositionsFn: fetchHasTransferredPositions,
     },
     fetchPositionsOnFarmer: {
       positionsOnFarmer,
@@ -1074,11 +819,6 @@ export function useFarmingSubgraph() {
       eternalFarmTvls,
       eternalFarmTvlsLoading,
       fetchEternalFarmTvlsFn: fetchEternalFarmTvls,
-    },
-    fetchPositionsOnEternalFarmings: {
-      positionsEternal,
-      positionsEternalLoading,
-      fetchPositionsOnEternalFarmingFn: fetchPositionsOnEternalFarming,
     },
   };
 }

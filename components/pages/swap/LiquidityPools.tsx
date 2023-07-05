@@ -1,13 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
-import { getTokenPairs, getBulkPairData } from 'utils';
-import { ChainId, Token } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'next-i18next';
-import { useEthPrice } from 'state/application/hooks';
-import { getTopPairsV3ByTokens } from 'utils/v3-graph';
 import { getConfig } from 'config';
 import styles from 'styles/pages/Swap.module.scss';
 
@@ -26,7 +23,6 @@ const LiquidityPools: React.FC<{
   const token2Address = token2.address.toLowerCase();
   const allTokenList = useAllTokens();
   const { t } = useTranslation();
-  const { ethPrice } = useEthPrice();
 
   const liquidityPairs = useMemo(
     () =>
@@ -37,7 +33,11 @@ const LiquidityPools: React.FC<{
                 self.findIndex(
                   (item1: any) =>
                     item &&
+                    item.token0 &&
+                    item.token1 &&
                     item1 &&
+                    item1.token0 &&
+                    item1.token1 &&
                     item.token0.symbol === item1.token0.symbol &&
                     item.token1.symbol === item1.token1.symbol,
                 ) === pos,
@@ -73,46 +73,49 @@ const LiquidityPools: React.FC<{
   );
 
   useEffect(() => {
-    if (!ethPrice.price) return;
     (async () => {
       const config = getConfig(token1.chainId);
       const v2 = config['v2'];
       let pairData;
       if (v2) {
-        const tokenPairs = await getTokenPairs(
-          token1Address,
-          token2Address,
-          token1.chainId ?? ChainId.MATIC,
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-liquidity-pools/${token1Address}/${token2Address}/v2?chainId=${token1.chainId}`,
         );
-        const formattedPairs = tokenPairs
-          ? tokenPairs
-              .filter((pair: any) => {
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get top token details`,
+          );
+        }
+        const data = await res.json();
+        pairData =
+          data && data.data && data.data.liquidityPools
+            ? data.data.liquidityPools.filter((pair: any) => {
                 return (
                   whiteListAddressList.includes(pair?.token0?.id) &&
                   whiteListAddressList.includes(pair?.token1?.id)
                 );
               })
-              .map((pair: any) => {
-                return pair.id;
-              })
-          : [];
-
-        pairData = await getBulkPairData(
-          formattedPairs,
-          ethPrice.price,
-          token1.chainId,
+            : [];
+      }
+      const v3Res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-liquidity-pools/${token1Address}/${token2Address}/v3?chainId=${token1.chainId}`,
+      );
+      if (!v3Res.ok) {
+        const errorText = await v3Res.text();
+        throw new Error(
+          errorText || v3Res.statusText || `Failed to get top token details`,
         );
       }
-      const tokenPairsV3 = await getTopPairsV3ByTokens(
-        token1Address.toLowerCase(),
-        token2Address.toLowerCase(),
-        token1.chainId ?? ChainId.MATIC,
-      );
-
+      const v3Data = await v3Res.json();
+      const tokenPairsV3 =
+        v3Data && v3Data.data && v3Data.data.liquidityPools
+          ? v3Data.data.liquidityPools
+          : [];
       updateTokenPairs((pairData ?? []).concat(tokenPairsV3));
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token1Address, token2Address, whiteListAddressList, ethPrice.price]);
+  }, [token1Address, token2Address]);
 
   useEffect(() => {
     setTimeout(() => {

@@ -221,9 +221,9 @@ export function FarmModal({
       farmHandler(
         selectedNFT,
         {
-          pool: pool.id,
-          rewardToken: rewardToken.id,
-          bonusRewardToken: bonusRewardToken.id,
+          pool: pool?.id,
+          rewardToken: rewardToken?.id,
+          bonusRewardToken: bonusRewardToken?.id,
           startTime,
           endTime,
         },
@@ -234,9 +234,9 @@ export function FarmModal({
     [
       farmHandler,
       selectedNFT,
-      pool.id,
-      rewardToken.id,
-      bonusRewardToken.id,
+      pool,
+      rewardToken,
+      bonusRewardToken,
       startTime,
       endTime,
       selectedTier,
@@ -267,7 +267,7 @@ export function FarmModal({
           +_balance >=
           +formatUnits(
             BigNumber.from(tokenAmountForTier1),
-            multiplierToken.decimals,
+            multiplierToken?.decimals,
           )
         );
       case tokenAmountForTier2:
@@ -275,7 +275,7 @@ export function FarmModal({
           +_balance >=
           +formatUnits(
             BigNumber.from(tokenAmountForTier2),
-            multiplierToken.decimals,
+            multiplierToken?.decimals,
           )
         );
       case tokenAmountForTier3:
@@ -283,7 +283,7 @@ export function FarmModal({
           +_balance >=
           +formatUnits(
             BigNumber.from(tokenAmountForTier3),
-            multiplierToken.decimals,
+            multiplierToken?.decimals,
           )
         );
       default:
@@ -291,7 +291,7 @@ export function FarmModal({
     }
   }, [
     balance,
-    multiplierToken.decimals,
+    multiplierToken?.decimals,
     selectedTier,
     tokenAmountForTier1,
     tokenAmountForTier2,

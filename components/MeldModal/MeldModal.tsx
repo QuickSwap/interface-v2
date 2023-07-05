@@ -14,13 +14,7 @@ const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
   return (
-    <CustomModal
-      open={open}
-      onClose={onClose}
-      background='#fff'
-      overflow='hidden'
-      modalWrapper={styles.meldModalWrapper}
-    >
+    <CustomModal open={open} onClose={onClose} modalWrapper={styles.meldModalWrapper}>
       <div className={styles.meldModalClose}>
         <Close className='cursor-pointer' onClick={onClose} />
       </div>
@@ -28,7 +22,7 @@ const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
         <iframe
           title='meld widget'
           allow='accelerometer; autoplay; camera; gyroscope; payment'
-          height='794px'
+          height='692px'
           src={`${process.env.NEXT_PUBLIC_MELD_URL}/?publicKey=${
             process.env.NEXT_PUBLIC_MELD_KEY
           }&destinationCurrencyCode=MATIC${
