@@ -9,7 +9,7 @@ import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
-import AdsSlider from 'components/AdsSlider';
+import { Adshares } from 'components';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
@@ -82,9 +82,6 @@ const DragonPage: React.FC = () => {
               <DragonsLair isNew={false} />
             </Box>
           )}
-          {/* <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
-            <AdsSlider sort='dragons' />
-          </Box> */}
         </Grid>
         <Grid item xs={12} sm={12} md={8}>
           <Box className='dragonWrapper'>
@@ -104,7 +101,7 @@ const DragonPage: React.FC = () => {
             maxWidth={isMobile ? '320px' : '1136px'}
             margin='0 auto 24px'
           >
-            <AdsSlider sort='analytics' />
+            <Adshares />
           </Box>
         </Grid>
       </Grid>
