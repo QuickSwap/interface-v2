@@ -15,7 +15,7 @@ const newSteps = [
     classes: 'shepherd shepherd-welcome',
     buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -55,7 +55,7 @@ const newSteps = [
     attachTo: { element: '.Connect-wallet-modal', on: 'right' },
     buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -106,7 +106,7 @@ const newSteps = [
     attachTo: { element: '.tradePage', on: 'left' },
     buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -165,7 +165,7 @@ const newSteps = [
             `,
     buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -225,7 +225,7 @@ const newSteps = [
     scrollTo: true,
      buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -271,7 +271,7 @@ const newSteps = [
     scrollTo: true,
      buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -330,7 +330,7 @@ const newSteps = [
     scrollTo: true,
      buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -390,7 +390,7 @@ const newSteps = [
     scrollTo: true,
      buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -430,7 +430,7 @@ const newSteps = [
     scrollTo: true,
      buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -471,7 +471,7 @@ const newSteps = [
     scrollTo: true,
      buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -510,7 +510,7 @@ const newSteps = [
     scrollTo: true,
      buttons: [
       {
-        type: 'cancel',
+        type: 'back',
         text: `
         <div style="
         display: flex;
@@ -549,7 +549,7 @@ const newSteps = [
     scrollTo: true,
      buttons: [
       {
-        type: 'cancel',
+        type: 'close',
         text: `
         <div style="
         display: flex;
@@ -557,7 +557,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Close</div>
             </div>
         `,
       },
@@ -594,7 +594,7 @@ const newSteps = [
 //     attachTo: { element: '.leverage-btn', on: 'left' },
 //     buttons: [
 //       {
-//         type: 'cancel',
+//         type: 'back',
 //         text: `
 //         <div style="
 //         display: flex;
@@ -652,7 +652,7 @@ const newSteps = [
 //     attachTo: { element: '.Modal-content', on: 'right' },
 //     buttons: [
 //       {
-//         type: 'cancel',
+//         type: 'back',
 //         text: `
 //         <div style="
 //         display: flex;
@@ -688,7 +688,7 @@ const newSteps = [
   //   attachTo: { element: '.Exchange-list-header', on: 'top' },
   //   buttons: [
   //     {
-  //       type: 'cancel',
+  //       type: 'back',
   //       text: `
   //       <div style="
   //       display: flex;
@@ -724,7 +724,7 @@ const newSteps = [
   //   attachTo: { element: '.close-action', on: 'top' },
   //   buttons: [
   //     {
-  //       type: 'cancel',
+  //       type: 'back',
   //       text: `
   //       <div style="
   //       display: flex;
