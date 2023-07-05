@@ -7,7 +7,16 @@
 
 
 .shepherd-element{
-  max-width: 550px !important;
+  max-width: 450px !important;
+  box-shadow: -14.719192504882812px 17.347618103027344px 84.10966491699219px rgba(0, 56.10, 255, 0.30); 
+  border-radius: 16px; 
+  border-left: 1.50px solid; 
+  border-top: 1.50px solid; 
+  border-right: 1.50px solid; 
+  border-bottom: 1.50px solid; 
+}
+.shepherd-cancel-icon{
+  display: none;
 }
 
 @media (max-width: 1200px) {
