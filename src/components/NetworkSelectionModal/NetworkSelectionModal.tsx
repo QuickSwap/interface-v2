@@ -14,7 +14,11 @@ import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { ApplicationModal } from 'state/application/actions';
 import { useIsSupportedNetwork } from 'utils';
-import { networkConnection, walletConnectConnection } from 'connectors';
+import {
+  networkConnection,
+  walletConnectConnection,
+  zengoConnectConnection,
+} from 'connectors';
 
 const NetworkSelectionModal: React.FC = () => {
   const { t } = useTranslation();
@@ -29,6 +33,7 @@ const NetworkSelectionModal: React.FC = () => {
 
   useEffect(() => {
     const localChainId = localStorage.getItem('localChainId');
+
     if (
       localChainId &&
       Number(localChainId) !== chainId &&
@@ -51,6 +56,7 @@ const NetworkSelectionModal: React.FC = () => {
       };
       if (
         connector === walletConnectConnection.connector ||
+        connector === zengoConnectConnection.connector ||
         connector === networkConnection.connector
       ) {
         await connector.activate(chainId);
