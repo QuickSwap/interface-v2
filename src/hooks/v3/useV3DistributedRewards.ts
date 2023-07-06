@@ -35,7 +35,12 @@ export function useV3DistributedRewards(chainId?: ChainId) {
       ? eternalFarms.reduce((total, farm) => {
           const farmRewardRate =
             Number(
-              formatUnits(farm.rewardRate, Number(farm.rewardToken.decimals)),
+              formatUnits(
+                farm.rewardRate,
+                farm && farm.rewardToken && farm.rewardToken.decimals
+                  ? Number(farm.rewardToken.decimals)
+                  : 18,
+              ),
             ) *
             3600 *
             24;
@@ -43,7 +48,9 @@ export function useV3DistributedRewards(chainId?: ChainId) {
             Number(
               formatUnits(
                 farm.bonusRewardRate,
-                Number(farm.bonusRewardToken.decimals),
+                farm && farm.bonusRewardToken && farm.bonusRewardToken.decimals
+                  ? Number(farm.bonusRewardToken.decimals)
+                  : 18,
               ),
             ) *
             3600 *
@@ -51,15 +58,21 @@ export function useV3DistributedRewards(chainId?: ChainId) {
           const rewardTokenPrice =
             rewardTokenPrices.find(
               (item) =>
+                farm &&
+                farm.rewardToken &&
+                farm.rewardToken.id &&
                 item.address.toLowerCase() ===
-                farm.rewardToken.id.toLowerCase(),
+                  farm.rewardToken.id.toLowerCase(),
             )?.price ?? 0;
 
           const bonusRewardTokenPrice =
             rewardTokenPrices.find(
               (item) =>
+                farm &&
+                farm.bonusRewardToken &&
+                farm.bonusRewardToken.id &&
                 item.address.toLowerCase() ===
-                farm.bonusRewardToken.id.toLowerCase(),
+                  farm.bonusRewardToken.id.toLowerCase(),
             )?.price ?? 0;
 
           const totalUSD =

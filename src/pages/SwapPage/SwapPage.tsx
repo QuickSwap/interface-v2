@@ -1,7 +1,6 @@
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { ChainId } from '@uniswap/sdk';
-import { SettingsModal } from 'components';
-import AdsSlider from 'components/AdsSlider';
+import { Adshares, SettingsModal } from 'components';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import 'pages/styles/swap.scss';
 import React, { useEffect, useState } from 'react';
@@ -96,7 +95,7 @@ const SwapPage: React.FC = () => {
         />
       )}
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
-        <AdsSlider sort='analytics' />
+        <Adshares />
       </Box>
     </Box>
   );
