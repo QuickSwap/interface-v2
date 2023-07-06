@@ -87,7 +87,7 @@ export function useFarmingSubgraph() {
   async function fetchToken(tokenId: string, farming = false) {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLICLEADERBOARD_APP_URL}/farming/token-details/${tokenId}?chainId=${chainId}&farming=${farming}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/token-details/${tokenId}?chainId=${chainId}&farming=${farming}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -103,7 +103,7 @@ export function useFarmingSubgraph() {
   async function fetchPool(poolId: string) {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLICLEADERBOARD_APP_URL}/farming/pool-details/${poolId}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/pool-details/${poolId}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -135,7 +135,7 @@ export function useFarmingSubgraph() {
   async function fetchLimit(limitFarmingId: string) {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLICLEADERBOARD_APP_URL}/farming/limit-farming/${limitFarmingId}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/limit-farming/${limitFarmingId}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -155,7 +155,7 @@ export function useFarmingSubgraph() {
   async function fetchEternalFarming(farmId: string) {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLICLEADERBOARD_APP_URL}/farming/eternal-farming/${farmId}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/eternal-farming/${farmId}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -179,7 +179,7 @@ export function useFarmingSubgraph() {
       setRewardsLoading(true);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLICLEADERBOARD_APP_URL}/farming/farm-rewards/${account}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/farm-rewards/${account}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -240,7 +240,7 @@ export function useFarmingSubgraph() {
       setTransferredPositionsLoading(true);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLICLEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -391,7 +391,7 @@ export function useFarmingSubgraph() {
           };
         } else {
           const res = await fetch(
-            `${process.env.NEXT_PUBLICLEADERBOARD_APP_URL}/farming/limit-farms-pool/${position.pool}?chainId=${chainId}`,
+            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/limit-farms-pool/${position.pool}?chainId=${chainId}`,
           );
           if (!res.ok) {
             const errorText = await res.text();
@@ -498,7 +498,7 @@ export function useFarmingSubgraph() {
           };
         } else {
           const res = await fetch(
-            `${process.env.NEXT_PUBLICLEADERBOARD_APP_URL}/farming/eternal-farms-pool/${position.pool}?chainId=${chainId}`,
+            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/eternal-farms-pool/${position.pool}?chainId=${chainId}`,
           );
           if (!res.ok) {
             const errorText = await res.text();
@@ -546,7 +546,7 @@ export function useFarmingSubgraph() {
       setPositionsForPoolLoading(true);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLICLEADERBOARD_APP_URL}/farming/pool-positions/${account}?chainId=${chainId}&poolId=${pool.id}&minRangeLength=${minRangeLength}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/pool-positions/${account}?chainId=${chainId}&poolId=${pool.id}&minRangeLength=${minRangeLength}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -582,7 +582,7 @@ export function useFarmingSubgraph() {
       setPositionsOnFarmerLoading(true);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLICLEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
