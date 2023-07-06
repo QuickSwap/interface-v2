@@ -119,7 +119,7 @@ const FarmPage: React.FC = () => {
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
-          <h4>{t('farm')}</h4>
+          <h1 className='h4'>{t('farm')}</h1>
           {v2 && v3 && (
             <Box ml={2}>
               <VersionToggle />

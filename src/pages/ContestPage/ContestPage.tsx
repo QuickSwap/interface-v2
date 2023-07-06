@@ -245,7 +245,7 @@ const ContestPage: React.FC = () => {
     <Box width='100%' mb={3} id='contest-page'>
       <Box className='pageHeading'>
         <Box className='flex items-center row'>
-          <h4>{t('leaderBoard')}</h4>
+          <h1 className='h4'>{t('leaderBoard')}</h1>
         </Box>
 
         {helpURL && (
