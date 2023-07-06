@@ -1,10 +1,6 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.rounded-top-10px {
-  border-top-left-radius: 10px !important ;
-  border-top-right-radius: 10px !important ;
-}
 .tokensFilter {
   cursor: pointer;
   display: flex;
@@ -38,14 +34,41 @@
   }
 }
 
-.filter-options-wrapper { 
+.filterOptionsWrapper {
   @include media('screen', '<tablet') {
     flex-direction: column;
     margin-bottom: 12px;
   }
-  .pair-options  {
-    @include media('screen', '<phone') {
-      justify-content: center;
-    } 
+}
+
+.pairOptions {
+  @include media('screen', '<phone') {
+    justify-content: center;
+  }
+}
+
+.searchWidgetWrapper {
+  width: 320px;
+  position: relative;
+}
+
+.searchWidgetInput {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: #1b1d26;
+  height: 46px;
+  border-radius: 10px;
+  margin: 12px 0;
+  color: $textSecondary;
+  & input {
+    flex: 1 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    color: $textPrimary;
   }
 }

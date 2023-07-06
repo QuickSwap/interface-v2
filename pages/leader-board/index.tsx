@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { ContestPairs, LeaderBoardAnalytics } from 'constants/index';
-import 'pages/styles/contest.scss';
 import HelpIcon from 'svgs/HelpIcon1.svg';
 import { ContestLeaderBoard, SwapDataV3 } from 'models/interfaces/contest';
-import SearchIcon from 'svgs/SearchIcon.svg';
+import { Search } from '@mui/icons-material';
 import { isAddress, shortenAddress } from 'utils';
-import 'components/styles/SearchWidget.scss';
-
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
@@ -22,10 +19,16 @@ import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
 import { useRouter } from 'next/router';
 import { ChainId } from '@uniswap/sdk';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import styles from 'styles/pages/Contest.module.scss';
+
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
 
-const ContestPage: React.FC = () => {
+const LeaderBoardPage = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation();
   const helpURL = process.env.NEXT_PUBLIC_HELP_URL;
   const [durationIndex, setDurationIndex] = useState(1);
@@ -260,18 +263,20 @@ const ContestPage: React.FC = () => {
       </Box>
 
       <Box width='100%' mb={3}>
-        <Box className='flex items-center justify-between filter-options-wrapper'>
+        <Box
+          className={`flex items-center justify-between ${styles.filterOptionsWrapper}`}
+        >
           <Box
             my={4}
             px={0}
-            className='flex flex-wrap items-center pair-options'
+            className={`flex flex-wrap items-center ${styles.pairOptions}`}
           >
             {ContestPairs[chainId || ChainId.MATIC].map((pair: any) => {
               return (
                 <Box
                   key={pair.address}
-                  className={`topTab ${contestFilter.address === pair.address &&
-                    'selectedTab'}`}
+                  className={`${styles.topTab} ${contestFilter.address ===
+                    pair.address && styles.selectedTab}`}
                   onClick={() => setContestFilter(pair)}
                 >
                   <p className='weight-600'>{pair.name}</p>
@@ -280,15 +285,15 @@ const ContestPage: React.FC = () => {
             })}
           </Box>
 
-          <Box className='searchWidgetWrapper'>
-            <Box className='searchWidgetInput'>
+          <Box className={styles.searchWidgetWrapper}>
+            <Box className={styles.searchWidgetInput}>
               <input
                 placeholder={t('searchAddress') ?? undefined}
                 value={searchValInput}
                 onChange={(evt) => setSearchValInput(evt.target.value)}
               />
               <Box display='flex'>
-                <SearchIcon />
+                <Search />
               </Box>
             </Box>
           </Box>
@@ -379,4 +384,12 @@ const ContestPage: React.FC = () => {
   );
 };
 
-export default ContestPage;
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
+};
+
+export default LeaderBoardPage;
