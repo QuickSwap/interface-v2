@@ -1,5 +1,5 @@
 import { getAddress } from '@ethersproject/address';
-import { Box, Divider, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 import { Skeleton } from '@mui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
 import { Search } from '@mui/icons-material';
@@ -28,8 +28,6 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 
 const SwapProAssets: React.FC = ({}) => {
   const { t } = useTranslation();
-  const theme = useTheme();
-  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
 
@@ -52,8 +50,6 @@ const SwapProAssets: React.FC = ({}) => {
   const { maticPrice } = useMaticPrice();
   const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const tokenMap = useSelectedTokenList();
-  const liquidityHeadCellIndex = 4;
-  const oneDayVolumeUSDIndex = 6;
 
   const tokenHeadCells = [
     {
@@ -92,7 +88,7 @@ const SwapProAssets: React.FC = ({}) => {
       const { price, oneDayPrice } = ethPrice;
       if (price !== undefined && oneDayPrice !== undefined) {
         fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v2?chainId=${chainIdToUse}&limit=${count}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/v2?chainId=${chainIdToUse}&limit=${count}`,
         ).then((res) =>
           res.json().then((res) => {
             const data = res.data;
@@ -119,7 +115,7 @@ const SwapProAssets: React.FC = ({}) => {
       const { price, oneDayPrice } = maticPrice;
       if (price !== undefined && oneDayPrice !== undefined) {
         fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/v3?chainId=${chainId}&limit=${count}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/v3?chainId=${chainId}&limit=${count}`,
         ).then((res) =>
           res.json().then((res) => {
             const data = res.data;
@@ -307,7 +303,7 @@ const SwapProAssets: React.FC = ({}) => {
         <Search />
         <input
           type='text'
-          placeholder={t('search')}
+          placeholder={t('search') ?? undefined}
           value={searchQueryInput}
           ref={inputRef as RefObject<HTMLInputElement>}
           onChange={(e) => setSearchQueryInput(e.target.value)}

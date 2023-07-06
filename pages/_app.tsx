@@ -20,8 +20,6 @@ import DualFarmUpdater from 'state/dualfarms/updater';
 import CNTFarmUpdater from 'state/cnt/updater';
 import SyrupUpdater from 'state/syrups/updater';
 import AnalyticsUpdater from 'state/analytics/updater';
-import AdsUpdater from 'state/ads/updater';
-import GasUpdater from 'state/application/gasUpdater';
 import { Web3ReactManager, Popups, TermsWrapper } from 'components';
 import { appWithTranslation } from 'next-i18next';
 import './index.scss';
@@ -61,8 +59,6 @@ function Updaters() {
       <DualFarmUpdater />
       <SyrupUpdater />
       <AnalyticsUpdater />
-      <AdsUpdater />
-      <GasUpdater />
     </>
   );
 }

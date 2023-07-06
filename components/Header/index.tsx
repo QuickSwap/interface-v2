@@ -284,8 +284,10 @@ const Header: React.FC = () => {
             <Box
               key={val.id}
               id={val.id}
-              className={`menuItem ${
-                pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
+              className={`${styles.menuItem} ${
+                pathname !== '/' && val.link.includes(pathname)
+                  ? styles.activeMenuItem
+                  : ''
               }`}
               onClick={() => {
                 if (val.onClick) {
@@ -386,7 +388,7 @@ const Header: React.FC = () => {
               <Box
                 key={val.id}
                 id={val.id}
-                className={`menuItem ${
+                className={`${styles.menuItem} ${
                   pathname !== '/' && val.link.includes(pathname)
                     ? 'active'
                     : ''
@@ -414,7 +416,7 @@ const Header: React.FC = () => {
                     <Box className={styles.subMenu}>
                       {menuItems.slice(4, menuItems.length).map((val) => (
                         <Box
-                          className={`subMenuItem ${
+                          className={`${styles.subMenuItem} ${
                             pathname !== '/' && val.link.includes(pathname)
                               ? 'active'
                               : ''

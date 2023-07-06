@@ -38,7 +38,7 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   useEffect(() => {
     async function getPairId(token1Address: string, token2Address: string) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/pair-address/${token1Address}/${token2Address}?chainId=${chainIdToUse}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/pair-address/${token1Address}/${token2Address}?chainId=${chainIdToUse}`,
       );
       if (!res.ok) {
         const errorText = await res.text();

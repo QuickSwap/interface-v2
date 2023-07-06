@@ -170,7 +170,7 @@ const AnalyticsSearch: React.FC = () => {
       try {
         const res = await fetch(
           `${
-            process.env.REACT_APP_LEADERBOARD_APP_URL
+            process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
           }/utils/search-token-pair/${
             isV2 && v2 ? 'v2' : 'v3'
           }?chainId=${chainIdToUse}&search=${searchVal}`,

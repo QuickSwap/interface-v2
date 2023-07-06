@@ -79,7 +79,7 @@ const LiquidityPools: React.FC<{
       let pairData;
       if (v2) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-liquidity-pools/${token1Address}/${token2Address}/v2?chainId=${token1.chainId}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-liquidity-pools/${token1Address}/${token2Address}/v2?chainId=${token1.chainId}`,
         );
         if (!res.ok) {
           const errorText = await res.text();
@@ -99,7 +99,7 @@ const LiquidityPools: React.FC<{
             : [];
       }
       const v3Res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-liquidity-pools/${token1Address}/${token2Address}/v3?chainId=${token1.chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-liquidity-pools/${token1Address}/${token2Address}/v3?chainId=${token1.chainId}`,
       );
       if (!v3Res.ok) {
         const errorText = await v3Res.text();

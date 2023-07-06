@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 
 export function useInfoLiquidity() {
@@ -17,7 +17,7 @@ export function useInfoLiquidity() {
       setPopularPoolsLoading(true);
 
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/popular-pools?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/popular-pools?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();

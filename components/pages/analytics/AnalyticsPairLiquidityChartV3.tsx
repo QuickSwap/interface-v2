@@ -27,7 +27,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     if (!chainId) return;
     (async () => {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();

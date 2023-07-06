@@ -38,7 +38,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       let tokenPriceDataV2, tokenPriceIsV2;
       if (v2) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v2?chainId=${chainId}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v2?chainId=${chainId}`,
         );
         if (!res.ok) {
           const errorText = await res.text();
@@ -57,7 +57,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       }
 
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v3?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v3?chainId=${chainId}`,
       );
       if (!res.ok) {
         const errorText = await res.text();
@@ -79,7 +79,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       let token0;
       if (v2) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
         );
         if (!res.ok) {
           const errorText = await res.text();
@@ -102,7 +102,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       }
       if (!token0 || !token0.priceUSD) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
         );
         if (!res.ok) {
           const errorText = await res.text();

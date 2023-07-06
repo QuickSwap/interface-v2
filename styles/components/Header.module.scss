@@ -57,95 +57,6 @@
   display: flex;
   align-items: center;
   height: 100%;
-  & .menuItem {
-    cursor: pointer;
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 36px;
-    padding: 0 24px;
-    margin-right: 6px;
-    overflow: hidden;
-    border-radius: 10px;
-    color: $textSecondary;
-    & small {
-      white-space: nowrap;
-    }
-    &.subMenuItem {
-      padding: 0;
-      overflow: visible;
-    }
-    .menuItemSparkle {
-      position: absolute;
-      transition: all 0.5s;
-    }
-    .menuItemSparkleTop {
-      top: -20px;
-      margin-left: -10px;
-    }
-    .menuItemSparkleBottom {
-      bottom: -20px;
-      margin-left: -12px;
-    }
-    .menuItemSparkleLeft {
-      left: -20px;
-    }
-    .menuItemSparkleRight {
-      right: -20px;
-    }
-    &.active {
-      color: $textPrimary;
-      background: $secondary1;
-      .menuItemSparkleTop {
-        top: 0px;
-      }
-      .menuItemSparkleBottom {
-        bottom: 0px;
-      }
-      .menuItemSparkleLeft {
-        left: 4px;
-      }
-      .menuItemSparkleRight {
-        right: 4px;
-      }
-    }
-    & .subMenu {
-      display: none;
-      background-color: $secondary2;
-      border-radius: 10px;
-      margin-top: 12px;
-      & .subMenuItem {
-        color: $textSecondary;
-        padding: 10px 24px;
-        white-space: unset;
-        &:hover {
-          color: $textPrimary;
-        }
-        &.active {
-          color: $textPrimary;
-        }
-      }
-    }
-    &:hover {
-      color: $textPrimary;
-      background: $secondary1;
-      .menuItemSparkleTop {
-        top: 0px;
-      }
-      .menuItemSparkleBottom {
-        bottom: 0px;
-      }
-      .menuItemSparkleLeft {
-        left: 4px;
-      }
-      .menuItemSparkleRight {
-        right: 4px;
-      }
-      & .subMenu {
-        display: block;
-      }
-    }
-  }
 }
 .activeMenuItem {
   color: $textPrimary !important;
@@ -170,17 +81,12 @@
   align-items: center;
   height: 36px;
   padding: 0 24px;
+  margin-right: 6px;
   overflow: hidden;
   border-radius: 10px;
+  color: $textSecondary;
   & small {
     white-space: nowrap;
-  }
-  &.subMenuItem {
-    padding: 0;
-    width: 36px;
-    justify-content: center;
-    overflow: visible;
-    color: $textSecondary;
   }
   .menuItemSparkle {
     position: absolute;
@@ -205,10 +111,14 @@
     background-color: $secondary2;
     border-radius: 10px;
     margin-top: 12px;
-    & > a {
+    & .subMenuItem {
+      color: $textSecondary;
       padding: 10px 24px;
       white-space: unset;
       &:hover {
+        color: $textPrimary;
+      }
+      &.active {
         color: $textPrimary;
       }
     }
@@ -232,6 +142,10 @@
       display: block;
     }
   }
+}
+.subMenuItem {
+  padding: 0;
+  overflow: visible;
 }
 .subMenuWrapper {
   position: absolute;

@@ -88,7 +88,7 @@ const ContestPage: React.FC = () => {
       )) {
         const lensRes = await fetch(
           `${
-            process.env.REACT_APP_LEADERBOARD_APP_URL
+            process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
           }/utils/lens-profiles?addresses=${data.leaderboardData
             .slice(ind * 150, (ind + 1) * 150)
             .map((e: any) => e.origin)
@@ -157,7 +157,7 @@ const ContestPage: React.FC = () => {
       console.log('pools_in', pools_in);
 
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/get-snap-shot/by-origin?chainId=${chainId}&days=${durationIndex}&pool=${contestFilter.address}&origin=${searchVal}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/get-snap-shot/by-origin?chainId=${chainId}&days=${durationIndex}&pool=${contestFilter.address}&origin=${searchVal}`,
       );
       if (!res.ok) {
         const errorText = await res.text();

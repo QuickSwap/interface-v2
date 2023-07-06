@@ -54,7 +54,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
         if (pairId.v2) {
           const res = await fetch(
             `${
-              process.env.REACT_APP_LEADERBOARD_APP_URL
+              process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
             }/utils/swap-transactions/${
               pairId.v2
             }/v2?chainId=${chainIdToUse}&startTime=${Number(
@@ -79,7 +79,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
         if (pairId.v3) {
           const res = await fetch(
             `${
-              process.env.REACT_APP_LEADERBOARD_APP_URL
+              process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
             }/utils/swap-transactions/${
               pairId.v3
             }/v3?chainId=${chainIdToUse}&startTime=${Number(
@@ -120,7 +120,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
 
       if (pairId.v2) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v2}/v2?chainId=${chainIdToUse}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v2}/v2?chainId=${chainIdToUse}`,
         );
         if (!res.ok) {
           const errorText = await res.text();
@@ -138,7 +138,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
 
       if (pairId.v3) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v3}/v3?chainId=${chainIdToUse}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v3}/v3?chainId=${chainIdToUse}`,
         );
         if (!res.ok) {
           const errorText = await res.text();

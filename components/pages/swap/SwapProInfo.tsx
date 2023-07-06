@@ -34,7 +34,7 @@ const SwapProInfo: React.FC<{
       if (ethPrice.price && ethPrice.oneDayPrice) {
         if (token1Address) {
           const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token1Address}/v2?chainId=${chainIdToUse}`,
+            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${token1Address}/v2?chainId=${chainIdToUse}`,
           );
           if (!res.ok) {
             const errorText = await res.text();
@@ -49,7 +49,7 @@ const SwapProInfo: React.FC<{
             setToken1Data(token);
           } else if (maticPrice.price && maticPrice.oneDayPrice) {
             const res = await fetch(
-              `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token1Address}/v3?chainId=${chainIdToUse}`,
+              `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${token1Address}/v3?chainId=${chainIdToUse}`,
             );
             if (!res.ok) {
               const errorText = await res.text();
@@ -71,7 +71,7 @@ const SwapProInfo: React.FC<{
         }
         if (token2Address) {
           const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token2Address}/v2?chainId=${chainIdToUse}`,
+            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${token2Address}/v2?chainId=${chainIdToUse}`,
           );
           if (!res.ok) {
             const errorText = await res.text();
@@ -86,7 +86,7 @@ const SwapProInfo: React.FC<{
             setToken2Data(token);
           } else if (maticPrice.price && maticPrice.oneDayPrice) {
             const res = await fetch(
-              `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token2Address}/v3?chainId=${chainIdToUse}`,
+              `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${token2Address}/v3?chainId=${chainIdToUse}`,
             );
             if (!res.ok) {
               const errorText = await res.text();
