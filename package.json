@@ -119,6 +119,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@gnosis.pm/safe-apps-sdk": "^7.8.0",
+    "@intract/attribution": "^2.0.0",
     "@mui/icons-material": "^5.11.11",
     "@mui/lab": "^5.0.0-alpha.122",
     "@mui/material": "^5.11.12",
