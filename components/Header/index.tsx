@@ -340,16 +340,22 @@ const Header: React.FC = () => {
           {menuItems.slice(menuItemCountToShow, menuItems.length).length >
             0 && (
             <Box className={`${styles.menuItem} ${styles.subMenuItem}`}>
-              <MoreHoriz />
+              <Box
+                width='36px'
+                height='36px'
+                className='flex items-center justify-center'
+              >
+                <MoreHoriz />
+              </Box>
               <Box className={styles.subMenuWrapper}>
                 <Box className={styles.subMenu}>
                   {menuItems
                     .slice(menuItemCountToShow, menuItems.length)
                     .map((val) => (
                       <Box
-                        className={`subMenuItem ${
+                        className={`${styles.subMenuItem} ${
                           pathname !== '/' && val.link.includes(pathname)
-                            ? 'active'
+                            ? styles.activeSubMenuItem
                             : ''
                         }`}
                         key={val.id}
@@ -390,7 +396,7 @@ const Header: React.FC = () => {
                 id={val.id}
                 className={`${styles.menuItem} ${
                   pathname !== '/' && val.link.includes(pathname)
-                    ? 'active'
+                    ? styles.activeMenuItem
                     : ''
                 }`}
                 onClick={() => {
@@ -418,7 +424,7 @@ const Header: React.FC = () => {
                         <Box
                           className={`${styles.subMenuItem} ${
                             pathname !== '/' && val.link.includes(pathname)
-                              ? 'active'
+                              ? styles.activeSubMenuItem
                               : ''
                           }`}
                           key={val.id}

@@ -118,7 +118,7 @@
       &:hover {
         color: $textPrimary;
       }
-      &.active {
+      &.activeSubMenuItem {
         color: $textPrimary;
       }
     }
@@ -159,7 +159,7 @@
     background-color: $secondary2;
     padding: 8px 0;
     bottom: 72px;
-    right: 12px;
+    right: 0;
     border: 1px solid $divider;
   }
 }
@@ -247,12 +247,22 @@
   width: 100%;
   & .menuItem,
   & .subMenuItem {
-    padding: 8px 12px;
+    padding: 8px 12px !important;
     color: $textSecondary;
     font-weight: bold;
     cursor: pointer;
-    &.active {
+    &:hover {
       color: $textPrimary;
+    }
+    &.activeMenuItem {
+      color: $textPrimary;
+    }
+  }
+  & .menuItem {
+    overflow: visible;
+    & .subMenu {
+      display: block;
+      margin-top: 0;
     }
   }
 }
