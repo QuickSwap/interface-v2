@@ -35,6 +35,7 @@ import {
   getIsTrustWallet,
 } from 'connectors/utils';
 import { useSelectedWallet } from 'state/user/hooks';
+import { WalletConnect } from 'connectors/WalletConnect';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -56,7 +57,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
 }) => {
   const { t } = useTranslation();
   // important that these are destructed from the account-specific web3-react context
-  const { account, connector, isActive } = useWeb3React();
+  const { chainId, account, connector, isActive } = useWeb3React();
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
   const [error, setError] = useState<Error | string | undefined>(undefined);
@@ -90,6 +91,14 @@ const WalletModal: React.FC<WalletModalProps> = ({
     });
     setPendingWallet(connection); // set wallet for pending view
     setWalletView(WALLET_VIEWS.PENDING);
+
+    if (
+      chainId &&
+      (connection.name === GlobalConst.walletName.WALLET_CONNECT ||
+        connection.name === GlobalConst.walletName.ZENGO_CONNECT)
+    ) {
+      (connection.connector as WalletConnect).setRequiredChains([chainId]);
+    }
 
     try {
       if (connector.deactivate) {
