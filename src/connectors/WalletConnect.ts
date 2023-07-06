@@ -51,7 +51,7 @@ export class WalletConnect extends Connector {
   private readonly options: Omit<WalletConnectOptions, 'rpcMap' | 'chains'>;
 
   private readonly rpcMap?: Record<number, string | string[]>;
-  private readonly chains: number[];
+  private chains: number[];
   private readonly defaultChainId?: number;
   private readonly timeout: number;
 
@@ -74,6 +74,10 @@ export class WalletConnect extends Connector {
     this.rpcMap = rpcMap;
     this.timeout = timeout;
   }
+
+  public setRequiredChains = (chains: number[]) => {
+    this.chains = chains;
+  };
 
   private disconnectListener = (error: ProviderRpcError) => {
     this.actions.resetState();
