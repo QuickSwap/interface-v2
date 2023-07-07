@@ -11,7 +11,7 @@ const SwapPageHeader: React.FC<{ proMode: boolean }> = ({ proMode }) => {
     <></>
   ) : (
     <Box className='pageHeading'>
-      <h4>{t('swap')}</h4>
+      <h1 className='h4'>{t('swap')}</h1>
       {helpURL && (
         <Box
           className='helpWrapper'

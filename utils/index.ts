@@ -38,7 +38,7 @@ import { CallState } from 'state/multicall/hooks';
 import { DualStakingBasic, StakingBasic } from 'types';
 import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
-import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
+import { DLQUICK, EMPTY, OLD_QUICK } from 'constants/v3/addresses';
 import { getConfig } from 'config';
 import { useEffect, useState } from 'react';
 import { useEthPrice } from 'state/application/hooks';
@@ -461,11 +461,11 @@ export function getTokenFromAddress(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
     );
     if (!token) {
-      const commonToken = Object.values(GlobalValue.tokens.COMMON).find(
+      const commonToken = GlobalValue.tokens.COMMON[chainId].find(
         (token) => token.address.toLowerCase() === tokenAddress.toLowerCase(),
       );
       if (!commonToken) {
-        return GlobalValue.tokens.COMMON.EMPTY;
+        return EMPTY[chainId];
       }
       return commonToken;
     }
@@ -709,7 +709,7 @@ export function getStakedAmountStakingInfo(
   if (!stakingInfo) return;
   const stakingTokenPair = stakingInfo.stakingTokenPair;
   const baseTokenCurrency = unwrappedToken(stakingInfo.baseToken);
-  const empty = unwrappedToken(GlobalValue.tokens.COMMON.EMPTY);
+  const empty = unwrappedToken(EMPTY[stakingInfo.baseToken.chainId]);
   const token0 = stakingInfo.tokens[0];
   const baseToken =
     baseTokenCurrency === empty ? token0 : stakingInfo.baseToken;

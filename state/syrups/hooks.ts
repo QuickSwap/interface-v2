@@ -136,7 +136,7 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
           .filter((address) => !tokenMap[ChainId.MATIC][address])
           .filter(
             (address) =>
-              !Object.values(GlobalValue.tokens.COMMON).find(
+              !GlobalValue.tokens.COMMON[ChainId.MATIC].find(
                 (token) =>
                   token.address.toLowerCase() === address.toLowerCase(),
               ),

@@ -151,6 +151,14 @@ export function PresetRanges({
     if (isStablecoinPair)
       return [
         {
+          type: Presets.FULL,
+          title: t('fullRange'),
+          min: 0,
+          max: Infinity,
+          risk: PresetProfits.VERY_LOW,
+          profit: PresetProfits.VERY_LOW,
+        },
+        {
           type: Presets.STABLE,
           title: t('stablecoins'),
           min: 0.984,

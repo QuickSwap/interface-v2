@@ -28,7 +28,6 @@ import IUniswapV2Router02 from '@uniswap/v2-periphery/build/IUniswapV2Router02.j
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
 import {
   GAMMA_MASTERCHEF_ADDRESSES,
-  GAMMA_UNIPROXY_ADDRESSES,
   MULTICALL_ADDRESS,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   QUOTER_ADDRESSES,
@@ -45,8 +44,10 @@ import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
 import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
+import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
 
 const STAKING_REWARDS_ABI = StakingRewards.abi;
 const IUniswapV2PairABI = IUniswapV2Pair.abi;
@@ -300,10 +301,28 @@ export function useV3NFTPositionManagerContract(
   );
 }
 
-export function useGammaUNIProxyContract(withSignerIfPossible?: boolean) {
+export function useGammaUNIProxyContract(
+  pairAddress?: string,
+  withSignerIfPossible?: boolean,
+) {
+  const hypervisorContract = useGammaHypervisorContract(pairAddress);
+  const uniProxyResult = useSingleCallResult(
+    hypervisorContract,
+    'whitelistedAddress',
+  );
+  const uniProxyAddress =
+    !uniProxyResult.loading &&
+    uniProxyResult.result &&
+    uniProxyResult.result.length > 0
+      ? uniProxyResult.result[0]
+      : undefined;
   return useContract(
-    GAMMA_UNIPROXY_ADDRESSES,
-    GammaUniProxy,
+    uniProxyAddress,
+    uniProxyAddress &&
+      uniProxyAddress.toLowerCase() ===
+        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? GammaUniProxy1
+      : GammaUniProxy,
     withSignerIfPossible,
   );
 }
@@ -329,7 +348,7 @@ export function useMasterChefContracts(withSignerIfPossible?: boolean) {
 }
 
 export function useGammaHypervisorContract(
-  address: string,
+  address?: string,
   withSignerIfPossible?: boolean,
 ) {
   return useContract(address, GammaPairABI, withSignerIfPossible);

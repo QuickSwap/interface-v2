@@ -60,6 +60,7 @@ import { Contract } from '@ethersproject/contracts';
 import {
   DLDQUICK,
   DLQUICK,
+  EMPTY,
   LAIR_ADDRESS,
   NEW_LAIR_ADDRESS,
   NEW_QUICK,
@@ -806,7 +807,7 @@ export function useCNTStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = GlobalValue.tokens.COMMON.EMPTY;
+    const empty = EMPTY[chainId];
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
@@ -1072,7 +1073,7 @@ export function useDualStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = unwrappedToken(GlobalValue.tokens.COMMON.EMPTY);
+    const empty = unwrappedToken(EMPTY[chainId]);
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
@@ -1493,7 +1494,7 @@ export function useStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = GlobalValue.tokens.COMMON.EMPTY;
+    const empty = EMPTY[chainId];
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
   const rewardTokens = info.map((item) => item.rewardToken);
