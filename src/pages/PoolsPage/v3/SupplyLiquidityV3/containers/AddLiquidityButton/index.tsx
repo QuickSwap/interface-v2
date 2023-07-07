@@ -9,7 +9,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
 import { Percent, Currency } from '@uniswap/sdk-core';
-import { useAppDispatch, useAppSelector } from 'state/hooks';
+import { useAppDispatch } from 'state/hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
@@ -74,7 +74,7 @@ export function AddLiquidityButton({
   const preset = useActivePreset();
 
   const positionManager = useV3NFTPositionManagerContract();
-  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+
   const wethContract = useWETHContract();
 
   const deadline = useTransactionDeadline();
@@ -111,6 +111,7 @@ export function AddLiquidityButton({
     gammaPair && gammaPair.length > 0
       ? gammaPair.find((pair) => pair.type === preset)?.address
       : undefined;
+  const gammaUNIPROXYContract = useGammaUNIProxyContract(gammaPairAddress);
   const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A];
   const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B];
   const wmaticBalance = useCurrencyBalance(
@@ -291,6 +292,7 @@ export function AddLiquidityButton({
       setRejected && setRejected(false);
 
       setAttemptingTxn(true);
+
       try {
         const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
           (GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress]

@@ -22,7 +22,7 @@ import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useGammaUNIProxyContract, useWETHContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 
 interface IncreaseGammaLiquidityModalProps {
@@ -39,75 +39,46 @@ export default function IncreaseGammaLiquidityModal({
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
-  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+  const gammaUNIPROXYContract = useGammaUNIProxyContract(position.pairAddress);
+  const [deposit0, setDeposit0] = useState('');
+  const [deposit1, setDeposit1] = useState('');
 
-  const tokens = [position.token0, position.token1];
-
-  const depositAmountsData = useSingleContractMultipleData(
+  const independentToken = isBaseInput ? position.token0 : position.token1;
+  const dependentToken = isBaseInput ? position.token1 : position.token0;
+  const independentDeposit = isBaseInput
+    ? Number(deposit0).toFixed(position.token0.decimals)
+    : Number(deposit1).toFixed(position.token1.decimals);
+  const depositAmountsData = useSingleCallResult(
     gammaUNIPROXYContract,
     'getDepositAmount',
-    tokens.map((token) => [
+    [
       position.pairAddress,
-      token.address,
-      parseUnits('1', token.decimals),
-    ]),
+      independentToken.address,
+      parseUnits(independentDeposit, independentToken.decimals),
+    ],
   );
 
   const depositRange = useMemo(() => {
-    if (depositAmountsData.length < 1) return;
-    const baseDepositMin =
-      !depositAmountsData[1].loading &&
-      depositAmountsData[1].result &&
-      depositAmountsData[1].result.length > 1
+    const depositMin =
+      !depositAmountsData.loading &&
+      depositAmountsData.result &&
+      depositAmountsData.result.length > 1
         ? Number(
-            formatUnits(
-              depositAmountsData[1].result[0],
-              position.token0.decimals,
-            ),
+            formatUnits(depositAmountsData.result[0], dependentToken.decimals),
           )
         : 0;
-    const baseDepositMax =
-      !depositAmountsData[1].loading &&
-      depositAmountsData[1].result &&
-      depositAmountsData[1].result.length > 1
+    const depositMax =
+      !depositAmountsData.loading &&
+      depositAmountsData.result &&
+      depositAmountsData.result.length > 1
         ? Number(
-            formatUnits(
-              depositAmountsData[1].result[1],
-              position.token0.decimals,
-            ),
-          )
-        : 0;
-    const quoteDepositMin =
-      !depositAmountsData[0].loading &&
-      depositAmountsData[0].result &&
-      depositAmountsData[0].result.length > 1
-        ? Number(
-            formatUnits(
-              depositAmountsData[0].result[0],
-              position.token1.decimals,
-            ),
-          )
-        : 0;
-    const quoteDepositMax =
-      !depositAmountsData[0].loading &&
-      depositAmountsData[0].result &&
-      depositAmountsData[0].result.length > 1
-        ? Number(
-            formatUnits(
-              depositAmountsData[0].result[1],
-              position.token1.decimals,
-            ),
+            formatUnits(depositAmountsData.result[1], dependentToken.decimals),
           )
         : 0;
 
-    return {
-      base: { min: baseDepositMin, max: baseDepositMax },
-      quote: { min: quoteDepositMin, max: quoteDepositMax },
-    };
-  }, [depositAmountsData, position.token0.decimals, position.token1.decimals]);
+    return { min: depositMin, max: depositMax };
+  }, [depositAmountsData, dependentToken.decimals]);
 
-  const [deposit0, setDeposit0] = useState('');
-  const [deposit1, setDeposit1] = useState('');
   const ethBalance = useCurrencyBalance(
     account ?? undefined,
     chainId ? ETHER[chainId] : undefined,
@@ -321,18 +292,14 @@ export default function IncreaseGammaLiquidityModal({
     if (depositRange) {
       if (isBaseInput) {
         if (Number(deposit0) > 0) {
-          const quoteDeposit =
-            ((depositRange.quote.min + depositRange.quote.max) / 2) *
-            Number(deposit0);
+          const quoteDeposit = (depositRange.min + depositRange.max) / 2;
           setDeposit1(quoteDeposit.toFixed(position.token1.decimals));
         } else {
           setDeposit1('');
         }
       } else {
         if (Number(deposit1) > 0) {
-          const baseDeposit =
-            ((depositRange.base.min + depositRange.base.max) / 2) *
-            Number(deposit1);
+          const baseDeposit = (depositRange.min + depositRange.max) / 2;
           setDeposit0(baseDeposit.toFixed(position.token0.decimals));
         } else {
           setDeposit0('');

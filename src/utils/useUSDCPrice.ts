@@ -81,8 +81,7 @@ export function useUSDCPricesFromAddresses(
       const addresses = addressStr.split('_');
 
       if (ethPrice.price && maticPrice.price) {
-        let addressesNotInV2: string[] = [],
-          pricesV2: any[] = [];
+        let pricesV2: any[] = [];
 
         if (v2) {
           const res = await fetch(
@@ -97,17 +96,15 @@ export function useUSDCPricesFromAddresses(
           const data = await res.json();
 
           pricesV2 = data && data.data && data.data.length > 0 ? data.data : [];
-
-          addressesNotInV2 = addresses.filter((address) => {
-            const priceV2 = pricesV2.find(
-              (item: any) =>
-                item && item.id.toLowerCase() === address.toLowerCase(),
-            );
-            return (
-              !priceV2 || !priceV2.derivedETH || !Number(priceV2.derivedETH)
-            );
-          });
         }
+
+        const addressesNotInV2 = addresses.filter((address) => {
+          const priceV2 = pricesV2.find(
+            (item: any) =>
+              item && item.id.toLowerCase() === address.toLowerCase(),
+          );
+          return !priceV2 || !priceV2.derivedETH || !Number(priceV2.derivedETH);
+        });
 
         const res = await fetch(
           `${
