@@ -155,7 +155,7 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
           .filter((address) => !tokenMap[ChainId.MATIC][address])
           .filter(
             (address) =>
-              !Object.values(GlobalValue.tokens.COMMON).find(
+              !GlobalValue.tokens.COMMON[ChainId.MATIC].find(
                 (token) =>
                   token.address.toLowerCase() === address.toLowerCase(),
               ),

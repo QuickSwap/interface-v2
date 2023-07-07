@@ -208,7 +208,7 @@ const Header: React.FC = () => {
   if (showLeaderboard) {
     menuItems.push({
       link: '/leader-board',
-      text: 'Leader Board',
+      text: 'Leaderboard',
       id: 'contest-page-link',
       isNew: true,
     });

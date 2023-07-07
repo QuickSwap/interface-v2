@@ -72,7 +72,7 @@ const AddGammaLiquidity: React.FC<{
     return approvalB !== ApprovalState.APPROVED;
   }, [approvalB]);
 
-  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+  const gammaUNIPROXYContract = useGammaUNIProxyContract(gammaPairAddress);
   const gammaTokens = token0 && token1 ? [token0, token1] : [];
   const depositAmountsData = useSingleContractMultipleData(
     gammaPairAddress && gammaTokens.length > 0

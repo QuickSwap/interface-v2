@@ -55,7 +55,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   return (
     <Box width='100%' mb={3}>
       <Box mb={4} className='flex items-center'>
-        <h4>{t('quickswapAnalytics')}</h4>
+        <h1 className='h4'>{t('quickswapAnalytics')}</h1>
         {v2 && v3 && !isPairDetails && (
           <Box ml={2}>
             <VersionToggle />
