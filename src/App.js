@@ -241,12 +241,10 @@ function AppHeaderUser({
   useEffect(() => {
     if (active) {
       setWalletModalVisible(false);
+      tour?.show(2)
     }
   }, [active, setWalletModalVisible]);
 
-  useEffect(() => {
-
-  }, [tour?.getCurrentStep()]);
 
   const getTour = () => {
     tour?.start()
@@ -284,6 +282,7 @@ function AppHeaderUser({
 function FullApp() {
   const exchangeRef = useRef();
   const { connector, library, deactivate, activate, active } = useWeb3React();
+  const tour = useContext(ShepherdTourContext);
   const { chainId } = useChainId();
   useEventToast();
   const [activatingConnector, setActivatingConnector] = useState();
