@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'next-i18next';
@@ -16,7 +16,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useRouter } from 'next/router';
 import {
   useGammaHypervisorContract,
   useMasterChefContract,
@@ -34,10 +34,10 @@ const GammaFarmsPage: React.FC<{
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
-  const parsedQuery = useParsedQueryString();
+  const router = useRouter();
   const farmStatus =
-    parsedQuery && parsedQuery.farmStatus
-      ? (parsedQuery.farmStatus as string)
+    router.query && router.query.farmStatus
+      ? (router.query.farmStatus as string)
       : 'active';
   const allGammaFarms = chainId
     ? ([] as GammaPair[])

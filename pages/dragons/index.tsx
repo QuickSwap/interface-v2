@@ -4,7 +4,6 @@ import DragonsLair from 'components/pages/dragons/DragonsLair';
 import DragonsSyrup from 'components/pages/dragons/DragonsSyrup';
 import styles from 'styles/pages/Dragon.module.scss';
 import { useTranslation } from 'next-i18next';
-import AdsSlider from 'components/AdsSlider';
 import Image from 'next/image';
 import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
@@ -13,6 +12,7 @@ import { getConfig } from 'config';
 import { useRouter } from 'next/router';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { Adshares } from 'components';
 
 const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { breakpoints } = useTheme();
@@ -94,9 +94,6 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
               <DragonsLair isNew={false} />
             </Box>
           )}
-          <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
-            <AdsSlider sort='dragons' />
-          </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={8}>
           <Box className={styles.dragonWrapper}>
@@ -120,6 +117,9 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           </Box>
         </Grid>
       </Grid>
+      <Box mt={2}>
+        <Adshares />
+      </Box>
     </Box>
   );
 };

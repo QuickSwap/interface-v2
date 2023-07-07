@@ -80,7 +80,7 @@ export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (
   let priceChangeETH = 0;
 
   const res = await fetch(
-    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/eth-price?chainId=${chainId}`,
+    `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/eth-price?chainId=${chainId}`,
   );
   if (!res.ok) {
     const errorText = await res.text();
@@ -966,7 +966,7 @@ export const getEternalFarmFromTokens = async (
 ) => {
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farm-tokens?chainId=${chainId}&token0=${token0}&token1=${token1}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/eternal-farm-tokens?chainId=${chainId}&token0=${token0}&token1=${token1}`,
     );
     if (!res.ok) {
       const errorText = await res.text();

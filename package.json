@@ -47,7 +47,6 @@
     "fortmatic": "^2.2.1",
     "graphql": "^15.5.1",
     "graphql-request": "^3.5.0",
-    "graphql-tag": "^2.12.5",
     "ipfs-deploy": "^11.1.0",
     "lodash.flatmap": "^4.5.0",
     "multicodec": "^3.0.1",

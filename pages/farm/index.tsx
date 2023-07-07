@@ -6,7 +6,7 @@ import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import FarmRewards from 'components/pages/farms/FarmRewards';
 import FarmsList from 'components/pages/farms/FarmsList';
-import { CustomSwitch } from 'components';
+import { Adshares, CustomSwitch } from 'components';
 import { useTranslation } from 'next-i18next';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultCNTFarmList } from 'state/cnt/hooks';

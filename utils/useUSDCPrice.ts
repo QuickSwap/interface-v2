@@ -12,7 +12,6 @@ import { PairState, usePairs, usePair } from 'data/Reserves';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
 import { useDQUICKtoQUICK } from 'state/stake/hooks';
-import { GlobalValue } from 'constants/index';
 import { useAllCommonPairs } from 'hooks/Trades';
 import { tryParseAmount } from 'state/swap/hooks';
 import { useEthPrice, useMaticPrice } from 'state/application/hooks';
@@ -86,7 +85,7 @@ export function useUSDCPricesFromAddresses(
 
         if (v2) {
           const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v2?chainId=${chainId}&addresses=${addressStr}`,
+            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-prices/v2?chainId=${chainId}&addresses=${addressStr}`,
           );
           if (!res.ok) {
             const errorText = await res.text();
@@ -111,7 +110,7 @@ export function useUSDCPricesFromAddresses(
 
         const res = await fetch(
           `${
-            process.env.REACT_APP_LEADERBOARD_APP_URL
+            process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
           }/utils/token-prices/v3?chainId=${chainId}&addresses=${addressesNotInV2.join(
             '_',
           )}`,
@@ -158,7 +157,7 @@ export function useUSDCPricesFromAddresses(
         setPrices(prices);
       } else if (maticPrice.price) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v3?chainId=${chainId}&addresses=${addressStr}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-prices/v3?chainId=${chainId}&addresses=${addressStr}`,
         );
         if (!res.ok) {
           const errorText = await res.text();
@@ -261,7 +260,6 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
       [usdcQuickPairState, usdcQuickPair],
     ] = remainPairs[index];
     const wrapped = wrappedCurrencies[index];
-    const internalWrapped = wrappedCurrency(currency, chainId);
     if (!wrapped || !chainId) {
       return undefined;
     }
