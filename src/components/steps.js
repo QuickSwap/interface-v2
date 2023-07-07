@@ -15,6 +15,19 @@ const newSteps = [
     classes: 'shepherd shepherd-welcome',
     buttons: [
       {
+        type: 'cancel',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
+      {
         type: 'back',
         text: `
         <div style="
@@ -27,7 +40,7 @@ const newSteps = [
             </div>
         `,
       },
-      {
+      { 
         type: 'next',
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
@@ -52,8 +65,21 @@ const newSteps = [
       <div style="color: #061341; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Select a wallet</div>
       <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Choose any of the shown non-custodial web3 wallets. Make sure you have it installed in your browser. Alternatively you can also scan QR code and connect via wallet connect supported wallets. </div>
       `,
-    attachTo: { element: '.Connect-wallet-modal', on: 'right' },
+    attachTo: { element: '.Modal-content', on: 'right' },
     buttons: [
+      {
+        type: 'cancel',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
       {
         type: 'back',
         text: `
@@ -85,16 +111,10 @@ const newSteps = [
   {
     id: 'usage',
     title: 'Step 3',
-    beforeShowPromise: function () {
-      return new Promise(function (resolve) {
-        // document.querySelector('.Connect-wallet-modal').style.opacity = "0"
-        resolve();
-      });
-    },
     text: `
-    <div style="display: flex;justify-content: space-between;">
+    <div>
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="display: flex; align-items: center; gap: 10px; font-size: 16px;">
+    <div style="    margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
         <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;">Long</button>
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Short</button>
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Swap</button>
@@ -105,6 +125,19 @@ const newSteps = [
             `,
     attachTo: { element: '.tradePage', on: 'left' },
     buttons: [
+      {
+        type: 'cancel',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
       {
         type: 'back',
         text: `
@@ -151,9 +184,9 @@ const newSteps = [
       });
     },
     text: `
-    <div style="display: flex;justify-content: space-between;">
+    <div>
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="display: flex; align-items: center; gap: 10px; font-size: 16px;">
+    <div style="    margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Long</button>
         <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;"">Short</button>
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Swap</button>
@@ -164,6 +197,19 @@ const newSteps = [
     <br/></div>
             `,
     buttons: [
+      {
+        type: 'cancel',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
       {
         type: 'back',
         text: `
@@ -211,9 +257,9 @@ const newSteps = [
       });
     },
     text: `
-    <div style="display: flex;justify-content: space-between;">
+    <div>
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="display: flex; align-items: center; gap: 10px; font-size: 16px;">
+    <div style="    margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Long</button>
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Short</button>
         <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;">Swap</button>
@@ -224,6 +270,19 @@ const newSteps = [
             `,
     scrollTo: true,
      buttons: [
+      {
+        type: 'cancel',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
       {
         type: 'back',
         text: `
@@ -256,9 +315,9 @@ const newSteps = [
     id: 'market',
     title: 'Learn more',
     text: `
-    <div style="display: flex;justify-content: space-between;">
+    <div>
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="display: flex; align-items: center; gap: 10px; font-size: 16px;">
+    <div style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
         <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;">Market</button>
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Limit</button>
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Trigger</button>
@@ -270,6 +329,19 @@ const newSteps = [
     attachTo: { element: '.Exchange-swap-order-type-tabs', on: 'left' },
     scrollTo: true,
      buttons: [
+      {
+        type: 'cancel',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
       {
         type: 'back',
         text: `
@@ -315,9 +387,9 @@ const newSteps = [
       });
     },
     text: `
-    <div style="display: flex;justify-content: space-between;">
+    <div>
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="display: flex; align-items: center; gap: 10px; font-size: 16px;">
+    <div style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Market</button>
         <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;">Limit</button>
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Trigger</button>
@@ -329,6 +401,19 @@ const newSteps = [
     attachTo: { element: '.Exchange-swap-order-type-tabs', on: 'left' },
     scrollTo: true,
      buttons: [
+      {
+        type: 'cancel',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
       {
         type: 'back',
         text: `
@@ -374,9 +459,9 @@ const newSteps = [
       });
     },
     text: `
-    <div style="display: flex;justify-content: space-between;">
+    <div>
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="display: flex; align-items: center; gap: 10px; font-size: 16px;">
+    <div style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Market</button>
         <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Limit</button>
         <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;">Trigger</button>
@@ -389,6 +474,19 @@ const newSteps = [
     attachTo: { element: '.Exchange-swap-order-type-tabs', on: 'left' },
     scrollTo: true,
      buttons: [
+      {
+        type: 'cancel',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
       {
         type: 'back',
         text: `
@@ -430,6 +528,19 @@ const newSteps = [
     scrollTo: true,
      buttons: [
       {
+        type: 'cancel',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
+      {
         type: 'back',
         text: `
         <div style="
@@ -470,6 +581,19 @@ const newSteps = [
     attachTo: { element: '.long-exchange', on: 'left' },
     scrollTo: true,
      buttons: [
+      {
+        type: 'cancel',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
       {
         type: 'back',
         text: `
@@ -523,10 +647,10 @@ const newSteps = [
         `,
       },
       {
-        type: 'next',
+        type: 'cancel',
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Done</div>
         <div style="width: 100%; height: 100%; position: relative">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -537,45 +661,45 @@ const newSteps = [
       },
     ],
   },
-  {
-    id: 'leverageBtn',
-    title: 'Enable Leverage',
-    text: `
-    </div>
-    <div style="width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Click on Enable Leverage and Sign the transaction in wallet for Leverage to be enabled. This is a one-time process.
-    <br/></div>
-            `,
-    attachTo: { element: '.leverage-btn', on: 'left' },
-    scrollTo: true,
-     buttons: [
-      {
-        type: 'close',
-        text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Close</div>
-            </div>
-        `,
-      },
-      {
-        type: 'next',
-        text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
-        <div style="width: 100%; height: 100%; position: relative">
-        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+  // {
+  //   id: 'leverageBtn',
+  //   title: 'Enable Leverage',
+  //   text: `
+  //   </div>
+  //   <div style="width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Click on Enable Leverage and Sign the transaction in wallet for Leverage to be enabled. This is a one-time process.
+  //   <br/></div>
+  //           `,
+  //   attachTo: { element: '.leverage-btn', on: 'left' },
+  //   scrollTo: true,
+  //    buttons: [
+  //     {
+  //       type: 'close',
+  //       text: `
+  //       <div style="
+  //       display: flex;
+  //       align-items: center;">
+  //           <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+  //           <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  //           </svg>
+  //           <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Close</div>
+  //           </div>
+  //       `,
+  //     },
+  //     {
+  //       type: 'next',
+  //       text: `
+  //       <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
+  //       <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+  //       <div style="width: 100%; height: 100%; position: relative">
+  //       <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  //       <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  //       </svg>
         
-    </div>
-        `,
-      },
-    ],
-  },
+  //   </div>
+  //       `,
+  //     },
+  //   ],
+  // },
 //   {
 //     id: 'usage',
 //     title: 'Usage',
