@@ -600,6 +600,13 @@ export const FRAX: { [chainId: number]: Token } = {
     'FRAX',
     'FRAX',
   ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0xFf8544feD5379D9ffa8D47a74cE6b91e632AC44D',
+    18,
+    'FRAX',
+    'FRAX',
+  ),
 };
 
 export const GHST: { [chainId: number]: Token } = {

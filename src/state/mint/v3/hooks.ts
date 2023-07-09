@@ -6,7 +6,6 @@ import {
   Price,
   Rounding,
   Token,
-  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
 import { AppState } from '../../index';
@@ -634,7 +633,7 @@ export function useV3DerivedMintInfo(
       };
     }
     return;
-  }, [currencyB, depositAmountsData]);
+  }, [currencyA, currencyB, depositAmountsData, independentField]);
 
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
     const dependentCurrency =
@@ -720,7 +719,6 @@ export function useV3DerivedMintInfo(
     poolForPosition,
     presetRange,
     depositAmount,
-    independentField,
     outOfRange,
     invalidRange,
   ]);

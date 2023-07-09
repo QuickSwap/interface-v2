@@ -1439,6 +1439,7 @@ export const GlobalData = {
       USDC[ChainId.ZKEVM],
       DAI[ChainId.ZKEVM],
       USDT[ChainId.ZKEVM],
+      FRAX[ChainId.ZKEVM],
     ],
     [ChainId.ZKTESTNET]: [],
   },
