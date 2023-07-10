@@ -33,6 +33,7 @@
     border: 1.21px solid rgba(0, 0, 0, 0.10);
     background: #FFF;
     box-shadow: 0px 0px 12px 0px #B8BBFF;
+    font-weight: 500;
 }
 
 .tour-selected-tab {
