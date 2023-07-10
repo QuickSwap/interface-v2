@@ -281,7 +281,7 @@ const newSteps = [
   },
   {
     id: "market",
-    title: "Learn more",
+    title: "Step 4",
     classes: "shepherd-expanded",
     text: `
     <div style="display: flex; justify-content: space-between; align-items: center">
@@ -339,7 +339,7 @@ const newSteps = [
   },
   {
     id: "limit",
-    title: "Learn more",
+    title: "Step 4",
     classes: "shepherd-expanded",
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
@@ -410,7 +410,7 @@ const newSteps = [
   },
   {
     id: "trigger",
-    title: "Learn more",
+    title: "Step 4",
     classes: "shepherd-expanded",
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
@@ -482,7 +482,7 @@ const newSteps = [
   },
   {
     id: "payExchange",
-    title: "Learn more",
+    title: "Step 5",
     text: `
 
     </div>
@@ -532,7 +532,7 @@ const newSteps = [
   },
   {
     id: "longExchange",
-    title: "Step 5",
+    title: "Step 6",
     text: `
 
     </div>
