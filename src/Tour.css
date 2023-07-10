@@ -1,0 +1,47 @@
+.shepherd-custom {
+    padding: 0 1rem;
+    
+    /* position: relative;
+    border: 20px solid transparent;
+    background-clip: padding-box;
+    -webkit-background-clip: padding-box; */
+}
+/* 
+.shepherd-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    margin: 5px;
+
+    border-radius: inherit;
+
+    background: linear-gradient(to right, lightgreen, cyan);
+} */
+
+.shepherd-expanded {
+    min-width: 35rem;
+}
+
+.tour-tab {
+    color: #0000005f;
+    padding: 6px 22px;
+    border-radius: 9.68px;
+    border: 1.21px solid rgba(0, 0, 0, 0.10);
+    background: #FFF;
+    box-shadow: 0px 0px 12px 0px #B8BBFF;
+}
+
+.tour-selected-tab {
+    color: black;
+    font-weight: 500;
+    padding: 6px 30px;
+    font-size: 16px;
+    border-radius: 9.68px;
+    border: 1.21px solid rgba(0, 0, 0, 0.10);
+    box-shadow: 0px 0px 14px 0px #B8BBFF;
+    background: #FFF;
+}

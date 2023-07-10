@@ -50,11 +50,9 @@ const newSteps = [
       {
         type: "cancel",
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word; float: left">Skip</div>
+
         `,
       },
       {
@@ -86,17 +84,18 @@ const newSteps = [
     ],
   },
   {
-    id: "usage",
+    id: "long",
+    classes: "shepherd-expanded",
     title: "Step 3",
     text: `
-    <div>
-    <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="    margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
-        <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;">Long</button>
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Short</button>
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Swap</button>
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
+      <div style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
+          <button class="tour-selected-tab">Long</button>
+          <button class="tour-tab">Short</button>
+          <button class="tour-tab">Swap</button>
+      </div>
     </div>
-</div>
     </div>
     <div style="width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">This means you buy a cryptocurrency, like Bitcoin, because you believe its price will increase in the future. You're planning to "go long," or profit from an increase in its price.<br/></div>
             `,
@@ -141,8 +140,9 @@ const newSteps = [
     ],
   },
   {
-    id: "long",
+    id: "short",
     title: "Step 3",
+    classes: "shepherd-expanded",
     attachTo: { element: ".tradePage", on: "left" },
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
@@ -158,12 +158,12 @@ const newSteps = [
       });
     },
     text: `
-    <div>
+    <div style="display: flex; justify-content: space-between; align-items: center">
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="    margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Long</button>
-        <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;"">Short</button>
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Swap</button>
+    <div style="    margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
+        <button class="tour-tab">Long</button>
+        <button class="tour-selected-tab"">Short</button>
+        <button class="tour-tab">Swap</button>
     </div>
 </div>
     </div>
@@ -212,6 +212,7 @@ const newSteps = [
   {
     id: "swap",
     title: "Step 3",
+    classes: "shepherd-expanded",
     attachTo: { element: ".tradePage", on: "left" },
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
@@ -227,12 +228,12 @@ const newSteps = [
       });
     },
     text: `
-    <div>
+    <div style="display: flex; justify-content: space-between; align-items: center">
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="    margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Long</button>
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Short</button>
-        <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;">Swap</button>
+    <div style="    margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
+        <button class="tour-tab">Long</button>
+        <button class="tour-tab">Short</button>
+        <button class="tour-selected-tab">Swap</button>
     </div>
 </div>
     </div>
@@ -281,13 +282,15 @@ const newSteps = [
   {
     id: "market",
     title: "Learn more",
+    classes: "shepherd-expanded",
     text: `
-    <div>
+    <div style="display: flex; justify-content: space-between; align-items: center">
+
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
-        <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;">Market</button>
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Limit</button>
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Trigger</button>
+    <div style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
+        <button class="tour-selected-tab">Market</button>
+        <button class="tour-tab">Limit</button>
+        <button class="tour-tab">Trigger</button>
     </div>
 </div>
     </div>
@@ -337,6 +340,7 @@ const newSteps = [
   {
     id: "limit",
     title: "Learn more",
+    classes: "shepherd-expanded",
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
         [...document.querySelector(".Exchange-swap-order-type-tabs").children].forEach((element, index) => {
@@ -351,12 +355,13 @@ const newSteps = [
       });
     },
     text: `
-    <div>
+    <div style="display: flex; justify-content: space-between; align-items: center">
+
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Market</button>
-        <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;">Limit</button>
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Trigger</button>
+    <div style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
+        <button class="tour-tab">Market</button>
+        <button class="tour-selected-tab">Limit</button>
+        <button class="tour-tab">Trigger</button>
     </div>
 </div>
     </div>
@@ -406,6 +411,7 @@ const newSteps = [
   {
     id: "trigger",
     title: "Learn more",
+    classes: "shepherd-expanded",
     beforeShowPromise: function () {
       return new Promise(function (resolve) {
         [...document.querySelector(".Exchange-swap-order-type-tabs").children].forEach((element, index) => {
@@ -420,12 +426,13 @@ const newSteps = [
       });
     },
     text: `
-    <div>
+    <div style="display: flex; justify-content: space-between; align-items: center">
+
     <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: nowrap">Choose from </div>
-    <div style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 16px;">
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Market</button>
-        <button style="color: #0000005f; padding: 6px 22px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); background: #FFF; box-shadow: 0px 0px 17px 0px #B8BBFF;">Limit</button>
-        <button style="color: black; padding: 6px 30px; font-size: 20px; border-radius: 9.68px; border: 1.21px solid rgba(0, 0, 0, 0.10); box-shadow: 0px 0px 20.569976806640625px 0px #B8BBFF; background: #FFF;">Trigger</button>
+    <div style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
+        <button class="tour-tab">Market</button>
+        <button class="tour-tab">Limit</button>
+        <button class="tour-selected-tab">Trigger</button>
     </div>
 </div>
     </div>
