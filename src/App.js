@@ -3,18 +3,18 @@ import { SWRConfig } from "swr";
 import { ethers } from "ethers";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useSafeAppConnection, SafeAppConnector } from '@gnosis.pm/safe-apps-web3-react';
+import { useSafeAppConnection, SafeAppConnector } from "@gnosis.pm/safe-apps-web3-react";
 
-import Logo from './assets/logos/QuickswapLogo@2x.png'
+import Logo from "./assets/logos/QuickswapLogo@2x.png";
 import qlp24Icon from "./img/ic_qlp_24.svg";
 import NotFound from "./404";
 import "shepherd.js/dist/css/shepherd.css";
-import NewBadge from './assets/icons/new.svg'
+import NewBadge from "./assets/icons/new.svg";
 import { Web3ReactProvider, useWeb3React } from "@web3-react/core";
 import { Web3Provider } from "@ethersproject/providers";
-import { ShepherdTourContext } from 'react-shepherd';
+import { ShepherdTourContext } from "react-shepherd";
 
-import HeaderNav from './HeaderNav'
+import HeaderNav from "./HeaderNav";
 
 import { Switch, Route, NavLink, Redirect } from "react-router-dom";
 
@@ -46,7 +46,6 @@ import {
   REFERRAL_CODE_QUERY_PARAMS,
   POLYGON_ZKEVM,
 } from "./Helpers";
-
 
 import Dashboard from "./views/Dashboard/Dashboard";
 import { Exchange } from "./views/Exchange/Exchange";
@@ -84,7 +83,7 @@ import { ConnectWalletButton } from "./components/Common/Button";
 import useEventToast from "./components/EventToast/useEventToast";
 import EventToastContainer from "./components/EventToast/EventToastContainer";
 import SEO from "./components/Common/SEO";
-import Tour from './components/tour'
+import Tour from "./components/tour";
 import useRouteQuery from "./hooks/useRouteQuery";
 import { encodeReferralCode } from "./Api/referrals";
 
@@ -95,8 +94,8 @@ import PositionRouter from "./abis/PositionRouter.json";
 import ReferralTerms from "./views/ReferralTerms/ReferralTerms";
 import { ModalProvider } from "./components/Modal/ModalProvider";
 import { WebSocketProvider } from "./utils/websocket-provider";
+import { UIContextProvider, useUIContext } from "./providers/InterfaceProvider";
 const safeMultisigConnector = new SafeAppConnector();
-
 
 if ("ethereum" in window) {
   window.ethereum.autoRefreshOnNetworkChange = false;
@@ -142,11 +141,7 @@ function AppHeaderLinks({ small, openSettings, clickCloseIcon }) {
             href="https://perps.quickswap.exchange"
             rel="noopener noreferrer"
           >
-            <img
-              style={{ width: 21, height: 21 }}
-              src={qlp24Icon}
-              alt="Logo"
-            />
+            <img style={{ width: 21, height: 21 }} src={qlp24Icon} alt="Logo" />
           </a>
         </div>
       )}
@@ -163,27 +158,27 @@ function AppHeaderLinks({ small, openSettings, clickCloseIcon }) {
         </div>
       )} */}
       <div className="App-header-link-container">
-        <a href="https://quickswap.exchange/#/swap" target='_blank' rel="noreferrer">
+        <a href="https://quickswap.exchange/#/swap" target="_blank" rel="noreferrer">
           Swap
         </a>
       </div>
       <div className="App-header-link-container">
-        <NavLink activeClassName="active" to="/trade" className='active'>
+        <NavLink activeClassName="active" to="/trade" className="active">
           Perps
         </NavLink>
       </div>
       <div className="App-header-link-container">
-        <a href="https://quickswap.exchange/#/pools" target='_blank' rel="noreferrer">
+        <a href="https://quickswap.exchange/#/pools" target="_blank" rel="noreferrer">
           Pool
         </a>
       </div>
       <div className="App-header-link-container">
-        <a href="https://quickswap.exchange/#/farm" target='_blank' rel="noreferrer">
+        <a href="https://quickswap.exchange/#/farm" target="_blank" rel="noreferrer">
           Farm
         </a>
       </div>
       <div className="App-header-link-container">
-        <a href="https://zksafe.quickswap.exchange/welcome" target='_blank' rel="noreferrer">
+        <a href="https://zksafe.quickswap.exchange/welcome" target="_blank" rel="noreferrer">
           Safe
         </a>
       </div>
@@ -210,7 +205,7 @@ function AppHeaderLinks({ small, openSettings, clickCloseIcon }) {
         </a>
       </div> */}
       <div className="App-header-link-container">
-        <a href="https://quickswap.exchange/#/analytics" target='_blank' rel="noreferrer">
+        <a href="https://quickswap.exchange/#/analytics" target="_blank" rel="noreferrer">
           Analytics
         </a>
       </div>
@@ -241,21 +236,20 @@ function AppHeaderUser({
   useEffect(() => {
     if (active) {
       setWalletModalVisible(false);
-      tour?.show(2)
+      tour?.show(2);
     }
   }, [active, setWalletModalVisible]);
 
-
-  const getTour = () => {
-    tour?.start()
-    setWalletModalVisible(true)
+  const onConnectWalletClick = () => {
+    // tour?.start();
+    setWalletModalVisible(true);
     // tour?.cancel()
-  }
+  };
 
   if (!active) {
     return (
       <div className="App-header-user">
-        <ConnectWalletButton onClick={getTour} imgSrc={connectWalletImg}>
+        <ConnectWalletButton onClick={onConnectWalletClick} imgSrc={connectWalletImg}>
           {small ? "Connect" : "Connect Wallet"}
         </ConnectWalletButton>
       </div>
@@ -282,7 +276,6 @@ function AppHeaderUser({
 function FullApp() {
   const exchangeRef = useRef();
   const { connector, library, deactivate, activate, active } = useWeb3React();
-  const tour = useContext(ShepherdTourContext);
   const { chainId } = useChainId();
   useEventToast();
   const [activatingConnector, setActivatingConnector] = useState();
@@ -395,7 +388,7 @@ function FullApp() {
     connectInjectedWallet();
   };
 
-  const [walletModalVisible, setWalletModalVisible] = useState();
+  const { walletModalVisible, setWalletModalVisible } = useUIContext();
   const connectWallet = () => setWalletModalVisible(true);
 
   const [isDrawerVisible, setIsDrawerVisible] = useState(undefined);
@@ -573,8 +566,7 @@ function FullApp() {
   }, [active, chainId, vaultAddress, positionRouterAddress]);
 
   return (
-    <Tour>
-    
+    <>
       <div className="App">
         {/* <img style={{ position: "absolute" }} src={backgroundLight} alt="background-light" /> */}
         {/* <div className="App-background-side-1"></div>
@@ -618,11 +610,7 @@ function FullApp() {
             <div className="App-header large">
               <div className="App-header-container-left">
                 <a className="App-header-link-main" href="https://perps.quickswap.exchange">
-                  <img
-                    style={{ height: "28px", flexBasis: "none" }}
-                    src={Logo}
-                    alt="Logo"
-                  />
+                  <img style={{ height: "28px", flexBasis: "none" }} src={Logo} alt="Logo" />
                 </a>
                 <AppHeaderLinks />
               </div>
@@ -649,12 +637,7 @@ function FullApp() {
                     {isDrawerVisible && <FaTimes className="App-header-menu-icon" />}
                   </div>
                   <div className="App-header-link-main clickable" onClick={() => setIsDrawerVisible(!isDrawerVisible)}>
-                    <img
-                      width={24}
-                      height={24}
-                      src={qlp24Icon}
-                      alt="Trade Logo"
-                    />
+                    <img width={24} height={24} src={qlp24Icon} alt="Trade Logo" />
                   </div>
                 </div>
                 <div className="App-header-container-right">
@@ -697,7 +680,7 @@ function FullApp() {
               <Redirect to="/trade" />
             </Route>
             <Route exact path="/trade">
-              <Tour>              
+              <Tour>
                 <ModalProvider>
                   <Exchange
                     ref={exchangeRef}
@@ -711,7 +694,7 @@ function FullApp() {
                     setSavedShouldShowPositionLines={setSavedShouldShowPositionLines}
                     connectWallet={connectWallet}
                   />
-              </ModalProvider>
+                </ModalProvider>
               </Tour>
             </Route>
             <Route exact path="/dashboard">
@@ -826,14 +809,16 @@ function FullApp() {
           </Checkbox>
         </div>
         <div className="Exchange-settings-row" style={{ marginTop: "30px" }}>
-          <button className="App-cta Exchange-swap-button" onClick={saveAndCloseSettings}
+          <button
+            className="App-cta Exchange-swap-button"
+            onClick={saveAndCloseSettings}
             style={{ fontSize: "16px", color: "#F5F6F8", fontWeight: "500" }}
           >
             Save
           </button>
         </div>
       </Modal>
-    </Tour>
+    </>
   );
 }
 
@@ -926,14 +911,15 @@ function PreviewApp() {
 }
 
 function App() {
-
   return (
     <SWRConfig value={{ refreshInterval: 15000, dedupingInterval: 5000 }}>
-      <Web3ReactProvider getLibrary={getLibrary}>
-        <SEO>
-          <FullApp />
-        </SEO>
-      </Web3ReactProvider>
+      <UIContextProvider>
+        <Web3ReactProvider getLibrary={getLibrary}>
+          <SEO>
+            <FullApp />
+          </SEO>
+        </Web3ReactProvider>
+      </UIContextProvider>
     </SWRConfig>
   );
 }
