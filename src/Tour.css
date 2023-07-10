@@ -1,13 +1,16 @@
 .shepherd-custom {
     padding: 0 1rem;
     
-    /* position: relative;
+    
+    /* background: linear-gradient(to right, lightgreen, cyan);
+    position: relative;
     border: 20px solid transparent;
+    border-radius: 40px;
     background-clip: padding-box;
     -webkit-background-clip: padding-box; */
 }
-/* 
-.shepherd-custom::before {
+
+/* .shepherd-custom::before {
     content: '';
     position: absolute;
     top: 0;
@@ -17,9 +20,8 @@
     z-index: -1;
     margin: 5px;
 
-    border-radius: inherit;
-
-    background: linear-gradient(to right, lightgreen, cyan);
+    border-radius: 20px;
+    background: white;
 } */
 
 .shepherd-expanded {

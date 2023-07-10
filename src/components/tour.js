@@ -26,7 +26,7 @@ function InnerTour({ children }) {
       if (localStorage.getItem("viewed_tour") !== "true") {
         currentTour.current = tour;
         tour.start();
-        // localStorage.setItem("viewed_tour", "true") // Commented for Testing
+        localStorage.setItem("viewed_tour", "true") // Commented for Testing
       }
     }
   }
