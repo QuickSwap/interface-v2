@@ -23,7 +23,6 @@ function InnerTour({ children }) {
   function startTour() {
     if (tour) {
       // Show tour on load only if user hasn't viewed it before
-      // Commented for Testing
       if (localStorage.getItem("viewed_tour") !== "true") {
         currentTour.current = tour;
         tour.start();

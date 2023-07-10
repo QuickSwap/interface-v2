@@ -241,7 +241,7 @@ function AppHeaderUser({
   }, [active, setWalletModalVisible]);
 
   const onConnectWalletClick = () => {
-    if (currentTour.current?.isActive) currentTour.current.show("installation");
+    if (currentTour.current?.isActive()) currentTour.current.show("installation");
     setWalletModalVisible(true);
   };
 
