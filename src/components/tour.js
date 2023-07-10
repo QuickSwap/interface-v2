@@ -3,8 +3,11 @@ import { ShepherdTour, ShepherdTourContext } from "react-shepherd";
 import newSteps from "./steps";
 import { useUIContext } from "../providers/InterfaceProvider";
 
+import "../Tour.css"
+
 const tourOptions = {
   defaultStepOptions: {
+    classes: "shepherd-custom",
     cancelIcon: {
       enabled: true,
     },
@@ -66,8 +69,6 @@ const Tour = ({ children }) => {
   }
 
   callOnce();
-
-  console.log("STEPS", steps.current);
 
   return (
     <ShepherdTour steps={steps.current} tourOptions={tourOptions}>
