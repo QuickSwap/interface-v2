@@ -1,9 +1,7 @@
 const newSteps = [
   {
     id: "welcome",
-    title: `
-    <div style="opacity: 0.60; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Step 1</div>
-    `,
+    title: `Step 1`,
     text: [
       `
       <div style="color: #213062; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Connect your web3 wallet</div>
@@ -41,7 +39,7 @@ const newSteps = [
   {
     id: "installation",
     title: `
-    <div style="opacity: 0.60; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Step 2</div>
+    Step 2
     `,
     text: `
       <div style="color: #061341; font-size: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Select a wallet</div>
@@ -527,7 +525,7 @@ const newSteps = [
   },
   {
     id: "longExchange",
-    title: "step 5",
+    title: "Step 5",
     text: `
 
     </div>

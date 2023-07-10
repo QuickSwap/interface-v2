@@ -32,16 +32,42 @@ const Tour = ({ children }) => {
   const { setWalletModalVisible } = useUIContext();
 
   const steps = useRef(newSteps);
+  const isSet = useRef(false);
 
-  steps.current[0].beforeShowPromise = () => {
-    setWalletModalVisible(false);
-  };
-  steps.current[1].beforeShowPromise = () => {
-    setWalletModalVisible(true);
-  };
-  steps.current[2].beforeShowPromise = () => {
-    setWalletModalVisible(false);
-  };
+  function callOnce() {
+    if (isSet.current) return;
+
+    steps.current[0].beforeShowPromise = () => {
+      setWalletModalVisible(false);
+    };
+    steps.current[1].beforeShowPromise = () => {
+      setWalletModalVisible(true);
+    };
+    steps.current[2].beforeShowPromise = () => {
+      setWalletModalVisible(false);
+    };
+
+    steps.current = steps.current.map((step) => {
+      if (step.title.length < 30) {
+        return {
+          ...step,
+          title: `
+            <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center; width: 100%">
+              <div style="opacity: 0.60; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">${step.title}</div>
+              <img src="/BuildoorBranding.png" width="150" />
+            </div>
+        `,
+        };
+      }
+      return step;
+    });
+
+    isSet.current = true;
+  }
+
+  callOnce();
+
+  console.log("STEPS", steps.current);
 
   return (
     <ShepherdTour steps={steps.current} tourOptions={tourOptions}>
