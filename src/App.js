@@ -231,19 +231,18 @@ function AppHeaderUser({
 }) {
   const { chainId } = useChainId();
   const { active, account } = useWeb3React();
-  const tour = useContext(ShepherdTourContext);
+  const { currentTour } = useUIContext();
 
   useEffect(() => {
     if (active) {
       setWalletModalVisible(false);
-      tour?.show(2);
+      currentTour.current?.show(2);
     }
   }, [active, setWalletModalVisible]);
 
   const onConnectWalletClick = () => {
-    // tour?.start();
+    if (currentTour.current?.isActive) currentTour.current.show("installation");
     setWalletModalVisible(true);
-    // tour?.cancel()
   };
 
   if (!active) {
