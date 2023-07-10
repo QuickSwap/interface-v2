@@ -610,11 +610,7 @@ const newSteps = [
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Done</div>
-        <div style="width: 100%; height: 100%; position: relative">
-        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        
+        <div style="width: 100%; height: 100%; position: relative">    
     </div>
         `,
       },
