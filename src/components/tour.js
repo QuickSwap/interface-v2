@@ -3,7 +3,7 @@ import { ShepherdTour, ShepherdTourContext } from "react-shepherd";
 import newSteps from "./steps";
 import { useUIContext } from "../providers/InterfaceProvider";
 
-import "../Tour.css"
+import "../Tour.css";
 
 const tourOptions = {
   defaultStepOptions: {
@@ -18,14 +18,21 @@ const tourOptions = {
 function InnerTour({ children }) {
   const tour = useContext(ShepherdTourContext);
 
-  useEffect(() => {
+  const { currentTour } = useUIContext();
+
+  function startTour() {
     if (tour) {
       // Show tour on load only if user hasn't viewed it before
       if (localStorage.getItem("viewed_tour") !== "true") {
+        currentTour.current = tour;
         tour.start();
         // localStorage.setItem("viewed_tour", "true") // Commented for Testing
       }
     }
+  }
+
+  useEffect(() => {
+    startTour();
   }, [tour]);
 
   return children;
