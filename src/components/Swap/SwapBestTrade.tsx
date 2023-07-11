@@ -838,7 +838,8 @@ const SwapBestTrade: React.FC<{
         optimalRate &&
         account &&
         library &&
-        chainId
+        chainId &&
+        approval === ApprovalState.APPROVED
       ) {
         setBonusRouteFound(false);
         setBonusRouteLoading(true);
@@ -892,7 +893,19 @@ const SwapBestTrade: React.FC<{
     outputCurrencySymbol,
     outputCurrencyAddress,
     typedValue,
+    approval, //Added to trigger bonus route search when approval changes
   ]);
+
+  //Reset approvalSubmitted when approval changes, it's needed when user hadn't nor paraswap neither wallchain approvals
+  useEffect(() => {
+    if (
+      bonusRouteFound &&
+      (approval === ApprovalState.NOT_APPROVED ||
+        approval === ApprovalState.UNKNOWN)
+    ) {
+      setApprovalSubmitted(false);
+    }
+  }, [approval, bonusRouteFound]);
 
   useEffect(() => {
     fetchOptimalRate();
