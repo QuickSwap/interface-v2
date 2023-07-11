@@ -10,7 +10,6 @@ import { Tick, TickConstructorArgs } from './tick';
 import { NoTickDataProvider, TickDataProvider } from './tickDataProvider';
 import { TickListDataProvider } from './tickListDataProvider';
 import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
-import { ChainId } from '@uniswap/sdk';
 import { computePoolAddress } from 'hooks/v3/computePoolAddress';
 
 interface StepComputations {
@@ -138,7 +137,7 @@ export class Pool {
     initCodeHashManualOverride?: string,
   ): string {
     return computePoolAddress({
-      poolDeployer: POOL_DEPLOYER_ADDRESS[ChainId.MATIC],
+      poolDeployer: POOL_DEPLOYER_ADDRESS[tokenA.chainId],
       tokenA,
       tokenB,
       initCodeHashManualOverride,
