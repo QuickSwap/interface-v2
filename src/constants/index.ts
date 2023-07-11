@@ -1308,6 +1308,17 @@ export const GammaPairs: {
         pid: 16,
       },
     ],
+    '0x68286607a1d43602d880d349187c3c48c0fd05e6-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x317a0d8d2a247004370fe4fb9362b2b256d890c0',
+        token0Address: '0x68286607a1d43602d880d349187c3c48c0fd05e6',
+        token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        ableToFarm: true,
+        pid: 17,
+      },
+    ],
   },
 };
 
