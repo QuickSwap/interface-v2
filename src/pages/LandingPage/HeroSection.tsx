@@ -4,6 +4,9 @@ import { Button, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { useIsSupportedNetwork } from 'utils';
 import { useActiveWeb3React } from 'hooks';
+import { useNewLairInfo } from 'state/stake/hooks';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+
 import {
   useWalletModalToggle,
   useNetworkSelectionModalToggle,
@@ -11,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config';
+import { DLQUICK } from 'constants/v3/addresses';
 
 const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
@@ -26,6 +30,9 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   const config = getConfig(chainIdToUse);
   const v2 = config['v2'];
   const v3 = config['v3'];
+  const lairInfo = useNewLairInfo();
+  const quickToken = DLQUICK[chainIdToUse];
+  const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
 
   return (
     <Box className='heroSection'>
@@ -36,7 +43,10 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
           <h1>
             {(
               (v2 ? Number(globalData.totalLiquidityUSD) : 0) +
-              (v3 ? Number(v3GlobalData.totalLiquidityUSD) : 0)
+              (v3 ? Number(v3GlobalData.totalLiquidityUSD) : 0) +
+              (lairInfo && quickPrice
+                ? Number(lairInfo.totalQuickBalance.toExact()) * quickPrice
+                : 0)
             ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}

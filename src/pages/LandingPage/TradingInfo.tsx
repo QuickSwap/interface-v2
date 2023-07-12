@@ -127,13 +127,15 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
                 </h3>
               </Box>
               <Box className='text-success text-center'>
-                <small>{dQUICKAPY}%</small>
+                <small>
+                  {t('apy')} {dQUICKAPY}%
+                </small>
               </Box>
             </Box>
           ) : (
             <Skeleton variant='rect' width={100} height={45} />
           )}
-          <p>dQUICK {t('apy')}</p>
+          <p>{t('dragonslair')}</p>
           <h4 onClick={() => setOpenStakeModal(true)}>
             {t('stake')} {'>'}
           </h4>
