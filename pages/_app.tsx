@@ -8,6 +8,7 @@ import { PageLayout } from 'layouts';
 import Background from 'layouts/Background';
 import { mainTheme } from 'styles/theme';
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
+import { GoogleAnalytics } from 'nextjs-google-analytics';
 import store from 'state';
 import ApplicationUpdater from 'state/application/updater';
 import TransactionUpdater from 'state/transactions/updater';
@@ -65,6 +66,7 @@ function Updaters() {
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const queryClient = new QueryClient();
+  const googleAnalyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
 
   return (
     <>
@@ -104,6 +106,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           `,
         }}
       />
+      {googleAnalyticsId && (
+        <GoogleAnalytics trackPageViews gaMeasurementId={googleAnalyticsId} />
+      )}
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
           <Providers>

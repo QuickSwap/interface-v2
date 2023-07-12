@@ -20,7 +20,7 @@ import { Bound } from 'state/mint/v3/actions';
 import useIsTickAtLimit from 'hooks/v3/useIsTickAtLimit';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
 import usePrevious from 'hooks/usePrevious';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
@@ -254,9 +254,8 @@ export default function PositionListItemDetails({
             setCollectMigrationHash(response.hash);
             setCollecting(false);
 
-            ReactGA.event({
+            event('CollectV3', {
               category: 'Liquidity',
-              action: 'CollectV3',
               label: [
                 feeValue0.currency.symbol,
                 feeValue1.currency.symbol,

@@ -10,7 +10,7 @@ import {
   WETH,
 } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, NativeCurrency } from '@uniswap/sdk-core';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@mui/material';
 import {
@@ -196,7 +196,7 @@ const SwapBestTrade: React.FC<{
     router.query.outputCurrency) as string;
 
   const handleCurrencySelect = useCallback(
-    (inputCurrency) => {
+    (inputCurrency: any) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
       const isSwichRedirect = currencyEquals(inputCurrency, ETHER[chainIdToUse])
         ? parsedCurrency1Id === 'ETH'
@@ -232,7 +232,7 @@ const SwapBestTrade: React.FC<{
   }, [parsedCurrency0, parsedCurrency1Id, chainIdToUse]);
 
   const handleOtherCurrencySelect = useCallback(
-    (outputCurrency) => {
+    (outputCurrency: any) => {
       const isSwichRedirect = currencyEquals(
         outputCurrency,
         ETHER[chainIdToUse],
@@ -727,16 +727,17 @@ const SwapBestTrade: React.FC<{
             swapErrorMessage: undefined,
             txHash: response.hash,
           });
-          ReactGA.event({
-            category: 'Swap',
-            action:
-              recipient === null
-                ? 'Swap w/o Send'
-                : (recipientAddress ?? recipient) === account
-                ? 'Swap w/o Send + recipient'
-                : 'Swap w/ Send',
-            label: [inputCurrency?.symbol, outputCurrency?.symbol].join('/'),
-          });
+          event(
+            recipient === null
+              ? 'Swap w/o Send'
+              : (recipientAddress ?? recipient) === account
+              ? 'Swap w/o Send + recipient'
+              : 'Swap w/ Send',
+            {
+              category: 'Swap',
+              label: [inputCurrency?.symbol, outputCurrency?.symbol].join('/'),
+            },
+          );
         } catch (error) {
           setSwapState({
             attemptingTxn: false,

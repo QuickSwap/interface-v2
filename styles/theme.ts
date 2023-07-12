@@ -92,33 +92,6 @@ export const mainTheme = responsiveFontSizes(
       fontFamily: "'Inter', sans-serif",
       fontWeightRegular: 500,
     },
-    overrides: {
-      MuiButton: {
-        root: {
-          textTransform: 'none',
-          backgroundColor: primary,
-          color: white,
-          boxShadow: 'none',
-          '&:hover': {
-            backgroundColor: primary,
-            opacity: 0.8,
-          },
-          '&$disabled': {
-            opacity: 0.3,
-          },
-        },
-        label: {
-          fontSize: 16,
-          lineHeight: '20px',
-        },
-      },
-      MuiContainer: {
-        root: {
-          paddingLeft: '40px !important',
-          paddingRight: '40px !important',
-        },
-      },
-    },
   }),
 );
 

@@ -13,7 +13,7 @@ import {
 } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { useTranslation } from 'react-i18next';
 import {
   currencyEquals,
@@ -342,9 +342,8 @@ const AddLiquidity: React.FC<{
             setAddLiquidityErrorMessage(t('errorInTx'));
           }
 
-          ReactGA.event({
+          event('Add', {
             category: 'Liquidity',
-            action: 'Add',
             label: [
               currencies[Field.CURRENCY_A]?.symbol,
               currencies[Field.CURRENCY_B]?.symbol,

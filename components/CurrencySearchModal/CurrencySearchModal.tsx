@@ -1,6 +1,6 @@
 import { ChainId, Currency, ETHER } from '@uniswap/sdk';
 import React, { useCallback, useEffect, useState } from 'react';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { CustomModal } from 'components';
 import useLast from 'hooks/useLast';
 import CurrencySearch from './CurrencySearch';
@@ -61,9 +61,8 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   );
 
   const handleClickChangeList = useCallback(() => {
-    ReactGA.event({
+    event('Change Lists', {
       category: 'Lists',
-      action: 'Change Lists',
     });
     setListView(true);
   }, []);

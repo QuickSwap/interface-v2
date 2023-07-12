@@ -36,7 +36,7 @@ import { Trade as V3Trade } from 'lib/trade';
 import { WrappedCurrency } from 'models/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { useRouter } from 'next/router';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { Field } from 'state/swap/v3/actions';
@@ -256,9 +256,8 @@ const SwapV3Page: React.FC = () => {
       }
     } else {
       await approveCallback();
-      ReactGA.event({
+      event('Approve', {
         category: 'Swap',
-        action: 'Approve',
         label: [trade?.inputAmount.currency.symbol, toggledVersion].join('/'),
       });
     }
@@ -322,22 +321,23 @@ const SwapV3Page: React.FC = () => {
           swapErrorMessage: undefined,
           txHash: hash,
         });
-        ReactGA.event({
-          category: 'Swap',
-          action:
-            recipient === null
-              ? 'Swap w/o Send'
-              : (recipientAddress ?? recipient) === account
-              ? 'Swap w/o Send + recipient'
-              : 'Swap w/ Send',
-          label: [
-            trade?.inputAmount?.currency?.symbol,
-            trade?.outputAmount?.currency?.symbol,
-            getTradeVersion(trade),
-            'MH',
-            account,
-          ].join('/'),
-        });
+        event(
+          recipient === null
+            ? 'Swap w/o Send'
+            : (recipientAddress ?? recipient) === account
+            ? 'Swap w/o Send + recipient'
+            : 'Swap w/ Send',
+          {
+            category: 'Swap',
+            label: [
+              trade?.inputAmount?.currency?.symbol,
+              trade?.outputAmount?.currency?.symbol,
+              getTradeVersion(trade),
+              'MH',
+              account,
+            ].join('/'),
+          },
+        );
       })
       .catch((error) => {
         setSwapState({
@@ -464,7 +464,7 @@ const SwapV3Page: React.FC = () => {
 
   const handleMaxInput = useCallback(() => {
     maxInputAmount && onUserInput(Field.INPUT, maxInputAmount.toExact());
-    ReactGA.event({
+    event('Max', {
       category: 'Swap',
       action: 'Max',
     });
@@ -475,7 +475,7 @@ const SwapV3Page: React.FC = () => {
       return;
     }
 
-    ReactGA.event({
+    event('Half', {
       category: 'Swap',
       action: 'Half',
     });
@@ -655,7 +655,7 @@ const SwapV3Page: React.FC = () => {
             />
             <CustomTooltip
               onOpen={() => {
-                ReactGA.event({
+                event('Transaction Details Tooltip Open', {
                   category: 'Swap',
                   action: 'Transaction Details Tooltip Open',
                 });

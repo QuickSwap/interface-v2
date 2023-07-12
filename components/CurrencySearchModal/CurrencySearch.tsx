@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { Box, Divider } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { useDispatch } from 'react-redux';
@@ -72,9 +72,8 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
   useEffect(() => {
     if (isAddressSearch) {
-      ReactGA.event({
+      event('Search by address', {
         category: 'Currency Select',
-        action: 'Search by address',
         label: isAddressSearch,
       });
     }

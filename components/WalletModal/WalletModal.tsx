@@ -1,7 +1,7 @@
 import { useWeb3React } from '@web3-react/core';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { Box } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { GlobalConst } from 'constants/index';
@@ -82,9 +82,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   const tryActivation = async (connection: Connection) => {
     // log selected wallet
-    ReactGA.event({
+    event('Change Wallet', {
       category: 'Wallet',
-      action: 'Change Wallet',
       label: connection.name,
     });
     setPendingWallet(connection); // set wallet for pending view

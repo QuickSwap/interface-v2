@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts';
 import { ArrowLeft, ArrowDown } from 'react-feather';
 import { Box, Button } from '@mui/material';
 import { ChainId, Currency, ETHER, JSBI, Percent } from '@uniswap/sdk';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
@@ -178,12 +178,12 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   );
   const onAttemptToApprove = async () => {
     if (!pairContract || !pair || !library || !deadline) {
-      setErrorMsg(t('missingdependencies'));
+      setErrorMsg(t('missingdependencies') ?? '');
       return;
     }
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
     if (!liquidityAmount) {
-      setErrorMsg(t('missingliquidity'));
+      setErrorMsg(t('missingliquidity') ?? '');
       return;
     }
     setApproving(true);
@@ -204,16 +204,16 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
   const onRemove = async () => {
     if (!chainId || !library || !account || !deadline || !router) {
-      setRemoveErrorMessage(t('missingdependencies'));
-      throw new Error(t('missingdependencies'));
+      setRemoveErrorMessage(t('missingdependencies') ?? '');
+      throw new Error(t('missingdependencies') ?? undefined);
     }
     const {
       [Field.CURRENCY_A]: currencyAmountA,
       [Field.CURRENCY_B]: currencyAmountB,
     } = parsedAmounts;
     if (!currencyAmountA || !currencyAmountB) {
-      setRemoveErrorMessage(t('noInputAmounts'));
-      throw new Error(t('noInputAmounts'));
+      setRemoveErrorMessage(t('noInputAmounts') ?? '');
+      throw new Error(t('noInputAmounts') ?? undefined);
     }
 
     const amountsMin = {
@@ -229,16 +229,16 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY];
     if (!liquidityAmount) {
-      setRemoveErrorMessage(t('noLiquidity'));
-      throw new Error(t('noLiquidity'));
+      setRemoveErrorMessage(t('noLiquidity') ?? '');
+      throw new Error(t('noLiquidity') ?? undefined);
     }
 
     const currencyBIsETH = currency1 === nativeCurrency;
     const oneCurrencyIsETH = currency0 === nativeCurrency || currencyBIsETH;
 
     if (!tokenA || !tokenB) {
-      setRemoveErrorMessage(t('cannotWrap'));
-      throw new Error(t('cannotWrap'));
+      setRemoveErrorMessage(t('cannotWrap') ?? '');
+      throw new Error(t('cannotWrap') ?? undefined);
     }
 
     let methodNames: string[],
@@ -278,8 +278,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
         ];
       }
     } else {
-      setRemoveErrorMessage(t('confirmWithoutApproval'));
-      throw new Error(t('confirmWithoutApproval'));
+      setRemoveErrorMessage(t('confirmWithoutApproval') ?? '');
+      throw new Error(t('confirmWithoutApproval') ?? undefined);
     }
 
     const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
@@ -288,8 +288,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           .then(calculateGasMargin)
           .catch((error) => {
             console.error(`estimateGas failed`, methodName, args, error);
-            setRemoveErrorMessage(t('removeLiquidityError1'));
-            throw new Error(t('removeLiquidityError1'));
+            setRemoveErrorMessage(t('removeLiquidityError1') ?? '');
+            throw new Error(t('removeLiquidityError1') ?? undefined);
           }),
       ),
     );
@@ -300,8 +300,8 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
     // all estimations failed...
     if (indexOfSuccessfulEstimation === -1) {
-      setRemoveErrorMessage(t('transactionWouldFail'));
-      throw new Error(t('transactionWouldFail'));
+      setRemoveErrorMessage(t('transactionWouldFail') ?? '');
+      throw new Error(t('transactionWouldFail') ?? undefined);
     } else {
       const methodName = methodNames[indexOfSuccessfulEstimation];
       const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation];
@@ -334,10 +334,10 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             setTxPending(false);
           } catch (error) {
             setTxPending(false);
-            setRemoveErrorMessage(t('errorInTx'));
+            setRemoveErrorMessage(t('errorInTx') ?? '');
           }
 
-          ReactGA.event({
+          event('Remove', {
             category: 'Liquidity',
             action: 'Remove',
             label: [currency0.symbol, currency1.symbol].join('/'),
@@ -348,7 +348,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           // we only care if the error is something _other_ than the user rejected the tx
           console.error(error);
           setRemoveErrorMessage(
-            error.code === 4001 ? t('txRejected') : t('errorInTx'),
+            error.code === 4001 ? t('txRejected') ?? '' : t('errorInTx') ?? '',
           );
         });
     }
@@ -459,7 +459,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
                 max={100}
                 step={1}
                 value={innerLiquidityPercentage}
-                handleChange={(event, value) =>
+                handleChange={(_, value) =>
                   setInnerLiquidityPercentage(value as number)
                 }
               />

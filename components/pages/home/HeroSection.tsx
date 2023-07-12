@@ -49,29 +49,24 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         </Box>
       )}
       <h5>{t('topAssetExchange')}</h5>
-      <Box mt={2} width={200} height={48}>
-        <Button
-          fullWidth
-          className='bg-blue1 p'
-          style={{
-            borderRadius: '30px',
-            height: '100%',
-          }}
-          onClick={() => {
-            !isSupportedNetwork
-              ? toggleNetworkSelectionModal()
-              : account
-              ? router.push('/swap')
-              : toggleWalletModal();
-          }}
-        >
-          {!isSupportedNetwork
-            ? t('switchNetwork')
+      <Button
+        fullWidth
+        size='large'
+        variant='contained'
+        onClick={() => {
+          !isSupportedNetwork
+            ? toggleNetworkSelectionModal()
             : account
-            ? t('enterApp')
-            : t('connectWallet')}
-        </Button>
-      </Box>
+            ? router.push('/swap')
+            : toggleWalletModal();
+        }}
+      >
+        {!isSupportedNetwork
+          ? t('switchNetwork')
+          : account
+          ? t('enterApp')
+          : t('connectWallet')}
+      </Button>
     </Box>
   );
 };

@@ -23,8 +23,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { Percent } from '@uniswap/sdk-core';
-
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { useActiveWeb3React } from 'hooks';
 import { calculateGasMarginV3 } from 'utils';
 import usePrevious from 'hooks/usePrevious';
@@ -169,9 +168,8 @@ export default function RemoveLiquidityV3({
           .then(async (response: TransactionResponse) => {
             setAttemptingTxn(false);
             setTxPending(true);
-            ReactGA.event({
+            event('RemoveV3', {
               category: 'Liquidity',
-              action: 'RemoveV3',
               label: [
                 liquidityValue0.currency.symbol,
                 liquidityValue1.currency.symbol,

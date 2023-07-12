@@ -34,7 +34,7 @@ import {
   useTransactionAdder,
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { useV2ToV3MigratorContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp';
@@ -50,7 +50,6 @@ import { V2Exchanges } from 'constants/v3/addresses';
 import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
-import { ReportProblemOutlined } from '@mui/icons-material';
 import { Trans, useTranslation } from 'next-i18next';
 import { calculateGasMargin } from 'utils';
 import { getConfig } from 'config';
@@ -513,9 +512,8 @@ export default function MigrateV2DetailsPage() {
         return migrator
           .multicall(data, { gasLimit: calculateGasMargin(estimateGas) })
           .then((response: TransactionResponse) => {
-            ReactGA.event({
+            event(`${v2Exchange}-> Quickswap V3`, {
               category: 'Migrate',
-              action: `${v2Exchange}-> Quickswap V3`,
               label: `${currency0.symbol}/${currency1.symbol}`,
             });
 
@@ -562,7 +560,7 @@ export default function MigrateV2DetailsPage() {
 
   useEffect(() => {
     if (!isMigrateAvailable) {
-      history.push('/');
+      router.push('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMigrateAvailable]);
@@ -682,7 +680,7 @@ export default function MigrateV2DetailsPage() {
                 {v3Amount0MinCurrency ? (
                   <p>{v3Amount0MinCurrency.toSignificant(2)}</p>
                 ) : mintInfo.ticks.LOWER && mintInfo.ticks.UPPER ? (
-                  <Loader stroke='white' size='24px' />
+                  <CircularProgress size='24px' />
                 ) : (
                   <></>
                 )}
@@ -695,7 +693,7 @@ export default function MigrateV2DetailsPage() {
                 {v3Amount1MinCurrency ? (
                   <p>{v3Amount1MinCurrency.toSignificant(2)}</p>
                 ) : mintInfo.ticks.LOWER && mintInfo.ticks.UPPER ? (
-                  <Loader stroke='white' size='24px' />
+                  <CircularProgress size='24px' />
                 ) : (
                   <></>
                 )}
@@ -791,7 +789,7 @@ export default function MigrateV2DetailsPage() {
                 token0Value={token0Value}
                 token1Value={token1Value}
                 showAdd={v2LiquidityRemoved}
-                onLiquidityAdded={() => history.push('/pools')}
+                onLiquidityAdded={() => router.push('/pools')}
               />
               {!v2LiquidityRemoved && (
                 <Box mt={2}>
@@ -826,7 +824,7 @@ export default function MigrateV2DetailsPage() {
               }
               onClick={() => {
                 if (isSuccessfullyMigrated) {
-                  history.push('/pools/v3');
+                  router.push('/pools/v3');
                 } else {
                   migrate();
                 }

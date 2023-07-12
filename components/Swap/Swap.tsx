@@ -9,7 +9,7 @@ import {
   currencyEquals,
   WETH,
 } from '@uniswap/sdk';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@mui/material';
 import {
@@ -532,19 +532,20 @@ const Swap: React.FC<{
             swapErrorMessage: undefined,
             txHash: response.hash,
           });
-          ReactGA.event({
-            category: 'Swap',
-            action:
-              recipient === null
-                ? 'Swap w/o Send'
-                : (recipientAddress ?? recipient) === account
-                ? 'Swap w/o Send + recipient'
-                : 'Swap w/ Send',
-            label: [
-              trade?.inputAmount?.currency?.symbol,
-              trade?.outputAmount?.currency?.symbol,
-            ].join('/'),
-          });
+          event(
+            recipient === null
+              ? 'Swap w/o Send'
+              : (recipientAddress ?? recipient) === account
+              ? 'Swap w/o Send + recipient'
+              : 'Swap w/ Send',
+            {
+              category: 'Swap',
+              label: [
+                trade?.inputAmount?.currency?.symbol,
+                trade?.outputAmount?.currency?.symbol,
+              ].join('/'),
+            },
+          );
         } catch (error) {
           setSwapState({
             attemptingTxn: false,
@@ -730,6 +731,7 @@ const Swap: React.FC<{
         )}
         <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
+            variant='contained'
             fullWidth
             disabled={swapButtonDisabled as boolean}
             onClick={account && isSupportedNetwork ? onSwap : connectWallet}

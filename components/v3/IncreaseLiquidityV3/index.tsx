@@ -23,7 +23,7 @@ import {
 import { useDerivedPositionInfo } from 'hooks/v3/useDerivedPositionInfo';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
 import styles from './IncreaseLiquidityV3.module.scss';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { WrappedCurrency } from 'models/types';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
@@ -243,9 +243,8 @@ export default function IncreaseLiquidityV3({
                 summary,
               });
               setTxHash(response.hash);
-              ReactGA.event({
+              event('Add', {
                 category: 'Liquidity',
-                action: 'Add',
                 label: [
                   currencies[Field.CURRENCY_A]?.symbol,
                   currencies[Field.CURRENCY_B]?.symbol,
