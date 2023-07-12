@@ -26,6 +26,7 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
   const quickToken = DLQUICK[chainId];
+  const loading = lairInfo?.loading;
 
   const oldLair = config['lair']?.oldLair;
   const newLair = config['lair']?.newLair;
@@ -71,7 +72,7 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
           ) : (
             <Skeleton variant='rect' width={100} height={45} />
           )}
-          <p>dQUICK {t('apy')}</p>
+          <p>{t('dragonslair')}</p>
           <h4 onClick={() => setOpenStakeModal(true)}>
             {t('stake')} {'>'}
           </h4>
