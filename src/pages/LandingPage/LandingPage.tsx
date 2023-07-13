@@ -19,13 +19,14 @@ import Rewards from 'assets/images/featured/Rewards.svg';
 import FeaturedSwap from 'assets/images/featured/Swap.svg';
 import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.svg';
 import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
-import { ReactComponent as MediumIcon } from 'assets/images/social/Medium.svg';
+import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
 import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
 import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
+import CoinpaprikaIcon from 'assets/images/social/coinpaprika-logo.png';
 import 'pages/styles/landing.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config';
@@ -94,9 +95,9 @@ const LandingPage: React.FC = () => {
       title: 'Twitter',
     },
     {
-      link: 'https://quickswap-layer2.medium.com/',
-      icon: <MediumIcon />,
-      title: 'Medium',
+      link: 'https://blog.quickswap.exchange/',
+      icon: <BlogIcon />,
+      title: 'Blog',
     },
     {
       link: 'https://www.youtube.com/channel/UCrPlF-DBwD-UzLFDzJ4Z5Fw',
@@ -112,6 +113,11 @@ const LandingPage: React.FC = () => {
       link: 'https://www.coingecko.com/en/exchanges/quickswap',
       icon: <CoingeckoIcon />,
       title: 'CoinGecko',
+    },
+    {
+      link: 'https://coinpaprika.com/exchanges/quickswap-v3/',
+      icon: <img src={CoinpaprikaIcon} alt='Coinpaprika' />,
+      title: 'Coinpaprika',
     },
     {
       link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
