@@ -821,11 +821,12 @@ export default function PositionSeller(props) {
                 option={orderOption}
                 optionLabels={orderOptionLabels}
                 onChange={onOrderOptionChange}
+                className="PositionSellerTabs"
               />
             </div>
           )}
           <div style={{ paddingLeft: "0.7rem" }}>
-            <div className="Exchange-swap-section">
+            <div className="Exchange-swap-section PositionSellerTabs-amount">
               <div className="Exchange-swap-section-top">
                 <div className="muted">
                   {convertedAmountFormatted && (
@@ -868,7 +869,7 @@ export default function PositionSeller(props) {
           </div>
           {orderOption === STOP && (
             <div style={{ paddingLeft: "0.7rem" }}>
-              <div className="Exchange-swap-section">
+              <div className="Exchange-swap-section positionSellerTabs-closing-amount">
                 <div className="Exchange-swap-section-top">
                   <div className="muted">Price</div>
                   <div

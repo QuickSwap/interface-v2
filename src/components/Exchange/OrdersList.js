@@ -107,16 +107,16 @@ export default function OrdersList(props) {
   }, [orders]);
 
   const renderActions = useCallback(
-    (order) => {
+    (order,index) => {
       return (
         <>
           <td>
-            <button className="Exchange-list-action edit-action" onClick={() => onEditClick(order)}>
+            <button className={`Exchange-list-action edit-action ${index === 0 && 'edit-tour-button'}`} onClick={() => onEditClick(order)}>
               Edit
             </button>
           </td>
           <td>
-            <button className="Exchange-list-action cancel-action" onClick={() => onCancelClick(order)}>
+            <button className={`Exchange-list-action cancel-action ${index === 0 && 'cancel-tour-button'}`}  onClick={() => onCancelClick(order)}>
               Cancel
             </button>
           </td>
@@ -131,7 +131,7 @@ export default function OrdersList(props) {
       return null;
     }
 
-    return orders.map((order) => {
+    return orders.map((order, index) => {
       if (order.type === SWAP) {
         const nativeTokenAddress = getContract(chainId, "NATIVE_TOKEN");
         const fromTokenInfo = getTokenInfo(infoTokens, order.path[0], true, nativeTokenAddress);
@@ -180,7 +180,7 @@ export default function OrdersList(props) {
               />
             </td>
             <td>{getExchangeRateDisplay(markExchangeRate, fromTokenInfo, toTokenInfo, true)}</td>
-            {!hideActions && renderActions(order)}
+            {!hideActions && renderActions(order, index)}
           </tr>
         );
       }
