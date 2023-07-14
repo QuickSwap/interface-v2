@@ -438,7 +438,7 @@ export default function PositionsList(props) {
       <table className="Exchange-list large table-normalizer">
         <tbody>
           <tr className="Exchange-list-header">
-            <th>Position</th>
+            <th className="position-heading">Position</th>
             <th>Net Value</th>
             <th>Size</th>
             <th>Collateral</th>
@@ -462,7 +462,7 @@ export default function PositionsList(props) {
               </td>
             </tr>
           )}
-          {positions.map((position) => {
+          {positions.map((position, index) => {
             const liquidationPrice = getLiquidationPrice(position) || bigNumberify(0);
             const positionOrders = getOrdersForPosition(account, position, orders, nativeTokenAddress);
             const hasOrderError = !!positionOrders.find((order) => order.error);
@@ -640,7 +640,7 @@ export default function PositionsList(props) {
 
                 <td>
                   <button
-                    className="Exchange-list-action close-action"
+                    className={`Exchange-list-action close-action  ${index === 0 && "exchange-list-close-action"}`}
                     onClick={() => sellPosition(position)}
                     disabled={position.size.eq(0)}
                   >

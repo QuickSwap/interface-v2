@@ -213,12 +213,14 @@ export default function SwapBox(props) {
   const [ordersToaOpen, setOrdersToaOpen] = useState(false);
 
   let [orderOption, setOrderOption] = useLocalStorageSerializeKey([chainId, "Order-option"], MARKET);
+  let [,setOrderOptionValue] = useLocalStorageSerializeKey(["Order-option"], MARKET);
   if (!flagOrdersEnabled) {
     orderOption = MARKET;
   }
 
   const onOrderOptionChange = (option) => {
     setOrderOption(option);
+    setOrderOptionValue(option)
   };
 
   const isMarketOrder = orderOption === MARKET;
@@ -1594,6 +1596,7 @@ export default function SwapBox(props) {
     setSwapOption(opt);
     if (orderOption === STOP) {
       setOrderOption(MARKET);
+      setOrderOptionValue(MARKET)
     }
     setAnchorOnFromAmount(true);
     setFromValue("");
@@ -1658,6 +1661,7 @@ export default function SwapBox(props) {
   const onClickPrimary = () => {
     if (isStopOrder) {
       setOrderOption(MARKET);
+      setOrderOptionValue(MARKET);
       return;
     }
 
@@ -1991,7 +1995,7 @@ export default function SwapBox(props) {
           </div>
         )}
         {showTriggerPriceSection && (
-          <div className="Exchange-swap-section">
+          <div className="Exchange-swap-section price-exchange">
             <div className="Exchange-swap-section-top">
               <div>Price</div>
               <div

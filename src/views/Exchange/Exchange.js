@@ -825,7 +825,7 @@ export const Exchange = forwardRef((props, ref) => {
             option={listSection}
             onChange={(section) => setListSection(section)}
             type="inline"
-            className="Exchange-list-tabs"
+            className="Exchange-list-tabs charts-list-tabs"
           />
           <div className="align-right Exchange-should-show-position-lines">
             {renderCancelOrderButton()}
