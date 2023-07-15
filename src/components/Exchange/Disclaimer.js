@@ -59,7 +59,7 @@ export default function Disclaimer(props) {
         </div>
 
         <button
-          className="App-cta Exchange-swap-button"
+          className="App-cta Exchange-swap-button Disclaimer-button"
           onClick={closeAndAction}
           style={{ fontSize: "16px", color: "#F5F6F8", fontWeight: "500" }}
           disabled={!isEnable}

@@ -2233,9 +2233,9 @@ export default function SwapBox(props) {
             .
           </div>
         )}
-        <div className="Exchange-swap-button-container leverage-btn">
+        <div className="Exchange-swap-button-container ">
           <button
-            className="App-cta Exchange-swap-button"
+            className="App-cta Exchange-swap-button leverage-btn"
             onClick={onClickPrimary}
             disabled={!isPrimaryEnabled()}
           >
