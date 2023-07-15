@@ -473,13 +473,13 @@ const AnalyticsPairChart: React.FC<{
               (currentPercent || currentPercent === 0) ? (
                 <>
                   <Box className='flex items-center'>
-                    <h4>
+                    <h1 className='h4'>
                       {`${chartYTicker === '$' ? chartYTicker : ''}${
                         currentData > 100000
                           ? formatCompact(currentData)
                           : currentData.toLocaleString('us')
                       }${chartYTicker === '%' ? chartYTicker : ''}`}
-                    </h4>
+                    </h1>
                     <Box
                       className={`priceChangeWrapper ${currentPercentClass}`}
                       ml={1}

@@ -1,7 +1,15 @@
 import React, { lazy, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Grid } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Grid,
+  Typography,
+} from '@material-ui/core';
+import { ExpandMoreOutlined } from '@material-ui/icons';
+import { useTranslation, Trans } from 'react-i18next';
 import Motif from 'assets/images/Motif.svg';
 import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
 import Analytics from 'assets/images/featured/Analytics.svg';
@@ -11,17 +19,19 @@ import Rewards from 'assets/images/featured/Rewards.svg';
 import FeaturedSwap from 'assets/images/featured/Swap.svg';
 import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.svg';
 import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
-import { ReactComponent as MediumIcon } from 'assets/images/social/Medium.svg';
+import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
 import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
 import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
+import CoinpaprikaIcon from 'assets/images/social/coinpaprika-logo.png';
 import 'pages/styles/landing.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
+
 const SwapSection = lazy(() => import('./SwapSection'));
 const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
 const GlobalSection = lazy(() => import('./GlobalSection'));
@@ -85,9 +95,9 @@ const LandingPage: React.FC = () => {
       title: 'Twitter',
     },
     {
-      link: 'https://quickswap-layer2.medium.com/',
-      icon: <MediumIcon />,
-      title: 'Medium',
+      link: 'https://blog.quickswap.exchange/',
+      icon: <BlogIcon />,
+      title: 'Blog',
     },
     {
       link: 'https://www.youtube.com/channel/UCrPlF-DBwD-UzLFDzJ4Z5Fw',
@@ -105,6 +115,11 @@ const LandingPage: React.FC = () => {
       title: 'CoinGecko',
     },
     {
+      link: 'https://coinpaprika.com/exchanges/quickswap-v3/',
+      icon: <img src={CoinpaprikaIcon} alt='Coinpaprika' />,
+      title: 'Coinpaprika',
+    },
+    {
       link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
       icon: <GeckoterminalIcon />,
       title: 'GeckoTerminal',
@@ -118,6 +133,112 @@ const LandingPage: React.FC = () => {
       link: 'https://t.me/QuickSwapAnnouncements',
       icon: <TelegramIcon />,
       title: 'Announcement',
+    },
+  ];
+
+  const faqs = [
+    {
+      header: t('faq-1-title'),
+      content: <Box>{t('faq-1-content')}</Box>,
+    },
+    {
+      header: t('faq-2-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-2-content'
+            components={{
+              underline: <u></u>,
+            }}
+          />
+        </Box>
+      ),
+    },
+    {
+      header: t('faq-3-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-3-content'
+            components={{
+              underline: <u></u>,
+              break: <br />,
+            }}
+          />
+        </Box>
+      ),
+    },
+    {
+      header: t('faq-4-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-4-content'
+            components={{
+              underline: <u></u>,
+              break: <br />,
+              alink: (
+                <a
+                  className='text-primary'
+                  href='https://snapshot.org/#/quickvote.eth'
+                  rel='noreferrer'
+                  target='_blank'
+                />
+              ),
+            }}
+          />
+        </Box>
+      ),
+    },
+    {
+      header: t('faq-5-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-5-content'
+            components={{
+              underline: <u></u>,
+              break: <br />,
+              alink: (
+                <a
+                  className='text-primary'
+                  href='https://quickswap.exchange/#/convert'
+                  rel='noreferrer'
+                  target='_blank'
+                />
+              ),
+            }}
+          />
+        </Box>
+      ),
+    },
+    {
+      header: t('faq-6-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-6-content'
+            components={{
+              underline: <u></u>,
+              break: <br />,
+            }}
+          />
+        </Box>
+      ),
+    },
+    {
+      header: t('faq-7-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-7-content'
+            components={{
+              underline: <u></u>,
+              break: <br />,
+            }}
+          />
+        </Box>
+      ),
     },
   ];
 
@@ -197,6 +318,26 @@ const LandingPage: React.FC = () => {
             </Grid>
           ))}
         </Grid>
+      </Box>
+      <Box className='communityContainer'>
+        <Box className='featureHeading'>
+          <h3>{t('faqs')}</h3>
+          <Box className='featureDivider' />
+        </Box>
+        <Box className=''>
+          {faqs.map((val, i) => (
+            <Accordion key={`accordation-{i}`}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreOutlined />}
+                aria-controls='panel1a-content'
+                id='panel1a-header'
+              >
+                <Typography>{val.header}</Typography>
+              </AccordionSummary>
+              <AccordionDetails>{val.content}</AccordionDetails>
+            </Accordion>
+          ))}
+        </Box>
       </Box>
       <Box className='communityContainer'>
         <Box className='featureHeading'>

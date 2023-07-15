@@ -9,9 +9,6 @@ import {
 import dayjs from 'dayjs';
 import { useMemo, useEffect, useState } from 'react';
 import { usePairs } from 'data/Reserves';
-
-import { clientV2, clientV3 } from 'apollo/client';
-import { GLOBAL_DATA, PAIRS_BULK, PAIRS_HISTORICAL_BULK } from 'apollo/queries';
 import { GlobalConst, GlobalValue } from 'constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
@@ -40,7 +37,6 @@ import {
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTotalSupplys } from 'data/TotalSupply';
 import {
-  getBlockFromTimestamp,
   getDaysCurrentYear,
   getFarmLPToken,
   getOneYearFee,
@@ -64,15 +60,14 @@ import { Contract } from '@ethersproject/contracts';
 import {
   DLDQUICK,
   DLQUICK,
+  EMPTY,
   LAIR_ADDRESS,
   NEW_LAIR_ADDRESS,
   NEW_QUICK,
   OLD_DQUICK,
   OLD_QUICK,
-  V2_FACTORY_ADDRESSES,
 } from 'constants/v3/addresses';
 import { getConfig } from '../../config/index';
-import { GLOBAL_DATA_V3 } from 'apollo/queries-v3';
 import { useDefaultCNTFarmList } from 'state/cnt/hooks';
 
 const web3 = new Web3('https://polygon-rpc.com/');
@@ -622,171 +617,50 @@ export function useOldSyrupInfo(
   );
 }
 
-export const getBulkPairData = async (chainId: ChainId, pairList: any) => {
-  // if (pairs !== undefined) {
-  //   return;
-  // }
-  const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime
-    .subtract(1, 'day')
-    .startOf('minute')
-    .unix();
-
-  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
-  const client = clientV2[chainId];
-  if (!client) return;
-  try {
-    const current = await client.query({
-      query: PAIRS_BULK(pairList),
-      fetchPolicy: 'network-only',
-    });
-
-    const [oneDayResult] = await Promise.all(
-      [oneDayOldBlock].map(async (block) => {
-        const cResult = await client.query({
-          query: PAIRS_HISTORICAL_BULK(block, pairList),
-          fetchPolicy: 'network-only',
-        });
-
-        return cResult;
-      }),
-    );
-
-    const oneDayData = oneDayResult?.data?.pairs.reduce(
-      (obj: any, cur: any, i: any) => {
-        return { ...obj, [cur.id]: cur };
-      },
-      {},
-    );
-
-    const pairData =
-      current &&
-      current.data.pairs.map((pair: any) => {
-        let data = pair;
-        let oneDayHistory = oneDayData?.[pair.id];
-
-        if (
-          Number(oneDayHistory?.reserveUSD ?? 0) ===
-            Number(data?.reserveUSD ?? 0) &&
-          Number(oneDayHistory?.volumeUSD ?? 0) ===
-            Number(data?.volumeUSD ?? 0) &&
-          Number(oneDayHistory?.totalSupply ?? 0) ===
-            Number(data?.totalSupply ?? 0)
-        ) {
-          oneDayHistory = null;
-        }
-
-        data = parseData(data, oneDayHistory);
-        return data;
-      });
-
-    const object = convertArrayToObject(pairData, 'id');
-    if (Object.keys(object).length > 0) {
-      pairs = object;
-      return object;
-    }
-    return object;
-  } catch (e) {
-    console.log(e);
-    return;
-  }
-};
-
-const getOneDayVolume = async (config: any) => {
-  let data: any = {};
-  let oneDayData: any = {};
-  const web3 = new Web3(config.rpc);
-  const current = await web3.eth.getBlockNumber();
-  const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-
-  const oneDayOldBlock = await getBlockFromTimestamp(
-    utcOneDayBack,
-    config.chainId,
+export const getBulkPairData = async (
+  chainId: ChainId,
+  pairListStr: string,
+) => {
+  const res = await fetch(
+    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/bulk-pair-data?chainId=${chainId}&addresses=${pairListStr}`,
   );
-
-  const chainId: ChainId = config.chainId;
-  const client = clientV2[chainId];
-  if (!client) return;
-  const result = await client.query({
-    query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], current),
-    fetchPolicy: 'network-only',
-  });
-
-  data = result.data.uniswapFactories[0];
-
-  // fetch the historical data
-  if (oneDayOldBlock) {
-    const oneDayResult = await client.query({
-      query: GLOBAL_DATA(V2_FACTORY_ADDRESSES[config.chainId], oneDayOldBlock),
-      fetchPolicy: 'network-only',
-    });
-    oneDayData = oneDayResult.data.uniswapFactories[0];
-  }
-
-  let oneDayVolumeUSD: any = 0;
-
-  if (data && oneDayData) {
-    oneDayVolumeUSD = get2DayPercentChange(
-      data.totalVolumeUSD,
-      oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(
+      errorText || res.statusText || `Failed to get bulk data for pair`,
     );
-    oneDayVol = oneDayVolumeUSD;
   }
-
-  return oneDayVolumeUSD;
+  const data = await res.json();
+  if (data && data.data) {
+    const items = data.data.map((item: any) => item.pairData);
+    const objects = convertArrayToObject(items, 'id');
+    if (Object.keys(objects).length > 0) {
+      pairs = objects;
+      return objects;
+    }
+    return objects;
+  }
+  return;
 };
 
-const getOneDayVolumeV3 = async (config: any) => {
-  let data: any = {};
-  let oneDayData: any = {};
-
-  const utcCurrentTime = dayjs();
-  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix();
-
-  const chainId: ChainId = config.chainId;
-  const oneDayOldBlock = await getBlockFromTimestamp(utcOneDayBack, chainId);
-
-  const client = clientV3[chainId];
-  if (!client) return;
-  const result = await client.query({
-    query: GLOBAL_DATA_V3(),
-    fetchPolicy: 'network-only',
-  });
-
-  data =
-    result &&
-    result.data &&
-    result.data.factories &&
-    result.data.factories.length > 0
-      ? result.data.factories[0]
-      : undefined;
-
-  // fetch the historical data
-  if (oneDayOldBlock) {
-    const oneDayResult = await client.query({
-      query: GLOBAL_DATA_V3(oneDayOldBlock),
-      fetchPolicy: 'network-only',
-    });
-    oneDayData =
-      oneDayResult &&
-      oneDayResult.data &&
-      oneDayResult.data.factories &&
-      oneDayResult.data.factories.length > 0
-        ? oneDayResult.data.factories[0]
-        : undefined;
-  }
-
-  let oneDayVolumeUSD: any = 0;
-
-  if (data && oneDayData) {
-    oneDayVolumeUSD = get2DayPercentChange(
-      data.totalVolumeUSD,
-      oneDayData.totalVolumeUSD ? oneDayData.totalVolumeUSD : 0,
+const getOneDayVolume = async (version: string, chainId: ChainId) => {
+  const res = await fetch(
+    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/oneDayVolume?chainId=${chainId}`,
+  );
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(
+      errorText || res.statusText || `Failed to get global data v2`,
     );
   }
 
-  return oneDayVolumeUSD;
+  const data = await res.json();
+  if (!data || !data.data) return;
+
+  const oneDayVolume = version === 'v2' ? data.data.v2 : data.data.v3;
+  oneDayVol = oneDayVolume;
+
+  return oneDayVolume;
 };
 
 const convertArrayToObject = (array: any, key: any) => {
@@ -798,31 +672,6 @@ const convertArrayToObject = (array: any, key: any) => {
     };
   }, initialValue);
 };
-
-export const get2DayPercentChange = (valueNow: any, value24HoursAgo: any) => {
-  // get volume info for both 24 hour periods
-  return Number(valueNow) - Number(value24HoursAgo);
-};
-
-function parseData(data: any, oneDayData: any) {
-  // get volume changes
-  const volumeKey =
-    data && data.volumeUSD && Number(data.volumeUSD)
-      ? 'volumeUSD'
-      : 'untrackedVolumeUSD';
-  const oneDayVolumeUSD = get2DayPercentChange(
-    data && data[volumeKey] ? Number(data[volumeKey]) : 0,
-    oneDayData && oneDayData[volumeKey] ? Number(oneDayData[volumeKey]) : 0,
-  );
-  return {
-    id: data.id,
-    token0: data.token0,
-    token1: data.token1,
-    oneDayVolumeUSD,
-    reserveUSD: data.reserveUSD,
-    totalSupply: data.totalSupply,
-  };
-}
 
 function getSearchFiltered(info: any, search: string) {
   const searchLowered = search.toLowerCase();
@@ -961,7 +810,7 @@ export function useCNTStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = GlobalValue.tokens.COMMON.EMPTY;
+    const empty = EMPTY[chainId];
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
@@ -1227,7 +1076,7 @@ export function useDualStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = unwrappedToken(GlobalValue.tokens.COMMON.EMPTY);
+    const empty = unwrappedToken(EMPTY[chainId]);
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
@@ -1530,10 +1379,10 @@ function useLairInfo(
       let v2OneDayVol = 0,
         v3OneDayVol = 0;
       if (config['v2']) {
-        v2OneDayVol = await getOneDayVolume(config);
+        v2OneDayVol = await getOneDayVolume('v2', chainId);
       }
       if (config['v3']) {
-        v3OneDayVol = await getOneDayVolumeV3(config);
+        v3OneDayVol = await getOneDayVolume('v3', chainId);
       }
       setOneDayVolume(v2OneDayVol + v3OneDayVol);
     })();
@@ -1545,6 +1394,7 @@ function useLairInfo(
     }
 
     return {
+      loading: lairsQuickBalance.loading,
       lairAddress: lairAddress,
       dQUICKtoQUICK: new TokenAmount(
         quickToken,
@@ -1648,7 +1498,7 @@ export function useStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = GlobalValue.tokens.COMMON.EMPTY;
+    const empty = EMPTY[chainId];
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
   const rewardTokens = info.map((item) => item.rewardToken);

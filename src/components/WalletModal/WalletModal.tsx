@@ -27,9 +27,15 @@ import {
   metamaskConnection,
   trustWalletConnection,
   cypherDConnection,
+  phantomConnection,
 } from 'connectors';
-import { getIsMetaMaskWallet, getIsTrustWallet } from 'connectors/utils';
+import {
+  getIsBitKeepWallet,
+  getIsMetaMaskWallet,
+  getIsTrustWallet,
+} from 'connectors/utils';
 import { useSelectedWallet } from 'state/user/hooks';
+import { WalletConnect } from 'connectors/WalletConnect';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -51,7 +57,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
 }) => {
   const { t } = useTranslation();
   // important that these are destructed from the account-specific web3-react context
-  const { account, connector, isActive } = useWeb3React();
+  const { chainId, account, connector, isActive } = useWeb3React();
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
   const [error, setError] = useState<Error | string | undefined>(undefined);
@@ -85,6 +91,14 @@ const WalletModal: React.FC<WalletModalProps> = ({
     });
     setPendingWallet(connection); // set wallet for pending view
     setWalletView(WALLET_VIEWS.PENDING);
+
+    if (
+      chainId &&
+      (connection.name === GlobalConst.walletName.WALLET_CONNECT ||
+        connection.name === GlobalConst.walletName.ZENGO_CONNECT)
+    ) {
+      (connection.connector as WalletConnect).setRequiredChains([chainId]);
+    }
 
     try {
       if (connector.deactivate) {
@@ -134,7 +148,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isMetamask = getIsMetaMaskWallet();
     const isBlockWallet = ethereum && ethereum.isBlockWallet;
     const isCypherD = ethereum && ethereum.isCypherD;
-    const isBitKeep = ethereum && ethereum.isBitKeep;
+    const isBitKeep = getIsBitKeepWallet();
     const isTrustWallet = getIsTrustWallet();
     const isBraveWallet = ethereum && ethereum.isBraveWallet;
     const isPhantomWallet =
@@ -142,11 +156,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isCoinbaseWallet = ethereum && ethereum.isCoinbaseWallet;
 
     return connections.map((option) => {
-      //disable safe app by in the list
-      if (option.key === 'SAFE_APP') {
-        return null;
-      }
-
       if (
         option.name === GlobalConst.walletName.PHANTOM_WALLET &&
         !isPhantomWallet
@@ -157,8 +166,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
             key={option.key}
             color={option.color}
             header={t('installPhantom')}
-            subheader={t('installPhantomDesc')}
-            link={'https://phantom.app/'}
+            subheader={null}
+            link={'https://phantom.app/download'}
             icon={option.iconName}
           />
         );
@@ -174,7 +183,49 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={t('installBrave')}
             subheader={t('installBraveDesc')}
             link={'https://brave.com/wallet'}
-            icon={BraveWalletIcon}
+            icon={option.iconName}
+          />
+        );
+      } else if (option.name === GlobalConst.walletName.BITKEEP && !isBitKeep) {
+        return (
+          <Option
+            id={`connect-${option.name}`}
+            key={option.name}
+            color={'#E8831D'}
+            header={t('installBitKeep')}
+            subheader={null}
+            link={'https://bitkeep.com/en/download'}
+            icon={option.iconName}
+          />
+        );
+      } else if (
+        option.name === GlobalConst.walletName.TRUST_WALLET &&
+        !isTrustWallet
+      ) {
+        return (
+          <Option
+            id={`connect-${option.name}`}
+            key={option.name}
+            color={'#E8831D'}
+            header={t('installTrustWallet')}
+            subheader={null}
+            link={'https://trustwallet.com/'}
+            icon={option.iconName}
+          />
+        );
+      } else if (
+        option.name === GlobalConst.walletName.METAMASK &&
+        !isMetamask
+      ) {
+        return (
+          <Option
+            id={`connect-${option.name}`}
+            key={option.name}
+            color={'#E8831D'}
+            header={t('installMetamask')}
+            subheader={null}
+            link={'https://metamask.io/'}
+            icon={MetamaskIcon}
           />
         );
       }
@@ -205,6 +256,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
           (option.mobile ||
             (isCypherD && option.connector === cypherDConnection.connector) ||
             (isMetamask && option.connector === metamaskConnection.connector) ||
+            (isPhantomWallet &&
+              option.connector === phantomConnection.connector) ||
             (isTrustWallet &&
               option.connector === trustWalletConnection.connector) ||
             (isCoinbaseWallet &&
@@ -236,35 +289,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         return null;
       }
 
-      if (!(web3 || ethereum)) {
-        if (option.name === GlobalConst.walletName.METAMASK) {
-          return (
-            <Option
-              id={`connect-${option.name}`}
-              key={option.name}
-              color={'#E8831D'}
-              header={t('installMetamask')}
-              subheader={null}
-              link={'https://metamask.io/'}
-              icon={MetamaskIcon}
-            />
-          );
-        } else {
-          return null; //dont want to return install twice
-        }
-      } else if (
-        option.name === GlobalConst.walletName.METAMASK &&
-        !isMetamask
-      ) {
-        return null;
-      } else if (option.name === GlobalConst.walletName.CYPHERD && !isCypherD) {
-        return null;
-      } else if (
-        !isTrustWallet &&
-        option.name === GlobalConst.walletName.TRUST_WALLET
-      ) {
-        return null;
-      } else if (option.name === GlobalConst.walletName.BITKEEP && !isBitKeep) {
+      if (option.name === GlobalConst.walletName.CYPHERD && !isCypherD) {
         return null;
       } else if (
         option.name === GlobalConst.walletName.BLOCKWALLET &&

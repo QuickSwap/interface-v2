@@ -3,14 +3,13 @@ import { Box, Divider } from '@material-ui/core';
 import { SwapHoriz } from '@material-ui/icons';
 import { ChainId, Currency, Token } from '@uniswap/sdk';
 import { CurrencyLogo } from 'components';
-import { getTokenInfo, formatNumber } from 'utils';
+import { formatNumber } from 'utils';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';
 import { useTranslation } from 'react-i18next';
 import { useEthPrice, useMaticPrice } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { getTokenInfoV3 } from 'utils/v3-graph';
 
 const SwapProInfo: React.FC<{
   token1?: Token;
@@ -34,54 +33,74 @@ const SwapProInfo: React.FC<{
     (async () => {
       if (ethPrice.price && ethPrice.oneDayPrice) {
         if (token1Address) {
-          const tokenInfo = await getTokenInfo(
-            ethPrice.price,
-            ethPrice.oneDayPrice,
-            token1Address,
-            chainIdToUse,
+          const res = await fetch(
+            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token1Address}/v2?chainId=${chainIdToUse}`,
           );
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText || res.statusText || `Failed to get top token details`,
+            );
+          }
+          const data = await res.json();
           const token =
-            tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
+            data && data.data && data.data.token ? data.data.token : undefined;
           if (token && token.priceUSD) {
             setToken1Data(token);
           } else if (maticPrice.price && maticPrice.oneDayPrice) {
-            const tokenInfoV3 = await getTokenInfoV3(
-              maticPrice.price,
-              maticPrice.oneDayPrice,
-              token1Address.toLowerCase(),
-              chainIdToUse,
+            const res = await fetch(
+              `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token1Address}/v3?chainId=${chainIdToUse}`,
             );
+            if (!res.ok) {
+              const errorText = await res.text();
+              throw new Error(
+                errorText ||
+                  res.statusText ||
+                  `Failed to get top token details`,
+              );
+            }
+            const data = await res.json();
             const tokenV3 =
-              tokenInfoV3 && tokenInfoV3.length > 0
-                ? tokenInfoV3[0]
-                : tokenInfoV3;
+              data && data.data && data.data.token
+                ? data.data.token
+                : undefined;
             if (tokenV3) {
               setToken1Data(tokenV3);
             }
           }
         }
         if (token2Address) {
-          const tokenInfo = await getTokenInfo(
-            ethPrice.price,
-            ethPrice.oneDayPrice,
-            token2Address,
-            chainIdToUse,
+          const res = await fetch(
+            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token2Address}/v2?chainId=${chainIdToUse}`,
           );
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText || res.statusText || `Failed to get top token details`,
+            );
+          }
+          const data = await res.json();
           const token =
-            tokenInfo && tokenInfo.length > 0 ? tokenInfo[0] : tokenInfo;
+            data && data.data && data.data.token ? data.data.token : undefined;
           if (token && token.priceUSD) {
             setToken2Data(token);
           } else if (maticPrice.price && maticPrice.oneDayPrice) {
-            const tokenInfoV3 = await getTokenInfoV3(
-              maticPrice.price,
-              maticPrice.oneDayPrice,
-              token2Address.toLowerCase(),
-              chainIdToUse,
+            const res = await fetch(
+              `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token2Address}/v3?chainId=${chainIdToUse}`,
             );
+            if (!res.ok) {
+              const errorText = await res.text();
+              throw new Error(
+                errorText ||
+                  res.statusText ||
+                  `Failed to get top token details`,
+              );
+            }
+            const data = await res.json();
             const tokenV3 =
-              tokenInfoV3 && tokenInfoV3.length > 0
-                ? tokenInfoV3[0]
-                : tokenInfoV3;
+              data && data.data && data.data.token
+                ? data.data.token
+                : undefined;
             if (tokenV3) {
               setToken2Data(tokenV3);
             }

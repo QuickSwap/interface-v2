@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +18,13 @@ import { Token } from '@uniswap/sdk';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import {
+  useGammaHypervisorContract,
+  useMasterChefContract,
+} from 'hooks/useContract';
+import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import { formatUnits } from 'ethers/lib/utils';
 
 const GammaFarmsPage: React.FC<{
   farmFilter: string;
@@ -67,6 +74,78 @@ const GammaFarmsPage: React.FC<{
     },
   );
 
+  const qiTokenAddress = '0x580a84c73811e1839f75d86d75d88cca0c241ff4';
+  const qiGammaFarm = '0x25B186eEd64ca5FDD1bc33fc4CFfd6d34069BAec';
+  const qimasterChefContract = useMasterChefContract(
+    2,
+    undefined,
+    QIGammaMasterChef,
+  );
+  const qiHypeContract = useGammaHypervisorContract(qiGammaFarm);
+
+  const qiPoolData = useSingleCallResult(qimasterChefContract, 'poolInfo', [2]);
+  const qiGammaStakedAmountData = useSingleCallResult(
+    qiHypeContract,
+    'balanceOf',
+    [qimasterChefContract?.address],
+  );
+  const qiGammaStakedAmount =
+    !qiGammaStakedAmountData.loading &&
+    qiGammaStakedAmountData.result &&
+    qiGammaStakedAmountData.result.length > 0
+      ? Number(formatUnits(qiGammaStakedAmountData.result[0], 18))
+      : 0;
+  const qiGammaData =
+    gammaData && gammaData[qiGammaFarm.toLowerCase()]
+      ? gammaData[qiGammaFarm.toLowerCase()]
+      : undefined;
+  const qiLPTokenUSD =
+    qiGammaData &&
+    qiGammaData.totalSupply &&
+    Number(qiGammaData.totalSupply) > 0
+      ? (Number(qiGammaData.tvlUSD) / Number(qiGammaData.totalSupply)) *
+        10 ** 18
+      : 0;
+  const qiGammaStakedAmountUSD = qiGammaStakedAmount * qiLPTokenUSD;
+
+  const qiAllocPointBN =
+    !qiPoolData.loading && qiPoolData.result && qiPoolData.result.length > 0
+      ? qiPoolData.result.allocPoint
+      : undefined;
+
+  const qiRewardPerSecondData = useSingleCallResult(
+    qimasterChefContract,
+    'rewardPerSecond',
+    [],
+  );
+
+  const qiRewardPerSecondBN =
+    !qiRewardPerSecondData.loading &&
+    qiRewardPerSecondData.result &&
+    qiRewardPerSecondData.result.length > 0
+      ? qiRewardPerSecondData.result[0]
+      : undefined;
+
+  const qiTotalAllocPointData = useSingleCallResult(
+    qimasterChefContract,
+    'totalAllocPoint',
+    [],
+  );
+
+  const qiTotalAllocPointBN =
+    !qiTotalAllocPointData.loading &&
+    qiTotalAllocPointData.result &&
+    qiTotalAllocPointData.result.length > 0
+      ? qiTotalAllocPointData.result[0]
+      : undefined;
+
+  const qiRewardPerSecond =
+    qiAllocPointBN && qiRewardPerSecondBN && qiTotalAllocPointBN
+      ? ((Number(qiAllocPointBN) / Number(qiTotalAllocPointBN)) *
+          Number(qiRewardPerSecondBN)) /
+        10 ** 18
+      : undefined;
+
   const gammaRewardTokenAddresses = GAMMA_MASTERCHEF_ADDRESSES.reduce<string[]>(
     (memo, masterChef) => {
       const gammaReward =
@@ -100,9 +179,50 @@ const GammaFarmsPage: React.FC<{
     [],
   );
 
+  const gammaRewardTokenAddressesWithQI = useMemo(() => {
+    const containsQI = !!gammaRewardTokenAddresses.find(
+      (address) => address.toLowerCase() === qiTokenAddress.toLowerCase(),
+    );
+    if (containsQI) {
+      return gammaRewardTokenAddresses;
+    }
+    return gammaRewardTokenAddresses.concat([qiTokenAddress]);
+  }, [gammaRewardTokenAddresses]);
+
   const gammaRewardsWithUSDPrice = useUSDCPricesFromAddresses(
-    gammaRewardTokenAddresses,
+    gammaRewardTokenAddressesWithQI,
   );
+
+  const qiPrice = gammaRewardsWithUSDPrice?.find(
+    (item) => item.address.toLowerCase() === qiTokenAddress.toLowerCase(),
+  )?.price;
+
+  const qiAPR =
+    qiRewardPerSecond && qiPrice && qiGammaStakedAmountUSD
+      ? (qiRewardPerSecond * qiPrice * 3600 * 24 * 365) / qiGammaStakedAmountUSD
+      : undefined;
+
+  if (gammaRewards && GAMMA_MASTERCHEF_ADDRESSES[2][chainId] && qiAPR) {
+    const qiRewardsData = {
+      apr: qiAPR,
+      stakedAmount: qiGammaStakedAmount,
+      stakedAmountUSD: qiGammaStakedAmountUSD,
+      rewarders: {
+        rewarder: {
+          rewardToken: qiTokenAddress,
+          rewardTokenDecimals: 18,
+          rewardTokenSymbol: 'QI',
+          rewardPerSecond: qiRewardPerSecond,
+          apr: qiAPR,
+          allocPoint: qiAllocPointBN.toString(),
+        },
+      },
+    };
+    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[2][chainId]] = { pools: {} };
+    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[2][chainId]]['pools'][
+      qiGammaFarm.toLowerCase()
+    ] = qiRewardsData;
+  }
 
   const filteredFarms = allGammaFarms
     .map((item) => {
@@ -151,29 +271,29 @@ const GammaFarmsPage: React.FC<{
           item.token1.address.toLowerCase().includes(search.toLowerCase())) ||
         item.title.toLowerCase().includes(search.toLowerCase());
       const blueChipCondition =
-        !!GlobalData.blueChips.find(
+        !!GlobalData.blueChips[chainId].find(
           (token) =>
             item.token0 &&
             token.address.toLowerCase() === item.token0.address.toLowerCase(),
         ) &&
-        !!GlobalData.blueChips.find(
+        !!GlobalData.blueChips[chainId].find(
           (token) =>
             item.token1 &&
             token.address.toLowerCase() === item.token1.address.toLowerCase(),
         );
       const stableCoinCondition =
-        !!GlobalData.stableCoins.find(
+        !!GlobalData.stableCoins[chainId].find(
           (token) =>
             item.token0 &&
             token.address.toLowerCase() === item.token0.address.toLowerCase(),
         ) &&
-        !!GlobalData.stableCoins.find(
+        !!GlobalData.stableCoins[chainId].find(
           (token) =>
             item.token1 &&
             token.address.toLowerCase() === item.token1.address.toLowerCase(),
         );
 
-      const stablePair0 = GlobalData.stablePairs.find(
+      const stablePair0 = GlobalData.stablePairs[chainId].find(
         (tokens) =>
           !!tokens.find(
             (token) =>
@@ -181,7 +301,7 @@ const GammaFarmsPage: React.FC<{
               token.address.toLowerCase() === item.token0.address.toLowerCase(),
           ),
       );
-      const stablePair1 = GlobalData.stablePairs.find(
+      const stablePair1 = GlobalData.stablePairs[chainId].find(
         (tokens) =>
           !!tokens.find(
             (token) =>
@@ -269,9 +389,13 @@ const GammaFarmsPage: React.FC<{
         return farm0Title > farm1Title ? sortMultiplier : -1 * sortMultiplier;
       } else if (sortBy === v3FarmSortBy.tvl) {
         const tvl0 =
-          gammaData0 && gammaData0['tvlUSD'] ? Number(gammaData0['tvlUSD']) : 0;
+          gammaReward0 && gammaReward0['stakedAmountUSD']
+            ? Number(gammaReward0['stakedAmountUSD'])
+            : 0;
         const tvl1 =
-          gammaData1 && gammaData1['tvlUSD'] ? Number(gammaData1['tvlUSD']) : 0;
+          gammaReward1 && gammaReward1['stakedAmountUSD']
+            ? Number(gammaReward1['stakedAmountUSD'])
+            : 0;
         return tvl0 > tvl1 ? sortMultiplier : -1 * sortMultiplier;
       } else if (sortBy === v3FarmSortBy.rewards) {
         const farm0RewardUSD =

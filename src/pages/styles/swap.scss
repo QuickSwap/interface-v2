@@ -26,10 +26,6 @@
   }
 }
 
-#swap-page {
-  padding-top: 88px;
-}
-
 .swapItem {
   padding: 0 16px;
   height: 46px;
@@ -42,10 +38,61 @@
   }
 }
 
+.trade-btn:hover {
+  color: #c7cad9;
+}
+
 .activeSwap {
-  background: $secondary1;
+  border-radius: 2rem;
+  border: 1px solid #448aff;
+  background: rgba(68, 138, 255, 0.3);
   & p {
-    color: white;
+    color: #c7cad9;
+  }
+}
+
+.tabContainer {
+  // padding-left: 1rem;
+  // padding-right: 1rem;
+  border-radius: 2rem;
+  border: 1px solid rgba(130, 177, 255, 0.08);
+  background: rgba(130, 177, 255, 0.03);
+  color: #696c80;
+}
+
+.tabMenu {
+  padding-left: 1.5rem;
+  padding-right: 1rem;
+}
+
+.tab {
+  background-color: transparent;
+  border-radius: 2rem;
+  padding: 0 16px;
+  height: 46px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  & p {
+    color: $textSecondary;
+  }
+}
+
+.tab:hover {
+    cursor: pointer;
+    background: rgba(68, 138, 255, 0.3) !important;  
+    color: white !important;
+    & p {
+      color: white;
+    }
+}
+
+.activeTab {
+  border-radius: 2rem;
+  border: 1px solid #448aff;
+  background: rgba(68, 138, 255, 0.3);
+  & p {
+    color: #c7cad9;
   }
 }
 

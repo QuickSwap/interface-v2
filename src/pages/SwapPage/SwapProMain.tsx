@@ -3,7 +3,6 @@ import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import React, { useEffect, useState } from 'react';
 import { useIsV2 } from 'state/application/hooks';
-import { getSwapTransactionsV3 } from 'utils';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
 import SwapMain from './SwapMain';
 import SwapProAssets from './SwapProAssets';
@@ -50,41 +49,117 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
 
   useEffect(() => {
     (async () => {
-      if (isV2 === undefined) return;
       if (pairId && transactions && transactions.length > 0) {
-        const txns = await getSwapTransactionsV3(
-          chainIdToUse,
-          pairId,
-          Number(transactions[0].transaction.timestamp),
-        );
-        if (txns) {
-          const filteredTxns = txns.filter(
-            (txn) =>
-              !transactions.find(
-                (tx) => tx.transaction.id === txn.transaction.id,
-              ),
+        let txns: any[] = [];
+        if (pairId.v2) {
+          const res = await fetch(
+            `${
+              process.env.REACT_APP_LEADERBOARD_APP_URL
+            }/utils/swap-transactions/${
+              pairId.v2
+            }/v2?chainId=${chainIdToUse}&startTime=${Number(
+              transactions[0].transaction.timestamp,
+            )}`,
           );
-          setTransactions([...filteredTxns, ...transactions]);
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText ||
+                res.statusText ||
+                `Failed to get v2 swap transactions`,
+            );
+          }
+          const data = await res.json();
+          const v2Txns =
+            data && data.data && data.data.transactions
+              ? data.data.transactions
+              : [];
+          txns = txns.concat(v2Txns ?? []);
         }
+        if (pairId.v3) {
+          const res = await fetch(
+            `${
+              process.env.REACT_APP_LEADERBOARD_APP_URL
+            }/utils/swap-transactions/${
+              pairId.v3
+            }/v3?chainId=${chainIdToUse}&startTime=${Number(
+              transactions[0].transaction.timestamp,
+            )}`,
+          );
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(
+              errorText ||
+                res.statusText ||
+                `Failed to get v3 swap transactions`,
+            );
+          }
+          const data = await res.json();
+          const v3Txns =
+            data && data.data && data.data.transactions
+              ? data.data.transactions
+              : [];
+          txns = txns.concat(v3Txns ?? []);
+        }
+        const filteredTxns = txns.filter(
+          (txn) =>
+            !transactions.find(
+              (tx) => tx.transaction.id === txn.transaction.id,
+            ),
+        );
+        setTransactions([...filteredTxns, ...transactions]);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, chainIdToUse, isV2]);
+  }, [currentTime, chainIdToUse]);
 
   useEffect(() => {
-    if (isV2 === undefined) return;
-    async function getTradesData(pairId: string) {
+    async function getTradesData(pairId: any) {
       setTransactions(undefined);
-      const transactions = await getSwapTransactionsV3(
-        chainIdToUse,
-        pairId.toLowerCase(),
-      );
+      let transactions: any[] = [];
+
+      if (pairId.v2) {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v2}/v2?chainId=${chainIdToUse}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get v2 swap transactions`,
+          );
+        }
+        const data = await res.json();
+        const v2Transactions =
+          data && data.data && data.data.transactions
+            ? data.data.transactions
+            : [];
+        transactions = transactions.concat(v2Transactions ?? []);
+      }
+
+      if (pairId.v3) {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v3}/v3?chainId=${chainIdToUse}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get v3 swap transactions`,
+          );
+        }
+        const data = await res.json();
+        const v3Transactions =
+          data && data.data && data.data.transactions
+            ? data.data.transactions
+            : [];
+        transactions = transactions.concat(v3Transactions ?? []);
+      }
+
       setTransactions(transactions);
     }
     if (pairId) {
       getTradesData(pairId);
     }
-  }, [pairId, chainIdToUse, isV2]);
+  }, [pairId, chainIdToUse]);
 
   return (
     <Box>
@@ -112,7 +187,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
                 showTrades={false}
                 token1={token1}
                 token2={token2}
-                pairAddress={pairId}
+                pairAddress={isV2 ? pairId?.v2 : pairId?.v3}
                 pairTokenReversed={pairTokenReversed}
                 transactions={transactions}
               />

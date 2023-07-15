@@ -56,13 +56,11 @@ import DualFarmUpdater from 'state/dualfarms/updater';
 import CNTFarmUpdater from 'state/cnt/updater';
 import SyrupUpdater from 'state/syrups/updater';
 import AnalyticsUpdater from 'state/analytics/updater';
-import AdsUpdater from 'state/ads/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import { mainTheme } from './theme';
 import Background from 'layouts/Background';
-import GasUpdater from 'state/application/gasUpdater';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import PastWinnersPage from 'pages/PastWinnersPage/PastWinnersPage';
@@ -98,8 +96,6 @@ function Updaters() {
       <DualFarmUpdater />
       <SyrupUpdater />
       <AnalyticsUpdater />
-      <AdsUpdater />
-      <GasUpdater />
     </>
   );
 }

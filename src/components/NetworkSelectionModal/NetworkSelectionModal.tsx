@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { CustomModal } from 'components';
 import { Box } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -14,7 +14,11 @@ import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { ApplicationModal } from 'state/application/actions';
 import { useIsSupportedNetwork } from 'utils';
-import { networkConnection, walletConnectConnection } from 'connectors';
+import {
+  networkConnection,
+  walletConnectConnection,
+  zengoConnectConnection,
+} from 'connectors';
 
 const NetworkSelectionModal: React.FC = () => {
   const { t } = useTranslation();
@@ -26,6 +30,19 @@ const NetworkSelectionModal: React.FC = () => {
   const modalOpen = useModalOpen(ApplicationModal.NETWORK_SELECTION);
   const toggleModal = useNetworkSelectionModalToggle();
   const isSupportedNetwork = useIsSupportedNetwork();
+
+  useEffect(() => {
+    const localChainId = localStorage.getItem('localChainId');
+
+    if (
+      localChainId &&
+      Number(localChainId) !== chainId &&
+      connector === networkConnection.connector
+    ) {
+      connector.activate(Number(localChainId));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const switchNetwork = useCallback(
     async (chainId: ChainId) => {
@@ -39,12 +56,14 @@ const NetworkSelectionModal: React.FC = () => {
       };
       if (
         connector === walletConnectConnection.connector ||
+        connector === zengoConnectConnection.connector ||
         connector === networkConnection.connector
       ) {
         await connector.activate(chainId);
       } else {
         await connector.activate(chainParam);
       }
+      localStorage.setItem('localChainId', chainId.toString());
     },
     [connector],
   );

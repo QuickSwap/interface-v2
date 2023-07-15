@@ -1,4 +1,4 @@
-import { ChainId, currencyEquals, ETHER } from '@uniswap/sdk';
+import { ChainId, ETHER } from '@uniswap/sdk';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -12,11 +12,31 @@ export default function useSwapRedirects() {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
 
+  const isEther = useCallback(
+    (currency) => {
+      // ether does not have address
+      if (currency?.address) return false;
+
+      // Check if it is actually an ether;
+      // don't use 'currencyEquals' method from uniswap because,
+      // the structure of current currency is modified already
+      // thus that method returns always false value in case if the selected
+      // token is ETHER.
+      const ether = ETHER[chainIdToUse];
+      return (
+        ether.decimals === currency?.decimals &&
+        ether.name === currency?.name &&
+        ether.symbol === currency?.symbol
+      );
+    },
+    [chainIdToUse],
+  );
+
   const redirectWithCurrency = useCallback(
     (currency: any, isInput: boolean, isV2 = true) => {
       let redirectPath = '';
       const currencyId = (isV2
-      ? currencyEquals(currency, ETHER[chainIdToUse])
+      ? isEther(currency)
       : currency.isNative)
         ? 'ETH'
         : currency.address;
@@ -60,9 +80,9 @@ export default function useSwapRedirects() {
       history.push(redirectPath);
     },
     [
-      chainIdToUse,
       currentPath,
       history,
+      isEther,
       parsedQs.currency0,
       parsedQs.currency1,
       parsedQs.inputCurrency,

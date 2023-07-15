@@ -5,13 +5,13 @@ import SupplyLiquidity from './SupplyLiquidity';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import AdsSlider from 'components/AdsSlider';
 import { useIsV2 } from 'state/application/hooks';
 import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 import { getConfig } from '../../config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { GammaPairs } from 'constants/index';
+import { Adshares } from 'components';
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
 const MyGammaPoolsV3 = lazy(() => import('./v3/MyGammaPoolsV3'));
@@ -36,7 +36,7 @@ const PoolsPage: React.FC = () => {
     <Box width='100%' mb={3}>
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
-          <h4>{t('pool')}</h4>
+          <h1 className='h4'>{t('pool')}</h1>
           {v2 && v3 && (
             <Box ml={2}>
               <VersionToggle />
@@ -59,9 +59,6 @@ const PoolsPage: React.FC = () => {
           <Box className='wrapper'>
             {!isV2 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
           </Box>
-          {/* <Box maxWidth={isMobile ? '320px' : '352px'} margin='16px auto 0'>
-            <AdsSlider sort='pools' />
-          </Box> */}
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
           <Box className='wrapper'>
@@ -74,8 +71,8 @@ const PoolsPage: React.FC = () => {
           )}
         </Grid>
       </Grid>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto 24px'>
-        <AdsSlider sort='analytics' />
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
+        <Adshares />
       </Box>
     </Box>
   );

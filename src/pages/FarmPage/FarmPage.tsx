@@ -6,7 +6,7 @@ import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
-import { AdsSlider, CustomSwitch } from 'components';
+import { Adshares, CustomSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
@@ -65,13 +65,14 @@ const FarmPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [farmAvailable]);
 
+  const pairListStr = pairLists.join('_');
   useEffect(() => {
     if (isV2) {
-      getBulkPairData(chainIdToUse, pairLists).then((data) =>
+      getBulkPairData(chainIdToUse, pairListStr).then((data) =>
         setBulkPairs(data),
       );
     }
-  }, [isV2, pairLists, chainIdToUse]);
+  }, [isV2, pairListStr, chainIdToUse]);
 
   const redirectWithFarmTab = (tab: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -118,7 +119,7 @@ const FarmPage: React.FC = () => {
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
-          <h4>{t('farm')}</h4>
+          <h1 className='h4'>{t('farm')}</h1>
           {v2 && v3 && (
             <Box ml={2}>
               <VersionToggle />
@@ -136,7 +137,7 @@ const FarmPage: React.FC = () => {
         )}
       </Box>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <AdsSlider sort='farms' />
+        <Adshares />
       </Box>
       {isV2 && v2 && (
         <>
