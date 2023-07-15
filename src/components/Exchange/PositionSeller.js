@@ -1201,7 +1201,7 @@ export default function PositionSeller(props) {
             </div>
           </div>
           <div style={{ paddingLeft: 10.85, paddingRight: 0 }} className="Exchange-swap-button-container">
-            <button className="App-cta Exchange-swap-button" onClick={onClickPrimary} disabled={!isPrimaryEnabled()}>
+            <button className="App-cta Exchange-swap-button close-transaction-button" onClick={onClickPrimary} disabled={!isPrimaryEnabled()}>
               {getPrimaryText()}
             </button>
           </div>

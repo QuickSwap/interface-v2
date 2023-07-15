@@ -53,7 +53,7 @@ export default function Modal(props) {
             }}
             onClick={() => setIsVisible(false)}
           ></div>
-          <div className="Modal-content">
+          <div className={cx("Modal-content", `${className}-content`)} >
             <div className="Modal-title-bar">
               <div className="Modal-title">{props.label}</div>
               <div className="Modal-close-button" onClick={() => setIsVisible(false)}>

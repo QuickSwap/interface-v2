@@ -2,7 +2,7 @@
 const newSteps = [
   {
     id: "welcome",
-    title: `Step 1`,    
+    title: "",    
     text: [
       `
       <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Connect your web3 wallet</div>
@@ -39,9 +39,7 @@ const newSteps = [
   },
   {
     id: "installation",
-    title: `
-    Step 2
-    `,
+    title: "",
     text: `
       <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Select a wallet</div>
       <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Choose any of the shown non-custodial web3 wallets. Make sure you have it installed in your browser. Alternatively you can also scan QR code and connect via wallet connect supported wallets.</div>
@@ -88,7 +86,7 @@ const newSteps = [
   {
     id: "step3",
     classes: "shepherd-expanded",
-    title: "Step 3",
+    title: "",
     when: {
       show: function() {
         let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'));
@@ -154,7 +152,7 @@ const newSteps = [
   }, 
   {
     id: "step4",
-    title: "Step 4",
+    title: "",
     classes: "shepherd-expanded",
     when: {
       show: function() {
@@ -225,7 +223,7 @@ const newSteps = [
   },  
   {
     id: "payExchange",
-    title: "Step 5",
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true;
@@ -288,7 +286,7 @@ const newSteps = [
   },
   {
     id: "exchange",
-    title: "Step 6",
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true;
@@ -352,7 +350,7 @@ const newSteps = [
   }, 
   {
     id: "price",
-    title: "Step 7",
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ( (Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
@@ -422,7 +420,9 @@ const newSteps = [
     },
     when: {
       show: function() {
-        document.querySelector("#leverageSlider-label > div > div").innerHTML  = document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit' ? 'Step 7' : 'Step 8'
+        if(document.querySelector('.leverage-btn').innerHTML === 'Enable Leverage'){
+          localStorage.setItem("HideEnableLeverageStep", 'false')
+        }       
         if(document.querySelector(".Exchange-swap-button").hasAttribute("disabled")){
           document.querySelector(".leverageSlider-button").disabled = true;
         }
@@ -477,13 +477,12 @@ const newSteps = [
   },
   {
     id: "enableLeverage",
-    title: "Step 8",
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      return (Object.values(swapPptionV2).includes("Long") === true   && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit');
-      
+      return (Object.values(swapPptionV2).includes("Long") === true   && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit' && localStorage.getItem("HideEnableLeverageStep")  === 'false');  
+         
     },
-    
     text: `<div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Enable Leverage</div>
     <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Click on Enable Leverage and Sign the transaction in wallet for Leverage to be enabled. This is a one-time process.</div>`,
     attachTo: { element: ".leverage-btn", on: "left" },
@@ -515,10 +514,86 @@ const newSteps = [
       },
       {
         action(){
-          this.next();
-          document.querySelector(".Exchange-swap-button").click();   
+          document.querySelector(".Exchange-swap-button").click();
+          this.next();   
         },
         
+        text: `
+        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
+        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        </div>
+        `,
+      },
+    ],
+  },
+  {
+    id: "enableLeverageDisclaimer",
+    title: "",
+    showOn(){
+      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      return (Object.values(swapPptionV2).includes("Long") === true   && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit' && localStorage.getItem("HideEnableLeverageStep")  === 'false');
+    },
+    when: {
+      show: function() {
+        if(document.querySelector(".Disclaimer-button").hasAttribute("disabled")){
+          document.querySelector(".Disclaimer-Step-Next").disabled = true;
+          
+        }
+        localStorage.setItem("HideEnableLeverageStep",'true')
+      }
+    },
+    text: `<div style="color: #061341;  font-size: 25px;   line-height: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Confirm Enable Leverage</div>
+      <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">
+      <label for="DisclaimerCheckAll"><input type="checkbox"  onClick='new Promise(function (resolve) {
+        if(!document.querySelector("#DisclaimerCheckAll").hasAttribute("checked")){
+          document.querySelector("#DisclaimerCheckAll").disabled = true;
+        }
+        document.querySelectorAll(".Disclaimer-checkbox").forEach(e=> e.click()); 
+         if(document.querySelector(".Disclaimer-button").hasAttribute("disabled")){
+        document.querySelector(".Disclaimer-Step-Next").disabled = false;
+      }resolve();});
+        ' name="DisclaimerCheckAll" id="DisclaimerCheckAll"> Check checkbox</label>
+      </div>
+    `,
+    
+    attachTo: { element: ".Disclaimer-content", on: "left" },
+
+    scrollTo: true,
+    buttons: [
+      {
+        type: "cancel",
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
+      {
+        type: "back",
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            </div>
+        `,
+      },
+      {
+        action(){
+          
+          document.querySelector(".Disclaimer-button").click();   
+          this.next();
+        },
+        classes:'Disclaimer-Step-Next',
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -541,8 +616,10 @@ const newSteps = [
     when: {
       show: function() {
         let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector("#ClickOnSwapLongShortToken-label > div > div").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Step 9' : 'Step 8'
         document.querySelector(".ClickOnSwapLongShortTokenLabel").innerHTML =  Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short';
+        if(!document.querySelector('.leverage-btn').innerHTML.includes(Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short')){
+          document.querySelector('.ClickOnSwapLongShortTokenNext').disabled = true
+        }
       }
     },
 
@@ -579,9 +656,10 @@ const newSteps = [
         `,
       },
       {
+        classes:'ClickOnSwapLongShortTokenNext',
         action(){
-          this.next();
           document.querySelector(".Exchange-swap-button").click();   
+          this.next();
         },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
@@ -597,7 +675,7 @@ const newSteps = [
   },  
   {
     id: "createLimitOrder",
-    title:'Step 9',
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ((Object.values(swapPptionV2).includes("Short") === true || Object.values(swapPptionV2).includes("Long") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
@@ -662,7 +740,6 @@ const newSteps = [
     when: {
       show: function() {
         let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector("#CheckPaperWork-label > div > div").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Step 10' : 'Step 9'
         document.querySelectorAll(".CheckPaperWorkLabel").forEach(e=> {
           e.innerHTML =  Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
         })  
@@ -682,8 +759,7 @@ const newSteps = [
       Click on Long and sign the transaction to initiate the <span class="CheckPaperWorkLabel"></span> trade.
     </div>
     `,
-    attachTo: { element: ".Confirmation-box-button", on: "left" },
-
+    attachTo: { element: ".Modal-content.Confirmation-box-content", on: "left" },
     scrollTo: true,
     buttons: [
       {
@@ -711,8 +787,8 @@ const newSteps = [
       },
       {
         action(){
+          document.querySelector(".Confirmation-box-button").click();
           this.next();
-          document.querySelector(".Confirmation-box-button").click();   
         },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
@@ -728,7 +804,7 @@ const newSteps = [
   },
   {
     id: "enableOrders",
-    title:'Step 10',
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ((Object.values(swapPptionV2).includes("Short") === true || Object.values(swapPptionV2).includes("Long") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
@@ -788,12 +864,6 @@ const newSteps = [
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ((Object.values(swapPptionV2).includes("Short") === true || Object.values(swapPptionV2).includes("Long") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit');
     },
-    when: {
-      show: function() {
-        let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector("#position-label > div > div").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Step 11' : 'Step 10'
-      }
-    },
     text: `
     </div>
     <div style="color: #061341; font-size: 25px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">
@@ -844,7 +914,7 @@ const newSteps = [
   }, 
   {
     id: "createOrder",
-    title:'Step 11',
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ( (Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
@@ -915,7 +985,7 @@ const newSteps = [
   },
   {
     id: "OrderTabs",
-    title:'Step 12',
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ( (Object.values(swapPptionV2).includes("Long") === true  || Object.values(swapPptionV2).includes("Short") === true ) && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
@@ -983,16 +1053,10 @@ const newSteps = [
   },
   {
     id: "closeAction",
-    title: "Step 12",
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ((Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit');
-    },
-    when: {
-      show: function() {
-        let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector("#position-label > div > div").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Step 12' : 'Step 11'
-      }
     },
     text: `
     </div>
@@ -1045,6 +1109,7 @@ const newSteps = [
   },
   {
     id: "CloseModal",
+    title: "",
     classes: "shepherd-expanded",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
@@ -1052,18 +1117,16 @@ const newSteps = [
     },
     when: {
       show: function() {
-        let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector("#CloseModal-label > div > div").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Step 13' : 'Step 12'
+        document.querySelector(`[data-label='${document.querySelector('.PositionSellerTabs .active').innerHTML}']`).click()   
       }
     },
-    title: "Step 12",    
     text: `
       <div style="display: flex; justify-content: space-between; align-items: center" >
         <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Choose from </div>
         
           <div class="positionSeller-list-tabs" style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
-              <button class="tour-tab tour-selected-tab"  type="button" onClick='new Promise(function (resolve) {[...document.querySelector(".positionSeller-list-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".positionSeller-list-tabs").children][0].classList.add("tour-selected-tab");[...document.querySelector(".PositionSellerTabs").children].forEach((element, index) => {if (index == 0) {element.classList.add("active"); element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-tab-container-1").innerHTML = "This is when you sell a cryptocurrency immediately at the best available price in the market.";'>Market</button>
-              <button class="tour-tab"  type="button" onClick='new Promise(function (resolve) {
+              <button class="tour-tab tour-selected-tab" data-label="Market"  type="button" onClick='new Promise(function (resolve) {[...document.querySelector(".positionSeller-list-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".positionSeller-list-tabs").children][0].classList.add("tour-selected-tab");[...document.querySelector(".PositionSellerTabs").children].forEach((element, index) => {if (index == 0) {element.classList.add("active"); element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-tab-container-1").innerHTML = "This is when you sell a cryptocurrency immediately at the best available price in the market.";'>Market</button>
+              <button class="tour-tab"  type="button" data-label="Trigger"  onClick='new Promise(function (resolve) {
                 [...document.querySelector(".positionSeller-list-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".positionSeller-list-tabs").children][1].classList.add("tour-selected-tab");[...document.querySelector(".PositionSellerTabs").children].forEach((element, index) => {if (index == 1) {element.classList.add("active");element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-tab-container-1").innerHTML = "This is a special type of order that starts as soon as a specific price is reached. It&prime;s like setting an alarm to remind you to sell your crypto when its price reaches a certain point.";'>Trigger</button>
 
           </div> 
@@ -1115,7 +1178,7 @@ const newSteps = [
   },
   {
     id: "OrderEdit",
-    title:'Step 13',
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ( (Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
@@ -1159,9 +1222,7 @@ const newSteps = [
         `,
       },
       {
-        action(){
-          this.next();  
-        },
+        type:'next',
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -1176,7 +1237,7 @@ const newSteps = [
   },
   {
     id: "OrderCancel",
-    title:'Step 14',
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ( (Object.values(swapPptionV2).includes("Short") === true || Object.values(swapPptionV2).includes("Long") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
@@ -1235,15 +1296,10 @@ const newSteps = [
       return ((Object.values(swapPptionV2).includes("Short") === true || Object.values(swapPptionV2).includes("Long") === true ) && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit'  && (document.querySelector(".PositionSellerTabs .active").innerHTML === 'Market' || document.querySelector(".PositionSellerTabs .active").innerHTML === 'Trigger')
       );
     },
-    when: {
-      show: function() {
-        let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector("#CloseModalPrice-label > div > div").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Step 14' : 'Step 13'
-      }
-    },
+   
     text: `
     </div>
-    <div style="color: #061341; font-size: 20px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Enter the amount which you want to close. Clicking on Max will autofill the complete amount.</div>
+    <div style="color: #061341; font-size: 20px; line-height:25px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Enter the amount which you want to close. Clicking on Max will autofill the complete amount.</div>
     
     `,
     attachTo: { element: ".PositionSellerTabs-amount", on: "left" },
@@ -1288,7 +1344,7 @@ const newSteps = [
   },
   {
     id: "CloseModalClosingPrice",
-    title: "Step 14",
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ((Object.values(swapPptionV2).includes("Long") === true  || Object.values(swapPptionV2).includes("Short") === true ) && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit' &&  document.querySelector(".PositionSellerTabs .active").innerHTML === 'Trigger');
@@ -1296,7 +1352,6 @@ const newSteps = [
     when: {
       show: function() {
         let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector("#CloseModalClosingPrice-label > div > div").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Step 15' : 'Step 14';
         document.querySelector(".CloseModalClosingPriceLabel").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
       }
     },
@@ -1346,7 +1401,7 @@ const newSteps = [
   },
   {
     id: "CloseModalMarketCheckPaper",
-    title: "Step 14",
+    title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return (Object.values(swapPptionV2).includes("Long") === true  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit' && document.querySelector(".PositionSellerTabs .active").innerHTML === 'Market');
@@ -1354,7 +1409,6 @@ const newSteps = [
     when: {
       show: function() {
         let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector("#CloseModalMarketCheckPaper-label > div > div").innerHTML = Object.values(swapPptionV2).includes("Long") === true  ? document.querySelector(".PositionSellerTabs .active").innerHTML === 'Market' ? 'Step 14' : 'Step 15' : Object.values(swapPptionV2).includes("Short") === true ? document.querySelector(".PositionSellerTabs .active").innerHTML === 'Market' ? 'Step 15' : 'Step 16' : "";
         document.querySelectorAll(".CloseModalMarketCheckPaperLabel").forEach(e=> {
           e.innerHTML =  Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
         })  
@@ -1378,7 +1432,7 @@ const newSteps = [
     </div>
     
     `,
-    attachTo: { element: ".PositionSeller-modal", on: "left" },
+    attachTo: { element: ".PositionSeller-modal-content", on: "left" },
     scrollTo: true,
     buttons: [
       {
@@ -1425,13 +1479,6 @@ const newSteps = [
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ( document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit' && document.querySelector(".PositionSellerTabs .active").innerHTML === 'Market' && (Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true) );
     },
-    when: {
-      show: function() {
-        let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector("#CloseModalMarketClose-label > div > div").innerHTML = Object.values(swapPptionV2).includes("Long") === true  ? document.querySelector(".PositionSellerTabs .active").innerHTML === 'Market' ? 'Step 16' : 'Step 17' : Object.values(swapPptionV2).includes("Short") === true ? document.querySelector(".PositionSellerTabs .active").innerHTML === 'Market' ? 'Step 15' : 'Step 16' : ""
-        
-      }
-    },
     text: `
     </div>
     <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Click on Close</div>
@@ -1466,6 +1513,7 @@ const newSteps = [
       },
       {
         action(){
+          document.querySelector(".close-transaction-button").click();  
           this.complete();
         },
         
