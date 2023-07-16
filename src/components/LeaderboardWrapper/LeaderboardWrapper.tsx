@@ -18,12 +18,8 @@ import ContestTable from 'components/ContestTable/ContestTable';
 import { ChartType } from 'components';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { formatNumber } from 'utils';
-import {
-  getTradingDataBetweenDates,
-  getFormattedLeaderBoardData,
-} from 'lib/src/leaderboard';
+import { getFormattedLeaderBoardData } from 'lib/src/leaderboard';
 import { useActiveWeb3React } from 'hooks';
-import { getLensProfiles } from 'utils/getLensProfile';
 import { getConfig } from 'config';
 import { useHistory } from 'react-router-dom';
 import { ChainId } from '@uniswap/sdk';
@@ -87,13 +83,13 @@ const LeaderboardWrapper: React.FC<Props> = (props: Props) => {
             process.env.REACT_APP_LEADERBOARD_APP_URL
           }/${'get-snap-shot/by-date'}?pool=${
             contestFilter.address
-          }&days=30&lastdate=2023-05-13`,
+          }&days=30&lastdate=2023-05-13&chainId=${chainId}`,
         );
       } else {
         res = await fetch(
           `${process.env.REACT_APP_LEADERBOARD_APP_URL}/${'leaderboard'}?pool=${
             contestFilter.address
-          }&days=${durationIndex}`,
+          }&days=${durationIndex}&chainId=${chainId}`,
         );
       }
 
@@ -109,17 +105,40 @@ const LeaderboardWrapper: React.FC<Props> = (props: Props) => {
       let result = showPastWinners
         ? data.lastCompititionData
         : data.leaderboardData;
-      const lensProfileResult = await getLensProfiles(
-        result.map((e: any) => e.origin),
-      );
-      if (lensProfileResult) {
-        result = result.map((d: ContestLeaderBoard, i: number) => {
-          return {
-            ...d,
-            lensHandle: lensProfileResult[i]?.handle,
-          };
-        });
+
+      let lensArray: any[] = [];
+      for (const ind of Array.from(
+        { length: Math.ceil(result.length / 150) },
+        (_, i) => i,
+      )) {
+        const lensRes = await fetch(
+          `${
+            process.env.REACT_APP_LEADERBOARD_APP_URL
+          }/utils/lens-profiles?addresses=${result
+            .slice(ind * 150, (ind + 1) * 150)
+            .map((e: any) => e.origin)
+            .join('_')}`,
+        );
+        if (!lensRes.ok) {
+          const errorText = await lensRes.text();
+          throw new Error(
+            errorText || lensRes.statusText || `Failed to get leaderboard`,
+          );
+        }
+        const lensData = await lensRes.json();
+        lensArray = lensArray.concat(lensData.data);
       }
+
+      // Fetch lens handles of all the addresses
+      result = result.map((d: ContestLeaderBoard, i: number) => {
+        return {
+          ...d,
+          lensHandle:
+            lensArray[i] && lensArray[i].length > 0
+              ? lensArray[i][0].handle
+              : undefined,
+        };
+      });
 
       setContestLeaderBoard(result);
       setLoading(false);
@@ -167,13 +186,19 @@ const LeaderboardWrapper: React.FC<Props> = (props: Props) => {
       }
       console.log('pools_in', pools_in);
 
-      const swapData: SwapDataV3[] = await getTradingDataBetweenDates(
-        pools_in,
-        firstTradeDay * 1000,
-        today * 1000,
-        searchVal,
-        chainId,
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/get-snap-shot/by-origin?chainId=${chainId}&days=${durationIndex}&pool=${contestFilter.address}&origin=${searchVal}`,
       );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          errorText || res.statusText || `Failed to get top token details`,
+        );
+      }
+      const data = await res.json();
+
+      const swapData: SwapDataV3[] =
+        data && data.lastCompititionData ? data.lastCompititionData : [];
 
       if (swapData) {
         const formattedLeaderBoardData = getFormattedLeaderBoardData(swapData);
