@@ -702,6 +702,7 @@ const newSteps = [
       },
       {
         type: "back",
+       
         text: `
         <div style="
         display: flex;
@@ -773,7 +774,10 @@ const newSteps = [
         `,
       },
       {
-        type: "back",
+        action(){
+          document.querySelector(".Confirmation-box .Modal-close-button").click(); 
+          this.back();
+        },
         text: `
         <div style="
         display: flex;
@@ -883,19 +887,7 @@ const newSteps = [
             </div>
         `,
       },
-      {
-        type: "back",
-        text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
-            </div>
-        `,
-      },
+      
       {
         action(){
           this.next(); 
