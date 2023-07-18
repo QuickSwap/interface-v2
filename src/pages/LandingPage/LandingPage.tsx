@@ -21,12 +21,14 @@ import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.
 import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
 import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
 import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
+import { ReactComponent as MediumIcon } from 'assets/images/social/Medium.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
 import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
 import CoinpaprikaIcon from 'assets/images/social/coinpaprika-logo.png';
+import InstagramIcon from 'assets/images/social/instagram.png';
 import 'pages/styles/landing.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config';
@@ -80,19 +82,24 @@ const LandingPage: React.FC = () => {
 
   const socialicons = [
     {
-      link: 'https://www.reddit.com/r/QuickSwap/',
-      icon: <RedditIcon />,
-      title: 'Reddit',
+      link: 'https://twitter.com/QuickswapDEX',
+      icon: <TwitterIcon />,
+      title: 'Twitter',
+    },
+    {
+      link: 'https://t.me/QuickSwapDEX',
+      icon: <TelegramIcon />,
+      title: 'Telegram',
+    },
+    {
+      link: 'https://t.me/QuickSwapAnnouncements',
+      icon: <TelegramIcon />,
+      title: 'Announcement',
     },
     {
       link: 'https://discord.gg/dSMd7AFH36',
       icon: <DiscordIcon />,
       title: 'Discord',
-    },
-    {
-      link: 'https://twitter.com/QuickswapDEX',
-      icon: <TwitterIcon />,
-      title: 'Twitter',
     },
     {
       link: 'https://blog.quickswap.exchange/',
@@ -105,24 +112,9 @@ const LandingPage: React.FC = () => {
       title: 'Youtube',
     },
     {
-      link: 'https://t.me/QuickSwapDEX',
-      icon: <TelegramIcon />,
-      title: 'Telegram',
-    },
-    {
-      link: 'https://www.coingecko.com/en/exchanges/quickswap',
-      icon: <CoingeckoIcon />,
-      title: 'CoinGecko',
-    },
-    {
-      link: 'https://coinpaprika.com/exchanges/quickswap-v3/',
-      icon: <img src={CoinpaprikaIcon} alt='Coinpaprika' />,
-      title: 'Coinpaprika',
-    },
-    {
-      link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
-      icon: <GeckoterminalIcon />,
-      title: 'GeckoTerminal',
+      link: 'https://www.reddit.com/r/QuickSwap/',
+      icon: <RedditIcon />,
+      title: 'Reddit',
     },
     {
       link: 'https://www.tiktok.com/@quickswapofficial',
@@ -130,9 +122,29 @@ const LandingPage: React.FC = () => {
       title: 'TikTok',
     },
     {
-      link: 'https://t.me/QuickSwapAnnouncements',
-      icon: <TelegramIcon />,
-      title: 'Announcement',
+      link: 'https://www.instagram.com/quickswapofficial',
+      icon: <img src={InstagramIcon} alt='Instagram' />,
+      title: 'Instagram',
+    },
+    {
+      link: 'https://quickswap-layer2.medium.com/',
+      icon: <MediumIcon />,
+      title: 'Medium',
+    },
+    {
+      link: 'https://www.coingecko.com/en/exchanges/quickswap',
+      icon: <CoingeckoIcon />,
+      title: 'CoinGecko',
+    },
+    {
+      link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
+      icon: <GeckoterminalIcon />,
+      title: 'GeckoTerminal',
+    },
+    {
+      link: 'https://coinpaprika.com/exchanges/quickswap-v3/',
+      icon: <img src={CoinpaprikaIcon} alt='Coinpaprika' />,
+      title: 'Coinpaprika',
     },
   ];
 
