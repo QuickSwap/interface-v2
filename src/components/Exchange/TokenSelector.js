@@ -129,7 +129,7 @@ export default function TokenSelector(props) {
             return (
               <div
                 key={token.address}
-                className={cx("TokenSelector-token-row", { disabled: tokenState.disabled })}
+                className={cx("TokenSelector-token-row token-box", { disabled: tokenState.disabled })}
                 onClick={() => !tokenState.disabled && onSelectToken(token)}
               >
                 {tokenState.disabled && tokenState.message && (
