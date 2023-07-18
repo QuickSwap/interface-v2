@@ -38,6 +38,7 @@ import {
   DC,
   DD,
   dDD,
+  frxETH,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -626,7 +627,6 @@ export const GammaPairs: {
         address: '0xfe4bb996926aca85c9747bbec886ec2a3f510c66',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-        ableToFarm: true,
         pid: 36,
       },
       {
@@ -635,7 +635,6 @@ export const GammaPairs: {
         address: '0x2e18b825b049c4994370b0db6c35d0100295b96c',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-        ableToFarm: true,
         pid: 37,
       },
     ],
@@ -684,7 +683,6 @@ export const GammaPairs: {
         address: '0xf6bE87Ae8976f50DCd231d42580e430CF6133400',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-        ableToFarm: true,
         pid: 42,
       },
       {
@@ -847,7 +845,6 @@ export const GammaPairs: {
         address: '0x8557dac2a7724712f12952de3dabeef54459bd97',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0x0e9b89007eee9c958c0eda24ef70723c2c93dd58',
-        ableToFarm: true,
         pid: 58,
       },
     ],
@@ -1077,7 +1074,6 @@ export const GammaPairs: {
         address: '0xc491c1b173e932e97d9f739ccd9ae5b6d5fce4ce',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xffa188493c15dfaf2c206c97d8633377847b6a52',
-        ableToFarm: true,
         pid: 80,
       },
     ],
@@ -1319,6 +1315,57 @@ export const GammaPairs: {
         pid: 17,
       },
     ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xB5F43c2206e3cAFEcd62651F5FcE9091A0207488',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        ableToFarm: true,
+        pid: 18,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xA163C591B04242121A2aC9753A8526F63D576F9A',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        ableToFarm: true,
+        pid: 19,
+      },
+    ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xa2036f0538221a77a3937f1379699f44945018d0': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x1E97925c365cd96D74Ec55A04569915c4D65e5e0',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        ableToFarm: true,
+        pid: 20,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xd582226B586Ab06f3Bf9353f0F2B8618a3544719',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        ableToFarm: true,
+        pid: 21,
+      },
+    ],
+    '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xcf7ecee185f19e2e970a301ee37f93536ed66179': [
+      {
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        address: '0x911bfbaca43f117e52197ae62d439d6a645c8886',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0xcf7ecee185f19e2e970a301ee37f93536ed66179',
+        ableToFarm: true,
+        pid: 22,
+      },
+    ],
   },
 };
 
@@ -1496,7 +1543,10 @@ export const GlobalData = {
     [ChainId.MUMBAI]: [],
     [ChainId.DOGECHAIN]: [],
     [ChainId.DOEGCHAIN_TESTNET]: [],
-    [ChainId.ZKEVM]: [],
+    [ChainId.ZKEVM]: [
+      [MATIC[ChainId.ZKEVM], STMATIC[ChainId.ZKEVM]],
+      [frxETH[ChainId.ZKEVM], WETH[ChainId.ZKEVM]],
+    ],
     [ChainId.ZKTESTNET]: [],
   },
 };

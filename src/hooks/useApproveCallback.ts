@@ -291,15 +291,19 @@ export function useApproveCallbackFromBestTrade(
   currency?: Currency,
   optimalRate?: OptimalRate,
   bonusRouteFound?: boolean,
+  atMaxAmountInput?: boolean,
 ): [ApprovalState, () => Promise<void>] {
   const { chainId } = useActiveWeb3React();
   const amountToApprove = useMemo(
     () =>
       optimalRate
-        ? new Fraction(ONE).add(allowedSlippage).multiply(optimalRate.srcAmount)
-            .quotient
+        ? atMaxAmountInput
+          ? new Fraction(ONE).multiply(optimalRate.srcAmount).quotient
+          : new Fraction(ONE)
+              .add(allowedSlippage)
+              .multiply(optimalRate.srcAmount).quotient
         : undefined,
-    [optimalRate, allowedSlippage],
+    [optimalRate, allowedSlippage, atMaxAmountInput],
   );
 
   return useApproveCallbackV3(
