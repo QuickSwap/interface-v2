@@ -38,6 +38,7 @@ import {
   DC,
   DD,
   dDD,
+  frxETH,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -1356,8 +1357,8 @@ export const GammaPairs: {
     ],
     '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xcf7ecee185f19e2e970a301ee37f93536ed66179': [
       {
-        type: Presets.GAMMA_STABLE,
-        title: 'Stable',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
         address: '0x911bfbaca43f117e52197ae62d439d6a645c8886',
         token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
         token1Address: '0xcf7ecee185f19e2e970a301ee37f93536ed66179',
@@ -1542,7 +1543,10 @@ export const GlobalData = {
     [ChainId.MUMBAI]: [],
     [ChainId.DOGECHAIN]: [],
     [ChainId.DOEGCHAIN_TESTNET]: [],
-    [ChainId.ZKEVM]: [],
+    [ChainId.ZKEVM]: [
+      [MATIC[ChainId.ZKEVM], STMATIC[ChainId.ZKEVM]],
+      [frxETH[ChainId.ZKEVM], WETH[ChainId.ZKEVM]],
+    ],
     [ChainId.ZKTESTNET]: [],
   },
 };
