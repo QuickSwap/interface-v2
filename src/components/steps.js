@@ -1,3 +1,31 @@
+const removeStepActionClasses = () =>{
+  document.querySelectorAll('.TokenSelector-box').forEach(e=>{
+    e.classList.remove('step-token-selected')
+  })
+  document.querySelector(".Pay-modal").classList.remove("steps-TokenSelector")
+  document.querySelector(".swapbox-modal").classList.remove("steps-TokenSelector")
+}
+const addStepActionClasses = () =>{
+  document.querySelectorAll('.TokenSelector-box').forEach(e=>{
+    e.classList.add('step-token-selected')
+  })
+  document.querySelector(".Pay-modal").classList.add("steps-TokenSelector")
+  document.querySelector(".swapbox-modal").classList.add("steps-TokenSelector")
+}
+const activeTourStep = (selector, event) => {
+  if(localStorage.getItem("viewed_tour_modal") === "false"){
+    let swapModal = document.querySelector(selector)
+    if(swapModal.classList.contains('steps-TokenSelector') === true){
+      swapModal.addEventListener("click",(e)=>{
+        if(!!e.target.classList.contains('token-box')){
+          event.show()
+        }
+    })
+  }
+  }else{
+    event.cancel()
+  }
+}
 
 const newSteps = [
   {
@@ -13,7 +41,7 @@ const newSteps = [
     classes: "shepherd shepherd-welcome",
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -47,7 +75,7 @@ const newSteps = [
     attachTo: { element: ".Modal-content", on: "right" },
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
 
             <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word; float: left">Skip</div>
@@ -111,7 +139,7 @@ const newSteps = [
     attachTo: { element: ".tradePage", on: "left" },
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -183,7 +211,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -206,8 +234,11 @@ const newSteps = [
         `,
       },
       {
-         type: "next",
-       
+       action(){
+        localStorage.setItem("viewed_tour_modal","false")
+        addStepActionClasses()
+        this.next()
+       },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -221,6 +252,8 @@ const newSteps = [
       },
     ],
   },  
+
+
   {
     id: "payExchange",
     title: "",
@@ -231,11 +264,21 @@ const newSteps = [
     when: {
       show: function() {
         let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'));
-       if(Object.values(swapPptionV2).includes("Long") === true ){
-        document.querySelector(".payExchange").innerHTML = 'Long'
-       }else if( Object.values(swapPptionV2).includes("Short") === true){
-        document.querySelector(".payExchange").innerHTML = 'Short'
-       }
+        if(Object.values(swapPptionV2).includes("Long") === true ){
+          document.querySelector(".payExchange").innerHTML = 'Long'
+        }else if( Object.values(swapPptionV2).includes("Short") === true){
+          document.querySelector(".payExchange").innerHTML = 'Short'
+        }
+        if(localStorage.getItem("viewed_tour_modal") === "false"){
+          document.querySelectorAll('.steps-TokenSelector').forEach(e=>{
+              e.addEventListener("click",()=>{
+                this.hide()
+              })
+            })
+          }
+        },
+      hide:function() {
+        activeTourStep('.Pay-modal', this)
       }
     },
     text: `
@@ -247,7 +290,10 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        action(){
+          localStorage.setItem('viewed_tour_modal',"true")
+          this.complete();
+        },
         text: `
         <div style="
         display: flex;
@@ -299,7 +345,16 @@ const newSteps = [
        }else if( Object.values(swapPptionV2).includes("Short") === true){
         document.querySelector(".exchange").innerHTML = 'Short'
        }
-      
+       if(localStorage.getItem("viewed_tour_modal") === "false"){
+          document.querySelectorAll('.steps-TokenSelector').forEach(e=>{
+            e.addEventListener("click",()=>{
+              this.hide()
+            })
+          })
+        }
+      },
+      hide:function() {
+        activeTourStep('.swapbox-modal', this)
       }
     },
     text: `
@@ -311,7 +366,10 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        action(){
+          localStorage.setItem('viewed_tour_modal',"true")
+          this.complete();
+        },
         text: `
         <div style="
         display: flex;
@@ -335,7 +393,11 @@ const newSteps = [
       },
       {
         classes:"exchange-button",
-        type: "next",
+        action(){
+          removeStepActionClasses()
+          localStorage.setItem("viewed_tour_modal","true")
+          this.next();
+        },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -373,7 +435,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -383,7 +445,11 @@ const newSteps = [
         `,
       },
       {
-        type: "back",
+        action(){
+          addStepActionClasses()
+          localStorage.setItem("viewed_tour_modal","false")
+          this.back();
+        },
         text: `
         <div style="
         display: flex;
@@ -438,7 +504,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -447,8 +513,12 @@ const newSteps = [
             </div>
         `,
       },
-      {
-        type: "back",
+      { 
+        action(){
+          addStepActionClasses()
+          localStorage.setItem("viewed_tour_modal", "false")
+          this.back();
+        },
         text: `
         <div style="
         display: flex;
@@ -463,6 +533,243 @@ const newSteps = [
       {
         type: "next",
         classes:"leverageSlider-button",
+        text: `
+        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
+        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        </div>
+        `,
+      },
+    ],
+  },
+
+
+  {
+    id: "swapPay",
+    title:'',
+    showOn(){
+      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      return ( Object.values(swapPptionV2).includes("Swap")  === true);
+    },
+    
+    text: `
+    </div>
+    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Select primary token</div>
+    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">A token that you want to exchange for another token.</div>
+            `,
+    attachTo: { element: ".pay-exchange", on: "left" },
+    scrollTo: true,
+    buttons: [
+      {
+        type:'complete',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
+      { 
+        type:'back',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            </div>
+        `,
+      },
+      {
+        type: "next",
+        text: `
+        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
+        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        </div>
+        `,
+      },
+    ],
+  },
+  {
+    id: "swapReceive",
+    title:'',
+    showOn(){
+      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      return ( Object.values(swapPptionV2).includes("Swap")  === true);
+    },
+     when: {
+      show: function() {
+        if(document.querySelector(".swap-button").hasAttribute("disabled")){
+          document.querySelector(".swapReceive-Step-Next").disabled = true;
+        }
+      }
+    },
+    text: `
+    </div>
+    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Token you want</div>
+    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Select the token that you want against the primary token.</div>
+            `,
+    attachTo: { element: ".long-exchange", on: "left" },
+    scrollTo: true,
+    buttons: [
+      {
+        type:'complete',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
+      { 
+       
+        type:'back',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            </div>
+        `,
+      },
+      {
+        action(){
+          document.querySelector(".swap-button").click();
+          this.next();
+        },
+        classes:'swapReceive-Step-Next',
+        text: `
+        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
+        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        </div>
+        `,
+      },
+    ],
+  },
+  {
+    id: "CheckPaperWork",
+    title: "",
+    showOn(){
+      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      return ((Object.values(swapPptionV2).includes("Short") === true || Object.values(swapPptionV2).includes("Long") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit');
+    },
+    text: `
+    </div>
+    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Check the Paperwork</div>
+    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">
+      <ul>
+        <li><span style=" font-weight: 700;">Minimum Received:</span> shows the number of tokens your wallet will receive after a successful swap.</li>
+        <li><span style="font-weight:700;">Price Impact:</span> Price Impact is the change in token price directly caused by your trade, make sure to not move the market.</li>
+       </ul>
+    </div>
+     
+
+    `,
+    attachTo: { element: ".Modal-content.Confirmation-box-content", on: "left" },
+    scrollTo: true,
+    buttons: [
+      {
+        type:'complete',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
+      {
+        action(){
+          document.querySelector(".Confirmation-box .Modal-close-button").click(); 
+          this.back();
+        },
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            </div>
+        `,
+      },
+      {
+        type:'next',
+        text: `
+        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
+        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        </div>
+        `,
+      },
+    ],
+  },
+  {
+    id: "swapReceive",
+    title:'',
+    showOn(){
+      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      return ( Object.values(swapPptionV2).includes("Swap")  === true);
+    },
+    text: `
+    </div>
+    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Let’s Swap</div>
+    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Click on Confirm and a popup from your connected wallet will appear. You need to click again to confirm or approve depending on the wallet you use to sign the transaction.</div>
+            `,
+    attachTo: { element: ".Confirmation-box-swap-button", on: "left" },
+    scrollTo: true,
+    buttons: [
+      {
+        type:'complete',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
+      { 
+       
+        type:'back',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            </div>
+        `,
+      },
+      {
+        action(){
+          document.querySelector(".Confirmation-box-swap-button").click();
+          this.next();
+        },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -490,7 +797,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -541,7 +848,6 @@ const newSteps = [
       show: function() {
         if(document.querySelector(".Disclaimer-button").hasAttribute("disabled")){
           document.querySelector(".Disclaimer-Step-Next").disabled = true;
-          
         }
         localStorage.setItem("HideEnableLeverageStep",'true')
       }
@@ -565,7 +871,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -633,7 +939,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -691,7 +997,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -764,7 +1070,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -822,7 +1128,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -878,7 +1184,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -936,7 +1242,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -1004,7 +1310,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -1060,7 +1366,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -1130,7 +1436,7 @@ const newSteps = [
     attachTo: { element: ".PositionSellerTabs", on: "left" },
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -1191,7 +1497,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -1242,7 +1548,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -1298,7 +1604,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -1355,7 +1661,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -1428,7 +1734,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;
@@ -1481,7 +1787,7 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type: "cancel",
+        type:'complete',
         text: `
         <div style="
         display: flex;

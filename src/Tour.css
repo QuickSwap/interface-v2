@@ -57,3 +57,6 @@
     box-shadow: 0px 0px 14px 0px #B8BBFF;
     background: #FFF;
 }
+.token-box *{
+    pointer-events: none;
+}

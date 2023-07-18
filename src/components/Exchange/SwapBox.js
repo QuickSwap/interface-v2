@@ -1886,6 +1886,7 @@ export default function SwapBox(props) {
                 <div>
                   <TokenSelector
                     label="Pay"
+                    className="Pay-modal"
                     chainId={chainId}
                     tokenAddress={fromTokenAddress}
                     onSelectToken={onSelectFromToken}
@@ -1934,6 +1935,7 @@ export default function SwapBox(props) {
                 <div>
                   <TokenSelector
                     label={getTokenLabel()}
+                    className="swapbox-modal"
                     chainId={chainId}
                     tokenAddress={toTokenAddress}
                     onSelectToken={onSelectToToken}
@@ -2235,7 +2237,7 @@ export default function SwapBox(props) {
         )}
         <div className="Exchange-swap-button-container ">
           <button
-            className="App-cta Exchange-swap-button leverage-btn"
+            className="App-cta Exchange-swap-button swap-button leverage-btn"
             onClick={onClickPrimary}
             disabled={!isPrimaryEnabled()}
           >
