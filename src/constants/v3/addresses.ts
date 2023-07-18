@@ -198,6 +198,7 @@ export const QUICK_ADDRESS: AddressMap = {
 
 export const NEW_QUICK_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
+  [ChainId.ZKEVM]: '0x68286607A1d43602d880D349187c3c48c0fD05E6',
 };
 
 export const DL_QUICK_ADDRESS: AddressMap = {
@@ -345,6 +346,13 @@ export const NEW_QUICK: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     NEW_QUICK_ADDRESS[ChainId.MATIC],
+    18,
+    'QUICK',
+    'QuickSwap(NEW)',
+  ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    NEW_QUICK_ADDRESS[ChainId.ZKEVM],
     18,
     'QUICK',
     'QuickSwap(NEW)',
@@ -830,6 +838,7 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(MATIC[ChainId.ZKEVM]),
     toV3Token(DAI[ChainId.ZKEVM]),
     toV3Token(WBTC[ChainId.ZKEVM]),
+    toV3Token(NEW_QUICK[ChainId.ZKEVM]),
   ],
 };
 
