@@ -38,6 +38,7 @@ import {
   DC,
   DD,
   dDD,
+  frxETH,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -1314,6 +1315,57 @@ export const GammaPairs: {
         pid: 17,
       },
     ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xB5F43c2206e3cAFEcd62651F5FcE9091A0207488',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        ableToFarm: true,
+        pid: 18,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xA163C591B04242121A2aC9753A8526F63D576F9A',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        ableToFarm: true,
+        pid: 19,
+      },
+    ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xa2036f0538221a77a3937f1379699f44945018d0': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x1E97925c365cd96D74Ec55A04569915c4D65e5e0',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        ableToFarm: true,
+        pid: 20,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xd582226B586Ab06f3Bf9353f0F2B8618a3544719',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        ableToFarm: true,
+        pid: 21,
+      },
+    ],
+    '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xcf7ecee185f19e2e970a301ee37f93536ed66179': [
+      {
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        address: '0x911bfbaca43f117e52197ae62d439d6a645c8886',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0xcf7ecee185f19e2e970a301ee37f93536ed66179',
+        ableToFarm: true,
+        pid: 22,
+      },
+    ],
   },
 };
 
@@ -1491,7 +1543,10 @@ export const GlobalData = {
     [ChainId.MUMBAI]: [],
     [ChainId.DOGECHAIN]: [],
     [ChainId.DOEGCHAIN_TESTNET]: [],
-    [ChainId.ZKEVM]: [],
+    [ChainId.ZKEVM]: [
+      [MATIC[ChainId.ZKEVM], STMATIC[ChainId.ZKEVM]],
+      [frxETH[ChainId.ZKEVM], WETH[ChainId.ZKEVM]],
+    ],
     [ChainId.ZKTESTNET]: [],
   },
 };

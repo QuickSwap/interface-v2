@@ -645,6 +645,13 @@ export const STMATIC: { [chainId: number]: Token } = {
     'stMatic',
     'Staked MATIC',
   ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x83b874c1e09d316059d929da402dcb1a98e92082',
+    18,
+    'stMatic',
+    'Staked MATIC',
+  ),
 };
 
 export const WSTETH: { [chainId: number]: Token } = {
@@ -724,6 +731,16 @@ export const WEFI: { [chainId: number]: Token } = {
     18,
     'WEFI',
     'WeFi',
+  ),
+};
+
+export const frxETH: { [chainId: number]: Token } = {
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0xcf7ecee185f19e2e970a301ee37f93536ed66179',
+    18,
+    'frxETH',
+    'Frax Ether',
   ),
 };
 
