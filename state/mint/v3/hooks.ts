@@ -633,7 +633,7 @@ export function useV3DerivedMintInfo(
       };
     }
     return;
-  }, [currencyB, depositAmountsData]);
+  }, [currencyA, currencyB, depositAmountsData, independentField]);
 
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
     const dependentCurrency =
@@ -719,7 +719,6 @@ export function useV3DerivedMintInfo(
     poolForPosition,
     presetRange,
     depositAmount,
-    independentField,
     outOfRange,
     invalidRange,
   ]);

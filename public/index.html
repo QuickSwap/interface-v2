@@ -3,7 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/logo_circle.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1"
+    />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
@@ -15,8 +18,8 @@
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -27,23 +30,41 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Quickswap - Leading DEX on Polygon</title>
-    <script type="text/javascript" src="https://app.web3ads.net/main.js" async></script>
+    <script
+      type="text/javascript"
+      src="https://app.web3ads.net/main.js"
+      async
+    ></script>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-ZWDNPDFXYC"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'G-ZWDNPDFXYC');
+    </script>
     <script>
       const script = document.createElement('script');
-      const apiKey = 'd29f17e774ac4e67247a2929a02a806f6787ac6cdbbb0fc41f721c6fc621156a'
+      const apiKey =
+        'd29f17e774ac4e67247a2929a02a806f6787ac6cdbbb0fc41f721c6fc621156a';
       const config = {
         // We are tracking wallet connections manually
-        trackWalletConnections: false
-      } 
-      script.src = 'https://unpkg.com/@arcxmoney/analytics'
-      script.onload = function () {
-        ArcxAnalyticsSdk.init(apiKey, config)
-          .then(function (sdk) {
-            window.arcx = sdk
-          })
-      }
+        trackWalletConnections: false,
+      };
+      script.src = 'https://unpkg.com/@arcxmoney/analytics';
+      script.onload = function() {
+        ArcxAnalyticsSdk.init(apiKey, config).then(function(sdk) {
+          window.arcx = sdk;
+        });
+      };
 
-      document.head.appendChild(script)
+      document.head.appendChild(script);
     </script>
   </head>
   <body>
@@ -61,6 +82,12 @@
     -->
   </body>
   <!-- Removed from head to reduce render blocking -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+    rel="stylesheet"
+  />
 </html>

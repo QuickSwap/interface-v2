@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import styles from './SelectPair.module.scss';
-import { useInfoLiquidity } from 'hooks/subgraph/useInfoLiquidity';
 import { IDerivedMintInfo } from 'state/mint/v3/hooks';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box } from '@mui/material';
@@ -27,14 +26,6 @@ export function SelectPair({
   handleCurrencyBSelect,
 }: ISelectPair) {
   const { t } = useTranslation();
-  const {
-    fetchPopularPools: { fetchPopularPoolsFn },
-  } = useInfoLiquidity();
-
-  useEffect(() => {
-    fetchPopularPoolsFn();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <Box>

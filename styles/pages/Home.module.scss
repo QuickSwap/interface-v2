@@ -21,11 +21,12 @@
     font-size: 15px;
     color: $textSecondary;
   }
-  & button {
-    margin-top: 20px;
-    height: 48px;
+  & > button {
+    height: 56px;
     width: 194px;
-    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
@@ -49,23 +50,23 @@
 }
 .rewardsContainer {
   text-align: center;
-  margin-top: 172px;
+  margin-top: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
   @include media('screen', '<phone') {
     margin: 32px 0 64px;
   }
-}
-.allRewardPairs {
-  width: 194px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 24px;
-  background-color: $secondary1;
-  cursor: pointer;
+  .allRewardPairs {
+    width: 194px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    background-color: $secondary1;
+    cursor: pointer;
+  }
 }
 .featureHeading {
   margin: auto;
@@ -83,65 +84,72 @@
 }
 .featureContainer {
   margin-top: 32px !important;
-  & > div {
-    & img {
-      width: 150px;
-      max-width: 240px;
-    }
+}
+.featureContainerItem {
+  display: flex;
+  & img {
+    width: 150px;
+    max-width: 240px;
+  }
+  @include media('screen', '<phone') {
+    flex-direction: column !important;
+    & img,
     & > div {
-      width: calc(100% - 270px);
-    }
-    @include media('screen', '<phone') {
-      flex-direction: column;
-      & img,
-      & > div {
-        width: 100%;
-        text-align: center;
-      }
+      width: 100%;
+      text-align: center;
     }
   }
 }
 .featureText {
   margin-left: 8px;
-  h5 {
+  width: calc(100% - 158px);
+  & h5 {
     color: white;
     margin-bottom: 8px;
   }
 }
 .communityContainer {
   margin: 100px 0;
-}
-.socialContent {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  margin-top: 48px;
-  & > div {
-    padding: 16px;
-    text-align: center;
-    width: 120px;
-    & a {
-      text-decoration: none;
-      color: $textPrimary;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      &:hover {
-        color: white;
+  & .socialContent {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-top: 48px;
+    & > div {
+      padding: 16px;
+      text-align: center;
+      width: 120px;
+      & a {
+        text-decoration: none;
+        color: $textPrimary;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        &:hover {
+          color: white;
+        }
       }
-    }
-    & svg,
-    & img {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 8px;
-    }
-    & img {
-      opacity: 0.8;
-    }
-    & a:hover img {
-      opacity: 1;
+      &.svgFill a:hover svg path {
+        fill: white;
+      }
+      & svg,
+      & img {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 8px;
+      }
+      &.svgFill svg path {
+        fill: $textPrimary;
+      }
+      &.noFill svg,
+      & img {
+        opacity: 0.8;
+      }
+      &.noFill a:hover svg,
+      & a:hover img {
+        opacity: 1;
+      }
     }
   }
 }
@@ -263,6 +271,7 @@
     position: absolute;
     top: 0;
     left: 0;
+    width: 1248px;
   }
   & > div {
     display: flex;
@@ -271,71 +280,89 @@
     height: 100%;
     position: relative;
     z-index: 2;
+    & img {
+      width: 129px;
+      max-width: 320px;
+    }
     @include media('screen', '<phone') {
       flex-direction: column;
       padding: 0;
     }
   }
-}
-
-.buyFiatInfo {
-  position: relative;
-  margin-right: 20px;
-  & > h3 {
-    font-size: 22px;
-    margin-bottom: 12px;
-  }
-  @include media('screen', '<phone') {
-    flex-direction: column;
-    margin-right: 0;
-    margin-bottom: 32px;
-    & img,
-    & > div {
-      width: 100%;
+  & .buyFiatInfo {
+    position: relative;
+    margin-right: 20px;
+    & > h3 {
+      font-size: 22px;
+      margin-bottom: 12px;
     }
-    & img {
-      margin: -32px 0;
-    }
-    & div {
-      padding: 0 20px 20px;
+    @include media('screen', '<phone') {
+      flex-direction: column;
+      margin-right: 0;
+      margin-bottom: 32px;
+      & img,
+      & > div {
+        width: 100%;
+      }
+      & img {
+        margin: -32px 0;
+      }
+      & div {
+        padding: 0 20px 20px;
+      }
+      & button {
+        width: 100%;
+      }
     }
     & button {
-      width: 100%;
+      margin-top: 24px;
+      height: 40px;
+      border-radius: 20px;
+      padding: 0 20px;
+      & small {
+        font-size: 16px;
+      }
     }
   }
-  & button {
-    margin-top: 24px;
-    height: 40px;
-    border-radius: 20px;
-    padding: 0 20px;
-    & small {
-      font-size: 16px;
+  & .buyFiatWrapper {
+    width: 408px;
+    position: relative;
+    @include media('screen', '<tablet') {
+      width: calc(100% - 64px);
+      margin-bottom: 32px;
+    }
+    @include media('screen', '<phone') {
+      width: calc(100% - 40px);
+    }
+    & .buyContent {
+      background: $bgColor;
+      border-radius: 20px;
+      padding: 24px;
+      & > div {
+        padding: 0;
+        border: none;
+        background: transparent;
+        & > p {
+          margin-bottom: 8px;
+        }
+      }
     }
   }
-}
-
-.buyFiatWrapper {
-  width: 408px;
-  position: relative;
-  @include media('screen', '<tablet') {
-    width: calc(100% - 64px);
-    margin-bottom: 32px;
+  .poweredBySection {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    height: auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: $textSecondary;
+    & img {
+      height: 20px;
+      width: auto;
+      &.meldLogo {
+        height: 15px;
+        margin: 0 3px 0 6px;
+      }
+    }
   }
-  @include media('screen', '<phone') {
-    width: calc(100% - 40px);
-  }
-}
-
-.poweredBySection {
-  position: absolute !important;
-  bottom: 16px;
-  right: 16px;
-  height: auto !important;
-  font-size: 12px;
-  font-weight: 600;
-  color: $textSecondary;
-}
-
-.meldLogo {
-  margin: 0 3px 0 6px;
 }

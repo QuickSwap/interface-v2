@@ -112,6 +112,7 @@ const Header: React.FC = () => {
   const showLeaderboard = config['leaderboard']['available'];
   const showSafe = config['safe']['available'];
   const showPerps = config['perps']['available'];
+  const showBOS = config['bos']['available'];
   const menuItems = [];
 
   const swapCurrencyStr = useMemo(() => {
@@ -201,6 +202,17 @@ const Header: React.FC = () => {
       isExternal: true,
       target: '_top',
       externalLink: process?.env?.NEXT_PUBLIC_GAMEHUB_URL || '',
+      isNew: true,
+    });
+  }
+  if (showBOS) {
+    menuItems.push({
+      link: '/bos',
+      text: 'BOS',
+      id: 'bos-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_BOS_URL || '',
       isNew: true,
     });
   }

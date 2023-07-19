@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Button, Box } from '@mui/material';
 import { Skeleton } from '@mui/lab';
@@ -12,6 +12,11 @@ import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Home.module.scss';
 import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config';
+
+// To compute dragon's lair
+import { useNewLairInfo } from 'state/stake/hooks';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { DLQUICK } from 'constants/v3/addresses';
 
 const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   globalData,
@@ -28,6 +33,21 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   const v2 = config['v2'];
   const v3 = config['v3'];
 
+  const lairInfo = useNewLairInfo();
+  const quickToken = DLQUICK[chainIdToUse];
+  const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
+
+  const [dragonReward, setDraonReward] = useState(0);
+
+  useEffect(() => {
+    if (lairInfo && quickPrice) {
+      const newReward =
+        Number(lairInfo.totalQuickBalance.toExact()) * quickPrice;
+
+      setDraonReward(newReward || 0);
+    }
+  }, [lairInfo, quickPrice]);
+
   return (
     <Box className={styles.heroSection}>
       <small className='text-bold'>{t('totalValueLocked')}</small>
@@ -37,7 +57,8 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
           <h1>
             {(
               (v2 ? Number(globalData.totalLiquidityUSD) : 0) +
-              (v3 ? Number(v3GlobalData.totalLiquidityUSD) : 0)
+              (v3 ? Number(v3GlobalData.totalLiquidityUSD) : 0) +
+              dragonReward
             ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}

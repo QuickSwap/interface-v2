@@ -198,6 +198,7 @@ export const QUICK_ADDRESS: AddressMap = {
 
 export const NEW_QUICK_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
+  [ChainId.ZKEVM]: '0x68286607A1d43602d880D349187c3c48c0fD05E6',
 };
 
 export const DL_QUICK_ADDRESS: AddressMap = {
@@ -345,6 +346,13 @@ export const NEW_QUICK: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     NEW_QUICK_ADDRESS[ChainId.MATIC],
+    18,
+    'QUICK',
+    'QuickSwap(NEW)',
+  ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    NEW_QUICK_ADDRESS[ChainId.ZKEVM],
     18,
     'QUICK',
     'QuickSwap(NEW)',
@@ -600,6 +608,13 @@ export const FRAX: { [chainId: number]: Token } = {
     'FRAX',
     'FRAX',
   ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0xFf8544feD5379D9ffa8D47a74cE6b91e632AC44D',
+    18,
+    'FRAX',
+    'FRAX',
+  ),
 };
 
 export const GHST: { [chainId: number]: Token } = {
@@ -626,6 +641,13 @@ export const STMATIC: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     '0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4',
+    18,
+    'stMatic',
+    'Staked MATIC',
+  ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x83b874c1e09d316059d929da402dcb1a98e92082',
     18,
     'stMatic',
     'Staked MATIC',
@@ -709,6 +731,16 @@ export const WEFI: { [chainId: number]: Token } = {
     18,
     'WEFI',
     'WeFi',
+  ),
+};
+
+export const frxETH: { [chainId: number]: Token } = {
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0xcf7ecee185f19e2e970a301ee37f93536ed66179',
+    18,
+    'frxETH',
+    'Frax Ether',
   ),
 };
 
@@ -823,6 +855,7 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(MATIC[ChainId.ZKEVM]),
     toV3Token(DAI[ChainId.ZKEVM]),
     toV3Token(WBTC[ChainId.ZKEVM]),
+    toV3Token(NEW_QUICK[ChainId.ZKEVM]),
   ],
 };
 

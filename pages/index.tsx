@@ -1,7 +1,15 @@
 import React from 'react';
-import { Box, Grid } from '@mui/material';
+import {
+  Box,
+  Grid,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Typography,
+} from '@mui/material';
+import { ExpandMoreOutlined } from '@mui/icons-material';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
-import { useTranslation } from 'next-i18next';
+import { useTranslation, Trans } from 'next-i18next';
 import Image from 'next/image';
 import styles from 'styles/pages/Home.module.scss';
 import GlobalSection from 'components/pages/home/GlobalSection';
@@ -58,9 +66,19 @@ const LandingPage = (
 
   const socialicons = [
     {
-      link: 'https://www.reddit.com/r/QuickSwap/',
-      icon: '/assets/images/social/Reddit.svg',
-      title: 'Reddit',
+      link: 'https://twitter.com/QuickswapDEX',
+      icon: '/assets/images/social/Twitter.svg',
+      title: 'Twitter',
+    },
+    {
+      link: 'https://t.me/QuickSwapDEX',
+      icon: '/assets/images/social/Telegram.svg',
+      title: 'Telegram',
+    },
+    {
+      link: 'https://t.me/QuickSwapAnnouncements',
+      icon: '/assets/images/social/Telegram.svg',
+      title: 'Announcement',
     },
     {
       link: 'https://discord.gg/dSMd7AFH36',
@@ -68,14 +86,9 @@ const LandingPage = (
       title: 'Discord',
     },
     {
-      link: 'https://twitter.com/QuickswapDEX',
-      icon: '/assets/images/social/Twitter.svg',
-      title: 'Twitter',
-    },
-    {
-      link: 'https://quickswap-layer2.medium.com/',
-      icon: '/assets/images/social/Medium.svg',
-      title: 'Medium',
+      link: 'https://blog.quickswap.exchange/',
+      icon: '/assets/images/social/Blog.svg',
+      title: 'Blog',
     },
     {
       link: 'https://www.youtube.com/channel/UCrPlF-DBwD-UzLFDzJ4Z5Fw',
@@ -83,9 +96,24 @@ const LandingPage = (
       title: 'Youtube',
     },
     {
-      link: 'https://t.me/QuickSwapDEX',
-      icon: '/assets/images/social/Telegram.svg',
-      title: 'Telegram',
+      link: 'https://www.reddit.com/r/QuickSwap/',
+      icon: '/assets/images/social/Reddit.svg',
+      title: 'Reddit',
+    },
+    {
+      link: 'https://www.tiktok.com/@quickswapofficial',
+      icon: '/assets/images/social/TikTok_Qs.png',
+      title: 'TikTok',
+    },
+    {
+      link: 'https://www.instagram.com/quickswapofficial',
+      icon: '/assets/images/social/instagram.png',
+      title: 'Instagram',
+    },
+    {
+      link: 'https://quickswap-layer2.medium.com/',
+      icon: '/assets/images/social/Medium.svg',
+      title: 'Medium',
     },
     {
       link: 'https://www.coingecko.com/en/exchanges/quickswap',
@@ -98,14 +126,115 @@ const LandingPage = (
       title: 'GeckoTerminal',
     },
     {
-      link: 'https://www.tiktok.com/@quickswapofficial',
-      icon: '/assets/images/social/TikTok_Qs.png',
-      title: 'TikTok',
+      link: 'https://coinpaprika.com/exchanges/quickswap-v3/',
+      icon: '/assets/images/social/coinpaprika-logo.png',
+      title: 'Coinpaprika',
+    },
+  ];
+
+  const faqs = [
+    {
+      header: t('faq-1-title'),
+      content: <Box>{t('faq-1-content')}</Box>,
     },
     {
-      link: 'https://t.me/QuickSwapAnnouncements',
-      icon: '/assets/images/social/Telegram.svg',
-      title: 'Announcement',
+      header: t('faq-2-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-2-content'
+            components={{
+              underline: <u></u>,
+            }}
+          />
+        </Box>
+      ),
+    },
+    {
+      header: t('faq-3-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-3-content'
+            components={{
+              underline: <u></u>,
+              break: <br />,
+            }}
+          />
+        </Box>
+      ),
+    },
+    {
+      header: t('faq-4-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-4-content'
+            components={{
+              underline: <u></u>,
+              break: <br />,
+              alink: (
+                <a
+                  className='text-primary'
+                  href='https://snapshot.org/#/quickvote.eth'
+                  rel='noreferrer'
+                  target='_blank'
+                />
+              ),
+            }}
+          />
+        </Box>
+      ),
+    },
+    {
+      header: t('faq-5-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-5-content'
+            components={{
+              underline: <u></u>,
+              break: <br />,
+              alink: (
+                <a
+                  className='text-primary'
+                  href='https://quickswap.exchange/#/convert'
+                  rel='noreferrer'
+                  target='_blank'
+                />
+              ),
+            }}
+          />
+        </Box>
+      ),
+    },
+    {
+      header: t('faq-6-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-6-content'
+            components={{
+              underline: <u></u>,
+              break: <br />,
+            }}
+          />
+        </Box>
+      ),
+    },
+    {
+      header: t('faq-7-title'),
+      content: (
+        <Box>
+          <Trans
+            i18nKey='faq-7-content'
+            components={{
+              underline: <u></u>,
+              break: <br />,
+            }}
+          />
+        </Box>
+      ),
     },
   ];
 
@@ -168,7 +297,14 @@ const LandingPage = (
         </Box>
         <Grid container spacing={4} className={styles.featureContainer}>
           {features.map((val, index) => (
-            <Grid item container alignItems='center' sm={12} md={6} key={index}>
+            <Grid
+              item
+              alignItems='center'
+              sm={12}
+              md={6}
+              key={index}
+              className={styles.featureContainerItem}
+            >
               <Image src={val.img} alt={val.title} width={150} height={150} />
               <Box className={styles.featureText}>
                 <h5>{val.title}</h5>
@@ -177,6 +313,26 @@ const LandingPage = (
             </Grid>
           ))}
         </Grid>
+      </Box>
+      <Box className={styles.communityContainer}>
+        <Box className={styles.featureHeading}>
+          <h3>{t('faqs')}</h3>
+          <Box className={styles.featureDivider} />
+        </Box>
+        <Box>
+          {faqs.map((val) => (
+            <Accordion key={`accordation-{i}`}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreOutlined />}
+                aria-controls='panel1a-content'
+                id='panel1a-header'
+              >
+                <Typography>{val.header}</Typography>
+              </AccordionSummary>
+              <AccordionDetails>{val.content}</AccordionDetails>
+            </Accordion>
+          ))}
+        </Box>
       </Box>
       <Box className={styles.communityContainer}>
         <Box className={styles.featureHeading}>

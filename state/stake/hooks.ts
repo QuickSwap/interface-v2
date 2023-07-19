@@ -1391,6 +1391,7 @@ function useLairInfo(
     }
 
     return {
+      loading: lairsQuickBalance.loading,
       lairAddress: lairAddress,
       dQUICKtoQUICK: new TokenAmount(
         quickToken,
