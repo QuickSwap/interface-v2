@@ -113,6 +113,7 @@ const Header: React.FC = () => {
   const showLeaderboard = config['leaderboard']['available'];
   const showSafe = config['safe']['available'];
   const showPerps = config['perps']['available'];
+  const showBOS = config['bos']['available'];
   const menuItems = [];
 
   const swapCurrencyStr = useMemo(() => {
@@ -233,6 +234,17 @@ const Header: React.FC = () => {
       link: `/analytics`,
       text: t('analytics'),
       id: 'analytics-page-link',
+    });
+  }
+  if (showBOS) {
+    menuItems.push({
+      link: '/bos',
+      text: 'BOS',
+      id: 'bos-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_BOS_URL || '',
+      isNew: true,
     });
   }
 
