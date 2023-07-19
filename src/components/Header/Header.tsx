@@ -206,6 +206,17 @@ const Header: React.FC = () => {
       isNew: true,
     });
   }
+  if (showBOS) {
+    menuItems.push({
+      link: '/bos',
+      text: 'BOS',
+      id: 'bos-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_BOS_URL || '',
+      isNew: true,
+    });
+  }
   if (showLeaderboard) {
     menuItems.push({
       link: '/leader-board',
@@ -234,17 +245,6 @@ const Header: React.FC = () => {
       link: `/analytics`,
       text: t('analytics'),
       id: 'analytics-page-link',
-    });
-  }
-  if (showBOS) {
-    menuItems.push({
-      link: '/bos',
-      text: 'BOS',
-      id: 'bos-page-link',
-      isExternal: true,
-      target: '_blank',
-      externalLink: process?.env?.REACT_APP_BOS_URL || '',
-      isNew: true,
     });
   }
 
