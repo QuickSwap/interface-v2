@@ -326,7 +326,7 @@ const SwapMain: React.FC = () => {
       </Box>
       {swapTabs.length > 0 && (
         <Box
-          margin={isProMode ? '16px 0' : '16px 0 0'}
+          margin={isProMode ? '28px 0' : '28px 0 0'}
           className='swapLimitTabs'
           borderRadius={isProMode ? 0 : 10}
         >
