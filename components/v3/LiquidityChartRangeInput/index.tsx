@@ -42,8 +42,6 @@ export default function LiquidityChartRangeInput({
   price,
   priceLower,
   priceUpper,
-  onLeftRangeInput,
-  onRightRangeInput,
   interactive,
   priceFormat,
 }: LiquidityChartRangeInputProps) {
@@ -52,7 +50,6 @@ export default function LiquidityChartRangeInput({
     isLoading,
     isUninitialized,
     isError,
-    error,
     formattedData,
   } = useDensityChartData({
     currencyA,
@@ -135,17 +132,13 @@ export default function LiquidityChartRangeInput({
     currencyB &&
     currencyA?.wrapped.sortsBefore(currencyB?.wrapped);
 
-  const onBrushDomainChangeEnded = useCallback(
-    (domain: any[], mode: string) => {
-      let leftRangeValue = Number(domain[0]);
-      const rightRangeValue = Number(domain[1]);
+  const onBrushDomainChangeEnded = useCallback((domain: any[]) => {
+    let leftRangeValue = Number(domain[0]);
 
-      if (leftRangeValue <= 0) {
-        leftRangeValue = 1 / 10 ** 6;
-      }
-    },
-    [],
-  );
+    if (leftRangeValue <= 0) {
+      leftRangeValue = 1 / 10 ** 6;
+    }
+  }, []);
 
   interactive = interactive && Boolean(formattedData?.length);
 

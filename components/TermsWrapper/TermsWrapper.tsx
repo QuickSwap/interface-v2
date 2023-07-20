@@ -3,6 +3,7 @@ import { CustomModal } from 'components';
 import { Trans, useTranslation } from 'next-i18next';
 import styles from 'styles/components/TermsWrapper.module.scss';
 import { Box, Button, Checkbox } from '@mui/material';
+import Image from 'next/image';
 
 export default function TermsWrapper({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
@@ -64,9 +65,10 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
             <p>{t('disclaimerText3')}</p>
           </Box>
           <Image
-            src='assets/images/perpsBanner.png'
+            src='/assets/images/perpsBanner.png'
             alt='perps banner'
-            width='100%'
+            width={710}
+            height={153}
           />
           <Box my={2}>
             <p className='caption text-secondary'>

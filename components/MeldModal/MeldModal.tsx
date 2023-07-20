@@ -14,7 +14,11 @@ const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
   return (
-    <CustomModal open={open} onClose={onClose} modalWrapper={styles.meldModalWrapper}>
+    <CustomModal
+      open={open}
+      onClose={onClose}
+      modalWrapper={styles.meldModalWrapper}
+    >
       <div className={styles.meldModalClose}>
         <Close className='cursor-pointer' onClick={onClose} />
       </div>

@@ -54,7 +54,7 @@ export abstract class SwapMath {
             true,
           );
       if (
-        JSBI.greaterThanOrEqual(amountRemainingLessFee, returnValues.amountIn!)
+        JSBI.greaterThanOrEqual(amountRemainingLessFee, returnValues.amountIn)
       ) {
         returnValues.sqrtRatioNextX96 = sqrtRatioTargetX96;
       } else {
@@ -140,8 +140,9 @@ export abstract class SwapMath {
 
     if (
       !exactIn &&
+      returnValues.amountOut &&
       JSBI.greaterThan(
-        returnValues.amountOut!,
+        returnValues.amountOut,
         JSBI.multiply(amountRemaining, NEGATIVE_ONE),
       )
     ) {
@@ -155,21 +156,21 @@ export abstract class SwapMath {
       // we didn't reach the target, so take the remainder of the maximum input as fee
       returnValues.feeAmount = JSBI.subtract(
         amountRemaining,
-        returnValues.amountIn!,
+        returnValues.amountIn ?? JSBI.BigInt(0),
       );
     } else {
       returnValues.feeAmount = FullMath.mulDivRoundingUp(
-        returnValues.amountIn!,
+        returnValues.amountIn ?? JSBI.BigInt(0),
         JSBI.BigInt(feePips),
         JSBI.subtract(MAX_FEE, JSBI.BigInt(feePips)),
       );
     }
 
     return [
-      returnValues.sqrtRatioNextX96!,
-      returnValues.amountIn!,
-      returnValues.amountOut!,
-      returnValues.feeAmount!,
+      returnValues.sqrtRatioNextX96,
+      returnValues.amountIn ?? JSBI.BigInt(0),
+      returnValues.amountOut ?? JSBI.BigInt(0),
+      returnValues.feeAmount,
     ];
   }
 }
