@@ -41,7 +41,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   openOptions,
 }) => {
   const { chainId, account, connector } = useActiveWeb3React();
-  const { udDomain, updateUDDomain } = useUDDomain();
+  const { udDomain } = useUDDomain();
   const { updateSelectedWallet } = useSelectedWallet();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
