@@ -60,3 +60,12 @@
 .token-box *{
     pointer-events: none;
 }
+
+div[data-shepherd-step-id="feedback"] .shepherd-footer {
+    align-items: center;
+    display: flex;
+    flex-flow: column-reverse;
+}
+div[data-shepherd-step-id="feedback"] .shepherd-footer  .shepherd-button:nth-child(2){
+    margin-left: 0;
+}
