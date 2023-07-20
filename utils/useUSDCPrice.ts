@@ -14,7 +14,6 @@ import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
 import { useDQUICKtoQUICK } from 'state/stake/hooks';
 import { useAllCommonPairs } from 'hooks/Trades';
 import { tryParseAmount } from 'state/swap/hooks';
-import { useEthPrice, useMaticPrice } from 'state/application/hooks';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
@@ -81,7 +80,7 @@ export function useUSDCPricesFromAddresses(
 
       if (v2) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v2?chainId=${chainId}&addresses=${addressStr}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-prices/v2?chainId=${chainId}&addresses=${addressStr}`,
         );
         if (!res.ok) {
           const errorText = await res.text();
@@ -104,7 +103,7 @@ export function useUSDCPricesFromAddresses(
 
       const res = await fetch(
         `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
+          process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
         }/utils/token-prices/v3?chainId=${chainId}&addresses=${addressesNotInV2.join(
           '_',
         )}`,

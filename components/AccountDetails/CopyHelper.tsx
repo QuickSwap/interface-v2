@@ -18,7 +18,7 @@ const CopyHelper: React.FC<CopyHelperProps> = ({ toCopy }) => {
     <Box className={styles.copyIcon} onClick={() => setCopied(toCopy)}>
       {isCopied ? (
         <>
-          <CheckCircle size='18' />
+          <CheckCircle />
           <small>{t('copied')}</small>
         </>
       ) : (

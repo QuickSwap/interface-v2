@@ -105,8 +105,6 @@ export const networkInfoMap: NetworkInfoChainMap = {
   },
 };
 
-const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;
-
 const [web3Network, web3NetworkHooks] = initializeConnector<Network>(
   (actions) =>
     new Network({ actions, urlMap: RPC_PROVIDERS, defaultChainId: 137 }),

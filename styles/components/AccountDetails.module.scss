@@ -16,11 +16,18 @@
 .copyIcon {
   display: flex;
   cursor: pointer;
-  &:hover, &:active, &:focus {
+  &:hover,
+  &:active,
+  &:focus {
     color: white;
   }
   & small {
     margin-left: 4px;
+  }
+  & svg {
+    width: 18px;
+    height: 18px;
+    color: $textSecondary;
   }
 }
 

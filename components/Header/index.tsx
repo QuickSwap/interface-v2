@@ -212,7 +212,7 @@ const Header: React.FC = () => {
       id: 'bos-page-link',
       isExternal: true,
       target: '_blank',
-      externalLink: process?.env?.REACT_APP_BOS_URL || '',
+      externalLink: process?.env?.NEXT_PUBLIC_BOS_URL || '',
       isNew: true,
     });
   }

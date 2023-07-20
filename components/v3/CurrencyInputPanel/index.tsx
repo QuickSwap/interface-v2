@@ -5,7 +5,6 @@ import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { LockOutlined } from '@mui/icons-material';
 
 import { useActiveWeb3React } from 'hooks';
-import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { WrappedCurrency } from 'models/types/Currency';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance } from 'state/wallet/hooks';
@@ -161,7 +160,7 @@ export default function CurrencyInputPanel({
           </Box>
         </Box>
         <Box className='flex justify-between'>
-          <Box display='flex'>
+          <Box display='flex items-center'>
             <small className='text-secondary'>
               {t('balance')}:{' '}
               {(showETH && ethBalance
@@ -170,12 +169,12 @@ export default function CurrencyInputPanel({
             </small>
 
             {account && currency && showHalfButton && (
-              <Box className='maxWrapper' onClick={onHalf}>
+              <Box className={styles1.maxWrapper} onClick={onHalf}>
                 <small>50%</small>
               </Box>
             )}
             {account && currency && showMaxButton && (
-              <Box className='maxWrapper' onClick={onMax}>
+              <Box className={styles1.maxWrapper} onClick={onMax}>
                 <small>{t('max')}</small>
               </Box>
             )}

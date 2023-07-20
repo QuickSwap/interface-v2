@@ -139,9 +139,9 @@ const SwapTokenDetailsHorizontal: React.FC<{
       </Grid>
       <Grid item xs={3}>
         <Box>
-          <small className='swapTxInfoHeader'>Price</small>
+          <small className='text-secondary'>Price</small>
           {tokenData ? (
-            <Box>${formatNumber(tokenData.priceUSD)}</Box>
+            <p className='small'>${formatNumber(tokenData.priceUSD)}</p>
           ) : (
             <Skeleton variant='rectangular' width={80} height={20} />
           )}
@@ -149,12 +149,12 @@ const SwapTokenDetailsHorizontal: React.FC<{
       </Grid>
       <Grid item xs={2}>
         <Box>
-          <small className='swapTxInfoHeader'>24h</small>
+          <small className='text-secondary'>24h</small>
           {tokenData ? (
-            <Box className={`${priceUp ? 'text-success' : 'text-error'}`}>
+            <p className={`small ${priceUp ? 'text-success' : 'text-error'}`}>
               {priceUp ? '+' : ''}
               {priceUpPercent}%
-            </Box>
+            </p>
           ) : (
             <Skeleton variant='rectangular' width={60} height={20} />
           )}

@@ -22,11 +22,10 @@
     color: $textSecondary;
   }
   & > button {
-    height: 56px;
+    height: 48px;
     width: 194px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-radius: 28px;
+    margin-top: 20px;
   }
 }
 

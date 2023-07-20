@@ -1,4 +1,4 @@
-import { Box, Button, Menu, MenuItem } from '@mui/material';
+import { Box, Menu, MenuItem } from '@mui/material';
 import { KeyboardArrowDown, Settings } from '@mui/icons-material';
 import { SettingsModal, Swap, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
@@ -216,23 +216,18 @@ const SwapMain: React.FC = () => {
         <Box display='flex' width={1}>
           {!isProMode ? (
             <>
-              <Box display='flex' className='tabContainer'>
+              <Box display='flex' className={styles.tabContainer}>
                 {dropDownMenuText && (
-                  <Button
+                  <Box
                     id='swap-button'
-                    aria-controls={open ? 'swap-menu' : undefined}
-                    aria-haspopup='true'
-                    aria-expanded={open ? 'true' : undefined}
-                    variant='text'
-                    disableElevation
                     onClick={handleClickListItem}
-                    endIcon={<KeyboardArrowDown />}
-                    className={`tab tabMenu ${
-                      selectedIndex !== SWAP_CROSS_CHAIN ? 'activeTab' : ''
+                    className={`${styles.tab} ${styles.tabMenu} ${
+                      selectedIndex !== SWAP_CROSS_CHAIN ? styles.activeTab : ''
                     }`}
                   >
-                    {t(dropDownMenuText)}
-                  </Button>
+                    <p>{t(dropDownMenuText)}</p>
+                    <KeyboardArrowDown />
+                  </Box>
                 )}
                 <Menu
                   id='swap-menu'
@@ -259,8 +254,8 @@ const SwapMain: React.FC = () => {
                 </Menu>
                 {showCrossChain && (
                   <Box
-                    className={`tab ${
-                      selectedIndex === SWAP_CROSS_CHAIN ? 'activeTab' : ''
+                    className={`${styles.tab} ${
+                      selectedIndex === SWAP_CROSS_CHAIN ? styles.activeTab : ''
                     }`}
                     onClick={() => {
                       setSelectedIndex(SWAP_CROSS_CHAIN);
@@ -268,7 +263,7 @@ const SwapMain: React.FC = () => {
                       redirectWithSwapType(SWAP_CROSS_CHAIN);
                     }}
                   >
-                    <p className='trade-btn'>{t('crossChain')}</p>
+                    <p className={styles.tradeBtn}>{t('crossChain')}</p>
                   </Box>
                 )}
               </Box>

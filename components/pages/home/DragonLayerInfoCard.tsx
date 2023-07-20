@@ -7,6 +7,7 @@ import { formatCompact, useLairDQUICKAPY } from 'utils';
 import { Skeleton } from '@mui/lab';
 import { StakeQuickModal } from 'components';
 import { useTranslation } from 'react-i18next';
+import styles from 'styles/pages/Home.module.scss';
 
 interface DragonLayerInfoCardProps {
   chainId: any;
@@ -57,7 +58,7 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
         />
       )}
       {(oldLair || newLair) && (
-        <Box className='tradingSection' pt='20px'>
+        <Box className={styles.tradingSection} pt='20px'>
           {dQUICKAPY ? (
             <Box>
               <Box display='flex'>

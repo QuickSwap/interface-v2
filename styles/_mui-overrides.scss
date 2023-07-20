@@ -24,7 +24,7 @@ html {
       height: 2px;
       width: calc(100% - 16px);
       padding: 13px 0;
-    
+
       & .MuiSlider-mark {
         width: 4px;
         height: 4px !important;
@@ -41,13 +41,13 @@ html {
             bottom: 14px;
             color: $textPrimary;
             font-family: 'DM Sans', sans-serif;
-            content: "Cheaper gas";
+            content: 'Cheaper gas';
             display: flex;
             align-items: center;
             margin-left: -50px;
             padding: 0.3em 1em;
             position: absolute;
-            z-index: 98
+            z-index: 98;
           }
           &::before {
             background-color: $bgColor;
@@ -59,7 +59,7 @@ html {
             border-left: transparent;
             color: $textPrimary;
             font-family: 'DM Sans', sans-serif;
-            content: "";
+            content: '';
             display: flex;
             align-items: center;
             margin-left: -4px;
@@ -67,17 +67,17 @@ html {
             box-sizing: border-box;
             -webkit-transform: rotate(135deg);
             transform: rotate(135deg);
-            z-index: 99
+            z-index: 99;
           }
         }
       }
     }
-    
+
     .MuiSlider-mark {
       height: 8px;
-      background-color: #B4C2D5;
+      background-color: #b4c2d5;
     }
-    
+
     .MuiSlider-thumb {
       height: 20px;
       width: 20px;
@@ -85,12 +85,14 @@ html {
       margin-top: -9px;
       margin-left: 0;
       box-shadow: 0px 2px 5px $grey21;
-    
-      &:focus, &:hover, &.active {
+
+      &:focus,
+      &:hover,
+      &.active {
         box-shadow: inherit;
       }
     }
-    
+
     .MuiSlider-valueLabel {
       left: calc(-50% - 8px);
       top: -18px;
@@ -102,19 +104,25 @@ html {
         color: $textPrimary;
       }
     }
-    
+
     .MuiSlider-track {
       height: 2px;
       background: $blue5;
       border-radius: 4px;
       padding-right: 8px;
     }
-    
+
     .MuiSlider-rail {
       height: 2px;
       border-radius: 4px;
       background: $bgPalette;
       width: calc(100% + 16px);
+    }
+  }
+
+  .MuiButton-root {
+    &.Mui-disabled {
+      opacity: 0.3;
     }
   }
 }

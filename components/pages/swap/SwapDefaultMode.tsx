@@ -7,6 +7,7 @@ import { SwapBuySellMiniWidget } from './BuySellWidget';
 import LiquidityPools from './LiquidityPools';
 import SwapMain from './SwapMain';
 import SwapNewsWidget from './SwapNewWidget';
+import styles from 'styles/pages/Swap.module.scss';
 
 const SwapDefaultMode: React.FC<{
   token1: any;
@@ -38,8 +39,8 @@ const SwapDefaultMode: React.FC<{
             <Grid item>
               <Box
                 sx={{ display: { xs: 'none', lg: 'block' } }}
-                className={`btn-swap-widget ${
-                  disabledLeft ? 'btn-swap-widget-disabled' : ''
+                className={`${styles.btnSwapWidget} ${
+                  disabledLeft ? styles.btnSwapWidgetDisabled : ''
                 } `}
                 onClick={() => {
                   if (disabledLeft) return;
@@ -105,7 +106,7 @@ const SwapDefaultMode: React.FC<{
             )}
             <Grid item>
               <Box
-                className='btn-swap-widget'
+                className={styles.btnSwapWidget}
                 sx={{ display: { xs: 'none', lg: 'block' } }}
                 onClick={() => setRightOpen(!rightOpen)}
               >

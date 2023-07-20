@@ -38,7 +38,7 @@
   }
 }
 
-.trade-btn:hover {
+.tradeBtn:hover {
   color: #c7cad9;
 }
 
@@ -52,8 +52,6 @@
 }
 
 .tabContainer {
-  // padding-left: 1rem;
-  // padding-right: 1rem;
   border-radius: 2rem;
   border: 1px solid rgba(130, 177, 255, 0.08);
   background: rgba(130, 177, 255, 0.03);
@@ -75,6 +73,7 @@
   align-items: center;
   & p {
     color: $textSecondary;
+    text-align: center;
   }
 }
 
@@ -90,9 +89,10 @@
 .activeTab {
   border-radius: 2rem;
   border: 1px solid #448aff;
-  background: rgba(68, 138, 255, 0.3);
+  background: rgba(68, 138, 255, 0.3) !important;
+  color: $textPrimary !important;
   & p {
-    color: #c7cad9;
+    color: $textPrimary !important;
   }
 }
 
@@ -341,7 +341,7 @@ div.buy {
   color: $successMain;
 }
 
-.btn-swap-widget {
+.btnSwapWidget {
   cursor: pointer;
   background-color: #1b1e29;
   border-radius: 12px;
@@ -354,7 +354,7 @@ div.buy {
   }
 }
 
-.btn-swap-widget-disabled {
+.btnSwapWidgetDisabled {
   cursor: not-allowed;
   background-color: #282d3d;
   color: 'grey' !important;

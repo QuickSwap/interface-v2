@@ -43,7 +43,7 @@ const Footer: React.FC = () => {
             <Image
               src='/assets/images/quickLogo.png'
               alt='QUICK'
-              width={40}
+              width={130}
               height={40}
             />
             <Box mt={2} maxWidth='240px'>
