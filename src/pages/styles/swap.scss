@@ -79,12 +79,12 @@
 }
 
 .tab:hover {
-    cursor: pointer;
-    background: rgba(68, 138, 255, 0.3) !important;  
-    color: white !important;
-    & p {
-      color: white;
-    }
+  cursor: pointer;
+  background: rgba(68, 138, 255, 0.3) !important;
+  color: white !important;
+  & p {
+    color: white;
+  }
 }
 
 .activeTab {
@@ -368,4 +368,29 @@ div.buy {
 .tradingview-widget-container > iframe {
   height: 100%;
   width: 100%;
+}
+
+.swapLimitTabs {
+  background-color: $secondary2;
+  display: flex;
+  justify-content: space-between;
+}
+
+.swapLimitTab {
+  width: 33%;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  & small {
+    color: $textSecondary;
+  }
+}
+
+.activeSwapLimitTab {
+  background-color: $grey32;
+  & small {
+    color: $bgPalette;
+  }
 }
