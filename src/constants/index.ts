@@ -1620,3 +1620,7 @@ export const LeaderBoardAnalytics = {
   CHART_DURATIONS: [1, 7, 30],
   CHART_DURATION_TEXTS: ['24H', '7D', '30D'],
 };
+
+export const paraswapAPIURL: { [chainId in ChainId]?: string } = {
+  [ChainId.ZKEVM]: 'https://api.orders.paraswap.io',
+};
