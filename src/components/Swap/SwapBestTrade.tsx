@@ -66,6 +66,7 @@ import useSwapRedirects from 'hooks/useSwapRedirect';
 import callWallchainAPI from 'utils/wallchainService';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { ONE } from 'v3lib/utils';
+import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -832,6 +833,9 @@ const SwapBestTrade: React.FC<{
       : undefined;
 
   useEffect(() => {
+    const bonusSwapRouterAddress = chainId
+      ? SWAP_ROUTER_ADDRESS[chainId]
+      : undefined;
     (async () => {
       if (
         swapIsReady &&
@@ -841,7 +845,8 @@ const SwapBestTrade: React.FC<{
         account &&
         library &&
         chainId &&
-        approval === ApprovalState.APPROVED
+        approval === ApprovalState.APPROVED &&
+        bonusSwapRouterAddress
       ) {
         setBonusRouteFound(false);
         setBonusRouteLoading(true);
