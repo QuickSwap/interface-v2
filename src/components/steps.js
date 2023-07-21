@@ -36,7 +36,11 @@ const newSteps = [
   
   {
     id: "welcome",
-    title: "",    
+    title: "",
+    showOn(){
+      let isConnected = localStorage.getItem('eagerconnect') && JSON.parse(localStorage.getItem('eagerconnect'));
+      return isConnected === null
+    }, 
     text: [
       `
       <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Connect your web3 wallet</div>
@@ -78,19 +82,20 @@ const newSteps = [
       <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Select a wallet</div>
       <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Choose any of the shown non-custodial web3 wallets. Make sure you have it installed in your browser. Alternatively you can also scan QR code and connect via wallet connect supported wallets.</div>
       `,
+    showOn(){
+      let isConnected = localStorage.getItem('eagerconnect') && JSON.parse(localStorage.getItem('eagerconnect'));
+      return isConnected === null
+    }, 
     attachTo: { element: ".Modal-content", on: "right" },
     buttons: [
       {
         type:'complete',
         text: `
-
             <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word; float: left">Skip</div>
-
         `,
       },
       {
         type: "back",
-
         text: `
         <div style="
         display: flex;
@@ -104,6 +109,8 @@ const newSteps = [
       },
       {
         type: "next",
+        disabled:true,
+        classes:'connectedWallet',
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -123,10 +130,15 @@ const newSteps = [
     title: "",
     when: {
       show: function() {
-        let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'));
-        document.querySelector(`[data-label='${Object.values(swapPptionV2)[0].split(',')[0]}']`).click()        
+        let swapPptionV2 = localStorage.getItem('Swap-option-v2')  && JSON.parse(localStorage.getItem('Swap-option-v2'));
+        Object.values(swapPptionV2).length > 0 && document.querySelector(`[data-label='${Object.values(swapPptionV2)[0].split(',')[0]}']`).click()        
+        let isConnected = localStorage.getItem('eagerconnect') && JSON.parse(localStorage.getItem('eagerconnect'));
+        let isProvider =  localStorage.getItem('currentprovider')
+        if(isConnected === true && isProvider != null ){
+          document.querySelector('.step3BackButton').disabled = true
+         }
       }
-    }, 
+    },
     text: `
       <div style="display: flex; justify-content: space-between; align-items: center" >
         <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Choose from </div>
@@ -156,6 +168,7 @@ const newSteps = [
       },
       {
         type: "back",
+        classes:'step3BackButton',
         text: `
         <div style="
         display: flex;
@@ -168,9 +181,7 @@ const newSteps = [
         `,
       },
       {
-       
-         type: "next",
-         
+        type:'next',
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -675,7 +686,7 @@ const newSteps = [
     title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      return ((Object.values(swapPptionV2).includes("Short") === true || Object.values(swapPptionV2).includes("Long") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit');
+      return (Object.values(swapPptionV2).includes("Swap") === true);
     },
     text: `
     </div>
@@ -836,42 +847,7 @@ const newSteps = [
       },
     ],
   },
-  {
-    id: "feedback",
-    title: "",    
-    text: [
-      `
-      <div style="color: #061341;  font-size: 28px;   line-height: 36px;text-align:center; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Rate your experience</div>
-      <div style="text-align:center"><img src="/feedback.png"/></div>
-    `,
-    ],
-    classes: "shepherd shepherd-welcome",
-    buttons: [
-      {
-        type:'complete',
-        text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Close</div>
-            </div>
-        `,
-      },
-      {
-        type:'complete',
-        text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Submit</div>
-        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
-        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        
-    </div>
-        `,
-      },
-    ],
-  },
+ 
 
 
   {
@@ -1915,6 +1891,42 @@ const newSteps = [
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         </div>
+        `,
+      },
+    ],
+  },
+  {
+    id: "feedback",
+    title: "",    
+    text: [
+      `
+      <div style="color: #061341;  font-size: 28px;   line-height: 36px;text-align:center; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Rate your experience</div>
+      <div style="text-align:center"><img src="/feedback.png"/></div>
+    `,
+    ],
+    classes: "shepherd shepherd-welcome",
+    buttons: [
+      {
+        type:'complete',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Close</div>
+            </div>
+        `,
+      },
+      {
+        type:'complete',
+        text: `
+        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
+        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Submit</div>
+        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        
+    </div>
         `,
       },
     ],
