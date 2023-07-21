@@ -3,34 +3,36 @@ import { Box, Grid } from '@material-ui/core';
 import QUICKLogo from 'assets/images/quickLogo.png';
 import 'components/styles/Footer.scss';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Footer: React.FC = () => {
   const history = useHistory();
   const copyrightYear = new Date().getFullYear();
+  const { t } = useTranslation();
 
   const socialMenuItems = [
     {
-      title: 'Services',
+      title: t('services'),
       items: [
-        { title: 'Swap', link: '/swap' },
-        { title: 'Pool', link: '/pools' },
-        { title: 'Farm', link: '/farm' },
-        { title: 'Dragons Lair', link: '/dragons' },
-        { title: 'Convert', link: '/convert' },
-        { title: 'Analytics', link: '/analytics' },
+        { title: t('swap'), link: '/swap' },
+        { title: t('pool'), link: '/pools' },
+        { title: t('farm'), link: '/farm' },
+        { title: t('dragonslair'), link: '/dragons' },
+        { title: t('convert'), link: '/convert' },
+        { title: t('analytics'), link: '/analytics' },
       ],
     },
     {
-      title: 'Developers',
+      title: t('developers'),
       items: [
-        { title: 'Github', link: 'https://github.com/QuickSwap' },
-        { title: 'Docs', link: 'https://docs.quickswap.exchange/' },
+        { title: t('github'), link: 'https://github.com/QuickSwap' },
+        { title: t('docs'), link: 'https://docs.quickswap.exchange/' },
       ],
     },
     {
-      title: 'Governance',
+      title: t('governance'),
       items: [
-        { title: 'Proposals', link: 'https://snapshot.org/#/quickvote.eth' },
+        { title: t('proposals'), link: 'https://snapshot.org/#/quickvote.eth' },
       ],
     },
   ];
@@ -42,10 +44,7 @@ const Footer: React.FC = () => {
           <Grid item xs={12} sm={12} md={4}>
             <img src={QUICKLogo} alt='QUICK' height={40} />
             <Box mt={2} maxWidth='240px'>
-              <small className='text-secondary'>
-                Our community is building a comprehensive decentralized trading
-                platform for the future of finance. Join us!
-              </small>
+              <small className='text-secondary'>{t('socialDescription')}</small>
             </Box>
           </Grid>
           <Grid item container xs={12} sm={12} md={8} spacing={4}>
@@ -78,7 +77,7 @@ const Footer: React.FC = () => {
         </Grid>
         <Box className='copyrightWrapper'>
           <small className='text-secondary'>© {copyrightYear} QuickSwap.</small>
-          <small className='text-secondary'>Terms of Use</small>
+          <small className='text-secondary'>{t('termsofuse')}</small>
         </Box>
       </Box>
     </Box>
