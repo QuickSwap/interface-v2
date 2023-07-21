@@ -894,6 +894,7 @@ export const SUGGESTED_BASES: {
     MATIC[ChainId.ZKEVM],
     DAI[ChainId.ZKEVM],
     WBTC[ChainId.ZKEVM],
+    NEW_QUICK[ChainId.ZKEVM],
   ],
 };
 
