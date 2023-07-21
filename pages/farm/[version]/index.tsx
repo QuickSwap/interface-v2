@@ -17,7 +17,7 @@ import V3Farms from 'components/pages/farms/V3/Farms';
 import { useIsV2 } from 'state/application/hooks';
 import { useRouter } from 'next/router';
 import { getConfig } from 'config/index';
-import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
@@ -187,6 +187,19 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
     props: {
       ...(await serverSideTranslations(locale ?? 'en', ['common'])),
     },
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const versions = ['v2', 'v3'];
+  const paths =
+    versions?.map((version) => ({
+      params: { version },
+    })) || [];
+
+  return {
+    paths,
+    fallback: 'blocking',
   };
 };
 

@@ -9,6 +9,7 @@ import { useTotalSupply } from 'data/TotalSupply';
 import { CurrencyLogo } from 'components';
 import { formatTokenAmount } from 'utils';
 import { useTranslation } from 'next-i18next';
+import styles from '../../MigrateV2Liquidity.module.scss';
 
 const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
@@ -91,7 +92,7 @@ const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
         </Box>
 
         <Button
-          className='migratev2LiquidityButton'
+          className={styles.migratev2LiquidityButton}
           onClick={() =>
             router.push(
               `/migrate/${

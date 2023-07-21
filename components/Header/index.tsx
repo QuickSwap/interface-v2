@@ -164,14 +164,14 @@ const Header: React.FC = () => {
   }
   if (showPool) {
     menuItems.push({
-      link: `/pools`,
+      link: `/pools/v3`,
       text: t('pool'),
       id: 'pools-page-link',
     });
   }
   if (showFarm) {
     menuItems.push({
-      link: `/farm`,
+      link: `/farm/v3`,
       text: t('farm'),
       id: 'farm-page-link',
     });
@@ -241,38 +241,11 @@ const Header: React.FC = () => {
   }
   if (showAnalytics) {
     menuItems.push({
-      link: `/analytics`,
+      link: `/analytics/total`,
       text: t('analytics'),
       id: 'analytics-page-link',
     });
   }
-
-  const outLinks: any[] = [
-    // {
-    //   link: '/',
-    //   text: 'Governance',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Docs',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'For Developers',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Help & Tutorials',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Knowledge Base',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'News',
-    // },
-  ];
 
   return (
     <Box className={`${styles.header} ${tabletWindowSize ? '' : headerClass}`}>
@@ -388,11 +361,6 @@ const Header: React.FC = () => {
                         <small>{val.text}</small>
                       </Box>
                     ))}
-                  {outLinks.map((item, ind) => (
-                    <a href={item.link} key={ind}>
-                      <small>{item.text}</small>
-                    </a>
-                  ))}
                 </Box>
               </Box>
             </Box>
@@ -456,15 +424,6 @@ const Header: React.FC = () => {
                         >
                           <small>{val.text}</small>
                         </Box>
-                      ))}
-                      {outLinks.map((item, ind) => (
-                        <a
-                          href={item.link}
-                          key={ind}
-                          onClick={() => setOpenDetailMenu(false)}
-                        >
-                          <small>{item.text}</small>
-                        </a>
                       ))}
                     </Box>
                   </Box>

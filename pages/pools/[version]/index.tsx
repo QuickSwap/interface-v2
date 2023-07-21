@@ -13,7 +13,7 @@ import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { GammaPairs } from 'constants/index';
-import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Adshares } from 'components';
 
@@ -83,6 +83,19 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
     props: {
       ...(await serverSideTranslations(locale ?? 'en', ['common'])),
     },
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const versions = ['v2', 'v3'];
+  const paths =
+    versions?.map((version) => ({
+      params: { version },
+    })) || [];
+
+  return {
+    paths,
+    fallback: 'blocking',
   };
 };
 

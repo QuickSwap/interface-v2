@@ -49,8 +49,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       window.location.host !== 'quickswap.exchange' &&
       window.location.host !== 'beta.quickswap.exchange' &&
       window.location.host !== 'dogechain.quickswap.exchange' &&
-      window.location.host !== 'localhost:3000' &&
-      window.location.host !== 'testing-wcv2.interface-v2-01.pages.dev'
+      window.location.host !== 'localhost:3000'
     ) {
       setOpenPassModal(true);
     }

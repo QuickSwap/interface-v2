@@ -9,6 +9,7 @@ import { useTotalSupply } from 'data/TotalSupply';
 import { CurrencyLogo, RemoveLiquidityModal } from 'components';
 import { currencyId, formatTokenAmount } from 'utils';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/components/PoolPositionCard.module.scss';
 
 const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
@@ -57,7 +58,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
 
   return (
     <>
-      <Box className='poolPositionCardDetails'>
+      <Box className={styles.poolPositionCardDetails}>
         <Box className='cardRow'>
           <small>{t('yourPoolTokens')}:</small>
           <small>{formatTokenAmount(userPoolBalance)}</small>
@@ -91,9 +92,10 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           </small>
         </Box>
 
-        <Box className='poolButtonRow'>
+        <Box className={styles.poolButtonRow}>
           <Button
             variant='outlined'
+            className={styles.viewAnalyticsButton}
             onClick={() =>
               router.push(
                 `/analytics/v2/pair?id=${pair.liquidityToken.address}`,
@@ -104,6 +106,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           </Button>
           <Button
             variant='contained'
+            className={styles.poolPositionButton}
             onClick={() => {
               router.push(
                 `/pools/v2?currency0=${currencyId(
@@ -120,6 +123,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           </Button>
           <Button
             variant='contained'
+            className={styles.poolPositionButton}
             onClick={() => {
               setOpenRemoveModal(true);
             }}

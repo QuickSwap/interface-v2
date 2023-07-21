@@ -7,6 +7,7 @@ import { Trans, useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { getConfig } from 'config';
+import styles from 'styles/pages/Pools.module.scss';
 
 const YourLiquidityPools: React.FC = () => {
   const { t } = useTranslation();
@@ -34,7 +35,7 @@ const YourLiquidityPools: React.FC = () => {
           allV2PairsWithLiquidity.length > 0 &&
           isMigrateAvailable && (
             <Box
-              className='v3-manage-v2liquidity-button'
+              className={styles.v3ManageV2liquidityButton}
               onClick={() => router.push('/migrate')}
             >
               <small className='text-primary'>Migrate Liquidity to V3</small>
@@ -49,7 +50,7 @@ const YourLiquidityPools: React.FC = () => {
           </Box>
         ) : allV2PairsWithLiquidity.length > 0 ? (
           <Box>
-            <small className='liquidityText'>
+            <small className={styles.liquidityText}>
               <Trans
                 i18nKey='poolMissingComment'
                 components={{
@@ -69,9 +70,11 @@ const YourLiquidityPools: React.FC = () => {
         ) : (
           <Box textAlign='center'>
             <Image
-              src='/images/NoLiquidityPool.png'
+              src='/assets/images/NoLiquidityPool.png'
               alt='No Liquidity'
-              className='noLiquidityImage'
+              className={styles.noLiquidityImage}
+              width={286}
+              height={176}
             />
             <p className='small liquidityText'>
               <Trans

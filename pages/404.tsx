@@ -1,12 +1,15 @@
 import React from 'react';
 import Head from 'next/head';
-import { NextPage } from 'next';
 import { Box, Button, Typography } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import Image404 from 'svgs/404.svg';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { GetStaticProps, InferGetServerSidePropsType } from 'next';
 
-const Custom404Page: NextPage = () => {
+const Custom404Page = (
+  _props: InferGetServerSidePropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation();
   const router = useRouter();
   const goBack = () => {
@@ -58,6 +61,14 @@ const Custom404Page: NextPage = () => {
       </div>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
 };
 
 export default Custom404Page;

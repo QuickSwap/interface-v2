@@ -3,7 +3,7 @@
 
 .headingItem {
   cursor: pointer;
-  display: flex
+  display: flex;
 }
 
 .liquidityText {
@@ -17,10 +17,10 @@
 .noLiquidityImage {
   max-width: 286px;
   width: 80%;
-  filter: grayscale(1)
+  filter: grayscale(1);
 }
 
-.v3-manage-v2liquidity-button {
+.v3ManageV2liquidityButton {
   height: 36px;
   padding: 0 20px;
   border-radius: 18px;

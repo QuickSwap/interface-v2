@@ -32,7 +32,7 @@ const Option: React.FC<OptionProps> = ({
   const content = (
     <Box className={styles.optionCardClickable} id={id} onClick={onClick}>
       <Box className='flex items-center' my={0.5}>
-        <Image src={icon} alt={'Icon'} width={24} />
+        <Image src={icon} alt={'Icon'} width={24} height={24} />
         <p style={{ marginLeft: 8 }}>{header}</p>
       </Box>
       {active && (

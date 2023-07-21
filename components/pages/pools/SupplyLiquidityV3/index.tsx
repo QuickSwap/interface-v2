@@ -284,8 +284,12 @@ export function SupplyLiquidityV3() {
               />
             </Box>
           )}
-          <Box className='flex cursor-pointer'>
-            <Settings onClick={() => setOpenSettingsModal(true)} />
+          <Box
+            className='flex cursor-pointer text-secondary'
+            onClick={() => setOpenSettingsModal(true)}
+            ml={1}
+          >
+            <Settings />
           </Box>
         </Box>
       </Box>

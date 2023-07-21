@@ -13,11 +13,11 @@ const Footer: React.FC = () => {
       title: 'Services',
       items: [
         { title: 'Swap', link: '/swap' },
-        { title: 'Pool', link: '/pools' },
-        { title: 'Farm', link: '/farm' },
+        { title: 'Pool', link: '/pools/v3' },
+        { title: 'Farm', link: '/farm/v3' },
         { title: 'Dragons Lair', link: '/dragons' },
         { title: 'Convert', link: '/convert' },
-        { title: 'Analytics', link: '/analytics' },
+        { title: 'Analytics', link: '/analytics/total' },
       ],
     },
     {

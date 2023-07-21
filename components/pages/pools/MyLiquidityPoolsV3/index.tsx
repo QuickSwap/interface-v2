@@ -10,6 +10,7 @@ import { PositionPool } from 'models/interfaces';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'next-i18next';
 import { getConfig } from 'config';
+import styles from 'styles/pages/Pools.module.scss';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
@@ -105,7 +106,7 @@ export default function MyLiquidityPoolsV3() {
           </Box>
           {allV2PairsWithLiquidity.length > 0 && isMigrateAvailable && (
             <Box
-              className='v3-manage-v2liquidity-button'
+              className={styles.v3ManageV2liquidityButton}
               onClick={() => router.push('/migrate')}
             >
               <small className='text-primary'>Migrate V2 Liquidity</small>

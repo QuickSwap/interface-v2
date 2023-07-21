@@ -52,6 +52,7 @@ import { useCurrency } from 'hooks/Tokens';
 import { useRouter } from 'next/router';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
+import styles from 'styles/components/Swap.module.scss';
 
 const AddLiquidity: React.FC<{
   currencyBgClass?: string;
@@ -472,7 +473,7 @@ const AddLiquidity: React.FC<{
         setAmount={onFieldAInput}
         bgClass={currencyBgClass}
       />
-      <Box className='exchangeSwap'>
+      <Box className={styles.exchangeSwap}>
         <AddLiquidityIcon />
       </Box>
       <CurrencyInput
@@ -502,7 +503,7 @@ const AddLiquidity: React.FC<{
         pairState !== PairState.INVALID &&
         price && (
           <Box my={2}>
-            <Box className='swapPrice'>
+            <Box className={styles.swapPrice}>
               <small>
                 1 {currencies[Field.CURRENCY_A]?.symbol} ={' '}
                 {price.toSignificant(3)} {currencies[Field.CURRENCY_B]?.symbol}{' '}
@@ -513,7 +514,7 @@ const AddLiquidity: React.FC<{
                 {currencies[Field.CURRENCY_A]?.symbol}{' '}
               </small>
             </Box>
-            <Box className='swapPrice'>
+            <Box className={styles.swapPrice}>
               <small>{t('yourPoolShare')}:</small>
               <small>
                 {poolTokenPercentage
@@ -521,7 +522,7 @@ const AddLiquidity: React.FC<{
                   : '-'}
               </small>
             </Box>
-            <Box className='swapPrice'>
+            <Box className={styles.swapPrice}>
               <small>{t('lpTokenReceived')}:</small>
               <small>
                 {formatTokenAmount(userPoolBalance)} {t('lpTokens')}
@@ -529,7 +530,7 @@ const AddLiquidity: React.FC<{
             </Box>
           </Box>
         )}
-      <Box className='swapButtonWrapper flex-wrap'>
+      <Box className={`${styles.swapButtonWrapper} flex-wrap`}>
         {(approvalA === ApprovalState.NOT_APPROVED ||
           approvalA === ApprovalState.PENDING ||
           approvalB === ApprovalState.NOT_APPROVED ||
@@ -541,6 +542,7 @@ const AddLiquidity: React.FC<{
                   width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
+                    variant='contained'
                     fullWidth
                     onClick={async () => {
                       setApprovingA(true);
@@ -568,6 +570,7 @@ const AddLiquidity: React.FC<{
                   width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
+                    variant='contained'
                     fullWidth
                     onClick={async () => {
                       setApprovingB(true);
@@ -593,6 +596,7 @@ const AddLiquidity: React.FC<{
             </Box>
           )}
         <Button
+          variant='contained'
           fullWidth
           disabled={
             Boolean(account) &&

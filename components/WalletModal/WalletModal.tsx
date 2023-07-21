@@ -222,7 +222,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={t('installMetamask')}
             subheader={null}
             link={'https://metamask.io/'}
-            icon='/images/metamask.png'
+            icon='/assets/images/metamask.png'
           />
         );
       }
