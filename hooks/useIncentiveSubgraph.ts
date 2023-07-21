@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { Contract } from 'ethers';
 import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
@@ -95,7 +95,8 @@ export function useFarmingSubgraph() {
       }
       const data = await res.json();
       return data && data.data && data.data.token ? data.data.token : undefined;
-    } catch (err) {
+    } catch (error) {
+      const err = error as any;
       throw new Error('Token fetching ' + err.message);
     }
   }
@@ -127,7 +128,8 @@ export function useFarmingSubgraph() {
           symbol: formatTokenSymbol(pool.token1.id, pool.token1.symbol),
         },
       };
-    } catch (err) {
+    } catch (error) {
+      const err = error as any;
       throw new Error('Pool fetching ' + err.message);
     }
   }
@@ -147,7 +149,8 @@ export function useFarmingSubgraph() {
       return data && data.data && data.data.limitFarm
         ? data.data.limitFarm
         : undefined;
-    } catch (err) {
+    } catch (error) {
+      const err = error as any;
       throw new Error('Limitfarming fetching ' + err.message);
     }
   }
@@ -167,7 +170,8 @@ export function useFarmingSubgraph() {
       return data && data.data && data.data.eternalFarm
         ? data.data.eternalFarm
         : undefined;
-    } catch (err) {
+    } catch (error) {
+      const err = error as any;
       throw new Error('Eternalfarming fetching ' + err.message);
     }
   }
@@ -469,7 +473,9 @@ export function useFarmingSubgraph() {
               +position.id,
               { from: account },
             );
-          } catch (e) {}
+          } catch (e) {
+            console.log(e);
+          }
 
           _position = {
             ..._position,
@@ -527,7 +533,8 @@ export function useFarmingSubgraph() {
         _positions.push(_position);
       }
       setTransferredPositions(_positions);
-    } catch (err) {
+    } catch (error) {
+      const err = error as any;
       throw new Error(
         'Transferred positions ' + 'code: ' + err.code + ', ' + err.message,
       );

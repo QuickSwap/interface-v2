@@ -23,11 +23,12 @@ const SwapBuySellMiniWidget: React.FC = () => {
           <Box className='text-white text-lg'>{t('buyOrSellCryptoFiat')}</Box>
           <Box className='flex items-center'>
             <small>{t('poweredBy')}</small>
-            <img
+            <Image
               className='meldLogo'
               src='assets/images/meldIcon.png'
               alt='MELD'
-              style={{ height: 15, marginLeft: 6 }}
+              height={15}
+              style={{ marginLeft: 6 }}
             />
           </Box>
           <Box>

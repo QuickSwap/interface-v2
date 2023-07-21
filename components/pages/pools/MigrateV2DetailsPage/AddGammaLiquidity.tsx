@@ -6,7 +6,7 @@ import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { GammaPairs } from 'constants/index';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { CurrencyLogo } from 'components';
@@ -307,7 +307,8 @@ const AddGammaLiquidity: React.FC<{
       if (onLiquidityAdded) {
         onLiquidityAdded();
       }
-    } catch (error) {
+    } catch (err) {
+      const error = err as any;
       console.error('Failed to send transaction', error);
       const errorMsg =
         error && error.message
@@ -318,12 +319,12 @@ const AddGammaLiquidity: React.FC<{
       setAddingLiquidity(false);
       setErrorMessage(
         errorMsg.indexOf('improper ratio') > -1
-          ? t('gammaImproperRatio')
+          ? t('gammaImproperRatio') ?? ''
           : errorMsg.indexOf('price change overflow') > -1
-          ? t('gammaPriceOverflow')
+          ? t('gammaPriceOverflow') ?? ''
           : error?.code === 4001 || error.code === 'ACTION_REJECTED'
           ? ''
-          : t('errorInTx'),
+          : t('errorInTx') ?? '',
       );
     }
   }

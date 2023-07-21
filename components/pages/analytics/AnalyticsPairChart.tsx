@@ -257,26 +257,106 @@ const AnalyticsPairChart: React.FC<{
 
   const apyChartData = useMemo(() => {
     if (!apyVisionData) return;
+    const feeAPYs = [
+      apyVisionData.fee_apys_inception ?? 0,
+      apyVisionData.fee_apys_90d ?? 0,
+      apyVisionData.fee_apys_60d ?? 0,
+      apyVisionData.fee_apys_30d ?? 0,
+      apyVisionData.fee_apys_14d ?? 0,
+      apyVisionData.fee_apys_7d ?? 0,
+      apyVisionData.fee_apys_1d ?? 0,
+    ];
+    const ilAPYs = [
+      apyVisionData.il_apys_inception ?? 0,
+      apyVisionData.il_apys_90d ?? 0,
+      apyVisionData.il_apys_60d ?? 0,
+      apyVisionData.il_apys_30d ?? 0,
+      apyVisionData.il_apys_14d ?? 0,
+      apyVisionData.il_apys_7d ?? 0,
+      apyVisionData.il_apys_1d ?? 0,
+    ];
+    const apyVisionPrice0 =
+      apyVisionData.prices && apyVisionData.prices.length > 0
+        ? apyVisionData.prices[0]
+        : undefined;
+    const apyVisionPrice1 =
+      apyVisionData.prices && apyVisionData.prices.length > 1
+        ? apyVisionData.prices[1]
+        : undefined;
+    const asset0Prices = [
+      apyVisionPrice0?.inception ?? 0,
+      apyVisionPrice0?.usd_90d ?? 0,
+      apyVisionPrice0?.usd_60d ?? 0,
+      apyVisionPrice0?.usd_30d ?? 0,
+      apyVisionPrice0?.usd_14d ?? 0,
+      apyVisionPrice0?.usd_7d ?? 0,
+      apyVisionPrice0?.usd_1d ?? 0,
+    ];
+    const asset1Prices = [
+      apyVisionPrice1?.inception ?? 0,
+      apyVisionPrice1?.usd_90d ?? 0,
+      apyVisionPrice1?.usd_60d ?? 0,
+      apyVisionPrice1?.usd_30d ?? 0,
+      apyVisionPrice1?.usd_14d ?? 0,
+      apyVisionPrice1?.usd_7d ?? 0,
+      apyVisionPrice1?.usd_1d ?? 0,
+    ];
+    const hodlMinusIls = [
+      apyVisionData.hodl_minus_il_return_pcts_inception ?? 0,
+      apyVisionData.hodl_minus_il_return_pcts_90d ?? 0,
+      apyVisionData.hodl_minus_il_return_pcts_60d ?? 0,
+      apyVisionData.hodl_minus_il_return_pcts_30d ?? 0,
+      apyVisionData.hodl_minus_il_return_pcts_14d ?? 0,
+      apyVisionData.hodl_minus_il_return_pcts_7d ?? 0,
+      apyVisionData.hodl_minus_il_return_pcts_1d ?? 0,
+    ];
+    const apyReserves = [
+      apyVisionData.avg_reserves_inception ?? 0,
+      apyVisionData.avg_reserves_90d ?? 0,
+      apyVisionData.avg_reserves_60d ?? 0,
+      apyVisionData.avg_reserves_30d ?? 0,
+      apyVisionData.avg_reserves_14d ?? 0,
+      apyVisionData.avg_reserves_7d ?? 0,
+      apyVisionData.avg_reserves_1d ?? 0,
+    ];
+    const apyVolumes = [
+      apyVisionData.avg_volume_inception ?? 0,
+      apyVisionData.avg_volume_90d ?? 0,
+      apyVisionData.avg_volume_60d ?? 0,
+      apyVisionData.avg_volume_30d ?? 0,
+      apyVisionData.avg_volume_14d ?? 0,
+      apyVisionData.avg_volume_7d ?? 0,
+      apyVisionData.avg_volume_1d ?? 0,
+    ];
+    const apyTxs = [
+      apyVisionData.avg_txns_inception ?? 0,
+      apyVisionData.avg_txns_90d ?? 0,
+      apyVisionData.avg_txns_60d ?? 0,
+      apyVisionData.avg_txns_30d ?? 0,
+      apyVisionData.avg_txns_14d ?? 0,
+      apyVisionData.avg_txns_7d ?? 0,
+      apyVisionData.avg_txns_1d ?? 0,
+    ];
+    const apySwapValues = [
+      apyVisionData.avg_swap_value_usd_inception ?? 0,
+      apyVisionData.avg_swap_value_usd_90d ?? 0,
+      apyVisionData.avg_swap_value_usd_60d ?? 0,
+      apyVisionData.avg_swap_value_usd_30d ?? 0,
+      apyVisionData.avg_swap_value_usd_14d ?? 0,
+      apyVisionData.avg_swap_value_usd_7d ?? 0,
+      apyVisionData.avg_swap_value_usd_1d ?? 0,
+    ];
+    const apyMedianSwapValues = [
+      apyVisionData.median_swap_value_inception ?? 0,
+      apyVisionData.median_swap_value_90d ?? 0,
+      apyVisionData.median_swap_value_60d ?? 0,
+      apyVisionData.median_swap_value_30d ?? 0,
+      apyVisionData.median_swap_value_14d ?? 0,
+      apyVisionData.median_swap_value_7d ?? 0,
+      apyVisionData.median_swap_value_1d ?? 0,
+    ];
     switch (chartIndex) {
       case CHART_APY_IL:
-        const feeAPYs = [
-          apyVisionData.fee_apys_inception ?? 0,
-          apyVisionData.fee_apys_90d ?? 0,
-          apyVisionData.fee_apys_60d ?? 0,
-          apyVisionData.fee_apys_30d ?? 0,
-          apyVisionData.fee_apys_14d ?? 0,
-          apyVisionData.fee_apys_7d ?? 0,
-          apyVisionData.fee_apys_1d ?? 0,
-        ];
-        const ilAPYs = [
-          apyVisionData.il_apys_inception ?? 0,
-          apyVisionData.il_apys_90d ?? 0,
-          apyVisionData.il_apys_60d ?? 0,
-          apyVisionData.il_apys_30d ?? 0,
-          apyVisionData.il_apys_14d ?? 0,
-          apyVisionData.il_apys_7d ?? 0,
-          apyVisionData.il_apys_1d ?? 0,
-        ];
         return [
           {
             name: 'Fees APY',
@@ -292,41 +372,6 @@ const AnalyticsPairChart: React.FC<{
           },
         ];
       case CHART_ASSET:
-        const apyVisionPrice0 =
-          apyVisionData.prices && apyVisionData.prices.length > 0
-            ? apyVisionData.prices[0]
-            : undefined;
-        const apyVisionPrice1 =
-          apyVisionData.prices && apyVisionData.prices.length > 1
-            ? apyVisionData.prices[1]
-            : undefined;
-        const asset0Prices = [
-          apyVisionPrice0?.inception ?? 0,
-          apyVisionPrice0?.usd_90d ?? 0,
-          apyVisionPrice0?.usd_60d ?? 0,
-          apyVisionPrice0?.usd_30d ?? 0,
-          apyVisionPrice0?.usd_14d ?? 0,
-          apyVisionPrice0?.usd_7d ?? 0,
-          apyVisionPrice0?.usd_1d ?? 0,
-        ];
-        const asset1Prices = [
-          apyVisionPrice1?.inception ?? 0,
-          apyVisionPrice1?.usd_90d ?? 0,
-          apyVisionPrice1?.usd_60d ?? 0,
-          apyVisionPrice1?.usd_30d ?? 0,
-          apyVisionPrice1?.usd_14d ?? 0,
-          apyVisionPrice1?.usd_7d ?? 0,
-          apyVisionPrice1?.usd_1d ?? 0,
-        ];
-        const hodlMinusIls = [
-          apyVisionData.hodl_minus_il_return_pcts_inception ?? 0,
-          apyVisionData.hodl_minus_il_return_pcts_90d ?? 0,
-          apyVisionData.hodl_minus_il_return_pcts_60d ?? 0,
-          apyVisionData.hodl_minus_il_return_pcts_30d ?? 0,
-          apyVisionData.hodl_minus_il_return_pcts_14d ?? 0,
-          apyVisionData.hodl_minus_il_return_pcts_7d ?? 0,
-          apyVisionData.hodl_minus_il_return_pcts_1d ?? 0,
-        ];
         return [
           {
             name: apyVisionData.prices[0].symbol,
@@ -357,24 +402,6 @@ const AnalyticsPairChart: React.FC<{
           },
         ];
       case CHART_RESERVE:
-        const apyReserves = [
-          apyVisionData.avg_reserves_inception ?? 0,
-          apyVisionData.avg_reserves_90d ?? 0,
-          apyVisionData.avg_reserves_60d ?? 0,
-          apyVisionData.avg_reserves_30d ?? 0,
-          apyVisionData.avg_reserves_14d ?? 0,
-          apyVisionData.avg_reserves_7d ?? 0,
-          apyVisionData.avg_reserves_1d ?? 0,
-        ];
-        const apyVolumes = [
-          apyVisionData.avg_volume_inception ?? 0,
-          apyVisionData.avg_volume_90d ?? 0,
-          apyVisionData.avg_volume_60d ?? 0,
-          apyVisionData.avg_volume_30d ?? 0,
-          apyVisionData.avg_volume_14d ?? 0,
-          apyVisionData.avg_volume_7d ?? 0,
-          apyVisionData.avg_volume_1d ?? 0,
-        ];
         return [
           { name: 'Reserve', type: 'column', data: apyReserves },
           {
@@ -391,33 +418,6 @@ const AnalyticsPairChart: React.FC<{
           },
         ];
       case CHART_TXS:
-        const apyTxs = [
-          apyVisionData.avg_txns_inception ?? 0,
-          apyVisionData.avg_txns_90d ?? 0,
-          apyVisionData.avg_txns_60d ?? 0,
-          apyVisionData.avg_txns_30d ?? 0,
-          apyVisionData.avg_txns_14d ?? 0,
-          apyVisionData.avg_txns_7d ?? 0,
-          apyVisionData.avg_txns_1d ?? 0,
-        ];
-        const apySwapValues = [
-          apyVisionData.avg_swap_value_usd_inception ?? 0,
-          apyVisionData.avg_swap_value_usd_90d ?? 0,
-          apyVisionData.avg_swap_value_usd_60d ?? 0,
-          apyVisionData.avg_swap_value_usd_30d ?? 0,
-          apyVisionData.avg_swap_value_usd_14d ?? 0,
-          apyVisionData.avg_swap_value_usd_7d ?? 0,
-          apyVisionData.avg_swap_value_usd_1d ?? 0,
-        ];
-        const apyMedianSwapValues = [
-          apyVisionData.median_swap_value_inception ?? 0,
-          apyVisionData.median_swap_value_90d ?? 0,
-          apyVisionData.median_swap_value_60d ?? 0,
-          apyVisionData.median_swap_value_30d ?? 0,
-          apyVisionData.median_swap_value_14d ?? 0,
-          apyVisionData.median_swap_value_7d ?? 0,
-          apyVisionData.median_swap_value_1d ?? 0,
-        ];
         return [
           {
             name: 'Avg # Txns',

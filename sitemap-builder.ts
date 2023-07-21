@@ -1,11 +1,9 @@
-import React from 'react';
 import fs from 'fs';
 import axios from 'axios';
 import { ChainId } from '@uniswap/sdk';
 
 const PUBLIC_URL = 'https://quickswap.exchange/#';
 const REACT_APP_LEADERBOARD_APP_URL = 'https://leaderboard.quickswap.exchange';
-const chain_ids = [ChainId.DOGECHAIN, ChainId.MATIC, ChainId.ZKEVM];
 
 const pools_paths = ['/pools/', '/pools/v2', '/pools/v3'];
 const farm_paths = [
@@ -33,21 +31,6 @@ const analytics_paths = [
   '/analytics/total/tokens',
 ];
 
-const dynamic_paths = [
-  '/swap/:version',
-  '/pool/:tokenId',
-  '/add/:currencyIdA?/:currencyIdB?/:version?',
-  '/increase/:currencyIdA?/:currencyIdB?/:tokenId',
-  '/remove/:tokenId',
-  '/migrate/:currencyIdA/:currencyIdB',
-  '/farm/:version?',
-  '/analytics/:version?',
-  '/analytics/:version/tokens',
-  '/analytics/:version/pairs',
-  '/analytics/:version/token/:id',
-  '/analytics/:version/pair/:id',
-];
-
 const static_paths = [
   '/',
   '/swap/',
@@ -72,7 +55,8 @@ const fetchTopPairs = async (version: string, chainId: number) => {
       (tokenId: string) => `/analytics/${version}/pair/${tokenId}`,
     );
     return paths;
-  } catch (error) {
+  } catch (err) {
+    const error = err as any;
     console.error(
       `Failed to get top pairs ${version}:`,
       error.response?.data || error.message || error,
@@ -93,7 +77,8 @@ const fetchTopTokens = async (version: string, chainId: number) => {
       (tokenId: string) => `/analytics/${version}/token/${tokenId}`,
     );
     return paths;
-  } catch (error) {
+  } catch (err) {
+    const error = err as any;
     console.error(
       `Failed to get top tokens ${version}:`,
       error.response?.data || error.message || error,

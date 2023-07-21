@@ -2,6 +2,7 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
 import { getWalletKeys } from 'utils';
+import Image from 'next/image';
 
 const StatusIcon: React.FC = () => {
   const { connector } = useActiveWeb3React();
@@ -10,7 +11,7 @@ const StatusIcon: React.FC = () => {
   )[0];
   return (
     <Box className='flex items-center'>
-      <img src={icon} width={24} alt='wallet icon' />
+      <Image src={icon} width={24} alt='wallet icon' />
     </Box>
   );
 };

@@ -17,7 +17,6 @@ import {
 } from './actions';
 
 // chunk calls so we do not exceed the gas limit
-const CALL_CHUNK_SIZE = 500;
 const DEFAULT_GAS_REQUIRED = 1_000_000;
 
 /**

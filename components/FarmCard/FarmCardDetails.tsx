@@ -34,7 +34,6 @@ import {
   formatNumber,
   calculateGasMargin,
 } from 'utils';
-import Image from 'next/image';
 
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -118,11 +117,11 @@ const FarmCardDetails: React.FC<{
           );
         }
         addTransaction(response, {
-          summary: t('withdrawliquidity'),
+          summary: t('withdrawliquidity') ?? undefined,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: t('withdrawliquidity'),
+          summary: t('withdrawliquidity') ?? undefined,
         });
         setAttemptUnstaking(false);
       } catch (error) {
@@ -141,11 +140,11 @@ const FarmCardDetails: React.FC<{
           gasLimit: calculateGasMargin(estimatedGas),
         });
         addTransaction(response, {
-          summary: t('claimrewards'),
+          summary: t('claimrewards') ?? undefined,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: t('claimrewards'),
+          summary: t('claimrewards') ?? undefined,
         });
         setAttemptClaiming(false);
       } catch (error) {
@@ -192,11 +191,11 @@ const FarmCardDetails: React.FC<{
           },
         );
         addTransaction(response, {
-          summary: t('depositliquidity'),
+          summary: t('depositliquidity') ?? undefined,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: t('depositliquidity'),
+          summary: t('depositliquidity') ?? undefined,
         });
         setAttemptStaking(false);
       } catch (error) {
@@ -204,15 +203,15 @@ const FarmCardDetails: React.FC<{
         console.log(error);
       }
     } else {
-      throw new Error(t('stakewithoutapproval'));
+      throw new Error(t('stakewithoutapproval') ?? undefined);
     }
   };
 
   const onAttemptToApprove = async () => {
     if (!pairContract || !library || !deadline)
-      throw new Error(t('missingdependencies'));
+      throw new Error(t('missingdependencies') ?? undefined);
     const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error(t('missingliquidity'));
+    if (!liquidityAmount) throw new Error(t('missingliquidity') ?? undefined);
     setApproving(true);
     try {
       await approveCallback();

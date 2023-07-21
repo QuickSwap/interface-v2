@@ -41,7 +41,7 @@ export function useFarmingHandlers() {
   //exit from basic farming and claim than
   const claimRewardsHandler = useCallback(
     async (
-      token,
+      token: any,
       {
         limitRewardToken,
         limitBonusRewardToken,
@@ -57,8 +57,8 @@ export function useFarmingHandlers() {
         limitBonusEarned,
         limitEarned,
         isDetached,
-      },
-      farmingType,
+      }: any,
+      farmingType: FarmingType,
     ) => {
       if (!account || !provider || !chainId) return;
 
@@ -104,7 +104,7 @@ export function useFarmingHandlers() {
             ]),
           ];
 
-          if (Boolean(+eternalEarned)) {
+          if (+eternalEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 eternalRewardToken.id,
@@ -115,7 +115,7 @@ export function useFarmingHandlers() {
             );
           }
 
-          if (Boolean(+eternalBonusEarned)) {
+          if (+eternalBonusEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 eternalBonusRewardToken.id,
@@ -179,7 +179,7 @@ export function useFarmingHandlers() {
             ]),
           ];
 
-          if (Boolean(+limitEarned)) {
+          if (+limitEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 limitRewardToken.id,
@@ -190,7 +190,7 @@ export function useFarmingHandlers() {
             );
           }
 
-          if (Boolean(+limitBonusEarned)) {
+          if (+limitBonusEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 limitBonusRewardToken.id,
@@ -211,7 +211,7 @@ export function useFarmingHandlers() {
         }
 
         addTransaction(result, {
-          summary: t('undepositNFT', { nftID: token }),
+          summary: t('undepositNFT', { nftID: token }) ?? undefined,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -219,7 +219,7 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: t('undepositedNFT', { nftID: token }),
+          summary: t('undepositedNFT', { nftID: token }) ?? undefined,
         });
 
         updateV3Stake({ txConfirmed: true });
@@ -246,14 +246,14 @@ export function useFarmingHandlers() {
   //collect rewards and claim than
   const eternalCollectRewardHandler = useCallback(
     async (
-      token,
+      token: any,
       {
         pool,
         eternalRewardToken,
         eternalBonusRewardToken,
         eternalStartTime,
         eternalEndTime,
-      },
+      }: any,
     ) => {
       if (!account || !provider || !chainId) return;
 
@@ -328,7 +328,7 @@ export function useFarmingHandlers() {
         }
 
         addTransaction(result, {
-          summary: t('claimingReward'),
+          summary: t('claimingReward') ?? undefined,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -336,7 +336,7 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: t('claimedReward'),
+          summary: t('claimedReward') ?? undefined,
         });
 
         updateV3Stake({ txConfirmed: true });
@@ -359,7 +359,7 @@ export function useFarmingHandlers() {
   );
 
   const withdrawHandler = useCallback(
-    async (token) => {
+    async (token: any) => {
       if (!account || !provider || !chainId) return;
 
       updateV3Stake({
@@ -402,7 +402,7 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: t('withdrawnNFT', { nftID: token }),
+          summary: t('withdrawnNFT', { nftID: token }) ?? undefined,
         });
 
         updateV3Stake({ txConfirmed: true });
@@ -426,10 +426,10 @@ export function useFarmingHandlers() {
 
   const farmHandler = useCallback(
     async (
-      selectedNFT,
-      { rewardToken, bonusRewardToken, pool, startTime, endTime },
-      eventType,
-      selectedTier,
+      selectedNFT: any,
+      { rewardToken, bonusRewardToken, pool, startTime, endTime }: any,
+      eventType: any,
+      selectedTier: any,
     ) => {
       if (!account || !provider || !chainId) return;
 
@@ -504,7 +504,7 @@ export function useFarmingHandlers() {
   );
 
   const approveHandler = useCallback(
-    async (selectedNFT) => {
+    async (selectedNFT: any) => {
       if (!account || !provider || !chainId) return;
 
       updateV3Stake({
@@ -576,7 +576,7 @@ export function useFarmingHandlers() {
   );
 
   const eternalOnlyCollectRewardHandler = useCallback(
-    async (rewardToken) => {
+    async (rewardToken: any) => {
       if (!account || !provider || !chainId) return;
 
       const farmingCenterContract = new Contract(
@@ -610,7 +610,7 @@ export function useFarmingHandlers() {
         );
 
         addTransaction(result, {
-          summary: t('claimingReward'),
+          summary: t('claimingReward') ?? undefined,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -618,7 +618,7 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: t('claimedReward'),
+          summary: t('claimedReward') ?? undefined,
         });
 
         updateV3Stake({ txConfirmed: true });

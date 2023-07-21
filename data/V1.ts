@@ -1,18 +1,13 @@
 import { AddressZero } from '@ethersproject/constants';
 import {
   BigintIsh,
-  Currency,
-  CurrencyAmount,
   currencyEquals,
-  ETHER,
   JSBI,
   Pair,
   Percent,
-  Route,
   Token,
   TokenAmount,
   Trade,
-  TradeType,
   WETH,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';

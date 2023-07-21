@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const TickerWidget: React.FC = ({}) => {
+const TickerWidget: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const script = document.createElement('script');

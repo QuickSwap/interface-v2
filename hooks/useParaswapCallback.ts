@@ -215,7 +215,8 @@ export function useParaswapCallback(
           });
 
           return { response, summary: withVersion };
-        } catch (error) {
+        } catch (err) {
+          const error = err as any;
           if (error?.code === 4001) {
             throw new Error('Transaction rejected.');
           } else {

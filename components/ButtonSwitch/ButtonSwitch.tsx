@@ -34,7 +34,7 @@ const ButtonSwitch: React.FC<ButtonSwitchProps> = ({
           style={{ minHeight }}
           value={value}
           variant='fullWidth'
-          onChange={(event, newValue) => {
+          onChange={(_, newValue) => {
             onChange && onChange(newValue);
           }}
           classes={{

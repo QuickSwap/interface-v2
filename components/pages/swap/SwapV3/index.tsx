@@ -96,7 +96,7 @@ const SwapV3Page: React.FC = () => {
   const importTokensNotInDefault =
     urlLoadedTokens &&
     urlLoadedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
+      return !(token.address in defaultTokens);
     });
 
   // toggle wallet when disconnected

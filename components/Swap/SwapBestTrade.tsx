@@ -108,7 +108,7 @@ const SwapBestTrade: React.FC<{
   const importTokensNotInDefault =
     urlLoadedTokens &&
     urlLoadedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
+      return !(token.address in defaultTokens);
     });
 
   const { t } = useTranslation();

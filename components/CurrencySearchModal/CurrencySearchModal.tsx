@@ -1,8 +1,7 @@
 import { ChainId, Currency, ETHER } from '@uniswap/sdk';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { event } from 'nextjs-google-analytics';
 import { CustomModal } from 'components';
-import useLast from 'hooks/useLast';
 import CurrencySearch from './CurrencySearch';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
@@ -29,16 +28,9 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   showCommonBases = false,
 }) => {
   const { isV2 } = useIsV2();
-  const [listView, setListView] = useState<boolean>(false);
-  const lastOpen = useLast(isOpen);
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
-  useEffect(() => {
-    if (isOpen && !lastOpen) {
-      setListView(false);
-    }
-  }, [isOpen, lastOpen]);
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
@@ -64,7 +56,6 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
     event('Change Lists', {
       category: 'Lists',
     });
-    setListView(true);
   }, []);
 
   return (

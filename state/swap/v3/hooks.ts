@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import JSBI from 'jsbi';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import { parseUnits } from '@ethersproject/units';
 import {
   Currency,
@@ -287,7 +287,7 @@ export function useDerivedSwapInfo(): {
   };
 }
 
-function parseCurrencyFromURLParameter(urlParam: any, chainId: number): string {
+function parseCurrencyFromURLParameter(urlParam: any, _: number): string {
   if (typeof urlParam === 'string') {
     const valid = isAddress(urlParam);
     if (valid) return valid;

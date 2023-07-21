@@ -12,7 +12,6 @@ export const Area = ({
   xValue,
   yValue,
   fill,
-  priceFormat,
 }: {
   series: ChartEntry[];
   xScale: ScaleLinear<number, number>;

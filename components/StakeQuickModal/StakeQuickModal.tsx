@@ -60,9 +60,10 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
   );
 
   const onAttemptToApprove = async () => {
-    if (!lairContractToUse) throw new Error(t('missingdependencies'));
+    if (!lairContractToUse)
+      throw new Error(t('missingdependencies') ?? undefined);
     const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error(t('missingliquidity'));
+    if (!liquidityAmount) throw new Error(t('missingliquidity') ?? undefined);
     return approveCallback();
   };
 
@@ -95,7 +96,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
         }
       } else {
         setAttempting(false);
-        throw new Error(t('stakewithoutapproval'));
+        throw new Error(t('stakewithoutapproval') ?? undefined);
       }
     }
   };
@@ -153,7 +154,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
                 max={100}
                 step={1}
                 value={stakePercent}
-                handleChange={(evt: any, value) => {
+                handleChange={(_, value) => {
                   setStakePercent(value as number);
                   setTypedValue(
                     quickBalance

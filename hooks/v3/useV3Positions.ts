@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Result,
   useSingleCallResult,
@@ -150,11 +149,7 @@ export function useV3Positions(
   } = useSingleCallResult(positionManager, 'balanceOf', [account ?? undefined]);
 
   const {
-    fetchPositionsOnFarmer: {
-      positionsOnFarmer,
-      positionsOnFarmerLoading,
-      fetchPositionsOnFarmerFn,
-    },
+    fetchPositionsOnFarmer: { positionsOnFarmer, fetchPositionsOnFarmerFn },
   } = useFarmingSubgraph();
 
   // we don't expect any account balance to ever exceed the bounds of max safe int

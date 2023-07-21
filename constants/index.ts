@@ -23,7 +23,6 @@ import {
   FXCBETH,
   MATIC,
   EMPTY,
-  WMATIC_EXTENDED,
   OLD_QUICK,
   OLD_DQUICK,
   CXETH,

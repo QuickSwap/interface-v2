@@ -38,7 +38,7 @@ export default function PositionPage() {
 
   const positionManager = useV3NFTPositionManagerContract();
   const owner = useSingleCallResult(
-    !!parsedTokenId ? positionManager : null,
+    parsedTokenId ? positionManager : null,
     'ownerOf',
     [parsedTokenId],
   ).result?.[0];

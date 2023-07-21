@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import { BigNumber } from '@ethersproject/bignumber';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { useRouterContract } from 'hooks/useContract';
@@ -195,7 +195,7 @@ const RemoveV2Liquidity: React.FC<{
           .then(calculateGasMargin)
           .catch((error) => {
             console.error(`estimateGas failed`, methodName, args, error);
-            throw new Error(t('removeLiquidityError1'));
+            throw new Error(t('removeLiquidityError1') ?? undefined);
           }),
       ),
     );
@@ -204,7 +204,7 @@ const RemoveV2Liquidity: React.FC<{
     );
     // all estimations failed...
     if (indexOfSuccessfulEstimation === -1) {
-      throw new Error(t('transactionWouldFail'));
+      throw new Error(t('transactionWouldFail') ?? undefined);
     } else {
       const methodName = methodNames[indexOfSuccessfulEstimation];
       const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation];

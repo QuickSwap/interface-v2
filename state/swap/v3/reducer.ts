@@ -38,7 +38,7 @@ export default createReducer<SwapState>(initialState, (builder) =>
     .addCase(
       replaceSwapState,
       (
-        state,
+        _,
         {
           payload: {
             typedValue,

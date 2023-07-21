@@ -41,10 +41,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
     userSlippageTolerance,
     setUserslippageTolerance,
   ] = useUserSlippageTolerance();
-  const [
-    slippageManuallySet,
-    setSlippageManuallySet,
-  ] = useSlippageManuallySet();
+  const [_, setSlippageManuallySet] = useSlippageManuallySet();
   const [ttl, setTtl] = useUserTransactionTTL();
   const { onChangeRecipient } = useSwapActionHandlers();
   const [expertMode, toggleExpertMode] = useExpertModeManager();
@@ -102,7 +99,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           setSlippageManuallySet(true);
         }
       }
-    } catch {}
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const parseCustomDeadline = (value: string) => {
@@ -113,7 +112,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
       if (!Number.isNaN(valueAsInt) && valueAsInt > 0) {
         setTtl(valueAsInt);
       }
-    } catch {}
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (

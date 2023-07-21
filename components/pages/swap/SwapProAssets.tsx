@@ -26,7 +26,7 @@ import {
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 
-const SwapProAssets: React.FC = ({}) => {
+const SwapProAssets: React.FC = () => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;

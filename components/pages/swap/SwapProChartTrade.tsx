@@ -50,7 +50,7 @@ const SwapProChartTrade: React.FC<{
             <th align='right'>{t('txn')}</th>
           </tr>
         )}
-        itemContent={(index, tx) => {
+        itemContent={(_, tx) => {
           const txType = Number(tx.amount0In) > 0 ? 'sell' : 'buy';
           const txAmount0 =
             Number(tx.amount0In) > 0 ? tx.amount0In : tx.amount0Out;

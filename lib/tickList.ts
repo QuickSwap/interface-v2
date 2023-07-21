@@ -54,7 +54,7 @@ export abstract class TickList {
   }
 
   public static getTick(ticks: readonly Tick[], index: number): Tick {
-    const tick = ticks[this.binarySearch(ticks, index)];
+    const tick = ticks[this.binarySearch(ticks, index) ?? 0];
     invariant(tick.index === index, 'NOT_CONTAINED');
     return tick;
   }
@@ -70,14 +70,14 @@ export abstract class TickList {
         return ticks[ticks.length - 1];
       }
       const index = this.binarySearch(ticks, tick);
-      return ticks[index];
+      return ticks[index ?? 0];
     } else {
       invariant(!this.isAtOrAboveLargest(ticks, tick), 'AT_OR_ABOVE_LARGEST');
       if (this.isBelowSmallest(ticks, tick)) {
         return ticks[0];
       }
       const index = this.binarySearch(ticks, tick);
-      return ticks[index + 1];
+      return ticks[(index ?? 0) + 1];
     }
   }
 
@@ -120,13 +120,14 @@ export abstract class TickList {
    * @param tick tick to find the largest tick that is less than or equal to tick
    * @private
    */
-  private static binarySearch(ticks: readonly Tick[], tick: number): number {
+  private static binarySearch(ticks: readonly Tick[], tick: number) {
     invariant(!this.isBelowSmallest(ticks, tick), 'BELOW_SMALLEST');
 
     let l = 0;
     let r = ticks.length - 1;
     let i;
-    while (true) {
+    const condition = true;
+    while (condition) {
       i = Math.floor((l + r) / 2);
 
       if (

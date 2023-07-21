@@ -90,19 +90,19 @@ const isBannedFarm = (farm: IFullFarm | IFarmRewardsData) => {
 export default async function getCNTFarmList(
   chainId: ChainId,
   account: string | null | undefined,
-  resolveENSContentHash: (ensName: string) => Promise<string>,
+  _: (ensName: string) => Promise<string>,
 ): Promise<CNTFarmListInfo> {
-  const info: CNTFarmListInfo = {
-    active: [],
-    closed: [],
-    name: 'CNT Farm List',
-    timestamp: new Date().getTime().toString(),
-    version: {
-      major: 1,
-      minor: 0,
-      patch: 0,
-    },
-  };
+  // const info: CNTFarmListInfo = {
+  //   active: [],
+  //   closed: [],
+  //   name: 'CNT Farm List',
+  //   timestamp: new Date().getTime().toString(),
+  //   version: {
+  //     major: 1,
+  //     minor: 0,
+  //     patch: 0,
+  //   },
+  // };
 
   return fetchFarms(
     chainId || ChainId.MATIC,

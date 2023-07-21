@@ -4,9 +4,8 @@ import { Trade as V3Trade } from 'lib/trade';
 import { ChevronRight } from 'react-feather';
 import { Box } from '@mui/material';
 import { unwrappedToken } from 'utils/unwrappedToken';
-import { FeeAmount } from 'lib/constants';
 
-function LabeledArrow({}: { fee: FeeAmount }) {
+function LabeledArrow() {
   // todo: render the fee in the label
   return <ChevronRight size={14} className='text-secondary' />;
 }
@@ -27,9 +26,7 @@ export default memo(function SwapRoute({
             <div className='flex items-end'>
               <small style={{ margin: '0 0.145rem' }}>{currency.symbol}</small>
             </div>
-            {isLastItem ? null : (
-              <LabeledArrow fee={trade.route.pools[i].fee} />
-            )}
+            {isLastItem ? null : <LabeledArrow />}
           </Fragment>
         );
       })}

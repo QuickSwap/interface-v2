@@ -468,7 +468,7 @@ export function SelectRange({
           {mintInfo.price && (
             <Box textAlign='center'>
               <span>
-                {!!mintInfo.noLiquidity
+                {mintInfo.noLiquidity
                   ? `${t('initialPrice')}:`
                   : `${t('currentPrice')}:`}
                 {currentPrice ?? ''}{' '}

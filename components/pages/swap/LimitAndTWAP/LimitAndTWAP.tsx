@@ -3,7 +3,7 @@ import { CurrencySearchModal } from 'components';
 import { useIsProMode, useActiveWeb3React } from 'hooks';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import useSwapRedirects from 'hooks/useSwapRedirect';
-import React, { FC, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
@@ -37,7 +37,7 @@ const getLogo = (value: string) => {
   return getTokenLogoURL(value).find((it) => it !== 'error') as any;
 };
 
-function TWAPBase({ Component }: { Component: FC<any> }) {
+function TWAPBase({ Component }: { Component: any }) {
   const { account, chainId, library } = useActiveWeb3React();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;

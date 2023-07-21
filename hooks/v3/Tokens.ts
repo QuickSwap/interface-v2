@@ -2,7 +2,6 @@ import { parseBytes32String } from '@ethersproject/strings';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { NEVER_RELOAD, useSingleCallResult } from 'state/multicall/v3/hooks';
-import { useUserAddedTokens } from 'state/user/hooks';
 import { isAddress } from 'utils';
 
 import { useActiveWeb3React } from 'hooks';
@@ -53,8 +52,6 @@ function useTokensFromMap(
 }
 
 export function useAllTokens(): { [address: string]: Token } {
-  const { chainId } = useActiveWeb3React();
-
   const allTokens = useSelectedTokenList();
 
   return useTokensFromMap(allTokens, true);

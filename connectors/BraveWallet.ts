@@ -43,19 +43,17 @@ export class BraveWallet extends Connector {
   /** {@inheritdoc Connector.provider} */
   public provider?: BraveWalletProvider;
 
-  private readonly options?: Parameters<typeof detectEthereumProvider>[0];
   private eagerConnection?: Promise<void>;
 
-  constructor({ actions, options, onError }: BraveWalletConstructorArgs) {
+  constructor({ actions, onError }: BraveWalletConstructorArgs) {
     super(actions, onError);
-    this.options = options;
   }
 
   private async isomorphicInitialize(): Promise<void> {
     if (this.eagerConnection) return;
 
     return (this.eagerConnection = import('@metamask/detect-provider').then(
-      async (m) => {
+      async (_) => {
         const provider = window.ethereum;
         if (provider) {
           this.provider = provider as BraveWalletProvider;

@@ -2,7 +2,6 @@ import React from 'react';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import { Error } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
-import styles from './Badge.module.scss';
 
 interface RangeBadgeProps {
   removed: boolean | undefined;

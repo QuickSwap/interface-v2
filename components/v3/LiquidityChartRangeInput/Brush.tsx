@@ -12,9 +12,6 @@ import styles from './LiquidityChartRangeInput.module.scss';
 // flips the handles draggers when close to the container edges
 const FLIP_HANDLE_THRESHOLD_PX = 20;
 
-// margin to prevent tick snapping from putting the brush off screen
-const BRUSH_EXTENT_MARGIN_PX = 2;
-
 const compare = (
   a: [number, number],
   b: [number, number],
@@ -52,8 +49,6 @@ export const Brush = ({
   const [localBrushExtent, setLocalBrushExtent] = useState<
     [number, number] | null
   >(brushExtent);
-  const [showLabels, setShowLabels] = useState(false);
-  const [hovering, setHovering] = useState(false);
 
   const previousBrushExtent = usePrevious(brushExtent);
 
@@ -143,27 +138,12 @@ export const Brush = ({
     );
   }, [brushExtent, xScale]);
 
-  // show labels when local brush changes
-  useEffect(() => {
-    setShowLabels(true);
-    const timeout = setTimeout(() => setShowLabels(false), 1500);
-    return () => clearTimeout(timeout);
-  }, [localBrushExtent]);
-
   // variables to help render the SVGs
   const flipWestHandle =
     localBrushExtent && xScale(localBrushExtent[0]) > FLIP_HANDLE_THRESHOLD_PX;
   const flipEastHandle =
     localBrushExtent &&
     xScale(localBrushExtent[1]) > innerWidth - FLIP_HANDLE_THRESHOLD_PX;
-
-  const showWestArrow =
-    localBrushExtent &&
-    (xScale(localBrushExtent[0]) < 0 || xScale(localBrushExtent[1]) < 0);
-  const showEastArrow =
-    localBrushExtent &&
-    (xScale(localBrushExtent[0]) > innerWidth ||
-      xScale(localBrushExtent[1]) > innerWidth);
 
   const westHandleInView =
     localBrushExtent &&
@@ -334,8 +314,6 @@ export const Brush = ({
               cursor={'default'}
               ref={brushRef}
               clipPath={`url(#${id}-brush-clip)`}
-              onMouseEnter={() => setHovering(true)}
-              onMouseLeave={() => setHovering(false)}
             />
           </>
         )}

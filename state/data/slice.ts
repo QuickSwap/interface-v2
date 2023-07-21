@@ -1,7 +1,4 @@
-import {
-  BaseQueryApi,
-  BaseQueryFn,
-} from '@reduxjs/toolkit/dist/query/baseQueryTypes';
+import { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { ChainId } from '@uniswap/sdk';
 import { DocumentNode } from 'graphql';
@@ -85,7 +82,7 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
   Pick<ClientError, 'name' | 'message' | 'stack'>,
   Partial<Pick<ClientError, 'request' | 'response'>>
 > {
-  return async ({ document, variables }, { getState }: BaseQueryApi) => {
+  return async ({ document, variables }) => {
     try {
       //TODO: Fix chainId to be grabbed from application state after ChainId is added To application
       // const chainId = (getState() as AppState).application?.chainId ?? ChainId.MATIC;

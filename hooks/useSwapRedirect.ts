@@ -23,7 +23,7 @@ export default function useSwapRedirects() {
     : undefined;
 
   const isEther = useCallback(
-    (currency) => {
+    (currency: any) => {
       // ether does not have address
       if (currency?.address) return false;
 
@@ -64,9 +64,9 @@ export default function useSwapRedirects() {
             );
           }
         } else {
-          // redirectPath = `${currentPath}${
-          //   history.location.search === '' ? '?' : '&'
-          // }currency0=${currencyId}`;
+          redirectPath = `${currentPath}${
+            Object.values(router.query).length === 0 ? '?' : '&'
+          }currency0=${currencyId}`;
         }
       } else {
         if (currency1Str ?? outputCurrencyStr) {
@@ -82,19 +82,19 @@ export default function useSwapRedirects() {
             );
           }
         } else {
-          // redirectPath = `${currentPath}${
-          //   history.location.search === '' ? '?' : '&'
-          // }currency1=${currencyId}`;
+          redirectPath = `${currentPath}${
+            Object.values(router.query).length === 0 ? '?' : '&'
+          }currency1=${currencyId}`;
         }
       }
       router.push(redirectPath);
     },
     [
-      chainIdToUse,
       currency0Str,
       currency1Str,
       currentPath,
       inputCurrencyStr,
+      isEther,
       outputCurrencyStr,
       router,
     ],

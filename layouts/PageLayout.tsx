@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@mui/material';
-import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
+// import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import Header from 'components/Header';
 import Footer from 'components/Footer';
@@ -29,20 +29,20 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   }, [isProMode, name, router.asPath]);
 
-  const intractKey = process.env.NEXT_PUBLIC_INTRACT_KEY;
-  useEffect(() => {
-    if (intractKey) {
-      IntractAttribution(intractKey, {
-        configAllowCookie: true,
-      });
-    }
-  }, [intractKey]);
+  // const intractKey = process.env.NEXT_PUBLIC_INTRACT_KEY;
+  // useEffect(() => {
+  //   if (intractKey) {
+  //     IntractAttribution(intractKey, {
+  //       configAllowCookie: true,
+  //     });
+  //   }
+  // }, [intractKey]);
 
-  useEffect(() => {
-    if (account) {
-      trackCustomWallet(account);
-    }
-  }, [account]);
+  // useEffect(() => {
+  //   if (account) {
+  //     trackCustomWallet(account);
+  //   }
+  // }, [account]);
 
   useEffect(() => {
     if (

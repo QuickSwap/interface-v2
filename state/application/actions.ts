@@ -1,5 +1,4 @@
 import { createAction } from '@reduxjs/toolkit';
-import { ChainId } from '@uniswap/sdk';
 import { TokenList } from '@uniswap/token-lists';
 import { TokenDetail } from './reducer';
 

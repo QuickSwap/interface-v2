@@ -133,7 +133,7 @@ export class Pool {
   public static getAddress(
     tokenA: Token,
     tokenB: Token,
-    fee: FeeAmount,
+    _: FeeAmount,
     initCodeHashManualOverride?: string,
   ): string {
     return computePoolAddress({

@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Swap.module.scss';
 import Image from 'next/image';
 
-export const SwapBuySellWidget: React.FC = ({}) => {
+export const SwapBuySellWidget: React.FC = () => {
   const { t } = useTranslation();
   const SPRITZ_LINK = process.env.NEXT_PUBLIC_SPRITZ_FINANCE_LINK;
 

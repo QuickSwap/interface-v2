@@ -180,10 +180,6 @@ export default function PositionListItem({
 
   const farmingLink = `/farm/v3?tab=my-farms`;
 
-  const isNewest = newestPosition
-    ? newestPosition === +positionDetails.tokenId
-    : undefined;
-
   const removed = _liquidity?.eq(0);
 
   useEffect(() => {

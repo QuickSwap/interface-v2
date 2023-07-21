@@ -31,7 +31,7 @@ const BuyFiatSection: React.FC = () => {
       </Box>
       <Box className={styles.poweredBySection}>
         {t('poweredBy')}
-        <img
+        <Image
           className={styles.meldLogo}
           src='/assets/images/meldIcon.png'
           alt='MELD'

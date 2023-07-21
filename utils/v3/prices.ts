@@ -6,7 +6,7 @@ import {
   Percent,
   TradeType,
 } from '@uniswap/sdk-core';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import {
   ALLOWED_PRICE_IMPACT_HIGH,
   ALLOWED_PRICE_IMPACT_LOW,
@@ -14,9 +14,7 @@ import {
   BLOCKED_PRICE_IMPACT_NON_EXPERT,
 } from 'constants/v3/misc';
 
-const THIRTY_BIPS_FEE = new Percent(JSBI.BigInt(30), JSBI.BigInt(10000));
 const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000));
-const INPUT_FRACTION_AFTER_FEE = ONE_HUNDRED_PERCENT.subtract(THIRTY_BIPS_FEE);
 
 // computes realized lp fee as a percent
 export function computeRealizedLPFeePercent(

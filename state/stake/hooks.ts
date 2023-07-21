@@ -9,7 +9,7 @@ import {
 import dayjs from 'dayjs';
 import { useMemo, useEffect, useState } from 'react';
 import { usePairs } from 'data/Reserves';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
   STAKING_DUAL_REWARDS_INTERFACE,

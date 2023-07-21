@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
-//@ts-ignore
 import IUniswapV2PairABI from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { Interface } from '@ethersproject/abi';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
-import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount, Token } from '@uniswap/sdk-core';
 import { computePairAddress, Pair } from 'utils/v3/computePairAddress';
 import {
   V2Exchanges,

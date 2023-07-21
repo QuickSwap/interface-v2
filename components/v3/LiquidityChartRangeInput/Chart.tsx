@@ -35,11 +35,6 @@ export function Chart({
     [width, height, margins],
   );
 
-  const maxXScale = useMemo(
-    () => series.reduce((acc, el) => (el.price0 > acc ? el.price0 : acc), 0),
-    [series],
-  );
-
   const { xScale, yScale } = useMemo(() => {
     const scales = {
       xScale: scaleLinear()

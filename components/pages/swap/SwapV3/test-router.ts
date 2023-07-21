@@ -300,7 +300,7 @@ export abstract class SwapRouter extends SelfPermit {
 
     // unwrap
     if (routerMustCustody) {
-      if (!!options.fee) {
+      if (options.fee) {
         const feeRecipient: string = validateAndParseAddress(
           options.fee.recipient,
         );

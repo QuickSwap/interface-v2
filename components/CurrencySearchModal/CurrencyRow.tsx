@@ -67,7 +67,6 @@ interface CurrenyRowProps {
   onSelect: () => void;
   isSelected: boolean;
   otherSelected: boolean;
-  style: any;
   isOnSelectedList?: boolean;
   balance: CurrencyAmount | undefined;
   usdPrice: number;
@@ -78,7 +77,6 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   onSelect,
   isSelected,
   otherSelected,
-  style,
   isOnSelectedList,
   balance,
   usdPrice,
@@ -114,7 +112,6 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   // only show add or remove buttons if not on selected list
   return (
     <ListItem
-      style={style}
       key={key}
       onClick={() => {
         if (!isSelected && !otherSelected) onSelect();

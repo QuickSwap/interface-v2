@@ -73,16 +73,13 @@ const DataTable: React.FC<DataTableProps<any>> = ({
   const [rowsPerPage, setRowsPerPage] = useState(rowPerPage);
   const count = size || data.length;
 
-  const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: HeadCell<any>,
-  ) => {
+  const handleRequestSort = (_: any, property: HeadCell<any>) => {
     const isAsc = orderBy.id === property.id && order === 'asc';
     setOrder(isAsc && !property.sortDisabled ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_: any, newPage: number) => {
     setPage(newPage);
   };
 

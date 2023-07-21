@@ -28,7 +28,7 @@ export const formatDollarAmount = (
 export const formatPercent = (
   num: number | undefined,
   digits = 2,
-  round = true,
+  _ = true,
 ) => {
   if (num === 0) return '-';
   if (!num) return '-';

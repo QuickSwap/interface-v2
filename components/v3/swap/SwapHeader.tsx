@@ -8,10 +8,7 @@ interface SwapHeaderProps {
   dynamicFee: number | null;
 }
 
-export default function SwapHeader({
-  allowedSlippage,
-  dynamicFee = null,
-}: SwapHeaderProps) {
+export default function SwapHeader({ dynamicFee = null }: SwapHeaderProps) {
   const { t } = useTranslation();
   return (
     <Box width='100%' mb={1} className='flex justify-between'>
