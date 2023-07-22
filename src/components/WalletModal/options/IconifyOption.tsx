@@ -23,7 +23,7 @@ const IconifyOption: React.FC<WalletOptionProps> = ({
       <Box className='optionIconContainer'>
         <img className='m-auto' src={icon} alt={'Icon'} width={48} />
       </Box>
-      <Box sx={{ maxWidth: '98px', textAlign: 'center' }} mt={0.5}>
+      <Box className='optionHeader' mt={0.5}>
         {header}
       </Box>
       {active && (
