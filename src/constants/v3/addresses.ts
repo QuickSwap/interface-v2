@@ -858,6 +858,8 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(DAI[ChainId.ZKEVM]),
     toV3Token(WBTC[ChainId.ZKEVM]),
     toV3Token(NEW_QUICK[ChainId.ZKEVM]),
+    toV3Token(FRAX[ChainId.ZKEVM]),
+    toV3Token(frxETH[ChainId.ZKEVM]),
   ],
 };
 
@@ -892,6 +894,7 @@ export const SUGGESTED_BASES: {
     MATIC[ChainId.ZKEVM],
     DAI[ChainId.ZKEVM],
     WBTC[ChainId.ZKEVM],
+    NEW_QUICK[ChainId.ZKEVM],
   ],
 };
 

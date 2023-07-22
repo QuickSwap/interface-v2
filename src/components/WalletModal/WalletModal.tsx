@@ -362,6 +362,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       );
     }
     return (
+<<<<<<< HEAD
       <Box paddingTop={4}>
         <Box paddingX={3}>
           <Box className='flex justify-between'>
@@ -385,6 +386,31 @@ const WalletModal: React.FC<WalletModalProps> = ({
                 className={
                   iconify ? 'option-container-iconify' : 'option-container'
                 }
+=======
+      <Box paddingX={3} paddingY={4}>
+        <Box className='flex justify-between'>
+          <h5>{t('connectWallet')}</h5>
+          <Close className='cursor-pointer' onClick={toggleWalletModal} />
+        </Box>
+        <Box mt={4}>
+          {walletView === WALLET_VIEWS.PENDING ? (
+            <PendingView
+              connection={pendingWallet}
+              error={pendingError}
+              setPendingError={setPendingError}
+              tryActivation={tryActivation}
+            />
+          ) : (
+            getOptions()
+          )}
+          {walletView !== WALLET_VIEWS.PENDING && (
+            <Box className='blurb'>
+              <small>{t('newToMatic')}</small>
+              <a
+                href='https://wiki.polygon.technology/docs/tools/wallets/getting-started'
+                target='_blank'
+                rel='noopener noreferrer'
+>>>>>>> dev2
               >
                 {getOptions()}
               </Box>
