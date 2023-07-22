@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 // import { UAuthConnector } from '@uauth/web3-react';
 // import UAuth from '@uauth/js';
 import Option from './Option';
+import WalletOption from './options';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
 import {
@@ -72,6 +73,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const toggleWalletModal = useWalletModalToggle();
 
   const connections = getConnections();
+
+  const iconify = true;
 
   // always reset to account view
   useEffect(() => {
@@ -161,7 +164,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         !isPhantomWallet
       ) {
         return (
-          <Option
+          <WalletOption
             id={`connect-${option.key}`}
             key={option.key}
             color={option.color}
@@ -169,6 +172,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             subheader={null}
             link={'https://phantom.app/download'}
             icon={option.iconName}
+            iconify={iconify}
           />
         );
       } else if (
@@ -176,7 +180,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         !isBraveWallet
       ) {
         return (
-          <Option
+          <WalletOption
             id={`connect-${option.name}`}
             key={option.name}
             color={'#E8831D'}
@@ -184,11 +188,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
             subheader={t('installBraveDesc')}
             link={'https://brave.com/wallet'}
             icon={option.iconName}
+            iconify={iconify}
           />
         );
       } else if (option.name === GlobalConst.walletName.BITKEEP && !isBitKeep) {
         return (
-          <Option
+          <WalletOption
             id={`connect-${option.name}`}
             key={option.name}
             color={'#E8831D'}
@@ -196,6 +201,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             subheader={null}
             link={'https://bitkeep.com/en/download'}
             icon={option.iconName}
+            iconify={iconify}
           />
         );
       } else if (
@@ -203,7 +209,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         !isTrustWallet
       ) {
         return (
-          <Option
+          <WalletOption
             id={`connect-${option.name}`}
             key={option.name}
             color={'#E8831D'}
@@ -211,6 +217,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             subheader={null}
             link={'https://trustwallet.com/'}
             icon={option.iconName}
+            iconify={iconify}
           />
         );
       } else if (
@@ -218,7 +225,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
         !isMetamask
       ) {
         return (
-          <Option
+          <WalletOption
             id={`connect-${option.name}`}
             key={option.name}
             color={'#E8831D'}
@@ -226,6 +233,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             subheader={null}
             link={'https://metamask.io/'}
             icon={MetamaskIcon}
+            iconify={iconify}
           />
         );
       }
@@ -234,7 +242,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       if (isMobile) {
         if (!web3 && !ethereum && option.mobile) {
           return (
-            <Option
+            <WalletOption
               onClick={() => {
                 option.connector !== connector &&
                   !option.href &&
@@ -249,6 +257,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               subheader={null}
               icon={option.iconName}
               installLink={option.installLink}
+              iconify={iconify}
             />
           );
         } else if (
@@ -264,7 +273,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               option.connector === coinbaseWalletConnection.connector))
         ) {
           return (
-            <Option
+            <WalletOption
               onClick={() => {
                 if (option.connector === connector && account) {
                   setWalletView(WALLET_VIEWS.ACCOUNT);
@@ -283,6 +292,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               subheader={null}
               icon={option.iconName}
               installLink={option.installLink}
+              iconify={iconify}
             />
           );
         }
@@ -302,7 +312,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       return (
         !isMobile &&
         !option.mobileOnly && (
-          <Option
+          <WalletOption
             id={`connect-${option.key}`}
             onClick={() => {
               isActive && option.connector === connector
@@ -317,6 +327,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             subheader={null} //use option.descriptio to bring back multi-line
             icon={option.iconName}
             installLink={option.installLink}
+            iconify={iconify}
           />
         )
       );
@@ -351,35 +362,47 @@ const WalletModal: React.FC<WalletModalProps> = ({
       );
     }
     return (
-      <Box paddingX={3} paddingY={4}>
-        <Box className='flex justify-between'>
-          <h5>{t('connectWallet')}</h5>
-          <Close className='cursor-pointer' onClick={toggleWalletModal} />
-        </Box>
-        <Box mt={4}>
-          {walletView === WALLET_VIEWS.PENDING ? (
-            <PendingView
-              connection={pendingWallet}
-              error={pendingError}
-              setPendingError={setPendingError}
-              tryActivation={tryActivation}
-            />
-          ) : (
-            getOptions()
-          )}
-          {walletView !== WALLET_VIEWS.PENDING && (
-            <Box className='blurb'>
-              <small>{t('newToMatic')}</small>
-              <a
-                href='https://docs.matic.network/docs/develop/wallets/getting-started'
-                target='_blank'
-                rel='noopener noreferrer'
+      <Box paddingTop={4}>
+        <Box paddingX={3}>
+          <Box className='flex justify-between'>
+            <h6>{t('connectWallet')}</h6>
+            <Close className='cursor-pointer' onClick={toggleWalletModal} />
+          </Box>
+          <Box my={1} sx={{ color: '#696c80' }}>
+            Connecting your wallet is like &quot;logging in&quot; on Web3.
+            Select your wallet from the options to get started.
+          </Box>
+          <Box className='abc'>
+            {walletView === WALLET_VIEWS.PENDING ? (
+              <PendingView
+                connection={pendingWallet}
+                error={pendingError}
+                setPendingError={setPendingError}
+                tryActivation={tryActivation}
+              />
+            ) : (
+              <Box
+                className={
+                  iconify ? 'option-container-iconify' : 'option-container'
+                }
               >
-                <small>{t('learnWallet')} ↗</small>
-              </a>
-            </Box>
-          )}
+                {getOptions()}
+              </Box>
+            )}
+          </Box>
         </Box>
+        {walletView !== WALLET_VIEWS.PENDING && (
+          <Box paddingY={2.5} className={iconify ? 'blurb-iconify' : 'blurb'}>
+            <small>{t('newToMatic')}</small>
+            <a
+              href='https://docs.matic.network/docs/develop/wallets/getting-started'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <small>{t('learnWallet')} ↗</small>
+            </a>
+          </Box>
+        )}
       </Box>
     );
   }

@@ -15,6 +15,36 @@
     text-decoration: none;
   }
 }
+
+.option-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+
+.option-container-iconify {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.blurb-iconify {
+  display: flex;
+  align-items: center;
+  // justify-content: center;
+  flex-wrap: wrap;
+  border-top: 1px solid $grey12;
+  padding-left: 24px;
+  & a {
+    margin-left: 8px;
+    color: $primary;
+    text-decoration: none;
+  }
+}
+
 .pendingSection {
   display: flex;
   flex-wrap: wrap;
@@ -58,6 +88,26 @@
     box-shadow: 0 0 0 1px $primary;
   }
 }
+
+.optionCardIconfiy {
+  &:hover {
+    cursor: pointer;
+  }
+
+  div.optionIconContainer {
+    border: 2px solid $secondary1;
+    width: 104px;
+    height: 104px;
+    display: flex;
+    margin: auto;
+    border-radius: 24px;
+
+    &:hover {
+      border-color: $primary;
+    }
+  }
+}
+
 .optionCardClickable {
   border: 1px solid transparent;
   background: $secondary1;

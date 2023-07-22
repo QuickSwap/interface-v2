@@ -40,7 +40,6 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
         const newReward = balance * quickPrice;
         const formattedReward = formatCompact(newReward, 18, 3, 3);
         if (formattedReward !== rewards) {
-          console.log('dragon - setting values');
           setRewards(formattedReward);
           setApy(dQUICKAPY);
         }
