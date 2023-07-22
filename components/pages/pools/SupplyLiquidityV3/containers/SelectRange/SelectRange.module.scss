@@ -18,7 +18,8 @@
   border-radius: 12px;
   margin-bottom: 12px;
   align-items: center;
-  & span, & small {
+  & span,
+  & small {
     flex: 1;
     color: $yellow5;
     & a {
@@ -55,7 +56,7 @@
 .poolRangeButtonGroup {
   padding: 0;
   margin: 12px 0 16px;
-  & .MuiButtonGroup-root {
+  & > div {
     margin-bottom: 0;
     & button {
       max-width: unset;
@@ -77,7 +78,7 @@
         color: $textPrimary;
       }
     }
-  } 
+  }
 }
 
 .poolRangeBetaBox {

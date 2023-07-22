@@ -46,8 +46,12 @@ const VersionToggle: React.FC = () => {
             (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
           : '') +
         `/${version}`;
-    console.log('ccc', router.asPath);
-    router.push(redirectPathName);
+    router.push(
+      redirectPathName +
+        (router.pathname.includes('/pools')
+          ? router.asPath.substring(router.asPath.indexOf('?'))
+          : ''),
+    );
   };
 
   return (

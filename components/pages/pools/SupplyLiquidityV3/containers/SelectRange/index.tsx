@@ -385,6 +385,8 @@ export function SelectRange({
                     : '/assets/images/automatic.svg'
                 }
                 alt='gamma range'
+                width={105}
+                height={15}
               />
             </Button>
             <Button
@@ -409,7 +411,12 @@ export function SelectRange({
         <>
           <Box my={1.5} className={styles.poolRangePowerGamma}>
             <span className='text-secondary'>{t('poweredBy')}</span>
-            <Image src='/assets/images/gammaLogo.png' alt='Gamma Logo' />
+            <Image
+              src='/assets/images/gammaLogo.png'
+              alt='Gamma Logo'
+              width={56}
+              height={9}
+            />
           </Box>
           <Box mb={1.5}>
             <small className='weight-600'>{t('selectStrategy')}</small>

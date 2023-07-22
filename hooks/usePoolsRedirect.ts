@@ -16,6 +16,10 @@ export default function usePoolsRedirect() {
     ? (router.query.currencyIdB as string)
     : undefined;
 
+  const currencyParamsArray = Object.keys(router.query)
+    .map((key, index) => [key, Object.values(router.query)[index]])
+    .filter((item) => item[0] !== 'version');
+
   const redirectWithCurrency = useCallback(
     (currency: any, isInput: boolean, isV2 = true) => {
       let redirectPath = '';
@@ -44,9 +48,9 @@ export default function usePoolsRedirect() {
                 : 'ETH'
             }${router.query.version ? `/${router.query.version}` : ''}`;
           } else {
-            // redirectPath = `${currentPath}${
-            //   history.location.search === '' ? '?' : '&'
-            // }currency0=${currencyId}`;
+            redirectPath = `${currentPath}${
+              currencyParamsArray.length === 0 ? '?' : '&'
+            }currency0=${currencyId}`;
           }
         }
       } else {
@@ -71,15 +75,22 @@ export default function usePoolsRedirect() {
               router.query.version ? `/${router.query.version}` : ''
             }`;
           } else {
-            // redirectPath = `${currentPath}${
-            //   history.location.search === '' ? '?' : '&'
-            // }currency1=${currencyId}`;
+            redirectPath = `${currentPath}${
+              currencyParamsArray.length === 0 ? '?' : '&'
+            }currency1=${currencyId}`;
           }
         }
       }
       router.push(redirectPath);
     },
-    [chainIdToUse, currencyIdAParam, currencyIdBParam, currentPath, router],
+    [
+      chainIdToUse,
+      currencyIdAParam,
+      currencyIdBParam,
+      currentPath,
+      router,
+      currencyParamsArray,
+    ],
   );
 
   const redirectWithSwitch = useCallback(

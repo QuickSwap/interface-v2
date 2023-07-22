@@ -410,225 +410,235 @@ export default function PositionListItemDetails({
           }
         />
       )}
-      <Box className={styles.v3PoolLiquidityItemDetails}>
-        <Box className='flex items-center justify-between'>
-          <Box>
-            <p className='small weight-600'>{t('liquidity')}</p>
-            <Box mt='5px'>
-              <p className='small weight-600'>
-                ${formatCurrencyAmount(fiatValueOfLiquidity, 4)}
-              </p>
-            </Box>
-          </Box>
-          {ownsNFT && (
-            <Box className='flex'>
-              <Button onClick={() => setOpenIncreaseLiquidityModal(true)}>
-                {t('add')}
-              </Button>
-              <Box ml={1}>
-                {_onFarming || _liquidity.eq(0) ? (
-                  <CustomTooltip
-                    title={
-                      _onFarming
-                        ? t('mustRemoveFromFarmRemoveLiquidity')
-                        : t('noLiquidityPosition')
-                    }
-                  >
-                    <div className='button bg-primary'>
-                      <span>{t('remove')}</span>
-                    </div>
-                  </CustomTooltip>
-                ) : (
-                  <Button onClick={() => setOpenRemoveLiquidityModal(true)}>
-                    {t('remove')}
-                  </Button>
-                )}
-              </Box>
-            </Box>
-          )}
-        </Box>
-        <Box mt={2} className={styles.v3PoolItemDetailsPanel}>
-          <Box pt='4px' className='flex items-center justify-between'>
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={currencyQuote} size='24px' />
-              <Box ml={1}>
-                <p>{currencyQuote?.symbol}</p>
-              </Box>
-            </Box>
-            <Box className='flex items-center'>
-              <Box mr={1}>
-                <p>
-                  {inverted
-                    ? formatCurrencyAmount(position?.amount0, 4)
-                    : formatCurrencyAmount(position?.amount1, 4)}
-                </p>
-              </Box>
-              {typeof ratio === 'number' && !removed && (
-                <Badge text={`${inverted ? ratio : 100 - ratio}%`}></Badge>
-              )}
-            </Box>
-          </Box>
-          <Box mt='16px' pb='4px' className='flex items-center justify-between'>
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={currencyBase} size='24px' />
-              <Box ml={1}>
-                <p>{currencyBase?.symbol}</p>
-              </Box>
-            </Box>
-            <Box className='flex items-center'>
-              <Box mr={1}>
-                <p>
-                  {inverted
-                    ? formatCurrencyAmount(position?.amount1, 4)
-                    : formatCurrencyAmount(position?.amount0, 4)}
-                </p>
-              </Box>
-              {typeof ratio === 'number' && !removed && (
-                <Badge text={`${inverted ? 100 - ratio : ratio}%`}></Badge>
-              )}
-            </Box>
-          </Box>
-        </Box>
-        <Box mt={3} className='flex items-center justify-between'>
-          <Box>
-            <p className='small weight-600'>{t('unclaimedFees')}</p>
-            <Box mt='5px'>
-              <p className='small weight-600'>
-                $
-                {_fiatValueOfFees?.greaterThan(new Fraction(1, 100))
-                  ? +_fiatValueOfFees.toFixed(2, { groupSeparator: ',' }) < 0.01
-                    ? '<0.01'
-                    : _fiatValueOfFees?.toFixed(2, {
-                        groupSeparator: ',',
-                      })
-                  : '-'}
-              </p>
-            </Box>
-          </Box>
-          {ownsNFT &&
-            (feeValue0?.greaterThan(0) ||
-              feeValue1?.greaterThan(0) ||
-              !!collectMigrationHash) && (
-              <Button
-                disabled={collecting || !!collectMigrationHash}
-                onClick={() => showCollectConfirm(true)}
-              >
-                {!!collectMigrationHash && !isCollectPending
-                  ? t('claimed')
-                  : isCollectPending || collecting
-                  ? t('claiming')
-                  : t('claim')}
-              </Button>
-            )}
-        </Box>
-        <Box mt={2} className={styles.v3PoolItemDetailsPanel}>
-          <Box pt='4px' className='flex items-center justify-between'>
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={feeValueUpper?.currency} size='24px' />
-              <Box ml={1}>
-                <p>{feeValueUpper?.currency?.symbol}</p>
-              </Box>
-            </Box>
-            <p>
-              {feeValueUpper ? formatCurrencyAmount(feeValueUpper, 4) : '-'}
-            </p>
-          </Box>
-          <Box mt='16px' pb='4px' className='flex items-center justify-between'>
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={feeValueLower?.currency} size='24px' />
-              <Box ml={1}>
-                <p>{feeValueLower?.currency?.symbol}</p>
-              </Box>
-            </Box>
-            <p>
-              {feeValueLower ? formatCurrencyAmount(feeValueLower, 4) : '-'}
+      <Box className='flex items-center justify-between'>
+        <Box>
+          <p className='small weight-600'>{t('liquidity')}</p>
+          <Box mt='5px'>
+            <p className='small weight-600'>
+              ${formatCurrencyAmount(fiatValueOfLiquidity, 4)}
             </p>
           </Box>
         </Box>
-        {showCollectAsWeth && (
-          <Box mt={2} className='flex items-center'>
-            <Box mr={1}>
-              <p>
-                {t('collectAsWmatic', {
-                  symbol: chainId ? WETH[chainId].symbol : '',
-                })}
-              </p>
-            </Box>
-            <ToggleSwitch
-              toggled={receiveWETH}
-              onToggle={() => setReceiveWETH((receiveWETH) => !receiveWETH)}
-            />
-          </Box>
-        )}
-        <Box mt={3} className='flex items-center justify-between'>
-          <small>{t('selectedRange')}</small>
-          {currencyBase && currencyQuote && (
-            <RateToggle
-              currencyA={currencyBase}
-              currencyB={currencyQuote}
-              handleRateToggle={() => setManuallyInverted(!manuallyInverted)}
-            />
-          )}
-        </Box>
-        <Box mt={2} className='flex justify-between'>
-          {priceLower && (
-            <Box
-              width={priceUpper ? '49%' : '100%'}
-              className={`${styles.v3PoolItemDetailsPanel} ${styles.v3PoolItemDetailsInfo}`}
+        {ownsNFT && (
+          <Box className='flex'>
+            <Button
+              className={styles.v3PoolLiquidityDetailsButton}
+              variant='contained'
+              onClick={() => setOpenIncreaseLiquidityModal(true)}
             >
-              <p>{t('minPrice')}</p>
-              <h6>{formatTickPrice(priceLower, tickAtLimit, Bound.LOWER)}</h6>
-              <p>
-                {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
-              </p>
-              {inRange && (
-                <p>
-                  {t('positionWill100PercentatthisPrice', {
-                    symbol: currencyBase?.symbol,
-                  })}
-                  .
-                </p>
+              {t('add')}
+            </Button>
+            <Box ml={1}>
+              {_onFarming || _liquidity.eq(0) ? (
+                <CustomTooltip
+                  title={
+                    _onFarming
+                      ? t('mustRemoveFromFarmRemoveLiquidity')
+                      : t('noLiquidityPosition')
+                  }
+                >
+                  <div>
+                    <Button
+                      className={styles.v3PoolLiquidityDetailsButton}
+                      variant='contained'
+                      disabled
+                    >
+                      {t('remove')}
+                    </Button>
+                  </div>
+                </CustomTooltip>
+              ) : (
+                <Button
+                  className={styles.v3PoolLiquidityDetailsButton}
+                  variant='contained'
+                  onClick={() => setOpenRemoveLiquidityModal(true)}
+                >
+                  {t('remove')}
+                </Button>
               )}
             </Box>
-          )}
-          {priceUpper && (
-            <Box
-              width={priceLower ? '49%' : '100%'}
-              className={`${styles.v3PoolItemDetailsPanel} ${styles.v3PoolItemDetailsInfo}`}
-            >
-              <p>{t('maxPrice')}</p>
-              <h6>{formatTickPrice(priceUpper, tickAtLimit, Bound.LOWER)}</h6>
-              <p>
-                {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
-              </p>
-              {inRange && (
-                <p>
-                  {t('positionWill100PercentatthisPrice', {
-                    symbol: currencyQuote?.symbol,
-                  })}
-                  .
-                </p>
-              )}
-            </Box>
-          )}
-        </Box>
-        {_pool && (
-          <Box
-            mt={2}
-            className={`${styles.v3PoolItemDetailsPanel} ${styles.v3PoolItemDetailsInfo}`}
-          >
-            <p>{t('currentPrice')}</p>
-            <h6>
-              {(inverted ? _pool.token1Price : _pool.token0Price).toSignificant(
-                6,
-              )}
-            </h6>
-            <p>
-              {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
-            </p>
           </Box>
         )}
       </Box>
+      <Box mt={2} className={styles.v3PoolItemDetailsPanel}>
+        <Box pt='4px' className='flex items-center justify-between'>
+          <Box className='flex items-center'>
+            <CurrencyLogo currency={currencyQuote} size='24px' />
+            <Box ml={1}>
+              <p>{currencyQuote?.symbol}</p>
+            </Box>
+          </Box>
+          <Box className='flex items-center'>
+            <Box mr={1}>
+              <p>
+                {inverted
+                  ? formatCurrencyAmount(position?.amount0, 4)
+                  : formatCurrencyAmount(position?.amount1, 4)}
+              </p>
+            </Box>
+            {typeof ratio === 'number' && !removed && (
+              <Badge text={`${inverted ? ratio : 100 - ratio}%`}></Badge>
+            )}
+          </Box>
+        </Box>
+        <Box mt='16px' pb='4px' className='flex items-center justify-between'>
+          <Box className='flex items-center'>
+            <CurrencyLogo currency={currencyBase} size='24px' />
+            <Box ml={1}>
+              <p>{currencyBase?.symbol}</p>
+            </Box>
+          </Box>
+          <Box className='flex items-center'>
+            <Box mr={1}>
+              <p>
+                {inverted
+                  ? formatCurrencyAmount(position?.amount1, 4)
+                  : formatCurrencyAmount(position?.amount0, 4)}
+              </p>
+            </Box>
+            {typeof ratio === 'number' && !removed && (
+              <Badge text={`${inverted ? 100 - ratio : ratio}%`}></Badge>
+            )}
+          </Box>
+        </Box>
+      </Box>
+      <Box mt={3} className='flex items-center justify-between'>
+        <Box>
+          <p className='small weight-600'>{t('unclaimedFees')}</p>
+          <Box mt='5px'>
+            <p className='small weight-600'>
+              $
+              {_fiatValueOfFees?.greaterThan(new Fraction(1, 100))
+                ? +_fiatValueOfFees.toFixed(2, { groupSeparator: ',' }) < 0.01
+                  ? '<0.01'
+                  : _fiatValueOfFees?.toFixed(2, {
+                      groupSeparator: ',',
+                    })
+                : '-'}
+            </p>
+          </Box>
+        </Box>
+        {ownsNFT &&
+          (feeValue0?.greaterThan(0) ||
+            feeValue1?.greaterThan(0) ||
+            !!collectMigrationHash) && (
+            <Button
+              className={styles.v3PoolLiquidityDetailsButton}
+              variant='contained'
+              disabled={collecting || !!collectMigrationHash}
+              onClick={() => showCollectConfirm(true)}
+            >
+              {!!collectMigrationHash && !isCollectPending
+                ? t('claimed')
+                : isCollectPending || collecting
+                ? t('claiming')
+                : t('claim')}
+            </Button>
+          )}
+      </Box>
+      <Box mt={2} className={styles.v3PoolItemDetailsPanel}>
+        <Box pt='4px' className='flex items-center justify-between'>
+          <Box className='flex items-center'>
+            <CurrencyLogo currency={feeValueUpper?.currency} size='24px' />
+            <Box ml={1}>
+              <p>{feeValueUpper?.currency?.symbol}</p>
+            </Box>
+          </Box>
+          <p>{feeValueUpper ? formatCurrencyAmount(feeValueUpper, 4) : '-'}</p>
+        </Box>
+        <Box mt='16px' pb='4px' className='flex items-center justify-between'>
+          <Box className='flex items-center'>
+            <CurrencyLogo currency={feeValueLower?.currency} size='24px' />
+            <Box ml={1}>
+              <p>{feeValueLower?.currency?.symbol}</p>
+            </Box>
+          </Box>
+          <p>{feeValueLower ? formatCurrencyAmount(feeValueLower, 4) : '-'}</p>
+        </Box>
+      </Box>
+      {showCollectAsWeth && (
+        <Box mt={2} className='flex items-center'>
+          <Box mr={1}>
+            <p>
+              {t('collectAsWmatic', {
+                symbol: chainId ? WETH[chainId].symbol : '',
+              })}
+            </p>
+          </Box>
+          <ToggleSwitch
+            toggled={receiveWETH}
+            onToggle={() => setReceiveWETH((receiveWETH) => !receiveWETH)}
+          />
+        </Box>
+      )}
+      <Box mt={3} className='flex items-center justify-between'>
+        <small>{t('selectedRange')}</small>
+        {currencyBase && currencyQuote && (
+          <RateToggle
+            currencyA={currencyBase}
+            currencyB={currencyQuote}
+            handleRateToggle={() => setManuallyInverted(!manuallyInverted)}
+          />
+        )}
+      </Box>
+      <Box mt={2} className='flex justify-between'>
+        {priceLower && (
+          <Box
+            width={priceUpper ? '49%' : '100%'}
+            className={`${styles.v3PoolItemDetailsPanel} ${styles.v3PoolItemDetailsInfo}`}
+          >
+            <p>{t('minPrice')}</p>
+            <h6>{formatTickPrice(priceLower, tickAtLimit, Bound.LOWER)}</h6>
+            <p>
+              {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
+            </p>
+            {inRange && (
+              <p>
+                {t('positionWill100PercentatthisPrice', {
+                  symbol: currencyBase?.symbol,
+                })}
+                .
+              </p>
+            )}
+          </Box>
+        )}
+        {priceUpper && (
+          <Box
+            width={priceLower ? '49%' : '100%'}
+            className={`${styles.v3PoolItemDetailsPanel} ${styles.v3PoolItemDetailsInfo}`}
+          >
+            <p>{t('maxPrice')}</p>
+            <h6>{formatTickPrice(priceUpper, tickAtLimit, Bound.LOWER)}</h6>
+            <p>
+              {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
+            </p>
+            {inRange && (
+              <p>
+                {t('positionWill100PercentatthisPrice', {
+                  symbol: currencyQuote?.symbol,
+                })}
+                .
+              </p>
+            )}
+          </Box>
+        )}
+      </Box>
+      {_pool && (
+        <Box
+          mt={2}
+          className={`${styles.v3PoolItemDetailsPanel} ${styles.v3PoolItemDetailsInfo}`}
+        >
+          <p>{t('currentPrice')}</p>
+          <h6>
+            {(inverted ? _pool.token1Price : _pool.token0Price).toSignificant(
+              6,
+            )}
+          </h6>
+          <p>
+            {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
+          </p>
+        </Box>
+      )}
     </>
   );
 }
