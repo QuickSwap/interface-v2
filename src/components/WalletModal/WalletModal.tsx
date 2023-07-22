@@ -368,11 +368,10 @@ const WalletModal: React.FC<WalletModalProps> = ({
             <h6>{t('connectWallet')}</h6>
             <Close className='cursor-pointer' onClick={toggleWalletModal} />
           </Box>
-          <Box my={1} sx={{ color: '#696c80' }}>
-            Connecting your wallet is like &quot;logging in&quot; on Web3.
-            Select your wallet from the options to get started.
+          <Box my={1} className='walletDescriptionContainer'>
+            {t('walletDescription')}
           </Box>
-          <Box className='abc'>
+          <Box>
             {walletView === WALLET_VIEWS.PENDING ? (
               <PendingView
                 connection={pendingWallet}
@@ -395,7 +394,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
           <Box paddingY={2.5} className={iconify ? 'blurb-iconify' : 'blurb'}>
             <small>{t('newToMatic')}</small>
             <a
-              href='https://docs.matic.network/docs/develop/wallets/getting-started'
+              href='https://wiki.polygon.technology/docs/tools/wallets/getting-started'
               target='_blank'
               rel='noopener noreferrer'
             >
