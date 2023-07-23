@@ -3,16 +3,21 @@ import React, { useEffect, useRef } from 'react';
 const TickerWidget: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const refElement = ref.current;
     const script = document.createElement('script');
     script.src =
       'https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';
     script.async = true;
     script.innerHTML = '{"colorTheme": "dark"}';
-    ref.current?.appendChild(script);
+    if (refElement) {
+      refElement.appendChild(script);
+    }
 
     // let's do the memory clean up on destruction of component.
     return () => {
-      // document.removeChild(script);
+      if (refElement && refElement.contains(script)) {
+        refElement.removeChild(script);
+      }
     };
   }, []);
 

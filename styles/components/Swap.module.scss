@@ -69,21 +69,22 @@
   & small {
     color: $grey19;
   }
-  & .swapSlippage {
-    cursor: pointer;
-    & small {
-      color: $primary;
-    }
-    & svg {
-      margin-left: 8px;
-    }
-  }
   & > div {
     display: flex;
     align-items: center;
     & > div {
       margin-left: 4px;
     }
+  }
+}
+
+.swapSlippage {
+  cursor: pointer;
+  & small {
+    color: $primary;
+  }
+  & svg {
+    margin-left: 8px;
   }
 }
 

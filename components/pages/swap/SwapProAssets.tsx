@@ -25,6 +25,7 @@ import {
   isAddress,
 } from 'utils';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
+import styles from 'styles/components/CurrencySearchModal.module.scss';
 
 const SwapProAssets: React.FC = () => {
   const { t } = useTranslation();
@@ -299,7 +300,7 @@ const SwapProAssets: React.FC = () => {
     <Box className='flex flex-col'>
       <p className='weight-600 text-secondary text-uppercase'>{t('assets')}</p>
       {/* Search Box */}
-      <Box className='searchInputWrapper'>
+      <Box className={styles.searchInputWrapper}>
         <Search />
         <input
           type='text'

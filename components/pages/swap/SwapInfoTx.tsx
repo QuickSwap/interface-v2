@@ -6,6 +6,7 @@ import utc from 'dayjs/plugin/utc';
 import { Skeleton } from '@mui/lab';
 import { formatCompact, formatNumber } from 'utils';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/pages/Swap.module.scss';
 dayjs.extend(utc);
 
 const SwapInfoTx: React.FC<{
@@ -42,7 +43,7 @@ const SwapInfoTx: React.FC<{
           { label: `24${t('hour')}`, value: '24_hour' },
         ]}
       />
-      <Box className='swapTxInfo'>
+      <Box className={styles.swapTxInfo}>
         <Box>
           <small className='text-secondary'>{t('transactions')}:</small>
           {filteredTxs ? (

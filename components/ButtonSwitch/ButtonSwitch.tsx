@@ -38,7 +38,7 @@ const ButtonSwitch: React.FC<ButtonSwitchProps> = ({
             onChange && onChange(newValue);
           }}
           classes={{
-            indicator: 'indicator',
+            indicator: styles.indicator,
           }}
         >
           {items.map((tab, index) => {

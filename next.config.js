@@ -15,6 +15,18 @@ const nextConfig = {
     '@orbs-network/twap-ui-quickswap',
   ],
   i18n,
+  images: {
+    domains: [
+      'assets.coingecko.com',
+      'i.imgur.com',
+      'pbs.twimg.com',
+      's2.coinmarketcap.com',
+      'data.everrise.com',
+      'res.cloudinary.com',
+      'augury.finance',
+      'encrypted-tbn0.gstatic.com',
+    ],
+  },
   webpack(config, { isServer }) {
     if (!isServer) {
       config.resolve = {

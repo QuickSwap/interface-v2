@@ -14,6 +14,7 @@ import EditIcon from 'svgs/EditIcon.svg';
 import { basisPointsToPercent } from 'utils';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
+import styles from 'styles/components/Swap.module.scss';
 
 interface TradeSummaryProps {
   optimalRate: OptimalRate;
@@ -50,20 +51,20 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      <Box className='summaryRow'>
+      <Box className={styles.summaryRow}>
         <Box>
           <small>{t('slippage')}:</small>
           <QuestionHelper text={t('slippageHelper')} />
         </Box>
         <Box
           onClick={() => setOpenSettingsModal(true)}
-          className='swapSlippage'
+          className={styles.swapSlippage}
         >
           <small>{Number(allowedSlippage.toSignificant())}%</small>
           <EditIcon />
         </Box>
       </Box>
-      <Box className='summaryRow'>
+      <Box className={styles.summaryRow}>
         <Box>
           <small>{isExactIn ? t('minReceived') : t('maxSold')}:</small>
           <QuestionHelper text={t('txLimitHelper')} />
@@ -79,7 +80,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
           <CurrencyLogo currency={currency} size='16px' />
         </Box>
       </Box>
-      <Box className='summaryRow'>
+      <Box className={styles.summaryRow}>
         <Box>
           <small>{t('priceimpact')}:</small>
           <QuestionHelper text={t('priceImpactHelper')} />

@@ -25,8 +25,9 @@ const SwapBuySellMiniWidget: React.FC = () => {
             <small>{t('poweredBy')}</small>
             <Image
               className='meldLogo'
-              src='assets/images/meldIcon.png'
+              src='/assets/images/meldIcon.png'
               alt='MELD'
+              width={48}
               height={15}
               style={{ marginLeft: 6 }}
             />

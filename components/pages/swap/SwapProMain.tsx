@@ -10,6 +10,7 @@ import SwapProChartTrade from './SwapProChartTrade';
 import SwapProInfo from './SwapProInfo';
 import SwapProTransactions from './SwapProTransactions';
 import TickerWidget from './TickerWidget';
+import styles from 'styles/pages/Swap.module.scss';
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -179,7 +180,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
           </Grid>
           <Grid item xs={12} lg={6}>
             <Item
-              className='bg-palette swapProWrapper'
+              className={`bg-palette ${styles.swapProWrapper}`}
               style={{ maxHeight: '100vh', minHeight: '500px', padding: '0' }}
             >
               <SwapProChartTrade

@@ -239,9 +239,9 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  .reflex-container {
+  & > div {
     flex: 1;
-    .top-pane {
+    & > div {
       overflow: hidden;
 
       iframe {
