@@ -39,6 +39,7 @@ import {
   DD,
   dDD,
   frxETH,
+  PUSH,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -716,8 +717,8 @@ export const GammaPairs: {
     ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xbbba073c31bf03b8acf7c28ef0738decf3695683': [
       {
-        type: Presets.GAMMA_NARROW,
-        title: 'Narrow',
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
         address: '0xef4f95d8c252d64308c04f711fb31892cc4c9965',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
@@ -725,8 +726,8 @@ export const GammaPairs: {
         pid: 46,
       },
       {
-        type: Presets.GAMMA_WIDE,
-        title: 'Wide',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
         address: '0x62f88fb208df717b035325d065c6919d7913b937',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
@@ -1120,6 +1121,17 @@ export const GammaPairs: {
         pid: 82,
       },
     ],
+    '0x58001cc1a9e17a20935079ab40b1b8f4fc19efd1-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x45a743cd8c58c96cbd566ece33c83698e2e49424',
+        token0Address: '0x58001cc1a9e17a20935079ab40b1b8f4fc19efd1',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 84,
+      },
+    ],
   },
   [ChainId.MUMBAI]: {},
   [ChainId.DOEGCHAIN_TESTNET]: {},
@@ -1426,6 +1438,7 @@ export const GlobalValue = {
         FXCBETH[ChainId.MATIC],
         RMATIC[ChainId.MATIC],
         WEFI[ChainId.MATIC],
+        PUSH[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],

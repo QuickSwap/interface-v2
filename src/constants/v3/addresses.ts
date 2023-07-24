@@ -745,6 +745,16 @@ export const frxETH: { [chainId: number]: Token } = {
   ),
 };
 
+export const PUSH: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x58001cc1a9e17a20935079ab40b1b8f4fc19efd1',
+    18,
+    'PUSH',
+    'Ethereum Push Notification Service (PoS)',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
