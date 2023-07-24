@@ -24,8 +24,6 @@ const activeTourStep = (selector, event) => {
         }
     })
   }
-  }else{
-    event.cancel()
   }
 }
 
@@ -33,14 +31,9 @@ const activeTourStep = (selector, event) => {
 
 
 const newSteps = [
-  
   {
     id: "welcome",
     title: "",
-    showOn(){
-      let isConnected = localStorage.getItem('eagerconnect') && JSON.parse(localStorage.getItem('eagerconnect'));
-      return isConnected === null
-    }, 
     text: [
       `
       <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Connect your web3 wallet</div>
@@ -82,10 +75,6 @@ const newSteps = [
       <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Select a wallet</div>
       <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Choose any of the shown non-custodial web3 wallets. Make sure you have it installed in your browser. Alternatively you can also scan QR code and connect via wallet connect supported wallets.</div>
       `,
-    showOn(){
-      let isConnected = localStorage.getItem('eagerconnect') && JSON.parse(localStorage.getItem('eagerconnect'));
-      return isConnected === null
-    }, 
     attachTo: { element: ".Modal-content", on: "right" },
     buttons: [
       {
@@ -494,9 +483,15 @@ const newSteps = [
       },
     ],
   },
+
+
+
+
   {
     id: "leverageSlider",
+    classes: "shepherd-expanded",
     title:'',
+    attachTo: { element: ".Exchange-leverage-slider", on: "left" },
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ((Object.values(swapPptionV2).includes("Short") === true || Object.values(swapPptionV2).includes("Long") === true) );
@@ -513,12 +508,9 @@ const newSteps = [
     },
     
     text: `
-    </div>
     <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Choose the leverage </div>
     <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">"Leverage" in trading is using borrowed funds to amplify your investment, potentially increasing both gains and losses. Be cautious, don’t use too much leverage.</div>
             `,
-    attachTo: { element: ".App-slider", on: "left" },
-    scrollTo: true,
     buttons: [
       {
         type:'complete',
@@ -537,9 +529,7 @@ const newSteps = [
           this.back();
         },
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
+        <div style=" display: flex; align-items: center;">
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
@@ -1002,7 +992,7 @@ const newSteps = [
     <div style="color: #061341; font-size: 25px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap"> Click on <span class="ClickOnSwapLongShortTokenLabel"></span> ETH</div>
     
             `,
-    attachTo: { element: ".Exchange-swap-button", on: "left" },
+    attachTo: { element: ".long-short-swap-button", on: "left" },
 
     scrollTo: true,
     buttons: [
@@ -1032,7 +1022,7 @@ const newSteps = [
       {
         classes:'ClickOnSwapLongShortTokenNext',
         action(){
-          document.querySelector(".Exchange-swap-button").click();   
+          document.querySelector(".long-short-swap-button").click();   
           this.next();
         },
         text: `
@@ -1166,7 +1156,9 @@ const newSteps = [
       {
         action(){
           document.querySelector(".Confirmation-box-button").click();
-          this.next();
+          if(localStorage.getItem('leaveGasLimit') !== "true" && document.querySelector(".Confirmation-box-button").innerHTML !== "Longing..."){
+            this.next();
+          }
         },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
@@ -1261,7 +1253,16 @@ const newSteps = [
             </div>
         `,
       },
-      
+      {
+        type:'back',
+        text:'back',
+        action(){
+          
+          if(!document.querySelector('.Exchange-swap-box').querySelector('.Confirmation-box')){
+            console.log("Exchange-swap-box .Confirmation-box")
+          }
+        }
+      },
       {
         action(){
           this.next(); 
@@ -1842,7 +1843,7 @@ const newSteps = [
     id: "CloseModalMarketClose",
     title: "",
     showOn(){
-      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      let swapPptionV2 = localStorage.getItem('Swap-option-v2')  && JSON.parse(localStorage.getItem('Swap-option-v2'));
       return ( document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit' && document.querySelector(".PositionSellerTabs .active").innerHTML === 'Market' && (Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true) );
     },
     text: `
@@ -1898,10 +1899,33 @@ const newSteps = [
   {
     id: "feedback",
     title: "",    
+    when:{
+      show:function(){
+        document.querySelector('.feedback-rating').querySelectorAll('li').forEach(e=>{
+          
+          e.addEventListener('click',()=>{
+            if(document.querySelector('.feedback-rating .active')){
+                document.querySelector('.feedback-rating .active').classList.remove('active')
+              }
+            e.classList.add('active')
+            document.querySelector('.submit-feedback-button').disabled = false
+          })
+        })  
+      }
+    },
     text: [
       `
       <div style="color: #061341;  font-size: 28px;   line-height: 36px;text-align:center; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Rate your experience</div>
-      <div style="text-align:center"><img src="/feedback.png"/></div>
+      
+      <div style="text-align:center">
+        <ul class="feedback-rating">
+          <li><img src="/feedback1.svg"/></li>
+          <li><img src="/feedback2.svg"/></li>
+          <li><img src="/feedback3.svg"/></li>
+          <li><img src="/feedback4.svg"/></li>
+          <li><img src="/feedback5.svg"/></li>
+        </ul>
+      </div>
     `,
     ],
     classes: "shepherd shepherd-welcome",
@@ -1918,6 +1942,8 @@ const newSteps = [
       },
       {
         type:'complete',
+        disabled:true,
+        classes:"submit-feedback-button",
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Submit</div>

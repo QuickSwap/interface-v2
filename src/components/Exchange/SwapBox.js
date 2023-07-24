@@ -1542,9 +1542,13 @@ export default function SwapBox(props) {
     if (shouldRaiseGasError(getTokenInfo(infoTokens, fromTokenAddress), fromAmount)) {
       setIsSubmitting(false);
       setIsPendingConfirmation(false);
+      localStorage.setItem('leaveGasLimit','true')
       helperToast.error(
         `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ${getConstant(chainId, "nativeTokenSymbol")} for gas`
       );
+      setTimeout(()=>{
+        localStorage.removeItem('leaveGasLimit')
+      },7000)
       return;
     }
 
@@ -2237,7 +2241,7 @@ export default function SwapBox(props) {
         )}
         <div className="Exchange-swap-button-container ">
           <button
-            className="App-cta Exchange-swap-button swap-button leverage-btn"
+            className="App-cta Exchange-swap-button long-short-swap-button swap-button leverage-btn"
             onClick={onClickPrimary}
             disabled={!isPrimaryEnabled()}
           >

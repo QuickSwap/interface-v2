@@ -420,7 +420,11 @@ export const Exchange = forwardRef((props, ref) => {
 
   const fromTokenAddress = tokenSelection[swapOption].from;
   const toTokenAddress = tokenSelection[swapOption].to;
-
+  useEffect(()=>{
+    if(Object.keys(JSON.parse(localStorage.getItem('Swap-option-v2'))).length === 0){
+      setSwapOption(LONG)
+    }
+  },[])
   const setFromTokenAddress = useCallback(
     (selectedSwapOption, address) => {
       const newTokenSelection = JSON.parse(JSON.stringify(tokenSelection));
