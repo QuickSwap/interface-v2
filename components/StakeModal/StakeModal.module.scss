@@ -27,12 +27,12 @@
   }
 }
 
-.v3-farm-stake-modal-position-selected {
+.v3FarmStakeModalPositionSelected {
   border: 1px solid $primary;
   box-shadow: 0 0 5px 5px $blue6;
 }
 
-.v3-farm-stake-position-check {
+.v3FarmStakePositionCheck {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -41,11 +41,11 @@
   border-radius: 8px;
 }
 
-.v3-farm-stake-position-unchecked {
+.v3FarmStakePositionUnchecked {
   border: 1px solid $secondary;
 }
 
-.v3-farm-stake-position-checked {
+.v3FarmStakePositionChecked {
   background-color: $primary;
   display: flex;
   align-items: center;
@@ -55,7 +55,7 @@
   }
 }
 
-.v3-stake-liquidity-link {
+.v3StakeLiquidityLink {
   background-color: $primary;
   padding: 6px 10px;
   border-radius: 8px;

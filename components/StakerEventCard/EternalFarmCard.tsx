@@ -68,7 +68,9 @@ export function EternalFarmCard({
   const { t } = useTranslation();
   const apr = aprs ? aprs[id] : undefined;
   const router = useRouter();
-  const farmStatus = router.query ? router.query.farmStatus : undefined;
+  const farmStatus = router.query
+    ? router.query.farmStatus ?? 'active'
+    : 'active';
   const poolApr = poolAprs ? poolAprs[pool.id] : undefined;
   const totalAPR =
     (poolApr && poolApr > 0 ? poolApr : 0) + (apr && apr > 0 ? apr : 0);
@@ -235,6 +237,7 @@ export function EternalFarmCard({
       <Box width={isMobile ? '100%' : '10%'}>
         {farmStatus === 'active' && (
           <Button
+            variant='contained'
             fullWidth
             style={{ height: 40, borderRadius: 10 }}
             onClick={farmHandler}

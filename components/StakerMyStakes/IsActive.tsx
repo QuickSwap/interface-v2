@@ -5,6 +5,7 @@ import { usePool } from 'hooks/usePools';
 import { Box } from '@mui/material';
 import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
 import { useTranslation } from 'next-i18next';
+import styles from './StakerMystakes.module.scss';
 
 export function IsActive({ el }: { el: any }) {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ export function IsActive({ el }: { el: any }) {
     <Box className='flex items-center'>
       <Box
         mr='6px'
-        className={`v3-stake-active-dot ${
+        className={`${styles.v3StakeActiveDot} ${
           outOfRange ? 'bg-error' : 'bg-success'
         }`}
       />

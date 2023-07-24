@@ -49,7 +49,9 @@ const VersionToggle: React.FC = () => {
     router.push(
       redirectPathName +
         (router.pathname.includes('/pools')
-          ? router.asPath.substring(router.asPath.indexOf('?'))
+          ? router.asPath.indexOf('?') === -1
+            ? ''
+            : router.asPath.substring(router.asPath.indexOf('?'))
           : ''),
     );
   };

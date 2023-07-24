@@ -32,6 +32,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
     <>
       {!el.eternalFarming && (
         <Button
+          variant='contained'
           fullWidth
           disabled={
             selectedTokenId === el.id &&
@@ -64,6 +65,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
         <Box width='100%' className='flex flex-wrap justify-between'>
           <Box my={0.5} width={!isMobile && isSmallDesktop ? '100%' : '49%'}>
             <Button
+              variant='contained'
               fullWidth
               disabled={
                 (selectedTokenId === el.id &&
@@ -93,6 +95,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
           </Box>
           <Box my={0.5} width={!isMobile && isSmallDesktop ? '100%' : '49%'}>
             <Button
+              variant='contained'
               fullWidth
               disabled={
                 selectedTokenId === el.id &&

@@ -19,6 +19,7 @@ import { useRouter } from 'next/router';
 import { getConfig } from 'config/index';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import styles from 'styles/pages/Farm.module.scss';
 
 const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { chainId } = useActiveWeb3React();
@@ -74,6 +75,9 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
   const redirectWithFarmTab = (tab: string) => {
     const currentPath = router.asPath;
+    const currencyParamsArray = Object.keys(router.query)
+      .map((key, index) => [key, Object.values(router.query)[index]])
+      .filter((item) => item[0] !== 'version');
     let redirectPath;
     if (router.query.tab) {
       redirectPath = currentPath.replace(
@@ -82,7 +86,7 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
       );
     } else {
       redirectPath = `${currentPath}${
-        Object.keys(router.query).length === 0 ? '?' : '&'
+        currencyParamsArray.length === 0 ? '?' : '&'
       }tab=${tab}`;
     }
     router.push(redirectPath);
@@ -151,7 +155,7 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 className={`flex ${isMobile ? 'mx-auto mt-1 fullWidth' : ''}`}
               >
                 <a
-                  className={`button ${
+                  className={`${styles.button} ${
                     isMobile ? 'rounded-md fullWidth' : 'rounded'
                   }`}
                   target='_blank'
@@ -172,7 +176,7 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           </Box>
 
           {/* Farms List */}
-          <Box className='farmsWrapper'>
+          <Box className={styles.farmsWrapper}>
             <FarmsList bulkPairs={bulkPairs} />
           </Box>
         </>

@@ -47,16 +47,18 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 <Image
                   src='/assets/images/DragonBg2.svg'
                   alt='Dragon Lair'
-                  width={395}
-                  height={232}
+                  width={352}
+                  height={207}
+                  style={{ width: '100%', height: 'auto' }}
                 />
               </Box>
               <Image
                 src='/assets/images/DragonLairMask.svg'
                 alt='Dragon Mask'
                 className={styles.dragonMask}
-                width={395}
-                height={366}
+                width={352}
+                height={326}
+                style={{ width: '100%', height: 'auto' }}
               />
               <Box className={styles.dragonTitle}>
                 <h5>{t('newDragonLair')}</h5>
@@ -76,16 +78,18 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 <Image
                   src='/assets/images/DragonBg2.svg'
                   alt='Dragon Lair'
-                  width={395}
-                  height={232}
+                  width={352}
+                  height={207}
+                  style={{ width: '100%', height: 'auto' }}
                 />
               </Box>
               <Image
                 src='/assets/images/DragonLairMask.svg'
                 alt='Dragon Mask'
                 className={styles.dragonMask}
-                width={395}
-                height={366}
+                width={352}
+                height={326}
+                style={{ width: '100%', height: 'auto' }}
               />
               <Box className={styles.dragonTitle} width='85%'>
                 <h5>{t('dragonLair')}</h5>

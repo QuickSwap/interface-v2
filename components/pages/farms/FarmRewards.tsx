@@ -8,6 +8,7 @@ import { useTranslation } from 'next-i18next';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useRouter } from 'next/router';
+import styles from 'styles/pages/Farm.module.scss';
 
 const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
   const router = useRouter();
@@ -72,7 +73,7 @@ const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
   );
 
   return (
-    <Box className='farmRewards'>
+    <Box className={styles.farmRewards}>
       {currentTab === GlobalConst.v2FarmTab.LPFARM && (
         <>
           <Box

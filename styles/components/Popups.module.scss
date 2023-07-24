@@ -5,7 +5,7 @@
   position: relative;
   max-width: 100%;
   display: none;
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     display: block;
   }
 }
@@ -27,7 +27,7 @@
   width: 100%;
   z-index: 3;
 
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     display: none;
   }
 }
@@ -36,12 +36,6 @@
   bottom: 0;
   width: 100%;
   left: 0;
-  & .MuiLinearProgress-root {
-    background: $yellow2;
-    & .MuiLinearProgress-bar {
-      background: $yellow3
-    }
-  }
 }
 .popupItem {
   padding: 20px;

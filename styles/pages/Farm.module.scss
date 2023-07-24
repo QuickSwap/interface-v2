@@ -29,7 +29,7 @@
   background-color: $secondary2;
 }
 
-a.button {
+.button {
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -44,7 +44,7 @@ a.button {
 }
 
 a.button:hover {
-  opacity: 0.9
+  opacity: 0.9;
 }
 
 .eternalPageLoader {

@@ -33,6 +33,10 @@ export default function Farms() {
       : [];
   }, [chainId]);
 
+  const currencyParamsArray = Object.keys(router.query)
+    .map((key, index) => [key, Object.values(router.query)[index]])
+    .filter((item) => item[0] !== 'version');
+
   const redirectWithFarmStatus = (status: string) => {
     let redirectPath;
     if (router.query.farmStatus) {
@@ -41,10 +45,9 @@ export default function Farms() {
         `farmStatus=${status}`,
       );
     } else {
-      redirectPath = '';
-      // redirectPath = `${currentPath}${
-      //   history.location.search === '' ? '?' : '&'
-      // }farmStatus=${status}`;
+      redirectPath = `${router.asPath}${
+        currencyParamsArray.length === 0 ? '?' : '&'
+      }farmStatus=${status}`;
     }
     router.push(redirectPath);
   };
@@ -90,7 +93,7 @@ export default function Farms() {
   }, [t, allGammaFarms]);
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
-      router.push(`?tab=${selected?.link}`);
+      router.push(`${router.asPath}?tab=${selected?.link}`);
     },
     [router],
   );

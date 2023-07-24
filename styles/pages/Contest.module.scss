@@ -72,3 +72,30 @@
     color: $textPrimary;
   }
 }
+
+.topMoversWrapper {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  border-radius: 10px;
+  padding: 20px 20px 4px;
+  @include media('screen', '<phone') {
+    align-items: center;
+  }
+}
+
+.topMoversContent {
+  width: 100%;
+  margin-top: 12px;
+  padding-bottom: 16px;
+  overflow-x: auto;
+  & > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+}

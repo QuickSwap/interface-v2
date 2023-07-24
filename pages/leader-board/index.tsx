@@ -301,11 +301,11 @@ const LeaderBoardPage = (
 
         {searchVal && (
           <>
-            <Box className='bg-palette topMoversWrapper' my={4}>
+            <Box className={`bg-palette ${styles.topMoversWrapper}`} my={4}>
               <p className='weight-600 text-secondary'>{t('searchResult')}</p>
               {!searchLoading && searchResult ? (
                 <>
-                  <Box className='topMoversContent'>
+                  <Box className={styles.topMoversContent}>
                     <Box className='flex items-center' mt={2}>
                       {searchCardColumns.map((column) => {
                         return (
@@ -323,7 +323,7 @@ const LeaderBoardPage = (
                       })}
                     </Box>
                   </Box>
-                  <Box className='topMoversContent'>
+                  <Box className={styles.topMoversContent}>
                     <Box className='flex items-center'>
                       <Box width={0.1} textAlign='start'>
                         <small>{searchResult.rank}</small>
