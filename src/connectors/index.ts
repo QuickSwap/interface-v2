@@ -12,6 +12,7 @@ import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
 import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import cypherDIcon from 'assets/images/cypherDIcon.png';
 import BitKeepIcon from 'assets/images/bitkeep.png';
+import OkxWalletIcon from 'assets/images/OKXWallet.svg';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
 import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
 import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
@@ -30,6 +31,7 @@ import { BlockWallet } from './BlockWallet';
 import { BraveWallet } from './BraveWallet';
 import { CypherD } from './CypherD';
 import { isMobile } from 'react-device-detect';
+import { OkxWallet } from './OkxWallet';
 
 const POLLING_INTERVAL = 12000;
 
@@ -50,6 +52,7 @@ export enum ConnectionType {
   BLOCKWALLET = 'BLOCKWALLET',
   BRAVEWALLET = 'BRAVEWALLET',
   CYPHERD = 'CYPHERD',
+  OKXWALLET = 'OKXWALLET',
 }
 
 export interface Connection {
@@ -214,6 +217,25 @@ export const bitKeepConnection: Connection = {
   iconName: BitKeepIcon,
   color: '#E8831D',
   description: 'BitKeep browser extension.',
+};
+
+const [web3OkxWallet, web3OkxWalletHooks] = initializeConnector<OkxWallet>(
+  (actions) =>
+    new OkxWallet({
+      actions,
+      onError,
+    }),
+);
+
+export const okxWalletConnection: Connection = {
+  key: 'OkxWallet',
+  name: GlobalConst.walletName.OKXWALLET,
+  connector: web3OkxWallet,
+  hooks: web3OkxWalletHooks,
+  type: ConnectionType.OKXWALLET,
+  iconName: OkxWalletIcon,
+  color: '#E8831D',
+  description: 'OkxWallet browser extension.',
 };
 
 const [web3CypherD, web3CypherDHooks] = initializeConnector<CypherD>(
@@ -394,6 +416,7 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitKeepConnection,
+        okxWalletConnection,
       ]
     : [
         cypherDConnection,
@@ -408,5 +431,6 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitKeepConnection,
+        okxWalletConnection,
       ];
 }
