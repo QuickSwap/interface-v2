@@ -25,6 +25,7 @@ export const getIsMetaMaskWallet = () => {
   return Boolean(
     ethereum &&
       ethereum.isMetaMask &&
+      ethereum._metamask &&
       (ethereum.detected && ethereum.detected.length > 0
         ? ethereum.detected.find(
             (provider: any) =>

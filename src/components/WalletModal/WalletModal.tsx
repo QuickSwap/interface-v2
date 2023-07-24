@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
 import { Box } from '@material-ui/core';
-import MetamaskIcon from 'assets/images/metamask.png';
-import OkxWalletIcon from 'assets/images/OKXWallet.svg';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { GlobalConst } from 'constants/index';
 import { ApplicationModal } from 'state/application/actions';
@@ -233,7 +231,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={t('installMetamask')}
             subheader={null}
             link={'https://metamask.io/'}
-            icon={MetamaskIcon}
+            icon={option.iconName}
             iconify={iconify}
           />
         );
@@ -249,7 +247,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={t('installOkxWallet')}
             subheader={null}
             link={'https://www.okx.com/web3'}
-            icon={OkxWalletIcon}
+            icon={option.iconName}
             iconify={iconify}
           />
         );
