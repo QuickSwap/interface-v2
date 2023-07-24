@@ -10,6 +10,7 @@ import {
   useV3MintActionHandlers,
   useV3MintState,
   useInitialUSDPrices,
+  useGetUnipilotVaults,
 } from 'state/mint/v3/hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { useAppDispatch } from 'state/hooks';
@@ -26,6 +27,7 @@ import { ChainId, JSBI } from '@uniswap/sdk';
 import { StableCoins } from 'constants/v3/addresses';
 import { getEternalFarmFromTokens } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
+import UnipilotLogo from 'assets/images/unipilot.png';
 import AutomaticImage from 'assets/images/automatic.svg';
 import AutomaticImageDark from 'assets/images/automaticDark.svg';
 import { Trans, useTranslation } from 'react-i18next';
@@ -360,35 +362,76 @@ export function SelectRange({
     currentPriceInUSDB,
   ]);
 
+  const unipilotVaults = useGetUnipilotVaults();
+  const unipilotVaultsForPair = unipilotVaults.filter((item) => {
+    return (
+      (item.token0 &&
+        item.token1 &&
+        item.token0.toLowerCase() === currencyAAddress.toLowerCase() &&
+        item.token1.toLowerCase() === currencyBAddress.toLowerCase()) ||
+      (item.token0 &&
+        item.token1 &&
+        item.token0.toLowerCase() === currencyBAddress.toLowerCase() &&
+        item.token1.toLowerCase() === currencyAAddress.toLowerCase())
+    );
+  });
+
   return (
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
-      {gammaPair && (
+      {(gammaPair || unipilotVaultsForPair.length > 0) && (
         <Box className='buttonGroup poolRangeButtonGroup'>
           <ButtonGroup>
-            <Button
-              className={
-                liquidityRangeType ===
-                GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-                  ? 'active'
-                  : ''
-              }
-              onClick={() =>
-                onChangeLiquidityRangeType(
-                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
-                )
-              }
-            >
-              <img
-                src={
+            {gammaPair && (
+              <Button
+                className={
                   liquidityRangeType ===
                   GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-                    ? AutomaticImageDark
-                    : AutomaticImage
+                    ? 'active'
+                    : ''
                 }
-                alt='gamma range'
-              />
-            </Button>
+                onClick={() =>
+                  onChangeLiquidityRangeType(
+                    GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
+                  )
+                }
+              >
+                <img
+                  src={
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+                      ? AutomaticImageDark
+                      : AutomaticImage
+                  }
+                  alt='gamma range'
+                />
+              </Button>
+            )}
+            {unipilotVaultsForPair.length > 0 && (
+              <Button
+                className={
+                  liquidityRangeType ===
+                  GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+                    ? 'active'
+                    : ''
+                }
+                onClick={() =>
+                  onChangeLiquidityRangeType(
+                    GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+                  )
+                }
+              >
+                <img
+                  src={
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+                      ? AutomaticImageDark
+                      : AutomaticImage
+                  }
+                  alt='unipilot range'
+                />
+              </Button>
+            )}
             <Button
               className={
                 liquidityRangeType ===
@@ -418,6 +461,18 @@ export function SelectRange({
           </Box>
         </>
       )}
+      {liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE && (
+        <>
+          <Box my={1.5} className='poolRangePowerGamma'>
+            <span className='text-secondary'>{t('poweredBy')}</span>
+            <img src={UnipilotLogo} alt='Unipilot Logo' />
+          </Box>
+          <Box mb={1.5}>
+            <small className='weight-600'>{t('selectStrategy')}</small>
+          </Box>
+        </>
+      )}
       <Box my={1}>
         <PresetRanges
           mintInfo={mintInfo}
@@ -432,7 +487,12 @@ export function SelectRange({
           isGamma={
             liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
           }
+          isUnipilot={
+            liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+          }
           gammaPair={gammaPair}
+          unipilotPairs={unipilotVaultsForPair}
         />
       </Box>
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&

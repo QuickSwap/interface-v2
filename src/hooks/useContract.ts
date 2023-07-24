@@ -48,6 +48,7 @@ import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -347,4 +348,11 @@ export function useGammaHypervisorContract(
   withSignerIfPossible?: boolean,
 ) {
   return useContract(address, GammaPairABI, withSignerIfPossible);
+}
+
+export function useUniPilotVaultContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, UNIPILOT_VAULT_ABI, withSignerIfPossible);
 }
