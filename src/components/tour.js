@@ -11,22 +11,21 @@ const tourOptions = {
     cancelIcon: {
       enabled: true,
     },
+    scrollTo: true,
   },
   useModalOverlay: true,
 };
 
 function InnerTour({ children }) {
   const tour = useContext(ShepherdTourContext);
-
   const { currentTour } = useUIContext();
-
   function startTour() {
     if (tour) {
       // Show tour on load only if user hasn't viewed it before
       if (localStorage.getItem("viewed_tour") !== "true") {
         currentTour.current = tour;
         tour.start();
-        localStorage.setItem("viewed_tour", "true")
+        tour.on('complete', ()=>{localStorage.setItem("viewed_tour", "true")});
       }
     }
   }

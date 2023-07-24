@@ -69,3 +69,26 @@ div[data-shepherd-step-id="feedback"] .shepherd-footer {
 div[data-shepherd-step-id="feedback"] .shepherd-footer  .shepherd-button:nth-child(2){
     margin-left: 0;
 }
+ul.feedback-rating {
+    list-style-type: none;
+    display: flex;
+    flex-flow: nowrap;
+    justify-content: center;
+    padding-left: 0;
+    margin: 0;
+}
+ul.feedback-rating li {
+    margin:15px 8px;
+    padding-bottom: 0;
+    filter: grayscale(100%);
+    cursor: pointer;
+}
+ul.feedback-rating li *{
+    pointer-events: none;
+}
+ul.feedback-rating li:hover{
+    filter: grayscale(30%);
+}
+ul.feedback-rating li.active{
+    filter: grayscale(0%);
+}  
