@@ -694,5 +694,6 @@
   "docs": "Docs",
   "governance": "Governance",
   "proposals": "Proposals",
-  "termsofuse": "Terms of Use"
+  "termsofuse": "Terms of Use",
+  "walletDescription": "Connecting your wallet is like \"logging in\" on Web3. Select your wallet from the options to get started."
 }
