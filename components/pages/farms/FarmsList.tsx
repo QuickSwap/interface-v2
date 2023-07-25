@@ -67,7 +67,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
     ? (router.query.sortBy as string)
     : POOL_COLUMN;
 
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const { chainId } = useActiveWeb3React();
   const [pageIndex, setPageIndex] = useState(0);
   const [farmSearch, setFarmSearch] = useState('');

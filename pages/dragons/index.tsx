@@ -15,7 +15,7 @@ import { Adshares } from 'components';
 
 const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const { t } = useTranslation();
   //showing old dragons lair until we're ready to deploy
 

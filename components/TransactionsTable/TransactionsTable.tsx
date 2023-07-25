@@ -87,7 +87,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   ];
   const { chainId } = useActiveWeb3React();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const getTxString = (txn: any) => {
     const messageData = {
       token0Symbol: txn.pair.token1.symbol,

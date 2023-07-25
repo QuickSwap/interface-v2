@@ -3,7 +3,7 @@ import { useMediaQuery, useTheme } from '@mui/material';
 
 const AdsSlider: React.FC = () => {
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   return (
     <div className='flex justify-center'>

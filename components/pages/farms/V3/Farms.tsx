@@ -23,7 +23,7 @@ export default function Farms() {
     ? (router.query.farmStatus as string)
     : 'active';
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const allGammaFarms = useMemo(() => {
     return chainId

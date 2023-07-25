@@ -23,7 +23,7 @@ const GammaFarmCard: React.FC<{
       : [];
   const [showDetails, setShowDetails] = useState(false);
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const farmAPR =
     rewardData && rewardData['apr'] ? Number(rewardData['apr']) : 0;

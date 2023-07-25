@@ -357,7 +357,9 @@ const PairTable: React.FC<PairsTableProps> = ({
     const totalSpecificRows = [
       {
         html: (
-          <Box className='analyticsPairVersion'>{pair.isV3 ? 'V3' : 'V2'}</Box>
+          <Box className={styles.analyticsPairVersion}>
+            {pair.isV3 ? 'V3' : 'V2'}
+          </Box>
         ),
       },
     ];

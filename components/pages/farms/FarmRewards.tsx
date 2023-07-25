@@ -19,7 +19,7 @@ const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
   const { breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
   const defaultChainId = chainId ?? ChainId.MATIC;
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const farmData = useUSDRewardsandFees(
     currentTab === GlobalConst.v2FarmTab.LPFARM,

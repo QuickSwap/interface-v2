@@ -12,7 +12,7 @@ const LiquidityPoolRow: React.FC<{
 }> = ({ pair }) => {
   const { breakpoints } = useTheme();
   const daysCurrentYear = getDaysCurrentYear();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isLg = useMediaQuery(breakpoints.only('lg'));
   const { t } = useTranslation();
 

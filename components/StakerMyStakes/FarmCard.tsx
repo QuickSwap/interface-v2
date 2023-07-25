@@ -24,7 +24,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const tokenMap = useSelectedTokenList();
   const poolToken0 = el.pool.token0 as any;

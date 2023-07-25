@@ -41,7 +41,9 @@ const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
 const Header: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { pathname } = router;
+  const routerPathArr = router.pathname.split('/');
+  const pathname =
+    '/' + (routerPathArr.length > 1 ? router.pathname.split('/')[1] : '');
   const { account } = useActiveWeb3React();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { ENSName } = useENSName(account ?? undefined);
@@ -61,8 +63,8 @@ const Header: React.FC = () => {
   const confirmed = sortedRecentTransactions
     .filter((tx: any) => tx.receipt)
     .map((tx: any) => tx.hash);
-  const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
-  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
+  const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
+  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const toggleWalletModal = useWalletModalToggle();
   const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const deviceWidth = useDeviceWidth();

@@ -16,7 +16,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
 }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const [expanded, setExpanded] = useState(false);
 
   const currency = unwrappedToken(syrup.token);

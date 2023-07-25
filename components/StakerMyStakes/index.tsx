@@ -49,7 +49,7 @@ export const FarmingMyFarms: React.FC<{
   const { chainId, account } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const { v3FarmSortBy } = GlobalConst.utils;
   const [sortByQuick, setSortByQuick] = useState(v3FarmSortBy.pool);

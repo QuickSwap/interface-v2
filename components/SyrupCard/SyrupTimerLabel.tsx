@@ -9,7 +9,7 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
   const { t } = useTranslation();
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const MINUTE = 60;
   const HOUR = MINUTE * 60;

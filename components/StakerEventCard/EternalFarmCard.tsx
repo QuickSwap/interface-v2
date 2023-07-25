@@ -102,7 +102,7 @@ export function EternalFarmCard({
       : undefined;
 
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   return (
     <Box

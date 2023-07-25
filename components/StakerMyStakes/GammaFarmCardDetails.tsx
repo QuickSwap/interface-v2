@@ -48,7 +48,7 @@ const GammaFarmCardDetails: React.FC<{
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const masterChefContract = useMasterChefContract(
     pairData.masterChefIndex ?? 0,
     undefined,

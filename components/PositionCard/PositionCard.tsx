@@ -105,7 +105,7 @@ export const MinimalPositionCard: React.FC<PositionCardProps> = ({
         <p>
           <span role='img' aria-label='wizard-icon'>
             ⭐️
-          </span>{' '}
+          </span>
           {t('addLiquidityDesc')}
         </p>
       )}

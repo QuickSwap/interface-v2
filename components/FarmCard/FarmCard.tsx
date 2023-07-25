@@ -25,7 +25,7 @@ const FarmCard: React.FC<{
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const [isExpandCard, setExpandCard] = useState(false);
 
   const lpStakingInfo = stakingInfo as StakingInfo;

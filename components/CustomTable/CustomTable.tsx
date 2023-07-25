@@ -1,4 +1,4 @@
-import React, { ReactChild } from 'react';
+import React from 'react';
 import {
   Box,
   useMediaQuery,
@@ -18,7 +18,7 @@ export interface CustomTableProps<T> {
   data: any;
   defaultOrderBy?: T;
   defaultOrder?: 'asc' | 'desc';
-  mobileHTML: (item: any, index: number) => ReactChild;
+  mobileHTML: (item: any, index: number) => React.ReactNode;
   desktopHTML: (
     item: any,
     index: number,
@@ -39,7 +39,7 @@ const CustomTable: React.FC<CustomTableProps<any>> = ({
   desktopHTML,
 }) => {
   const theme = useTheme();
-  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
+  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Box className={styles.tableContainer}>

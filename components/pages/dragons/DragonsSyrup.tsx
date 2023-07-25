@@ -37,7 +37,7 @@ const EARNED_COLUMN = 4;
 const DragonsSyrup: React.FC = () => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const [isEndedSyrup, setIsEndedSyrup] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const [sortBy, setSortBy] = useState(0);

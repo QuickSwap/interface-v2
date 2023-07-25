@@ -13,7 +13,7 @@ const LiquidityPools: React.FC<{
   token2: Token;
 }> = ({ token1, token2 }) => {
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isLg = useMediaQuery(breakpoints.only('lg'));
 
   const [liquidityPoolClosed, setLiquidityPoolClosed] = useState(isMobile);

@@ -18,7 +18,7 @@ interface FarmCardDetailProps {
 export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isSmallDesktop = useMediaQuery(breakpoints.down('md'));
 
   const { v3Stake } = useV3StakeData();

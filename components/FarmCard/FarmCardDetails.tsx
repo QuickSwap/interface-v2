@@ -42,7 +42,7 @@ const FarmCardDetails: React.FC<{
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const [stakeAmount, setStakeAmount] = useState('');
   const [attemptStaking, setAttemptStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);

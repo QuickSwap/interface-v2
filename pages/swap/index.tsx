@@ -31,7 +31,7 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainIdToUse);
 
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainIdToUse);
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainIdToUse);
 

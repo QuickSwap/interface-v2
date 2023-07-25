@@ -40,7 +40,7 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const cntFarms = useDefaultCNTFarmList(chainIdToUse);
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const OTHER_FARM_LINK = process.env.NEXT_PUBLIC_OTHER_LP_CREATE_A_FARM_LINK;
 
   const pairLists = useMemo(() => {
