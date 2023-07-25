@@ -1579,6 +1579,10 @@ export const ContestPairs: any = {
       token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
       token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
     },
+    {
+      name: 'Past Winners',
+      address: 'past-winners',
+    },
   ],
   [ChainId.ZKEVM]: [
     {
