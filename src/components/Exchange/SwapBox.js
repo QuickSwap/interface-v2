@@ -13,6 +13,7 @@ import { ethers } from "ethers";
 import arrowIcon from "../../img/ic_convert_down.svg";
 import { BsArrowRight } from "react-icons/bs";
 
+import { useUIContext } from "../../providers/InterfaceProvider";
 import {
   helperToast,
   formatAmount,
@@ -172,6 +173,7 @@ export default function SwapBox(props) {
   const { userReferralCode } = Api.useUserReferralCode(library, chainId, account);
   const userReferralCodeInLocalStorage = window.localStorage.getItem(REFERRAL_CODE_KEY);
 
+  const { currentTour } = useUIContext();
   let allowedSlippage = savedSlippageAmount;
   if (isHigherSlippageAllowed) {
     allowedSlippage = DEFAULT_HIGHER_SLIPPAGE_AMOUNT;
@@ -1256,7 +1258,9 @@ export default function SwapBox(props) {
       setPendingTxns,
       showModal,
     })
-      .then(async (res) => {})
+      .then(async (res) => {
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.hide('swapReceive'); currentTour.current?.show('CheckPaperWork')},100) };
+      })
       .catch((e) => console.log("error: ", e))
       .finally(() => {
         setIsSubmitting(false);
@@ -1277,7 +1281,9 @@ export default function SwapBox(props) {
       setPendingTxns,
       showModal,
     })
-      .then(async (res) => {})
+      .then(async (res) => {
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.hide('swapReceive'); currentTour.current?.show('CheckPaperWork')},100) };
+      })
       .catch((e) => console.log("error: ", e))
       .finally(() => {
         setIsSubmitting(false);
@@ -1713,6 +1719,7 @@ export default function SwapBox(props) {
 
     setIsConfirming(true);
     setIsHigherSlippageAllowed(false);
+    if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.hide('ClickOnSwapLongShortToken'); currentTour.current?.show('CheckPaperWorkNotLimit')},100) };
   };
 
   const isStopOrder = orderOption === STOP;
