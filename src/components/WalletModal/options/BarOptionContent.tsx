@@ -1,10 +1,9 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { WalletOptionProps } from './options/WalletOptionProps';
+import { WalletOptionProps } from './WalletOptionProps';
 
-const Option: React.FC<WalletOptionProps> = ({
-  link = null,
+const BarOptionContent: React.FC<WalletOptionProps> = ({
   onClick,
   header,
   subheader = null,
@@ -14,7 +13,7 @@ const Option: React.FC<WalletOptionProps> = ({
   installLink = null,
 }) => {
   const { t } = useTranslation();
-  const content = (
+  return (
     <Box className='optionCardClickable' id={id} onClick={onClick}>
       <Box className='flex items-center' my={0.5}>
         <img src={icon} alt={'Icon'} width={24} />
@@ -38,33 +37,6 @@ const Option: React.FC<WalletOptionProps> = ({
       )}
     </Box>
   );
-  if (link) {
-    return (
-      <a
-        href={link}
-        target='_blank'
-        rel='noopener noreferrer'
-        className='optionLink'
-      >
-        {content}
-      </a>
-    );
-  }
-
-  if (installLink !== null) {
-    return (
-      <a
-        href={installLink}
-        target='_blank'
-        rel='noopener noreferrer'
-        className='installLink'
-      >
-        {content}
-      </a>
-    );
-  }
-
-  return content;
 };
 
-export default Option;
+export default BarOptionContent;
