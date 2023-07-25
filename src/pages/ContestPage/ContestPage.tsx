@@ -70,27 +70,42 @@ const ContestPage: React.FC = () => {
   const getTradingDataForPool = async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/leaderboard?pool=${contestFilter.address}&days=${durationIndex}&chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to get leaderboard`,
+      const showPastWinners = contestFilter.address === 'past-winners';
+
+      let res;
+      if (showPastWinners) {
+        res = await fetch(
+          `${
+            process.env.REACT_APP_LEADERBOARD_APP_URL
+          }/${'get-snap-shot/by-date'}?pool=${'all'}&days=30&lastdate=2023-05-13&chainId=${chainId}`,
         );
+      } else {
+        res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/leaderboard?pool=${contestFilter.address}&days=${durationIndex}&chainId=${chainId}`,
+        );
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(
+            errorText || res.statusText || `Failed to get leaderboard`,
+          );
+        }
       }
 
       const data = await res.json();
 
+      const result = showPastWinners
+        ? data.lastCompititionData
+        : data.leaderboardData;
+
       let lensArray: any[] = [];
       for (const ind of Array.from(
-        { length: Math.ceil(data.leaderboardData.length / 150) },
+        { length: Math.ceil(result.length / 150) },
         (_, i) => i,
       )) {
         const lensRes = await fetch(
           `${
             process.env.REACT_APP_LEADERBOARD_APP_URL
-          }/utils/lens-profiles?addresses=${data.leaderboardData
+          }/utils/lens-profiles?addresses=${result
             .slice(ind * 150, (ind + 1) * 150)
             .map((e: any) => e.origin)
             .join('_')}`,
@@ -106,19 +121,17 @@ const ContestPage: React.FC = () => {
       }
 
       // Fetch lens handles of all the addresses
-      const result = data.leaderboardData.map(
-        (d: ContestLeaderBoard, i: number) => {
-          return {
-            ...d,
-            lensHandle:
-              lensArray[i] && lensArray[i].length > 0
-                ? lensArray[i][0].handle
-                : undefined,
-          };
-        },
-      );
+      const resultData = result.map((d: ContestLeaderBoard, i: number) => {
+        return {
+          ...d,
+          lensHandle:
+            lensArray[i] && lensArray[i].length > 0
+              ? lensArray[i][0].handle
+              : undefined,
+        };
+      });
 
-      setContestLeaderBoard(result);
+      setContestLeaderBoard(resultData);
       setLoading(false);
       setError(null);
     } catch (error) {
@@ -353,14 +366,16 @@ const ContestPage: React.FC = () => {
         )}
 
         <Box className='panel'>
-          <Box className='flex justify-end' mb={2}>
-            <ChartType
-              typeTexts={LeaderBoardAnalytics.CHART_DURATION_TEXTS}
-              chartTypes={LeaderBoardAnalytics.CHART_DURATIONS}
-              chartType={durationIndex}
-              setChartType={setDurationIndex}
-            />
-          </Box>
+          {contestFilter.address !== 'past-winners' && (
+            <Box className='flex justify-end' mb={2}>
+              <ChartType
+                typeTexts={LeaderBoardAnalytics.CHART_DURATION_TEXTS}
+                chartTypes={LeaderBoardAnalytics.CHART_DURATIONS}
+                chartType={durationIndex}
+                setChartType={setDurationIndex}
+              />
+            </Box>
+          )}
 
           {!loading ? (
             <>
