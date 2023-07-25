@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   useGammaUNIProxyContract,
+  useUniPilotVaultContract,
   useV3NFTPositionManagerContract,
   useWETHContract,
 } from 'hooks/useContract';
@@ -127,8 +128,8 @@ export function AddLiquidityButton({
       !amountA ||
       !amountB ||
       !chainId ||
-      mintInfo.liquidityRangeType ===
-        GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+      mintInfo.liquidityRangeType !==
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
     )
       return;
     if (
@@ -167,12 +168,18 @@ export function AddLiquidityButton({
     wmaticBalance,
   ]);
 
+  const uniPilotVaultAddress = mintInfo.presetRange?.address;
+  const uniPilotVaultContract = useUniPilotVaultContract(uniPilotVaultAddress);
+
   const [approvalA] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A],
     chainId
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
         ? gammaPairAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+        ? uniPilotVaultAddress
         : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
       : undefined,
   );
@@ -182,6 +189,9 @@ export function AddLiquidityButton({
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
         ? gammaPairAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+        ? uniPilotVaultAddress
         : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
       : undefined,
   );
@@ -363,6 +373,98 @@ export function AddLiquidityButton({
             ? t('txRejected')
             : t('errorInTx'),
         );
+      }
+    } else if (
+      mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+    ) {
+      if (
+        !uniPilotVaultContract ||
+        !mintInfo.presetRange ||
+        !mintInfo.presetRange.tokenStr
+      )
+        return;
+      const baseCurrencyAddress = baseCurrency.wrapped
+        ? baseCurrency.wrapped.address.toLowerCase()
+        : undefined;
+      const quoteCurrencyAddress = quoteCurrency.wrapped
+        ? quoteCurrency.wrapped.address.toLowerCase()
+        : undefined;
+
+      const uniPilotToken0Address = mintInfo.presetRange.tokenStr.split('-')[0];
+
+      if (
+        !amountA ||
+        !amountB ||
+        !uniPilotVaultAddress ||
+        !baseCurrencyAddress ||
+        !quoteCurrencyAddress
+      )
+        return;
+
+      setRejected && setRejected(false);
+
+      setAttemptingTxn(true);
+
+      try {
+        const estimatedGas = await uniPilotVaultContract.estimateGas.deposit(
+          (uniPilotToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountA
+            : amountB
+          ).numerator.toString(),
+          (uniPilotToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountB
+            : amountA
+          ).numerator.toString(),
+          account,
+        );
+        console.log('aaa', estimatedGas);
+        const response: TransactionResponse = await uniPilotVaultContract.deposit(
+          (uniPilotToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountA
+            : amountB
+          ).numerator.toString(),
+          (uniPilotToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountB
+            : amountA
+          ).numerator.toString(),
+          account,
+          {
+            gasLimit: calculateGasMargin(estimatedGas),
+          },
+        );
+        const summary = mintInfo.noLiquidity
+          ? t('createPoolandaddLiquidity', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            })
+          : t('addLiquidityWithTokens', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            });
+        setAttemptingTxn(false);
+        setTxPending(true);
+        addTransaction(response, {
+          summary,
+        });
+        dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary,
+        });
+        setTxPending(false);
+        handleAddLiquidity();
+      } catch (error) {
+        console.error('Failed to send transaction', error);
+        const errorMsg =
+          error && error.message
+            ? error.message.toLowerCase()
+            : error && error.data && error.data.message
+            ? error.data.message.toLowerCase()
+            : '';
+        setAttemptingTxn(false);
+        setTxPending(false);
+        setAddLiquidityErrorMessage(t('errorInTx'));
       }
     } else {
       if (mintInfo.position && account && deadline) {

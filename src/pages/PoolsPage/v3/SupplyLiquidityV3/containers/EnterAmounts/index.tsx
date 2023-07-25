@@ -101,6 +101,8 @@ export function EnterAmounts({
       ? gammaPair.find((pair) => pair.type === preset)?.address
       : undefined;
 
+  const uniPilotVaultAddress = mintInfo.presetRange?.address;
+
   // check whether the user has approved the router on the tokens
   const currencyAApproval =
     mintInfo.liquidityRangeType ===
@@ -123,6 +125,9 @@ export function EnterAmounts({
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
         ? gammaPairAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+        ? uniPilotVaultAddress
         : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
       : undefined,
   );
@@ -133,6 +138,9 @@ export function EnterAmounts({
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
         ? gammaPairAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+        ? uniPilotVaultAddress
         : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
       : undefined,
   );

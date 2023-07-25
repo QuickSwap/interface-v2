@@ -193,6 +193,7 @@ export function PresetRanges({
               type: pairType,
               title: unipilotVaultTypes[pairType - 1],
               address: pair.id,
+              tokenStr: pair.token0 + '-' + pair.token1,
               min: minPrice,
               max: maxPrice,
               risk: PresetProfits.VERY_LOW,
