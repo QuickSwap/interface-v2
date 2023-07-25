@@ -491,7 +491,8 @@ export function useV3DerivedMintInfo(
     | CurrencyAmount<Currency>
     | undefined = tryParseAmount(
     typedValue,
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE) &&
       independentCurrency &&
       independentCurrency.isNative
       ? independentCurrency.wrapped
@@ -688,20 +689,14 @@ export function useV3DerivedMintInfo(
       uniPilotVaultPositionResult.result.length > 1
     ) {
       return {
-        token0:
-          Number(
-            formatUnits(
-              uniPilotVaultPositionResult.result[0],
-              vaultToken0?.decimals,
-            ),
-          ) + Number(unipilotToken0VaultBalance?.toExact() ?? 0),
-        token1:
-          Number(
-            formatUnits(
-              uniPilotVaultPositionResult.result[1],
-              vaultToken1?.decimals,
-            ),
-          ) + Number(unipilotToken1VaultBalance?.toExact() ?? 0),
+        token0: JSBI.add(
+          JSBI.BigInt(uniPilotVaultPositionResult.result[0]),
+          unipilotToken0VaultBalance?.numerator ?? JSBI.BigInt(0),
+        ),
+        token1: JSBI.add(
+          JSBI.BigInt(uniPilotVaultPositionResult.result[1]),
+          unipilotToken1VaultBalance?.numerator ?? JSBI.BigInt(0),
+        ),
       };
     }
     return;
@@ -709,8 +704,6 @@ export function useV3DerivedMintInfo(
     uniPilotVaultPositionResult,
     unipilotToken0VaultBalance,
     unipilotToken1VaultBalance,
-    vaultToken0,
-    vaultToken1,
   ]);
 
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
@@ -765,19 +758,23 @@ export function useV3DerivedMintInfo(
           vaultToken0.address.toLowerCase()
           ? uniPilotVaultReserve?.token0
           : uniPilotVaultReserve?.token1;
-      if (!independentReserve || !dependentReserve) return;
-      const dependentDeposit = parseUnits(
-        (
-          (dependentReserve / independentReserve) *
-          Number(independentAmount.toExact())
-        ).toFixed(dependentCurrency.wrapped.decimals),
-        dependentCurrency.wrapped.decimals,
+      if (
+        !independentReserve ||
+        !dependentReserve ||
+        JSBI.equal(independentReserve, JSBI.BigInt(0))
+      )
+        return;
+
+      const dependentDeposit = JSBI.divide(
+        JSBI.multiply(dependentReserve, independentAmount.numerator),
+        independentReserve,
       );
+
       return CurrencyAmount.fromRawAmount(
         dependentCurrency.isNative
           ? dependentCurrency.wrapped
           : dependentCurrency,
-        JSBI.BigInt(dependentDeposit),
+        dependentDeposit,
       );
     }
     // we wrap the currencies just to get the price in terms of the other token

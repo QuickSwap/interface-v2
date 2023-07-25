@@ -1,36 +1,16 @@
 [
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_pool",
-        "type": "address"
-      },
+      { "internalType": "address", "name": "_pool", "type": "address" },
       {
         "internalType": "address",
         "name": "_unipilotFactory",
         "type": "address"
       },
-      {
-        "internalType": "address",
-        "name": "_WETH",
-        "type": "address"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_strategytype",
-        "type": "uint16"
-      },
-      {
-        "internalType": "string",
-        "name": "_name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_symbol",
-        "type": "string"
-      }
+      { "internalType": "address", "name": "_WETH", "type": "address" },
+      { "internalType": "uint16", "name": "_strategytype", "type": "uint16" },
+      { "internalType": "string", "name": "_name", "type": "string" },
+      { "internalType": "string", "name": "_symbol", "type": "string" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -228,164 +208,75 @@
     "name": "Withdraw",
     "type": "event"
   },
+  { "stateMutability": "payable", "type": "fallback" },
   {
-    "stateMutability": "payable",
-    "type": "fallback"
-  },
-  {
-    "inputs": [
-      
-    ],
+    "inputs": [],
     "name": "DOMAIN_SEPARATOR",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount0Owed",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount1Owed",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
+      { "internalType": "uint256", "name": "amount0Owed", "type": "uint256" },
+      { "internalType": "uint256", "name": "amount1Owed", "type": "uint256" },
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
     ],
     "name": "algebraMintCallback",
-    "outputs": [
-      
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "int256",
-        "name": "amount0",
-        "type": "int256"
-      },
-      {
-        "internalType": "int256",
-        "name": "amount1",
-        "type": "int256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
+      { "internalType": "int256", "name": "amount0", "type": "int256" },
+      { "internalType": "int256", "name": "amount1", "type": "int256" },
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
     ],
     "name": "algebraSwapCallback",
-    "outputs": [
-      
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "owner", "type": "address" },
+      { "internalType": "address", "name": "spender", "type": "address" }
     ],
     "name": "allowance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "spender", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "approve",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      
-    ],
+    "inputs": [],
     "name": "decimals",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
+      { "internalType": "address", "name": "spender", "type": "address" },
       {
         "internalType": "uint256",
         "name": "subtractedValue",
@@ -393,13 +284,7 @@
       }
     ],
     "name": "decreaseAllowance",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -415,445 +300,188 @@
         "name": "amount1Desired",
         "type": "uint256"
       },
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "recipient", "type": "address" }
     ],
     "name": "deposit",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "lpShares",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount0",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount1",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "lpShares", "type": "uint256" },
+      { "internalType": "uint256", "name": "amount0", "type": "uint256" },
+      { "internalType": "uint256", "name": "amount1", "type": "uint256" }
     ],
     "stateMutability": "payable",
     "type": "function"
   },
   {
-    "inputs": [
-      
-    ],
+    "inputs": [],
     "name": "getPositionDetails",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount0",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount1",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fees0",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fees1",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint128",
-        "name": "baseLiquidity",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint128",
-        "name": "rangeLiquidity",
-        "type": "uint128"
-      }
+      { "internalType": "uint256", "name": "amount0", "type": "uint256" },
+      { "internalType": "uint256", "name": "amount1", "type": "uint256" },
+      { "internalType": "uint256", "name": "fees0", "type": "uint256" },
+      { "internalType": "uint256", "name": "fees1", "type": "uint256" },
+      { "internalType": "uint128", "name": "baseLiquidity", "type": "uint128" },
+      { "internalType": "uint128", "name": "rangeLiquidity", "type": "uint128" }
     ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      
-    ],
+    "inputs": [],
     "name": "getVaultInfo",
     "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint16", "name": "", "type": "uint16" },
+      { "internalType": "address", "name": "", "type": "address" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "addedValue",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "spender", "type": "address" },
+      { "internalType": "uint256", "name": "addedValue", "type": "uint256" }
     ],
     "name": "increaseAllowance",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_operator",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_operator", "type": "address" }
     ],
     "name": "isOperator",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      
-    ],
+    "inputs": [],
     "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "owner", "type": "address" }
     ],
     "name": "nonces",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "deadline",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint8",
-        "name": "v",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "r",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "s",
-        "type": "bytes32"
-      }
+      { "internalType": "address", "name": "owner", "type": "address" },
+      { "internalType": "address", "name": "spender", "type": "address" },
+      { "internalType": "uint256", "name": "value", "type": "uint256" },
+      { "internalType": "uint256", "name": "deadline", "type": "uint256" },
+      { "internalType": "uint8", "name": "v", "type": "uint8" },
+      { "internalType": "bytes32", "name": "r", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "s", "type": "bytes32" }
     ],
     "name": "permit",
-    "outputs": [
-      
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      
-    ],
+    "inputs": [],
     "name": "pullLiquidity",
-    "outputs": [
-      
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "swapBP",
-        "type": "uint8"
-      }
-    ],
+    "inputs": [{ "internalType": "uint8", "name": "swapBP", "type": "uint8" }],
     "name": "readjustLiquidity",
-    "outputs": [
-      
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "int256",
-        "name": "swapAmount",
-        "type": "int256"
-      },
-      {
-        "internalType": "bool",
-        "name": "zeroForOne",
-        "type": "bool"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickUpper",
-        "type": "int24"
-      }
+      { "internalType": "int256", "name": "swapAmount", "type": "int256" },
+      { "internalType": "bool", "name": "zeroForOne", "type": "bool" },
+      { "internalType": "int24", "name": "tickLower", "type": "int24" },
+      { "internalType": "int24", "name": "tickUpper", "type": "int24" }
     ],
     "name": "rebalance",
-    "outputs": [
-      
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      
-    ],
+    "inputs": [],
     "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      
-    ],
+    "inputs": [],
     "name": "ticksData",
     "outputs": [
-      {
-        "internalType": "int24",
-        "name": "baseTickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "baseTickUpper",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "rangeTickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "rangeTickUpper",
-        "type": "int24"
-      }
+      { "internalType": "int24", "name": "baseTickLower", "type": "int24" },
+      { "internalType": "int24", "name": "baseTickUpper", "type": "int24" },
+      { "internalType": "int24", "name": "rangeTickLower", "type": "int24" },
+      { "internalType": "int24", "name": "rangeTickUpper", "type": "int24" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_operator",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_operator", "type": "address" }
     ],
     "name": "toggleOperator",
-    "outputs": [
-      
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      
-    ],
+    "inputs": [],
     "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "recipient", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "transfer",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "sender", "type": "address" },
+      { "internalType": "address", "name": "recipient", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "transferFrom",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "liquidity",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "refundAsETH",
-        "type": "bool"
-      }
+      { "internalType": "uint256", "name": "liquidity", "type": "uint256" },
+      { "internalType": "address", "name": "recipient", "type": "address" },
+      { "internalType": "bool", "name": "refundAsETH", "type": "bool" }
     ],
     "name": "withdraw",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount0",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount1",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "amount0", "type": "uint256" },
+      { "internalType": "uint256", "name": "amount1", "type": "uint256" }
     ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
-  }
+  { "stateMutability": "payable", "type": "receive" }
 ]

@@ -418,7 +418,6 @@ export function AddLiquidityButton({
           ).numerator.toString(),
           account,
         );
-        console.log('aaa', estimatedGas);
         const response: TransactionResponse = await uniPilotVaultContract.deposit(
           (uniPilotToken0Address.toLowerCase() === baseCurrencyAddress
             ? amountA

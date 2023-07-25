@@ -105,15 +105,19 @@ export function EnterAmounts({
 
   // check whether the user has approved the router on the tokens
   const currencyAApproval =
-    mintInfo.liquidityRangeType ===
-      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+    (mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+      mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE) &&
     currencyA &&
     currencyA.isNative
       ? currencyA.wrapped
       : currencyA;
   const currencyBApproval =
-    mintInfo.liquidityRangeType ===
-      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+    (mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+      mintInfo.liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE) &&
     currencyB &&
     currencyB.isNative
       ? currencyB.wrapped
