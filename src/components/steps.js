@@ -241,8 +241,11 @@ const newSteps = [
       },
       {
        action(){
+        let activeTab = JSON.parse(localStorage.getItem('["Order-option"]'));
         localStorage.setItem("viewed_tour_modal","false")
-        addStepActionClasses()
+        if(activeTab !== "Stop"){
+          addStepActionClasses()
+        }
         this.next()
        },
         text: `
@@ -265,7 +268,9 @@ const newSteps = [
     title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      return Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true;
+      let activeTab = JSON.parse(localStorage.getItem('["Order-option"]'));
+      localStorage.setItem("viewed_tour_modal","false")
+      return (Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true) && activeTab !== 'Stop' ;
     },
     when: {
       show: function() {
@@ -416,6 +421,8 @@ const newSteps = [
       },
     ],
   }, 
+
+
   {
     id: "price",
     title: "",
@@ -561,7 +568,20 @@ const newSteps = [
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ( Object.values(swapPptionV2).includes("Swap")  === true);
     },
-    
+    when:{
+      show:function(){
+        if(localStorage.getItem("viewed_tour_modal") === "false"){
+          document.querySelectorAll('.steps-TokenSelector').forEach(e=>{
+            e.addEventListener("click",()=>{
+              this.hide()
+            })
+          })
+        }
+      },
+      hide:function() {
+        activeTourStep('.Pay-modal', this)
+      }
+    },
     text: `
     </div>
     <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Select primary token</div>
@@ -571,7 +591,10 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type:'complete',
+        action(){
+          localStorage.setItem('viewed_tour_modal',"true")
+          this.complete();
+        },
         text: `
         <div style="
         display: flex;
@@ -594,7 +617,7 @@ const newSteps = [
         `,
       },
       {
-        type: "next",
+        type:'next',
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -614,11 +637,25 @@ const newSteps = [
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return ( Object.values(swapPptionV2).includes("Swap")  === true);
     },
-     when: {
+    when: {
       show: function() {
-        if(document.querySelector(".swap-button").hasAttribute("disabled")){
-          document.querySelector(".swapReceive-Step-Next").disabled = true;
+        let activeTab = JSON.parse(localStorage.getItem('["Order-option"]'));
+        localStorage.setItem("viewed_tour_modal","false")
+        if(activeTab === "Limit"){
+          if(!!document.querySelector(".swap-button").hasAttribute("disabled")){
+            document.querySelector(".swapReceive-Step-Next").disabled = true;
+          }
         }
+       if(localStorage.getItem("viewed_tour_modal") === "false"){
+          document.querySelectorAll('.steps-TokenSelector').forEach(e=>{
+            e.addEventListener("click",()=>{
+              this.hide()
+            })
+          })
+        }
+      },
+      hide:function() {
+        activeTourStep('.swapbox-modal', this)
       }
     },
     text: `
@@ -630,7 +667,10 @@ const newSteps = [
     scrollTo: true,
     buttons: [
       {
-        type:'complete',
+        action(){
+          localStorage.setItem('viewed_tour_modal',"true")
+          this.complete();
+        },
         text: `
         <div style="
         display: flex;
@@ -656,7 +696,8 @@ const newSteps = [
       {
         action(){
           document.querySelector(".swap-button").click();
-          this.next();
+          removeStepActionClasses()
+          localStorage.setItem("viewed_tour_modal","true")
         },
         classes:'swapReceive-Step-Next',
         text: `
@@ -706,6 +747,8 @@ const newSteps = [
       {
         action(){
           document.querySelector(".Confirmation-box .Modal-close-button").click(); 
+          addStepActionClasses()
+          localStorage.setItem("viewed_tour_modal","false")
           this.back();
         },
         text: `
@@ -1096,7 +1139,7 @@ const newSteps = [
     ],
   },  
   {
-    id: "CheckPaperWork",
+    id: "CheckPaperWorkNotLimit",
     title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
@@ -1106,8 +1149,11 @@ const newSteps = [
       show: function() {
         let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
         document.querySelectorAll(".CheckPaperWorkLabel").forEach(e=> {
-          e.innerHTML =  Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
-        })  
+        e.innerHTML =  Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
+        document.querySelector('.Confirmation-box-content').querySelector('.Modal-close-button').addEventListener('click',()=>{
+          document.querySelector('.CheckPaperWorkNotLimitBackButton').click()
+        })
+      })  
       }
     },
     text: `
@@ -1139,9 +1185,11 @@ const newSteps = [
       },
       {
         action(){
-          document.querySelector(".Confirmation-box .Modal-close-button").click(); 
-          this.back();
+          this.hide();
+          this.show('ClickOnSwapLongShortToken')
+          document.querySelector(".Confirmation-box") && document.querySelector(".Confirmation-box .Modal-close-button").click(); 
         },
+        classes:'CheckPaperWorkNotLimitBackButton',
         text: `
         <div style="
         display: flex;
@@ -1156,10 +1204,14 @@ const newSteps = [
       {
         action(){
           document.querySelector(".Confirmation-box-button").click();
-          if(localStorage.getItem('leaveGasLimit') !== "true" && document.querySelector(".Confirmation-box-button").innerHTML !== "Longing..."){
-            this.next();
-          }
+          setTimeout(()=>{
+            if((localStorage.getItem('leaveGasLimit') && localStorage.getItem('leaveGasLimit') !== "true") && (document.querySelector(".Confirmation-box-button").innerHTML !== "Longing..." || document.querySelector(".Confirmation-box-button").innerHTML !== "Shorting...")){
+              this.next();
+            }
+          },100)
+         
         },
+        classes:'CheckPaperWorkNotLimitNextButton',
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
