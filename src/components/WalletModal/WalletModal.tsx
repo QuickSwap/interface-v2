@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
 import { Box } from '@material-ui/core';
-import MetamaskIcon from 'assets/images/metamask.png';
-import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
 import { GlobalConst } from 'constants/index';
 import { ApplicationModal } from 'state/application/actions';
@@ -157,6 +155,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isPhantomWallet =
       (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
     const isCoinbaseWallet = ethereum && ethereum.isCoinbaseWallet;
+    const isOkxwallet = (window as any).okxwallet;
 
     return connections.map((option) => {
       if (
@@ -232,7 +231,23 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={t('installMetamask')}
             subheader={null}
             link={'https://metamask.io/'}
-            icon={MetamaskIcon}
+            icon={option.iconName}
+            iconify={iconify}
+          />
+        );
+      } else if (
+        option.name === GlobalConst.walletName.OKXWALLET &&
+        !isOkxwallet
+      ) {
+        return (
+          <WalletOption
+            id={`connect-${option.name}`}
+            key={option.name}
+            color={'#E8831D'}
+            header={t('installOkxWallet')}
+            subheader={null}
+            link={'https://www.okx.com/web3'}
+            icon={option.iconName}
             iconify={iconify}
           />
         );
