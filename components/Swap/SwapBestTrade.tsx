@@ -314,7 +314,7 @@ const SwapBestTrade: React.FC<{
         amount: srcAmount,
         side: swapType,
         options: {
-          includeDEXS: 'quickswap,quickswapv3',
+          includeDEXS: 'quickswap,quickswapv3,quickswapv3.1',
           maxImpact: maxImpactAllowed,
           partner: 'quickswapv3',
           //@ts-ignore

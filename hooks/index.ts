@@ -13,6 +13,7 @@ import {
   gnosisSafeConnection,
   metamaskConnection,
   networkConnection,
+  okxWalletConnection,
   phantomConnection,
   trustWalletConnection,
   walletConnectConnection,
@@ -93,6 +94,8 @@ export function useGetConnection() {
           return braveWalletConnection;
         case ConnectionType.CYPHERD:
           return cypherDConnection;
+        case ConnectionType.OKXWALLET:
+          return okxWalletConnection;
         default:
           throw Error('unsupported connector');
       }

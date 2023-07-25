@@ -17,6 +17,7 @@ import { BlockWallet } from './BlockWallet';
 import { BraveWallet } from './BraveWallet';
 import { CypherD } from './CypherD';
 import { isMobile } from 'react-device-detect';
+import { OkxWallet } from './OkxWallet';
 
 const MetamaskIcon = '/assets/images/metamask.png';
 const BlockWalletIcon = '/assets/images/blockwalletIcon.svg';
@@ -27,6 +28,7 @@ const CoinbaseWalletIcon = '/assets/images/coinbaseWalletIcon.svg';
 const WalletConnectIcon = '/assets/images/walletConnectIcon.svg';
 const PhantomIcon = '/assets/images/wallets/phantomIconPurple.svg';
 const VenlyIcon = '/assets/images/venly.svg';
+const OkxWalletIcon = '/assets/images/OKXWallet.svg'
 // const UnstoppableDomainsIcon = '/assets/images/unstoppableDomains.png';
 const GnosisIcon = '/assets/images/gnosis_safe.png';
 const TrustIcon = '/assets/images/trust.png';
@@ -49,6 +51,7 @@ export enum ConnectionType {
   BLOCKWALLET = 'BLOCKWALLET',
   BRAVEWALLET = 'BRAVEWALLET',
   CYPHERD = 'CYPHERD',
+  OKXWALLET = 'OKXWALLET',
 }
 
 export interface Connection {
@@ -211,6 +214,26 @@ export const bitKeepConnection: Connection = {
   iconName: BitKeepIcon,
   color: '#E8831D',
   description: 'BitKeep browser extension.',
+};
+
+const [web3OkxWallet, web3OkxWalletHooks] = initializeConnector<OkxWallet>(
+  (actions) =>
+    new OkxWallet({
+      actions,
+      onError,
+    }),
+);
+
+export const okxWalletConnection: Connection = {
+  key: 'OkxWallet',
+  name: GlobalConst.walletName.OKXWALLET,
+  connector: web3OkxWallet,
+  hooks: web3OkxWalletHooks,
+  type: ConnectionType.OKXWALLET,
+  iconName: OkxWalletIcon,
+  color: '#E8831D',
+  description: 'OkxWallet browser extension.',
+  mobile: true,
 };
 
 const [web3CypherD, web3CypherDHooks] = initializeConnector<CypherD>(
@@ -391,6 +414,7 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitKeepConnection,
+        okxWalletConnection,
       ]
     : [
         cypherDConnection,
@@ -405,5 +429,6 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitKeepConnection,
+        okxWalletConnection,
       ];
 }
