@@ -15,9 +15,11 @@
 }
 
 .noLiquidityImage {
-  max-width: 286px;
-  width: 80%;
   filter: grayscale(1);
+  & img {
+    max-width: 286px;
+    width: 80%;
+  }
 }
 
 .v3ManageV2liquidityButton {

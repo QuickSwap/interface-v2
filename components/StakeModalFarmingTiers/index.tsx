@@ -9,7 +9,6 @@ import { useCurrencyBalance } from 'state/wallet/hooks';
 import { formatAmountTokens } from 'utils/numbers';
 import { HelpCircle } from 'react-feather';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Token } from '@uniswap/sdk-core';
 
 import { ChainId } from '@uniswap/sdk';
@@ -150,7 +149,9 @@ export default function StakeModalFarmingTiers({
           >
             <div className='p-1 farming-tier__header w-100 ta-l pos-r'>
               <div className='mb-1 farming-tier__img'>
-                <Image width={48} height={48} src={tier.img} alt='Tier Image' />
+                <picture>
+                  <img width={48} height={48} src={tier.img} alt='Tier Image' />
+                </picture>
               </div>
               <div className='farming-tier__title b f f-jb'>
                 <span>{tier.title}</span>

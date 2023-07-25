@@ -2,7 +2,6 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import styles from 'styles/components/WalletModal.module.scss';
-import Image from 'next/image';
 
 interface OptionProps {
   link?: string | null;
@@ -32,7 +31,9 @@ const Option: React.FC<OptionProps> = ({
   const content = (
     <Box className={styles.optionCardClickable} id={id} onClick={onClick}>
       <Box className='flex items-center' my={0.5}>
-        <Image src={icon} alt={'Icon'} width={24} height={24} />
+        <picture>
+          <img src={icon} alt={'Icon'} width={24} />
+        </picture>
         <p style={{ marginLeft: 8 }}>{header}</p>
       </Box>
       {active && (

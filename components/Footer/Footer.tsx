@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Grid } from '@mui/material';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import styles from 'styles/components/Footer.module.scss';
 import { useTranslation } from 'next-i18next';
@@ -42,12 +41,9 @@ const Footer: React.FC = () => {
       <Box className={styles.footerContainer}>
         <Grid container spacing={4} className={styles.socialMenuWrapper}>
           <Grid item xs={12} sm={12} md={4}>
-            <Image
-              src='/assets/images/quickLogo.png'
-              alt='QUICK'
-              width={130}
-              height={40}
-            />
+            <picture>
+              <img src='/assets/images/quickLogo.png' alt='QUICK' height={40} />
+            </picture>
             <Box mt={2} maxWidth='240px'>
               <small className='text-secondary'>{t('socialDescription')}</small>
             </Box>

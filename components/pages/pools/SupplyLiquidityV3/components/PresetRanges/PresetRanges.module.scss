@@ -22,9 +22,9 @@
 }
 
 .activePresetButton {
-  border: 1px solid $primary;
+  border: 1px solid $primary !important;
   & p {
-    color: $textPrimary;
+    color: $textPrimary !important;
   }
 }
 

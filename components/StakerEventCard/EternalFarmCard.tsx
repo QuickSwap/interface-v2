@@ -18,7 +18,6 @@ import { getAddress } from 'ethers/lib/utils';
 import { useTranslation } from 'next-i18next';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { useMaticPrice } from 'state/application/hooks';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 interface EternalFarmCardProps {
@@ -222,12 +221,9 @@ export function EternalFarmCard({
             </small>
             <Box ml={0.5} className='flex'>
               <TotalAPRTooltip farmAPR={apr ?? 0} poolAPR={poolApr ?? 0}>
-                <Image
-                  src='/assets/images/circleinfo.svg'
-                  alt='info'
-                  width={16}
-                  height={16}
-                />
+                <picture>
+                  <img src='/assets/images/circleinfo.svg' alt='info' />
+                </picture>
               </TotalAPRTooltip>
             </Box>
           </Box>

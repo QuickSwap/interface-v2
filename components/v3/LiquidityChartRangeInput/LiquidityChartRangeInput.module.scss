@@ -8,8 +8,8 @@
 }
 
 .filledPath {
-  stroke: #2797FF;
-  fill: url(#liquidity-chart-gradient);
+  stroke: #2797ff !important;
+  fill: url(#liquidity-chart-gradient) !important;
 }
 
 .path {
@@ -41,7 +41,7 @@
 }
 
 .tooltipBackground {
-  fill: #2797FF;
+  fill: #2797ff;
 }
 
 .tooltip {
@@ -67,8 +67,8 @@
   border-radius: 4px;
   top: 0;
   right: 0;
-};
+}
 
 .zoomOverlay {
   fill: transparent;
-};
+}

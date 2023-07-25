@@ -5,7 +5,6 @@ import { PoolFinderModal, PoolPositionCard } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { Trans, useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 import { getConfig } from 'config';
 import styles from 'styles/pages/Pools.module.scss';
 
@@ -68,15 +67,14 @@ const YourLiquidityPools: React.FC = () => {
             ))}
           </Box>
         ) : (
-          <Box textAlign='center'>
-            <Image
-              src='/assets/images/NoLiquidityPool.png'
-              alt='No Liquidity'
-              className={styles.noLiquidityImage}
-              width={286}
-              height={176}
-            />
-            <p className='small liquidityText'>
+          <Box className='flex flex-col items-center text-center'>
+            <picture className={styles.noLiquidityImage}>
+              <img
+                src='/assets/images/NoLiquidityPool.png'
+                alt='No Liquidity'
+              />
+            </picture>
+            <p className={`small ${styles.liquidityText}`}>
               <Trans
                 i18nKey='poolMissingComment'
                 components={{

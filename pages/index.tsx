@@ -10,7 +10,6 @@ import {
 import { ExpandMoreOutlined } from '@mui/icons-material';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { useTranslation, Trans } from 'next-i18next';
-import Image from 'next/image';
 import styles from 'styles/pages/Home.module.scss';
 import GlobalSection from 'components/pages/home/GlobalSection';
 import SwapSection from 'components/pages/home/SwapSection';
@@ -245,7 +244,9 @@ const LandingPage = (
         {socialicons.map((val, ind) => (
           <Box key={ind} mx={1.5}>
             <a href={val.link} target='_blank' rel='noopener noreferrer'>
-              <Image src={val.icon} alt='social icons' width={64} height={64} />
+              <picture>
+                <img src={val.icon} alt='social icons' />
+              </picture>
             </a>
           </Box>
         ))}
@@ -255,12 +256,9 @@ const LandingPage = (
       </Box>
       <Box className={styles.quickInfo}>
         <h4>{t('quickInfoTitle')}</h4>
-        <Image
-          src='/assets/images/Motif.svg'
-          alt='Motif'
-          width={15}
-          height={38}
-        />
+        <picture>
+          <img src='/assets/images/Motif.svg' alt='Motif' />
+        </picture>
       </Box>
       <SwapSection />
       {isFarmAvailable && (
@@ -305,7 +303,9 @@ const LandingPage = (
               key={index}
               className={styles.featureContainerItem}
             >
-              <Image src={val.img} alt={val.title} width={150} height={150} />
+              <picture>
+                <img src={val.img} alt={val.title} />
+              </picture>
               <Box className={styles.featureText}>
                 <h5>{val.title}</h5>
                 <p>{val.desc}</p>
@@ -343,12 +343,9 @@ const LandingPage = (
           {socialicons.map((val, ind) => (
             <Box key={ind}>
               <a href={val.link} target='_blank' rel='noopener noreferrer'>
-                <Image
-                  src={val.icon}
-                  alt='social icons'
-                  width={32}
-                  height={32}
-                />
+                <picture>
+                  <img src={val.icon} alt='social icons' />
+                </picture>
                 <p>{val.title}</p>
               </a>
             </Box>

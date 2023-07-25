@@ -8,7 +8,6 @@ import { formatNumber } from 'utils';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import GammaFarmCardDetails from './GammaFarmCardDetails';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import Image from 'next/image';
 
 const GammaFarmCard: React.FC<{
   data: any;
@@ -104,12 +103,9 @@ const GammaFarmCard: React.FC<{
                   farmAPR={farmAPR * 100}
                   poolAPR={poolAPR * 100}
                 >
-                  <Image
-                    src='/assets/images/circleinfo.svg'
-                    alt='info'
-                    width={16}
-                    height={16}
-                  />
+                  <picture>
+                    <img src='/assets/images/circleinfo.svg' alt='info' />
+                  </picture>
                 </TotalAPRTooltip>
               </Box>
             </Box>

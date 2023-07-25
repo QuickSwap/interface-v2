@@ -252,7 +252,7 @@ export const Brush = ({
                     rx='4'
                   />
                   <text
-                    className={styles.toolTip}
+                    className={styles.tooltip}
                     y='8'
                     x='-27'
                     transform={`scale(-1, 1)`}
@@ -299,7 +299,7 @@ export const Brush = ({
                     rx='4'
                   />
                   <text
-                    className={styles.toolTip}
+                    className={styles.tooltip}
                     y='8'
                     x='27'
                     dominantBaseline='middle'

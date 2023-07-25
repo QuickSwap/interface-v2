@@ -26,7 +26,6 @@ import { ChainId, JSBI } from '@uniswap/sdk';
 import { StableCoins } from 'constants/v3/addresses';
 import { getEternalFarmFromTokens } from 'utils';
 import { Trans, useTranslation } from 'next-i18next';
-import Image from 'next/image';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -362,7 +361,7 @@ export function SelectRange({
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
       {gammaPair && (
-        <Box className={`buttonGroup ${styles.poolRangeButtonGroup}`}>
+        <Box className={`${styles.poolRangeButtonGroup} buttonGroup`}>
           <ButtonGroup>
             <Button
               className={
@@ -377,17 +376,17 @@ export function SelectRange({
                 )
               }
             >
-              <Image
-                src={
-                  liquidityRangeType ===
-                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-                    ? '/assets/images/automaticDark.svg'
-                    : '/assets/images/automatic.svg'
-                }
-                alt='gamma range'
-                width={105}
-                height={15}
-              />
+              <picture>
+                <img
+                  src={
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+                      ? '/assets/images/automaticDark.svg'
+                      : '/assets/images/automatic.svg'
+                  }
+                  alt='gamma range'
+                />
+              </picture>
             </Button>
             <Button
               className={
@@ -411,12 +410,9 @@ export function SelectRange({
         <>
           <Box my={1.5} className={styles.poolRangePowerGamma}>
             <span className='text-secondary'>{t('poweredBy')}</span>
-            <Image
-              src='/assets/images/gammaLogo.png'
-              alt='Gamma Logo'
-              width={56}
-              height={9}
-            />
+            <picture>
+              <img src='/assets/images/gammaLogo.png' alt='Gamma Logo' />
+            </picture>
           </Box>
           <Box mb={1.5}>
             <small className='weight-600'>{t('selectStrategy')}</small>
@@ -549,16 +545,16 @@ export function SelectRange({
               </Box>
             )}
           {mintInfo.outOfRange && (
-            <Box className='pool-range-chart-warning'>
-              <Box className='pool-range-chart-warning-icon'>
+            <Box className={styles.poolRangeChartWarning}>
+              <Box className={styles.poolRangeChartWarningIcon}>
                 <ReportProblemOutlined />
               </Box>
               <span>{t('priceRangeNotElligibleWraning')}</span>
             </Box>
           )}
           {mintInfo.invalidRange && (
-            <Box className='pool-range-chart-warning'>
-              <Box className='pool-range-chart-warning-icon'>
+            <Box className={styles.poolRangeChartWarning}>
+              <Box className={styles.poolRangeChartWarningIcon}>
                 <ReportProblemOutlined />
               </Box>
               <span>{t('invalidRange')}</span>
@@ -567,7 +563,7 @@ export function SelectRange({
         </>
       )}
 
-      <Box className='pool-range-chart-wrapper'>
+      <Box className={styles.poolRangeChartWrapper}>
         <LiquidityChartRangeInput
           currencyA={currencyA ?? undefined}
           currencyB={currencyB ?? undefined}

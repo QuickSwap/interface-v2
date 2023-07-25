@@ -17,7 +17,9 @@ const BarOptionContent: React.FC<WalletOptionProps> = ({
   return (
     <Box className={styles.optionCardClickable} id={id} onClick={onClick}>
       <Box className='flex items-center' my={0.5}>
-        <img src={icon} alt={'Icon'} width={24} />
+        <picture>
+          <img src={icon} alt={'Icon'} width={24} />
+        </picture>
         <p style={{ marginLeft: 8 }}>{header}</p>
       </Box>
       {active && (

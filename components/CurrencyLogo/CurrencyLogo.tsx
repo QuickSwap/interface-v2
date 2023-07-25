@@ -8,7 +8,6 @@ import { WrappedTokenInfo as V3WrappedTokenInfo } from 'state/lists/v3/wrappedTo
 import { Logo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import styles from 'styles/components/CurrencyLogo.module.scss';
-import Image from 'next/image';
 import { useActiveWeb3React } from 'hooks';
 
 interface CurrencyLogoProps {
@@ -72,13 +71,13 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
         borderRadius={size}
         className={styles.currencyLogo}
       >
-        <Image
-          className={styles.ethereumLogo}
-          src={nativeCurrencyImage}
-          alt='Ethereum Logo'
-          width={100}
-          height={100}
-        />
+        <picture>
+          <img
+            className={styles.ethereumLogo}
+            src={nativeCurrencyImage}
+            alt='Ethereum Logo'
+          />
+        </picture>
       </Box>
     );
   }

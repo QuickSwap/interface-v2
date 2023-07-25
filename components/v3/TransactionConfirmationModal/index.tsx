@@ -13,7 +13,6 @@ import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
 import { CustomModal } from 'components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
 import { useTranslation } from 'next-i18next';
-import Image from 'next/image';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -36,7 +35,9 @@ function ConfirmationPendingContent({
         </Box>
       )}
       <Box className='flex justify-center spinner'>
-        <Image src='assets/images/spinner.svg' alt='Spinner' />
+        <picture>
+          <img src='assets/images/spinner.svg' alt='Spinner' />
+        </picture>
       </Box>
       <Box mt='20px' textAlign='center'>
         <p>{t('waitingConfirm')}</p>
@@ -99,12 +100,14 @@ function TransactionSubmittedContent({
               >
                 <Box className='flex items-center'>
                   {t('addToMetamaskToken', { symbol: currencyToAdd.symbol })}
-                  <Image
-                    src='/images/blue-loader.svg'
-                    alt='Metamask'
-                    width={16}
-                    style={{ marginLeft: 6 }}
-                  />
+                  <picture>
+                    <img
+                      src='/assets/images/blue-loader.svg'
+                      alt='Metamask'
+                      width={16}
+                      style={{ marginLeft: 6 }}
+                    />
+                  </picture>
                 </Box>
               </Button>
             ) : (

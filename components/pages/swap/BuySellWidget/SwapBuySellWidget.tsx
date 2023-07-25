@@ -3,7 +3,6 @@ import { BuyFiatButton } from 'components';
 import React from 'react';
 import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Swap.module.scss';
-import Image from 'next/image';
 
 export const SwapBuySellWidget: React.FC = () => {
   const { t } = useTranslation();
@@ -13,11 +12,12 @@ export const SwapBuySellWidget: React.FC = () => {
     <Box className={`${styles.wrapper} ${styles.buySellWidgetContainer}`}>
       <Box mb={2} className='row'>
         <Box>
-          <Image
-            className='wallet'
-            src='/images/featured/BuyWithFiatNoPad.png'
-            alt='buy with fiat'
-          />
+          <picture>
+            <img
+              src='/images/featured/BuyWithFiatNoPad.png'
+              alt='buy with fiat'
+            />
+          </picture>
         </Box>
         <Box className='heading'>{t('buyOrSellCryptoFiat')}</Box>
         <Box sx={{ marginTop: 'auto', marginBottom: 'auto' }}>
@@ -27,21 +27,17 @@ export const SwapBuySellWidget: React.FC = () => {
       <Divider />
       <Box mt={2} className='row'>
         <Box>
-          <Image
-            className='bill'
-            src='/images/featured/BillPay.png'
-            alt='bill pay'
-          />
+          <picture>
+            <img src='/images/featured/BillPay.png' alt='bill pay' />
+          </picture>
         </Box>
         <Box className='heading'>
           <Box>{t('payBills')}</Box>
           <Box className='sub-heading'>
             {t('poweredBy')}
-            <Image
-              className='spritz'
-              src='/images/SpritzIcon.png'
-              alt='spritz finance'
-            />
+            <picture>
+              <img src='/images/SpritzIcon.png' alt='spritz finance' />
+            </picture>
           </Box>
         </Box>
         <Box sx={{ marginTop: 'auto', marginBottom: 'auto' }}>

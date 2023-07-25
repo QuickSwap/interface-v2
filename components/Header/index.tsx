@@ -17,7 +17,6 @@ import { shortenAddress, useIsSupportedNetwork } from 'utils';
 import useENSName from 'hooks/useENSName';
 import { WalletModal, NetworkSelectionModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
-import Image from 'next/image';
 import styles from 'styles/components/Header.module.scss';
 import { useTranslation } from 'react-i18next';
 import { getConfig } from 'config';
@@ -256,12 +255,13 @@ const Header: React.FC = () => {
         confirmedTransactions={confirmed}
       />
       <Link href='/'>
-        <Image
-          src={mobileWindowSize ? QuickIcon : QuickLogo}
-          alt='QuickLogo'
-          width={mobileWindowSize ? 40 : 195}
-          height={mobileWindowSize ? 40 : 60}
-        />
+        <picture>
+          <img
+            src={mobileWindowSize ? QuickIcon : QuickLogo}
+            alt='QuickLogo'
+            height={mobileWindowSize ? 40 : 60}
+          />
+        </picture>
       </Link>
       {!tabletWindowSize && (
         <Box className={styles.mainMenu}>
@@ -289,35 +289,29 @@ const Header: React.FC = () => {
               <small>{val.text}</small>
               {val.isNew && (
                 <>
-                  <Image src={NewTag} alt='new menu' width={46} height={30} />
-                  <Image
+                  <picture>
+                    <img src={NewTag} alt='new menu' width={46} />
+                  </picture>
+                  <picture
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleLeft}`}
-                    src={SparkleLeft}
-                    alt='menuItem sparkle left'
-                    width={4}
-                    height={5}
-                  />
-                  <Image
+                  >
+                    <img src={SparkleLeft} alt='menuItem sparkle left' />
+                  </picture>
+                  <picture
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleRight}`}
-                    src={SparkleRight}
-                    alt='menuItem sparkle right'
-                    width={4}
-                    height={5}
-                  />
-                  <Image
+                  >
+                    <img src={SparkleRight} alt='menuItem sparkle right' />
+                  </picture>
+                  <picture
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleBottom}`}
-                    src={SparkleBottom}
-                    alt='menuItem sparkle bottom'
-                    width={136}
-                    height={10}
-                  />
-                  <Image
+                  >
+                    <img src={SparkleBottom} alt='menuItem sparkle bottom' />
+                  </picture>
+                  <picture
                     className={`${styles.menuItemSparkle} ${styles.menuItemSparkleTop}`}
-                    src={SparkleTop}
-                    alt='menuItem sparkle top'
-                    width={133}
-                    height={11}
-                  />
+                  >
+                    <img src={SparkleTop} alt='menuItem sparkle top' />
+                  </picture>
                 </>
               )}
             </Box>
@@ -441,12 +435,9 @@ const Header: React.FC = () => {
           {isSupportedNetwork && (
             <Box className={styles.networkSelectionImage}>
               {chainId && <Box className={styles.styledPollingDot} />}
-              <Image
-                src={config['nativeCurrencyImage']}
-                alt='network Image'
-                width={18}
-                height={18}
-              />
+              <picture>
+                <img src={config['nativeCurrencyImage']} alt='network Image' />
+              </picture>
             </Box>
           )}
           <small className='weight-600'>
@@ -462,7 +453,9 @@ const Header: React.FC = () => {
             onClick={toggleWalletModal}
           >
             <p>{udDomain ?? shortenAddress(account)}</p>
-            <Image src={WalletIcon} alt='Wallet' width={20} height={20} />
+            <picture>
+              <img src={WalletIcon} alt='Wallet' />
+            </picture>
           </Box>
         ) : (
           <Box

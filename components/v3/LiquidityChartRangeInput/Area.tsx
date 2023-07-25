@@ -24,8 +24,7 @@ export const Area = ({
   useMemo(
     () => (
       <path
-        className={styles.path}
-        fill={fill}
+        className={`${styles.path} ${fill ? styles.filledPath : ''}`}
         d={
           area()
             .curve(curveStepAfter)

@@ -57,25 +57,25 @@
   padding: 0;
   margin: 12px 0 16px;
   & > div {
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
     & button {
-      max-width: unset;
-      height: 36px;
+      max-width: unset !important;
+      height: 36px !important;
       background-color: $secondary1;
       &:first-child {
-        border-top-left-radius: 6px;
-        border-bottom-left-radius: 6px;
+        border-top-left-radius: 6px !important;
+        border-bottom-left-radius: 6px !important;
       }
       &:last-child {
-        border-top-right-radius: 6px;
-        border-bottom-right-radius: 6px;
+        border-top-right-radius: 6px !important;
+        border-bottom-right-radius: 6px !important;
       }
       &.active span {
-        color: $bgPalette;
+        color: $bgPalette !important;
       }
       & span {
-        font-size: 14px;
-        color: $textPrimary;
+        font-size: 14px !important;
+        color: $textPrimary !important;
       }
     }
   }

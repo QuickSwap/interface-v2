@@ -23,11 +23,14 @@ export function PoolStats({ fee, apr, noLiquidity, loading }: IPoolStats) {
     <Box className={styles.poolStats}>
       <span>{noLiquidity ? t('newPool') : t('currentPoolstats')}</span>
       <Box mt='6px' className='flex items-center'>
-        <Box className='poolStatsWrapper bg-primaryLight'>
+        <Box className={`${styles.poolStatsWrapper} bg-primaryLight`}>
           <span>{fee}</span>
         </Box>
         {apr && (
-          <Box ml='6px' className='poolStatsWrapper bg-successLight'>
+          <Box
+            ml='6px'
+            className={`${styles.poolStatsWrapper} bg-successLight`}
+          >
             <span className='text-success'>
               {apr}% {t('apr')}
             </span>

@@ -22,7 +22,6 @@ import {
 import SyrupTimerLabel from './SyrupTimerLabel';
 import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
-import Image from 'next/image';
 import { ChainId } from '@uniswap/sdk';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
@@ -182,12 +181,9 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apr')}:</small>
                     <Box ml={0.5} className='flex'>
-                      <Image
-                        src='/assets/images/circleinfo.svg'
-                        alt='info'
-                        width={16}
-                        height={16}
-                      />
+                      <picture>
+                        <img src='/assets/images/circleinfo.svg' alt='info' />
+                      </picture>
                     </Box>
                   </Box>
                   <Box textAlign='right'>

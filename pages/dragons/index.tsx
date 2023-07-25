@@ -4,7 +4,6 @@ import DragonsLair from 'components/pages/dragons/DragonsLair';
 import DragonsSyrup from 'components/pages/dragons/DragonsSyrup';
 import styles from 'styles/pages/Dragon.module.scss';
 import { useTranslation } from 'next-i18next';
-import Image from 'next/image';
 import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
@@ -44,22 +43,17 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           {showNew && (
             <Box className={styles.dragonWrapper}>
               <Box className={styles.dragonBg}>
-                <Image
-                  src='/assets/images/DragonBg2.svg'
-                  alt='Dragon Lair'
-                  width={352}
-                  height={207}
-                  style={{ width: '100%', height: 'auto' }}
-                />
+                <picture>
+                  <img src='/assets/images/DragonBg2.svg' alt='Dragon Lair' />
+                </picture>
               </Box>
-              <Image
-                src='/assets/images/DragonLairMask.svg'
-                alt='Dragon Mask'
-                className={styles.dragonMask}
-                width={352}
-                height={326}
-                style={{ width: '100%', height: 'auto' }}
-              />
+              <picture>
+                <img
+                  src='/assets/images/DragonLairMask.svg'
+                  alt='Dragon Mask'
+                  className={styles.dragonMask}
+                />
+              </picture>
               <Box className={styles.dragonTitle}>
                 <h5>{t('newDragonLair')}</h5>
                 <small>
@@ -75,22 +69,18 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           {showOld && (
             <Box className={styles.dragonWrapper} mt='10px'>
               <Box className={styles.dragonBg} style={{ maxHeight: 170 }}>
-                <Image
-                  src='/assets/images/DragonBg2.svg'
-                  alt='Dragon Lair'
-                  width={352}
-                  height={207}
-                  style={{ width: '100%', height: 'auto' }}
-                />
+                <picture>
+                  <img src='/assets/images/DragonBg2.svg' alt='Dragon Lair' />
+                </picture>
               </Box>
-              <Image
-                src='/assets/images/DragonLairMask.svg'
-                alt='Dragon Mask'
-                className={styles.dragonMask}
-                width={352}
-                height={326}
-                style={{ width: '100%', height: 'auto' }}
-              />
+              <picture>
+                <img
+                  src='/assets/images/DragonLairMask.svg'
+                  alt='Dragon Mask'
+                  className={styles.dragonMask}
+                />
+              </picture>
+
               <Box className={styles.dragonTitle} width='85%'>
                 <h5>{t('dragonLair')}</h5>
                 <small>{t('oldDragonLairTitle')}</small>
@@ -102,16 +92,16 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
         <Grid item xs={12} sm={12} md={8}>
           <Box className={styles.dragonWrapper}>
             <Box className={styles.dragonBg}>
-              <Image
-                src={
-                  isMobile
-                    ? '/assets/images/DragonBg2.svg'
-                    : '/assets/images/DragonBg1.svg'
-                }
-                alt='Dragon Syrup'
-                width={isMobile ? 352 : 821}
-                height={isMobile ? 207 : 151}
-              />
+              <picture>
+                <img
+                  src={
+                    isMobile
+                      ? '/assets/images/DragonBg2.svg'
+                      : '/assets/images/DragonBg1.svg'
+                  }
+                  alt='Dragon Syrup'
+                />
+              </picture>
             </Box>
             <Box className={styles.dragonTitle}>
               <h5>{t('dragonSyrup')}</h5>

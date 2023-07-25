@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { stringToColour } from 'utils/stringToColour';
-import Image from 'next/image';
 
 const BAD_SRCS: { [tokenAddress: string]: true } = {};
 
@@ -22,19 +21,20 @@ const Logo: React.FC<LogoProps> = ({
 
   symbol = symbol.trim();
   const displaySymbol = symbol.slice(0, 1) + symbol.slice(-1);
-  const imageSize = Number(size.substring(0, size.length - 2));
   if (src) {
     return (
-      <Image
-        alt={alt ?? 'Logo'}
-        src={src}
-        width={imageSize}
-        height={imageSize}
-        onError={() => {
-          if (src) BAD_SRCS[src] = true;
-          refresh((i) => i + 1);
-        }}
-      />
+      <picture>
+        <img
+          alt={alt ?? 'Logo'}
+          src={src}
+          width={size}
+          height={size}
+          onError={() => {
+            if (src) BAD_SRCS[src] = true;
+            refresh((i) => i + 1);
+          }}
+        />
+      </picture>
     );
   }
   return (

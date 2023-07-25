@@ -17,7 +17,6 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import styles from 'styles/components/FarmCard.module.scss';
 import { Trans, useTranslation } from 'next-i18next';
-import Image from 'next/image';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -112,12 +111,13 @@ const FarmCard: React.FC<{
                 <Box className='flex items-center'>
                   <span className='text-secondary'>{t('apy')}</span>
                   <Box ml={0.5} className='flex'>
-                    <Image
-                      src='/assets/images/circleinfo.svg'
-                      alt='info'
-                      width={16}
-                      height={16}
-                    />
+                    <picture>
+                      <img
+                        src='/assets/images/circleinfo.svg'
+                        alt='info'
+                        height={16}
+                      />
+                    </picture>
                   </Box>
                 </Box>
                 <Box mt={0.5}>

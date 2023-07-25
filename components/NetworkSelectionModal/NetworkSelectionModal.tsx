@@ -10,7 +10,6 @@ import {
   useModalOpen,
   useNetworkSelectionModalToggle,
 } from 'state/application/hooks';
-import Image from 'next/image';
 import { ApplicationModal } from 'state/application/actions';
 import { useIsSupportedNetwork } from 'utils';
 import { ChainId } from '@uniswap/sdk';
@@ -92,12 +91,12 @@ const NetworkSelectionModal: React.FC = () => {
               }}
             >
               <Box className='flex items-center'>
-                <Image
-                  src={config['nativeCurrencyImage']}
-                  alt='network Image'
-                  width={24}
-                  height={24}
-                />
+                <picture>
+                  <img
+                    src={config['nativeCurrencyImage']}
+                    alt='network Image'
+                  />
+                </picture>
                 <small className='weight-600'>{config['networkName']}</small>
               </Box>
               {isSupportedNetwork && chainId && chainId === chain && (

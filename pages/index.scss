@@ -12,6 +12,10 @@ body {
   }
 }
 
+picture {
+  display: flex;
+}
+
 .panel {
   background: $grey3;
   border-radius: 20px;

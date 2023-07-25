@@ -12,7 +12,6 @@ import FarmStakeButtons from './FarmStakeButtons';
 import { formatReward } from 'utils/formatReward';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import Image from 'next/image';
 
 interface FarmCardProps {
   el: any;
@@ -214,12 +213,9 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
               </small>
               <Box ml={0.5} className='flex'>
                 <TotalAPRTooltip farmAPR={farmApr ?? 0} poolAPR={poolApr ?? 0}>
-                  <Image
-                    src='/assets/images/circleinfo.svg'
-                    alt='info'
-                    width={16}
-                    height={16}
-                  />
+                  <picture>
+                    <img src='/assets/images/circleinfo.svg' alt='info' />
+                  </picture>
                 </TotalAPRTooltip>
               </Box>
             </Box>

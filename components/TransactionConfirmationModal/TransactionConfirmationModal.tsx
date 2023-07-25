@@ -9,7 +9,6 @@ import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import styles from 'styles/components/TransactionConfirmationModal.module.scss';
 import { useTranslation } from 'next-i18next';
-import Image from 'next/image';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -28,7 +27,9 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
       </Box>
       <Box className={styles.txModalContent}>
         <Box my={4} className='flex justify-center spinner'>
-          <Image src='/images/spinner.svg' alt='Spinner' />
+          <picture>
+            <img src='/images/spinner.svg' alt='Spinner' />
+          </picture>
         </Box>
         <h5>{t('waitingConfirm')}</h5>
         {pendingText && <p>{pendingText}</p>}
@@ -190,7 +191,9 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   // confirmation screen
   return (
     <CustomModal open={isOpen} onClose={onDismiss} modalWrapper={modalWrapper}>
-      <Image src='/images/ModalBG.svg' alt='Modal Back' className='txModalBG' />
+      <picture>
+        <img src='/images/ModalBG.svg' alt='Modal Back' className='txModalBG' />
+      </picture>
       <Box position='relative' zIndex={2}>
         {attemptingTxn ? (
           <ConfirmationPendingContent

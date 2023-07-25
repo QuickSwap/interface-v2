@@ -295,7 +295,7 @@ function RangePart({
   ]);
 
   return (
-    <Box className='text-center price-range-part'>
+    <Box className={`text-center ${styles.priceRangePart}`}>
       <p className='caption text-secondary'>{title}</p>
       <Box className={styles.priceRangeMain}>
         <button
@@ -304,14 +304,13 @@ function RangePart({
         >
           <Remove />
         </button>
-        <div className='price-range-input'>
+        <div className={styles.priceRangeInput}>
           <Input
             value={
               isUSD ? (valueUSD ? '$' : '') + localUSDValue : localTokenValue
             }
             id={title}
             onBlur={handleOnBlur}
-            className={`range-input ${isUSD && valueUSD ? 'is-usd' : ''}`}
             disabled={disabled || locked}
             onUserInput={(val) => {
               isUSD
