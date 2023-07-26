@@ -15,7 +15,7 @@
     display: flex;
     align-items: center;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 12px;
   }
 }
@@ -32,12 +32,12 @@
   cursor: pointer;
   & small {
     color: $primary;
-    font-weight: 600
+    font-weight: 600;
   }
 }
 .priceShowBox {
   border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0
+  border-bottom-right-radius: 0;
 }
 .currencyButton {
   display: flex;

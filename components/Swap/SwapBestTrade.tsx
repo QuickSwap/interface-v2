@@ -957,7 +957,7 @@ const SwapBestTrade: React.FC<{
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
         color={isProMode ? 'white' : 'secondary'}
-        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
+        bgClass={isProMode ? styles.swapBgHighlight : currencyBgClass}
       />
       <Box className={styles.exchangeSwap}>
         <ExchangeIcon
@@ -980,7 +980,7 @@ const SwapBestTrade: React.FC<{
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
         color={isProMode ? 'white' : 'secondary'}
-        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
+        bgClass={isProMode ? styles.swapBgHighlight : currencyBgClass}
       />
       {paraRate && (
         <Box className={styles.swapPrice}>

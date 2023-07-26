@@ -35,6 +35,7 @@ import { useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useRouter } from 'next/router';
+import styles from 'styles/pages/Farm.module.scss';
 
 const LOADFARM_COUNT = 10;
 const POOL_COLUMN = '1';
@@ -424,6 +425,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
     },
   ];
 
+  const currencyParamsArray = Object.keys(router.query)
+    .map((key, index) => [key, Object.values(router.query)[index]])
+    .filter((item) => item[0] !== 'version');
   const redirectWithFarms = (key: string, value: string) => {
     let redirectPath;
     if (router.query && router.query[key]) {
@@ -432,10 +436,9 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
         `${key}=${value}`,
       );
     } else {
-      redirectPath = '';
-      // redirectPath = `${currentPath}${
-      //   history.location.search === '' ? '?' : '&'
-      // }${key}=${value}`;
+      redirectPath = `${router.asPath}${
+        currencyParamsArray.length === 0 ? '?' : '&'
+      }${key}=${value}`;
     }
     router.push(redirectPath);
   };
@@ -490,7 +493,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
 
   return (
     <>
-      <Box className='farmListHeader'>
+      <Box className={styles.farmListHeader}>
         <Box>
           <h5>
             {t(

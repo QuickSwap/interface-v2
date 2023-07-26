@@ -1,12 +1,11 @@
 import { ChainId, ETHER } from '@uniswap/sdk';
-import { useActiveWeb3React, useIsProMode } from 'hooks';
+import { useActiveWeb3React } from 'hooks';
 import { useCallback } from 'react';
 import { useRouter } from 'next/router';
 
 export default function useSwapRedirects() {
   const router = useRouter();
   const currentPath = router.asPath;
-  const isProMode = useIsProMode();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const currency0Str = router.query.currency0
@@ -164,14 +163,14 @@ export default function useSwapRedirects() {
   const redirectWithProMode = (proMode: boolean) => {
     const currentPath = router.asPath;
     let redirectPath = '';
-    if (isProMode) {
+    if (router.query.isProMode) {
       redirectPath = currentPath.replace(
-        `isProMode=${isProMode}`,
+        `isProMode=${router.query.isProMode}`,
         `isProMode=${proMode}`,
       );
     } else {
       redirectPath = `${currentPath}${
-        Object.values(router.query).length > 0 ? '&' : '?'
+        router.asPath.includes('?') ? '&' : '?'
       }isProMode=${proMode}`;
     }
     router.push(redirectPath);

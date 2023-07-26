@@ -84,14 +84,14 @@ const SwapMain: React.FC = () => {
 
   const redirectWithSwapType = (swapTypeTo: number) => {
     let redirectPath = '';
-    if (swapType) {
+    if (router.asPath.includes('swapIndex=')) {
       redirectPath = router.asPath.replace(
         `swapIndex=${swapType}`,
         `swapIndex=${swapTypeTo}`,
       );
     } else {
       redirectPath = `${router.asPath}${
-        Object.values(router.query).length > 0 ? '&' : '?'
+        router.asPath.includes('?') ? '&' : '?'
       }swapIndex=${swapTypeTo}`;
     }
     setSelectedIndex(swapTypeTo);

@@ -34,6 +34,7 @@ import {
   formatNumber,
   calculateGasMargin,
 } from 'utils';
+import styles from 'styles/components/FarmCard.module.scss';
 
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -276,7 +277,7 @@ const FarmCardDetails: React.FC<{
   return (
     <>
       <Box
-        className={`farmCardDetails ${
+        className={`${styles.farmCardDetails} ${
           stakingInfo?.ended ? 'justify-end' : 'justify-between'
         }`}
       >
@@ -284,11 +285,11 @@ const FarmCardDetails: React.FC<{
           <>
             {isMobile && (
               <>
-                <Box className='farmCardMobileRow'>
+                <Box className={styles.farmCardMobileRow}>
                   <small className='text-secondary'>{t('tvl')}</small>
                   <small>{tvl}</small>
                 </Box>
-                <Box className='farmCardMobileRow'>
+                <Box className={styles.farmCardMobileRow}>
                   <small className='text-secondary'>{t('rewards')}</small>
                   <Box textAlign='right'>
                     <small>
@@ -310,7 +311,7 @@ const FarmCardDetails: React.FC<{
                     )}
                   </Box>
                 </Box>
-                <Box className='farmCardMobileRow'>
+                <Box className={styles.farmCardMobileRow}>
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apy')}</small>
                   </Box>
@@ -319,7 +320,7 @@ const FarmCardDetails: React.FC<{
               </>
             )}
             {!stakingInfo.ended && (
-              <Box className='buttonWrapper'>
+              <Box className={styles.buttonWrapper}>
                 <Box className='flex justify-between'>
                   <small>{t('inwallet')}:</small>
                   <Box className='flex flex-col items-end'>
@@ -339,7 +340,7 @@ const FarmCardDetails: React.FC<{
                     </Link>
                   </Box>
                 </Box>
-                <Box className='inputVal' mb={2} mt={2} p={2}>
+                <Box className={styles.inputVal} mb={2} mt={2} p={2}>
                   <NumericalInput
                     placeholder='0.00'
                     value={stakeAmount}
@@ -370,7 +371,9 @@ const FarmCardDetails: React.FC<{
                   </small>
                 </Box>
                 <Box
-                  className={stakeEnabled ? 'buttonClaim' : 'buttonToken'}
+                  className={
+                    stakeEnabled ? styles.buttonClaim : styles.buttonToken
+                  }
                   mt={2}
                   p={2}
                   onClick={async () => {
@@ -395,7 +398,7 @@ const FarmCardDetails: React.FC<{
                 </Box>
               </Box>
             )}
-            <Box className='buttonWrapper' mx={isMobile ? 0 : 2} my={2}>
+            <Box className={styles.buttonWrapper} mx={isMobile ? 0 : 2} my={2}>
               <Box className='flex justify-between'>
                 <small>{t('mydeposits')}:</small>
                 <small>
@@ -403,7 +406,7 @@ const FarmCardDetails: React.FC<{
                   {getUSDString(stakedAmounts?.myStakedUSD)})
                 </small>
               </Box>
-              <Box className='inputVal' mb={2} mt={4.5} p={2}>
+              <Box className={styles.inputVal} mb={2} mt={4.5} p={2}>
                 <NumericalInput
                   placeholder='0.00'
                   value={unstakeAmount}
@@ -434,7 +437,9 @@ const FarmCardDetails: React.FC<{
                 </small>
               </Box>
               <Box
-                className={unstakeEnabled ? 'buttonClaim' : 'buttonToken'}
+                className={
+                  unstakeEnabled ? styles.buttonClaim : styles.buttonToken
+                }
                 mt={2}
                 p={2}
                 onClick={() => {
@@ -450,7 +455,7 @@ const FarmCardDetails: React.FC<{
                 </p>
               </Box>
             </Box>
-            <Box className='buttonWrapper'>
+            <Box className={styles.buttonWrapper}>
               <Box className='flex flex-col items-center justify-between'>
                 <Box mb={1}>
                   <small>{t('unclaimedRewards')}:</small>
@@ -493,7 +498,9 @@ const FarmCardDetails: React.FC<{
                 )}
               </Box>
               <Box
-                className={claimEnabled ? 'buttonClaim' : 'buttonToken'}
+                className={
+                  claimEnabled ? styles.buttonClaim : styles.buttonToken
+                }
                 p={2}
                 onClick={() => {
                   if (claimEnabled) {
@@ -508,7 +515,7 @@ const FarmCardDetails: React.FC<{
         )}
       </Box>
       {mainRewardRate?.greaterThan('0') && (
-        <Box className='dailyRateWrapper'>
+        <Box className={styles.dailyRateWrapper}>
           <Box>
             <Box>
               <small className='text-secondary'>

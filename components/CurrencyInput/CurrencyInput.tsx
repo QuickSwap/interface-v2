@@ -116,10 +116,10 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         </Box>
       </Box>
       <Box className='flex justify-between'>
-        <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+        <small className={`${color ? `text-${color}` : 'text-secondary'}`}>
           {t('balance')}: {formatTokenAmount(selectedCurrencyBalance)}
         </small>
-        <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+        <small className={`${color ? `text-${color}` : 'text-secondary'}`}>
           ${(usdPrice * Number(amount)).toLocaleString('us')}
         </small>
       </Box>
