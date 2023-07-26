@@ -88,15 +88,6 @@ export function SelectRange({
   const gammaCurrencyA = gammaPairReversed ? currencyB : currencyA;
   const gammaCurrencyB = gammaPairReversed ? currencyA : currencyB;
 
-  useEffect(() => {
-    if (gammaPair) {
-      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.GAMMA_RANGE);
-    } else {
-      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencyA, currencyB]);
-
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
 
@@ -375,6 +366,19 @@ export function SelectRange({
         item.token1.toLowerCase() === currencyAAddress.toLowerCase())
     );
   });
+
+  useEffect(() => {
+    if (gammaPair) {
+      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.GAMMA_RANGE);
+    } else if (unipilotVaultsForPair.length > 0) {
+      onChangeLiquidityRangeType(
+        GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+      );
+    } else {
+      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currencyA, currencyB, unipilotVaultsForPair.length]);
 
   return (
     <Box>

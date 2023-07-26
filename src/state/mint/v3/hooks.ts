@@ -743,19 +743,31 @@ export function useV3DerivedMintInfo(
       )
         return;
       const independentReserve =
-        dependentField === Field.CURRENCY_B &&
-        currencyB &&
-        vaultToken0 &&
-        currencyB.wrapped.address.toLowerCase() ===
-          vaultToken0.address.toLowerCase()
+        dependentField === Field.CURRENCY_B
+          ? currencyB &&
+            vaultToken0 &&
+            currencyB.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
+            ? uniPilotVaultReserve?.token1
+            : uniPilotVaultReserve?.token0
+          : currencyA &&
+            vaultToken0 &&
+            currencyA.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
           ? uniPilotVaultReserve?.token1
           : uniPilotVaultReserve?.token0;
       const dependentReserve =
-        dependentField === Field.CURRENCY_B &&
-        currencyB &&
-        vaultToken0 &&
-        currencyB.wrapped.address.toLowerCase() ===
-          vaultToken0.address.toLowerCase()
+        dependentField === Field.CURRENCY_B
+          ? currencyB &&
+            vaultToken0 &&
+            currencyB.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
+            ? uniPilotVaultReserve?.token0
+            : uniPilotVaultReserve?.token1
+          : currencyA &&
+            vaultToken0 &&
+            currencyA.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
           ? uniPilotVaultReserve?.token0
           : uniPilotVaultReserve?.token1;
       if (

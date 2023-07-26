@@ -355,6 +355,18 @@ export function PresetRanges({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gammaValuesLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
 
+  useEffect(() => {
+    if (
+      unipilotPairs &&
+      unipilotPairs?.length > 0 &&
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+    ) {
+      handlePresetRangeSelection(ranges[0]);
+      onChangePresetRange(ranges[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unipilotPairs?.length, liquidityRangeType, baseCurrency, quoteCurrency]);
+
   return (
     <Box>
       <Box mb='10px' className='preset-buttons'>
