@@ -14,7 +14,6 @@ import {
 } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency, useToken } from 'hooks/v3/Tokens';
-import styles from 'styles/pages/Pools.module.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { CurrencyAmount, Percent, Price } from '@uniswap/sdk-core';
 import {
@@ -23,8 +22,8 @@ import {
   useV3MintState,
 } from 'state/mint/v3/hooks';
 import usePrevious from 'hooks/usePrevious';
-import { InitialPrice } from '../SupplyLiquidityV3/containers/InitialPrice';
-import { SelectRange } from '../SupplyLiquidityV3/containers/SelectRange';
+import { InitialPrice } from 'components/pages/pools/SupplyLiquidityV3/containers/InitialPrice';
+import { SelectRange } from 'components/pages/pools/SupplyLiquidityV3/containers/SelectRange';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Field } from 'state/mint/actions';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
@@ -54,10 +53,15 @@ import { Trans, useTranslation } from 'next-i18next';
 import { calculateGasMargin } from 'utils';
 import { getConfig } from 'config';
 import { GlobalConst } from 'constants/index';
-import RemoveV2Liquidity from './RemoveV2Liquidity';
-import AddGammaLiquidity from './AddGammaLiquidity';
+import RemoveV2Liquidity from 'components/pages/migrate/RemoveV2Liquidity';
+import AddGammaLiquidity from 'components/pages/migrate/AddGammaLiquidity';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import styles from 'styles/pages/Migrate.module.scss';
 
-export default function MigrateV2DetailsPage() {
+const MigrateV2DetailsPage = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation();
   const v2Exchange = V2Exchanges.Quickswap;
   const percentageToMigrate = 100;
@@ -609,7 +613,7 @@ export default function MigrateV2DetailsPage() {
             </small>
           </Box>
         )}
-        <Box mt={3} className='v3-migrate-details-box'>
+        <Box mt={3} className={styles.v3MigrateDetailsBox}>
           <Box className='flex items-center'>
             <DoubleCurrencyLogo
               currency0={currency0 ?? undefined}
@@ -620,7 +624,7 @@ export default function MigrateV2DetailsPage() {
               {currency0?.symbol}-{currency1?.symbol} LP (V2)
             </p>
           </Box>
-          <Box mt={3} className='v3-migrate-details-row'>
+          <Box mt={3} className={styles.v3MigrateDetailsRow}>
             <Box className='flex items-center'>
               <CurrencyLogo currency={currency0 ?? undefined} size='20px' />
               <p>{currency0?.symbol}</p>
@@ -629,7 +633,7 @@ export default function MigrateV2DetailsPage() {
               token0Value ? formatCurrencyAmount(token0Value, 4) : ''
             }`}</p>
           </Box>
-          <Box mt={1.5} className='v3-migrate-details-row'>
+          <Box mt={1.5} className={styles.v3MigrateDetailsRow}>
             <Box className='flex items-center'>
               <CurrencyLogo currency={currency1 ?? undefined} size='20px' />
               <p>{currency1?.symbol}</p>
@@ -848,4 +852,14 @@ export default function MigrateV2DetailsPage() {
       </Box>
     </>
   );
-}
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
+};
+
+export default MigrateV2DetailsPage;

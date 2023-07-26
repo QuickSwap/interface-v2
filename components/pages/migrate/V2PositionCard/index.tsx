@@ -6,6 +6,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
 import V2PositionCardDetails from '../V2PositionCardDetails';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/pages/Migrate.module.scss';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
@@ -15,8 +16,8 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const [showMore, setShowMore] = useState(false);
 
   return (
-    <Box className='migratev2PositionCard bg-secondary1'>
-      <Box className='migratev2PositionCardTop'>
+    <Box className={`${styles.migratev2PositionCard} bg-secondary1`}>
+      <Box className={styles.migratev2PositionCardTop}>
         <Box className='flex items-center'>
           <DoubleCurrencyLogo
             currency0={currency0}

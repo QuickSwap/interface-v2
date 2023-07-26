@@ -8,15 +8,19 @@ import Link from 'next/link';
 import { BigNumber } from '@ethersproject/bignumber';
 import usePrevious from 'hooks/usePrevious';
 import { Box, CircularProgress } from '@mui/material';
-import PositionListItem from './MyLiquidityPoolsV3/components/PositionListItem';
+import PositionListItem from 'components/pages/pools/MyLiquidityPoolsV3/components/PositionListItem';
 import { useActiveWeb3React } from 'hooks';
 import { PositionPool } from 'models/interfaces';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useV3NFTPositionManagerContract } from 'hooks/useContract';
 import { FARMING_CENTER } from 'constants/v3/addresses';
 import { useTranslation } from 'next-i18next';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-export default function PositionPage() {
+const PositionPage = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation();
   const router = useRouter();
   const tokenIdFromUrl = router.query.tokenId
@@ -100,4 +104,14 @@ export default function PositionPage() {
       )}
     </>
   );
-}
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
+};
+
+export default PositionPage;

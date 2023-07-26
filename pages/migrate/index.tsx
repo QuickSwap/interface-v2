@@ -4,11 +4,15 @@ import { useRouter } from 'next/router';
 import { ArrowBack } from '@mui/icons-material';
 import { QuestionHelper, PoolFinderModal } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
-import V2PositionCard from './components/V2PositionCard';
+import V2PositionCard from 'components/pages/migrate/V2PositionCard';
 import { useTranslation } from 'next-i18next';
 import { getConfig } from 'config';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-export default function MigrateV2LiquidityPage() {
+const MigrateV2LiquidityPage = (
+  _props: InferGetStaticPropsType<typeof getStaticProps>,
+) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { account, chainId } = useActiveWeb3React();
@@ -36,7 +40,7 @@ export default function MigrateV2LiquidityPage() {
           onClose={() => setOpenPoolFinder(false)}
         />
       )}
-      <Box className='wrapper' maxWidth='464px' width='100%'>
+      <Box className='wrapper' maxWidth='464px' width='100%' mb={8}>
         <Box className='flex items-center justify-between'>
           <Box
             className='flex cursor-pointer'
@@ -87,4 +91,14 @@ export default function MigrateV2LiquidityPage() {
       </Box>
     </>
   );
-}
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
+};
+
+export default MigrateV2LiquidityPage;

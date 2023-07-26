@@ -9,7 +9,7 @@ import { useTotalSupply } from 'data/TotalSupply';
 import { CurrencyLogo } from 'components';
 import { formatTokenAmount } from 'utils';
 import { useTranslation } from 'next-i18next';
-import styles from '../../MigrateV2Liquidity.module.scss';
+import styles from 'styles/pages/Migrate.module.scss';
 
 const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
@@ -57,7 +57,7 @@ const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
 
   return (
     <>
-      <Box className='migratev2PositionCardDetails'>
+      <Box className={styles.migratev2PositionCardDetails}>
         <Box className='cardRow'>
           <small>{t('yourPoolTokens')}:</small>
           <small>{formatTokenAmount(userPoolBalance)}</small>
@@ -92,14 +92,15 @@ const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
         </Box>
 
         <Button
+          variant='contained'
           className={styles.migratev2LiquidityButton}
           onClick={() =>
             router.push(
-              `/migrate/${
+              `/migrate/detail?currencyIdA=${
                 currency0.symbol?.toLowerCase() === 'matic'
                   ? 'ETH'
                   : pair.token0.address
-              }/${
+              }&currencyIdB=${
                 currency1.symbol?.toLowerCase() === 'matic'
                   ? 'ETH'
                   : pair.token1.address

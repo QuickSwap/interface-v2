@@ -21,6 +21,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { calculateGasMargin } from 'utils';
+import styles from 'styles/pages/Migrate.module.scss';
 
 const AddGammaLiquidity: React.FC<{
   token0Value: CurrencyAmount<Currency> | undefined;
@@ -331,15 +332,15 @@ const AddGammaLiquidity: React.FC<{
 
   return (
     <>
-      <Box mt={2} className='v3-migrate-details-box'>
-        <Box className='v3-migrate-details-row'>
+      <Box mt={2} className={styles.v3MigrateDetailsBox}>
+        <Box className={styles.v3MigrateDetailsRow}>
           <Box className='flex items-center'>
             <CurrencyLogo currency={token0 ?? undefined} size='20px' />
             <p>{token0?.symbol}</p>
           </Box>
           {gammaAmounts && <p>{gammaAmounts.token0.toSignificant()}</p>}
         </Box>
-        <Box mt={1.5} className='v3-migrate-details-row'>
+        <Box mt={1.5} className={styles.v3MigrateDetailsRow}>
           <Box className='flex items-center'>
             <CurrencyLogo currency={token1 ?? undefined} size='20px' />
             <p>{token1?.symbol}</p>
@@ -364,20 +365,20 @@ const AddGammaLiquidity: React.FC<{
           <Box width={showApprovalB === undefined ? '100%' : '49%'}>
             {showApprovalA ? (
               approvalA === ApprovalState.PENDING ? (
-                <Button className='v3-migrate-details-button' disabled>
+                <Button className={styles.v3MigrateDetailsButton} disabled>
                   {t('approving')} {token0?.symbol}
                   <span className='loadingDots' />
                 </Button>
               ) : (
                 <Button
-                  className='v3-migrate-details-button'
+                  className={styles.v3MigrateDetailsButton}
                   onClick={approveACallback}
                 >
                   {t('approve')} {token0?.symbol}
                 </Button>
               )
             ) : (
-              <Button className='v3-migrate-details-button' disabled>
+              <Button className={styles.v3MigrateDetailsButton} disabled>
                 {t('approved')} {token0?.symbol}
               </Button>
             )}
@@ -387,20 +388,20 @@ const AddGammaLiquidity: React.FC<{
           <Box width={showApprovalA === undefined ? '100%' : '49%'}>
             {showApprovalB ? (
               approvalB === ApprovalState.PENDING ? (
-                <Button className='v3-migrate-details-button' disabled>
+                <Button className={styles.v3MigrateDetailsButton} disabled>
                   {t('approving')} {token1?.symbol}
                   <span className='loadingDots' />
                 </Button>
               ) : (
                 <Button
-                  className='v3-migrate-details-button'
+                  className={styles.v3MigrateDetailsButton}
                   onClick={approveBCallback}
                 >
                   {t('approve')} {token1?.symbol}
                 </Button>
               )
             ) : (
-              <Button className='v3-migrate-details-button' disabled>
+              <Button className={styles.v3MigrateDetailsButton} disabled>
                 {t('approved')} {token1?.symbol}
               </Button>
             )}
@@ -412,7 +413,7 @@ const AddGammaLiquidity: React.FC<{
         approvalB === ApprovalState.APPROVED && (
           <Box mt={2}>
             <Button
-              className='v3-migrate-details-button'
+              className={styles.v3MigrateDetailsButton}
               onClick={amountToWrap ? onWrapMatic : onAddLiquidity}
               disabled={wrappingETH || addingLiquidity}
             >
