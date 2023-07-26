@@ -93,9 +93,20 @@ export default function Farms() {
   }, [t, allGammaFarms]);
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
-      router.push(`${router.asPath}?tab=${selected?.link}`);
+      let redirectPath;
+      if (router.query.tab) {
+        redirectPath = router.asPath.replace(
+          `tab=${router.query.tab}`,
+          `tab=${selected.link}`,
+        );
+      } else {
+        redirectPath = `${router.asPath}${
+          currencyParamsArray.length === 0 ? '?' : '&'
+        }tab=${selected.link}`;
+      }
+      router.push(redirectPath);
     },
-    [router],
+    [currencyParamsArray, router],
   );
 
   const selectedFarmCategory = useMemo(() => {

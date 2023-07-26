@@ -95,6 +95,10 @@ export default function usePoolsRedirect() {
 
   const redirectWithSwitch = useCallback(
     (currency: any, isInput: boolean, isV2 = true) => {
+      const currentPath = router.pathname.replace(
+        '[version]',
+        router.query.version as string,
+      );
       const currencyId = (isV2
       ? currencyEquals(currency, ETHER[chainIdToUse])
       : currency.isNative)
@@ -107,7 +111,7 @@ export default function usePoolsRedirect() {
             router.query.version ? `/${router.query.version}` : ''
           }`;
         } else {
-          redirectPath = `${router.pathname}?currency0=${currencyId}&currency1=${router.query.currency0}`;
+          redirectPath = `${currentPath}?currency0=${currencyId}&currency1=${router.query.currency0}`;
         }
       } else {
         if (router.pathname.includes('/add')) {
@@ -115,7 +119,7 @@ export default function usePoolsRedirect() {
             router.query.version ? `/${router.query.version}` : ''
           }`;
         } else {
-          redirectPath = `${router.pathname}?currency0=${router.query.currency1}&currency1=${currencyId}`;
+          redirectPath = `${currentPath}?currency0=${router.query.currency1}&currency1=${currencyId}`;
         }
       }
       router.push(redirectPath);
