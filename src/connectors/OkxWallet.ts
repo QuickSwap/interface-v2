@@ -10,7 +10,7 @@ import { Connector } from '@web3-react/types';
 
 export class NoOkxWalletError extends Error {
   public constructor() {
-    super('BitKeep not installed');
+    super('OkxWallet not installed');
     this.name = NoOkxWalletError.name;
     Object.setPrototypeOf(this, NoOkxWalletError.prototype);
   }

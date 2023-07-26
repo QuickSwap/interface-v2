@@ -236,6 +236,7 @@ export const okxWalletConnection: Connection = {
   iconName: OkxWalletIcon,
   color: '#E8831D',
   description: 'OkxWallet browser extension.',
+  mobile: true,
 };
 
 const [web3CypherD, web3CypherDHooks] = initializeConnector<CypherD>(
