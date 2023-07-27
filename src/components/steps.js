@@ -125,8 +125,18 @@ const newSteps = [
         let isProvider =  localStorage.getItem('currentprovider')
         if(isConnected === true && isProvider != null ){
           document.querySelector('.step3BackButton').disabled = true
-         }
-      }
+        }
+        document.querySelector(".tradePage").querySelectorAll('.Tab-option').forEach((element) => {
+          element.addEventListener('click',()=>{
+            document.querySelector(".step-3-tour-tabs").querySelectorAll('.tour-tab').forEach((e) => {
+                e.classList.remove("tour-selected-tab");
+                if(element.innerHTML === e.innerHTML){
+                  e.classList.add("tour-selected-tab")
+                }
+            })
+          })
+        })
+      },
     },
     text: `
       <div style="display: flex; justify-content: space-between; align-items: center" >
@@ -194,6 +204,16 @@ const newSteps = [
         let activeTab = JSON.parse(localStorage.getItem('["Order-option"]'));
         document.querySelector(`[data-label='${activeTab}']`).click()
         Object.values(swapPptionV2).includes("Swap") !== true ?  document.querySelector("[data-label='Trigger']").style.display = 'block' : document.querySelector("[data-label='Trigger']").style.display = 'none'
+        document.querySelector(".Exchange-swap-order-type-tabs").querySelectorAll('.Tab-option').forEach((element) => {
+          element.addEventListener('click',()=>{
+            document.querySelector(".step-4-tour-tabs").querySelectorAll('.tour-tab').forEach((e) => {
+                e.classList.remove("tour-selected-tab");
+                if(element.innerHTML === e.innerHTML){
+                  e.classList.add("tour-selected-tab")
+                }
+            })
+          })
+        })
       }
     },
     text: `
@@ -716,8 +736,9 @@ const newSteps = [
     id: "CheckPaperWork",
     title: "",
     showOn(){
-      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      return (Object.values(swapPptionV2).includes("Swap") === true);
+      // let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      // return (Object.values(swapPptionV2).includes("Swap") === true);
+      return false;
     },
     text: `
     </div>
@@ -780,8 +801,9 @@ const newSteps = [
     id: "letsSwap",
     title:'',
     showOn(){
-      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      return ( Object.values(swapPptionV2).includes("Swap")  === true);
+     // let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      // return (Object.values(swapPptionV2).includes("Swap") === true);
+      return false;
     },
     text: `
     </div>
@@ -817,7 +839,7 @@ const newSteps = [
       },
       {
         action(){
-          document.querySelector(".Confirmation-box-swap-button").click();
+          // document.querySelector(".Confirmation-box-swap-button").click();
           this.next();
         },
         text: `
@@ -836,8 +858,9 @@ const newSteps = [
     id: "swapCheckAllTtransactions",
     title:'',
     showOn(){
-      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      return ( Object.values(swapPptionV2).includes("Swap")  === true);
+     // let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      // return (Object.values(swapPptionV2).includes("Swap") === true);
+      return false;
     },
     when:{
       show: function() {
@@ -1066,7 +1089,6 @@ const newSteps = [
         classes:'ClickOnSwapLongShortTokenNext',
         action(){
           document.querySelector(".long-short-swap-button").click();   
-          this.next();
         },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
@@ -1150,7 +1172,7 @@ const newSteps = [
         let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
         document.querySelectorAll(".CheckPaperWorkLabel").forEach(e=> {
         e.innerHTML =  Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
-        document.querySelector('.Confirmation-box-content').querySelector('.Modal-close-button').addEventListener('click',()=>{
+        document.querySelector('.Exchange-swap-box').querySelector('.Modal-close-button').addEventListener('click',()=>{
           document.querySelector('.CheckPaperWorkNotLimitBackButton').click()
         })
       })  
@@ -1185,9 +1207,10 @@ const newSteps = [
       },
       {
         action(){
-          this.hide();
           this.show('ClickOnSwapLongShortToken')
-          document.querySelector(".Confirmation-box") && document.querySelector(".Confirmation-box .Modal-close-button").click(); 
+          if(!!document.querySelector('.Exchange-swap-box').querySelector('.Confirmation-box')){
+            document.querySelector(".Confirmation-box .Modal-close-button").click(); 
+          }
         },
         classes:'CheckPaperWorkNotLimitBackButton',
         text: `
@@ -1204,12 +1227,6 @@ const newSteps = [
       {
         action(){
           document.querySelector(".Confirmation-box-button").click();
-          setTimeout(()=>{
-            if((localStorage.getItem('leaveGasLimit') && localStorage.getItem('leaveGasLimit') !== "true") && (document.querySelector(".Confirmation-box-button").innerHTML !== "Longing..." || document.querySelector(".Confirmation-box-button").innerHTML !== "Shorting...")){
-              this.next();
-            }
-          },100)
-         
         },
         classes:'CheckPaperWorkNotLimitNextButton',
         text: `
@@ -1304,16 +1321,6 @@ const newSteps = [
             <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
             </div>
         `,
-      },
-      {
-        type:'back',
-        text:'back',
-        action(){
-          
-          if(!document.querySelector('.Exchange-swap-box').querySelector('.Confirmation-box')){
-            console.log("Exchange-swap-box .Confirmation-box")
-          }
-        }
       },
       {
         action(){
@@ -1895,8 +1902,8 @@ const newSteps = [
     id: "CloseModalMarketClose",
     title: "",
     showOn(){
-      let swapPptionV2 = localStorage.getItem('Swap-option-v2')  && JSON.parse(localStorage.getItem('Swap-option-v2'));
-      return ( document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit' && document.querySelector(".PositionSellerTabs .active").innerHTML === 'Market' && (Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true) );
+      let swapPptionV2 = localStorage.getItem('Swap-option-v2') && JSON.parse(localStorage.getItem('Swap-option-v2'));
+      return ( (Object.values(swapPptionV2).includes("Long") === true || Object.values(swapPptionV2).includes("Short") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit' && document.querySelector(".PositionSellerTabs .active").innerHTML === 'Market' );
     },
     text: `
     </div>

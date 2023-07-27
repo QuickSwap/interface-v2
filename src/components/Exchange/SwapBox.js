@@ -1259,7 +1259,7 @@ export default function SwapBox(props) {
       showModal,
     })
       .then(async (res) => {
-        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.hide('swapReceive'); currentTour.current?.show('CheckPaperWork')},100) };
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next();},100) };
       })
       .catch((e) => console.log("error: ", e))
       .finally(() => {
@@ -1282,7 +1282,7 @@ export default function SwapBox(props) {
       showModal,
     })
       .then(async (res) => {
-        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.hide('swapReceive'); currentTour.current?.show('CheckPaperWork')},100) };
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next();},100) };
       })
       .catch((e) => console.log("error: ", e))
       .finally(() => {
@@ -1579,7 +1579,7 @@ export default function SwapBox(props) {
     })
       .then(async () => {
         setIsConfirming(false);
-
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next()},100) };
         const key = getPositionKey(account, path[path.length - 1], indexTokenAddress, isLong);
         let nextSize = toUsdMax;
         if (hasExistingPosition) {
@@ -1716,10 +1716,11 @@ export default function SwapBox(props) {
         return;
       }
     }
-
+    if(!isConfirming){
+      if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next()},100) };
+    }
     setIsConfirming(true);
     setIsHigherSlippageAllowed(false);
-    if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.hide('ClickOnSwapLongShortToken'); currentTour.current?.show('CheckPaperWorkNotLimit')},100) };
   };
 
   const isStopOrder = orderOption === STOP;
