@@ -50,7 +50,6 @@ const GammaFarmsPage: React.FC<{
 
   const fetchGammaRewards = async () => {
     const gammaRewards = await getGammaRewards(chainId);
-    console.log('bbb', gammaRewards);
     return gammaRewards;
   };
 
