@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +50,7 @@ const GammaFarmsPage: React.FC<{
 
   const fetchGammaRewards = async () => {
     const gammaRewards = await getGammaRewards(chainId);
+    console.log('bbb', gammaRewards);
     return gammaRewards;
   };
 
@@ -58,15 +59,39 @@ const GammaFarmsPage: React.FC<{
     return gammaData;
   };
 
-  const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery({
+  const {
+    isLoading: gammaFarmsLoading,
+    data: gammaData,
+    refetch: refetchGammaData,
+  } = useQuery({
     queryKey: ['fetchGammaData', chainId],
     queryFn: fetchGammaData,
   });
 
-  const { isLoading: gammaRewardsLoading, data: gammaRewards } = useQuery({
+  const {
+    isLoading: gammaRewardsLoading,
+    data: gammaRewards,
+    refetch: refetchGammaRewards,
+  } = useQuery({
     queryKey: ['fetchGammaRewards', chainId],
     queryFn: fetchGammaRewards,
   });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchGammaData();
+    refetchGammaRewards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const qiTokenAddress = '0x580a84c73811e1839f75d86d75d88cca0c241ff4';
   const qiGammaFarm = '0x25B186eEd64ca5FDD1bc33fc4CFfd6d34069BAec';

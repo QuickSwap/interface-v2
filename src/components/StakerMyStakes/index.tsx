@@ -469,15 +469,39 @@ export const FarmingMyFarms: React.FC<{
     return gammaData;
   };
 
-  const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery({
+  const {
+    isLoading: gammaFarmsLoading,
+    data: gammaData,
+    refetch: refetchGammaData,
+  } = useQuery({
     queryKey: ['fetchGammaData', chainId],
     queryFn: fetchGammaData,
   });
 
-  const { isLoading: gammaRewardsLoading, data: gammaRewards } = useQuery({
+  const {
+    isLoading: gammaRewardsLoading,
+    data: gammaRewards,
+    refetch: refetchGammaRewards,
+  } = useQuery({
     queryKey: ['fetchGammaRewards', chainId],
     queryFn: fetchGammaRewards,
   });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchGammaData();
+    refetchGammaRewards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const sortMultiplierGamma = sortDescGamma ? -1 : 1;
 

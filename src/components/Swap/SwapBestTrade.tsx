@@ -333,7 +333,7 @@ const SwapBestTrade: React.FC<{
     }
   };
 
-  const { data: optimalRate } = useQuery({
+  const { data: optimalRate, refetch: reFetchOptimalRate } = useQuery({
     queryKey: [
       'fetchOptimalRate',
       srcToken,
@@ -342,6 +342,7 @@ const SwapBestTrade: React.FC<{
       swapType,
       account,
       chainId,
+      maxImpactAllowed,
     ],
     queryFn: fetchOptimalRate,
   });
@@ -926,6 +927,28 @@ const SwapBestTrade: React.FC<{
     fetchOptimalRate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typedValue, independentField, inputCurrency, outputCurrency]);
+
+  useEffect(() => {
+    if (!optimalRate) {
+      reFetchOptimalRate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [optimalRate]);
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    reFetchOptimalRate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   return (
     <Box>
