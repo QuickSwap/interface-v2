@@ -49,7 +49,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
           !txConfirmed &&
           !txError ? (
             <>
-              <CircularProgress />
+              <CircularProgress size={24} />
               <Box ml='5px'>
                 <small>{t('withdrawing')}</small>
               </Box>
@@ -83,7 +83,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
               !txConfirmed &&
               !txError ? (
                 <>
-                  <CircularProgress />
+                  <CircularProgress size={24} />
                   <Box ml='5px'>
                     <small>{t('claiming')}</small>
                   </Box>
@@ -114,7 +114,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
               !txConfirmed &&
               !txError ? (
                 <>
-                  <CircularProgress />
+                  <CircularProgress size={24} />
                   <Box ml='5px'>
                     <small>{t('undepositing')}</small>
                   </Box>

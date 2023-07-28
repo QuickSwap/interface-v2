@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import styles from './Toggle.module.scss';
+import styles from 'styles/components/v3/Toggle.module.scss';
 
 interface ToggleProps {
   id?: string;

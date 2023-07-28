@@ -58,6 +58,7 @@ import AddGammaLiquidity from 'components/pages/migrate/AddGammaLiquidity';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import styles from 'styles/pages/Migrate.module.scss';
+import rangeStyle from 'components/pages/pools/SupplyLiquidityV3/containers/SelectRange/SelectRange.module.scss';
 
 const MigrateV2DetailsPage = (
   _props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -719,9 +720,12 @@ const MigrateV2DetailsPage = (
                 )}
             </Box>
             {largePriceDifference && !largePriceDiffDismissed && (
-              <Box mt={2} className='pool-range-chart-warning border-error'>
+              <Box
+                mt={2}
+                className={`${rangeStyle.poolRangeChartWarning} border-error`}
+              >
                 <Box width={1} className='flex items-center'>
-                  <Box className='pool-range-chart-warning-icon'>
+                  <Box className={rangeStyle.poolRangeChartWarningIcon}>
                     <ReportProblemOutlined />
                   </Box>
                   <small>{t('priceImpactLarger')}</small>
@@ -753,6 +757,7 @@ const MigrateV2DetailsPage = (
             )}
             <Box mt={3} className='flex justify-between'>
               <Button
+                variant='contained'
                 className={styles.v3MigrateDetailsButton}
                 disabled={
                   attemptApproving ||
@@ -815,6 +820,7 @@ const MigrateV2DetailsPage = (
             </>
           ) : (
             <Button
+              variant='contained'
               className={styles.v3MigrateDetailsButton}
               disabled={
                 !v3Amount0Min ||

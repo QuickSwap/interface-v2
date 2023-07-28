@@ -22,7 +22,7 @@ import {
 } from 'state/mint/v3/hooks';
 import { useDerivedPositionInfo } from 'hooks/v3/useDerivedPositionInfo';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
-import styles from './IncreaseLiquidityV3.module.scss';
+import styles from 'styles/components/v3/IncreaseLiquidityV3.module.scss';
 import { event } from 'nextjs-google-analytics';
 import { WrappedCurrency } from 'models/types';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';

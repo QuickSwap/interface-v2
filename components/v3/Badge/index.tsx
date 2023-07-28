@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Badge.module.scss';
+import styles from 'styles/components/v3/Badge.module.scss';
 import { Box } from '@mui/material';
 import { CustomTooltip } from 'components';
 

@@ -4,7 +4,7 @@ import { useActiveWeb3React } from 'hooks';
 import { Deposit, FormattedRewardInterface } from 'models/interfaces';
 import { FarmingType } from 'models/enums';
 import { useRouter } from 'next/router';
-import styles from './StakerMystakes.module.scss';
+import styles from 'styles/components/StakerMyStakes.module.scss';
 import FarmCard from './FarmCard';
 import {
   Box,

@@ -6,12 +6,13 @@
     overflow: unset;
   }
   & thead {
-    height: 53px
+    height: 53px;
   }
   & tbody tr {
-    height: 57px
+    height: 57px;
   }
-  & thead tr th, & tbody tr td {
+  & thead tr th,
+  & tbody tr td {
     font-size: 14px;
     border-bottom: 1px solid $divider;
     &.buttonCell {
@@ -31,8 +32,8 @@
     padding: 7px 6px;
     cursor: pointer;
     &:first-child {
-      padding: 7px 0px 7px 23px;
-      @include media("screen", "<tablet") {
+      padding: 7px 0px 7px 15px;
+      @include media('screen', '<tablet') {
         padding: 7px 6px 7px 13px;
       }
     }
@@ -50,7 +51,7 @@
     border-bottom: none;
     &:first-child {
       padding: 6px 0px 6px 15px;
-      @include media("screen", "<tablet") {
+      @include media('screen', '<tablet') {
         padding: 6px;
       }
     }

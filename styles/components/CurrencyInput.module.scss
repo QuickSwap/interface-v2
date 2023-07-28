@@ -55,3 +55,38 @@
 .currencySelected {
   background-color: $grey12;
 }
+
+.v3CurrencyInputPanel {
+  position: relative;
+}
+
+.v3CurrencyInputLockWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $secondary1;
+  border-radius: 12px;
+  opacity: 0.9;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  & small {
+    margin-top: 8px;
+  }
+}
+
+.inputUsdValue {
+  max-width: 50%;
+  display: flex;
+  margin-left: 8px;
+  & small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-align: right;
+  }
+}

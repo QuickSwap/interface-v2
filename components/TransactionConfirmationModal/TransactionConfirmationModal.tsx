@@ -28,7 +28,7 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
       <Box className={styles.txModalContent}>
         <Box my={4} className='flex justify-center spinner'>
           <picture>
-            <img src='/images/spinner.svg' alt='Spinner' />
+            <img src='/assets/images/spinner.svg' alt='Spinner' />
           </picture>
         </Box>
         <h5>{t('waitingConfirm')}</h5>
@@ -192,7 +192,11 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return (
     <CustomModal open={isOpen} onClose={onDismiss} modalWrapper={modalWrapper}>
       <picture>
-        <img src='/images/ModalBG.svg' alt='Modal Back' className='txModalBG' />
+        <img
+          src='/assets/images/ModalBG.svg'
+          alt='Modal Back'
+          className={styles.txModalBG}
+        />
       </picture>
       <Box position='relative' zIndex={2}>
         {attemptingTxn ? (

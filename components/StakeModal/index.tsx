@@ -7,7 +7,7 @@ import { useChunkedRows } from 'utils/chunkForRows';
 import { FarmingType } from 'models/enums';
 import { NTFInterface } from 'models/interfaces';
 import Link from 'next/link';
-import styles from './StakeModal.module.scss';
+import styles from 'styles/components/StakeModal.module.scss';
 import FarmModalFarmingTiers from 'components/StakeModalFarmingTiers';
 import { IsActive } from 'components/StakerMyStakes/IsActive';
 import { useCurrencyBalance } from 'state/wallet/hooks';
@@ -556,8 +556,8 @@ export function FarmModal({
                 >
                   {submitLoader && submitState === 0 ? (
                     <Box className='flex items-center'>
-                      <CircularProgress />
-                      <div>{t('approving')}</div>
+                      <CircularProgress size={24} />
+                      <Box ml='4px'>{t('approving')}</Box>
                     </Box>
                   ) : NFTsForStake && !NFTsForApprove ? (
                     t('positionApproved')
@@ -574,8 +574,8 @@ export function FarmModal({
                 >
                   {submitLoader && submitState === 2 ? (
                     <Box className='flex items-center'>
-                      <CircularProgress />
-                      <div>{t('depositing')}</div>
+                      <CircularProgress size={24} />
+                      <Box ml='4px'>{t('depositing')}</Box>
                     </Box>
                   ) : (
                     t('deposit')

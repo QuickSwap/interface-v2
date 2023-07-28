@@ -17,7 +17,7 @@ import { formatUnits, Interface } from 'ethers/lib/utils';
 import { Token } from '@uniswap/sdk';
 import { useTokenBalances } from 'state/wallet/hooks';
 
-export default function MyLiquidityPoolsV3() {
+export default function MyGammaPoolsV3() {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
 

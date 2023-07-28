@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { BrushBehavior, brushX, D3BrushEvent, ScaleLinear, select } from 'd3';
 import usePrevious from 'hooks/usePrevious';
-import styles from './LiquidityChartRangeInput.module.scss';
+import styles from 'styles/components/v3/LiquidityChartRangeInput.module.scss';
 
 // flips the handles draggers when close to the container edges
 const FLIP_HANDLE_THRESHOLD_PX = 20;

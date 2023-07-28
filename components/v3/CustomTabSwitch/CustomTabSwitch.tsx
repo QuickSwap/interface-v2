@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Tab, Tabs } from '@mui/material';
-import styles from './CustomTabSwitch.module.scss';
+import styles from 'styles/components/v3/CustomTabSwitch.module.scss';
 
 interface tabItem {
   text: string;

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ScaleLinear } from 'd3';
-import styles from './LiquidityChartRangeInput.module.scss';
+import styles from 'styles/components/v3/LiquidityChartRangeInput.module.scss';
 import { useTranslation } from 'next-i18next';
 
 export const Line = ({

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { area, curveStepAfter, ScaleLinear } from 'd3';
-import styles from './LiquidityChartRangeInput.module.scss';
+import styles from 'styles/components/v3/LiquidityChartRangeInput.module.scss';
 import { ChartEntry } from './types';
 import inRange from 'lodash/inRange';
 import { PriceFormats } from '../PriceFomatToggler';

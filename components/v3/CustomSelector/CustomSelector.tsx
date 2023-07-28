@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import styles from './CustomSelector.module.scss';
+import styles from 'styles/components/v3/CustomSelector.module.scss';
 
 export interface SelectorItem {
   text: string;

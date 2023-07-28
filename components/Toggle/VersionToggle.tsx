@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import styles from './Toggle.module.scss';
+import styles from 'styles/components/Toggle.module.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
 import { useIsAnalyticsLoaded } from 'state/analytics/hooks';

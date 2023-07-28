@@ -36,7 +36,7 @@ import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import ColoredSlider from 'components/ColoredSlider';
 import { JSBI, WETH } from '@uniswap/sdk';
 import { useUserSlippageTolerance } from 'state/user/hooks';
-import styles from './RemoveLiquidityV3.module.scss';
+import styles from 'styles/components/v3/RemoveLiquidityV3.module.scss';
 
 interface RemoveLiquidityV3Props {
   position: PositionPool;
@@ -273,7 +273,7 @@ export default function RemoveLiquidityV3({
         </Box>
         {(feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) && (
           <Box mt={2}>
-            <p>{t('collectFeeFromThisPosition')}.</p>
+            <p className='text-center'>{t('collectFeeFromThisPosition')}.</p>
             <Box mt={2} className='flex justify-between'>
               <p>
                 {feeValue0?.currency?.symbol} {t('feeEarned')}:
@@ -305,7 +305,11 @@ export default function RemoveLiquidityV3({
           </Box>
         )}
         <Box mt={2}>
-          <Button className='v3-remove-liquidity-button' onClick={burn}>
+          <Button
+            variant='contained'
+            className={styles.v3RemoveLiquidityButton}
+            onClick={burn}
+          >
             {t('confirm')}
           </Button>
         </Box>
@@ -379,11 +383,31 @@ export default function RemoveLiquidityV3({
         </Box>
         <Box mb={2} className='flex items-center justify-between'>
           <h3>{percentForSlider}%</h3>
-          <Box ml={1} className='v3-remove-liquidity-percent-buttons'>
-            <Button onClick={() => onPercentSelectForSlider(25)}>25%</Button>
-            <Button onClick={() => onPercentSelectForSlider(50)}>50%</Button>
-            <Button onClick={() => onPercentSelectForSlider(75)}>75%</Button>
-            <Button onClick={() => onPercentSelectForSlider(100)}>100%</Button>
+          <Box ml={1} className={styles.v3RemoveLiquidityPercentButtons}>
+            <Button
+              variant='contained'
+              onClick={() => onPercentSelectForSlider(25)}
+            >
+              25%
+            </Button>
+            <Button
+              variant='contained'
+              onClick={() => onPercentSelectForSlider(50)}
+            >
+              50%
+            </Button>
+            <Button
+              variant='contained'
+              onClick={() => onPercentSelectForSlider(75)}
+            >
+              75%
+            </Button>
+            <Button
+              variant='contained'
+              onClick={() => onPercentSelectForSlider(100)}
+            >
+              100%
+            </Button>
           </Box>
         </Box>
         <ColoredSlider
@@ -455,6 +479,7 @@ export default function RemoveLiquidityV3({
         </Box>
       )}
       <Button
+        variant='contained'
         className={styles.v3RemoveLiquidityButton}
         disabled={removed || percent === 0 || !liquidityValue0}
         onClick={() => setShowConfirm(true)}

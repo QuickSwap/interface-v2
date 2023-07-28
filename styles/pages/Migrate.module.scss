@@ -40,7 +40,7 @@
 .v3MigrateDetailsRow {
   display: flex;
   justify-content: space-between;
-  .currencyLogo {
+  & > div > div {
     margin-right: 6px;
   }
 }

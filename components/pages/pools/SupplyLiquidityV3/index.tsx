@@ -12,7 +12,7 @@ import { EnterAmounts } from './containers/EnterAmounts';
 import { SelectPair } from './containers/SelectPair';
 import { SelectRange } from './containers/SelectRange';
 import { Currency } from '@uniswap/sdk-core';
-import styles from './SupplyLiquidityV3.module.scss';
+import styles from 'styles/pages/pools/SupplyLiquidityV3.module.scss';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import {
   setInitialTokenPrice,

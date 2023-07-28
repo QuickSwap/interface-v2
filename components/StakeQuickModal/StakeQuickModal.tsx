@@ -13,7 +13,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { calculateGasMargin, formatTokenAmount } from 'utils';
-import styles from 'styles/components/StakeModal.module.scss';
+import styles from 'styles/components/StakeQuickModal.module.scss';
 import { useTranslation } from 'next-i18next';
 import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
@@ -175,6 +175,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
         <Box mt={3} className='flex items-center justify-between'>
           <Box width='48%'>
             <Button
+              variant='contained'
               className={styles.stakeButton}
               disabled={approving || approval !== ApprovalState.NOT_APPROVED}
               onClick={async () => {
@@ -192,6 +193,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
           </Box>
           <Box width='48%'>
             <Button
+              variant='contained'
               className={styles.stakeButton}
               disabled={
                 !!error || attempting || approval !== ApprovalState.APPROVED

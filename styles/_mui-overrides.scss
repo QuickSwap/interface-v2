@@ -79,11 +79,8 @@ html {
     }
 
     .MuiSlider-thumb {
-      height: 20px;
-      width: 20px;
       background-color: $primary;
-      margin-top: -9px;
-      margin-left: 0;
+      margin-left: 5px;
       box-shadow: 0px 2px 5px $grey21;
 
       &:focus,
@@ -121,6 +118,11 @@ html {
   }
 
   .MuiButton-root {
+    &.MuiButton-containedPrimary {
+      & svg {
+        color: white;
+      }
+    }
     &.Mui-disabled {
       opacity: 0.3;
     }

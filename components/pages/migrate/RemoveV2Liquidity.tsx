@@ -25,6 +25,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
+import styles from 'styles/pages/Migrate.module.scss';
 
 const RemoveV2Liquidity: React.FC<{
   pair: Pair | null;
@@ -241,7 +242,8 @@ const RemoveV2Liquidity: React.FC<{
 
   return (
     <Button
-      className='v3-migrate-details-button'
+      variant='contained'
+      className={styles.v3MigrateDetailsButton}
       disabled={approving || removingV2Liquidity || !!removeErrorMessage}
       onClick={() => {
         if (approval === ApprovalState.APPROVED) {

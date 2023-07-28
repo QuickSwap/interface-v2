@@ -5,7 +5,7 @@ import { usePool } from 'hooks/usePools';
 import { Box } from '@mui/material';
 import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
 import { useTranslation } from 'next-i18next';
-import styles from './StakerMystakes.module.scss';
+import styles from 'styles/components/StakerMyStakes.module.scss';
 
 export function IsActive({ el }: { el: any }) {
   const { t } = useTranslation();

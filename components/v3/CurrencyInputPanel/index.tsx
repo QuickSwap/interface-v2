@@ -12,8 +12,7 @@ import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@mui/material';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'next-i18next';
-import styles from './CurrencyInputPanel.module.scss';
-import styles1 from 'styles/components/CurrencyInput.module.scss';
+import styles from 'styles/components/CurrencyInput.module.scss';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
@@ -107,12 +106,12 @@ export default function CurrencyInputPanel({
         </Box>
       )}
 
-      <Box id={id} className={`${styles1.swapBox} ${bgClass}`}>
+      <Box id={id} className={`${styles.swapBox} ${bgClass}`}>
         <Box mb={2}>
           <Box>
             <Box
-              className={`${styles1.currencyButton} ${
-                currency ? styles1.currencySelected : styles1.noCurrency
+              className={`${styles.currencyButton} ${
+                currency ? styles.currencySelected : styles.noCurrency
               }`}
               onClick={() => {
                 if (onCurrencySelect) {
@@ -146,7 +145,7 @@ export default function CurrencyInputPanel({
             </Box>
           </Box>
 
-          <Box className={styles1.inputWrapper}>
+          <Box className={styles.inputWrapper}>
             <NumericalInput
               value={value}
               align='right'
@@ -169,12 +168,12 @@ export default function CurrencyInputPanel({
             </small>
 
             {account && currency && showHalfButton && (
-              <Box className={styles1.maxWrapper} onClick={onHalf}>
+              <Box className={styles.maxWrapper} onClick={onHalf}>
                 <small>50%</small>
               </Box>
             )}
             {account && currency && showMaxButton && (
-              <Box className={styles1.maxWrapper} onClick={onMax}>
+              <Box className={styles.maxWrapper} onClick={onMax}>
                 <small>{t('max')}</small>
               </Box>
             )}
