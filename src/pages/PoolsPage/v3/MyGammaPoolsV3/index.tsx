@@ -5,7 +5,7 @@ import Loader from 'components/Loader';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import GammaLPList from './GammaLPList';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getGammaData, getGammaPositions } from 'utils';
 import { GammaPair, GammaPairs } from 'constants/index';
 import { useMasterChefContracts } from 'hooks/useContract';
@@ -37,21 +37,15 @@ export default function MyLiquidityPoolsV3() {
     return gammaData;
   };
 
-  const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
-    'fetchGammaPositions',
-    fetchGammaPositions,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const { isLoading: positionsLoading, data: gammaPositions } = useQuery({
+    queryKey: ['fetchGammaPositions', account, chainId],
+    queryFn: fetchGammaPositions,
+  });
 
-  const { isLoading: dataLoading, data: gammaData } = useQuery(
-    'fetchGammaData',
-    fetchGammaData,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const { isLoading: dataLoading, data: gammaData } = useQuery({
+    queryKey: ['fetchGammaData', chainId],
+    queryFn: fetchGammaData,
+  });
 
   const allGammaPairsToFarm = chainId
     ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))

@@ -58,7 +58,7 @@ import {
   RouterTypes,
   SmartRouter,
 } from 'constants/index';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -305,7 +305,7 @@ const SwapBestTrade: React.FC<{
       !chainId ||
       !library
     ) {
-      return;
+      return null;
     }
     try {
       const rate = await paraswap.getRate({
@@ -329,12 +329,21 @@ const SwapBestTrade: React.FC<{
       return rate;
     } catch (err) {
       setOptimalRateError(err.message);
-      return;
+      return null;
     }
   };
 
-  const { data: optimalRate } = useQuery('fetchOptimalRate', fetchOptimalRate, {
-    refetchInterval: 5000,
+  const { data: optimalRate } = useQuery({
+    queryKey: [
+      'fetchOptimalRate',
+      srcToken,
+      destToken,
+      srcAmount,
+      swapType,
+      account,
+      chainId,
+    ],
+    queryFn: fetchOptimalRate,
   });
 
   const parsedAmounts = useMemo(() => {

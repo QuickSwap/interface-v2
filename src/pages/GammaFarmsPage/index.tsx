@@ -9,7 +9,7 @@ import {
   GlobalConst,
   GlobalData,
 } from 'constants/index';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import GammaFarmCard from './GammaFarmCard';
 import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
 import { useActiveWeb3React } from 'hooks';
@@ -58,21 +58,15 @@ const GammaFarmsPage: React.FC<{
     return gammaData;
   };
 
-  const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
-    'fetchGammaData',
-    fetchGammaData,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery({
+    queryKey: ['fetchGammaData', chainId],
+    queryFn: fetchGammaData,
+  });
 
-  const { isLoading: gammaRewardsLoading, data: gammaRewards } = useQuery(
-    'fetchGammaRewards',
-    fetchGammaRewards,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const { isLoading: gammaRewardsLoading, data: gammaRewards } = useQuery({
+    queryKey: ['fetchGammaRewards', chainId],
+    queryFn: fetchGammaRewards,
+  });
 
   const qiTokenAddress = '0x580a84c73811e1839f75d86d75d88cca0c241ff4';
   const qiGammaFarm = '0x25B186eEd64ca5FDD1bc33fc4CFfd6d34069BAec';
