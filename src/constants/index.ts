@@ -239,7 +239,7 @@ export const GlobalConst = {
     WALLET_LINK: 'Coinbase Wallet',
     WALLET_CONNECT: 'WalletConnect',
     ZENGO_CONNECT: 'ZenGo',
-    OKXWALLET: 'OkxWallet',
+    OKXWALLET: 'OKX Wallet',
   },
 };
 

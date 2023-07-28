@@ -23,12 +23,12 @@ import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
 import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as MediumIcon } from 'assets/images/social/Medium.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
-import { ReactComponent as TwitterIcon } from 'assets/images/social/Twitter.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
 import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
 import CoinpaprikaIcon from 'assets/images/social/coinpaprika-logo.png';
 import InstagramIcon from 'assets/images/social/instagram.png';
+import TwitterIcon from 'assets/images/social/Twitter.png';
 import 'pages/styles/landing.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config';
@@ -83,7 +83,7 @@ const LandingPage: React.FC = () => {
   const socialicons = [
     {
       link: 'https://twitter.com/QuickswapDEX',
-      icon: <TwitterIcon />,
+      icon: <img src={TwitterIcon} alt='TikTok' />,
       title: 'Twitter',
     },
     {
