@@ -551,6 +551,7 @@ export default function IncreaseLiquidityV3({
         )}
       <Box mt={2}>
         <Button
+          variant='contained'
           className={styles.v3IncreaseLiquidityButton}
           disabled={
             attemptingTxn ||

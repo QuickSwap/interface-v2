@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp } from 'react-feather';
 import { Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo } from 'components';
-import V2PositionCardDetails from '../V2PositionCardDetails';
+import V2PositionCardDetails from './V2PositionCardDetails';
 import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Migrate.module.scss';
 

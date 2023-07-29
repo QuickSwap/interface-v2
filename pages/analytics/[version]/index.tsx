@@ -126,7 +126,7 @@ const AnalyticsPage = (
   ]);
 
   return (
-    <Box width='100%' mb={3}>
+    <Box width='100%'>
       <AnalyticsHeader />
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>

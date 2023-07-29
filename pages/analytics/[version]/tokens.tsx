@@ -79,7 +79,7 @@ const AnalyticsTokens = (
   }, [version]);
 
   return (
-    <Box width='100%' mb={3}>
+    <Box width='100%'>
       <AnalyticsHeader />
       <TopMovers hideArrow={true} />
       <Box my={4} px={2} className='flex flex-wrap items-center'>

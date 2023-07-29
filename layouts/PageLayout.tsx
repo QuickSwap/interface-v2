@@ -82,7 +82,9 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
             }}
           />
           <Box textAlign='right'>
-            <Button onClick={confirmPassword}>Confirm</Button>
+            <Button variant='contained' onClick={confirmPassword}>
+              Confirm
+            </Button>
           </Box>
         </Box>
       </CustomModal>

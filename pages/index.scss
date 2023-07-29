@@ -168,7 +168,7 @@ wcm-modal {
   display: flex;
   align-items: center;
   flex-direction: column;
-  margin: 0 auto;
+  margin: 0 auto 24px;
   padding: 112px 32px 0;
   @include media('screen', '<tablet') {
     padding: 24px 12px 0;

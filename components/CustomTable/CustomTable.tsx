@@ -66,12 +66,7 @@ const CustomTable: React.FC<CustomTableProps<any>> = ({
               <TableRow key={index}>
                 {desktopHTML(item, index, page, rowsPerPage).map(
                   (cellItem: any, ind: number) => (
-                    <TableCell
-                      key={ind}
-                      className={cellItem.button ? 'buttonCell' : ''}
-                    >
-                      {cellItem.html}
-                    </TableCell>
+                    <TableCell key={ind}>{cellItem.html}</TableCell>
                   ),
                 )}
               </TableRow>

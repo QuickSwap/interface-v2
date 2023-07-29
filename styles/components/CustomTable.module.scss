@@ -37,14 +37,6 @@
         padding: 7px 6px 7px 13px;
       }
     }
-    &.buttonCell {
-      & > div > div {
-        width: 100%;
-      }
-      & button {
-        color: $textSecondary;
-      }
-    }
   }
   & tbody tr td {
     padding: 6px;

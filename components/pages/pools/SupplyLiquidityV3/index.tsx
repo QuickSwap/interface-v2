@@ -271,7 +271,7 @@ export function SupplyLiquidityV3() {
               resetState();
               onFieldAInput('');
               onFieldBInput('');
-              router.push('/pools');
+              router.push('/pools/v3');
             }}
           >
             {t('clearAll')}
