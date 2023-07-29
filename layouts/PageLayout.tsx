@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@mui/material';
-// import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import Header from 'components/Header';
 import Footer from 'components/Footer';
@@ -8,6 +7,10 @@ import BetaWarningBanner from 'components/BetaWarningBanner';
 import CustomModal from 'components/CustomModal';
 import Background from './Background';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+const IntractTracking = dynamic(() => import('./IntractTracking'), {
+  ssr: false,
+});
 
 export interface PageLayoutProps {
   children: any;
@@ -28,21 +31,6 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   }, [isProMode, name, router.asPath]);
-
-  // const intractKey = process.env.NEXT_PUBLIC_INTRACT_KEY;
-  // useEffect(() => {
-  //   if (intractKey) {
-  //     IntractAttribution(intractKey, {
-  //       configAllowCookie: true,
-  //     });
-  //   }
-  // }, [intractKey]);
-
-  // useEffect(() => {
-  //   if (account) {
-  //     trackCustomWallet(account);
-  //   }
-  // }, [account]);
 
   useEffect(() => {
     if (
@@ -95,6 +83,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
 
   return (
     <Box className='page'>
+      <IntractTracking />
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
       <Header />
