@@ -58,7 +58,7 @@ import AddGammaLiquidity from 'components/pages/migrate/AddGammaLiquidity';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import styles from 'styles/pages/Migrate.module.scss';
-import rangeStyle from 'components/pages/pools/SupplyLiquidityV3/containers/SelectRange/SelectRange.module.scss';
+import rangeStyle from 'styles/pages/pools/SelectRange.module.scss';
 
 const MigrateV2DetailsPage = (
   _props: InferGetStaticPropsType<typeof getStaticProps>,
