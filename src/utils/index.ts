@@ -1027,7 +1027,7 @@ export const getGammaPositions = async (
   account?: string,
   chainId?: ChainId,
 ) => {
-  if (!account) return null;
+  if (!account || !chainId) return null;
   try {
     const data = await fetch(
       `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
