@@ -14,7 +14,6 @@ import { GammaPairs } from 'constants/index';
 import { Adshares } from 'components';
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
-const MyGammaPoolsV3 = lazy(() => import('./v3/MyGammaPoolsV3'));
 
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -64,11 +63,6 @@ const PoolsPage: React.FC = () => {
           <Box className='wrapper'>
             {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
           </Box>
-          {!isV2 && Object.values(allGammaPairs).length > 0 && (
-            <Box mt={4} className='wrapper'>
-              <MyGammaPoolsV3 />
-            </Box>
-          )}
         </Grid>
       </Grid>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>

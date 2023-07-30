@@ -132,7 +132,7 @@ export function PresetRanges({
     if (!callData.loading && callData.result && callData.result.length > 1) {
       return Number(callData.result[1]);
     }
-    return 0;
+    return;
   });
 
   const gammaValues = gammaPairAddresses.map((_, index) => {
@@ -187,8 +187,14 @@ export function PresetRanges({
               Number(pair.rangeTickUpper ?? 0),
             );
             const currentTick = uniPilotCurrentTicks[index];
-            const minPrice = Math.pow(1.0001, minTick - currentTick);
-            const maxPrice = Math.pow(1.0001, maxTick - currentTick);
+            const minPrice =
+              currentTick !== undefined
+                ? Math.pow(1.0001, minTick - currentTick)
+                : 0;
+            const maxPrice =
+              currentTick !== undefined
+                ? Math.pow(1.0001, maxTick - currentTick)
+                : 0;
             return {
               type: pairType,
               title: unipilotVaultTypes[pairType - 1],
@@ -355,17 +361,21 @@ export function PresetRanges({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gammaValuesLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
 
+  const uniPilotValuesLoaded =
+    unipilotPairs &&
+    unipilotPairs.length > 0 &&
+    uniPilotCurrentTicks.filter((tick) => !tick).length === 0;
+
   useEffect(() => {
     if (
-      unipilotPairs &&
-      unipilotPairs?.length > 0 &&
+      uniPilotValuesLoaded &&
       liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
     ) {
       handlePresetRangeSelection(ranges[0]);
       onChangePresetRange(ranges[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unipilotPairs?.length, liquidityRangeType, baseCurrency, quoteCurrency]);
+  }, [uniPilotValuesLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
 
   return (
     <Box>

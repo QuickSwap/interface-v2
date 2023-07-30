@@ -1,16 +1,25 @@
 import React from 'react';
 import {
   Result,
+  useMultipleContractMultipleData,
   useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { useEffect, useMemo } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useActiveWeb3React } from 'hooks';
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import {
+  useMasterChefContracts,
+  useV3NFTPositionManagerContract,
+} from 'hooks/useContract';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
+import { ChainId } from '@uniswap/sdk';
+import { getGammaPositions } from 'utils';
+import { useQuery } from 'react-query';
+import { GammaPair, GammaPairs } from 'constants/index';
+import { formatUnits } from 'ethers/lib/utils';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -270,4 +279,212 @@ export function useV3Positions(
       _positionsOnFarmerLoading,
     positions: combinedPositions,
   };
+}
+
+export function useV3PositionsCount(
+  account: string | null | undefined,
+  hideClosePosition: boolean,
+  hideFarmingPosition: boolean,
+) {
+  const positionManager = useV3NFTPositionManagerContract();
+
+  const {
+    loading: balanceLoading,
+    result: balanceResult,
+  } = useSingleCallResult(positionManager, 'balanceOf', [account ?? undefined]);
+
+  const accountBalance = useMemo(() => {
+    if (balanceResult && balanceResult.length > 0) {
+      return balanceResult[0].toNumber();
+    }
+    return 0;
+  }, [balanceResult]);
+
+  const tokenIdsArgs = useMemo(() => {
+    if (accountBalance && account) {
+      const tokenRequests: any[] = [];
+      for (let i = 0; i < accountBalance; i++) {
+        tokenRequests.push([account, i]);
+      }
+      return tokenRequests;
+    }
+    return [];
+  }, [account, accountBalance]);
+
+  const tokenIdResults = useSingleContractMultipleData(
+    positionManager,
+    'tokenOfOwnerByIndex',
+    tokenIdsArgs,
+  );
+
+  const tokenIds = useMemo(() => {
+    if (account) {
+      return tokenIdResults
+        .map(({ result }) => result)
+        .filter((result): result is Result => !!result)
+        .map((result) => BigNumber.from(result[0]));
+    }
+    return [];
+  }, [account, tokenIdResults]);
+
+  const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
+    tokenIds,
+  );
+
+  const {
+    fetchPositionsOnFarmer: {
+      positionsOnFarmer,
+      positionsOnFarmerLoading,
+      fetchPositionsOnFarmerFn,
+    },
+  } = useFarmingSubgraph();
+
+  useEffect(() => {
+    if (account) {
+      fetchPositionsOnFarmerFn(account);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account]);
+
+  const farmingPositionsCount = useMemo(() => {
+    if (positionsOnFarmer && positionsOnFarmer.transferredPositionsIds) {
+      return positionsOnFarmer.transferredPositionsIds.length;
+    }
+
+    return 0;
+  }, [positionsOnFarmer]);
+
+  const oldFarmingPositionsCount = useMemo(() => {
+    if (positionsOnFarmer && positionsOnFarmer.oldTransferredPositionsIds) {
+      return positionsOnFarmer.oldTransferredPositionsIds.length;
+    }
+
+    return 0;
+  }, [positionsOnFarmer]);
+
+  const positionCount = useMemo(() => {
+    if (!positions) return 0;
+    return positions.filter((position) =>
+      hideClosePosition ? position.liquidity.gt('0') : true,
+    ).length;
+  }, [hideClosePosition, positions]);
+
+  const totalCount =
+    positionCount +
+    (hideFarmingPosition
+      ? 0
+      : farmingPositionsCount + oldFarmingPositionsCount);
+
+  const prevCount = usePrevious(totalCount);
+
+  const count = totalCount > 0 ? totalCount : prevCount;
+
+  return {
+    loading: balanceLoading || positionsLoading || positionsOnFarmerLoading,
+    count,
+  };
+}
+
+export function useGammaPositionsCount(
+  account: string | null | undefined,
+  chainId: ChainId | undefined,
+) {
+  const fetchGammaPositions = async () => {
+    if (!account || !chainId) return;
+    const gammaPositions = await getGammaPositions(account, chainId);
+    return gammaPositions;
+  };
+
+  const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
+    'fetchGammaPositions',
+    fetchGammaPositions,
+    {
+      refetchInterval: 30000,
+    },
+  );
+
+  const allGammaPairsToFarm = chainId
+    ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
+    : [];
+  const masterChefContracts = useMasterChefContracts();
+  const stakedAmountData = useMultipleContractMultipleData(
+    account ? masterChefContracts : [],
+    'userInfo',
+    account
+      ? masterChefContracts.map((_, ind) =>
+          allGammaPairsToFarm
+            .filter((pair) => (pair.masterChefIndex ?? 0) === ind)
+            .map((pair) => [pair.pid, account]),
+        )
+      : [],
+  );
+
+  const stakedAmounts = stakedAmountData.map((callStates, ind) => {
+    const gammaPairsFiltered = allGammaPairsToFarm.filter(
+      (pair) => (pair.masterChefIndex ?? 0) === ind,
+    );
+    return callStates.map((callData, index) => {
+      const amount =
+        !callData.loading && callData.result && callData.result.length > 0
+          ? formatUnits(callData.result[0], 18)
+          : '0';
+      const gPair =
+        gammaPairsFiltered.length > index
+          ? gammaPairsFiltered[index]
+          : undefined;
+      return {
+        amount,
+        pid: gPair?.pid,
+        masterChefIndex: ind,
+      };
+    });
+  });
+
+  const stakedLoading = !!stakedAmountData.find(
+    (callStates) => !!callStates.find((callData) => callData.loading),
+  );
+
+  const stakedLPs = allGammaPairsToFarm
+    .map((item) => {
+      const masterChefIndex = item.masterChefIndex ?? 0;
+      const sItem =
+        stakedAmounts && stakedAmounts.length > masterChefIndex
+          ? stakedAmounts[masterChefIndex].find(
+              (sAmount) => sAmount.pid === item.pid,
+            )
+          : undefined;
+      return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
+    })
+    .filter((item) => {
+      return item.stakedAmount > 0;
+    });
+
+  const gammaPositionArray = useMemo(() => {
+    if (gammaPositions && chainId) {
+      return Object.keys(gammaPositions)
+        .filter(
+          (value) =>
+            !!Object.values(GammaPairs[chainId]).find(
+              (pairData) =>
+                !!pairData.find(
+                  (item) => item.address.toLowerCase() === value.toLowerCase(),
+                ),
+            ),
+        )
+        .filter(
+          (pairAddress) =>
+            !stakedLPs.find(
+              (item) =>
+                item.address.toLowerCase() === pairAddress.toLowerCase(),
+            ),
+        );
+    }
+    return [];
+  }, [chainId, gammaPositions, stakedLPs]);
+
+  const count = useMemo(() => {
+    return gammaPositionArray.length + stakedLPs.length;
+  }, [gammaPositionArray, stakedLPs]);
+
+  return { loading: positionsLoading || stakedLoading, count };
 }

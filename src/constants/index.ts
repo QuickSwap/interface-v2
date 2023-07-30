@@ -205,6 +205,11 @@ export const GlobalConst = {
       stableLP: '3',
       otherLP: '4',
     },
+    poolsFilter: {
+      quickswap: '0',
+      unipilot: '1',
+      gamma: '2',
+    },
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,

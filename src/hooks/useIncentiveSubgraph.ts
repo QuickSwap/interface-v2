@@ -586,6 +586,11 @@ export function useFarmingSubgraph() {
       );
       if (!res.ok) {
         const errorText = await res.text();
+        setPositionsOnFarmer({
+          transferredPositionsIds: [],
+          oldTransferredPositionsIds: [],
+        });
+        setPositionsOnFarmerLoading(false);
         throw new Error(
           errorText ||
             res.statusText ||
@@ -611,6 +616,7 @@ export function useFarmingSubgraph() {
 
       const oldTransferredPositionsIds: string[] = [];
 
+      setPositionsOnFarmerLoading(false);
       setPositionsOnFarmer({
         transferredPositionsIds,
         oldTransferredPositionsIds,

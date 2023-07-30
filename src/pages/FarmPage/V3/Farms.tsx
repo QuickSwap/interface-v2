@@ -136,7 +136,7 @@ export default function Farms() {
     ],
     [t],
   );
-  const [farmFilter, setFarmFilter] = useState(farmFilters[0]);
+  const [farmFilter, setFarmFilter] = useState(farmFilters[0].id);
 
   const [searchValue, setSearchValue] = useState('');
 
@@ -239,7 +239,7 @@ export default function Farms() {
           <Box mt={2} pl='12px' className='bg-secondary1'>
             <CustomTabSwitch
               items={farmFilters}
-              selectedItem={farmFilter}
+              value={farmFilter}
               handleTabChange={setFarmFilter}
               height={50}
             />
@@ -263,7 +263,7 @@ export default function Farms() {
       )}
       {selectedFarmCategory?.id === 1 && (
         <EternalFarmsPage
-          farmFilter={farmFilter.id}
+          farmFilter={farmFilter}
           search={searchValue}
           sortBy={sortBy}
           sortDesc={sortDesc}
@@ -272,7 +272,7 @@ export default function Farms() {
       )}
       {selectedFarmCategory?.id === 2 && (
         <GammaFarmsPage
-          farmFilter={farmFilter.id}
+          farmFilter={farmFilter}
           search={searchValue}
           sortBy={sortBy}
           sortDesc={sortDesc}
