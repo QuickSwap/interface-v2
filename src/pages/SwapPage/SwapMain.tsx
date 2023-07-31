@@ -152,7 +152,7 @@ const SwapMain: React.FC = () => {
       );
       if (availableSwapTypes.length > 0) {
         const aSwapType = availableSwapTypes[0];
-        if (aSwapType === SWAP_V3) {
+        if (aSwapType === SWAP_V3 || !v2) {
           updateIsV2(false);
         } else {
           updateIsV2(true);
@@ -167,14 +167,14 @@ const SwapMain: React.FC = () => {
 
   useEffect(() => {
     if (swapType) {
-      if (Number(swapType) === SWAP_V3) {
+      if (Number(swapType) === SWAP_V3 || !v2) {
         updateIsV2(false);
       } else {
         updateIsV2(true);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swapType]);
+  }, [swapType, v2]);
 
   const swapTabs = useMemo(() => {
     const tabs = [];
