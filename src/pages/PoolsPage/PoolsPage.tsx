@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React, { lazy, useEffect } from 'react';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import SupplyLiquidity from './SupplyLiquidity';
@@ -18,7 +18,7 @@ const MyGammaPoolsV3 = lazy(() => import('./v3/MyGammaPoolsV3'));
 
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
-  const { isV2 } = useIsV2();
+  const { isV2, updateIsV2 } = useIsV2();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
@@ -31,6 +31,12 @@ const PoolsPage: React.FC = () => {
 
   const helpURL = process.env.REACT_APP_HELP_URL;
   const allGammaPairs = chainId ? GammaPairs[chainId] : {};
+
+  useEffect(() => {
+    if (!v2) {
+      updateIsV2(false);
+    }
+  }, [updateIsV2, v2]);
 
   return (
     <Box width='100%' mb={3}>
