@@ -28,7 +28,7 @@ import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckot
 import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
 import CoinpaprikaIcon from 'assets/images/social/coinpaprika-logo.png';
 import InstagramIcon from 'assets/images/social/instagram.png';
-import TwitterIcon from 'assets/images/social/Twitter.png';
+import XIcon from 'assets/images/social/X.png';
 import 'pages/styles/landing.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config';
@@ -83,8 +83,8 @@ const LandingPage: React.FC = () => {
   const socialicons = [
     {
       link: 'https://twitter.com/QuickswapDEX',
-      icon: <img src={TwitterIcon} alt='TikTok' />,
-      title: 'Twitter',
+      icon: <img src={XIcon} alt='X' />,
+      title: 'X',
     },
     {
       link: 'https://t.me/QuickSwapDEX',
