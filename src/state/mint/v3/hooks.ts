@@ -491,8 +491,7 @@ export function useV3DerivedMintInfo(
     | CurrencyAmount<Currency>
     | undefined = tryParseAmount(
     typedValue,
-    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE) &&
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
       independentCurrency &&
       independentCurrency.isNative
       ? independentCurrency.wrapped
@@ -782,12 +781,7 @@ export function useV3DerivedMintInfo(
         independentReserve,
       );
 
-      return CurrencyAmount.fromRawAmount(
-        dependentCurrency.isNative
-          ? dependentCurrency.wrapped
-          : dependentCurrency,
-        dependentDeposit,
-      );
+      return CurrencyAmount.fromRawAmount(dependentCurrency, dependentDeposit);
     }
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;

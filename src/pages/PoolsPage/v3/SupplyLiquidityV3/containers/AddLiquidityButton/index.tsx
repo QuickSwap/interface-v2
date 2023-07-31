@@ -417,6 +417,13 @@ export function AddLiquidityButton({
             : amountA
           ).numerator.toString(),
           account,
+          {
+            value: baseCurrency.isNative
+              ? amountA.numerator.toString()
+              : quoteCurrency.isNative
+              ? amountB.numerator.toString()
+              : '0',
+          },
         );
         const response: TransactionResponse = await uniPilotVaultContract.deposit(
           (uniPilotToken0Address.toLowerCase() === baseCurrencyAddress
@@ -430,6 +437,11 @@ export function AddLiquidityButton({
           account,
           {
             gasLimit: calculateGasMargin(estimatedGas),
+            value: baseCurrency.isNative
+              ? amountA.numerator.toString()
+              : quoteCurrency.isNative
+              ? amountB.numerator.toString()
+              : '0',
           },
         );
         const summary = mintInfo.noLiquidity

@@ -227,8 +227,8 @@ export function SelectRange({
         const priceQuoteDecimals = Math.max(3, priceObj.baseCurrency.decimals);
         onLeftRangeInput(
           preset
-            ? liquidityRangeType ===
-              GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+            ? liquidityRangeType !==
+              GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
               ? String(Number(priceObj.toSignificant()) * preset.min)
               : priceObj
                   .quote(
@@ -250,7 +250,8 @@ export function SelectRange({
         );
         onRightRangeInput(
           preset
-            ? GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+            ? liquidityRangeType !==
+              GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
               ? String(Number(priceObj.toSignificant()) * preset.max)
               : priceObj
                   .quote(

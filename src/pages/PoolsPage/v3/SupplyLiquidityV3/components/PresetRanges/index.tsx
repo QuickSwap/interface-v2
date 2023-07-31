@@ -178,14 +178,8 @@ export function PresetRanges({
         ? unipilotPairs.map((pair, index) => {
             const pairSymbolData = pair.symbol.split('-');
             const pairType = Number(pairSymbolData[pairSymbolData.length - 1]);
-            const minTick = Math.max(
-              Number(pair.baseTickLower ?? 0),
-              Number(pair.rangeTickLower ?? 0),
-            );
-            const maxTick = Math.max(
-              Number(pair.baseTickUpper ?? 0),
-              Number(pair.rangeTickUpper ?? 0),
-            );
+            const minTick = Number(pair.baseTickLower ?? 0);
+            const maxTick = Number(pair.baseTickUpper ?? 0);
             const currentTick = uniPilotCurrentTicks[index];
             const minPrice =
               currentTick !== undefined

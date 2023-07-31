@@ -377,7 +377,7 @@ export function useV3PositionsCount(
 
   const prevCount = usePrevious(totalCount);
 
-  const count = totalCount > 0 ? totalCount : prevCount;
+  const count = totalCount > 0 ? totalCount : prevCount ?? 0;
 
   return {
     loading: balanceLoading || positionsLoading || positionsOnFarmerLoading,
