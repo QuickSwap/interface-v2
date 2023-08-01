@@ -420,6 +420,7 @@
   "installBraveDesc": "You need to install brave browser to use brave wallet. If you are on brave browser, you need to disable metamask or set Default Ethereum Wallet to Brave Wallet in settings. (brave://settings/wallet)",
   "installBitKeep": "Install BitKeep Wallet",
   "installTrustWallet": "Install TrustWallet",
+  "installOkxWallet": "Install OKX Wallet",
   "wrongNetwork": "Wrong Network",
   "connectPolygonNetwork": "Please connect to the appropriate Polygon network.",
   "errorConnectRefresh": "Error connecting. Try refreshing the page.",
@@ -645,7 +646,8 @@
   "unwrappingMATIC": "Unwrapping {{ symbol }}",
   "fetchingBestRoute": "Fetching Best Route",
   "contest": "Contest",
-  "leaderBoard": "Leaderboard",
+  "leaderBoard": "Leader Board",
+  "pastWinner": "Past Winners",
   "rank": "Rank",
   "address": "Address",
   "tradesTitleCase": "Trades",
@@ -693,5 +695,6 @@
   "governance": "Governance",
   "proposals": "Proposals",
   "termsofuse": "Terms of Use",
-  "walletDescription": "Connecting your wallet is like \"logging in\" on Web3. Select your wallet from the options to get started."
+  "walletDescription": "Connecting your wallet is like \"logging in\" on Web3. Select your wallet from the options to get started.",
+  "failedToFetchAnalyticsSearch": "Failed to fetch tokens and pairs."
 }

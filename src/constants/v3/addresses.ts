@@ -683,6 +683,13 @@ export const CRV: { [chainId: number]: Token } = {
     'CRV',
     'CRV (PoS)',
   ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x3d5320821bfca19fb0b5428f2c79d63bd5246f89',
+    18,
+    'CRV',
+    'Curve DAO Token',
+  ),
 };
 
 export const DAVOS: { [chainId: number]: Token } = {
@@ -742,6 +749,36 @@ export const frxETH: { [chainId: number]: Token } = {
     18,
     'frxETH',
     'Frax Ether',
+  ),
+};
+
+export const PUSH: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x58001cc1a9e17a20935079ab40b1b8f4fc19efd1',
+    18,
+    'PUSH',
+    'Ethereum Push Notification Service (PoS)',
+  ),
+};
+
+export const LINK: { [chainId: number]: Token } = {
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x4b16e4752711a7abec32799c976f3cefc0111f2b',
+    18,
+    'LINK',
+    'ChainLink Token',
+  ),
+};
+
+export const AAVE: { [chainId: number]: Token } = {
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x68791cfe079814c46e0e25c19bcc5bfc71a744f7',
+    18,
+    'AAVE',
+    'Aave Token',
   ),
 };
 

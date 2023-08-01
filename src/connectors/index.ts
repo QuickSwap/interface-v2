@@ -236,6 +236,7 @@ export const okxWalletConnection: Connection = {
   iconName: OkxWalletIcon,
   color: '#E8831D',
   description: 'OkxWallet browser extension.',
+  mobile: true,
 };
 
 const [web3CypherD, web3CypherDHooks] = initializeConnector<CypherD>(
@@ -408,6 +409,7 @@ export function getConnections() {
         cypherDConnection,
         metamaskConnection,
         trustWalletConnection,
+        okxWalletConnection,
         phantomConnection,
         braveWalletConnection,
         blockWalletConnection,
@@ -416,12 +418,12 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitKeepConnection,
-        okxWalletConnection,
       ]
     : [
         cypherDConnection,
         metamaskConnection,
         trustWalletConnection,
+        okxWalletConnection,
         phantomConnection,
         braveWalletConnection,
         blockWalletConnection,
@@ -431,6 +433,5 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitKeepConnection,
-        okxWalletConnection,
       ];
 }

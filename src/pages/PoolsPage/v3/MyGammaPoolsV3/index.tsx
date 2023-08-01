@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import GammaLPList from './GammaLPList';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getGammaData, getGammaPositions } from 'utils';
 import { GammaPair, GammaPairs } from 'constants/index';
 import { useMasterChefContracts } from 'hooks/useContract';
@@ -37,21 +37,39 @@ export default function MyGammaPoolsV3() {
     return gammaData;
   };
 
-  const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
-    'fetchGammaPositions',
-    fetchGammaPositions,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const {
+    isLoading: positionsLoading,
+    data: gammaPositions,
+    refetch: refetchGammaPositions,
+  } = useQuery({
+    queryKey: ['fetchGammaPositions', account, chainId],
+    queryFn: fetchGammaPositions,
+  });
 
-  const { isLoading: dataLoading, data: gammaData } = useQuery(
-    'fetchGammaData',
-    fetchGammaData,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const {
+    isLoading: dataLoading,
+    data: gammaData,
+    refetch: refetchGammaData,
+  } = useQuery({
+    queryKey: ['fetchGammaData', chainId],
+    queryFn: fetchGammaData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchGammaData();
+    refetchGammaPositions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const allGammaPairsToFarm = chainId
     ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
