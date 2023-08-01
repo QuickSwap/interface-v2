@@ -1718,6 +1718,9 @@ export default function SwapBox(props) {
         return;
       }
     }
+    if(!isConfirming && isMarketOrder){
+      if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next()},100) };
+    }
     setIsConfirming(true);
     setIsHigherSlippageAllowed(false);
     if(!isMarketOrder){
@@ -1964,7 +1967,7 @@ export default function SwapBox(props) {
           </React.Fragment>
         )}
         {showTriggerRatioSection && (
-          <div className="Exchange-swap-section">
+          <div className="Exchange-swap-section price-swap">
             <div className="Exchange-swap-section-top">
               <div>Price</div>
               {fromTokenInfo && toTokenInfo && (
