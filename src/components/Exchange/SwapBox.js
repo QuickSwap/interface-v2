@@ -1450,7 +1450,9 @@ export default function SwapBox(props) {
     )
       .then(() => {
         setIsConfirming(false);
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next()},100) };
       })
+      .catch((error)=> console.log(error))
       .finally(() => {
         setIsSubmitting(false);
         setIsPendingConfirmation(false);
@@ -1716,11 +1718,11 @@ export default function SwapBox(props) {
         return;
       }
     }
-    if(!isConfirming){
-      if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next()},100) };
-    }
     setIsConfirming(true);
     setIsHigherSlippageAllowed(false);
+    if(!isMarketOrder){
+      if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next()},100) };
+    }
   };
 
   const isStopOrder = orderOption === STOP;

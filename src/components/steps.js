@@ -659,13 +659,7 @@ const newSteps = [
     },
     when: {
       show: function() {
-        let activeTab = JSON.parse(localStorage.getItem('["Order-option"]'));
         localStorage.setItem("viewed_tour_modal","false")
-        if(activeTab === "Limit"){
-          if(!!document.querySelector(".swap-button").hasAttribute("disabled")){
-            document.querySelector(".swapReceive-Step-Next").disabled = true;
-          }
-        }
        if(localStorage.getItem("viewed_tour_modal") === "false"){
           document.querySelectorAll('.steps-TokenSelector').forEach(e=>{
             e.addEventListener("click",()=>{
@@ -718,6 +712,7 @@ const newSteps = [
           document.querySelector(".swap-button").click();
           removeStepActionClasses()
           localStorage.setItem("viewed_tour_modal","true")
+          this.next()
         },
         classes:'swapReceive-Step-Next',
         text: `
@@ -736,9 +731,8 @@ const newSteps = [
     id: "CheckPaperWork",
     title: "",
     showOn(){
-      // let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      // return (Object.values(swapPptionV2).includes("Swap") === true);
-      return false;
+      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      return (Object.values(swapPptionV2).includes("Swap") === true && JSON.parse(localStorage.getItem('["Order-option"]'))  === "Market" )
     },
     text: `
     </div>
@@ -801,9 +795,8 @@ const newSteps = [
     id: "letsSwap",
     title:'',
     showOn(){
-     // let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      // return (Object.values(swapPptionV2).includes("Swap") === true);
-      return false;
+      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      return (Object.values(swapPptionV2).includes("Swap") === true && JSON.parse(localStorage.getItem('["Order-option"]'))  === "Market" )
     },
     text: `
     </div>
@@ -839,8 +832,7 @@ const newSteps = [
       },
       {
         action(){
-          // document.querySelector(".Confirmation-box-swap-button").click();
-          this.next();
+          document.querySelector(".Confirmation-box-swap-button").click();
         },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
@@ -858,9 +850,8 @@ const newSteps = [
     id: "swapCheckAllTtransactions",
     title:'',
     showOn(){
-     // let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      // return (Object.values(swapPptionV2).includes("Swap") === true);
-      return false;
+     let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+     return (Object.values(swapPptionV2).includes("Swap") === true && JSON.parse(localStorage.getItem('["Order-option"]'))  === "Market" )
     },
     when:{
       show: function() {
@@ -903,9 +894,6 @@ const newSteps = [
       },
     ],
   },
- 
-
-
   {
     id: "enableLeverage",
     title: "",
@@ -1107,16 +1095,15 @@ const newSteps = [
     title: "",
     showOn(){
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      return ((Object.values(swapPptionV2).includes("Short") === true || Object.values(swapPptionV2).includes("Long") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
+      return ((Object.values(swapPptionV2).includes("Short") === true || Object.values(swapPptionV2).includes("Long") === true)  && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit') && document.querySelector('.Exchange-swap-button').innerHTML === "Create Limit Order";
     },
     text: `
-    </div>
     <div style="width: 100%; color: #061341; font-size: 20px; line-height:
     25.52px; font-family: Space Grotesk; font-weight: 700; line-height: 30px; word-wrap: break-word">
     Now click on Create Limit order
     to initiate placing a limit order trade</div>
             `,
-    attachTo: { element: ".enable-order-button", on: "left" },
+    attachTo: { element: ".Exchange-swap-button", on: "left" },
     scrollTo: true,
     buttons: [
       {
@@ -1145,8 +1132,7 @@ const newSteps = [
       },
       {
         action(){
-          document.querySelector(".enable-order-button").click(); 
-          this.next();  
+          document.querySelector(".Exchange-swap-button").click(); 
         },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
@@ -1351,6 +1337,9 @@ const newSteps = [
         document.querySelectorAll(".createOrderLabel").forEach(e=> {
           e.innerHTML =  Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
         })  
+        document.querySelector('.Exchange-swap-box').querySelector('.Modal-close-button').addEventListener('click',()=>{
+          document.querySelector('.createOrderBackButton').click()
+        })
       }
     },
     text: `
@@ -1366,7 +1355,7 @@ const newSteps = [
       </ul>
       Click on Create Order and sign the transaction to initiate the Limit <span class="createOrderLabel"></span> trade.
     </div> `,
-    attachTo: { element: ".Exchange-swap-button", on: "left" },
+    attachTo: { element: ".Confirmation-box-content", on: "left" },
     scrollTo: true,
     buttons: [
       {
@@ -1380,7 +1369,13 @@ const newSteps = [
         `,
       },
       {
-        type: "back",
+        action(){
+          this.show('createLimitOrder')
+          if(!!document.querySelector('.Exchange-swap-box').querySelector('.Confirmation-box')){
+            document.querySelector(".Confirmation-box .Modal-close-button").click(); 
+          }
+        },
+        classes:'createOrderBackButton',
         text: `
         <div style="
         display: flex;
@@ -1394,8 +1389,7 @@ const newSteps = [
       },
       {
         action(){
-          document.querySelector(".Exchange-swap-button").click(); 
-          this.next();  
+          document.querySelector(".Confirmation-box-button").click(); 
         },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
