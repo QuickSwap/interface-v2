@@ -734,6 +734,13 @@ const newSteps = [
       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
       return (Object.values(swapPptionV2).includes("Swap") === true && JSON.parse(localStorage.getItem('["Order-option"]'))  === "Market" )
     },
+    when: {
+      show: function() {
+        document.querySelector('.Exchange-swap-box').querySelector('.Modal-close-button').addEventListener('click',()=>{
+          document.querySelector('.CheckPaperWorkSwapLimit').click()
+        })
+      }
+    },
     text: `
     </div>
     <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Check the Paperwork</div>
@@ -764,8 +771,9 @@ const newSteps = [
           document.querySelector(".Confirmation-box .Modal-close-button").click(); 
           addStepActionClasses()
           localStorage.setItem("viewed_tour_modal","false")
-          this.back();
+          this.show('swapReceive');
         },
+        classes:'CheckPaperWorkSwapLimit',
         text: `
         <div style="
         display: flex;
