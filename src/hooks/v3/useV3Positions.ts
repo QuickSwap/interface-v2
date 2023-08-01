@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Result,
   useMultipleContractMultipleData,
@@ -17,7 +17,7 @@ import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
 import { ChainId } from '@uniswap/sdk';
 import { getGammaPositions } from 'utils';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { GammaPair, GammaPairs } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
 
@@ -395,13 +395,29 @@ export function useGammaPositionsCount(
     return gammaPositions;
   };
 
-  const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
-    'fetchGammaPositions',
-    fetchGammaPositions,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const {
+    isLoading: positionsLoading,
+    data: gammaPositions,
+    refetch: refetchGammaPositions,
+  } = useQuery({
+    queryKey: ['fetchGammaPositions', account, chainId],
+    queryFn: fetchGammaPositions,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchGammaPositions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const allGammaPairsToFarm = chainId
     ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
