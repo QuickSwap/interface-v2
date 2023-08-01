@@ -4,7 +4,7 @@ import { AlertTriangle } from 'react-feather';
 import { Box, Button } from '@mui/material';
 import { Field } from 'state/swap/actions';
 import { DoubleCurrencyLogo } from 'components';
-import useUSDCPrice from 'utils/useUSDCPrice';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import ArrowDownIcon from 'svgs/ArrowDownIcon.svg';
 import { basisPointsToPercent, formatTokenAmount } from 'utils';
@@ -12,10 +12,12 @@ import { useTranslation } from 'next-i18next';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
 import styles from 'styles/components/ConfirmSwapModal.module.scss';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { useActiveWeb3React } from 'hooks';
 
 interface SwapModalHeaderProps {
   trade?: Trade;
-  optimalRate?: OptimalRate;
+  optimalRate?: OptimalRate | null;
   inputCurrency?: Currency;
   outputCurrency?: Currency;
   allowedSlippage: number;
@@ -35,13 +37,16 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
   onConfirm,
 }) => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
   const slippageAdjustedAmounts = useMemo(
     () => computeSlippageAdjustedAmounts(trade, allowedSlippage),
     [trade, allowedSlippage],
   );
-  const usdPrice = useUSDCPrice(
+  const wrappedToken = wrappedCurrency(
     trade ? trade.inputAmount.currency : inputCurrency,
+    chainId,
   );
+  const usdPrice = useUSDCPriceFromAddress(wrappedToken?.address ?? '');
 
   const pct = basisPointsToPercent(allowedSlippage);
 
@@ -76,7 +81,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
             : ''}{' '}
           {trade ? trade.inputAmount.currency.symbol : inputCurrency?.symbol} ($
           {(
-            Number(usdPrice?.toSignificant()) *
+            (usdPrice ?? 0) *
             (optimalRate
               ? Number(optimalRate.srcAmount) / 10 ** optimalRate.srcDecimals
               : trade

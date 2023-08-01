@@ -30,7 +30,7 @@ function tradeMeaningfullyDiffers(tradeA: Trade, tradeB: Trade): boolean {
 
 interface ConfirmSwapModalProps {
   isOpen: boolean;
-  optimalRate?: OptimalRate;
+  optimalRate?: OptimalRate | null;
   trade?: Trade;
   originalTrade?: Trade;
   inputCurrency?: Currency;

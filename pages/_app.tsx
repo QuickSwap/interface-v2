@@ -1,6 +1,6 @@
 import App, { AppProps } from 'next/app';
 import React, { Suspense } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'react-redux';
 import Head from 'next/head';
 import Script from 'next/script';

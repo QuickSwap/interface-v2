@@ -92,7 +92,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
 };
 
 export interface BestTradeAdvancedSwapDetailsProps {
-  optimalRate?: OptimalRate;
+  optimalRate?: OptimalRate | null;
   inputCurrency?: Currency;
   outputCurrency?: Currency;
 }

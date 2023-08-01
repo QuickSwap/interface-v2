@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'next-i18next';
@@ -8,7 +8,7 @@ import {
   GlobalConst,
   GlobalData,
 } from 'constants/index';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import GammaFarmCard from './GammaFarmCard';
 import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
 import { useActiveWeb3React } from 'hooks';
@@ -57,21 +57,39 @@ const GammaFarmsPage: React.FC<{
     return gammaData;
   };
 
-  const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
-    'fetchGammaData',
-    fetchGammaData,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const {
+    isLoading: gammaFarmsLoading,
+    data: gammaData,
+    refetch: refetchGammaData,
+  } = useQuery({
+    queryKey: ['fetchGammaData', chainId],
+    queryFn: fetchGammaData,
+  });
 
-  const { isLoading: gammaRewardsLoading, data: gammaRewards } = useQuery(
-    'fetchGammaRewards',
-    fetchGammaRewards,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const {
+    isLoading: gammaRewardsLoading,
+    data: gammaRewards,
+    refetch: refetchGammaRewards,
+  } = useQuery({
+    queryKey: ['fetchGammaRewards', chainId],
+    queryFn: fetchGammaRewards,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchGammaData();
+    refetchGammaRewards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const qiTokenAddress = '0x580a84c73811e1839f75d86d75d88cca0c241ff4';
   const qiGammaFarm = '0x25B186eEd64ca5FDD1bc33fc4CFfd6d34069BAec';

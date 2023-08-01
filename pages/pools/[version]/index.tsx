@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
 import { HelpOutline } from '@mui/icons-material';
 import SupplyLiquidity from 'components/pages/pools/SupplyLiquidity';
@@ -19,7 +19,7 @@ import { Adshares } from 'components';
 
 const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation();
-  const { isV2 } = useIsV2();
+  const { isV2, updateIsV2 } = useIsV2();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
@@ -31,6 +31,12 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
   const helpURL = process.env.NEXT_PUBLIC_HELP_URL;
   const allGammaPairs = chainId ? GammaPairs[chainId] : {};
+
+  useEffect(() => {
+    if (!v2) {
+      updateIsV2(false);
+    }
+  }, [updateIsV2, v2]);
 
   return (
     <Box width='100%' mb={3}>

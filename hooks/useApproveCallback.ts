@@ -289,7 +289,7 @@ export function useApproveCallbackFromTrade(
 export function useApproveCallbackFromBestTrade(
   allowedSlippage: Percent,
   currency?: Currency,
-  optimalRate?: OptimalRate,
+  optimalRate?: OptimalRate | null,
   bonusRouteFound?: boolean,
   atMaxAmountInput?: boolean,
 ): [ApprovalState, () => Promise<void>] {

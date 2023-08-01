@@ -406,6 +406,7 @@ export function getConnections() {
         cypherDConnection,
         metamaskConnection,
         trustWalletConnection,
+        okxWalletConnection,
         phantomConnection,
         braveWalletConnection,
         blockWalletConnection,
@@ -414,12 +415,12 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitKeepConnection,
-        okxWalletConnection,
       ]
     : [
         cypherDConnection,
         metamaskConnection,
         trustWalletConnection,
+        okxWalletConnection,
         phantomConnection,
         braveWalletConnection,
         blockWalletConnection,
@@ -429,6 +430,5 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitKeepConnection,
-        okxWalletConnection,
       ];
 }

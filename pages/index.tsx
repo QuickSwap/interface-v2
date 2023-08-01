@@ -66,8 +66,8 @@ const LandingPage = (
   const socialicons = [
     {
       link: 'https://twitter.com/QuickswapDEX',
-      icon: '/assets/images/social/Twitter.svg',
-      title: 'Twitter',
+      icon: '/assets/images/social/X.png',
+      title: 'X',
     },
     {
       link: 'https://t.me/QuickSwapDEX',

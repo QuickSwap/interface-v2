@@ -996,6 +996,7 @@ const gammaChainName = (chainId?: ChainId) => {
 };
 
 export const getGammaData = async (chainId?: ChainId) => {
+  if (!chainId) return null;
   try {
     const data = await fetch(
       `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
@@ -1015,7 +1016,7 @@ export const getGammaData = async (chainId?: ChainId) => {
       return gammaData;
     } catch (e) {
       console.log(e);
-      return;
+      return null;
     }
   }
 };
@@ -1024,7 +1025,7 @@ export const getGammaPositions = async (
   account?: string,
   chainId?: ChainId,
 ) => {
-  if (!account) return;
+  if (!account || !chainId) return null;
   try {
     const data = await fetch(
       `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
@@ -1044,13 +1045,13 @@ export const getGammaPositions = async (
       return positions[account.toLowerCase()];
     } catch (e) {
       console.log(e);
-      return;
+      return null;
     }
   }
 };
 
 export const getGammaRewards = async (chainId?: ChainId) => {
-  if (!chainId) return;
+  if (!chainId) return null;
   try {
     const data = await fetch(
       `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
@@ -1070,7 +1071,7 @@ export const getGammaRewards = async (chainId?: ChainId) => {
       return gammaData;
     } catch (e) {
       console.log(e);
-      return;
+      return null;
     }
   }
 };

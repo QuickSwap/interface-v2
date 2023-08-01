@@ -34,7 +34,7 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const farmAvailable = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
-  const { isV2 } = useIsV2();
+  const { isV2, updateIsV2 } = useIsV2();
 
   const lpFarms = useDefaultFarmList();
   const cntFarms = useDefaultCNTFarmList(chainIdToUse);
@@ -63,6 +63,12 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [farmAvailable]);
+
+  useEffect(() => {
+    if (!v2) {
+      updateIsV2(false);
+    }
+  }, [updateIsV2, v2]);
 
   const pairListStr = pairLists.join('_');
   useEffect(() => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/router';
-import { Box } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { getTokenFromAddress } from 'utils';
 import { GlobalConst } from 'constants/index';
@@ -16,6 +16,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { useIsV2 } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
+import { useQuery } from '@tanstack/react-query';
 dayjs.extend(utc);
 
 const AnalyticsSearch: React.FC = () => {
@@ -34,8 +35,6 @@ const AnalyticsSearch: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<any>(null);
   const wrapperRef = useRef<any>(null);
-  const [searchedTokens, setSearchedTokens] = useState<any[]>([]);
-  const [searchedPairs, setSearchedPairs] = useState<any[]>([]);
   const [tokensShown, setTokensShown] = useState(3);
   const [pairsShown, setPairsShown] = useState(3);
   const tokenMap = useSelectedTokenList();
@@ -47,11 +46,40 @@ const AnalyticsSearch: React.FC = () => {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   };
 
+  const fetchSearchData = async () => {
+    try {
+      const res = await fetch(
+        `${
+          process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
+        }/utils/search-token-pair/${
+          isV2 && v2 ? 'v2' : 'v3'
+        }?chainId=${chainIdToUse}&search=${searchVal}`,
+      );
+      if (!res.ok) {
+        return null;
+      }
+      const data = await res.json();
+
+      return data && data.data ? data.data : null;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const {
+    isLoading: searchDataLoading,
+    data: searchData,
+    refetch: refetchSearchData,
+  } = useQuery({
+    queryKey: ['fetchSearchData', searchVal, isV2, v2, chainIdToUse],
+    queryFn: fetchSearchData,
+  });
+
   const filteredTokens = useMemo(() => {
     const uniqueTokens: any[] = [];
     const found: any = {};
-    if (searchedTokens && searchedTokens.length > 0) {
-      searchedTokens.map((token) => {
+    if (searchData && searchData.tokens && searchData.tokens.length > 0) {
+      searchData.tokens.map((token: any) => {
         if (!found[token.id]) {
           found[token.id] = true;
           uniqueTokens.push(token);
@@ -95,13 +123,13 @@ const AnalyticsSearch: React.FC = () => {
             })
         : [];
     return filtered;
-  }, [searchedTokens, searchVal]);
+  }, [searchData, searchVal]);
 
   const filteredPairs = useMemo(() => {
     const uniquePairs: any[] = [];
     const pairsFound: any = {};
-    if (searchedPairs && searchedPairs.length > 0)
-      searchedPairs.map((pair) => {
+    if (searchData && searchData.pairs && searchData.pairs.length > 0)
+      searchData.pairs.map((pair: any) => {
         if (!pairsFound[pair.id]) {
           pairsFound[pair.id] = true;
           uniquePairs.push(pair);
@@ -163,40 +191,7 @@ const AnalyticsSearch: React.FC = () => {
           })
       : [];
     return filtered;
-  }, [searchedPairs, searchVal]);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await fetch(
-          `${
-            process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
-          }/utils/search-token-pair/${
-            isV2 && v2 ? 'v2' : 'v3'
-          }?chainId=${chainIdToUse}&search=${searchVal}`,
-        );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get top token details`,
-          );
-        }
-        const data = await res.json();
-
-        setSearchedTokens(
-          data && data.data && data.data.tokens ? data.data.tokens : [],
-        );
-        setSearchedPairs(
-          data && data.data && data.data.pairs ? data.data.pairs : [],
-        );
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    if (isV2 !== undefined) {
-      fetchData();
-    }
-  }, [searchVal, isV2, v2, chainIdToUse]);
+  }, [searchData, searchVal]);
 
   const handleClick = (e: any) => {
     if (
@@ -232,88 +227,113 @@ const AnalyticsSearch: React.FC = () => {
       </Box>
       {menuOpen && (
         <div ref={wrapperRef} className={styles.searchWidgetContent}>
-          <h6>{t('pairs')}</h6>
-          {filteredPairs.slice(0, pairsShown).map((val, ind) => {
-            const currency0 = getTokenFromAddress(
-              val.token0.id,
-              chainIdToUse,
-              tokenMap,
-              [
-                new Token(
-                  chainIdToUse,
-                  getAddress(val.token0.id),
-                  val.token0.decimals,
-                ),
-              ],
-            );
-            const currency1 = getTokenFromAddress(
-              val.token1.id,
-              chainIdToUse,
-              tokenMap,
-              [
-                new Token(
-                  chainIdToUse,
-                  getAddress(val.token1.id),
-                  val.token1.decimals,
-                ),
-              ],
-            );
-            return (
-              <Box
-                key={ind}
-                className={styles.searchWidgetRow}
-                onClick={() => {
-                  router.push(`/analytics/${version}/pair?id=${val.id}`);
-                  setMenuOpen(false);
-                }}
-              >
-                <DoubleCurrencyLogo
-                  currency0={currency0}
-                  currency1={currency1}
-                  size={28}
-                />
-                <small>
-                  {val.token0.symbol} - {val.token1.symbol} {t('pair')}
-                </small>
+          {searchDataLoading ? (
+            <Box
+              width='100%'
+              height='100%'
+              className='flex items-center justify-center'
+            >
+              <CircularProgress size='30px' />
+            </Box>
+          ) : !searchData ? (
+            <Box
+              width='100%'
+              height='100%'
+              className='flex flex-col items-center justify-center'
+            >
+              <p>{t('failedToFetchAnalyticsSearch')}</p>
+              <Box mt={2}>
+                <Button size='large' onClick={() => refetchSearchData()}>
+                  {t('tryagain')}
+                </Button>
               </Box>
-            );
-          })}
-          <Box
-            className={styles.searchWidgetShowMore}
-            onClick={() => setPairsShown(pairsShown + 5)}
-          >
-            <small>{t('showMore')}</small>
-          </Box>
-          <h6>{t('tokens')}</h6>
-          {filteredTokens.slice(0, tokensShown).map((val, ind) => {
-            const currency = getTokenFromAddress(
-              getAddress(val.id),
-              chainIdToUse,
-              tokenMap,
-              [new Token(chainIdToUse, getAddress(val.id), val.decimals)],
-            );
-            return (
+            </Box>
+          ) : (
+            <>
+              <h6>{t('pairs')}</h6>
+              {filteredPairs.slice(0, pairsShown).map((val, ind) => {
+                const currency0 = getTokenFromAddress(
+                  val.token0.id,
+                  chainIdToUse,
+                  tokenMap,
+                  [
+                    new Token(
+                      chainIdToUse,
+                      getAddress(val.token0.id),
+                      val.token0.decimals,
+                    ),
+                  ],
+                );
+                const currency1 = getTokenFromAddress(
+                  val.token1.id,
+                  chainIdToUse,
+                  tokenMap,
+                  [
+                    new Token(
+                      chainIdToUse,
+                      getAddress(val.token1.id),
+                      val.token1.decimals,
+                    ),
+                  ],
+                );
+                return (
+                  <Box
+                    key={ind}
+                    className={styles.searchWidgetRow}
+                    onClick={() => {
+                      router.push(`/analytics/${version}/pair/${val.id}`);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <DoubleCurrencyLogo
+                      currency0={currency0}
+                      currency1={currency1}
+                      size={28}
+                    />
+                    <small>
+                      {val.token0.symbol} - {val.token1.symbol} {t('pair')}
+                    </small>
+                  </Box>
+                );
+              })}
               <Box
-                key={ind}
-                className={styles.searchWidgetRow}
-                onClick={() => {
-                  router.push(`/analytics/${version}/token?id=${val.id}`);
-                  setMenuOpen(false);
-                }}
+                className={styles.searchWidgetShowMore}
+                onClick={() => setPairsShown(pairsShown + 5)}
               >
-                <CurrencyLogo currency={currency} size='28px' />
-                <small>
-                  {val.name} ({val.symbol})
-                </small>
+                <small>{t('showMore')}</small>
               </Box>
-            );
-          })}
-          <Box
-            className={styles.searchWidgetShowMore}
-            onClick={() => setTokensShown(tokensShown + 5)}
-          >
-            <small>{t('showMore')}</small>
-          </Box>
+              <h6>{t('tokens')}</h6>
+              {filteredTokens.slice(0, tokensShown).map((val, ind) => {
+                const currency = getTokenFromAddress(
+                  getAddress(val.id),
+                  chainIdToUse,
+                  tokenMap,
+                  [new Token(chainIdToUse, getAddress(val.id), val.decimals)],
+                );
+                return (
+                  <Box
+                    key={ind}
+                    className={styles.searchWidgetRow}
+                    onClick={() => {
+                      router.push(`/analytics/${version}/token/${val.id}`);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <CurrencyLogo currency={currency} size='28px' />
+                    <small>
+                      {val.name} ({val.symbol})
+                    </small>
+                  </Box>
+                );
+              })}
+              <Box
+                className={styles.searchWidgetShowMore}
+                onClick={() => setTokensShown(tokensShown + 5)}
+              >
+                <small>{t('showMore')}</small>
+              </Box>
+            </>
+          )}
         </div>
       )}
     </Box>

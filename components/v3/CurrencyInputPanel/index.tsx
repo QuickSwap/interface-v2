@@ -78,10 +78,7 @@ export default function CurrencyInputPanel({
     currency?.isNative ? nativeCurrency : currency ?? undefined,
   );
 
-  const currentPrice = useUSDCPriceFromAddress(
-    currency?.wrapped.address ?? '',
-    true,
-  );
+  const currentPrice = useUSDCPriceFromAddress(currency?.wrapped.address ?? '');
 
   const valueAsUsd = useMemo(() => {
     if (!currentPrice || !value) {
