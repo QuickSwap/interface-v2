@@ -697,5 +697,6 @@
   "governance": "Governance",
   "proposals": "Proposals",
   "termsofuse": "Terms of Use",
-  "walletDescription": "Connecting your wallet is like \"logging in\" on Web3. Select your wallet from the options to get started."
+  "walletDescription": "Connecting your wallet is like \"logging in\" on Web3. Select your wallet from the options to get started.",
+  "failedToFetchAnalyticsSearch": "Failed to fetch tokens and pairs."
 }

@@ -19,7 +19,7 @@ import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'react-i18next';
 import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
 import SortColumns from 'components/SortColumns';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { ChainId, Token } from '@uniswap/sdk';
@@ -469,21 +469,39 @@ export const FarmingMyFarms: React.FC<{
     return gammaData;
   };
 
-  const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
-    'fetchGammaData',
-    fetchGammaData,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const {
+    isLoading: gammaFarmsLoading,
+    data: gammaData,
+    refetch: refetchGammaData,
+  } = useQuery({
+    queryKey: ['fetchGammaData', chainId],
+    queryFn: fetchGammaData,
+  });
 
-  const { isLoading: gammaRewardsLoading, data: gammaRewards } = useQuery(
-    'fetchGammaRewards',
-    fetchGammaRewards,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const {
+    isLoading: gammaRewardsLoading,
+    data: gammaRewards,
+    refetch: refetchGammaRewards,
+  } = useQuery({
+    queryKey: ['fetchGammaRewards', chainId],
+    queryFn: fetchGammaRewards,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchGammaData();
+    refetchGammaRewards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const sortMultiplierGamma = sortDescGamma ? -1 : 1;
 

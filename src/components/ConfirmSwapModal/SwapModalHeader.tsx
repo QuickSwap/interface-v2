@@ -14,7 +14,7 @@ import { ONE } from 'v3lib/utils';
 
 interface SwapModalHeaderProps {
   trade?: Trade;
-  optimalRate?: OptimalRate;
+  optimalRate?: OptimalRate | null;
   inputCurrency?: Currency;
   outputCurrency?: Currency;
   allowedSlippage: number;
