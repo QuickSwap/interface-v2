@@ -40,6 +40,8 @@ import {
   dDD,
   frxETH,
   PUSH,
+  LINK,
+  AAVE,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -1132,6 +1134,17 @@ export const GammaPairs: {
         pid: 84,
       },
     ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xd6df932a45c0f255f85145f286ea0b292b21c90b': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x5ba383530db75a22e028239dbc777c7ee8ce4752',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xd6df932a45c0f255f85145f286ea0b292b21c90b',
+        ableToFarm: true,
+        pid: 85,
+      },
+    ],
   },
   [ChainId.MUMBAI]: {},
   [ChainId.DOEGCHAIN_TESTNET]: {},
@@ -1377,6 +1390,39 @@ export const GammaPairs: {
         pid: 22,
       },
     ],
+    '0x4b16e4752711a7abec32799c976f3cefc0111f2b-0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xECfA9CD134E77f573b079378940A4Be944993F17',
+        token0Address: '0x4b16e4752711a7abec32799c976f3cefc0111f2b',
+        token1Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        ableToFarm: true,
+        pid: 23,
+      },
+    ],
+    '0x3d5320821bfca19fb0b5428f2c79d63bd5246f89-0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xbAAA5a2D780C5914FB1BAD0Ea6Cbf7B99589d6FE',
+        token0Address: '0x3d5320821bfca19fb0b5428f2c79d63bd5246f89',
+        token1Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        ableToFarm: true,
+        pid: 24,
+      },
+    ],
+    '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0x68791cfe079814c46e0e25c19bcc5bfc71a744f7': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x06895D6f6680E5e8301604D5E0483A3655C547B8',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0x68791cfe079814c46e0e25c19bcc5bfc71a744f7',
+        ableToFarm: true,
+        pid: 25,
+      },
+    ],
   },
 };
 
@@ -1460,6 +1506,9 @@ export const GlobalValue = {
         WBTC[ChainId.ZKEVM],
         DAI[ChainId.ZKEVM],
         MATIC[ChainId.ZKEVM],
+        CRV[ChainId.ZKEVM],
+        LINK[ChainId.ZKEVM],
+        AAVE[ChainId.ZKEVM],
       ],
       [ChainId.MUMBAI]: [],
       [ChainId.DOEGCHAIN_TESTNET]: [],
