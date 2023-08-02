@@ -1259,7 +1259,8 @@ export default function SwapBox(props) {
       showModal,
     })
       .then(async (res) => {
-        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next();},100) };
+        console.log('dfd')
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
       })
       .catch((e) => console.log("error: ", e))
       .finally(() => {
@@ -1282,7 +1283,7 @@ export default function SwapBox(props) {
       showModal,
     })
       .then(async (res) => {
-        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next();},100) };
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
       })
       .catch((e) => console.log("error: ", e))
       .finally(() => {
@@ -1362,6 +1363,9 @@ export default function SwapBox(props) {
       })
         .then(() => {
           setIsConfirming(false);
+          if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
+        }).catch((error)=>{
+          console.log(error)
         })
         .finally(() => {
           setIsSubmitting(false);
@@ -1398,6 +1402,7 @@ export default function SwapBox(props) {
       showModal,
     })
       .then(async () => {
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
         setIsConfirming(false);
       })
       .catch((e) => console.log("error: ", e))

@@ -204,6 +204,9 @@ const newSteps = [
         let activeTab = JSON.parse(localStorage.getItem('["Order-option"]'));
         document.querySelector(`[data-label='${activeTab}']`).click()
         Object.values(swapPptionV2).includes("Swap") !== true ?  document.querySelector("[data-label='Trigger']").style.display = 'block' : document.querySelector("[data-label='Trigger']").style.display = 'none'
+        if(JSON.parse(localStorage.getItem('["Order-option"]') === "Stop")){
+          document.querySelector(".step4NextButton").disabled = true;
+        } 
         document.querySelector(".Exchange-swap-order-type-tabs").querySelectorAll('.Tab-option').forEach((element) => {
           element.addEventListener('click',()=>{
             document.querySelector(".step-4-tour-tabs").querySelectorAll('.tour-tab').forEach((e) => {
@@ -220,12 +223,10 @@ const newSteps = [
     <div style="display: flex; justify-content: space-between; align-items: center">
       <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Choose from </div>
         <div class="step-4-tour-tabs" style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
-            <button class="tour-tab tour-selected-tab" data-label="Market"  type="button" onClick='new Promise(function (resolve) {[...document.querySelector(".step-4-tour-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".step-4-tour-tabs").children][0].classList.add("tour-selected-tab");[...document.querySelector(".Exchange-swap-order-type-tabs").children].forEach((element, index) => {if (index == 0) {element.classList.add("active"); element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-sub-tab-container").innerHTML = "This is when you buy or sell a cryptocurrency immediately at the best available price in the market. It&prime;s like buying a toy at the price it&prime;s currently being sold for.";'>Market</button>
-            <button class="tour-tab" data-label="Limit"  type="button" onClick='new Promise(function (resolve) {
-              [...document.querySelector(".step-4-tour-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".step-4-tour-tabs").children][1].classList.add("tour-selected-tab");[...document.querySelector(".Exchange-swap-order-type-tabs").children].forEach((element, index) => {if (index == 1) {element.classList.add("active");element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-sub-tab-container").innerHTML = "This is when you decide to buy or sell a cryptocurrency only at a specific price or better. It&prime;s like waiting for a toy to go on sale before you buy it.";'>Limit</button>
+            <button class="tour-tab tour-selected-tab" data-label="Market"  type="button" onClick='new Promise(function (resolve) {document.querySelector(".step4NextButton").disabled = false;[...document.querySelector(".step-4-tour-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".step-4-tour-tabs").children][0].classList.add("tour-selected-tab");[...document.querySelector(".Exchange-swap-order-type-tabs").children].forEach((element, index) => {if (index == 0) {element.classList.add("active"); element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-sub-tab-container").innerHTML = "This is when you buy or sell a cryptocurrency immediately at the best available price in the market. It&prime;s like buying a toy at the price it&prime;s currently being sold for.";'>Market</button>
+            <button class="tour-tab" data-label="Limit"  type="button" onClick='new Promise(function (resolve) {document.querySelector(".step4NextButton").disabled = false;[...document.querySelector(".step-4-tour-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".step-4-tour-tabs").children][1].classList.add("tour-selected-tab");[...document.querySelector(".Exchange-swap-order-type-tabs").children].forEach((element, index) => {if (index == 1) {element.classList.add("active");element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-sub-tab-container").innerHTML = "This is when you decide to buy or sell a cryptocurrency only at a specific price or better. It&prime;s like waiting for a toy to go on sale before you buy it.";'>Limit</button>
 
-            <button class="tour-tab" data-label="Trigger"  type="button" onClick='new Promise(function (resolve) {
-              [...document.querySelector(".step-4-tour-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".step-4-tour-tabs").children][2].classList.add("tour-selected-tab");[...document.querySelector(".Exchange-swap-order-type-tabs").children].forEach((element, index) => {if (index == 2) {element.classList.add("active");element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-sub-tab-container").innerHTML = "This is a special type of order that starts as soon as a specific price is reached. It&prime;s like setting an alarm to remind you to buy a toy when its price drops to a certain point.";'>Trigger</button>
+            <button class="tour-tab" data-label="Trigger"  type="button" onClick='new Promise(function (resolve) {document.querySelector(".step4NextButton").disabled = true;[...document.querySelector(".step-4-tour-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".step-4-tour-tabs").children][2].classList.add("tour-selected-tab");[...document.querySelector(".Exchange-swap-order-type-tabs").children].forEach((element, index) => {if (index == 2) {element.classList.add("active");element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-sub-tab-container").innerHTML = "This is a special type of order that starts as soon as a specific price is reached. It&prime;s like setting an alarm to remind you to buy a toy when its price drops to a certain point.";'>Trigger</button>
               <div id="content"></div>
               
         </div> 
@@ -268,6 +269,7 @@ const newSteps = [
         }
         this.next()
        },
+       classes:'step4NextButton',
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -727,13 +729,148 @@ const newSteps = [
           clearInterval()
           removeStepActionClasses()
           localStorage.setItem("viewed_tour_modal","true")
-          if(JSON.parse(localStorage.getItem('["Order-option"]'))  === "Market" ){
+          if(document.querySelector('.swap-button').innerHTML.includes("Approve")  ){
+            this.show('ApproveSwap')
+          }else{
+            this.show('letsSwap')
+          }
+        },
+        classes:'swapReceive-Step-Next',
+        text: `
+        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
+        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        </div>
+        `,
+      },
+    ],
+  },
+  {
+    id: "ApproveSwap",
+    title:'',
+    showOn(){
+      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      return (Object.values(swapPptionV2).includes("Swap") === true && JSON.parse(localStorage.getItem('["Order-option"]'))  === "Market" )
+    },
+    when: {
+      show: function() {
+        
+          setInterval(() => {
+            if(!document.querySelector('.swap-button').innerHTML.includes("Approve")){
+              document.querySelector('.letsSwapNext').click()
+            }
+          },  1000);
+      },
+      hide:function() {
+        clearInterval()
+      }
+    },
+    text: `
+    </div>
+    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Approve Token</div>
+           `,
+    attachTo: { element: ".swap-button", on: "left" },
+    scrollTo: true,
+    buttons: [
+      {
+        type:'complete',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
+      { 
+       
+        action(){
+          addStepActionClasses()
+          localStorage.setItem("viewed_tour_modal","false")
+          this.show('swapReceive')
+        },
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            </div>
+        `,
+      },
+      {
+        action(){
+          
+          if(document.querySelector('.swap-button').innerHTML.includes("Approve")  ){
             document.querySelector(".swap-button").click();
           }else{
             this.next()
           }
         },
-        classes:'swapReceive-Step-Next',
+        classes:'letsSwapNext',
+        text: `
+        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
+        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        </div>
+        `,
+      },
+    ],
+  },
+  {
+    id: "letsSwap",
+    title:'',
+    showOn(){
+      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+      return (Object.values(swapPptionV2).includes("Swap") === true && JSON.parse(localStorage.getItem('["Order-option"]'))  === "Market" )
+    },
+    text: `
+    </div>
+    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Let’s Swap</div>
+    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Click on Confirm and a popup from your connected wallet will appear. You need to click again to confirm or approve depending on the wallet you use to sign the transaction.</div>
+            `,
+    attachTo: { element: ".swap-button", on: "left" },
+    scrollTo: true,
+    buttons: [
+      {
+        type:'complete',
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
+            </div>
+        `,
+      },
+      { 
+        action(){
+          addStepActionClasses()
+          localStorage.setItem("viewed_tour_modal","false")
+          this.show('swapReceive')
+        },
+        text: `
+        <div style="
+        display: flex;
+        align-items: center;">
+            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            </div>
+        `,
+      },
+      {
+        action(){
+          document.querySelector(".swap-button").click();
+        },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -788,64 +925,10 @@ const newSteps = [
       {
         action(){
           document.querySelector(".Confirmation-box .Modal-close-button").click(); 
-          addStepActionClasses()
-          localStorage.setItem("viewed_tour_modal","false")
-          this.show('swapReceive');
+         
+          this.show('letsSwap');
         },
         classes:'CheckPaperWorkSwapLimit',
-        text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
-            </div>
-        `,
-      },
-      {
-        type:'next',
-        text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
-        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
-        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        </div>
-        `,
-      },
-    ],
-  },
-  {
-    id: "letsSwap",
-    title:'',
-    showOn(){
-      let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-      return (Object.values(swapPptionV2).includes("Swap") === true && JSON.parse(localStorage.getItem('["Order-option"]'))  === "Market" )
-    },
-    text: `
-    </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Let’s Swap</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Click on Confirm and a popup from your connected wallet will appear. You need to click again to confirm or approve depending on the wallet you use to sign the transaction.</div>
-            `,
-    attachTo: { element: ".Confirmation-box-swap-button", on: "left" },
-    scrollTo: true,
-    buttons: [
-      {
-        type:'complete',
-        text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
-        `,
-      },
-      { 
-       
-        type:'back',
         text: `
         <div style="
         display: flex;
@@ -963,8 +1046,8 @@ const newSteps = [
     when:{
       show: function() {
         setTimeout(()=>{
-          this.next()
-        },7000)
+          document.querySelector('.swapCheckAllTtransactionNext').click()
+        },3000)
       }
     },
     text: `
@@ -989,6 +1072,7 @@ const newSteps = [
       },
       {
         type:"next",
+        classes:'swapCheckAllTtransactionNext',
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
         <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
@@ -1682,7 +1766,7 @@ const newSteps = [
       {
         action(){
           document.querySelector(".close-transaction-button").click();  
-          this.complete();
+          this.next();
         },
         
         text: `
@@ -2054,7 +2138,7 @@ const newSteps = [
       },
       {
         action(){
-          this.complete();  
+          this.next();  
         },
         text: `
         <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
