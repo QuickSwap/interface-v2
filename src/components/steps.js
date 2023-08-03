@@ -1,5 +1,3 @@
-
-
 const removeStepActionClasses = () =>{
   document.querySelectorAll('.TokenSelector-box').forEach(e=>{
     e.classList.remove('step-token-selected')
@@ -36,51 +34,48 @@ const newSteps = [
     title: "",
     text: [
       `
-      <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Connect your web3 wallet</div>
-      <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">A non-custodial web3 wallet serves as a gateway to use dApps. It is your web3 identity, pro tip: never share your private keys.</div>
+      <div class="s-title">Connect your web3 wallet</div>
+      <div class="s-description">A non-custodial web3 wallet serves as a gateway to use dApps. It is your web3 identity, pro tip: never share your private keys.</div>
         `,
     ],
     attachTo: { element: ".App-header-user", on: "bottom" },
     classes: "shepherd shepherd-welcome",
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
         type: "next",
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        
-    </div>
+       </div>
         `,
       },
     ],
   },
   {
     id: "installation",
+    
     title: "",
     text: `
-      <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Select a wallet</div>
-      <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Choose any of the shown non-custodial web3 wallets. Make sure you have it installed in your browser. Alternatively you can also scan QR code and connect via wallet connect supported wallets.</div>
+      <div class="s-title">Select a wallet</div>
+      <div class="s-description">Choose any of the shown non-custodial web3 wallets. Make sure you have it installed in your browser. Alternatively you can also scan QR code and connect via wallet connect supported wallets.</div>
       `,
     attachTo: { element: ".Modal-content", on: "right" },
     buttons: [
       {
         type:'complete',
         text: `
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word; float: left">Skip</div>
+            <div class="skip">Skip</div>
         `,
       },
       {
@@ -92,7 +87,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -101,8 +96,8 @@ const newSteps = [
         disabled:true,
         classes:'connectedWallet',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -140,7 +135,7 @@ const newSteps = [
     },
     text: `
       <div style="display: flex; justify-content: space-between; align-items: center" >
-        <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Choose from </div>
+        <div class="s-title">Choose from </div>
           <div class="step-3-tour-tabs" style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
               <button class="tour-tab tour-selected-tab" data-label='Long'  type="button" onClick='new Promise(function (resolve) {[...document.querySelector(".step-3-tour-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".step-3-tour-tabs").children][0].classList.add("tour-selected-tab");[...document.querySelector(".tradePage").children].forEach((element, index) => {if (index == 0) {element.classList.add("active"); element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-tab-container").innerHTML = "This means you buy a cryptocurrency, like Bitcoin, because you believe its price will increase in the future. You&prime;re planning to &ldquo;go long,&rdquo; or profit from an increase in its price.";'>Long</button>
               <button class="tour-tab"  type="button" data-label='Short' onClick='new Promise(function (resolve) {
@@ -151,18 +146,14 @@ const newSteps = [
           </div> 
         </div>
       </div>
-      <div class="tour-tab-container" style="width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">This means you buy a cryptocurrency, like Bitcoin, because you believe its price will increase in the future. You&prime;re planning to &ldquo;go long,&rdquo; or profit from an increase in its price.</div>
+      <div class="tour-tab-container s-description" >This means you buy a cryptocurrency, like Bitcoin, because you believe its price will increase in the future. You&prime;re planning to &ldquo;go long,&rdquo; or profit from an increase in its price.</div>
             `,
     attachTo: { element: ".tradePage", on: "left" },
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -175,15 +166,15 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
       {
         type:'next',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -221,7 +212,7 @@ const newSteps = [
     },
     text: `
     <div style="display: flex; justify-content: space-between; align-items: center">
-      <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Choose from </div>
+      <div class="s-title">Choose from </div>
         <div class="step-4-tour-tabs" style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
             <button class="tour-tab tour-selected-tab" data-label="Market"  type="button" onClick='new Promise(function (resolve) {document.querySelector(".step4NextButton").disabled = false;[...document.querySelector(".step-4-tour-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".step-4-tour-tabs").children][0].classList.add("tour-selected-tab");[...document.querySelector(".Exchange-swap-order-type-tabs").children].forEach((element, index) => {if (index == 0) {element.classList.add("active"); element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-sub-tab-container").innerHTML = "This is when you buy or sell a cryptocurrency immediately at the best available price in the market. It&prime;s like buying a toy at the price it&prime;s currently being sold for.";'>Market</button>
             <button class="tour-tab" data-label="Limit"  type="button" onClick='new Promise(function (resolve) {document.querySelector(".step4NextButton").disabled = false;[...document.querySelector(".step-4-tour-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".step-4-tour-tabs").children][1].classList.add("tour-selected-tab");[...document.querySelector(".Exchange-swap-order-type-tabs").children].forEach((element, index) => {if (index == 1) {element.classList.add("active");element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-sub-tab-container").innerHTML = "This is when you decide to buy or sell a cryptocurrency only at a specific price or better. It&prime;s like waiting for a toy to go on sale before you buy it.";'>Limit</button>
@@ -232,19 +223,14 @@ const newSteps = [
         </div> 
       </div>
     </div>
-    <div class="tour-sub-tab-container" style="width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">This is when you buy or sell a cryptocurrency immediately at the best available price in the market. It&prime;s like buying a toy at the price it&prime;s currently being sold for.</div>
+    <div class="tour-sub-tab-container s-description" >This is when you buy or sell a cryptocurrency immediately at the best available price in the market. It&prime;s like buying a toy at the price it&prime;s currently being sold for.</div>
           `,
     attachTo: { element: ".Exchange-swap-order-type-tabs", on: "left" },
-    scrollTo: true,
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -256,7 +242,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -271,8 +257,8 @@ const newSteps = [
        },
        classes:'step4NextButton',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -316,11 +302,11 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="width: 100%; color: #061341; font-size: 20px; font-family: Space Grotesk; font-weight: 700; line-height: 30px; word-wrap: break-word">Select the token through which you want to finance <span class="payExchange"></span> Position and enter the amount
+    <div class="s-subTitle">Select the token through which you want to finance <span class="payExchange"></span> Position and enter the amount
     <br/></div>
             `,
     attachTo: { element: ".pay-exchange", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         action(){
@@ -328,11 +314,7 @@ const newSteps = [
           this.complete();
         },
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -348,15 +330,15 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
       {
         type: "next",
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -396,11 +378,11 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="width: 100%; color: #061341; font-size: 20px; font-family: Space Grotesk; font-weight: 700; line-height: 30px; word-wrap: break-word">Select the token that you
+    <div class="s-subTitle">Select the token that you
     want to <span class="exchange"></span></div>
             `,
     attachTo: { element: ".long-exchange", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         action(){
@@ -408,11 +390,7 @@ const newSteps = [
           this.complete();
         },
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -424,7 +402,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -436,8 +414,8 @@ const newSteps = [
           this.next();
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -468,19 +446,15 @@ const newSteps = [
       }
     },
     text: `
-    <div style="width: 100%; color: #061341; font-size: 20px; font-family: Space Grotesk; font-weight: 700; line-height: 30px; word-wrap: break-word">Enter the price at which you want to initiate the <span class="price-label"></span></div>
+    <div class="s-subTitle">Enter the price at which you want to initiate the <span class="price-label"></span></div>
             `,
     attachTo: { element: ".price-exchange", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -496,7 +470,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -504,8 +478,8 @@ const newSteps = [
        
         type: "next",
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -541,18 +515,14 @@ const newSteps = [
     },
     
     text: `
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Choose the leverage </div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">"Leverage" in trading is using borrowed funds to amplify your investment, potentially increasing both gains and losses. Be cautious, don’t use too much leverage.</div>
+    <div class="s-title">Choose the leverage </div>
+    <div class="s-description">"Leverage" in trading is using borrowed funds to amplify your investment, potentially increasing both gains and losses. Be cautious, don’t use too much leverage.</div>
             `,
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       { 
@@ -566,7 +536,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -574,8 +544,8 @@ const newSteps = [
         type: "next",
         classes:"leverageSlider-button",
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -610,11 +580,11 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Select primary token</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">A token that you want to exchange for another token.</div>
+    <div class="s-title">Select primary token</div>
+    <div class="s-description">A token that you want to exchange for another token.</div>
             `,
     attachTo: { element: ".pay-exchange", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         action(){
@@ -622,11 +592,7 @@ const newSteps = [
           this.complete();
         },
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       { 
@@ -638,15 +604,15 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
       {
         type:'next',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -690,11 +656,11 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Token you want</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Select the token that you want against the primary token.</div>
+    <div class="s-title">Token you want</div>
+    <div class="s-description">Select the token that you want against the primary token.</div>
             `,
     attachTo: { element: ".long-exchange", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         action(){
@@ -703,11 +669,7 @@ const newSteps = [
           this.complete();
         },
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       { 
@@ -720,7 +682,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -729,16 +691,18 @@ const newSteps = [
           clearInterval()
           removeStepActionClasses()
           localStorage.setItem("viewed_tour_modal","true")
-          if(document.querySelector('.swap-button').innerHTML.includes("Approve")  ){
-            this.show('ApproveSwap')
-          }else{
-            this.show('letsSwap')
-          }
+          
+            if(document.querySelector('.swap-button').innerHTML.includes("Approve")  ){
+              this.show('ApproveSwap')
+            }else{
+              this.show('letsSwap')
+            }
+          
         },
         classes:'swapReceive-Step-Next',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -770,19 +734,15 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Approve Token</div>
+    <div class="s-title">Approve Token</div>
            `,
     attachTo: { element: ".swap-button", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       { 
@@ -799,7 +759,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -808,14 +768,12 @@ const newSteps = [
           
           if(document.querySelector('.swap-button').innerHTML.includes("Approve")  ){
             document.querySelector(".swap-button").click();
-          }else{
-            this.next()
           }
         },
         classes:'letsSwapNext',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -834,20 +792,16 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Let’s Swap</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Click on Confirm and a popup from your connected wallet will appear. You need to click again to confirm or approve depending on the wallet you use to sign the transaction.</div>
+    <div class="s-title">Let’s Swap</div>
+    <div class="s-description">Click on Confirm and a popup from your connected wallet will appear. You need to click again to confirm or approve depending on the wallet you use to sign the transaction.</div>
             `,
     attachTo: { element: ".swap-button", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       { 
@@ -863,7 +817,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -872,8 +826,8 @@ const newSteps = [
           document.querySelector(".swap-button").click();
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -899,8 +853,8 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Check the Paperwork</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">
+    <div class="s-title">Check the Paperwork</div>
+    <div class="s-description">
       <ul>
         <li><span style=" font-weight: 700;">Minimum Received:</span> shows the number of tokens your wallet will receive after a successful swap.</li>
         <li><span style="font-weight:700;">Price Impact:</span> Price Impact is the change in token price directly caused by your trade, make sure to not move the market.</li>
@@ -910,16 +864,12 @@ const newSteps = [
 
     `,
     attachTo: { element: ".Modal-content.Confirmation-box-content", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -936,7 +886,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -945,8 +895,8 @@ const newSteps = [
           document.querySelector(".Confirmation-box-swap-button").click();
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -967,7 +917,6 @@ const newSteps = [
     },
     when: {
       show:function(){
-        clearInterval()
         setInterval(() => {
           if(!document.querySelector('.Exchange-swap-button').hasAttribute('disabled')){
             document.querySelector('.swapPriceBoxNext').disabled =  false
@@ -975,13 +924,16 @@ const newSteps = [
             document.querySelector('.swapPriceBoxNext').disabled =  true
           }
         }, 1000);
+      },
+      hide:function(){
+        clearInterval()
       }
     },
     text: `
-    <div style="width: 100%; color: #061341; font-size: 20px; font-family: Space Grotesk; font-weight: 700; line-height: 30px; word-wrap: break-word">Enter the price at which you want to initiate the swap</div>
+    <div class="s-subTitle">Enter the price at which you want to initiate the swap</div>
             `,
     attachTo: { element: ".price-swap", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         action(){
@@ -989,11 +941,7 @@ const newSteps = [
           this.complete()
         },
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1011,7 +959,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -1024,8 +972,8 @@ const newSteps = [
         classes:'swapPriceBoxNext',
         disabled:'true',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1052,30 +1000,26 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Check all the transactions
+    <div class="s-title">Check all the transactions
     and their status</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word"> In this space you can check all the past transactions and status of each one.
+    <div class="s-description">In this space you can check all the past transactions and status of each one.
     Thank you for swapping on QuickSwap :)</div>
             `,
     attachTo: { element: ".checkStatus", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
         type:"next",
         classes:'swapCheckAllTtransactionNext',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1093,20 +1037,16 @@ const newSteps = [
       return (Object.values(swapPptionV2).includes("Long") === true   && document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML !== 'Limit' && localStorage.getItem("HideEnableLeverageStep")  === 'false');  
          
     },
-    text: `<div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Enable Leverage</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Click on Enable Leverage and Sign the transaction in wallet for Leverage to be enabled. This is a one-time process.</div>`,
+    text: `<div class="s-title">Enable Leverage</div>
+    <div class="s-description">Click on Enable Leverage and Sign the transaction in wallet for Leverage to be enabled. This is a one-time process.</div>`,
     attachTo: { element: ".leverage-btn", on: "left" },
 
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1118,7 +1058,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -1129,8 +1069,8 @@ const newSteps = [
         },
         
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1155,8 +1095,8 @@ const newSteps = [
         localStorage.setItem("HideEnableLeverageStep",'true')
       }
     },
-    text: `<div style="color: #061341;  font-size: 25px;   line-height: 28px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Confirm Enable Leverage</div>
-      <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">
+    text: `<div class="s-title">Confirm Enable Leverage</div>
+      <div class="s-description">
       <label for="DisclaimerCheckAll"><input type="checkbox"  onClick='new Promise(function (resolve) {
         if(!document.querySelector("#DisclaimerCheckAll").hasAttribute("checked")){
           document.querySelector("#DisclaimerCheckAll").disabled = true;
@@ -1171,16 +1111,12 @@ const newSteps = [
     
     attachTo: { element: ".Disclaimer-content", on: "left" },
 
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1192,7 +1128,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -1204,8 +1140,8 @@ const newSteps = [
         },
         classes:'Disclaimer-Step-Next',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1234,21 +1170,17 @@ const newSteps = [
 
     text: `
     </div>
-    <div style="color: #061341; font-size: 25px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap"> Click on <span class="ClickOnSwapLongShortTokenLabel"></span> ETH</div>
+    <div class="s-subTitle"> Click on <span class="ClickOnSwapLongShortTokenLabel"></span> ETH</div>
     
             `,
     attachTo: { element: ".long-short-swap-button", on: "left" },
 
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1260,7 +1192,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -1270,8 +1202,8 @@ const newSteps = [
           document.querySelector(".long-short-swap-button").click();   
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1302,9 +1234,9 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Check the paperwork
+    <div class="s-title">Check the paperwork
     to <span class="CheckPaperWorkLabel"></span></div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">
+    <div class="s-description">
       <ul>
         <li><span style=" font-weight: 700;">Leverage:</span> Shows your chosen leverage.</li>
         <li><span style="font-weight:700;">Entry Price:</span> The price at which the trade will initiate.</li>
@@ -1315,16 +1247,12 @@ const newSteps = [
     </div>
     `,
     attachTo: { element: ".Modal-content.Confirmation-box-content", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1342,7 +1270,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -1352,8 +1280,8 @@ const newSteps = [
         },
         classes:'CheckPaperWorkNotLimitNextButton',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1374,21 +1302,17 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341; font-size: 25px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">
+    <div class="s-subTitle">
     You can track your position here.</div>
     `,
     attachTo: { element: ".position-heading", on: "top" },
 
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1396,8 +1320,8 @@ const newSteps = [
           this.next(); 
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1420,21 +1344,17 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341; font-size: 25px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Closing Order</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">You can either close an order on market price or set a trigger to automatically close the order.</div>
+    <div class="s-subTitle">Closing Order</div>
+    <div class="s-description">You can either close an order on market price or set a trigger to automatically close the order.</div>
     `,
     attachTo: { element: ".exchange-list-close-action", on: "top" },
 
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1446,7 +1366,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -1456,8 +1376,8 @@ const newSteps = [
           this.next(); 
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1482,7 +1402,7 @@ const newSteps = [
     },
     text: `
       <div style="display: flex; justify-content: space-between; align-items: center" >
-        <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Choose from </div>
+        <div class="s-title">Choose from </div>
         
           <div class="positionSeller-list-tabs" style="margin: 10px 0;display: flex; align-items: center; gap: 10px; font-size: 12px;">
               <button class="tour-tab tour-selected-tab" data-label="Market"  type="button" onClick='new Promise(function (resolve) {[...document.querySelector(".positionSeller-list-tabs").children].forEach((element, index) => {element.classList.remove("tour-selected-tab");}); [...document.querySelector(".positionSeller-list-tabs").children][0].classList.add("tour-selected-tab");[...document.querySelector(".PositionSellerTabs").children].forEach((element, index) => {if (index == 0) {element.classList.add("active"); element.click()} else {element.classList.remove("active");}});resolve();});document.querySelector(".tour-tab-container-1").innerHTML = "This is when you sell a cryptocurrency immediately at the best available price in the market.";'>Market</button>
@@ -1501,10 +1421,7 @@ const newSteps = [
         type:'complete',
         text: `
         <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1516,7 +1433,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -1524,8 +1441,8 @@ const newSteps = [
        
         type: "next",
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1551,20 +1468,16 @@ const newSteps = [
    
     text: `
     </div>
-    <div style="color: #061341; font-size: 20px; line-height:25px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Enter the amount which you want to close. Clicking on Max will autofill the complete amount.</div>
+    <div class="s-subTitle">Enter the amount which you want to close. Clicking on Max will autofill the complete amount.</div>
     
     `,
     attachTo: { element: ".PositionSellerTabs-amount", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1576,15 +1489,15 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
       {
         type: "next",
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1609,19 +1522,15 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Enter Closing Price</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Enter the price at which you wish to Close the <span class="CloseModalClosingPriceLabel">Long</span> trade.</div> `,
+    <div class="s-title">Enter Closing Price</div>
+    <div class="s-description">Enter the price at which you wish to Close the <span class="CloseModalClosingPriceLabel">Long</span> trade.</div> `,
     attachTo: { element: ".positionSellerTabs-closing-amount", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1633,15 +1542,15 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
       {
         type: "next",
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1669,9 +1578,9 @@ const newSteps = [
     text: `
     </div>
     
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Check the paperwork
+    <div class="s-title">Check the paperwork
     to <span class="CloseModalMarketCheckPaperLabel">Long</span></div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">
+    <div class="s-description">
       <ul>
         <li><span style=" font-weight: 700;">Mkt Price:</span> It shows the current market price.</li>
         <li><span style="font-weight:700;">Leverage:</span> Shows your chosen leverage.</li>
@@ -1685,16 +1594,12 @@ const newSteps = [
     
     `,
     attachTo: { element: ".PositionSeller-modal-content", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1706,15 +1611,15 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
       {
         type: "next",
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1733,21 +1638,17 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Click on Close</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">This will prompt you to sign a transaction to close the trade.</div>
+    <div class="s-title">Click on Close</div>
+    <div class="s-description">This will prompt you to sign a transaction to close the trade.</div>
             `,
     attachTo: { element: ".Exchange-swap-button", on: "left" },
 
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1759,7 +1660,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -1770,8 +1671,8 @@ const newSteps = [
         },
         
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1790,22 +1691,17 @@ const newSteps = [
       return ( document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit') && document.querySelector('.Exchange-swap-button').innerHTML === "Create Limit Order";
     },
     text: `
-    <div style="width: 100%; color: #061341; font-size: 20px; line-height:
-    25.52px; font-family: Space Grotesk; font-weight: 700; line-height: 30px; word-wrap: break-word">
+    <div class="s-subTitle">
     Now click on Create Limit order
     to initiate placing a limit order trade</div>
             `,
     attachTo: { element: ".Exchange-swap-button", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1818,7 +1714,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -1827,8 +1723,8 @@ const newSteps = [
           document.querySelector(".Exchange-swap-button").click(); 
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1849,20 +1745,16 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Enable Orders</div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Check the mark to accept the terms and conditions, click on the accept terms to enable orders and sign the transaction in your wallet to enable it.</div>
+    <div class="s-title">Enable Orders</div>
+    <div class="s-description">Check the mark to accept the terms and conditions, click on the accept terms to enable orders and sign the transaction in your wallet to enable it.</div>
             `,
     attachTo: { element: ".enable-orders", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1874,7 +1766,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -1884,8 +1776,8 @@ const newSteps = [
           this.next();  
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1914,8 +1806,8 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 28px;   line-height: 36px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Check the paperwork to Limit <span class="createOrderLabel"></span></div>
-    <div style="margin-top: 1rem;width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">
+    <div class="s-title">Check the paperwork to Limit <span class="createOrderLabel"></span></div>
+    <div class="s-description">
       <ul>
         <li><span style=" font-weight: 700;">Leverage:</span> Shows your chosen leverage.</li>
         <li><span style="font-weight:700;">Entry Price:</span> The price at which the trade will initiate.</li>
@@ -1926,16 +1818,12 @@ const newSteps = [
       Click on Create Order and sign the transaction to initiate the Limit <span class="createOrderLabel"></span> trade.
     </div> `,
     attachTo: { element: ".Confirmation-box-content", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -1953,17 +1841,17 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
       {
         action(){
-          document.querySelector(".Confirmation-box-button").click(); 
+          document.querySelector(".Confirmation-box-swap-button").click(); 
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1983,9 +1871,9 @@ const newSteps = [
       show: function() {
         let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
         document.querySelector(".OrderTabsLabel").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
-         let chartsListTabs =  document.querySelector("#charts-list-tabs").querySelectorAll('.Tab-option')
+         let chartsListTabs =  document.querySelector(".charts-list-tabs").querySelectorAll('.Tab-option')
         for (let i = 0; i < chartsListTabs.length; i++) {
-          if(chartsListTabs[i].innerHTML === "Orders"){
+          if(!!chartsListTabs[i].innerHTML.includes("Orders")){
             chartsListTabs[i].click()
           }
         }
@@ -1993,21 +1881,16 @@ const newSteps = [
     },
     text: `
     </div>
-    <div style="color: #061341;  font-size: 20px;   line-height: 
-    25.52px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">
+    <div class="s-subTitle">
     Check your created Limit <span class="OrderTabsLabel">Long</span> order under the orders tab.</div>
     `,
-    attachTo: { element: ".order-tabs", on: "left" },
-    scrollTo: true,
+    attachTo: { element: ".charts-list-tabs .active", on: "left" },
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -2019,18 +1902,17 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
       {
         action(){
-          document.querySelector(".create-order").click(); 
           this.next();  
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2056,21 +1938,17 @@ const newSteps = [
     },
     text: `
     </div>
-      <div style="color: #061341;  font-size: 28px;   line-height: 35px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">Edit Entry price for the order by clicking on Edit button.</div>
-      <div class="tour-tab-container" style="width: 100%; color: #213062; font-size: 16px; font-family: Space Grotesk; font-weight: 400; line-height: 24px; word-wrap: break-word">Enter the updated price at which you want to execute Limit <span class="OrderEdit">Long</span> Trade and press Update Order.
+      <div class="s-title">Edit Entry price for the order by clicking on Edit button.</div>
+      <div class="tour-tab-container s-description">Enter the updated price at which you want to execute Limit <span class="OrderEdit">Long</span> Trade and press Update Order.
       </div>
     `,
     attachTo: { element: ".edit-tour-button", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -2082,15 +1960,15 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
-            </div>
+            <div class="back">Prev</div>
+        </div>
         `,
       },
       {
         type:'next',
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2108,19 +1986,15 @@ const newSteps = [
     },
     text: `
     </div>
-      <div style="color: #061341;  font-size: 20px;   line-height: 25.52px; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word;white-space: wrap">To cancel the order, press on cancel and Sign the transaction.</div>
+      <div class="s-subTitle">To cancel the order, press on cancel and Sign the transaction.</div>
     `,
     attachTo: { element: ".cancel-tour-button", on: "left" },
-    scrollTo: true,
+    
     buttons: [
       {
         type:'complete',
         text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Skip</div>
-            </div>
+        <div class="skip">Skip</div>
         `,
       },
       {
@@ -2132,7 +2006,7 @@ const newSteps = [
             <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Prev</div>
+            <div class="back">Prev</div>
             </div>
         `,
       },
@@ -2141,8 +2015,8 @@ const newSteps = [
           this.next();  
         },
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Next</div>
+        <div class="s-next">
+        <div>Next</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2171,7 +2045,7 @@ const newSteps = [
     },
     text: [
       `
-      <div style="color: #061341;  font-size: 28px;   line-height: 36px;text-align:center; font-family: Space Grotesk; font-weight: 700; word-wrap: break-word">Rate your experience</div>
+      <div class="s-title">Rate your experience</div>
       
       <div style="text-align:center">
         <ul class="feedback-rating">
@@ -2192,7 +2066,7 @@ const newSteps = [
         <div style="
         display: flex;
         align-items: center;">
-            <div style="color: black;font-size: 16px;font-family: Space Grotesk;font-weight: 500;word-wrap: break-word;margin-left: 8px;">Close</div>
+            <div class="back">Close</div>
             </div>
         `,
       },
@@ -2201,8 +2075,8 @@ const newSteps = [
         disabled:true,
         classes:"submit-feedback-button",
         text: `
-        <div style="width: 100%; height: 100%; padding-left: 25px; padding-right: 25px; padding-top: 12px; padding-bottom: 12px; background: white; box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.20); border-radius: 8px; border-left: 0.50px rgba(0, 0, 0, 0.10) solid; border-top: 0.50px rgba(0, 0, 0, 0.10) solid; border-right: 0.50px rgba(0, 0, 0, 0.10) solid; border-bottom: 0.50px rgba(0, 0, 0, 0.10) solid; justify-content: center; align-items: center; display: inline-flex">
-        <div style="color: black; font-size: 16px; font-family: Space Grotesk; font-weight: 500; word-wrap: break-word">Submit</div>
+        <div class="s-next">
+        <div >Submit</div>
         <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
         <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

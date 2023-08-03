@@ -1363,7 +1363,12 @@ export default function SwapBox(props) {
       })
         .then(() => {
           setIsConfirming(false);
-          if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
+          if(!isMarketOrder){
+            if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next();},100) };
+          }else{
+            if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
+          }
+         
         }).catch((error)=>{
           console.log(error)
         })
