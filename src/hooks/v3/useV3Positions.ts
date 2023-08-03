@@ -16,7 +16,7 @@ import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
 import { ChainId } from '@uniswap/sdk';
-import { getGammaPositions } from 'utils';
+import { getGammaPositions, getUnipilotPositions } from 'utils';
 import { useQuery } from '@tanstack/react-query';
 import { GammaPair, GammaPairs } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
@@ -503,4 +503,41 @@ export function useGammaPositionsCount(
   }, [gammaPositionArray, stakedLPs]);
 
   return { loading: positionsLoading || stakedLoading, count };
+}
+
+export function useUnipilotPositions(
+  account: string | null | undefined,
+  chainId: ChainId | undefined,
+) {
+  const fetchUnipilotPositions = async () => {
+    if (!account || !chainId) return;
+    const unipilotPositions = await getUnipilotPositions(account, chainId);
+    return unipilotPositions;
+  };
+
+  const {
+    isLoading: positionsLoading,
+    data: unipilotPositions,
+    refetch: refetchUnipilotPositions,
+  } = useQuery({
+    queryKey: ['fetchUnipilotPositions', account, chainId],
+    queryFn: fetchUnipilotPositions,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchUnipilotPositions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  return { loading: positionsLoading, unipilotPositions };
 }

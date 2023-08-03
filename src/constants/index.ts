@@ -1708,3 +1708,5 @@ export const LeaderBoardAnalytics = {
   CHART_DURATIONS: [1, 7, 30],
   CHART_DURATION_TEXTS: ['24H', '7D', '30D'],
 };
+
+export const unipilotVaultTypes = ['Wide', 'Balanced', 'Narrow'];

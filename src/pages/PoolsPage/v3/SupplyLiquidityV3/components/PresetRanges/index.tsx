@@ -16,7 +16,7 @@ import { useActiveWeb3React } from 'hooks';
 import { Interface } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useMultipleContractSingleData } from 'state/multicall/hooks';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, unipilotVaultTypes } from 'constants/index';
 
 export interface IPresetArgs {
   type: Presets;
@@ -51,8 +51,6 @@ enum PresetProfits {
   MEDIUM,
   HIGH,
 }
-
-const unipilotVaultTypes = ['Wide', 'Balanced', 'Narrow'];
 
 export function PresetRanges({
   mintInfo,

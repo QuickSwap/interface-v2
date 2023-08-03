@@ -9,11 +9,13 @@ import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import {
   useGammaPositionsCount,
   useV3PositionsCount,
+  useUnipilotPositions,
 } from 'hooks/v3/useV3Positions';
 import Loader from 'components/Loader';
 import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
 import MyGammaPoolsV3 from '../MyGammaPoolsV3';
 import FilterPanelItem from '../FilterPanelItem';
+import MyUnipilotPoolsV3 from '../MyUnipilotPoolsV3';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
@@ -61,7 +63,13 @@ export default function MyLiquidityPoolsV3() {
     count: gammaPoolsCount,
   } = useGammaPositionsCount(account, chainId);
 
-  const loading = quickPoolsLoading || gammaPoolsLoading;
+  const {
+    loading: uniPilotPositionsLoading,
+    unipilotPositions,
+  } = useUnipilotPositions(account, chainId);
+
+  const loading =
+    quickPoolsLoading || gammaPoolsLoading || uniPilotPositionsLoading;
 
   const [poolFilter, setPoolFilter] = useState(
     GlobalConst.utils.poolsFilter.quickswap,
@@ -89,7 +97,21 @@ export default function MyLiquidityPoolsV3() {
     });
     filters.push({
       id: GlobalConst.utils.poolsFilter.unipilot,
-      text: <>Unipilot</>,
+      text: (
+        <Box className='flex items-center'>
+          <small>Unipilot</small>
+          <Box
+            ml='6px'
+            className={`myV3PoolCountWrapper ${
+              poolFilter === GlobalConst.utils.poolsFilter.unipilot
+                ? 'activeMyV3PoolCountWrapper'
+                : ''
+            }`}
+          >
+            {unipilotPositions ? unipilotPositions.length : 0}
+          </Box>
+        </Box>
+      ),
     });
     if (gammaPoolsCount > 0) {
       filters.push({
@@ -112,7 +134,7 @@ export default function MyLiquidityPoolsV3() {
       });
     }
     return filters;
-  }, [quickPoolsCount, gammaPoolsCount, poolFilter]);
+  }, [poolFilter, quickPoolsCount, unipilotPositions, gammaPoolsCount]);
 
   return (
     <Box>
@@ -160,6 +182,9 @@ export default function MyLiquidityPoolsV3() {
                   userHideClosedPositions={userHideQuickClosedPositions}
                 />
               </>
+            )}
+            {poolFilter === GlobalConst.utils.poolsFilter.unipilot && (
+              <MyUnipilotPoolsV3 />
             )}
             {poolFilter === GlobalConst.utils.poolsFilter.gamma && (
               <MyGammaPoolsV3 />
