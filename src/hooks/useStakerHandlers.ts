@@ -13,25 +13,16 @@ import {
 } from '../state/transactions/hooks';
 import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';
-import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { TransactionResponse } from '@ethersproject/providers';
 import { FarmingType } from '../models/enums';
 import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/src/utils/calldata';
-import { useAppSelector } from 'state';
 import { useV3StakeData } from 'state/farms/hooks';
 import { calculateGasMargin } from 'utils';
 
 export function useFarmingHandlers() {
   const { chainId, account, provider } = useActiveWeb3React();
   const { t } = useTranslation();
-
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
 
   const addTransaction = useTransactionAdder();
   const finalizeTransaction = useTransactionFinalizer();
@@ -140,7 +131,6 @@ export function useFarmingHandlers() {
               result = await farmingCenterContract.callStatic.multicall(
                 callDatas,
                 {
-                  gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
                   gasLimit: 350000,
                 },
               );
@@ -235,7 +225,6 @@ export function useFarmingHandlers() {
       addTransaction,
       chainId,
       finalizeTransaction,
-      gasPrice,
       provider,
       updateV3Stake,
       t,
