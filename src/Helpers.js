@@ -1945,7 +1945,7 @@ export function approveTokens({
     .approve(spender, ethers.constants.MaxUint256)
     .then(async (res) => {
       const txUrl = getExplorerUrl(chainId) + "tx/" + res.hash;
-      if (useUIContext().current?.isActive()) {setTimeout(()=>{useUIContext().current?.next();},100) };
+      if (useUIContext().current?.isActive()) {setTimeout(()=>{useUIContext().current?.show('letsSwap');},100) };
       helperToast.success(
         <div>
           Approval submitted!{" "}
