@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
 @font-face {
   font-family: 'Relative';
   font-style: normal;
@@ -34,9 +36,10 @@
        url('./fonts/relative/relative-mono-10-pitch-pro.ttf') format('truetype'); /* Safari, Android, iOS */
 }
 
-@font-face {
+/* @font-face {
   font-family: 'Space Grotesk';
   font-style: bold;
   font-weight: 400;
-  src: url('./fonts/relative/SpaceGrotesk-Regular.ttf'); /* IE9 Compat Modes */
-}
+  src: url('./fonts/relative/SpaceGrotesk-Regular.ttf');
+} */
+
