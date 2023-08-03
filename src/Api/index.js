@@ -900,7 +900,7 @@ export async function callContract(chainId, contract, method, params, opts) {
     const txUrl = getExplorerUrl(chainId) + "tx/" + res.hash;
     const sentMsg = opts.sentMsg || "Transaction sent.";
     helperToast.success(
-      <div>
+      <div className="checkStatus" >
         {sentMsg}{" "}
         <a style={{ color: "#ffaa27" }} href={txUrl} target="_blank" rel="noopener noreferrer">
           View status.

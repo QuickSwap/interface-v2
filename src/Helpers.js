@@ -13,6 +13,7 @@ import Token from "./abis/Token.json";
 import _ from "lodash";
 import { getContract } from "./Addresses";
 import useSWR from "swr";
+import { useUIContext } from "./providers/InterfaceProvider";
 
 import OrderBookReader from "./abis/OrderBookReader.json";
 import OrderBook from "./abis/OrderBook.json";
@@ -1944,6 +1945,7 @@ export function approveTokens({
     .approve(spender, ethers.constants.MaxUint256)
     .then(async (res) => {
       const txUrl = getExplorerUrl(chainId) + "tx/" + res.hash;
+      if (useUIContext().current?.isActive()) {setTimeout(()=>{useUIContext().current?.next();},100) };
       helperToast.success(
         <div>
           Approval submitted!{" "}

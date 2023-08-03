@@ -1259,7 +1259,8 @@ export default function SwapBox(props) {
       showModal,
     })
       .then(async (res) => {
-        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next();},100) };
+        console.log('dfd')
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
       })
       .catch((e) => console.log("error: ", e))
       .finally(() => {
@@ -1282,7 +1283,7 @@ export default function SwapBox(props) {
       showModal,
     })
       .then(async (res) => {
-        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next();},100) };
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
       })
       .catch((e) => console.log("error: ", e))
       .finally(() => {
@@ -1362,6 +1363,9 @@ export default function SwapBox(props) {
       })
         .then(() => {
           setIsConfirming(false);
+          if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
+        }).catch((error)=>{
+          console.log(error)
         })
         .finally(() => {
           setIsSubmitting(false);
@@ -1398,6 +1402,7 @@ export default function SwapBox(props) {
       showModal,
     })
       .then(async () => {
+        if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
         setIsConfirming(false);
       })
       .catch((e) => console.log("error: ", e))
@@ -1718,6 +1723,9 @@ export default function SwapBox(props) {
         return;
       }
     }
+    if(!isConfirming && isMarketOrder){
+      if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.next()},100) };
+    }
     setIsConfirming(true);
     setIsHigherSlippageAllowed(false);
     if(!isMarketOrder){
@@ -1964,7 +1972,7 @@ export default function SwapBox(props) {
           </React.Fragment>
         )}
         {showTriggerRatioSection && (
-          <div className="Exchange-swap-section">
+          <div className="Exchange-swap-section price-swap">
             <div className="Exchange-swap-section-top">
               <div>Price</div>
               {fromTokenInfo && toTokenInfo && (
