@@ -1,6 +1,6 @@
 {
   "name": "interface-v2",
-  "version": "0.1.0",
+  "version": "3.6.1",
   "private": true,
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.5.0",
