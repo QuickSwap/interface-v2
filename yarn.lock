@@ -3638,7 +3638,7 @@
     redux-thunk "^2.4.2"
     reselect "^4.1.8"
 
-"@release-it/conventional-changelog@release-it/conventional-changelog":
+"@release-it/conventional-changelog@github:release-it/conventional-changelog":
   version "7.0.0"
   resolved "https://codeload.github.com/release-it/conventional-changelog/tar.gz/a4acfeac76369937a6566d698a5ae9180eceb413"
   dependencies:
