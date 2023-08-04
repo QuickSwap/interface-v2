@@ -11,6 +11,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
+import { Token } from '@uniswap/sdk-core';
 
 const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
   const { t } = useTranslation();
@@ -20,18 +21,33 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
   const farmingLink = `/farm/v3?tab=my-farms`;
 
   const tokenMap = useSelectedTokenList();
-  const token0 = getTokenFromAddress(
+  const token0Data = getTokenFromAddress(
     position.vault.quickswapPool.token0.id,
     chainId,
     tokenMap,
     [],
   );
-  const token1 = getTokenFromAddress(
+  const token0 = new Token(
+    chainId,
+    token0Data.address,
+    token0Data.decimals,
+    token0Data.symbol,
+    token0Data.name,
+  );
+  const token1Data = getTokenFromAddress(
     position.vault.quickswapPool.token1.id,
     chainId,
     tokenMap,
     [],
   );
+  const token1 = new Token(
+    chainId,
+    token1Data.address,
+    token1Data.decimals,
+    token1Data.symbol,
+    token1Data.name,
+  );
+  const positionDetail = { ...position, token0, token1 };
 
   return (
     <Box className='gamma-liquidity-item'>
@@ -53,8 +69,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
           )}
           <Box ml={1.5} className='gamma-liquidity-range'>
             <small>
-              {unipilotVaultTypes[Number(position.vault.strategyId) - 1]}{' '}
-              {t('range').toLowerCase()}
+              {unipilotVaultTypes[Number(position.vault.strategyId) - 1]}
             </small>
           </Box>
           {/* {gammaPosition && gammaPosition.farming && (
@@ -87,7 +102,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
       </Box>
       {expanded && position && (
         <Box mt={2}>
-          <UnipilotLPItemDetails position={position} />
+          <UnipilotLPItemDetails position={positionDetail} />
         </Box>
       )}
     </Box>

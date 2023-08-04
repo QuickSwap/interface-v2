@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
@@ -6,102 +6,185 @@ import { formatNumber } from 'utils';
 import { CurrencyLogo } from 'components';
 import Badge from 'components/v3/Badge';
 import { Button } from '@material-ui/core';
-import useUSDCPrice from 'hooks/v3/useUSDCPrice';
-// import IncreaseGammaLiquidityModal from '../IncreaseGammaLiquidityModal';
-// import WithdrawGammaLiquidityModal from '../WithdrawGammaLiquidityModal';
+import IncreaseUnipilotLiquidityModal from '../IncreaseUnipilotLiquidityModal';
+import WithdrawUnipilotLiquidityModal from '../WithdrawUnipilotLiquidityModal';
 import { JSBI, Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
-import { useTokenBalance } from 'state/wallet/hooks';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import { useUniPilotVaultContract } from 'hooks/useContract';
+import { useTokenBalance } from 'state/wallet/v3/hooks';
+import { formatUnits } from 'ethers/lib/utils';
 
 const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
-  // const lpToken = chainId
-  //   ? new Token(chainId, gammaPosition.pairAddress, 18)
-  //   : undefined;
-  // const lpTokenBalance = useTokenBalance(account ?? undefined, lpToken);
-  // const token0USDPrice = useUSDCPrice(gammaPosition?.token0);
-  // const token0PooledPercent =
-  //   token0USDPrice &&
-  //   gammaPosition &&
-  //   gammaPosition.balance0 &&
-  //   Number(gammaPosition.balanceUSD) > 0
-  //     ? ((Number(token0USDPrice.toSignificant()) * gammaPosition.balance0) /
-  //         gammaPosition.balanceUSD) *
-  //       100
-  //     : 0;
+
+  const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
+  const unipilotToken0VaultBalance = useTokenBalance(
+    position.vault.id,
+    position.token0,
+  );
+  const unipilotToken1VaultBalance = useTokenBalance(
+    position.vault.id,
+    position.token1,
+  );
+
+  const vaultTotalSupplyResult = useSingleCallResult(
+    uniPilotVaultContract,
+    'totalSupply',
+  );
+  const vaultTotalSupply =
+    !vaultTotalSupplyResult.loading &&
+    vaultTotalSupplyResult.result &&
+    vaultTotalSupplyResult.result.length > 0
+      ? vaultTotalSupplyResult.result[0]
+      : undefined;
+
+  const vaultPositionResult = useSingleCallResult(
+    uniPilotVaultContract,
+    'getPositionDetails',
+  );
+  const vaultPositionDetails =
+    !vaultPositionResult.loading && vaultPositionResult.result
+      ? vaultPositionResult.result
+      : undefined;
+
+  const token0Balance = useMemo(() => {
+    if (
+      vaultPositionDetails &&
+      vaultPositionDetails.length > 0 &&
+      vaultTotalSupply &&
+      JSBI.greaterThan(JSBI.BigInt(vaultTotalSupply), JSBI.BigInt(0))
+    ) {
+      return JSBI.divide(
+        JSBI.multiply(
+          JSBI.add(
+            JSBI.BigInt(vaultPositionDetails[0]),
+            unipilotToken0VaultBalance?.numerator ?? JSBI.BigInt(0),
+          ),
+          JSBI.BigInt(position.balance),
+        ),
+        JSBI.BigInt(vaultTotalSupply),
+      );
+    }
+  }, [
+    vaultPositionDetails,
+    vaultTotalSupply,
+    unipilotToken0VaultBalance?.numerator,
+    position.balance,
+  ]);
+
+  const token1Balance = useMemo(() => {
+    if (
+      vaultPositionDetails &&
+      vaultPositionDetails.length > 1 &&
+      vaultTotalSupply &&
+      JSBI.greaterThan(JSBI.BigInt(vaultTotalSupply), JSBI.BigInt(0))
+    ) {
+      return JSBI.divide(
+        JSBI.multiply(
+          JSBI.add(
+            JSBI.BigInt(vaultPositionDetails[1]),
+            unipilotToken1VaultBalance?.numerator ?? JSBI.BigInt(0),
+          ),
+          JSBI.BigInt(position.balance),
+        ),
+        JSBI.BigInt(vaultTotalSupply),
+      );
+    }
+  }, [
+    position,
+    vaultPositionDetails,
+    unipilotToken1VaultBalance,
+    vaultTotalSupply,
+  ]);
 
   const [showAddLPModal, setShowAddLPModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
+  const positionWithTokenBalances = {
+    ...position,
+    token0Balance,
+    token1Balance,
+  };
+
   return (
     <Box>
-      {/* {showAddLPModal && (
-        <IncreaseGammaLiquidityModal
+      {showAddLPModal && (
+        <IncreaseUnipilotLiquidityModal
           open={showAddLPModal}
           onClose={() => setShowAddLPModal(false)}
-          position={gammaPosition}
+          position={positionWithTokenBalances}
         />
       )}
       {showWithdrawModal && (
-        <WithdrawGammaLiquidityModal
+        <WithdrawUnipilotLiquidityModal
           open={showWithdrawModal}
           onClose={() => setShowWithdrawModal(false)}
-          position={gammaPosition}
+          position={positionWithTokenBalances}
         />
-      )} */}
-      {/* <Box className='flex justify-between'>
+      )}
+      <Box className='flex justify-between'>
         <small>{t('myLiquidity')}</small>
         <small>
-          $
-          {gammaPosition.balanceUSD
-            ? formatNumber(Number(gammaPosition.balanceUSD))
+          {position.balance
+            ? formatNumber(Number(position.balance) / 10 ** 18)
             : 0}{' '}
-          (
-          {gammaPosition.shares
-            ? formatNumber(gammaPosition.shares / 10 ** 18)
-            : 0}{' '}
-          LP)
+          LP
         </small>
       </Box>
       <Box className='flex justify-between' mt={1}>
-        {gammaPosition.token0 && (
+        {position.token0 && (
           <Box className='flex items-center'>
             <Box className='flex' mr={1}>
-              <CurrencyLogo currency={gammaPosition.token0} size='24px' />
+              <CurrencyLogo currency={position.token0} size='24px' />
             </Box>
             <small>
-              {t('pooled')} {gammaPosition.token0.symbol}
+              {t('pooled')} {position.token0.symbol}
             </small>
           </Box>
         )}
         <Box className='flex items-center'>
           <small>
-            {gammaPosition.balance0 ? formatNumber(gammaPosition.balance0) : 0}
+            {token0Balance
+              ? formatNumber(
+                  formatUnits(
+                    token0Balance.toString(),
+                    position.token0.decimals,
+                  ),
+                )
+              : 0}
           </small>
-          <Box ml='6px'>
+          {/* <Box ml='6px'>
             <Badge text={`${formatNumber(token0PooledPercent)}%`} />
-          </Box>
+          </Box> */}
         </Box>
       </Box>
       <Box className='flex justify-between' mt={1}>
-        {gammaPosition.token1 && (
+        {position.token1 && (
           <Box className='flex items-center'>
             <Box className='flex' mr={1}>
-              <CurrencyLogo currency={gammaPosition.token1} size='24px' />
+              <CurrencyLogo currency={position.token1} size='24px' />
             </Box>
             <small>
-              {t('pooled')} {gammaPosition.token1.symbol}
+              {t('pooled')} {position.token1.symbol}
             </small>
           </Box>
         )}
         <Box className='flex items-center'>
           <small>
-            {gammaPosition.balance1 ? formatNumber(gammaPosition.balance1) : 0}
+            {token1Balance
+              ? formatNumber(
+                  formatUnits(
+                    token1Balance.toString(),
+                    position.token1.decimals,
+                  ),
+                )
+              : 0}
           </small>
-          <Box ml='6px'>
+          {/* <Box ml='6px'>
             <Badge text={`${formatNumber(100 - token0PooledPercent)}%`} />
-          </Box>
+          </Box> */}
         </Box>
       </Box>
       <Box mt={2} className='gamma-liquidity-item-buttons'>
@@ -113,16 +196,16 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
         </Button>
         <Button
           className='gamma-liquidity-item-button'
-          disabled={
-            gammaPosition.farming &&
-            (!lpTokenBalance ||
-              JSBI.equal(lpTokenBalance.numerator, JSBI.BigInt('0')))
-          }
+          // disabled={
+          //   gammaPosition.farming &&
+          //   (!lpTokenBalance ||
+          //     JSBI.equal(lpTokenBalance.numerator, JSBI.BigInt('0')))
+          // }
           onClick={() => setShowWithdrawModal(true)}
         >
           <small>{t('withdraw')}</small>
         </Button>
-      </Box> */}
+      </Box>
     </Box>
   );
 };

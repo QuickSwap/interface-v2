@@ -12,11 +12,9 @@ import { Box, Button } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import '../GammaLPItemDetails/index.scss';
+import '../UnipilotLPItemDetails/index.scss';
 import { calculateGasMargin, formatNumber } from 'utils';
 import { BigNumber } from 'ethers';
-import GammaHyperVisorABI from 'constants/abis/gamma-hypervisor.json';
-import { useContract } from 'hooks/useContract';
 import { useActiveWeb3React } from 'hooks';
 import {
   useTransactionAdder,
@@ -25,18 +23,19 @@ import {
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JSBI, Token } from '@uniswap/sdk';
 import { useTokenBalance } from 'state/wallet/hooks';
+import { formatUnits } from 'ethers/lib/utils';
 
-interface WithdrawGammaLiquidityModalProps {
+interface WithdrawUnipilotLiquidityModalProps {
   open: boolean;
   onClose: () => void;
   position: any;
 }
 
-export default function WithdrawGammaLiquidityModal({
+export default function WithdrawUnipilotLiquidityModal({
   position,
   open,
   onClose,
-}: WithdrawGammaLiquidityModalProps) {
+}: WithdrawUnipilotLiquidityModalProps) {
   const { t } = useTranslation();
   const [percent, setPercent] = useState(0);
   const { chainId, account } = useActiveWeb3React();
@@ -53,22 +52,7 @@ export default function WithdrawGammaLiquidityModal({
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
 
-  const hyperVisorContract = useContract(
-    position.pairAddress,
-    GammaHyperVisorABI,
-  );
-
-  const lpToken = chainId
-    ? new Token(chainId, position.pairAddress, 18)
-    : undefined;
-  const lpBalance = useTokenBalance(account ?? undefined, lpToken);
-  const lpBalanceNumber = lpBalance
-    ? Number(lpBalance.numerator.toString())
-    : 0;
-  const withdrawPercent =
-    position && position.shares > 0 ? lpBalanceNumber / position.shares : 0;
-
-  const buttonDisabled = !percent || !hyperVisorContract || !account;
+  const buttonDisabled = !percent || !account;
   const buttonText = useMemo(() => {
     if (!account) return t('connectWallet');
     if (!percent) return t('enterAmount');
@@ -87,51 +71,46 @@ export default function WithdrawGammaLiquidityModal({
   }, [onPercentSelectForSlider, txnHash]);
 
   const withdrawGammaLiquidity = async () => {
-    if (!hyperVisorContract || !account || !lpBalance) return;
-    setAttemptingTxn(true);
-    const withdrawAmount = BigNumber.from(lpBalance.numerator.toString())
-      .mul(BigNumber.from(percent))
-      .div(BigNumber.from(100));
-
-    try {
-      const estimatedGas = await hyperVisorContract.estimateGas.withdraw(
-        withdrawAmount,
-        account,
-        account,
-        [0, 0, 0, 0],
-      );
-      const response: TransactionResponse = await hyperVisorContract.withdraw(
-        withdrawAmount,
-        account,
-        account,
-        [0, 0, 0, 0],
-        { gasLimit: calculateGasMargin(estimatedGas) },
-      );
-      setAttemptingTxn(false);
-      setTxPending(true);
-      setTxnHash(response.hash);
-      addTransaction(response, {
-        summary: t('withdrawingGammaLiquidity'),
-      });
-      const receipt = await response.wait();
-      finalizedTransaction(receipt, {
-        summary: t('withdrewGammaLiquidity'),
-      });
-      setTxPending(false);
-    } catch (e) {
-      setAttemptingTxn(false);
-      setRemoveErrorMessage(t('errorInTx'));
-    }
+    // if (!account || !lpBalance) return;
+    // setAttemptingTxn(true);
+    // const withdrawAmount = BigNumber.from(lpBalance.numerator.toString())
+    //   .mul(BigNumber.from(percent))
+    //   .div(BigNumber.from(100));
+    // try {
+    //   const estimatedGas = await hyperVisorContract.estimateGas.withdraw(
+    //     withdrawAmount,
+    //     account,
+    //     account,
+    //     [0, 0, 0, 0],
+    //   );
+    //   const response: TransactionResponse = await hyperVisorContract.withdraw(
+    //     withdrawAmount,
+    //     account,
+    //     account,
+    //     [0, 0, 0, 0],
+    //     { gasLimit: calculateGasMargin(estimatedGas) },
+    //   );
+    //   setAttemptingTxn(false);
+    //   setTxPending(true);
+    //   setTxnHash(response.hash);
+    //   addTransaction(response, {
+    //     summary: t('withdrawingGammaLiquidity'),
+    //   });
+    //   const receipt = await response.wait();
+    //   finalizedTransaction(receipt, {
+    //     summary: t('withdrewGammaLiquidity'),
+    //   });
+    //   setTxPending(false);
+    // } catch (e) {
+    //   setAttemptingTxn(false);
+    //   setRemoveErrorMessage(t('errorInTx'));
+    // }
   };
 
   const pendingText = t('removingLiquidityMsg', {
-    amount1: formatNumber(
-      (position.balance0 * withdrawPercent * percent) / 100,
-    ),
+    amount1: formatNumber((position.balance0 * percent) / 100),
     symbol1: position.token0.symbol,
-    amount2: formatNumber(
-      (position.balance1 * withdrawPercent * percent) / 100,
-    ),
+    amount2: formatNumber((position.balance1 * percent) / 100),
     symbol2: position.token1.symbol,
   });
 
@@ -143,11 +122,7 @@ export default function WithdrawGammaLiquidityModal({
             {t('pooled')} {position.token0.symbol}
           </p>
           <Box className='flex items-center'>
-            <p>
-              {formatNumber(
-                (position.balance0 * withdrawPercent * percent) / 100,
-              )}
-            </p>
+            <p>{formatNumber((position.balance0 * percent) / 100)}</p>
             <Box className='flex' ml={1}>
               <CurrencyLogo size='24px' currency={position.token0} />
             </Box>
@@ -158,11 +133,7 @@ export default function WithdrawGammaLiquidityModal({
             {t('pooled')} {position.token1.symbol}
           </p>
           <Box className='flex items-center'>
-            <p>
-              {formatNumber(
-                (position.balance1 * withdrawPercent * percent) / 100,
-              )}
-            </p>
+            <p>{formatNumber((position.balance1 * percent) / 100)}</p>
             <Box className='flex' ml={1}>
               <CurrencyLogo size='24px' currency={position.token1} />
             </Box>
@@ -261,7 +232,16 @@ export default function WithdrawGammaLiquidityModal({
               {t('pooled')} {position.token0.symbol}
             </p>
             <Box className='flex items-center'>
-              <p>{formatNumber(position.balance0 * withdrawPercent)}</p>
+              <p>
+                {formatNumber(
+                  position.token0Balance
+                    ? formatUnits(
+                        position.token0Balance.toString(),
+                        position.token0.decimals,
+                      )
+                    : 0,
+                )}
+              </p>
               <Box className='flex' ml={1}>
                 <CurrencyLogo size='24px' currency={position.token0} />
               </Box>
@@ -272,7 +252,16 @@ export default function WithdrawGammaLiquidityModal({
               {t('pooled')} {position.token1.symbol}
             </p>
             <Box className='flex items-center'>
-              <p>{formatNumber(position.balance1 * withdrawPercent)}</p>
+              <p>
+                {formatNumber(
+                  position.token1Balance
+                    ? formatUnits(
+                        position.token1Balance.toString(),
+                        position.token1.decimals,
+                      )
+                    : 0,
+                )}
+              </p>
               <Box className='flex' ml={1}>
                 <CurrencyLogo size='24px' currency={position.token1} />
               </Box>

@@ -95,24 +95,26 @@ export default function MyLiquidityPoolsV3() {
         </Box>
       ),
     });
-    filters.push({
-      id: GlobalConst.utils.poolsFilter.unipilot,
-      text: (
-        <Box className='flex items-center'>
-          <small>Unipilot</small>
-          <Box
-            ml='6px'
-            className={`myV3PoolCountWrapper ${
-              poolFilter === GlobalConst.utils.poolsFilter.unipilot
-                ? 'activeMyV3PoolCountWrapper'
-                : ''
-            }`}
-          >
-            {unipilotPositions ? unipilotPositions.length : 0}
+    if (unipilotPositions && unipilotPositions.length > 0) {
+      filters.push({
+        id: GlobalConst.utils.poolsFilter.unipilot,
+        text: (
+          <Box className='flex items-center'>
+            <small>Unipilot</small>
+            <Box
+              ml='6px'
+              className={`myV3PoolCountWrapper ${
+                poolFilter === GlobalConst.utils.poolsFilter.unipilot
+                  ? 'activeMyV3PoolCountWrapper'
+                  : ''
+              }`}
+            >
+              {unipilotPositions.length}
+            </Box>
           </Box>
-        </Box>
-      ),
-    });
+        ),
+      });
+    }
     if (gammaPoolsCount > 0) {
       filters.push({
         id: GlobalConst.utils.poolsFilter.gamma,

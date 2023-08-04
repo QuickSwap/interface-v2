@@ -16,68 +16,74 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
-import '../GammaLPItemDetails/index.scss';
+import '../UnipilotLPItemDetails/index.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useGammaUNIProxyContract, useWETHContract } from 'hooks/useContract';
+import { useUniPilotVaultContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 
-interface IncreaseGammaLiquidityModalProps {
+interface IncreaseUnipilotLiquidityModalProps {
   open: boolean;
   onClose: () => void;
   position: any;
 }
 
-export default function IncreaseGammaLiquidityModal({
+export default function IncreaseUnipilotLiquidityModal({
   position,
   open,
   onClose,
-}: IncreaseGammaLiquidityModalProps) {
+}: IncreaseUnipilotLiquidityModalProps) {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
-  const gammaUNIPROXYContract = useGammaUNIProxyContract(position.pairAddress);
+  const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
   const [deposit0, setDeposit0] = useState('');
   const [deposit1, setDeposit1] = useState('');
+
+  const unipilotToken0VaultBalance = useTokenBalance(
+    position.vault.id,
+    position.token0,
+  );
+  const unipilotToken1VaultBalance = useTokenBalance(
+    position.vault.id,
+    position.token1,
+  );
+  const uniPilotVaultPositionResult = useSingleCallResult(
+    uniPilotVaultContract,
+    'getPositionDetails',
+  );
+  const uniPilotVaultReserve = useMemo(() => {
+    if (
+      !uniPilotVaultPositionResult.loading &&
+      uniPilotVaultPositionResult.result &&
+      uniPilotVaultPositionResult.result.length > 1
+    ) {
+      return {
+        token0: JSBI.add(
+          JSBI.BigInt(uniPilotVaultPositionResult.result[0]),
+          unipilotToken0VaultBalance?.numerator ?? JSBI.BigInt(0),
+        ),
+        token1: JSBI.add(
+          JSBI.BigInt(uniPilotVaultPositionResult.result[1]),
+          unipilotToken1VaultBalance?.numerator ?? JSBI.BigInt(0),
+        ),
+      };
+    }
+    return;
+  }, [
+    uniPilotVaultPositionResult,
+    unipilotToken0VaultBalance,
+    unipilotToken1VaultBalance,
+  ]);
 
   const independentToken = isBaseInput ? position.token0 : position.token1;
   const dependentToken = isBaseInput ? position.token1 : position.token0;
   const independentDeposit = isBaseInput
     ? Number(deposit0).toFixed(position.token0.decimals)
     : Number(deposit1).toFixed(position.token1.decimals);
-  const depositAmountsData = useSingleCallResult(
-    gammaUNIPROXYContract,
-    'getDepositAmount',
-    [
-      position.pairAddress,
-      independentToken.address,
-      parseUnits(independentDeposit, independentToken.decimals),
-    ],
-  );
-
-  const depositRange = useMemo(() => {
-    const depositMin =
-      !depositAmountsData.loading &&
-      depositAmountsData.result &&
-      depositAmountsData.result.length > 1
-        ? Number(
-            formatUnits(depositAmountsData.result[0], dependentToken.decimals),
-          )
-        : 0;
-    const depositMax =
-      !depositAmountsData.loading &&
-      depositAmountsData.result &&
-      depositAmountsData.result.length > 1
-        ? Number(
-            formatUnits(depositAmountsData.result[1], dependentToken.decimals),
-          )
-        : 0;
-
-    return { min: depositMin, max: depositMax };
-  }, [depositAmountsData, dependentToken.decimals]);
 
   const ethBalance = useCurrencyBalance(
     account ?? undefined,
@@ -113,7 +119,6 @@ export default function IncreaseGammaLiquidityModal({
     parseUnits(!deposit1 ? '0' : deposit1, position.token1.decimals),
   );
 
-  const [wrappingETH, setWrappingETH] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
   const [txnHash, setTxnHash] = useState<string | undefined>();
@@ -126,42 +131,12 @@ export default function IncreaseGammaLiquidityModal({
     !Number(deposit0) ||
     !Number(deposit1) ||
     !account ||
-    !depositRange ||
     JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI) ||
-    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI) ||
-    wrappingETH;
-
-  const wrapAmount = useMemo(() => {
-    if (token0isWETH) {
-      const token0BalanceJSBI = token0Balance
-        ? token0Balance.numerator
-        : JSBI.BigInt('0');
-      if (JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI))
-        return JSBI.subtract(deposit0JSBI, token0BalanceJSBI);
-      return;
-    } else if (token1isWETH) {
-      const token1BalanceJSBI = token1Balance
-        ? token1Balance.numerator
-        : JSBI.BigInt('0');
-      if (JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI))
-        return JSBI.subtract(deposit1JSBI, token1BalanceJSBI);
-      return;
-    }
-    return;
-  }, [
-    deposit0JSBI,
-    deposit1JSBI,
-    token0Balance,
-    token0isWETH,
-    token1Balance,
-    token1isWETH,
-  ]);
+    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI);
 
   const buttonText = useMemo(() => {
-    if (wrappingETH)
-      return t('wrappingMATIC', { symbol: ETHER[chainId].symbol });
     if (!account) return t('connectWallet');
-    if (!depositRange) return t('fetchingGammaDepositRange');
+    if (!uniPilotVaultReserve) return t('fetchingGammaDepositRange');
     if (JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI))
       return t('insufficientBalance', {
         symbol:
@@ -175,12 +150,10 @@ export default function IncreaseGammaLiquidityModal({
           position.token1.symbol,
       });
     if (!Number(deposit0) || !Number(deposit1)) return t('enterAmount');
-    if (wrapAmount) return t('wrapMATIC', { symbol: ETHER[chainId].symbol });
     return t('addLiquidity');
   }, [
     account,
     t,
-    depositRange,
     deposit0JSBI,
     token0BalanceJSBI,
     token0isWETH,
@@ -191,9 +164,8 @@ export default function IncreaseGammaLiquidityModal({
     token1isWETH,
     deposit0,
     deposit1,
-    wrapAmount,
-    wrappingETH,
     chainId,
+    uniPilotVaultReserve,
   ]);
 
   const handleDismissConfirmation = useCallback(() => {
@@ -208,59 +180,23 @@ export default function IncreaseGammaLiquidityModal({
     setAddErrorMessage('');
   }, [txnHash]);
 
-  const wethContract = useWETHContract();
-
-  const wrapETH = async () => {
-    if (!chainId || !account || !wethContract || !wrapAmount) return;
-
-    setWrappingETH(true);
-    try {
-      const wrapEstimateGas = await wethContract.estimateGas.deposit({
-        value: wrapAmount.toString(),
-      });
-      const wrapResponse: TransactionResponse = await wethContract.deposit({
-        gasLimit: calculateGasMargin(wrapEstimateGas),
-        value: wrapAmount.toString(),
-      });
-      setAttemptingTxn(false);
-      setTxPending(true);
-      const summary = `Wrap ${formatUnits(
-        wrapAmount.toString(),
-        18,
-      )} ETH to WETH`;
-      addTransaction(wrapResponse, {
-        summary,
-      });
-      const receipt = await wrapResponse.wait();
-      finalizedTransaction(receipt, {
-        summary,
-      });
-      setWrappingETH(false);
-    } catch (e) {
-      console.error(e);
-      setWrappingETH(false);
-    }
-  };
-
-  const addGammaLiquidity = async () => {
-    if (!gammaUNIPROXYContract || !account) return;
+  const addUnipilotLiquidity = async () => {
+    if (!uniPilotVaultContract || !account) return;
     setAttemptingTxn(true);
     try {
-      const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
+      const estimatedGas = await uniPilotVaultContract.estimateGas.deposit(
         deposit0JSBI.toString(),
         deposit1JSBI.toString(),
         account,
-        position.pairAddress,
-        [0, 0, 0, 0],
+        { value: '0' },
       );
-      const response: TransactionResponse = await gammaUNIPROXYContract.deposit(
+      const response: TransactionResponse = await uniPilotVaultContract.deposit(
         deposit0JSBI.toString(),
         deposit1JSBI.toString(),
         account,
-        position.pairAddress,
-        [0, 0, 0, 0],
         {
           gasLimit: calculateGasMargin(estimatedGas),
+          value: '0',
         },
       );
       const summary = t('addLiquidityWithTokens', {
@@ -288,32 +224,31 @@ export default function IncreaseGammaLiquidityModal({
     }
   };
 
-  useEffect(() => {
-    if (depositRange) {
-      if (isBaseInput) {
-        if (Number(deposit0) > 0) {
-          const quoteDeposit = (depositRange.min + depositRange.max) / 2;
-          setDeposit1(quoteDeposit.toFixed(position.token1.decimals));
-        } else {
-          setDeposit1('');
-        }
-      } else {
-        if (Number(deposit1) > 0) {
-          const baseDeposit = (depositRange.min + depositRange.max) / 2;
-          setDeposit0(baseDeposit.toFixed(position.token0.decimals));
-        } else {
-          setDeposit0('');
-        }
-      }
-    }
-  }, [
-    depositRange,
-    deposit0,
-    deposit1,
-    isBaseInput,
-    position.token1.decimals,
-    position.token0.decimals,
-  ]);
+  // useEffect(() => {
+  //   if (uniPilotVaultReserve) {
+  //     if (isBaseInput) {
+  //       if (Number(deposit0) > 0) {
+  //         const quoteDeposit = (depositRange.min + depositRange.max) / 2;
+  //         setDeposit1(quoteDeposit.toFixed(position.token1.decimals));
+  //       } else {
+  //         setDeposit1('');
+  //       }
+  //     } else {
+  //       if (Number(deposit1) > 0) {
+  //         const baseDeposit = (depositRange.min + depositRange.max) / 2;
+  //         setDeposit0(baseDeposit.toFixed(position.token0.decimals));
+  //       } else {
+  //         setDeposit0('');
+  //       }
+  //     }
+  //   }
+  // }, [
+  //   deposit0,
+  //   deposit1,
+  //   isBaseInput,
+  //   position.token1.decimals,
+  //   position.token0.decimals,
+  // ]);
 
   const pendingText = t('addingLiquidityTokens', {
     amountA: formatNumber(deposit0),
@@ -348,7 +283,7 @@ export default function IncreaseGammaLiquidityModal({
           <Button
             fullWidth
             className='gamma-liquidity-item-button'
-            onClick={addGammaLiquidity}
+            onClick={addUnipilotLiquidity}
           >
             {t('confirm')}
           </Button>
@@ -477,7 +412,7 @@ export default function IncreaseGammaLiquidityModal({
           <Button
             className='gamma-liquidity-item-button'
             disabled={buttonDisabled}
-            onClick={() => (wrapAmount ? wrapETH() : setShowConfirm(true))}
+            onClick={() => setShowConfirm(true)}
             fullWidth
           >
             {buttonText}
