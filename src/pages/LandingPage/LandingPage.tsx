@@ -336,9 +336,9 @@ const LandingPage: React.FC = () => {
           <h3>{t('faqs')}</h3>
           <Box className='featureDivider' />
         </Box>
-        <Box className=''>
+        <Box>
           {faqs.map((val, i) => (
-            <Accordion key={`accordation-{i}`}>
+            <Accordion key={`accordation-${i}`}>
               <AccordionSummary
                 expandIcon={<ExpandMoreOutlined />}
                 aria-controls='panel1a-content'
