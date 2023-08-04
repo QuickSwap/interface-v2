@@ -2,11 +2,12 @@
     padding: 0 1rem;
     background: linear-gradient(228.09deg, #FF2CF7 -9.95%, rgba(251, 4, 123, 0.796875) 12.47%, rgba(255, 126, 188, 0.81) 30.87%, rgba(255, 255, 255, 0) 42.87%, rgba(73, 255, 233, 0.65) 70.34%, #130EFF 100.44%);
     position: relative;
-    border: 20px solid transparent;
+    border: 0px solid transparent;
     border-radius: 40px;
     background-clip: padding-box;
     -webkit-background-clip: padding-box;
     box-shadow:none;
+    max-width: 495px !important;
 }
 
 .shepherd-custom::before {
@@ -18,10 +19,13 @@
     left: 0;
     z-index: -1;
     margin: 5px;
-    border-radius: 20px;
+    border-radius: 38px;
     background: white;
 }
-
+.shepherd-arrow, .shepherd-arrow:before {
+    height: 22px;
+    width: 22px;
+}
 .shepherd-footer {
     justify-content: unset;
     padding: 0;
@@ -38,6 +42,18 @@
 }
 .shepherd-element.shepherd-has-title[data-popper-placement^=right]>.shepherd-arrow:before {
     border-radius: 0px 0px 0px 3px;
+}
+.shepherd-element[data-popper-placement^=right]>.shepherd-arrow {
+    left: -7px;
+}
+.shepherd-element[data-popper-placement^=left]>.shepherd-arrow {
+    right: -7px;
+}
+.shepherd-element[data-popper-placement^=top]>.shepherd-arrow {
+    bottom: -7px;
+}
+.shepherd-element[data-popper-placement^=bottom]>.shepherd-arrow {
+    top: -7px;
 }
 .shepherd-button:nth-child(2) {
     margin-left: auto;

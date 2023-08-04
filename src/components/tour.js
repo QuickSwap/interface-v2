@@ -11,6 +11,7 @@ const tourOptions = {
     cancelIcon: {
       enabled: true,
     },
+    scrollTo:true
   },
   useModalOverlay: true,
 };
