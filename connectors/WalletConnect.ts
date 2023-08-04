@@ -69,6 +69,7 @@ export class WalletConnect extends Connector {
     const { rpcMap, chains, ...rest } = options;
 
     this.options = rest;
+    //@ts-ignore
     this.chains = chains;
     this.defaultChainId = defaultChainId;
     this.rpcMap = rpcMap;
@@ -111,6 +112,7 @@ export class WalletConnect extends Connector {
     return (this.eagerConnection = import(
       '@walletconnect/ethereum-provider'
     ).then(async (ethProviderModule) => {
+      //@ts-ignore
       const provider = (this.provider = await ethProviderModule.default.init({
         ...this.options,
         chains,
