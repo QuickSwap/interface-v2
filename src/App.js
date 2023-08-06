@@ -306,6 +306,8 @@ function FullApp() {
     }
   }, [query]);
 
+  const tour = useContext(ShepherdTourContext);
+
   useEffect(() => {
     if (window.ethereum) {
       // hack
@@ -462,11 +464,14 @@ function FullApp() {
     setIsSettingsVisible(false);
   };
   useEffect(() => {
-    if (isDrawerVisible) {
+    const isTourViewed = localStorage.getItem("viewed_tour")
+
+    if (isDrawerVisible || isTourViewed !== "true") {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
     }
+
     return () => (document.body.style.overflow = "unset");
   }, [isDrawerVisible]);
 
