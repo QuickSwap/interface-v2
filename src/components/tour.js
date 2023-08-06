@@ -11,7 +11,7 @@ const tourOptions = {
     cancelIcon: {
       enabled: true,
     },
-    scrollTo:true
+    // scrollTo:true,
   },
   useModalOverlay: true,
 };
@@ -25,7 +25,10 @@ function InnerTour({ children }) {
       if (localStorage.getItem("viewed_tour") !== "true") {
         currentTour.current = tour;
         tour.start();
-        tour.on('complete', ()=>{localStorage.setItem("viewed_tour", "true")});
+        tour.on('complete', () => {
+          document.body.style.overflow = '';
+          localStorage.setItem("viewed_tour", "true")
+        });
       }
     }
   }
