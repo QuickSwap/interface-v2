@@ -48,7 +48,7 @@ const UnipilotFarmCard: React.FC<{
                   size={30}
                 />
                 <Box ml='6px'>
-                  {/* <small className='weight-600'>{`${token0.symbol}/${token1.symbol} (${pairData.title})`}</small> */}
+                  <small className='weight-600'>{`${token0.symbol}/${token1.symbol}`}</small>
                   <Box className='cursor-pointer'>
                     <Link
                       to={`/pools?currency0=${token0.address}&currency1=${token1.address}`}

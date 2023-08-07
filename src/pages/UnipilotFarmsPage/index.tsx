@@ -25,7 +25,10 @@ import {
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
-import { useUnipilotFarms } from 'hooks/v3/useUnipilotFarms';
+import {
+  useUnipilotFarmData,
+  useUnipilotFarms,
+} from 'hooks/v3/useUnipilotFarms';
 
 const UnipilotFarmsPage: React.FC<{
   farmFilter: string;
@@ -39,9 +42,21 @@ const UnipilotFarmsPage: React.FC<{
   const sortMultiplier = sortDesc ? -1 : 1;
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 
-  const { loading: unipilotFarmsLoading, unipilotFarms } = useUnipilotFarms(
+  const {
+    loading: unipilotFarmsLoading,
+    data: unipilotFarmsArray,
+  } = useUnipilotFarms(chainId);
+  const unipilotFarms = unipilotFarmsArray ?? [];
+
+  const {
+    loading: unipilotFarmDataLoading,
+    data: unipilotFarmData,
+  } = useUnipilotFarmData(
+    unipilotFarms.map((farm: any) => farm.id),
     chainId,
   );
+
+  console.log('aaa', unipilotFarmData);
 
   const rewardTokenAddresses = unipilotFarms.reduce(
     (memo: string[], farm: any) => {
@@ -70,13 +85,13 @@ const UnipilotFarmsPage: React.FC<{
     .map((item: any) => {
       if (chainId) {
         const token0Data = getTokenFromAddress(
-          item.token0Address,
+          item.token0.id,
           chainId,
           tokenMap,
           [],
         );
         const token1Data = getTokenFromAddress(
-          item.token1Address,
+          item.token1.id,
           chainId,
           tokenMap,
           [],

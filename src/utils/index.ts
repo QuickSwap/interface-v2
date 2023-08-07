@@ -1103,10 +1103,10 @@ export const getUnipilotPositions = async (
 };
 
 export const getUnipilotFarms = async (chainId?: ChainId) => {
-  if (!chainId) return null;
+  if (!chainId) return [];
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/unipilot/farming-vaults/?chainId=${chainId}`,
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/unipilot/farming-vaults?chainId=${chainId}`,
     );
     if (!res.ok) {
       const errorText = await res.text();
@@ -1116,7 +1116,33 @@ export const getUnipilotFarms = async (chainId?: ChainId) => {
     }
     const data = await res.json();
     return data && data.data && data.data.farms ? data.data.farms : [];
-  } catch {
+  } catch (err) {
     return [];
+  }
+};
+
+export const getUnipilotFarmData = async (
+  vaultAddresses?: string[],
+  chainId?: ChainId,
+) => {
+  if (!chainId || !vaultAddresses) return null;
+  try {
+    const res = await fetch(
+      `${
+        process.env.REACT_APP_UNIPILOT_API_URL
+      }/api/unipilot/aprs?vaultAddresses=${vaultAddresses?.join(
+        ',',
+      )}&chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(
+        errorText || res.statusText || `Failed to get unipilot farms`,
+      );
+    }
+    const data = await res.json();
+    return data && data.doc ? data.doc : null;
+  } catch {
+    return null;
   }
 };

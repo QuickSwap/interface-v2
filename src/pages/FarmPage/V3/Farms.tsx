@@ -14,6 +14,7 @@ import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
 import { SearchInput, SortColumns, CustomSwitch } from 'components';
 import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
 import { useUnipilotFarms } from 'hooks/v3/useUnipilotFarms';
+import UnipilotFarmsPage from 'pages/UnipilotFarmsPage';
 
 interface FarmCategory {
   id: number;
@@ -45,7 +46,11 @@ export default function Farms() {
       : [];
   }, [chainId]);
 
-  const { unipilotFarms } = useUnipilotFarms(chainId);
+  const { data: unipilotFarmsArray } = useUnipilotFarms(chainId);
+  const unipilotFarms = useMemo(() => {
+    if (!unipilotFarmsArray) return [];
+    return unipilotFarmsArray;
+  }, [unipilotFarmsArray]);
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -289,7 +294,7 @@ export default function Farms() {
         />
       )}
       {selectedFarmCategory?.id === 3 && (
-        <GammaFarmsPage
+        <UnipilotFarmsPage
           farmFilter={farmFilter}
           search={searchValue}
           sortBy={sortBy}
