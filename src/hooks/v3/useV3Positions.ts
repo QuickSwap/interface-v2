@@ -380,7 +380,7 @@ export function useV3PositionsCount(
   const count = totalCount > 0 ? totalCount : prevCount ?? 0;
 
   return {
-    loading: balanceLoading || positionsLoading || positionsOnFarmerLoading,
+    loading: balanceLoading || positionsOnFarmerLoading,
     count,
   };
 }

@@ -187,15 +187,15 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
           </Box> */}
         </Box>
       </Box>
-      <Box mt={2} className='gamma-liquidity-item-buttons'>
+      <Box mt={2} className='unipilot-liquidity-item-buttons'>
         <Button
-          className='gamma-liquidity-item-button'
+          className='unipilot-liquidity-item-button'
           onClick={() => setShowAddLPModal(true)}
         >
           <small>{t('addLiquidity')}</small>
         </Button>
         <Button
-          className='gamma-liquidity-item-button'
+          className='unipilot-liquidity-item-button'
           // disabled={
           //   gammaPosition.farming &&
           //   (!lpTokenBalance ||

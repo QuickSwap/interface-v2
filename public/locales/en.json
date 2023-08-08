@@ -631,6 +631,8 @@
   "assets": "Assets",
   "withdrawingGammaLiquidity": "Withdrawing Gamma Liquidity",
   "withdrewGammaLiquidity": "Withdrew Gamma Liquidity",
+  "withdrawingUnipilotLiquidity": "Withdrawing Unipilot Liquidity",
+  "withdrewUnipilotLiquidity": "Withdrew Unipilot Liquidity",
   "fetchingGammaDepositRange": "Fetching Gamma Deposit Range",
   "available": "Available",
   "noGammaFarms": "No Gamma Farms",

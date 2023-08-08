@@ -21,36 +21,22 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
   const farmingLink = `/farm/v3?tab=my-farms`;
 
   const tokenMap = useSelectedTokenList();
-  const token0Data = getTokenFromAddress(
+  const token0 = getTokenFromAddress(
     position.vault.quickswapPool.token0.id,
     chainId,
     tokenMap,
     [],
   );
-  const token0 = new Token(
-    chainId,
-    token0Data.address,
-    token0Data.decimals,
-    token0Data.symbol,
-    token0Data.name,
-  );
-  const token1Data = getTokenFromAddress(
+  const token1 = getTokenFromAddress(
     position.vault.quickswapPool.token1.id,
     chainId,
     tokenMap,
     [],
   );
-  const token1 = new Token(
-    chainId,
-    token1Data.address,
-    token1Data.decimals,
-    token1Data.symbol,
-    token1Data.name,
-  );
   const positionDetail = { ...position, token0, token1 };
 
   return (
-    <Box className='gamma-liquidity-item'>
+    <Box className='unipilot-liquidity-item'>
       <Box className='flex items-center justify-between'>
         <Box className='flex items-center'>
           {token0 && token1 && (
@@ -67,7 +53,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
               </p>
             </>
           )}
-          <Box ml={1.5} className='gamma-liquidity-range'>
+          <Box ml={1.5} className='unipilot-liquidity-range'>
             <small>
               {unipilotVaultTypes[Number(position.vault.strategyId) - 1]}
             </small>
@@ -92,7 +78,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
         </Box>
 
         <Box
-          className={`gamma-liquidity-item-expand ${
+          className={`unipilot-liquidity-item-expand ${
             expanded ? 'text-primary' : ''
           }`}
           onClick={() => setExpanded(!expanded)}

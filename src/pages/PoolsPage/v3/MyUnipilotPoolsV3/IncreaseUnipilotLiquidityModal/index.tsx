@@ -79,11 +79,26 @@ export default function IncreaseUnipilotLiquidityModal({
     unipilotToken1VaultBalance,
   ]);
 
-  const independentToken = isBaseInput ? position.token0 : position.token1;
   const dependentToken = isBaseInput ? position.token1 : position.token0;
   const independentDeposit = isBaseInput
-    ? Number(deposit0).toFixed(position.token0.decimals)
-    : Number(deposit1).toFixed(position.token1.decimals);
+    ? JSBI.BigInt(
+        parseUnits(
+          Number(deposit0).toFixed(position.token0.decimals),
+          position.token0.decimals,
+        ),
+      )
+    : JSBI.BigInt(
+        parseUnits(
+          Number(deposit1).toFixed(position.token1.decimals),
+          position.token1.decimals,
+        ),
+      );
+  const independentReserve = isBaseInput
+    ? uniPilotVaultReserve?.token0
+    : uniPilotVaultReserve?.token1;
+  const dependentReserve = isBaseInput
+    ? uniPilotVaultReserve?.token1
+    : uniPilotVaultReserve?.token0;
 
   const ethBalance = useCurrencyBalance(
     account ?? undefined,
@@ -180,6 +195,29 @@ export default function IncreaseUnipilotLiquidityModal({
     setAddErrorMessage('');
   }, [txnHash]);
 
+  const ethAmount = useMemo(() => {
+    if (token0isWETH) {
+      return JSBI.subtract(
+        deposit0JSBI,
+        token0Balance ? token0Balance.numerator : JSBI.BigInt(0),
+      );
+    }
+    if (token1isWETH) {
+      return JSBI.subtract(
+        deposit1JSBI,
+        token1Balance ? token1Balance.numerator : JSBI.BigInt(0),
+      );
+    }
+    return JSBI.BigInt(0);
+  }, [
+    deposit0JSBI,
+    deposit1JSBI,
+    token0Balance,
+    token0isWETH,
+    token1Balance,
+    token1isWETH,
+  ]);
+
   const addUnipilotLiquidity = async () => {
     if (!uniPilotVaultContract || !account) return;
     setAttemptingTxn(true);
@@ -188,7 +226,7 @@ export default function IncreaseUnipilotLiquidityModal({
         deposit0JSBI.toString(),
         deposit1JSBI.toString(),
         account,
-        { value: '0' },
+        { value: ethAmount.toString() },
       );
       const response: TransactionResponse = await uniPilotVaultContract.deposit(
         deposit0JSBI.toString(),
@@ -196,7 +234,7 @@ export default function IncreaseUnipilotLiquidityModal({
         account,
         {
           gasLimit: calculateGasMargin(estimatedGas),
-          value: '0',
+          value: ethAmount.toString(),
         },
       );
       const summary = t('addLiquidityWithTokens', {
@@ -224,31 +262,29 @@ export default function IncreaseUnipilotLiquidityModal({
     }
   };
 
-  // useEffect(() => {
-  //   if (uniPilotVaultReserve) {
-  //     if (isBaseInput) {
-  //       if (Number(deposit0) > 0) {
-  //         const quoteDeposit = (depositRange.min + depositRange.max) / 2;
-  //         setDeposit1(quoteDeposit.toFixed(position.token1.decimals));
-  //       } else {
-  //         setDeposit1('');
-  //       }
-  //     } else {
-  //       if (Number(deposit1) > 0) {
-  //         const baseDeposit = (depositRange.min + depositRange.max) / 2;
-  //         setDeposit0(baseDeposit.toFixed(position.token0.decimals));
-  //       } else {
-  //         setDeposit0('');
-  //       }
-  //     }
-  //   }
-  // }, [
-  //   deposit0,
-  //   deposit1,
-  //   isBaseInput,
-  //   position.token1.decimals,
-  //   position.token0.decimals,
-  // ]);
+  useEffect(() => {
+    if (dependentReserve && independentReserve) {
+      const dependentDeposit = JSBI.divide(
+        JSBI.multiply(dependentReserve, independentDeposit),
+        independentReserve,
+      );
+      if (isBaseInput) {
+        setDeposit1(
+          formatUnits(dependentDeposit.toString(), dependentToken.decimals),
+        );
+      } else {
+        setDeposit0(
+          formatUnits(dependentDeposit.toString(), dependentToken.decimals),
+        );
+      }
+    }
+  }, [
+    isBaseInput,
+    dependentReserve,
+    dependentToken.decimals,
+    independentDeposit,
+    independentReserve,
+  ]);
 
   const pendingText = t('addingLiquidityTokens', {
     amountA: formatNumber(deposit0),
@@ -332,7 +368,16 @@ export default function IncreaseUnipilotLiquidityModal({
               {t('pooled')} {position.token0.symbol}
             </p>
             <Box className='flex items-center'>
-              <p>{formatNumber(position.balance0)}</p>
+              <p>
+                {position.token0Balance
+                  ? formatNumber(
+                      formatUnits(
+                        position.token0Balance.toString(),
+                        position.token0.decimals,
+                      ),
+                    )
+                  : 0}
+              </p>
               <Box className='flex' ml={1}>
                 <CurrencyLogo size='24px' currency={position.token0} />
               </Box>
@@ -343,7 +388,16 @@ export default function IncreaseUnipilotLiquidityModal({
               {t('pooled')} {position.token1.symbol}
             </p>
             <Box className='flex items-center'>
-              <p>{formatNumber(position.balance1)}</p>
+              <p>
+                {position.token1Balance
+                  ? formatNumber(
+                      formatUnits(
+                        position.token1Balance.toString(),
+                        position.token1.decimals,
+                      ),
+                    )
+                  : 0}
+              </p>
               <Box className='flex' ml={1}>
                 <CurrencyLogo size='24px' currency={position.token1} />
               </Box>

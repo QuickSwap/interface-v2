@@ -14,16 +14,15 @@ import { useTranslation } from 'react-i18next';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import '../UnipilotLPItemDetails/index.scss';
 import { calculateGasMargin, formatNumber } from 'utils';
-import { BigNumber } from 'ethers';
 import { useActiveWeb3React } from 'hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { JSBI, Token } from '@uniswap/sdk';
-import { useTokenBalance } from 'state/wallet/hooks';
+import { JSBI } from '@uniswap/sdk';
 import { formatUnits } from 'ethers/lib/utils';
+import { useUniPilotVaultContract } from 'hooks/useContract';
 
 interface WithdrawUnipilotLiquidityModalProps {
   open: boolean;
@@ -38,7 +37,7 @@ export default function WithdrawUnipilotLiquidityModal({
 }: WithdrawUnipilotLiquidityModalProps) {
   const { t } = useTranslation();
   const [percent, setPercent] = useState(0);
-  const { chainId, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const [
     percentForSlider,
     onPercentSelectForSlider,
@@ -70,47 +69,76 @@ export default function WithdrawUnipilotLiquidityModal({
     setRemoveErrorMessage('');
   }, [onPercentSelectForSlider, txnHash]);
 
+  const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
+  const lpBalance = JSBI.BigInt(position.balance);
   const withdrawGammaLiquidity = async () => {
-    // if (!account || !lpBalance) return;
-    // setAttemptingTxn(true);
-    // const withdrawAmount = BigNumber.from(lpBalance.numerator.toString())
-    //   .mul(BigNumber.from(percent))
-    //   .div(BigNumber.from(100));
-    // try {
-    //   const estimatedGas = await hyperVisorContract.estimateGas.withdraw(
-    //     withdrawAmount,
-    //     account,
-    //     account,
-    //     [0, 0, 0, 0],
-    //   );
-    //   const response: TransactionResponse = await hyperVisorContract.withdraw(
-    //     withdrawAmount,
-    //     account,
-    //     account,
-    //     [0, 0, 0, 0],
-    //     { gasLimit: calculateGasMargin(estimatedGas) },
-    //   );
-    //   setAttemptingTxn(false);
-    //   setTxPending(true);
-    //   setTxnHash(response.hash);
-    //   addTransaction(response, {
-    //     summary: t('withdrawingGammaLiquidity'),
-    //   });
-    //   const receipt = await response.wait();
-    //   finalizedTransaction(receipt, {
-    //     summary: t('withdrewGammaLiquidity'),
-    //   });
-    //   setTxPending(false);
-    // } catch (e) {
-    //   setAttemptingTxn(false);
-    //   setRemoveErrorMessage(t('errorInTx'));
-    // }
+    if (!account || !uniPilotVaultContract) return;
+    setAttemptingTxn(true);
+    const withdrawAmount = JSBI.divide(
+      JSBI.multiply(lpBalance, JSBI.BigInt(percent)),
+      JSBI.BigInt(100),
+    );
+    try {
+      const estimatedGas = await uniPilotVaultContract.estimateGas.withdraw(
+        withdrawAmount.toString(),
+        account,
+        true,
+      );
+      const response: TransactionResponse = await uniPilotVaultContract.withdraw(
+        withdrawAmount.toString(),
+        account,
+        true,
+        { gasLimit: calculateGasMargin(estimatedGas) },
+      );
+      setAttemptingTxn(false);
+      setTxPending(true);
+      setTxnHash(response.hash);
+      addTransaction(response, {
+        summary: t('withdrawingUnipilotLiquidity'),
+      });
+      const receipt = await response.wait();
+      finalizedTransaction(receipt, {
+        summary: t('withdrewUnipilotLiquidity'),
+      });
+      setTxPending(false);
+    } catch (e) {
+      setAttemptingTxn(false);
+      setRemoveErrorMessage(t('errorInTx'));
+    }
   };
 
+  const token0Amount = useMemo(() => {
+    if (!position.token0Balance) return 0;
+    return (
+      (Number(
+        formatUnits(
+          position.token0Balance.toString(),
+          position.token0.decimals,
+        ),
+      ) *
+        percent) /
+      100
+    );
+  }, [percent, position.token0.decimals, position.token0Balance]);
+
+  const token1Amount = useMemo(() => {
+    if (!position.token1Balance) return 0;
+    return (
+      (Number(
+        formatUnits(
+          position.token1Balance.toString(),
+          position.token1.decimals,
+        ),
+      ) *
+        percent) /
+      100
+    );
+  }, [percent, position.token1.decimals, position.token1Balance]);
+
   const pendingText = t('removingLiquidityMsg', {
-    amount1: formatNumber((position.balance0 * percent) / 100),
+    amount1: formatNumber(token0Amount),
     symbol1: position.token0.symbol,
-    amount2: formatNumber((position.balance1 * percent) / 100),
+    amount2: formatNumber(token1Amount),
     symbol2: position.token1.symbol,
   });
 
@@ -122,7 +150,7 @@ export default function WithdrawUnipilotLiquidityModal({
             {t('pooled')} {position.token0.symbol}
           </p>
           <Box className='flex items-center'>
-            <p>{formatNumber((position.balance0 * percent) / 100)}</p>
+            <p>{formatNumber(token0Amount)}</p>
             <Box className='flex' ml={1}>
               <CurrencyLogo size='24px' currency={position.token0} />
             </Box>
@@ -133,7 +161,7 @@ export default function WithdrawUnipilotLiquidityModal({
             {t('pooled')} {position.token1.symbol}
           </p>
           <Box className='flex items-center'>
-            <p>{formatNumber((position.balance1 * percent) / 100)}</p>
+            <p>{formatNumber(token1Amount)}</p>
             <Box className='flex' ml={1}>
               <CurrencyLogo size='24px' currency={position.token1} />
             </Box>
