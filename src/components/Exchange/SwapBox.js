@@ -1259,7 +1259,6 @@ export default function SwapBox(props) {
       showModal,
     })
       .then(async (res) => {
-        console.log('dfd')
         if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('swapCheckAllTtransactions');},100) };
       })
       .catch((e) => console.log("error: ", e))
