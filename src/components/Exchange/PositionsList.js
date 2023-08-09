@@ -28,6 +28,7 @@ import {
 import PositionShare from "./PositionShare";
 import PositionDropdown from "./PositionDropdown";
 
+import { useUIContext } from "../../providers/InterfaceProvider";
 const getOrdersForPosition = (account, position, orders, nativeTokenAddress) => {
   if (!orders || orders.length === 0) {
     return [];
@@ -123,6 +124,7 @@ export default function PositionsList(props) {
     setMarket(position.isLong ? LONG : SHORT, position.indexToken.address);
   };
 
+  const { currentTour } = useUIContext();
   return (
     <div className="PositionsList">
       <PositionEditor
@@ -641,7 +643,7 @@ export default function PositionsList(props) {
                 <td>
                   <button
                     className={`Exchange-list-action close-action  ${index === 0 && "exchange-list-close-action"}`}
-                    onClick={() => sellPosition(position)}
+                    onClick={() => {sellPosition(position); if (currentTour.current?.isActive()) {setTimeout(()=>{currentTour.current?.show('CloseModal');},100) }; }}
                     disabled={position.size.eq(0)}
                   >
                     Close
