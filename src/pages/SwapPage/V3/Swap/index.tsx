@@ -345,7 +345,7 @@ const SwapV3Page: React.FC = () => {
           attemptingTxn: false,
           tradeToConfirm,
           showConfirm,
-          swapErrorMessage: error.message,
+          swapErrorMessage: error?.message,
           txHash: undefined,
         });
       });
@@ -794,8 +794,6 @@ const SwapV3Page: React.FC = () => {
                       handleSwap();
                     } else {
                       setSwapState({
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        //@ts-ignore
                         tradeToConfirm: trade,
                         attemptingTxn: false,
                         swapErrorMessage: undefined,
@@ -828,8 +826,6 @@ const SwapV3Page: React.FC = () => {
                   handleSwap();
                 } else {
                   setSwapState({
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    //@ts-ignore
                     tradeToConfirm: trade,
                     attemptingTxn: false,
                     swapErrorMessage: undefined,

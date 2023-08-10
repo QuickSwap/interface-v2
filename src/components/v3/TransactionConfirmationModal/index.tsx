@@ -1,13 +1,7 @@
 import { Currency } from '@uniswap/sdk-core';
 import React, { ReactNode, useEffect } from 'react';
 import { Box, Button } from '@material-ui/core';
-import {
-  AlertTriangle,
-  ArrowUpCircle,
-  CheckCircle,
-  ExternalLink,
-  X,
-} from 'react-feather';
+import { CheckCircle, ExternalLink, X } from 'react-feather';
 import SpinnerImage from 'assets/images/spinner.svg';
 import MetaMaskLogo from 'assets/images/metamask-logo.svg';
 import { useActiveWeb3React } from 'hooks';
@@ -15,6 +9,9 @@ import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
 import { CustomModal } from 'components';
 import { ExplorerDataType, getEtherscanLink } from 'utils';
 import { useTranslation } from 'react-i18next';
+import TransactionFailed from 'assets/images/TransactionFailed.png';
+import TransactionSubmitted from 'assets/images/TransactionSubmitted.png';
+import 'components/styles/TransactionConfirmationModal.scss';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -80,7 +77,7 @@ function TransactionSubmittedContent({
         </Box>
       )}
       <Box mt={2} className='flex justify-center'>
-        <ArrowUpCircle strokeWidth={0.5} size={inline ? '40px' : '90px'} />
+        <img src={TransactionSubmitted} alt='Transaction Submitted' />
       </Box>
       <Box mt={2} className='flex flex-col items-center'>
         <h5>{t('txSubmitted')}</h5>
@@ -176,33 +173,17 @@ export function TransactionErrorContent({
   const { t } = useTranslation();
   return (
     <Box>
-      <Box>
-        <Box className='flex justify-between'>
-          <h5>{t('error')}</h5>
-          <X className='cursor-pointer' onClick={onDismiss} />
-        </Box>
-        <Box mt={2} className='flex flex-col items-center'>
-          <AlertTriangle color='red' style={{ strokeWidth: 1.5 }} size={64} />
-          <p
-            className='text-error'
-            style={{
-              marginTop: 16,
-              textAlign: 'center',
-              width: '85%',
-              wordBreak: 'break-word',
-            }}
-          >
-            {message}
-          </p>
-        </Box>
+      <Box className='txModalHeader'>
+        <h5 className='text-error'>{t('error')}</h5>
+        <X className='cursor-pointer' onClick={onDismiss} />
+      </Box>
+      <Box mt={2} className='txModalContent'>
+        <img src={TransactionFailed} alt='Transaction Failed' />
+        <p>{message}</p>
       </Box>
       <Box mt={2}>
-        <Button
-          fullWidth
-          onClick={onDismiss}
-          style={{ height: '40px', borderRadius: 12 }}
-        >
-          {t('dismiss')}
+        <Button fullWidth onClick={onDismiss} className='txSubmitButton'>
+          {t('close')}
         </Button>
       </Box>
     </Box>
@@ -243,7 +224,11 @@ export default function TransactionConfirmationModal({
   // if on L2 and submitted dont render content, as should auto dismiss
   // need this to skip submitted view during state update ^^
   return (
-    <CustomModal open={isOpen} onClose={onDismiss}>
+    <CustomModal
+      modalWrapper='txModalWrapper'
+      open={isOpen}
+      onClose={onDismiss}
+    >
       <Box padding='24px 20px 20px'>
         {attemptingTxn ? (
           <ConfirmationPendingContent

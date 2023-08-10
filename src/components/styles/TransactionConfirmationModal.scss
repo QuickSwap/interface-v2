@@ -1,5 +1,9 @@
 @use 'styles/variables' as *;
 
+.txModalWrapper {
+  max-width: 400px;
+}
+
 .txModalHeader {
   display: flex;
   align-items: center;
@@ -14,7 +18,7 @@
   & svg {
     cursor: pointer;
     position: relative;
-    z-index: 3
+    z-index: 3;
   }
 }
 
@@ -23,7 +27,7 @@
   top: 100px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1
+  z-index: 1;
 }
 .txModalContent {
   margin-top: 20px;
@@ -32,7 +36,7 @@
   text-align: center;
   & p {
     margin: 16px 0;
-    word-break: break-all;
+    word-break: break-word;
   }
 }
 .txSubmitButton {

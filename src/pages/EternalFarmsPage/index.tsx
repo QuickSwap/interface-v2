@@ -355,7 +355,11 @@ const EternalFarmsPage: React.FC<{
 
   return (
     <>
-      <CustomModal open={!!modalForPool} onClose={() => setModalForPool(null)}>
+      <CustomModal
+        modalWrapper='farmModalWrapper'
+        open={!!modalForPool}
+        onClose={() => setModalForPool(null)}
+      >
         {modalForPool && (
           <FarmModal
             event={modalForPool}
