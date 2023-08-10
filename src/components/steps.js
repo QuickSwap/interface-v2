@@ -1472,170 +1472,176 @@ const newSteps = [
       },
     ],
   },
-  {
-    id: "OrderTabs",
-    title: "",
-    showOn(){
-      return ( document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
-    },
-    when: {
-      show: function() {
-        let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector(".OrderTabsLabel").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
-         let chartsListTabs =  document.querySelector(".charts-list-tabs").querySelectorAll('.Tab-option')
-        for (let i = 0; i < chartsListTabs.length; i++) {
-          if(!!chartsListTabs[i].innerHTML.includes("Orders")){
-            chartsListTabs[i].click()
-          }
-        }
-      }
-    },
-    text: `
-    </div>
-    <div class="s-subTitle">
-    Check your created Limit <span class="OrderTabsLabel">Long</span> order under the orders tab.</div>
-    `,
-    attachTo: { element: ".charts-list-tabs .active", on: "left" },
+
+
+
+  // {
+  //   id: "OrderTabs",
+  //   title: "",
+  //   showOn(){
+  //     return ( document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
+  //   },
+  //   when: {
+  //     show: function() {
+  //       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+  //       document.querySelector(".OrderTabsLabel").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
+  //        let chartsListTabs =  document.querySelector(".charts-list-tabs").querySelectorAll('.Tab-option')
+  //       for (let i = 0; i < chartsListTabs.length; i++) {
+  //         if(!!chartsListTabs[i].innerHTML.includes("Orders")){
+  //           chartsListTabs[i].click()
+  //         }
+  //       }
+  //     }
+  //   },
+  //   text: `
+  //   </div>
+  //   <div class="s-subTitle">
+  //   Check your created Limit <span class="OrderTabsLabel">Long</span> order under the orders tab.</div>
+  //   `,
+  //   attachTo: { element: ".charts-list-tabs .active", on: "left" },
     
-    buttons: [
-      {
-        type:'complete',
-        text: `
-        <div class="skip">Skip</div>
-        `,
-      },
-      {
-        type: "back",
-        text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            <div class="back">Prev</div>
-            </div>
-        `,
-      },
-      {
-        action(){
-          this.next();  
-        },
-        text: `
-        <div class="s-next">
-        <div>Next</div>
-        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
-        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        </div>
-        `,
-      },
-    ],
-  },
-  {
-    id: "OrderEdit",
-    title: "",
-    showOn(){
+  //   buttons: [
+  //     {
+  //       type:'complete',
+  //       text: `
+  //       <div class="skip">Skip</div>
+  //       `,
+  //     },
+  //     {
+  //       type: "back",
+  //       text: `
+  //       <div style="
+  //       display: flex;
+  //       align-items: center;">
+  //           <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+  //           <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  //           </svg>
+  //           <div class="back">Prev</div>
+  //           </div>
+  //       `,
+  //     },
+  //     {
+  //       action(){
+  //         this.next();  
+  //       },
+  //       text: `
+  //       <div class="s-next">
+  //       <div>Next</div>
+  //       <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+  //       <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  //       <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  //       </svg>
+  //       </div>
+  //       `,
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "OrderEdit",
+  //   title: "",
+  //   showOn(){
      
-      return ( document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
-    },
-    when: {
-      show: function() {
-        let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
-        document.querySelector(".OrderEdit").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
-      }
-    },
-    text: `
-    </div>
-      <div class="s-title">Edit Entry price for the order by clicking on Edit button.</div>
-      <div class="tour-tab-container s-description">Enter the updated price at which you want to execute Limit <span class="OrderEdit">Long</span> Trade and press Update Order.
-      </div>
-    `,
-    attachTo: { element: ".edit-tour-button", on: "left" },
+  //     return ( document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
+  //   },
+  //   when: {
+  //     show: function() {
+  //       let swapPptionV2 = JSON.parse(localStorage.getItem('Swap-option-v2'))
+  //       document.querySelector(".OrderEdit").innerHTML  = Object.values(swapPptionV2).includes("Long") === true ? 'Long' : 'Short'
+  //     }
+  //   },
+  //   text: `
+  //   </div>
+  //     <div class="s-title">Edit Entry price for the order by clicking on Edit button.</div>
+  //     <div class="tour-tab-container s-description">Enter the updated price at which you want to execute Limit <span class="OrderEdit">Long</span> Trade and press Update Order.
+  //     </div>
+  //   `,
+  //   attachTo: { element: ".edit-tour-button", on: "left" },
     
-    buttons: [
-      {
-        type:'complete',
-        text: `
-        <div class="skip">Skip</div>
-        `,
-      },
-      {
-        type: "back",
-        text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            <div class="back">Prev</div>
-        </div>
-        `,
-      },
-      {
-        type:'next',
-        text: `
-        <div class="s-next">
-        <div>Next</div>
-        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
-        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        </div>
-        `,
-      },
-    ],
-  },
-  {
-    id: "OrderCancel",
-    title: "",
-    showOn(){
-      return ( document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
-    },
-    text: `
-    </div>
-      <div class="s-subTitle">To cancel the order, press on cancel and Sign the transaction.</div>
-    `,
-    attachTo: { element: ".cancel-tour-button", on: "left" },
+  //   buttons: [
+  //     {
+  //       type:'complete',
+  //       text: `
+  //       <div class="skip">Skip</div>
+  //       `,
+  //     },
+  //     {
+  //       type: "back",
+  //       text: `
+  //       <div style="
+  //       display: flex;
+  //       align-items: center;">
+  //           <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+  //           <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  //           </svg>
+  //           <div class="back">Prev</div>
+  //       </div>
+  //       `,
+  //     },
+  //     {
+  //       type:'next',
+  //       text: `
+  //       <div class="s-next">
+  //       <div>Next</div>
+  //       <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+  //       <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  //       <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  //       </svg>
+  //       </div>
+  //       `,
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "OrderCancel",
+  //   title: "",
+  //   showOn(){
+  //     return ( document.querySelector(".Exchange-swap-order-type-tabs .active").innerHTML === 'Limit');
+  //   },
+  //   text: `
+  //   </div>
+  //     <div class="s-subTitle">To cancel the order, press on cancel and Sign the transaction.</div>
+  //   `,
+  //   attachTo: { element: ".cancel-tour-button", on: "left" },
     
-    buttons: [
-      {
-        type:'complete',
-        text: `
-        <div class="skip">Skip</div>
-        `,
-      },
-      {
-        type: "back",
-        text: `
-        <div style="
-        display: flex;
-        align-items: center;">
-            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            <div class="back">Prev</div>
-            </div>
-        `,
-      },
-      {
-        action(){
-          this.next();  
-        },
-        text: `
-        <div class="s-next">
-        <div>Next</div>
-        <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
-        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        </div>
-        `,
-      },
-    ],
-  },
+  //   buttons: [
+  //     {
+  //       type:'complete',
+  //       text: `
+  //       <div class="skip">Skip</div>
+  //       `,
+  //     },
+  //     {
+  //       type: "back",
+  //       text: `
+  //       <div style="
+  //       display: flex;
+  //       align-items: center;">
+  //           <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+  //           <path d="M11.667 5.99972L1.00033 5.99971M1.00033 5.99971L5.66699 10.6664M1.00033 5.99971L5.66699 1.33305" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  //           </svg>
+  //           <div class="back">Prev</div>
+  //           </div>
+  //       `,
+  //     },
+  //     {
+  //       action(){
+  //         this.next();  
+  //       },
+  //       text: `
+  //       <div class="s-next">
+  //       <div>Next</div>
+  //       <div style="width: 100%; height: 100%; margin-bottom: 1.1px; margin-left: 4px">
+  //       <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  //       <path d="M3.16699 7.99967H13.8337M9.16699 3.33301L13.8337 7.99967L9.16699 12.6663" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  //       </svg>
+  //       </div>
+  //       `,
+  //     },
+  //   ],
+  // },
+
+
+
   {
     id: "feedback",
     title: "",    
