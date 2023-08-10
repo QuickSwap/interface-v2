@@ -13,8 +13,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { useIsV2 } from 'state/application/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { getConfig } from '../../config/index';
 import Loader from 'components/Loader';
 import { useQuery } from '@tanstack/react-query';
@@ -28,6 +27,7 @@ const AnalyticsSearch: React.FC = () => {
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
   const v2 = config['v2'];
+  const v3 = config['v3'];
   const [searchValInput, setSearchValInput] = useDebouncedChangeHandler(
     searchVal,
     setSearchVal,
@@ -39,9 +39,7 @@ const AnalyticsSearch: React.FC = () => {
   const [tokensShown, setTokensShown] = useState(3);
   const [pairsShown, setPairsShown] = useState(3);
   const tokenMap = useSelectedTokenList();
-
-  const { isV2 } = useIsV2();
-  const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
+  const version = useAnalyticsVersion();
 
   const escapeRegExp = (str: string) => {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -49,17 +47,64 @@ const AnalyticsSearch: React.FC = () => {
 
   const fetchSearchData = async () => {
     try {
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/search-token-pair/${
-          isV2 && v2 ? 'v2' : 'v3'
-        }?chainId=${chainIdToUse}&search=${searchVal}`,
-      );
-      if (!res.ok) {
-        return null;
+      let v2Data: any = null;
+      let v3Data: any = null;
+      if (v2) {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/search-token-pair/v2?chainId=${chainIdToUse}&search=${searchVal}`,
+        );
+        if (!res.ok) {
+          return null;
+        }
+        const data = await res.json();
+        if (data && data.data) {
+          v2Data = data.data;
+        }
       }
-      const data = await res.json();
 
-      return data && data.data ? data.data : null;
+      if (v3) {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/search-token-pair/v3?chainId=${chainIdToUse}&search=${searchVal}`,
+        );
+        if (!res.ok) {
+          return null;
+        }
+        const data = await res.json();
+        if (data && data.data) {
+          v3Data = data.data;
+        }
+      }
+
+      if (version === 'v2') return v2Data;
+      if (version === 'v3') return v3Data;
+      const v2Tokens =
+        v2Data && v2Data.tokens
+          ? v2Data.tokens.map((token: any) => {
+              return { ...token, version: 'v2' };
+            })
+          : [];
+      const v2Pairs =
+        v2Data && v2Data.pairs
+          ? v2Data.pairs.map((pair: any) => {
+              return { ...pair, version: 'v2' };
+            })
+          : [];
+      const v3Tokens =
+        v3Data && v3Data.tokens
+          ? v3Data.tokens.map((token: any) => {
+              return { ...token, version: 'v3' };
+            })
+          : [];
+      const v3Pairs =
+        v3Data && v3Data.pairs
+          ? v3Data.pairs.map((pair: any) => {
+              return { ...pair, version: 'v3' };
+            })
+          : [];
+      return {
+        tokens: v3Tokens.concat(v2Tokens),
+        pairs: v3Pairs.concat(v2Pairs),
+      };
     } catch (e) {
       return null;
     }
@@ -70,7 +115,7 @@ const AnalyticsSearch: React.FC = () => {
     data: searchData,
     refetch: refetchSearchData,
   } = useQuery({
-    queryKey: ['fetchSearchData', searchVal, isV2, v2, chainIdToUse],
+    queryKey: ['fetchSearchData', searchVal, version, chainIdToUse],
     queryFn: fetchSearchData,
   });
 
@@ -280,7 +325,11 @@ const AnalyticsSearch: React.FC = () => {
                     key={ind}
                     className='searchWidgetRow'
                     onClick={() => {
-                      history.push(`/analytics/${version}/pair/${val.id}`);
+                      history.push(
+                        `/analytics/${
+                          version === 'total' ? val.version : version
+                        }/pair/${val.id}`,
+                      );
                       setMenuOpen(false);
                     }}
                   >
