@@ -463,17 +463,17 @@ function FullApp() {
     setSavedSlippageAmount(basisPoints);
     setIsSettingsVisible(false);
   };
-  useEffect(() => {
-    const isTourViewed = localStorage.getItem("viewed_tour")
+  // useEffect(() => {
+  //   const isTourViewed = localStorage.getItem("viewed_tour")
 
-    if (isDrawerVisible || isTourViewed !== "true") {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+  //   if (isDrawerVisible || isTourViewed !== "true") {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = "unset";
+  //   }
 
-    return () => (document.body.style.overflow = "unset");
-  }, [isDrawerVisible]);
+  //   return () => (document.body.style.overflow = "unset");
+  // }, [isDrawerVisible]);
 
   const [pendingTxns, setPendingTxns] = useState([]);
 

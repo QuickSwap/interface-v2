@@ -1,27 +1,15 @@
 .shepherd-custom {
     padding: 0 1rem;
-    background: linear-gradient(228.09deg, #FF2CF7 -9.95%, rgba(251, 4, 123, 0.796875) 12.47%, rgba(255, 126, 188, 0.81) 30.87%, rgba(255, 255, 255, 0) 42.87%, rgba(73, 255, 233, 0.65) 70.34%, #130EFF 100.44%);
+    /* background: linear-gradient(228.09deg, #FF2CF7 -9.95%, rgba(251, 4, 123, 0.796875) 12.47%, rgba(255, 126, 188, 0.81) 30.87%, rgba(255, 255, 255, 0) 42.87%, rgba(73, 255, 233, 0.65) 70.34%, #130EFF 100.44%); */
     position: relative;
     border: 0px solid transparent;
-    border-radius: 40px;
+    border-radius: 20px;
     background-clip: padding-box;
     -webkit-background-clip: padding-box;
     box-shadow:none;
     max-width: 495px !important;
 }
 
-.shepherd-custom::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: -1;
-    margin: 5px;
-    border-radius: 38px;
-    background: white;
-}
 .shepherd-element .shepherd-arrow {
     border-width: 0;
     height: auto;
