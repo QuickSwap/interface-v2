@@ -94,7 +94,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && next export",
     "start": "next start",
     "format": "prettier --write \"**/*.{ts,js,tsx,json,md}\"",
     "integration-test": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run'",
