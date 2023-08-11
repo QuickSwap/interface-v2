@@ -9,7 +9,6 @@ const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
   swcMinify: true,
-  distDir: 'build',
   transpilePackages: [
     '@0xsquid/widget',
     '@orbs-network/twap-ui',
