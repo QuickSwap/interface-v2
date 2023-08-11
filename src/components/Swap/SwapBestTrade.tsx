@@ -442,6 +442,7 @@ const SwapBestTrade: React.FC<{
 
   const showApproveFlow =
     !swapInputError &&
+    !showWrap &&
     (approval === ApprovalState.NOT_APPROVED ||
       approval === ApprovalState.PENDING ||
       (approvalSubmitted && approval === ApprovalState.APPROVED));

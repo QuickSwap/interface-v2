@@ -50,3 +50,12 @@
     background: $secondary1;
   }
 }
+
+.txModalContentSuccess {
+  & svg {
+    color: $successMain;
+    margin-right: 4px;
+    top: 6px;
+    position: relative;
+  }
+}

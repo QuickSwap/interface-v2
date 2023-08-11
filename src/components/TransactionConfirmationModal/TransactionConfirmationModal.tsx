@@ -11,6 +11,7 @@ import ModalBg from 'assets/images/ModalBG.svg';
 import SpinnerImage from '../../assets/images/spinner.svg';
 import 'components/styles/TransactionConfirmationModal.scss';
 import { useTranslation } from 'react-i18next';
+import { CheckCircleOutline } from '@material-ui/icons';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -61,13 +62,14 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
         <h5>{txPending ? t('txSubmitted') : t('txCompleted')}</h5>
         <CloseIcon onClick={onDismiss} />
       </Box>
-      {!txPending && (
-        <Box mt={8} className='flex justify-center'>
-          <img src={TransactionSubmitted} alt='Transaction Submitted' />
-        </Box>
-      )}
-      <Box className='txModalContent'>
-        <p>{modalContent}</p>
+      <Box mt={8} className='flex justify-center'>
+        <img src={TransactionSubmitted} alt='Transaction Submitted' />
+      </Box>
+      <Box className='txModalContent txModalContentSuccess'>
+        <p>
+          <CheckCircleOutline />
+          {modalContent}
+        </p>
       </Box>
       <Box className='flex justify-between' mt={2}>
         {chainId && hash && (
@@ -77,9 +79,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
             rel='noopener noreferrer'
             style={{ width: '48%', textDecoration: 'none' }}
           >
-            <Button className='txSubmitButton'>
-              {t('viewonBlockExplorer')}
-            </Button>
+            <Button className='txSubmitButton'>{t('viewTx')}</Button>
           </a>
         )}
         <Button

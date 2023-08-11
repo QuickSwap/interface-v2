@@ -260,6 +260,7 @@
   "disconnect": "Disconnect",
   "change": "Change",
   "copyAddress": "Copy Address",
+  "viewTx": "View Tx",
   "viewonBlockExplorer": "View on Block Explorer",
   "recentTransactions": "Recent Transactions",
   "clearAll": "Clear all",

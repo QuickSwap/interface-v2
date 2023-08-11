@@ -85,7 +85,7 @@ function TransactionSubmittedContent({
           <ExternalLink
             href={getEtherscanLink(chainId, hash, ExplorerDataType.TRANSACTION)}
           >
-            <small>{t('viewonBlockExplorer')}</small>
+            <small>{t('viewTx')}</small>
           </ExternalLink>
         )}
         {currencyToAdd && library?.provider?.isMetaMask && (
