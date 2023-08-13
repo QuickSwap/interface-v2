@@ -699,5 +699,7 @@
   "proposals": "Proposals",
   "termsofuse": "Terms of Use",
   "walletDescription": "Connecting your wallet is like \"logging in\" on Web3. Select your wallet from the options to get started.",
-  "failedToFetchAnalyticsSearch": "Failed to fetch tokens and pairs."
+  "failedToFetchAnalyticsSearch": "Failed to fetch tokens and pairs.",
+  "liquidityLocked": "LIQUIDITY LOCKED",
+  "totalTVL": "TOTAL TVL"
 }

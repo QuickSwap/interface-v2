@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Grid, Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import AnalyticsExtraInfo from './AnalyticsExtraInfo';
 
 dayjs.extend(utc);
 
@@ -121,6 +122,7 @@ const AnalyticsOverview: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
+      <AnalyticsExtraInfo data={globalData} chainId={chainId} />
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='panel' width={1}>
