@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux';
 import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import AnalyticsExtraInfo from './AnalyticsExtraInfo';
+import { ChainId } from '@uniswap/sdk';
 
 dayjs.extend(utc);
 
@@ -122,7 +123,9 @@ const AnalyticsOverview: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
-      <AnalyticsExtraInfo data={globalData} chainId={chainId} />
+      {(chainId === ChainId.DOGECHAIN || chainId === ChainId.MATIC) && (
+        <AnalyticsExtraInfo data={globalData} chainId={chainId} />
+      )}
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='panel' width={1}>
