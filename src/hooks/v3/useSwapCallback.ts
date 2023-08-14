@@ -1,5 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Trade as V3Trade } from 'lib/src/trade';
+import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { SignatureData } from './useERC20Permit';
@@ -206,7 +207,12 @@ export function useSwapCallback(
   signatureData: SignatureData | undefined | null,
 ): {
   state: SwapCallbackState;
-  callback: null | (() => Promise<string>);
+  callback:
+    | null
+    | (() => Promise<{
+        response: TransactionResponse;
+        summary: string;
+      }>);
   error: string | null;
 } {
   const { account, chainId, library } = useActiveWeb3React();
@@ -250,7 +256,10 @@ export function useSwapCallback(
 
     return {
       state: SwapCallbackState.VALID,
-      callback: async function onSwap(): Promise<string> {
+      callback: async function onSwap(): Promise<{
+        response: TransactionResponse;
+        summary: string;
+      }> {
         const estimatedCalls: SwapCallEstimate[] = await Promise.all(
           swapCalls.map((call) => {
             const { address, calldata, value } = call;
@@ -368,7 +377,7 @@ export function useSwapCallback(
               summary: withVersion,
             });
 
-            return response.hash;
+            return { response, summary: withVersion };
           })
           .catch((error) => {
             // if the user rejected the tx, pass this along

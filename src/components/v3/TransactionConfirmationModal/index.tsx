@@ -1,17 +1,15 @@
-import { Currency } from '@uniswap/sdk-core';
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { CheckCircle, ExternalLink, X } from 'react-feather';
+import { X } from 'react-feather';
 import SpinnerImage from 'assets/images/spinner.svg';
-import MetaMaskLogo from 'assets/images/metamask-logo.svg';
 import { useActiveWeb3React } from 'hooks';
-import useAddTokenToMetamask from 'hooks/v3/useAddTokenToMetamask';
 import { CustomModal } from 'components';
-import { ExplorerDataType, getEtherscanLink } from 'utils';
+import { getEtherscanLink } from 'utils';
 import { useTranslation } from 'react-i18next';
 import TransactionFailed from 'assets/images/TransactionFailed.png';
 import TransactionSubmitted from 'assets/images/TransactionSubmitted.png';
 import 'components/styles/TransactionConfirmationModal.scss';
+import { CheckCircleOutline } from '@material-ui/icons';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -51,85 +49,53 @@ interface TransactionSubmittedContentProps {
   onDismiss: () => void;
   hash: string | undefined;
   chainId: number;
-  currencyToAdd?: Currency | undefined;
   inline?: boolean; // not in modal
+  txPending?: boolean;
 }
 
 function TransactionSubmittedContent({
   onDismiss,
   chainId,
   hash,
-  currencyToAdd,
   inline,
+  txPending,
 }: TransactionSubmittedContentProps) {
   const { t } = useTranslation();
-
-  const { library } = useActiveWeb3React();
-
-  const { addToken, success } = useAddTokenToMetamask(currencyToAdd);
 
   return (
     <div>
       {!inline && (
-        <Box className='flex justify-between'>
-          <div />
+        <Box className='txModalHeader'>
+          <h5>{txPending ? t('txSubmitted') : t('txCompleted')}</h5>
           <X className='cursor-pointer' onClick={onDismiss} />
         </Box>
       )}
-      <Box mt={2} className='flex justify-center'>
+      <Box mt={8} className='flex justify-center'>
         <img src={TransactionSubmitted} alt='Transaction Submitted' />
       </Box>
-      <Box mt={2} className='flex flex-col items-center'>
-        <h5>{t('txSubmitted')}</h5>
+      <Box className='txModalContent txModalContentSuccess'>
+        <p>
+          {!txPending && <CheckCircleOutline />}
+          {txPending ? t('submittedTxSwap') : t('swapSuccess')}
+        </p>
+      </Box>
+      <Box className='flex justify-between' mt={2}>
         {chainId && hash && (
-          <ExternalLink
-            href={getEtherscanLink(chainId, hash, ExplorerDataType.TRANSACTION)}
+          <a
+            href={getEtherscanLink(chainId, hash, 'transaction')}
+            target='_blank'
+            rel='noopener noreferrer'
+            style={{ width: '48%', textDecoration: 'none' }}
           >
-            <small>{t('viewTx')}</small>
-          </ExternalLink>
-        )}
-        {currencyToAdd && library?.provider?.isMetaMask && (
-          <>
-            {!success ? (
-              <Button
-                style={{ marginTop: 12, borderRadius: 12 }}
-                onClick={addToken}
-              >
-                <Box className='flex items-center'>
-                  {t('addToMetamaskToken', { symbol: currencyToAdd.symbol })}
-                  <img
-                    src={MetaMaskLogo}
-                    alt='Metamask'
-                    width='16px'
-                    style={{ marginLeft: 6 }}
-                  />
-                </Box>
-              </Button>
-            ) : (
-              <Box mt='12px' className='flex items-center'>
-                <p>
-                  {t('added')} {currencyToAdd.symbol}
-                </p>
-                <CheckCircle
-                  size={'16px'}
-                  stroke='green'
-                  style={{ marginLeft: '6px' }}
-                />
-              </Box>
-            )}
-          </>
+            <Button className='txSubmitButton'>{t('viewTx')}</Button>
+          </a>
         )}
         <Button
-          fullWidth
           onClick={onDismiss}
-          style={{
-            height: 40,
-            borderRadius: 12,
-            margin: '20px 0 0 0',
-            color: 'white',
-          }}
+          className='txSubmitButton'
+          style={{ width: '48%' }}
         >
-          {inline ? t('return') : t('close')}
+          {t('close')}
         </Button>
       </Box>
     </div>
@@ -197,7 +163,7 @@ interface ConfirmationModalProps {
   content: () => ReactNode;
   attemptingTxn: boolean;
   pendingText: ReactNode;
-  currencyToAdd?: Currency | undefined;
+  txPending?: boolean;
 }
 
 export default function TransactionConfirmationModal({
@@ -207,16 +173,9 @@ export default function TransactionConfirmationModal({
   hash,
   pendingText,
   content,
-  currencyToAdd,
+  txPending,
 }: ConfirmationModalProps) {
   const { chainId } = useActiveWeb3React();
-
-  // if on L2 and txn is submitted, close automatically (if open)
-  useEffect(() => {
-    if (isOpen && chainId && hash) {
-      onDismiss();
-    }
-  }, [chainId, hash, isOpen, onDismiss]);
 
   if (!chainId) return null;
 
@@ -240,7 +199,7 @@ export default function TransactionConfirmationModal({
             chainId={chainId}
             hash={hash}
             onDismiss={onDismiss}
-            currencyToAdd={currencyToAdd}
+            txPending={txPending}
           />
         ) : (
           content()

@@ -67,7 +67,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
       </Box>
       <Box className='txModalContent txModalContentSuccess'>
         <p>
-          <CheckCircleOutline />
+          {!txPending && <CheckCircleOutline />}
           {modalContent}
         </p>
       </Box>
