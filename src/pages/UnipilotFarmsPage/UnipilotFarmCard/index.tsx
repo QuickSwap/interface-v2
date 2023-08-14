@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, useTheme, useMediaQuery } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Token } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk-core';
 import { DoubleCurrencyLogo } from 'components';
 import { Link } from 'react-router-dom';
 import { formatNumber } from 'utils';
@@ -10,12 +10,17 @@ import UnipilotFarmCardDetails from '../UnipilotFarmCardDetails';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { formatUnits } from 'ethers/lib/utils';
+import { useUniPilotVaultContract } from 'hooks/useContract';
+import { useTokenBalance } from 'state/wallet/v3/hooks';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import { JSBI } from '@uniswap/sdk';
 
 const UnipilotFarmCard: React.FC<{
   data: any;
-  token0: Token | null;
-  token1: Token | null;
-}> = ({ data, token0, token1 }) => {
+  farmData: any;
+  token0?: Token;
+  token1?: Token;
+}> = ({ data, token0, token1, farmData }) => {
   const { t } = useTranslation();
   const [showDetails, setShowDetails] = useState(false);
   const { breakpoints } = useTheme();
@@ -27,6 +32,69 @@ const UnipilotFarmCard: React.FC<{
   const rewardB = Number(
     formatUnits(data.totalRewardPaidB, data.rewardTokenB.decimals),
   );
+
+  const uniPilotVaultContract = useUniPilotVaultContract(data?.stakingAddress);
+  const unipilotToken0VaultBalance = useTokenBalance(
+    data?.stakingAddress,
+    token0 ?? undefined,
+  );
+  const unipilotToken1VaultBalance = useTokenBalance(
+    data?.stakingAddress,
+    token1 ?? undefined,
+  );
+  const uniPilotVaultPositionResult = useSingleCallResult(
+    uniPilotVaultContract,
+    'getPositionDetails',
+  );
+  const vaultTotalSupplyResult = useSingleCallResult(
+    uniPilotVaultContract,
+    'totalSupply',
+  );
+  const vaultTotalSupply =
+    !vaultTotalSupplyResult.loading &&
+    vaultTotalSupplyResult.result &&
+    vaultTotalSupplyResult.result.length > 0
+      ? vaultTotalSupplyResult.result[0]
+      : undefined;
+  const uniPilotVaultReserve = useMemo(() => {
+    if (
+      !uniPilotVaultPositionResult.loading &&
+      uniPilotVaultPositionResult.result &&
+      uniPilotVaultPositionResult.result.length > 1 &&
+      vaultTotalSupply &&
+      JSBI.greaterThan(JSBI.BigInt(vaultTotalSupply), JSBI.BigInt(0))
+    ) {
+      const token0Reserve = JSBI.add(
+        JSBI.BigInt(uniPilotVaultPositionResult.result[0]),
+        unipilotToken0VaultBalance?.numerator ?? JSBI.BigInt(0),
+      );
+      const token1Reserve = JSBI.add(
+        JSBI.BigInt(uniPilotVaultPositionResult.result[1]),
+        unipilotToken1VaultBalance?.numerator ?? JSBI.BigInt(0),
+      );
+      return {
+        token0: JSBI.divide(
+          JSBI.multiply(JSBI.BigInt(data.totalLpLocked), token0Reserve),
+          JSBI.BigInt(vaultTotalSupply),
+        ),
+        token1: JSBI.divide(
+          JSBI.multiply(JSBI.BigInt(data.totalLpLocked), token1Reserve),
+          JSBI.BigInt(vaultTotalSupply),
+        ),
+      };
+    }
+    return;
+  }, [
+    uniPilotVaultPositionResult,
+    unipilotToken0VaultBalance,
+    unipilotToken1VaultBalance,
+    data,
+    vaultTotalSupply,
+  ]);
+
+  const poolAPR = farmData ? farmData['stats'] : 0;
+  const farmAPR = farmData ? farmData['farming'] : 0;
+  const totalAPR = farmData ? farmData['total'] : 0;
 
   return (
     <Box
@@ -75,16 +143,16 @@ const UnipilotFarmCard: React.FC<{
                 {rewardA > 0 && (
                   <div>
                     <small className='small weight-600'>
-                      {formatNumber(rewardA * 3600 * 24)}{' '}
-                      {data.rewardTokenA.symbol} / {t('day')}
+                      {formatNumber(rewardA)} {data.rewardTokenA.symbol} /{' '}
+                      {t('day')}
                     </small>
                   </div>
                 )}
                 {rewardB > 0 && (
                   <div>
                     <small className='small weight-600'>
-                      {formatNumber(rewardB * 3600 * 24)}{' '}
-                      {data.rewardTokenB.symbol} / {t('day')}
+                      {formatNumber(rewardB)} {data.rewardTokenB.symbol} /{' '}
+                      {t('day')}
                     </small>
                   </div>
                 )}
@@ -92,21 +160,16 @@ const UnipilotFarmCard: React.FC<{
             </>
           )}
 
-          {/* {(!isMobile || !showDetails) && (
+          {(!isMobile || !showDetails) && (
             <Box width={isMobile ? '30%' : '20%'} className='flex items-center'>
-              <small className='text-success'>
-                {formatNumber((poolAPR + farmAPR) * 100)}%
-              </small>
+              <small className='text-success'>{formatNumber(totalAPR)}%</small>
               <Box ml={0.5} height={16}>
-                <TotalAPRTooltip
-                  farmAPR={farmAPR * 100}
-                  poolAPR={poolAPR * 100}
-                >
+                <TotalAPRTooltip farmAPR={farmAPR} poolAPR={poolAPR}>
                   <img src={CircleInfoIcon} alt={'arrow up'} />
                 </TotalAPRTooltip>
               </Box>
             </Box>
-          )} */}
+          )}
         </Box>
 
         <Box width='10%' className='flex justify-center'>

@@ -49,6 +49,8 @@ import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
+import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
+import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -355,4 +357,22 @@ export function useUniPilotVaultContract(
   withSignerIfPossible?: boolean,
 ) {
   return useContract(address, UNIPILOT_VAULT_ABI, withSignerIfPossible);
+}
+
+export function useUnipilotFarmingContract(
+  address?: string,
+  isDual?: boolean,
+  withSignerIfPossible?: boolean,
+) {
+  const singleContract = useContract(
+    address,
+    UNIPILOT_SINGLE_REWARD_ABI,
+    withSignerIfPossible,
+  );
+  const dualContract = useContract(
+    address,
+    UNIPILOT_DUAL_REWARD_ABI,
+    withSignerIfPossible,
+  );
+  return isDual ? dualContract : singleContract;
 }

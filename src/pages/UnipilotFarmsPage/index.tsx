@@ -1,29 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { Box } from '@material-ui/core';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/Loader';
-import {
-  GammaPair,
-  GammaPairs,
-  GlobalConst,
-  GlobalData,
-} from 'constants/index';
-import { useQuery } from '@tanstack/react-query';
+import { GlobalConst, GlobalData } from 'constants/index';
 import UnipilotFarmCard from './UnipilotFarmCard';
-import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
+import { getTokenFromAddress } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { Token } from '@uniswap/sdk';
-import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import {
-  useGammaHypervisorContract,
-  useMasterChefContract,
-} from 'hooks/useContract';
-import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
 import {
   useUnipilotFarmData,
@@ -56,8 +41,6 @@ const UnipilotFarmsPage: React.FC<{
     chainId,
   );
 
-  console.log('aaa', unipilotFarmData);
-
   const rewardTokenAddresses = unipilotFarms.reduce(
     (memo: string[], farm: any) => {
       if (
@@ -84,35 +67,21 @@ const UnipilotFarmsPage: React.FC<{
   const filteredFarms = unipilotFarms
     .map((item: any) => {
       if (chainId) {
-        const token0Data = getTokenFromAddress(
+        const token0 = getTokenFromAddress(
           item.token0.id,
           chainId,
           tokenMap,
           [],
         );
-        const token1Data = getTokenFromAddress(
+        const token1 = getTokenFromAddress(
           item.token1.id,
           chainId,
           tokenMap,
           [],
         );
-        const token0 = new Token(
-          chainId,
-          token0Data.address,
-          token0Data.decimals,
-          token0Data.symbol,
-          token0Data.name,
-        );
-        const token1 = new Token(
-          chainId,
-          token1Data.address,
-          token1Data.decimals,
-          token1Data.symbol,
-          token1Data.name,
-        );
         return { ...item, token0, token1 };
       }
-      return { ...item, token0: null, token1: null };
+      return { ...item, token0: undefined, token1: undefined };
     })
     .filter((item: any) => {
       const searchCondition =
@@ -256,34 +225,24 @@ const UnipilotFarmsPage: React.FC<{
           ? sortMultiplier
           : -1 * sortMultiplier;
       } else if (sortBy === v3FarmSortBy.apr) {
-        // const poolAPR0 =
-        //   gammaData0 &&
-        //   gammaData0['returns'] &&
-        //   gammaData0['returns']['allTime'] &&
-        //   gammaData0['returns']['allTime']['feeApr']
-        //     ? Number(gammaData0['returns']['allTime']['feeApr'])
-        //     : 0;
-        // const poolAPR1 =
-        //   gammaData1 &&
-        //   gammaData1['returns'] &&
-        //   gammaData1['returns']['allTime'] &&
-        //   gammaData1['returns']['allTime']['feeApr']
-        //     ? Number(gammaData1['returns']['allTime']['feeApr'])
-        //     : 0;
-        // const farmAPR0 =
-        //   gammaReward0 && gammaReward0['apr'] ? Number(gammaReward0['apr']) : 0;
-        // const farmAPR1 =
-        //   gammaReward1 && gammaReward1['apr'] ? Number(gammaReward1['apr']) : 0;
-        // return poolAPR0 + farmAPR0 > poolAPR1 + farmAPR1
-        //   ? sortMultiplier
-        //   : -1 * sortMultiplier;
+        const farm0Data =
+          unipilotFarmData && farm0 && farm0.id
+            ? unipilotFarmData[farm0.id.toLowerCase()]
+            : undefined;
+        const farm0Apr = farm0Data ? Number(farm0Data['total']) : 0;
+        const farm1Data =
+          unipilotFarmData && farm1 && farm1.id
+            ? unipilotFarmData[farm1.id.toLowerCase()]
+            : undefined;
+        const farm1Apr = farm1Data ? Number(farm1Data['total']) : 0;
+        return farm0Apr > farm1Apr ? sortMultiplier : -1 * sortMultiplier;
       }
       return 1;
     });
 
   return (
     <Box px={2} py={3}>
-      {unipilotFarmsLoading ? (
+      {unipilotFarmsLoading || unipilotFarmDataLoading ? (
         <div className='flex justify-center' style={{ padding: '16px 0' }}>
           <Loader stroke='white' size='1.5rem' />
         </div>
@@ -299,11 +258,16 @@ const UnipilotFarmsPage: React.FC<{
         <Box>
           {filteredFarms.map((farm: any) => {
             return (
-              <Box mb={2} key={farm.address}>
+              <Box mb={2} key={farm.id}>
                 <UnipilotFarmCard
                   token0={farm.token0}
                   token1={farm.token1}
                   data={farm}
+                  farmData={
+                    unipilotFarmData && farm.id
+                      ? unipilotFarmData[farm.id.toLowerCase()]
+                      : undefined
+                  }
                 />
               </Box>
             );

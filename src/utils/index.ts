@@ -1146,3 +1146,27 @@ export const getUnipilotFarmData = async (
     return null;
   }
 };
+
+export const getUnipilotUserFarms = async (
+  chainId?: ChainId,
+  account?: string,
+) => {
+  if (!chainId || !account) return [];
+  try {
+    const res = await fetch(
+      `${
+        process.env.REACT_APP_LEADERBOARD_APP_URL
+      }/unipilot/farming-user-vaults/${account.toLowerCase()}?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(
+        errorText || res.statusText || `Failed to get unipilot user farms`,
+      );
+    }
+    const data = await res.json();
+    return data && data.data && data.data.vaults ? data.data.vaults : [];
+  } catch (err) {
+    return [];
+  }
+};
