@@ -566,8 +566,6 @@ const SwapV3Page: React.FC = () => {
   //TODO
   const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
 
-  console.log('ccc', showConfirm);
-
   return (
     <>
       <Helmet>

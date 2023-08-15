@@ -32,7 +32,7 @@ const AnalyticsExtraInfo: React.FC<AnalyticsInfoProps> = ({
       const balance = Number(lairInfo.totalQuickBalance.toExact());
       if (balance > 0) {
         const newReward = balance * quickPrice;
-        const totalTVLValue = data.totalLiquidityUSD + newReward;
+        const totalTVLValue = (data?.totalLiquidityUSD ?? 0) + newReward;
 
         const formattedReward = formatCompact(newReward, 18, 3, 3);
         // if (formattedReward !== rewards && rewards !== '0') {
