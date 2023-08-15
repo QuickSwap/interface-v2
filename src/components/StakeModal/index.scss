@@ -13,12 +13,12 @@
 .v3-farm-stake-modal-position {
   background-color: $secondary3;
   height: 84px;
-  min-width: 250px;
+  width: 100%;
   display: flex;
   align-items: center;
   padding: 0 12px;
   border-radius: 8px;
-  margin: 0 24px 16px 0;
+  margin: 0 0 16px;
   position: relative;
   cursor: pointer;
   & a {

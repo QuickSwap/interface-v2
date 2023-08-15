@@ -442,6 +442,7 @@ const SwapBestTrade: React.FC<{
 
   const showApproveFlow =
     !swapInputError &&
+    !showWrap &&
     (approval === ApprovalState.NOT_APPROVED ||
       approval === ApprovalState.PENDING ||
       (approvalSubmitted && approval === ApprovalState.APPROVED));
@@ -756,7 +757,7 @@ const SwapBestTrade: React.FC<{
             attemptingTxn: false,
             tradeToConfirm,
             showConfirm,
-            swapErrorMessage: (error as any).message,
+            swapErrorMessage: error?.message,
             txHash: undefined,
           });
         }
@@ -766,7 +767,7 @@ const SwapBestTrade: React.FC<{
           attemptingTxn: false,
           tradeToConfirm,
           showConfirm,
-          swapErrorMessage: error.message,
+          swapErrorMessage: error?.message,
           txHash: undefined,
         });
       });
