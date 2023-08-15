@@ -4,6 +4,7 @@ import { Contract } from 'ethers';
 import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
 import FARMING_CENTER_ABI from 'abis/farming-center.json';
 import FINITE_FARMING_ABI from 'abis/finite-farming.json';
+import VIRTUAL_POOL_ABI from 'abis/virtual-pool.json';
 import {
   FARMING_CENTER,
   FINITE_FARMING,
@@ -24,7 +25,7 @@ import {
   fetchPoolsAPR,
 } from 'utils/api';
 import { useSelectedTokenList } from 'state/lists/v3/hooks';
-import { getV3TokenFromAddress } from 'utils';
+import { getContract, getV3TokenFromAddress } from 'utils';
 import { ChainId } from '@uniswap/sdk';
 import { formatTokenSymbol } from 'utils/v3-graph';
 
@@ -681,8 +682,9 @@ export function useFarmingSubgraph() {
     }
   }
 
-  async function fetchEternalFarms(ended = false) {
+  async function fetchEternalFarms() {
     setEternalFarmsLoading(true);
+    if (!provider) throw new Error('No provider');
     try {
       const res = await fetch(
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
@@ -694,29 +696,8 @@ export function useFarmingSubgraph() {
         );
       }
       const data = await res.json();
-      const eternalFarmingsSubgraph =
-        data && data.data && data.data.farms ? data.data.farms : [];
-
       const eternalFarmings =
-        eternalFarmingsSubgraph && eternalFarmingsSubgraph.length > 0
-          ? eternalFarmingsSubgraph.filter((farming: any) => {
-              if (ended) {
-                return (
-                  farming.isDetached ||
-                  ((!farming.rewardRate || !Number(farming.rewardRate)) &&
-                    (!farming.bonusRewardRate ||
-                      !Number(farming.bonusRewardRate)))
-                );
-              } else {
-                return (
-                  !farming.isDetached &&
-                  ((farming.rewardRate && Number(farming.rewardRate) > 0) ||
-                    (farming.bonusRewardRate &&
-                      Number(farming.bonusRewardRate) > 0))
-                );
-              }
-            })
-          : [];
+        data && data.data && data.data.farms ? data.data.farms : [];
 
       if (eternalFarmings.length === 0) {
         setEternalFarms([]);
@@ -724,11 +705,17 @@ export function useFarmingSubgraph() {
         return;
       }
 
-      let _eternalFarmings: FormattedEternalFarming[] = [];
-      // TODO
-      // .filter(farming => +farming.bonusRewardRate || +farming.rewardRate)
+      const _eternalFarmings: FormattedEternalFarming[] = [];
+
       for (const farming of eternalFarmings) {
         try {
+          const virtualPoolContract = getContract(
+            farming.virtualPool,
+            VIRTUAL_POOL_ABI,
+            provider,
+          );
+          const reward = await virtualPoolContract.rewardReserve0();
+          const bonusReward = await virtualPoolContract.rewardReserve1();
           const pool = await fetchPool(farming.pool);
           const rewardToken = await fetchToken(farming.rewardToken, true);
           const bonusRewardToken = await fetchToken(
@@ -755,20 +742,15 @@ export function useFarmingSubgraph() {
             true,
           );
 
-          _eternalFarmings = [
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            ..._eternalFarmings,
-            {
-              ...farming,
-              rewardToken,
-              bonusRewardToken,
-              multiplierToken,
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-ignore
-              pool: newPool,
-            },
-          ];
+          _eternalFarmings.push({
+            ...farming,
+            reward: reward.toString(),
+            bonusReward: bonusReward.toString(),
+            rewardToken,
+            bonusRewardToken,
+            multiplierToken,
+            pool: newPool,
+          });
         } catch (e) {
           console.log(e);
         }

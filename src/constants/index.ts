@@ -238,7 +238,7 @@ export const GlobalConst = {
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
     BRAVEWALLET: 'BraveWallet',
-    BITKEEP: 'BitKeep',
+    BITGET: 'Bitget Wallet',
     INJECTED: 'Injected',
     SAFE_APP: 'Gnosis Safe App',
     ARKANE_CONNECT: 'Venly',

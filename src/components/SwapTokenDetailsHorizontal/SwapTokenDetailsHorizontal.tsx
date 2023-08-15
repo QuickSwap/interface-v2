@@ -52,9 +52,6 @@ const SwapTokenDetailsHorizontal: React.FC<{
           data && data.data && data.data.intervalTokenData
             ? data.data.intervalTokenData
             : undefined;
-        tokenPriceIsV2 = !!tokenPriceDataV2.find(
-          (item: any) => item.open && item.close,
-        );
       }
 
       const res = await fetch(
@@ -71,14 +68,40 @@ const SwapTokenDetailsHorizontal: React.FC<{
         data && data.data && data.data.intervalTokenData
           ? data.data.intervalTokenData
           : undefined;
+      const tokenPriceIsV3 = !!tokenPriceDataV3.find(
+        (item: any) => item.open && item.close,
+      );
 
-      const tokenPriceData = tokenPriceIsV2
-        ? tokenPriceDataV2
-        : tokenPriceDataV3;
+      const tokenPriceData = tokenPriceIsV3
+        ? tokenPriceDataV3
+        : tokenPriceDataV2;
       setPriceData(tokenPriceData);
 
-      let token0;
-      if (v2) {
+      const tokenDetailsRes = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
+      );
+      if (!tokenDetailsRes.ok) {
+        const errorText = await tokenDetailsRes.text();
+        throw new Error(
+          errorText ||
+            tokenDetailsRes.statusText ||
+            `Failed to get top token details`,
+        );
+      }
+      const tokenDetailsData = await tokenDetailsRes.json();
+      const tokenV3 =
+        tokenDetailsData && tokenDetailsData.data && tokenDetailsData.data.token
+          ? tokenDetailsData.data.token
+          : undefined;
+      if (tokenV3) {
+        setTokenData(tokenV3);
+        const tokenDetailToUpdate = {
+          address: tokenAddress,
+          tokenData: tokenV3,
+          priceData: tokenPriceData,
+        };
+        updateTokenDetails(tokenDetailToUpdate);
+      } else if (v2 && !tokenV3.priceUSD) {
         const res = await fetch(
           `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
         );
@@ -89,36 +112,13 @@ const SwapTokenDetailsHorizontal: React.FC<{
           );
         }
         const data = await res.json();
-        token0 =
+        const token0 =
           data && data.data && data.data.token ? data.data.token : undefined;
         if (token0 && token0.priceUSD) {
           setTokenData(token0);
           const tokenDetailToUpdate = {
             address: tokenAddress,
             tokenData: token0,
-            priceData: tokenPriceData,
-          };
-          updateTokenDetails(tokenDetailToUpdate);
-        }
-      }
-      if (!token0 || !token0.priceUSD) {
-        const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
-        );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get top token details`,
-          );
-        }
-        const data = await res.json();
-        const tokenV3 =
-          data && data.data && data.data.token ? data.data.token : undefined;
-        if (tokenV3) {
-          setTokenData(tokenV3);
-          const tokenDetailToUpdate = {
-            address: tokenAddress,
-            tokenData: tokenV3,
             priceData: tokenPriceData,
           };
           updateTokenDetails(tokenDetailToUpdate);
@@ -133,7 +133,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       <Grid item xs={4}>
         <Box className='flex items-center'>
           <CurrencyLogo currency={currency} size='28px' />
-          <Box ml={1}>
+          <Box ml={0.5}>
             <small>{currency.symbol}</small>
           </Box>
         </Box>

@@ -1,5 +1,4 @@
 .eternal-page {
-
   &__row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -20,12 +19,14 @@
   }
 }
 
+.farmModalWrapper {
+  max-width: 400px;
+}
+
 @media screen and (max-width: 500px) {
   .eternal-page {
-
     &__row {
       grid-template-columns: repeat(1, 1fr);
     }
-
   }
 }

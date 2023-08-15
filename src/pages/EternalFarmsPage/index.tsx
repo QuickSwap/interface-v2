@@ -36,7 +36,7 @@ const EternalFarmsPage: React.FC<{
   const {
     fetchEternalFarms: {
       fetchEternalFarmsFn,
-      eternalFarms,
+      eternalFarms: allEternalFarms,
       eternalFarmsLoading,
     },
     fetchEternalFarmPoolAprs: {
@@ -57,14 +57,36 @@ const EternalFarmsPage: React.FC<{
   } = useFarmingSubgraph() || {};
 
   useEffect(() => {
-    fetchEternalFarmsFn(farmStatus === 'ended');
+    fetchEternalFarmsFn();
     fetchEternalFarmPoolAprsFn();
     fetchEternalFarmAprsFn();
     fetchEternalFarmTvlsFn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [farmStatus]);
+  }, []);
 
   const sortDescKey = sortDesc ? -1 : 1;
+
+  const eternalFarms = useMemo(() => {
+    if (!allEternalFarms) return [];
+    return allEternalFarms
+      .filter((farm) => {
+        if (farmStatus === 'active') {
+          return (
+            (Number(farm.reward) > 0 || Number(farm.bonusReward) > 0) &&
+            ((farm.rewardRate && Number(farm.rewardRate) > 0) ||
+              (farm.bonusRewardRate && Number(farm.bonusRewardRate) > 0))
+          );
+        }
+        return Number(farm.reward) === 0 && Number(farm.bonusReward) === 0;
+      })
+      .map((farm) => {
+        return {
+          ...farm,
+          rewardRate: farmStatus === 'ended' ? '0' : farm.rewardRate,
+          bonusRewardRate: farmStatus === 'ended' ? '0' : farm.bonusRewardRate,
+        };
+      });
+  }, [allEternalFarms, farmStatus]);
 
   const rewardTokenAddresses = useMemo(() => {
     if (!eternalFarms || !eternalFarms.length) return [];
@@ -333,7 +355,11 @@ const EternalFarmsPage: React.FC<{
 
   return (
     <>
-      <CustomModal open={!!modalForPool} onClose={() => setModalForPool(null)}>
+      <CustomModal
+        modalWrapper='farmModalWrapper'
+        open={!!modalForPool}
+        onClose={() => setModalForPool(null)}
+      >
         {modalForPool && (
           <FarmModal
             event={modalForPool}

@@ -29,7 +29,7 @@ import {
   phantomConnection,
 } from 'connectors';
 import {
-  getIsBitKeepWallet,
+  getIsBitgetWallet,
   getIsMetaMaskWallet,
   getIsTrustWallet,
 } from 'connectors/utils';
@@ -149,7 +149,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isMetamask = getIsMetaMaskWallet();
     const isBlockWallet = ethereum && ethereum.isBlockWallet;
     const isCypherD = ethereum && ethereum.isCypherD;
-    const isBitKeep = getIsBitKeepWallet();
+    const isBitget = getIsBitgetWallet();
     const isTrustWallet = getIsTrustWallet();
     const isBraveWallet = ethereum && ethereum.isBraveWallet;
     const isPhantomWallet =
@@ -190,13 +190,13 @@ const WalletModal: React.FC<WalletModalProps> = ({
             iconify={iconify}
           />
         );
-      } else if (option.name === GlobalConst.walletName.BITKEEP && !isBitKeep) {
+      } else if (option.name === GlobalConst.walletName.BITGET && !isBitget) {
         return (
           <WalletOption
             id={`connect-${option.name}`}
             key={option.name}
             color={'#E8831D'}
-            header={t('installBitKeep')}
+            header={t('installBitget')}
             subheader={null}
             link={'https://bitkeep.com/en/download'}
             icon={option.iconName}
@@ -422,8 +422,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
   }
 
   return (
-    <CustomModal open={walletModalOpen} onClose={toggleWalletModal}>
-      <Box className='walletModalWrapper'>{getModalContent()}</Box>
+    <CustomModal
+      modalWrapper='walletModalWrapper'
+      open={walletModalOpen}
+      onClose={toggleWalletModal}
+    >
+      <Box>{getModalContent()}</Box>
     </CustomModal>
   );
 };

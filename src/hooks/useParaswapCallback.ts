@@ -216,7 +216,8 @@ export function useParaswapCallback(
 
           return { response, summary: withVersion };
         } catch (error) {
-          if (error?.code === 4001) {
+          console.log('ccc', error?.code);
+          if (error?.code === 'ACTION_REJECTED') {
             throw new Error('Transaction rejected.');
           } else {
             throw new Error(`Swap failed: ${error.message}`);

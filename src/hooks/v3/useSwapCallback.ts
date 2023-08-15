@@ -1,5 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Trade as V3Trade } from 'lib/src/trade';
+import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { SignatureData } from './useERC20Permit';
@@ -10,8 +11,6 @@ import { calculateGasMargin, isAddress, isZero, shortenAddress } from 'utils';
 import useENS from 'hooks/useENS';
 import { SWAP_ROUTER_ADDRESSES } from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
-import { useAppSelector } from 'state';
-import { GAS_PRICE_MULTIPLIER } from 'hooks/useGasPrice';
 import { SwapRouter } from 'lib/src/swapRouter';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
@@ -208,7 +207,12 @@ export function useSwapCallback(
   signatureData: SignatureData | undefined | null,
 ): {
   state: SwapCallbackState;
-  callback: null | (() => Promise<string>);
+  callback:
+    | null
+    | (() => Promise<{
+        response: TransactionResponse;
+        summary: string;
+      }>);
   error: string | null;
 } {
   const { account, chainId, library } = useActiveWeb3React();
@@ -221,13 +225,6 @@ export function useSwapCallback(
   );
 
   const addTransaction = useTransactionAdder();
-
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
 
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =
@@ -259,7 +256,10 @@ export function useSwapCallback(
 
     return {
       state: SwapCallbackState.VALID,
-      callback: async function onSwap(): Promise<string> {
+      callback: async function onSwap(): Promise<{
+        response: TransactionResponse;
+        summary: string;
+      }> {
         const estimatedCalls: SwapCallEstimate[] = await Promise.all(
           swapCalls.map((call) => {
             const { address, calldata, value } = call;
@@ -318,10 +318,7 @@ export function useSwapCallback(
         );
 
         // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
-        let bestCallOption:
-          | SuccessfulCall
-          | SwapCallEstimate
-          | undefined = estimatedCalls.find(
+        const bestCallOption = estimatedCalls.find(
           (el, ix, list): el is SuccessfulCall =>
             'gasEstimate' in el &&
             (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
@@ -334,14 +331,9 @@ export function useSwapCallback(
           );
           if (errorCalls.length > 0)
             throw errorCalls[errorCalls.length - 1].error;
-          const firstNoErrorCall = estimatedCalls.find<SwapCallEstimate>(
-            (call): call is SwapCallEstimate => !('error' in call),
+          throw new Error(
+            'Unexpected error. Could not estimate gas for the swap.',
           );
-          if (!firstNoErrorCall)
-            throw new Error(
-              'Unexpected error. Could not estimate gas for the swap.',
-            );
-          bestCallOption = firstNoErrorCall;
         }
 
         const {
@@ -355,9 +347,7 @@ export function useSwapCallback(
             to: address,
             data: calldata,
             // let the wallet try if we can't estimate the gas
-            ...('gasEstimate' in bestCallOption
-              ? { gasLimit: calculateGasMargin(bestCallOption.gasEstimate) }
-              : { gasPrice: gasPrice * GAS_PRICE_MULTIPLIER }),
+            gasLimit: calculateGasMargin(bestCallOption.gasEstimate),
             ...(value && !isZero(value) ? { value } : {}),
           })
           .then((response) => {
@@ -387,11 +377,11 @@ export function useSwapCallback(
               summary: withVersion,
             });
 
-            return response.hash;
+            return { response, summary: withVersion };
           })
           .catch((error) => {
             // if the user rejected the tx, pass this along
-            if (error?.code === 4001) {
+            if (error?.code === 'ACTION_REJECTED') {
               throw new Error('Transaction rejected.');
             } else {
               // otherwise, the error was unexpected and we need to convey that
@@ -413,7 +403,6 @@ export function useSwapCallback(
     recipient,
     recipientAddressOrName,
     swapCalls,
-    gasPrice,
     addTransaction,
   ]);
 }

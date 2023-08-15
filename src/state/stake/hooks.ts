@@ -83,13 +83,18 @@ let oneDayVol: any = undefined;
 export function useTotalRewardsDistributed(
   chainId: ChainId,
 ): number | undefined {
-  const syrupRewardsInfo = Object.values(useDefaultSyrupList()[chainId]);
+  const allSyrupRewardsInfo = Object.values(useDefaultSyrupList()[chainId]);
   const dualStakingRewardsInfo = Object.values(
     useDefaultDualFarmList()[chainId],
   ).filter((x) => !x.ended);
   const stakingRewardsInfo = Object.values(
     useDefaultFarmList()[chainId],
   ).filter((x) => !x.ended);
+  const currentTimestamp = dayjs().unix();
+
+  const syrupRewardsInfo = allSyrupRewardsInfo.filter(
+    (x) => x.ending > currentTimestamp && !x.ended,
+  );
 
   const tokenAddresses = syrupRewardsInfo
     .map((item) => item.token.address)
