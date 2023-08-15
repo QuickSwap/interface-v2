@@ -5,10 +5,14 @@ import { DoubleCurrencyLogo } from 'components';
 import { Link } from 'react-router-dom';
 import { formatNumber } from 'utils';
 import { ChevronDown, ChevronUp } from 'react-feather';
-import UnipilotFarmCardDetails from '../UnipilotFarmCardDetails';
+import UnipilotFarmCardDetails from './UnipilotFarmCardDetails';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { formatUnits } from 'ethers/lib/utils';
+import { useUniPilotVaultContract } from 'hooks/useContract';
+import { useTokenBalance } from 'state/wallet/hooks';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import { JSBI } from '@uniswap/sdk';
 
 const UnipilotFarmCard: React.FC<{
   data: any;
@@ -35,6 +39,65 @@ const UnipilotFarmCard: React.FC<{
         24 *
         3600
       : 0;
+
+  const uniPilotVaultContract = useUniPilotVaultContract(data?.stakingAddress);
+  const unipilotToken0VaultBalance = useTokenBalance(
+    data?.stakingAddress,
+    data.token0,
+  );
+  const unipilotToken1VaultBalance = useTokenBalance(
+    data?.stakingAddress,
+    data.token1,
+  );
+  const uniPilotVaultPositionResult = useSingleCallResult(
+    uniPilotVaultContract,
+    'getPositionDetails',
+  );
+  const vaultTotalSupplyResult = useSingleCallResult(
+    uniPilotVaultContract,
+    'totalSupply',
+  );
+  const vaultTotalSupply =
+    !vaultTotalSupplyResult.loading &&
+    vaultTotalSupplyResult.result &&
+    vaultTotalSupplyResult.result.length > 0
+      ? vaultTotalSupplyResult.result[0]
+      : undefined;
+  const uniPilotVaultReserve = useMemo(() => {
+    if (
+      !uniPilotVaultPositionResult.loading &&
+      uniPilotVaultPositionResult.result &&
+      uniPilotVaultPositionResult.result.length > 1 &&
+      vaultTotalSupply &&
+      JSBI.greaterThan(JSBI.BigInt(vaultTotalSupply), JSBI.BigInt(0))
+    ) {
+      const token0Reserve = JSBI.add(
+        JSBI.BigInt(uniPilotVaultPositionResult.result[0]),
+        unipilotToken0VaultBalance?.numerator ?? JSBI.BigInt(0),
+      );
+      const token1Reserve = JSBI.add(
+        JSBI.BigInt(uniPilotVaultPositionResult.result[1]),
+        unipilotToken1VaultBalance?.numerator ?? JSBI.BigInt(0),
+      );
+      return {
+        token0: JSBI.divide(
+          JSBI.multiply(JSBI.BigInt(data.totalLpLocked), token0Reserve),
+          JSBI.BigInt(vaultTotalSupply),
+        ),
+        token1: JSBI.divide(
+          JSBI.multiply(JSBI.BigInt(data.totalLpLocked), token1Reserve),
+          JSBI.BigInt(vaultTotalSupply),
+        ),
+      };
+    }
+    return;
+  }, [
+    uniPilotVaultPositionResult,
+    unipilotToken0VaultBalance,
+    unipilotToken1VaultBalance,
+    data,
+    vaultTotalSupply,
+  ]);
 
   const poolAPR = farmData ? Number(farmData['stats'] ?? 0) : 0;
   const farmAPR = farmData ? Number(farmData['farming'] ?? 0) : 0;
