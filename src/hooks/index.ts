@@ -4,7 +4,7 @@ import { ChainId, Pair } from '@uniswap/sdk';
 import {
   ConnectionType,
   arkaneConnection,
-  bitKeepConnection,
+  bitgetConnection,
   blockWalletConnection,
   braveWalletConnection,
   coinbaseWalletConnection,
@@ -87,8 +87,8 @@ export function useGetConnection() {
           return phantomConnection;
         case ConnectionType.TRUSTWALLET:
           return trustWalletConnection;
-        case ConnectionType.BITKEEP:
-          return bitKeepConnection;
+        case ConnectionType.BITGET:
+          return bitgetConnection;
         case ConnectionType.BLOCKWALLET:
           return blockWalletConnection;
         case ConnectionType.BRAVEWALLET:
