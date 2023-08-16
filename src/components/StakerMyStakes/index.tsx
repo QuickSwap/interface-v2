@@ -40,6 +40,7 @@ import { formatUnits } from 'ethers/lib/utils';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import CurrencyLogo from 'components/CurrencyLogo';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 
 export const FarmingMyFarms: React.FC<{
   search: string;
@@ -469,39 +470,17 @@ export const FarmingMyFarms: React.FC<{
     return gammaData;
   };
 
-  const {
-    isLoading: gammaFarmsLoading,
-    data: gammaData,
-    refetch: refetchGammaData,
-  } = useQuery({
-    queryKey: ['fetchGammaData', chainId],
+  const lastTxHash = useLastTransactionHash();
+
+  const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery({
+    queryKey: ['fetchGammaData', lastTxHash, chainId],
     queryFn: fetchGammaData,
   });
 
-  const {
-    isLoading: gammaRewardsLoading,
-    data: gammaRewards,
-    refetch: refetchGammaRewards,
-  } = useQuery({
-    queryKey: ['fetchGammaRewards', chainId],
+  const { isLoading: gammaRewardsLoading, data: gammaRewards } = useQuery({
+    queryKey: ['fetchGammaRewards', lastTxHash, chainId],
     queryFn: fetchGammaRewards,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchGammaData();
-    refetchGammaRewards();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const sortMultiplierGamma = sortDescGamma ? -1 : 1;
 
