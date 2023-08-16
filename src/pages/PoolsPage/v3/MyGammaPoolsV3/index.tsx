@@ -41,12 +41,12 @@ export default function MyLiquidityPoolsV3() {
   const lastTxHash = useLastTransactionHash();
 
   const { isLoading: positionsLoading, data: gammaPositions } = useQuery({
-    queryKey: ['fetchGammaPositions', lastTxHash, account, chainId],
+    queryKey: ['fetchGammaPositionsPools', lastTxHash, account, chainId],
     queryFn: fetchGammaPositions,
   });
 
   const { isLoading: dataLoading, data: gammaData } = useQuery({
-    queryKey: ['fetchGammaData', lastTxHash, chainId],
+    queryKey: ['fetchGammaDataPools', lastTxHash, chainId],
     queryFn: fetchGammaData,
   });
 

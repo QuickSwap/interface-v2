@@ -155,6 +155,7 @@ interface ConfirmationModalProps {
   modalContent: string;
   txPending?: boolean;
   modalWrapper?: string;
+  isTxWrapper?: boolean;
 }
 
 const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -167,6 +168,7 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   content,
   modalContent,
   modalWrapper,
+  isTxWrapper = true,
 }) => {
   const { chainId } = useActiveWeb3React();
 
@@ -177,7 +179,7 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
     <CustomModal
       open={isOpen}
       onClose={onDismiss}
-      modalWrapper={`${modalWrapper} txModalWrapper`}
+      modalWrapper={`${modalWrapper}${isTxWrapper ? ' txModalWrapper' : ''}`}
     >
       <img src={ModalBg} alt='Modal Back' className='txModalBG' />
       <Box position='relative' zIndex={2}>

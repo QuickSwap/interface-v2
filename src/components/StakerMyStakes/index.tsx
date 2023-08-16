@@ -473,12 +473,12 @@ export const FarmingMyFarms: React.FC<{
   const lastTxHash = useLastTransactionHash();
 
   const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery({
-    queryKey: ['fetchGammaData', lastTxHash, chainId],
+    queryKey: ['fetchGammaDataMyFarms', lastTxHash, chainId],
     queryFn: fetchGammaData,
   });
 
   const { isLoading: gammaRewardsLoading, data: gammaRewards } = useQuery({
-    queryKey: ['fetchGammaRewards', lastTxHash, chainId],
+    queryKey: ['fetchGammaRewardsMyFarms', lastTxHash, chainId],
     queryFn: fetchGammaRewards,
   });
 

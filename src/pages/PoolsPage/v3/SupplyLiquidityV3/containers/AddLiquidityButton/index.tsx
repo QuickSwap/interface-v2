@@ -359,7 +359,7 @@ export function AddLiquidityButton({
             ? t('gammaImproperRatio')
             : errorMsg.indexOf('price change overflow') > -1
             ? t('gammaPriceOverflow')
-            : error?.code === 4001
+            : error?.code === 'ACTION_REJECTED'
             ? t('txRejected')
             : t('errorInTx'),
         );
@@ -632,6 +632,9 @@ export function AddLiquidityButton({
           isOpen={showConfirm}
           onDismiss={handleDismissConfirmation}
           attemptingTxn={attemptingTxn}
+          isTxWrapper={
+            !!attemptingTxn || !!txHash || !!addLiquidityErrorMessage
+          }
           hash={txHash}
           txPending={txPending}
           content={() =>
