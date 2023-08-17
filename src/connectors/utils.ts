@@ -60,7 +60,7 @@ export const getIsTrustWallet = () => {
   );
 };
 
-export const getIsBitKeepWallet = () => {
+export const getIsBitgetWallet = () => {
   const windowAsAny = window as any;
   return Boolean(windowAsAny.bitkeep && windowAsAny.bitkeep.ethereum);
 };

@@ -19,12 +19,25 @@ export function useV3DistributedRewards(chainId?: ChainId) {
   }, [farmEnabled, chainId]);
   const allRewardTokenAddresses = eternalFarms
     ? eternalFarms
+        .filter(
+          (farm) =>
+            (Number(farm.reward) > 0 || Number(farm.bonusReward) > 0) &&
+            ((farm.rewardRate && Number(farm.rewardRate) > 0) ||
+              (farm.bonusRewardRate && Number(farm.bonusRewardRate) > 0)),
+        )
         .filter((farm) => farm.rewardToken && farm.rewardToken.id)
         .map(({ rewardToken }) => rewardToken.id)
         .concat(
           eternalFarms
             .filter((farm) => farm.bonusRewardToken && farm.bonusRewardToken.id)
             .map(({ bonusRewardToken }) => bonusRewardToken.id),
+        )
+        .filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex(
+              (item) => item.toLowerCase() === value.toLowerCase(),
+            ),
         )
     : [];
 
