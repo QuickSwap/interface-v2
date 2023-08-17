@@ -1,19 +1,15 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { TopMovers, TokensTable } from 'components';
 import { useBookmarkTokens } from 'state/application/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
-import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
   const [tokensFilter, setTokensFilter] = useState(0);
-
-  const dispatch = useDispatch();
 
   const { bookmarkTokens } = useBookmarkTokens();
   const { chainId } = useActiveWeb3React();
@@ -33,10 +29,6 @@ const AnalyticsTokens: React.FC = () => {
       return [];
     }
   }, [topTokens, bookmarkTokens]);
-
-  useEffect(() => {
-    dispatch(setAnalyticsLoaded(!topTokensLoading));
-  }, [topTokensLoading, dispatch]);
 
   return (
     <Box width='100%' mb={3}>

@@ -22,8 +22,6 @@ import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import { useDispatch } from 'react-redux';
-import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { getConfig } from 'config';
 import { useQuery } from '@tanstack/react-query';
 
@@ -51,8 +49,6 @@ const AnalyticsTokenDetails: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showAnalytics]);
-
-  const dispatch = useDispatch();
 
   const { updateIsV2 } = useIsV2();
 
@@ -96,10 +92,6 @@ const AnalyticsTokenDetails: React.FC = () => {
     refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);
-
-  useEffect(() => {
-    dispatch(setAnalyticsLoaded(!isLoading));
-  }, [isLoading, dispatch]);
 
   const currency =
     data && data.token && chainId

@@ -25,8 +25,6 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { CallMade } from '@material-ui/icons';
 import { getConfig } from 'config';
 import { useQuery } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
-import { setAnalyticsLoaded } from 'state/analytics/actions';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -82,11 +80,6 @@ const AnalyticsPairDetails: React.FC = () => {
     refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);
-
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(setAnalyticsLoaded(!isLoading));
-  }, [isLoading, dispatch]);
 
   const pairData = data ? data.pairData : undefined;
   const pairTransactions = data ? data.pairTransactions : undefined;

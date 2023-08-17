@@ -55,7 +55,6 @@ import FarmUpdater from 'state/farms/updater';
 import DualFarmUpdater from 'state/dualfarms/updater';
 import CNTFarmUpdater from 'state/cnt/updater';
 import SyrupUpdater from 'state/syrups/updater';
-import AnalyticsUpdater from 'state/analytics/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
@@ -94,7 +93,6 @@ function Updaters() {
       <CNTFarmUpdater />
       <DualFarmUpdater />
       <SyrupUpdater />
-      <AnalyticsUpdater />
     </>
   );
 }

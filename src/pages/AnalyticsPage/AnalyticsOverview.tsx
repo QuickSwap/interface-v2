@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -10,8 +10,6 @@ import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
-import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import AnalyticsExtraInfo from './AnalyticsExtraInfo';
 import { ChainId } from '@uniswap/sdk';
@@ -27,7 +25,6 @@ const AnalyticsOverview: React.FC = () => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const history = useHistory();
-  const dispatch = useDispatch();
   const version = useAnalyticsVersion();
 
   const {
@@ -44,14 +41,6 @@ const AnalyticsOverview: React.FC = () => {
     version,
     chainId,
   );
-
-  useEffect(() => {
-    dispatch(
-      setAnalyticsLoaded(
-        !globalDataLoading && !topTokensLoading && !topPairsLoading,
-      ),
-    );
-  }, [dispatch, globalDataLoading, topTokensLoading, topPairsLoading]);
 
   return (
     <Box width='100%' mb={3}>
