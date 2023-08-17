@@ -40,10 +40,11 @@ import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
 import { DLQUICK, EMPTY, OLD_QUICK } from 'constants/v3/addresses';
 import { getConfig } from 'config';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useEthPrice } from 'state/application/hooks';
 import { TFunction } from 'react-i18next';
 import { Connector } from '@web3-react/types';
+import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -588,26 +589,6 @@ export function getTokenAPRSyrup(syrup: SyrupInfo) {
     : 0;
 }
 
-export const getGlobalData = async (chainId: ChainId, version: string) => {
-  try {
-    const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/global-data/${version}?chainId=${chainId}`,
-    );
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(
-        errorText || res.statusText || `Failed to get global data`,
-      );
-    }
-    const data = await res.json();
-    if (!data) return;
-    return data.data;
-  } catch (e) {
-    console.log('Failed to fetch global data', e);
-    return;
-  }
-};
-
 export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
   const daysCurrentYear = getDaysCurrentYear();
   const { chainId } = useActiveWeb3React();
@@ -627,39 +608,20 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     : ChainId.MATIC;
   const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
   const quickPrice = useUSDCPriceFromAddress(quickToken.address);
-  const [feesPercent, setFeesPercent] = useState(0);
-  const { ethPrice } = useEthPrice();
 
-  useEffect(() => {
-    if (!chainId) return;
-    (async () => {
-      let feePercent = 0;
-      if (v3) {
-        const v3Data = await getGlobalData(chainId, 'v3');
-        if (v3Data) {
-          feePercent += Number(v3Data.feesUSD ?? 0) / 7.5;
-        }
-        if (!v2) {
-          setFeesPercent(feePercent);
-        }
-      }
-      if (
-        v2 &&
-        ethPrice.price !== undefined &&
-        ethPrice.oneDayPrice !== undefined
-      ) {
-        const v2data = await getGlobalData(chainId, 'v2');
-        if (v2data) {
-          feePercent +=
-            (Number(v2data.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT) /
-            14.7;
-        }
-        if (v3) {
-          setFeesPercent(feePercent);
-        }
-      }
-    })();
-  }, [ethPrice.oneDayPrice, ethPrice.price, chainId, v2, v3]);
+  const { data: v3Data } = useAnalyticsGlobalData('v3', chainId);
+  const { data: v2Data } = useAnalyticsGlobalData('v2', chainId);
+  const feesPercent = useMemo(() => {
+    let feePercent = 0;
+    if (v3 && v3Data) {
+      feePercent += Number(v3Data.feesUSD ?? 0) / 7.5;
+    }
+    if (v2 && v2Data) {
+      feePercent +=
+        (Number(v2Data.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT) / 14.7;
+    }
+    return feePercent;
+  }, [v2, v2Data, v3, v3Data]);
 
   if (!lair || !quickPrice) return '';
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -69,15 +69,12 @@ const AnalyticsTokenDetails: React.FC = () => {
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to get top token details`,
-        );
+        return;
       }
       const data = await res.json();
-      return data && data.data ? data.data : null;
+      return data && data.data ? data.data : undefined;
     }
-    return null;
+    return;
   };
 
   const { isLoading, data } = useQuery({
@@ -86,11 +83,7 @@ const AnalyticsTokenDetails: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!isLoading) {
-      dispatch(setAnalyticsLoaded(true));
-    } else {
-      dispatch(setAnalyticsLoaded(false));
-    }
+    dispatch(setAnalyticsLoaded(!isLoading));
   }, [isLoading, dispatch]);
 
   const currency =

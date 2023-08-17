@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import dayjs from 'dayjs';
@@ -14,48 +14,46 @@ import { GlobalConst, GlobalData } from 'constants/index';
 import { AreaChart, ChartType } from 'components';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { useQuery } from '@tanstack/react-query';
 dayjs.extend(utc);
 
 const AnalyticsLiquidityChart: React.FC<{
   globalData: any;
-  setDataLoaded: (loaded: boolean) => void;
-}> = ({ globalData, setDataLoaded }) => {
+}> = ({ globalData }) => {
   const { t } = useTranslation();
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
-  const [globalChartData, updateGlobalChartData] = useState<any[] | null>(null);
   const { chainId } = useActiveWeb3React();
   const version = useAnalyticsVersion();
 
-  useEffect(() => {
-    if (!chainId) return;
-    const fetchChartData = async () => {
-      updateGlobalChartData(null);
-      setDataLoaded(false);
+  const fetchChartData = async () => {
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      return;
+    }
+    const pairsData = await res.json();
+    const chartData =
+      pairsData && pairsData.data && pairsData.data.length > 0
+        ? getLimitedData(
+            pairsData.data[0],
+            GlobalConst.analyticChart.CHART_COUNT,
+          )
+        : undefined;
+    return chartData;
+  };
 
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText ||
-            res.statusText ||
-            `Failed to get chart data ${durationIndex} ${version}`,
-        );
-      }
-      const pairsData = await res.json();
-      setDataLoaded(true);
-      const chartData = getLimitedData(
-        pairsData.data[0],
-        GlobalConst.analyticChart.CHART_COUNT,
-      );
-      updateGlobalChartData(chartData);
-    };
-    fetchChartData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [durationIndex, version, chainId]);
+  const { isLoading, data: globalChartData } = useQuery({
+    queryKey: [
+      'fetchAnalyticsLiquidityChartData',
+      durationIndex,
+      version,
+      chainId,
+    ],
+    queryFn: fetchChartData,
+  });
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,
@@ -66,11 +64,6 @@ const AnalyticsLiquidityChart: React.FC<{
       const dailyVolumes: number[] = globalChartData.map((value: any) =>
         Number(value.totalLiquidityUSD),
       );
-      // this is for defining the scale for the liquidity values to present in graph. Liquidity values are more than 100M so set the min and max amount with rounding after dividing into 20000000 to show all liquidity values into the graph
-      // const minVolume =
-      //   Math.floor(Math.min(...dailyVolumes) / 20000000) * 20000000;
-      // const maxVolume =
-      //   Math.ceil(Math.max(...dailyVolumes) / 20000000) * 20000000;
 
       const minVolume = Math.floor(Math.min(...dailyVolumes));
       const maxVolume = Math.ceil(Math.max(...dailyVolumes));
@@ -104,7 +97,7 @@ const AnalyticsLiquidityChart: React.FC<{
           setChartType={setDurationIndex}
         />
       </Box>
-      {globalData ? (
+      {globalData && (
         <Box mt={0.5} className='flex items-center'>
           <h5>${formatCompact(globalData.totalLiquidityUSD)}</h5>
           <Box
@@ -119,10 +112,6 @@ const AnalyticsLiquidityChart: React.FC<{
             </span>
           </Box>
         </Box>
-      ) : (
-        <Box my={0.5}>
-          <Skeleton variant='rect' width='100%' height={24} />
-        </Box>
       )}
       <Box>
         <span className='text-disabled'>
@@ -130,7 +119,9 @@ const AnalyticsLiquidityChart: React.FC<{
         </span>
       </Box>
       <Box mt={2}>
-        {globalChartData ? (
+        {isLoading ? (
+          <Skeleton variant='rect' width='100%' height={223} />
+        ) : globalChartData ? (
           <AreaChart
             data={globalChartData.map((value: any) =>
               Number(value.totalLiquidityUSD),
@@ -144,7 +135,7 @@ const AnalyticsLiquidityChart: React.FC<{
             categories={getChartDates(globalChartData, durationIndex)}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={223} />
+          <></>
         )}
       </Box>
     </>

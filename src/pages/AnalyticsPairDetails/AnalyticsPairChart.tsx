@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useRouteMatch } from 'react-router-dom';
 import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
 import { useActiveWeb3React } from 'hooks';
+import { useQuery } from '@tanstack/react-query';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -36,8 +37,6 @@ const AnalyticsPairChart: React.FC<{
   const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
-  const [pairChartData, setPairChartData] = useState<any[] | null>(null);
-  const [pairFeeData, setPairFeeData] = useState<any[] | null>(null);
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
@@ -49,9 +48,59 @@ const AnalyticsPairChart: React.FC<{
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const [priceChartTokenIdx, setPriceChartTokenIdx] = useState(0);
-  const [apyVisionData, setAPYVisionData] = useState<any>(undefined);
   const apyVisionURL = process.env.REACT_APP_APY_VISION_BASE_URL;
   const apyVisionAccessToken = process.env.REACT_APP_APY_VISION_ACCESS_TOKEN;
+
+  const fetchChartData = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-chart-data/${pairAddress}/${durationIndex}/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        return;
+      }
+      const data = await res.json();
+      return data ? data.data : undefined;
+    } catch {
+      return;
+    }
+  };
+
+  const { isLoading: loadingChartData, data } = useQuery({
+    queryKey: [
+      'analyticsTopTokenChartData',
+      pairAddress,
+      durationIndex,
+      version,
+      chainId,
+    ],
+    queryFn: fetchChartData,
+  });
+
+  const pairChartData = data ? data.pairChartData : undefined;
+  const pairFeeData = data ? data.pairFeeData : undefined;
+
+  const fetchApyData = async () => {
+    try {
+      const apyResponse = await fetch(
+        `${apyVisionURL}/api/v1/pools/${pairAddress.toLowerCase()}?accessToken=${apyVisionAccessToken}`,
+      );
+      const apyData = await apyResponse.json();
+      return apyData && apyData.length > 0 ? apyData[0] : undefined;
+    } catch {
+      return;
+    }
+  };
+
+  const { isLoading: loadingAPYData, data: apyVisionData } = useQuery({
+    queryKey: [
+      'analyticsTopTokenChartData',
+      pairAddress,
+      apyVisionAccessToken,
+      apyVisionURL,
+    ],
+    queryFn: fetchApyData,
+  });
 
   const usingUtVolume =
     pairData &&
@@ -206,42 +255,6 @@ const AnalyticsPairChart: React.FC<{
         return '$';
     }
   }, [chartIndex, pairData]);
-
-  useEffect(() => {
-    if (!chainId) return;
-    (async () => {
-      setPairChartData(null);
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-chart-data/${pairAddress}/${durationIndex}/${version}?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to get pair chart data`,
-        );
-      }
-      const data = await res.json();
-      if (data?.data?.pairChartData && data?.data?.pairChartData?.length) {
-        setPairChartData(data.data.pairChartData);
-      }
-      if (data?.data?.pairFeeData && data?.data?.pairFeeData?.length) {
-        setPairFeeData(data.data.pairFeeData);
-      }
-    })();
-  }, [pairAddress, durationIndex, isV2, chainId, version]);
-
-  useEffect(() => {
-    if (!apyVisionURL || !apyVisionAccessToken) return;
-    (async () => {
-      const apyResponse = await fetch(
-        `${apyVisionURL}/api/v1/pools/${pairAddress.toLowerCase()}?accessToken=${apyVisionAccessToken}`,
-      );
-      const apyData = await apyResponse.json();
-      if (apyData && apyData.length > 0) {
-        setAPYVisionData(apyData[0]);
-      }
-    })();
-  }, [apyVisionAccessToken, apyVisionURL, pairAddress]);
 
   const _chartData = useMemo(() => {
     if (!pairData || !pairChartData) return;
@@ -548,36 +561,42 @@ const AnalyticsPairChart: React.FC<{
         </Box>
       )}
       {chartIndexesAPYVision.includes(chartIndex) ? (
-        apyChartData && (
-          <>
-            {(chartIndex === CHART_APY_IL || chartIndex === CHART_ASSET) && (
-              <ColumnChart
-                categories={apyChartCategories}
-                data={apyChartData}
-                width='100%'
-                height='100%'
-                valueSuffix={
-                  chartIndex === CHART_ASSET
-                    ? 'USD'
-                    : chartIndex === CHART_APY_IL
-                    ? '%'
-                    : ''
-                }
-              />
-            )}
-            {(chartIndex === CHART_RESERVE || chartIndex === CHART_TXS) && (
-              <MixedChart
-                categories={apyChartCategories}
-                data={apyChartData}
-                width='100%'
-                height='100%'
-              />
-            )}
-          </>
+        loadingAPYData ? (
+          <Skeleton variant='rect' width='100%' height={217} />
+        ) : (
+          apyChartData && (
+            <>
+              {(chartIndex === CHART_APY_IL || chartIndex === CHART_ASSET) && (
+                <ColumnChart
+                  categories={apyChartCategories}
+                  data={apyChartData}
+                  width='100%'
+                  height='100%'
+                  valueSuffix={
+                    chartIndex === CHART_ASSET
+                      ? 'USD'
+                      : chartIndex === CHART_APY_IL
+                      ? '%'
+                      : ''
+                  }
+                />
+              )}
+              {(chartIndex === CHART_RESERVE || chartIndex === CHART_TXS) && (
+                <MixedChart
+                  categories={apyChartCategories}
+                  data={apyChartData}
+                  width='100%'
+                  height='100%'
+                />
+              )}
+            </>
+          )
         )
       ) : (
         <Box mt={2} width={1}>
-          {chartData && _chartData ? (
+          {loadingChartData ? (
+            <Skeleton variant='rect' width='100%' height={217} />
+          ) : chartData && _chartData ? (
             chartIndex === CHART_LIQUIDITY ? (
               <AnalyticsPairLiquidityChartV3
                 pairData={pairData}
@@ -597,7 +616,7 @@ const AnalyticsPairChart: React.FC<{
               />
             )
           ) : (
-            <Skeleton variant='rect' width='100%' height={217} />
+            <></>
           )}
         </Box>
       )}

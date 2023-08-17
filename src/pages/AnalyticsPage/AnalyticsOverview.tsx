@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Grid, Typography } from '@material-ui/core';
+import React, { useEffect } from 'react';
+import { Box, Grid } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { useEthPrice, useMaticPrice } from 'state/application/hooks';
 import { TokensTable, PairTable } from 'components';
 import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
@@ -16,6 +15,11 @@ import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import AnalyticsExtraInfo from './AnalyticsExtraInfo';
 import { ChainId } from '@uniswap/sdk';
+import {
+  useAnalyticsGlobalData,
+  useAnalyticsTopPairs,
+  useAnalyticsTopTokens,
+} from 'hooks/useFetchAnalyticsData';
 
 dayjs.extend(utc);
 
@@ -23,103 +27,31 @@ const AnalyticsOverview: React.FC = () => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const history = useHistory();
-  const [globalData, updateGlobalData] = useState<any>(null);
-  const [topTokens, updateTopTokens] = useState<any[] | null>(null);
-  const [topPairs, updateTopPairs] = useState<any[] | null>(null);
-  const [liquidityChartLoaded, setLiquidityChartLoaded] = useState(false);
-  const [volumeChartLoaded, setVolumeChartLoaded] = useState(false);
-  const { ethPrice } = useEthPrice();
-  const { maticPrice } = useMaticPrice();
   const dispatch = useDispatch();
   const version = useAnalyticsVersion();
 
-  useEffect(() => {
-    if (!chainId) return;
-    (async () => {
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/global-data/${version}?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to get global data ${version}`,
-        );
-      }
+  const {
+    isLoading: globalDataLoading,
+    data: globalData,
+  } = useAnalyticsGlobalData(version, chainId);
 
-      const data = await res.json();
+  const {
+    isLoading: topTokensLoading,
+    data: topTokens,
+  } = useAnalyticsTopTokens(version, chainId);
 
-      if (data.data) {
-        updateGlobalData(data.data);
-      }
-    })();
-
-    (async () => {
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/${version}?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to get top tokens`,
-        );
-      }
-      const data = await res.json();
-      if (data.data) {
-        updateTopTokens(data.data);
-      }
-    })();
-
-    (async () => {
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pairs/${version}?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to get top pairs ${version}`,
-        );
-      }
-      const pairsData = await res.json();
-      if (pairsData.data) {
-        updateTopPairs(pairsData.data);
-      }
-    })();
-  }, [
-    ethPrice.price,
-    ethPrice.oneDayPrice,
-    maticPrice.price,
-    maticPrice.oneDayPrice,
+  const { isLoading: topPairsLoading, data: topPairs } = useAnalyticsTopPairs(
     version,
     chainId,
-  ]);
+  );
 
   useEffect(() => {
-    updateGlobalData(null);
-    updateTopPairs(null);
-    updateTopTokens(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [version]);
-
-  useEffect(() => {
-    if (
-      globalData &&
-      topTokens &&
-      topPairs &&
-      liquidityChartLoaded &&
-      volumeChartLoaded
-    ) {
-      dispatch(setAnalyticsLoaded(true));
-    } else {
-      dispatch(setAnalyticsLoaded(false));
-    }
-  }, [
-    globalData,
-    topTokens,
-    topPairs,
-    dispatch,
-    liquidityChartLoaded,
-    volumeChartLoaded,
-  ]);
+    dispatch(
+      setAnalyticsLoaded(
+        !globalDataLoading && !topTokensLoading && !topPairsLoading,
+      ),
+    );
+  }, [dispatch, globalDataLoading, topTokensLoading, topPairsLoading]);
 
   return (
     <Box width='100%' mb={3}>
@@ -129,27 +61,23 @@ const AnalyticsOverview: React.FC = () => {
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='panel' width={1}>
-            <AnalyticsLiquidityChart
-              globalData={globalData}
-              setDataLoaded={setLiquidityChartLoaded}
-            />
+            <AnalyticsLiquidityChart globalData={globalData} />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='analyticsVolumeChart panel'>
-            <AnalyticsVolumeChart
-              globalData={globalData}
-              setDataLoaded={setVolumeChartLoaded}
-            />
+            <AnalyticsVolumeChart globalData={globalData} />
           </Box>
         </Grid>
       </Grid>
       <Box mt={4}>
         <Box className='flex flex-wrap panel'>
-          {globalData ? (
+          {globalDataLoading ? (
+            <Skeleton width='100%' height={20} />
+          ) : globalData ? (
             <AnalyticsInfo data={globalData} />
           ) : (
-            <Skeleton width='100%' height={20} />
+            <></>
           )}
         </Box>
       </Box>
@@ -168,10 +96,12 @@ const AnalyticsOverview: React.FC = () => {
         </Box>
       </Box>
       <Box mt={3} className='panel'>
-        {topTokens ? (
+        {topTokensLoading ? (
+          <Skeleton variant='rect' width='100%' height={150} />
+        ) : topTokens ? (
           <TokensTable
             data={topTokens
-              .sort((token1, token2) => {
+              .sort((token1: any, token2: any) => {
                 return token1.totalLiquidityUSD > token2.totalLiquidityUSD
                   ? -1
                   : 1;
@@ -180,7 +110,7 @@ const AnalyticsOverview: React.FC = () => {
             showPagination={false}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <></>
         )}
       </Box>
       <Box mt={4}>
@@ -198,10 +128,12 @@ const AnalyticsOverview: React.FC = () => {
         </Box>
       </Box>
       <Box mt={3} className='panel'>
-        {topPairs ? (
+        {topPairsLoading ? (
+          <Skeleton variant='rect' width='100%' height={150} />
+        ) : topPairs ? (
           <PairTable
             data={topPairs
-              .sort((pair1, pair2) => {
+              .sort((pair1: any, pair2: any) => {
                 const liquidity1 = pair1.trackedReserveUSD
                   ? pair1.trackedReserveUSD
                   : pair1.reserveUSD ?? 0;
@@ -214,7 +146,7 @@ const AnalyticsOverview: React.FC = () => {
             showPagination={false}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
+          <></>
         )}
       </Box>
     </Box>
