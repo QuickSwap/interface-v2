@@ -7,11 +7,10 @@ import './index.scss';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import UnipilotLPItemDetails from '../UnipilotLPItemDetails';
 import { useActiveWeb3React } from 'hooks';
-// import { ArrowRight } from 'react-feather';
+import { ArrowRight } from 'react-feather';
 import { useHistory } from 'react-router-dom';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
-import { Token } from '@uniswap/sdk-core';
 
 const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
   const { t } = useTranslation();
@@ -58,7 +57,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
               {unipilotVaultTypes[Number(position.vault.strategyId) - 1]}
             </small>
           </Box>
-          {/* {gammaPosition && gammaPosition.farming && (
+          {position && position.farming && (
             <Box
               className='flex items-center bg-primary cursor-pointer'
               padding='0 5px'
@@ -74,7 +73,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
                 <ArrowRight size={12} />
               </Box>
             </Box>
-          )} */}
+          )}
         </Box>
 
         <Box

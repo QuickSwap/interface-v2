@@ -4,12 +4,10 @@ import { useTranslation } from 'react-i18next';
 import './index.scss';
 import { formatNumber } from 'utils';
 import { CurrencyLogo } from 'components';
-import Badge from 'components/v3/Badge';
 import { Button } from '@material-ui/core';
 import IncreaseUnipilotLiquidityModal from '../IncreaseUnipilotLiquidityModal';
 import WithdrawUnipilotLiquidityModal from '../WithdrawUnipilotLiquidityModal';
-import { JSBI, Token } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { JSBI } from '@uniswap/sdk';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useUniPilotVaultContract } from 'hooks/useContract';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
@@ -17,7 +15,6 @@ import { formatUnits } from 'ethers/lib/utils';
 
 const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
   const { t } = useTranslation();
-  const { chainId, account } = useActiveWeb3React();
 
   const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
   const unipilotToken0VaultBalance = useTokenBalance(
@@ -155,9 +152,6 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
                 )
               : 0}
           </small>
-          {/* <Box ml='6px'>
-            <Badge text={`${formatNumber(token0PooledPercent)}%`} />
-          </Box> */}
         </Box>
       </Box>
       <Box className='flex justify-between' mt={1}>
@@ -182,9 +176,6 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
                 )
               : 0}
           </small>
-          {/* <Box ml='6px'>
-            <Badge text={`${formatNumber(100 - token0PooledPercent)}%`} />
-          </Box> */}
         </Box>
       </Box>
       <Box mt={2} className='unipilot-liquidity-item-buttons'>
@@ -196,11 +187,7 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
         </Button>
         <Button
           className='unipilot-liquidity-item-button'
-          // disabled={
-          //   gammaPosition.farming &&
-          //   (!lpTokenBalance ||
-          //     JSBI.equal(lpTokenBalance.numerator, JSBI.BigInt('0')))
-          // }
+          disabled={position.farming}
           onClick={() => setShowWithdrawModal(true)}
         >
           <small>{t('withdraw')}</small>

@@ -931,8 +931,6 @@ export const FarmingMyFarms: React.FC<{
     unipilotFarmData,
   );
 
-  console.log('ccc', filteredUnipilotFarms);
-
   return (
     <Box mt={2}>
       <Divider />

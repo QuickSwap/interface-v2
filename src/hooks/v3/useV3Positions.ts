@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Result,
   useMultipleContractMultipleData,
+  useMultipleContractSingleData,
   useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
@@ -15,11 +16,14 @@ import {
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
-import { ChainId } from '@uniswap/sdk';
-import { getGammaPositions, getUnipilotPositions } from 'utils';
+import { ChainId, JSBI } from '@uniswap/sdk';
+import { getContract, getGammaPositions, getUnipilotPositions } from 'utils';
 import { useQuery } from '@tanstack/react-query';
 import { GammaPair, GammaPairs } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
+import { useUnipilotUserFarms } from './useUnipilotFarms';
+import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
+import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -509,10 +513,47 @@ export function useUnipilotPositions(
   account: string | null | undefined,
   chainId: ChainId | undefined,
 ) {
+  const { library } = useActiveWeb3React();
+  const {
+    loading: positionsOnFarmLoading,
+    data: positionsOnFarm,
+  } = useUnipilotUserFarms(chainId, account ?? undefined);
+
   const fetchUnipilotPositions = async () => {
     if (!account || !chainId) return;
-    const unipilotPositions = await getUnipilotPositions(account, chainId);
-    return unipilotPositions;
+    const userPositions = await getUnipilotPositions(account, chainId);
+    const unipilotPositions = await Promise.all(
+      (userPositions ?? []).map(async (item: any) => {
+        const farmPosition = (positionsOnFarm ?? []).find(
+          (position: any) =>
+            position.stakingAddress.toLowerCase() ===
+            item.vault.id.toLowerCase(),
+        );
+        if (farmPosition && library) {
+          const farmContract = getContract(
+            farmPosition.id,
+            farmPosition.isDualReward
+              ? UNIPILOT_DUAL_REWARD_ABI
+              : UNIPILOT_SINGLE_REWARD_ABI,
+            library,
+          );
+          const stakedAmount = await farmContract.balanceOf(account ?? '');
+          return {
+            ...item,
+            balance: JSBI.add(
+              JSBI.BigInt(stakedAmount),
+              JSBI.BigInt(item.balance),
+            ).toString(),
+            farming: true,
+          };
+        }
+        return { ...item, farming: false };
+      }),
+    );
+
+    return unipilotPositions.filter(
+      (position: any) => Number(position.balance) > 0,
+    );
   };
 
   const {
@@ -539,5 +580,8 @@ export function useUnipilotPositions(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);
 
-  return { loading: positionsLoading, unipilotPositions };
+  return {
+    loading: positionsLoading || positionsOnFarmLoading,
+    unipilotPositions,
+  };
 }
