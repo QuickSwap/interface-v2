@@ -3,7 +3,7 @@ import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import { Pool } from 'v3lib/entities/pool';
 import { TickMath } from 'v3lib/utils/tickMath';
 import { BigNumber } from 'ethers';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { isAddress } from 'utils';
 import Chart from 'react-apexcharts';
 import { Box } from '@material-ui/core';
@@ -118,10 +118,29 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     }
   };
 
-  const { isLoading: loadingChartData, data: processedData } = useQuery({
+  const {
+    isLoading: loadingChartData,
+    data: processedData,
+    refetch,
+  } = useQuery({
     queryKey: ['analyticsV3PairLiquidityChartData', pairAddress, chainId],
     queryFn: fetchLiquidityChartData,
   });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const [zoom, setZoom] = useState(5);
 

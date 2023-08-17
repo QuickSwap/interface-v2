@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouteMatch } from 'react-router-dom';
 import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -66,7 +66,7 @@ const AnalyticsPairChart: React.FC<{
     }
   };
 
-  const { isLoading: loadingChartData, data } = useQuery({
+  const { isLoading: loadingChartData, data, refetch } = useQuery({
     queryKey: [
       'analyticsTopTokenChartData',
       pairAddress,
@@ -76,6 +76,21 @@ const AnalyticsPairChart: React.FC<{
     ],
     queryFn: fetchChartData,
   });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const pairChartData = data ? data.pairChartData : undefined;
   const pairFeeData = data ? data.pairFeeData : undefined;
