@@ -92,34 +92,19 @@ const EternalFarmsPage: React.FC<{
     if (!eternalFarms || !eternalFarms.length) return [];
     return eternalFarms.reduce<string[]>((memo, farm) => {
       const rewardTokenAddress = memo.find(
-        (item) =>
-          farm &&
-          farm.rewardToken &&
-          farm.rewardToken.id &&
-          farm.rewardToken.id.toLowerCase() === item,
+        (item) => farm && farm.rewardToken.address.toLowerCase() === item,
       );
       const bonusRewardTokenAddress = memo.find(
         (item) =>
           farm &&
           farm.bonusRewardToken &&
-          farm.bonusRewardToken.id &&
-          farm.bonusRewardToken.id.toLowerCase() === item,
+          farm.bonusRewardToken.address.toLowerCase() === item,
       );
-      if (
-        !rewardTokenAddress &&
-        farm &&
-        farm.rewardToken &&
-        farm.rewardToken.id
-      ) {
-        memo.push(farm.rewardToken.id.toLowerCase());
+      if (!rewardTokenAddress && farm && farm.rewardToken) {
+        memo.push(farm.rewardToken.address.toLowerCase());
       }
-      if (
-        !bonusRewardTokenAddress &&
-        farm.bonusRewardToken &&
-        farm.bonusRewardToken.id &&
-        farm.bonusRewardToken.id
-      ) {
-        memo.push(farm.bonusRewardToken.id.toLowerCase());
+      if (!bonusRewardTokenAddress && farm.bonusRewardToken) {
+        memo.push(farm.bonusRewardToken.address.toLowerCase());
       }
       return memo;
     }, []);
@@ -259,49 +244,35 @@ const EternalFarmsPage: React.FC<{
           const farm1RewardTokenPrice = rewardTokenPrices?.find(
             (item) =>
               farm1 &&
-              farm1.rewardToken &&
-              farm1.rewardToken.id &&
-              item.address.toLowerCase() === farm1.rewardToken.id.toLowerCase(),
+              item.address.toLowerCase() ===
+                farm1.rewardToken.address.toLowerCase(),
           );
           const farm1BonusRewardTokenPrice = rewardTokenPrices?.find(
             (item) =>
               farm1 &&
-              farm1.bonusRewardToken &&
-              farm1.bonusRewardToken.id &&
               item.address.toLowerCase() ===
-                farm1.bonusRewardToken.id.toLowerCase(),
+                farm1.bonusRewardToken.address.toLowerCase(),
           );
           const farm2RewardTokenPrice = rewardTokenPrices?.find(
             (item) =>
               farm2 &&
-              farm2.rewardToken &&
-              farm2.rewardToken.id &&
-              item.address.toLowerCase() === farm2.rewardToken.id.toLowerCase(),
+              item.address.toLowerCase() ===
+                farm2.rewardToken.address.toLowerCase(),
           );
           const farm2BonusRewardTokenPrice = rewardTokenPrices?.find(
             (item) =>
               farm2 &&
-              farm2.bonusRewardToken &&
-              farm2.bonusRewardToken.id &&
               item.address.toLowerCase() ===
-                farm2.bonusRewardToken.id.toLowerCase(),
+                farm2.bonusRewardToken.address.toLowerCase(),
           );
           const farm1Reward =
-            farm1 &&
-            farm1.rewardRate &&
-            farm1.rewardToken &&
-            farm1.rewardToken.decimals &&
-            farm1RewardTokenPrice
+            farm1 && farm1.rewardRate && farm1RewardTokenPrice
               ? Number(
                   formatUnits(farm1.rewardRate, farm1.rewardToken.decimals),
                 ) * farm1RewardTokenPrice.price
               : 0;
           const farm1BonusReward =
-            farm1 &&
-            farm1.bonusRewardRate &&
-            farm1.bonusRewardToken &&
-            farm1.bonusRewardToken.decimals &&
-            farm1BonusRewardTokenPrice
+            farm1 && farm1.bonusRewardRate && farm1BonusRewardTokenPrice
               ? Number(
                   formatUnits(
                     farm1.bonusRewardRate,
@@ -310,21 +281,13 @@ const EternalFarmsPage: React.FC<{
                 ) * farm1BonusRewardTokenPrice.price
               : 0;
           const farm2Reward =
-            farm2 &&
-            farm2.rewardRate &&
-            farm2.rewardToken &&
-            farm2.rewardToken.decimals &&
-            farm2RewardTokenPrice
+            farm2 && farm2.rewardRate && farm2RewardTokenPrice
               ? Number(
                   formatUnits(farm2.rewardRate, farm2.rewardToken.decimals),
                 ) * farm2RewardTokenPrice.price
               : 0;
           const farm2BonusReward =
-            farm2 &&
-            farm2.bonusRewardRate &&
-            farm2.bonusRewardToken &&
-            farm2.bonusRewardToken.decimals &&
-            farm2BonusRewardTokenPrice
+            farm2 && farm2.bonusRewardRate && farm2BonusRewardTokenPrice
               ? Number(
                   formatUnits(
                     farm2.bonusRewardRate,

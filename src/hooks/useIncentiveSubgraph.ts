@@ -25,13 +25,15 @@ import {
   fetchPoolsAPR,
 } from 'utils/api';
 import { useSelectedTokenList } from 'state/lists/v3/hooks';
-import { getContract, getV3TokenFromAddress } from 'utils';
+import { useSelectedTokenList as useSelectedV2TokenList } from 'state/lists/hooks';
+import { getContract, getTokenFromAddress, getV3TokenFromAddress } from 'utils';
 import { ChainId } from '@uniswap/sdk';
 import { formatTokenSymbol } from 'utils/v3-graph';
 
 export function useFarmingSubgraph() {
   const { chainId, account, provider } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
+  const v2TokenMap = useSelectedV2TokenList();
 
   const [positionsForPool, setPositionsForPool] = useState<Position[] | null>(
     null,
@@ -711,10 +713,17 @@ export function useFarmingSubgraph() {
           const reward = await virtualPoolContract.rewardReserve0();
           const bonusReward = await virtualPoolContract.rewardReserve1();
           const pool = await fetchPool(farming.pool);
-          const rewardToken = await fetchToken(farming.rewardToken, true);
-          const bonusRewardToken = await fetchToken(
+          const rewardToken = getTokenFromAddress(
+            farming.rewardToken,
+            chainId ?? ChainId.MATIC,
+            v2TokenMap,
+            [],
+          );
+          const bonusRewardToken = getTokenFromAddress(
             farming.bonusRewardToken,
-            true,
+            chainId ?? ChainId.MATIC,
+            v2TokenMap,
+            [],
           );
           const wrappedToken0 = getV3TokenFromAddress(
             pool.token0.id,
@@ -731,9 +740,11 @@ export function useFarmingSubgraph() {
             token0: wrappedToken0 ? wrappedToken0.token : pool.token0,
             token1: wrappedToken1 ? wrappedToken1.token : pool.token1,
           };
-          const multiplierToken = await fetchToken(
+          const multiplierToken = getTokenFromAddress(
             farming.multiplierToken,
-            true,
+            chainId ?? ChainId.MATIC,
+            v2TokenMap,
+            [],
           );
 
           _eternalFarmings.push({
