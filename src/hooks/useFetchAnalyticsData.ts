@@ -22,10 +22,18 @@ export const useAnalyticsGlobalData = (version: string, chainId: ChainId) => {
   return { isLoading, data };
 };
 
-export const useAnalyticsTopTokens = (version: string, chainId: ChainId) => {
+export const useAnalyticsTopTokens = (
+  version: string,
+  chainId: ChainId,
+  limit?: number,
+) => {
   const fetchTopTokens = async () => {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-tokens/${version}?chainId=${chainId}`,
+      `${
+        process.env.REACT_APP_LEADERBOARD_APP_URL
+      }/analytics/top-tokens/${version}?chainId=${chainId}${
+        limit ? `&limit=${limit}` : ''
+      }`,
     );
     if (!res.ok) {
       return;
@@ -35,7 +43,7 @@ export const useAnalyticsTopTokens = (version: string, chainId: ChainId) => {
   };
 
   const { isLoading, data } = useQuery({
-    queryKey: ['fetchAnalyticsTopTokens', version, chainId],
+    queryKey: ['fetchAnalyticsTopTokens', version, chainId, limit],
     queryFn: fetchTopTokens,
   });
 
