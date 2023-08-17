@@ -466,7 +466,7 @@ export function getTokenFromAddress(
         (token) => token.address.toLowerCase() === tokenAddress.toLowerCase(),
       );
       if (!commonToken) {
-        return EMPTY[chainId];
+        return;
       }
       return commonToken;
     }

@@ -24,16 +24,14 @@ import {
   fetchEternalFarmTVL,
   fetchPoolsAPR,
 } from 'utils/api';
-import { useSelectedTokenList } from 'state/lists/v3/hooks';
-import { useSelectedTokenList as useSelectedV2TokenList } from 'state/lists/hooks';
-import { getContract, getTokenFromAddress, getV3TokenFromAddress } from 'utils';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { getContract, getTokenFromAddress } from 'utils';
 import { ChainId } from '@uniswap/sdk';
 import { formatTokenSymbol } from 'utils/v3-graph';
 
 export function useFarmingSubgraph() {
   const { chainId, account, provider } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
-  const v2TokenMap = useSelectedV2TokenList();
 
   const [positionsForPool, setPositionsForPool] = useState<Position[] | null>(
     null,
@@ -296,20 +294,22 @@ export function useFarmingSubgraph() {
         ) {
           const _pool = await fetchPool(position.pool);
           if (_pool) {
-            const token0 = getV3TokenFromAddress(
+            const token0 = getTokenFromAddress(
               _pool.token0.id,
               chainId,
               tokenMap,
+              [],
             );
-            const token1 = getV3TokenFromAddress(
+            const token1 = getTokenFromAddress(
               _pool.token1.id,
               chainId,
               tokenMap,
+              [],
             );
             const newPool = {
               ..._pool,
-              token0: token0 ? token0.token : _pool.token0,
-              token1: token1 ? token1.token : _pool.token1,
+              token0: token0 ?? _pool.token0,
+              token1: token1 ?? _pool.token1,
             };
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
@@ -345,25 +345,42 @@ export function useFarmingSubgraph() {
             +position.id,
           );
 
-          const _rewardToken = await fetchToken(rewardToken);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken);
-          const _multiplierToken = await fetchToken(multiplierToken, true);
+          const _rewardToken = getTokenFromAddress(
+            rewardToken,
+            chainId,
+            tokenMap,
+            [],
+          );
+          const _bonusRewardToken = getTokenFromAddress(
+            bonusRewardToken,
+            chainId,
+            tokenMap,
+            [],
+          );
+          const _multiplierToken = getTokenFromAddress(
+            multiplierToken,
+            chainId,
+            tokenMap,
+            [],
+          );
           const _pool = await fetchPool(pool);
 
-          const token0 = getV3TokenFromAddress(
+          const token0 = getTokenFromAddress(
             _pool.token0.id,
             chainId,
             tokenMap,
+            [],
           );
-          const token1 = getV3TokenFromAddress(
+          const token1 = getTokenFromAddress(
             _pool.token1.id,
             chainId,
             tokenMap,
+            [],
           );
           const newPool = {
             ..._pool,
-            token0: token0 ? token0.token : _pool.token0,
-            token1: token1 ? token1.token : _pool.token1,
+            token0: token0 ?? _pool.token0,
+            token1: token1 ?? _pool.token1,
           };
 
           _position = {
@@ -378,12 +395,14 @@ export function useFarmingSubgraph() {
             started: +startTime * 1000 < Date.now(),
             ended: +endTime * 1000 < Date.now(),
             createdAtTimestamp: +createdAtTimestamp,
-            limitEarned: rewardInfo[0]
-              ? formatUnits(rewardInfo[0], _rewardToken.decimals)
-              : 0,
-            limitBonusEarned: rewardInfo[1]
-              ? formatUnits(rewardInfo[1], _bonusRewardToken.decimals)
-              : 0,
+            limitEarned:
+              rewardInfo[0] && _rewardToken
+                ? formatUnits(rewardInfo[0], _rewardToken.decimals)
+                : 0,
+            limitBonusEarned:
+              rewardInfo[1] && _bonusRewardToken
+                ? formatUnits(rewardInfo[1], _bonusRewardToken.decimals)
+                : 0,
             multiplierToken: _multiplierToken,
             tokenAmountForTier1,
             tokenAmountForTier2,
@@ -444,26 +463,43 @@ export function useFarmingSubgraph() {
             provider.getSigner(),
           );
 
-          const _rewardToken = await fetchToken(rewardToken, true);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
+          const _rewardToken = getTokenFromAddress(
+            rewardToken,
+            chainId,
+            tokenMap,
+            [],
+          );
+          const _bonusRewardToken = getTokenFromAddress(
+            bonusRewardToken,
+            chainId,
+            tokenMap,
+            [],
+          );
           const _pool = await fetchPool(pool);
 
-          const token0 = getV3TokenFromAddress(
+          const token0 = getTokenFromAddress(
             _pool.token0.id,
             chainId,
             tokenMap,
+            [],
           );
-          const token1 = getV3TokenFromAddress(
+          const token1 = getTokenFromAddress(
             _pool.token1.id,
             chainId,
             tokenMap,
+            [],
           );
           const newPool = {
             ..._pool,
-            token0: token0 ? token0.token : _pool.token0,
-            token1: token1 ? token1.token : _pool.token1,
+            token0: token0 ?? _pool.token0,
+            token1: token1 ?? _pool.token1,
           };
-          const _multiplierToken = await fetchToken(multiplierToken, true);
+          const _multiplierToken = getTokenFromAddress(
+            multiplierToken,
+            chainId,
+            tokenMap,
+            [],
+          );
 
           let rewardRes: any;
           try {
@@ -492,12 +528,14 @@ export function useFarmingSubgraph() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: newPool,
-            eternalEarned: rewardRes
-              ? formatUnits(rewardRes.reward, _rewardToken.decimals)
-              : 0,
-            eternalBonusEarned: rewardRes
-              ? formatUnits(rewardRes.bonusReward, _bonusRewardToken.decimals)
-              : 0,
+            eternalEarned:
+              rewardRes && _rewardToken
+                ? formatUnits(rewardRes.reward, _rewardToken.decimals)
+                : 0,
+            eternalBonusEarned:
+              rewardRes && _bonusRewardToken
+                ? formatUnits(rewardRes.bonusReward, _bonusRewardToken.decimals)
+                : 0,
           };
         } else {
           const res = await fetch(
@@ -716,34 +754,36 @@ export function useFarmingSubgraph() {
           const rewardToken = getTokenFromAddress(
             farming.rewardToken,
             chainId ?? ChainId.MATIC,
-            v2TokenMap,
+            tokenMap,
             [],
           );
           const bonusRewardToken = getTokenFromAddress(
             farming.bonusRewardToken,
             chainId ?? ChainId.MATIC,
-            v2TokenMap,
+            tokenMap,
             [],
           );
-          const wrappedToken0 = getV3TokenFromAddress(
+          const wrappedToken0 = getTokenFromAddress(
             pool.token0.id,
             chainId ?? ChainId.MATIC,
             tokenMap,
+            [],
           );
-          const wrappedToken1 = getV3TokenFromAddress(
+          const wrappedToken1 = getTokenFromAddress(
             pool.token1.id,
             chainId ?? ChainId.MATIC,
             tokenMap,
+            [],
           );
           const newPool = {
             ...pool,
-            token0: wrappedToken0 ? wrappedToken0.token : pool.token0,
-            token1: wrappedToken1 ? wrappedToken1.token : pool.token1,
+            token0: wrappedToken0 ?? pool.token0,
+            token1: wrappedToken1 ?? pool.token1,
           };
           const multiplierToken = getTokenFromAddress(
             farming.multiplierToken,
             chainId ?? ChainId.MATIC,
-            v2TokenMap,
+            tokenMap,
             [],
           );
 

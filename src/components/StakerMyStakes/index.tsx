@@ -689,33 +689,19 @@ export const FarmingMyFarms: React.FC<{
     })
     .map((item) => {
       if (chainId) {
-        const token0Data = getTokenFromAddress(
+        const token0 = getTokenFromAddress(
           item.token0Address,
           chainId,
           tokenMap,
           [],
         );
-        const token1Data = getTokenFromAddress(
+        const token1 = getTokenFromAddress(
           item.token1Address,
           chainId,
           tokenMap,
           [],
         );
-        const token0 = new Token(
-          chainId,
-          token0Data.address,
-          token0Data.decimals,
-          token0Data.symbol,
-          token0Data.name,
-        );
-        const token1 = new Token(
-          chainId,
-          token1Data.address,
-          token1Data.decimals,
-          token1Data.symbol,
-          token1Data.name,
-        );
-        return { ...item, token0, token1 };
+        return { ...item, token0: token0 ?? null, token1: token1 ?? null };
       }
       return { ...item, token0: null, token1: null };
     })

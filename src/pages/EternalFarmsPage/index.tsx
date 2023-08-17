@@ -92,7 +92,10 @@ const EternalFarmsPage: React.FC<{
     if (!eternalFarms || !eternalFarms.length) return [];
     return eternalFarms.reduce<string[]>((memo, farm) => {
       const rewardTokenAddress = memo.find(
-        (item) => farm && farm.rewardToken.address.toLowerCase() === item,
+        (item) =>
+          farm &&
+          farm.rewardToken &&
+          farm.rewardToken.address.toLowerCase() === item,
       );
       const bonusRewardTokenAddress = memo.find(
         (item) =>
