@@ -24,6 +24,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import { getConfig } from 'config';
 import { useQuery } from '@tanstack/react-query';
+import { useAnalyticsTokenDetails } from 'hooks/useFetchAnalyticsData';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -59,39 +60,11 @@ const AnalyticsTokenDetails: React.FC = () => {
   }, [updateIsV2, v2, v3]);
   const version = useAnalyticsVersion();
 
-  const fetchTokenDetails = async () => {
-    if (chainId && version) {
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/${version}?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        return;
-      }
-      const data = await res.json();
-      return data && data.data ? data.data : undefined;
-    }
-    return;
-  };
-
-  const { isLoading, data, refetch } = useQuery({
-    queryKey: ['fetchAnalyticsTokenDetails', tokenAddress, version, chainId],
-    queryFn: fetchTokenDetails,
-  });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  const { isLoading, data } = useAnalyticsTokenDetails(
+    tokenAddress,
+    version,
+    chainId,
+  );
 
   const currency =
     data && data.token && chainId

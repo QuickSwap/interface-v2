@@ -7,53 +7,68 @@ import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import VIRTUAL_POOL_ABI from 'abis/virtual-pool.json';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
+import { useQuery } from '@tanstack/react-query';
 
 export function useV3DistributedRewards(chainId?: ChainId) {
   const { provider } = useActiveWeb3React();
   const config = getConfig(chainId);
   const farmEnabled = config['farm']['available'];
-  const [eternalFarms, setEternalFarms] = useState<any[] | undefined>(
-    undefined,
-  );
   const tokenMap = useSelectedTokenList();
 
-  useEffect(() => {
-    if (farmEnabled && chainId && provider) {
-      (async () => {
-        const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
-        );
-        if (!res.ok) {
-          setEternalFarms([]);
-        }
-        const data = await res.json();
-        const eternalFarmings =
-          data && data.data && data.data.farms ? data.data.farms : [];
-        const _eternalFarmings: any[] = [];
-
-        for (const farming of eternalFarmings) {
-          try {
-            const virtualPoolContract = getContract(
-              farming.virtualPool,
-              VIRTUAL_POOL_ABI,
-              provider,
-            );
-            const reward = await virtualPoolContract.rewardReserve0();
-            const bonusReward = await virtualPoolContract.rewardReserve1();
-
-            if (Number(reward) > 0 && Number(bonusReward) > 0) {
-              _eternalFarmings.push(farming);
-            }
-
-            _eternalFarmings.push(farming);
-          } catch (e) {
-            console.log(e);
-          }
-        }
-        setEternalFarms(_eternalFarmings);
-      })();
+  const fetchEternalFarmsForV3Rewards = async () => {
+    if (!provider || !farmEnabled) return;
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      return;
     }
-  }, [farmEnabled, chainId, provider]);
+    const data = await res.json();
+    const eternalFarmings =
+      data && data.data && data.data.farms ? data.data.farms : [];
+    const _eternalFarmings: any[] = [];
+
+    for (const farming of eternalFarmings) {
+      try {
+        const virtualPoolContract = getContract(
+          farming.virtualPool,
+          VIRTUAL_POOL_ABI,
+          provider,
+        );
+        const reward = await virtualPoolContract.rewardReserve0();
+        const bonusReward = await virtualPoolContract.rewardReserve1();
+
+        if (Number(reward) > 0 && Number(bonusReward) > 0) {
+          _eternalFarmings.push(farming);
+        }
+
+        _eternalFarmings.push(farming);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    return _eternalFarmings;
+  };
+
+  const { data: eternalFarms, refetch } = useQuery({
+    queryKey: ['fetchEternalFarmsV3Rewards', chainId, !!provider, farmEnabled],
+    queryFn: fetchEternalFarmsForV3Rewards,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const allRewardTokenAddresses = eternalFarms
     ? eternalFarms

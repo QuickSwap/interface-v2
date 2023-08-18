@@ -82,17 +82,13 @@ export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (
   const res = await fetch(
     `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/eth-price?chainId=${chainId}`,
   );
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(
-      errorText || res.statusText || `Failed to get global data v2`,
-    );
-  }
-  const data = await res.json();
-  if (data && data.data) {
-    ethPrice = data.data.ethPrice;
-    ethPriceOneDay = data.data.ethPriceOneDay;
-    priceChangeETH = data.data.priceChangeETH;
+  if (res.ok) {
+    const data = await res.json();
+    if (data && data.data) {
+      ethPrice = data.data.ethPrice;
+      ethPriceOneDay = data.data.ethPriceOneDay;
+      priceChangeETH = data.data.priceChangeETH;
+    }
   }
 
   return [ethPrice, ethPriceOneDay, priceChangeETH];

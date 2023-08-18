@@ -19,6 +19,7 @@ import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from '../../config/index';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -29,34 +30,32 @@ const FarmPage: React.FC = () => {
       ? (parsedQuery.tab as string)
       : GlobalConst.v2FarmTab.LPFARM;
   const { t } = useTranslation();
-  const [bulkPairs, setBulkPairs] = useState<any>(null);
-  const chainIdToUse = chainId ?? ChainId.MATIC;
-  const config = getConfig(chainIdToUse);
+  const config = getConfig(chainId);
   const farmAvailable = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
   const { isV2, updateIsV2 } = useIsV2();
 
   const lpFarms = useDefaultFarmList();
-  const cntFarms = useDefaultCNTFarmList(chainIdToUse);
+  const cntFarms = useDefaultCNTFarmList(chainId);
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const OTHER_FARM_LINK = process.env.REACT_APP_OTHER_LP_CREATE_A_FARM_LINK;
 
   const pairLists = useMemo(() => {
-    const stakingPairLists = Object.values(lpFarms[chainIdToUse]).map(
+    const stakingPairLists = Object.values(lpFarms[chainId]).map(
       (item) => item.pair,
     );
-    const dualPairLists = Object.values(dualFarms[chainIdToUse]).map(
+    const dualPairLists = Object.values(dualFarms[chainId]).map(
       (item) => item.pair,
     );
-    const cntPairLists = Object.values(cntFarms[chainIdToUse]).map(
+    const cntPairLists = Object.values(cntFarms[chainId]).map(
       (item) => item.pair,
     );
 
     return stakingPairLists.concat(dualPairLists).concat(cntPairLists);
-  }, [chainIdToUse, lpFarms, dualFarms, cntFarms]);
+  }, [chainId, lpFarms, dualFarms, cntFarms]);
 
   useEffect(() => {
     if (!farmAvailable) {
@@ -72,13 +71,32 @@ const FarmPage: React.FC = () => {
   }, [updateIsV2, v2]);
 
   const pairListStr = pairLists.join('_');
+
+  const fetchBulkPairData = async () => {
+    if (!isV2) return;
+    const data = getBulkPairData(chainId, pairListStr);
+    return data;
+  };
+
+  const { data: bulkPairs, refetch } = useQuery({
+    queryKey: ['fetchBulkPairData', isV2, chainId, pairListStr],
+    queryFn: fetchBulkPairData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
   useEffect(() => {
-    if (isV2) {
-      getBulkPairData(chainIdToUse, pairListStr).then((data) =>
-        setBulkPairs(data),
-      );
-    }
-  }, [isV2, pairListStr, chainIdToUse]);
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const redirectWithFarmTab = (tab: string) => {
     const currentPath = history.location.pathname + history.location.search;

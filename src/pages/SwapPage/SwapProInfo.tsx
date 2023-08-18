@@ -8,8 +8,8 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';
 import { useTranslation } from 'react-i18next';
-import { useEthPrice, useMaticPrice } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
+import { useQuery } from '@tanstack/react-query';
 
 const SwapProInfo: React.FC<{
   token1?: Token;
@@ -18,110 +18,67 @@ const SwapProInfo: React.FC<{
   showHeading?: boolean;
 }> = ({ token1, token2, transactions, showHeading = true }) => {
   const { t } = useTranslation();
-  const [token1Data, setToken1Data] = useState<any>(null);
-  const [token2Data, setToken2Data] = useState<any>(null);
   const token1Address = token1?.address;
   const token2Address = token2?.address;
   const currency1 = token1 ? unwrappedToken(token1) : undefined;
   const currency2 = token2 ? unwrappedToken(token2) : undefined;
-  const { ethPrice } = useEthPrice();
-  const { maticPrice } = useMaticPrice();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
 
-  useEffect(() => {
-    (async () => {
-      if (ethPrice.price && ethPrice.oneDayPrice) {
-        if (token1Address) {
-          const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token1Address}/v2?chainId=${chainIdToUse}`,
-          );
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(
-              errorText || res.statusText || `Failed to get top token details`,
-            );
-          }
-          const data = await res.json();
-          const token =
-            data && data.data && data.data.token ? data.data.token : undefined;
-          if (token && token.priceUSD) {
-            setToken1Data(token);
-          } else if (maticPrice.price && maticPrice.oneDayPrice) {
-            const res = await fetch(
-              `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token1Address}/v3?chainId=${chainIdToUse}`,
-            );
-            if (!res.ok) {
-              const errorText = await res.text();
-              throw new Error(
-                errorText ||
-                  res.statusText ||
-                  `Failed to get top token details`,
-              );
-            }
-            const data = await res.json();
-            const tokenV3 =
-              data && data.data && data.data.token
-                ? data.data.token
-                : undefined;
-            if (tokenV3) {
-              setToken1Data(tokenV3);
-            }
-          }
-        }
-        if (token2Address) {
-          const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token2Address}/v2?chainId=${chainIdToUse}`,
-          );
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(
-              errorText || res.statusText || `Failed to get top token details`,
-            );
-          }
-          const data = await res.json();
-          const token =
-            data && data.data && data.data.token ? data.data.token : undefined;
-          if (token && token.priceUSD) {
-            setToken2Data(token);
-          } else if (maticPrice.price && maticPrice.oneDayPrice) {
-            const res = await fetch(
-              `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${token2Address}/v3?chainId=${chainIdToUse}`,
-            );
-            if (!res.ok) {
-              const errorText = await res.text();
-              throw new Error(
-                errorText ||
-                  res.statusText ||
-                  `Failed to get top token details`,
-              );
-            }
-            const data = await res.json();
-            const tokenV3 =
-              data && data.data && data.data.token
-                ? data.data.token
-                : undefined;
-            if (tokenV3) {
-              setToken2Data(tokenV3);
-            }
-          }
-        }
-      }
-    })();
-  }, [
-    token1Address,
-    token2Address,
-    ethPrice.price,
-    ethPrice.oneDayPrice,
-    chainIdToUse,
-    maticPrice.price,
-    maticPrice.oneDayPrice,
-  ]);
+  const fetchTokenData = async (tokenAddress?: string) => {
+    if (!tokenAddress) return;
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainIdToUse}`,
+    );
+    let tokenV2;
+    if (res.ok) {
+      const data = await res.json();
+      tokenV2 =
+        data && data.data && data.data.token ? data.data.token : undefined;
+    }
+    if (tokenV2 && tokenV2.priceUSD) {
+      return tokenV2;
+    }
+    const v3Res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainIdToUse}`,
+    );
+    if (!v3Res.ok) {
+      return;
+    }
+    const data = await res.json();
+    const tokenV3 =
+      data && data.data && data.data.token ? data.data.token : undefined;
+    if (tokenV3) {
+      return tokenV3;
+    }
+    return;
+  };
 
-  const TokenInfo: React.FC<{ currency: Currency; tokenData: any }> = ({
-    currency,
-    tokenData,
-  }) => {
+  const fetchDataForToken1 = async () => {
+    const data = await fetchTokenData(token1Address);
+    return data;
+  };
+
+  const fetchDataForToken2 = async () => {
+    const data = await fetchTokenData(token2Address);
+    return data;
+  };
+
+  const { isLoading: loadingToken1Data, data: token1Data } = useQuery({
+    queryKey: ['fetchToken1DataSwapPro', token1Address, chainIdToUse],
+    queryFn: fetchDataForToken1,
+  });
+
+  const { isLoading: loadingToken2Data, data: token2Data } = useQuery({
+    queryKey: ['fetchToken2DataSwapPro', token2Address, chainIdToUse],
+    queryFn: fetchDataForToken2,
+  });
+
+  const TokenInfo: React.FC<{
+    currency: Currency;
+    tokenData: any;
+    loading: boolean;
+  }> = ({ currency, tokenData, loading }) => {
     const priceUpPercent = Number(tokenData?.priceChangeUSD);
     return (
       <>
@@ -130,13 +87,17 @@ const SwapProInfo: React.FC<{
           <Box ml={1} flex={1}>
             <Box className='flex justify-between'>
               <small>{currency.symbol}</small>
-              {tokenData ? (
-                <small>${formatNumber(tokenData?.priceUSD)}</small>
-              ) : (
+              {loading ? (
                 <Skeleton width={60} height={14} />
+              ) : tokenData ? (
+                <small>${formatNumber(tokenData.priceUSD)}</small>
+              ) : (
+                <></>
               )}
             </Box>
-            {tokenData ? (
+            {loading ? (
+              <Skeleton width={60} height={12} />
+            ) : tokenData ? (
               <span>
                 {t('24h')}:{' '}
                 <span
@@ -146,7 +107,7 @@ const SwapProInfo: React.FC<{
                 </span>
               </span>
             ) : (
-              <Skeleton width={60} height={12} />
+              <></>
             )}
           </Box>
         </Box>
@@ -165,8 +126,20 @@ const SwapProInfo: React.FC<{
           <Divider />
         </Box>
       )}
-      {currency1 && <TokenInfo currency={currency1} tokenData={token1Data} />}
-      {currency2 && <TokenInfo currency={currency2} tokenData={token2Data} />}
+      {currency1 && (
+        <TokenInfo
+          currency={currency1}
+          tokenData={token1Data}
+          loading={loadingToken1Data}
+        />
+      )}
+      {currency2 && (
+        <TokenInfo
+          currency={currency2}
+          tokenData={token2Data}
+          loading={loadingToken2Data}
+        />
+      )}
       {currency1 && currency2 && (
         <>
           <Box py={2} px={1}>

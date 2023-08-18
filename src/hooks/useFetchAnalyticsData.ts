@@ -115,3 +115,45 @@ export const useAnalyticsTopPairs = (version: string, chainId: ChainId) => {
 
   return { isLoading, data };
 };
+
+export const useAnalyticsTokenDetails = (
+  tokenAddress: string,
+  version: string,
+  chainId: ChainId,
+) => {
+  const fetchTokenDetails = async () => {
+    if (chainId && version) {
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        return;
+      }
+      const data = await res.json();
+      return data && data.data ? data.data : undefined;
+    }
+    return;
+  };
+
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['fetchAnalyticsTokenDetails', tokenAddress, version, chainId],
+    queryFn: fetchTokenDetails,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  return { isLoading, data };
+};
