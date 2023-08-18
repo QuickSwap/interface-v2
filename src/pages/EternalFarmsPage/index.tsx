@@ -354,9 +354,9 @@ const EternalFarmsPage: React.FC<{
                     farmHandler={() => setModalForPool(event as any)}
                     now={0}
                     eternal
-                    poolAprs={eternalFarmPoolAprs}
+                    poolAprs={eternalFarmPoolAprs ?? undefined}
                     poolAprsLoading={eternalFarmPoolAprsLoading}
-                    aprs={eternalFarmAprs}
+                    aprs={eternalFarmAprs ?? undefined}
                     aprsLoading={eternalFarmAprsLoading}
                     tvls={eternalFarmTvls}
                     tvlsLoading={eternalFarmTvlsLoading}
