@@ -32,7 +32,7 @@ const AnalyticsLiquidityChart: React.FC<{
       `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
     );
     if (!res.ok) {
-      return;
+      return null;
     }
     const pairsData = await res.json();
     const chartData =
@@ -41,7 +41,7 @@ const AnalyticsLiquidityChart: React.FC<{
             pairsData.data[0],
             GlobalConst.analyticChart.CHART_COUNT,
           )
-        : undefined;
+        : null;
     return chartData;
   };
 

@@ -6,13 +6,13 @@ export function useInfoLiquidity() {
   const { chainId } = useActiveWeb3React();
 
   async function fetchPopularPools() {
-    if (!chainId) return;
+    if (!chainId) return null;
     try {
       const res = await fetch(
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/popular-pools?chainId=${chainId}`,
       );
       if (!res.ok) {
-        return;
+        return null;
       }
       const data = await res.json();
       const pools: any[] =
@@ -24,7 +24,7 @@ export function useInfoLiquidity() {
       return mappedPools;
     } catch (err) {
       console.error('total stats failed', err);
-      return;
+      return null;
     }
   }
 

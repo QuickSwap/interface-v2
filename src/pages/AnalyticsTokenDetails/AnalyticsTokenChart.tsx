@@ -42,12 +42,12 @@ const AnalyticsTokenChart: React.FC<{
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-chart-data/${tokenAddress}/${durationIndex}/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        return;
+        return null;
       }
       const data = await res.json();
-      return data && data.data ? data.data.tokenChartData : undefined;
+      return data && data.data ? data.data.tokenChartData : null;
     }
-    return;
+    return null;
   };
 
   const { isLoading, data: tokenChartData, refetch } = useQuery({

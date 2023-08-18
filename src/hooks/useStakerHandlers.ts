@@ -84,8 +84,8 @@ export function useFarmingHandlers() {
           callDatas = [
             farmingCenterInterface.encodeFunctionData('exitFarming', [
               [
-                eternalRewardToken.id,
-                eternalBonusRewardToken.id,
+                eternalRewardToken.address,
+                eternalBonusRewardToken.address,
                 pool.id,
                 +eternalStartTime,
                 +eternalEndTime,
@@ -98,7 +98,7 @@ export function useFarmingHandlers() {
           if (Boolean(+eternalEarned)) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
-                eternalRewardToken.id,
+                eternalRewardToken.address,
                 account,
                 0,
                 MaxUint128,
@@ -109,7 +109,7 @@ export function useFarmingHandlers() {
           if (Boolean(+eternalBonusEarned)) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
-                eternalBonusRewardToken.id,
+                eternalBonusRewardToken.address,
                 account,
                 0,
                 MaxUint128,
@@ -158,8 +158,8 @@ export function useFarmingHandlers() {
           callDatas = [
             farmingCenterInterface.encodeFunctionData('exitFarming', [
               [
-                limitRewardToken.id,
-                limitBonusRewardToken.id,
+                limitRewardToken.address,
+                limitBonusRewardToken.address,
                 pool.id,
                 +limitStartTime,
                 +limitEndTime,
@@ -172,7 +172,7 @@ export function useFarmingHandlers() {
           if (Boolean(+limitEarned)) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
-                limitRewardToken.id,
+                limitRewardToken.address,
                 account,
                 MaxUint128,
                 0,
@@ -183,7 +183,7 @@ export function useFarmingHandlers() {
           if (Boolean(+limitBonusEarned)) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
-                limitBonusRewardToken.id,
+                limitBonusRewardToken.address,
                 account,
                 MaxUint128,
                 0,
@@ -274,8 +274,8 @@ export function useFarmingHandlers() {
           'collectRewards',
           [
             [
-              eternalRewardToken.id,
-              eternalBonusRewardToken.id,
+              eternalRewardToken.address,
+              eternalBonusRewardToken.address,
               pool.id,
               +eternalStartTime,
               +eternalEndTime,
@@ -285,18 +285,18 @@ export function useFarmingHandlers() {
         );
         const claimReward1 = farmingCenterInterface.encodeFunctionData(
           'claimReward',
-          [eternalRewardToken.id, account, 0, MaxUint128],
+          [eternalRewardToken.address, account, 0, MaxUint128],
         );
         const claimReward2 = farmingCenterInterface.encodeFunctionData(
           'claimReward',
-          [eternalBonusRewardToken.id, account, 0, MaxUint128],
+          [eternalBonusRewardToken.address, account, 0, MaxUint128],
         );
 
         let result: TransactionResponse;
 
         if (
-          eternalRewardToken.id.toLowerCase() !==
-          eternalBonusRewardToken.id.toLowerCase()
+          eternalRewardToken.address.toLowerCase() !==
+          eternalBonusRewardToken.address.toLowerCase()
         ) {
           const estimatedGas = await farmingCenterContract.estimateGas.multicall(
             [collectRewards, claimReward1, claimReward2],

@@ -73,9 +73,9 @@ const FarmPage: React.FC = () => {
   const pairListStr = pairLists.join('_');
 
   const fetchBulkPairData = async () => {
-    if (!isV2) return;
-    const data = getBulkPairData(chainId, pairListStr);
-    return data;
+    if (!isV2) return null;
+    const data = await getBulkPairData(chainId, pairListStr);
+    return data ?? null;
   };
 
   const { data: bulkPairs, refetch } = useQuery({

@@ -16,12 +16,12 @@ export function useV3DistributedRewards(chainId?: ChainId) {
   const tokenMap = useSelectedTokenList();
 
   const fetchEternalFarmsForV3Rewards = async () => {
-    if (!provider || !farmEnabled) return;
+    if (!provider || !farmEnabled) return null;
     const res = await fetch(
       `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
     );
     if (!res.ok) {
-      return;
+      return null;
     }
     const data = await res.json();
     const eternalFarmings =

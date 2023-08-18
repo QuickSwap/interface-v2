@@ -35,9 +35,9 @@ const RewardSlider: React.FC = () => {
   const stakingPairLists = stakingPairListStr.split('_');
 
   const fetchBulkPairData = async () => {
-    if (!stakingPairListStr) return;
-    const data = getBulkPairData(chainId, stakingPairListStr);
-    return data;
+    if (!stakingPairListStr) return null;
+    const data = await getBulkPairData(chainId, stakingPairListStr);
+    return data ?? null;
   };
 
   const { data: bulkPairs, refetch } = useQuery({

@@ -37,8 +37,8 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const pairId = pair.liquidityToken.address;
 
   const fetchBulkPairData = async () => {
-    const data = getBulkPairData(chainId, pairId);
-    return data;
+    const data = await getBulkPairData(chainId, pairId);
+    return data ?? null;
   };
 
   const { data: bulkPairData, refetch } = useQuery({

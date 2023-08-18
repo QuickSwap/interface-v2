@@ -57,18 +57,18 @@ const AnalyticsPairChart: React.FC<{
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-chart-data/${pairAddress}/${durationIndex}/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        return;
+        return null;
       }
       const data = await res.json();
-      return data ? data.data : undefined;
+      return data ? data.data : null;
     } catch {
-      return;
+      return null;
     }
   };
 
   const { isLoading: loadingChartData, data, refetch } = useQuery({
     queryKey: [
-      'analyticsTopTokenChartData',
+      'analyticsTopPairChartData',
       pairAddress,
       durationIndex,
       version,
@@ -101,15 +101,15 @@ const AnalyticsPairChart: React.FC<{
         `${apyVisionURL}/api/v1/pools/${pairAddress.toLowerCase()}?accessToken=${apyVisionAccessToken}`,
       );
       const apyData = await apyResponse.json();
-      return apyData && apyData.length > 0 ? apyData[0] : undefined;
+      return apyData && apyData.length > 0 ? apyData[0] : null;
     } catch {
-      return;
+      return null;
     }
   };
 
   const { isLoading: loadingAPYData, data: apyVisionData } = useQuery({
     queryKey: [
-      'analyticsTopTokenChartData',
+      'analyticsTopPairChartAPYData',
       pairAddress,
       apyVisionAccessToken,
       apyVisionURL,

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { EternalFarmCard } from 'components/StakerEventCard/EternalFarmCard';
 import { Frown } from 'react-feather';
@@ -9,7 +9,12 @@ import { FarmModal } from '../../components/StakeModal';
 import { FarmingType } from '../../models/enums';
 import './index.scss';
 import { FormattedEternalFarming } from 'models/interfaces';
-import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+import {
+  useEternalFarmAprs,
+  useEternalFarmPoolAPRs,
+  useEternalFarmTvls,
+  useEternalFarms,
+} from 'hooks/useIncentiveSubgraph';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -34,35 +39,24 @@ const EternalFarmsPage: React.FC<{
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 
   const {
-    fetchEternalFarms: {
-      fetchEternalFarmsFn,
-      eternalFarms: allEternalFarms,
-      eternalFarmsLoading,
-    },
-    fetchEternalFarmPoolAprs: {
-      fetchEternalFarmPoolAprsFn,
-      eternalFarmPoolAprs,
-      eternalFarmPoolAprsLoading,
-    },
-    fetchEternalFarmAprs: {
-      fetchEternalFarmAprsFn,
-      eternalFarmAprs,
-      eternalFarmAprsLoading,
-    },
-    fetchEternalFarmTvls: {
-      fetchEternalFarmTvlsFn,
-      eternalFarmTvls,
-      eternalFarmTvlsLoading,
-    },
-  } = useFarmingSubgraph() || {};
+    data: allEternalFarms,
+    isLoading: eternalFarmsLoading,
+  } = useEternalFarms();
 
-  useEffect(() => {
-    fetchEternalFarmsFn();
-    fetchEternalFarmPoolAprsFn();
-    fetchEternalFarmAprsFn();
-    fetchEternalFarmTvlsFn();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const {
+    data: eternalFarmPoolAprs,
+    isLoading: eternalFarmPoolAprsLoading,
+  } = useEternalFarmPoolAPRs();
+
+  const {
+    data: eternalFarmAprs,
+    isLoading: eternalFarmAprsLoading,
+  } = useEternalFarmAprs();
+
+  const {
+    data: eternalFarmTvls,
+    isLoading: eternalFarmTvlsLoading,
+  } = useEternalFarmTvls();
 
   const sortDescKey = sortDesc ? -1 : 1;
 

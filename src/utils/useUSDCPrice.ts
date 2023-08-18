@@ -73,16 +73,15 @@ export function useUSDCPricesFromAddresses(
     const addresses = addressStr.split('_');
 
     let pricesV2: any[] = [];
+    let pricesV3: any[] = [];
 
     const res = await fetch(
       `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v3?chainId=${chainId}&addresses=${addressStr}`,
     );
-    if (!res.ok) {
-      return;
+    if (res.ok) {
+      const data = await res.json();
+      pricesV3 = data && data.data && data.data.length > 0 ? data.data : [];
     }
-    const data = await res.json();
-
-    const pricesV3 = data && data.data && data.data.length > 0 ? data.data : [];
 
     if (v2) {
       const addressesNotInV3 = addresses.filter((address) => {

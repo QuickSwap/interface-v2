@@ -31,7 +31,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       tokenPriceDataV3 =
         data && data.data && data.data.intervalTokenData
           ? data.data.intervalTokenData
-          : undefined;
+          : null;
     }
 
     if (
@@ -44,16 +44,16 @@ const SwapTokenDetailsHorizontal: React.FC<{
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v2?chainId=${chainId}`,
       );
       if (!res.ok) {
-        return;
+        return null;
       }
       const data = await res.json();
       const tokenPriceDataV2 =
         data && data.data && data.data.intervalTokenData
           ? data.data.intervalTokenData
-          : undefined;
+          : null;
       return tokenPriceDataV2;
     }
-    return;
+    return null;
   };
 
   const fetchTokenData = async () => {
@@ -66,7 +66,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       tokenV3 =
         tokenDetailsData && tokenDetailsData.data && tokenDetailsData.data.token
           ? tokenDetailsData.data.token
-          : undefined;
+          : null;
     }
     if (tokenV3) {
       return tokenV3;
@@ -75,16 +75,16 @@ const SwapTokenDetailsHorizontal: React.FC<{
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
       );
       if (!res.ok) {
-        return;
+        return null;
       }
       const data = await res.json();
       const token0 =
-        data && data.data && data.data.token ? data.data.token : undefined;
+        data && data.data && data.data.token ? data.data.token : null;
       if (token0 && token0.priceUSD) {
         return token0;
       }
     }
-    return;
+    return null;
   };
 
   const {

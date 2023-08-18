@@ -37,17 +37,17 @@ const AnalyticsVolumeChart: React.FC<{
       `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
     );
     if (!res.ok) {
-      return;
+      return null;
     }
     const pairsData = await res.json();
     const newChartData =
       pairsData && pairsData.data && pairsData.data.length > 0
         ? pairsData.data[0]
-        : undefined;
+        : null;
     const newWeeklyData =
       pairsData && pairsData.data && pairsData.data.length > 0
         ? pairsData.data[1]
-        : undefined;
+        : null;
     if (newChartData && newWeeklyData) {
       const dayItems = getLimitedData(
         newChartData,
@@ -59,7 +59,7 @@ const AnalyticsVolumeChart: React.FC<{
       );
       return { day: dayItems, week: weekItems };
     }
-    return;
+    return null;
   };
 
   const { isLoading, data: globalChartData, refetch } = useQuery({

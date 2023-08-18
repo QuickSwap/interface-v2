@@ -8,11 +8,11 @@ export const useAnalyticsGlobalData = (version: string, chainId: ChainId) => {
       `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/global-data/${version}?chainId=${chainId}`,
     );
     if (!res.ok) {
-      return;
+      return null;
     }
 
     const data = await res.json();
-    return data && data.data ? data.data : undefined;
+    return data && data.data ? data.data : null;
   };
 
   const { isLoading, data, refetch } = useQuery({
@@ -52,10 +52,10 @@ export const useAnalyticsTopTokens = (
       }`,
     );
     if (!res.ok) {
-      return;
+      return null;
     }
     const data = await res.json();
-    return data && data.data ? data.data : undefined;
+    return data && data.data ? data.data : null;
   };
 
   const { isLoading, data, refetch } = useQuery({
@@ -87,10 +87,10 @@ export const useAnalyticsTopPairs = (version: string, chainId: ChainId) => {
       `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pairs/${version}?chainId=${chainId}`,
     );
     if (!res.ok) {
-      return;
+      return null;
     }
     const data = await res.json();
-    return data && data.data ? data.data : undefined;
+    return data && data.data ? data.data : null;
   };
 
   const { isLoading, data, refetch } = useQuery({
@@ -127,10 +127,10 @@ export const useAnalyticsTokenDetails = (
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        return;
+        return null;
       }
       const data = await res.json();
-      return data && data.data ? data.data : undefined;
+      return data && data.data ? data.data : null;
     }
     return;
   };

@@ -36,7 +36,7 @@ const SwapPage: React.FC = () => {
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/pair-address/${token1.address}/${token2.address}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        return;
+        return null;
       }
       const data = await res.json();
 
@@ -53,7 +53,7 @@ const SwapPage: React.FC = () => {
         };
       }
     }
-    return;
+    return null;
   };
 
   const { data } = useQuery({

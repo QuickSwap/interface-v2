@@ -26,7 +26,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        return;
+        return null;
       }
       const data = await res.json();
       if (data && data.data && data.data.chartData) {
@@ -113,8 +113,9 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
           return data;
         }
       }
+      return null;
     } catch {
-      return;
+      return null;
     }
   };
 

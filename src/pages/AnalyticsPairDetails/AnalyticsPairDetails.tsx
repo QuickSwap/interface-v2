@@ -53,12 +53,12 @@ const AnalyticsPairDetails: React.FC = () => {
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        return;
+        return null;
       }
       const data = await res.json();
-      return data && data.data ? data.data : undefined;
+      return data && data.data ? data.data : null;
     }
-    return;
+    return null;
   };
 
   const { isLoading, data, refetch } = useQuery({

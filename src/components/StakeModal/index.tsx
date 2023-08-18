@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { X } from 'react-feather';
-import { useFarmingSubgraph } from '../../hooks/useIncentiveSubgraph';
+import { useFarmPositionsForPool } from '../../hooks/useIncentiveSubgraph';
 import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
 import { useChunkedRows } from '../../utils/chunkForRows';
 import Loader from '../Loader';
@@ -17,7 +17,6 @@ import { FARMING_CENTER } from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
 import TransactionSubmitted from 'assets/images/TransactionSubmitted.png';
 import TransactionFailed from 'assets/images/TransactionFailed.png';
-import { Token } from '@uniswap/sdk-core';
 import { formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { ChainId } from '@uniswap/sdk';
@@ -93,12 +92,9 @@ export function FarmModal({
 
   const [selectedNFT, setSelectedNFT] = useState<null | NTFInterface>(null);
   const {
-    fetchPositionsForPool: {
-      positionsForPool,
-      positionsForPoolLoading,
-      fetchPositionsForPoolFn,
-    },
-  } = useFarmingSubgraph() || {};
+    data: positionsForPool,
+    isLoading: positionsForPoolLoading,
+  } = useFarmPositionsForPool(pool, minRangeLength);
 
   const { v3Stake } = useV3StakeData();
   const { txType, selectedTokenId, txConfirmed, txHash, txError } =
@@ -107,18 +103,6 @@ export function FarmModal({
   const { approveHandler, farmHandler } = useFarmingHandlers() || {};
 
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchPositionsForPoolFn(pool, minRangeLength);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (txType === 'farm' && txConfirmed) {
-      fetchPositionsForPoolFn(pool, minRangeLength);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [txType, txConfirmed]);
 
   const positionsForStake = useMemo(() => {
     if (!positionsForPool) return [];
@@ -134,16 +118,38 @@ export function FarmModal({
       return true;
     });
   }, [farmingType, pool.id, positionsForPool]);
-  const [chunkedPositions, setChunkedPositions] = useState<
-    any[][] | null | undefined
-  >(null);
 
   const _chunked = useChunkedRows(positionsForStake, 1000);
 
+  const chunkedPositions = useMemo(() => {
+    if (txHash && txConfirmed && selectedTokenId) {
+      const _newChunked: any[][] = [];
+
+      if (_chunked) {
+        for (const row of _chunked) {
+          const _newRow: any[] = [];
+
+          for (const position of row) {
+            if (position.id === selectedTokenId) {
+              position.onFarmingCenter = true;
+              setSelectedNFT((old) => ({
+                ...old,
+                onFarmingCenter: true,
+              }));
+            }
+            _newRow.push(position);
+          }
+          _newChunked.push(_newRow);
+        }
+      }
+
+      return _newChunked;
+    }
+    return _chunked;
+  }, [_chunked, selectedTokenId, txConfirmed, txHash]);
+
   const [submitState, setSubmitState] = useState(0);
   const [submitLoader, setSubmitLoader] = useState(false);
-
-  useEffect(() => setChunkedPositions(_chunked), [_chunked]);
 
   const filterNFTs = useCallback(
     (fn) => {
@@ -167,32 +173,10 @@ export function FarmModal({
   );
 
   useEffect(() => {
-    if (!chunkedPositions || submitState !== (txType === 'farmApprove' ? 0 : 2))
-      return;
+    if (submitState !== (txType === 'farmApprove' ? 0 : 2)) return;
     if (txError) {
       setSubmitLoader(false);
     } else if (txHash && txConfirmed && selectedTokenId) {
-      const _newChunked: any = [];
-
-      if (chunkedPositions) {
-        for (const row of chunkedPositions) {
-          const _newRow: any = [];
-
-          for (const position of row) {
-            if (position.id === selectedTokenId) {
-              position.onFarmingCenter = true;
-              setSelectedNFT((old) => ({
-                ...old,
-                onFarmingCenter: true,
-              }));
-            }
-            _newRow.push(position);
-          }
-          _newChunked.push(_newRow);
-        }
-      }
-
-      setChunkedPositions(_newChunked);
       setSubmitLoader(false);
       if (txType === 'farmApprove') {
         setSubmitState(1);
@@ -200,16 +184,7 @@ export function FarmModal({
         setSubmitState(3);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    chunkedPositions?.length,
-    selectedTokenId,
-    submitState,
-    txConfirmed,
-    txError,
-    txHash,
-    txType,
-  ]);
+  }, [selectedTokenId, submitState, txConfirmed, txError, txHash, txType]);
 
   const approveNFTs = useCallback(() => {
     setSubmitLoader(true);
@@ -225,8 +200,8 @@ export function FarmModal({
         selectedNFT,
         {
           pool: pool?.id,
-          rewardToken: rewardToken?.id,
-          bonusRewardToken: bonusRewardToken?.id,
+          rewardToken: rewardToken?.address,
+          bonusRewardToken: bonusRewardToken?.address,
           startTime,
           endTime,
         },
@@ -246,18 +221,7 @@ export function FarmModal({
     ],
   );
 
-  const balance = useCurrencyBalance(
-    account ?? undefined,
-    multiplierToken
-      ? new Token(
-          chainIdToUse,
-          multiplierToken.id,
-          +multiplierToken.decimals,
-          multiplierToken.symbol,
-          multiplierToken.name,
-        )
-      : undefined,
-  );
+  const balance = useCurrencyBalance(account ?? undefined, multiplierToken);
 
   const isEnoughTokenForLock = useMemo(() => {
     if (!balance) return false;
@@ -333,17 +297,8 @@ export function FarmModal({
   const _amountForApprove = useMemo(() => {
     if (!selectedTier || !multiplierToken) return undefined;
 
-    return CurrencyAmount.fromRawAmount(
-      new Token(
-        chainIdToUse,
-        multiplierToken.id,
-        +multiplierToken.decimals,
-        multiplierToken.symbol,
-        multiplierToken.name,
-      ),
-      selectedTier,
-    );
-  }, [selectedTier, multiplierToken, chainIdToUse]);
+    return CurrencyAmount.fromRawAmount(multiplierToken, selectedTier);
+  }, [selectedTier, multiplierToken]);
 
   const [approval, approveCallback] = useApproveCallback(
     _amountForApprove,

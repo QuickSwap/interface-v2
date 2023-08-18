@@ -26,7 +26,7 @@ const SwapProInfo: React.FC<{
   const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const fetchTokenData = async (tokenAddress?: string) => {
-    if (!tokenAddress) return;
+    if (!tokenAddress) return null;
     const res = await fetch(
       `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainIdToUse}`,
     );
@@ -43,7 +43,7 @@ const SwapProInfo: React.FC<{
       `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainIdToUse}`,
     );
     if (!v3Res.ok) {
-      return;
+      return null;
     }
     const data = await res.json();
     const tokenV3 =
@@ -51,7 +51,7 @@ const SwapProInfo: React.FC<{
     if (tokenV3) {
       return tokenV3;
     }
-    return;
+    return null;
   };
 
   const fetchDataForToken1 = async () => {
