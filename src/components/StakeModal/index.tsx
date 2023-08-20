@@ -132,10 +132,6 @@ export function FarmModal({
           for (const position of row) {
             if (position.id === selectedTokenId) {
               position.onFarmingCenter = true;
-              setSelectedNFT((old) => ({
-                ...old,
-                onFarmingCenter: true,
-              }));
             }
             _newRow.push(position);
           }
