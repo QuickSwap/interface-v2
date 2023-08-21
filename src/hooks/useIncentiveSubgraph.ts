@@ -498,13 +498,7 @@ export function useTransferredPositions() {
   }
 
   const { isLoading, data, refetch } = useQuery({
-    queryKey: [
-      'v3FarmTransferredPositions',
-      chainId,
-      account,
-      !!provider,
-      lastTxHash,
-    ],
+    queryKey: ['v3FarmTransferredPositions', chainId, account, !!provider],
     queryFn: fetchTransferredPositions,
   });
 
@@ -521,7 +515,7 @@ export function useTransferredPositions() {
   useEffect(() => {
     refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, lastTxHash]);
 
   return { isLoading, data };
 }

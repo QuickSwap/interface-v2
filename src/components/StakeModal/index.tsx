@@ -6,7 +6,6 @@ import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
 import { useChunkedRows } from '../../utils/chunkForRows';
 import Loader from '../Loader';
 import { FarmingType } from '../../models/enums';
-import { NTFInterface } from '../../models/interfaces';
 import './index.scss';
 import FarmModalFarmingTiers from 'components/StakeModalFarmingTiers';
 import { IsActive } from 'components/StakerMyStakes/IsActive';
@@ -90,7 +89,7 @@ export function FarmModal({
     ],
   );
 
-  const [selectedNFT, setSelectedNFT] = useState<null | NTFInterface>(null);
+  const [selectedNFT, setSelectedNFT] = useState('');
   const {
     data: positionsForPool,
     isLoading: positionsForPoolLoading,
@@ -121,8 +120,17 @@ export function FarmModal({
 
   const _chunked = useChunkedRows(positionsForStake, 1000);
 
+  const [submitState, setSubmitState] = useState(0);
+  const [submitLoader, setSubmitLoader] = useState(false);
+
   const chunkedPositions = useMemo(() => {
-    if (txHash && txConfirmed && selectedTokenId) {
+    if (
+      submitState === (txType === 'farmApprove' ? 0 : 2) &&
+      !txError &&
+      txHash &&
+      txConfirmed &&
+      selectedTokenId
+    ) {
       const _newChunked: any[][] = [];
 
       if (_chunked) {
@@ -142,31 +150,25 @@ export function FarmModal({
       return _newChunked;
     }
     return _chunked;
-  }, [_chunked, selectedTokenId, txConfirmed, txHash]);
+  }, [
+    _chunked,
+    selectedTokenId,
+    submitState,
+    txConfirmed,
+    txError,
+    txHash,
+    txType,
+  ]);
 
-  const [submitState, setSubmitState] = useState(0);
-  const [submitLoader, setSubmitLoader] = useState(false);
+  const nftApproved = useMemo(() => {
+    if (!selectedNFT) return false;
 
-  const filterNFTs = useCallback(
-    (fn) => {
-      if (!selectedNFT) return;
+    const selectedPosition = positionsForStake?.find(
+      (position) => position.id.toLowerCase() === selectedNFT.toLowerCase(),
+    );
 
-      const _filtered = [selectedNFT].filter(fn);
-
-      return _filtered.length > 0 ? _filtered[0] : null;
-    },
-    [selectedNFT],
-  );
-
-  const NFTsForApprove = useMemo(
-    () => filterNFTs((v: NTFInterface) => !v.onFarmingCenter),
-    [filterNFTs],
-  );
-
-  const NFTsForStake = useMemo(
-    () => filterNFTs((v: NTFInterface) => v.onFarmingCenter),
-    [filterNFTs],
-  );
+    return selectedPosition ? selectedPosition.onFarmingCenter : false;
+  }, [positionsForStake, selectedNFT]);
 
   useEffect(() => {
     if (submitState !== (txType === 'farmApprove' ? 0 : 2)) return;
@@ -280,7 +282,7 @@ export function FarmModal({
           setSelectedTier('');
       }
 
-      if (!isEnoughTokenForLock || tier === '') setSelectedNFT(null);
+      if (!isEnoughTokenForLock || tier === '') setSelectedNFT('');
     },
     [
       isEnoughTokenForLock,
@@ -320,8 +322,7 @@ export function FarmModal({
             <img src={TransactionSubmitted} alt='Deposited Successfully' />
             <Box mt={3}>
               <p>
-                {t('positionDepositedSuccessfully', { nftID: selectedNFT?.id })}
-                !
+                {t('positionDepositedSuccessfully', { nftID: selectedNFT })}!
               </p>
             </Box>
           </Box>
@@ -394,7 +395,7 @@ export function FarmModal({
                   {row.map((el, j) => (
                     <Box
                       className={`v3-farm-stake-modal-position${
-                        selectedNFT?.id === el.id
+                        selectedNFT === el.id
                           ? ' v3-farm-stake-modal-position-selected'
                           : ''
                       }`}
@@ -402,14 +403,7 @@ export function FarmModal({
                       onClick={(e: any) => {
                         if (!isEnoughTokenForLock && selectedTier) return;
                         if (e.target.tagName !== 'A' && !submitLoader) {
-                          setSelectedNFT((old) =>
-                            old && old.id === el.id
-                              ? null
-                              : {
-                                  onFarmingCenter: el.onFarmingCenter,
-                                  id: el.id,
-                                },
-                          );
+                          setSelectedNFT((old) => (old === el.id ? '' : el.id));
                         }
                       }}
                     >
@@ -433,12 +427,12 @@ export function FarmModal({
                       </Box>
                       <Box
                         className={`v3-farm-stake-position-check ${
-                          selectedNFT?.id === el.id
+                          selectedNFT === el.id
                             ? 'v3-farm-stake-position-checked'
                             : 'v3-farm-stake-position-unchecked'
                         }`}
                       >
-                        {selectedNFT?.id === el.id && <Check />}
+                        {selectedNFT === el.id && <Check />}
                       </Box>
                     </Box>
                   ))}
@@ -499,7 +493,7 @@ export function FarmModal({
               )}
               <Box width={selectedTier ? '32%' : '49%'}>
                 <Button
-                  disabled={submitLoader || !NFTsForApprove}
+                  disabled={submitLoader || nftApproved}
                   onClick={approveNFTs}
                 >
                   {submitLoader && submitState === 0 ? (
@@ -507,7 +501,7 @@ export function FarmModal({
                       <Loader stroke={'white'} />
                       <Box ml='4px'>{t('approving')}</Box>
                     </Box>
-                  ) : NFTsForStake && !NFTsForApprove ? (
+                  ) : nftApproved ? (
                     t('positionApproved')
                   ) : (
                     t('approvePosition')
@@ -516,7 +510,7 @@ export function FarmModal({
               </Box>
               <Box width={selectedTier ? '32%' : '49%'}>
                 <Button
-                  disabled={submitLoader || !NFTsForStake}
+                  disabled={submitLoader || !nftApproved}
                   onClick={() => farmNFTs(farmingType)}
                 >
                   {submitLoader && submitState === 2 ? (

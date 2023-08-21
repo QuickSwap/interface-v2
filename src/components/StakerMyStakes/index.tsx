@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
@@ -44,6 +44,7 @@ import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import CurrencyLogo from 'components/CurrencyLogo';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 import { useLastTransactionHash } from 'state/transactions/hooks';
+import { FarmingType } from 'models/enums';
 
 export const FarmingMyFarms: React.FC<{
   search: string;
@@ -71,7 +72,7 @@ export const FarmingMyFarms: React.FC<{
 
   const { data: rewardsResult } = useFarmRewards();
   const {
-    data: shallowPositions,
+    data: transferredPositions,
     isLoading: transferredPositionsLoading,
   } = useTransferredPositions();
   const {
@@ -87,6 +88,57 @@ export const FarmingMyFarms: React.FC<{
   const { v3Stake } = useV3StakeData();
   const { selectedTokenId, txType, txError, txConfirmed, selectedFarmingType } =
     v3Stake ?? {};
+
+  const shallowPositions = useMemo(() => {
+    if (!transferredPositions) return [];
+    if (txConfirmed && selectedTokenId) {
+      if (txType === 'eternalCollectReward') {
+        return transferredPositions.map((el) => {
+          if (el.id === selectedTokenId) {
+            el.eternalEarned = 0;
+            el.eternalBonusEarned = 0;
+          }
+          return el;
+        });
+      } else if (txType === 'withdraw') {
+        return transferredPositions.map((el) => {
+          if (el.id === selectedTokenId) {
+            el.onFarmingCenter = false;
+          }
+          return el;
+        });
+      } else if (txType === 'claimRewards') {
+        return transferredPositions.map((el) => {
+          if (el.id === selectedTokenId) {
+            if (selectedFarmingType === FarmingType.LIMIT) {
+              el.limitFarming = null;
+            } else {
+              el.eternalFarming = null;
+            }
+          }
+          return el;
+        });
+      } else if (txType === 'getRewards') {
+        return transferredPositions.map((el) => {
+          if (el.id === selectedTokenId) {
+            if (selectedFarmingType === FarmingType.LIMIT) {
+              el.limitFarming = null;
+            } else {
+              el.eternalFarming = null;
+            }
+          }
+          return el;
+        });
+      }
+    }
+    return transferredPositions;
+  }, [
+    selectedFarmingType,
+    selectedTokenId,
+    transferredPositions,
+    txConfirmed,
+    txType,
+  ]);
 
   const shallowRewards = useMemo(() => {
     if (!rewardsResult) return [];
@@ -384,17 +436,39 @@ export const FarmingMyFarms: React.FC<{
     return gammaData;
   };
 
-  const lastTxHash = useLastTransactionHash();
-
-  const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery({
-    queryKey: ['fetchGammaDataMyFarms', lastTxHash, chainId],
+  const {
+    isLoading: gammaFarmsLoading,
+    data: gammaData,
+    refetch: refetchGammaData,
+  } = useQuery({
+    queryKey: ['fetchGammaDataMyFarms', chainId],
     queryFn: fetchGammaData,
   });
 
-  const { isLoading: gammaRewardsLoading, data: gammaRewards } = useQuery({
-    queryKey: ['fetchGammaRewardsMyFarms', lastTxHash, chainId],
+  const {
+    isLoading: gammaRewardsLoading,
+    data: gammaRewards,
+    refetch: refetchGammaRewards,
+  } = useQuery({
+    queryKey: ['fetchGammaRewardsMyFarms', chainId],
     queryFn: fetchGammaRewards,
   });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchGammaData();
+    refetchGammaRewards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const sortMultiplierGamma = sortDescGamma ? -1 : 1;
 
