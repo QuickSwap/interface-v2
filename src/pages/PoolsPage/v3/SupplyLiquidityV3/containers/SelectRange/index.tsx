@@ -93,7 +93,12 @@ export function SelectRange({
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencyA, currencyB]);
+  }, [
+    currencyA?.isNative,
+    currencyA?.wrapped.address,
+    currencyB?.isNative,
+    currencyB?.wrapped.address,
+  ]);
 
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
