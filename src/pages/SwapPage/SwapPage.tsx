@@ -1,9 +1,8 @@
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
-import { ChainId } from '@uniswap/sdk';
 import { Adshares, SettingsModal } from 'components';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import 'pages/styles/swap.scss';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useIsV2 } from 'state/application/hooks';
 import { Field } from 'state/swap/actions';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
@@ -12,60 +11,55 @@ import { wrappedCurrency, wrappedCurrencyV3 } from 'utils/wrappedCurrency';
 import SwapDefaultMode from './SwapDefaultMode';
 import SwapPageHeader from './SwapPageHeader';
 import SwapProMain from './SwapProMain';
+import { useQuery } from '@tanstack/react-query';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { isV2 } = useIsV2();
   const isProMode = useIsProMode();
-  const [pairId, setPairId] = useState<
-    { v2: string | undefined; v3: string | undefined } | undefined
-  >(undefined);
-  const [pairTokenReversed, setPairTokenReversed] = useState(false);
 
   const { currencies } = useDerivedSwapInfo();
   const { currencies: currenciesV3 } = useDerivedSwapInfoV3();
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
-  const token1 = wrappedCurrency(currencies[Field.INPUT], chainIdToUse);
-  const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainIdToUse);
+  const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
+  const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const tabletWindowSize = useMediaQuery(breakpoints.down('sm'));
-  const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainIdToUse);
-  const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainIdToUse);
+  const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainId);
+  const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainId);
 
-  useEffect(() => {
-    async function getPairId(token1Address: string, token2Address: string) {
+  const getPairId = async () => {
+    if (token1 && token2) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/pair-address/${token1Address}/${token2Address}?chainId=${chainIdToUse}`,
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/pair-address/${token1.address}/${token2.address}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to get top token details`,
-        );
+        return null;
       }
       const data = await res.json();
 
       if (data && data.data) {
-        setPairTokenReversed(
-          isV2
+        return {
+          tokenReversed: isV2
             ? data.data.v2
               ? data.data.v2.tokenReversed
               : false
             : data.data.v3
             ? data.data.v3.tokenReversed
             : false,
-        );
-
-        setPairId({ v2: data.data.v2?.pairId, v3: data.data.v3?.pairId });
+          pairId: { v2: data.data.v2?.pairId, v3: data.data.v3?.pairId },
+        };
       }
     }
-    if (token1?.address && token2?.address) {
-      getPairId(token1?.address, token2?.address);
-    }
-  }, [chainIdToUse, isV2, token1?.address, token2?.address]);
+    return null;
+  };
+
+  const { data } = useQuery({
+    queryKey: ['fetchPairId', token1?.address, token2?.address, chainId],
+    queryFn: getPairId,
+  });
 
   return (
     <Box
@@ -83,8 +77,8 @@ const SwapPage: React.FC = () => {
       <SwapPageHeader proMode={isProMode} />
       {isProMode ? (
         <SwapProMain
-          pairId={pairId}
-          pairTokenReversed={pairTokenReversed}
+          pairId={data?.pairId}
+          pairTokenReversed={data?.tokenReversed ?? false}
           token1={isV2 ? token1 : token1V3}
           token2={isV2 ? token2 : token2V3}
         />

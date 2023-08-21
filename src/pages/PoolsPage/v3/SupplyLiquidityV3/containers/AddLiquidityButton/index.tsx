@@ -359,7 +359,7 @@ export function AddLiquidityButton({
             ? t('gammaImproperRatio')
             : errorMsg.indexOf('price change overflow') > -1
             ? t('gammaPriceOverflow')
-            : error?.code === 4001
+            : error?.code === 'ACTION_REJECTED'
             ? t('txRejected')
             : t('errorInTx'),
         );
@@ -435,7 +435,9 @@ export function AddLiquidityButton({
                   console.error('Failed to send transaction', error);
                   setTxPending(false);
                   setAddLiquidityErrorMessage(
-                    error?.code === 4001 ? t('txRejected') : t('errorInTx'),
+                    error?.code === 'ACTION_REJECTED'
+                      ? t('txRejected')
+                      : t('errorInTx'),
                   );
                 }
               })
@@ -443,7 +445,9 @@ export function AddLiquidityButton({
                 console.error('Failed to send transaction', err);
                 setAttemptingTxn(false);
                 setAddLiquidityErrorMessage(
-                  err?.code === 4001 ? t('txRejected') : t('errorInTx'),
+                  err?.code === 'ACTION_REJECTED'
+                    ? t('txRejected')
+                    : t('errorInTx'),
                 );
               });
           })
@@ -453,9 +457,11 @@ export function AddLiquidityButton({
             setRejected && setRejected(true);
             setAttemptingTxn(false);
             setAddLiquidityErrorMessage(
-              error?.code === 4001 ? t('txRejected') : t('errorInTx'),
+              error?.code === 'ACTION_REJECTED'
+                ? t('txRejected')
+                : t('errorInTx'),
             );
-            if (error?.code !== 4001) {
+            if (error?.code !== 'ACTION_REJECTED') {
               console.error(error);
             }
           });
@@ -632,6 +638,9 @@ export function AddLiquidityButton({
           isOpen={showConfirm}
           onDismiss={handleDismissConfirmation}
           attemptingTxn={attemptingTxn}
+          isTxWrapper={
+            !!attemptingTxn || !!txHash || !!addLiquidityErrorMessage
+          }
           hash={txHash}
           txPending={txPending}
           content={() =>

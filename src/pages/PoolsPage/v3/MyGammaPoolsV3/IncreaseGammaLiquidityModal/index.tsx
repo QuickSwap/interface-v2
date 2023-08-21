@@ -283,7 +283,7 @@ export default function IncreaseGammaLiquidityModal({
       setAttemptingTxn(false);
       setTxPending(false);
       setAddErrorMessage(
-        error?.code === 4001 ? t('txRejected') : t('errorInTx'),
+        error?.code === 'ACTION_REJECTED' ? t('txRejected') : t('errorInTx'),
       );
     }
   };

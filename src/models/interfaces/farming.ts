@@ -4,6 +4,7 @@ import {
   PoolSubgraph,
   TokenSubgraph,
 } from './responseSubgraph';
+import { Token } from '@uniswap/sdk';
 
 interface DefaultFarmingEvent {
   id: string;
@@ -66,13 +67,13 @@ export interface FormattedEternalFarming {
   tvl: number | undefined;
   bonusReward: string;
   bonusRewardRate: string;
-  bonusRewardToken: TokenSubgraph;
+  bonusRewardToken: Token;
   endTime: string;
   id: string;
   pool: PoolChartSubgraph;
   reward: string;
   rewardRate: string;
-  rewardToken: TokenSubgraph;
+  rewardToken: Token;
   startTime: string;
   tokenAmountForTier1: string;
   tokenAmountForTier2: string;
@@ -80,7 +81,7 @@ export interface FormattedEternalFarming {
   tier1Multiplier: string;
   tier2Multiplier: string;
   tier3Multiplier: string;
-  multiplierToken: TokenSubgraph;
+  multiplierToken: Token;
   isDetached: boolean;
 }
 

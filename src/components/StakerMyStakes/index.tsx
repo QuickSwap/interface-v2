@@ -2,8 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
-import { Deposit, FormattedRewardInterface } from '../../models/interfaces';
-import { FarmingType } from '../../models/enums';
 import { useLocation } from 'react-router-dom';
 import './index.scss';
 import FarmCard from './FarmCard';
@@ -15,7 +13,12 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { useV3StakeData } from 'state/farms/hooks';
-import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+import {
+  useEternalFarmAprs,
+  useEternalFarmPoolAPRs,
+  useFarmRewards,
+  useTransferredPositions,
+} from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'react-i18next';
 import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
 import SortColumns from 'components/SortColumns';
@@ -40,6 +43,8 @@ import { formatUnits } from 'ethers/lib/utils';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import CurrencyLogo from 'components/CurrencyLogo';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
+import { useLastTransactionHash } from 'state/transactions/hooks';
+import { FarmingType } from 'models/enums';
 
 export const FarmingMyFarms: React.FC<{
   search: string;
@@ -65,41 +70,81 @@ export const FarmingMyFarms: React.FC<{
   }, [chainId]);
   const { eternalOnlyCollectRewardHandler } = useFarmingHandlers();
 
+  const { data: rewardsResult } = useFarmRewards();
   const {
-    fetchRewards: { rewardsResult, fetchRewardsFn, rewardsLoading },
-    fetchTransferredPositions: {
-      fetchTransferredPositionsFn,
-      transferredPositions,
-      transferredPositionsLoading,
-    },
-    fetchEternalFarmPoolAprs: {
-      fetchEternalFarmPoolAprsFn,
-      eternalFarmPoolAprs,
-      eternalFarmPoolAprsLoading,
-    },
-    fetchEternalFarmAprs: {
-      fetchEternalFarmAprsFn,
-      eternalFarmAprs,
-      eternalFarmAprsLoading,
-    },
-  } = useFarmingSubgraph() || {};
+    data: transferredPositions,
+    isLoading: transferredPositionsLoading,
+  } = useTransferredPositions();
+  const {
+    data: eternalFarmPoolAprs,
+    isLoading: eternalFarmPoolAprsLoading,
+  } = useEternalFarmPoolAPRs();
+
+  const {
+    data: eternalFarmAprs,
+    isLoading: eternalFarmAprsLoading,
+  } = useEternalFarmAprs();
+
   const { v3Stake } = useV3StakeData();
-  const {
-    selectedTokenId,
-    txType,
-    txHash,
-    txError,
-    txConfirmed,
+  const { selectedTokenId, txType, txError, txConfirmed, selectedFarmingType } =
+    v3Stake ?? {};
+
+  const shallowPositions = useMemo(() => {
+    if (!transferredPositions) return [];
+    if (txConfirmed && selectedTokenId) {
+      if (txType === 'eternalCollectReward') {
+        return transferredPositions.map((el) => {
+          if (el.id === selectedTokenId) {
+            el.eternalEarned = 0;
+            el.eternalBonusEarned = 0;
+          }
+          return el;
+        });
+      } else if (txType === 'withdraw') {
+        return transferredPositions.map((el) => {
+          if (el.id === selectedTokenId) {
+            el.onFarmingCenter = false;
+          }
+          return el;
+        });
+      } else if (txType === 'claimRewards') {
+        return transferredPositions.map((el) => {
+          if (el.id === selectedTokenId) {
+            if (selectedFarmingType === FarmingType.LIMIT) {
+              el.limitFarming = null;
+            } else {
+              el.eternalFarming = null;
+            }
+          }
+          return el;
+        });
+      } else if (txType === 'getRewards') {
+        return transferredPositions.map((el) => {
+          if (el.id === selectedTokenId) {
+            if (selectedFarmingType === FarmingType.LIMIT) {
+              el.limitFarming = null;
+            } else {
+              el.eternalFarming = null;
+            }
+          }
+          return el;
+        });
+      }
+    }
+    return transferredPositions;
+  }, [
     selectedFarmingType,
-  } = v3Stake ?? {};
+    selectedTokenId,
+    transferredPositions,
+    txConfirmed,
+    txType,
+  ]);
 
-  const [shallowPositions, setShallowPositions] = useState<Deposit[] | null>(
-    null,
-  );
-
-  const [shallowRewards, setShallowRewards] = useState<
-    FormattedRewardInterface[] | null
-  >();
+  const shallowRewards = useMemo(() => {
+    if (!rewardsResult) return [];
+    const rewards = rewardsResult.filter((reward) => reward.trueAmount);
+    return rewards;
+  }, [rewardsResult]);
 
   const { hash } = useLocation();
 
@@ -110,31 +155,31 @@ export const FarmingMyFarms: React.FC<{
         (item) =>
           farm &&
           farm.eternalRewardToken &&
-          farm.eternalRewardToken.id &&
-          farm.eternalRewardToken.id.toLowerCase() === item,
+          farm.eternalRewardToken.address &&
+          farm.eternalRewardToken.address.toLowerCase() === item,
       );
       const bonusRewardTokenAddress = memo.find(
         (item) =>
           farm &&
           farm.eternalBonusRewardToken &&
-          farm.eternalBonusRewardToken.id &&
-          farm.eternalBonusRewardToken.id.toLowerCase() === item,
+          farm.eternalBonusRewardToken.address &&
+          farm.eternalBonusRewardToken.address.toLowerCase() === item,
       );
       if (
         !rewardTokenAddress &&
         farm &&
         farm.eternalRewardToken &&
-        farm.eternalRewardToken.id
+        farm.eternalRewardToken.address
       ) {
-        memo.push(farm.eternalRewardToken.id.toLowerCase());
+        memo.push(farm.eternalRewardToken.address.toLowerCase());
       }
       if (
         !bonusRewardTokenAddress &&
         farm.eternalBonusRewardToken &&
-        farm.eternalBonusRewardToken.id &&
-        farm.eternalBonusRewardToken.id
+        farm.eternalBonusRewardToken.address &&
+        farm.eternalBonusRewardToken.address
       ) {
-        memo.push(farm.eternalBonusRewardToken.id.toLowerCase());
+        memo.push(farm.eternalBonusRewardToken.address.toLowerCase());
       }
       return memo;
     }, []);
@@ -163,12 +208,18 @@ export const FarmingMyFarms: React.FC<{
             ? farm.pool.token1.symbol
             : '';
         const farmToken0Id =
-          farm && farm.pool && farm.pool.token0 && farm.pool.token0.id
-            ? farm.pool.token0.id
+          farm &&
+          farm.pool &&
+          farm.pool.token0 &&
+          (farm.pool.token0.id ?? farm.pool.token0.address)
+            ? farm.pool.token0.id ?? farm.pool.token0.address
             : '';
         const farmToken1Id =
-          farm && farm.pool && farm.pool.token1 && farm.pool.token1.id
-            ? farm.pool.token1.id
+          farm &&
+          farm.pool &&
+          farm.pool.token1 &&
+          (farm.pool.token1.id ?? farm.pool.token1.address)
+            ? farm.pool.token1.id ?? farm.pool.token1.address
             : '';
         return (
           farm.onFarmingCenter &&
@@ -210,33 +261,33 @@ export const FarmingMyFarms: React.FC<{
             (item) =>
               farm1 &&
               farm1.eternalRewardToken &&
-              farm1.eternalRewardToken.id &&
+              farm1.eternalRewardToken.address &&
               item.address.toLowerCase() ===
-                farm1.eternalRewardToken.id.toLowerCase(),
+                farm1.eternalRewardToken.address.toLowerCase(),
           );
           const farm1BonusRewardTokenPrice = rewardTokenPrices?.find(
             (item) =>
               farm1 &&
               farm1.eternalBonusRewardToken &&
-              farm1.eternalBonusRewardToken.id &&
+              farm1.eternalBonusRewardToken.address &&
               item.address.toLowerCase() ===
-                farm1.eternalBonusRewardToken.id.toLowerCase(),
+                farm1.eternalBonusRewardToken.address.toLowerCase(),
           );
           const farm2RewardTokenPrice = rewardTokenPrices?.find(
             (item) =>
               farm2 &&
               farm2.eternalRewardToken &&
-              farm2.eternalRewardToken.id &&
+              farm2.eternalRewardToken.address &&
               item.address.toLowerCase() ===
-                farm2.eternalRewardToken.id.toLowerCase(),
+                farm2.eternalRewardToken.address.toLowerCase(),
           );
           const farm2BonusRewardTokenPrice = rewardTokenPrices?.find(
             (item) =>
               farm2 &&
               farm2.eternalBonusRewardToken &&
-              farm2.eternalBonusRewardToken.id &&
+              farm2.eternalBonusRewardToken.address &&
               item.address.toLowerCase() ===
-                farm2.eternalBonusRewardToken.id.toLowerCase(),
+                farm2.eternalBonusRewardToken.address.toLowerCase(),
           );
 
           const farm1Reward =
@@ -294,90 +345,6 @@ export const FarmingMyFarms: React.FC<{
     v3FarmSortBy.apr,
     v3FarmSortBy.rewards,
   ]);
-
-  useEffect(() => {
-    fetchTransferredPositionsFn();
-    fetchEternalFarmPoolAprsFn();
-    fetchEternalFarmAprsFn();
-    fetchRewardsFn();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
-
-  useEffect(() => {
-    if (txType === 'farm' && txConfirmed) {
-      fetchTransferredPositionsFn();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [txType, txConfirmed]);
-
-  useEffect(() => {
-    setShallowPositions(transferredPositions);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transferredPositions?.length]);
-
-  useEffect(() => {
-    setShallowRewards(rewardsResult.filter((reward) => reward.trueAmount));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rewardsResult?.length]);
-
-  useEffect(() => {
-    if (!shallowPositions) return;
-    if (txHash && txConfirmed && selectedTokenId) {
-      if (txType === 'eternalCollectReward') {
-        setShallowPositions(
-          shallowPositions.map((el) => {
-            if (el.id === selectedTokenId) {
-              el.eternalEarned = 0;
-              el.eternalBonusEarned = 0;
-            }
-            return el;
-          }),
-        );
-      } else if (txType === 'withdraw') {
-        setShallowPositions(
-          shallowPositions.map((el) => {
-            if (el.id === selectedTokenId) {
-              el.onFarmingCenter = false;
-            }
-            return el;
-          }),
-        );
-      } else if (txType === 'claimRewards') {
-        setShallowPositions(
-          shallowPositions.map((el) => {
-            if (el.id === selectedTokenId) {
-              if (selectedFarmingType === FarmingType.LIMIT) {
-                el.limitFarming = null;
-              } else {
-                el.eternalFarming = null;
-              }
-            }
-            return el;
-          }),
-        );
-      } else if (txType === 'getRewards') {
-        setShallowPositions(
-          shallowPositions.map((el) => {
-            if (el.id === selectedTokenId) {
-              if (selectedFarmingType === FarmingType.LIMIT) {
-                el.limitFarming = null;
-              } else {
-                el.eternalFarming = null;
-              }
-            }
-            return el;
-          }),
-        );
-      } else if (txType === 'eternalOnlyCollectReward') {
-        if (!shallowRewards) return;
-
-        setShallowRewards(
-          shallowRewards.filter((reward) => reward.id !== selectedTokenId),
-        );
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [txHash, txConfirmed, selectedTokenId, selectedFarmingType, txType]);
 
   const [sortByGamma, setSortByGamma] = useState(v3FarmSortBy.pool);
 
@@ -474,7 +441,7 @@ export const FarmingMyFarms: React.FC<{
     data: gammaData,
     refetch: refetchGammaData,
   } = useQuery({
-    queryKey: ['fetchGammaData', chainId],
+    queryKey: ['fetchGammaDataMyFarms', chainId],
     queryFn: fetchGammaData,
   });
 
@@ -483,7 +450,7 @@ export const FarmingMyFarms: React.FC<{
     data: gammaRewards,
     refetch: refetchGammaRewards,
   } = useQuery({
-    queryKey: ['fetchGammaRewards', chainId],
+    queryKey: ['fetchGammaRewardsMyFarms', chainId],
     queryFn: fetchGammaRewards,
   });
 
@@ -493,7 +460,7 @@ export const FarmingMyFarms: React.FC<{
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 30000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
@@ -710,33 +677,19 @@ export const FarmingMyFarms: React.FC<{
     })
     .map((item) => {
       if (chainId) {
-        const token0Data = getTokenFromAddress(
+        const token0 = getTokenFromAddress(
           item.token0Address,
           chainId,
           tokenMap,
           [],
         );
-        const token1Data = getTokenFromAddress(
+        const token1 = getTokenFromAddress(
           item.token1Address,
           chainId,
           tokenMap,
           [],
         );
-        const token0 = new Token(
-          chainId,
-          token0Data.address,
-          token0Data.decimals,
-          token0Data.symbol,
-          token0Data.name,
-        );
-        const token1 = new Token(
-          chainId,
-          token1Data.address,
-          token1Data.decimals,
-          token1Data.symbol,
-          token1Data.name,
-        );
-        return { ...item, token0, token1 };
+        return { ...item, token0: token0 ?? null, token1: token1 ?? null };
       }
       return { ...item, token0: null, token1: null };
     })
@@ -867,11 +820,11 @@ export const FarmingMyFarms: React.FC<{
   return (
     <Box mt={2}>
       <Divider />
-      {shallowRewards?.length ? (
+      {shallowRewards.length ? (
         <Box px={2} my={2}>
           <h6>Unclaimed Rewards</h6>
           <Box my={2} className='flex'>
-            {shallowRewards?.map((reward, index) =>
+            {shallowRewards.map((reward, index) =>
               reward.trueAmount ? (
                 <Box key={index} className='flex items-center' mr={2}>
                   <CurrencyLogo

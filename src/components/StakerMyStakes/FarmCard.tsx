@@ -61,71 +61,39 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
         Number(el.pool.tick) >= el.tickUpper
       : false;
 
+  const HOPToken = getTokenFromAddress(
+    '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc',
+    chainId,
+    tokenMap,
+    [],
+  );
+
   const rewardToken = el.eternalRewardToken;
   const earned = el.eternalEarned;
   const bonusEarned = el.eternalBonusEarned;
-  const bonusRewardToken = el.eternalBonusRewardToken;
-
-  const farmRewardToken =
-    chainId && rewardToken
-      ? getTokenFromAddress(rewardToken.id, chainId, tokenMap, [
-          new Token(
-            chainId,
-            rewardToken.id,
-            Number(rewardToken.decimals),
-            rewardToken.symbol,
-          ),
-        ])
-      : undefined;
-
-  const HOPTokenAddress = '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc';
-
-  const farmBonusRewardToken =
-    chainId && bonusRewardToken
-      ? getTokenFromAddress(
-          el.pool &&
-            el.pool.id &&
-            el.pool.id.toLowerCase() ===
-              '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
-            ? HOPTokenAddress
-            : bonusRewardToken.id,
-          chainId,
-          tokenMap,
-          [
-            new Token(
-              chainId,
-              el.pool &&
-              el.pool.id &&
-              el.pool.id.toLowerCase() ===
-                '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
-                ? HOPTokenAddress
-                : bonusRewardToken.id,
-              Number(bonusRewardToken.decimals),
-              bonusRewardToken.symbol,
-            ),
-          ],
-        )
-      : undefined;
+  const bonusRewardToken =
+    el.pool &&
+    el.pool.id &&
+    el.pool.id.toLowerCase() === '0x0db644468cd5c664a354e31aa1f6dba1d1dead47'
+      ? HOPToken
+      : el.eternalBonusRewardToken;
 
   const rewardTokenAddresses = useMemo(() => {
     const addresses = [];
-    if (rewardToken && rewardToken.id) addresses.push(rewardToken.id);
-    if (bonusRewardToken && bonusRewardToken.id)
-      addresses.push(bonusRewardToken.id);
+    if (rewardToken) addresses.push(rewardToken.address);
+    if (bonusRewardToken) addresses.push(bonusRewardToken.address);
     return addresses;
   }, [bonusRewardToken, rewardToken]);
   const rewardTokenUSDPrices = useUSDCPricesFromAddresses(rewardTokenAddresses);
   const rewardTokenPrice = rewardTokenUSDPrices?.find(
     (item) =>
       rewardToken &&
-      rewardToken.id &&
-      item.address.toLowerCase() === rewardToken.id.toLowerCase(),
+      item.address.toLowerCase() === rewardToken.address.toLowerCase(),
   );
   const bonusRewardTokenPrice = rewardTokenUSDPrices?.find(
     (item) =>
       bonusRewardToken &&
-      bonusRewardToken.id &&
-      item.address.toLowerCase() === bonusRewardToken.id.toLowerCase(),
+      item.address.toLowerCase() === bonusRewardToken.address.toLowerCase(),
   );
 
   const usdAmount =
@@ -232,8 +200,8 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
               <Box
                 className={`flex items-center ${isMobile ? 'justify-end' : ''}`}
               >
-                {farmRewardToken && (
-                  <CurrencyLogo size='16px' currency={farmRewardToken} />
+                {rewardToken && (
+                  <CurrencyLogo size='16px' currency={rewardToken} />
                 )}
 
                 {rewardToken && (
@@ -244,21 +212,20 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
                   </Box>
                 )}
               </Box>
-              <Box
-                className={`flex items-center ${isMobile ? 'justify-end' : ''}`}
-              >
-                {farmBonusRewardToken && (
-                  <CurrencyLogo size='16px' currency={farmBonusRewardToken} />
-                )}
-
-                {bonusRewardToken && (
+              {bonusRewardToken && (
+                <Box
+                  className={`flex items-center ${
+                    isMobile ? 'justify-end' : ''
+                  }`}
+                >
+                  <CurrencyLogo size='16px' currency={bonusRewardToken} />
                   <Box ml='6px'>
                     <p className='caption'>{`${formatReward(
                       Number(bonusEarned),
                     )} ${bonusRewardToken.symbol}`}</p>
                   </Box>
-                )}
-              </Box>
+                </Box>
+              )}
             </Box>
           </Box>
         </Box>
