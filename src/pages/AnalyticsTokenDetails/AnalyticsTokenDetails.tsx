@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -13,12 +13,7 @@ import {
 } from 'utils';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
-import {
-  useBookmarkTokens,
-  useEthPrice,
-  useIsV2,
-  useMaticPrice,
-} from 'state/application/hooks';
+import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { GlobalConst, TxnType } from 'constants/index';
@@ -27,34 +22,22 @@ import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import { useDispatch } from 'react-redux';
-import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { getConfig } from 'config';
+import { useAnalyticsTokenDetails } from 'hooks/useFetchAnalyticsData';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id.toLowerCase();
-  const [loadingData, setLoadingData] = useState(false);
-  const [token, setToken] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
-  const currency =
-    token && chainId
-      ? getTokenFromAddress(tokenAddress, chainId, tokenMap, [
-          new Token(chainId, getAddress(token.id), token.decimals ?? 18),
-        ])
-      : undefined;
-  const [tokenPairs, updateTokenPairs] = useState<any>(null);
-  const [tokenTransactions, updateTokenTransactions] = useState<any>(null);
+
   const {
     bookmarkTokens,
     addBookmarkToken,
     removeBookmarkToken,
   } = useBookmarkTokens();
-  const { ethPrice } = useEthPrice();
-  const { maticPrice } = useMaticPrice();
   const config = getConfig(chainId);
   const v3 = config['v3'];
   const v2 = config['v2'];
@@ -67,8 +50,6 @@ const AnalyticsTokenDetails: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showAnalytics]);
 
-  const dispatch = useDispatch();
-
   const { updateIsV2 } = useIsV2();
 
   useEffect(() => {
@@ -78,12 +59,33 @@ const AnalyticsTokenDetails: React.FC = () => {
   }, [updateIsV2, v2, v3]);
   const version = useAnalyticsVersion();
 
+  const { isLoading, data } = useAnalyticsTokenDetails(
+    tokenAddress,
+    version,
+    chainId,
+  );
+
+  const currency =
+    data && data.token && chainId
+      ? getTokenFromAddress(tokenAddress, chainId, tokenMap, [
+          new Token(
+            chainId,
+            getAddress(data.token.id),
+            data.token.decimals ?? 18,
+          ),
+        ])
+      : undefined;
+
+  const tokenPercentClass = getPriceClass(
+    data && data.token ? Number(data.token.priceChangeUSD) : 0,
+  );
+
   const tokenTransactionsList = useMemo(() => {
-    if (tokenTransactions) {
-      const mints = tokenTransactions.mints.map((item: any) => {
+    if (data && data.tokenTransactions) {
+      const mints = data.tokenTransactions.mints.map((item: any) => {
         return { ...item, type: TxnType.ADD };
       });
-      const swaps = tokenTransactions.swaps.map((item: any) => {
+      const swaps = data.tokenTransactions.swaps.map((item: any) => {
         const amount0 = item.isV2
           ? item.amount0Out > 0
             ? item.amount0Out
@@ -116,64 +118,14 @@ const AnalyticsTokenDetails: React.FC = () => {
           type: TxnType.SWAP,
         };
       });
-      const burns = tokenTransactions.burns.map((item: any) => {
+      const burns = data.tokenTransactions.burns.map((item: any) => {
         return { ...item, type: TxnType.REMOVE };
       });
       return mints.concat(swaps).concat(burns);
     } else {
       return null;
     }
-  }, [tokenTransactions]);
-
-  useEffect(() => {
-    (async () => {
-      if (chainId && version) {
-        const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/${version}?chainId=${chainId}`,
-        );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get top token details`,
-          );
-        }
-        const data = await res.json();
-        setLoadingData(false);
-        if (data?.data?.token) {
-          setToken(data.data.token);
-          updateTokenPairs(data.data.tokenPairs);
-          updateTokenTransactions(data.data.tokenTransactions);
-        }
-      }
-    })();
-  }, [
-    tokenAddress,
-    ethPrice.price,
-    ethPrice.oneDayPrice,
-    maticPrice.price,
-    maticPrice.oneDayPrice,
-    version,
-    chainId,
-  ]);
-
-  useEffect(() => {
-    setLoadingData(true);
-    setToken(null);
-    updateTokenPairs(null);
-    updateTokenTransactions(null);
-  }, [tokenAddress, version]);
-
-  useEffect(() => {
-    if (!loadingData) {
-      dispatch(setAnalyticsLoaded(true));
-    } else {
-      dispatch(setAnalyticsLoaded(false));
-    }
-  }, [loadingData, dispatch]);
-
-  const tokenPercentClass = getPriceClass(
-    token ? Number(token.priceChangeUSD) : 0,
-  );
+  }, [data]);
 
   const V2TokenInfo = ({ token, tokenPairs }: any) => {
     return (
@@ -310,8 +262,8 @@ const AnalyticsTokenDetails: React.FC = () => {
         </p>
       </Box>
       <Box width={1} className='panel' mt={4}>
-        {tokenPairs ? (
-          <PairTable data={tokenPairs} />
+        {data && data.tokenPairs ? (
+          <PairTable data={data.tokenPairs} />
         ) : (
           <Skeleton variant='rect' width='100%' height={150} />
         )}
@@ -333,8 +285,10 @@ const AnalyticsTokenDetails: React.FC = () => {
 
   return (
     <>
-      <AnalyticsHeader type='token' data={token} address={tokenAddress} />
-      {token ? (
+      <AnalyticsHeader type='token' data={data?.token} address={tokenAddress} />
+      {isLoading ? (
+        <Skeleton width='100%' height={100} />
+      ) : data && data.token ? (
         <>
           <Box width={1} className='flex flex-wrap justify-between'>
             <Box display='flex'>
@@ -342,25 +296,27 @@ const AnalyticsTokenDetails: React.FC = () => {
               <Box ml={1.5}>
                 <Box className='flex items-center'>
                   <Box className='flex items-end' mr={0.5}>
-                    <p className='heading1'>{token.name} </p>
-                    <p className='heading2'>({token.symbol})</p>
+                    <p className='heading1'>{data.token.name} </p>
+                    <p className='heading2'>({data.token.symbol})</p>
                   </Box>
-                  {bookmarkTokens.includes(token.id) ? (
+                  {bookmarkTokens.includes(data.token.id) ? (
                     <StarChecked
-                      onClick={() => removeBookmarkToken(token.id)}
+                      onClick={() => removeBookmarkToken(data.token.id)}
                     />
                   ) : (
-                    <StarUnchecked onClick={() => addBookmarkToken(token.id)} />
+                    <StarUnchecked
+                      onClick={() => addBookmarkToken(data.token.id)}
+                    />
                   )}
                 </Box>
                 <Box mt={1.25} className='flex items-center'>
-                  <h5>${formatNumber(token.priceUSD)}</h5>
+                  <h5>${formatNumber(data.token.priceUSD)}</h5>
                   <Box
                     className={`priceChangeWrapper ${tokenPercentClass}`}
                     ml={2}
                   >
                     <small>
-                      {getFormattedPercent(Number(token.priceChangeUSD))}
+                      {getFormattedPercent(Number(data.token.priceChangeUSD))}
                     </small>
                   </Box>
                 </Box>
@@ -373,7 +329,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                 onClick={() => {
                   history.push(
                     `/pools${version === 'v2' ? '/v2' : '/v3'}?currency0=${
-                      token.id
+                      data.token.id
                     }&currency1=ETH`,
                   );
                 }}
@@ -385,7 +341,7 @@ const AnalyticsTokenDetails: React.FC = () => {
                 onClick={() => {
                   history.push(
                     `/swap${version === 'v2' ? '/v2' : ''}?currency0=${
-                      token.id
+                      data.token.id
                     }&currency1=ETH`,
                   );
                 }}
@@ -395,16 +351,14 @@ const AnalyticsTokenDetails: React.FC = () => {
             </Box>
           </Box>
           {version === 'v2' ? (
-            <V2TokenInfo token={token} tokenPairs={tokenPairs} />
+            <V2TokenInfo token={data.token} tokenPairs={data.tokenPairs} />
           ) : (
             <V3TokenInfo
-              token={token}
+              token={data.token}
               tokenTransactions={tokenTransactionsList}
             />
           )}
         </>
-      ) : loadingData ? (
-        <Skeleton width='100%' height={100} />
       ) : (
         <Box py={4}>
           <h5>{t('tokenNotExist')}</h5>

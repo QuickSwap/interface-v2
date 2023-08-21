@@ -108,7 +108,7 @@ const UnipilotFarmCardDetails: React.FC<{
     !rewardResult.loading &&
     rewardResult.result &&
     rewardResult.result.length > 0
-      ? formatUnits(rewardResult.result[0], rewardToken.decimals)
+      ? formatUnits(rewardResult.result[0], rewardToken?.decimals)
       : '0';
 
   const rewardTokenAResult = useSingleCallResult(
@@ -138,7 +138,7 @@ const UnipilotFarmCardDetails: React.FC<{
     !rewardAResult.loading &&
     rewardAResult.result &&
     rewardAResult.result.length > 0
-      ? formatUnits(rewardAResult.result[0], rewardTokenA.decimals)
+      ? formatUnits(rewardAResult.result[0], rewardTokenA?.decimals)
       : '0';
 
   const rewardTokenBResult = useSingleCallResult(
@@ -168,7 +168,7 @@ const UnipilotFarmCardDetails: React.FC<{
     !rewardBResult.loading &&
     rewardBResult.result &&
     rewardBResult.result.length > 0
-      ? formatUnits(rewardBResult.result[0], rewardTokenB.decimals)
+      ? formatUnits(rewardBResult.result[0], rewardTokenB?.decimals)
       : '0';
 
   const approveOrStakeLP = async () => {
@@ -361,10 +361,7 @@ const UnipilotFarmCardDetails: React.FC<{
           <Grid item xs={12} sm={4}>
             <Box className='flex justify-between'>
               <small className='text-secondary'>{t('available')}:</small>
-              <small>
-                {formatNumber(lpBalance)} LP ($
-                {})
-              </small>
+              <small>{formatNumber(lpBalance)} LP</small>
             </Box>
             <Box
               className='flex items-center bg-palette'
@@ -404,7 +401,7 @@ const UnipilotFarmCardDetails: React.FC<{
           <Grid item xs={12} sm={4}>
             <Box className='flex justify-between'>
               <small className='text-secondary'>{t('deposited')}: </small>
-              <small>{formatNumber(stakedAmount)} LP ($)</small>
+              <small>{formatNumber(stakedAmount)} LP</small>
             </Box>
             <Box
               className='flex items-center bg-palette'
@@ -448,7 +445,7 @@ const UnipilotFarmCardDetails: React.FC<{
                   <Box ml='6px'>
                     <small>
                       {formatNumber(data.isDualReward ? rewardA : reward)}{' '}
-                      {(data.isDualReward ? rewardTokenA : rewardToken).symbol}
+                      {(data.isDualReward ? rewardTokenA : rewardToken)?.symbol}
                     </small>
                   </Box>
                 </Box>
@@ -457,7 +454,7 @@ const UnipilotFarmCardDetails: React.FC<{
                     <CurrencyLogo currency={rewardTokenB} size='16px' />
                     <Box ml='6px'>
                       <small>
-                        {formatNumber(rewardB)} {rewardTokenB.symbol}
+                        {formatNumber(rewardB)} {rewardTokenB?.symbol}
                       </small>
                     </Box>
                   </Box>

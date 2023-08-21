@@ -137,7 +137,7 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
               <CurrencyLogo currency={position.token0} size='24px' />
             </Box>
             <small>
-              {t('pooled')} {position.token0.symbol}
+              {t('pooled')} {position.token0?.symbol}
             </small>
           </Box>
         )}
@@ -147,7 +147,7 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
               ? formatNumber(
                   formatUnits(
                     token0Balance.toString(),
-                    position.token0.decimals,
+                    position.token0?.decimals,
                   ),
                 )
               : 0}
@@ -161,7 +161,7 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
               <CurrencyLogo currency={position.token1} size='24px' />
             </Box>
             <small>
-              {t('pooled')} {position.token1.symbol}
+              {t('pooled')} {position.token1?.symbol}
             </small>
           </Box>
         )}
@@ -171,7 +171,7 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
               ? formatNumber(
                   formatUnits(
                     token1Balance.toString(),
-                    position.token1.decimals,
+                    position.token1?.decimals,
                   ),
                 )
               : 0}

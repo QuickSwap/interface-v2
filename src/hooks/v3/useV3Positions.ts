@@ -14,7 +14,7 @@ import {
   useV3NFTPositionManagerContract,
 } from 'hooks/useContract';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
-import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import { getContract, getGammaPositions, getUnipilotPositions } from 'utils';
@@ -24,6 +24,7 @@ import { formatUnits } from 'ethers/lib/utils';
 import { useUnipilotUserFarms } from './useUnipilotFarms';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -162,23 +163,10 @@ export function useV3Positions(
     result: balanceResult,
   } = useSingleCallResult(positionManager, 'balanceOf', [account ?? undefined]);
 
-  const {
-    fetchPositionsOnFarmer: {
-      positionsOnFarmer,
-      positionsOnFarmerLoading,
-      fetchPositionsOnFarmerFn,
-    },
-  } = useFarmingSubgraph();
+  const { data: positionsOnFarmer } = usePositionsOnFarmer(account);
 
   // we don't expect any account balance to ever exceed the bounds of max safe int
   const accountBalance: number | undefined = balanceResult?.[0]?.toNumber();
-
-  useEffect(() => {
-    if (account) {
-      fetchPositionsOnFarmerFn(account);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
 
   const tokenIdsArgs = useMemo(() => {
     if (accountBalance && account) {
@@ -336,19 +324,9 @@ export function useV3PositionsCount(
   );
 
   const {
-    fetchPositionsOnFarmer: {
-      positionsOnFarmer,
-      positionsOnFarmerLoading,
-      fetchPositionsOnFarmerFn,
-    },
-  } = useFarmingSubgraph();
-
-  useEffect(() => {
-    if (account) {
-      fetchPositionsOnFarmerFn(account);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
+    data: positionsOnFarmer,
+    isLoading: positionsOnFarmerLoading,
+  } = usePositionsOnFarmer(account);
 
   const farmingPositionsCount = useMemo(() => {
     if (positionsOnFarmer && positionsOnFarmer.transferredPositionsIds) {
@@ -514,6 +492,7 @@ export function useUnipilotPositions(
   chainId: ChainId | undefined,
 ) {
   const { library } = useActiveWeb3React();
+  const lastTxHash = useLastTransactionHash();
   const {
     loading: positionsOnFarmLoading,
     data: positionsOnFarm,
@@ -561,7 +540,7 @@ export function useUnipilotPositions(
     data: unipilotPositions,
     refetch: refetchUnipilotPositions,
   } = useQuery({
-    queryKey: ['fetchUnipilotPositions', account, chainId],
+    queryKey: ['fetchUnipilotPositions', account, lastTxHash, chainId],
     queryFn: fetchUnipilotPositions,
   });
 

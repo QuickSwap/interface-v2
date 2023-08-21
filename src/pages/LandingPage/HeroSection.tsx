@@ -16,11 +16,9 @@ import { getConfig } from 'config';
 import { useNewLairInfo } from 'state/stake/hooks';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { DLQUICK } from 'constants/v3/addresses';
+import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
 
-const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
-  globalData,
-  v3GlobalData,
-}) => {
+const HeroSection: React.FC = () => {
   const history = useHistory();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { chainId, account } = useActiveWeb3React();
@@ -37,6 +35,9 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
 
   const [dragonReward, setDraonReward] = useState(0);
+
+  const { data: globalData } = useAnalyticsGlobalData('v2', chainId);
+  const { data: v3GlobalData } = useAnalyticsGlobalData('v3', chainId);
 
   useEffect(() => {
     if (lairInfo && quickPrice) {

@@ -83,14 +83,14 @@ export default function IncreaseUnipilotLiquidityModal({
   const independentDeposit = isBaseInput
     ? JSBI.BigInt(
         parseUnits(
-          Number(deposit0).toFixed(position.token0.decimals),
-          position.token0.decimals,
+          Number(deposit0).toFixed(position.token0?.decimals),
+          position.token0?.decimals,
         ),
       )
     : JSBI.BigInt(
         parseUnits(
-          Number(deposit1).toFixed(position.token1.decimals),
-          position.token1.decimals,
+          Number(deposit1).toFixed(position.token1?.decimals),
+          position.token1?.decimals,
         ),
       );
   const independentReserve = isBaseInput
@@ -108,10 +108,14 @@ export default function IncreaseUnipilotLiquidityModal({
   const token1Balance = useTokenBalance(account ?? undefined, position.token1);
   const token0isWETH =
     chainId &&
+    position &&
+    position.token0 &&
     position.token0.address.toLowerCase() ===
       WETH[chainId].address.toLowerCase();
   const token1isWETH =
     chainId &&
+    position &&
+    position.token1 &&
     position.token1.address.toLowerCase() ===
       WETH[chainId].address.toLowerCase();
   const token0BalanceJSBI = JSBI.add(
@@ -120,6 +124,8 @@ export default function IncreaseUnipilotLiquidityModal({
   );
   const token1BalanceJSBI = JSBI.add(
     chainId &&
+      position &&
+      position.token1 &&
       position.token1.address.toLowerCase() ===
         WETH[chainId].address.toLowerCase() &&
       ethBalance
@@ -128,10 +134,10 @@ export default function IncreaseUnipilotLiquidityModal({
     token1Balance ? token1Balance.numerator : JSBI.BigInt('0'),
   );
   const deposit0JSBI = JSBI.BigInt(
-    parseUnits(!deposit0 ? '0' : deposit0, position.token0.decimals),
+    parseUnits(!deposit0 ? '0' : deposit0, position.token0?.decimals),
   );
   const deposit1JSBI = JSBI.BigInt(
-    parseUnits(!deposit1 ? '0' : deposit1, position.token1.decimals),
+    parseUnits(!deposit1 ? '0' : deposit1, position.token1?.decimals),
   );
 
   const [showConfirm, setShowConfirm] = useState(false);
@@ -156,13 +162,13 @@ export default function IncreaseUnipilotLiquidityModal({
       return t('insufficientBalance', {
         symbol:
           (token0isWETH ? `${ETHER[chainId].symbol}+` : '') +
-          position.token0.symbol,
+          position.token0?.symbol,
       });
     if (JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI))
       return t('insufficientBalance', {
         symbol:
           (token1isWETH ? `${ETHER[chainId].symbol}+` : '') +
-          position.token1.symbol,
+          position.token1?.symbol,
       });
     if (!Number(deposit0) || !Number(deposit1)) return t('enterAmount');
     return t('addLiquidity');
@@ -172,8 +178,8 @@ export default function IncreaseUnipilotLiquidityModal({
     deposit0JSBI,
     token0BalanceJSBI,
     token0isWETH,
-    position.token0.symbol,
-    position.token1.symbol,
+    position.token0?.symbol,
+    position.token1?.symbol,
     deposit1JSBI,
     token1BalanceJSBI,
     token1isWETH,
@@ -238,8 +244,8 @@ export default function IncreaseUnipilotLiquidityModal({
         },
       );
       const summary = t('addLiquidityWithTokens', {
-        symbolA: position.token0.symbol,
-        symbolB: position.token1.symbol,
+        symbolA: position.token0?.symbol,
+        symbolB: position.token1?.symbol,
       });
       setAttemptingTxn(false);
       setTxPending(true);
@@ -270,34 +276,34 @@ export default function IncreaseUnipilotLiquidityModal({
       );
       if (isBaseInput) {
         setDeposit1(
-          formatUnits(dependentDeposit.toString(), dependentToken.decimals),
+          formatUnits(dependentDeposit.toString(), dependentToken?.decimals),
         );
       } else {
         setDeposit0(
-          formatUnits(dependentDeposit.toString(), dependentToken.decimals),
+          formatUnits(dependentDeposit.toString(), dependentToken?.decimals),
         );
       }
     }
   }, [
     isBaseInput,
     dependentReserve,
-    dependentToken.decimals,
+    dependentToken?.decimals,
     independentDeposit,
     independentReserve,
   ]);
 
   const pendingText = t('addingLiquidityTokens', {
     amountA: formatNumber(deposit0),
-    symbolA: position.token0.symbol,
+    symbolA: position.token0?.symbol,
     amountB: formatNumber(deposit1),
-    symbolB: position.token1.symbol,
+    symbolB: position.token1?.symbol,
   });
 
   function modalHeader() {
     return (
       <Box>
         <Box mt={3} className='flex justify-between'>
-          <p>{position.token0.symbol}</p>
+          <p>{position.token0?.symbol}</p>
           <Box className='flex items-center'>
             <p>{formatNumber(deposit0)}</p>
             <Box className='flex' ml={1}>
@@ -306,7 +312,7 @@ export default function IncreaseUnipilotLiquidityModal({
           </Box>
         </Box>
         <Box mt={2} className='flex justify-between'>
-          <p>{position.token1.symbol}</p>
+          <p>{position.token1?.symbol}</p>
           <Box className='flex items-center'>
             <p>{formatNumber(deposit1)}</p>
             <Box className='flex' ml={1}>
@@ -365,7 +371,7 @@ export default function IncreaseUnipilotLiquidityModal({
         <Box mt={2} className='bg-secondary1' borderRadius={10} p={2}>
           <Box className='flex justify-between'>
             <p>
-              {t('pooled')} {position.token0.symbol}
+              {t('pooled')} {position.token0?.symbol}
             </p>
             <Box className='flex items-center'>
               <p>
@@ -373,7 +379,7 @@ export default function IncreaseUnipilotLiquidityModal({
                   ? formatNumber(
                       formatUnits(
                         position.token0Balance.toString(),
-                        position.token0.decimals,
+                        position.token0?.decimals,
                       ),
                     )
                   : 0}
@@ -385,7 +391,7 @@ export default function IncreaseUnipilotLiquidityModal({
           </Box>
           <Box mt={2} className='flex justify-between'>
             <p>
-              {t('pooled')} {position.token1.symbol}
+              {t('pooled')} {position.token1?.symbol}
             </p>
             <Box className='flex items-center'>
               <p>
@@ -393,7 +399,7 @@ export default function IncreaseUnipilotLiquidityModal({
                   ? formatNumber(
                       formatUnits(
                         position.token1Balance.toString(),
-                        position.token1.decimals,
+                        position.token1?.decimals,
                       ),
                     )
                   : 0}
@@ -416,7 +422,7 @@ export default function IncreaseUnipilotLiquidityModal({
               setDeposit0(
                 formatUnits(
                   token0BalanceJSBI.toString(),
-                  position.token0.decimals,
+                  position.token0?.decimals,
                 ),
               );
             }}
@@ -428,6 +434,8 @@ export default function IncreaseUnipilotLiquidityModal({
             swap={false}
             showETH={
               chainId &&
+              position &&
+              position.token0 &&
               position.token0.address.toLowerCase() ===
                 WETH[chainId].address.toLowerCase()
             }
@@ -445,7 +453,7 @@ export default function IncreaseUnipilotLiquidityModal({
               setDeposit1(
                 formatUnits(
                   token1BalanceJSBI.toString(),
-                  position.token1.decimals,
+                  position.token1?.decimals,
                 ),
               );
             }}
@@ -457,6 +465,8 @@ export default function IncreaseUnipilotLiquidityModal({
             swap={false}
             showETH={
               chainId &&
+              position &&
+              position.token1 &&
               position.token1.address.toLowerCase() ===
                 WETH[chainId].address.toLowerCase()
             }

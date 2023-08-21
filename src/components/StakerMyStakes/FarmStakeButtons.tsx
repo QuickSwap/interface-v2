@@ -3,7 +3,6 @@ import { Box, Button, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import { FarmingType } from 'models/enums';
-import Loader from 'components/Loader';
 import { useTranslation } from 'react-i18next';
 import { useV3StakeData } from 'state/farms/hooks';
 
@@ -39,21 +38,14 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
             withdrawHandler(el.id);
           }}
         >
-          {selectedTokenId === el.id &&
-          txType === 'withdraw' &&
-          !txConfirmed &&
-          !txError ? (
-            <>
-              <Loader size={'1rem'} stroke={'var(--white)'} />
-              <Box ml='5px'>
-                <small>{t('withdrawing')}</small>
-              </Box>
-            </>
-          ) : (
-            <>
-              <small>{t('withdraw')}</small>
-            </>
-          )}
+          <small>
+            {selectedTokenId === el.id &&
+            txType === 'withdraw' &&
+            !txConfirmed &&
+            !txError
+              ? t('withdrawing')
+              : t('withdraw')}
+          </small>
         </Button>
       )}
       {el.eternalFarming && (
@@ -72,19 +64,14 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
                 eternalCollectRewardHandler(el.id, { ...el });
               }}
             >
-              {selectedTokenId === el.id &&
-              txType === 'eternalCollectReward' &&
-              !txConfirmed &&
-              !txError ? (
-                <>
-                  <Loader size={'18px'} stroke={'var(--white)'} />
-                  <Box ml='5px'>
-                    <small>{t('claiming')}</small>
-                  </Box>
-                </>
-              ) : (
-                <small>{t('claim')}</small>
-              )}
+              <small>
+                {selectedTokenId === el.id &&
+                txType === 'eternalCollectReward' &&
+                !txConfirmed &&
+                !txError
+                  ? t('claiming')
+                  : t('claim')}
+              </small>
             </Button>
           </Box>
           <Box my={0.5} width={!isMobile && isSmallDesktop ? '100%' : '49%'}>
@@ -101,20 +88,15 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
                 claimRewardsHandler(el.id, { ...el }, FarmingType.ETERNAL);
               }}
             >
-              {selectedTokenId === el.id &&
-              selectedFarmingType === FarmingType.ETERNAL &&
-              txType === 'claimRewards' &&
-              !txConfirmed &&
-              !txError ? (
-                <>
-                  <Loader size={'18px'} stroke={'var(--white)'} />
-                  <Box ml='5px'>
-                    <small>{t('undepositing')}</small>
-                  </Box>
-                </>
-              ) : (
-                <small>{t('undeposit')}</small>
-              )}
+              <small>
+                {selectedTokenId === el.id &&
+                selectedFarmingType === FarmingType.ETERNAL &&
+                txType === 'claimRewards' &&
+                !txConfirmed &&
+                !txError
+                  ? t('undepositing')
+                  : t('undeposit')}
+              </small>
             </Button>
           </Box>
         </Box>

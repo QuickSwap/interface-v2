@@ -17,6 +17,7 @@ import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
 import { Token } from '@uniswap/sdk';
 import { useTokenBalances } from 'state/wallet/hooks';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 
 export default function MyGammaPoolsV3() {
   const { t } = useTranslation();
@@ -37,39 +38,17 @@ export default function MyGammaPoolsV3() {
     return gammaData;
   };
 
-  const {
-    isLoading: positionsLoading,
-    data: gammaPositions,
-    refetch: refetchGammaPositions,
-  } = useQuery({
-    queryKey: ['fetchGammaPositions', account, chainId],
+  const lastTxHash = useLastTransactionHash();
+
+  const { isLoading: positionsLoading, data: gammaPositions } = useQuery({
+    queryKey: ['fetchGammaPositionsPools', lastTxHash, account, chainId],
     queryFn: fetchGammaPositions,
   });
 
-  const {
-    isLoading: dataLoading,
-    data: gammaData,
-    refetch: refetchGammaData,
-  } = useQuery({
-    queryKey: ['fetchGammaData', chainId],
+  const { isLoading: dataLoading, data: gammaData } = useQuery({
+    queryKey: ['fetchGammaDataPools', lastTxHash, chainId],
     queryFn: fetchGammaData,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchGammaData();
-    refetchGammaPositions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const allGammaPairsToFarm = chainId
     ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))

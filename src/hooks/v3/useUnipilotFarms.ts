@@ -17,6 +17,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { GlobalConst, GlobalData } from 'constants/index';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 
 interface RewardRate {
   rewardA?: BigNumber;
@@ -102,12 +103,13 @@ export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
       : [];
   };
 
+  const lastTxHash = useLastTransactionHash();
   const {
     isLoading: farmsLoading,
     data,
     refetch: refetchUnipilotUserFarms,
   } = useQuery({
-    queryKey: ['fetchUnipilotUserFarms', chainId, account],
+    queryKey: ['fetchUnipilotUserFarms', chainId, account, lastTxHash],
     queryFn: fetchUnipilotUserFarms,
   });
 

@@ -5,7 +5,6 @@ import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { LockOutlined } from '@material-ui/icons';
 
 import { useActiveWeb3React } from 'hooks';
-import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { WrappedCurrency } from 'models/types/Currency';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance } from 'state/wallet/hooks';

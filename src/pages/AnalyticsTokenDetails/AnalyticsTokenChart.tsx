@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -15,6 +15,7 @@ import { AreaChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { useQuery } from '@tanstack/react-query';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
@@ -26,7 +27,6 @@ const AnalyticsTokenChart: React.FC<{
   const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const tokenAddress = match.params.id;
-  const [tokenChartData, updateTokenChartData] = useState<any>(null);
   const chartIndexes = [CHART_VOLUME, CHART_LIQUIDITY, CHART_PRICE];
   const chartIndexTexts = [t('volume'), t('liquidity'), t('price')];
   const [chartIndex, setChartIndex] = useState(CHART_VOLUME);
@@ -34,6 +34,47 @@ const AnalyticsTokenChart: React.FC<{
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const { chainId } = useActiveWeb3React();
+  const version = useAnalyticsVersion();
+
+  const fetchTokenChartData = async () => {
+    if (chainId) {
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-chart-data/${tokenAddress}/${durationIndex}/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        return null;
+      }
+      const data = await res.json();
+      return data && data.data ? data.data.tokenChartData : null;
+    }
+    return null;
+  };
+
+  const { isLoading, data: tokenChartData, refetch } = useQuery({
+    queryKey: [
+      'analyticsTopTokenChartData',
+      tokenAddress,
+      durationIndex,
+      version,
+      chainId,
+    ],
+    queryFn: fetchTokenChartData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const chartData = useMemo(() => {
     if (!tokenChartData) return;
@@ -78,31 +119,6 @@ const AnalyticsTokenChart: React.FC<{
         return;
     }
   }, [token, chartIndex]);
-
-  const version = useAnalyticsVersion();
-
-  useEffect(() => {
-    async function fetchTokenChartData() {
-      if (chainId) {
-        updateTokenChartData(null);
-
-        const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-chart-data/${tokenAddress}/${durationIndex}/${version}?chainId=${chainId}`,
-        );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get token chart data`,
-          );
-        }
-        const data = await res.json();
-        if (data?.data?.tokenChartData) {
-          updateTokenChartData(data?.data?.tokenChartData);
-        }
-      }
-    }
-    fetchTokenChartData();
-  }, [tokenAddress, durationIndex, version, chainId]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
@@ -158,7 +174,9 @@ const AnalyticsTokenChart: React.FC<{
         </Box>
       </Box>
       <Box mt={2} width={1}>
-        {tokenChartData ? (
+        {isLoading ? (
+          <Skeleton variant='rect' width='100%' height={217} />
+        ) : tokenChartData ? (
           <AreaChart
             data={chartData}
             yAxisValues={getYAXISValuesAnalytics(chartData)}
@@ -170,7 +188,7 @@ const AnalyticsTokenChart: React.FC<{
             categories={getChartDates(tokenChartData, durationIndex)}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={217} />
+          <></>
         )}
       </Box>
     </>

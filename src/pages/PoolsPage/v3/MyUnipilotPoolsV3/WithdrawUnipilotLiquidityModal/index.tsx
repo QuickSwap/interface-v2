@@ -113,13 +113,13 @@ export default function WithdrawUnipilotLiquidityModal({
       (Number(
         formatUnits(
           position.token0Balance.toString(),
-          position.token0.decimals,
+          position.token0?.decimals,
         ),
       ) *
         percent) /
       100
     );
-  }, [percent, position.token0.decimals, position.token0Balance]);
+  }, [percent, position.token0?.decimals, position.token0Balance]);
 
   const token1Amount = useMemo(() => {
     if (!position.token1Balance) return 0;
@@ -127,19 +127,19 @@ export default function WithdrawUnipilotLiquidityModal({
       (Number(
         formatUnits(
           position.token1Balance.toString(),
-          position.token1.decimals,
+          position.token1?.decimals,
         ),
       ) *
         percent) /
       100
     );
-  }, [percent, position.token1.decimals, position.token1Balance]);
+  }, [percent, position.token1?.decimals, position.token1Balance]);
 
   const pendingText = t('removingLiquidityMsg', {
     amount1: formatNumber(token0Amount),
-    symbol1: position.token0.symbol,
+    symbol1: position.token0?.symbol,
     amount2: formatNumber(token1Amount),
-    symbol2: position.token1.symbol,
+    symbol2: position.token1?.symbol,
   });
 
   function modalHeader() {
@@ -147,7 +147,7 @@ export default function WithdrawUnipilotLiquidityModal({
       <Box>
         <Box mt={3} className='flex justify-between'>
           <p>
-            {t('pooled')} {position.token0.symbol}
+            {t('pooled')} {position.token0?.symbol}
           </p>
           <Box className='flex items-center'>
             <p>{formatNumber(token0Amount)}</p>
@@ -158,7 +158,7 @@ export default function WithdrawUnipilotLiquidityModal({
         </Box>
         <Box mt={2} className='flex justify-between'>
           <p>
-            {t('pooled')} {position.token1.symbol}
+            {t('pooled')} {position.token1?.symbol}
           </p>
           <Box className='flex items-center'>
             <p>{formatNumber(token1Amount)}</p>
@@ -226,7 +226,7 @@ export default function WithdrawUnipilotLiquidityModal({
             />
           </Box>
           <h5>
-            {position.token0.symbol}-{position.token1.symbol}
+            {position.token0?.symbol}-{position.token1?.symbol}
           </h5>
         </Box>
         <Box mt={2} className='v3-remove-liquidity-input-wrapper'>
@@ -257,7 +257,7 @@ export default function WithdrawUnipilotLiquidityModal({
         <Box mt={2} className='bg-secondary1' borderRadius={10} p={2}>
           <Box className='flex justify-between'>
             <p>
-              {t('pooled')} {position.token0.symbol}
+              {t('pooled')} {position.token0?.symbol}
             </p>
             <Box className='flex items-center'>
               <p>
@@ -265,7 +265,7 @@ export default function WithdrawUnipilotLiquidityModal({
                   position.token0Balance
                     ? formatUnits(
                         position.token0Balance.toString(),
-                        position.token0.decimals,
+                        position.token0?.decimals,
                       )
                     : 0,
                 )}
@@ -277,7 +277,7 @@ export default function WithdrawUnipilotLiquidityModal({
           </Box>
           <Box mt={2} className='flex justify-between'>
             <p>
-              {t('pooled')} {position.token1.symbol}
+              {t('pooled')} {position.token1?.symbol}
             </p>
             <Box className='flex items-center'>
               <p>
@@ -285,7 +285,7 @@ export default function WithdrawUnipilotLiquidityModal({
                   position.token1Balance
                     ? formatUnits(
                         position.token1Balance.toString(),
-                        position.token1.decimals,
+                        position.token1?.decimals,
                       )
                     : 0,
                 )}
