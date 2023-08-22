@@ -379,7 +379,13 @@ export function SelectRange({
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencyA, currencyB, unipilotVaultsForPair.length]);
+  }, [
+    currencyA?.isNative,
+    currencyA?.wrapped.address,
+    currencyB?.isNative,
+    currencyB?.wrapped.address,
+    unipilotVaultsForPair.length,
+  ]);
 
   return (
     <Box>
