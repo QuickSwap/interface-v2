@@ -15,6 +15,7 @@ import { GlobalConst } from 'constants/index';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch/CustomTabSwitch';
 import MyQuickswapPoolsV3 from './MyQuickswapPoolsV3';
 import MyGammaPoolsV3 from './MyGammaPoolsV3';
+import styles from 'styles/pages/Pools.module.scss';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
@@ -83,9 +84,9 @@ export default function MyLiquidityPoolsV3() {
           <small>Quickswap</small>
           <Box
             ml='6px'
-            className={`myV3PoolCountWrapper ${
+            className={`${styles.myV3PoolCountWrapper} ${
               poolFilter === GlobalConst.utils.poolsFilter.quickswap
-                ? 'activeMyV3PoolCountWrapper'
+                ? styles.activeMyV3PoolCountWrapper
                 : ''
             }`}
           >
@@ -102,9 +103,9 @@ export default function MyLiquidityPoolsV3() {
             <small>Unipilot</small>
             <Box
               ml='6px'
-              className={`myV3PoolCountWrapper ${
+              className={`${styles.myV3PoolCountWrapper} ${
                 poolFilter === GlobalConst.utils.poolsFilter.unipilot
-                  ? 'activeMyV3PoolCountWrapper'
+                  ? styles.activeMyV3PoolCountWrapper
                   : ''
               }`}
             >
@@ -122,9 +123,9 @@ export default function MyLiquidityPoolsV3() {
             <small>Gamma</small>
             <Box
               ml='6px'
-              className={`myV3PoolCountWrapper ${
+              className={`${styles.myV3PoolCountWrapper} ${
                 poolFilter === GlobalConst.utils.poolsFilter.gamma
-                  ? 'activeMyV3PoolCountWrapper'
+                  ? styles.activeMyV3PoolCountWrapper
                   : ''
               }`}
             >
@@ -143,7 +144,7 @@ export default function MyLiquidityPoolsV3() {
         <p className='weight-600'>{t('myPools')}</p>
         {allV2PairsWithLiquidity.length > 0 && isMigrateAvailable && (
           <Box
-            className='v3-manage-v2liquidity-button'
+            className={styles.v3ManageV2liquidityButton}
             onClick={() => router.push('/migrate')}
           >
             <small className='text-primary'>Migrate V2 Liquidity</small>
@@ -156,7 +157,7 @@ export default function MyLiquidityPoolsV3() {
         </Box>
       ) : (
         <>
-          <Box className='myV3PoolsFilterWrapper'>
+          <Box className={styles.myV3PoolsFilterWrapper}>
             <CustomTabSwitch
               items={myPoolsFilter}
               value={poolFilter}

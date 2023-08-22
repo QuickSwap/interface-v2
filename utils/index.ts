@@ -1040,7 +1040,7 @@ export const getUnipilotPositions = async (
   if (!account || !chainId) return null;
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/unipilot/user-positions/${account}?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/unipilot/user-positions/${account}?chainId=${chainId}`,
     );
     if (!res.ok) {
       const errorText = await res.text();
@@ -1061,7 +1061,7 @@ export const getUnipilotFarms = async (chainId?: ChainId) => {
   if (!chainId) return [];
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/unipilot/farming-vaults?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/unipilot/farming-vaults?chainId=${chainId}`,
     );
     if (!res.ok) {
       const errorText = await res.text();
@@ -1084,7 +1084,7 @@ export const getUnipilotFarmData = async (
   try {
     const res = await fetch(
       `${
-        process.env.REACT_APP_UNIPILOT_API_URL
+        process.env.NEXT_PUBLIC_UNIPILOT_API_URL
       }/api/unipilot/aprs?vaultAddresses=${vaultAddresses?.join(
         ',',
       )}&chainId=${chainId}`,
@@ -1110,7 +1110,7 @@ export const getUnipilotUserFarms = async (
   try {
     const res = await fetch(
       `${
-        process.env.REACT_APP_LEADERBOARD_APP_URL
+        process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
       }/unipilot/farming-user-vaults/${account.toLowerCase()}?chainId=${chainId}`,
     );
     if (!res.ok) {
