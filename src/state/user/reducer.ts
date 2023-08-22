@@ -36,6 +36,7 @@ export interface UserState {
   // user defined slippage tolerance in bips, used in all txns
   userSlippageTolerance: number;
   slippageManuallySet: boolean;
+  userLiquidityHubDisabled: boolean;
 
   // deadline set by user in minutes, used in all txns
   userDeadline: number;
@@ -71,6 +72,7 @@ export const initialState: UserState = {
   userBonusRouterDisabled: false,
   userSlippageTolerance: GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE,
   slippageManuallySet: false,
+  userLiquidityHubDisabled: false,
   userDeadline: GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW,
   tokens: {},
   pairs: {},

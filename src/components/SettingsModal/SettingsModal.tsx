@@ -16,10 +16,12 @@ import {
   useBonusRouterManager,
   useSlippageManuallySet,
   useUserSingleHopOnly,
+  useLiquidityHubManager,
 } from 'state/user/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/SettingsModal.scss';
 import { useTranslation } from 'react-i18next';
+import { LiquidityHubTxSettings } from 'components/Swap/LiquidityHub';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -55,6 +57,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const [deadlineInput, setDeadlineInput] = useState('');
   const [expertConfirm, setExpertConfirm] = useState(false);
   const [expertConfirmText, setExpertConfirmText] = useState('');
+  const [
+    liquidityHubDisabled,
+    toggleLiquidityHubDisabled,
+  ] = useLiquidityHubManager();
 
   const slippageInputIsValid =
     slippageInput === '' ||
@@ -313,6 +319,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           <ToggleSwitch
             toggled={singleHopOnly}
             onToggle={() => setSingleHopOnly(!singleHopOnly)}
+          />
+        </Box>
+        <Divider />
+        <Box my={2.5} className='flex items-center justify-between'>
+          <LiquidityHubTxSettings />
+          <ToggleSwitch
+            toggled={liquidityHubDisabled}
+            onToggle={toggleLiquidityHubDisabled}
           />
         </Box>
         <Divider />

@@ -1,5 +1,5 @@
 import { ChainId } from '@uniswap/sdk';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { CustomModal } from 'components';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -12,6 +12,11 @@ import SpinnerImage from '../../assets/images/spinner.svg';
 import 'components/styles/TransactionConfirmationModal.scss';
 import { useTranslation } from 'react-i18next';
 import { CheckCircleOutline } from '@material-ui/icons';
+import {
+  LiquidityHubConfirmationModalContent,
+  useConfirmationPendingContent,
+} from 'components/Swap/LiquidityHub';
+import { useLiquidityHubState } from 'state/swap/liquidity-hub/hooks';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -22,7 +27,8 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
   onDismiss,
   pendingText,
 }) => {
-  const { t } = useTranslation();
+  const confirmationPendingContent = useConfirmationPendingContent(pendingText);
+
   return (
     <Box padding={4} overflow='hidden'>
       <Box className='txModalHeader'>
@@ -32,9 +38,11 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
         <Box my={4} className='flex justify-center spinner'>
           <img src={SpinnerImage} alt='Spinner' />
         </Box>
-        <h5>{t('waitingConfirm')}</h5>
-        {pendingText && <p>{pendingText}</p>}
-        <p>{t('confirmTxinWallet')}</p>
+        <h5>{confirmationPendingContent.title}</h5>
+        {confirmationPendingContent.pending && (
+          <p>{confirmationPendingContent.pending}</p>
+        )}
+        <p>{confirmationPendingContent.confirm || ''}</p>
       </Box>
     </Box>
   );
@@ -69,6 +77,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
         <p>
           {!txPending && <CheckCircleOutline />}
           {modalContent}
+          <LiquidityHubConfirmationModalContent txPending={txPending} />
         </p>
       </Box>
       <Box className='flex justify-between' mt={2}>

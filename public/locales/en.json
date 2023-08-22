@@ -699,5 +699,17 @@
   "walletDescription": "Connecting your wallet is like \"logging in\" on Web3. Select your wallet from the options to get started.",
   "failedToFetchAnalyticsSearch": "Failed to fetch tokens and pairs.",
   "liquidityLocked": "LIQUIDITY LOCKED",
-  "totalTVL": "TOTAL TVL"
+  "totalTVL": "TOTAL TVL",
+  "forMoreInfo": "For more info.",
+  "liquidityHub": "Liquidity Hub",
+  "aboutLiquidityHub": "may provide better price by aggregating liquidity from multiple sources.",
+  "disableLiquidityHub": "Disable Liquidity Hub",
+  "savedUsingWithValue": "Saved {{value}}%",
+  "using": "using",
+  "by": "by",
+  "seekingBestPrice": "Seeking Best Price",
+  "optimizedRouteAvailable": "Optimized Route Available",
+  "signToPerformGaslessSwap": "Sign to perform gasless swap.",
+  "liquidityHubFailed": "Liquidity Hub failed",
+  "awaitingApproval": "Awaiting Approval"
 }

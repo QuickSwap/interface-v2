@@ -11,6 +11,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useIsV2 } from 'state/application/hooks';
+import { useLiquidityHubManager } from 'state/user/hooks';
 import { Limit, TWAP } from './LimitAndTWAP/LimitAndTWAP';
 import SwapCrossChain from './SwapCrossChain';
 import SwapV3Page from './V3/Swap';
@@ -46,6 +47,7 @@ const SwapMain: React.FC = () => {
   const showTwapOrder = config['swap']['twapOrder'];
   const showCrossChain = config['swap']['crossChain'];
   const showProMode = config['swap']['proMode'];
+  const [liquidityHubDisabled] = useLiquidityHubManager();
 
   const SwapDropdownTabs = useMemo(() => {
     const tabs = [];
@@ -219,7 +221,7 @@ const SwapMain: React.FC = () => {
           {!isProMode ? (
             <>
               <Box display='flex' className='tabContainer'>
-                {dropDownMenuText && (
+                {dropDownMenuText && liquidityHubDisabled && (
                   <Button
                     id='swap-button'
                     aria-controls={open ? 'swap-menu' : undefined}
@@ -259,6 +261,21 @@ const SwapMain: React.FC = () => {
                     ),
                   )}
                 </Menu>
+
+                {!liquidityHubDisabled && (
+                  <Box
+                    className={`tab ${
+                      selectedIndex === SWAP_BEST_TRADE ? 'activeTab' : ''
+                    }`}
+                    onClick={() => {
+                      setSelectedIndex(SWAP_BEST_TRADE);
+                      setAnchorEl(null);
+                      redirectWithSwapType(SWAP_BEST_TRADE);
+                    }}
+                  >
+                    <p className='trade-btn'>{t('bestTrade')}</p>
+                  </Box>
+                )}
                 {showCrossChain && (
                   <Box
                     className={`tab ${
@@ -277,7 +294,9 @@ const SwapMain: React.FC = () => {
             </>
           ) : (
             <>
-              {SwapDropdownTabs.map((option, index) => (
+              {SwapDropdownTabs.filter((it) =>
+                liquidityHubDisabled ? it : it.key === SWAP_BEST_TRADE,
+              ).map((option) => (
                 <Box
                   key={option.key}
                   style={{ textAlign: 'center' }}
