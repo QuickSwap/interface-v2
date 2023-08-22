@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.unipilot-liquidity-item {
+.unipilotLiquidityItem {
   background-color: $secondary1;
   padding: 20px;
   border-radius: 10px;
@@ -11,7 +11,7 @@
   }
 }
 
-.unipilot-liquidity-range {
+.unipilotLiquidityRange {
   background-color: $grey12;
   height: 22px;
   display: flex;
@@ -20,7 +20,7 @@
   border-radius: 11px;
 }
 
-.unipilot-liquidity-item-expand {
+.unipilotLiquidityItemExpand {
   cursor: pointer;
   width: 24px;
   height: 24px;

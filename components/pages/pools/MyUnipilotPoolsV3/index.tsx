@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
-import Loader from 'components/Loader';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import UnipilotLPItem from './UnipilotLPItem';
@@ -24,7 +23,7 @@ export default function MyUnipilotPoolsV3() {
     <Box>
       {uniPilotPositionsLoading ? (
         <Box mt={2} className='flex justify-center'>
-          <Loader stroke='white' size={'2rem'} />
+          <CircularProgress size={'2rem'} />
         </Box>
       ) : unipilotPositions && unipilotPositions.length > 0 ? (
         <Box>

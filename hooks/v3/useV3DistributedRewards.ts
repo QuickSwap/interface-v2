@@ -18,7 +18,7 @@ export function useV3DistributedRewards(chainId?: ChainId) {
   const fetchEternalFarmsForV3Rewards = async () => {
     if (!provider || !farmEnabled) return null;
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
     );
     if (!res.ok) {
       return null;

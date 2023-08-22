@@ -1,10 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
-<<<<<<< HEAD:hooks/v3/useSwapCallback.ts
 import { Trade as V3Trade } from 'lib/trade';
-=======
-import { Trade as V3Trade } from 'lib/src/trade';
 import { TransactionResponse } from '@ethersproject/providers';
->>>>>>> dev2:src/hooks/v3/useSwapCallback.ts
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import { SignatureData } from './useERC20Permit';
@@ -15,13 +11,7 @@ import { calculateGasMargin, isAddress, isZero, shortenAddress } from 'utils';
 import useENS from 'hooks/useENS';
 import { SWAP_ROUTER_ADDRESSES } from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
-<<<<<<< HEAD:hooks/v3/useSwapCallback.ts
-import { useAppSelector } from 'state';
-import { GAS_PRICE_MULTIPLIER } from 'hooks/useGasPrice';
 import { SwapRouter } from 'lib/swapRouter';
-=======
-import { SwapRouter } from 'lib/src/swapRouter';
->>>>>>> dev2:src/hooks/v3/useSwapCallback.ts
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -171,7 +161,7 @@ function useSwapCallArguments(
  */
 function swapErrorToUserReadableMessage(error: any): string {
   let reason: string | undefined;
-  while (Boolean(error)) {
+  while (error) {
     reason = error.reason ?? error.message ?? reason;
     error = error.error ?? error.data?.originalError;
   }

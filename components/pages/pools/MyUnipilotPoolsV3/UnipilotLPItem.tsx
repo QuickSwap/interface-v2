@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DoubleCurrencyLogo } from 'components';
 import { unipilotVaultTypes } from 'constants/index';
-import './index.scss';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import UnipilotLPItemDetails from '../UnipilotLPItemDetails';
+import styles from 'styles/pages/pools/UnipilotLPItem.module.scss';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import UnipilotLPItemDetails from './UnipilotLPItemDetails';
 import { useActiveWeb3React } from 'hooks';
 import { ArrowRight } from 'react-feather';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
 
@@ -16,7 +16,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const [expanded, setExpanded] = useState(false);
-  const history = useHistory();
+  const router = useRouter();
   const farmingLink = `/farm/v3?tab=my-farms`;
 
   const tokenMap = useSelectedTokenList();
@@ -35,7 +35,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
   const positionDetail = { ...position, token0, token1 };
 
   return (
-    <Box className='unipilot-liquidity-item'>
+    <Box className={styles.unipilotLiquidityItem}>
       <Box className='flex items-center justify-between'>
         <Box className='flex items-center'>
           {token0 && token1 && (
@@ -52,7 +52,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
               </p>
             </>
           )}
-          <Box ml={1.5} className='unipilot-liquidity-range'>
+          <Box ml={1.5} className={styles.unipilotLiquidityRange}>
             <small>
               {unipilotVaultTypes[Number(position.vault.strategyId) - 1]}
             </small>
@@ -66,7 +66,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
               ml={1}
               my={0.5}
               color='white'
-              onClick={() => history.push(farmingLink)}
+              onClick={() => router.push(farmingLink)}
             >
               <p className='span'>{t('farming')}</p>
               <Box className='flex' ml='3px'>
@@ -77,7 +77,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
         </Box>
 
         <Box
-          className={`unipilot-liquidity-item-expand ${
+          className={`${styles.unipilotLiquidityItemExpand} ${
             expanded ? 'text-primary' : ''
           }`}
           onClick={() => setExpanded(!expanded)}

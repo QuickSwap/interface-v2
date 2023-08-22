@@ -2,8 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Box, CircularProgress } from '@mui/material';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
-import FilterPanelItem from '../FilterPanelItem';
-import MyUnipilotPoolsV3 from '../MyUnipilotPoolsV3';
+import FilterPanelItem from './FilterPanelItem';
+import MyUnipilotPoolsV3 from './MyUnipilotPoolsV3';
 import { useTranslation } from 'next-i18next';
 import { getConfig } from 'config';
 import {
@@ -13,8 +13,8 @@ import {
 } from 'hooks/v3/useV3Positions';
 import { GlobalConst } from 'constants/index';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch/CustomTabSwitch';
-import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
-import MyGammaPoolsV3 from '../MyGammaPoolsV3';
+import MyQuickswapPoolsV3 from './MyQuickswapPoolsV3';
+import MyGammaPoolsV3 from './MyGammaPoolsV3';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();

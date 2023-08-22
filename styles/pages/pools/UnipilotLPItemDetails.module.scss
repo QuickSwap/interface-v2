@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.unipilot-liquidity-item-buttons {
+.unipilotLiquidityItemButtons {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -16,7 +16,7 @@
   }
 }
 
-.unipilot-liquidity-item-button {
+.unipilotLiquidityItemButton {
   height: 38px;
   border-radius: 10px;
 }

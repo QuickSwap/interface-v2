@@ -6,8 +6,8 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
-import { Box, Button } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Box, Button } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { calculateGasMargin, formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
@@ -16,7 +16,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
-import '../UnipilotLPItemDetails/index.scss';
+import styles from 'styles/pages/pools/UnipilotLPItemDetails.module.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
@@ -258,12 +258,13 @@ export default function IncreaseUnipilotLiquidityModal({
         summary,
       });
       setTxPending(false);
-    } catch (error) {
+    } catch (err) {
+      const error = err as any;
       console.error('Failed to send transaction', error);
       setAttemptingTxn(false);
       setTxPending(false);
       setAddErrorMessage(
-        error?.code === 4001 ? t('txRejected') : t('errorInTx'),
+        error?.code === 4001 ? t('txRejected') ?? '' : t('errorInTx') ?? '',
       );
     }
   };
@@ -366,7 +367,7 @@ export default function IncreaseUnipilotLiquidityModal({
       <Box padding={3}>
         <Box className='flex justify-between'>
           <p className='weight-600'>{t('addLiquidity')}</p>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box mt={2} className='bg-secondary1' borderRadius={10} p={2}>
           <Box className='flex justify-between'>
@@ -474,7 +475,7 @@ export default function IncreaseUnipilotLiquidityModal({
         </Box>
         <Box mt={2}>
           <Button
-            className='gamma-liquidity-item-button'
+            className={styles.unipilotLiquidityItemButton}
             disabled={buttonDisabled}
             onClick={() => setShowConfirm(true)}
             fullWidth

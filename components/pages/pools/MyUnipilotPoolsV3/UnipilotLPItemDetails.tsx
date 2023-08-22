@@ -1,12 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { Box } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
-import './index.scss';
+import { Box, Button } from '@mui/material';
+import { useTranslation } from 'next-i18next';
+import styles from 'styles/pages/pools/UnipilotLPItemDetails.module.scss';
 import { formatNumber } from 'utils';
 import { CurrencyLogo } from 'components';
-import { Button } from '@material-ui/core';
-import IncreaseUnipilotLiquidityModal from '../IncreaseUnipilotLiquidityModal';
-import WithdrawUnipilotLiquidityModal from '../WithdrawUnipilotLiquidityModal';
+import IncreaseUnipilotLiquidityModal from './IncreaseUnipilotLiquidityModal';
+import WithdrawUnipilotLiquidityModal from './WithdrawUnipilotLiquidityModal';
 import { JSBI } from '@uniswap/sdk';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useUniPilotVaultContract } from 'hooks/useContract';
@@ -178,7 +177,7 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
           </small>
         </Box>
       </Box>
-      <Box mt={2} className='unipilot-liquidity-item-buttons'>
+      <Box mt={2} className={styles.unipilotLiquidityItemButtons}>
         <Button
           className='unipilot-liquidity-item-button'
           onClick={() => setShowAddLPModal(true)}
@@ -186,7 +185,7 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
           <small>{t('addLiquidity')}</small>
         </Button>
         <Button
-          className='unipilot-liquidity-item-button'
+          className={styles.unipilotLiquidityItemButton}
           disabled={position.farming}
           onClick={() => setShowWithdrawModal(true)}
         >

@@ -34,7 +34,7 @@ const AnalyticsVolumeChart: React.FC<{
 
   const fetchChartData = async () => {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
     );
     if (!res.ok) {
       return null;

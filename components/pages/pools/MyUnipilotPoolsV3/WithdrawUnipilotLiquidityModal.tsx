@@ -8,11 +8,11 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
-import { Box, Button } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Box, Button } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import '../UnipilotLPItemDetails/index.scss';
+import styles from 'styles/pages/pools/UnipilotLPItemDetails.module.scss';
 import { calculateGasMargin, formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -94,16 +94,16 @@ export default function WithdrawUnipilotLiquidityModal({
       setTxPending(true);
       setTxnHash(response.hash);
       addTransaction(response, {
-        summary: t('withdrawingUnipilotLiquidity'),
+        summary: t('withdrawingUnipilotLiquidity') ?? '',
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('withdrewUnipilotLiquidity'),
+        summary: t('withdrewUnipilotLiquidity') ?? '',
       });
       setTxPending(false);
     } catch (e) {
       setAttemptingTxn(false);
-      setRemoveErrorMessage(t('errorInTx'));
+      setRemoveErrorMessage(t('errorInTx') ?? '');
     }
   };
 
@@ -215,7 +215,7 @@ export default function WithdrawUnipilotLiquidityModal({
       <Box padding={3}>
         <Box className='flex justify-between'>
           <p className='weight-600'>{t('removeLiquidity')}</p>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box mt={3} className='flex items-center'>
           <Box className='flex' mr={1}>
@@ -249,7 +249,7 @@ export default function WithdrawUnipilotLiquidityModal({
             max={100}
             step={1}
             value={percentForSlider}
-            handleChange={(event, value) => {
+            handleChange={(_, value) => {
               onPercentSelectForSlider(value as number);
             }}
           />
@@ -298,7 +298,7 @@ export default function WithdrawUnipilotLiquidityModal({
         </Box>
         <Box mt={2}>
           <Button
-            className='gamma-liquidity-item-button'
+            className={styles.unipilotLiquidityItemButton}
             disabled={buttonDisabled}
             onClick={() => setShowConfirm(true)}
             fullWidth
