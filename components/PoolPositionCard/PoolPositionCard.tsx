@@ -14,17 +14,16 @@ import PoolPositionCardDetails from './PoolPositionCardDetails';
 import styles from 'styles/components/PoolPositionCard.module.scss';
 import { Trans, useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
+import { useQuery } from '@tanstack/react-query';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const [bulkPairData, setBulkPairData] = useState<any>(null);
-  const chainIdOrDefault = chainId ?? ChainId.MATIC;
   const currency0 = unwrappedToken(pair.token0);
   const currency1 = unwrappedToken(pair.token1);
 
-  const stakingInfos = useStakingInfo(chainIdOrDefault, pair);
-  const dualStakingInfos = useDualStakingInfo(chainIdOrDefault, pair);
+  const stakingInfos = useStakingInfo(chainId, pair);
+  const dualStakingInfos = useDualStakingInfo(chainId, pair);
   const stakingInfo = useMemo(
     () =>
       stakingInfos.length > 0
@@ -37,12 +36,30 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
 
   const pairId = pair.liquidityToken.address;
 
+  const fetchBulkPairData = async () => {
+    const data = await getBulkPairData(chainId, pairId);
+    return data ?? null;
+  };
+
+  const { data: bulkPairData, refetch } = useQuery({
+    queryKey: ['fetchBulkPairData', chainId, pairId],
+    queryFn: fetchBulkPairData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
   useEffect(() => {
-    getBulkPairData(chainIdOrDefault, pairId).then((data) =>
-      setBulkPairData(data),
-    );
-    return () => setBulkPairData(null);
-  }, [pairId, chainIdOrDefault]);
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const [showMore, setShowMore] = useState(false);
 

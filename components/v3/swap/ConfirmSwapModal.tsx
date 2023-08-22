@@ -41,6 +41,7 @@ interface ConfirmSwapModalProps {
   onConfirm: () => void;
   swapErrorMessage: ReactNode | undefined;
   onDismiss: () => void;
+  txPending?: boolean;
 }
 
 export default function ConfirmSwapModal({
@@ -55,6 +56,7 @@ export default function ConfirmSwapModal({
   isOpen,
   attemptingTxn,
   txHash,
+  txPending,
 }: ConfirmSwapModalProps) {
   const { t } = useTranslation();
   const showAcceptChanges = useMemo(
@@ -124,7 +126,7 @@ export default function ConfirmSwapModal({
       hash={txHash}
       content={confirmationContent}
       pendingText={pendingText}
-      currencyToAdd={trade?.outputAmount.currency}
+      txPending={txPending}
     />
   );
 }

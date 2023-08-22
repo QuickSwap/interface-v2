@@ -13,25 +13,16 @@ import {
 } from '../state/transactions/hooks';
 import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';
-import { GAS_PRICE_MULTIPLIER } from './useGasPrice';
 import { TransactionResponse } from '@ethersproject/providers';
 import { FarmingType } from '../models/enums';
 import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/utils/calldata';
-import { useAppSelector } from 'state';
 import { useV3StakeData } from 'state/farms/hooks';
 import { calculateGasMargin } from 'utils';
 
 export function useFarmingHandlers() {
   const { chainId, account, provider } = useActiveWeb3React();
   const { t } = useTranslation();
-
-  const gasPrice = useAppSelector((state) => {
-    if (!state.application.gasPrice.fetched) return 36;
-    return state.application.gasPrice.override
-      ? 36
-      : state.application.gasPrice.fetched;
-  });
 
   const addTransaction = useTransactionAdder();
   const finalizeTransaction = useTransactionFinalizer();
@@ -93,8 +84,8 @@ export function useFarmingHandlers() {
           callDatas = [
             farmingCenterInterface.encodeFunctionData('exitFarming', [
               [
-                eternalRewardToken.id,
-                eternalBonusRewardToken.id,
+                eternalRewardToken.address,
+                eternalBonusRewardToken.address,
                 pool.id,
                 +eternalStartTime,
                 +eternalEndTime,
@@ -107,7 +98,7 @@ export function useFarmingHandlers() {
           if (+eternalEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
-                eternalRewardToken.id,
+                eternalRewardToken.address,
                 account,
                 0,
                 MaxUint128,
@@ -118,7 +109,7 @@ export function useFarmingHandlers() {
           if (+eternalBonusEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
-                eternalBonusRewardToken.id,
+                eternalBonusRewardToken.address,
                 account,
                 0,
                 MaxUint128,
@@ -140,7 +131,6 @@ export function useFarmingHandlers() {
               result = await farmingCenterContract.callStatic.multicall(
                 callDatas,
                 {
-                  gasPrice: gasPrice * GAS_PRICE_MULTIPLIER,
                   gasLimit: 350000,
                 },
               );
@@ -168,8 +158,8 @@ export function useFarmingHandlers() {
           callDatas = [
             farmingCenterInterface.encodeFunctionData('exitFarming', [
               [
-                limitRewardToken.id,
-                limitBonusRewardToken.id,
+                limitRewardToken.address,
+                limitBonusRewardToken.address,
                 pool.id,
                 +limitStartTime,
                 +limitEndTime,
@@ -182,7 +172,7 @@ export function useFarmingHandlers() {
           if (+limitEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
-                limitRewardToken.id,
+                limitRewardToken.address,
                 account,
                 MaxUint128,
                 0,
@@ -193,7 +183,7 @@ export function useFarmingHandlers() {
           if (+limitBonusEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
-                limitBonusRewardToken.id,
+                limitBonusRewardToken.address,
                 account,
                 MaxUint128,
                 0,
@@ -236,7 +226,6 @@ export function useFarmingHandlers() {
       addTransaction,
       chainId,
       finalizeTransaction,
-      gasPrice,
       provider,
       updateV3Stake,
       t,
@@ -286,8 +275,8 @@ export function useFarmingHandlers() {
           'collectRewards',
           [
             [
-              eternalRewardToken.id,
-              eternalBonusRewardToken.id,
+              eternalRewardToken.address,
+              eternalBonusRewardToken.address,
               pool.id,
               +eternalStartTime,
               +eternalEndTime,
@@ -297,18 +286,18 @@ export function useFarmingHandlers() {
         );
         const claimReward1 = farmingCenterInterface.encodeFunctionData(
           'claimReward',
-          [eternalRewardToken.id, account, 0, MaxUint128],
+          [eternalRewardToken.address, account, 0, MaxUint128],
         );
         const claimReward2 = farmingCenterInterface.encodeFunctionData(
           'claimReward',
-          [eternalBonusRewardToken.id, account, 0, MaxUint128],
+          [eternalBonusRewardToken.address, account, 0, MaxUint128],
         );
 
         let result: TransactionResponse;
 
         if (
-          eternalRewardToken.id.toLowerCase() !==
-          eternalBonusRewardToken.id.toLowerCase()
+          eternalRewardToken.address.toLowerCase() !==
+          eternalBonusRewardToken.address.toLowerCase()
         ) {
           const estimatedGas = await farmingCenterContract.estimateGas.multicall(
             [collectRewards, claimReward1, claimReward2],
@@ -434,7 +423,7 @@ export function useFarmingHandlers() {
       if (!account || !provider || !chainId) return;
 
       updateV3Stake({
-        selectedTokenId: selectedNFT.id,
+        selectedTokenId: selectedNFT,
         selectedFarmingType: null,
         txType: 'farm',
         txConfirmed: false,
@@ -451,40 +440,38 @@ export function useFarmingHandlers() {
           provider.getSigner(),
         );
 
-        if (selectedNFT.onFarmingCenter) {
-          current = selectedNFT.id;
+        current = selectedNFT;
 
-          const estimatedGas = await farmingCenterContract.estimateGas.enterFarming(
-            [rewardToken, bonusRewardToken, pool, startTime, endTime],
-            +selectedNFT.id,
-            selectedTier,
-            eventType === FarmingType.LIMIT,
-          );
+        const estimatedGas = await farmingCenterContract.estimateGas.enterFarming(
+          [rewardToken, bonusRewardToken, pool, startTime, endTime],
+          +selectedNFT,
+          selectedTier,
+          eventType === FarmingType.LIMIT,
+        );
 
-          const result = await farmingCenterContract.enterFarming(
-            [rewardToken, bonusRewardToken, pool, startTime, endTime],
-            +selectedNFT.id,
-            selectedTier,
-            eventType === FarmingType.LIMIT,
-            {
-              gasLimit: calculateGasMargin(estimatedGas),
-            },
-          );
+        const result = await farmingCenterContract.enterFarming(
+          [rewardToken, bonusRewardToken, pool, startTime, endTime],
+          +selectedNFT,
+          selectedTier,
+          eventType === FarmingType.LIMIT,
+          {
+            gasLimit: calculateGasMargin(estimatedGas),
+          },
+        );
 
-          addTransaction(result, {
-            summary: `${t('nftDepositing', { nftID: selectedNFT.id })}!`,
-          });
+        addTransaction(result, {
+          summary: `${t('nftDepositing', { nftID: selectedNFT })}!`,
+        });
 
-          updateV3Stake({ txHash: result.hash });
+        updateV3Stake({ txHash: result.hash });
 
-          const receipt = await result.wait();
+        const receipt = await result.wait();
 
-          finalizeTransaction(receipt, {
-            summary: `${t('nftDeposited', { nftID: selectedNFT.id })}!`,
-          });
+        finalizeTransaction(receipt, {
+          summary: `${t('nftDeposited', { nftID: selectedNFT })}!`,
+        });
 
-          updateV3Stake({ txConfirmed: true });
-        }
+        updateV3Stake({ txConfirmed: true });
       } catch (err) {
         updateV3Stake({ txError: 'failed' });
         if (err instanceof Error) {
@@ -508,7 +495,7 @@ export function useFarmingHandlers() {
       if (!account || !provider || !chainId) return;
 
       updateV3Stake({
-        selectedTokenId: selectedNFT.id,
+        selectedTokenId: selectedNFT,
         selectedFarmingType: null,
         txType: 'farmApprove',
         txConfirmed: false,
@@ -528,11 +515,11 @@ export function useFarmingHandlers() {
         );
 
         if (!selectedNFT.onFarmingCenter) {
-          current = selectedNFT.id;
+          current = selectedNFT;
 
           const transferData = nonFunPosManInterface.encodeFunctionData(
             'safeTransferFrom(address,address,uint256)',
-            [account, FARMING_CENTER[chainId], selectedNFT.id],
+            [account, FARMING_CENTER[chainId], selectedNFT],
           );
 
           const estimatedGas = await nonFunPosManContract.estimateGas.multicall(
@@ -544,7 +531,7 @@ export function useFarmingHandlers() {
           });
 
           addTransaction(result, {
-            summary: `${t('nftApproving', { nftID: selectedNFT.id })}!`,
+            summary: `${t('nftApproving', { nftID: selectedNFT })}!`,
           });
 
           updateV3Stake({ txHash: result.hash });
@@ -552,7 +539,7 @@ export function useFarmingHandlers() {
           const receipt = await result.wait();
 
           finalizeTransaction(receipt, {
-            summary: `${t('nftApproved', { nftID: selectedNFT.id })}!`,
+            summary: `${t('nftApproved', { nftID: selectedNFT })}!`,
           });
 
           updateV3Stake({ txConfirmed: true });

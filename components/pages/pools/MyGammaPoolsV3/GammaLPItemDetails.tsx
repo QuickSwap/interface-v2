@@ -5,12 +5,12 @@ import styles from 'styles/pages/pools/GammaLPItemDetails.module.scss';
 import { formatNumber } from 'utils';
 import { CurrencyLogo } from 'components';
 import Badge from 'components/v3/Badge';
-import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import IncreaseGammaLiquidityModal from './IncreaseGammaLiquidityModal';
 import WithdrawGammaLiquidityModal from './WithdrawGammaLiquidityModal';
 import { JSBI, Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
   gammaPosition,
@@ -21,13 +21,13 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
     ? new Token(chainId, gammaPosition.pairAddress, 18)
     : undefined;
   const lpTokenBalance = useTokenBalance(account ?? undefined, lpToken);
-  const token0USDPrice = useUSDCPrice(gammaPosition?.token0);
+  const token0USDPrice = useUSDCPriceFromAddress(gammaPosition?.token0.address);
   const token0PooledPercent =
     token0USDPrice &&
     gammaPosition &&
     gammaPosition.balance0 &&
     Number(gammaPosition.balanceUSD) > 0
-      ? ((Number(token0USDPrice.toSignificant()) * gammaPosition.balance0) /
+      ? ((Number(token0USDPrice ?? 0) * gammaPosition.balance0) /
           gammaPosition.balanceUSD) *
         100
       : 0;

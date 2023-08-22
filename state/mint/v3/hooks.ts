@@ -34,17 +34,23 @@ import { getTickToPrice } from 'v3lib/utils/getTickToPrice';
 import { BIG_INT_ZERO } from 'constants/v3/misc';
 import { FeeAmount } from 'v3lib/utils';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
-import { useCurrencyBalance } from 'state/wallet/hooks';
+import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { IPresetArgs } from 'components/pages/pools/SupplyLiquidityV3/components/PresetRanges';
-import { GlobalConst } from 'constants/index';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useContract, useGammaUNIProxyContract } from 'hooks/useContract';
+import { GlobalConst, UnipilotVaults } from 'constants/index';
+import { Interface, formatUnits, parseUnits } from 'ethers/lib/utils';
+import {
+  useContract,
+  useGammaUNIProxyContract,
+  useUniPilotVaultContract,
+} from 'hooks/useContract';
 import { useSingleCallResult } from 'state/multicall/hooks';
 import { ETHER, WETH } from '@uniswap/sdk';
 import { maxAmountSpend } from 'utils';
 import { GammaPairs } from 'constants/index';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
+import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
+import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -635,6 +641,70 @@ export function useV3DerivedMintInfo(
     return;
   }, [currencyA, currencyB, depositAmountsData, independentField]);
 
+  const isUniPilot =
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE;
+
+  const vaultToken0Address =
+    presetRange && presetRange.tokenStr
+      ? presetRange.tokenStr.split('-')[0]
+      : undefined;
+  const vaultToken0 =
+    currencyA && vaultToken0Address
+      ? currencyA.wrapped.address.toLowerCase() ===
+        vaultToken0Address.toLowerCase()
+        ? currencyA.wrapped
+        : currencyB?.wrapped
+      : undefined;
+  const vaultToken1Address =
+    presetRange && presetRange.tokenStr
+      ? presetRange.tokenStr.split('-')[1]
+      : undefined;
+  const vaultToken1 =
+    currencyA && vaultToken1Address
+      ? currencyA.wrapped.address.toLowerCase() ===
+        vaultToken1Address.toLowerCase()
+        ? currencyA.wrapped
+        : currencyB?.wrapped
+      : undefined;
+  const unipilotToken0VaultBalance = useTokenBalance(
+    presetRange?.address,
+    isUniPilot ? vaultToken0 : undefined,
+  );
+  const unipilotToken1VaultBalance = useTokenBalance(
+    presetRange?.address,
+    isUniPilot ? vaultToken1 : undefined,
+  );
+  const uniPilotVaultContract = useUniPilotVaultContract(presetRange?.address);
+  const uniPilotVaultPositionResult = useSingleCallResult(
+    isUniPilot && presetRange && presetRange.address && uniPilotVaultContract
+      ? uniPilotVaultContract
+      : undefined,
+    'getPositionDetails',
+  );
+  const uniPilotVaultReserve = useMemo(() => {
+    if (
+      !uniPilotVaultPositionResult.loading &&
+      uniPilotVaultPositionResult.result &&
+      uniPilotVaultPositionResult.result.length > 1
+    ) {
+      return {
+        token0: JSBI.add(
+          JSBI.BigInt(uniPilotVaultPositionResult.result[0]),
+          unipilotToken0VaultBalance?.numerator ?? JSBI.BigInt(0),
+        ),
+        token1: JSBI.add(
+          JSBI.BigInt(uniPilotVaultPositionResult.result[1]),
+          unipilotToken1VaultBalance?.numerator ?? JSBI.BigInt(0),
+        ),
+      };
+    }
+    return;
+  }, [
+    uniPilotVaultPositionResult,
+    unipilotToken0VaultBalance,
+    unipilotToken1VaultBalance,
+  ]);
+
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
     const dependentCurrency =
       dependentField === Field.CURRENCY_B ? currencyB : currencyA;
@@ -659,6 +729,59 @@ export function useV3DerivedMintInfo(
           : dependentCurrency,
         JSBI.BigInt(dependentDeposit),
       );
+    }
+
+    if (
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+    ) {
+      if (
+        !independentAmount ||
+        !presetRange ||
+        !presetRange.address ||
+        !dependentCurrency
+      )
+        return;
+      const independentReserve =
+        dependentField === Field.CURRENCY_B
+          ? currencyB &&
+            vaultToken0 &&
+            currencyB.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
+            ? uniPilotVaultReserve?.token1
+            : uniPilotVaultReserve?.token0
+          : currencyA &&
+            vaultToken0 &&
+            currencyA.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
+          ? uniPilotVaultReserve?.token1
+          : uniPilotVaultReserve?.token0;
+      const dependentReserve =
+        dependentField === Field.CURRENCY_B
+          ? currencyB &&
+            vaultToken0 &&
+            currencyB.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
+            ? uniPilotVaultReserve?.token0
+            : uniPilotVaultReserve?.token1
+          : currencyA &&
+            vaultToken0 &&
+            currencyA.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
+          ? uniPilotVaultReserve?.token0
+          : uniPilotVaultReserve?.token1;
+      if (
+        !independentReserve ||
+        !dependentReserve ||
+        JSBI.equal(independentReserve, JSBI.BigInt(0))
+      )
+        return;
+
+      const dependentDeposit = JSBI.divide(
+        JSBI.multiply(dependentReserve, independentAmount.numerator),
+        independentReserve,
+      );
+
+      return CurrencyAmount.fromRawAmount(dependentCurrency, dependentDeposit);
     }
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
@@ -709,16 +832,18 @@ export function useV3DerivedMintInfo(
 
     return undefined;
   }, [
-    liquidityRangeType,
-    independentAmount,
     dependentField,
     currencyB,
     currencyA,
+    liquidityRangeType,
+    independentAmount,
     tickLower,
     tickUpper,
     poolForPosition,
     presetRange,
     depositAmount,
+    vaultToken0,
+    uniPilotVaultReserve,
     outOfRange,
     invalidRange,
   ]);
@@ -1186,4 +1311,59 @@ export function useCurrentStep(): AppState['mintV3']['currentStep'] {
     (state: AppState) => state.mintV3.currentStep,
   );
   return useMemo(() => currentStep, [currentStep]);
+}
+
+export function useGetUnipilotVaults() {
+  const { chainId } = useActiveWeb3React();
+  const vaultIds = UnipilotVaults[chainId] ?? [];
+  const vaultInfoResults = useMultipleContractSingleData(
+    vaultIds,
+    new Interface(UNIPILOT_VAULT_ABI),
+    'getVaultInfo',
+  );
+  const vaultSymbolResults = useMultipleContractSingleData(
+    vaultIds,
+    new Interface(UNIPILOT_VAULT_ABI),
+    'symbol',
+  );
+  const vaultTicksResults = useMultipleContractSingleData(
+    vaultIds,
+    new Interface(UNIPILOT_VAULT_ABI),
+    'ticksData',
+  );
+  return vaultIds.map((id, index) => {
+    const vaultInfoCallData = vaultInfoResults[index];
+    const vaultSymbolCallData = vaultSymbolResults[index];
+    const vaultTickCallData = vaultTicksResults[index];
+    const vaultInfoResult =
+      !vaultInfoCallData.loading &&
+      vaultInfoCallData.result &&
+      vaultInfoCallData.result.length > 0
+        ? vaultInfoCallData.result
+        : undefined;
+    const vaultSymbolResult =
+      !vaultSymbolCallData.loading &&
+      vaultSymbolCallData.result &&
+      vaultSymbolCallData.result.length > 0
+        ? vaultSymbolCallData.result
+        : undefined;
+    const vaultTicksResult =
+      !vaultTickCallData.loading &&
+      vaultTickCallData.result &&
+      vaultTickCallData.result.length > 0
+        ? vaultTickCallData.result
+        : undefined;
+    return {
+      id,
+      symbol: vaultSymbolResult ? vaultSymbolResult[0] : undefined,
+      token0: vaultInfoResult ? vaultInfoResult[0] : undefined,
+      token1: vaultInfoResult ? vaultInfoResult[1] : undefined,
+      fee: vaultInfoResult ? vaultInfoResult[2] : undefined,
+      poolAddress: vaultInfoResult ? vaultInfoResult[3] : undefined,
+      baseTickLower: vaultTicksResult ? vaultTicksResult[0] : undefined,
+      baseTickUpper: vaultTicksResult ? vaultTicksResult[1] : undefined,
+      rangeTickLower: vaultTicksResult ? vaultTicksResult[2] : undefined,
+      rangeTickUpper: vaultTicksResult ? vaultTicksResult[3] : undefined,
+    };
+  });
 }

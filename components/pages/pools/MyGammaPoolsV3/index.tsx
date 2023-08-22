@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
@@ -16,6 +16,7 @@ import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
 import { Token } from '@uniswap/sdk';
 import { useTokenBalances } from 'state/wallet/hooks';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 
 export default function MyGammaPoolsV3() {
   const { t } = useTranslation();
@@ -36,39 +37,17 @@ export default function MyGammaPoolsV3() {
     return gammaData;
   };
 
-  const {
-    isLoading: positionsLoading,
-    data: gammaPositions,
-    refetch: refetchGammaPositions,
-  } = useQuery({
-    queryKey: ['fetchGammaPositions', account, chainId],
+  const lastTxHash = useLastTransactionHash();
+
+  const { isLoading: positionsLoading, data: gammaPositions } = useQuery({
+    queryKey: ['fetchGammaPositionsPools', lastTxHash, account, chainId],
     queryFn: fetchGammaPositions,
   });
 
-  const {
-    isLoading: dataLoading,
-    data: gammaData,
-    refetch: refetchGammaData,
-  } = useQuery({
-    queryKey: ['fetchGammaData', chainId],
+  const { isLoading: dataLoading, data: gammaData } = useQuery({
+    queryKey: ['fetchGammaDataPools', lastTxHash, chainId],
     queryFn: fetchGammaData,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchGammaData();
-    refetchGammaPositions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const allGammaPairsToFarm = chainId
     ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
@@ -218,36 +197,29 @@ export default function MyGammaPoolsV3() {
 
   return (
     <Box>
-      <p className='weight-600'>{t('myGammaLP')}</p>
-      <>
-        {positionsLoading || stakedLoading || dataLoading ? (
-          <Box mt={2} className='flex justify-center'>
-            <CircularProgress size={'2rem'} />
-          </Box>
-        ) : (gammaPositions && gammaPositionList.length > 0) ||
-          stakedPositions.length > 0 ? (
-          <GammaLPList
-            gammaPairs={gammaPositionList}
-            gammaPositions={gammaPositions}
-            stakedPositions={stakedPositions}
-          />
-        ) : (
-          <Box mt={2} textAlign='center'>
-            <p>{t('noLiquidityPositions')}.</p>
-            {showConnectAWallet && (
-              <Box maxWidth={250} margin='20px auto 0'>
-                <Button
-                  variant='contained'
-                  fullWidth
-                  onClick={toggleWalletModal}
-                >
-                  {t('connectWallet')}
-                </Button>
-              </Box>
-            )}
-          </Box>
-        )}
-      </>
+      {positionsLoading || stakedLoading || dataLoading ? (
+        <Box mt={2} className='flex justify-center'>
+          <CircularProgress size={'2rem'} />
+        </Box>
+      ) : (gammaPositions && gammaPositionList.length > 0) ||
+        stakedPositions.length > 0 ? (
+        <GammaLPList
+          gammaPairs={gammaPositionList}
+          gammaPositions={gammaPositions}
+          stakedPositions={stakedPositions}
+        />
+      ) : (
+        <Box mt={2} textAlign='center'>
+          <p>{t('noLiquidityPositions')}.</p>
+          {showConnectAWallet && (
+            <Box maxWidth={250} margin='20px auto 0'>
+              <Button variant='contained' fullWidth onClick={toggleWalletModal}>
+                {t('connectWallet')}
+              </Button>
+            </Box>
+          )}
+        </Box>
+      )}
     </Box>
   );
 }

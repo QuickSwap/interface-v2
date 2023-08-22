@@ -8,11 +8,11 @@ import {
 } from '@web3-react/types';
 import { Connector } from '@web3-react/types';
 
-export class NoBitKeepError extends Error {
+export class NoBitgetError extends Error {
   public constructor() {
-    super('BitKeep not installed');
-    this.name = NoBitKeepError.name;
-    Object.setPrototypeOf(this, NoBitKeepError.prototype);
+    super('Bitget Wallet not installed');
+    this.name = NoBitgetError.name;
+    Object.setPrototypeOf(this, NoBitgetError.prototype);
   }
 }
 
@@ -24,19 +24,19 @@ function parseChainId(chainId: string) {
  * @param options - Options to pass to `@metamask/detect-provider`
  * @param onError - Handler to report errors thrown from eventListeners.
  */
-export interface BitKeepConstructorArgs {
+export interface BitgetConstructorArgs {
   actions: Actions;
   options?: Parameters<typeof detectEthereumProvider>[0];
   onError?: (error: Error) => void;
 }
 
-export class BitKeep extends Connector {
+export class Bitget extends Connector {
   /** {@inheritdoc Connector.provider} */
   public provider: any;
 
   private eagerConnection?: Promise<void>;
 
-  constructor({ actions, onError }: BitKeepConstructorArgs) {
+  constructor({ actions, onError }: BitgetConstructorArgs) {
     super(actions, onError);
   }
 
@@ -132,7 +132,7 @@ export class BitKeep extends Connector {
 
     return this.isomorphicInitialize()
       .then(async () => {
-        if (!this.provider) throw new NoBitKeepError();
+        if (!this.provider) throw new NoBitgetError();
 
         // Wallets may resolve eth_chainId and hang on eth_accounts pending user interaction, which may include changing
         // chains; they should be requested serially, with accounts first, so that the chainId can settle.

@@ -21,13 +21,13 @@ import { GlobalConst, TxnType } from 'constants/index';
 import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
 import AnalyticsPairChart from 'components/pages/analytics/AnalyticsPairChart';
 import { useTranslation } from 'next-i18next';
-import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { CallMade } from '@mui/icons-material';
 import { getConfig } from 'config';
 import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import styles from 'styles/pages/Analytics.module.scss';
+import { useQuery } from '@tanstack/react-query';
 
 const AnalyticsPairDetails = (
   _props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -36,9 +36,6 @@ const AnalyticsPairDetails = (
   const router = useRouter();
   const pairAddress = router.query.id ? (router.query.id as string) : undefined;
   const tokenMap = useSelectedTokenList();
-  const [dataLoading, setDataLoading] = useState(false);
-  const [pairData, setPairData] = useState<any>(null);
-  const [pairTransactions, setPairTransactions] = useState<any>(null);
 
   const version = router.query.version ?? 'v3';
   const isV2 = version === 'v2';
@@ -52,6 +49,43 @@ const AnalyticsPairDetails = (
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showAnalytics]);
+
+  const fetchPairData = async () => {
+    if (chainId && version) {
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        return null;
+      }
+      const data = await res.json();
+      return data && data.data ? data.data : null;
+    }
+    return null;
+  };
+
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['fetchAnalyticsPairDetails', pairAddress, version, chainId],
+    queryFn: fetchPairData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  const pairData = data ? data.pairData : undefined;
+  const pairTransactions = data ? data.pairTransactions : undefined;
 
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
@@ -156,35 +190,6 @@ const AnalyticsPairDetails = (
     : pairData && pairData.feesUSDOneDay
     ? formatNumber(pairData.feesUSDOneDay)
     : '0';
-  const { ethPrice } = useEthPrice();
-
-  useEffect(() => {
-    (async () => {
-      if (chainId && version && pairAddress) {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
-        );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get top pair details`,
-          );
-        }
-        const data = await res.json();
-        setDataLoading(false);
-        if (data?.data?.pairData) {
-          setPairData(data.data.pairData);
-          setPairTransactions(data.data.pairTransactions);
-        }
-      }
-    })();
-  }, [pairAddress, ethPrice.price, isV2, chainId, version]);
-
-  useEffect(() => {
-    setDataLoading(true);
-    setPairData(null);
-    setPairTransactions(null);
-  }, [pairAddress, isV2]);
 
   const PairInfo = () => (
     <Box width={1} my={4}>
@@ -291,7 +296,9 @@ const AnalyticsPairDetails = (
   return (
     <>
       <AnalyticsHeader type='pair' data={pairData} address={pairAddress} />
-      {pairData ? (
+      {isLoading ? (
+        <Skeleton width='100%' height={100} />
+      ) : pairData ? (
         <>
           <Box width={1} className='flex flex-wrap justify-between'>
             <Box>
@@ -404,8 +411,6 @@ const AnalyticsPairDetails = (
             </>
           )}
         </>
-      ) : dataLoading ? (
-        <Skeleton width='100%' height={100} />
       ) : (
         <Box py={4}>
           <h5>{t('pairNotExist')}</h5>

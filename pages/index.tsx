@@ -320,8 +320,8 @@ const LandingPage = (
           <Box className={styles.featureDivider} />
         </Box>
         <Box>
-          {faqs.map((val) => (
-            <Accordion key={`accordation-{i}`}>
+          {faqs.map((val, i) => (
+            <Accordion key={`accordation-${i}`}>
               <AccordionSummary
                 expandIcon={<ExpandMoreOutlined />}
                 aria-controls='panel1a-content'

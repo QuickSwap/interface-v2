@@ -2,9 +2,7 @@ import { ChainId } from '@uniswap/sdk';
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import { CustomModal } from 'components';
-import { Close } from '@mui/icons-material';
-import TransactionFailed from 'svgs/TransactionFailed.svg';
-import TransactionSuccess from 'svgs/TransactionSuccess.svg';
+import { Close, CheckCircleOutline } from '@mui/icons-material';
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import styles from 'styles/components/TransactionConfirmationModal.module.scss';
@@ -61,13 +59,21 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
         <h5>{txPending ? t('txSubmitted') : t('txCompleted')}</h5>
         <Close onClick={onDismiss} />
       </Box>
-      {!txPending && (
-        <Box mt={8} className='flex justify-center'>
-          <TransactionSuccess />
-        </Box>
-      )}
-      <Box className={styles.txModalContent}>
-        <p>{modalContent}</p>
+      <Box mt={8} className='flex justify-center'>
+        <picture>
+          <img
+            src='/assets/images/TransactionSubmitted.png'
+            alt='Transaction Submitted'
+          />
+        </picture>
+      </Box>
+      <Box
+        className={`${styles.txModalContent} ${styles.txModalContentSuccess}`}
+      >
+        <p>
+          {!txPending && <CheckCircleOutline />}
+          {modalContent}
+        </p>
       </Box>
       <Box className='flex justify-between' mt={2}>
         {chainId && hash && (
@@ -77,9 +83,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
             rel='noopener noreferrer'
             style={{ width: '48%', textDecoration: 'none' }}
           >
-            <Button className={styles.txSubmitButton}>
-              {t('viewonBlockExplorer')}
-            </Button>
+            <Button className={styles.txSubmitButton}>{t('viewTx')}</Button>
           </a>
         )}
         <Button
@@ -116,22 +120,6 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
   );
 };
 
-export const ConfirmationModalContentV3: React.FC<ConfirmationModalContentProps> = ({
-  title,
-  onDismiss,
-  content,
-}) => {
-  return (
-    <Box padding={4}>
-      <Box className='flex items-center justify-between'>
-        <p>{title}</p>
-        <Close onClick={onDismiss} />
-      </Box>
-      {content()}
-    </Box>
-  );
-};
-
 interface TransactionErrorContentProps {
   message: string;
   onDismiss: () => void;
@@ -150,12 +138,17 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
           <Close onClick={onDismiss} />
         </Box>
         <Box className={styles.txModalContent}>
-          <TransactionFailed />
+          <picture>
+            <img
+              src='/assets/images/TransactionFailed.png'
+              alt='Transaction Failed'
+            />
+          </picture>
           <p>{message}</p>
         </Box>
       </Box>
       <Button className={styles.txSubmitButton} onClick={onDismiss}>
-        {t('dismiss')}
+        {t('close')}
       </Button>
     </Box>
   );
@@ -171,6 +164,7 @@ interface ConfirmationModalProps {
   modalContent: string;
   txPending?: boolean;
   modalWrapper?: string;
+  isTxWrapper?: boolean;
 }
 
 const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -183,6 +177,7 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
   content,
   modalContent,
   modalWrapper,
+  isTxWrapper = true,
 }) => {
   const { chainId } = useActiveWeb3React();
 
@@ -190,7 +185,13 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   // confirmation screen
   return (
-    <CustomModal open={isOpen} onClose={onDismiss} modalWrapper={modalWrapper}>
+    <CustomModal
+      open={isOpen}
+      onClose={onDismiss}
+      modalWrapper={`${modalWrapper} ${
+        isTxWrapper ? styles.txModalWrapper : ''
+      }`}
+    >
       <picture>
         <img
           src='/assets/images/ModalBG.svg'

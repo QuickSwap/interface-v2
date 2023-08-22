@@ -60,6 +60,7 @@ import useSwapRedirects from 'hooks/useSwapRedirect';
 import { useTranslation } from 'next-i18next';
 import { CHAIN_INFO } from 'constants/v3/chains';
 import styles from 'styles/components/Swap.module.scss';
+import { useTransactionFinalizer } from 'state/transactions/hooks';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
@@ -190,16 +191,25 @@ const SwapV3Page: React.FC = () => {
 
   // modal and loading
   const [
-    { showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash },
+    {
+      showConfirm,
+      txPending,
+      tradeToConfirm,
+      swapErrorMessage,
+      attemptingTxn,
+      txHash,
+    },
     setSwapState,
   ] = useState<{
     showConfirm: boolean;
+    txPending?: boolean;
     tradeToConfirm: V3Trade<Currency, Currency, TradeType> | undefined;
     attemptingTxn: boolean;
     swapErrorMessage: string | undefined;
     txHash: string | undefined;
   }>({
     showConfirm: false,
+    txPending: false,
     tradeToConfirm: undefined,
     attemptingTxn: false,
     swapErrorMessage: undefined,
@@ -298,6 +308,8 @@ const SwapV3Page: React.FC = () => {
 
   const singleHopOnly = false;
 
+  const finalizedTransaction = useTransactionFinalizer();
+
   const handleSwap = useCallback(() => {
     if (!swapCallback) {
       return;
@@ -313,13 +325,14 @@ const SwapV3Page: React.FC = () => {
       txHash: undefined,
     });
     swapCallback()
-      .then((hash) => {
+      .then(async ({ response, summary }) => {
         setSwapState({
           attemptingTxn: false,
+          txPending: true,
           tradeToConfirm,
           showConfirm,
           swapErrorMessage: undefined,
-          txHash: hash,
+          txHash: response.hash,
         });
         event(
           recipient === null
@@ -338,26 +351,50 @@ const SwapV3Page: React.FC = () => {
             ].join('/'),
           },
         );
+        try {
+          const receipt = await response.wait();
+          finalizedTransaction(receipt, {
+            summary,
+          });
+          setSwapState({
+            attemptingTxn: false,
+            txPending: false,
+            tradeToConfirm,
+            showConfirm,
+            swapErrorMessage: undefined,
+            txHash: response.hash,
+          });
+        } catch (err) {
+          const error = err as any;
+          setSwapState({
+            attemptingTxn: false,
+            tradeToConfirm,
+            showConfirm,
+            swapErrorMessage: error?.message,
+            txHash: undefined,
+          });
+        }
       })
       .catch((error) => {
         setSwapState({
           attemptingTxn: false,
           tradeToConfirm,
           showConfirm,
-          swapErrorMessage: error.message,
+          swapErrorMessage: error?.message,
           txHash: undefined,
         });
       });
   }, [
     swapCallback,
     priceImpact,
+    t,
     tradeToConfirm,
     showConfirm,
     recipient,
     recipientAddress,
     account,
     trade,
-    t,
+    finalizedTransaction,
   ]);
 
   // errors
@@ -387,6 +424,7 @@ const SwapV3Page: React.FC = () => {
   const handleConfirmDismiss = useCallback(() => {
     setSwapState({
       showConfirm: false,
+      txPending: false,
       tradeToConfirm,
       attemptingTxn,
       swapErrorMessage,
@@ -545,6 +583,7 @@ const SwapV3Page: React.FC = () => {
           onAcceptChanges={handleAcceptChanges}
           attemptingTxn={attemptingTxn}
           txHash={txHash}
+          txPending={txPending}
           recipient={recipient}
           allowedSlippage={allowedSlippage}
           onConfirm={handleSwap}
@@ -785,8 +824,6 @@ const SwapV3Page: React.FC = () => {
                       handleSwap();
                     } else {
                       setSwapState({
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        //@ts-ignore
                         tradeToConfirm: trade,
                         attemptingTxn: false,
                         swapErrorMessage: undefined,
@@ -820,8 +857,6 @@ const SwapV3Page: React.FC = () => {
                   handleSwap();
                 } else {
                   setSwapState({
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    //@ts-ignore
                     tradeToConfirm: trade,
                     attemptingTxn: false,
                     swapErrorMessage: undefined,

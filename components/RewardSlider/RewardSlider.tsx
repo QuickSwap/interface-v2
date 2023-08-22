@@ -12,16 +12,15 @@ import { useActiveWeb3React } from 'hooks';
 import { getOneYearFee } from 'utils';
 import styles from 'styles/components/RewardSlider.module.scss';
 import { ChainId } from '@uniswap/sdk';
+import { useQuery } from '@tanstack/react-query';
 
 const RewardSlider: React.FC = () => {
   const theme = useTheme();
   const { chainId } = useActiveWeb3React();
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('md'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
-  const chainIdOrDefault = chainId ?? ChainId.MATIC;
-  const lprewardItems = useStakingInfo(chainIdOrDefault, null, 0, 2);
-  const dualrewardItems = useDualStakingInfo(chainIdOrDefault, null, 0, 1);
-  const [bulkPairs, setBulkPairs] = useState<any>(null);
+  const lprewardItems = useStakingInfo(chainId, null, 0, 2);
+  const dualrewardItems = useDualStakingInfo(chainId, null, 0, 1);
   const rewardItemsCount = lprewardItems.length + dualrewardItems.length;
 
   const stakingPairListStr = useMemo(() => {
@@ -33,13 +32,31 @@ const RewardSlider: React.FC = () => {
 
   const stakingPairLists = stakingPairListStr.split('_');
 
+  const fetchBulkPairData = async () => {
+    if (!stakingPairListStr) return null;
+    const data = await getBulkPairData(chainId, stakingPairListStr);
+    return data ?? null;
+  };
+
+  const { data: bulkPairs, refetch } = useQuery({
+    queryKey: ['fetchBulkPairData', chainId, stakingPairListStr],
+    queryFn: fetchBulkPairData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
   useEffect(() => {
-    if (stakingPairListStr) {
-      getBulkPairData(chainIdOrDefault, stakingPairListStr).then((data) =>
-        setBulkPairs(data),
-      );
-    }
-  }, [chainIdOrDefault, stakingPairListStr]);
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && stakingPairLists.length > 0) {

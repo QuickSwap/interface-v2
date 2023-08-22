@@ -322,8 +322,8 @@ const AddGammaLiquidity: React.FC<{
           ? t('gammaImproperRatio') ?? ''
           : errorMsg.indexOf('price change overflow') > -1
           ? t('gammaPriceOverflow') ?? ''
-          : error?.code === 4001 || error.code === 'ACTION_REJECTED'
-          ? ''
+          : error?.code === 4001 || error?.code === 'ACTION_REJECTED'
+          ? t('txRejected') ?? ''
           : t('errorInTx') ?? '',
       );
     }

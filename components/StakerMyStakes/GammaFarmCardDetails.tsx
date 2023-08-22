@@ -117,44 +117,39 @@ const GammaFarmCardDetails: React.FC<{
       (rewardArray, callData, index) => {
         const reward = rewards.length > 0 ? rewards[index] : undefined;
         if (chainId && reward && tokenMap) {
-          const rewardTokenData = getTokenFromAddress(
+          const rewardToken = getTokenFromAddress(
             reward.rewardToken,
             chainId,
             tokenMap,
             [],
           );
-          const rewardToken = new Token(
-            chainId,
-            rewardTokenData.address,
-            rewardTokenData.decimals,
-            rewardTokenData.symbol,
-            rewardTokenData.name,
-          );
 
-          const existingRewardIndex = rewardArray.findIndex(
-            (item) =>
-              item.token.address.toLowerCase() ===
-              reward.rewardToken.toLowerCase(),
-          );
-          const rewardAmountBN =
-            !callData.loading && callData.result && callData.result.length > 0
-              ? callData.result[0]
-              : undefined;
+          if (rewardToken) {
+            const existingRewardIndex = rewardArray.findIndex(
+              (item) =>
+                item.token.address.toLowerCase() ===
+                reward.rewardToken.toLowerCase(),
+            );
+            const rewardAmountBN =
+              !callData.loading && callData.result && callData.result.length > 0
+                ? callData.result[0]
+                : undefined;
 
-          const rewardAmount =
-            (rewardAmountBN
-              ? Number(formatUnits(rewardAmountBN, rewardToken.decimals))
-              : 0) +
-            (existingRewardIndex > -1
-              ? rewardArray[existingRewardIndex].amount
-              : 0);
-          if (existingRewardIndex === -1) {
-            rewardArray.push({ token: rewardToken, amount: rewardAmount });
-          } else {
-            rewardArray[existingRewardIndex] = {
-              token: rewardToken,
-              amount: rewardAmount,
-            };
+            const rewardAmount =
+              (rewardAmountBN
+                ? Number(formatUnits(rewardAmountBN, rewardToken.decimals))
+                : 0) +
+              (existingRewardIndex > -1
+                ? rewardArray[existingRewardIndex].amount
+                : 0);
+            if (existingRewardIndex === -1) {
+              rewardArray.push({ token: rewardToken, amount: rewardAmount });
+            } else {
+              rewardArray[existingRewardIndex] = {
+                token: rewardToken,
+                amount: rewardAmount,
+              };
+            }
           }
         }
         return rewardArray;

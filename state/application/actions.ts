@@ -90,11 +90,6 @@ export const updateTokenDetails = createAction<TokenDetail>(
   'application/updateTokenDetail',
 );
 
-export const updateGasPrice = createAction<{
-  fetched: number | null;
-  override: boolean;
-}>('application/updateGasPrice');
-
 export const updateIsV2 = createAction<boolean>('application/updateIsV2');
 
 export const updateUDDomain = createAction<string | undefined>(

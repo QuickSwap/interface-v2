@@ -52,6 +52,7 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
     <>
       {openStakeModal && (
         <StakeQuickModal
+          isNew={true}
           open={openStakeModal}
           onClose={() => setOpenStakeModal(false)}
         />

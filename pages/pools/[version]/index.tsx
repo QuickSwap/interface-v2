@@ -8,11 +8,9 @@ import { useIsV2 } from 'state/application/hooks';
 import { SupplyLiquidityV3 } from 'components/pages/pools/SupplyLiquidityV3';
 import YourLiquidityPools from 'components/pages/pools/YourLiquidityPools';
 import MyLiquidityPoolsV3 from 'components/pages/pools/MyLiquidityPoolsV3';
-import MyGammaPoolsV3 from 'components/pages/pools/MyGammaPoolsV3';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { GammaPairs } from 'constants/index';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Adshares } from 'components';
@@ -30,7 +28,6 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const helpURL = process.env.NEXT_PUBLIC_HELP_URL;
-  const allGammaPairs = chainId ? GammaPairs[chainId] : {};
 
   useEffect(() => {
     if (!v2) {
@@ -70,11 +67,6 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           <Box className='wrapper'>
             {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
           </Box>
-          {!isV2 && Object.values(allGammaPairs).length > 0 && (
-            <Box mt={4} className='wrapper'>
-              <MyGammaPoolsV3 />
-            </Box>
-          )}
         </Grid>
       </Grid>
       <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>

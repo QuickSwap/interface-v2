@@ -1,0 +1,44 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3-pool-liquidity-item-details {
+  & button, & .button {
+    height: 26px;
+    border-radius: 8px;
+    & span {
+      font-size: 14px;
+    }
+  }
+  & .button {
+    padding: 0 8px;
+    min-width: 64px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    opacity: 0.3;
+    & span {
+      color: white;
+    }
+  }
+}
+
+.v3-pool-item-details-panel {
+  background-color: $bgColor;
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.v3-pool-item-details-info {
+  text-align: center;
+  p {
+    color: $textSecondary;
+    font-size: 13px;
+    line-height: 1.31;
+  }
+  p:not(:first-child):not(:last-child) {
+    margin-bottom: 8px;
+  }
+  h6 {
+    margin: 8px 0;
+  }
+}

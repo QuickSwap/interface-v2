@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@mui/material';
 import { ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
 import { Skeleton } from '@mui/lab';
@@ -8,19 +8,17 @@ import { CurrencyLogo } from 'components';
 import { getPriceClass, formatNumber, getTokenFromAddress } from 'utils';
 import styles from 'styles/components/TopMovers.module.scss';
 import { useTranslation } from 'next-i18next';
-import { useEthPrice, useMaticPrice, useIsV2 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
 import { useSelectedTokenList } from 'state/lists/hooks';
+import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
 
 interface TopMoversProps {
   hideArrow?: boolean;
 }
 const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const { t } = useTranslation();
-  const [topTokens, updateTopTokens] = useState<any[] | null>(null);
-  const { ethPrice } = useEthPrice();
-  const { maticPrice } = useMaticPrice();
   const { chainId } = useActiveWeb3React();
   const config = chainId ? getConfig(chainId) : undefined;
   const tokenMap = useSelectedTokenList();
@@ -29,73 +27,38 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const v3 = config ? config['v3'] : undefined;
   const { isV2 } = useIsV2();
 
+  const { isLoading: loadingV2Tokens, data: v2Tokens } = useAnalyticsTopTokens(
+    'v2',
+    chainId,
+    5,
+  );
+
+  const { isLoading: loadingV3Tokens, data: v3Tokens } = useAnalyticsTopTokens(
+    'v3',
+    chainId,
+    5,
+  );
+
+  const topTokens = useMemo(() => {
+    if (v2 && isV2) return v2Tokens;
+    if (v3) return v3Tokens;
+    return;
+  }, [isV2, v2, v2Tokens, v3, v3Tokens]);
+
   const topMoverTokens = useMemo(
     () => (topTokens && topTokens.length >= 5 ? topTokens.slice(0, 5) : null),
     [topTokens],
   );
 
-  useEffect(() => {
-    if (!chainId) return;
-
-    (async () => {
-      if (isV2) {
-        if (
-          v2 &&
-          ethPrice.price !== undefined &&
-          ethPrice.oneDayPrice !== undefined
-        ) {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/v2?chainId=${chainId}&limit=5`,
-          );
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(
-              errorText || res.statusText || `Failed to get top tokens`,
-            );
-          }
-          const data = await res.json();
-          if (data.data) {
-            updateTopTokens(data.data);
-          }
-        }
-      } else {
-        if (
-          v3 &&
-          maticPrice.price !== undefined &&
-          maticPrice.oneDayPrice !== undefined
-        ) {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/v3?chainId=${chainId}&limit=5`,
-          );
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(
-              errorText || res.statusText || `Failed to get top tokens`,
-            );
-          }
-          const data = await res.json();
-          if (data.data) {
-            updateTopTokens(data.data);
-          }
-        }
-      }
-    })();
-  }, [
-    ethPrice.price,
-    ethPrice.oneDayPrice,
-    maticPrice.price,
-    maticPrice.oneDayPrice,
-    isV2,
-    v2,
-    v3,
-    chainId,
-  ]);
+  const loading = loadingV2Tokens || loadingV3Tokens;
 
   return (
     <Box className={`bg-palette ${styles.topMoversWrapper}`}>
       <p className='weight-600 text-secondary'>{t('24hMostVolume')}</p>
       <Box className={styles.topMoversContent}>
-        {topMoverTokens && chainId ? (
+        {loading ? (
+          <Skeleton variant='rectangular' width='100%' height={100} />
+        ) : topMoverTokens && chainId ? (
           <Box>
             {topMoverTokens.map((token: any) => {
               const currency = getTokenFromAddress(
@@ -138,7 +101,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
             })}
           </Box>
         ) : (
-          <Skeleton variant='rectangular' width='100%' height={100} />
+          <></>
         )}
       </Box>
     </Box>

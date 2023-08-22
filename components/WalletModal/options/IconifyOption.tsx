@@ -18,8 +18,6 @@ const IconifyOption: React.FC<WalletOptionProps> = ({
       id={id}
       onClick={onClick}
       className={`flex items-center flex-col ${styles.optionCardIconfiy}`}
-      my={1.5}
-      mx={1.5}
     >
       <Box className={styles.optionIconContainer}>
         <picture className='m-auto'>

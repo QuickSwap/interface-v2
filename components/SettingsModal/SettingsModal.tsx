@@ -15,6 +15,7 @@ import {
   useUserSlippageTolerance,
   useBonusRouterManager,
   useSlippageManuallySet,
+  useUserSingleHopOnly,
 } from 'state/user/hooks';
 import { Close } from '@mui/icons-material';
 import styles from 'styles/components/SettingsModal.module.scss';
@@ -46,6 +47,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const { onChangeRecipient } = useSwapActionHandlers();
   const [expertMode, toggleExpertMode] = useExpertModeManager();
   const [bonusRouterDisabled, toggleSetBonusRouter] = useBonusRouterManager();
+  const [singleHopOnly, setSingleHopOnly] = useUserSingleHopOnly();
   const [slippageInput, setSlippageInput] = useState('');
   const [deadlineInput, setDeadlineInput] = useState('');
   const [expertConfirm, setExpertConfirm] = useState(false);
@@ -302,6 +304,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           <ToggleSwitch
             toggled={bonusRouterDisabled}
             onToggle={toggleSetBonusRouter}
+          />
+        </Box>
+        <Divider />
+        <Box my={2.5} className='flex items-center justify-between'>
+          <Box className='flex items-center'>
+            <p style={{ marginRight: 6 }}>{t('singleRouteOnly')}</p>
+          </Box>
+          <ToggleSwitch
+            toggled={singleHopOnly}
+            onToggle={() => setSingleHopOnly(!singleHopOnly)}
           />
         </Box>
         <Divider />

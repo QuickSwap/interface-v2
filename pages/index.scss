@@ -252,6 +252,10 @@ wcm-modal {
   display: flex;
 }
 
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
 .flex-col {
   flex-direction: column;
 }

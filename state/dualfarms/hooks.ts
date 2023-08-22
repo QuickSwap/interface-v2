@@ -8,6 +8,7 @@ import { getTokenFromAddress } from 'utils';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { useTokens } from 'hooks/Tokens';
 import { GlobalValue } from 'constants/index';
+import { EMPTY } from 'constants/v3/addresses';
 
 export class WrappedDualFarmInfo implements DualStakingBasic {
   public readonly stakingInfo: DualStakingRaw;
@@ -42,45 +43,49 @@ export class WrappedDualFarmInfo implements DualStakingBasic {
     this.rateA = stakingInfo.rateA;
     this.rateB = stakingInfo.rateB;
 
-    this.baseToken = getTokenFromAddress(
-      stakingInfo.baseToken,
-      chainId,
-      tokenAddressMap,
-      dualFarmTokens,
-    );
+    this.baseToken =
+      getTokenFromAddress(
+        stakingInfo.baseToken,
+        chainId,
+        tokenAddressMap,
+        dualFarmTokens,
+      ) ?? EMPTY[chainId];
     this.tokens = [
       getTokenFromAddress(
         stakingInfo.tokens[0],
         chainId,
         tokenAddressMap,
         dualFarmTokens,
-      ),
+      ) ?? EMPTY[chainId],
       getTokenFromAddress(
         stakingInfo.tokens[1],
         chainId,
         tokenAddressMap,
         dualFarmTokens,
-      ),
+      ) ?? EMPTY[chainId],
     ];
 
-    this.rewardTokenA = getTokenFromAddress(
-      stakingInfo.rewardTokenA,
-      chainId,
-      tokenAddressMap,
-      dualFarmTokens,
-    );
-    this.rewardTokenB = getTokenFromAddress(
-      stakingInfo.rewardTokenB,
-      chainId,
-      tokenAddressMap,
-      dualFarmTokens,
-    );
-    this.rewardTokenBBase = getTokenFromAddress(
-      stakingInfo.rewardTokenBBase,
-      chainId,
-      tokenAddressMap,
-      dualFarmTokens,
-    );
+    this.rewardTokenA =
+      getTokenFromAddress(
+        stakingInfo.rewardTokenA,
+        chainId,
+        tokenAddressMap,
+        dualFarmTokens,
+      ) ?? EMPTY[chainId];
+    this.rewardTokenB =
+      getTokenFromAddress(
+        stakingInfo.rewardTokenB,
+        chainId,
+        tokenAddressMap,
+        dualFarmTokens,
+      ) ?? EMPTY[chainId];
+    this.rewardTokenBBase =
+      getTokenFromAddress(
+        stakingInfo.rewardTokenBBase,
+        chainId,
+        tokenAddressMap,
+        dualFarmTokens,
+      ) ?? EMPTY[chainId];
   }
 }
 

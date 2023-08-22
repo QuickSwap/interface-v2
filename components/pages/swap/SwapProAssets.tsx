@@ -6,16 +6,16 @@ import { Search } from '@mui/icons-material';
 import { CurrencyLogo, CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
+import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
 import React, {
   RefObject,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'next-i18next';
-import { useEthPrice, useIsV2, useMaticPrice } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import {
   formatNumber,
@@ -30,7 +30,6 @@ import styles from 'styles/components/CurrencySearchModal.module.scss';
 const SwapProAssets: React.FC = () => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const inputRef = useRef<HTMLInputElement>();
   const handleInput = useCallback((input: string) => {
@@ -47,9 +46,6 @@ const SwapProAssets: React.FC = () => {
 
   // For tokens
   const { isV2 } = useIsV2();
-  const { ethPrice } = useEthPrice();
-  const { maticPrice } = useMaticPrice();
-  const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const tokenMap = useSelectedTokenList();
 
   const tokenHeadCells = [
@@ -79,76 +75,35 @@ const SwapProAssets: React.FC = () => {
     // },
   ];
 
-  useEffect(() => {
-    if (isV2 === undefined) return;
+  const { isLoading: loadingV2Tokens, data: v2Tokens } = useAnalyticsTopTokens(
+    'v2',
+    chainId,
+    GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+  );
 
-    // Reset the top tokens
-    // updateTopTokens(null);
-    const count = GlobalConst.utils.ANALYTICS_TOKENS_COUNT;
-    if (isV2) {
-      const { price, oneDayPrice } = ethPrice;
-      if (price !== undefined && oneDayPrice !== undefined) {
-        fetch(
-          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/v2?chainId=${chainIdToUse}&limit=${count}`,
-        ).then((res) =>
-          res.json().then((res) => {
-            const data = res.data;
-            if (Array.isArray(data)) {
-              data.forEach((d) => {
-                d.searchVal = (
-                  (d.symbol || '') + '-' + ('' || d.name) || ''
-                ).toLowerCase();
-                d.numericVol = Number(d.oneDayVolumeUSD);
-                d.kmbVol = toKMB(d.totalLiquidityUSD);
-              });
+  const { isLoading: loadingV3Tokens, data: v3Tokens } = useAnalyticsTopTokens(
+    'v3',
+    chainId,
+    GlobalConst.utils.ANALYTICS_TOKENS_COUNT,
+  );
 
-              data.sort((a, b) => b.totalLiquidityUSD - a.totalLiquidityUSD);
-            }
-            updateTopTokens(data || []);
-            setTimeout(() => {
-              performFilteration(data || []);
-            }, 100);
-          }),
-        );
-      }
-    } else {
-      // v3
-      const { price, oneDayPrice } = maticPrice;
-      if (price !== undefined && oneDayPrice !== undefined) {
-        fetch(
-          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/v3?chainId=${chainId}&limit=${count}`,
-        ).then((res) =>
-          res.json().then((res) => {
-            const data = res.data;
-            if (Array.isArray(data)) {
-              data.forEach((d) => {
-                d.searchVal = (
-                  (d.symbol || '') + '-' + ('' || d.name) || ''
-                ).toLowerCase();
-                d.numericVol = Number(d.totalLiquidityUSD);
-                d.kmbVol = toKMB(d.numericVol);
-              });
+  const loading = loadingV2Tokens || loadingV3Tokens;
 
-              data.sort((a, b) => b.totalLiquidityUSD - a.totalLiquidityUSD);
-            }
+  const topTokens = useMemo(() => {
+    const data = isV2 ? v2Tokens : v3Tokens;
+    if (Array.isArray(data)) {
+      data.forEach((d) => {
+        d.searchVal = (
+          (d.symbol || '') + '-' + ('' || d.name) || ''
+        ).toLowerCase();
+        d.numericVol = Number(d.oneDayVolumeUSD);
+        d.kmbVol = toKMB(d.totalLiquidityUSD);
+      });
 
-            updateTopTokens(data || []);
-            setTimeout(() => {
-              performFilteration(data);
-            }, 100);
-          }),
-        );
-      }
+      data.sort((a, b) => b.totalLiquidityUSD - a.totalLiquidityUSD);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    ethPrice.price,
-    ethPrice.oneDayPrice,
-    maticPrice.price,
-    maticPrice.oneDayPrice,
-    isV2,
-    chainIdToUse,
-  ]);
+    return data;
+  }, [isV2, v2Tokens, v3Tokens]);
 
   const performFilteration = useCallback(
     (data: Array<any>) => {
@@ -159,14 +114,11 @@ const SwapProAssets: React.FC = () => {
             return d.searchVal.indexOf(toSearch) > -1;
           });
 
-          // console.log('filteredValue => ', filteredValue);
-          // updateFilteredTokens(filteredValue);
           return filteredValue;
         } else {
           return data || [];
         }
       } else {
-        // updateFilteredTokens(data || []);
         return data || [];
       }
     },
@@ -176,11 +128,6 @@ const SwapProAssets: React.FC = () => {
   const filteredTokensData = useMemo(() => {
     const result: Token[] = performFilteration(topTokens || []);
     return result.slice(0, 10);
-    // if (mobileWindowSize) {
-    //   return result.slice(0, 20);
-    // } else {
-    //   return result;
-    // }
   }, [performFilteration, topTokens]);
 
   function toKMB(value: any) {
@@ -315,7 +262,9 @@ const SwapProAssets: React.FC = () => {
 
       {/** Table */}
       <Box className='panel'>
-        {topTokens ? (
+        {loading ? (
+          <Skeleton variant='rectangular' width={'100%'} height={150} />
+        ) : topTokens ? (
           <CustomTable
             headCells={tokenHeadCells}
             emptyMessage={'No token found'}
@@ -327,11 +276,9 @@ const SwapProAssets: React.FC = () => {
             showPagination={false}
           />
         ) : (
-          <Skeleton variant='rectangular' width={'100%'} height={150} />
+          <></>
         )}
       </Box>
-
-      {/* <AnalyticsTokens /> */}
     </Box>
   );
 };

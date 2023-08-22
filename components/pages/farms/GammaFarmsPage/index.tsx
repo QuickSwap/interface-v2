@@ -24,6 +24,7 @@ import {
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 
 const GammaFarmsPage: React.FC<{
   farmFilter: string;
@@ -57,12 +58,22 @@ const GammaFarmsPage: React.FC<{
     return gammaData;
   };
 
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
   const {
     isLoading: gammaFarmsLoading,
     data: gammaData,
     refetch: refetchGammaData,
   } = useQuery({
-    queryKey: ['fetchGammaData', chainId],
+    queryKey: ['fetchGammaDataFarms', chainId],
     queryFn: fetchGammaData,
   });
 
@@ -71,19 +82,9 @@ const GammaFarmsPage: React.FC<{
     data: gammaRewards,
     refetch: refetchGammaRewards,
   } = useQuery({
-    queryKey: ['fetchGammaRewards', chainId],
+    queryKey: ['fetchGammaRewardsFarms', chainId],
     queryFn: fetchGammaRewards,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     refetchGammaData();
@@ -244,33 +245,19 @@ const GammaFarmsPage: React.FC<{
   const filteredFarms = allGammaFarms
     .map((item) => {
       if (chainId) {
-        const token0Data = getTokenFromAddress(
+        const token0 = getTokenFromAddress(
           item.token0Address,
           chainId,
           tokenMap,
           [],
         );
-        const token1Data = getTokenFromAddress(
+        const token1 = getTokenFromAddress(
           item.token1Address,
           chainId,
           tokenMap,
           [],
         );
-        const token0 = new Token(
-          chainId,
-          token0Data.address,
-          token0Data.decimals,
-          token0Data.symbol,
-          token0Data.name,
-        );
-        const token1 = new Token(
-          chainId,
-          token1Data.address,
-          token1Data.decimals,
-          token1Data.symbol,
-          token1Data.name,
-        );
-        return { ...item, token0, token1 };
+        return { ...item, token0: token0 ?? null, token1: token1 ?? null };
       }
       return { ...item, token0: null, token1: null };
     })
@@ -327,19 +314,18 @@ const GammaFarmsPage: React.FC<{
           ),
       );
       const stableLPCondition =
-        item.token0 &&
-        item.token1 &&
-        ((stablePair0 &&
+        (stablePair0 &&
           stablePair0.find(
             (token) =>
+              item.token1 &&
               token.address.toLowerCase() === item.token1.address.toLowerCase(),
           )) ||
-          (stablePair1 &&
-            stablePair1.find(
-              (token) =>
-                token.address.toLowerCase() ===
-                item.token0.address.toLowerCase(),
-            )));
+        (stablePair1 &&
+          stablePair1.find(
+            (token) =>
+              item.token0 &&
+              token.address.toLowerCase() === item.token0.address.toLowerCase(),
+          ));
 
       return (
         searchCondition &&

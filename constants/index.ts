@@ -207,6 +207,11 @@ export const GlobalConst = {
       stableLP: '3',
       otherLP: '4',
     },
+    poolsFilter: {
+      quickswap: '0',
+      unipilot: '1',
+      gamma: '2',
+    },
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,
@@ -224,6 +229,7 @@ export const GlobalConst = {
   v3LiquidityRangeType: {
     MANUAL_RANGE: '0',
     GAMMA_RANGE: '1',
+    UNIPILOT_RANGE: '2',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -232,7 +238,7 @@ export const GlobalConst = {
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
     BRAVEWALLET: 'BraveWallet',
-    BITKEEP: 'BitKeep',
+    BITGET: 'Bitget Wallet',
     INJECTED: 'Injected',
     SAFE_APP: 'Gnosis Safe App',
     ARKANE_CONNECT: 'Venly',
@@ -1425,6 +1431,21 @@ export const GammaPairs: {
   },
 };
 
+export const UnipilotVaults: {
+  [chainId in ChainId]?: string[];
+} = {
+  [ChainId.DOGECHAIN]: [
+    '0x1749af477bb94cf84c942f0db69f4213959e0b12',
+    '0x1768bdfb0f9a508374e596f2e2c84fec48dc207f',
+    '0x2c054da252b032df9dd67c6be570b0fa2fbec905',
+    '0x4fc58e1598735e4ee6dd46852dd77e00d26ee98a',
+    '0x60ee3b3a281a18b6ceee85a2e7c4470916512c7b',
+    '0xd139300ff6bdd6ae778b1835af5dbf242194cc2f',
+    '0xf346f3eaa3e319f53413fc2a0008f0710c2ea448',
+    '0xf9edf35c75f624207bf81242024d9ea6a4f4d245',
+  ],
+};
+
 export const GlobalValue = {
   percents: {
     ALLOWED_PRICE_IMPACT_LOW: new Percent( // used for warning states
@@ -1686,3 +1707,5 @@ export const LeaderBoardAnalytics = {
   CHART_DURATIONS: [1, 7, 30],
   CHART_DURATION_TEXTS: ['24H', '7D', '30D'],
 };
+
+export const unipilotVaultTypes = ['Wide', 'Balanced', 'Narrow'];

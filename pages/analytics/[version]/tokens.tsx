@@ -1,19 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Box } from '@mui/material';
 import { TopMovers, TokensTable } from 'components';
-import {
-  useBookmarkTokens,
-  useEthPrice,
-  useMaticPrice,
-} from 'state/application/hooks';
+import { useBookmarkTokens } from 'state/application/hooks';
 import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'next-i18next';
-import { useDispatch } from 'react-redux';
-import { setAnalyticsLoaded } from 'state/analytics/actions';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
+import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
 
 const AnalyticsTokens = (
   _props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -21,14 +16,14 @@ const AnalyticsTokens = (
   const { t } = useTranslation();
   const [tokensFilter, setTokensFilter] = useState(0);
 
-  const dispatch = useDispatch();
-
-  const [topTokens, updateTopTokens] = useState<any[] | null>(null);
   const { bookmarkTokens } = useBookmarkTokens();
-  const { ethPrice } = useEthPrice();
-  const { maticPrice } = useMaticPrice();
   const { chainId } = useActiveWeb3React();
   const version = useAnalyticsVersion();
+
+  const {
+    isLoading: topTokensLoading,
+    data: topTokens,
+  } = useAnalyticsTopTokens(version, chainId);
 
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
@@ -39,44 +34,6 @@ const AnalyticsTokens = (
       return [];
     }
   }, [topTokens, bookmarkTokens]);
-
-  useEffect(() => {
-    if (!chainId) return;
-    (async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-tokens/${version}?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to get top tokens`,
-        );
-      }
-      const data = await res.json();
-      if (data.data) {
-        updateTopTokens(data.data);
-      }
-    })();
-  }, [
-    ethPrice.price,
-    ethPrice.oneDayPrice,
-    maticPrice.price,
-    maticPrice.oneDayPrice,
-    version,
-    chainId,
-  ]);
-
-  useEffect(() => {
-    if (topTokens) {
-      dispatch(setAnalyticsLoaded(true));
-    } else {
-      dispatch(setAnalyticsLoaded(false));
-    }
-  }, [topTokens, dispatch]);
-
-  useEffect(() => {
-    updateTopTokens(null);
-  }, [version]);
 
   return (
     <Box width='100%'>
@@ -109,10 +66,12 @@ const AnalyticsTokens = (
         </Box>
       </Box>
       <Box className='panel'>
-        {topTokens ? (
+        {topTokensLoading ? (
+          <Skeleton variant='rectangular' width='100%' height={150} />
+        ) : topTokens ? (
           <TokensTable data={tokensFilter === 0 ? topTokens : favoriteTokens} />
         ) : (
-          <Skeleton variant='rectangular' width='100%' height={150} />
+          <></>
         )}
       </Box>
     </Box>

@@ -2,137 +2,134 @@ import React, { useEffect, useState } from 'react';
 import { Box, Grid, useTheme } from '@mui/material';
 import { Skeleton } from '@mui/lab';
 import { CurrencyLogo, CopyHelper } from 'components';
-import { useTokenDetails } from 'state/application/hooks';
 import { formatNumber, shortenAddress } from 'utils';
 import { LineChart } from 'components';
-import { ChainId, Token } from '@uniswap/sdk';
+import { Token } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
+import { useQuery } from '@tanstack/react-query';
 
 const SwapTokenDetailsHorizontal: React.FC<{
   token: Token;
 }> = ({ token }) => {
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
   const { palette } = useTheme();
-  const { tokenDetails, updateTokenDetails } = useTokenDetails();
-  const [tokenData, setTokenData] = useState<any>(null);
-  const [priceData, setPriceData] = useState<any>(null);
-  const priceUp = Number(tokenData?.priceChangeUSD) > 0;
-  const priceUpPercent = Number(tokenData?.priceChangeUSD).toFixed(2);
-  const prices = priceData ? priceData.map((price: any) => price.close) : [];
   const config = getConfig(chainId);
   const v2 = config['v2'];
 
-  useEffect(() => {
-    (async () => {
-      const tokenDetail = tokenDetails.find(
-        (item) => item.address === tokenAddress,
-      );
-      setTokenData(tokenDetail?.tokenData);
-      setPriceData(tokenDetail?.priceData);
-
-      let tokenPriceDataV2, tokenPriceIsV2;
-      if (v2) {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v2?chainId=${chainId}`,
-        );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get top token details`,
-          );
-        }
-        const data = await res.json();
-        tokenPriceDataV2 =
-          data && data.data && data.data.intervalTokenData
-            ? data.data.intervalTokenData
-            : undefined;
-        tokenPriceIsV2 = !!tokenPriceDataV2.find(
-          (item: any) => item.open && item.close,
-        );
-      }
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v3?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to get top token details`,
-        );
-      }
+  const fetchTokenInterval = async () => {
+    let tokenPriceDataV3;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v3?chainId=${chainId}`,
+    );
+    if (res.ok) {
       const data = await res.json();
-      const tokenPriceDataV3 =
+      tokenPriceDataV3 =
         data && data.data && data.data.intervalTokenData
           ? data.data.intervalTokenData
-          : undefined;
+          : null;
+    }
 
-      const tokenPriceData = tokenPriceIsV2
-        ? tokenPriceDataV2
-        : tokenPriceDataV3;
-      setPriceData(tokenPriceData);
+    if (
+      tokenPriceDataV3 &&
+      !!tokenPriceDataV3.find((item: any) => item.open && item.close)
+    ) {
+      return tokenPriceDataV3;
+    } else if (v2) {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v2?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        return null;
+      }
+      const data = await res.json();
+      const tokenPriceDataV2 =
+        data && data.data && data.data.intervalTokenData
+          ? data.data.intervalTokenData
+          : null;
+      return tokenPriceDataV2;
+    }
+    return null;
+  };
 
-      let token0;
-      if (v2) {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
-        );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get top token details`,
-          );
-        }
-        const data = await res.json();
-        token0 =
-          data && data.data && data.data.token ? data.data.token : undefined;
-        if (token0 && token0.priceUSD) {
-          setTokenData(token0);
-          const tokenDetailToUpdate = {
-            address: tokenAddress,
-            tokenData: token0,
-            priceData: tokenPriceData,
-          };
-          updateTokenDetails(tokenDetailToUpdate);
-        }
+  const fetchTokenData = async () => {
+    let tokenV3;
+    const tokenDetailsRes = await fetch(
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
+    );
+    if (tokenDetailsRes.ok) {
+      const tokenDetailsData = await tokenDetailsRes.json();
+      tokenV3 =
+        tokenDetailsData && tokenDetailsData.data && tokenDetailsData.data.token
+          ? tokenDetailsData.data.token
+          : null;
+    }
+    if (tokenV3) {
+      return tokenV3;
+    } else if (v2 && !tokenV3.priceUSD) {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        return null;
       }
-      if (!token0 || !token0.priceUSD) {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
-        );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get top token details`,
-          );
-        }
-        const data = await res.json();
-        const tokenV3 =
-          data && data.data && data.data.token ? data.data.token : undefined;
-        if (tokenV3) {
-          setTokenData(tokenV3);
-          const tokenDetailToUpdate = {
-            address: tokenAddress,
-            tokenData: tokenV3,
-            priceData: tokenPriceData,
-          };
-          updateTokenDetails(tokenDetailToUpdate);
-        }
+      const data = await res.json();
+      const token0 =
+        data && data.data && data.data.token ? data.data.token : null;
+      if (token0 && token0.priceUSD) {
+        return token0;
       }
-    })();
+    }
+    return null;
+  };
+
+  const {
+    isLoading: loadingPriceData,
+    data: priceData,
+    refetch: refetchPriceData,
+  } = useQuery({
+    queryKey: ['fetchTokenIntervalData', tokenAddress, chainId],
+    queryFn: fetchTokenInterval,
+  });
+
+  const {
+    isLoading: loadingTokenData,
+    data: tokenData,
+    refetch: refetchTokenData,
+  } = useQuery({
+    queryKey: ['fetchTokenDataSwap', tokenAddress, chainId],
+    queryFn: fetchTokenData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchPriceData();
+    refetchTokenData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenAddress, chainIdToUse]);
+  }, [currentTime]);
+
+  const priceUp = Number(tokenData?.priceChangeUSD) > 0;
+  const priceUpPercent = Number(tokenData?.priceChangeUSD).toFixed(2);
+  const prices = priceData ? priceData.map((price: any) => price.close) : [];
 
   return (
     <Grid container spacing={1}>
       <Grid item xs={4}>
         <Box className='flex items-center'>
           <CurrencyLogo currency={currency} size='28px' />
-          <Box ml={1}>
+          <Box ml={0.5}>
             <small>{currency.symbol}</small>
           </Box>
         </Box>
@@ -140,28 +137,34 @@ const SwapTokenDetailsHorizontal: React.FC<{
       <Grid item xs={3}>
         <Box>
           <small className='text-secondary'>Price</small>
-          {tokenData ? (
+          {loadingTokenData ? (
+            <Skeleton variant='rectangular' width={80} height={20} />
+          ) : tokenData ? (
             <p className='small'>${formatNumber(tokenData.priceUSD)}</p>
           ) : (
-            <Skeleton variant='rectangular' width={80} height={20} />
+            <></>
           )}
         </Box>
       </Grid>
       <Grid item xs={2}>
         <Box>
           <small className='text-secondary'>24h</small>
-          {tokenData ? (
+          {loadingTokenData ? (
+            <Skeleton variant='rectangular' width={60} height={20} />
+          ) : tokenData ? (
             <p className={`small ${priceUp ? 'text-success' : 'text-error'}`}>
               {priceUp ? '+' : ''}
               {priceUpPercent}%
             </p>
           ) : (
-            <Skeleton variant='rectangular' width={60} height={20} />
+            <></>
           )}
         </Box>
       </Grid>
       <Grid item xs={3}>
-        {tokenData && priceData ? (
+        {loadingTokenData || loadingPriceData ? (
+          <Skeleton variant='rectangular' width={88} height={47} />
+        ) : tokenData && priceData ? (
           <Box width={88} height={47} position='relative'>
             <Box position='absolute' top={-30} width={1}>
               {prices.length > 0 && (
@@ -175,7 +178,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
             </Box>
           </Box>
         ) : (
-          <Skeleton variant='rectangular' width={88} height={47} />
+          <></>
         )}
       </Grid>
       <Grid item xs={12}>

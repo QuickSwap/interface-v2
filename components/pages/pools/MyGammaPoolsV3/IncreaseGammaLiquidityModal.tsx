@@ -284,7 +284,7 @@ export default function IncreaseGammaLiquidityModal({
       setAttemptingTxn(false);
       setTxPending(false);
       setAddErrorMessage(
-        error && error.code && error.code === 4001
+        error?.code === 'ACTION_REJECTED'
           ? t('txRejected') ?? ''
           : t('errorInTx') ?? '',
       );

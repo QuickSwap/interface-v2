@@ -551,7 +551,7 @@ const Swap: React.FC<{
             attemptingTxn: false,
             tradeToConfirm,
             showConfirm,
-            swapErrorMessage: (error as any).message,
+            swapErrorMessage: error?.message,
             txHash: undefined,
           });
         }
@@ -561,7 +561,7 @@ const Swap: React.FC<{
           attemptingTxn: false,
           tradeToConfirm,
           showConfirm,
-          swapErrorMessage: error.message,
+          swapErrorMessage: error?.message,
           txHash: undefined,
         });
       });

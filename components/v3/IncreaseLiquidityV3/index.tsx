@@ -266,9 +266,13 @@ export default function IncreaseLiquidityV3({
           console.error('Failed to send transaction', error);
           setAttemptingTxn(false);
           setTxPending(false);
-          setIncreaseErrorMessage(t('errorInTx') ?? '');
+          setIncreaseErrorMessage(
+            error?.code === 'ACTION_REJECTED'
+              ? t('txRejected') ?? ''
+              : t('errorInTx') ?? '',
+          );
           // we only care if the error is something _other_ than the user rejected the tx
-          if (error?.code !== 4001) {
+          if (error?.code !== 'ACTION_REJECTED') {
             console.error(error);
           }
         });

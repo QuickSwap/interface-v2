@@ -12,7 +12,7 @@ import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 import { SecretType } from '@venly/web3-provider';
 import { Phantom } from './Phantom';
 import { TrustWallet } from './TrustWallet';
-import { BitKeep } from './BitKeep';
+import { Bitget } from './Bitget';
 import { BlockWallet } from './BlockWallet';
 import { BraveWallet } from './BraveWallet';
 import { CypherD } from './CypherD';
@@ -23,12 +23,12 @@ const MetamaskIcon = '/assets/images/metamask.png';
 const BlockWalletIcon = '/assets/images/blockwalletIcon.svg';
 const BraveWalletIcon = '/assets/images/braveWalletIcon.png';
 const cypherDIcon = '/assets/images/cypherDIcon.png';
-const BitKeepIcon = '/assets/images/bitkeep.png';
+const BitGetIcon = '/assets/images/bitget.svg';
 const CoinbaseWalletIcon = '/assets/images/coinbaseWalletIcon.svg';
 const WalletConnectIcon = '/assets/images/walletConnectIcon.svg';
 const PhantomIcon = '/assets/images/wallets/phantomIconPurple.svg';
 const VenlyIcon = '/assets/images/venly.svg';
-const OkxWalletIcon = '/assets/images/OKXWallet.svg'
+const OkxWalletIcon = '/assets/images/OKXWallet.svg';
 // const UnstoppableDomainsIcon = '/assets/images/unstoppableDomains.png';
 const GnosisIcon = '/assets/images/gnosis_safe.png';
 const TrustIcon = '/assets/images/trust.png';
@@ -47,7 +47,7 @@ export enum ConnectionType {
   GNOSIS_SAFE = 'GNOSIS_SAFE',
   PHATOM = 'PHANTOM',
   TRUSTWALLET = 'TRUSTWALLET',
-  BITKEEP = 'BITKEEP',
+  BITGET = 'BITGET',
   BLOCKWALLET = 'BLOCKWALLET',
   BRAVEWALLET = 'BRAVEWALLET',
   CYPHERD = 'CYPHERD',
@@ -197,23 +197,23 @@ export const braveWalletConnection: Connection = {
   mobile: true,
 };
 
-const [web3BitKeep, web3BitKeepHooks] = initializeConnector<BitKeep>(
+const [web3BitGet, web3BitGetHooks] = initializeConnector<Bitget>(
   (actions) =>
-    new BitKeep({
+    new Bitget({
       actions,
       onError,
     }),
 );
 
-export const bitKeepConnection: Connection = {
-  key: 'BITKEEP',
-  name: GlobalConst.walletName.BITKEEP,
-  connector: web3BitKeep,
-  hooks: web3BitKeepHooks,
-  type: ConnectionType.BITKEEP,
-  iconName: BitKeepIcon,
+export const bitgetConnection: Connection = {
+  key: 'BITGET',
+  name: GlobalConst.walletName.BITGET,
+  connector: web3BitGet,
+  hooks: web3BitGetHooks,
+  type: ConnectionType.BITGET,
+  iconName: BitGetIcon,
   color: '#E8831D',
-  description: 'BitKeep browser extension.',
+  description: 'Bitget Wallet browser extension.',
 };
 
 const [web3OkxWallet, web3OkxWalletHooks] = initializeConnector<OkxWallet>(
@@ -414,7 +414,7 @@ export function getConnections() {
         coinbaseWalletConnection,
         zengoConnectConnection,
         arkaneConnection,
-        bitKeepConnection,
+        bitgetConnection,
       ]
     : [
         cypherDConnection,
@@ -429,6 +429,6 @@ export function getConnections() {
         walletConnectConnection,
         zengoConnectConnection,
         arkaneConnection,
-        bitKeepConnection,
+        bitgetConnection,
       ];
 }

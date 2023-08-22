@@ -201,3 +201,11 @@ export function useUserHasSubmittedClaim(
 
   return { claimSubmitted: Boolean(claimTxn), claimTxn };
 }
+
+export function useLastTransactionHash() {
+  const allTransactions = useAllTransactions();
+  const sortedTransactions = Object.values(allTransactions)
+    .sort((a, b) => b.addedTime - a.addedTime)
+    .filter((tx) => tx.receipt);
+  return sortedTransactions.length > 0 ? sortedTransactions[0].hash : '';
+}

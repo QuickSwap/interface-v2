@@ -8,6 +8,7 @@ import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
 import { useTokens } from 'hooks/Tokens';
 import { GlobalValue } from 'constants/index';
+import { EMPTY } from 'constants/v3/addresses';
 
 export class WrappedSyrupInfo implements SyrupBasic {
   public readonly stakingInfo: SyrupRaw;
@@ -38,24 +39,27 @@ export class WrappedSyrupInfo implements SyrupBasic {
     this.name = syrupInfo.name;
     this.ending = syrupInfo.ending;
 
-    this.baseToken = getTokenFromAddress(
-      syrupInfo.baseToken,
-      chainId,
-      tokenAddressMap,
-      syrupTokens,
-    );
-    this.stakingToken = getTokenFromAddress(
-      syrupInfo.stakingToken,
-      chainId,
-      tokenAddressMap,
-      syrupTokens,
-    );
-    this.token = getTokenFromAddress(
-      syrupInfo.token,
-      chainId,
-      tokenAddressMap,
-      syrupTokens,
-    );
+    this.baseToken =
+      getTokenFromAddress(
+        syrupInfo.baseToken,
+        chainId,
+        tokenAddressMap,
+        syrupTokens,
+      ) ?? EMPTY[chainId];
+    this.stakingToken =
+      getTokenFromAddress(
+        syrupInfo.stakingToken,
+        chainId,
+        tokenAddressMap,
+        syrupTokens,
+      ) ?? EMPTY[chainId];
+    this.token =
+      getTokenFromAddress(
+        syrupInfo.token,
+        chainId,
+        tokenAddressMap,
+        syrupTokens,
+      ) ?? EMPTY[chainId];
   }
 }
 

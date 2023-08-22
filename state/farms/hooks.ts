@@ -10,7 +10,7 @@ import { useTokens } from 'hooks/Tokens';
 import { GlobalValue } from 'constants/index';
 import { updateV3Stake } from './actions';
 import { FarmingType } from 'models/enums';
-import { OLD_DQUICK } from 'constants/v3/addresses';
+import { EMPTY, OLD_DQUICK } from 'constants/v3/addresses';
 
 export class WrappedStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -41,25 +41,26 @@ export class WrappedStakingInfo implements StakingBasic {
     this.lp = stakingInfo.lp;
     this.name = stakingInfo.name;
 
-    this.baseToken = getTokenFromAddress(
-      stakingInfo.baseToken,
-      chainId,
-      tokenAddressMap,
-      farmTokens,
-    );
+    this.baseToken =
+      getTokenFromAddress(
+        stakingInfo.baseToken,
+        chainId,
+        tokenAddressMap,
+        farmTokens,
+      ) ?? EMPTY[chainId];
     this.tokens = [
       getTokenFromAddress(
         stakingInfo.tokens[0],
         chainId,
         tokenAddressMap,
         farmTokens,
-      ),
+      ) ?? EMPTY[chainId],
       getTokenFromAddress(
         stakingInfo.tokens[1],
         chainId,
         tokenAddressMap,
         farmTokens,
-      ),
+      ) ?? EMPTY[chainId],
     ];
     this.rewardToken = stakingInfo.rewardToken
       ? getTokenFromAddress(
@@ -67,7 +68,7 @@ export class WrappedStakingInfo implements StakingBasic {
           chainId,
           tokenAddressMap,
           farmTokens,
-        )
+        ) ?? EMPTY[chainId]
       : OLD_DQUICK[chainId];
   }
 }

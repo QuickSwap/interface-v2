@@ -10,11 +10,9 @@ import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
 import { useV3DistributedRewards } from 'hooks/v3/useV3DistributedRewards';
 import DragonLayerInfoCard from 'components/pages/home/DragonLayerInfoCard';
+import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
 
-const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
-  globalData,
-  v3GlobalData,
-}) => {
+const TradingInfo: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
 
@@ -27,6 +25,9 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
 
   const v2 = config['v2'];
   const v3 = config['v3'];
+
+  const { data: globalData } = useAnalyticsGlobalData('v2', chainId);
+  const { data: v3GlobalData } = useAnalyticsGlobalData('v3', chainId);
 
   return (
     <>
