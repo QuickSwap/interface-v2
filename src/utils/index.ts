@@ -1034,3 +1034,96 @@ export const getGammaRewards = async (chainId?: ChainId) => {
     }
   }
 };
+
+export const getUnipilotPositions = async (
+  account?: string,
+  chainId?: ChainId,
+) => {
+  if (!account || !chainId) return null;
+  try {
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/unipilot/user-positions/${account}?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(
+        errorText || res.statusText || `Failed to get unipilot positions`,
+      );
+    }
+    const data = await res.json();
+    return data && data.data && data.data.positions
+      ? data.data.positions
+      : null;
+  } catch {
+    return null;
+  }
+};
+
+export const getUnipilotFarms = async (chainId?: ChainId) => {
+  if (!chainId) return [];
+  try {
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/unipilot/farming-vaults?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(
+        errorText || res.statusText || `Failed to get unipilot farms`,
+      );
+    }
+    const data = await res.json();
+    return data && data.data && data.data.farms ? data.data.farms : [];
+  } catch (err) {
+    return [];
+  }
+};
+
+export const getUnipilotFarmData = async (
+  vaultAddresses?: string[],
+  chainId?: ChainId,
+) => {
+  if (!chainId || !vaultAddresses) return null;
+  try {
+    const res = await fetch(
+      `${
+        process.env.REACT_APP_UNIPILOT_API_URL
+      }/api/unipilot/aprs?vaultAddresses=${vaultAddresses?.join(
+        ',',
+      )}&chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(
+        errorText || res.statusText || `Failed to get unipilot farms`,
+      );
+    }
+    const data = await res.json();
+    return data && data.doc ? data.doc : null;
+  } catch {
+    return null;
+  }
+};
+
+export const getUnipilotUserFarms = async (
+  chainId?: ChainId,
+  account?: string,
+) => {
+  if (!chainId || !account) return [];
+  try {
+    const res = await fetch(
+      `${
+        process.env.REACT_APP_LEADERBOARD_APP_URL
+      }/unipilot/farming-user-vaults/${account.toLowerCase()}?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(
+        errorText || res.statusText || `Failed to get unipilot user farms`,
+      );
+    }
+    const data = await res.json();
+    return data && data.data && data.data.vaults ? data.data.vaults : [];
+  } catch (err) {
+    return [];
+  }
+};

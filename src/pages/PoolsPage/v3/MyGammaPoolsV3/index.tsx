@@ -19,7 +19,7 @@ import { Token } from '@uniswap/sdk';
 import { useTokenBalances } from 'state/wallet/hooks';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 
-export default function MyLiquidityPoolsV3() {
+export default function MyGammaPoolsV3() {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
 
@@ -198,32 +198,29 @@ export default function MyLiquidityPoolsV3() {
 
   return (
     <Box>
-      <p className='weight-600'>{t('myGammaLP')}</p>
-      <>
-        {positionsLoading || stakedLoading || dataLoading ? (
-          <Box mt={2} className='flex justify-center'>
-            <Loader stroke='white' size={'2rem'} />
-          </Box>
-        ) : (gammaPositions && gammaPositionList.length > 0) ||
-          stakedPositions.length > 0 ? (
-          <GammaLPList
-            gammaPairs={gammaPositionList}
-            gammaPositions={gammaPositions}
-            stakedPositions={stakedPositions}
-          />
-        ) : (
-          <Box mt={2} textAlign='center'>
-            <p>{t('noLiquidityPositions')}.</p>
-            {showConnectAWallet && (
-              <Box maxWidth={250} margin='20px auto 0'>
-                <Button fullWidth onClick={toggleWalletModal}>
-                  {t('connectWallet')}
-                </Button>
-              </Box>
-            )}
-          </Box>
-        )}
-      </>
+      {positionsLoading || stakedLoading || dataLoading ? (
+        <Box mt={2} className='flex justify-center'>
+          <Loader stroke='white' size={'2rem'} />
+        </Box>
+      ) : (gammaPositions && gammaPositionList.length > 0) ||
+        stakedPositions.length > 0 ? (
+        <GammaLPList
+          gammaPairs={gammaPositionList}
+          gammaPositions={gammaPositions}
+          stakedPositions={stakedPositions}
+        />
+      ) : (
+        <Box mt={2} textAlign='center'>
+          <p>{t('noLiquidityPositions')}.</p>
+          {showConnectAWallet && (
+            <Box maxWidth={250} margin='20px auto 0'>
+              <Button fullWidth onClick={toggleWalletModal}>
+                {t('connectWallet')}
+              </Button>
+            </Box>
+          )}
+        </Box>
+      )}
     </Box>
   );
 }

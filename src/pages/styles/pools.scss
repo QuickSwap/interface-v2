@@ -3,7 +3,7 @@
 
 .headingItem {
   cursor: pointer;
-  display: flex
+  display: flex;
 }
 
 .liquidityText {
@@ -17,7 +17,7 @@
 .noLiquidityImage {
   max-width: 286px;
   width: 80%;
-  filter: grayscale(1)
+  filter: grayscale(1);
 }
 
 .v3-manage-v2liquidity-button {
@@ -28,4 +28,29 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+}
+
+.myV3PoolsFilterWrapper {
+  margin: 16px -24px 0;
+  background-color: $secondary1;
+  padding-left: 12px;
+  @include media('screen', '<phone') {
+    margin: 16px -12px;
+  }
+}
+
+.myV3PoolCountWrapper {
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background-color: $textSecondary;
+  color: $bgPalette;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.activeMyV3PoolCountWrapper {
+  background-color: $textPrimary;
 }

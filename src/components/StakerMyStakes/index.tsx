@@ -27,6 +27,7 @@ import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
+import UnipilotFarmCard from './UnipilotFarmCard';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { formatReward } from 'utils/formatReward';
@@ -43,7 +44,11 @@ import { formatUnits } from 'ethers/lib/utils';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import CurrencyLogo from 'components/CurrencyLogo';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
-import { useLastTransactionHash } from 'state/transactions/hooks';
+import {
+  useUnipilotFarmData,
+  useUnipilotFilteredFarms,
+  useUnipilotUserFarms,
+} from 'hooks/v3/useUnipilotFarms';
 import { FarmingType } from 'models/enums';
 
 export const FarmingMyFarms: React.FC<{
@@ -350,6 +355,10 @@ export const FarmingMyFarms: React.FC<{
 
   const [sortDescGamma, setSortDescGamma] = useState(false);
 
+  const [sortByUnipilot, setSortByUnipilot] = useState(v3FarmSortBy.pool);
+
+  const [sortDescUnipilot, setSortDescUnipilot] = useState(false);
+
   const sortColumnsQuickSwap = [
     {
       text: t('pool'),
@@ -372,6 +381,33 @@ export const FarmingMyFarms: React.FC<{
   ];
 
   const sortColumnsGamma = [
+    {
+      text: t('pool'),
+      index: v3FarmSortBy.pool,
+      width: 0.3,
+      justify: 'flex-start',
+    },
+    {
+      text: t('tvl'),
+      index: v3FarmSortBy.tvl,
+      width: 0.2,
+      justify: 'flex-start',
+    },
+    {
+      text: t('rewards'),
+      index: v3FarmSortBy.rewards,
+      width: 0.3,
+      justify: 'flex-start',
+    },
+    {
+      text: t('apr'),
+      index: v3FarmSortBy.apr,
+      width: 0.2,
+      justify: 'flex-start',
+    },
+  ];
+
+  const sortColumnsUnipilot = [
     {
       text: t('pool'),
       index: v3FarmSortBy.pool,
@@ -421,6 +457,20 @@ export const FarmingMyFarms: React.FC<{
         } else {
           setSortByGamma(item.index);
           setSortDescGamma(false);
+        }
+      },
+    };
+  });
+
+  const sortByDesktopItemsUnipilot = sortColumnsUnipilot.map((item) => {
+    return {
+      ...item,
+      onClick: () => {
+        if (sortByUnipilot === item.index) {
+          setSortDescUnipilot(!sortDescUnipilot);
+        } else {
+          setSortByUnipilot(item.index);
+          setSortDescUnipilot(false);
         }
       },
     };
@@ -817,6 +867,25 @@ export const FarmingMyFarms: React.FC<{
       return 1;
     });
 
+  const {
+    data: myUnipilotFarmsData,
+    loading: myUnipilotFarmsLoading,
+  } = useUnipilotUserFarms(chainId, account);
+  const myUnipilotFarms = myUnipilotFarmsData ?? [];
+
+  const {
+    loading: unipilotFarmDataLoading,
+    data: unipilotFarmData,
+  } = useUnipilotFarmData(
+    myUnipilotFarms.map((farm: any) => farm.id),
+    chainId,
+  );
+
+  const filteredUnipilotFarms = useUnipilotFilteredFarms(
+    myUnipilotFarms,
+    unipilotFarmData,
+  );
+
   return (
     <Box mt={2}>
       <Divider />
@@ -997,6 +1066,52 @@ export const FarmingMyFarms: React.FC<{
                             ? gammaRewards[gmMasterChef]['pools'][
                                 farm.address.toLowerCase()
                               ]
+                            : undefined
+                        }
+                      />
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+          ) : (
+            <></>
+          )}
+        </Box>
+      )}
+
+      {filteredUnipilotFarms.length > 0 && (
+        <Box my={2}>
+          <Divider />
+          <Box px={2} mt={2}>
+            <h6>Unipilot {t('farms')}</h6>
+          </Box>
+          {myUnipilotFarmsLoading || unipilotFarmDataLoading ? (
+            <Box py={5} className='flex justify-center'>
+              <Loader stroke={'white'} size={'1.5rem'} />
+            </Box>
+          ) : chainId ? (
+            <Box padding='24px'>
+              {!isMobile && (
+                <Box px={1.5}>
+                  <Box width='90%'>
+                    <SortColumns
+                      sortColumns={sortByDesktopItemsUnipilot}
+                      selectedSort={sortByUnipilot}
+                      sortDesc={sortDescUnipilot}
+                    />
+                  </Box>
+                </Box>
+              )}
+              <Box pb={2}>
+                {filteredUnipilotFarms.map((farm: any) => {
+                  return (
+                    <Box mt={2} key={farm.address}>
+                      <UnipilotFarmCard
+                        data={farm}
+                        farmData={
+                          unipilotFarmData && farm.id
+                            ? unipilotFarmData[farm.id.toLowerCase()]
                             : undefined
                         }
                       />
