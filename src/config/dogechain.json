@@ -61,5 +61,11 @@
   },
   "bos": {
     "available": false
+  },
+  "gamma": {
+    "available": false
+  },
+  "unipilot": {
+    "available": true
   }
 }

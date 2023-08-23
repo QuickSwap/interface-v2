@@ -20,7 +20,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { calculateGasMargin } from 'utils';
+import { calculateGasMargin, getGammaPairsForTokens } from 'utils';
 
 const AddGammaLiquidity: React.FC<{
   token0Value: CurrencyAmount<Currency> | undefined;
@@ -36,15 +36,13 @@ const AddGammaLiquidity: React.FC<{
   const { chainId, account } = useActiveWeb3React();
   const token0 = token0Value?.currency.wrapped;
   const token1 = token1Value?.currency.wrapped;
-  const token0Address = token0 ? token0.address.toLowerCase() : '';
-  const token1Address = token1 ? token1.address.toLowerCase() : '';
-  const gammaPair = chainId
-    ? GammaPairs[chainId][token0Address + '-' + token1Address] ??
-      GammaPairs[chainId][token1Address + '-' + token0Address]
-    : [];
-  const gammaPairReverted = Boolean(
-    chainId && GammaPairs[chainId][token1Address + '-' + token0Address],
+  const gammaPairData = getGammaPairsForTokens(
+    chainId,
+    token0?.address,
+    token1?.address,
   );
+  const gammaPair = gammaPairData?.pairs ?? [];
+  const gammaPairReverted = gammaPairData?.reversed;
   const gammaPairAddress = gammaPair
     ? gammaPair.find((pair) => pair.type === preset)?.address
     : undefined;

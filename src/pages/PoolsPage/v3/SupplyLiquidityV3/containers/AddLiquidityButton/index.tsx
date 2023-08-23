@@ -27,7 +27,11 @@ import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
-import { calculateGasMargin, calculateGasMarginV3 } from 'utils';
+import {
+  calculateGasMargin,
+  calculateGasMarginV3,
+  getGammaPairsForTokens,
+} from 'utils';
 import { Button, Box } from '@material-ui/core';
 import {
   ConfirmationModalContent,
@@ -40,7 +44,7 @@ import './index.scss';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { useInverter } from 'hooks/v3/useInverter';
-import { GammaPairs, GlobalConst } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { formatUnits } from 'ethers/lib/utils';
@@ -53,7 +57,6 @@ interface IAddLiquidityButton {
   title: string;
   setRejected?: (rejected: boolean) => void;
 }
-const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
 export function AddLiquidityButton({
   baseCurrency,
@@ -96,18 +99,12 @@ export function AddLiquidityButton({
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
 
-  const baseCurrencyAddress =
-    baseCurrency && baseCurrency.wrapped
-      ? baseCurrency.wrapped.address.toLowerCase()
-      : '';
-  const quoteCurrencyAddress =
-    quoteCurrency && quoteCurrency.wrapped
-      ? quoteCurrency.wrapped.address.toLowerCase()
-      : '';
-  const gammaPair = chainId
-    ? GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
-      GammaPairs[chainId][quoteCurrencyAddress + '-' + baseCurrencyAddress]
-    : [];
+  const gammaPairData = getGammaPairsForTokens(
+    chainId,
+    baseCurrency?.wrapped.address,
+    quoteCurrency?.wrapped.address,
+  );
+  const gammaPair = gammaPairData?.pairs;
   const gammaPairAddress =
     gammaPair && gammaPair.length > 0
       ? gammaPair.find((pair) => pair.type === preset)?.address
@@ -283,21 +280,8 @@ export function AddLiquidityButton({
       mintInfo.liquidityRangeType ===
       GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
     ) {
-      if (!gammaUNIPROXYContract) return;
-      const baseCurrencyAddress = baseCurrency.wrapped
-        ? baseCurrency.wrapped.address.toLowerCase()
-        : '';
-      const quoteCurrencyAddress = quoteCurrency.wrapped
-        ? quoteCurrency.wrapped.address.toLowerCase()
-        : '';
-      const gammaPair =
-        GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
-        GammaPairs[chainId][quoteCurrencyAddress + '-' + baseCurrencyAddress];
-      const gammaPairAddress =
-        gammaPair && gammaPair.length > 0
-          ? gammaPair.find((pair) => pair.type === preset)?.address
-          : undefined;
-      if (!amountA || !amountB || !gammaPairAddress) return;
+      if (!gammaUNIPROXYContract || !amountA || !amountB || !gammaPairData)
+        return;
 
       setRejected && setRejected(false);
 
@@ -305,27 +289,15 @@ export function AddLiquidityButton({
 
       try {
         const estimatedGas = await gammaUNIPROXYContract.estimateGas.deposit(
-          (GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress]
-            ? amountA
-            : amountB
-          ).numerator.toString(),
-          (GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress]
-            ? amountB
-            : amountA
-          ).numerator.toString(),
+          (!gammaPairData.reversed ? amountA : amountB).numerator.toString(),
+          (!gammaPairData.reversed ? amountB : amountA).numerator.toString(),
           account,
           gammaPairAddress,
           [0, 0, 0, 0],
         );
         const response: TransactionResponse = await gammaUNIPROXYContract.deposit(
-          (GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress]
-            ? amountA
-            : amountB
-          ).numerator.toString(),
-          (GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress]
-            ? amountB
-            : amountA
-          ).numerator.toString(),
+          (!gammaPairData.reversed ? amountA : amountB).numerator.toString(),
+          (!gammaPairData.reversed ? amountB : amountA).numerator.toString(),
           account,
           gammaPairAddress,
           [0, 0, 0, 0],

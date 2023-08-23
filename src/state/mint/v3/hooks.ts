@@ -46,11 +46,11 @@ import {
 } from 'hooks/useContract';
 import { useSingleCallResult } from 'state/multicall/hooks';
 import { ETHER, WETH } from '@uniswap/sdk';
-import { maxAmountSpend } from 'utils';
-import { GammaPairs } from 'constants/index';
+import { getGammaPairsForTokens, maxAmountSpend } from 'utils';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
+import { getConfig } from 'config';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -280,7 +280,9 @@ export function useV3DerivedMintInfo(
               JSBI.BigInt(maxSpendETH ? maxSpendETH.numerator.toString() : '0'),
             ),
           )
-        : balances[0],
+        : balances.length > 0
+        ? balances[0]
+        : undefined,
     [Field.CURRENCY_B]:
       liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
       currencyB &&
@@ -294,7 +296,9 @@ export function useV3DerivedMintInfo(
               JSBI.BigInt(maxSpendETH ? maxSpendETH.numerator.toString() : '0'),
             ),
           )
-        : balances[1],
+        : balances.length > 1
+        ? balances[1]
+        : undefined,
   };
 
   // pool
@@ -498,31 +502,16 @@ export function useV3DerivedMintInfo(
       : independentCurrency,
   );
 
-  const gammaPairKeyReverted =
-    currencyA && currencyB
-      ? currencyB.wrapped.address.toLowerCase() +
-        '-' +
-        currencyA.wrapped.address.toLowerCase()
-      : '';
-  const gammaPairReverted = !!(
-    chainId && GammaPairs[chainId][gammaPairKeyReverted]
+  const gammaPairData = getGammaPairsForTokens(
+    chainId,
+    currencyA?.wrapped.address,
+    currencyB?.wrapped.address,
   );
-  const gammaPairs =
-    currencyA && currencyB
-      ? GammaPairs[chainId][
-          currencyA.wrapped.address.toLowerCase() +
-            '-' +
-            currencyB.wrapped.address.toLowerCase()
-        ] ??
-        GammaPairs[chainId][
-          currencyB.wrapped.address.toLowerCase() +
-            '-' +
-            currencyA.wrapped.address.toLowerCase()
-        ]
-      : undefined;
-
+  const gammaPairReverted = gammaPairData?.reversed;
   const gammaPairAddress =
-    gammaPairs && gammaPairs.length > 0 ? gammaPairs[0].address : undefined;
+    gammaPairData && gammaPairData.pairs.length > 0
+      ? gammaPairData.pairs[0].address
+      : undefined;
   const gammaUNIPROXYContract = useGammaUNIProxyContract(gammaPairAddress);
   const depositAmountsData = useSingleCallResult(
     presetRange && presetRange.address ? gammaUNIPROXYContract : undefined,
@@ -1315,7 +1304,9 @@ export function useCurrentStep(): AppState['mintV3']['currentStep'] {
 
 export function useGetUnipilotVaults() {
   const { chainId } = useActiveWeb3React();
-  const vaultIds = UnipilotVaults[chainId] ?? [];
+  const config = getConfig(chainId);
+  const unipilotAvailable = config['unipilot']['available'];
+  const vaultIds = unipilotAvailable ? UnipilotVaults[chainId] ?? [] : [];
   const vaultInfoResults = useMultipleContractSingleData(
     vaultIds,
     new Interface(UNIPILOT_VAULT_ABI),

@@ -19,13 +19,13 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GammaPairs, GlobalConst } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { Box, ButtonGroup, Button } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import { StableCoins } from 'constants/v3/addresses';
-import { getEternalFarmFromTokens } from 'utils';
+import { getEternalFarmFromTokens, getGammaPairsForTokens } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
 import UnipilotLogo from 'assets/images/unipilot.png';
 import AutomaticImage from 'assets/images/automatic.svg';
@@ -74,16 +74,13 @@ export function SelectRange({
     currencyB && currencyB.wrapped
       ? currencyB.wrapped.address.toLowerCase()
       : '';
-  const gammaPair = chainId
-    ? GammaPairs[chainId][currencyAAddress + '-' + currencyBAddress] ??
-      GammaPairs[chainId][currencyBAddress + '-' + currencyAAddress]
-    : [];
-
-  const gammaPairReversed = !!(
-    gammaPair &&
-    chainId &&
-    GammaPairs[chainId][currencyBAddress + '-' + currencyAAddress]
+  const gammaPairData = getGammaPairsForTokens(
+    chainId,
+    currencyAAddress,
+    currencyBAddress,
   );
+  const gammaPair = gammaPairData?.pairs;
+  const gammaPairReversed = gammaPairData?.reversed;
 
   const gammaCurrencyA = gammaPairReversed ? currencyB : currencyA;
   const gammaCurrencyB = gammaPairReversed ? currencyA : currencyB;
