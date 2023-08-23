@@ -442,7 +442,7 @@ export default function IncreaseUnipilotLiquidityModal({
             }
           />
         </Box>
-        <Box mt={2} className='v3-increase-liquidity-input'>
+        <Box mt={2}>
           <CurrencyInputPanel
             value={deposit1}
             onUserInput={(val) => {

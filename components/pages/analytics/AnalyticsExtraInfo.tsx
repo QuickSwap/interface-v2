@@ -1,13 +1,13 @@
 import { Box, Grid } from '@mui/material';
 import Skeleton from '@mui/lab/Skeleton';
 
-import { formatCompact, useLairDQUICKAPY } from 'utils';
+import { formatCompact } from 'utils';
 import { useNewLairInfo } from 'state/stake/hooks';
 import { DLQUICK } from 'constants/v3/addresses';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 import { useTranslation } from 'react-i18next';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 
 interface AnalyticsInfoProps {
   data: any;
@@ -20,33 +20,31 @@ const AnalyticsExtraInfo: React.FC<AnalyticsInfoProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [rewards, setRewards] = useState('0');
-  const [totalTVL, setTotalTVL] = useState('0');
   const lairInfo = useNewLairInfo();
-  const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
   const quickToken = DLQUICK[chainId];
   const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
 
-  useEffect(() => {
+  const rewards = useMemo(() => {
     if (lairInfo && quickPrice) {
       const balance = Number(lairInfo.totalQuickBalance.toExact());
-      if (balance > 0) {
-        const newReward = balance * quickPrice;
-        const totalTVLValue = (data?.totalLiquidityUSD ?? 0) + newReward;
+      const newReward = balance * quickPrice;
 
-        const formattedReward = formatCompact(newReward, 18, 3, 3);
-        // if (formattedReward !== rewards && rewards !== '0') {
-        setRewards(formattedReward);
-        // }
-
-        const formattedTotalTVL = formatCompact(totalTVLValue, 18, 5, 5);
-        // if (formattedTotalTVL !== totalTVL && totalTVL !== '0') {
-        setTotalTVL(formattedTotalTVL);
-        // }
-      }
+      const formattedReward = formatCompact(newReward, 18, 3, 3);
+      return formattedReward;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quickPrice, lairInfo, dQUICKAPY, data]);
+    return '0';
+  }, [lairInfo, quickPrice]);
+
+  const totalTVL = useMemo(() => {
+    if (lairInfo && quickPrice) {
+      const balance = Number(lairInfo.totalQuickBalance.toExact());
+      const newReward = balance * quickPrice;
+      const totalTVLValue = (data?.totalLiquidityUSD ?? 0) + newReward;
+      const formattedTotalTVL = formatCompact(totalTVLValue, 18, 5, 5);
+      return formattedTotalTVL;
+    }
+    return '0';
+  }, [data?.totalLiquidityUSD, lairInfo, quickPrice]);
 
   return (
     <Box mb={3}>

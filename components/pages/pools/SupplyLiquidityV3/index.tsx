@@ -47,22 +47,24 @@ export function SupplyLiquidityV3() {
   const router = useRouter();
   const currencyId0 = router.query.currencyIdA ?? router.query.currency0;
   const currencyId1 = router.query.currencyIdB ?? router.query.currency1;
+
+  const isSupportedNetwork = useIsSupportedNetwork();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
+  const chainInfo = CHAIN_INFO[chainIdToUse];
+
   const currencyIdAParam = currencyId0
     ? (currencyId0 as string).toLowerCase() === 'matic' ||
       (currencyId0 as string).toLowerCase() === 'eth'
-      ? 'matic'
+      ? chainInfo.nativeCurrencySymbol.toLowerCase()
       : (currencyId0 as string)
     : undefined;
   const currencyIdBParam = currencyId1
     ? (currencyId1 as string).toLowerCase() === 'matic' ||
       (currencyId1 as string).toLowerCase() === 'eth'
-      ? 'matic'
+      ? chainInfo.nativeCurrencySymbol.toLowerCase()
       : (currencyId1 as string)
     : undefined;
-  const isSupportedNetwork = useIsSupportedNetwork();
-  const { account, chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
-  const chainInfo = CHAIN_INFO[chainIdToUse];
 
   const [currencyIdA, setCurrencyIdA] = useState(currencyIdAParam);
   const [currencyIdB, setCurrencyIdB] = useState(currencyIdBParam);

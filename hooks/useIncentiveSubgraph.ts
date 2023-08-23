@@ -113,7 +113,7 @@ export function useFarmRewards() {
   const { chainId, account } = useActiveWeb3React();
 
   async function fetchRewards() {
-    if (!account || !chainId) return;
+    if (!account || !chainId) return null;
 
     try {
       const res = await fetch(
@@ -579,6 +579,7 @@ export function usePositionsOnFarmer(account: string | null | undefined) {
   const { chainId } = useActiveWeb3React();
 
   async function fetchPositionsOnFarmer() {
+    if (!account) return null;
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,

@@ -387,7 +387,7 @@ export function SelectRange({
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
       {(gammaPair || unipilotVaultsForPair.length > 0) && (
-        <Box className='buttonGroup poolRangeButtonGroup'>
+        <Box className={`buttonGroup ${styles.poolRangeButtonGroup}`}>
           <ButtonGroup>
             {gammaPair && (
               <Button
@@ -477,10 +477,10 @@ export function SelectRange({
       {liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE && (
         <>
-          <Box my={1.5} className='poolRangePowerGamma'>
+          <Box my={1.5} className={styles.poolRangePowerGamma}>
             <span className='text-secondary'>{t('poweredBy')}</span>
             <picture>
-              <img src='/assets/images/unipilotLogo.png' alt='Unipilot Logo' />
+              <img src='/assets/images/unipilot.png' alt='Unipilot Logo' />
             </picture>
           </Box>
           <Box mb={1.5}>

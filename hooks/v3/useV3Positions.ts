@@ -369,17 +369,18 @@ export function useGammaPositionsCount(
   chainId: ChainId | undefined,
 ) {
   const fetchGammaPositions = async () => {
-    if (!account || !chainId) return;
+    if (!account || !chainId) return null;
     const gammaPositions = await getGammaPositions(account, chainId);
     return gammaPositions;
   };
 
+  const lastTxHash = useLastTransactionHash();
   const {
     isLoading: positionsLoading,
     data: gammaPositions,
     refetch: refetchGammaPositions,
   } = useQuery({
-    queryKey: ['fetchGammaPositions', account, chainId],
+    queryKey: ['fetchGammaPositions', account, lastTxHash, chainId],
     queryFn: fetchGammaPositions,
   });
 
@@ -496,7 +497,7 @@ export function useUnipilotPositions(
   } = useUnipilotUserFarms(chainId, account ?? undefined);
 
   const fetchUnipilotPositions = async () => {
-    if (!account || !chainId) return;
+    if (!account || !chainId) return null;
     const userPositions = await getUnipilotPositions(account, chainId);
     const unipilotPositions = await Promise.all(
       (userPositions ?? []).map(async (item: any) => {

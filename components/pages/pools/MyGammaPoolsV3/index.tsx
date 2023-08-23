@@ -27,7 +27,6 @@ export default function MyGammaPoolsV3() {
   const toggleWalletModal = useWalletModalToggle();
 
   const fetchGammaPositions = async () => {
-    if (!account || !chainId) return;
     const gammaPositions = await getGammaPositions(account, chainId);
     return gammaPositions;
   };

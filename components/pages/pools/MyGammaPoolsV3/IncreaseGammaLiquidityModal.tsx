@@ -447,7 +447,7 @@ export default function IncreaseGammaLiquidityModal({
             }
           />
         </Box>
-        <Box mt={2} className={styles.v3IncreaseLiquidityInput}>
+        <Box mt={2}>
           <CurrencyInputPanel
             value={deposit1}
             onUserInput={(val) => {

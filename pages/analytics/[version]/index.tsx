@@ -21,6 +21,7 @@ import {
 } from 'hooks/useFetchAnalyticsData';
 import { ChainId } from '@uniswap/sdk';
 import AnalyticsExtraInfo from 'components/pages/analytics/AnalyticsExtraInfo';
+import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
 
 dayjs.extend(utc);
 
@@ -49,6 +50,7 @@ const AnalyticsPage = (
 
   return (
     <Box width='100%' mb={3}>
+      <AnalyticsHeader />
       {(chainId === ChainId.DOGECHAIN || chainId === ChainId.MATIC) && (
         <AnalyticsExtraInfo data={globalData} chainId={chainId} />
       )}
