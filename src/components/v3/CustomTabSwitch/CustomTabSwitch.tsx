@@ -3,7 +3,7 @@ import { Box, Tab, Tabs } from '@material-ui/core';
 import './CustomTabSwitch.scss';
 
 interface tabItem {
-  text: string;
+  text: string | React.ReactNode;
   id: string;
 }
 
@@ -11,25 +11,25 @@ interface CustomTabSwitchProps {
   width?: number | string;
   height: number;
   items: tabItem[];
-  selectedItem: tabItem;
-  handleTabChange: (item: tabItem) => void;
+  value: string;
+  handleTabChange: (item: string) => void;
 }
 
 const CustomTabSwitch: React.FC<CustomTabSwitchProps> = ({
   width = '100%',
   height,
   items,
-  selectedItem,
+  value,
   handleTabChange,
 }) => {
   return (
     <Box className='customTabWrapper' width={width} height={height}>
       <Tabs
-        value={selectedItem?.id}
+        value={value}
         onChange={(evt, value) => {
           const itemToSelect = items.find((item) => item.id === value);
           if (itemToSelect) {
-            handleTabChange(itemToSelect);
+            handleTabChange(itemToSelect.id);
           }
         }}
       >

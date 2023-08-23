@@ -115,7 +115,7 @@ const AnalyticsSearch: React.FC = () => {
     data: searchData,
     refetch: refetchSearchData,
   } = useQuery({
-    queryKey: ['fetchSearchData', searchVal, version, chainIdToUse],
+    queryKey: ['fetchAnalyticsSearchData', searchVal, version, chainIdToUse],
     queryFn: fetchSearchData,
   });
 

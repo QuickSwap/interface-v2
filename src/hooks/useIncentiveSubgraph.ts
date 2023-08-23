@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { Contract } from 'ethers';
 import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
@@ -12,9 +12,7 @@ import {
 } from '../constants/v3/addresses';
 import { formatUnits } from '@ethersproject/units';
 import {
-  Deposit,
   FormattedEternalFarming,
-  FormattedRewardInterface,
   PoolChartSubgraph,
   Position,
   Aprs,
@@ -24,180 +22,118 @@ import {
   fetchEternalFarmTVL,
   fetchPoolsAPR,
 } from 'utils/api';
-import { useSelectedTokenList } from 'state/lists/v3/hooks';
-import { getContract, getV3TokenFromAddress } from 'utils';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { getContract, getTokenFromAddress } from 'utils';
 import { ChainId } from '@uniswap/sdk';
 import { formatTokenSymbol } from 'utils/v3-graph';
+import { useQuery } from '@tanstack/react-query';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 
-export function useFarmingSubgraph() {
-  const { chainId, account, provider } = useActiveWeb3React();
-  const tokenMap = useSelectedTokenList();
-
-  const [positionsForPool, setPositionsForPool] = useState<Position[] | null>(
-    null,
-  );
-  const [positionsForPoolLoading, setPositionsForPoolLoading] = useState<
-    boolean
-  >(false);
-
-  const [transferredPositions, setTransferredPositions] = useState<
-    Deposit[] | null
-  >(null);
-  const [
-    transferredPositionsLoading,
-    setTransferredPositionsLoading,
-  ] = useState<boolean>(false);
-
-  const [rewardsResult, setRewardsResult] = useState<
-    FormattedRewardInterface[]
-  >([]);
-  const [rewardsLoading, setRewardsLoading] = useState<boolean>(false);
-
-  const [positionsOnFarmer, setPositionsOnFarmer] = useState<{
-    transferredPositionsIds: string[];
-    oldTransferredPositionsIds: string[];
-  } | null>(null);
-  const [positionsOnFarmerLoading, setPositionsOnFarmerLoading] = useState<
-    boolean
-  >(false);
-
-  const [eternalFarms, setEternalFarms] = useState<
-    FormattedEternalFarming[] | null
-  >(null);
-  const [eternalFarmsLoading, setEternalFarmsLoading] = useState<boolean>(
-    false,
-  );
-
-  const [eternalFarmPoolAprs, setEternalFarmPoolAprs] = useState<
-    Aprs | undefined
-  >();
-  const [eternalFarmPoolAprsLoading, setEternalFarmPoolAprsLoading] = useState<
-    boolean
-  >(false);
-
-  const [eternalFarmAprs, setEternalFarmAprs] = useState<Aprs | undefined>();
-  const [eternalFarmAprsLoading, setEternalFarmAprsLoading] = useState<boolean>(
-    false,
-  );
-
-  const [eternalFarmTvls, setEternalFarmTvls] = useState<any>();
-  const [eternalFarmTvlsLoading, setEternalFarmTvlsLoading] = useState<boolean>(
-    false,
-  );
-
-  async function fetchToken(tokenId: string, farming = false) {
-    try {
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/token-details/${tokenId}?chainId=${chainId}&farming=${farming}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(errorText || res.statusText || `Failed to fetch token`);
-      }
-      const data = await res.json();
-      return data && data.data && data.data.token ? data.data.token : undefined;
-    } catch (err) {
-      throw new Error('Token fetching ' + err.message);
+async function fetchToken(tokenId: string, farming = false, chainId: ChainId) {
+  try {
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/token-details/${tokenId}?chainId=${chainId}&farming=${farming}`,
+    );
+    if (!res.ok) {
+      return;
     }
+    const data = await res.json();
+    return data && data.data && data.data.token ? data.data.token : undefined;
+  } catch (err) {
+    return;
   }
+}
 
-  async function fetchPool(poolId: string) {
-    try {
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/pool-details/${poolId}?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(errorText || res.statusText || `Failed to fetch pool`);
-      }
-      const data = await res.json();
-
-      const pool =
-        data && data.data && data.data.pool ? data.data.pool : undefined;
-
-      if (!pool) return;
-
-      return {
-        ...pool,
-        token0: {
-          ...pool.token0,
-          symbol: formatTokenSymbol(pool.token0.id, pool.token0.symbol),
-        },
-        token1: {
-          ...pool.token1,
-          symbol: formatTokenSymbol(pool.token1.id, pool.token1.symbol),
-        },
-      };
-    } catch (err) {
-      throw new Error('Pool fetching ' + err.message);
+async function fetchPool(poolId: string, chainId: ChainId) {
+  try {
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/pool-details/${poolId}?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      return;
     }
-  }
+    const data = await res.json();
 
-  async function fetchLimit(limitFarmingId: string) {
-    try {
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/limit-farming/${limitFarmingId}?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to fetch limit farm`,
-        );
-      }
-      const data = await res.json();
-      return data && data.data && data.data.limitFarm
-        ? data.data.limitFarm
-        : undefined;
-    } catch (err) {
-      throw new Error('Limitfarming fetching ' + err.message);
-    }
-  }
+    const pool =
+      data && data.data && data.data.pool ? data.data.pool : undefined;
 
-  async function fetchEternalFarming(farmId: string) {
-    try {
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farming/${farmId}?chainId=${chainId}`,
-      );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to fetch eternal farm`,
-        );
-      }
-      const data = await res.json();
-      return data && data.data && data.data.eternalFarm
-        ? data.data.eternalFarm
-        : undefined;
-    } catch (err) {
-      throw new Error('Eternalfarming fetching ' + err.message);
-    }
+    if (!pool) return;
+
+    return {
+      ...pool,
+      token0: {
+        ...pool.token0,
+        symbol: formatTokenSymbol(pool.token0.id, pool.token0.symbol),
+      },
+      token1: {
+        ...pool.token1,
+        symbol: formatTokenSymbol(pool.token1.id, pool.token1.symbol),
+      },
+    };
+  } catch (err) {
+    return;
   }
+}
+
+async function fetchLimit(limitFarmingId: string, chainId: ChainId) {
+  try {
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/limit-farming/${limitFarmingId}?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      return;
+    }
+    const data = await res.json();
+    return data && data.data && data.data.limitFarm
+      ? data.data.limitFarm
+      : undefined;
+  } catch (err) {
+    return;
+  }
+}
+
+async function fetchEternalFarming(farmId: string, chainId: ChainId) {
+  try {
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farming/${farmId}?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      return;
+    }
+    const data = await res.json();
+    return data && data.data && data.data.eternalFarm
+      ? data.data.eternalFarm
+      : undefined;
+  } catch (err) {
+    return;
+  }
+}
+
+export function useFarmRewards() {
+  const { chainId, account } = useActiveWeb3React();
 
   async function fetchRewards() {
     if (!account || !chainId) return;
 
     try {
-      setRewardsLoading(true);
-
       const res = await fetch(
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/farm-rewards/${account}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to fetch eternal farm`,
-        );
+        return null;
       }
       const data = await res.json();
       const rewards =
         data && data.data && data.data.rewards ? data.data.rewards : [];
 
-      if (!provider) throw new Error('No provider');
-
       const newRewards: any[] = [];
 
       for (const reward of rewards) {
-        const rewardToken = await fetchToken(reward.rewardAddress, true);
+        const rewardToken = await fetchToken(
+          reward.rewardAddress,
+          true,
+          chainId,
+        );
 
         const rewardAmount =
           +reward.amount > 0
@@ -218,47 +154,43 @@ export function useFarmingSubgraph() {
         newRewards.push(newReward);
       }
 
-      setRewardsResult(newRewards);
+      return newRewards;
     } catch (err) {
-      // setRewardsResult(null);
-      if (err instanceof Error) {
-        throw new Error('Reward fetching ' + err.message);
-      }
+      return null;
     }
-
-    setRewardsLoading(false);
   }
 
+  const lastTxHash = useLastTransactionHash();
+  const { isLoading, data } = useQuery({
+    queryKey: ['v3FarmRewards', chainId, lastTxHash, account],
+    queryFn: fetchRewards,
+  });
+
+  return { isLoading, data };
+}
+
+export function useTransferredPositions() {
+  const { chainId, account, provider } = useActiveWeb3React();
+  const tokenMap = useSelectedTokenList();
+  const lastTxHash = useLastTransactionHash();
   async function fetchTransferredPositions() {
-    if (!chainId || !account) {
-      setTransferredPositions([]);
-      return;
+    if (!chainId || !account || !provider) {
+      return [];
     }
 
-    if (!provider) throw new Error('No provider');
-
     try {
-      setTransferredPositionsLoading(true);
-
       const res = await fetch(
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText ||
-            res.statusText ||
-            `Failed to fetch transferred positions`,
-        );
+        return [];
       }
       const data = await res.json();
       const positionsTransferred =
         data && data.data && data.data.positions ? data.data.positions : [];
 
       if (positionsTransferred.length === 0) {
-        setTransferredPositions([]);
-        setTransferredPositionsLoading(false);
-        return;
+        return [];
       }
 
       const _positions: any[] = [];
@@ -292,22 +224,24 @@ export function useFarmingSubgraph() {
           !position.eternalFarming &&
           typeof position.pool === 'string'
         ) {
-          const _pool = await fetchPool(position.pool);
+          const _pool = await fetchPool(position.pool, chainId);
           if (_pool) {
-            const token0 = getV3TokenFromAddress(
+            const token0 = getTokenFromAddress(
               _pool.token0.id,
               chainId,
               tokenMap,
+              [],
             );
-            const token1 = getV3TokenFromAddress(
+            const token1 = getTokenFromAddress(
               _pool.token1.id,
               chainId,
               tokenMap,
+              [],
             );
             const newPool = {
               ..._pool,
-              token0: token0 ? token0.token : _pool.token0,
-              token1: token1 ? token1.token : _pool.token1,
+              token0: token0 ?? _pool.token0,
+              token1: token1 ?? _pool.token1,
             };
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
@@ -336,32 +270,49 @@ export function useFarmingSubgraph() {
             tier1Multiplier,
             tier2Multiplier,
             tier3Multiplier,
-          } = await fetchLimit(position.limitFarming);
+          } = await fetchLimit(position.limitFarming, chainId);
 
           const rewardInfo = await finiteFarmingContract.callStatic.getRewardInfo(
             [rewardToken, bonusRewardToken, pool, +startTime, +endTime],
             +position.id,
           );
 
-          const _rewardToken = await fetchToken(rewardToken);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken);
-          const _multiplierToken = await fetchToken(multiplierToken, true);
-          const _pool = await fetchPool(pool);
+          const _rewardToken = getTokenFromAddress(
+            rewardToken,
+            chainId,
+            tokenMap,
+            [],
+          );
+          const _bonusRewardToken = getTokenFromAddress(
+            bonusRewardToken,
+            chainId,
+            tokenMap,
+            [],
+          );
+          const _multiplierToken = getTokenFromAddress(
+            multiplierToken,
+            chainId,
+            tokenMap,
+            [],
+          );
+          const _pool = await fetchPool(pool, chainId);
 
-          const token0 = getV3TokenFromAddress(
+          const token0 = getTokenFromAddress(
             _pool.token0.id,
             chainId,
             tokenMap,
+            [],
           );
-          const token1 = getV3TokenFromAddress(
+          const token1 = getTokenFromAddress(
             _pool.token1.id,
             chainId,
             tokenMap,
+            [],
           );
           const newPool = {
             ..._pool,
-            token0: token0 ? token0.token : _pool.token0,
-            token1: token1 ? token1.token : _pool.token1,
+            token0: token0 ?? _pool.token0,
+            token1: token1 ?? _pool.token1,
           };
 
           _position = {
@@ -376,12 +327,14 @@ export function useFarmingSubgraph() {
             started: +startTime * 1000 < Date.now(),
             ended: +endTime * 1000 < Date.now(),
             createdAtTimestamp: +createdAtTimestamp,
-            limitEarned: rewardInfo[0]
-              ? formatUnits(rewardInfo[0], _rewardToken.decimals)
-              : 0,
-            limitBonusEarned: rewardInfo[1]
-              ? formatUnits(rewardInfo[1], _bonusRewardToken.decimals)
-              : 0,
+            limitEarned:
+              rewardInfo[0] && _rewardToken
+                ? formatUnits(rewardInfo[0], _rewardToken.decimals)
+                : 0,
+            limitBonusEarned:
+              rewardInfo[1] && _bonusRewardToken
+                ? formatUnits(rewardInfo[1], _bonusRewardToken.decimals)
+                : 0,
             multiplierToken: _multiplierToken,
             tokenAmountForTier1,
             tokenAmountForTier2,
@@ -394,27 +347,23 @@ export function useFarmingSubgraph() {
           const res = await fetch(
             `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/limit-farms-pool/${position.pool}?chainId=${chainId}`,
           );
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(
-              errorText || res.statusText || `Failed to fetch limit farms`,
-            );
-          }
-          const data = await res.json();
-          const limitFarmings =
-            data && data.data && data.data.limitFarms
-              ? data.data.limitFarms
-              : [];
+          if (res.ok) {
+            const data = await res.json();
+            const limitFarmings =
+              data && data.data && data.data.limitFarms
+                ? data.data.limitFarms
+                : [];
 
-          if (
-            limitFarmings.filter(
-              (farm: any) => Math.round(Date.now() / 1000) < farm.startTime,
-            ).length !== 0
-          ) {
-            _position = {
-              ..._position,
-              limitAvailable: true,
-            };
+            if (
+              limitFarmings.filter(
+                (farm: any) => Math.round(Date.now() / 1000) < farm.startTime,
+              ).length !== 0
+            ) {
+              _position = {
+                ..._position,
+                limitAvailable: true,
+              };
+            }
           }
         }
 
@@ -434,7 +383,7 @@ export function useFarmingSubgraph() {
             tokenAmountForTier2,
             tokenAmountForTier3,
             isDetached,
-          } = await fetchEternalFarming(position.eternalFarming);
+          } = await fetchEternalFarming(position.eternalFarming, chainId);
 
           const farmingCenterContract = new Contract(
             FARMING_CENTER[chainId],
@@ -442,26 +391,43 @@ export function useFarmingSubgraph() {
             provider.getSigner(),
           );
 
-          const _rewardToken = await fetchToken(rewardToken, true);
-          const _bonusRewardToken = await fetchToken(bonusRewardToken, true);
-          const _pool = await fetchPool(pool);
+          const _rewardToken = getTokenFromAddress(
+            rewardToken,
+            chainId,
+            tokenMap,
+            [],
+          );
+          const _bonusRewardToken = getTokenFromAddress(
+            bonusRewardToken,
+            chainId,
+            tokenMap,
+            [],
+          );
+          const _pool = await fetchPool(pool, chainId);
 
-          const token0 = getV3TokenFromAddress(
+          const token0 = getTokenFromAddress(
             _pool.token0.id,
             chainId,
             tokenMap,
+            [],
           );
-          const token1 = getV3TokenFromAddress(
+          const token1 = getTokenFromAddress(
             _pool.token1.id,
             chainId,
             tokenMap,
+            [],
           );
           const newPool = {
             ..._pool,
-            token0: token0 ? token0.token : _pool.token0,
-            token1: token1 ? token1.token : _pool.token1,
+            token0: token0 ?? _pool.token0,
+            token1: token1 ?? _pool.token1,
           };
-          const _multiplierToken = await fetchToken(multiplierToken, true);
+          const _multiplierToken = getTokenFromAddress(
+            multiplierToken,
+            chainId,
+            tokenMap,
+            [],
+          );
 
           let rewardRes: any;
           try {
@@ -490,70 +456,85 @@ export function useFarmingSubgraph() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             pool: newPool,
-            eternalEarned: rewardRes
-              ? formatUnits(rewardRes.reward, _rewardToken.decimals)
-              : 0,
-            eternalBonusEarned: rewardRes
-              ? formatUnits(rewardRes.bonusReward, _bonusRewardToken.decimals)
-              : 0,
+            eternalEarned:
+              rewardRes && _rewardToken
+                ? formatUnits(rewardRes.reward, _rewardToken.decimals)
+                : 0,
+            eternalBonusEarned:
+              rewardRes && _bonusRewardToken
+                ? formatUnits(rewardRes.bonusReward, _bonusRewardToken.decimals)
+                : 0,
           };
         } else {
           const res = await fetch(
             `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms-pool/${position.pool}?chainId=${chainId}`,
           );
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(
-              errorText || res.statusText || `Failed to fetch eternal farms`,
-            );
-          }
-          const data = await res.json();
-          const eternalFarmings =
-            data && data.data && data.data.eternalFarms
-              ? data.data.eternalFarms
-              : [];
+          if (res.ok) {
+            const data = await res.json();
+            const eternalFarmings =
+              data && data.data && data.data.eternalFarms
+                ? data.data.eternalFarms
+                : [];
 
-          if (
-            eternalFarmings.filter(
-              (farm: any) => +farm.rewardRate || +farm.bonusRewardRate,
-            ).length !== 0
-          ) {
-            _position = {
-              ..._position,
-              eternalAvailable: true,
-            };
+            if (
+              eternalFarmings.filter(
+                (farm: any) => +farm.rewardRate || +farm.bonusRewardRate,
+              ).length !== 0
+            ) {
+              _position = {
+                ..._position,
+                eternalAvailable: true,
+              };
+            }
           }
         }
 
         _positions.push(_position);
       }
-      setTransferredPositions(_positions);
+      return _positions;
     } catch (err) {
-      throw new Error(
-        'Transferred positions ' + 'code: ' + err.code + ', ' + err.message,
-      );
-    } finally {
-      setTransferredPositionsLoading(false);
+      return [];
     }
   }
 
-  async function fetchPositionsForPool(
-    pool: PoolChartSubgraph,
-    minRangeLength: string,
-  ) {
-    if (!chainId || !account) return;
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['v3FarmTransferredPositions', chainId, account, !!provider],
+    queryFn: fetchTransferredPositions,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime, lastTxHash]);
+
+  return { isLoading, data };
+}
+
+export function useFarmPositionsForPool(
+  pool: PoolChartSubgraph,
+  minRangeLength: string,
+) {
+  const { chainId, account } = useActiveWeb3React();
+
+  async function fetchPositionsForPool() {
+    if (!chainId || !account) return null;
 
     try {
-      setPositionsForPoolLoading(true);
-
       const res = await fetch(
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/pool-positions/${account}?chainId=${chainId}&poolId=${pool.id}&minRangeLength=${minRangeLength}`,
       );
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to fetch eternal farms`,
-        );
+        return null;
       }
       const data = await res.json();
       const positionsTransferred =
@@ -570,133 +551,202 @@ export function useFarmingSubgraph() {
         _positions.push(_position);
       }
 
-      setPositionsForPool(_positions);
+      return _positions;
     } catch (err) {
-      throw new Error('Positions for pools ' + err);
-    } finally {
-      setPositionsForPoolLoading(false);
+      return null;
     }
   }
 
-  async function fetchPositionsOnFarmer(account: string) {
-    try {
-      setPositionsOnFarmerLoading(true);
+  const lastTxHash = useLastTransactionHash();
+  const { isLoading, data } = useQuery({
+    queryKey: [
+      'v3FarmPositionsForPool',
+      chainId,
+      account,
+      pool.id,
+      minRangeLength,
+      lastTxHash,
+    ],
+    queryFn: fetchPositionsForPool,
+  });
 
+  return { isLoading, data };
+}
+
+export function usePositionsOnFarmer(account: string | null | undefined) {
+  const { chainId } = useActiveWeb3React();
+
+  async function fetchPositionsOnFarmer() {
+    try {
       const res = await fetch(
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
       );
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText ||
-            res.statusText ||
-            `Failed to fetch transferred positions`,
-        );
+        return null;
       }
       const data = await res.json();
       const positionsTransferred =
         data && data.data && data.data.positions ? data.data.positions : [];
 
       if (positionsTransferred.length === 0) {
-        setPositionsOnFarmer({
+        return {
           transferredPositionsIds: [],
           oldTransferredPositionsIds: [],
-        });
-        setPositionsOnFarmerLoading(false);
-        return;
+        };
       }
 
-      const transferredPositionsIds = positionsTransferred.map(
+      const transferredPositionsIds: string[] = positionsTransferred.map(
         (position: any) => position.id,
       );
 
       const oldTransferredPositionsIds: string[] = [];
 
-      setPositionsOnFarmer({
+      return {
         transferredPositionsIds,
         oldTransferredPositionsIds,
-      });
+      };
     } catch (err) {
-      setPositionsOnFarmerLoading(false);
-      throw new Error('Fetching positions on farmer ' + err);
+      return null;
     }
   }
 
+  const lastTxHash = useLastTransactionHash();
+  const { isLoading, data } = useQuery({
+    queryKey: ['v3PositionsOnFarmer', lastTxHash, chainId, account],
+    queryFn: fetchPositionsOnFarmer,
+  });
+
+  return { isLoading, data };
+}
+
+export function useEternalFarmPoolAPRs() {
+  const { chainId } = useActiveWeb3React();
+
   async function fetchEternalFarmPoolAprs() {
-    if (!chainId) return;
-    setEternalFarmPoolAprsLoading(true);
+    if (!chainId) return null;
 
     try {
       const aprs: Aprs = await fetchPoolsAPR(chainId);
-      setEternalFarmPoolAprs(aprs);
+      return aprs;
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(
-          'Error while fetching eternal farms pool Aprs' + err.message,
-        );
-      }
-    } finally {
-      setEternalFarmPoolAprsLoading(false);
+      return null;
     }
   }
 
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['v3EternalFarmPoolAprs', chainId],
+    queryFn: fetchEternalFarmPoolAprs,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  return { isLoading, data };
+}
+
+export function useEternalFarmAprs() {
+  const { chainId } = useActiveWeb3React();
+
   async function fetchEternalFarmAprs() {
-    if (!chainId) return;
-    setEternalFarmAprsLoading(true);
+    if (!chainId) return null;
 
     try {
       const aprs: Aprs = await fetchEternalFarmAPR(chainId);
-      setEternalFarmAprs(aprs);
+      return aprs;
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(
-          'Error while fetching eternal farms Aprs' + err.message,
-        );
-      }
-    } finally {
-      setEternalFarmAprsLoading(false);
+      return null;
     }
   }
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['v3EternalFarmAprs', chainId],
+    queryFn: fetchEternalFarmAprs,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  return { isLoading, data };
+}
+
+export function useEternalFarmTvls() {
+  const { chainId } = useActiveWeb3React();
 
   async function fetchEternalFarmTvls() {
-    if (!chainId) return;
-    setEternalFarmTvlsLoading(true);
+    if (!chainId) return null;
 
     try {
       const tvls = await fetchEternalFarmTVL(chainId);
-      setEternalFarmTvls(tvls);
+      return tvls;
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(
-          'Error while fetching eternal farms Tvls' + err.message,
-        );
-      }
-    } finally {
-      setEternalFarmTvlsLoading(false);
+      return null;
     }
   }
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['v3EternalFarmTvls', chainId],
+    queryFn: fetchEternalFarmTvls,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  return { isLoading, data };
+}
+
+export function useEternalFarms() {
+  const { chainId, provider } = useActiveWeb3React();
+  const tokenMap = useSelectedTokenList();
 
   async function fetchEternalFarms() {
-    setEternalFarmsLoading(true);
-    if (!provider) throw new Error('No provider');
+    if (!provider) return null;
     try {
       const res = await fetch(
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
       );
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to fetch eternal farms`,
-        );
+        return null;
       }
       const data = await res.json();
       const eternalFarmings =
         data && data.data && data.data.farms ? data.data.farms : [];
 
       if (eternalFarmings.length === 0) {
-        setEternalFarms([]);
-        setEternalFarmsLoading(false);
-        return;
+        return null;
       }
 
       const _eternalFarmings: FormattedEternalFarming[] = [];
@@ -710,30 +760,41 @@ export function useFarmingSubgraph() {
           );
           const reward = await virtualPoolContract.rewardReserve0();
           const bonusReward = await virtualPoolContract.rewardReserve1();
-          const pool = await fetchPool(farming.pool);
-          const rewardToken = await fetchToken(farming.rewardToken, true);
-          const bonusRewardToken = await fetchToken(
-            farming.bonusRewardToken,
-            true,
+          const pool = await fetchPool(farming.pool, chainId);
+          const rewardToken = getTokenFromAddress(
+            farming.rewardToken,
+            chainId ?? ChainId.MATIC,
+            tokenMap,
+            [],
           );
-          const wrappedToken0 = getV3TokenFromAddress(
+          const bonusRewardToken = getTokenFromAddress(
+            farming.bonusRewardToken,
+            chainId ?? ChainId.MATIC,
+            tokenMap,
+            [],
+          );
+          const wrappedToken0 = getTokenFromAddress(
             pool.token0.id,
             chainId ?? ChainId.MATIC,
             tokenMap,
+            [],
           );
-          const wrappedToken1 = getV3TokenFromAddress(
+          const wrappedToken1 = getTokenFromAddress(
             pool.token1.id,
             chainId ?? ChainId.MATIC,
             tokenMap,
+            [],
           );
           const newPool = {
             ...pool,
-            token0: wrappedToken0 ? wrappedToken0.token : pool.token0,
-            token1: wrappedToken1 ? wrappedToken1.token : pool.token1,
+            token0: wrappedToken0 ?? pool.token0,
+            token1: wrappedToken1 ?? pool.token1,
           };
-          const multiplierToken = await fetchToken(
+          const multiplierToken = getTokenFromAddress(
             farming.multiplierToken,
-            true,
+            chainId ?? ChainId.MATIC,
+            tokenMap,
+            [],
           );
 
           _eternalFarmings.push({
@@ -750,57 +811,31 @@ export function useFarmingSubgraph() {
         }
       }
 
-      setEternalFarms(_eternalFarmings);
+      return _eternalFarmings;
     } catch (err) {
-      setEternalFarms(null);
-      if (err instanceof Error) {
-        throw new Error('Error while fetching eternal farms ' + err.message);
-      }
-    } finally {
-      setEternalFarmsLoading(false);
+      return null;
     }
   }
 
-  return {
-    fetchRewards: {
-      rewardsResult,
-      rewardsLoading,
-      fetchRewardsFn: fetchRewards,
-    },
-    fetchPositionsForPool: {
-      positionsForPool,
-      positionsForPoolLoading,
-      fetchPositionsForPoolFn: fetchPositionsForPool,
-    },
-    fetchTransferredPositions: {
-      transferredPositions,
-      transferredPositionsLoading,
-      fetchTransferredPositionsFn: fetchTransferredPositions,
-    },
-    fetchPositionsOnFarmer: {
-      positionsOnFarmer,
-      positionsOnFarmerLoading,
-      fetchPositionsOnFarmerFn: fetchPositionsOnFarmer,
-    },
-    fetchEternalFarms: {
-      eternalFarms,
-      eternalFarmsLoading,
-      fetchEternalFarmsFn: fetchEternalFarms,
-    },
-    fetchEternalFarmPoolAprs: {
-      eternalFarmPoolAprs,
-      eternalFarmPoolAprsLoading,
-      fetchEternalFarmPoolAprsFn: fetchEternalFarmPoolAprs,
-    },
-    fetchEternalFarmAprs: {
-      eternalFarmAprs,
-      eternalFarmAprsLoading,
-      fetchEternalFarmAprsFn: fetchEternalFarmAprs,
-    },
-    fetchEternalFarmTvls: {
-      eternalFarmTvls,
-      eternalFarmTvlsLoading,
-      fetchEternalFarmTvlsFn: fetchEternalFarmTvls,
-    },
-  };
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['v3EternalFarms', !!provider, chainId],
+    queryFn: fetchEternalFarms,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  return { isLoading, data };
 }

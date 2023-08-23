@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import {
@@ -13,14 +13,14 @@ import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { useQuery } from '@tanstack/react-query';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
 
 const AnalyticsVolumeChart: React.FC<{
   globalData: any;
-  setDataLoaded: (loaded: boolean) => void;
-}> = ({ globalData, setDataLoaded }) => {
+}> = ({ globalData }) => {
   const { t } = useTranslation();
   const volumeTypes = [DAY_VOLUME, WEEK_VOLUME];
   const volumeTypeTexts = [t('dayAbb'), t('weekAbb')];
@@ -29,45 +29,63 @@ const AnalyticsVolumeChart: React.FC<{
     GlobalConst.analyticChart.ONE_MONTH_CHART,
   );
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
-  const [globalChartData, updateGlobalChartData] = useState<any>(null);
   const { chainId } = useActiveWeb3React();
   const version = useAnalyticsVersion();
 
-  useEffect(() => {
-    if (!chainId) return;
-    const fetchChartData = async () => {
-      updateGlobalChartData(null);
-      setDataLoaded(false);
-
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
+  const fetchChartData = async () => {
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      return null;
+    }
+    const pairsData = await res.json();
+    const newChartData =
+      pairsData && pairsData.data && pairsData.data.length > 0
+        ? pairsData.data[0]
+        : null;
+    const newWeeklyData =
+      pairsData && pairsData.data && pairsData.data.length > 0
+        ? pairsData.data[1]
+        : null;
+    if (newChartData && newWeeklyData) {
+      const dayItems = getLimitedData(
+        newChartData,
+        GlobalConst.analyticChart.CHART_COUNT,
       );
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText ||
-            res.statusText ||
-            `Failed to get chart data ${durationIndex} ${version}`,
-        );
-      }
-      const pairsData = await res.json();
-      setDataLoaded(true);
-      const [newChartData, newWeeklyData] = pairsData.data;
-      if (newChartData && newWeeklyData) {
-        const dayItems = getLimitedData(
-          newChartData,
-          GlobalConst.analyticChart.CHART_COUNT,
-        );
-        const weekItems = getLimitedData(
-          newWeeklyData,
-          GlobalConst.analyticChart.CHART_COUNT,
-        );
-        updateGlobalChartData({ day: dayItems, week: weekItems });
-      }
-    };
-    fetchChartData();
+      const weekItems = getLimitedData(
+        newWeeklyData,
+        GlobalConst.analyticChart.CHART_COUNT,
+      );
+      return { day: dayItems, week: weekItems };
+    }
+    return null;
+  };
+
+  const { isLoading, data: globalChartData, refetch } = useQuery({
+    queryKey: [
+      'fetchAnalyticsVolumeChartData',
+      durationIndex,
+      version,
+      chainId,
+    ],
+    queryFn: fetchChartData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [durationIndex, version, chainId]);
+  }, [currentTime]);
 
   const liquidityWeeks = useMemo(() => {
     if (globalChartData) {
@@ -144,19 +162,19 @@ const AnalyticsVolumeChart: React.FC<{
     if (selectedVolumeIndex > -1) {
       if (volumeIndex === DAY_VOLUME) {
         return formatDateFromTimeStamp(
-          Number(globalChartData.day[selectedVolumeIndex].date),
+          Number(globalChartData?.day[selectedVolumeIndex].date),
           'MMM DD, YYYY',
         );
       } else {
         const weekStart = formatDateFromTimeStamp(
           Number(
-            globalChartData.week[Math.max(0, selectedVolumeIndex - 1)].date,
+            globalChartData?.week[Math.max(0, selectedVolumeIndex - 1)].date,
           ),
           'MMM DD, YYYY',
           selectedVolumeIndex > 0 ? 1 : -6,
         );
         const weekEnd = formatDateFromTimeStamp(
-          Number(globalChartData.week[selectedVolumeIndex].date),
+          Number(globalChartData?.week[selectedVolumeIndex].date),
           'MMM DD, YYYY',
         );
         return `${weekStart} - ${weekEnd}`;
@@ -241,7 +259,9 @@ const AnalyticsVolumeChart: React.FC<{
         </Box>
       </Box>
       <Box mt={2}>
-        {globalChartData ? (
+        {isLoading ? (
+          <Skeleton variant='rect' width='100%' height={250} />
+        ) : globalChartData ? (
           <BarChart
             height={200}
             isV3={version !== 'v2'}
@@ -257,7 +277,7 @@ const AnalyticsVolumeChart: React.FC<{
             }}
           />
         ) : (
-          <Skeleton variant='rect' width='100%' height={250} />
+          <></>
         )}
       </Box>
     </>

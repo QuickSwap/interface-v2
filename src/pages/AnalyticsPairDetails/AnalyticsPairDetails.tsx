@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory, useRouteMatch, Link, useParams } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -21,10 +21,10 @@ import 'pages/styles/analytics.scss';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
-import { useEthPrice } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { CallMade } from '@material-ui/icons';
 import { getConfig } from 'config';
+import { useQuery } from '@tanstack/react-query';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -32,9 +32,6 @@ const AnalyticsPairDetails: React.FC = () => {
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
   const tokenMap = useSelectedTokenList();
-  const [dataLoading, setDataLoading] = useState(false);
-  const [pairData, setPairData] = useState<any>(null);
-  const [pairTransactions, setPairTransactions] = useState<any>(null);
 
   const params: any = useParams();
   const version = params && params.version ? params.version : 'v3';
@@ -49,6 +46,43 @@ const AnalyticsPairDetails: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showAnalytics]);
+
+  const fetchPairData = async () => {
+    if (chainId && version) {
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
+      );
+      if (!res.ok) {
+        return null;
+      }
+      const data = await res.json();
+      return data && data.data ? data.data : null;
+    }
+    return null;
+  };
+
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['fetchAnalyticsPairDetails', pairAddress, version, chainId],
+    queryFn: fetchPairData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  const pairData = data ? data.pairData : undefined;
+  const pairTransactions = data ? data.pairTransactions : undefined;
 
   const pairTransactionsList = useMemo(() => {
     if (pairTransactions) {
@@ -153,35 +187,6 @@ const AnalyticsPairDetails: React.FC = () => {
     : pairData && pairData.feesUSDOneDay
     ? formatNumber(pairData.feesUSDOneDay)
     : '0';
-  const { ethPrice } = useEthPrice();
-
-  useEffect(() => {
-    (async () => {
-      if (chainId && version) {
-        const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
-        );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get top pair details`,
-          );
-        }
-        const data = await res.json();
-        setDataLoading(false);
-        if (data?.data?.pairData) {
-          setPairData(data.data.pairData);
-          setPairTransactions(data.data.pairTransactions);
-        }
-      }
-    })();
-  }, [pairAddress, ethPrice.price, isV2, chainId, version]);
-
-  useEffect(() => {
-    setDataLoading(true);
-    setPairData(null);
-    setPairTransactions(null);
-  }, [pairAddress, isV2]);
 
   const PairInfo = () => (
     <Box width={1} my={4}>
@@ -283,7 +288,9 @@ const AnalyticsPairDetails: React.FC = () => {
   return (
     <>
       <AnalyticsHeader type='pair' data={pairData} address={pairAddress} />
-      {pairData ? (
+      {isLoading ? (
+        <Skeleton width='100%' height={100} />
+      ) : pairData ? (
         <>
           <Box width={1} className='flex flex-wrap justify-between'>
             <Box>
@@ -396,8 +403,6 @@ const AnalyticsPairDetails: React.FC = () => {
             </>
           )}
         </>
-      ) : dataLoading ? (
-        <Skeleton width='100%' height={100} />
       ) : (
         <Box py={4}>
           <h5>{t('pairNotExist')}</h5>

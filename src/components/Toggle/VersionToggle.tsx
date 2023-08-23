@@ -5,7 +5,6 @@ import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
-import { useIsAnalyticsLoaded } from 'state/analytics/hooks';
 import { useAnalyticsVersion } from 'hooks';
 
 const VersionToggle: React.FC = () => {
@@ -21,9 +20,6 @@ const VersionToggle: React.FC = () => {
       : isAnalyticsPage
       ? analyticsVersion
       : 'v3';
-
-  const analyticsLoaded = useIsAnalyticsLoaded();
-  const toggleDisabled = isAnalyticsPage && !analyticsLoaded;
 
   useEffect(() => {
     updateIsV2(version === 'v2');
@@ -51,17 +47,11 @@ const VersionToggle: React.FC = () => {
   };
 
   return (
-    <Box
-      className={`version-toggle-container${
-        toggleDisabled ? ' version-toggle-disabled' : ''
-      }`}
-    >
+    <Box className='version-toggle-container'>
       <Box
         className={isV2 && version !== 'total' ? 'version-toggle-active' : ''}
         onClick={() => {
-          if (!toggleDisabled) {
-            redirectWithVersion('v2');
-          }
+          redirectWithVersion('v2');
         }}
       >
         <small>{t('V2')}</small>
@@ -70,9 +60,7 @@ const VersionToggle: React.FC = () => {
       <Box
         className={!isV2 && version !== 'total' ? 'version-toggle-active' : ''}
         onClick={() => {
-          if (!toggleDisabled) {
-            redirectWithVersion('v3');
-          }
+          redirectWithVersion('v3');
         }}
       >
         <small>{t('V3')}</small>
@@ -82,9 +70,7 @@ const VersionToggle: React.FC = () => {
         <Box
           className={version === 'total' ? 'version-toggle-active' : ''}
           onClick={() => {
-            if (!toggleDisabled) {
-              redirectWithVersion('total');
-            }
+            redirectWithVersion('total');
           }}
         >
           <small>{t('total')}</small>

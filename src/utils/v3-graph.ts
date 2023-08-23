@@ -10,17 +10,13 @@ export const getMaticPrice: (chainId: ChainId) => Promise<number[]> = async (
   const res = await fetch(
     `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/matic-price?chainId=${chainId}`,
   );
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(
-      errorText || res.statusText || `Failed to get global data v2`,
-    );
-  }
-  const data = await res.json();
-  if (data && data.data) {
-    maticPrice = data.data.maticPrice;
-    maticPriceOneDay = data.data.maticPriceOneDay;
-    priceChangeMatic = data.data.priceChangeMatic;
+  if (res.ok) {
+    const data = await res.json();
+    if (data && data.data) {
+      maticPrice = data.data.maticPrice;
+      maticPriceOneDay = data.data.maticPriceOneDay;
+      priceChangeMatic = data.data.priceChangeMatic;
+    }
   }
 
   return [maticPrice, maticPriceOneDay, priceChangeMatic];
