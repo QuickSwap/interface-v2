@@ -8,7 +8,7 @@ import {
 import { useActiveWeb3React } from 'hooks';
 import { useLocation } from 'react-router-dom';
 import { styled } from '@material-ui/styles';
-import { Box } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import OrbsLogo from 'assets/images/orbs-logo.svg';
 import {
   setWeb3Instance,
@@ -23,6 +23,8 @@ import {
   useLiquidityHubState,
 } from 'state/swap/liquidity-hub/hooks';
 import { useTokenContract } from 'hooks/useContract';
+import { getConfig } from 'config';
+import ToggleSwitch from 'components/ToggleSwitch';
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
 
@@ -38,12 +40,15 @@ export const useLiquidityHubCallback = (
     onResetLiquidityHubState,
   } = useLiquidityHubActionHandlers();
   const [userSlippageTolerance] = useUserSlippageTolerance();
-  const location = useLocation();
   const queryParam = useQueryParam();
   const approve = useApprove(srcToken);
   const swap = useSwap();
   const sign = useSign();
+  const isSupported = useIsLiquidityHubSupported();
   return async (srcAmount?: string, minDestAmount?: string) => {
+    if (!isSupported) {
+      return undefined;
+    }
     if (liquidityHubDisabled) {
       liquidityHubAnalytics.onDisabled();
     }
@@ -75,7 +80,6 @@ export const useLiquidityHubCallback = (
       account,
       force: queryParam === LiquidityHubControl.FORCE,
       slippage: userSlippageTolerance / 100,
-      qs: encodeURIComponent(location.search),
     };
 
     try {
@@ -161,14 +165,17 @@ const useSign = () => {
   const { onSetLiquidityHubState } = useLiquidityHubActionHandlers();
   return async (permitData: any) => {
     try {
+      if (!account || !library) {
+        throw new Error('No account or library');
+      }
       onSetLiquidityHubState({ waitingForSignature: true });
       liquidityHubAnalytics.onSignatureRequest();
       if (!hasWeb3Instance()) {
-        setWeb3Instance(new Web3(library!.provider as any));
+        setWeb3Instance(new Web3(library.provider as any));
       }
       process.env.DEBUG = 'web3-candies';
 
-      const signature = await signEIP712(account!, permitData);
+      const signature = await signEIP712(account, permitData);
       liquidityHubAnalytics.onSignatureSuccess(signature);
       return signature;
     } catch (error) {
@@ -263,6 +270,7 @@ const quote = async ({
         outAmount: minDestAmount,
         user: account,
         slippage,
+        qs: encodeURIComponent(window.location.hash),
       }),
     });
     const result = await response.json();
@@ -316,30 +324,51 @@ export const useQueryParam = () => {
 };
 
 export const LiquidityHubTxSettings = () => {
+  const [
+    liquidityHubDisabled,
+    toggleLiquidityHubDisabled,
+  ] = useLiquidityHubManager();
   const { t } = useTranslation();
+
+  const isSupported = useIsLiquidityHubSupported();
+  if (!isSupported) return null;
+
   return (
-    <StyledLiquidityHubTxSettings>
-      <p>{t('disableLiquidityHub')}</p>
-      <p className='bottom-text'>
-        <img src={OrbsLogo} />
-        <a target='_blank' rel='noreferrer' href={`${WEBSITE}/liquidity-hub`}>
-          {t('liquidityHub')}
-        </a>
-        , {t('poweredBy').toLowerCase()}{' '}
-        <a href={WEBSITE} target='_blank' rel='noreferrer'>
-          Orbs
-        </a>
-        , {t('aboutLiquidityHub')}{' '}
-        <a
-          className='more-info'
-          href={`${WEBSITE}/liquidity-hub`}
-          target='_blank'
-          rel='noreferrer'
-        >
-          {t('forMoreInfo')}
-        </a>
-      </p>
-    </StyledLiquidityHubTxSettings>
+    <>
+      <Box my={2.5} className='flex items-center justify-between'>
+        <StyledLiquidityHubTxSettings>
+          <p>{t('disableLiquidityHub')}</p>
+          <p className='bottom-text'>
+            <img src={OrbsLogo} />
+            <a
+              target='_blank'
+              rel='noreferrer'
+              href={`${WEBSITE}/liquidity-hub`}
+            >
+              {t('liquidityHub')}
+            </a>
+            , {t('poweredBy').toLowerCase()}{' '}
+            <a href={WEBSITE} target='_blank' rel='noreferrer'>
+              Orbs
+            </a>
+            , {t('aboutLiquidityHub')}{' '}
+            <a
+              className='more-info'
+              href={`${WEBSITE}/liquidity-hub`}
+              target='_blank'
+              rel='noreferrer'
+            >
+              {t('forMoreInfo')}
+            </a>
+          </p>
+        </StyledLiquidityHubTxSettings>
+        <ToggleSwitch
+          toggled={liquidityHubDisabled}
+          onToggle={toggleLiquidityHubDisabled}
+        />
+      </Box>
+      <Divider />
+    </>
   );
 };
 
@@ -737,4 +766,17 @@ export const useConfirmationPendingContent = (pendingText?: string) => {
     liquidityHubState?.waitingForApproval,
     liquidityHubState.waitingForSignature,
   ]);
+};
+
+const useIsLiquidityHubSupported = () => {
+  const { chainId } = useActiveWeb3React();
+
+  return useMemo(() => getConfig(chainId)?.swap?.liquidityHub, [chainId]);
+};
+
+export const useIsLiquidityHubEnabled = () => {
+  const isSupported = useIsLiquidityHubSupported();
+  const [liquidityHubDisabled] = useLiquidityHubManager();
+
+  return isSupported && !liquidityHubDisabled;
 };

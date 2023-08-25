@@ -3,6 +3,7 @@ import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { SettingsModal, Swap, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
+import { useIsLiquidityHubEnabled } from 'components/Swap/LiquidityHub';
 import { getConfig } from 'config';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -11,7 +12,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useIsV2 } from 'state/application/hooks';
-import { useLiquidityHubManager } from 'state/user/hooks';
 import { Limit, TWAP } from './LimitAndTWAP/LimitAndTWAP';
 import SwapCrossChain from './SwapCrossChain';
 import SwapV3Page from './V3/Swap';
@@ -47,10 +47,13 @@ const SwapMain: React.FC = () => {
   const showTwapOrder = config['swap']['twapOrder'];
   const showCrossChain = config['swap']['crossChain'];
   const showProMode = config['swap']['proMode'];
-  const [liquidityHubDisabled] = useLiquidityHubManager();
+  const isLiquidityHubEnabled = useIsLiquidityHubEnabled();
 
   const SwapDropdownTabs = useMemo(() => {
     const tabs = [];
+    if (isLiquidityHubEnabled) {
+      return [{ name: 'bestTrade', key: SWAP_BEST_TRADE }];
+    }
     if (showBestTrade) {
       tabs.push({ name: 'bestTrade', key: SWAP_BEST_TRADE });
     }
@@ -68,7 +71,7 @@ const SwapMain: React.FC = () => {
       });
     }
     return tabs;
-  }, [showBestTrade, v2, v3, showCrossChain]);
+  }, [showBestTrade, v2, v3, showCrossChain, isLiquidityHubEnabled]);
 
   const dropDownMenuText = useMemo(() => {
     if (!swapType) return;
@@ -128,6 +131,8 @@ const SwapMain: React.FC = () => {
 
   useEffect(() => {
     if (
+      (isLiquidityHubEnabled && Number(swapType) === SWAP_V3) ||
+      (isLiquidityHubEnabled && Number(swapType) === SWAP_NORMAL) ||
       !swapType ||
       (Number(swapType) === SWAP_BEST_TRADE && !showBestTrade) ||
       (Number(swapType) === SWAP_NORMAL && !v2) ||
@@ -142,7 +147,11 @@ const SwapMain: React.FC = () => {
         SWAP_LIMIT,
         SWAP_TWAP,
       ].filter((sType) =>
-        sType === SWAP_BEST_TRADE
+        isLiquidityHubEnabled && sType === SWAP_V3
+          ? false
+          : isLiquidityHubEnabled && sType === SWAP_NORMAL
+          ? false
+          : sType === SWAP_BEST_TRADE
           ? showBestTrade
           : sType === SWAP_NORMAL
           ? v2
@@ -152,6 +161,7 @@ const SwapMain: React.FC = () => {
           ? showLimitOrder
           : showTwapOrder,
       );
+
       if (availableSwapTypes.length > 0) {
         const aSwapType = availableSwapTypes[0];
         if (aSwapType === SWAP_V3) {
@@ -159,13 +169,23 @@ const SwapMain: React.FC = () => {
         } else {
           updateIsV2(true);
         }
+        console.log(availableSwapTypes);
+
         redirectWithSwapType(availableSwapTypes[0]);
       } else {
         history.push('/');
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swapType, v2, v3, showBestTrade, showLimitOrder, showTwapOrder]);
+  }, [
+    swapType,
+    v2,
+    v3,
+    showBestTrade,
+    showLimitOrder,
+    showTwapOrder,
+    isLiquidityHubEnabled,
+  ]);
 
   useEffect(() => {
     if (swapType) {
@@ -221,7 +241,7 @@ const SwapMain: React.FC = () => {
           {!isProMode ? (
             <>
               <Box display='flex' className='tabContainer'>
-                {dropDownMenuText && liquidityHubDisabled && (
+                {dropDownMenuText && (
                   <Button
                     id='swap-button'
                     aria-controls={open ? 'swap-menu' : undefined}
@@ -229,8 +249,10 @@ const SwapMain: React.FC = () => {
                     aria-expanded={open ? 'true' : undefined}
                     variant='text'
                     disableElevation
-                    onClick={handleClickListItem}
-                    endIcon={<KeyboardArrowDown />}
+                    onClick={
+                      !isLiquidityHubEnabled ? handleClickListItem : undefined
+                    }
+                    endIcon={!isLiquidityHubEnabled && <KeyboardArrowDown />}
                     className={`tab tabMenu ${
                       selectedIndex !== SWAP_CROSS_CHAIN ? 'activeTab' : ''
                     }`}
@@ -262,20 +284,6 @@ const SwapMain: React.FC = () => {
                   )}
                 </Menu>
 
-                {!liquidityHubDisabled && (
-                  <Box
-                    className={`tab ${
-                      selectedIndex === SWAP_BEST_TRADE ? 'activeTab' : ''
-                    }`}
-                    onClick={() => {
-                      setSelectedIndex(SWAP_BEST_TRADE);
-                      setAnchorEl(null);
-                      redirectWithSwapType(SWAP_BEST_TRADE);
-                    }}
-                  >
-                    <p className='trade-btn'>{t('bestTrade')}</p>
-                  </Box>
-                )}
                 {showCrossChain && (
                   <Box
                     className={`tab ${
@@ -294,9 +302,7 @@ const SwapMain: React.FC = () => {
             </>
           ) : (
             <>
-              {SwapDropdownTabs.filter((it) =>
-                liquidityHubDisabled ? it : it.key === SWAP_BEST_TRADE,
-              ).map((option) => (
+              {SwapDropdownTabs.map((option) => (
                 <Box
                   key={option.key}
                   style={{ textAlign: 'center' }}

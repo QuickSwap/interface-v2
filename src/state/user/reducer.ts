@@ -18,6 +18,7 @@ import {
   updateUserBonusRouter,
   updateSlippageManuallySet,
   updateSelectedWallet,
+  updateUserLiquidityHub,
 } from './actions';
 import { ConnectionType } from 'connectors';
 
@@ -174,5 +175,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateSelectedWallet, (state, action) => {
       state.selectedWallet = action.payload.wallet;
+    })
+    .addCase(updateUserLiquidityHub, (state, action) => {
+      state.userLiquidityHubDisabled = action.payload.userLiquidityHubDisabled;
     }),
 );
