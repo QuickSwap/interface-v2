@@ -2,6 +2,7 @@ import polygon from './polygon.json';
 import dogechain from './dogechain.json';
 import zktestnet from './zktestnet.json';
 import zkmainnet from './zkmainnet.json';
+import qlpmanager from './qlpmanager.json';
 import { ChainId } from '@uniswap/sdk';
 const configs: any = {
   [ChainId.MATIC]: polygon,
@@ -16,4 +17,8 @@ export const getConfig = (network: ChainId | undefined) => {
   }
   const config = configs[network];
   return config;
+};
+
+export const getQlpManager = () => {
+  return qlpmanager;
 };

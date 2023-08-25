@@ -8,6 +8,7 @@ import { useActiveWeb3React } from 'hooks';
 import { getConfig } from '../../config/index';
 import DragonLayerInfoCard from './TradingInfoCards/DragonLayerInfoCard';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
+import { ZkEvmTvlInfoCard } from './TradingInfoCards/ZkEvmTvlInfoCard';
 
 const TradingInfo: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -70,6 +71,7 @@ const TradingInfo: React.FC = () => {
         <p>{t('totalTradingPairs')}</p>
       </Box>
       <DragonLayerInfoCard chainId={chainIdToUse} config={config} />
+      {chainIdToUse === ChainId.ZKEVM && <ZkEvmTvlInfoCard />}
     </>
   );
 };
