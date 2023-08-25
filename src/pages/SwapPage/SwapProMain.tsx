@@ -186,7 +186,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
               />
             </Item>
             <Item className='bg-palette  mt-1'>
-              <SwapProTransactions data={transactions || []} />
+              <SwapProTransactions data={transactions} />
             </Item>
           </Grid>
           <Grid item xs={12} lg={3}></Grid>

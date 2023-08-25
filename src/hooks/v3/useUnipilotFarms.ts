@@ -18,6 +18,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useLastTransactionHash } from 'state/transactions/hooks';
+import { getConfig } from 'config';
 
 interface RewardRate {
   rewardA?: BigNumber;
@@ -28,8 +29,10 @@ interface RewardRate {
 }
 
 export function useUnipilotFarms(chainId?: ChainId) {
+  const config = getConfig(chainId);
+  const unipilotAvailable = config['unipilot']['available'];
   const fetchUnipilotFarms = async () => {
-    if (!chainId) return [];
+    if (!unipilotAvailable || !chainId) return [];
     const unipilotFarms = await getUnipilotFarms(chainId);
     return unipilotFarms;
   };
@@ -49,7 +52,7 @@ export function useUnipilotFarms(chainId?: ChainId) {
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 30000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
@@ -65,8 +68,10 @@ export function useUnipilotFarmData(
   farmAddresses?: string[],
   chainId?: ChainId,
 ) {
+  const config = getConfig(chainId);
+  const unipilotAvailable = config['unipilot']['available'];
   const fetchUnipilotFarmData = async () => {
-    if (!chainId) return;
+    if (!chainId || !unipilotAvailable) return null;
     const unipilotFarms = await getUnipilotFarmData(farmAddresses, chainId);
     return unipilotFarms;
   };
@@ -82,7 +87,7 @@ export function useUnipilotFarmData(
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 30000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
@@ -95,8 +100,10 @@ export function useUnipilotFarmData(
 }
 
 export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
+  const config = getConfig(chainId);
+  const unipilotAvailable = config['unipilot']['available'];
   const fetchUnipilotUserFarms = async () => {
-    if (!chainId) return [];
+    if (!chainId || !unipilotAvailable) return [];
     const unipilotFarms = await getUnipilotUserFarms(chainId, account);
     return unipilotFarms
       ? unipilotFarms.filter((farm: any) => farm.rewards.length > 0)
@@ -119,7 +126,7 @@ export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 30000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
