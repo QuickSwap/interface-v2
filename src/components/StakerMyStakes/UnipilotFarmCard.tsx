@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, useTheme, useMediaQuery } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DoubleCurrencyLogo } from 'components';
@@ -9,7 +9,7 @@ import UnipilotFarmCardDetails from './UnipilotFarmCardDetails';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { formatUnits } from 'ethers/lib/utils';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { useUnipilotFarmAPR } from 'hooks/v3/useUnipilotFarms';
 
 const UnipilotFarmCard: React.FC<{
   data: any;
@@ -38,22 +38,7 @@ const UnipilotFarmCard: React.FC<{
       : 0;
 
   const vaultAPR = farmData ? Number(farmData['stats'] ?? 0) : 0;
-  const rewardTokenAUsd = useUSDCPriceFromAddress(
-    data.rewardRate && data.rewardRate.tokenA
-      ? data.rewardRate.tokenA.address
-      : '',
-  );
-  const rewardTokenBUsd = useUSDCPriceFromAddress(
-    data.rewardRate && data.rewardRate.tokenB
-      ? data.rewardRate.tokenB.address
-      : '',
-  );
-  const farmAPR = useMemo(() => {
-    const tvl = data.tvl ?? 1000;
-    const rewardAPRTokenA = ((rewardA * rewardTokenAUsd) / tvl) * 36500;
-    const rewardAPRTokenB = ((rewardB * rewardTokenBUsd) / tvl) * 36500;
-    return rewardAPRTokenA + rewardAPRTokenB;
-  }, [data.tvl, rewardA, rewardB, rewardTokenAUsd, rewardTokenBUsd]);
+  const farmAPR = useUnipilotFarmAPR(data);
   const totalAPR = vaultAPR + farmAPR;
 
   return (
