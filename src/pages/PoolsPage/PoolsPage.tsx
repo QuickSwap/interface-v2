@@ -56,6 +56,9 @@ const PoolsPage: React.FC = () => {
           </Box>
         )}
       </Box>
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
+        <Adshares />
+      </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>
           <Box className='wrapper'>
@@ -68,9 +71,6 @@ const PoolsPage: React.FC = () => {
           </Box>
         </Grid>
       </Grid>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
-        <Adshares />
-      </Box>
     </Box>
   );
 };

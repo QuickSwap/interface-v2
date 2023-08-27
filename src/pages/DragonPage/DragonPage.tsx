@@ -41,6 +41,9 @@ const DragonPage: React.FC = () => {
 
   return (
     <Box width='100%' mb={3}>
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
+        <Adshares />
+      </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={4}>
           {showNew && (
@@ -93,15 +96,6 @@ const DragonPage: React.FC = () => {
               <small>{t('dragonSyrupTitle')}</small>
             </Box>
             <DragonsSyrup />
-          </Box>
-        </Grid>
-        <Grid item>
-          <Box
-            id={'addbox-bottom'}
-            maxWidth={isMobile ? '320px' : '1136px'}
-            margin='0 auto 24px'
-          >
-            <Adshares />
           </Box>
         </Grid>
       </Grid>
