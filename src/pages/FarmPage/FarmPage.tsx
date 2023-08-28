@@ -28,7 +28,7 @@ const FarmPage: React.FC = () => {
   const currentTab =
     parsedQuery && parsedQuery.tab
       ? (parsedQuery.tab as string)
-      : GlobalConst.v2FarmTab.LPFARM;
+      : GlobalConst.v2FarmTab.OTHER_LP;
   const { t } = useTranslation();
   const config = getConfig(chainId);
   const farmAvailable = config['farm']['available'];
