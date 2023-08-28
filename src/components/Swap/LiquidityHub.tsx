@@ -241,6 +241,13 @@ async function waitForTx(txHash: string, library: any) {
   }
 }
 
+interface QuoteResponse {
+  outAmount: string;
+  permitData: any;
+  serializedOrder: string;
+  callData: string;
+}
+
 const quote = async ({
   destToken,
   srcAmount,
@@ -292,12 +299,7 @@ const quote = async ({
       throw new Error('Dex trade is better than LiquidityHub trade');
     }
 
-    return {
-      outAmount: result.outAmount,
-      permitData: result.permitData,
-      serializedOrder: result.serializedOrder,
-      callData: result.callData,
-    };
+    return result as QuoteResponse;
   } catch (error) {
     liquidityHubAnalytics.onQuoteFailed(error.message);
     throw new Error(error.message);
