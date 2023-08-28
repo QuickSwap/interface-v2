@@ -453,6 +453,7 @@
   "otherLPMining": "Other Mining",
   "createAFarm": "Create a Farm",
   "removeLiquidityError1": "There is an error in transaction. Please increase your slippage.",
+  "vaultAPR": "Vault APR",
   "poolAPR": "Pool APR",
   "farmAPR": "Farm APR",
   "v3PositionNoLiquidity": "Your position has 0 liquidity, and is not earning fees.",
