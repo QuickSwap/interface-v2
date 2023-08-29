@@ -26,6 +26,7 @@ import {
   useUniPilotVaultContract,
   useUnipilotFarmingContract,
 } from 'hooks/useContract';
+import { useUnipilotFarmAPR } from 'hooks/v3/useUnipilotFarms';
 
 const UnipilotFarmCardDetails: React.FC<{
   data: any;
@@ -292,8 +293,8 @@ const UnipilotFarmCardDetails: React.FC<{
     return Number(reward) === 0 || attemptClaiming;
   }, [attemptClaiming, data.isDualReward, reward, rewardA, rewardB]);
 
-  const poolAPR = farmData ? Number(farmData['stats'] ?? 0) : 0;
-  const farmAPR = farmData ? Number(farmData['farming'] ?? 0) : 0;
+  const vaultAPR = farmData ? Number(farmData['stats'] ?? 0) : 0;
+  const farmAPR = useUnipilotFarmAPR(data);
 
   const rewardRateA =
     data.rewardRate && data.rewardRate.rateA && data.rewardRate.tokenA
@@ -343,9 +344,9 @@ const UnipilotFarmCardDetails: React.FC<{
             </Box>
           </Box>
           <Box className='flex justify-between' mb={2}>
-            <small className='text-secondary'>{t('poolAPR')}</small>
+            <small className='text-secondary'>{t('vaultAPR')}</small>
             <small className='text-success weight-600'>
-              {formatNumber(poolAPR)}%
+              {formatNumber(vaultAPR)}%
             </small>
           </Box>
           <Box className='flex justify-between'>

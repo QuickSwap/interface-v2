@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, useTheme, useMediaQuery } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DoubleCurrencyLogo } from 'components';
@@ -9,6 +9,7 @@ import UnipilotFarmCardDetails from '../UnipilotFarmCardDetails';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { formatUnits } from 'ethers/lib/utils';
+import { useUnipilotFarmAPR } from 'hooks/v3/useUnipilotFarms';
 
 const UnipilotFarmCard: React.FC<{
   data: any;
@@ -36,9 +37,11 @@ const UnipilotFarmCard: React.FC<{
         3600
       : 0;
 
-  const poolAPR = farmData ? Number(farmData['stats'] ?? 0) : 0;
-  const farmAPR = farmData ? Number(farmData['farming'] ?? 0) : 0;
-  const totalAPR = farmData ? Number(farmData['total'] ?? 0) : 0;
+  const vaultAPR = farmData ? Number(farmData['stats'] ?? 0) : 0;
+
+  const farmAPR = useUnipilotFarmAPR(data);
+
+  const totalAPR = vaultAPR + farmAPR;
 
   return (
     <Box
@@ -104,7 +107,11 @@ const UnipilotFarmCard: React.FC<{
             <Box width={isMobile ? '30%' : '20%'} className='flex items-center'>
               <small className='text-success'>{formatNumber(totalAPR)}%</small>
               <Box ml={0.5} height={16}>
-                <TotalAPRTooltip farmAPR={farmAPR} poolAPR={poolAPR}>
+                <TotalAPRTooltip
+                  farmAPR={farmAPR}
+                  poolAPR={vaultAPR}
+                  poolAPRText={t('vaultAPR')}
+                >
                   <img src={CircleInfoIcon} alt={'arrow up'} />
                 </TotalAPRTooltip>
               </Box>

@@ -22,7 +22,13 @@ import {
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
-import { GlobalConst, GlobalValue, SUPPORTED_CHAINIDS } from 'constants/index';
+import {
+  GammaPair,
+  GammaPairs,
+  GlobalConst,
+  GlobalValue,
+  SUPPORTED_CHAINIDS,
+} from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
 import {
@@ -1126,4 +1132,39 @@ export const getUnipilotUserFarms = async (
   } catch (err) {
     return [];
   }
+};
+
+export const getAllGammaPairs = (chainId?: ChainId) => {
+  const config = getConfig(chainId);
+  const gammaAvailable = config['gamma']['available'];
+  if (gammaAvailable && chainId) {
+    return ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]));
+  }
+  return [];
+};
+
+export const getGammaPairsForTokens = (
+  chainId?: ChainId,
+  address0?: string,
+  address1?: string,
+) => {
+  const config = getConfig(chainId);
+  const gammaAvailable = config['gamma']['available'];
+  if (gammaAvailable && chainId && address0 && address1) {
+    const pairs =
+      GammaPairs[chainId][
+        address0.toLowerCase() + '-' + address1.toLowerCase()
+      ];
+    const reversedPairs =
+      GammaPairs[chainId][
+        address1.toLowerCase() + '-' + address0.toLowerCase()
+      ];
+    if (pairs) {
+      return { reversed: false, pairs };
+    } else if (reversedPairs) {
+      return { reversed: true, pairs: reversedPairs };
+    }
+    return;
+  }
+  return;
 };

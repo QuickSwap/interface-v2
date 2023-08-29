@@ -10,7 +10,6 @@ import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 import { getConfig } from '../../config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { GammaPairs } from 'constants/index';
 import { Adshares } from 'components';
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
@@ -21,7 +20,6 @@ const PoolsPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
-  const pool = config['pools']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
 
@@ -29,7 +27,6 @@ const PoolsPage: React.FC = () => {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const helpURL = process.env.REACT_APP_HELP_URL;
-  const allGammaPairs = chainId ? GammaPairs[chainId] : {};
 
   useEffect(() => {
     if (!v2) {
@@ -59,6 +56,9 @@ const PoolsPage: React.FC = () => {
           </Box>
         )}
       </Box>
+      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
+        <Adshares />
+      </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>
           <Box className='wrapper'>
@@ -71,9 +71,6 @@ const PoolsPage: React.FC = () => {
           </Box>
         </Grid>
       </Grid>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
-        <Adshares />
-      </Box>
     </Box>
   );
 };
