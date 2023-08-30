@@ -237,7 +237,7 @@ const AnalyticsTokenDetails = (
                     <h5>${formatNumber(token.oneDayVolumeUSD)}</h5>
                   </Box>
                   <small
-                    className={`priceChangeWrapper ${getPriceClass(
+                    className={`${styles.priceChangeWrapper} ${getPriceClass(
                       Number(token.volumeChangeUSD) || 0,
                     )}`}
                   >

@@ -16,6 +16,7 @@ import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'next-i18next';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useQuery } from '@tanstack/react-query';
+import styles from 'styles/pages/Analytics.module.scss';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
@@ -141,7 +142,7 @@ const AnalyticsTokenChart: React.FC<{
                       : formatNumber(currentData)}
                   </h4>
                   <Box
-                    className={`priceChangeWrapper ${currentPercentClass}`}
+                    className={`${styles.priceChangeWrapper} ${currentPercentClass}`}
                     ml={1}
                   >
                     <small>{getFormattedPercent(Number(currentPercent))}</small>

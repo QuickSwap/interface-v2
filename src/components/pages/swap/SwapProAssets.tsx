@@ -178,7 +178,7 @@ const SwapProAssets: React.FC = () => {
         </Box>
         <Box className='mobileRow'>
           <p>{t('change')}</p>
-          <Box className={`priceChangeWrapper ${priceClass} rounded`}>
+          <Box className={`${priceClass} rounded`}>
             <small style={{ paddingLeft: '8px', paddingRight: '8px' }}>
               {getFormattedPrice(Number(token.priceChangeUSD))}%
             </small>
@@ -228,7 +228,7 @@ const SwapProAssets: React.FC = () => {
       },
       {
         html: (
-          <Box className={`priceChangeWrapper ${priceClass} bg-transparent`}>
+          <Box className={`${priceClass} bg-transparent`}>
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         ),
@@ -261,24 +261,22 @@ const SwapProAssets: React.FC = () => {
       </Box>
 
       {/** Table */}
-      <Box className='panel'>
-        {loading ? (
-          <Skeleton variant='rectangular' width={'100%'} height={150} />
-        ) : topTokens ? (
-          <CustomTable
-            headCells={tokenHeadCells}
-            emptyMessage={'No token found'}
-            rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
-            defaultOrderBy={4}
-            data={filteredTokensData}
-            desktopHTML={desktopHTML}
-            mobileHTML={mobileHTML}
-            showPagination={false}
-          />
-        ) : (
-          <></>
-        )}
-      </Box>
+      {loading ? (
+        <Skeleton variant='rectangular' width={'100%'} height={150} />
+      ) : topTokens ? (
+        <CustomTable
+          headCells={tokenHeadCells}
+          emptyMessage={'No token found'}
+          rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
+          defaultOrderBy={4}
+          data={filteredTokensData}
+          desktopHTML={desktopHTML}
+          mobileHTML={mobileHTML}
+          showPagination={false}
+        />
+      ) : (
+        <></>
+      )}
     </Box>
   );
 };

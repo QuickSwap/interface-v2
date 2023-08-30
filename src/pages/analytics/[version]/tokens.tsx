@@ -9,6 +9,7 @@ import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
 import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
+import styles from 'styles/pages/Analytics.module.scss';
 
 const AnalyticsTokens = (
   _props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -41,7 +42,7 @@ const AnalyticsTokens = (
       <TopMovers hideArrow={true} />
       <Box my={4} px={2} className='flex flex-wrap items-center'>
         <Box
-          className={`tokensFilter ${
+          className={`${styles.tokensFilter} ${
             tokensFilter === 0 ? 'text-primary' : 'text-disabled'
           }`}
           onClick={() => setTokensFilter(0)}
@@ -49,7 +50,7 @@ const AnalyticsTokens = (
           <p className='weight-600'>{t('allCryptos')}</p>
         </Box>
         <Box
-          className={`tokensFilter ${
+          className={`${styles.tokensFilter} ${
             tokensFilter === 1 ? 'text-primary' : 'text-disabled'
           }`}
           onClick={() => setTokensFilter(1)}
@@ -57,7 +58,7 @@ const AnalyticsTokens = (
           <p className='weight-600'>{t('favourites')}</p>
         </Box>
         <Box
-          className={`tokensFilter ${
+          className={`${styles.tokensFilter} ${
             tokensFilter === 2 ? 'text-primary' : 'text-disabled'
           }`}
           onClick={() => setTokensFilter(2)}

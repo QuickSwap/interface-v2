@@ -102,7 +102,9 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
         <Divider />
         <Box className='mobileRow'>
           <Box>{`${t('Price')} (${symbol1})`}</Box>
-          <Box className={txn.txType}>{formatNumber(txn.token1Amount)}</Box>
+          <Box className={txn.txType === 'buy' ? 'text-success' : 'text-error'}>
+            {formatNumber(txn.token1Amount)}
+          </Box>
         </Box>
         <Box className='mobileRow'>
           <Box>{`${t('Amount')} (${symbol2})`}</Box>
@@ -117,11 +119,12 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
   };
 
   const desktopHTML = (txn: any) => {
+    const txnClass = txn.txType === 'buy' ? 'text-success' : 'text-error';
     return [
       {
         html: (
           <Box
-            className={`${txn.txType} cursor-pointer`}
+            className={`${txnClass} cursor-pointer`}
             onClick={() => {
               if (txn.link) {
                 window.open(txn.link, '_blank');
@@ -135,7 +138,7 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
       {
         html: (
           <Box
-            className={`${txn.txType} cursor-pointer`}
+            className={`${txnClass} cursor-pointer`}
             onClick={() => {
               if (txn.link) {
                 window.open(txn.link, '_blank');
@@ -149,7 +152,7 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
       {
         html: (
           <Box
-            className={`${txn.txType} cursor-pointer`}
+            className={`${txnClass} cursor-pointer`}
             mr={2}
             onClick={() => {
               if (txn.link) {
@@ -171,7 +174,7 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
       </p>
 
       {/** Table */}
-      <Box className='panel'>
+      <Box mt={2}>
         {data ? (
           <CustomTable
             defaultOrderBy={tokenHeadCells[2]}
