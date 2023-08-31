@@ -62,6 +62,7 @@ import { mainTheme } from './theme';
 import Background from 'layouts/Background';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
+import { Environment, HypeLab, HypeLabContext } from 'hypelab-react';
 
 const ThemeProvider: React.FC = ({ children }) => {
   const theme = mainTheme;
@@ -100,129 +101,140 @@ function Updaters() {
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
+  const hypeLabClient = new HypeLab({
+    URL: 'https://api.hypelab-staging.com',
+    propertySlug: '46c81c2255',
+    environment: Environment.Development,
+  });
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <Route component={GoogleAnalyticsReporter} />
-      <Provider store={store}>
-        <Providers>
-          <TermsWrapper>
-            <Web3ReactManager>
-              <Updaters />
-              <Popups />
-              <Switch>
-                <Route exact path='/'>
-                  <PageLayout>
-                    <LandingPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/swap/:version?'>
-                  <PageLayout>
-                    <SwapPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/leader-board'>
-                  <PageLayout>
-                    <ContestPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/pools/:version?'>
-                  <PageLayout>
-                    <PoolsPage />
-                  </PageLayout>
-                </Route>
-                <Route exact strict path='/pool/:tokenId'>
-                  <PageLayout>
-                    <PositionPage></PositionPage>
-                  </PageLayout>
-                </Route>
-                <Route exact path='/add/:currencyIdA?/:currencyIdB?/:version?'>
-                  <PageLayout>
-                    <PoolsPage></PoolsPage>
-                  </PageLayout>
-                </Route>
-                <Route
-                  exact
-                  path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'
-                >
-                  <PageLayout>
-                    <IncreaseLiquidityV3Page></IncreaseLiquidityV3Page>
-                  </PageLayout>
-                </Route>
-                <Route exact path='/remove/:tokenId'>
-                  <PageLayout>
-                    <RemoveLiquidityV3Page></RemoveLiquidityV3Page>
-                  </PageLayout>
-                </Route>
-                <Route exact path='/migrate'>
-                  <PageLayout>
-                    <MigrateV2LiquidityPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/migrate/:currencyIdA/:currencyIdB'>
-                  <PageLayout>
-                    <MigrateV2DetailsPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/farm/:version?'>
-                  <PageLayout>
-                    <FarmPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/dragons'>
-                  <PageLayout>
-                    <DragonPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/convert'>
-                  <PageLayout>
-                    <ConvertQUICKPage />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/gamehub'>
-                  <RedirectExternal
-                    to={`${process.env.REACT_APP_GAMEHUB_URL}`}
-                    target={'_top'}
-                  ></RedirectExternal>
-                </Route>
-                <Route exact path='/analytics/:version?'>
-                  <PageLayout>
-                    <AnalyticsHeader />
-                    <AnalyticsOverview />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/analytics/:version/tokens'>
-                  <PageLayout>
-                    <AnalyticsHeader />
-                    <AnalyticsTokens />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/analytics/:version/pairs'>
-                  <PageLayout>
-                    <AnalyticsHeader />
-                    <AnalyticsPairs />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/analytics/:version/token/:id'>
-                  <PageLayout>
-                    <AnalyticsTokenDetails />
-                  </PageLayout>
-                </Route>
-                <Route exact path='/analytics/:version/pair/:id'>
-                  <PageLayout>
-                    <AnalyticsPairDetails />
-                  </PageLayout>
-                </Route>
-                <Route path='*'>
-                  <PageLayout>
-                    <NotFound404Page />
-                  </PageLayout>
-                </Route>
-              </Switch>
-            </Web3ReactManager>
-          </TermsWrapper>
-        </Providers>
-      </Provider>
-    </QueryClientProvider>
+    <HypeLabContext client={hypeLabClient}>
+      <QueryClientProvider client={queryClient}>
+        <Route component={GoogleAnalyticsReporter} />
+        <Provider store={store}>
+          <Providers>
+            <TermsWrapper>
+              <Web3ReactManager>
+                <Updaters />
+                <Popups />
+                <Switch>
+                  <Route exact path='/'>
+                    <PageLayout>
+                      <LandingPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/swap/:version?'>
+                    <PageLayout>
+                      <SwapPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/leader-board'>
+                    <PageLayout>
+                      <ContestPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/pools/:version?'>
+                    <PageLayout>
+                      <PoolsPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact strict path='/pool/:tokenId'>
+                    <PageLayout>
+                      <PositionPage></PositionPage>
+                    </PageLayout>
+                  </Route>
+                  <Route
+                    exact
+                    path='/add/:currencyIdA?/:currencyIdB?/:version?'
+                  >
+                    <PageLayout>
+                      <PoolsPage></PoolsPage>
+                    </PageLayout>
+                  </Route>
+                  <Route
+                    exact
+                    path='/increase/:currencyIdA?/:currencyIdB?/:tokenId'
+                  >
+                    <PageLayout>
+                      <IncreaseLiquidityV3Page></IncreaseLiquidityV3Page>
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/remove/:tokenId'>
+                    <PageLayout>
+                      <RemoveLiquidityV3Page></RemoveLiquidityV3Page>
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/migrate'>
+                    <PageLayout>
+                      <MigrateV2LiquidityPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/migrate/:currencyIdA/:currencyIdB'>
+                    <PageLayout>
+                      <MigrateV2DetailsPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/farm/:version?'>
+                    <PageLayout>
+                      <FarmPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/dragons'>
+                    <PageLayout>
+                      <DragonPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/convert'>
+                    <PageLayout>
+                      <ConvertQUICKPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/gamehub'>
+                    <RedirectExternal
+                      to={`${process.env.REACT_APP_GAMEHUB_URL}`}
+                      target={'_top'}
+                    ></RedirectExternal>
+                  </Route>
+                  <Route exact path='/analytics/:version?'>
+                    <PageLayout>
+                      <AnalyticsHeader />
+                      <AnalyticsOverview />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/analytics/:version/tokens'>
+                    <PageLayout>
+                      <AnalyticsHeader />
+                      <AnalyticsTokens />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/analytics/:version/pairs'>
+                    <PageLayout>
+                      <AnalyticsHeader />
+                      <AnalyticsPairs />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/analytics/:version/token/:id'>
+                    <PageLayout>
+                      <AnalyticsTokenDetails />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/analytics/:version/pair/:id'>
+                    <PageLayout>
+                      <AnalyticsPairDetails />
+                    </PageLayout>
+                  </Route>
+                  <Route path='*'>
+                    <PageLayout>
+                      <NotFound404Page />
+                    </PageLayout>
+                  </Route>
+                </Switch>
+              </Web3ReactManager>
+            </TermsWrapper>
+          </Providers>
+        </Provider>
+      </QueryClientProvider>
+    </HypeLabContext>
   );
 };
 
