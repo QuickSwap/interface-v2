@@ -1,5 +1,5 @@
 import React, { lazy, useEffect } from 'react';
-import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import SupplyLiquidity from './SupplyLiquidity';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,8 @@ import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 import { getConfig } from '../../config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { Banner } from 'hypelab-react';
+import { HypeLabAds } from 'components';
+
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
 
@@ -22,9 +23,6 @@ const PoolsPage: React.FC = () => {
   const config = getConfig(chainIdToUse);
   const v3 = config['v3'];
   const v2 = config['v2'];
-
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const helpURL = process.env.REACT_APP_HELP_URL;
 
@@ -56,8 +54,8 @@ const PoolsPage: React.FC = () => {
           </Box>
         )}
       </Box>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
-        <Banner placement='6a6aec7c5f' />
+      <Box margin='24px auto'>
+        <HypeLabAds />
       </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>
