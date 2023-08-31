@@ -102,9 +102,9 @@ const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   const hypeLabClient = new HypeLab({
-    URL: 'https://api.hypelab-staging.com',
-    propertySlug: '46c81c2255',
-    environment: Environment.Development,
+    URL: 'https://api.hypelab.com',
+    propertySlug: '81c00452a9',
+    environment: Environment.Production,
   });
 
   return (

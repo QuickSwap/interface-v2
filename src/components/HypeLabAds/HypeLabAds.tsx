@@ -8,8 +8,8 @@ const HypeLabAds: React.FC = () => {
 
   return (
     <div className='flex justify-center'>
-      {isMobile && <Banner placement='92d1d5bbde' />}
-      {!isMobile && <Banner placement='6a6aec7c5f' />}
+      {isMobile && <Banner placement='4177d327af' />}
+      {!isMobile && <Banner placement='f70b3ef021' />}
     </div>
   );
 };
