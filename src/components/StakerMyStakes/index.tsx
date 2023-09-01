@@ -21,10 +21,15 @@ import {
   useTransferredPositions,
 } from 'hooks/useIncentiveSubgraph';
 import { useTranslation } from 'next-i18next';
-import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import SortColumns from 'components/SortColumns';
 import { useQuery } from '@tanstack/react-query';
-import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
+import {
+  getAllGammaPairs,
+  getGammaData,
+  getGammaRewards,
+  getTokenFromAddress,
+} from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
@@ -66,13 +71,9 @@ export const FarmingMyFarms: React.FC<{
   const [sortDescQuick, setSortDescQuick] = useState(false);
   const sortMultiplierQuick = sortDescQuick ? -1 : 1;
 
-  const allGammaFarms = useMemo(() => {
-    return chainId
-      ? ([] as GammaPair[])
-          .concat(...Object.values(GammaPairs[chainId]))
-          .filter((item) => item.ableToFarm)
-      : [];
-  }, [chainId]);
+  const allGammaPairsToFarm = getAllGammaPairs(chainId);
+
+  const allGammaFarms = allGammaPairsToFarm.filter((item) => item.ableToFarm);
   const { eternalOnlyCollectRewardHandler } = useFarmingHandlers();
 
   const { data: rewardsResult } = useFarmRewards();
@@ -673,10 +674,6 @@ export const FarmingMyFarms: React.FC<{
     ] = qiRewardsData;
   }
 
-  const allGammaPairsToFarm = chainId
-    ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
-    : [];
-
   const masterChefContracts = useMasterChefContracts();
 
   const stakedAmountData = useMultipleContractMultipleData(
@@ -1089,7 +1086,7 @@ export const FarmingMyFarms: React.FC<{
           </Box>
           {myUnipilotFarmsLoading || unipilotFarmDataLoading ? (
             <Box py={5} className='flex justify-center'>
-              <Loader stroke={'white'} size={'1.5rem'} />
+              <CircularProgress size={'1.5rem'} />
             </Box>
           ) : chainId ? (
             <Box padding='24px'>

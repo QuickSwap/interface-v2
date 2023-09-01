@@ -10,7 +10,12 @@ import {
 } from 'constants/index';
 import { useQuery } from '@tanstack/react-query';
 import GammaFarmCard from './GammaFarmCard';
-import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
+import {
+  getAllGammaPairs,
+  getGammaData,
+  getGammaRewards,
+  getTokenFromAddress,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
@@ -24,7 +29,6 @@ import {
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
-import { useLastTransactionHash } from 'state/transactions/hooks';
 
 const GammaFarmsPage: React.FC<{
   farmFilter: string;
@@ -40,11 +44,10 @@ const GammaFarmsPage: React.FC<{
     router.query && router.query.farmStatus
       ? (router.query.farmStatus as string)
       : 'active';
-  const allGammaFarms = chainId
-    ? ([] as GammaPair[])
-        .concat(...Object.values(GammaPairs[chainId]))
-        .filter((item) => !!item.ableToFarm === (farmStatus === 'active'))
-    : [];
+
+  const allGammaFarms = getAllGammaPairs(chainId).filter(
+    (item) => !!item.ableToFarm === (farmStatus === 'active'),
+  );
   const sortMultiplier = sortDesc ? -1 : 1;
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 

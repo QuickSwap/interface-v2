@@ -9,12 +9,10 @@ import { formatNumber, getEtherscanLink } from 'utils';
 import dayjs from 'dayjs';
 
 interface SwapProTransactionsProps {
-  data: any[];
+  data?: any[];
 }
 
-const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({
-  data = [],
-}) => {
+const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({ data }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));

@@ -26,7 +26,7 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const router = useRouter();
   const currentTab = router.query.tab
     ? (router.query.tab as string)
-    : GlobalConst.v2FarmTab.LPFARM;
+    : GlobalConst.v2FarmTab.OTHER_LP;
   const { t } = useTranslation();
   const config = getConfig(chainId);
   const farmAvailable = config['farm']['available'];

@@ -16,14 +16,19 @@ import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
 import { ChainId, JSBI } from '@uniswap/sdk';
-import { getContract, getGammaPositions, getUnipilotPositions } from 'utils';
+import {
+  getAllGammaPairs,
+  getContract,
+  getGammaPositions,
+  getUnipilotPositions,
+  getUnipilotUserFarms,
+} from 'utils';
 import { useQuery } from '@tanstack/react-query';
-import { GammaPair, GammaPairs } from 'constants/index';
 import { formatUnits } from 'ethers/lib/utils';
-import { useUnipilotUserFarms } from './useUnipilotFarms';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import { useLastTransactionHash } from 'state/transactions/hooks';
+import { getConfig } from 'config';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -390,7 +395,7 @@ export function useGammaPositionsCount(
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 30000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
@@ -399,9 +404,7 @@ export function useGammaPositionsCount(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);
 
-  const allGammaPairsToFarm = chainId
-    ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
-    : [];
+  const allGammaPairsToFarm = getAllGammaPairs(chainId);
   const masterChefContracts = useMasterChefContracts();
   const stakedAmountData = useMultipleContractMultipleData(
     account ? masterChefContracts : [],
@@ -460,11 +463,8 @@ export function useGammaPositionsCount(
       return Object.keys(gammaPositions)
         .filter(
           (value) =>
-            !!Object.values(GammaPairs[chainId]).find(
-              (pairData) =>
-                !!pairData.find(
-                  (item) => item.address.toLowerCase() === value.toLowerCase(),
-                ),
+            !!allGammaPairsToFarm.find(
+              (pair) => pair.address.toLowerCase() === value.toLowerCase(),
             ),
         )
         .filter(
@@ -476,7 +476,7 @@ export function useGammaPositionsCount(
         );
     }
     return [];
-  }, [chainId, gammaPositions, stakedLPs]);
+  }, [allGammaPairsToFarm, chainId, gammaPositions, stakedLPs]);
 
   const count = useMemo(() => {
     return gammaPositionArray.length + stakedLPs.length;
@@ -491,14 +491,13 @@ export function useUnipilotPositions(
 ) {
   const { library } = useActiveWeb3React();
   const lastTxHash = useLastTransactionHash();
-  const {
-    loading: positionsOnFarmLoading,
-    data: positionsOnFarm,
-  } = useUnipilotUserFarms(chainId, account ?? undefined);
+  const config = getConfig(chainId);
+  const unipilotAvailable = config['unipilot']['available'];
 
   const fetchUnipilotPositions = async () => {
-    if (!account || !chainId) return null;
+    if (!account || !chainId || !unipilotAvailable) return null;
     const userPositions = await getUnipilotPositions(account, chainId);
+    const positionsOnFarm = await getUnipilotUserFarms(chainId, account);
     const unipilotPositions = await Promise.all(
       (userPositions ?? []).map(async (item: any) => {
         const farmPosition = (positionsOnFarm ?? []).find(
@@ -548,7 +547,7 @@ export function useUnipilotPositions(
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 30000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
@@ -558,7 +557,7 @@ export function useUnipilotPositions(
   }, [currentTime]);
 
   return {
-    loading: positionsLoading || positionsOnFarmLoading,
+    loading: positionsLoading,
     unipilotPositions,
   };
 }

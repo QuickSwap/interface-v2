@@ -5,7 +5,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'next-i18next';
 import GammaLPList from './GammaLPList';
 import { useQuery } from '@tanstack/react-query';
-import { getGammaData, getGammaPositions } from 'utils';
+import { getAllGammaPairs, getGammaData, getGammaPositions } from 'utils';
 import { GammaPair, GammaPairs } from 'constants/index';
 import { useMasterChefContracts } from 'hooks/useContract';
 import {
@@ -48,9 +48,7 @@ export default function MyGammaPoolsV3() {
     queryFn: fetchGammaData,
   });
 
-  const allGammaPairsToFarm = chainId
-    ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
-    : [];
+  const allGammaPairsToFarm = getAllGammaPairs(chainId);
 
   const masterChefContracts = useMasterChefContracts();
 
@@ -177,12 +175,8 @@ export default function MyGammaPoolsV3() {
       ? Object.keys(gammaPositions)
           .filter(
             (value) =>
-              !!Object.values(GammaPairs[chainId]).find(
-                (pairData) =>
-                  !!pairData.find(
-                    (item) =>
-                      item.address.toLowerCase() === value.toLowerCase(),
-                  ),
+              !!allGammaPairsToFarm.find(
+                (pair) => pair.address.toLowerCase() === value.toLowerCase(),
               ),
           )
           .filter(

@@ -9,12 +9,16 @@ interface TotalAPRToolTipProps {
   poolAPR: number;
   farmAPR: number;
   children: any;
+  poolAPRText?: string;
+  farmAPRText?: string;
 }
 
 const TotalAPRTooltip: React.FC<TotalAPRToolTipProps> = ({
   poolAPR,
   farmAPR,
   children,
+  poolAPRText,
+  farmAPRText,
 }) => {
   const { t } = useTranslation();
   return (
@@ -33,11 +37,15 @@ const TotalAPRTooltip: React.FC<TotalAPRToolTipProps> = ({
             </small>
           </Box>
           <Box className='flex justify-between' mt='16px'>
-            <small className='text-secondary'>{t('poolAPR')}</small>
+            <small className='text-secondary'>
+              {poolAPRText ?? t('poolAPR')}
+            </small>
             <small>{formatNumber(poolAPR)}%</small>
           </Box>
           <Box className='flex justify-between' my='10px'>
-            <small className='text-secondary'>{t('farmAPR')}</small>
+            <small className='text-secondary'>
+              {farmAPRText ?? t('farmAPR')}
+            </small>
             <small>{formatNumber(farmAPR)}%</small>
           </Box>
         </Box>

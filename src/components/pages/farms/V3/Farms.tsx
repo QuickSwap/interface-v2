@@ -11,9 +11,10 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
 import { SearchInput, SortColumns, CustomSwitch } from 'components';
-import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useUnipilotFarms } from 'hooks/v3/useUnipilotFarms';
 import UnipilotFarmsPage from 'components/pages/farms/UnipilotFarmsPage';
+import { getAllGammaPairs } from 'utils';
 
 interface FarmCategory {
   id: number;
@@ -34,13 +35,9 @@ export default function Farms() {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
-  const allGammaFarms = useMemo(() => {
-    return chainId
-      ? ([] as GammaPair[])
-          .concat(...Object.values(GammaPairs[chainId]))
-          .filter((item) => item.ableToFarm)
-      : [];
-  }, [chainId]);
+  const allGammaFarms = getAllGammaPairs(chainId).filter(
+    (item) => item.ableToFarm,
+  );
 
   const currencyParamsArray = Object.keys(router.query)
     .map((key, index) => [key, Object.values(router.query)[index]])

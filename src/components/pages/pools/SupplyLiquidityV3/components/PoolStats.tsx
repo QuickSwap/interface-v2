@@ -15,7 +15,7 @@ export function PoolStats({ fee, apr, noLiquidity, loading }: IPoolStats) {
   if (loading)
     return (
       <Box className='flex items-center justify-center'>
-        <CircularProgress />
+        <CircularProgress size='16px' />
       </Box>
     );
 

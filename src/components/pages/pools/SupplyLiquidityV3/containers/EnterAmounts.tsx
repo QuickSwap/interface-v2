@@ -18,8 +18,9 @@ import { TokenAmountCard } from '../components/TokenAmountCard';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { Check } from '@mui/icons-material';
-import { GammaPairs, GlobalConst } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'next-i18next';
+import { getGammaPairsForTokens } from 'utils';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;
@@ -83,18 +84,12 @@ export function EnterAmounts({
     };
   }, {});
 
-  const baseCurrencyAddress =
-    currencyA && currencyA.wrapped
-      ? currencyA.wrapped.address.toLowerCase()
-      : '';
-  const quoteCurrencyAddress =
-    currencyB && currencyB.wrapped
-      ? currencyB.wrapped.address.toLowerCase()
-      : '';
-  const gammaPair = chainId
-    ? GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
-      GammaPairs[chainId][quoteCurrencyAddress + '-' + baseCurrencyAddress]
-    : [];
+  const gammaPairData = getGammaPairsForTokens(
+    chainId,
+    currencyA?.wrapped.address,
+    currencyB?.wrapped.address,
+  );
+  const gammaPair = gammaPairData?.pairs;
   const gammaPairAddress =
     gammaPair && gammaPair.length > 0
       ? gammaPair.find((pair) => pair.type === preset)?.address

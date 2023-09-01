@@ -156,19 +156,19 @@ const LiquidityPools: React.FC<{
             <Box padding={2} className={`flex ${styles.liquidityMain}`}>
               <Box width={0.5} className={`flex ${styles.liquidityFilter}`}>
                 <small
-                  className={liquidityFilterIndex === 0 ? 'active' : ''}
+                  className={liquidityFilterIndex === 0 ? styles.active : ''}
                   onClick={() => setLiquidityFilterIndex(0)}
                 >
                   {t('all')}
                 </small>
                 <small
-                  className={liquidityFilterIndex === 1 ? 'active' : ''}
+                  className={liquidityFilterIndex === 1 ? styles.active : ''}
                   onClick={() => setLiquidityFilterIndex(1)}
                 >
                   {token1.symbol?.toUpperCase()}
                 </small>
                 <small
-                  className={liquidityFilterIndex === 2 ? 'active' : ''}
+                  className={liquidityFilterIndex === 2 ? styles.active : ''}
                   onClick={() => setLiquidityFilterIndex(2)}
                 >
                   {token2.symbol?.toUpperCase()}

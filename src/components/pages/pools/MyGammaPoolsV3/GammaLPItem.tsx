@@ -2,22 +2,23 @@ import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { DoubleCurrencyLogo } from 'components';
-import { GammaPairs } from 'constants/index';
 import styles from 'styles/pages/pools/GammaLPItem.module.scss';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import GammaLPItemDetails from './GammaLPItemDetails';
 import { useActiveWeb3React } from 'hooks';
 import { ArrowRight } from 'react-feather';
 import { useRouter } from 'next/router';
+import { getGammaPairsForTokens } from 'utils';
 
 const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const gammaTokenStr =
-    gammaPosition.token0.address.toLowerCase() +
-    '-' +
-    gammaPosition.token1.address.toLowerCase();
-  const gammaPair = chainId ? GammaPairs[chainId][gammaTokenStr] : [];
+  const gammaPairData = getGammaPairsForTokens(
+    chainId,
+    gammaPosition?.token0?.address,
+    gammaPosition?.token1?.address,
+  );
+  const gammaPair = gammaPairData?.pairs;
   const gammaPairInfo = gammaPair
     ? gammaPair.find(
         (item) =>

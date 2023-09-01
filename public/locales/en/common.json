@@ -453,6 +453,7 @@
   "otherLPMining": "Other Mining",
   "createAFarm": "Create a Farm",
   "removeLiquidityError1": "There is an error in transaction. Please increase your slippage.",
+  "vaultAPR": "Vault APR",
   "poolAPR": "Pool APR",
   "farmAPR": "Farm APR",
   "v3PositionNoLiquidity": "Your position has 0 liquidity, and is not earning fees.",
@@ -700,5 +701,6 @@
   "walletDescription": "Connecting your wallet is like \"logging in\" on Web3. Select your wallet from the options to get started.",
   "failedToFetchAnalyticsSearch": "Failed to fetch tokens and pairs.",
   "liquidityLocked": "LIQUIDITY LOCKED",
-  "totalTVL": "TOTAL TVL"
+  "totalTVL": "TOTAL TVL",
+  "qlpPool": "QLP POOL"
 }

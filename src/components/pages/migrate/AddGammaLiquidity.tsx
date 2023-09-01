@@ -4,7 +4,6 @@ import { useActivePreset } from 'state/mint/v3/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
-import { GammaPairs } from 'constants/index';
 import { Box, Button } from '@mui/material';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
@@ -19,7 +18,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { calculateGasMargin } from 'utils';
+import { calculateGasMargin, getGammaPairsForTokens } from 'utils';
 import styles from 'styles/pages/Migrate.module.scss';
 
 const AddGammaLiquidity: React.FC<{
@@ -36,15 +35,13 @@ const AddGammaLiquidity: React.FC<{
   const { chainId, account } = useActiveWeb3React();
   const token0 = token0Value?.currency.wrapped;
   const token1 = token1Value?.currency.wrapped;
-  const token0Address = token0 ? token0.address.toLowerCase() : '';
-  const token1Address = token1 ? token1.address.toLowerCase() : '';
-  const gammaPair = chainId
-    ? GammaPairs[chainId][token0Address + '-' + token1Address] ??
-      GammaPairs[chainId][token1Address + '-' + token0Address]
-    : [];
-  const gammaPairReverted = Boolean(
-    chainId && GammaPairs[chainId][token1Address + '-' + token0Address],
+  const gammaPairData = getGammaPairsForTokens(
+    chainId,
+    token0?.address,
+    token1?.address,
   );
+  const gammaPair = gammaPairData?.pairs ?? [];
+  const gammaPairReverted = gammaPairData?.reversed;
   const gammaPairAddress = gammaPair
     ? gammaPair.find((pair) => pair.type === preset)?.address
     : undefined;

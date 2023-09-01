@@ -315,7 +315,7 @@ export function PresetRanges({
       mintInfo.poolState === PoolState.INVALID ||
       mintInfo.poolState === PoolState.LOADING
     )
-      return <CircularProgress />;
+      return '';
 
     if (mintInfo.noLiquidity) return `0.01% ${t('fee').toLowerCase()}`;
 
