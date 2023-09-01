@@ -43,7 +43,7 @@ const UnipilotFarmCard: React.FC<{
   return (
     <Box
       width='100%'
-      borderRadius={16}
+      borderRadius='16px'
       className={`bg-secondary1${showDetails ? ' border-primary' : ''}`}
     >
       <Box padding={1.5} className='flex items-center'>
@@ -107,7 +107,7 @@ const UnipilotFarmCard: React.FC<{
                 <TotalAPRTooltip
                   farmAPR={farmAPR}
                   poolAPR={vaultAPR}
-                  poolAPRText={t('vaultAPR')}
+                  poolAPRText={t('vaultAPR') ?? ''}
                 >
                   <picture>
                     <img src='/assets/images/circleinfo.svg' alt={'arrow up'} />

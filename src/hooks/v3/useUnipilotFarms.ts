@@ -37,7 +37,7 @@ export function useUnipilotFarms(chainId?: ChainId) {
   const fetchUnipilotFarms = async () => {
     if (!unipilotAvailable || !chainId) return [];
     const unipilotFarms = await getUnipilotFarms(chainId);
-    return unipilotFarms;
+    return unipilotFarms ?? [];
   };
 
   const {
@@ -64,7 +64,7 @@ export function useUnipilotFarms(chainId?: ChainId) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);
 
-  return { loading: farmsLoading, data };
+  return { loading: farmsLoading, data: data ?? [] };
 }
 
 export function useUnipilotFarmData(

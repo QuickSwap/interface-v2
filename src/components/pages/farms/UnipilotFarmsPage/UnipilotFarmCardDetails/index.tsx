@@ -383,6 +383,7 @@ const UnipilotFarmCardDetails: React.FC<{
             </Box>
             <Box mt={2}>
               <Button
+                variant='contained'
                 style={{ height: 40, borderRadius: 10 }}
                 disabled={stakeButtonDisabled}
                 fullWidth
@@ -423,6 +424,7 @@ const UnipilotFarmCardDetails: React.FC<{
             </Box>
             <Box mt={2}>
               <Button
+                variant='contained'
                 style={{ height: 40, borderRadius: 10 }}
                 disabled={unStakeButtonDisabled}
                 fullWidth
@@ -463,6 +465,7 @@ const UnipilotFarmCardDetails: React.FC<{
               </Box>
               <Box width='100%'>
                 <Button
+                  variant='contained'
                   style={{ height: 40, borderRadius: 10 }}
                   fullWidth
                   disabled={claimButtonDisabled}
