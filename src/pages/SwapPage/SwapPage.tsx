@@ -74,6 +74,9 @@ const SwapPage: React.FC = () => {
         />
       )}
       <SwapPageHeader proMode={isProMode} />
+      <Box margin='24px auto'>
+        <HypeLabAds />
+      </Box>
       {isProMode ? (
         <SwapProMain
           pairId={data?.pairId}
@@ -87,9 +90,6 @@ const SwapPage: React.FC = () => {
           token2={isV2 ? token2 : token2V3}
         />
       )}
-      <Box margin='24px auto'>
-        <HypeLabAds />
-      </Box>
     </Box>
   );
 };
