@@ -322,14 +322,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           />
         </Box>
         <Divider />
-        <Box my={2.5} className='flex items-center justify-between'>
-          <LiquidityHubTxSettings />
-          <ToggleSwitch
-            toggled={liquidityHubDisabled}
-            onToggle={toggleLiquidityHubDisabled}
-          />
-        </Box>
-        <Divider />
+        <LiquidityHubTxSettings />
         <Box mt={2.5} className='flex items-center justify-between'>
           <p>{t('language')}</p>
           <Box className='flex items-center'>
