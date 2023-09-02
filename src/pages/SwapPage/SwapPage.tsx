@@ -1,5 +1,5 @@
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
-import { Adshares, SettingsModal } from 'components';
+import { HypeLabAds, SettingsModal } from 'components';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import 'pages/styles/swap.scss';
 import React, { useState } from 'react';
@@ -25,7 +25,6 @@ const SwapPage: React.FC = () => {
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
 
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const tabletWindowSize = useMediaQuery(breakpoints.down('sm'));
   const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainId);
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainId);
@@ -75,6 +74,9 @@ const SwapPage: React.FC = () => {
         />
       )}
       <SwapPageHeader proMode={isProMode} />
+      <Box margin='24px auto'>
+        <HypeLabAds />
+      </Box>
       {isProMode ? (
         <SwapProMain
           pairId={data?.pairId}
@@ -88,9 +90,6 @@ const SwapPage: React.FC = () => {
           token2={isV2 ? token2 : token2V3}
         />
       )}
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
-        <Adshares />
-      </Box>
     </Box>
   );
 };
