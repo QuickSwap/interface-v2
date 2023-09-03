@@ -37,7 +37,7 @@
     "ajv": "^6.12.3",
     "cids": "^1.1.9",
     "copy-to-clipboard": "^3.2.0",
-    "cypress": "^7.7.0",
+    "cypress": "^13.1.0",
     "d3": "^7.0.0",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.11.0",
