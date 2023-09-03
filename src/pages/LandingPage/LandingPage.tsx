@@ -33,6 +33,7 @@ import 'pages/styles/landing.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
+import { HypeLabAds } from 'components';
 
 const SwapSection = lazy(() => import('./SwapSection'));
 const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
@@ -281,6 +282,9 @@ const LandingPage: React.FC = () => {
       </Box>
       <Box mt={2} width={1}>
         <TopMovers />
+      </Box>
+      <Box margin='32px auto'>
+        <HypeLabAds />
       </Box>
       <Box className='quickInfo'>
         <h1 className='h4'>{t('quickInfoTitle')}</h1>
