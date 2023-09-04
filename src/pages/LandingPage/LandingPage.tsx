@@ -34,6 +34,7 @@ import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config';
 import { useActiveWeb3React } from 'hooks';
 import { HypeLabAds } from 'components';
+import NewsletterSignupForm from './NewsletterSignupForm';
 
 const SwapSection = lazy(() => import('./SwapSection'));
 const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
@@ -334,6 +335,9 @@ const LandingPage: React.FC = () => {
             </Grid>
           ))}
         </Grid>
+      </Box>
+      <Box my={4}>
+        <NewsletterSignupForm />
       </Box>
       <Box className='communityContainer'>
         <Box className='featureHeading'>

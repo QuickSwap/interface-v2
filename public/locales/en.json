@@ -702,5 +702,16 @@
   "failedToFetchAnalyticsSearch": "Failed to fetch tokens and pairs.",
   "liquidityLocked": "LIQUIDITY LOCKED",
   "totalTVL": "TOTAL TVL",
-  "qlpPool": "QLP POOL"
+  "qlpPool": "QLP POOL",
+  "signupnewsletter": "Sign up for our newsletter today.",
+  "enterEmail": "Enter your email",
+  "signup": "Sign Up",
+  "signupnewsletterTopDesc": "Sign up for our newsletter to get the latest updates and a chance to earn $300 in QuickSwap tokens",
+  "dragonDispatch": "Dragon's Dispatch",
+  "newsletterSignup": "Newsletter Sign Up",
+  "newsletterSignupDesc": "Sign-up for our newsletter to get the latest QuickSwap alpha and a chance to",
+  "earn300QUICK": "earn $300 in $QUICK.",
+  "win300QUICK": "win $300 in $QUICK.",
+  "quickOfficialNewsletter": "QuickSwap Official Newsletter",
+  "subscribe": "Subscribe"
 }

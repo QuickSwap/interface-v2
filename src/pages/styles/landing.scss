@@ -369,3 +369,67 @@
     }
   }
 }
+
+.newsletterSignupWrapper {
+  max-width: 1036px;
+  border-radius: 21px;
+  background-color: $bgPalette;
+  margin: 0 auto;
+  position: relative;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  & img {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    opacity: 0.4;
+  }
+  @include media('screen', '<tablet') {
+    flex-direction: column;
+    & > div:first-child {
+      text-align: center;
+    }
+  }
+  @include media('screen', '<phone') {
+    padding: 24px;
+  }
+}
+
+.newsletterSignupForm {
+  border: 1px solid $grey22;
+  background-color: $bgColor;
+  display: flex;
+  padding: 6px;
+  border-radius: 11px;
+  position: relative;
+  z-index: 5;
+  margin: 0 60px 0 32px;
+  & input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    flex: 1;
+    color: white;
+    width: 290px;
+    margin-right: 6px;
+  }
+  & button {
+    background: linear-gradient(90deg, $blue9 0%, $purple3 100%);
+    width: 123px;
+    height: 40px;
+    & span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+  @include media('screen', '<tablet') {
+    margin: 16px 0 0;
+    width: 100%;
+    max-width: 430px;
+    & input {
+      width: auto;
+    }
+  }
+}

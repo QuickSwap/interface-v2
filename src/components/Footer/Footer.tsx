@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Button, Grid } from '@material-ui/core';
 import QUICKLogo from 'assets/images/quickLogo.png';
 import 'components/styles/Footer.scss';
 import { useHistory } from 'react-router-dom';
@@ -45,6 +45,13 @@ const Footer: React.FC = () => {
             <img src={QUICKLogo} alt='QUICK' height={40} />
             <Box mt={2} maxWidth='240px'>
               <small className='text-secondary'>{t('socialDescription')}</small>
+            </Box>
+            <Box mt={2}>
+              <small className='text-secondary'>{t('signupnewsletter')}</small>
+              <Box className='newsletterInput'>
+                <input placeholder={t('enterEmail')} />
+                <Button>{t('signup')}</Button>
+              </Box>
             </Box>
           </Grid>
           <Grid item container xs={12} sm={12} md={8} spacing={4}>
