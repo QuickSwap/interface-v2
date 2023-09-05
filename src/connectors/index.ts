@@ -13,6 +13,7 @@ import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
 import cypherDIcon from 'assets/images/cypherDIcon.png';
 import BitGetIcon from 'assets/images/bitget.svg';
 import OkxWalletIcon from 'assets/images/OKXWallet.svg';
+import CryptocomIcon from 'assets/images/cryptocomWallet.png';
 import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
 import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
 import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
@@ -32,6 +33,7 @@ import { BraveWallet } from './BraveWallet';
 import { CypherD } from './CypherD';
 import { isMobile } from 'react-device-detect';
 import { OkxWallet } from './OkxWallet';
+import { Cryptocom } from './Cryptocom';
 
 const POLLING_INTERVAL = 12000;
 
@@ -53,6 +55,7 @@ export enum ConnectionType {
   BRAVEWALLET = 'BRAVEWALLET',
   CYPHERD = 'CYPHERD',
   OKXWALLET = 'OKXWALLET',
+  CRYPTOCOM = 'CRYPTO_COM',
 }
 
 export interface Connection {
@@ -239,6 +242,26 @@ export const okxWalletConnection: Connection = {
   mobile: true,
 };
 
+const [web3Cryptocom, web3CryptocomHooks] = initializeConnector<Cryptocom>(
+  (actions) =>
+    new Cryptocom({
+      actions,
+      onError,
+    }),
+);
+
+export const cryptoComConnection: Connection = {
+  key: 'Cryptocom',
+  name: GlobalConst.walletName.CRYPTOCOM,
+  connector: web3Cryptocom,
+  hooks: web3CryptocomHooks,
+  type: ConnectionType.CRYPTOCOM,
+  iconName: CryptocomIcon,
+  color: '#E8831D',
+  description: 'Crypto.com DeFi Wallet browser extension.',
+  mobile: true,
+};
+
 const [web3CypherD, web3CypherDHooks] = initializeConnector<CypherD>(
   (actions) =>
     new CypherD({
@@ -418,6 +441,7 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitgetConnection,
+        cryptoComConnection,
       ]
     : [
         cypherDConnection,
@@ -433,5 +457,6 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitgetConnection,
+        cryptoComConnection,
       ];
 }
