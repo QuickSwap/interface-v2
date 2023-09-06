@@ -263,7 +263,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
             color={'#E8831D'}
             header={t('installCryptocom')}
             subheader={null}
-            link={'https://crypto.com/us/defi-wallet'}
+            link={
+              'https://chrome.google.com/webstore/detail/cryptocom-wallet-extensio/hifafgmccdpekplomjjkcfgodnhcellj'
+            }
             icon={option.iconName}
             iconify={iconify}
           />
