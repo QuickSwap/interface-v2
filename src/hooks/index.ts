@@ -28,6 +28,7 @@ import { useParams } from 'react-router-dom';
 import { getConfig } from 'config';
 import { Connector } from '@web3-react/types';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
 
 export function useActiveWeb3React() {
   const context = useWeb3React();
@@ -168,4 +169,13 @@ export const useAnalyticsVersion = () => {
   const params: any = useParams();
   const version = params && params.version ? params.version : defaultVersion;
   return version;
+};
+
+export const useMasaAnalytics = () => {
+  const masaAnalytics = useMasaAnalyticsReact({
+    clientId: process.env.REACT_APP_MASA_CLIENT_ID ?? '',
+    clientApp: 'Quickswap',
+    clientName: 'Quickswap',
+  });
+  return masaAnalytics;
 };

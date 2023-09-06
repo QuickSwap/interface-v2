@@ -450,7 +450,7 @@ const SwapV3Page: React.FC = () => {
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
 
   const handleInputSelect = useCallback(
-    (inputCurrency) => {
+    (inputCurrency: any) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
       if (
         (inputCurrency &&
@@ -528,7 +528,7 @@ const SwapV3Page: React.FC = () => {
   }, [maxInputAmount, onUserInput]);
 
   const handleOutputSelect = useCallback(
-    (outputCurrency) => {
+    (outputCurrency: any) => {
       if (
         (outputCurrency &&
           outputCurrency.isNative &&
