@@ -1,0 +1,10 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.availableBondsSwitch {
+  background-color: white;
+  border-radius: 8px !important;
+  & p {
+    color: $bgPalette;
+  }
+}

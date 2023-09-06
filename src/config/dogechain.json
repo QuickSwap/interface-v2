@@ -67,5 +67,8 @@
   },
   "unipilot": {
     "available": true
+  },
+  "bonds": {
+    "available": true
   }
 }

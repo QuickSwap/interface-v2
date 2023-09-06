@@ -15,6 +15,7 @@ const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ContestPage = lazy(() => import('./pages/ContestPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
+const BondsPage = lazy(() => import('./pages/BondsPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -187,6 +188,11 @@ const App: React.FC = () => {
                   <Route exact path='/convert'>
                     <PageLayout>
                       <ConvertQUICKPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/bonds'>
+                    <PageLayout>
+                      <BondsPage />
                     </PageLayout>
                   </Route>
                   <Route exact path='/gamehub'>

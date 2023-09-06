@@ -114,6 +114,7 @@ const Header: React.FC = () => {
   const showSafe = config['safe']['available'];
   const showPerps = config['perps']['available'];
   const showBOS = config['bos']['available'];
+  const showBonds = config['bonds']['available'];
   const menuItems = [];
 
   const swapCurrencyStr = useMemo(() => {
@@ -175,6 +176,13 @@ const Header: React.FC = () => {
       link: `/farm`,
       text: t('farm'),
       id: 'farm-page-link',
+    });
+  }
+  if (showBonds) {
+    menuItems.push({
+      link: `/bonds`,
+      text: t('bonds'),
+      id: 'bonds-page-link',
     });
   }
   if (showSafe) {
