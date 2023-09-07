@@ -13,10 +13,11 @@ import ApeSwapLogo from 'assets/images/bonds/apeSwapLogo.svg';
 import { ReactComponent as BillSvg1 } from 'assets/images/bonds/billSvg1.svg';
 import { ReactComponent as BillSvg2 } from 'assets/images/bonds/billSvg2.svg';
 import { ReactComponent as BillSvg3 } from 'assets/images/bonds/billSvg3.svg';
+import BondsList from './BondsList';
 
 const BondsPage: React.FC = () => {
   const { t } = useTranslation();
-  const { account, chainId } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
 
   const config = getConfig(chainId);
   const showBonds = config['bonds']['available'];
@@ -182,6 +183,7 @@ const BondsPage: React.FC = () => {
             </Box>
           </Box>
         </Box>
+        <BondsList search={search} />
       </Box>
     </Box>
   );
