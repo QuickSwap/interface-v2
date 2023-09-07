@@ -156,6 +156,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
     const isCoinbaseWallet = ethereum && ethereum.isCoinbaseWallet;
     const isOkxwallet = (window as any).okxwallet;
+    const isDefiConnectProvider = (window as any).deficonnectProvider;
 
     return connections.map((option) => {
       if (
@@ -247,6 +248,24 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={t('installOkxWallet')}
             subheader={null}
             link={'https://www.okx.com/web3'}
+            icon={option.iconName}
+            iconify={iconify}
+          />
+        );
+      } else if (
+        option.name === GlobalConst.walletName.CRYPTOCOM &&
+        !isDefiConnectProvider
+      ) {
+        return (
+          <WalletOption
+            id={`connect-${option.name}`}
+            key={option.name}
+            color={'#E8831D'}
+            header={t('installCryptocom')}
+            subheader={null}
+            link={
+              'https://chrome.google.com/webstore/detail/cryptocom-wallet-extensio/hifafgmccdpekplomjjkcfgodnhcellj'
+            }
             icon={option.iconName}
             iconify={iconify}
           />

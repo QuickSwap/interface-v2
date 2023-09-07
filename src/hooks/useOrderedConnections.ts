@@ -15,6 +15,7 @@ const SELECTABLE_WALLETS = [
   ConnectionType.BRAVEWALLET,
   ConnectionType.CYPHERD,
   ConnectionType.OKXWALLET,
+  ConnectionType.CRYPTOCOM,
 ];
 
 export default function useOrderedConnections() {
