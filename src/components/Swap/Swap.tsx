@@ -24,6 +24,7 @@ import {
 } from 'state/swap/hooks';
 import {
   useExpertModeManager,
+  useSelectedWallet,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { Field, SwapDelay } from 'state/swap/actions';
@@ -33,7 +34,12 @@ import {
   AdvancedSwapDetails,
   AddressInput,
 } from 'components';
-import { useIsProMode, useActiveWeb3React } from 'hooks';
+import {
+  useIsProMode,
+  useActiveWeb3React,
+  useMasaAnalytics,
+  useGetConnection,
+} from 'hooks';
 import {
   ApprovalState,
   useApproveCallbackFromTrade,
@@ -59,6 +65,10 @@ import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import { GlobalValue } from 'constants/index';
+import { getConfig } from 'config';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
@@ -494,6 +504,15 @@ const Swap: React.FC<{
     }
   }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash]);
 
+  const { fireEvent } = useMasaAnalytics();
+  const config = getConfig(chainId);
+  const { selectedWallet } = useSelectedWallet();
+  const getConnection = useGetConnection();
+  const fromTokenWrapped = wrappedCurrency(currencies[Field.INPUT], chainId);
+  const fromTokenUSDPrice = useUSDCPriceFromAddress(
+    fromTokenWrapped?.address ?? '',
+  );
+
   const handleSwap = useCallback(() => {
     if (
       priceImpactWithoutFee &&
@@ -504,6 +523,7 @@ const Swap: React.FC<{
     if (!swapCallback) {
       return;
     }
+
     setSwapState({
       attemptingTxn: true,
       tradeToConfirm,
@@ -548,6 +568,27 @@ const Swap: React.FC<{
               trade?.outputAmount?.currency?.symbol,
             ].join('/'),
           });
+          if (
+            account &&
+            fromTokenWrapped &&
+            selectedWallet &&
+            chainId === ChainId.MATIC
+          ) {
+            const connection = getConnection(selectedWallet);
+            fireEvent('trade', {
+              user_address: account,
+              network: config['networkName'],
+              contract_address: V2_ROUTER_ADDRESS[chainId],
+              asset_amount: formattedAmounts[Field.INPUT],
+              asset_ticker: fromTokenWrapped.symbol ?? '',
+              additionalEventData: {
+                wallet: connection.name,
+                asset_usd_amount: (
+                  Number(formattedAmounts[Field.INPUT]) * fromTokenUSDPrice
+                ).toString(),
+              },
+            });
+          }
         } catch (error) {
           setSwapState({
             attemptingTxn: false,
@@ -568,16 +609,25 @@ const Swap: React.FC<{
         });
       });
   }, [
-    tradeToConfirm,
-    account,
     priceImpactWithoutFee,
+    t,
+    swapCallback,
+    tradeToConfirm,
+    showConfirm,
+    finalizedTransaction,
     recipient,
     recipientAddress,
-    showConfirm,
-    swapCallback,
-    finalizedTransaction,
-    trade,
-    t,
+    account,
+    trade?.inputAmount?.currency?.symbol,
+    trade?.outputAmount?.currency?.symbol,
+    fromTokenWrapped,
+    selectedWallet,
+    chainId,
+    getConnection,
+    fireEvent,
+    config,
+    formattedAmounts,
+    fromTokenUSDPrice,
   ]);
 
   const fetchingBestRoute =
