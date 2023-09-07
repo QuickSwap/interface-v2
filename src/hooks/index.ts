@@ -8,6 +8,7 @@ import {
   blockWalletConnection,
   braveWalletConnection,
   coinbaseWalletConnection,
+  cryptoComConnection,
   cypherDConnection,
   getConnections,
   gnosisSafeConnection,
@@ -98,6 +99,8 @@ export function useGetConnection() {
           return cypherDConnection;
         case ConnectionType.OKXWALLET:
           return okxWalletConnection;
+        case ConnectionType.CRYPTOCOM:
+          return cryptoComConnection;
         default:
           throw Error('unsupported connector');
       }

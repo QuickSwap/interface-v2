@@ -247,6 +247,7 @@ export const GlobalConst = {
     WALLET_CONNECT: 'WalletConnect',
     ZENGO_CONNECT: 'ZenGo',
     OKXWALLET: 'OKX Wallet',
+    CRYPTOCOM: 'Crypto.com DeFi Wallet',
   },
 };
 
