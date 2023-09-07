@@ -58,7 +58,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
   const currentTab =
     parsedQuery && parsedQuery.tab
       ? (parsedQuery.tab as string)
-      : GlobalConst.v2FarmTab.LPFARM;
+      : GlobalConst.v2FarmTab.OTHER_LP;
   const isEndedFarm =
     parsedQuery && parsedQuery.ended ? parsedQuery.ended === 'true' : false;
   const stakedOnly =
