@@ -711,5 +711,10 @@
   "tipBuyBond1Desc": "The token discount is calculated based on several variables: Token price, LP price, Time, Supply and Demand.",
   "tipBuyBond2Desc": "Use Zap to purchase a Bond with a single token or create an LP.",
   "tipBuyBond3Desc": "To mint a full color NFT, purchase a Bond with a value of $25 or more.",
-  "tipBuyBondComment": "QuickSwap Bonds are in no way related to any financial product offered by the US government or any other government or other financial institution. These products are solely affiliated with the third party projects listed on QuickSwap and are not in any way backed, insured or guaranteed by QuickSwap. These products are not available to persons that are residents or citizens of the US, or that are currently located in the US."
+  "tipBuyBondComment": "QuickSwap Bonds are in no way related to any financial product offered by the US government or any other government or other financial institution. These products are solely affiliated with the third party projects listed on QuickSwap and are not in any way backed, insured or guaranteed by QuickSwap. These products are not available to persons that are residents or citizens of the US, or that are currently located in the US.",
+  "discount": "Discount",
+  "vestingTerm": "Vesting Term",
+  "availableTokens": "Available Tokens",
+  "bondDiscountTooltip": "This is the percentage discount relative to the token's current market price.",
+  "bondVestingTermTooltip": "This is how long it will take for all tokens in the Bill to fully vest."
 }

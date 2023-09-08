@@ -24,7 +24,11 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
 
   return (
     <Box pb={2} px={3}>
-      {loading && <Loader />}
+      {loading && (
+        <Box className='flex justify-center items-center' height='100px'>
+          <Loader size='32px' />
+        </Box>
+      )}
       {bonds && bonds.length > 0 && (
         <>
           {bonds.map((bond: any) => (
