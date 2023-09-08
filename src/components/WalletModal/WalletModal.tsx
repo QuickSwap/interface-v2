@@ -15,7 +15,6 @@ import { AccountDetails, CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
 // import { UAuthConnector } from '@uauth/web3-react';
 // import UAuth from '@uauth/js';
-import Option from './Option';
 import WalletOption from './options';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
@@ -35,6 +34,7 @@ import {
 } from 'connectors/utils';
 import { useSelectedWallet } from 'state/user/hooks';
 import { WalletConnect } from 'connectors/WalletConnect';
+import { useMasaAnalytics } from 'hooks';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -58,6 +58,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   // important that these are destructed from the account-specific web3-react context
   const { chainId, account, connector, isActive } = useWeb3React();
 
+  const [walletName, setWalletName] = useState('');
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
   const [error, setError] = useState<Error | string | undefined>(undefined);
   const { updateUDDomain } = useUDDomain();
@@ -83,6 +84,18 @@ const WalletModal: React.FC<WalletModalProps> = ({
     }
   }, [walletModalOpen]);
 
+  const { fireConnectWalletEvent } = useMasaAnalytics();
+
+  useEffect(() => {
+    if (account && walletName) {
+      fireConnectWalletEvent({
+        user_address: account,
+        wallet_type: walletName,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletName]);
+
   const tryActivation = async (connection: Connection) => {
     // log selected wallet
     ReactGA.event({
@@ -92,6 +105,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     });
     setPendingWallet(connection); // set wallet for pending view
     setWalletView(WALLET_VIEWS.PENDING);
+    setWalletName('');
 
     if (
       chainId &&
@@ -108,6 +122,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       await connector.resetState();
       await connection.connector.activate();
       updateSelectedWallet(connection.type);
+      setWalletName(connection.name);
 
       // if (
       //   connection.connector instanceof UAuthConnector &&

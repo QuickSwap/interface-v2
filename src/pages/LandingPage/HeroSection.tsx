@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -34,18 +34,16 @@ const HeroSection: React.FC = () => {
   const quickToken = DLQUICK[chainIdToUse];
   const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
 
-  const [dragonReward, setDraonReward] = useState(0);
-
   const { data: globalData } = useAnalyticsGlobalData('v2', chainId);
   const { data: v3GlobalData } = useAnalyticsGlobalData('v3', chainId);
-
-  useEffect(() => {
+  const dragonReward = useMemo(() => {
     if (lairInfo && quickPrice) {
       const newReward =
         Number(lairInfo.totalQuickBalance.toExact()) * quickPrice;
 
-      setDraonReward(newReward || 0);
+      return newReward;
     }
+    return 0;
   }, [lairInfo, quickPrice]);
 
   return (

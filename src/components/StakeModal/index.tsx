@@ -264,7 +264,7 @@ export function FarmModal({
   ]);
 
   const tierSelectionHandler = useCallback(
-    (tier) => {
+    (tier: any) => {
       switch (tier) {
         case 0:
           setSelectedTier(null);
