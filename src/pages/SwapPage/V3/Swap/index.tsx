@@ -16,7 +16,7 @@ import SwapCallbackError from 'components/v3/swap/SwapCallbackError';
 import SwapHeader from 'components/v3/swap/SwapHeader';
 import TradePrice from 'components/v3/swap/TradePrice';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useGetConnection, useMasaAnalytics } from 'hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import {
   ApprovalState,
@@ -48,7 +48,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from 'state/swap/v3/hooks';
-import { useExpertModeManager } from 'state/user/hooks';
+import { useExpertModeManager, useSelectedWallet } from 'state/user/hooks';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
@@ -57,12 +57,14 @@ import { warningSeverity } from 'utils/v3/prices';
 import { Box, Button } from '@material-ui/core';
 import { ChainId, ETHER, WETH } from '@uniswap/sdk';
 import { AddressInput, CustomTooltip } from 'components';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { SWAP_ROUTER_ADDRESSES, WMATIC_EXTENDED } from 'constants/v3/addresses';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import { CHAIN_INFO } from 'constants/v3/chains';
 import { useTranslation } from 'react-i18next';
 import { useTransactionFinalizer } from 'state/transactions/hooks';
+import { getConfig } from 'config';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
@@ -218,12 +220,14 @@ const SwapV3Page: React.FC = () => {
     txHash: undefined,
   });
 
-  const formattedAmounts = {
-    [independentField]: typedValue,
-    [dependentField]: showWrap
-      ? parsedAmounts[independentField]?.toExact() ?? ''
-      : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-  };
+  const formattedAmounts = useMemo(() => {
+    return {
+      [independentField]: typedValue,
+      [dependentField]: showWrap
+        ? parsedAmounts[independentField]?.toExact() ?? ''
+        : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+    };
+  }, [dependentField, independentField, parsedAmounts, showWrap, typedValue]);
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
@@ -312,6 +316,14 @@ const SwapV3Page: React.FC = () => {
 
   const finalizedTransaction = useTransactionFinalizer();
 
+  const { fireEvent } = useMasaAnalytics();
+  const config = getConfig(chainId);
+  const { selectedWallet } = useSelectedWallet();
+  const getConnection = useGetConnection();
+  const fromTokenUSDPrice = useUSDCPriceFromAddress(
+    currencies[Field.INPUT]?.wrapped.address ?? '',
+  );
+
   const handleSwap = useCallback(() => {
     if (!swapCallback) {
       return;
@@ -319,6 +331,7 @@ const SwapV3Page: React.FC = () => {
     if (priceImpact && !confirmPriceImpactWithoutFee(priceImpact, t)) {
       return;
     }
+
     setSwapState({
       attemptingTxn: true,
       tradeToConfirm,
@@ -365,6 +378,27 @@ const SwapV3Page: React.FC = () => {
               account,
             ].join('/'),
           });
+          if (
+            account &&
+            currencies[Field.INPUT] &&
+            selectedWallet &&
+            chainId === ChainId.MATIC
+          ) {
+            const connection = getConnection(selectedWallet);
+            fireEvent('trade', {
+              user_address: account,
+              network: config['networkName'],
+              contract_address: SWAP_ROUTER_ADDRESSES[chainId],
+              asset_amount: formattedAmounts[Field.INPUT],
+              asset_ticker: currencies[Field.INPUT].symbol ?? '',
+              additionalEventData: {
+                wallet: connection.name,
+                asset_usd_amount: (
+                  Number(formattedAmounts[Field.INPUT]) * fromTokenUSDPrice
+                ).toString(),
+              },
+            });
+          }
         } catch (error) {
           setSwapState({
             attemptingTxn: false,
@@ -387,14 +421,22 @@ const SwapV3Page: React.FC = () => {
   }, [
     swapCallback,
     priceImpact,
+    t,
+    account,
+    currencies,
+    selectedWallet,
+    chainId,
     tradeToConfirm,
     showConfirm,
+    getConnection,
+    fireEvent,
+    config,
+    formattedAmounts,
+    fromTokenUSDPrice,
+    finalizedTransaction,
     recipient,
     recipientAddress,
-    finalizedTransaction,
-    account,
     trade,
-    t,
   ]);
 
   // errors
@@ -450,7 +492,7 @@ const SwapV3Page: React.FC = () => {
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
 
   const handleInputSelect = useCallback(
-    (inputCurrency) => {
+    (inputCurrency: any) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
       if (
         (inputCurrency &&
@@ -528,7 +570,7 @@ const SwapV3Page: React.FC = () => {
   }, [maxInputAmount, onUserInput]);
 
   const handleOutputSelect = useCallback(
-    (outputCurrency) => {
+    (outputCurrency: any) => {
       if (
         (outputCurrency &&
           outputCurrency.isNative &&

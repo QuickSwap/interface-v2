@@ -191,7 +191,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
   const adding = Boolean(lists[listUrlInput]?.loadingRequestId);
   const [addError, setAddError] = useState<string | null>(null);
 
-  const handleInput = useCallback((e) => {
+  const handleInput = useCallback((e: any) => {
     setListUrlInput(e.target.value);
     setAddError(null);
   }, []);
@@ -228,7 +228,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
   }, [listUrlInput]);
 
   const handleEnterKey = useCallback(
-    (e) => {
+    (e: any) => {
       if (validUrl && e.key === 'Enter') {
         handleAddList();
       }

@@ -125,8 +125,14 @@ export function useEthPrice(): {
 
   const dispatch = useDispatch();
   const _updateETHPrice = useCallback(
-    ({ price, oneDayPrice, ethPriceChange }) => {
-      dispatch(updateEthPrice({ price, oneDayPrice, ethPriceChange }));
+    ({ price, oneDayPrice, ethPriceChange }: ETHPrice) => {
+      dispatch(
+        updateEthPrice({
+          price: price ?? 0,
+          oneDayPrice: oneDayPrice ?? 0,
+          ethPriceChange: ethPriceChange ?? 0,
+        }),
+      );
     },
     [dispatch],
   );
@@ -147,8 +153,14 @@ export function useMaticPrice(): {
 
   const dispatch = useDispatch();
   const _updateMaticPrice = useCallback(
-    ({ price, oneDayPrice, maticPriceChange }) => {
-      dispatch(updateMaticPrice({ price, oneDayPrice, maticPriceChange }));
+    ({ price, oneDayPrice, maticPriceChange }: MaticPrice) => {
+      dispatch(
+        updateMaticPrice({
+          price: price ?? 0,
+          oneDayPrice: oneDayPrice ?? 0,
+          maticPriceChange: maticPriceChange ?? 0,
+        }),
+      );
     },
     [dispatch],
   );
