@@ -1,6 +1,6 @@
 import React, { lazy, useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React, useIsProMode } from 'hooks';
+import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
 import NewsletterSignupPanel from './NewsletterSignupPanel';
@@ -29,6 +29,15 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   }, [isProMode, location, name]);
+
+  const { firePageViewEvent } = useMasaAnalytics();
+
+  const { pathname } = location;
+  useEffect(() => {
+    const page = `https://quickswap.exchange/#${pathname}`;
+    firePageViewEvent({ page, user_address: account });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const intractKey = process.env.REACT_APP_INTRACT_KEY;
   useEffect(() => {

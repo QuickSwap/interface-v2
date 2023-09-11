@@ -52,7 +52,7 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
   );
 
   const Row = useCallback(
-    ({ data, index, style }) => {
+    ({ data, index, style }: { data: any[]; index: number; style?: any }) => {
       const currency = data[index];
       const isSelected = Boolean(
         selectedCurrency && currencyEquals(selectedCurrency, currency),

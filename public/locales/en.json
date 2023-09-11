@@ -422,6 +422,7 @@
   "installBitget": "Install Bitget Wallet",
   "installTrustWallet": "Install TrustWallet",
   "installOkxWallet": "Install OKX Wallet",
+  "installCryptocom": "Install Crypto.com Wallet",
   "wrongNetwork": "Wrong Network",
   "connectPolygonNetwork": "Please connect to the appropriate Polygon network.",
   "errorConnectRefresh": "Error connecting. Try refreshing the page.",

@@ -61,7 +61,7 @@ export default function StakeModalFarmingTiers({
   ]);
 
   const handleTier = useCallback(
-    (tier) => {
+    (tier: any) => {
       if (selectedTier === tier) {
         setSelectedTier(undefined);
         selectTier('');

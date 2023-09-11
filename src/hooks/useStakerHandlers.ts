@@ -32,7 +32,7 @@ export function useFarmingHandlers() {
   //exit from basic farming and claim than
   const claimRewardsHandler = useCallback(
     async (
-      token,
+      token: any,
       {
         limitRewardToken,
         limitBonusRewardToken,
@@ -48,8 +48,8 @@ export function useFarmingHandlers() {
         limitBonusEarned,
         limitEarned,
         isDetached,
-      },
-      farmingType,
+      }: any,
+      farmingType: any,
     ) => {
       if (!account || !provider || !chainId) return;
 
@@ -234,14 +234,14 @@ export function useFarmingHandlers() {
   //collect rewards and claim than
   const eternalCollectRewardHandler = useCallback(
     async (
-      token,
+      token: any,
       {
         pool,
         eternalRewardToken,
         eternalBonusRewardToken,
         eternalStartTime,
         eternalEndTime,
-      },
+      }: any,
     ) => {
       if (!account || !provider || !chainId) return;
 
@@ -347,7 +347,7 @@ export function useFarmingHandlers() {
   );
 
   const withdrawHandler = useCallback(
-    async (token) => {
+    async (token: any) => {
       if (!account || !provider || !chainId) return;
 
       updateV3Stake({
@@ -414,10 +414,10 @@ export function useFarmingHandlers() {
 
   const farmHandler = useCallback(
     async (
-      selectedNFT,
-      { rewardToken, bonusRewardToken, pool, startTime, endTime },
-      eventType,
-      selectedTier,
+      selectedNFT: any,
+      { rewardToken, bonusRewardToken, pool, startTime, endTime }: any,
+      eventType: any,
+      selectedTier: any,
     ) => {
       if (!account || !provider || !chainId) return;
 
@@ -490,7 +490,7 @@ export function useFarmingHandlers() {
   );
 
   const approveHandler = useCallback(
-    async (selectedNFT) => {
+    async (selectedNFT: any) => {
       if (!account || !provider || !chainId) return;
 
       updateV3Stake({
@@ -562,7 +562,7 @@ export function useFarmingHandlers() {
   );
 
   const eternalOnlyCollectRewardHandler = useCallback(
-    async (rewardToken) => {
+    async (rewardToken: any) => {
       if (!account || !provider || !chainId) return;
 
       const farmingCenterContract = new Contract(
