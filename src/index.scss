@@ -7,8 +7,8 @@
 body {
   margin: 0;
 
-  iframe[style*="z-index: 2147483647"] {
-    display: none!important;
+  iframe[style*='z-index: 2147483647'] {
+    display: none !important;
   }
 }
 
@@ -63,7 +63,7 @@ wcm-modal {
 }
 
 [data-reach-dialog-content] {
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     transform: translateY(-90px) !important;
     max-height: calc(100vh - 120px) !important;
     min-height: calc(100vh - 120px) !important;
@@ -75,8 +75,8 @@ wcm-modal {
   padding: 24px;
   background: $bgPalette;
   border-radius: 20px;
-  @include media("screen", "<phone") {
-    padding: 16px 12px
+  @include media('screen', '<phone') {
+    padding: 16px 12px;
   }
 }
 
@@ -93,7 +93,6 @@ wcm-modal {
     }
   }
 }
-
 
 .buttonGroup {
   text-align: center;
@@ -134,7 +133,7 @@ wcm-modal {
       }
     }
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     & .MuiGrid-item {
       width: 100%;
       margin-bottom: 32px;
@@ -157,15 +156,15 @@ wcm-modal {
   align-items: center;
   flex-direction: column;
   margin: 0 auto;
-  padding: 112px 32px 0;
-  @include media("screen", "<tablet") {
-    padding: 24px 12px 0;
+  padding: 152px 32px 0;
+  @include media('screen', '<tablet') {
+    padding: 190px 12px 0;
   }
 }
 
 .pageProModeWrapper {
-  padding-top: 88px;
-  @include media("screen", "<tablet") {
+  padding-top: 128px;
+  @include media('screen', '<tablet') {
     padding-top: 0;
   }
 }
@@ -177,9 +176,16 @@ wcm-modal {
   align-items: center;
   flex-direction: column;
   margin: 24px auto;
-  padding: 0 32px;
-  @include media("screen", "<phone") {
-    padding: 0 12px;
+  padding: 128px 32px 0;
+  @include media('screen', '<tablet') {
+    padding: 190px 12px 0;
+  }
+}
+
+.pageWrapper-proMode {
+  padding: 128px 0 0;
+  @include media('screen', '<tablet') {
+    padding: 190px 0 0;
   }
 }
 
@@ -375,7 +381,8 @@ wcm-modal {
   & p {
     font-size: 8px;
   }
-  & p, & span {
+  & p,
+  & span {
     color: $secondary1;
     font-weight: 600;
   }
@@ -414,4 +421,67 @@ wcm-modal {
 
 .p-1 {
   padding: 1rem;
+}
+
+.staticNewsletterSignUpPanel {
+  position: fixed;
+  padding: 16px;
+  width: 300px;
+  border-radius: 21px;
+  border: 1px solid $divider;
+  right: 24px;
+  top: 140px;
+  z-index: 9;
+  text-align: center;
+  backdrop-filter: blur(3px);
+  background-color: $bgPalette1;
+  & p {
+    color: $textSecondary;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+  }
+  & h4 {
+    font-size: 23px;
+    line-height: 23px;
+    margin: 8px 0;
+  }
+  & small {
+    color: $grey35;
+    line-height: 14px;
+  }
+  & input {
+    width: 100%;
+    margin: 8px 0;
+    background-color: $bgColor;
+    border: 1px solid $grey34;
+    box-shadow: none;
+    height: 43px;
+    border-radius: 11px;
+    padding: 0 8px;
+    outline: none;
+    color: white;
+  }
+  & button {
+    width: 100%;
+    border-radius: 10px;
+    background: linear-gradient(0deg, $blue11 0.6%, $purple6 100.1%);
+    box-shadow: 0 0 7px 0 $purple7;
+    height: 33px;
+    & span {
+      font-size: 12.11px;
+      font-weight: 600;
+    }
+  }
+  & > div {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: $textSecondary;
+  }
+  @include media('screen', '<tablet') {
+    top: 180px;
+  }
 }

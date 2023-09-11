@@ -35,11 +35,11 @@
   & div {
     position: absolute;
     color: white;
-    right: 16px;
+    right: 12px;
     display: flex;
   }
   @include media('screen', '<tablet') {
-    padding: 6px 8px;
+    padding: 6px 28px;
     flex-direction: column;
     & button {
       margin: 6px 0 0;

@@ -61,12 +61,7 @@ const SwapPage: React.FC = () => {
   });
 
   return (
-    <Box
-      width='100%'
-      mb={3}
-      id='swap-page'
-      style={{ paddingTop: tabletWindowSize ? '0px' : '88px' }}
-    >
+    <Box width='100%' mb={3} id='swap-page'>
       {openSettingsModal && (
         <SettingsModal
           open={openSettingsModal}

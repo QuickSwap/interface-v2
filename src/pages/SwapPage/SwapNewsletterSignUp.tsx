@@ -9,7 +9,7 @@ const SwapNewsletterSignup: React.FC = () => {
     <Box className='wrapper newsletterSignupSwap'>
       <p>{t('dragonDispatch')}</p>
       <h4>{t('quickOfficialNewsletter')}</h4>
-      <small className='text-primaryText'>
+      <small>
         {t('newsletterSignupDesc')}&nbsp;
         <b>{t('earn300QUICK')}</b>
       </small>
