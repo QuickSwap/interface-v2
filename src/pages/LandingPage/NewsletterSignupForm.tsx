@@ -5,6 +5,23 @@ import newsletterBg from 'assets/images/newsletterBg.svg';
 
 const NewsletterSignupForm: React.FC = () => {
   const { t } = useTranslation();
+  const signupNewsletter = async () => {
+    const formSubmit = document.querySelector(
+      '[data-form="b97ce206-2a21-11ee-b259-89605999ef42"] form input[type=submit]',
+    );
+    if (formSubmit) {
+      (formSubmit as any).click();
+    }
+  };
+
+  const inputEmail = (e: any) => {
+    const emailInput = document.querySelector(
+      '[data-form="b97ce206-2a21-11ee-b259-89605999ef42"] form input[type=email]',
+    );
+    if (emailInput) {
+      (emailInput as any).value = e.target.value;
+    }
+  };
 
   return (
     <Box className='newsletterSignupWrapper'>
@@ -16,10 +33,14 @@ const NewsletterSignupForm: React.FC = () => {
           <b>{t('earn300QUICK')}</b>
         </small>
       </Box>
-      <Box className='newsletterSignupForm'>
-        <input placeholder={t('enterEmail')} />
-        <Button>{t('signup')}</Button>
-      </Box>
+      <div className='newsletterSignupForm'>
+        <input
+          type='email'
+          placeholder={t('enterEmail')}
+          onChange={inputEmail}
+        />
+        <Button onClick={signupNewsletter}>{t('signup')}</Button>
+      </div>
       <img src={newsletterBg} />
     </Box>
   );

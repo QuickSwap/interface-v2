@@ -17,6 +17,25 @@ const NewsletterSignupPanel: React.FC = () => {
       setShowPanel(true);
     }, 3000);
   }, []);
+
+  const signupNewsletter = async () => {
+    const formSubmit = document.querySelector(
+      '[data-form="b97ce206-2a21-11ee-b259-89605999ef42"] form input[type=submit]',
+    );
+    if (formSubmit) {
+      (formSubmit as any).click();
+    }
+  };
+
+  const inputEmail = (e: any) => {
+    const emailInput = document.querySelector(
+      '[data-form="b97ce206-2a21-11ee-b259-89605999ef42"] form input[type=email]',
+    );
+    if (emailInput) {
+      (emailInput as any).value = e.target.value;
+    }
+  };
+
   return showPanel ? (
     <div ref={signupPanel} className='staticNewsletterSignUpPanel'>
       <p>{t('dragonDispatch')}</p>
@@ -25,8 +44,8 @@ const NewsletterSignupPanel: React.FC = () => {
         {t('newsletterSignupDesc')}&nbsp;
         <b>{t('earn300QUICK')}</b>
       </small>
-      <input placeholder={t('enterEmail')} />
-      <Button>{t('signup')}</Button>
+      <input placeholder={t('enterEmail')} onChange={inputEmail} />
+      <Button onClick={signupNewsletter}>{t('signup')}</Button>
       <Box className='cursor-pointer' onClick={hidePanel}>
         <Close />
       </Box>
