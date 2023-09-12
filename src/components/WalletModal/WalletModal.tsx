@@ -135,7 +135,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
         try {
           const user = await uauth.user();
-          console.log('ccc', user);
           updateUDDomain(user.sub);
           setWalletView(WALLET_VIEWS.ACCOUNT);
         } catch {
