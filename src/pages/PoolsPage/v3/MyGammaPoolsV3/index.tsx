@@ -40,15 +40,6 @@ export default function MyGammaPoolsV3() {
   const lastTxHash = useLastTransactionHash();
 
   const {
-    isLoading: positionsLoading,
-    data: gammaPositions,
-    refetch: refetchGammaPositions,
-  } = useQuery({
-    queryKey: ['fetchGammaPositionsPools', lastTxHash, account, chainId],
-    queryFn: fetchGammaPositions,
-  });
-
-  const {
     isLoading: dataLoading,
     data: gammaData,
     refetch: refetchGammaData,
@@ -63,13 +54,12 @@ export default function MyGammaPoolsV3() {
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 120000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     refetchGammaData();
-    refetchGammaPositions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);
 
@@ -110,122 +100,115 @@ export default function MyGammaPoolsV3() {
     });
   });
 
-  const stakedLoading = !!stakedAmountData.find(
-    (callStates) => !!callStates.find((callData) => callData.loading),
+  const lpsWithStakedAmount = allGammaPairsToFarm.map((item) => {
+    const masterChefIndex = item.masterChefIndex ?? 0;
+    const sItem =
+      stakedAmounts && stakedAmounts.length > masterChefIndex
+        ? stakedAmounts[masterChefIndex].find(
+            (sAmount) => sAmount.pid === item.pid,
+          )
+        : undefined;
+    return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
+  });
+  const lpAddresses = lpsWithStakedAmount.map((item) => item.address);
+
+  const lpBalances = useMultipleContractSingleData(
+    lpAddresses,
+    new Interface(GammaPairABI),
+    'balanceOf',
+    [account ?? undefined],
   );
 
-  const stakedLPs = allGammaPairsToFarm
-    .map((item) => {
-      const masterChefIndex = item.masterChefIndex ?? 0;
-      const sItem =
-        stakedAmounts && stakedAmounts.length > masterChefIndex
-          ? stakedAmounts[masterChefIndex].find(
-              (sAmount) => sAmount.pid === item.pid,
-            )
-          : undefined;
-      return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
-    })
-    .filter((item) => {
-      return item.stakedAmount > 0;
-    });
-
-  const stakedLPAddresses = stakedLPs.map((lp) => lp.address);
-
-  const lpTokens = chainId
-    ? stakedLPAddresses.map((address) => new Token(chainId, address, 18))
-    : undefined;
-  const lpBalances = useTokenBalances(account ?? undefined, lpTokens);
-
   const lpTotalAmounts = useMultipleContractSingleData(
-    stakedLPAddresses,
+    lpAddresses,
     new Interface(GammaPairABI),
     'getTotalAmounts',
   );
   const lpTotalSupply = useMultipleContractSingleData(
-    stakedLPAddresses,
+    lpAddresses,
     new Interface(GammaPairABI),
     'totalSupply',
   );
 
-  const stakedPositions = stakedLPs.map((lp, ind) => {
-    const totalAmountsCalldata = lpTotalAmounts[ind];
-    const totalSupplyCalldata = lpTotalSupply[ind];
-    const totalAmount0 =
-      !totalAmountsCalldata.loading &&
-      totalAmountsCalldata.result &&
-      totalAmountsCalldata.result.length > 0
-        ? totalAmountsCalldata.result[0]
+  const stakedLoading = !!stakedAmountData.find(
+    (callStates) => !!callStates.find((callData) => callData.loading),
+  );
+  const lpBalanceLoading = !!lpBalances.find((callData) => callData.loading);
+  const lpTotalAmountsLoading = !!lpTotalAmounts.find(
+    (callData) => callData.loading,
+  );
+  const lpTotalSupplyLoading = !!lpTotalSupply.find(
+    (callData) => callData.loading,
+  );
+  const loading =
+    stakedLoading ||
+    lpBalanceLoading ||
+    lpTotalAmountsLoading ||
+    lpTotalSupplyLoading ||
+    dataLoading;
+
+  const gammaPositions = lpsWithStakedAmount
+    .map((lp, ind) => {
+      const totalAmountsCalldata = lpTotalAmounts[ind];
+      const totalSupplyCalldata = lpTotalSupply[ind];
+      const lpBalanceCallData = lpBalances[ind];
+      const totalAmount0 =
+        !totalAmountsCalldata.loading &&
+        totalAmountsCalldata.result &&
+        totalAmountsCalldata.result.length > 0
+          ? totalAmountsCalldata.result[0]
+          : undefined;
+      const totalAmount1 =
+        !totalAmountsCalldata.loading &&
+        totalAmountsCalldata.result &&
+        totalAmountsCalldata.result.length > 1
+          ? totalAmountsCalldata.result[1]
+          : undefined;
+      const totalSupply =
+        !totalSupplyCalldata.loading &&
+        totalSupplyCalldata.result &&
+        totalSupplyCalldata.result.length > 0
+          ? Number(formatUnits(totalSupplyCalldata.result[0], 18))
+          : 0;
+      const lpBalance =
+        !lpBalanceCallData.loading &&
+        lpBalanceCallData.result &&
+        lpBalanceCallData.result.length > 0
+          ? Number(formatUnits(lpBalanceCallData.result[0], 18))
+          : 0;
+
+      const lpData = gammaData
+        ? gammaData[lp.address.toLowerCase()]
         : undefined;
-    const totalAmount1 =
-      !totalAmountsCalldata.loading &&
-      totalAmountsCalldata.result &&
-      totalAmountsCalldata.result.length > 1
-        ? totalAmountsCalldata.result[1]
-        : undefined;
-    const totalSupply =
-      !totalSupplyCalldata.loading &&
-      totalSupplyCalldata.result &&
-      totalSupplyCalldata.result.length > 0
-        ? Number(formatUnits(totalSupplyCalldata.result[0], 18))
-        : 0;
+      const lpUSD =
+        lpData && lpData.totalSupply && Number(lpData.totalSupply) > 0
+          ? (Number(lpData.tvlUSD) / Number(lpData.totalSupply)) * 10 ** 18
+          : 0;
 
-    const lpData = gammaData ? gammaData[lp.address.toLowerCase()] : undefined;
-    const lpUSD =
-      lpData && lpData.totalSupply && Number(lpData.totalSupply) > 0
-        ? (Number(lpData.tvlUSD) / Number(lpData.totalSupply)) * 10 ** 18
-        : 0;
-    const lpBalanceInd = Object.keys(lpBalances).findIndex(
-      (addr) => addr.toLowerCase() === lp.address.toLowerCase(),
-    );
-    const lpBalance =
-      lpBalanceInd >= 0 ? Object.values(lpBalances)[lpBalanceInd] : undefined;
-    const lpBalanceNumber = lpBalance ? Number(lpBalance.toExact()) : 0;
-    const balanceUSD = (lpBalanceNumber + lp.stakedAmount) * lpUSD;
+      const balanceUSD = (lpBalance + lp.stakedAmount) * lpUSD;
 
-    return {
-      totalAmount0,
-      totalAmount1,
-      totalSupply,
-      balanceUSD,
-      lpAmount: lpBalanceNumber + lp.stakedAmount,
-      pairAddress: lp.address,
-      token0Address: lp.token0Address,
-      token1Address: lp.token1Address,
-      farming: true,
-    };
-  });
-
-  const gammaPositionList =
-    gammaPositions && chainId
-      ? Object.keys(gammaPositions)
-          .filter(
-            (value) =>
-              !!allGammaPairsToFarm.find(
-                (pair) => pair.address.toLowerCase() === value.toLowerCase(),
-              ),
-          )
-          .filter(
-            (pairAddress) =>
-              !stakedPositions.find(
-                (item) =>
-                  item.pairAddress.toLowerCase() === pairAddress.toLowerCase(),
-              ),
-          )
-      : [];
+      return {
+        totalAmount0,
+        totalAmount1,
+        totalSupply,
+        balanceUSD,
+        lpAmount: lpBalance + lp.stakedAmount,
+        pairAddress: lp.address,
+        token0Address: lp.token0Address,
+        token1Address: lp.token1Address,
+        farming: lp.stakedAmount > 0,
+      };
+    })
+    .filter((item) => item.lpAmount > 0);
 
   return (
     <Box>
-      {positionsLoading || stakedLoading || dataLoading ? (
+      {loading ? (
         <Box mt={2} className='flex justify-center'>
           <Loader stroke='white' size={'2rem'} />
         </Box>
-      ) : (gammaPositions && gammaPositionList.length > 0) ||
-        stakedPositions.length > 0 ? (
-        <GammaLPList
-          gammaPairs={gammaPositionList}
-          gammaPositions={gammaPositions}
-          stakedPositions={stakedPositions}
-        />
+      ) : gammaPositions.length > 0 ? (
+        <GammaLPList gammaPositions={gammaPositions} />
       ) : (
         <Box mt={2} textAlign='center'>
           <p>{t('noLiquidityPositions')}.</p>
