@@ -433,7 +433,7 @@ export function useV3PositionsCount(
       return uniV3BalanceResult[0].toNumber();
     }
     return 0;
-  }, [balanceResult]);
+  }, [uniV3BalanceResult]);
 
   const uniV3TokenIdsArgs = useMemo(() => {
     if (uniV3AccountBalance && account) {
@@ -471,7 +471,7 @@ export function useV3PositionsCount(
     return uniV3Positions.filter((position) =>
       hideClosePosition ? position.liquidity.gt('0') : true,
     ).length;
-  }, [hideClosePosition, positions]);
+  }, [hideClosePosition, uniV3Positions]);
 
   const totalCount =
     positionCount +
