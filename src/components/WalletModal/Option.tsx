@@ -1,22 +1,9 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { WalletOptionProps } from './options/WalletOptionProps';
 
-interface OptionProps {
-  link?: string | null;
-  clickable?: boolean;
-  size?: number | null;
-  onClick?: () => void;
-  color: string;
-  header: React.ReactNode;
-  subheader: React.ReactNode | null;
-  icon: string;
-  active?: boolean;
-  id: string;
-  installLink?: string | null;
-}
-
-const Option: React.FC<OptionProps> = ({
+const Option: React.FC<WalletOptionProps> = ({
   link = null,
   onClick,
   header,

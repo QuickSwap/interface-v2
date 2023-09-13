@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import './index.scss';
 import { Field } from 'state/mint/actions';
@@ -22,8 +22,9 @@ import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import { Box, Button } from '@material-ui/core';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
-import { GammaPairs, GlobalConst } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
+import { getGammaPairsForTokens } from 'utils';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;
@@ -87,22 +88,18 @@ export function EnterAmounts({
     };
   }, {});
 
-  const baseCurrencyAddress =
-    currencyA && currencyA.wrapped
-      ? currencyA.wrapped.address.toLowerCase()
-      : '';
-  const quoteCurrencyAddress =
-    currencyB && currencyB.wrapped
-      ? currencyB.wrapped.address.toLowerCase()
-      : '';
-  const gammaPair = chainId
-    ? GammaPairs[chainId][baseCurrencyAddress + '-' + quoteCurrencyAddress] ??
-      GammaPairs[chainId][quoteCurrencyAddress + '-' + baseCurrencyAddress]
-    : [];
+  const gammaPairData = getGammaPairsForTokens(
+    chainId,
+    currencyA?.wrapped.address,
+    currencyB?.wrapped.address,
+  );
+  const gammaPair = gammaPairData?.pairs;
   const gammaPairAddress =
     gammaPair && gammaPair.length > 0
       ? gammaPair.find((pair) => pair.type === preset)?.address
       : undefined;
+
+  const uniPilotVaultAddress = mintInfo.presetRange?.address;
 
   // check whether the user has approved the router on the tokens
   const currencyAApproval =
@@ -133,6 +130,9 @@ export function EnterAmounts({
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
         ? gammaPairAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+        ? uniPilotVaultAddress
         : positionManagerAddress
       : undefined,
   );
@@ -143,6 +143,9 @@ export function EnterAmounts({
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
         ? gammaPairAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+        ? uniPilotVaultAddress
         : positionManagerAddress
       : undefined,
   );

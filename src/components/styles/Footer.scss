@@ -1,12 +1,27 @@
 @use 'styles/variables' as *;
 
 .footer {
-  text-align: center;
-  padding-bottom: 110px;
+  border-top: 1px solid $divider;
   position: relative;
-  & p {
-    font-size: 14px;
-    line-height: 24px;
-    margin-top: 20px;
-  }
+  display: flex;
+  justify-content: center;
+}
+
+.footerContainer {
+  max-width: 1296px;
+  width: 100%;
+  overflow: hidden;
+  padding: 0 24px;
+}
+
+.socialMenuWrapper {
+  padding: 40px 0;
+}
+
+.copyrightWrapper {
+  border-top: 1px solid $divider;
+  display: flex;
+  padding: 16px 0;
+  justify-content: space-between;
+  align-items: center;
 }

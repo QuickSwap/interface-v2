@@ -61,20 +61,14 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
               transactions[0].transaction.timestamp,
             )}`,
           );
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(
-              errorText ||
-                res.statusText ||
-                `Failed to get v2 swap transactions`,
-            );
+          if (res.ok) {
+            const data = await res.json();
+            const v2Txns =
+              data && data.data && data.data.transactions
+                ? data.data.transactions
+                : [];
+            txns = txns.concat(v2Txns ?? []);
           }
-          const data = await res.json();
-          const v2Txns =
-            data && data.data && data.data.transactions
-              ? data.data.transactions
-              : [];
-          txns = txns.concat(v2Txns ?? []);
         }
         if (pairId.v3) {
           const res = await fetch(
@@ -86,20 +80,14 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
               transactions[0].transaction.timestamp,
             )}`,
           );
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(
-              errorText ||
-                res.statusText ||
-                `Failed to get v3 swap transactions`,
-            );
+          if (res.ok) {
+            const data = await res.json();
+            const v3Txns =
+              data && data.data && data.data.transactions
+                ? data.data.transactions
+                : [];
+            txns = txns.concat(v3Txns ?? []);
           }
-          const data = await res.json();
-          const v3Txns =
-            data && data.data && data.data.transactions
-              ? data.data.transactions
-              : [];
-          txns = txns.concat(v3Txns ?? []);
         }
         const filteredTxns = txns.filter(
           (txn) =>
@@ -122,36 +110,28 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
         const res = await fetch(
           `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v2}/v2?chainId=${chainIdToUse}`,
         );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get v2 swap transactions`,
-          );
+        if (res.ok) {
+          const data = await res.json();
+          const v2Transactions =
+            data && data.data && data.data.transactions
+              ? data.data.transactions
+              : [];
+          transactions = transactions.concat(v2Transactions ?? []);
         }
-        const data = await res.json();
-        const v2Transactions =
-          data && data.data && data.data.transactions
-            ? data.data.transactions
-            : [];
-        transactions = transactions.concat(v2Transactions ?? []);
       }
 
       if (pairId.v3) {
         const res = await fetch(
           `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v3}/v3?chainId=${chainIdToUse}`,
         );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get v3 swap transactions`,
-          );
+        if (res.ok) {
+          const data = await res.json();
+          const v3Transactions =
+            data && data.data && data.data.transactions
+              ? data.data.transactions
+              : [];
+          transactions = transactions.concat(v3Transactions ?? []);
         }
-        const data = await res.json();
-        const v3Transactions =
-          data && data.data && data.data.transactions
-            ? data.data.transactions
-            : [];
-        transactions = transactions.concat(v3Transactions ?? []);
       }
 
       setTransactions(transactions);
@@ -206,7 +186,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
               />
             </Item>
             <Item className='bg-palette  mt-1'>
-              <SwapProTransactions data={transactions || []} />
+              <SwapProTransactions data={transactions} />
             </Item>
           </Grid>
           <Grid item xs={12} lg={3}></Grid>

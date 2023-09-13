@@ -7,7 +7,7 @@ import { AppState } from 'state';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { CNTFarmListInfo, StakingBasic, StakingRaw } from 'types';
 import { getTokenFromAddress } from 'utils';
-import { OLD_DQUICK } from 'constants/v3/addresses';
+import { EMPTY, OLD_DQUICK } from 'constants/v3/addresses';
 
 export class WrappedCNTStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -38,25 +38,26 @@ export class WrappedCNTStakingInfo implements StakingBasic {
     this.lp = stakingInfo.lp;
     this.name = stakingInfo.name;
 
-    this.baseToken = getTokenFromAddress(
-      stakingInfo.baseToken,
-      chainId,
-      tokenAddressMap,
-      farmTokens,
-    );
+    this.baseToken =
+      getTokenFromAddress(
+        stakingInfo.baseToken,
+        chainId,
+        tokenAddressMap,
+        farmTokens,
+      ) ?? EMPTY[chainId];
     this.tokens = [
       getTokenFromAddress(
         stakingInfo.tokens[0],
         chainId,
         tokenAddressMap,
         farmTokens,
-      ),
+      ) ?? EMPTY[chainId],
       getTokenFromAddress(
         stakingInfo.tokens[1],
         chainId,
         tokenAddressMap,
         farmTokens,
-      ),
+      ) ?? EMPTY[chainId],
     ];
 
     this.rewardToken = stakingInfo.rewardToken
@@ -65,7 +66,7 @@ export class WrappedCNTStakingInfo implements StakingBasic {
           chainId,
           tokenAddressMap,
           farmTokens,
-        )
+        ) ?? EMPTY[chainId]
       : OLD_DQUICK[chainId];
   }
 }
@@ -157,7 +158,7 @@ export function useCNTFarmList(
           .filter((address) => !tokenMap[ChainId.MATIC][address])
           .filter(
             (address) =>
-              !Object.values(GlobalValue.tokens.COMMON).find(
+              !GlobalValue.tokens.COMMON[chainId].find(
                 (token) =>
                   token.address.toLowerCase() === address.toLowerCase(),
               ),

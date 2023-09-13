@@ -1,4 +1,4 @@
-import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk';
+import { ChainId, JSBI, Percent, WETH } from '@uniswap/sdk';
 import { Presets } from 'state/mint/v3/reducer';
 import {
   DAI,
@@ -22,6 +22,25 @@ import {
   WSTETH,
   FXCBETH,
   MATIC,
+  EMPTY,
+  OLD_QUICK,
+  OLD_DQUICK,
+  CXETH,
+  VERSA,
+  SAND,
+  MAUSDC,
+  FRAX,
+  GHST,
+  CRV,
+  FBX,
+  WEFI,
+  DC,
+  DD,
+  dDD,
+  frxETH,
+  PUSH,
+  LINK,
+  AAVE,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -188,6 +207,11 @@ export const GlobalConst = {
       stableLP: '3',
       otherLP: '4',
     },
+    poolsFilter: {
+      quickswap: '0',
+      unipilot: '1',
+      gamma: '2',
+    },
   },
   analyticChart: {
     ONE_MONTH_CHART: 1,
@@ -205,6 +229,7 @@ export const GlobalConst = {
   v3LiquidityRangeType: {
     MANUAL_RANGE: '0',
     GAMMA_RANGE: '1',
+    UNIPILOT_RANGE: '2',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -213,7 +238,7 @@ export const GlobalConst = {
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
     BRAVEWALLET: 'BraveWallet',
-    BITKEEP: 'BitKeep',
+    BITGET: 'Bitget Wallet',
     INJECTED: 'Injected',
     SAFE_APP: 'Gnosis Safe App',
     ARKANE_CONNECT: 'Venly',
@@ -221,6 +246,8 @@ export const GlobalConst = {
     WALLET_LINK: 'Coinbase Wallet',
     WALLET_CONNECT: 'WalletConnect',
     ZENGO_CONNECT: 'ZenGo',
+    OKXWALLET: 'OKX Wallet',
+    CRYPTOCOM: 'Crypto.com DeFi Wallet',
   },
 };
 
@@ -610,7 +637,6 @@ export const GammaPairs: {
         address: '0xfe4bb996926aca85c9747bbec886ec2a3f510c66',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-        ableToFarm: true,
         pid: 36,
       },
       {
@@ -619,7 +645,6 @@ export const GammaPairs: {
         address: '0x2e18b825b049c4994370b0db6c35d0100295b96c',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-        ableToFarm: true,
         pid: 37,
       },
     ],
@@ -668,7 +693,6 @@ export const GammaPairs: {
         address: '0xf6bE87Ae8976f50DCd231d42580e430CF6133400',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
-        ableToFarm: true,
         pid: 42,
       },
       {
@@ -701,8 +725,8 @@ export const GammaPairs: {
     ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xbbba073c31bf03b8acf7c28ef0738decf3695683': [
       {
-        type: Presets.GAMMA_NARROW,
-        title: 'Narrow',
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
         address: '0xef4f95d8c252d64308c04f711fb31892cc4c9965',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
@@ -710,12 +734,11 @@ export const GammaPairs: {
         pid: 46,
       },
       {
-        type: Presets.GAMMA_WIDE,
-        title: 'Wide',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
         address: '0x62f88fb208df717b035325d065c6919d7913b937',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
-        ableToFarm: true,
         pid: 47,
       },
     ],
@@ -726,7 +749,6 @@ export const GammaPairs: {
         address: '0x706bae8828c260d5e52ccfa96f1258a2d2f6fdda',
         token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
         token1Address: '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc',
-        ableToFarm: true,
         pid: 48,
       },
     ],
@@ -831,7 +853,6 @@ export const GammaPairs: {
         address: '0x8557dac2a7724712f12952de3dabeef54459bd97',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0x0e9b89007eee9c958c0eda24ef70723c2c93dd58',
-        ableToFarm: true,
         pid: 58,
       },
     ],
@@ -1061,7 +1082,6 @@ export const GammaPairs: {
         address: '0xc491c1b173e932e97d9f739ccd9ae5b6d5fce4ce',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xffa188493c15dfaf2c206c97d8633377847b6a52',
-        ableToFarm: true,
         pid: 80,
       },
     ],
@@ -1094,9 +1114,41 @@ export const GammaPairs: {
         address: '0x25B186eEd64ca5FDD1bc33fc4CFfd6d34069BAec',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-        pid: 2,
-        masterChefIndex: 2,
+        pid: 81,
         ableToFarm: true,
+      },
+    ],
+    '0x236aa50979d5f3de3bd1eeb40e81137f22ab794b-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xadfc52d48d68b235b6b9453ef5130fc6dfd2513e',
+        token0Address: '0x236aa50979d5f3de3bd1eeb40e81137f22ab794b',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 82,
+      },
+    ],
+    '0x58001cc1a9e17a20935079ab40b1b8f4fc19efd1-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x45a743cd8c58c96cbd566ece33c83698e2e49424',
+        token0Address: '0x58001cc1a9e17a20935079ab40b1b8f4fc19efd1',
+        token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        ableToFarm: true,
+        pid: 84,
+      },
+    ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xd6df932a45c0f255f85145f286ea0b292b21c90b': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x5ba383530db75a22e028239dbc777c7ee8ce4752',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xd6df932a45c0f255f85145f286ea0b292b21c90b',
+        ableToFarm: true,
+        pid: 85,
       },
     ],
   },
@@ -1282,7 +1334,117 @@ export const GammaPairs: {
         pid: 16,
       },
     ],
+    '0x68286607a1d43602d880d349187c3c48c0fd05e6-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x317a0d8d2a247004370fe4fb9362b2b256d890c0',
+        token0Address: '0x68286607a1d43602d880d349187c3c48c0fd05e6',
+        token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        ableToFarm: true,
+        pid: 17,
+      },
+    ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xB5F43c2206e3cAFEcd62651F5FcE9091A0207488',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        ableToFarm: true,
+        pid: 18,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xA163C591B04242121A2aC9753A8526F63D576F9A',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        ableToFarm: true,
+        pid: 19,
+      },
+    ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xa2036f0538221a77a3937f1379699f44945018d0': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x1E97925c365cd96D74Ec55A04569915c4D65e5e0',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        ableToFarm: true,
+        pid: 20,
+      },
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xd582226B586Ab06f3Bf9353f0F2B8618a3544719',
+        token0Address: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+        token1Address: '0xa2036f0538221a77a3937f1379699f44945018d0',
+        ableToFarm: true,
+        pid: 21,
+      },
+    ],
+    '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xcf7ecee185f19e2e970a301ee37f93536ed66179': [
+      {
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        address: '0x911bfbaca43f117e52197ae62d439d6a645c8886',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0xcf7ecee185f19e2e970a301ee37f93536ed66179',
+        ableToFarm: true,
+        pid: 22,
+      },
+    ],
+    '0x4b16e4752711a7abec32799c976f3cefc0111f2b-0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xECfA9CD134E77f573b079378940A4Be944993F17',
+        token0Address: '0x4b16e4752711a7abec32799c976f3cefc0111f2b',
+        token1Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        ableToFarm: true,
+        pid: 23,
+      },
+    ],
+    '0x3d5320821bfca19fb0b5428f2c79d63bd5246f89-0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xbAAA5a2D780C5914FB1BAD0Ea6Cbf7B99589d6FE',
+        token0Address: '0x3d5320821bfca19fb0b5428f2c79d63bd5246f89',
+        token1Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        ableToFarm: true,
+        pid: 24,
+      },
+    ],
+    '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0x68791cfe079814c46e0e25c19bcc5bfc71a744f7': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x06895D6f6680E5e8301604D5E0483A3655C547B8',
+        token0Address: '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9',
+        token1Address: '0x68791cfe079814c46e0e25c19bcc5bfc71a744f7',
+        ableToFarm: true,
+        pid: 25,
+      },
+    ],
   },
+};
+
+export const UnipilotVaults: {
+  [chainId in ChainId]?: string[];
+} = {
+  [ChainId.DOGECHAIN]: [
+    '0x1749af477bb94cf84c942f0db69f4213959e0b12',
+    '0x1768bdfb0f9a508374e596f2e2c84fec48dc207f',
+    '0x2c054da252b032df9dd67c6be570b0fa2fbec905',
+    '0x4fc58e1598735e4ee6dd46852dd77e00d26ee98a',
+    '0x60ee3b3a281a18b6ceee85a2e7c4470916512c7b',
+    '0xd139300ff6bdd6ae778b1835af5dbf242194cc2f',
+    '0xf346f3eaa3e319f53413fc2a0008f0710c2ea448',
+    '0xf9edf35c75f624207bf81242024d9ea6a4f4d245',
+  ],
 };
 
 export const GlobalValue = {
@@ -1311,13 +1473,67 @@ export const GlobalValue = {
   tokens: {
     MATIC: WETH[ChainId.MATIC],
     COMMON: {
-      EMPTY: new Token(
-        ChainId.MATIC,
-        '0x0000000000000000000000000000000000000000',
-        0,
-        'EMPTY',
-        'EMPTY',
-      ),
+      [ChainId.MATIC]: [
+        EMPTY[ChainId.MATIC],
+        USDC[ChainId.MATIC],
+        USDT[ChainId.MATIC],
+        OLD_QUICK[ChainId.MATIC],
+        NEW_QUICK[ChainId.MATIC],
+        OLD_DQUICK[ChainId.MATIC],
+        NEW_DQUICK[ChainId.MATIC],
+        WBTC[ChainId.MATIC],
+        DAI[ChainId.MATIC],
+        ETHER[ChainId.MATIC],
+        MI[ChainId.MATIC],
+        axlUSDC[ChainId.MATIC],
+        TUSD[ChainId.MATIC],
+        UND[ChainId.MATIC],
+        USDD[ChainId.MATIC],
+        CXETH[ChainId.MATIC],
+        VERSA[ChainId.MATIC],
+        SAND[ChainId.MATIC],
+        MAUSDC[ChainId.MATIC],
+        FRAX[ChainId.MATIC],
+        GHST[ChainId.MATIC],
+        MATICX[ChainId.MATIC],
+        STMATIC[ChainId.MATIC],
+        WSTETH[ChainId.MATIC],
+        ANKRMATIC[ChainId.MATIC],
+        CRV[ChainId.MATIC],
+        DAVOS[ChainId.MATIC],
+        FBX[ChainId.MATIC],
+        FXCBETH[ChainId.MATIC],
+        RMATIC[ChainId.MATIC],
+        WEFI[ChainId.MATIC],
+        PUSH[ChainId.MATIC],
+      ],
+      [ChainId.DOGECHAIN]: [
+        EMPTY[ChainId.DOGECHAIN],
+        USDC[ChainId.DOGECHAIN],
+        USDT[ChainId.DOGECHAIN],
+        WBTC[ChainId.DOGECHAIN],
+        DAI[ChainId.DOGECHAIN],
+        ETHER[ChainId.DOGECHAIN],
+        MATIC[ChainId.DOGECHAIN],
+        MI[ChainId.DOGECHAIN],
+        DC[ChainId.DOGECHAIN],
+        DD[ChainId.DOGECHAIN],
+        dDD[ChainId.DOGECHAIN],
+      ],
+      [ChainId.ZKEVM]: [
+        EMPTY[ChainId.ZKEVM],
+        USDC[ChainId.ZKEVM],
+        USDT[ChainId.ZKEVM],
+        WBTC[ChainId.ZKEVM],
+        DAI[ChainId.ZKEVM],
+        MATIC[ChainId.ZKEVM],
+        CRV[ChainId.ZKEVM],
+        LINK[ChainId.ZKEVM],
+        AAVE[ChainId.ZKEVM],
+      ],
+      [ChainId.MUMBAI]: [],
+      [ChainId.DOEGCHAIN_TESTNET]: [],
+      [ChainId.ZKTESTNET]: [],
     },
   },
   marketSDK: {
@@ -1363,6 +1579,7 @@ export const GlobalData = {
       USDC[ChainId.ZKEVM],
       DAI[ChainId.ZKEVM],
       USDT[ChainId.ZKEVM],
+      FRAX[ChainId.ZKEVM],
     ],
     [ChainId.ZKTESTNET]: [],
   },
@@ -1408,7 +1625,10 @@ export const GlobalData = {
     [ChainId.MUMBAI]: [],
     [ChainId.DOGECHAIN]: [],
     [ChainId.DOEGCHAIN_TESTNET]: [],
-    [ChainId.ZKEVM]: [],
+    [ChainId.ZKEVM]: [
+      [MATIC[ChainId.ZKEVM], STMATIC[ChainId.ZKEVM]],
+      [frxETH[ChainId.ZKEVM], WETH[ChainId.ZKEVM]],
+    ],
     [ChainId.ZKTESTNET]: [],
   },
 };
@@ -1442,6 +1662,10 @@ export const ContestPairs: any = {
       address: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
       token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
       token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+    },
+    {
+      name: 'Past Winners',
+      address: 'past-winners',
     },
   ],
   [ChainId.ZKEVM]: [
@@ -1484,3 +1708,5 @@ export const LeaderBoardAnalytics = {
   CHART_DURATIONS: [1, 7, 30],
   CHART_DURATION_TEXTS: ['24H', '7D', '30D'],
 };
+
+export const unipilotVaultTypes = ['Wide', 'Balanced', 'Narrow'];

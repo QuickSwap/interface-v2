@@ -28,7 +28,6 @@ import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUnisw
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
 import {
   GAMMA_MASTERCHEF_ADDRESSES,
-  GAMMA_UNIPROXY_ADDRESSES,
   MULTICALL_ADDRESS,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   QUOTER_ADDRESSES,
@@ -46,9 +45,14 @@ import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
 import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
+import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import UNINFTPosMan from 'constants/abis/uni-v3/nft-position-manager.json';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
+import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
+import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -307,10 +311,28 @@ export function useUNIV3NFTPositionManagerContract(
   );
 }
 
-export function useGammaUNIProxyContract(withSignerIfPossible?: boolean) {
+export function useGammaUNIProxyContract(
+  pairAddress?: string,
+  withSignerIfPossible?: boolean,
+) {
+  const hypervisorContract = useGammaHypervisorContract(pairAddress);
+  const uniProxyResult = useSingleCallResult(
+    hypervisorContract,
+    'whitelistedAddress',
+  );
+  const uniProxyAddress =
+    !uniProxyResult.loading &&
+    uniProxyResult.result &&
+    uniProxyResult.result.length > 0
+      ? uniProxyResult.result[0]
+      : undefined;
   return useContract(
-    GAMMA_UNIPROXY_ADDRESSES,
-    GammaUniProxy,
+    uniProxyAddress,
+    uniProxyAddress &&
+      uniProxyAddress.toLowerCase() ===
+        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? GammaUniProxy1
+      : GammaUniProxy,
     withSignerIfPossible,
   );
 }
@@ -336,8 +358,33 @@ export function useMasterChefContracts(withSignerIfPossible?: boolean) {
 }
 
 export function useGammaHypervisorContract(
-  address: string,
+  address?: string,
   withSignerIfPossible?: boolean,
 ) {
   return useContract(address, GammaPairABI, withSignerIfPossible);
+}
+
+export function useUniPilotVaultContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, UNIPILOT_VAULT_ABI, withSignerIfPossible);
+}
+
+export function useUnipilotFarmingContract(
+  address?: string,
+  isDual?: boolean,
+  withSignerIfPossible?: boolean,
+) {
+  const singleContract = useContract(
+    address,
+    UNIPILOT_SINGLE_REWARD_ABI,
+    withSignerIfPossible,
+  );
+  const dualContract = useContract(
+    address,
+    UNIPILOT_DUAL_REWARD_ABI,
+    withSignerIfPossible,
+  );
+  return isDual ? dualContract : singleContract;
 }

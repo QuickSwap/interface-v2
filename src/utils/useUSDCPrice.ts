@@ -12,10 +12,8 @@ import { PairState, usePairs, usePair } from 'data/Reserves';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
 import { useDQUICKtoQUICK } from 'state/stake/hooks';
-import { GlobalValue } from 'constants/index';
 import { useAllCommonPairs } from 'hooks/Trades';
 import { tryParseAmount } from 'state/swap/hooks';
-import { useEthPrice, useMaticPrice } from 'state/application/hooks';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
@@ -29,6 +27,7 @@ import {
   USDT,
 } from 'constants/v3/addresses';
 import { getConfig } from 'config';
+import { useQuery } from '@tanstack/react-query';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -67,127 +66,90 @@ export function useUSDCPricesFromAddresses(
 ) {
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
-  const { ethPrice } = useEthPrice();
-  const { maticPrice } = useMaticPrice();
-  const [prices, setPrices] = useState<
-    { address: string; price: number }[] | undefined
-  >();
   const v2 = config['v2'] && !onlyV3;
   const addressStr = addressArray.join('_');
 
-  useEffect(() => {
-    if (!chainId) return;
-    (async () => {
-      const addresses = addressStr.split('_');
+  const fetchTokenPrices = async () => {
+    const addresses = addressStr.split('_');
 
-      if (ethPrice.price && maticPrice.price) {
-        let addressesNotInV2: string[] = [],
-          pricesV2: any[] = [];
+    let pricesV2: any[] = [];
+    let pricesV3: any[] = [];
 
-        if (v2) {
-          const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v2?chainId=${chainId}&addresses=${addressStr}`,
-          );
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(
-              errorText || res.statusText || `Failed to get v2 token price`,
-            );
-          }
-          const data = await res.json();
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v3?chainId=${chainId}&addresses=${addressStr}`,
+    );
+    if (res.ok) {
+      const data = await res.json();
+      pricesV3 = data && data.data && data.data.length > 0 ? data.data : [];
+    }
 
-          pricesV2 = data && data.data && data.data.length > 0 ? data.data : [];
-
-          addressesNotInV2 = addresses.filter((address) => {
-            const priceV2 = pricesV2.find(
-              (item: any) =>
-                item && item.id.toLowerCase() === address.toLowerCase(),
-            );
-            return (
-              !priceV2 || !priceV2.derivedETH || !Number(priceV2.derivedETH)
-            );
-          });
-        }
-
-        const res = await fetch(
-          `${
-            process.env.REACT_APP_LEADERBOARD_APP_URL
-          }/utils/token-prices/v3?chainId=${chainId}&addresses=${addressesNotInV2.join(
-            '_',
-          )}`,
+    if (v2) {
+      const addressesNotInV3 = addresses.filter((address) => {
+        const priceV3 = pricesV3.find(
+          (item: any) =>
+            item && item.id.toLowerCase() === address.toLowerCase(),
         );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get v3 token price`,
-          );
-        }
+        return !priceV3 || !priceV3.price;
+      });
+
+      const res = await fetch(
+        `${
+          process.env.REACT_APP_LEADERBOARD_APP_URL
+        }/utils/token-prices/v2?chainId=${chainId}&addresses=${addressesNotInV3.join(
+          '_',
+        )}`,
+      );
+      if (res.ok) {
         const data = await res.json();
-
-        const pricesV3 =
-          data && data.data && data.data.length > 0 ? data.data : [];
-
-        const prices = addresses.map((address) => {
-          const priceV2 = pricesV2.find(
-            (item: any) =>
-              item && item.id.toLowerCase() === address.toLowerCase(),
-          );
-          if (priceV2 && priceV2.derivedETH && Number(priceV2.derivedETH)) {
-            return {
-              address,
-              price: (ethPrice.price ?? 0) * Number(priceV2.derivedETH),
-            };
-          } else {
-            const priceV3 = pricesV3.find(
-              (item: any) =>
-                item && item.id.toLowerCase() === address.toLowerCase(),
-            );
-            if (
-              priceV3 &&
-              priceV3.derivedMatic &&
-              Number(priceV3.derivedMatic)
-            ) {
-              return {
-                address,
-                price: (maticPrice.price ?? 0) * Number(priceV3.derivedMatic),
-              };
-            }
-            return { address, price: 0 };
-          }
-        });
-        setPrices(prices);
-      } else if (maticPrice.price) {
-        const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v3?chainId=${chainId}&addresses=${addressStr}`,
-        );
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(
-            errorText || res.statusText || `Failed to get v3 token price`,
-          );
-        }
-        const data = await res.json();
-
-        const pricesV3 =
-          data && data.data && data.data.length > 0 ? data.data : [];
-
-        const prices = addresses.map((address) => {
-          const priceV3 = pricesV3.find(
-            (item: any) =>
-              item && item.id.toLowerCase() === address.toLowerCase(),
-          );
-          if (priceV3 && priceV3.derivedMatic && Number(priceV3.derivedMatic)) {
-            return {
-              address,
-              price: (maticPrice.price ?? 0) * Number(priceV3.derivedMatic),
-            };
-          }
-          return { address, price: 0 };
-        });
-        setPrices(prices);
+        pricesV2 = data && data.data && data.data.length > 0 ? data.data : [];
       }
-    })();
-  }, [ethPrice.price, maticPrice.price, v2, chainId, addressStr]);
+    }
+
+    const prices = addresses.map((address) => {
+      const priceV3 = pricesV3.find(
+        (item: any) => item && item.id.toLowerCase() === address.toLowerCase(),
+      );
+      if (priceV3 && priceV3.price) {
+        return {
+          address,
+          price: priceV3.price,
+        };
+      } else {
+        const priceV2 = pricesV2.find(
+          (item: any) =>
+            item && item.id.toLowerCase() === address.toLowerCase(),
+        );
+        if (priceV2 && priceV2.price) {
+          return {
+            address,
+            price: priceV2.price,
+          };
+        }
+        return { address, price: 0 };
+      }
+    });
+    return prices;
+  };
+
+  const { data: prices, refetch } = useQuery({
+    queryKey: ['fetchTokenPrices', chainId, addressStr, v2],
+    queryFn: fetchTokenPrices,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   return prices;
 }

@@ -194,6 +194,7 @@ export const V2_ROUTER_ADDRESS: AddressMap = {
 
 export const PARASWAP_PROXY_ROUTER_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0x216b4b4ba9f3e719726886d34a177484278bfcae',
+  [ChainId.ZKEVM]: '0xc8a21fcd5a100c3ecc037c97e2f9c53a8d3a02a1',
 };
 
 export const PARASWAP_ROUTER_ADDRESS: AddressMap = {
@@ -215,6 +216,7 @@ export const QUICK_ADDRESS: AddressMap = {
 
 export const NEW_QUICK_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
+  [ChainId.ZKEVM]: '0x68286607A1d43602d880D349187c3c48c0fD05E6',
 };
 
 export const DL_QUICK_ADDRESS: AddressMap = {
@@ -362,6 +364,13 @@ export const NEW_QUICK: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     NEW_QUICK_ADDRESS[ChainId.MATIC],
+    18,
+    'QUICK',
+    'QuickSwap(NEW)',
+  ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    NEW_QUICK_ADDRESS[ChainId.ZKEVM],
     18,
     'QUICK',
     'QuickSwap(NEW)',
@@ -617,6 +626,13 @@ export const FRAX: { [chainId: number]: Token } = {
     'FRAX',
     'FRAX',
   ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0xFf8544feD5379D9ffa8D47a74cE6b91e632AC44D',
+    18,
+    'FRAX',
+    'FRAX',
+  ),
 };
 
 export const GHST: { [chainId: number]: Token } = {
@@ -643,6 +659,13 @@ export const STMATIC: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     '0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4',
+    18,
+    'stMatic',
+    'Staked MATIC',
+  ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x83b874c1e09d316059d929da402dcb1a98e92082',
     18,
     'stMatic',
     'Staked MATIC',
@@ -676,6 +699,13 @@ export const CRV: { [chainId: number]: Token } = {
     18,
     'CRV',
     'CRV (PoS)',
+  ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x3d5320821bfca19fb0b5428f2c79d63bd5246f89',
+    18,
+    'CRV',
+    'Curve DAO Token',
   ),
 };
 
@@ -729,6 +759,70 @@ export const WEFI: { [chainId: number]: Token } = {
   ),
 };
 
+export const frxETH: { [chainId: number]: Token } = {
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0xcf7ecee185f19e2e970a301ee37f93536ed66179',
+    18,
+    'frxETH',
+    'Frax Ether',
+  ),
+};
+
+export const PUSH: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x58001cc1a9e17a20935079ab40b1b8f4fc19efd1',
+    18,
+    'PUSH',
+    'Ethereum Push Notification Service (PoS)',
+  ),
+};
+
+export const LINK: { [chainId: number]: Token } = {
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x4b16e4752711a7abec32799c976f3cefc0111f2b',
+    18,
+    'LINK',
+    'ChainLink Token',
+  ),
+};
+
+export const AAVE: { [chainId: number]: Token } = {
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x68791cfe079814c46e0e25c19bcc5bfc71a744f7',
+    18,
+    'AAVE',
+    'Aave Token',
+  ),
+};
+
+export const EMPTY: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x0000000000000000000000000000000000000000',
+    0,
+    'EMPTY',
+    'EMPTY',
+  ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0x0000000000000000000000000000000000000000',
+    0,
+    'EMPTY',
+    'EMPTY',
+  ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x0000000000000000000000000000000000000000',
+    0,
+    'EMPTY',
+    'EMPTY',
+  ),
+};
+
 export const DLQUICK: { [chainId: number]: Token } = {
   [ChainId.MATIC]: NEW_QUICK[ChainId.MATIC],
   [ChainId.DOGECHAIN]: DD[ChainId.DOGECHAIN],
@@ -761,6 +855,7 @@ export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
     DC[ChainId.DOGECHAIN],
     DD[ChainId.DOGECHAIN],
   ],
+  [ChainId.ZKEVM]: [],
 };
 
 export const StableCoins: { [ChainId: number]: Token[] } = {
@@ -816,6 +911,9 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(MATIC[ChainId.ZKEVM]),
     toV3Token(DAI[ChainId.ZKEVM]),
     toV3Token(WBTC[ChainId.ZKEVM]),
+    toV3Token(NEW_QUICK[ChainId.ZKEVM]),
+    toV3Token(FRAX[ChainId.ZKEVM]),
+    toV3Token(frxETH[ChainId.ZKEVM]),
   ],
 };
 
@@ -850,6 +948,7 @@ export const SUGGESTED_BASES: {
     MATIC[ChainId.ZKEVM],
     DAI[ChainId.ZKEVM],
     WBTC[ChainId.ZKEVM],
+    NEW_QUICK[ChainId.ZKEVM],
   ],
 };
 

@@ -239,6 +239,10 @@ wcm-modal {
   display: flex;
 }
 
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
 .flex-col {
   flex-direction: column;
 }
@@ -339,6 +343,10 @@ wcm-modal {
 
 .btn-exit:hover {
   opacity: 85%;
+}
+
+.m-auto {
+  margin: auto;
 }
 
 .mx-auto {

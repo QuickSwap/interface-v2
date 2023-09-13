@@ -33,6 +33,7 @@ export interface SyrupListInfo {
   readonly logoURI?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CNTFarmListInfo extends FarmListInfo {}
 
 export interface DualFarmListInfo {
@@ -45,6 +46,7 @@ export interface DualFarmListInfo {
 }
 
 export interface LairInfo {
+  loading: boolean;
   lairAddress: string;
 
   dQUICKtoQUICK: TokenAmount;

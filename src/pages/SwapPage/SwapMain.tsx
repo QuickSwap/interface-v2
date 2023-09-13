@@ -58,12 +58,6 @@ const SwapMain: React.FC = () => {
     if (v3) {
       tabs.push({ name: 'marketV3', key: SWAP_V3 });
     }
-    if (showLimitOrder) {
-      tabs.push({ name: 'limit', key: SWAP_LIMIT });
-    }
-    if (showTwapOrder) {
-      tabs.push({ name: 'twap', key: SWAP_TWAP });
-    }
     if (showCrossChain) {
       tabs.push({
         name: 'crossChain',
@@ -72,7 +66,7 @@ const SwapMain: React.FC = () => {
       });
     }
     return tabs;
-  }, [showBestTrade, showLimitOrder, showTwapOrder, v2, v3, showCrossChain]);
+  }, [showBestTrade, v2, v3, showCrossChain]);
 
   const dropDownMenuText = useMemo(() => {
     if (!swapType) return;
@@ -81,7 +75,7 @@ const SwapMain: React.FC = () => {
         item.key ===
         (Number(swapType) === SWAP_CROSS_CHAIN ? 0 : Number(swapType)),
     );
-    if (!dropdownTab) return;
+    if (!dropdownTab) return 'bestTrade';
     return dropdownTab.name;
   }, [SwapDropdownTabs, swapType]);
 
@@ -182,6 +176,32 @@ const SwapMain: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swapType]);
 
+  const swapTabs = useMemo(() => {
+    const tabs = [];
+    if (showLimitOrder || showTwapOrder) {
+      tabs.push({ id: 'market', text: 'Market' });
+    }
+    if (showLimitOrder) {
+      tabs.push({ id: SWAP_LIMIT.toString(), text: 'Limit' });
+    }
+    if (showTwapOrder) {
+      tabs.push({ id: SWAP_TWAP.toString(), text: 'TWAP' });
+    }
+    return tabs;
+  }, [showLimitOrder, showTwapOrder]);
+
+  const isActiveSwapTab = (tabId: string) => {
+    if (tabId === 'market') {
+      return (
+        Number(swapType) === SWAP_BEST_TRADE ||
+        Number(swapType) === SWAP_NORMAL ||
+        Number(swapType) === SWAP_V3
+      );
+    } else {
+      return Number(tabId) === Number(swapType);
+    }
+  };
+
   return (
     <>
       {openSettingsModal && (
@@ -197,62 +217,64 @@ const SwapMain: React.FC = () => {
       >
         <Box display='flex' width={1}>
           {!isProMode ? (
-            <Box display={'flex'} className='tabContainer'>
-              {dropDownMenuText && (
-                <Button
-                  id='swap-button'
-                  aria-controls={open ? 'swap-menu' : undefined}
-                  aria-haspopup='true'
-                  aria-expanded={open ? 'true' : undefined}
-                  variant='text'
-                  disableElevation
-                  onClick={handleClickListItem}
-                  endIcon={<KeyboardArrowDown />}
-                  className={`tab tabMenu ${
-                    selectedIndex !== SWAP_CROSS_CHAIN ? 'activeTab' : ''
-                  }`}
-                >
-                  {t(dropDownMenuText)}
-                </Button>
-              )}
-              <Menu
-                id='swap-menu'
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'swap-button',
-                  role: 'listbox',
-                }}
-              >
-                {SwapDropdownTabs.filter((d) => d.visible !== false).map(
-                  (option, index) => (
-                    <MenuItem
-                      key={option.key}
-                      disabled={option.key === selectedIndex}
-                      selected={option.key === selectedIndex}
-                      onClick={(event) => handleMenuItemClick(event, index)}
-                    >
-                      {t(option.name)}
-                    </MenuItem>
-                  ),
+            <>
+              <Box display='flex' className='tabContainer'>
+                {dropDownMenuText && (
+                  <Button
+                    id='swap-button'
+                    aria-controls={open ? 'swap-menu' : undefined}
+                    aria-haspopup='true'
+                    aria-expanded={open ? 'true' : undefined}
+                    variant='text'
+                    disableElevation
+                    onClick={handleClickListItem}
+                    endIcon={<KeyboardArrowDown />}
+                    className={`tab tabMenu ${
+                      selectedIndex !== SWAP_CROSS_CHAIN ? 'activeTab' : ''
+                    }`}
+                  >
+                    {t(dropDownMenuText)}
+                  </Button>
                 )}
-              </Menu>
-              {showCrossChain && (
-                <Box
-                  className={`tab ${
-                    selectedIndex === SWAP_CROSS_CHAIN ? 'activeTab' : ''
-                  }`}
-                  onClick={() => {
-                    setSelectedIndex(SWAP_CROSS_CHAIN);
-                    setAnchorEl(null);
-                    redirectWithSwapType(SWAP_CROSS_CHAIN);
+                <Menu
+                  id='swap-menu'
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    'aria-labelledby': 'swap-button',
+                    role: 'listbox',
                   }}
                 >
-                  <p className='trade-btn'>{t('crossChain')}</p>
-                </Box>
-              )}
-            </Box>
+                  {SwapDropdownTabs.filter((d) => d.visible !== false).map(
+                    (option, index) => (
+                      <MenuItem
+                        key={option.key}
+                        disabled={option.key === selectedIndex}
+                        selected={option.key === selectedIndex}
+                        onClick={(event) => handleMenuItemClick(event, index)}
+                      >
+                        {t(option.name)}
+                      </MenuItem>
+                    ),
+                  )}
+                </Menu>
+                {showCrossChain && (
+                  <Box
+                    className={`tab ${
+                      selectedIndex === SWAP_CROSS_CHAIN ? 'activeTab' : ''
+                    }`}
+                    onClick={() => {
+                      setSelectedIndex(SWAP_CROSS_CHAIN);
+                      setAnchorEl(null);
+                      redirectWithSwapType(SWAP_CROSS_CHAIN);
+                    }}
+                  >
+                    <p className='trade-btn'>{t('crossChain')}</p>
+                  </Box>
+                )}
+              </Box>
+            </>
           ) : (
             <>
               {SwapDropdownTabs.map((option, index) => (
@@ -302,6 +324,32 @@ const SwapMain: React.FC = () => {
           }
         </Box>
       </Box>
+      {swapTabs.length > 0 && (
+        <Box
+          margin={isProMode ? '28px 0' : '28px 0 0'}
+          className='swapLimitTabs'
+          borderRadius={isProMode ? 0 : 10}
+        >
+          {swapTabs.map((tab) => (
+            <Box
+              className={`swapLimitTab ${
+                isActiveSwapTab(tab.id) ? 'activeSwapLimitTab' : ''
+              }`}
+              key={tab.id.toString()}
+              borderRadius={isProMode ? 0 : 10}
+              onClick={() => {
+                if (tab.id === 'market') {
+                  redirectWithSwapType(SWAP_BEST_TRADE);
+                } else {
+                  redirectWithSwapType(Number(tab.id));
+                }
+              }}
+            >
+              <small>{tab.text}</small>
+            </Box>
+          ))}
+        </Box>
+      )}
       <Box
         style={{
           backgroundImage: isProMode

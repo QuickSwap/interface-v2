@@ -1,30 +1,85 @@
 import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config';
 import { formatUnits } from 'ethers/lib/utils';
-import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getContract, getTokenFromAddress } from 'utils';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import VIRTUAL_POOL_ABI from 'abis/virtual-pool.json';
+import { useActiveWeb3React } from 'hooks';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { useQuery } from '@tanstack/react-query';
 
 export function useV3DistributedRewards(chainId?: ChainId) {
+  const { provider } = useActiveWeb3React();
   const config = getConfig(chainId);
   const farmEnabled = config['farm']['available'];
-  const {
-    fetchEternalFarms: { fetchEternalFarmsFn, eternalFarms },
-  } = useFarmingSubgraph() || {};
-  useEffect(() => {
-    if (farmEnabled && chainId) {
-      fetchEternalFarmsFn();
+  const tokenMap = useSelectedTokenList();
+
+  const fetchEternalFarmsForV3Rewards = async () => {
+    if (!provider || !farmEnabled) return null;
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      return null;
     }
+    const data = await res.json();
+    const eternalFarmings =
+      data && data.data && data.data.farms ? data.data.farms : [];
+    const _eternalFarmings: any[] = [];
+
+    for (const farming of eternalFarmings) {
+      try {
+        const virtualPoolContract = getContract(
+          farming.virtualPool,
+          VIRTUAL_POOL_ABI,
+          provider,
+        );
+        const reward = await virtualPoolContract.rewardReserve0();
+        const bonusReward = await virtualPoolContract.rewardReserve1();
+
+        if (Number(reward) > 0 && Number(bonusReward) > 0) {
+          _eternalFarmings.push(farming);
+        }
+
+        _eternalFarmings.push(farming);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    return _eternalFarmings;
+  };
+
+  const { data: eternalFarms, refetch } = useQuery({
+    queryKey: ['fetchEternalFarmsV3Rewards', chainId, !!provider, farmEnabled],
+    queryFn: fetchEternalFarmsForV3Rewards,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [farmEnabled, chainId]);
+  }, [currentTime]);
+
   const allRewardTokenAddresses = eternalFarms
     ? eternalFarms
-        .filter((farm) => farm.rewardToken && farm.rewardToken.id)
-        .map(({ rewardToken }) => rewardToken.id)
-        .concat(
-          eternalFarms
-            .filter((farm) => farm.bonusRewardToken && farm.bonusRewardToken.id)
-            .map(({ bonusRewardToken }) => bonusRewardToken.id),
+        .map(({ rewardToken }) => rewardToken)
+        .concat(eternalFarms.map(({ bonusRewardToken }) => bonusRewardToken))
+        .filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex(
+              (item) => item.toLowerCase() === value.toLowerCase(),
+            ),
         )
     : [];
 
@@ -33,13 +88,24 @@ export function useV3DistributedRewards(chainId?: ChainId) {
   const totalRewardsUSD =
     eternalFarms && rewardTokenPrices
       ? eternalFarms.reduce((total, farm) => {
+          const farmRewardToken =
+            farm && farm.rewardToken && chainId
+              ? getTokenFromAddress(farm.rewardToken, chainId, tokenMap, [])
+              : undefined;
+          const farmBonusRewardToken =
+            farm && farm.bonusRewardToken && chainId
+              ? getTokenFromAddress(
+                  farm.bonusRewardToken,
+                  chainId,
+                  tokenMap,
+                  [],
+                )
+              : undefined;
           const farmRewardRate =
             Number(
               formatUnits(
                 farm.rewardRate,
-                farm && farm.rewardToken && farm.rewardToken.decimals
-                  ? Number(farm.rewardToken.decimals)
-                  : undefined,
+                farmRewardToken ? Number(farmRewardToken.decimals) : 18,
               ),
             ) *
             3600 *
@@ -48,9 +114,9 @@ export function useV3DistributedRewards(chainId?: ChainId) {
             Number(
               formatUnits(
                 farm.bonusRewardRate,
-                farm && farm.bonusRewardToken && farm.bonusRewardToken.decimals
-                  ? Number(farm.bonusRewardToken.decimals)
-                  : undefined,
+                farmBonusRewardToken
+                  ? Number(farmBonusRewardToken.decimals)
+                  : 18,
               ),
             ) *
             3600 *
@@ -58,15 +124,18 @@ export function useV3DistributedRewards(chainId?: ChainId) {
           const rewardTokenPrice =
             rewardTokenPrices.find(
               (item) =>
-                item.address.toLowerCase() ===
-                farm.rewardToken.id.toLowerCase(),
+                farm &&
+                farm.rewardToken &&
+                item.address.toLowerCase() === farm.rewardToken.toLowerCase(),
             )?.price ?? 0;
 
           const bonusRewardTokenPrice =
             rewardTokenPrices.find(
               (item) =>
+                farm &&
+                farm.bonusRewardToken &&
                 item.address.toLowerCase() ===
-                farm.bonusRewardToken.id.toLowerCase(),
+                  farm.bonusRewardToken.toLowerCase(),
             )?.price ?? 0;
 
           const totalUSD =

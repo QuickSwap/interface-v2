@@ -6,7 +6,7 @@ export default function useCopyClipboard(
 ): [boolean, (toCopy: string) => void] {
   const [isCopied, setIsCopied] = useState(false);
 
-  const staticCopy = useCallback((text) => {
+  const staticCopy = useCallback((text: string) => {
     const didCopy = copy(text);
     setIsCopied(didCopy);
   }, []);

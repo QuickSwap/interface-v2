@@ -60,6 +60,7 @@ import { Contract } from '@ethersproject/contracts';
 import {
   DLDQUICK,
   DLQUICK,
+  EMPTY,
   LAIR_ADDRESS,
   NEW_LAIR_ADDRESS,
   NEW_QUICK,
@@ -68,6 +69,7 @@ import {
 } from 'constants/v3/addresses';
 import { getConfig } from '../../config/index';
 import { useDefaultCNTFarmList } from 'state/cnt/hooks';
+import { useQuery } from '@tanstack/react-query';
 
 const web3 = new Web3('https://polygon-rpc.com/');
 
@@ -82,13 +84,18 @@ let oneDayVol: any = undefined;
 export function useTotalRewardsDistributed(
   chainId: ChainId,
 ): number | undefined {
-  const syrupRewardsInfo = Object.values(useDefaultSyrupList()[chainId]);
+  const allSyrupRewardsInfo = Object.values(useDefaultSyrupList()[chainId]);
   const dualStakingRewardsInfo = Object.values(
     useDefaultDualFarmList()[chainId],
   ).filter((x) => !x.ended);
   const stakingRewardsInfo = Object.values(
     useDefaultFarmList()[chainId],
   ).filter((x) => !x.ended);
+  const currentTimestamp = dayjs().unix();
+
+  const syrupRewardsInfo = allSyrupRewardsInfo.filter(
+    (x) => x.ending > currentTimestamp && !x.ended,
+  );
 
   const tokenAddresses = syrupRewardsInfo
     .map((item) => item.token.address)
@@ -624,10 +631,7 @@ export const getBulkPairData = async (
     `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/bulk-pair-data?chainId=${chainId}&addresses=${pairListStr}`,
   );
   if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(
-      errorText || res.statusText || `Failed to get bulk data for pair`,
-    );
+    return;
   }
   const data = await res.json();
   if (data && data.data) {
@@ -647,10 +651,7 @@ const getOneDayVolume = async (version: string, chainId: ChainId) => {
     `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/oneDayVolume?chainId=${chainId}`,
   );
   if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(
-      errorText || res.statusText || `Failed to get global data v2`,
-    );
+    return;
   }
 
   const data = await res.json();
@@ -809,7 +810,7 @@ export function useCNTStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = GlobalValue.tokens.COMMON.EMPTY;
+    const empty = EMPTY[chainId];
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
@@ -1075,7 +1076,7 @@ export function useDualStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = unwrappedToken(GlobalValue.tokens.COMMON.EMPTY);
+    const empty = unwrappedToken(EMPTY[chainId]);
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
 
@@ -1369,23 +1370,38 @@ function useLairInfo(
     accountArg,
   );
 
-  const [oneDayVolume, setOneDayVolume] = useState(0);
+  const getOneDayVol = async () => {
+    const config = getConfig(chainId);
+    let v2OneDayVol = 0,
+      v3OneDayVol = 0;
+    if (config['v2']) {
+      v2OneDayVol = await getOneDayVolume('v2', chainId);
+    }
+    if (config['v3']) {
+      v3OneDayVol = await getOneDayVolume('v3', chainId);
+    }
+    return v2OneDayVol + v3OneDayVol;
+  };
+
+  const { data: oneDayVolume, refetch } = useQuery({
+    queryKey: ['getOneDayVolume', chainId],
+    queryFn: getOneDayVol,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 
   useEffect(() => {
-    if (!chainId) return;
-    (async () => {
-      const config = getConfig(chainId);
-      let v2OneDayVol = 0,
-        v3OneDayVol = 0;
-      if (config['v2']) {
-        v2OneDayVol = await getOneDayVolume('v2', chainId);
-      }
-      if (config['v3']) {
-        v3OneDayVol = await getOneDayVolume('v3', chainId);
-      }
-      setOneDayVolume(v2OneDayVol + v3OneDayVol);
-    })();
-  }, [chainId]);
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   return useMemo(() => {
     if (!quickToken || !dQuickToQuick) {
@@ -1393,6 +1409,7 @@ function useLairInfo(
     }
 
     return {
+      loading: lairsQuickBalance.loading,
       lairAddress: lairAddress,
       dQUICKtoQUICK: new TokenAmount(
         quickToken,
@@ -1418,7 +1435,7 @@ function useLairInfo(
         dQuickToken,
         JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
       ),
-      oneDayVol: oneDayVolume,
+      oneDayVol: oneDayVolume ?? 0,
     };
   }, [
     lairAddress,
@@ -1496,7 +1513,7 @@ export function useStakingInfo(
 
   const baseTokens = info.map((item) => {
     const unwrappedCurrency = unwrappedToken(item.baseToken);
-    const empty = GlobalValue.tokens.COMMON.EMPTY;
+    const empty = EMPTY[chainId];
     return unwrappedCurrency === empty ? item.tokens[0] : item.baseToken;
   });
   const rewardTokens = info.map((item) => item.rewardToken);

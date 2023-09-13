@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import GammaLPList from './GammaLPList';
-import { useQuery } from 'react-query';
-import { getGammaData, getGammaPositions } from 'utils';
+import { useQuery } from '@tanstack/react-query';
+import { getAllGammaPairs, getGammaData, getGammaPositions } from 'utils';
 import { GammaPair, GammaPairs } from 'constants/index';
 import { useMasterChefContracts } from 'hooks/useContract';
 import {
@@ -17,8 +17,9 @@ import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
 import { Token } from '@uniswap/sdk';
 import { useTokenBalances } from 'state/wallet/hooks';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 
-export default function MyLiquidityPoolsV3() {
+export default function MyGammaPoolsV3() {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
 
@@ -37,25 +38,19 @@ export default function MyLiquidityPoolsV3() {
     return gammaData;
   };
 
-  const { isLoading: positionsLoading, data: gammaPositions } = useQuery(
-    'fetchGammaPositions',
-    fetchGammaPositions,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const lastTxHash = useLastTransactionHash();
 
-  const { isLoading: dataLoading, data: gammaData } = useQuery(
-    'fetchGammaData',
-    fetchGammaData,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const { isLoading: positionsLoading, data: gammaPositions } = useQuery({
+    queryKey: ['fetchGammaPositionsPools', lastTxHash, account, chainId],
+    queryFn: fetchGammaPositions,
+  });
 
-  const allGammaPairsToFarm = chainId
-    ? ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]))
-    : [];
+  const { isLoading: dataLoading, data: gammaData } = useQuery({
+    queryKey: ['fetchGammaDataPools', lastTxHash, chainId],
+    queryFn: fetchGammaData,
+  });
+
+  const allGammaPairsToFarm = getAllGammaPairs(chainId);
 
   const masterChefContracts = useMasterChefContracts();
 
@@ -182,12 +177,8 @@ export default function MyLiquidityPoolsV3() {
       ? Object.keys(gammaPositions)
           .filter(
             (value) =>
-              !!Object.values(GammaPairs[chainId]).find(
-                (pairData) =>
-                  !!pairData.find(
-                    (item) =>
-                      item.address.toLowerCase() === value.toLowerCase(),
-                  ),
+              !!allGammaPairsToFarm.find(
+                (pair) => pair.address.toLowerCase() === value.toLowerCase(),
               ),
           )
           .filter(
@@ -201,32 +192,29 @@ export default function MyLiquidityPoolsV3() {
 
   return (
     <Box>
-      <p className='weight-600'>{t('myGammaLP')}</p>
-      <>
-        {positionsLoading || stakedLoading || dataLoading ? (
-          <Box mt={2} className='flex justify-center'>
-            <Loader stroke='white' size={'2rem'} />
-          </Box>
-        ) : (gammaPositions && gammaPositionList.length > 0) ||
-          stakedPositions.length > 0 ? (
-          <GammaLPList
-            gammaPairs={gammaPositionList}
-            gammaPositions={gammaPositions}
-            stakedPositions={stakedPositions}
-          />
-        ) : (
-          <Box mt={2} textAlign='center'>
-            <p>{t('noLiquidityPositions')}.</p>
-            {showConnectAWallet && (
-              <Box maxWidth={250} margin='20px auto 0'>
-                <Button fullWidth onClick={toggleWalletModal}>
-                  {t('connectWallet')}
-                </Button>
-              </Box>
-            )}
-          </Box>
-        )}
-      </>
+      {positionsLoading || stakedLoading || dataLoading ? (
+        <Box mt={2} className='flex justify-center'>
+          <Loader stroke='white' size={'2rem'} />
+        </Box>
+      ) : (gammaPositions && gammaPositionList.length > 0) ||
+        stakedPositions.length > 0 ? (
+        <GammaLPList
+          gammaPairs={gammaPositionList}
+          gammaPositions={gammaPositions}
+          stakedPositions={stakedPositions}
+        />
+      ) : (
+        <Box mt={2} textAlign='center'>
+          <p>{t('noLiquidityPositions')}.</p>
+          {showConnectAWallet && (
+            <Box maxWidth={250} margin='20px auto 0'>
+              <Button fullWidth onClick={toggleWalletModal}>
+                {t('connectWallet')}
+              </Button>
+            </Box>
+          )}
+        </Box>
+      )}
     </Box>
   );
 }

@@ -3,13 +3,7 @@ import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import { Pool } from 'v3lib/entities/pool';
 import { TickMath } from 'v3lib/utils/tickMath';
 import { BigNumber } from 'ethers';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { isAddress } from 'utils';
 import Chart from 'react-apexcharts';
 import { Box } from '@material-ui/core';
@@ -17,6 +11,7 @@ import '../styles/analytics.scss';
 import { useActiveWeb3React } from 'hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;
@@ -24,14 +19,10 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
   isUni?: boolean;
 }> = ({ pairData, pairAddress, isUni }) => {
   const { t } = useTranslation();
-  const [liquidityChartData, updateLiquidtyChartData] = useState<any | null>(
-    null,
-  );
   const { chainId } = useActiveWeb3React();
 
-  useEffect(() => {
-    if (!chainId) return;
-    (async () => {
+  const fetchLiquidityChartData = async () => {
+    try {
       const res = await fetch(
         `${
           process.env.REACT_APP_LEADERBOARD_APP_URL
@@ -40,17 +31,123 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
         }`,
       );
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          errorText || res.statusText || `Failed to get top pair details`,
-        );
+        return null;
       }
       const data = await res.json();
       if (data && data.data && data.data.chartData) {
-        updateLiquidtyChartData(data.data.chartData);
+        const liquidityChartData = data.data.chartData;
+        if (
+          pairData &&
+          liquidityChartData.ticksProcessed &&
+          liquidityChartData.ticksProcessed.length > 0
+        ) {
+          const data = await Promise.all(
+            liquidityChartData.ticksProcessed.map(async (t: any, i: number) => {
+              const active = t.tickIdx === liquidityChartData.activeTickIdx;
+              const sqrtPriceX96 = TickMath.getSqrtRatioAtTick(t.tickIdx);
+              const mockTicks = [
+                {
+                  index: t.tickIdx - 60,
+                  liquidityGross: JSBI.BigInt(t.liquidityGross),
+                  liquidityNet: JSBI.multiply(
+                    JSBI.BigInt(t.liquidityNet),
+                    JSBI.BigInt('-1'),
+                  ),
+                },
+                {
+                  index: t.tickIdx,
+                  liquidityGross: JSBI.BigInt(t.liquidityGross),
+                  liquidityNet: JSBI.BigInt(t.liquidityNet),
+                },
+              ];
+              const pool =
+                _token0 && _token1
+                  ? new Pool(
+                      _token0,
+                      _token1,
+                      500,
+                      sqrtPriceX96,
+                      t.liquidityActive,
+                      t.tickIdx,
+                      mockTicks,
+                      isUni,
+                    )
+                  : undefined;
+              const nextSqrtX96 = liquidityChartData.ticksProcessed[i - 1]
+                ? TickMath.getSqrtRatioAtTick(
+                    liquidityChartData.ticksProcessed[i - 1].tickIdx,
+                  )
+                : undefined;
+
+              const maxAmountToken0 = _token0
+                ? CurrencyAmount.fromRawAmount(_token0, MAX_UINT128.toString())
+                : undefined;
+              let outputRes0;
+              if (pool && maxAmountToken0) {
+                try {
+                  outputRes0 = await pool.getOutputAmount(
+                    maxAmountToken0,
+                    nextSqrtX96,
+                  );
+                } catch {}
+              }
+
+              const token1Amount = outputRes0?.[0] as
+                | CurrencyAmount<Token>
+                | undefined;
+
+              const amount0 = token1Amount
+                ? parseFloat(token1Amount.toExact()) * parseFloat(t.price1)
+                : 0;
+              const amount1 = token1Amount
+                ? parseFloat(token1Amount.toExact())
+                : 0;
+
+              return {
+                index: i,
+                isCurrent: active,
+                activeLiquidity: parseFloat(t.liquidityActive.toString()),
+                price0: parseFloat(t.price0),
+                price1: parseFloat(t.price1),
+                tvlToken0: amount0,
+                tvlToken1: amount1,
+                token0: pairData.token0,
+                token1: pairData.token1,
+              };
+            }),
+          );
+          return data;
+        }
       }
-    })();
-  }, [pairAddress, chainId, isUni]);
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const {
+    isLoading: loadingChartData,
+    data: processedData,
+    refetch,
+  } = useQuery({
+    queryKey: ['analyticsV3PairLiquidityChartData', pairAddress, chainId],
+    queryFn: fetchLiquidityChartData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const [zoom, setZoom] = useState(5);
 
@@ -59,9 +156,6 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
   const MAX_UINT128 = BigNumber.from(2)
     .pow(128)
     .sub(1);
-
-  const [processedData, setProcessedData] = useState<any[] | null>(null);
-  const ref = useRef<HTMLDivElement>(null);
 
   const formattedAddress0 = isAddress(pairData?.token0?.id);
   const formattedAddress1 = isAddress(pairData?.token1?.id);
@@ -78,91 +172,6 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
       ? new Token(137, formattedAddress1, +pairData.token1.decimals)
       : undefined;
   }, [formattedAddress0, formattedAddress1, pairData]);
-
-  useEffect(() => {
-    if (
-      !pairData ||
-      !liquidityChartData ||
-      !liquidityChartData.ticksProcessed ||
-      !liquidityChartData.ticksProcessed.length
-    )
-      return;
-
-    async function processTicks() {
-      const _data = await Promise.all(
-        liquidityChartData.ticksProcessed.map(async (t: any, i: number) => {
-          const active = t.tickIdx === liquidityChartData.activeTickIdx;
-          const sqrtPriceX96 = TickMath.getSqrtRatioAtTick(t.tickIdx);
-          const mockTicks = [
-            {
-              index: t.tickIdx - 60,
-              liquidityGross: JSBI.BigInt(t.liquidityGross),
-              liquidityNet: JSBI.multiply(
-                JSBI.BigInt(t.liquidityNet),
-                JSBI.BigInt('-1'),
-              ),
-            },
-            {
-              index: t.tickIdx,
-              liquidityGross: JSBI.BigInt(t.liquidityGross),
-              liquidityNet: JSBI.BigInt(t.liquidityNet),
-            },
-          ];
-          const pool =
-            _token0 && _token1
-              ? new Pool(
-                  _token0,
-                  _token1,
-                  500,
-                  sqrtPriceX96,
-                  t.liquidityActive,
-                  t.tickIdx,
-                  mockTicks,
-                  isUni,
-                )
-              : undefined;
-          const nextSqrtX96 = liquidityChartData.ticksProcessed[i - 1]
-            ? TickMath.getSqrtRatioAtTick(
-                liquidityChartData.ticksProcessed[i - 1].tickIdx,
-              )
-            : undefined;
-
-          const maxAmountToken0 = _token0
-            ? CurrencyAmount.fromRawAmount(_token0, MAX_UINT128.toString())
-            : undefined;
-          const outputRes0 =
-            pool && maxAmountToken0
-              ? await pool.getOutputAmount(maxAmountToken0, nextSqrtX96)
-              : undefined;
-
-          const token1Amount = outputRes0?.[0] as
-            | CurrencyAmount<Token>
-            | undefined;
-
-          const amount0 = token1Amount
-            ? parseFloat(token1Amount.toExact()) * parseFloat(t.price1)
-            : 0;
-          const amount1 = token1Amount ? parseFloat(token1Amount.toExact()) : 0;
-
-          return {
-            index: i,
-            isCurrent: active,
-            activeLiquidity: parseFloat(t.liquidityActive.toString()),
-            price0: parseFloat(t.price0),
-            price1: parseFloat(t.price1),
-            tvlToken0: amount0,
-            tvlToken1: amount1,
-            token0: pairData.token0,
-            token1: pairData.token1,
-          };
-        }),
-      );
-      setProcessedData(_data);
-    }
-
-    processTicks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liquidityChartData, pairData, _token0, _token1]);
 
   const formattedData = useMemo(() => {
     if (!processedData) return undefined;
@@ -204,7 +213,9 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
 
   return (
     <Box position={'relative'} height='100%'>
-      {formattedData ? (
+      {loadingChartData ? (
+        <Skeleton variant='rect' width='100%' height='100%' />
+      ) : formattedData ? (
         <>
           <Chart
             type={'bar'}
@@ -344,7 +355,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
           </Box>
         </>
       ) : (
-        <Skeleton variant='rect' width='100%' height='100%' />
+        <></>
       )}
     </Box>
   );

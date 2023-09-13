@@ -4,6 +4,7 @@ import { Pool } from 'v3lib/entities/pool';
 import { Route } from 'v3lib/entities/route';
 import { useMemo } from 'react';
 import { useV3SwapPools } from './useV3SwapPools';
+import { useUserSingleHopOnly } from 'state/user/hooks';
 
 /**
  * Returns true if poolA is equivalent to poolB
@@ -78,8 +79,7 @@ export function useAllV3Routes(
     currencyOut,
   );
 
-  const singleHopOnly = false;
-  //const [singleHopOnly] = useUserSingleHopOnly();
+  const [singleHopOnly] = useUserSingleHopOnly();
 
   return useMemo(() => {
     if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut) {
@@ -89,9 +89,7 @@ export function useAllV3Routes(
       };
     }
 
-    //Hack
-    // const singleIfWrapped = (currencyIn.isNative || currencyOut.isNative)
-    const singleIfWrapped = false;
+    const singleIfWrapped = currencyIn.isNative || currencyOut.isNative;
 
     const routes = computeAllRoutes(
       currencyIn,

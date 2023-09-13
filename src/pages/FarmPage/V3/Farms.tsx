@@ -12,7 +12,17 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
 import { SearchInput, SortColumns, CustomSwitch } from 'components';
-import { GammaPair, GammaPairs, GlobalConst } from 'constants/index';
+import { GlobalConst } from 'constants/index';
+import { useUnipilotFarms } from 'hooks/v3/useUnipilotFarms';
+import UnipilotFarmsPage from 'pages/UnipilotFarmsPage';
+import { getAllGammaPairs } from 'utils';
+
+interface FarmCategory {
+  id: number;
+  text: string;
+  link: string;
+  hasSeparator?: boolean;
+}
 
 export default function Farms() {
   const { t } = useTranslation();
@@ -29,13 +39,15 @@ export default function Farms() {
 
   const history = useHistory();
 
-  const allGammaFarms = useMemo(() => {
-    return chainId
-      ? ([] as GammaPair[])
-          .concat(...Object.values(GammaPairs[chainId]))
-          .filter((item) => item.ableToFarm)
-      : [];
-  }, [chainId]);
+  const allGammaFarms = getAllGammaPairs(chainId).filter(
+    (item) => item.ableToFarm,
+  );
+
+  const { data: unipilotFarmsArray } = useUnipilotFarms(chainId);
+  const unipilotFarms = useMemo(() => {
+    if (!unipilotFarmsArray) return [];
+    return unipilotFarmsArray;
+  }, [unipilotFarmsArray]);
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -58,41 +70,41 @@ export default function Farms() {
       ? (parsedQuery.tab as string)
       : allGammaFarms.length > 0
       ? 'gamma-farms'
+      : unipilotFarms.length > 0
+      ? 'unipilot-farms'
       : 'eternal-farms';
 
   const v3FarmCategories = useMemo(() => {
-    return allGammaFarms.length > 0
-      ? [
-          {
-            text: t('myFarms'),
-            id: 0,
-            link: 'my-farms',
-          },
-          {
-            text: t('quickswapFarms'),
-            id: 1,
-            link: 'eternal-farms',
-          },
-          {
-            text: t('gammaFarms'),
-            id: 2,
-            link: 'gamma-farms',
-            hasSeparator: true,
-          },
-        ]
-      : [
-          {
-            text: t('myFarms'),
-            id: 0,
-            link: 'my-farms',
-          },
-          {
-            text: t('quickswapFarms'),
-            id: 1,
-            link: 'eternal-farms',
-          },
-        ];
-  }, [t, allGammaFarms]);
+    const farmCategories: FarmCategory[] = [
+      {
+        text: t('myFarms'),
+        id: 0,
+        link: 'my-farms',
+      },
+      {
+        text: t('quickswapFarms'),
+        id: 1,
+        link: 'eternal-farms',
+      },
+    ];
+    if (allGammaFarms.length > 0) {
+      farmCategories.push({
+        text: t('gammaFarms'),
+        id: 2,
+        link: 'gamma-farms',
+        hasSeparator: true,
+      });
+    }
+    if (unipilotFarms.length > 0) {
+      farmCategories.push({
+        text: t('unipilotFarms'),
+        id: 3,
+        link: 'unipilot-farms',
+        hasSeparator: true,
+      });
+    }
+    return farmCategories;
+  }, [t, allGammaFarms, unipilotFarms]);
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
       history.push(`?tab=${selected?.link}`);
@@ -136,7 +148,7 @@ export default function Farms() {
     ],
     [t],
   );
-  const [farmFilter, setFarmFilter] = useState(farmFilters[0]);
+  const [farmFilter, setFarmFilter] = useState(farmFilters[0].id);
 
   const [searchValue, setSearchValue] = useState('');
 
@@ -239,7 +251,7 @@ export default function Farms() {
           <Box mt={2} pl='12px' className='bg-secondary1'>
             <CustomTabSwitch
               items={farmFilters}
-              selectedItem={farmFilter}
+              value={farmFilter}
               handleTabChange={setFarmFilter}
               height={50}
             />
@@ -263,7 +275,7 @@ export default function Farms() {
       )}
       {selectedFarmCategory?.id === 1 && (
         <EternalFarmsPage
-          farmFilter={farmFilter.id}
+          farmFilter={farmFilter}
           search={searchValue}
           sortBy={sortBy}
           sortDesc={sortDesc}
@@ -272,7 +284,15 @@ export default function Farms() {
       )}
       {selectedFarmCategory?.id === 2 && (
         <GammaFarmsPage
-          farmFilter={farmFilter.id}
+          farmFilter={farmFilter}
+          search={searchValue}
+          sortBy={sortBy}
+          sortDesc={sortDesc}
+        />
+      )}
+      {selectedFarmCategory?.id === 3 && (
+        <UnipilotFarmsPage
+          farmFilter={farmFilter}
           search={searchValue}
           sortBy={sortBy}
           sortDesc={sortDesc}

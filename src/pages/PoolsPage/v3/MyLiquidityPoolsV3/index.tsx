@@ -1,99 +1,26 @@
 import React, { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Button } from '@material-ui/core';
-import { useUniV3Positions, useV3Positions } from 'hooks/v3/useV3Positions';
+import { Box } from '@material-ui/core';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
-import Loader from 'components/Loader';
-import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
-import PositionList from './components/PositionList';
-import FilterPanelItem from '../FilterPanelItem';
-import { PositionPool } from 'models/interfaces';
-import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import { getConfig } from 'config';
+import { GlobalConst } from 'constants/index';
+import CustomTabSwitch from 'components/v3/CustomTabSwitch';
+import {
+  useGammaPositionsCount,
+  useV3PositionsCount,
+  useUnipilotPositions,
+} from 'hooks/v3/useV3Positions';
+import Loader from 'components/Loader';
+import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
+import MyGammaPoolsV3 from '../MyGammaPoolsV3';
+import FilterPanelItem from '../FilterPanelItem';
+import MyUnipilotPoolsV3 from '../MyUnipilotPoolsV3';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const history = useHistory();
-  const [userHideClosedPositions, setUserHideClosedPositions] = useState(true);
-  const [hideFarmingPositions, setHideFarmingPositions] = useState(false);
-  const {
-    positions: algebraPositions,
-    loading: algebraPositionsLoading,
-  } = useV3Positions(account);
-  const {
-    positions: uniV3Positions,
-    loading: uniV3PositionsLoading,
-  } = useUniV3Positions(account);
-  const positionsLoading = algebraPositionsLoading || uniV3PositionsLoading;
-  const positions = (algebraPositions ?? []).concat(uniV3Positions ?? []);
-
-  const prevAccount = usePrevious(account);
-
-  const [openPositions, closedPositions] = positions?.reduce<
-    [PositionPool[], PositionPool[]]
-  >(
-    (acc, p) => {
-      acc[p.liquidity?.isZero() ? 1 : 0].push(p);
-      return acc;
-    },
-    [[], []],
-  ) ?? [[], []];
-
-  const filters = [
-    {
-      title: t('closed'),
-      method: setUserHideClosedPositions,
-      checkValue: userHideClosedPositions,
-    },
-    {
-      title: t('farming'),
-      method: setHideFarmingPositions,
-      checkValue: hideFarmingPositions,
-    },
-  ];
-
-  const farmingPositions = useMemo(
-    () => positions?.filter((el) => el.onFarming),
-    [positions],
-  );
-  const inRangeWithOutFarmingPositions = useMemo(
-    () => openPositions.filter((el) => !el.onFarming),
-    [openPositions],
-  );
-
-  const filteredPositions = useMemo(
-    () => [
-      ...(hideFarmingPositions || !farmingPositions ? [] : farmingPositions),
-      ...inRangeWithOutFarmingPositions,
-      ...(userHideClosedPositions ? [] : closedPositions),
-    ],
-    [
-      hideFarmingPositions,
-      farmingPositions,
-      inRangeWithOutFarmingPositions,
-      userHideClosedPositions,
-      closedPositions,
-    ],
-  );
-  const prevFilteredPositions = usePreviousNonEmptyArray(filteredPositions);
-  const _filteredPositions = useMemo(() => {
-    if (account !== prevAccount) return filteredPositions;
-
-    if (filteredPositions.length === 0 && prevFilteredPositions) {
-      return prevFilteredPositions;
-    }
-    return filteredPositions;
-  }, [prevFilteredPositions, filteredPositions, account, prevAccount]);
-
-  const newestPosition = useMemo(() => {
-    return Math.max(..._filteredPositions.map((position) => +position.tokenId));
-  }, [_filteredPositions]);
-
-  const showConnectAWallet = Boolean(!account);
-
-  const toggleWalletModal = useWalletModalToggle();
 
   const { pairs: allV2PairsWithLiquidity } = useV2LiquidityPools(
     account ?? undefined,
@@ -102,53 +29,171 @@ export default function MyLiquidityPoolsV3() {
   const config = getConfig(chainId);
   const isMigrateAvailable = config['migrate']['available'];
 
+  const [
+    userHideQuickClosedPositions,
+    setUserHideQuickClosedPositions,
+  ] = useState(true);
+  const [hideQuickFarmingPositions, setHideQuickFarmingPositions] = useState(
+    false,
+  );
+
+  const filters = [
+    {
+      title: t('closed'),
+      method: setUserHideQuickClosedPositions,
+      checkValue: userHideQuickClosedPositions,
+    },
+    {
+      title: t('farming'),
+      method: setHideQuickFarmingPositions,
+      checkValue: hideQuickFarmingPositions,
+    },
+  ];
+
+  const {
+    loading: quickPoolsLoading,
+    count: quickPoolsCount,
+  } = useV3PositionsCount(
+    account,
+    userHideQuickClosedPositions,
+    hideQuickFarmingPositions,
+  );
+  const {
+    loading: gammaPoolsLoading,
+    count: gammaPoolsCount,
+  } = useGammaPositionsCount(account, chainId);
+
+  const {
+    loading: uniPilotPositionsLoading,
+    unipilotPositions,
+  } = useUnipilotPositions(account, chainId);
+
+  const loading =
+    quickPoolsLoading || gammaPoolsLoading || uniPilotPositionsLoading;
+
+  const [poolFilter, setPoolFilter] = useState(
+    GlobalConst.utils.poolsFilter.quickswap,
+  );
+
+  const myPoolsFilter = useMemo(() => {
+    const filters = [];
+    filters.push({
+      id: GlobalConst.utils.poolsFilter.quickswap,
+      text: (
+        <Box className='flex items-center'>
+          <small>Quickswap</small>
+          <Box
+            ml='6px'
+            className={`myV3PoolCountWrapper ${
+              poolFilter === GlobalConst.utils.poolsFilter.quickswap
+                ? 'activeMyV3PoolCountWrapper'
+                : ''
+            }`}
+          >
+            {quickPoolsCount}
+          </Box>
+        </Box>
+      ),
+    });
+    if (unipilotPositions && unipilotPositions.length > 0) {
+      filters.push({
+        id: GlobalConst.utils.poolsFilter.unipilot,
+        text: (
+          <Box className='flex items-center'>
+            <small>Unipilot</small>
+            <Box
+              ml='6px'
+              className={`myV3PoolCountWrapper ${
+                poolFilter === GlobalConst.utils.poolsFilter.unipilot
+                  ? 'activeMyV3PoolCountWrapper'
+                  : ''
+              }`}
+            >
+              {unipilotPositions.length}
+            </Box>
+          </Box>
+        ),
+      });
+    }
+    if (gammaPoolsCount > 0) {
+      filters.push({
+        id: GlobalConst.utils.poolsFilter.gamma,
+        text: (
+          <Box className='flex items-center'>
+            <small>Gamma</small>
+            <Box
+              ml='6px'
+              className={`myV3PoolCountWrapper ${
+                poolFilter === GlobalConst.utils.poolsFilter.gamma
+                  ? 'activeMyV3PoolCountWrapper'
+                  : ''
+              }`}
+            >
+              {gammaPoolsCount}
+            </Box>
+          </Box>
+        ),
+      });
+    }
+    return filters;
+  }, [poolFilter, quickPoolsCount, unipilotPositions, gammaPoolsCount]);
+
   return (
     <Box>
-      <p className='weight-600'>{t('myQuickSwapLP')}</p>
-      {account && (
-        <Box mt={2} className='flex justify-between items-center'>
-          <Box className='flex'>
-            {filters.map((item, key) => (
-              <Box mr={1} key={key}>
-                <FilterPanelItem item={item} />
-              </Box>
-            ))}
-          </Box>
-          {allV2PairsWithLiquidity.length > 0 && isMigrateAvailable && (
-            <Box
-              className='v3-manage-v2liquidity-button'
-              onClick={() => history.push('/migrate')}
-            >
-              <small className='text-primary'>Migrate V2 Liquidity</small>
-            </Box>
-          )}
-        </Box>
-      )}
-      <Box mt={2}>
-        {positionsLoading ? (
-          <Box className='flex justify-center'>
-            <Loader stroke='white' size={'2rem'} />
-          </Box>
-        ) : _filteredPositions && _filteredPositions.length > 0 ? (
-          <PositionList
-            positions={_filteredPositions.sort((posA, posB) =>
-              Number(+posA.tokenId < +posB.tokenId),
-            )}
-            newestPosition={newestPosition}
-          />
-        ) : (
-          <Box textAlign='center'>
-            <p>{t('noLiquidityPositions')}.</p>
-            {showConnectAWallet && (
-              <Box maxWidth={250} margin='20px auto 0'>
-                <Button fullWidth onClick={toggleWalletModal}>
-                  {t('connectWallet')}
-                </Button>
-              </Box>
-            )}
+      <Box className='flex justify-between items-center'>
+        <p className='weight-600'>{t('myPools')}</p>
+        {allV2PairsWithLiquidity.length > 0 && isMigrateAvailable && (
+          <Box
+            className='v3-manage-v2liquidity-button'
+            onClick={() => history.push('/migrate')}
+          >
+            <small className='text-primary'>Migrate V2 Liquidity</small>
           </Box>
         )}
       </Box>
+      {loading ? (
+        <Box py={5} className='flex items-center justify-center'>
+          <Loader size='40px' />
+        </Box>
+      ) : (
+        <>
+          <Box className='myV3PoolsFilterWrapper'>
+            <CustomTabSwitch
+              items={myPoolsFilter}
+              value={poolFilter}
+              handleTabChange={setPoolFilter}
+              height={50}
+            />
+          </Box>
+          <Box>
+            {poolFilter === GlobalConst.utils.poolsFilter.quickswap && (
+              <>
+                {account && (
+                  <Box mt={2} className='flex justify-between items-center'>
+                    <Box className='flex'>
+                      {filters.map((item, key) => (
+                        <Box mr={1} key={key}>
+                          <FilterPanelItem item={item} />
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                )}
+                <MyQuickswapPoolsV3
+                  hideFarmingPositions={hideQuickFarmingPositions}
+                  userHideClosedPositions={userHideQuickClosedPositions}
+                />
+              </>
+            )}
+            {poolFilter === GlobalConst.utils.poolsFilter.unipilot && (
+              <MyUnipilotPoolsV3 />
+            )}
+            {poolFilter === GlobalConst.utils.poolsFilter.gamma && (
+              <MyGammaPoolsV3 />
+            )}
+          </Box>
+        </>
+      )}
     </Box>
   );
 }

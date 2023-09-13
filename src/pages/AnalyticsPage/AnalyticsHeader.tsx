@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
-import AdsSlider from 'components/AdsSlider';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import { getConfig } from 'config';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useIsV2 } from 'state/application/hooks';
+import { HypeLabAds } from 'components';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -28,8 +28,6 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const history = useHistory();
   const { pathname } = useLocation();
   const { t } = useTranslation();
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
   const v3 = config['v3'];
@@ -55,15 +53,15 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   return (
     <Box width='100%' mb={3}>
       <Box mb={4} className='flex items-center'>
-        <h4>{t('quickswapAnalytics')}</h4>
+        <h1 className='h4'>{t('quickswapAnalytics')}</h1>
         {v2 && v3 && !isPairDetails && (
           <Box ml={2}>
             <VersionToggle />
           </Box>
         )}
       </Box>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <AdsSlider sort='analytics' />
+      <Box margin='0 auto 24px'>
+        <HypeLabAds />
       </Box>
       <Box
         mb={4}

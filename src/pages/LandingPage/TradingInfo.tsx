@@ -1,45 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { StakeQuickModal } from 'components';
-import { useNewLairInfo, useTotalRewardsDistributed } from 'state/stake/hooks';
-import { formatCompact, useLairDQUICKAPY } from 'utils';
+import { formatCompact } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from '../../config/index';
-import { useV3DistributedRewards } from 'hooks/v3/useV3DistributedRewards';
+import DragonLayerInfoCard from './TradingInfoCards/DragonLayerInfoCard';
+import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
+import { ZkEvmTvlInfoCard } from './TradingInfoCards/ZkEvmTvlInfoCard';
 
-const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
-  globalData,
-  v3GlobalData,
-}) => {
+const TradingInfo: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const lairInfo = useNewLairInfo();
-  const [openStakeModal, setOpenStakeModal] = useState(false);
 
-  const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
   const config = getConfig(chainIdToUse);
-  const oldLair = config['lair']['oldLair'];
-  const newLair = config['lair']['newLair'];
-  const farmEnabled = config['farm']['available'];
-  //TODO: Support Multichain
-  const totalRewardsUSD = useTotalRewardsDistributed(chainIdToUse);
-  const totalRewardsUSDV3 = useV3DistributedRewards(chainIdToUse);
+
   const { t } = useTranslation();
 
   const v2 = config['v2'];
   const v3 = config['v3'];
 
+  const { data: globalData } = useAnalyticsGlobalData('v2', chainId);
+  const { data: v3GlobalData } = useAnalyticsGlobalData('v3', chainId);
+
   return (
     <>
-      {openStakeModal && (
-        <StakeQuickModal
-          open={openStakeModal}
-          onClose={() => setOpenStakeModal(false)}
-        />
-      )}
       <Box className='tradingSection'>
         {(v2 ? globalData : true) && (v3 ? v3GlobalData : true) ? (
           <h3>
@@ -69,25 +55,6 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         )}
         <p>{t('24hTradingVol')}</p>
       </Box>
-      {farmEnabled && (
-        <Box className='tradingSection'>
-          {(v2 ? totalRewardsUSD !== undefined : true) &&
-          (v3 ? totalRewardsUSDV3 !== undefined : true) ? (
-            <Box display='flex'>
-              <h6>$</h6>
-              <h3>
-                {formatCompact(
-                  (v2 ? totalRewardsUSD ?? 0 : 0) +
-                    (v3 ? totalRewardsUSDV3 ?? 0 : 0),
-                )}
-              </h3>
-            </Box>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <p>{t('24hRewardsDistributed')}</p>
-        </Box>
-      )}
       <Box className='tradingSection'>
         {(v2 ? globalData : true) && (v3 ? v3GlobalData : true) ? (
           <h3>
@@ -103,19 +70,8 @@ const TradingInfo: React.FC<{ globalData: any; v3GlobalData: any }> = ({
         )}
         <p>{t('totalTradingPairs')}</p>
       </Box>
-      {(oldLair || newLair) && (
-        <Box className='tradingSection' pt='20px'>
-          {dQUICKAPY ? (
-            <h3>{dQUICKAPY}%</h3>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
-          )}
-          <p>dQUICK {t('apy')}</p>
-          <h4 onClick={() => setOpenStakeModal(true)}>
-            {t('stake')} {'>'}
-          </h4>
-        </Box>
-      )}
+      <DragonLayerInfoCard chainId={chainIdToUse} config={config} />
+      {chainIdToUse === ChainId.ZKEVM && <ZkEvmTvlInfoCard />}
     </>
   );
 };

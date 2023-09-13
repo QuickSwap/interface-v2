@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -9,9 +9,14 @@ import {
   GlobalConst,
   GlobalData,
 } from 'constants/index';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import GammaFarmCard from './GammaFarmCard';
-import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
+import {
+  getAllGammaPairs,
+  getGammaData,
+  getGammaRewards,
+  getTokenFromAddress,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { Token } from '@uniswap/sdk';
@@ -40,11 +45,10 @@ const GammaFarmsPage: React.FC<{
     parsedQuery && parsedQuery.farmStatus
       ? (parsedQuery.farmStatus as string)
       : 'active';
-  const allGammaFarms = chainId
-    ? ([] as GammaPair[])
-        .concat(...Object.values(GammaPairs[chainId]))
-        .filter((item) => !!item.ableToFarm === (farmStatus === 'active'))
-    : [];
+
+  const allGammaFarms = getAllGammaPairs(chainId).filter(
+    (item) => !!item.ableToFarm === (farmStatus === 'active'),
+  );
   const sortMultiplier = sortDesc ? -1 : 1;
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 
@@ -58,21 +62,39 @@ const GammaFarmsPage: React.FC<{
     return gammaData;
   };
 
-  const { isLoading: gammaFarmsLoading, data: gammaData } = useQuery(
-    'fetchGammaData',
-    fetchGammaData,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 
-  const { isLoading: gammaRewardsLoading, data: gammaRewards } = useQuery(
-    'fetchGammaRewards',
-    fetchGammaRewards,
-    {
-      refetchInterval: 30000,
-    },
-  );
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const {
+    isLoading: gammaFarmsLoading,
+    data: gammaData,
+    refetch: refetchGammaData,
+  } = useQuery({
+    queryKey: ['fetchGammaDataFarms', chainId],
+    queryFn: fetchGammaData,
+  });
+
+  const {
+    isLoading: gammaRewardsLoading,
+    data: gammaRewards,
+    refetch: refetchGammaRewards,
+  } = useQuery({
+    queryKey: ['fetchGammaRewardsFarms', chainId],
+    queryFn: fetchGammaRewards,
+  });
+
+  useEffect(() => {
+    refetchGammaData();
+    refetchGammaRewards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const qiTokenAddress = '0x580a84c73811e1839f75d86d75d88cca0c241ff4';
   const qiGammaFarm = '0x25B186eEd64ca5FDD1bc33fc4CFfd6d34069BAec';
@@ -227,33 +249,19 @@ const GammaFarmsPage: React.FC<{
   const filteredFarms = allGammaFarms
     .map((item) => {
       if (chainId) {
-        const token0Data = getTokenFromAddress(
+        const token0 = getTokenFromAddress(
           item.token0Address,
           chainId,
           tokenMap,
           [],
         );
-        const token1Data = getTokenFromAddress(
+        const token1 = getTokenFromAddress(
           item.token1Address,
           chainId,
           tokenMap,
           [],
         );
-        const token0 = new Token(
-          chainId,
-          token0Data.address,
-          token0Data.decimals,
-          token0Data.symbol,
-          token0Data.name,
-        );
-        const token1 = new Token(
-          chainId,
-          token1Data.address,
-          token1Data.decimals,
-          token1Data.symbol,
-          token1Data.name,
-        );
-        return { ...item, token0, token1 };
+        return { ...item, token0: token0 ?? null, token1: token1 ?? null };
       }
       return { ...item, token0: null, token1: null };
     })
@@ -310,19 +318,18 @@ const GammaFarmsPage: React.FC<{
           ),
       );
       const stableLPCondition =
-        item.token0 &&
-        item.token1 &&
-        ((stablePair0 &&
+        (stablePair0 &&
           stablePair0.find(
             (token) =>
+              item.token1 &&
               token.address.toLowerCase() === item.token1.address.toLowerCase(),
           )) ||
-          (stablePair1 &&
-            stablePair1.find(
-              (token) =>
-                token.address.toLowerCase() ===
-                item.token0.address.toLowerCase(),
-            )));
+        (stablePair1 &&
+          stablePair1.find(
+            (token) =>
+              item.token0 &&
+              token.address.toLowerCase() === item.token0.address.toLowerCase(),
+          ));
 
       return (
         searchCondition &&

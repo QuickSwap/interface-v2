@@ -40,19 +40,23 @@ import { getTickToPrice } from 'v3lib/utils/getTickToPrice';
 import { BIG_INT_ZERO } from 'constants/v3/misc';
 import { FeeAmount } from 'v3lib/utils';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
-import { useCurrencyBalance } from 'state/wallet/hooks';
+import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
-import { GlobalConst } from 'constants/index';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useGammaUNIProxyContract } from 'hooks/useContract';
+import { GlobalConst, UnipilotVaults } from 'constants/index';
+import { Interface, formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
-  useSingleCallResult,
-  useSingleContractMultipleData,
-} from 'state/multicall/hooks';
+  useContract,
+  useGammaUNIProxyContract,
+  useUniPilotVaultContract,
+} from 'hooks/useContract';
+import { useSingleCallResult } from 'state/multicall/hooks';
 import { ETHER, WETH } from '@uniswap/sdk';
-import { maxAmountSpend } from 'utils';
-import { GammaPairs } from 'constants/index';
+import { getGammaPairsForTokens, maxAmountSpend } from 'utils';
+import GammaClearingABI from 'constants/abis/gamma-clearing.json';
+import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
+import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
+import { getConfig } from 'config';
 import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
 
 export interface IDerivedMintInfo {
@@ -296,7 +300,9 @@ export function useV3DerivedMintInfo(
               JSBI.BigInt(maxSpendETH ? maxSpendETH.numerator.toString() : '0'),
             ),
           )
-        : balances[0],
+        : balances.length > 0
+        ? balances[0]
+        : undefined,
     [Field.CURRENCY_B]:
       liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
       currencyB &&
@@ -310,7 +316,9 @@ export function useV3DerivedMintInfo(
               JSBI.BigInt(maxSpendETH ? maxSpendETH.numerator.toString() : '0'),
             ),
           )
-        : balances[1],
+        : balances.length > 1
+        ? balances[1]
+        : undefined,
   };
 
   const feeAmount = useMemo(() => {
@@ -538,40 +546,81 @@ export function useV3DerivedMintInfo(
       : independentCurrency,
   );
 
-  const gammaUNIPROXYContract = useGammaUNIProxyContract();
-  const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : [];
-  const depositAmountsData = useSingleContractMultipleData(
-    presetRange && presetRange.address && gammaCurrencies.length > 0
-      ? gammaUNIPROXYContract
-      : undefined,
+  const gammaPairData = getGammaPairsForTokens(
+    chainId,
+    currencyA?.wrapped.address,
+    currencyB?.wrapped.address,
+  );
+  const gammaPairReverted = gammaPairData?.reversed;
+  const gammaPairAddress =
+    gammaPairData && gammaPairData.pairs.length > 0
+      ? gammaPairData.pairs[0].address
+      : undefined;
+  const gammaUNIPROXYContract = useGammaUNIProxyContract(gammaPairAddress);
+  const depositAmountsData = useSingleCallResult(
+    presetRange && presetRange.address ? gammaUNIPROXYContract : undefined,
     'getDepositAmount',
-    presetRange && presetRange.address
-      ? gammaCurrencies.map((currency) => [
-          presetRange?.address,
-          currency?.wrapped.address,
-          parseUnits('1', currency?.wrapped.decimals ?? 0),
-        ])
-      : [],
+    [
+      presetRange?.address,
+      independentCurrency?.wrapped.address,
+      independentAmount?.numerator.toString(),
+    ],
   );
 
-  const depositCapData = useSingleCallResult(
-    presetRange && presetRange.address ? gammaUNIPROXYContract : undefined,
+  const depositCapData1 = useSingleCallResult(
+    presetRange &&
+      presetRange.address &&
+      gammaUNIPROXYContract &&
+      gammaUNIPROXYContract.address.toLowerCase() !==
+        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? gammaUNIPROXYContract
+      : undefined,
     'positions',
     presetRange && presetRange.address ? [presetRange.address] : [],
   );
 
-  const gammaPairKeyReverted =
-    currencyA && currencyB
-      ? currencyB.wrapped.address.toLowerCase() +
-        '-' +
-        currencyA.wrapped.address.toLowerCase()
-      : '';
-  const gammaPairReverted = !!(
-    chainId && GammaPairs[chainId][gammaPairKeyReverted]
+  const clearanceResult = useSingleCallResult(
+    presetRange &&
+      presetRange.address &&
+      gammaUNIPROXYContract &&
+      gammaUNIPROXYContract.address.toLowerCase() ===
+        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? gammaUNIPROXYContract
+      : undefined,
+    'clearance',
   );
+
+  const clearanceAddress =
+    !clearanceResult.loading &&
+    clearanceResult.result &&
+    clearanceResult.result.length > 0
+      ? clearanceResult.result[0]
+      : undefined;
+
+  const clearanceContract = useContract(clearanceAddress, GammaClearingABI);
+
+  const depositCapData2 = useSingleCallResult(
+    presetRange &&
+      presetRange.address &&
+      gammaUNIPROXYContract &&
+      gammaUNIPROXYContract.address.toLowerCase() ===
+        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? clearanceContract
+      : undefined,
+    'positions',
+    presetRange && presetRange.address ? [presetRange.address] : [],
+  );
+
+  const depositCapData = gammaUNIPROXYContract
+    ? gammaUNIPROXYContract.address.toLowerCase() ===
+      '0xa42d55074869491d60ac05490376b74cf19b00e6'
+      ? depositCapData2
+      : depositCapData1
+    : undefined;
 
   const depositCap = useMemo(() => {
     if (
+      depositCapData &&
       !depositCapData.loading &&
       depositCapData.result &&
       depositCapData.result.length > 0 &&
@@ -598,101 +647,177 @@ export function useV3DerivedMintInfo(
     return;
   }, [currencyA, currencyB, depositCapData, gammaPairReverted]);
 
-  const quoteDepositAmount = useMemo(() => {
+  const depositAmount = useMemo(() => {
+    const dependentCurrency =
+      independentField === Field.CURRENCY_A ? currencyB : currencyA;
     if (
-      depositAmountsData.length > 0 &&
-      !depositAmountsData[0].loading &&
-      depositAmountsData[0].result &&
-      depositAmountsData[0].result.length > 1 &&
-      currencyB
+      !depositAmountsData.loading &&
+      depositAmountsData.result &&
+      depositAmountsData.result.length > 1 &&
+      dependentCurrency
     ) {
       return {
         amountMin: Number(
           formatUnits(
-            depositAmountsData[0].result[0],
-            currencyB.wrapped.decimals,
+            depositAmountsData.result[0],
+            dependentCurrency.wrapped.decimals,
           ),
         ),
         amountMax: Number(
           formatUnits(
-            depositAmountsData[0].result[1],
-            currencyB.wrapped.decimals,
+            depositAmountsData.result[1],
+            dependentCurrency.wrapped.decimals,
           ),
         ),
       };
     }
     return;
-  }, [currencyB, depositAmountsData]);
+  }, [currencyA, currencyB, depositAmountsData, independentField]);
 
-  const baseDepositAmount = useMemo(() => {
+  const isUniPilot =
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE;
+
+  const vaultToken0Address =
+    presetRange && presetRange.tokenStr
+      ? presetRange.tokenStr.split('-')[0]
+      : undefined;
+  const vaultToken0 =
+    currencyA && vaultToken0Address
+      ? currencyA.wrapped.address.toLowerCase() ===
+        vaultToken0Address.toLowerCase()
+        ? currencyA.wrapped
+        : currencyB?.wrapped
+      : undefined;
+  const vaultToken1Address =
+    presetRange && presetRange.tokenStr
+      ? presetRange.tokenStr.split('-')[1]
+      : undefined;
+  const vaultToken1 =
+    currencyA && vaultToken1Address
+      ? currencyA.wrapped.address.toLowerCase() ===
+        vaultToken1Address.toLowerCase()
+        ? currencyA.wrapped
+        : currencyB?.wrapped
+      : undefined;
+  const unipilotToken0VaultBalance = useTokenBalance(
+    presetRange?.address,
+    isUniPilot ? vaultToken0 : undefined,
+  );
+  const unipilotToken1VaultBalance = useTokenBalance(
+    presetRange?.address,
+    isUniPilot ? vaultToken1 : undefined,
+  );
+  const uniPilotVaultContract = useUniPilotVaultContract(presetRange?.address);
+  const uniPilotVaultPositionResult = useSingleCallResult(
+    isUniPilot && presetRange && presetRange.address && uniPilotVaultContract
+      ? uniPilotVaultContract
+      : undefined,
+    'getPositionDetails',
+  );
+  const uniPilotVaultReserve = useMemo(() => {
     if (
-      depositAmountsData.length > 1 &&
-      !depositAmountsData[1].loading &&
-      depositAmountsData[1].result &&
-      depositAmountsData[1].result.length > 1 &&
-      currencyA
+      !uniPilotVaultPositionResult.loading &&
+      uniPilotVaultPositionResult.result &&
+      uniPilotVaultPositionResult.result.length > 1
     ) {
       return {
-        amountMin: Number(
-          formatUnits(
-            depositAmountsData[1].result[0],
-            currencyA.wrapped.decimals,
-          ),
+        token0: JSBI.add(
+          JSBI.BigInt(uniPilotVaultPositionResult.result[0]),
+          unipilotToken0VaultBalance?.numerator ?? JSBI.BigInt(0),
         ),
-        amountMax: Number(
-          formatUnits(
-            depositAmountsData[1].result[1],
-            currencyA.wrapped.decimals,
-          ),
+        token1: JSBI.add(
+          JSBI.BigInt(uniPilotVaultPositionResult.result[1]),
+          unipilotToken1VaultBalance?.numerator ?? JSBI.BigInt(0),
         ),
       };
     }
     return;
-  }, [currencyA, depositAmountsData]);
+  }, [
+    uniPilotVaultPositionResult,
+    unipilotToken0VaultBalance,
+    unipilotToken1VaultBalance,
+  ]);
 
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
+    const dependentCurrency =
+      dependentField === Field.CURRENCY_B ? currencyB : currencyA;
     if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE) {
       if (
         !independentAmount ||
         !presetRange ||
         !presetRange.address ||
-        !quoteDepositAmount ||
-        !baseDepositAmount ||
-        !currencyA ||
-        !currencyB
+        !depositAmount ||
+        !dependentCurrency
       )
         return;
-      if (independentField === Field.CURRENCY_A) {
-        const quoteDeposit = parseUnits(
-          (
-            ((quoteDepositAmount.amountMin + quoteDepositAmount.amountMax) /
-              2) *
-            Number(independentAmount.toSignificant())
-          ).toFixed(currencyB.wrapped.decimals),
-          currencyB.wrapped.decimals,
-        );
-        return CurrencyAmount.fromRawAmount(
-          currencyB.isNative ? currencyB.wrapped : currencyB,
-          JSBI.BigInt(quoteDeposit),
-        );
-      } else {
-        const baseDeposit = parseUnits(
-          (
-            ((baseDepositAmount.amountMin + baseDepositAmount.amountMax) / 2) *
-            Number(independentAmount.toSignificant())
-          ).toFixed(currencyA.wrapped.decimals),
-          currencyA.wrapped.decimals,
-        );
-        return CurrencyAmount.fromRawAmount(
-          currencyA.isNative ? currencyA.wrapped : currencyA,
-          JSBI.BigInt(baseDeposit),
-        );
-      }
+      const dependentDeposit = parseUnits(
+        ((depositAmount.amountMin + depositAmount.amountMax) / 2).toFixed(
+          dependentCurrency.wrapped.decimals,
+        ),
+        dependentCurrency.wrapped.decimals,
+      );
+      return CurrencyAmount.fromRawAmount(
+        dependentCurrency.isNative
+          ? dependentCurrency.wrapped
+          : dependentCurrency,
+        JSBI.BigInt(dependentDeposit),
+      );
+    }
+
+    if (
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+    ) {
+      if (
+        !independentAmount ||
+        !presetRange ||
+        !presetRange.address ||
+        !dependentCurrency
+      )
+        return;
+      const independentReserve =
+        dependentField === Field.CURRENCY_B
+          ? currencyB &&
+            vaultToken0 &&
+            currencyB.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
+            ? uniPilotVaultReserve?.token1
+            : uniPilotVaultReserve?.token0
+          : currencyA &&
+            vaultToken0 &&
+            currencyA.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
+          ? uniPilotVaultReserve?.token1
+          : uniPilotVaultReserve?.token0;
+      const dependentReserve =
+        dependentField === Field.CURRENCY_B
+          ? currencyB &&
+            vaultToken0 &&
+            currencyB.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
+            ? uniPilotVaultReserve?.token0
+            : uniPilotVaultReserve?.token1
+          : currencyA &&
+            vaultToken0 &&
+            currencyA.wrapped.address.toLowerCase() ===
+              vaultToken0.address.toLowerCase()
+          ? uniPilotVaultReserve?.token0
+          : uniPilotVaultReserve?.token1;
+      if (
+        !independentReserve ||
+        !dependentReserve ||
+        JSBI.equal(independentReserve, JSBI.BigInt(0))
+      )
+        return;
+
+      const dependentDeposit = JSBI.divide(
+        JSBI.multiply(dependentReserve, independentAmount.numerator),
+        independentReserve,
+      );
+
+      return CurrencyAmount.fromRawAmount(dependentCurrency, dependentDeposit);
     }
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
-    const dependentCurrency =
-      dependentField === Field.CURRENCY_B ? currencyB : currencyA;
     if (
       independentAmount &&
       wrappedIndependentAmount &&
@@ -740,18 +865,18 @@ export function useV3DerivedMintInfo(
 
     return undefined;
   }, [
-    liquidityRangeType,
-    independentAmount,
     dependentField,
     currencyB,
     currencyA,
+    liquidityRangeType,
+    independentAmount,
     tickLower,
     tickUpper,
     poolForPosition,
     presetRange,
-    quoteDepositAmount,
-    baseDepositAmount,
-    independentField,
+    depositAmount,
+    vaultToken0,
+    uniPilotVaultReserve,
     outOfRange,
     invalidRange,
   ]);
@@ -1178,4 +1303,61 @@ export function useCurrentStep(): AppState['mintV3']['currentStep'] {
     (state: AppState) => state.mintV3.currentStep,
   );
   return useMemo(() => currentStep, [currentStep]);
+}
+
+export function useGetUnipilotVaults() {
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const unipilotAvailable = config['unipilot']['available'];
+  const vaultIds = unipilotAvailable ? UnipilotVaults[chainId] ?? [] : [];
+  const vaultInfoResults = useMultipleContractSingleData(
+    vaultIds,
+    new Interface(UNIPILOT_VAULT_ABI),
+    'getVaultInfo',
+  );
+  const vaultSymbolResults = useMultipleContractSingleData(
+    vaultIds,
+    new Interface(UNIPILOT_VAULT_ABI),
+    'symbol',
+  );
+  const vaultTicksResults = useMultipleContractSingleData(
+    vaultIds,
+    new Interface(UNIPILOT_VAULT_ABI),
+    'ticksData',
+  );
+  return vaultIds.map((id, index) => {
+    const vaultInfoCallData = vaultInfoResults[index];
+    const vaultSymbolCallData = vaultSymbolResults[index];
+    const vaultTickCallData = vaultTicksResults[index];
+    const vaultInfoResult =
+      !vaultInfoCallData.loading &&
+      vaultInfoCallData.result &&
+      vaultInfoCallData.result.length > 0
+        ? vaultInfoCallData.result
+        : undefined;
+    const vaultSymbolResult =
+      !vaultSymbolCallData.loading &&
+      vaultSymbolCallData.result &&
+      vaultSymbolCallData.result.length > 0
+        ? vaultSymbolCallData.result
+        : undefined;
+    const vaultTicksResult =
+      !vaultTickCallData.loading &&
+      vaultTickCallData.result &&
+      vaultTickCallData.result.length > 0
+        ? vaultTickCallData.result
+        : undefined;
+    return {
+      id,
+      symbol: vaultSymbolResult ? vaultSymbolResult[0] : undefined,
+      token0: vaultInfoResult ? vaultInfoResult[0] : undefined,
+      token1: vaultInfoResult ? vaultInfoResult[1] : undefined,
+      fee: vaultInfoResult ? vaultInfoResult[2] : undefined,
+      poolAddress: vaultInfoResult ? vaultInfoResult[3] : undefined,
+      baseTickLower: vaultTicksResult ? vaultTicksResult[0] : undefined,
+      baseTickUpper: vaultTicksResult ? vaultTicksResult[1] : undefined,
+      rangeTickLower: vaultTicksResult ? vaultTicksResult[2] : undefined,
+      rangeTickUpper: vaultTicksResult ? vaultTicksResult[3] : undefined,
+    };
+  });
 }

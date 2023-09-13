@@ -1,11 +1,9 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
-import { GammaPairs } from 'constants/index';
-import { getTokenFromAddress } from 'utils';
+import { getAllGammaPairs, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import GammaLPItem from '../GammaLPItem';
-import { Token } from '@uniswap/sdk-core';
 import { formatUnits } from 'ethers/lib/utils';
 
 const GammaLPList: React.FC<{
@@ -18,40 +16,16 @@ const GammaLPList: React.FC<{
 
   const getTokensFromPosition = (position: any) => {
     if (!chainId) return;
-    const pairIndex = Object.values(GammaPairs[chainId]).findIndex(
-      (pairData) =>
-        !!pairData.find(
-          (item) =>
-            item.address.toLowerCase() === position.pairAddress.toLowerCase(),
-        ),
+    const gammaPair = getAllGammaPairs(chainId).find(
+      (pair) =>
+        pair.address.toLowerCase() === position.pairAddress.toLowerCase(),
     );
-    const tokenArray = Object.keys(GammaPairs[chainId])[pairIndex].split('-');
-    const token0Data = getTokenFromAddress(
-      tokenArray[0],
-      chainId,
-      tokenMap,
-      [],
-    );
-    const token1Data = getTokenFromAddress(
-      tokenArray[1],
-      chainId,
-      tokenMap,
-      [],
-    );
-    const token0 = new Token(
-      chainId,
-      token0Data.address,
-      token0Data.decimals,
-      token0Data.symbol,
-      token0Data.name,
-    );
-    const token1 = new Token(
-      chainId,
-      token1Data.address,
-      token1Data.decimals,
-      token1Data.symbol,
-      token1Data.name,
-    );
+    const token0 = gammaPair
+      ? getTokenFromAddress(gammaPair.token0Address, chainId, tokenMap, [])
+      : undefined;
+    const token1 = gammaPair
+      ? getTokenFromAddress(gammaPair.token1Address, chainId, tokenMap, [])
+      : undefined;
     return { token0, token1 };
   };
 
@@ -59,12 +33,14 @@ const GammaLPList: React.FC<{
     const tokens = getTokensFromPosition(position);
     if (!tokens) return { ...position, balance0: 0, balance1: 0 };
     const { token0, token1 } = tokens;
-    const amount0 = position.totalAmount0
-      ? Number(formatUnits(position.totalAmount0, token0.decimals))
-      : 0;
-    const amount1 = position.totalAmount1
-      ? Number(formatUnits(position.totalAmount1, token1.decimals))
-      : 0;
+    const amount0 =
+      position.totalAmount0 && token0
+        ? Number(formatUnits(position.totalAmount0, token0.decimals))
+        : 0;
+    const amount1 =
+      position.totalAmount1 && token1
+        ? Number(formatUnits(position.totalAmount1, token1.decimals))
+        : 0;
     const balance0 =
       position.totalSupply && position.totalSupply > 0
         ? (amount0 * position.lpAmount) / position.totalSupply

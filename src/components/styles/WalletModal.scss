@@ -1,7 +1,8 @@
 @use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
 
 .walletModalWrapper {
-  max-height: 80vh;
+  max-height: 95vh;
   overflow: auto;
 }
 .blurb {
@@ -15,6 +16,40 @@
     text-decoration: none;
   }
 }
+
+.walletDescriptionContainer {
+  color: $textSecondary;
+}
+
+.option-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+
+.option-container-iconify {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.blurb-iconify {
+  display: flex;
+  align-items: center;
+  // justify-content: center;
+  flex-wrap: wrap;
+  border-top: 1px solid $grey12;
+  padding-left: 24px;
+  & a {
+    margin-left: 8px;
+    color: $primary;
+    text-decoration: none;
+  }
+}
+
 .pendingSection {
   display: flex;
   flex-wrap: wrap;
@@ -58,6 +93,51 @@
     box-shadow: 0 0 0 1px $primary;
   }
 }
+
+.optionCardIconfiy {
+  margin: 12px;
+
+  @include media('screen', '<tablet') {
+    margin: 8px;
+  }
+
+  @media screen and (max-height: 600px) {
+    margin: 8px;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  div.optionIconContainer {
+    border: 2px solid $secondary1;
+    width: 104px;
+    height: 104px;
+    display: flex;
+    margin: auto;
+    border-radius: 24px;
+
+    @include media('screen', '<tablet') {
+      width: 80px;
+      height: 80px;
+    }
+
+    @media screen and (max-height: 600px) {
+      width: 80px;
+      height: 80px;
+    }
+
+    &:hover {
+      border-color: $primary;
+    }
+  }
+
+  div.optionHeader {
+    max-width: 98px;
+    text-align: center;
+  }
+}
+
 .optionCardClickable {
   border: 1px solid transparent;
   background: $secondary1;

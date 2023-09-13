@@ -6,19 +6,19 @@ import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
-import { AdsSlider, CustomSwitch } from 'components';
+import { CustomSwitch, HypeLabAds } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultCNTFarmList } from 'state/cnt/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
-import { ChainId } from '@uniswap/sdk';
 import VersionToggle from 'components/Toggle/VersionToggle';
 import V3Farms from 'pages/FarmPage/V3';
 import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from '../../config/index';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -27,36 +27,34 @@ const FarmPage: React.FC = () => {
   const currentTab =
     parsedQuery && parsedQuery.tab
       ? (parsedQuery.tab as string)
-      : GlobalConst.v2FarmTab.LPFARM;
+      : GlobalConst.v2FarmTab.OTHER_LP;
   const { t } = useTranslation();
-  const [bulkPairs, setBulkPairs] = useState<any>(null);
-  const chainIdToUse = chainId ?? ChainId.MATIC;
-  const config = getConfig(chainIdToUse);
+  const config = getConfig(chainId);
   const farmAvailable = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
-  const { isV2 } = useIsV2();
+  const { isV2, updateIsV2 } = useIsV2();
 
   const lpFarms = useDefaultFarmList();
-  const cntFarms = useDefaultCNTFarmList(chainIdToUse);
+  const cntFarms = useDefaultCNTFarmList(chainId);
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const OTHER_FARM_LINK = process.env.REACT_APP_OTHER_LP_CREATE_A_FARM_LINK;
 
   const pairLists = useMemo(() => {
-    const stakingPairLists = Object.values(lpFarms[chainIdToUse]).map(
+    const stakingPairLists = Object.values(lpFarms[chainId]).map(
       (item) => item.pair,
     );
-    const dualPairLists = Object.values(dualFarms[chainIdToUse]).map(
+    const dualPairLists = Object.values(dualFarms[chainId]).map(
       (item) => item.pair,
     );
-    const cntPairLists = Object.values(cntFarms[chainIdToUse]).map(
+    const cntPairLists = Object.values(cntFarms[chainId]).map(
       (item) => item.pair,
     );
 
     return stakingPairLists.concat(dualPairLists).concat(cntPairLists);
-  }, [chainIdToUse, lpFarms, dualFarms, cntFarms]);
+  }, [chainId, lpFarms, dualFarms, cntFarms]);
 
   useEffect(() => {
     if (!farmAvailable) {
@@ -65,14 +63,39 @@ const FarmPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [farmAvailable]);
 
-  const pairListStr = pairLists.join('_');
   useEffect(() => {
-    if (isV2) {
-      getBulkPairData(chainIdToUse, pairListStr).then((data) =>
-        setBulkPairs(data),
-      );
+    if (!v2) {
+      updateIsV2(false);
     }
-  }, [isV2, pairListStr, chainIdToUse]);
+  }, [updateIsV2, v2]);
+
+  const pairListStr = pairLists.join('_');
+
+  const fetchBulkPairData = async () => {
+    if (!isV2) return null;
+    const data = await getBulkPairData(chainId, pairListStr);
+    return data ?? null;
+  };
+
+  const { data: bulkPairs, refetch } = useQuery({
+    queryKey: ['fetchBulkPairData', isV2, chainId, pairListStr],
+    queryFn: fetchBulkPairData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
 
   const redirectWithFarmTab = (tab: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -119,7 +142,7 @@ const FarmPage: React.FC = () => {
     <Box width='100%' mb={3} id='farmPage'>
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
-          <h4>{t('farm')}</h4>
+          <h1 className='h4'>{t('farm')}</h1>
           {v2 && v3 && (
             <Box ml={2}>
               <VersionToggle />
@@ -136,8 +159,8 @@ const FarmPage: React.FC = () => {
           </Box>
         )}
       </Box>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <AdsSlider sort='analytics' />
+      <Box margin='0 auto 24px'>
+        <HypeLabAds />
       </Box>
       {isV2 && v2 && (
         <>

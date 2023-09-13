@@ -8,7 +8,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import Loader from 'components/Loader';
 import usePrevious from 'hooks/usePrevious';
 import { Box } from '@material-ui/core';
-import PositionListItem from './MyLiquidityPoolsV3/components/PositionListItem';
+import PositionListItem from './MyQuickswapPoolsV3/components/PositionListItem';
 import { useActiveWeb3React } from 'hooks';
 import { PositionPool } from 'models/interfaces';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';

@@ -13,18 +13,23 @@ import {
   UNI_V3_FACTORY_ADDRESS,
 } from 'constants/v3/addresses';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import PoolABI from 'constants/abis/v3/pool.json';
 import './index.scss';
 import { useActiveWeb3React } from 'hooks';
 import { Interface } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useMultipleContractSingleData } from 'state/multicall/hooks';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, unipilotVaultTypes } from 'constants/index';
 
 export interface IPresetArgs {
   type: Presets;
   min: number;
   max: number;
   address?: string;
+  isReversed?: boolean;
+  title?: string;
+  risk?: PresetProfits;
+  tokenStr?: string;
 }
 
 interface IPresetRanges {
@@ -39,6 +44,8 @@ interface IPresetRanges {
   price: string | undefined;
   gammaPair?: { address: string; title: string; type: Presets }[];
   isGamma?: boolean;
+  unipilotPairs?: any[];
+  isUnipilot?: boolean;
 }
 
 enum PresetProfits {
@@ -60,6 +67,8 @@ export function PresetRanges({
   priceUpper,
   isGamma = false,
   gammaPair,
+  isUnipilot = false,
+  unipilotPairs,
 }: IPresetRanges) {
   const { chainId } = useActiveWeb3React();
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity);
@@ -93,6 +102,12 @@ export function PresetRanges({
     'currentTick',
   );
 
+  const uniPilotCurrentTickData = useMultipleContractSingleData(
+    unipilotPairs?.map((pair) => pair.poolAddress) ?? [],
+    new Interface(PoolABI),
+    'globalState',
+  );
+
   const gammaBaseLowers = gammaBaseLowerData.map((callData) => {
     if (!callData.loading && callData.result && callData.result.length > 0) {
       return Number(callData.result[0]);
@@ -110,6 +125,13 @@ export function PresetRanges({
   const gammaCurrentTicks = gammaCurrentTickData.map((callData) => {
     if (!callData.loading && callData.result && callData.result.length > 0) {
       return Number(callData.result[0]);
+    }
+    return;
+  });
+
+  const uniPilotCurrentTicks = uniPilotCurrentTickData.map((callData) => {
+    if (!callData.loading && callData.result && callData.result.length > 1) {
+      return Number(callData.result[1]);
     }
     return;
   });
@@ -133,7 +155,7 @@ export function PresetRanges({
     return;
   });
 
-  const ranges = useMemo(() => {
+  const ranges: IPresetArgs[] = useMemo(() => {
     if (isGamma) {
       return gammaPair
         ? gammaPair.map((pair, index) => {
@@ -152,8 +174,46 @@ export function PresetRanges({
         : [];
     }
 
+    if (isUnipilot) {
+      return unipilotPairs
+        ? unipilotPairs.map((pair, index) => {
+            const pairSymbolData = pair.symbol.split('-');
+            const pairType = Number(pairSymbolData[pairSymbolData.length - 1]);
+            const minTick = Number(pair.baseTickLower ?? 0);
+            const maxTick = Number(pair.baseTickUpper ?? 0);
+            const currentTick = uniPilotCurrentTicks[index];
+            const minPrice =
+              currentTick !== undefined
+                ? Math.pow(1.0001, minTick - currentTick)
+                : 0;
+            const maxPrice =
+              currentTick !== undefined
+                ? Math.pow(1.0001, maxTick - currentTick)
+                : 0;
+            return {
+              type: pairType,
+              title: unipilotVaultTypes[pairType - 1],
+              address: pair.id,
+              tokenStr: pair.token0 + '-' + pair.token1,
+              min: minPrice,
+              max: maxPrice,
+              risk: PresetProfits.VERY_LOW,
+              profit: PresetProfits.HIGH,
+            };
+          })
+        : [];
+    }
+
     if (isStablecoinPair)
       return [
+        {
+          type: Presets.FULL,
+          title: t('fullRange'),
+          min: 0,
+          max: Infinity,
+          risk: PresetProfits.VERY_LOW,
+          profit: PresetProfits.VERY_LOW,
+        },
         {
           type: Presets.STABLE,
           title: t('stablecoins'),
@@ -198,7 +258,16 @@ export function PresetRanges({
         profit: PresetProfits.HIGH,
       },
     ];
-  }, [isStablecoinPair, isGamma, gammaPair, gammaValues, t]);
+  }, [
+    isGamma,
+    isUnipilot,
+    isStablecoinPair,
+    t,
+    gammaPair,
+    gammaValues,
+    unipilotPairs,
+    uniPilotCurrentTicks,
+  ]);
 
   const risk = useMemo(() => {
     if (!priceUpper || !priceLower || !price) return;
@@ -289,6 +358,22 @@ export function PresetRanges({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gammaValuesLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
 
+  const uniPilotValuesLoaded =
+    unipilotPairs &&
+    unipilotPairs.length > 0 &&
+    uniPilotCurrentTicks.filter((tick) => !tick).length === 0;
+
+  useEffect(() => {
+    if (
+      uniPilotValuesLoaded &&
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+    ) {
+      handlePresetRangeSelection(ranges[0]);
+      onChangePresetRange(ranges[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uniPilotValuesLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
+
   return (
     <Box>
       <Box mb='10px' className='preset-buttons'>
@@ -319,7 +404,7 @@ export function PresetRanges({
           </>
         )}
       </Box>
-      {!isGamma && (
+      {!isGamma && !isUnipilot && (
         <>
           <Box className='flex justify-between'>
             {_risk && !mintInfo.invalidRange && !isStablecoinPair && (

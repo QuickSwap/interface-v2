@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Result,
+  useMultipleContractMultipleData,
   useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
@@ -9,11 +10,26 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { useActiveWeb3React } from 'hooks';
 import {
   useUNIV3NFTPositionManagerContract,
+  useMasterChefContracts,
   useV3NFTPositionManagerContract,
 } from 'hooks/useContract';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
-import { useFarmingSubgraph } from 'hooks/useIncentiveSubgraph';
+import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
+import { ChainId, JSBI } from '@uniswap/sdk';
+import {
+  getAllGammaPairs,
+  getContract,
+  getGammaPositions,
+  getUnipilotPositions,
+  getUnipilotUserFarms,
+} from 'utils';
+import { useQuery } from '@tanstack/react-query';
+import { formatUnits } from 'ethers/lib/utils';
+import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
+import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
+import { useLastTransactionHash } from 'state/transactions/hooks';
+import { getConfig } from 'config';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -159,23 +175,10 @@ export function useV3Positions(
     result: balanceResult,
   } = useSingleCallResult(positionManager, 'balanceOf', [account ?? undefined]);
 
-  const {
-    fetchPositionsOnFarmer: {
-      positionsOnFarmer,
-      positionsOnFarmerLoading,
-      fetchPositionsOnFarmerFn,
-    },
-  } = useFarmingSubgraph();
+  const { data: positionsOnFarmer } = usePositionsOnFarmer(account);
 
   // we don't expect any account balance to ever exceed the bounds of max safe int
   const accountBalance: number | undefined = balanceResult?.[0]?.toNumber();
-
-  useEffect(() => {
-    if (account) {
-      fetchPositionsOnFarmerFn(account);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
 
   const tokenIdsArgs = useMemo(() => {
     if (accountBalance && account) {
@@ -336,5 +339,345 @@ export function useUniV3Positions(
     positions: positions?.map((position) => {
       return { ...position, isUni: true };
     }),
+  };
+}
+
+export function useV3PositionsCount(
+  account: string | null | undefined,
+  hideClosePosition: boolean,
+  hideFarmingPosition: boolean,
+) {
+  const algebraPositionManager = useV3NFTPositionManagerContract();
+  const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
+
+  const {
+    loading: balanceLoading,
+    result: balanceResult,
+  } = useSingleCallResult(algebraPositionManager, 'balanceOf', [
+    account ?? undefined,
+  ]);
+
+  const accountBalance = useMemo(() => {
+    if (balanceResult && balanceResult.length > 0) {
+      return balanceResult[0].toNumber();
+    }
+    return 0;
+  }, [balanceResult]);
+
+  const tokenIdsArgs = useMemo(() => {
+    if (accountBalance && account) {
+      const tokenRequests: any[] = [];
+      for (let i = 0; i < accountBalance; i++) {
+        tokenRequests.push([account, i]);
+      }
+      return tokenRequests;
+    }
+    return [];
+  }, [account, accountBalance]);
+
+  const tokenIdResults = useSingleContractMultipleData(
+    algebraPositionManager,
+    'tokenOfOwnerByIndex',
+    tokenIdsArgs,
+  );
+
+  const tokenIds = useMemo(() => {
+    if (account) {
+      return tokenIdResults
+        .map(({ result }) => result)
+        .filter((result): result is Result => !!result)
+        .map((result) => BigNumber.from(result[0]));
+    }
+    return [];
+  }, [account, tokenIdResults]);
+
+  const { positions } = useV3PositionsFromTokenIds(tokenIds);
+
+  const {
+    data: positionsOnFarmer,
+    isLoading: positionsOnFarmerLoading,
+  } = usePositionsOnFarmer(account);
+
+  const farmingPositionsCount = useMemo(() => {
+    if (positionsOnFarmer && positionsOnFarmer.transferredPositionsIds) {
+      return positionsOnFarmer.transferredPositionsIds.length;
+    }
+
+    return 0;
+  }, [positionsOnFarmer]);
+
+  const oldFarmingPositionsCount = useMemo(() => {
+    if (positionsOnFarmer && positionsOnFarmer.oldTransferredPositionsIds) {
+      return positionsOnFarmer.oldTransferredPositionsIds.length;
+    }
+
+    return 0;
+  }, [positionsOnFarmer]);
+
+  const positionCount = useMemo(() => {
+    if (!positions) return 0;
+    return positions.filter((position) =>
+      hideClosePosition ? position.liquidity.gt('0') : true,
+    ).length;
+  }, [hideClosePosition, positions]);
+
+  const {
+    loading: uniV3BalanceLoading,
+    result: uniV3BalanceResult,
+  } = useSingleCallResult(uniV3PositionManager, 'balanceOf', [
+    account ?? undefined,
+  ]);
+
+  const uniV3AccountBalance = useMemo(() => {
+    if (uniV3BalanceResult && uniV3BalanceResult.length > 0) {
+      return uniV3BalanceResult[0].toNumber();
+    }
+    return 0;
+  }, [balanceResult]);
+
+  const uniV3TokenIdsArgs = useMemo(() => {
+    if (uniV3AccountBalance && account) {
+      const tokenRequests: any[] = [];
+      for (let i = 0; i < uniV3AccountBalance; i++) {
+        tokenRequests.push([account, i]);
+      }
+      return tokenRequests;
+    }
+    return [];
+  }, [account, uniV3AccountBalance]);
+
+  const uniV3tokenIdResults = useSingleContractMultipleData(
+    uniV3PositionManager,
+    'tokenOfOwnerByIndex',
+    uniV3TokenIdsArgs,
+  );
+
+  const uniV3TokenIds = useMemo(() => {
+    if (account) {
+      return uniV3tokenIdResults
+        .map(({ result }) => result)
+        .filter((result): result is Result => !!result)
+        .map((result) => BigNumber.from(result[0]));
+    }
+    return [];
+  }, [account, uniV3tokenIdResults]);
+
+  const { positions: uniV3Positions } = useV3PositionsFromTokenIds(
+    uniV3TokenIds,
+  );
+
+  const uniV3PositionCount = useMemo(() => {
+    if (!uniV3Positions) return 0;
+    return uniV3Positions.filter((position) =>
+      hideClosePosition ? position.liquidity.gt('0') : true,
+    ).length;
+  }, [hideClosePosition, positions]);
+
+  const totalCount =
+    positionCount +
+    uniV3PositionCount +
+    (hideFarmingPosition
+      ? 0
+      : farmingPositionsCount + oldFarmingPositionsCount);
+
+  const prevCount = usePrevious(totalCount);
+
+  const count = totalCount > 0 ? totalCount : prevCount ?? 0;
+
+  return {
+    loading: balanceLoading || uniV3BalanceLoading || positionsOnFarmerLoading,
+    count,
+  };
+}
+
+export function useGammaPositionsCount(
+  account: string | null | undefined,
+  chainId: ChainId | undefined,
+) {
+  const fetchGammaPositions = async () => {
+    if (!account || !chainId) return;
+    const gammaPositions = await getGammaPositions(account, chainId);
+    return gammaPositions;
+  };
+
+  const {
+    isLoading: positionsLoading,
+    data: gammaPositions,
+    refetch: refetchGammaPositions,
+  } = useQuery({
+    queryKey: ['fetchGammaPositions', account, chainId],
+    queryFn: fetchGammaPositions,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchGammaPositions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  const allGammaPairsToFarm = getAllGammaPairs(chainId);
+  const masterChefContracts = useMasterChefContracts();
+  const stakedAmountData = useMultipleContractMultipleData(
+    account ? masterChefContracts : [],
+    'userInfo',
+    account
+      ? masterChefContracts.map((_, ind) =>
+          allGammaPairsToFarm
+            .filter((pair) => (pair.masterChefIndex ?? 0) === ind)
+            .map((pair) => [pair.pid, account]),
+        )
+      : [],
+  );
+
+  const stakedAmounts = stakedAmountData.map((callStates, ind) => {
+    const gammaPairsFiltered = allGammaPairsToFarm.filter(
+      (pair) => (pair.masterChefIndex ?? 0) === ind,
+    );
+    return callStates.map((callData, index) => {
+      const amount =
+        !callData.loading && callData.result && callData.result.length > 0
+          ? formatUnits(callData.result[0], 18)
+          : '0';
+      const gPair =
+        gammaPairsFiltered.length > index
+          ? gammaPairsFiltered[index]
+          : undefined;
+      return {
+        amount,
+        pid: gPair?.pid,
+        masterChefIndex: ind,
+      };
+    });
+  });
+
+  const stakedLoading = !!stakedAmountData.find(
+    (callStates) => !!callStates.find((callData) => callData.loading),
+  );
+
+  const stakedLPs = allGammaPairsToFarm
+    .map((item) => {
+      const masterChefIndex = item.masterChefIndex ?? 0;
+      const sItem =
+        stakedAmounts && stakedAmounts.length > masterChefIndex
+          ? stakedAmounts[masterChefIndex].find(
+              (sAmount) => sAmount.pid === item.pid,
+            )
+          : undefined;
+      return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
+    })
+    .filter((item) => {
+      return item.stakedAmount > 0;
+    });
+
+  const gammaPositionArray = useMemo(() => {
+    if (gammaPositions && chainId) {
+      return Object.keys(gammaPositions)
+        .filter(
+          (value) =>
+            !!allGammaPairsToFarm.find(
+              (pair) => pair.address.toLowerCase() === value.toLowerCase(),
+            ),
+        )
+        .filter(
+          (pairAddress) =>
+            !stakedLPs.find(
+              (item) =>
+                item.address.toLowerCase() === pairAddress.toLowerCase(),
+            ),
+        );
+    }
+    return [];
+  }, [allGammaPairsToFarm, chainId, gammaPositions, stakedLPs]);
+
+  const count = useMemo(() => {
+    return gammaPositionArray.length + stakedLPs.length;
+  }, [gammaPositionArray, stakedLPs]);
+
+  return { loading: positionsLoading || stakedLoading, count };
+}
+
+export function useUnipilotPositions(
+  account: string | null | undefined,
+  chainId: ChainId | undefined,
+) {
+  const { library } = useActiveWeb3React();
+  const lastTxHash = useLastTransactionHash();
+  const config = getConfig(chainId);
+  const unipilotAvailable = config['unipilot']['available'];
+
+  const fetchUnipilotPositions = async () => {
+    if (!account || !chainId || !unipilotAvailable) return null;
+    const userPositions = await getUnipilotPositions(account, chainId);
+    const positionsOnFarm = await getUnipilotUserFarms(chainId, account);
+    const unipilotPositions = await Promise.all(
+      (userPositions ?? []).map(async (item: any) => {
+        const farmPosition = (positionsOnFarm ?? []).find(
+          (position: any) =>
+            position.stakingAddress.toLowerCase() ===
+            item.vault.id.toLowerCase(),
+        );
+        if (farmPosition && library) {
+          const farmContract = getContract(
+            farmPosition.id,
+            farmPosition.isDualReward
+              ? UNIPILOT_DUAL_REWARD_ABI
+              : UNIPILOT_SINGLE_REWARD_ABI,
+            library,
+          );
+          const stakedAmount = await farmContract.balanceOf(account ?? '');
+          return {
+            ...item,
+            balance: JSBI.add(
+              JSBI.BigInt(stakedAmount),
+              JSBI.BigInt(item.balance),
+            ).toString(),
+            farming: true,
+          };
+        }
+        return { ...item, farming: false };
+      }),
+    );
+
+    return unipilotPositions.filter(
+      (position: any) => Number(position.balance) > 0,
+    );
+  };
+
+  const {
+    isLoading: positionsLoading,
+    data: unipilotPositions,
+    refetch: refetchUnipilotPositions,
+  } = useQuery({
+    queryKey: ['fetchUnipilotPositions', account, lastTxHash, chainId],
+    queryFn: fetchUnipilotPositions,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchUnipilotPositions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  return {
+    loading: positionsLoading,
+    unipilotPositions,
   };
 }

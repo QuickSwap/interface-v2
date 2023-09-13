@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -12,10 +12,13 @@ import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config';
 
-const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
-  globalData,
-  v3GlobalData,
-}) => {
+// To compute dragon's lair
+import { useNewLairInfo } from 'state/stake/hooks';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { DLQUICK } from 'constants/v3/addresses';
+import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
+
+const HeroSection: React.FC = () => {
   const history = useHistory();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { chainId, account } = useActiveWeb3React();
@@ -27,6 +30,22 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
   const v2 = config['v2'];
   const v3 = config['v3'];
 
+  const lairInfo = useNewLairInfo();
+  const quickToken = DLQUICK[chainIdToUse];
+  const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
+
+  const { data: globalData } = useAnalyticsGlobalData('v2', chainId);
+  const { data: v3GlobalData } = useAnalyticsGlobalData('v3', chainId);
+  const dragonReward = useMemo(() => {
+    if (lairInfo && quickPrice) {
+      const newReward =
+        Number(lairInfo.totalQuickBalance.toExact()) * quickPrice;
+
+      return newReward;
+    }
+    return 0;
+  }, [lairInfo, quickPrice]);
+
   return (
     <Box className='heroSection'>
       <small className='text-bold'>{t('totalValueLocked')}</small>
@@ -36,7 +55,8 @@ const HeroSection: React.FC<{ globalData: any; v3GlobalData: any }> = ({
           <h1>
             {(
               (v2 ? Number(globalData.totalLiquidityUSD) : 0) +
-              (v3 ? Number(v3GlobalData.totalLiquidityUSD) : 0)
+              (v3 ? Number(v3GlobalData.totalLiquidityUSD) : 0) +
+              dragonReward
             ).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}

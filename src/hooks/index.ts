@@ -4,15 +4,17 @@ import { ChainId, Pair } from '@uniswap/sdk';
 import {
   ConnectionType,
   arkaneConnection,
-  bitKeepConnection,
+  bitgetConnection,
   blockWalletConnection,
   braveWalletConnection,
   coinbaseWalletConnection,
+  cryptoComConnection,
   cypherDConnection,
   getConnections,
   gnosisSafeConnection,
   metamaskConnection,
   networkConnection,
+  okxWalletConnection,
   phantomConnection,
   trustWalletConnection,
   walletConnectConnection,
@@ -27,6 +29,7 @@ import { useParams } from 'react-router-dom';
 import { getConfig } from 'config';
 import { Connector } from '@web3-react/types';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
 
 export function useActiveWeb3React() {
   const context = useWeb3React();
@@ -86,14 +89,18 @@ export function useGetConnection() {
           return phantomConnection;
         case ConnectionType.TRUSTWALLET:
           return trustWalletConnection;
-        case ConnectionType.BITKEEP:
-          return bitKeepConnection;
+        case ConnectionType.BITGET:
+          return bitgetConnection;
         case ConnectionType.BLOCKWALLET:
           return blockWalletConnection;
         case ConnectionType.BRAVEWALLET:
           return braveWalletConnection;
         case ConnectionType.CYPHERD:
           return cypherDConnection;
+        case ConnectionType.OKXWALLET:
+          return okxWalletConnection;
+        case ConnectionType.CRYPTOCOM:
+          return cryptoComConnection;
         default:
           throw Error('unsupported connector');
       }
@@ -165,4 +172,13 @@ export const useAnalyticsVersion = () => {
   const params: any = useParams();
   const version = params && params.version ? params.version : defaultVersion;
   return version;
+};
+
+export const useMasaAnalytics = () => {
+  const masaAnalytics = useMasaAnalyticsReact({
+    clientId: process.env.REACT_APP_MASA_CLIENT_ID ?? '',
+    clientApp: 'Quickswap',
+    clientName: 'Quickswap',
+  });
+  return masaAnalytics;
 };

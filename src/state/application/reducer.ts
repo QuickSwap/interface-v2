@@ -1,5 +1,4 @@
 import { createReducer, nanoid } from '@reduxjs/toolkit';
-import { ChainId } from '@uniswap/sdk';
 import {
   addPopup,
   PopupContent,
@@ -16,7 +15,6 @@ import {
   updateBookmarkPairs,
   updateTokenDetails,
   updateMaticPrice,
-  updateGasPrice,
   updateIsV2,
   updateUDDomain,
 } from './actions';
@@ -58,7 +56,6 @@ export interface ApplicationState {
   readonly analyticToken: any;
   readonly tokenChartData: any;
   readonly tokenDetails: TokenDetail[];
-  readonly gasPrice: { fetched: number | null; override: boolean };
   readonly isV2: boolean | undefined;
   readonly udDomain: string | undefined;
 }
@@ -75,7 +72,6 @@ const initialState: ApplicationState = {
   analyticToken: null,
   tokenChartData: null,
   tokenDetails: [],
-  gasPrice: { fetched: 70, override: true },
   isV2: undefined,
   udDomain: undefined,
 };
@@ -92,9 +88,6 @@ export default createReducer(initialState, (builder) =>
           state.blockNumber[chainId],
         );
       }
-    })
-    .addCase(updateGasPrice, (state, action) => {
-      state.gasPrice = action.payload;
     })
     .addCase(setOpenModal, (state, action) => {
       state.openModal = action.payload;

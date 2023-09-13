@@ -20,11 +20,12 @@ const allNonMetamaskFlags: NonMetaMaskFlag[] = [
   'isTrust',
 ];
 export const getIsMetaMaskWallet = () => {
-  const { ethereum } = window as any;
+  const { ethereum, web3 } = window as any;
 
   return Boolean(
     ethereum &&
       ethereum.isMetaMask &&
+      web3 &&
       (ethereum.detected && ethereum.detected.length > 0
         ? ethereum.detected.find(
             (provider: any) =>
@@ -59,7 +60,7 @@ export const getIsTrustWallet = () => {
   );
 };
 
-export const getIsBitKeepWallet = () => {
+export const getIsBitgetWallet = () => {
   const windowAsAny = window as any;
   return Boolean(windowAsAny.bitkeep && windowAsAny.bitkeep.ethereum);
 };

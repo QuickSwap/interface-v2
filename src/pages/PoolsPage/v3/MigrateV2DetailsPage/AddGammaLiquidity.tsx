@@ -20,7 +20,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { calculateGasMargin } from 'utils';
+import { calculateGasMargin, getGammaPairsForTokens } from 'utils';
 
 const AddGammaLiquidity: React.FC<{
   token0Value: CurrencyAmount<Currency> | undefined;
@@ -36,15 +36,13 @@ const AddGammaLiquidity: React.FC<{
   const { chainId, account } = useActiveWeb3React();
   const token0 = token0Value?.currency.wrapped;
   const token1 = token1Value?.currency.wrapped;
-  const token0Address = token0 ? token0.address.toLowerCase() : '';
-  const token1Address = token1 ? token1.address.toLowerCase() : '';
-  const gammaPair = chainId
-    ? GammaPairs[chainId][token0Address + '-' + token1Address] ??
-      GammaPairs[chainId][token1Address + '-' + token0Address]
-    : [];
-  const gammaPairReverted = Boolean(
-    chainId && GammaPairs[chainId][token1Address + '-' + token0Address],
+  const gammaPairData = getGammaPairsForTokens(
+    chainId,
+    token0?.address,
+    token1?.address,
   );
+  const gammaPair = gammaPairData?.pairs ?? [];
+  const gammaPairReverted = gammaPairData?.reversed;
   const gammaPairAddress = gammaPair
     ? gammaPair.find((pair) => pair.type === preset)?.address
     : undefined;
@@ -72,7 +70,7 @@ const AddGammaLiquidity: React.FC<{
     return approvalB !== ApprovalState.APPROVED;
   }, [approvalB]);
 
-  const gammaUNIPROXYContract = useGammaUNIProxyContract();
+  const gammaUNIPROXYContract = useGammaUNIProxyContract(gammaPairAddress);
   const gammaTokens = token0 && token1 ? [token0, token1] : [];
   const depositAmountsData = useSingleContractMultipleData(
     gammaPairAddress && gammaTokens.length > 0
@@ -321,8 +319,8 @@ const AddGammaLiquidity: React.FC<{
           ? t('gammaImproperRatio')
           : errorMsg.indexOf('price change overflow') > -1
           ? t('gammaPriceOverflow')
-          : error?.code === 4001 || error.code === 'ACTION_REJECTED'
-          ? ''
+          : error?.code === 4001 || error?.code === 'ACTION_REJECTED'
+          ? t('txRejected')
           : t('errorInTx'),
       );
     }

@@ -15,7 +15,7 @@
   },
   "swap": {
     "available": true,
-    "bestTrade": false,
+    "bestTrade": true,
     "proMode": false,
     "limitOrder": false,
     "crossChain": false
@@ -58,5 +58,14 @@
   },
   "perps": {
     "available": true
+  },
+  "bos": {
+    "available": true
+  },
+  "gamma": {
+    "available": true
+  },
+  "unipilot": {
+    "available": false
   }
 }

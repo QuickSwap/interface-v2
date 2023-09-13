@@ -348,7 +348,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           // we only care if the error is something _other_ than the user rejected the tx
           console.error(error);
           setRemoveErrorMessage(
-            error.code === 4001 ? t('txRejected') : t('errorInTx'),
+            error.code === 'ACTION_REJECTED' ? t('txRejected') : t('errorInTx'),
           );
         });
     }
