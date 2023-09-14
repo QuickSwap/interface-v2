@@ -15,7 +15,7 @@
   },
   "swap": {
     "available": true,
-    "bestTrade": false,
+    "bestTrade": true,
     "proMode": false,
     "limitOrder": false,
     "crossChain": false

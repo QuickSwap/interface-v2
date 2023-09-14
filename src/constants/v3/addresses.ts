@@ -908,11 +908,9 @@ export const SUGGESTED_BASES: {
     DAI[ChainId.MATIC],
     USDC[ChainId.MATIC],
     USDT[ChainId.MATIC],
-    OLD_QUICK[ChainId.MATIC],
     NEW_QUICK[ChainId.MATIC],
     ETHER[ChainId.MATIC],
     WBTC[ChainId.MATIC],
-    MI[ChainId.MATIC],
   ],
   [ChainId.DOGECHAIN]: [
     USDC[ChainId.DOGECHAIN],

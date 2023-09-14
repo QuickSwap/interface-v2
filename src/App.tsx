@@ -65,13 +65,13 @@ import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import { Environment, HypeLab, HypeLabContext } from 'hypelab-react';
 
-const ThemeProvider: React.FC = ({ children }) => {
+const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {
   const theme = mainTheme;
 
   return <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>;
 };
 
-const Providers: React.FC = ({ children }) => {
+const Providers: React.FC<{ children: any }> = ({ children }) => {
   return (
     <Suspense fallback={<Background fallback={true} />}>
       <ThemeProvider>

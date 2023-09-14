@@ -13,7 +13,7 @@ export default function useSwapRedirects() {
   const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const isEther = useCallback(
-    (currency) => {
+    (currency: any) => {
       // ether does not have address
       if (currency?.address) return false;
 

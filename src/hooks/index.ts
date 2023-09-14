@@ -8,6 +8,7 @@ import {
   blockWalletConnection,
   braveWalletConnection,
   coinbaseWalletConnection,
+  cryptoComConnection,
   cypherDConnection,
   getConnections,
   gnosisSafeConnection,
@@ -17,6 +18,7 @@ import {
   phantomConnection,
   trustWalletConnection,
   walletConnectConnection,
+  unstoppableDomainsConnection,
 } from 'connectors';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
 import { useArgentWalletDetectorContract } from './useContract';
@@ -28,6 +30,7 @@ import { useParams } from 'react-router-dom';
 import { getConfig } from 'config';
 import { Connector } from '@web3-react/types';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
 
 export function useActiveWeb3React() {
   const context = useWeb3React();
@@ -97,6 +100,10 @@ export function useGetConnection() {
           return cypherDConnection;
         case ConnectionType.OKXWALLET:
           return okxWalletConnection;
+        case ConnectionType.CRYPTOCOM:
+          return cryptoComConnection;
+        case ConnectionType.UNSTOPPABLEDOMAINS:
+          return unstoppableDomainsConnection;
         default:
           throw Error('unsupported connector');
       }
@@ -168,4 +175,13 @@ export const useAnalyticsVersion = () => {
   const params: any = useParams();
   const version = params && params.version ? params.version : defaultVersion;
   return version;
+};
+
+export const useMasaAnalytics = () => {
+  const masaAnalytics = useMasaAnalyticsReact({
+    clientId: process.env.REACT_APP_MASA_CLIENT_ID ?? '',
+    clientApp: 'Quickswap',
+    clientName: 'Quickswap',
+  });
+  return masaAnalytics;
 };

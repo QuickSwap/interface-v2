@@ -211,7 +211,6 @@ const Header: React.FC = () => {
       isExternal: true,
       target: '_top',
       externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
-      isNew: true,
     });
   }
   if (showBOS) {

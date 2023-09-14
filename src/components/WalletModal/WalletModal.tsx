@@ -13,9 +13,6 @@ import {
 } from 'state/application/hooks';
 import { AccountDetails, CustomModal } from 'components';
 import { useTranslation } from 'react-i18next';
-// import { UAuthConnector } from '@uauth/web3-react';
-// import UAuth from '@uauth/js';
-import Option from './Option';
 import WalletOption from './options';
 import PendingView from './PendingView';
 import 'components/styles/WalletModal.scss';
@@ -35,6 +32,9 @@ import {
 } from 'connectors/utils';
 import { useSelectedWallet } from 'state/user/hooks';
 import { WalletConnect } from 'connectors/WalletConnect';
+import { useGetConnection, useMasaAnalytics } from 'hooks';
+import { UAuthConnector } from '@uauth/web3-react';
+import UAuth from '@uauth/js';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -61,7 +61,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT);
   const [error, setError] = useState<Error | string | undefined>(undefined);
   const { updateUDDomain } = useUDDomain();
-  const { updateSelectedWallet } = useSelectedWallet();
+  const { selectedWallet, updateSelectedWallet } = useSelectedWallet();
 
   const [pendingWallet, setPendingWallet] = useState<Connection | undefined>();
 
@@ -82,6 +82,19 @@ const WalletModal: React.FC<WalletModalProps> = ({
       setWalletView(WALLET_VIEWS.ACCOUNT);
     }
   }, [walletModalOpen]);
+
+  const { fireConnectWalletEvent } = useMasaAnalytics();
+  const getConnection = useGetConnection();
+  useEffect(() => {
+    if (account && selectedWallet) {
+      const connection = getConnection(selectedWallet);
+      fireConnectWalletEvent({
+        user_address: account,
+        wallet_type: connection.name,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, selectedWallet]);
 
   const tryActivation = async (connection: Connection) => {
     // log selected wallet
@@ -109,28 +122,28 @@ const WalletModal: React.FC<WalletModalProps> = ({
       await connection.connector.activate();
       updateSelectedWallet(connection.type);
 
-      // if (
-      //   connection.connector instanceof UAuthConnector &&
-      //   process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
-      //   process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
-      // ) {
-      //   const uauth = new UAuth({
-      //     clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-      //     redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
-      //     scope: 'openid wallet',
-      //   });
+      if (
+        connection.connector instanceof UAuthConnector &&
+        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
+      ) {
+        const uauth = new UAuth({
+          clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+          redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+          scope: 'openid wallet',
+        });
 
-      //   try {
-      //     const user = await uauth.user();
-      //     updateUDDomain(user.sub);
-      //     setWalletView(WALLET_VIEWS.ACCOUNT);
-      //   } catch {
-      //     setError('User does not exist.');
-      //   }
-      // } else {
-      updateUDDomain(undefined);
-      setWalletView(WALLET_VIEWS.ACCOUNT);
-      // }
+        try {
+          const user = await uauth.user();
+          updateUDDomain(user.sub);
+          setWalletView(WALLET_VIEWS.ACCOUNT);
+        } catch {
+          setError('User does not exist.');
+        }
+      } else {
+        updateUDDomain(undefined);
+        setWalletView(WALLET_VIEWS.ACCOUNT);
+      }
     } catch (e) {
       setPendingError(true);
     }
@@ -156,6 +169,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
       (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
     const isCoinbaseWallet = ethereum && ethereum.isCoinbaseWallet;
     const isOkxwallet = (window as any).okxwallet;
+    const isDefiConnectProvider = (window as any).deficonnectProvider;
 
     return connections.map((option) => {
       if (
@@ -247,6 +261,24 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={t('installOkxWallet')}
             subheader={null}
             link={'https://www.okx.com/web3'}
+            icon={option.iconName}
+            iconify={iconify}
+          />
+        );
+      } else if (
+        option.name === GlobalConst.walletName.CRYPTOCOM &&
+        !isDefiConnectProvider
+      ) {
+        return (
+          <WalletOption
+            id={`connect-${option.name}`}
+            key={option.name}
+            color={'#E8831D'}
+            header={t('installCryptocom')}
+            subheader={null}
+            link={
+              'https://chrome.google.com/webstore/detail/cryptocom-wallet-extensio/hifafgmccdpekplomjjkcfgodnhcellj'
+            }
             icon={option.iconName}
             iconify={iconify}
           />
