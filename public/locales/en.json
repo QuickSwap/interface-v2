@@ -714,5 +714,7 @@
   "earn300QUICK": "earn $300 in $QUICK.",
   "win300QUICK": "win $300 in $QUICK.",
   "quickOfficialNewsletter": "QuickSwap Official Newsletter",
-  "subscribe": "Subscribe"
+  "subscribe": "Subscribe",
+  "subscribeSuccess": "Success! Please, check your mail inbox to confirm your subscription.",
+  "subscribeError": "Error! failed to subscribe to the newsletter."
 }

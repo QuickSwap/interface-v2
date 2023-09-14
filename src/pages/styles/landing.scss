@@ -396,6 +396,10 @@
   }
 }
 
+.newsletterSignupFormWrapper {
+  margin: 0 60px 0 32px;
+}
+
 .newsletterSignupForm {
   border: 1px solid $grey22;
   background-color: $bgColor;
@@ -404,7 +408,6 @@
   border-radius: 11px;
   position: relative;
   z-index: 5;
-  margin: 0 60px 0 32px;
   & input {
     background-color: transparent;
     border: none;

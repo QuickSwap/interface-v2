@@ -475,11 +475,15 @@ wcm-modal {
       font-weight: 600;
     }
   }
-  & > div {
+  & .newsletterSignupClose {
     position: absolute;
     top: 12px;
     right: 12px;
     color: $textSecondary;
+  }
+  & span {
+    font-size: 13px;
+    line-height: 14px;
   }
   @include media('screen', '<tablet') {
     top: 180px;

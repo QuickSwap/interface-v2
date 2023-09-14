@@ -1,26 +1,17 @@
-import React from 'react';
-import { Box, Button } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Box, Button, CircularProgress } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import newsletterBg from 'assets/images/newsletterBg.svg';
+import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
 const NewsletterSignupForm: React.FC = () => {
   const { t } = useTranslation();
-  const signupNewsletter = async () => {
-    const formSubmit = document.querySelector(
-      '[data-form="b97ce206-2a21-11ee-b259-89605999ef42"] form input[type=submit]',
-    );
-    if (formSubmit) {
-      (formSubmit as any).click();
-    }
-  };
-
-  const inputEmail = (e: any) => {
-    const emailInput = document.querySelector(
-      '[data-form="b97ce206-2a21-11ee-b259-89605999ef42"] form input[type=email]',
-    );
-    if (emailInput) {
-      (emailInput as any).value = e.target.value;
-    }
+  const [email, setEmail] = useState('');
+  const { mutate, isLoading, data } = useSubscribeNewsletter(
+    process.env.REACT_APP_CONVERTKIT_FORM_ID,
+  );
+  const handleSignup = async () => {
+    await mutate({ email });
   };
 
   return (
@@ -33,14 +24,34 @@ const NewsletterSignupForm: React.FC = () => {
           <b>{t('earn300QUICK')}</b>
         </small>
       </Box>
-      <div className='newsletterSignupForm'>
-        <input
-          type='email'
-          placeholder={t('enterEmail')}
-          onChange={inputEmail}
-        />
-        <Button onClick={signupNewsletter}>{t('signup')}</Button>
-      </div>
+      <Box className='newsletterSignupFormWrapper'>
+        <Box className='newsletterSignupForm'>
+          <input
+            type='email'
+            placeholder={t('enterEmail')}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Button disabled={isLoading} onClick={handleSignup}>
+            {isLoading && (
+              <CircularProgress
+                size='20px'
+                style={{ color: 'white', marginRight: 5 }}
+              />
+            )}
+            {t('signup')}
+          </Button>
+        </Box>
+        {data && (
+          <Box mt={1} textAlign='center'>
+            {data.subscription && (
+              <small className='text-success'>{t('subscribeSuccess')}</small>
+            )}
+            {data.error && (
+              <small className='text-error'>{t('subscribeError')}</small>
+            )}
+          </Box>
+        )}
+      </Box>
       <img src={newsletterBg} />
     </Box>
   );
