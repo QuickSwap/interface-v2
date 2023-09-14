@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useActiveWeb3React } from 'hooks';
 import { useEffect, useState } from 'react';
+import BondABI from 'constants/abis/bond.json';
+import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
+import { Interface } from 'ethers/lib/utils';
 
 export const useFetchBonds = () => {
   const { chainId } = useActiveWeb3React();
@@ -45,4 +48,21 @@ export const useFetchBonds = () => {
   }, [currentTime]);
 
   return { loading: isLoading, data };
+};
+
+export const useFetchBondsFromContract = (bondAddresses: string[]) => {
+  const bondInterface = new Interface(BondABI);
+  const bondTrueBillPriceCalls = useMultipleContractSingleData(
+    bondAddresses,
+    bondInterface,
+    'trueBillPrice',
+  );
+  const bondTrueBillPrices = bondTrueBillPriceCalls.map((call) =>
+    !call.loading && call.result && call.result.length > 0
+      ? call.result[0]
+      : undefined,
+  );
+  return bondAddresses.map((address, index) => {
+    return { address, trueBillPrice: bondTrueBillPrices[index] };
+  });
 };
