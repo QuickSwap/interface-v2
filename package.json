@@ -124,7 +124,7 @@
   ],
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@0xsquid/widget": "1.5.13",
+    "@0xsquid/widget": "1.6.0",
     "@cryption/df-sdk-core": "0.0.26",
     "@deficonnect/web3-connector": "^2.0.3",
     "@intract/attribution": "^2.0.0",
@@ -134,6 +134,7 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@paraswap/sdk": "^5.6.0-alpha.6",
     "@tanstack/react-query": "^4.32.0",
+    "@uauth/web3-react": "^2.8.1",
     "@venly/web3-provider": "3.1.0-develop.0",
     "@walletconnect/ethereum-provider": "^2.8.5",
     "@walletconnect/modal": "^2.5.4",

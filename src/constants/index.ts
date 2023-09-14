@@ -248,6 +248,7 @@ export const GlobalConst = {
     ZENGO_CONNECT: 'ZenGo',
     OKXWALLET: 'OKX Wallet',
     CRYPTOCOM: 'Crypto.com DeFi Wallet',
+    UNSTOPPABLEDOMAINS: 'Unstoppable Domains',
   },
 };
 
