@@ -12,6 +12,7 @@ const nextConfig = {
     '@0xsquid/widget',
     '@orbs-network/twap-ui',
     '@orbs-network/twap-ui-quickswap',
+    '@masa-finance/analytics-react',
   ],
   i18n,
   images: {

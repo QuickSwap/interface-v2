@@ -1,5 +1,5 @@
-import { Box, useTheme, useMediaQuery } from '@mui/material';
-import { Adshares, SettingsModal } from 'components';
+import { Box } from '@mui/material';
+import { HypeLabAds, SettingsModal } from 'components';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import React, { useState } from 'react';
 import { useIsV2 } from 'state/application/hooks';
@@ -25,8 +25,6 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
 
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainId);
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainId);
 
@@ -70,6 +68,9 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
         />
       )}
       <SwapPageHeader proMode={isProMode} />
+      <Box margin='24px auto'>
+        <HypeLabAds />
+      </Box>
       {isProMode ? (
         <SwapProMain
           pairId={data?.pairId}
@@ -83,9 +84,6 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           token2={isV2 ? token2 : token2V3}
         />
       )}
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
-        <Adshares />
-      </Box>
     </Box>
   );
 };

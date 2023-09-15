@@ -18,6 +18,8 @@ import { BraveWallet } from './BraveWallet';
 import { CypherD } from './CypherD';
 import { isMobile } from 'react-device-detect';
 import { OkxWallet } from './OkxWallet';
+import { Cryptocom } from './Cryptocom';
+import { UAuthConnector } from '@uauth/web3-react';
 
 const MetamaskIcon = '/assets/images/metamask.png';
 const BlockWalletIcon = '/assets/images/blockwalletIcon.svg';
@@ -29,10 +31,11 @@ const WalletConnectIcon = '/assets/images/walletConnectIcon.svg';
 const PhantomIcon = '/assets/images/wallets/phantomIconPurple.svg';
 const VenlyIcon = '/assets/images/venly.svg';
 const OkxWalletIcon = '/assets/images/OKXWallet.svg';
-// const UnstoppableDomainsIcon = '/assets/images/unstoppableDomains.png';
+const UnstoppableDomainsIcon = '/assets/images/unstoppableDomains.png';
 const GnosisIcon = '/assets/images/gnosis_safe.png';
 const TrustIcon = '/assets/images/trust.png';
 const ZengoIcon = '/assets/images/zengo.png';
+const CryptocomIcon = '/assets/images/cryptocomWallet.png';
 
 function onError(error: Error) {
   console.debug(`web3-react error: ${error}`);
@@ -52,6 +55,8 @@ export enum ConnectionType {
   BRAVEWALLET = 'BRAVEWALLET',
   CYPHERD = 'CYPHERD',
   OKXWALLET = 'OKXWALLET',
+  CRYPTOCOM = 'CRYPTO_COM',
+  UNSTOPPABLEDOMAINS = 'UNSTOPPABLE_DOMAINS',
 }
 
 export interface Connection {
@@ -236,6 +241,26 @@ export const okxWalletConnection: Connection = {
   mobile: true,
 };
 
+const [web3Cryptocom, web3CryptocomHooks] = initializeConnector<Cryptocom>(
+  (actions) =>
+    new Cryptocom({
+      actions,
+      onError,
+    }),
+);
+
+export const cryptoComConnection: Connection = {
+  key: 'Cryptocom',
+  name: GlobalConst.walletName.CRYPTOCOM,
+  connector: web3Cryptocom,
+  hooks: web3CryptocomHooks,
+  type: ConnectionType.CRYPTOCOM,
+  iconName: CryptocomIcon,
+  color: '#E8831D',
+  description: 'Crypto.com DeFi Wallet browser extension.',
+  mobile: true,
+};
+
 const [web3CypherD, web3CypherDHooks] = initializeConnector<CypherD>(
   (actions) =>
     new CypherD({
@@ -399,6 +424,38 @@ export const coinbaseWalletConnection: Connection = {
   description: 'Use Coinbase Wallet app on mobile device',
 };
 
+const [
+  web3UnstoppableDomains,
+  web3UnstoppableDomainsHooks,
+] = initializeConnector<UAuthConnector>(
+  (actions) =>
+    new UAuthConnector({
+      actions,
+      options: {
+        clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID ?? '',
+        redirectUri:
+          process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI ?? '',
+        scope: 'openid wallet',
+        connectors: {
+          injected: web3Metamask,
+          walletconnect: web3WalletConnect,
+        },
+      },
+      onError,
+    }),
+);
+
+export const unstoppableDomainsConnection: Connection = {
+  key: 'UNSTOPPABLE_DOMAINS',
+  name: GlobalConst.walletName.UNSTOPPABLEDOMAINS,
+  connector: web3UnstoppableDomains,
+  hooks: web3UnstoppableDomainsHooks,
+  type: ConnectionType.UNSTOPPABLEDOMAINS,
+  iconName: UnstoppableDomainsIcon,
+  color: '#315CF5',
+  description: 'Connect to Unstoppable Domains',
+};
+
 export function getConnections() {
   return isMobile
     ? [
@@ -415,6 +472,8 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitgetConnection,
+        cryptoComConnection,
+        unstoppableDomainsConnection,
       ]
     : [
         cypherDConnection,
@@ -430,5 +489,7 @@ export function getConnections() {
         zengoConnectConnection,
         arkaneConnection,
         bitgetConnection,
+        cryptoComConnection,
+        unstoppableDomainsConnection,
       ];
 }

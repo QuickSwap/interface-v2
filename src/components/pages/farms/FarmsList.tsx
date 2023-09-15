@@ -54,7 +54,7 @@ const FarmsList: React.FC<FarmsListProps> = ({ bulkPairs }) => {
   const router = useRouter();
   const currentTab = router.query.tab
     ? (router.query.tab as string)
-    : GlobalConst.v2FarmTab.LPFARM;
+    : GlobalConst.v2FarmTab.OTHER_LP;
   const isEndedFarm = router.query.ended
     ? router.query.ended === 'true'
     : false;

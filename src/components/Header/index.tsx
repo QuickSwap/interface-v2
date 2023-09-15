@@ -203,7 +203,6 @@ const Header: React.FC = () => {
       isExternal: true,
       target: '_top',
       externalLink: process?.env?.NEXT_PUBLIC_GAMEHUB_URL || '',
-      isNew: true,
     });
   }
   if (showBOS) {

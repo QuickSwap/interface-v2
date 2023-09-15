@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Result,
   useMultipleContractMultipleData,
+  useMultipleContractSingleData,
   useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
@@ -19,16 +20,16 @@ import { ChainId, JSBI } from '@uniswap/sdk';
 import {
   getAllGammaPairs,
   getContract,
-  getGammaPositions,
   getUnipilotPositions,
   getUnipilotUserFarms,
 } from 'utils';
 import { useQuery } from '@tanstack/react-query';
-import { formatUnits } from 'ethers/lib/utils';
+import { Interface, formatUnits } from 'ethers/lib/utils';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 import { getConfig } from 'config';
+import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -373,37 +374,6 @@ export function useGammaPositionsCount(
   account: string | null | undefined,
   chainId: ChainId | undefined,
 ) {
-  const fetchGammaPositions = async () => {
-    if (!account || !chainId) return null;
-    const gammaPositions = await getGammaPositions(account, chainId);
-    return gammaPositions;
-  };
-
-  const lastTxHash = useLastTransactionHash();
-  const {
-    isLoading: positionsLoading,
-    data: gammaPositions,
-    refetch: refetchGammaPositions,
-  } = useQuery({
-    queryKey: ['fetchGammaPositions', account, lastTxHash, chainId],
-    queryFn: fetchGammaPositions,
-  });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchGammaPositions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
-
   const allGammaPairsToFarm = getAllGammaPairs(chainId);
   const masterChefContracts = useMasterChefContracts();
   const stakedAmountData = useMultipleContractMultipleData(
@@ -458,31 +428,32 @@ export function useGammaPositionsCount(
       return item.stakedAmount > 0;
     });
 
-  const gammaPositionArray = useMemo(() => {
-    if (gammaPositions && chainId) {
-      return Object.keys(gammaPositions)
-        .filter(
-          (value) =>
-            !!allGammaPairsToFarm.find(
-              (pair) => pair.address.toLowerCase() === value.toLowerCase(),
-            ),
-        )
-        .filter(
-          (pairAddress) =>
-            !stakedLPs.find(
-              (item) =>
-                item.address.toLowerCase() === pairAddress.toLowerCase(),
-            ),
-        );
-    }
-    return [];
-  }, [allGammaPairsToFarm, chainId, gammaPositions, stakedLPs]);
+  const lpBalancesData = useMultipleContractSingleData(
+    allGammaPairsToFarm.map((pair) => pair.address),
+    new Interface(GammaPairABI),
+    'balanceOf',
+    [account ?? undefined],
+  );
+
+  const lpBalances = lpBalancesData.map((callData) => {
+    const amount =
+      !callData.loading && callData.result && callData.result.length > 0
+        ? Number(formatUnits(callData.result[0], 18))
+        : 0;
+    return amount;
+  });
+
+  const lpBalancesLoading = !!lpBalancesData.find(
+    (callState) => !!callState.loading,
+  );
 
   const count = useMemo(() => {
-    return gammaPositionArray.length + stakedLPs.length;
-  }, [gammaPositionArray, stakedLPs]);
+    return (
+      lpBalances.filter((balance) => balance > 0).length + stakedLPs.length
+    );
+  }, [lpBalances, stakedLPs]);
 
-  return { loading: positionsLoading || stakedLoading, count };
+  return { loading: lpBalancesLoading || stakedLoading, count };
 }
 
 export function useUnipilotPositions(

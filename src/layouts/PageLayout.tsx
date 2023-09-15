@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@mui/material';
-import { useActiveWeb3React, useIsProMode } from 'hooks';
+import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
 import Header from 'components/Header';
 import Footer from 'components/Footer';
 import BetaWarningBanner from 'components/BetaWarningBanner';
@@ -31,6 +31,15 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
   }, [isProMode, name, router.asPath]);
+
+  const { firePageViewEvent } = useMasaAnalytics();
+
+  const { pathname } = location;
+  useEffect(() => {
+    const page = `https://quickswap.exchange/#${pathname}`;
+    firePageViewEvent({ page, user_address: account });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   useEffect(() => {
     if (

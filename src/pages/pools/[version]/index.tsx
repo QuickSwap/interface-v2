@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { HelpOutline } from '@mui/icons-material';
 import SupplyLiquidity from 'components/pages/pools/SupplyLiquidity';
 import { useTranslation } from 'next-i18next';
@@ -13,7 +13,7 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { Adshares } from 'components';
+import { HypeLabAds } from 'components';
 
 const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation();
@@ -23,9 +23,6 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const config = getConfig(chainIdToUse);
   const v3 = config['v3'];
   const v2 = config['v2'];
-
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const helpURL = process.env.NEXT_PUBLIC_HELP_URL;
 
@@ -57,8 +54,8 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           </Box>
         )}
       </Box>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='24px auto'>
-        <Adshares />
+      <Box margin='24px auto'>
+        <HypeLabAds />
       </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>

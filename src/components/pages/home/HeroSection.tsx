@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { Button, Box } from '@mui/material';
 import { Skeleton } from '@mui/lab';
@@ -37,13 +37,12 @@ const HeroSection: React.FC = () => {
 
   const { data: globalData } = useAnalyticsGlobalData('v2', chainId);
   const { data: v3GlobalData } = useAnalyticsGlobalData('v3', chainId);
-
   const dragonReward = useMemo(() => {
     if (lairInfo && quickPrice) {
       const newReward =
         Number(lairInfo.totalQuickBalance.toExact()) * quickPrice;
 
-      return newReward || 0;
+      return newReward;
     }
     return 0;
   }, [lairInfo, quickPrice]);

@@ -6,7 +6,7 @@ import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import FarmRewards from 'components/pages/farms/FarmRewards';
 import FarmsList from 'components/pages/farms/FarmsList';
-import { Adshares, CustomSwitch } from 'components';
+import { HypeLabAds, CustomSwitch } from 'components';
 import { useTranslation } from 'next-i18next';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultCNTFarmList } from 'state/cnt/hooks';
@@ -161,8 +161,8 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           </Box>
         )}
       </Box>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <Adshares />
+      <Box margin='0 auto 24px'>
+        <HypeLabAds />
       </Box>
       {isV2 && v2 && (
         <>

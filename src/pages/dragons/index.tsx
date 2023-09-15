@@ -11,7 +11,7 @@ import { getConfig } from 'config';
 import { useRouter } from 'next/router';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { Adshares } from 'components';
+import { HypeLabAds } from 'components';
 
 const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { breakpoints } = useTheme();
@@ -38,6 +38,9 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
   return (
     <Box width='100%' mb={3}>
+      <Box margin='0 auto 24px'>
+        <HypeLabAds />
+      </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={4}>
           {showNew && (
@@ -111,9 +114,6 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           </Box>
         </Grid>
       </Grid>
-      <Box mt={2}>
-        <Adshares />
-      </Box>
     </Box>
   );
 };

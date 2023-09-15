@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { Box } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
 import AnalyticsSearch from 'components/AnalyticsSearch';
 import { shortenAddress } from 'utils';
@@ -11,7 +11,7 @@ import { getConfig } from 'config';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useIsV2 } from 'state/application/hooks';
-import { Adshares } from 'components';
+import { HypeLabAds } from 'components';
 
 interface AnalyticHeaderProps {
   data?: any;
@@ -27,8 +27,6 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const { chainId } = useActiveWeb3React();
   const router = useRouter();
   const { t } = useTranslation();
-  const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
   const v3 = config['v3'];
@@ -61,8 +59,8 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
           </Box>
         )}
       </Box>
-      <Box maxWidth={isMobile ? '320px' : '1136px'} margin='0 auto 24px'>
-        <Adshares />
+      <Box margin='0 auto 24px'>
+        <HypeLabAds />
       </Box>
       <Box
         mb={4}

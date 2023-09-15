@@ -7,10 +7,8 @@ import GammaLPItem from './GammaLPItem';
 import { formatUnits } from 'ethers/lib/utils';
 
 const GammaLPList: React.FC<{
-  gammaPositions: any;
-  gammaPairs: string[];
-  stakedPositions: any[];
-}> = ({ gammaPositions, gammaPairs, stakedPositions }) => {
+  gammaPositions: any[];
+}> = ({ gammaPositions }) => {
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
 
@@ -29,7 +27,7 @@ const GammaLPList: React.FC<{
     return { token0, token1 };
   };
 
-  const stakedLPs = stakedPositions.map((position) => {
+  const positionsList = gammaPositions.map((position) => {
     const tokens = getTokensFromPosition(position);
     if (!tokens) return { ...position, balance0: 0, balance1: 0 };
     const { token0, token1 } = tokens;
@@ -58,20 +56,6 @@ const GammaLPList: React.FC<{
       shares: position.lpAmount * 10 ** 18,
     };
   });
-
-  const positionsList = gammaPairs
-    .map((pairAddress) => {
-      const gammaData = gammaPositions[pairAddress];
-      return { ...gammaData, pairAddress, farming: false };
-    })
-    .map((position: any) => {
-      const tokens = getTokensFromPosition(position);
-      if (!tokens) return position;
-
-      const { token0, token1 } = tokens;
-      return { ...position, token0, token1 };
-    })
-    .concat(stakedLPs);
 
   return (
     <Box>

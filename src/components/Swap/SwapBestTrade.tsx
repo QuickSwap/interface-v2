@@ -25,12 +25,18 @@ import {
 } from 'state/swap/hooks';
 import {
   useExpertModeManager,
+  useSelectedWallet,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
 import { useRouter } from 'next/router';
 import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
-import { useActiveWeb3React, useIsProMode } from 'hooks';
+import {
+  useActiveWeb3React,
+  useGetConnection,
+  useIsProMode,
+  useMasaAnalytics,
+} from 'hooks';
 import {
   ApprovalState,
   useApproveCallbackFromBestTrade,
@@ -66,6 +72,9 @@ import callWallchainAPI from 'utils/wallchainService';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { ONE } from 'v3lib/utils';
 import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import { getConfig } from 'config';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -705,6 +714,15 @@ const SwapBestTrade: React.FC<{
     }
   }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash]);
 
+  const { fireEvent } = useMasaAnalytics();
+  const config = getConfig(chainId);
+  const { selectedWallet } = useSelectedWallet();
+  const getConnection = useGetConnection();
+  const fromTokenWrapped = wrappedCurrency(currencies[Field.INPUT], chainId);
+  const fromTokenUSDPrice = useUSDCPriceFromAddress(
+    fromTokenWrapped?.address ?? '',
+  );
+
   const handleParaswap = useCallback(() => {
     if (!paraswapCallback) {
       return;
@@ -752,7 +770,30 @@ const SwapBestTrade: React.FC<{
               label: [inputCurrency?.symbol, outputCurrency?.symbol].join('/'),
             },
           );
-        } catch (error) {
+          if (
+            account &&
+            optimalRate &&
+            fromTokenWrapped &&
+            selectedWallet &&
+            chainId === ChainId.MATIC
+          ) {
+            const connection = getConnection(selectedWallet);
+            fireEvent('trade', {
+              user_address: account,
+              network: config['networkName'],
+              contract_address: optimalRate.contractAddress,
+              asset_amount: formattedAmounts[Field.INPUT],
+              asset_ticker: fromTokenWrapped.symbol ?? '',
+              additionalEventData: {
+                wallet: connection.name,
+                asset_usd_amount: (
+                  Number(formattedAmounts[Field.INPUT]) * fromTokenUSDPrice
+                ).toString(),
+              },
+            });
+          }
+        } catch (err) {
+          const error = err as any;
           setSwapState({
             attemptingTxn: false,
             tradeToConfirm,
@@ -781,6 +822,15 @@ const SwapBestTrade: React.FC<{
     account,
     inputCurrency?.symbol,
     outputCurrency?.symbol,
+    optimalRate,
+    fromTokenWrapped,
+    selectedWallet,
+    chainId,
+    getConnection,
+    fireEvent,
+    config,
+    formattedAmounts,
+    fromTokenUSDPrice,
   ]);
 
   const paraRate = optimalRate

@@ -20,6 +20,7 @@ import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
+import { HypeLabAds } from 'components';
 
 const LandingPage = (
   _props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -90,7 +91,7 @@ const LandingPage = (
       title: 'Blog',
     },
     {
-      link: 'https://www.youtube.com/channel/UCrPlF-DBwD-UzLFDzJ4Z5Fw',
+      link: 'https://www.youtube.com/@quickswapofficial',
       icon: '/assets/images/social/YouTube.svg',
       title: 'Youtube',
     },
@@ -253,6 +254,9 @@ const LandingPage = (
       </Box>
       <Box mt={2} width={1}>
         <TopMovers />
+      </Box>
+      <Box margin='32px auto'>
+        <HypeLabAds />
       </Box>
       <Box className={styles.quickInfo}>
         <h4>{t('quickInfoTitle')}</h4>

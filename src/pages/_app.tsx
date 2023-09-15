@@ -25,6 +25,7 @@ import { appWithTranslation } from 'next-i18next';
 import './index.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { Environment, HypeLab, HypeLabContext } from 'hypelab-react';
 
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -65,6 +66,12 @@ function Updaters() {
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const queryClient = new QueryClient();
   const googleAnalyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
+
+  const hypeLabClient = new HypeLab({
+    URL: 'https://api.hypelab.com',
+    propertySlug: '81c00452a9',
+    environment: Environment.Production,
+  });
 
   return (
     <>
@@ -107,21 +114,23 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       {googleAnalyticsId && (
         <GoogleAnalytics trackPageViews gaMeasurementId={googleAnalyticsId} />
       )}
-      <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <Providers>
-            <TermsWrapper>
-              <Web3ReactManager>
-                <Updaters />
-                <Popups />
-                <PageLayout>
-                  <Component {...pageProps} />
-                </PageLayout>
-              </Web3ReactManager>
-            </TermsWrapper>
-          </Providers>
-        </Provider>
-      </QueryClientProvider>
+      <HypeLabContext client={hypeLabClient}>
+        <QueryClientProvider client={queryClient}>
+          <Provider store={store}>
+            <Providers>
+              <TermsWrapper>
+                <Web3ReactManager>
+                  <Updaters />
+                  <Popups />
+                  <PageLayout>
+                    <Component {...pageProps} />
+                  </PageLayout>
+                </Web3ReactManager>
+              </TermsWrapper>
+            </Providers>
+          </Provider>
+        </QueryClientProvider>
+      </HypeLabContext>
     </>
   );
 };
