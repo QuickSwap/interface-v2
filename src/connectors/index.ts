@@ -432,9 +432,9 @@ const [
     new UAuthConnector({
       actions,
       options: {
-        clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID ?? '',
+        clientID: process.env.NEXT_PUBLIC_UNSTOPPABLE_DOMAIN_CLIENT_ID ?? '',
         redirectUri:
-          process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI ?? '',
+          process.env.NEXT_PUBLIC_UNSTOPPABLE_DOMAIN_REDIRECT_URI ?? '',
         scope: 'openid wallet',
         connectors: {
           injected: web3Metamask,

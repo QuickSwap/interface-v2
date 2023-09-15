@@ -11,7 +11,6 @@ import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
 import { getOneYearFee } from 'utils';
 import styles from 'styles/components/RewardSlider.module.scss';
-import { ChainId } from '@uniswap/sdk';
 import { useQuery } from '@tanstack/react-query';
 
 const RewardSlider: React.FC = () => {
