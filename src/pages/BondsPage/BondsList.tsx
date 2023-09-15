@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFetchBonds } from 'hooks/useFetchBonds';
+import { useFetchBonds, useFetchBondsFromContract } from 'hooks/useFetchBonds';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import Loader from 'components/Loader';
 import BondItem from './BondItem';
@@ -21,6 +21,8 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
       : 'availableBonds';
 
   const { loading, data: bonds } = useFetchBonds();
+  const bondsWithData = useFetchBondsFromContract(bonds ?? []);
+  console.log('aaa', bondsWithData);
 
   return (
     <Box pb={2} px={3}>

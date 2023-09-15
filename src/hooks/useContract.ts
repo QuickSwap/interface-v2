@@ -51,6 +51,7 @@ import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
+import PRICE_GETTER_ABI from 'constants/abis/price-getter.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -375,4 +376,11 @@ export function useUnipilotFarmingContract(
     withSignerIfPossible,
   );
   return isDual ? dualContract : singleContract;
+}
+
+export function usePriceGetterContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, PRICE_GETTER_ABI, withSignerIfPossible);
 }

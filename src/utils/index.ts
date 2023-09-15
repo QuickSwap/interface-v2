@@ -1168,3 +1168,21 @@ export const getGammaPairsForTokens = (
   }
   return;
 };
+
+export enum LiquidityProtocol {
+  Both = 1,
+  V2 = 2,
+  V3 = 3,
+  Algebra = 4,
+  Gamma = 5,
+}
+
+export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
+  if (dex === 'Algebra') {
+    if (isLP) {
+      return LiquidityProtocol.Gamma;
+    }
+    return LiquidityProtocol.Algebra;
+  }
+  return LiquidityProtocol.V2;
+};

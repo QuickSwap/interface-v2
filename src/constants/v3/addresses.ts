@@ -45,6 +45,10 @@ export const toV3Currency = (t: {
   return new V3Currency(t.chainId, t.decimals, t.symbol, t.name);
 };
 
+export const PRICE_GETTER_ADDRESS: AddressMap = {
+  [ChainId.MATIC]: '0x241ebA867Bee0Dd50a8Ca54732A6C05815C50Cc5',
+};
+
 export const MULTICALL_NETWORKS: { [chainId in ChainId]: string } = {
   [ChainId.MUMBAI]: '0xc7efb32470dee601959b15f1f923e017c6a918ca', //TODO: CHANGE THIS
   [ChainId.MATIC]: '0x02817C1e3543c2d908a590F5dB6bc97f933dB4BD',
