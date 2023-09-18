@@ -1,5 +1,4 @@
 import {
-  Limit as QuickSwapLimit,
   TWAP as QuickSwapTWAP,
   Orders as QuickSwapOrders,
 } from '@orbs-network/twap-ui-quickswap';
@@ -20,7 +19,7 @@ const getLogo = (value: string) => {
   return getTokenLogoURL(value).find((it) => it !== 'error') as any;
 };
 
-function TWAPBase({ Component }: { Component: FC<any> }) {
+function TWAPBase({ limit }: { limit?: boolean }) {
   const { account, chainId, library } = useActiveWeb3React();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
@@ -53,7 +52,8 @@ function TWAPBase({ Component }: { Component: FC<any> }) {
 
   return (
     <>
-      <Component
+      <QuickSwapTWAP
+        limit
         isProMode={isProMode}
         connect={toggleWalletModal}
         connectedChainId={chainId}
@@ -67,19 +67,14 @@ function TWAPBase({ Component }: { Component: FC<any> }) {
         onDstTokenSelected={onDstSelect}
         getTokenLogoURL={getLogo}
       />
-      <QuickSwapOrders
-        dappTokens={allTokens as any}
-        provider={library?.provider}
-        account={account}
-        getTokenLogoURL={getLogo}
-      />
+      <QuickSwapOrders />
     </>
   );
 }
 export const TWAP = () => {
-  return <TWAPBase Component={QuickSwapTWAP} />;
+  return <TWAPBase />;
 };
 
 export const Limit = () => {
-  return <TWAPBase Component={QuickSwapLimit} />;
+  return <TWAPBase limit />;
 };

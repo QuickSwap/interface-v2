@@ -16,6 +16,7 @@
     "bestTrade": false,
     "proMode": false,
     "limitOrder": false,
+    "liquidityHub": false,
     "crossChain": false
   },
   "pools": {
