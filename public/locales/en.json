@@ -718,5 +718,7 @@
   "availableTokens": "Available Tokens",
   "bondDiscountTooltip": "This is the percentage discount relative to the token's current market price.",
   "bondVestingTermTooltip": "This is how long it will take for all tokens in the Bill to fully vest.",
-  "marketPrice": "Market Price"
+  "marketPrice": "Market Price",
+  "bondValue": "Bond Value",
+  "maxPerBond": "Max per Bond"
 }

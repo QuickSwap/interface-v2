@@ -12,6 +12,7 @@ interface BondTokenDisplayProps {
   token2Obj?: any;
   token3Obj?: any;
   stakeLP?: boolean;
+  size?: number;
 }
 
 const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
@@ -19,6 +20,7 @@ const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
   token2Obj,
   token3Obj,
   stakeLP,
+  size = 32,
 }) => {
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
@@ -94,18 +96,28 @@ const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
 
   return (
     <Box className='flex items-center'>
-      {stakeLP ? (
-        <DoubleCurrencyLogo currency0={token1} currency1={token2} size={32} />
+      {stakeLP && token1 && token2 ? (
+        <DoubleCurrencyLogo currency0={token1} currency1={token2} size={size} />
       ) : (
-        <CurrencyLogo currency={token1} size='32px' />
+        <CurrencyLogo currency={token1} size={`${size}px`} />
       )}
-      <Box className='flex' mx={1}>
-        <BondArrow />
-      </Box>
-      {stakeLP ? (
-        <CurrencyLogo currency={token3} size='32px' />
-      ) : (
-        <DoubleCurrencyLogo currency0={token2} currency1={token3} size={32} />
+      {token1 && token2 && token3 && (
+        <Box className='flex' mx={1}>
+          <BondArrow />
+        </Box>
+      )}
+      {token3 && (
+        <>
+          {stakeLP ? (
+            <CurrencyLogo currency={token3} size={`${size}px`} />
+          ) : (
+            <DoubleCurrencyLogo
+              currency0={token2}
+              currency1={token3}
+              size={size}
+            />
+          )}
+        </>
       )}
     </Box>
   );

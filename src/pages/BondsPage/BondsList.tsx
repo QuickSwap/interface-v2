@@ -22,7 +22,6 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
 
   const { loading, data: bonds } = useFetchBonds();
   const bondsWithData = useFetchBondsFromContract(bonds ?? []);
-  console.log('aaa', bondsWithData);
 
   return (
     <Box pb={2} px={3}>
@@ -31,9 +30,9 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
           <Loader size='32px' />
         </Box>
       )}
-      {bonds && bonds.length > 0 && (
+      {bondsWithData && bondsWithData.length > 0 && (
         <>
-          {bonds.map((bond: any) => (
+          {bondsWithData.map((bond: any) => (
             <BondItem key={bond.index} bond={bond} />
           ))}
         </>

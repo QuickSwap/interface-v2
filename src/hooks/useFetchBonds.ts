@@ -244,6 +244,7 @@ export const useFetchBondsFromContract = (bonds: any[]) => {
       lpPrice: lpPriceNumber,
       earnTokenPrice: earnTokenPriceNumber,
       discount,
+      priceUsd,
     };
   });
 };
