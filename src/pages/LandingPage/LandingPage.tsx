@@ -109,7 +109,7 @@ const LandingPage: React.FC = () => {
       title: 'Blog',
     },
     {
-      link: 'https://www.youtube.com/channel/UCrPlF-DBwD-UzLFDzJ4Z5Fw',
+      link: 'https://www.youtube.com/@quickswapofficial',
       icon: <YouTubeIcon />,
       title: 'Youtube',
     },
