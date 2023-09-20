@@ -274,12 +274,19 @@ const Header: React.FC = () => {
     // },
   ];
 
+  const navigateToFooterSignUp = () => {
+    const newsletterForm = document.getElementById('footerNewsletterSignup');
+    if (newsletterForm) {
+      newsletterForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <Box className='header'>
       {showNewsletter && (
         <Box className='newsletterBar'>
           <small className='text-white'>{t('signupnewsletterTopDesc')}</small>
-          <Button>{t('signup')}</Button>
+          <Button onClick={navigateToFooterSignUp}>{t('signup')}</Button>
           <Box
             className='cursor-pointer'
             onClick={() => setShowNewsletter(false)}
