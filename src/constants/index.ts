@@ -1454,8 +1454,8 @@ export const GammaPairs: {
     ],
     '0x819d1daa794c1c46b841981b61cc978d95a17b8e-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
       {
-        type: Presets.GAMMA_WIDE,
-        title: 'Wide',
+        type: Presets.STABLE,
+        title: 'Stable',
         address: '0x9902bc1eb18c5d1594dd97907f1bb427d8a153da',
         token0Address: '0x819d1daa794c1c46b841981b61cc978d95a17b8e',
         token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
