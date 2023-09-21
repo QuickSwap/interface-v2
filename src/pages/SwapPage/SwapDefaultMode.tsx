@@ -7,6 +7,7 @@ import { SwapBuySellMiniWidget } from './BuySellWidget';
 import LiquidityPools from './LiquidityPools';
 import SwapMain from './SwapMain';
 import SwapNewsWidget from './SwapNewWidget';
+import SwapNewsletterSignup from './SwapNewsletterSignUp';
 
 type NavParams = {
   swapIndex: string | undefined;
@@ -82,6 +83,9 @@ const SwapDefaultMode: React.FC<{
                         <LiquidityPools token1={token1} token2={token2} />
                       </Box>
                     )}
+                  </Grid>
+                  <Grid item xs={12}>
+                    <SwapNewsletterSignup />
                   </Grid>
                 </Grid>
               </Grid>

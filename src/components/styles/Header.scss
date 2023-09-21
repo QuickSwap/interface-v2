@@ -3,13 +3,58 @@
 
 .header {
   top: 0px;
-  padding: 0 24px;
   position: fixed;
   width: 100%;
+  z-index: 3;
+}
+
+.newsletterBar {
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    $black2 -11.2%,
+    $purple4 41.95%,
+    $primary 100%
+  );
+  z-index: 5;
+  display: flex;
+  min-height: 40px;
+  justify-content: center;
+  align-items: center;
+  & button {
+    margin-left: 19px;
+    height: 26px;
+    background-color: $black3;
+    &:hover {
+      background-color: $black3;
+    }
+    & span {
+      font-size: 11px;
+    }
+  }
+  & div {
+    position: absolute;
+    color: white;
+    right: 12px;
+    display: flex;
+  }
+  @include media('screen', '<tablet') {
+    padding: 6px 28px;
+    flex-direction: column;
+    & button {
+      margin: 6px 0 0;
+    }
+    & small {
+      text-align: center;
+    }
+  }
+}
+
+.menuBar {
+  padding: 0 24px;
+  min-height: 88px;
   display: flex;
   flex-wrap: wrap;
-  min-height: 88px;
-  z-index: 3;
   align-items: center;
   justify-content: space-between;
   & a {
@@ -41,11 +86,11 @@
       }
     }
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     align-items: center;
     position: relative;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 0 16px;
     position: relative;
   }
@@ -153,7 +198,7 @@
   left: 0;
   border-radius: 10px;
   top: 32px;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     left: unset;
     top: unset;
     background-color: $secondary2;
@@ -178,7 +223,7 @@
   }
   & img {
     width: 20px;
-    margin-left: 8px
+    margin-left: 8px;
   }
 }
 .connectButton {
@@ -224,7 +269,7 @@
     border: solid 1px $primary;
     color: $primary;
     font-size: 14px;
-    font-weight: 600
+    font-weight: 600;
   }
 }
 .mobileMenuContainer {
@@ -245,7 +290,8 @@
   justify-content: space-between;
   max-width: 375px;
   width: 100%;
-  & .menuItem, & .subMenuItem {
+  & .menuItem,
+  & .subMenuItem {
     padding: 8px 12px;
     color: $textSecondary;
     font-weight: bold;
