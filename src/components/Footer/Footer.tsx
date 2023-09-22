@@ -4,7 +4,7 @@ import QUICKLogo from 'assets/images/quickLogo.png';
 import 'components/styles/Footer.scss';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
+// import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
 const Footer: React.FC = () => {
   const history = useHistory();
@@ -39,12 +39,12 @@ const Footer: React.FC = () => {
   ];
 
   const [email, setEmail] = useState('');
-  const { mutate, isLoading, data } = useSubscribeNewsletter(
-    process.env.REACT_APP_CONVERTKIT_FORM_ID,
-  );
-  const handleSignup = async () => {
-    await mutate({ email });
-  };
+  // const { mutate, isLoading, data } = useSubscribeNewsletter(
+  //   process.env.REACT_APP_CONVERTKIT_FORM_ID,
+  // );
+  // const handleSignup = async () => {
+  //   await mutate({ email });
+  // };
 
   return (
     <Box className='footer'>
@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
             <Box mt={2} maxWidth='240px'>
               <small className='text-secondary'>{t('socialDescription')}</small>
             </Box>
-            <Box mt={2} id='footerNewsletterSignup'>
+            {/* <Box mt={2} id='footerNewsletterSignup'>
               <small className='text-secondary'>{t('signupnewsletter')}</small>
               <Box className='newsletterInput'>
                 <input
@@ -84,7 +84,7 @@ const Footer: React.FC = () => {
                   )}
                 </Box>
               )}
-            </Box>
+            </Box> */}
           </Grid>
           <Grid item container xs={12} sm={12} md={8} spacing={4}>
             {socialMenuItems.map((item) => (
