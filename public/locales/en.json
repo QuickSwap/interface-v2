@@ -716,7 +716,7 @@
   "signToPerformGaslessSwap": "Sign to perform gasless swap.",
   "liquidityHubFailed": "Liquidity Hub failed",
   "awaitingApproval": "Awaiting Approval",
-  "calculatorHeading": "0.01 ETH to USD (Convert Ethereum to US Dollar",
+  "calculatorHeading": "0.01 ETH to USD (Convert Ethereum to US Dollar)",
   "howMuchETH": "How much is 0.01 ETH to USD?",
   "aboutETH": "About ETH (Ethereum)",
   "aboutETHDetails": "ETH is the native currency used to power Ethereum. Ethereum is a decentralized blockchain platform that enables users to participate in a peer-to-peer network. The blockchain uses a decentralized consensus mechanism to securely execute transactions and verify application code, called smart contracts.",

@@ -7,15 +7,17 @@ import { FaqSection } from './FaqSection';
 import { HistoricalTable } from './HistoricalTable';
 import { StepsSection } from './StepsSection';
 
+import '../styles/calculator.scss';
+
 const CalculatorPage: React.FC = () => {
   return (
     <Box width='100%' mb={3} id='calculator-page'>
       <Calculator />
-      <Graph />
+      {/* <Graph />
       <AboutSecction />
       <StepsSection />
       <FaqSection />
-      <HistoricalTable />
+      <HistoricalTable /> */}
     </Box>
   );
 };

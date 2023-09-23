@@ -8,6 +8,10 @@ export const Calculator: React.FC = () => {
   return (
     <Box width='100%' mb={3}>
       <h1 className='h4'>{t('calculatorHeading')}</h1>
+      <Box className='box-wrapper'>
+        <Box></Box>
+        <Box>0.01 ETH = 16.5234 USD</Box>
+      </Box>
     </Box>
   );
 };
