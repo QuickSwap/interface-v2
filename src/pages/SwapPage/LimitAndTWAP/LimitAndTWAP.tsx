@@ -53,7 +53,7 @@ function TWAPBase({ limit }: { limit?: boolean }) {
   return (
     <>
       <QuickSwapTWAP
-        limit
+        limit={limit}
         isProMode={isProMode}
         connect={toggleWalletModal}
         connectedChainId={chainId}
