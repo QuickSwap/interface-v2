@@ -3,7 +3,7 @@ import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
-import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
+import NewsletterSignupPanel from './NewsletterSignupPanel';
 const Header = lazy(() => import('components/Header'));
 const Footer = lazy(() => import('components/Footer'));
 const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
@@ -23,7 +23,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const { location } = useHistory();
   const pageWrapperClassName = useMemo(() => {
     if (isProMode) {
-      return '';
+      return 'pageWrapper-proMode';
     } else if (location.pathname.includes('/swap')) {
       return 'pageWrapper-no-max';
     }
@@ -77,7 +77,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const PasswordModal = () => {
     const [devPass, setDevPass] = useState('');
     const confirmPassword = () => {
-      if (devPass === 'gammaPass' || devPass === 'devPass') {
+      if (devPass === 'gammaPass' || devPass === 'testPass') {
         setOpenPassModal(false);
       }
     };
@@ -106,6 +106,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     <Box className='page'>
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
+      <NewsletterSignupPanel />
       <Header />
       {!isProMode && <Background fallback={false} />}
       <Box className={pageWrapperClassName}>{children}</Box>

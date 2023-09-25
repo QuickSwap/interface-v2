@@ -17,6 +17,7 @@
     "bestTrade": true,
     "proMode": true,
     "limitOrder": true,
+    "liquidityHub": true,
     "twapOrder": true,
     "crossChain": true
   },

@@ -150,6 +150,7 @@ const SwapMain: React.FC = () => {
           ? showLimitOrder
           : showTwapOrder,
       );
+
       if (availableSwapTypes.length > 0) {
         const aSwapType = availableSwapTypes[0];
         if (aSwapType === SWAP_V3) {
@@ -157,6 +158,8 @@ const SwapMain: React.FC = () => {
         } else {
           updateIsV2(true);
         }
+        console.log(availableSwapTypes);
+
         redirectWithSwapType(availableSwapTypes[0]);
       } else {
         history.push('/');
@@ -259,6 +262,7 @@ const SwapMain: React.FC = () => {
                     ),
                   )}
                 </Menu>
+
                 {showCrossChain && (
                   <Box
                     className={`tab ${
@@ -277,7 +281,7 @@ const SwapMain: React.FC = () => {
             </>
           ) : (
             <>
-              {SwapDropdownTabs.map((option, index) => (
+              {SwapDropdownTabs.map((option) => (
                 <Box
                   key={option.key}
                   style={{ textAlign: 'center' }}

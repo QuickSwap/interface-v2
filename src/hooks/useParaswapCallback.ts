@@ -24,6 +24,7 @@ import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
 import { useSwapActionHandlers } from 'state/swap/hooks';
 import { BigNumber } from 'ethers';
+import { useLiquidityHubCallback } from 'components/Swap/LiquidityHub';
 
 export enum SwapCallbackState {
   INVALID,
@@ -68,7 +69,10 @@ export function useParaswapCallback(
   const { onBestRoute, onSetSwapDelay } = useSwapActionHandlers();
 
   const addTransaction = useTransactionAdder();
-
+  const liquidutyHubCallback = useLiquidityHubCallback(
+    priceRoute?.srcToken,
+    priceRoute?.destToken,
+  );
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
@@ -127,6 +131,31 @@ export function useParaswapCallback(
                 .div(BigNumber.from(10000))
                 .toString()
             : priceRoute.srcAmount;
+
+        const summary = formatSummary({
+          inputCurrency,
+          outputCurrency,
+          priceRoute,
+          account,
+          recipient,
+          recipientAddressOrName,
+        });
+
+        const liquidityHubResult = await liquidutyHubCallback(
+          maxSrcAmount,
+          minDestAmount,
+        );
+
+        if (liquidityHubResult) {
+          addTransaction(liquidityHubResult, {
+            summary,
+          });
+
+          return {
+            response: liquidityHubResult,
+            summary,
+          };
+        }
 
         let txParams;
 
@@ -187,34 +216,12 @@ export function useParaswapCallback(
 
         try {
           const response = await signer.sendTransaction(ethersTxParams);
-          const inputSymbol = inputCurrency?.symbol;
-          const outputSymbol = outputCurrency?.symbol;
-          const inputAmount =
-            Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
-          const outputAmount =
-            Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
-
-          const base = `Swap ${inputAmount.toLocaleString(
-            'us',
-          )} ${inputSymbol} for ${outputAmount.toLocaleString(
-            'us',
-          )} ${outputSymbol}`;
-          const withRecipient =
-            recipient === account
-              ? base
-              : `${base} to ${
-                  recipientAddressOrName && isAddress(recipientAddressOrName)
-                    ? shortenAddress(recipientAddressOrName)
-                    : recipientAddressOrName
-                }`;
-
-          const withVersion = withRecipient;
 
           addTransaction(response, {
-            summary: withVersion,
+            summary,
           });
 
-          return { response, summary: withVersion };
+          return { response, summary };
         } catch (error) {
           if (error?.code === 'ACTION_REJECTED') {
             throw new Error('Transaction rejected.');
@@ -240,5 +247,40 @@ export function useParaswapCallback(
     inputCurrency,
     outputCurrency,
     allowedSlippage,
+    liquidutyHubCallback,
   ]);
 }
+
+const formatSummary = ({
+  inputCurrency,
+  outputCurrency,
+  priceRoute,
+  account,
+  recipient,
+  recipientAddressOrName,
+}: {
+  inputCurrency?: Currency;
+  outputCurrency?: Currency;
+  priceRoute: OptimalRate;
+  account: string;
+  recipient: string;
+  recipientAddressOrName: string | null;
+}) => {
+  const inputSymbol = inputCurrency?.symbol;
+  const outputSymbol = outputCurrency?.symbol;
+  const inputAmount =
+    Number(priceRoute.srcAmount) / 10 ** priceRoute.srcDecimals;
+  const outputAmount =
+    Number(priceRoute.destAmount) / 10 ** priceRoute.destDecimals;
+
+  const base = `Swap ${inputAmount.toLocaleString(
+    'us',
+  )} ${inputSymbol} for ${outputAmount.toLocaleString('us')} ${outputSymbol}`;
+  return recipient === account
+    ? base
+    : `${base} to ${
+        recipientAddressOrName && isAddress(recipientAddressOrName)
+          ? shortenAddress(recipientAddressOrName)
+          : recipientAddressOrName
+      }`;
+};

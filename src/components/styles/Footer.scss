@@ -25,3 +25,27 @@
   justify-content: space-between;
   align-items: center;
 }
+
+.newsletterInput {
+  border: 1px solid $divider;
+  border-radius: 8px;
+  max-width: 300px;
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 2px 2px 6px;
+  & input {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    color: $textPrimary;
+    flex: 1;
+  }
+  & button {
+    background: linear-gradient(90deg, $blue9 0%, $purple3 100%);
+    & span {
+      font-size: 11px;
+    }
+  }
+}
