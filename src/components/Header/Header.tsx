@@ -48,7 +48,7 @@ const Header: React.FC = () => {
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
-  const [showNewsletter, setShowNewsletter] = useState(true);
+  const [showNewsletter, setShowNewsletter] = useState(false);
 
   const theme = useTheme();
   const allTransactions = useAllTransactions();
