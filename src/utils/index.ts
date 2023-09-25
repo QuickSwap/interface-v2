@@ -20,7 +20,7 @@ import {
   Currency as CurrencyV3,
 } from '@uniswap/sdk-core';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
-import { formatUnits } from 'ethers/lib/utils';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import {
   GammaPair,
@@ -1185,4 +1185,17 @@ export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
     return LiquidityProtocol.Algebra;
   }
   return LiquidityProtocol.V2;
+};
+
+export const convertToTokenValue = (
+  numberString: string,
+  decimals: number,
+): BigNumber => {
+  if (isNaN(parseFloat(numberString))) {
+    console.error('Error: numberString to parse is not a number');
+    return parseUnits('0', decimals);
+  }
+
+  const tokenValue = parseUnits(numberString, decimals);
+  return tokenValue;
 };

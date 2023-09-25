@@ -10,13 +10,13 @@ import { useActiveWeb3React } from 'hooks';
 import { Token } from '@uniswap/sdk-core';
 import { BigNumber } from 'ethers';
 
-interface BondModalProps {
+interface BuyBondModalProps {
   open: boolean;
   onClose: () => void;
   bond: any;
 }
 
-const BondModal: React.FC<BondModalProps> = ({ bond, open, onClose }) => {
+const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
   const token1Obj = bond.token;
   const token2Obj =
     bond.billType === 'reserve' ? bond.earnToken : bond.quoteToken;
@@ -62,6 +62,7 @@ const BondModal: React.FC<BondModalProps> = ({ bond, open, onClose }) => {
         token1Obj.symbol,
       );
     }
+    return;
   }, [bond.lpToken, chainId, stakeLP, token1Obj]);
   const balance = useTokenBalance(account, buyToken);
   const buyDisabled = useMemo(() => {
@@ -70,7 +71,19 @@ const BondModal: React.FC<BondModalProps> = ({ bond, open, onClose }) => {
   }, [buyAmount]);
   const available = BigNumber.from(bond?.maxTotalPayOut ?? '0')
     .sub(BigNumber.from(bond?.totalPayoutGiven ?? '0'))
-    .div(BigNumber.from(10).pow(token3Obj?.decimals?.[chainId] ?? '0'));
+    .div(BigNumber.from(10).pow(token3Obj?.decimals?.[chainId] ?? 18));
+  const thresholdToShow =
+    bond && bond.earnTokenPrice && bond.earnTokenPrice > 0
+      ? 5 / bond.earnTokenPrice
+      : 0;
+  const safeAvailable = Number(available) - thresholdToShow;
+  const singlePurchaseLimit = Number(
+    BigNumber.from(bond?.maxPayoutTokens ?? 0).div(
+      BigNumber.from(10).pow(token3Obj?.decimals?.[chainId] ?? 18),
+    ),
+  );
+  const displayAvailable =
+    singlePurchaseLimit > safeAvailable ? singlePurchaseLimit : safeAvailable;
 
   return (
     <CustomModal open={open} onClose={onClose} modalWrapper='bondModalWrapper'>
@@ -133,7 +146,9 @@ const BondModal: React.FC<BondModalProps> = ({ bond, open, onClose }) => {
                 </Box>
               </Box>
               <Box className='flex justify-end items-center' mt='8px'>
-                <small>Balance: {balance?.toExact() ?? 0}</small>
+                <small>
+                  Balance: {formatNumber(Number(balance?.toExact() ?? 0))}
+                </small>
                 <Box
                   className='bondBuyMaxButton'
                   ml='5px'
@@ -150,7 +165,8 @@ const BondModal: React.FC<BondModalProps> = ({ bond, open, onClose }) => {
                 {t('bondValue')} {bond.price}
               </small>
               <small>
-                {t('maxPerBond')} {bond.price}
+                {t('maxPerBond')} {formatNumber(displayAvailable)}{' '}
+                {bond?.earnToken?.symbol}
               </small>
             </Box>
             <Box className='bondModalButtonsWrapper'>
@@ -166,4 +182,4 @@ const BondModal: React.FC<BondModalProps> = ({ bond, open, onClose }) => {
   );
 };
 
-export default BondModal;
+export default BuyBondModal;

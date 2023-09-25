@@ -45,6 +45,9 @@ export const toV3Currency = (t: {
   return new V3Currency(t.chainId, t.decimals, t.symbol, t.name);
 };
 
+export const NATIVE_TOKEN_ADDRESS =
+  '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
 export const PRICE_GETTER_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0x241ebA867Bee0Dd50a8Ca54732A6C05815C50Cc5',
 };
@@ -234,6 +237,10 @@ export const LENDING_QS_POOL_DIRECTORY: AddressMap = {
 
 export const LENDING_LENS: AddressMap = {
   [ChainId.MATIC]: '0x4B1dfA99d53FFA6E4c0123956ec4Ac2a6D9F4c75',
+};
+
+export const BANANA_ADDRESSES: AddressMap = {
+  [ChainId.MATIC]: '0x5d47baba0d66083c52009271faf3f50dcc01023c',
 };
 
 export const LENDING_QS_POOLS: { [chainId: number]: string[] } = {

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button } from '@material-ui/core';
 import { QuestionHelper } from 'components';
-import BondModal from './BondModal';
+import BuyBondModal from './BuyBondModal';
 import BondTokenDisplay from './BondTokenDisplay';
 import { formatCompact, formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
@@ -42,7 +42,7 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
 
   return (
     <Box mb={2} className='bondItemWrapper'>
-      <BondModal
+      <BuyBondModal
         bond={bond}
         open={openModal}
         onClose={() => setOpenModal(false)}
