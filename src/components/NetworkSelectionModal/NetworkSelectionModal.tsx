@@ -4,7 +4,7 @@ import { Box } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/NetworkSelectionModal.scss';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import {
   useModalOpen,

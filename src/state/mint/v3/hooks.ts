@@ -50,7 +50,7 @@ import { getGammaPairsForTokens, maxAmountSpend } from 'utils';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;

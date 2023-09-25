@@ -22,7 +22,7 @@ import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useAnalyticsTokenDetails } from 'hooks/useFetchAnalyticsData';
 
 const AnalyticsTokenDetails: React.FC = () => {

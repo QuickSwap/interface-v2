@@ -25,7 +25,7 @@ import { tryParseAmount } from 'state/swap/hooks';
 import 'pages/styles/convertQUICK.scss';
 import { ChainId } from '@uniswap/sdk';
 import { OLD_QUICK } from 'constants/v3/addresses';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useHistory } from 'react-router-dom';
 
 const ConvertQUICKPage: React.FC = () => {

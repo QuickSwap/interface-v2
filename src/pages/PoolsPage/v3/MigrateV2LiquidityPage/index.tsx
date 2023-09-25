@@ -8,7 +8,7 @@ import Loader from 'components/Loader';
 import V2PositionCard from './components/V2PositionCard';
 import './index.scss';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 
 export default function MigrateV2LiquidityPage() {
   const { t } = useTranslation();

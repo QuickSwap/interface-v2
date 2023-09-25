@@ -1,5 +1,5 @@
 import { Token } from '@uniswap/sdk-core';
-import { ZapType } from '@ape.swap/v2-zap-sdk';
+import { ZapType } from 'constants/index';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   Field,
@@ -12,12 +12,12 @@ import {
   setZapType,
   typeInput,
 } from './actions';
-import { TradeState } from 'state/routing/types';
+import { V3TradeState } from 'hooks/v3/useBestV3Trade';
 
 export interface ZapState {
   readonly independentField: Field;
   readonly typedValue: string;
-  readonly zapRouteState: TradeState;
+  readonly zapRouteState: V3TradeState;
   readonly zapType: ZapType;
   readonly [Field.INPUT]: {
     readonly currencyId: string | undefined;
@@ -34,7 +34,7 @@ export interface ZapState {
 
 const initialState: ZapState = {
   independentField: Field.INPUT,
-  zapRouteState: TradeState.INVALID,
+  zapRouteState: V3TradeState.INVALID,
   zapType: ZapType.ZAP,
   typedValue: '',
   [Field.INPUT]: {

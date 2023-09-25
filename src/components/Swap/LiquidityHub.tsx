@@ -23,7 +23,7 @@ import {
   useLiquidityHubState,
 } from 'state/swap/liquidity-hub/hooks';
 import { useTokenContract } from 'hooks/useContract';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import ToggleSwitch from 'components/ToggleSwitch';
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';

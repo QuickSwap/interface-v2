@@ -26,7 +26,7 @@ import {
   USDC,
   USDT,
 } from 'constants/v3/addresses';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
 
 dayjs.extend(utc);

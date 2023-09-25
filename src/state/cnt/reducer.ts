@@ -2,7 +2,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { getVersionUpgrade, VersionUpgrade } from '@uniswap/token-lists';
 import { GlobalConst } from 'constants/index';
 import { updateVersion } from 'state/global/actions';
-import { CNTFarmListInfo } from 'types';
+import { CNTFarmListInfo } from 'types/index';
 import { acceptCNTFarmUpdate, fetchCNTFarmList } from './actions';
 
 export interface CNTFarmsListsState {

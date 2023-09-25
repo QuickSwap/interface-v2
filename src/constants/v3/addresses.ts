@@ -26,6 +26,16 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.ZKEVM]: [WETH[ChainId.ZKEVM]],
 };
 
+export const toV2Token = (t: {
+  chainId: number;
+  address: string;
+  decimals: number;
+  symbol?: string;
+  name?: string;
+}): Token => {
+  return new Token(t.chainId, t.address, t.decimals, t.symbol, t.name);
+};
+
 export const toV3Token = (t: {
   chainId: number;
   address: string;

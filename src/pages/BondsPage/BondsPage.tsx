@@ -4,7 +4,7 @@ import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
 import 'pages/styles/bonds.scss';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useHistory } from 'react-router-dom';
 import { CustomSwitch, HypeLabAds, SearchInput } from 'components';
 import useParsedQueryString from 'hooks/useParsedQueryString';

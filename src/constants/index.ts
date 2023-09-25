@@ -54,6 +54,21 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.ZKTESTNET]: 'zkevm_testnet',
 };
 
+export enum ZapType {
+  ZAP = 0,
+  ZAP_LP_MIGRATOR = 1,
+  ZAP_LP_POOL = 2,
+  ZAP_SINGLE_ASSET_POOL = 3,
+  ZAP_T_BILL = 4,
+  ZAP_MINI_APE = 5,
+}
+
+export enum ZapVersion {
+  External = 'External',
+  ZapV1 = 'ZapV1',
+  Wido = 'Wido',
+}
+
 export enum TxnType {
   SWAP,
   ADD,

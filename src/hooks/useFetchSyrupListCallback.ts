@@ -6,7 +6,7 @@ import resolveENSContentHash from 'utils/resolveENSContentHash';
 import { useActiveWeb3React } from 'hooks';
 import { fetchSyrupList } from 'state/syrups/actions';
 import getSyrupList from 'utils/getSyrupList';
-import { SyrupListInfo } from 'types';
+import { SyrupListInfo } from 'types/index';
 
 export function useFetchSyrupListCallback(): (
   listUrl: string,

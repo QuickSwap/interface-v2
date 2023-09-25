@@ -27,7 +27,7 @@ import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { usePairs } from 'data/Reserves';
 import useParsedQueryString from './useParsedQueryString';
 import { useParams } from 'react-router-dom';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { Connector } from '@web3-react/types';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';

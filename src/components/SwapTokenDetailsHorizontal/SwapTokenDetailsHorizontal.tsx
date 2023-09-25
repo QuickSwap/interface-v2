@@ -8,7 +8,7 @@ import { LineChart } from 'components';
 import { Token } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
 
 const SwapTokenDetailsHorizontal: React.FC<{

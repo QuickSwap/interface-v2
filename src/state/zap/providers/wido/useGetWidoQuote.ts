@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { quote, QuoteResult } from 'wido';
 import { useSelector } from 'react-redux';
 import { ChainId } from '@uniswap/sdk';
-import { ZapVersion } from '@ape.swap/apeswap-lists';
+import { ZapVersion } from 'constants/index';
 import { convertToTokenValue } from 'utils';
 import { AppState } from 'state';
 import { BOND_QUERY_KEYS } from 'constants/index';

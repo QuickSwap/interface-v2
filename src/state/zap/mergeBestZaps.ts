@@ -1,20 +1,31 @@
-import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
+import {
+  Currency,
+  Percent,
+  TradeType,
+  CurrencyAmount,
+} from '@uniswap/sdk-core';
+import { Trade } from 'lib/src/trade';
 import { Pair, ChainId, TokenAmount } from '@uniswap/sdk';
 import { PairState } from 'data/Reserves';
 import { MergedZap } from './actions';
 import JSBI from 'jsbi';
-import { InterfaceTrade } from 'state/routing/types';
-import { computeZapPriceBreakdown } from 'utils/prices';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { computeZapPriceBreakdown } from 'utils/v3/prices';
+import {
+  WMATIC_EXTENDED,
+  toV2Token,
+  toV3Currency,
+  toV3Token,
+} from 'constants/v3/addresses';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
 
 // Since a best zap can be null when its the same token we have to check for each possibility
 export function mergeBestZaps(
-  bestZapOne: InterfaceTrade<Currency, Currency, TradeType> | undefined,
-  bestZapTwo: InterfaceTrade<Currency, Currency, TradeType> | undefined,
+  bestZapOne: Trade<Currency, Currency, TradeType> | null,
+  bestZapTwo: Trade<Currency, Currency, TradeType> | null,
   out1: Currency | undefined,
   out2: Currency | undefined,
   outputPair: [PairState, Pair | null],
-  allowedSlippage: Percent | 'auto',
+  allowedSlippage: Percent,
   totalPairSupply: TokenAmount | undefined,
   chainId: ChainId,
 ): MergedZap {
@@ -38,6 +49,8 @@ export function mergeBestZaps(
   // output currencies
   const outputCurrencyOne = out1?.wrapped;
   const outputCurrencyTwo = out2?.wrapped;
+  const outputCurrencyOneV2 = out1 ? toV2Token(out1?.wrapped) : undefined;
+  const outputCurrencyTwoV2 = out2 ? toV2Token(out2?.wrapped) : undefined;
 
   const halfInput = bestZapOne?.inputAmount || bestZapTwo?.inputAmount;
   // Since we divide the input by two for each route we add both inputs here
@@ -60,8 +73,8 @@ export function mergeBestZaps(
       : JSBI.BigInt(0);
 
   // get best paths for each
-  const pathOne = bestZapOne ? bestZapOne.routes?.[0].path : [];
-  const pathTwo = bestZapTwo ? bestZapTwo.routes?.[0].path : [];
+  const pathOne = bestZapOne ? bestZapOne.route.tokenPath : [];
+  const pathTwo = bestZapTwo ? bestZapTwo.route.tokenPath : [];
 
   // get output amounts
   const outputOne = inAndOutAreTheSame1Flag
@@ -91,6 +104,25 @@ export function mergeBestZaps(
     minSwapOutOne?.wrapped,
     minSwapOutTwo?.wrapped,
   ];
+
+  const wOutputOneV2 = wOutputOne
+    ? new TokenAmount(toV2Token(wOutputOne?.currency), wOutputOne?.quotient)
+    : undefined;
+  const wOutputTwoV2 = wOutputTwo
+    ? new TokenAmount(toV2Token(wOutputTwo?.currency), wOutputTwo?.quotient)
+    : undefined;
+  const wMinSwapOutOneV2 = wMinSwapOutOne
+    ? new TokenAmount(
+        toV2Token(wMinSwapOutOne?.currency),
+        wMinSwapOutOne?.quotient,
+      )
+    : undefined;
+  const wMinSwapOutTwoV2 = wMinSwapOutTwo
+    ? new TokenAmount(
+        toV2Token(wMinSwapOutTwo?.currency),
+        wMinSwapOutTwo?.quotient,
+      )
+    : undefined;
 
   const {
     priceImpactWithoutFee: priceImpactWithoutFeeOne,
@@ -127,33 +159,33 @@ export function mergeBestZaps(
 
   try {
     pairInAmount =
-      outputCurrencyOne &&
-      wOutputOne &&
-      wOutputTwo &&
-      outputCurrencyTwo &&
+      outputCurrencyOneV2 &&
+      wOutputOneV2 &&
+      wOutputTwoV2 &&
+      outputCurrencyTwoV2 &&
       pair
         ?.priceOf(
-          inAndOutAreTheSame1Flag ? outputCurrencyTwo : outputCurrencyOne,
+          inAndOutAreTheSame1Flag ? outputCurrencyTwoV2 : outputCurrencyOneV2,
         )
-        ?.quote(inAndOutAreTheSame1Flag ? wOutputTwo : wOutputOne);
+        ?.quote(inAndOutAreTheSame1Flag ? wOutputTwoV2 : wOutputOneV2);
 
     minPairInAmount =
-      outputCurrencyOne &&
-      wMinSwapOutOne &&
-      wMinSwapOutTwo &&
-      outputCurrencyTwo &&
+      outputCurrencyOneV2 &&
+      wMinSwapOutOneV2 &&
+      wMinSwapOutTwoV2 &&
+      outputCurrencyTwoV2 &&
       pair
         ?.priceOf(
-          inAndOutAreTheSame1Flag ? outputCurrencyTwo : outputCurrencyOne,
+          inAndOutAreTheSame1Flag ? outputCurrencyTwoV2 : outputCurrencyOneV2,
         )
-        ?.quote(inAndOutAreTheSame1Flag ? wMinSwapOutTwo : wMinSwapOutOne)
+        ?.quote(inAndOutAreTheSame1Flag ? wMinSwapOutTwoV2 : wMinSwapOutOneV2)
         ?.quotient.toString();
 
     liquidityMinted =
-      wOutputOne &&
-      wOutputTwo &&
+      wOutputOneV2 &&
+      wOutputTwoV2 &&
       totalPairSupply &&
-      pair?.getLiquidityMinted(totalPairSupply, wOutputOne, wOutputTwo);
+      pair?.getLiquidityMinted(totalPairSupply, wOutputOneV2, wOutputTwoV2);
 
     poolTokenPercentage =
       liquidityMinted && totalPairSupply
@@ -165,6 +197,33 @@ export function mergeBestZaps(
   } catch (e) {
     console.error(e);
   }
+
+  const totalSupplyToken = wrappedCurrency(totalPairSupply?.currency, chainId);
+  const totalPairSupplyV3 =
+    totalPairSupply && totalSupplyToken
+      ? CurrencyAmount.fromRawAmount(
+          toV3Token(totalSupplyToken),
+          totalPairSupply.numerator,
+        )
+      : undefined;
+
+  const liquidityMintedToken = wrappedCurrency(
+    liquidityMinted?.currency,
+    chainId,
+  );
+  const liquidityMintedV3 =
+    liquidityMinted && liquidityMintedToken
+      ? CurrencyAmount.fromRawAmount(
+          toV3Token(liquidityMintedToken),
+          liquidityMinted.numerator,
+        )
+      : undefined;
+  const pairInAmountV3 = pairInAmount
+    ? CurrencyAmount.fromRawAmount(
+        toV3Currency({ ...pairInAmount.currency, chainId }),
+        pairInAmount.numerator,
+      )
+    : undefined;
 
   return {
     currencyIn: {
@@ -186,11 +245,11 @@ export function mergeBestZaps(
     pairOut: {
       pair,
       pairState,
-      totalPairSupply,
-      liquidityMinted,
+      totalPairSupply: totalPairSupplyV3,
+      liquidityMinted: liquidityMintedV3,
       inAmount: inAndOutAreTheSame1Flag
-        ? { token1: pairInAmount, token2: swapOutTwo }
-        : { token1: swapOutOne, token2: pairInAmount },
+        ? { token1: pairInAmountV3, token2: swapOutTwo }
+        : { token1: swapOutOne, token2: pairInAmountV3 },
       minInAmount: inAndOutAreTheSame1Flag
         ? {
             token1: minPairInAmount,

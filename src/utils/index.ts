@@ -37,15 +37,16 @@ import {
   StakingInfo,
   SyrupBasic,
   SyrupInfo,
-} from 'types';
+  DualStakingBasic,
+  StakingBasic,
+} from 'types/index';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
-import { DualStakingBasic, StakingBasic } from 'types';
 import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
 import { DLQUICK, EMPTY, OLD_QUICK } from 'constants/v3/addresses';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
 import { Connector } from '@web3-react/types';

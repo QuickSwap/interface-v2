@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { ZapType } from '@ape.swap/v2-zap-sdk';
+import { ZapType } from 'constants/index';
 import { useSelector } from 'react-redux';
 import { useAllTokens, useCurrency } from 'hooks/v3/Tokens';
 import { isAddress } from 'utils';
@@ -20,19 +20,16 @@ import {
   useUserZapSlippageTolerance,
 } from '../user/hooks';
 import { useAppDispatch } from 'state/hooks';
-import { Currency, Token, TradeType } from '@uniswap/sdk-core';
-import { useBestTrade } from 'hooks/useBestTrade';
+import { Currency, Token } from '@uniswap/sdk-core';
+import { V3TradeState, useBestV3TradeExactIn } from 'hooks/v3/useBestV3Trade';
 import { usePair } from 'data/Reserves';
 import { useCurrencyBalances } from 'state/wallet/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import useENS from 'hooks/useENS';
 import JSBI from 'jsbi';
 import { BANANA_ADDRESSES } from 'constants/v3/addresses';
-import { Protocol } from '@ape.swap/router-sdk';
 import { mergeBestZaps } from './mergeBestZaps';
 import BigNumber from 'bignumber.js';
-import { zapInputTokens } from '@ape.swap/apeswap-lists';
-import { TradeState } from 'state/routing/types';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
@@ -182,26 +179,14 @@ export function useDerivedZapInfo() {
     [inputCurrency, halfTypedValue],
   );
 
-  const bestZapOne = useBestTrade(
-    TradeType.EXACT_INPUT,
-    parsedAmount,
-    out0 ?? undefined,
-    [Protocol.V2],
-    false,
-  );
-  const bestZapTwo = useBestTrade(
-    TradeType.EXACT_INPUT,
-    parsedAmount,
-    out1 ?? undefined,
-    [Protocol.V2],
-    false,
-  );
+  const bestZapOne = useBestV3TradeExactIn(parsedAmount, out0 ?? undefined);
+  const bestZapTwo = useBestV3TradeExactIn(parsedAmount, out1 ?? undefined);
 
   const zap = useMemo(
     () =>
       mergeBestZaps(
-        bestZapOne?.trade,
-        bestZapTwo?.trade,
+        bestZapOne.trade,
+        bestZapTwo.trade,
         out0 ?? undefined,
         out1 ?? undefined,
         outputPair,
@@ -266,15 +251,15 @@ export function useDerivedZapInfo() {
   }
 
   const zapRouteState =
-    bestZapOne?.state === TradeState.LOADING ||
-    bestZapTwo?.state === TradeState.LOADING ||
-    bestZapOne?.state === TradeState.SYNCING ||
-    bestZapTwo?.state === TradeState.SYNCING
-      ? TradeState.LOADING
-      : bestZapOne?.state === TradeState.VALID &&
-        bestZapTwo?.state === TradeState.VALID
-      ? TradeState.VALID
-      : TradeState.INVALID;
+    bestZapOne?.state === V3TradeState.LOADING ||
+    bestZapTwo?.state === V3TradeState.LOADING ||
+    bestZapOne?.state === V3TradeState.SYNCING ||
+    bestZapTwo?.state === V3TradeState.SYNCING
+      ? V3TradeState.LOADING
+      : bestZapOne?.state === V3TradeState.VALID &&
+        bestZapTwo?.state === V3TradeState.VALID
+      ? V3TradeState.VALID
+      : V3TradeState.INVALID;
 
   return {
     currencies,
@@ -361,7 +346,7 @@ export function useSetZapInputList() {
   const dispatch = useAppDispatch();
   useEffect(() => {
     const getZapInputList = () => {
-      dispatch(setInputList({ zapInputList: zapInputTokens as any }));
+      dispatch(setInputList({ zapInputList: {} }));
     };
     getZapInputList();
   }, [dispatch]);

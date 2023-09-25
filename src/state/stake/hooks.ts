@@ -52,7 +52,7 @@ import {
   DualStakingInfo,
   StakingBasic,
   DualStakingBasic,
-} from 'types';
+} from 'types/index';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { useDefaultSyrupList } from 'state/syrups/hooks';

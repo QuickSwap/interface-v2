@@ -3,9 +3,9 @@ import useGetWidoApprove from './useGetWidoApprove';
 import { useSignTransaction } from 'state/transactions/hooks';
 import { BOND_QUERY_KEYS } from 'constants/index';
 import { NATIVE_TOKEN_ADDRESS } from 'constants/v3/addresses';
-import { TransactionType } from 'state/transactions/types';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
+import { useTranslation } from 'react-i18next';
 
 const useApproveWidoSpender = ({
   inputTokenAddress,
@@ -43,6 +43,7 @@ const useApproveWidoSpender = ({
   });
 
   const { data, to } = widoSpenderData || {};
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: () => {
@@ -50,9 +51,8 @@ const useApproveWidoSpender = ({
       return signTransaction({
         dataToSign: { to, data },
         txInfo: {
-          type: TransactionType.APPROVAL,
-          tokenAddress: toTokenAddress,
-          spender: spenderAddress,
+          summary: `${t('approve')} ${toTokenAddress}`,
+          approval: { tokenAddress: toTokenAddress, spender: spenderAddress },
         },
       });
     },
