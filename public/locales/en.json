@@ -745,5 +745,6 @@
   "optimizedRouteAvailable": "Optimized Route Available",
   "signToPerformGaslessSwap": "Sign to perform gasless swap.",
   "liquidityHubFailed": "Liquidity Hub failed",
-  "awaitingApproval": "Awaiting Approval"
+  "awaitingApproval": "Awaiting Approval",
+  "buyBond": "Buy a Bond"
 }

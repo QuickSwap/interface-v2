@@ -63,12 +63,6 @@ export enum ZapType {
   ZAP_MINI_APE = 5,
 }
 
-export enum ZapVersion {
-  External = 'External',
-  ZapV1 = 'ZapV1',
-  Wido = 'Wido',
-}
-
 export enum TxnType {
   SWAP,
   ADD,

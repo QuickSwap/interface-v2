@@ -52,6 +52,8 @@ import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import PRICE_GETTER_ABI from 'constants/abis/price-getter.json';
+import BOND_ABI from 'constants/abis/bond.json';
+import BOND_NFT_ABI from 'constants/abis/bondNFT.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -384,3 +386,11 @@ export function usePriceGetterContract(
 ) {
   return useContract(address, PRICE_GETTER_ABI, withSignerIfPossible);
 }
+
+export const useBondContract = (address: string) => {
+  return useContract(address, BOND_ABI);
+};
+
+export const useBondNFTContract = (address: string) => {
+  return useContract(address, BOND_NFT_ABI);
+};

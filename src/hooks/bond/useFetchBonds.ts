@@ -7,13 +7,12 @@ import {
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
-import PRICE_GETTER_ABI from 'constants/abis/price-getter.json';
 import {
   PRICE_GETTER_ADDRESS,
   V2_FACTORY_ADDRESSES,
   V3_CORE_FACTORY_ADDRESSES,
 } from 'constants/v3/addresses';
-import { usePriceGetterContract } from './useContract';
+import { usePriceGetterContract } from '../useContract';
 import { LiquidityProtocol, getLiquidityDexIndex } from 'utils';
 import { ZERO_ADDRESS } from 'constants/v3/misc';
 

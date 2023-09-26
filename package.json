@@ -153,6 +153,7 @@
     "sass": "^1.51.0",
     "slick-carousel": "^1.8.1",
     "tiny-warning": "^1.0.3",
-    "wido": "^0.4.1"
+    "wido": "^0.4.1",
+    "@ape.swap/apeswap-lists": "1.5.18"
   }
 }

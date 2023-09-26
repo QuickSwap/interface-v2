@@ -1,5 +1,8 @@
 import React from 'react';
-import { useFetchBonds, useFetchBondsFromContract } from 'hooks/useFetchBonds';
+import {
+  useFetchBonds,
+  useFetchBondsFromContract,
+} from 'hooks/bond/useFetchBonds';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import Loader from 'components/Loader';
 import BondItem from './BondItem';

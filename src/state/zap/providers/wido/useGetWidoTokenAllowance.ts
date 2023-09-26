@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { ZapVersion } from 'constants/index';
+import { ZapVersion } from '@ape.swap/apeswap-lists';
 import { ChainId } from '@uniswap/sdk';
 import { AppState } from 'state';
 import useGetWidoAllowance from './useGetWidoAllowance';
