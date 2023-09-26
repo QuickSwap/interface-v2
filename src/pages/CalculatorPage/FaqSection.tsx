@@ -49,8 +49,10 @@ export const FaqSection: React.FC = () => {
   ];
 
   return (
-    <Box width='100%' mb={3}>
-      <h6>{t('ethFaqHeading')}</h6>
+    <Box className='section' mb={4}>
+      <Box className='sub-heading sub-heading-20' mb={3}>
+        {t('ethFaqHeading')}
+      </Box>
       <Box>
         {faqs.map((val, i) => (
           <Accordion key={`accordation-${i}`}>
@@ -65,7 +67,7 @@ export const FaqSection: React.FC = () => {
           </Accordion>
         ))}
       </Box>
-      <Box>
+      <Box mt={4}>
         <SwapEthButton />
       </Box>
     </Box>

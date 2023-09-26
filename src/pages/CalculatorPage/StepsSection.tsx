@@ -7,38 +7,38 @@ import { SwapEthButton } from './SwapEthButton';
 export const StepsSection: React.FC = () => {
   const { t } = useTranslation();
   return (
-    <Box width='100%' mb={3}>
+    <Box width='100%' mt={5} mb={4}>
       <h6>{t('ethStepsHeading')}</h6>
       <ul>
-        <li>
-          <Box>
-            <b>Step 1:</b>
+        <li className='step'>
+          <Box ml={3} pb={2}>
+            <Box className='step-heading'>Step 1:</Box>
+            <Box className='step-description'>{t('ethStep1Details')}</Box>
           </Box>
-          <Box>{t('ethStep1Details')}</Box>
         </li>
-        <li>
-          <Box>
-            <b>Step 2:</b>
+        <li className='step'>
+          <Box ml={3} pb={2}>
+            <Box className='step-heading'>Step 2:</Box>
+            <Box className='step-description'>{t('ethStep2Details')}</Box>
           </Box>
-          <Box>{t('ethStep2Details')}</Box>
         </li>
-        <li>
-          <Box>
-            <b>Step 3:</b>
+        <li className='step'>
+          <Box ml={3} pb={2}>
+            <Box className='step-heading'>Step 3:</Box>
+            <Box className='step-description'>{t('ethStep3Details')}</Box>
           </Box>
-          <Box>{t('ethStep3Details')}</Box>
         </li>
-        <li>
-          <Box>
-            <b>Step 4:</b>
+        <li className='step'>
+          <Box ml={3} pb={2}>
+            <Box className='step-heading'>Step 4:</Box>
+            <Box className='step-description'>{t('ethStep4Details')}</Box>
           </Box>
-          <Box>{t('ethStep4Details')}</Box>
         </li>
-        <li>
-          <Box>
-            <b>Step 5:</b>
+        <li className='step'>
+          <Box ml={3} pb={2}>
+            <Box className='step-heading'>Step 5:</Box>
+            <Box className='step-description'>{t('ethStep5Details')}</Box>
           </Box>
-          <Box>{t('ethStep5Details')}</Box>
         </li>
       </ul>
       <Box>
