@@ -1,16 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import DualCurrencyDropdown from './DualCurrencyDropdown';
-// import useIsMobile from 'hooks/useIsMobile';
-import { Currency, SupportedChainId } from '@uniswap/sdk-core';
+import { Currency } from '@uniswap/sdk-core';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
-// import useTokenPriceUsd from 'hooks/useTokenPriceUsd';
-// import { Flex, NumericInput, Text } from 'components/uikit';
-// import Dots from 'components/Dots';
-// import { nativeOnChain } from '../../config/constants/tokens';
 import { DualCurrencySelector } from 'types/bond';
-import { useActiveWeb3React } from 'hooks';
-import { Box } from '@material-ui/core';
+import { useActiveWeb3React, useTokenPriceUsd } from 'hooks';
+import { Box, CircularProgress } from '@material-ui/core';
+import { NumericalInput } from 'components';
+import { toNativeCurrency } from 'utils';
+import 'components/styles/DualCurrencyPanel.scss';
 
 /**
  * Dropdown component that supports both single currencies and currency pairs. An array of pairs is passed as lpList,
@@ -29,9 +27,9 @@ interface DualCurrencyPanelProps {
   onUserInput: (val: string) => void;
   value: string;
   onCurrencySelect: (currency: DualCurrencySelector) => void;
-  inputCurrencies: (Currency | null | undefined)[];
+  inputCurrencies: Currency[];
   lpList: DualCurrencySelector[];
-  principalToken: Currency | null | undefined;
+  principalToken: Currency | null;
   enableZap?: boolean;
   lpUsdVal?: number;
 }
@@ -48,7 +46,6 @@ const DualCurrencyPanel: React.FC<DualCurrencyPanelProps> = ({
   lpUsdVal = 0,
 }) => {
   const { account, chainId } = useActiveWeb3React();
-  // const isMobile = useIsMobile();
   const selectedCurrencyBalance = useCurrencyBalance(
     account ?? undefined,
     inputCurrencies[1]
@@ -62,83 +59,82 @@ const DualCurrencyPanel: React.FC<DualCurrencyPanelProps> = ({
   const currencyBalance = selectedCurrencyBalance?.toSignificant(6);
   const { t } = useTranslation();
 
-  // const [usdValue] = useTokenPriceUsd(
-  //   inputCurrencies[1] ? principalToken : inputCurrencies[0],
-  //   !!inputCurrencies[1],
-  // );
-  // const usdVal = inputCurrencies[1] ? lpUsdVal : usdValue;
+  const [usdValue] = useTokenPriceUsd(
+    inputCurrencies[1] ? principalToken : inputCurrencies[0],
+    !!inputCurrencies[1],
+  );
+  const usdVal = inputCurrencies[1] ? lpUsdVal : usdValue;
 
-  // // Once balances are fetched it should check if the user holds the selected LP
-  // // if it doesn't, it will select the native coin to enable zap
-  // const hasRunRef = useRef(false);
-  // useEffect(() => {
-  //   if (
-  //     !hasRunRef.current &&
-  //     enableZap &&
-  //     pairBalance &&
-  //     pairBalance?.toExact() === '0'
-  //   ) {
-  //     onCurrencySelect({
-  //       currencyA: nativeOnChain(chainId as SupportedChainId),
-  //       currencyB: undefined,
-  //     });
-  //     hasRunRef.current = true;
-  //   }
-  //   /* eslint-disable react-hooks/exhaustive-deps */
-  // }, [pairBalance, chainId]);
+  // Once balances are fetched it should check if the user holds the selected LP
+  // if it doesn't, it will select the native coin to enable zap
+  const hasRunRef = useRef(false);
+  useEffect(() => {
+    const nativeCurrency = toNativeCurrency(chainId);
+    if (
+      !hasRunRef.current &&
+      enableZap &&
+      pairBalance &&
+      pairBalance?.toExact() === '0' &&
+      nativeCurrency
+    ) {
+      onCurrencySelect({
+        currencyA: nativeCurrency,
+        currencyB: undefined,
+      });
+      hasRunRef.current = true;
+    }
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [pairBalance, chainId]);
+
+  const filteredInputCurrencies = inputCurrencies.filter(
+    (currency) => !!currency,
+  ) as Currency[];
 
   return (
-    <Box className='flex'>
-      {/* <Flex sx={styles.panelTopContainer}>
-        <NumericInput
-          value={value}
-          onUserInput={(val) => onUserInput(val)}
-          style={{ fontSize: isMobile ? '15px' : '22px', align: 'left' }}
-          // removeLiquidity={isMobile}
-        />
-        <DualCurrencyDropdown
-          inputCurrencies={inputCurrencies}
-          onCurrencySelect={onCurrencySelect}
-          lpList={lpList}
-          principalToken={principalToken}
-          enableZap={enableZap ?? true}
-          showNativeFirst={enableZap && pairBalance?.toExact() === '0'}
-        />
-      </Flex>
-      <Flex sx={styles.panelBottomContainer}>
-        <Flex
-          sx={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: 0.4,
-          }}
-        >
-          <Text size='12px' sx={styles.panelBottomText}>
-            {!usdVal && value !== '0.0' ? (
-              <Spinner width='15px' height='15px' />
-            ) : value !== '0.0' && usdVal !== 0 && value ? (
-              `$${(usdVal * parseFloat(value)).toFixed(2)}`
-            ) : null}
-          </Text>
-        </Flex>
-        {account && (
-          <Flex sx={{ alignItems: 'center' }}>
-            <Text size='12px' sx={styles.panelBottomText}>
-              {t('Balance: %balance%', {
-                balance: currencyBalance || 'loading',
-              })}
-              {!currencyBalance && <Dots />}
-            </Text>
-            {parseFloat(currencyBalance ?? '0') > 0 && (
-              <Flex sx={styles.maxButton} size='sm' onClick={handleMaxInput}>
-                <Text color='primaryBright' sx={{ lineHeight: '0px' }}>
-                  {t('MAX')}
-                </Text>
-              </Flex>
-            )}
-          </Flex>
+    <Box className='dualCurrencyPanelWrapper'>
+      <Box className='flex' mb='10px'>
+        <NumericalInput value={value} onUserInput={(val) => onUserInput(val)} />
+        {principalToken && (
+          <DualCurrencyDropdown
+            inputCurrencies={filteredInputCurrencies}
+            onCurrencySelect={onCurrencySelect}
+            lpList={lpList}
+            principalToken={principalToken}
+            enableZap={enableZap ?? true}
+            showNativeFirst={enableZap && pairBalance?.toExact() === '0'}
+          />
         )}
-      </Flex> */}
+      </Box>
+      <Box className='flex items-center justify-between'>
+        <Box className='flex items-center justify-center'>
+          {!usdVal && value !== '0.0' ? (
+            <CircularProgress size={15} />
+          ) : value !== '0.0' && usdVal !== 0 && value ? (
+            `$${(usdVal * parseFloat(value)).toFixed(2)}`
+          ) : null}
+        </Box>
+        {account && (
+          <Box className='flex items-center'>
+            <small>
+              {t('balance')}: {currencyBalance || t('loading')}
+            </small>
+            {!currencyBalance && (
+              <Box ml='4px' className='flex'>
+                <CircularProgress size={15} />
+              </Box>
+            )}
+            {parseFloat(currencyBalance ?? '0') > 0 && (
+              <Box
+                ml={0.5}
+                className='dualCurrencyMaxButton'
+                onClick={handleMaxInput}
+              >
+                <small>{t('MAX')}</small>
+              </Box>
+            )}
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 };

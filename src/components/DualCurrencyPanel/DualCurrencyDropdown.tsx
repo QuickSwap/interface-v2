@@ -1,17 +1,17 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import DualCurrencySearchModal from './DualCurrencySearchModal';
-import { useAllTokens } from 'hooks/Tokens';
+import { useAllTokens } from 'hooks/v3/Tokens';
 import { useSetZapInputList, useZapInputList } from 'state/zap/hooks';
 import DropdownDisplay from './DropdownDisplay';
 import { useTranslation } from 'react-i18next';
 import { Currency } from '@uniswap/sdk-core';
 import { createFilterToken } from './filtering';
-// import useModal from 'hooks/useModal';
-// import { nativeOnChain } from 'config/constants/tokens';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { DualCurrencySelector } from 'types/bond';
 import { Box, CircularProgress } from '@material-ui/core';
+import { toNativeCurrency } from 'utils';
+import { DropdownItem, Dropdown } from 'components/Dropdown';
 
 const DualCurrencyDropdown: React.FC<{
   inputCurrencies: Currency[];
@@ -34,6 +34,7 @@ const DualCurrencyDropdown: React.FC<{
   const { chainId } = useActiveWeb3React();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [openCurrencyModal, setOpenCurrencyModal] = useState(false);
 
   const handleSearchQuery = useCallback((val: string) => {
     setSearchQuery(val);
@@ -82,82 +83,77 @@ const DualCurrencyDropdown: React.FC<{
     return 1;
   };
 
-  // const currenciesList: any = useMemo(() => {
-  //   const filterToken = createFilterToken(searchQuery);
-  //   const parsedList = Object.values(zapInputList)
-  //     .filter(filterToken)
-  //     .sort(quickSorting)
-  //     .map((token) => {
-  //       return { currencyA: token, currencyB: null };
-  //     });
-  //   if (showNativeFirst) {
-  //     return [
-  //       {
-  //         currencyA: nativeOnChain(chainId as ChainId),
-  //         currencyB: null,
-  //       },
-  //       lpList[0],
-  //       parsedList,
-  //     ].flat();
-  //   }
-  //   return [
-  //     lpList[0],
-  //     {
-  //       currencyA: nativeOnChain(chainId as ChainId),
-  //       currencyB: null,
-  //     },
-  //     parsedList,
-  //   ].flat();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [zapInputList, searchQuery, showNativeFirst]);
+  const currenciesList: any = useMemo(() => {
+    const filterToken = createFilterToken(searchQuery);
+    const parsedList = Object.values(zapInputList)
+      .filter(filterToken)
+      .sort(quickSorting)
+      .map((token) => {
+        return { currencyA: token, currencyB: null };
+      });
+    if (showNativeFirst) {
+      return [
+        {
+          currencyA: toNativeCurrency(chainId),
+          currencyB: null,
+        },
+        lpList[0],
+        parsedList,
+      ].flat();
+    }
+    return [
+      lpList[0],
+      {
+        currencyA: toNativeCurrency(chainId),
+        currencyB: null,
+      },
+      parsedList,
+    ].flat();
+  }, [searchQuery, zapInputList, showNativeFirst, lpList, chainId]);
 
-  // const handleCurrencyDynamic = useCallback(
-  //   (currency: DualCurrencySelector) => {
-  //     onCurrencySelect(currency);
-  //     setSearchQuery('');
-  //   },
-  //   [onCurrencySelect],
-  // );
+  const handleCurrencyDynamic = useCallback(
+    (currency: DualCurrencySelector) => {
+      onCurrencySelect(currency);
+      setSearchQuery('');
+    },
+    [onCurrencySelect],
+  );
 
-  // const [onPresentCurrencyModal] = useModal(
-  //   <DualCurrencySearchModal
-  //     onCurrencySelect={handleCurrencyDynamic}
-  //     inputCurrencies={inputCurrencies}
-  //     currenciesList={currenciesList}
-  //     searchQuery={searchQuery}
-  //     handleSearchQuery={handleSearchQuery}
-  //   />,
-  //   true,
-  //   true,
-  //   'DualCurrencySearch',
-  // );
-
-  // const Item = useCallback(
-  //   (item: Currency[], index: number) => {
-  //     return (
-  //       <DropdownItem
-  //         size='sm'
-  //         key={index}
-  //         onClick={() => handleCurrencyDynamic(currenciesList[index])}
-  //         sx={{ width: '100%' }}
-  //       >
-  //         <DropdownDisplay
-  //           principalToken={principalToken}
-  //           inputCurrencies={item}
-  //         />
-  //       </DropdownItem>
-  //     );
-  //   },
-  //   [currenciesList, handleCurrencyDynamic, principalToken],
-  // );
+  const Item = useCallback(
+    (item: Currency[], index: number) => {
+      return (
+        <DropdownItem
+          key={index}
+          onClick={() => handleCurrencyDynamic(currenciesList[index])}
+          sx={{ width: '100%' }}
+        >
+          <DropdownDisplay
+            principalToken={principalToken}
+            inputCurrencies={item}
+          />
+        </DropdownItem>
+      );
+    },
+    [currenciesList, handleCurrencyDynamic, principalToken],
+  );
 
   return (
     <Box className='flex' minWidth='max-content'>
+      {openCurrencyModal && (
+        <DualCurrencySearchModal
+          open={openCurrencyModal}
+          onClose={() => setOpenCurrencyModal(false)}
+          onCurrencySelect={handleCurrencyDynamic}
+          inputCurrencies={inputCurrencies}
+          currenciesList={currenciesList}
+          searchQuery={searchQuery}
+          handleSearchQuery={handleSearchQuery}
+        />
+      )}
       {inputCurrencies[0] ? (
         <Box className='flex'>
-          {/* {enableZap ? (
+          {enableZap ? (
             <Dropdown
-              size='sm'
               component={
                 <DropdownDisplay
                   principalToken={principalToken}
@@ -171,26 +167,19 @@ const DualCurrencyDropdown: React.FC<{
                 return Item([item.currencyA, item.currencyB], index);
               })}
               <DropdownItem
-                size='sm'
                 sx={{ textAlign: 'center' }}
-                onClick={onPresentCurrencyModal}
+                onClick={() => setOpenCurrencyModal(true)}
               >
-                <Text sx={{ '&:hover': { textDecoration: 'underline' } }}>
-                  {t('See all')} &gt;
-                </Text>
+                <Box>{t('seeAll')}</Box>
               </DropdownItem>
             </Dropdown>
           ) : (
-            <Box>
-              <Box>
-                <DropdownDisplay
-                  principalToken={principalToken}
-                  inputCurrencies={inputCurrencies}
-                  active
-                />
-              </Box>
-            </Box>
-          )} */}
+            <DropdownDisplay
+              principalToken={principalToken}
+              inputCurrencies={inputCurrencies}
+              active
+            />
+          )}
         </Box>
       ) : (
         <CircularProgress size={15} />

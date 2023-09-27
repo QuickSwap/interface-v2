@@ -18,6 +18,7 @@ import {
 import {
   CurrencyAmount as CurrencyAmountV3,
   Currency as CurrencyV3,
+  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
@@ -54,6 +55,15 @@ import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
+
+export function toNativeCurrency(chainId: ChainId | undefined) {
+  if (!chainId) return;
+  return {
+    ...ETHER[chainId],
+    isNative: true,
+    isToken: false,
+  } as NativeCurrency;
+}
 
 export function formatCompact(
   unformatted: number | string | BigNumber | BigNumberish | undefined | null,

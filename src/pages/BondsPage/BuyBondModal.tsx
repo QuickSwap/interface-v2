@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, Grid } from '@material-ui/core';
 import { CustomModal, DualCurrencyPanel } from 'components';
 import BillImage from 'assets/images/bonds/hidden-bill.jpg';
@@ -8,7 +8,7 @@ import { formatNumber } from 'utils';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { Currency, Token } from '@uniswap/sdk-core';
+import { Currency } from '@uniswap/sdk-core';
 import { BigNumber } from 'ethers';
 import {
   useDerivedZapInfo,
@@ -48,14 +48,34 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
   const billCurrencyA = useCurrency(bond?.token.address[chainId]);
   const billCurrencyB = useCurrency(bond?.quoteToken.address[chainId]);
   const billsCurrencies = useMemo(() => {
+    if (!billCurrencyA) return;
     return {
       currencyA: billCurrencyA,
-      currencyB: billCurrencyB,
+      currencyB: billCurrencyB ?? undefined,
     };
   }, [billCurrencyA, billCurrencyB]);
-  const [currencyA, setCurrencyA] = useState(billsCurrencies.currencyA);
-  const [currencyB, setCurrencyB] = useState(billsCurrencies.currencyB);
-  const inputCurrencies = [currencyA, currencyB];
+  const [currencyA, setCurrencyA] = useState(billsCurrencies?.currencyA);
+  const [currencyB, setCurrencyB] = useState(billsCurrencies?.currencyB);
+  const billCurrencyLoaded = !!billsCurrencies;
+
+  useEffect(() => {
+    if (billsCurrencies) {
+      setCurrencyA(billsCurrencies.currencyA);
+      setCurrencyB(billsCurrencies.currencyB);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [billCurrencyLoaded]);
+
+  const inputCurrencies = useMemo(() => {
+    const currencies = [];
+    if (currencyA) {
+      currencies.push(currencyA);
+    }
+    if (currencyB) {
+      currencies.push(currencyB);
+    }
+    return currencies;
+  }, [currencyA, currencyB]);
 
   const discountEarnTokenPrice =
     bond && bond?.earnTokenPrice
@@ -114,7 +134,7 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
   const handleCurrencySelect = useCallback(
     (currency: DualCurrencySelector) => {
       setCurrencyA(currency?.currencyA);
-      setCurrencyB(currency?.currencyB ?? null);
+      setCurrencyB(currency?.currencyB);
       onHandleValueChange('');
       if (!currency?.currencyB) {
         if (currency.currencyA) {
@@ -234,21 +254,25 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
                 </h4>
               </Box>
             </Box>
-            <DualCurrencyPanel
-              handleMaxInput={handleMaxInput}
-              onUserInput={onHandleValueChange}
-              value={typedValue}
-              onCurrencySelect={handleCurrencySelect}
-              inputCurrencies={
-                bond?.billType !== 'reserve'
-                  ? inputCurrencies
-                  : [inputCurrencies[0]]
-              }
-              lpList={[billsCurrencies]}
-              principalToken={principalToken}
-              enableZap={getIsZapCurrDropdownEnabled()}
-              lpUsdVal={bond?.lpPrice}
-            />
+            {billsCurrencies && (
+              <Box mt={2}>
+                <DualCurrencyPanel
+                  handleMaxInput={handleMaxInput}
+                  onUserInput={onHandleValueChange}
+                  value={typedValue}
+                  onCurrencySelect={handleCurrencySelect}
+                  inputCurrencies={
+                    bond?.billType !== 'reserve'
+                      ? inputCurrencies
+                      : [inputCurrencies[0]]
+                  }
+                  lpList={[billsCurrencies]}
+                  principalToken={principalToken ?? null}
+                  enableZap={getIsZapCurrDropdownEnabled()}
+                  lpUsdVal={bond?.lpPrice}
+                />
+              </Box>
+            )}
             <Box my='12px' className='flex justify-between'>
               <small>
                 {t('bondValue')} {billValue} {bond?.earnToken?.symbol}

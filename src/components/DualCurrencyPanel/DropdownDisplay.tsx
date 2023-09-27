@@ -47,15 +47,15 @@ const DropdownDisplay: React.FC<{
             ? `${inputCurrencies[0]?.wrapped.symbol}-${inputCurrencies[1]?.wrapped.symbol}`
             : inputCurrencies[0]?.symbol}
         </p>
-        <Box>
-          {!active ? (
-            balance ? (
+        {!active && (
+          <Box>
+            {balance ? (
               <Balance balance={balance} />
             ) : account ? (
               <CircularProgress size={20} />
-            ) : null
-          ) : null}
-        </Box>
+            ) : null}
+          </Box>
+        )}
       </Box>
     </Box>
   );
