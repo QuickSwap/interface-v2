@@ -20,6 +20,7 @@ const Footer: React.FC = () => {
         { title: t('farm'), link: '/farm' },
         { title: t('dragonslair'), link: '/dragons' },
         { title: t('convert'), link: '/convert' },
+        { title: t('calculator'), link: '/calculator/0.01-eth-to-usd' },
         { title: t('analytics'), link: '/analytics' },
       ],
     },
