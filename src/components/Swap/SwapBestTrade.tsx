@@ -992,7 +992,7 @@ const SwapBestTrade: React.FC<{
       reFetchOptimalRate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [optimalRate]);
+  }, [!optimalRate]);
 
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 

@@ -61,6 +61,7 @@ export const Calculator: React.FC<{ factor: number }> = ({ factor }) => {
         handleOnConvert();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [factor]);
 
   return (

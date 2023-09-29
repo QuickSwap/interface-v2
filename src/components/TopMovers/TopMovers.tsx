@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import Skeleton from '@material-ui/lab/Skeleton';
