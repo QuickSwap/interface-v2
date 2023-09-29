@@ -37,7 +37,6 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({ data }) => {
   const filteredData = useMemo(() => {
     if (Array.isArray(data) && data.length > 0) {
       const sample = data[0];
-      const token0 = sample.pair.token0;
       const token1 = sample.pair.token1;
 
       data.forEach((tx) => {
@@ -181,7 +180,7 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({ data }) => {
       </p>
 
       {/** Table */}
-      <Box mt={2} className='panel'>
+      <Box mt={2}>
         {data ? (
           <CustomTable
             defaultOrderBy={tokenHeadCells[2]}
