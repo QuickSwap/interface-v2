@@ -28,7 +28,7 @@ export function mergeBestZaps(
   allowedSlippage: Percent,
   totalPairSupply: TokenAmount | undefined,
   chainId: ChainId,
-): MergedZap {
+): MergedZap | undefined {
   const currencyIn =
     bestZapOne?.inputAmount.currency || bestZapTwo?.inputAmount.currency;
   const slippageTolerance = allowedSlippage;
@@ -225,6 +225,19 @@ export function mergeBestZaps(
       )
     : undefined;
 
+  if (
+    !currencyIn ||
+    !outputCurrencyOne ||
+    !outputOne ||
+    !minSwapOutOne ||
+    !outputCurrencyTwo ||
+    !outputTwo ||
+    !minSwapOutTwo ||
+    !pair ||
+    !totalPairSupplyV3 ||
+    !liquidityMintedV3
+  )
+    return;
   return {
     currencyIn: {
       currency: currencyIn,
@@ -252,12 +265,12 @@ export function mergeBestZaps(
         : { token1: swapOutOne, token2: pairInAmountV3 },
       minInAmount: inAndOutAreTheSame1Flag
         ? {
-            token1: minPairInAmount,
-            token2: minSwapOutTwo?.quotient.toString(),
+            token1: minPairInAmount ?? '0',
+            token2: minSwapOutTwo?.quotient.toString() ?? '0',
           }
         : {
-            token1: minSwapOutOne?.quotient.toString(),
-            token2: minPairInAmount,
+            token1: minSwapOutOne?.quotient.toString() ?? '0',
+            token2: minPairInAmount ?? '0',
           },
       poolTokenPercentage,
     },

@@ -7,9 +7,10 @@ import useTransactionDeadline from '../useTransactionDeadline';
 import useENS from '../useENS';
 import { Percent } from '@uniswap/sdk-core';
 import { useZapContract } from '../useContract';
-import { ZapType, ZapV1 } from '@ape.swap/v2-zap-sdk';
+import { ZapType } from 'constants/index';
 import { MergedZap } from 'state/zap/actions';
 import { useActiveWeb3React } from 'hooks';
+import { Zap } from 'v3lib/entities/zap';
 
 export const DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
@@ -43,7 +44,7 @@ interface FailedCall {
  */
 
 function useZapCallArguments(
-  zap: MergedZap,
+  zap: MergedZap | undefined,
   zapType: ZapType,
   allowedSlippage: Percent = DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
@@ -77,7 +78,7 @@ function useZapCallArguments(
     const swapMethods = [];
 
     swapMethods.push(
-      ZapV1.zapCallParameters(zap, {
+      Zap.zapCallParameters(zap, {
         allowedSlippage: allowedSlippage,
         zapType: zapType,
         stakingContractAddress,
@@ -85,6 +86,7 @@ function useZapCallArguments(
         deadline: deadline.toNumber(),
         maxPrice,
         stakingPid,
+        ttl: 0,
       }),
     );
 
@@ -108,7 +110,7 @@ function useZapCallArguments(
 // returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
 export function useZapCallback(
-  zap: MergedZap,
+  zap: MergedZap | undefined,
   zapType: ZapType,
   allowedSlippage: Percent = DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender

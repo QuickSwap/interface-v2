@@ -3,7 +3,7 @@ import { ChainId, Pair } from '@uniswap/sdk';
 import { createAction } from '@reduxjs/toolkit';
 import { PairState } from 'data/Reserves';
 import JSBI from 'jsbi';
-import { ZapType } from '@ape.swap/v2-zap-sdk';
+import { ZapType } from 'constants/index';
 
 export enum Field {
   INPUT = 'INPUT',

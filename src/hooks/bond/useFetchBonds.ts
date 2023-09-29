@@ -297,6 +297,7 @@ export const useFetchBonds = () => {
       return {
         ...bond,
         loading,
+        price: trueBillPrice?.data,
         trueBillPrice: trueBillPrice?.data,
         controlVariable,
         vestingTerm,

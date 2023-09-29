@@ -748,5 +748,6 @@
   "liquidityHubFailed": "Liquidity Hub failed",
   "awaitingApproval": "Awaiting Approval",
   "buyBond": "Buy a Bond",
-  "approveBond": "Approve a Bond"
+  "approveBond": "Approve a Bond",
+  "signingWidoBuyTx": "Signing Wido buy Tx"
 }

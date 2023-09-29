@@ -27,9 +27,16 @@ import useGetWidoQuote from 'state/zap/providers/wido/useGetWidoQuote';
 import { NATIVE_TOKEN_ADDRESS } from 'constants/v3/addresses';
 import { useV2Pair } from 'hooks/v3/useV2Pairs';
 import BondActions from './BondActions';
-import { BillReferenceData } from 'hooks/bond/usePostBondReference';
+import {
+  BillReferenceData,
+  usePostBillReference,
+} from 'hooks/bond/usePostBondReference';
 import useBuyBond from 'hooks/bond/useBuyBond';
 import { useUserZapSlippageTolerance } from 'state/user/hooks';
+import { useSignTransaction } from 'state/transactions/hooks';
+import { useZapCallback } from 'hooks/bond/useZapCallback';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { ZapType } from 'constants/index';
 
 interface BuyBondModalProps {
   open: boolean;
@@ -50,6 +57,23 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
   const { zap, zapRouteState } = useDerivedZapInfo();
   const { onCurrencySelection, onUserInput } = useZapActionHandlers();
   const [zapSlippage, setZapSlippage] = useUserZapSlippageTolerance();
+  const { signTransaction } = useSignTransaction();
+  const [billId, setBillId] = useState('');
+  const [txSubmitted, setTxSubmitted] = useState(false);
+  const routerQuery = useParsedQueryString();
+  const { mutate: postBillReference } = usePostBillReference();
+
+  const maxPrice = BigNumber.from(bond.price ?? '0')
+    .mul(102)
+    .div(100);
+  const { callback: zapCallback } = useZapCallback(
+    zap,
+    ZapType.ZAP_T_BILL,
+    zapSlippage,
+    recipient,
+    bond.contractAddress[chainId] || '',
+    maxPrice.toString(),
+  );
 
   const originalSlippage = useMemo(() => {
     return zapSlippage;
@@ -169,6 +193,21 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
     [billsCurrencies, onCurrencySelection, onHandleValueChange],
   );
 
+  const searchForBillId = useCallback(
+    (resp: any, billNftAddress: string) => {
+      const { logs } = resp;
+      const findBillNftLog = logs.find(
+        (log: any) =>
+          log.address.toLowerCase() === billNftAddress.toLowerCase(),
+      );
+      const getBillNftIndex =
+        findBillNftLog.topics[findBillNftLog.topics.length - 1];
+      const convertHexId = parseInt(getBillNftIndex, 16);
+      setBillId(convertHexId.toString());
+    },
+    [setBillId],
+  );
+
   const liquidityDex =
     bond?.lpToken.liquidityDex?.[chainId] || LiquidityDex.ApeSwapV2;
   const dexToZapMappingAny = dexToZapMapping as any;
@@ -276,10 +315,9 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
     if (!provider || !chainId || !bond.billNftAddress || !account) return;
     setPendingTrx(true);
     if (zapVersion === ZapVersion.Wido && isWidoSupported) {
-      console.log('Signing Wido buy Tx');
       signTransaction({
         dataToSign: { to, data, value },
-        txInfo: { type: TransactionType.ZAP },
+        txInfo: { summary: 'Signing Wido buy Tx' },
       })
         .then((hash: any) => {
           setPendingTrx(true);
@@ -296,47 +334,47 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
               const getBillNftIndex =
                 findBillNftLog?.topics[findBillNftLog.topics.length - 1];
               const convertHexId = parseInt(getBillNftIndex ?? '', 16);
-              onBillId && onBillId(convertHexId.toString(), hash);
+              setBillId(convertHexId.toString());
               const billsReference: Partial<BillReferenceData> = {
                 chainId,
                 transactionHash: hash,
-                referenceId: config?.referenceId,
-                billContract: bill?.contractAddress?.[chainId as ChainId],
+                referenceId: routerQuery?.referenceId?.toString(),
+                billContract: bond?.contractAddress?.[chainId],
               };
               postBillReference(billsReference);
             })
             .catch((e) => {
               console.error(e);
               setPendingTrx(false);
-              onTransactionSubmited && onTransactionSubmited(false);
+              setTxSubmitted(false);
             });
         })
         .catch((e: any) => {
           setZapSlippage(originalSlippage);
           console.error(e);
           setPendingTrx(false);
-          onTransactionSubmited && onTransactionSubmited(false);
+          setTxSubmitted(false);
         });
       return;
     }
-    onTransactionSubmited && onTransactionSubmited(true);
+    setTxSubmitted(true);
     if (zapVersion === ZapVersion.ZapV1 || isInputCurrencyPrincipal) {
       if (currencyB) {
         await onBuyBond()
           .then((resp: any) => {
-            searchForBillId(resp, billNftAddress);
+            searchForBillId(resp, bond.billNftAddress ?? '');
             const billsReference: Partial<BillReferenceData> = {
               chainId,
               transactionHash: resp?.transactionHash,
-              referenceId: config?.referenceId,
-              billContract: bill?.contractAddress?.[chainId as ChainId],
+              referenceId: routerQuery?.referenceId?.toString(),
+              billContract: bond?.contractAddress?.[chainId],
             };
             postBillReference(billsReference);
           })
           .catch((e: any) => {
             console.error(e);
             setPendingTrx(false);
-            onTransactionSubmited && onTransactionSubmited(false);
+            setTxSubmitted(false);
           });
       } else {
         await zapCallback()
@@ -346,7 +384,7 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
             const billsReference: Partial<BillReferenceData> = {
               chainId,
               transactionHash: hash,
-              referenceId: config?.referenceId,
+              referenceId: routerQuery?.referenceId?.toString(),
               billContract: bond?.contractAddress?.[chainId],
             };
             postBillReference(billsReference);
@@ -362,19 +400,19 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
                 const getBillNftIndex =
                   findBillNftLog?.topics[findBillNftLog.topics.length - 1];
                 const convertHexId = parseInt(getBillNftIndex ?? '', 16);
-                onBillId && onBillId(convertHexId.toString(), hash);
+                setBillId(convertHexId.toString());
               })
               .catch((e) => {
                 console.error(e);
                 setPendingTrx(false);
-                onTransactionSubmited && onTransactionSubmited(false);
+                setTxSubmitted(false);
               });
           })
           .catch((e: any) => {
             setZapSlippage(originalSlippage);
             console.error(e);
             setPendingTrx(false);
-            onTransactionSubmited && onTransactionSubmited(false);
+            setTxSubmitted(false);
           });
       }
     }
@@ -387,11 +425,18 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
     zapVersion,
     isWidoSupported,
     isInputCurrencyPrincipal,
+    signTransaction,
     to,
     data,
     value,
+    setZapSlippage,
+    originalSlippage,
+    routerQuery?.referenceId,
+    postBillReference,
     currencyB,
     onBuyBond,
+    searchForBillId,
+    zapCallback,
   ]);
 
   return (
@@ -468,32 +513,34 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
                   {t('getLP')}
                 </Button>
               )}
-              <BondActions
-                bond={bond}
-                zap={zap}
-                zapRouteState={zapRouteState}
-                handleBuy={handleBuy}
-                bondValue={billValue}
-                value={typedValue}
-                purchaseLimit={displayAvailable.toString()}
-                balance={selectedCurrencyBalance?.toExact() ?? ''}
-                pendingTrx={pendingTrx}
-                errorMessage={
-                  zapSlippage &&
-                  zapSlippage.lessThan(priceImpact ?? '0') &&
-                  !currencyB
-                    ? 'Change Slippage'
-                    : null
-                }
-                isWidoSupported={isWidoSupported}
-                widoQuote={widoQuote}
-                zapVersion={zapVersion}
-                inputTokenAddress={inputTokenAddress}
-                inputTokenDecimals={decimals}
-                toTokenAddress={bondContractAddress}
-                inputTokenChainId={inputTokenChainId}
-                isInputCurrencyPrincipal={isInputCurrencyPrincipal}
-              />
+              {zap && (
+                <BondActions
+                  bond={bond}
+                  zap={zap}
+                  zapRouteState={zapRouteState}
+                  handleBuy={handleBuy}
+                  bondValue={billValue}
+                  value={typedValue}
+                  purchaseLimit={displayAvailable.toString()}
+                  balance={selectedCurrencyBalance?.toExact() ?? ''}
+                  pendingTrx={pendingTrx}
+                  errorMessage={
+                    zapSlippage &&
+                    zapSlippage.lessThan(priceImpact ?? '0') &&
+                    !currencyB
+                      ? 'Change Slippage'
+                      : null
+                  }
+                  isWidoSupported={isWidoSupported}
+                  widoQuote={widoQuote}
+                  zapVersion={zapVersion}
+                  inputTokenAddress={inputTokenAddress}
+                  inputTokenDecimals={decimals}
+                  toTokenAddress={bondContractAddress}
+                  inputTokenChainId={inputTokenChainId}
+                  isInputCurrencyPrincipal={isInputCurrencyPrincipal}
+                />
+              )}
             </Box>
           </Box>
         </Grid>

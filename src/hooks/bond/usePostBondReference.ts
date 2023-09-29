@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { bondAPIV2BaseURL, BOND_QUERY_KEYS } from 'constants/index';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React } from 'hooks';
 
 export interface BillReferenceData {
   chainId: number;
@@ -43,7 +43,7 @@ export const postBillReference = async (
 
 export const usePostBillReference = () => {
   const queryClient = useQueryClient();
-  const { chainId: currentChainId } = useWeb3React();
+  const { chainId: currentChainId } = useActiveWeb3React();
 
   return useMutation({
     mutationFn: ({
