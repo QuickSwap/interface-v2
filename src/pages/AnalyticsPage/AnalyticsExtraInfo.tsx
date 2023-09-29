@@ -1,13 +1,13 @@
-import { Box, Grid, Typography } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 
-import { formatCompact, useLairDQUICKAPY } from 'utils';
+import { formatCompact } from 'utils';
 import { useNewLairInfo } from 'state/stake/hooks';
 import { DLQUICK } from 'constants/v3/addresses';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 import { useTranslation } from 'react-i18next';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 
 interface AnalyticsInfoProps {
   data: any;
@@ -20,33 +20,24 @@ const AnalyticsExtraInfo: React.FC<AnalyticsInfoProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [rewards, setRewards] = useState('0');
-  const [totalTVL, setTotalTVL] = useState('0');
   const lairInfo = useNewLairInfo();
-  const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
   const quickToken = DLQUICK[chainId];
   const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
 
-  useEffect(() => {
+  const extraInfo = useMemo(() => {
     if (lairInfo && quickPrice) {
       const balance = Number(lairInfo.totalQuickBalance.toExact());
       if (balance > 0) {
         const newReward = balance * quickPrice;
         const totalTVLValue = (data?.totalLiquidityUSD ?? 0) + newReward;
-
         const formattedReward = formatCompact(newReward, 18, 3, 3);
-        // if (formattedReward !== rewards && rewards !== '0') {
-        setRewards(formattedReward);
-        // }
-
         const formattedTotalTVL = formatCompact(totalTVLValue, 18, 5, 5);
-        // if (formattedTotalTVL !== totalTVL && totalTVL !== '0') {
-        setTotalTVL(formattedTotalTVL);
-        // }
+        return { rewards: formattedReward, totalTVL: formattedTotalTVL };
       }
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quickPrice, lairInfo, dQUICKAPY, data]);
+    return;
+  }, [data?.totalLiquidityUSD, lairInfo, quickPrice]);
 
   return (
     <Box mb={3}>
@@ -56,10 +47,10 @@ const AnalyticsExtraInfo: React.FC<AnalyticsInfoProps> = ({
             <span className='text-disabled text-bold text-uppercase'>
               {t('totalTVL')}
             </span>
-            {totalTVL === '0' ? (
-              <Skeleton width='100%' height={40} />
+            {extraInfo && extraInfo.totalTVL ? (
+              <h5>${extraInfo.totalTVL}</h5>
             ) : (
-              <h5>${totalTVL}</h5>
+              <Skeleton width='100%' height={40} />
             )}
           </Box>
         </Grid>
@@ -80,10 +71,10 @@ const AnalyticsExtraInfo: React.FC<AnalyticsInfoProps> = ({
             <span className='text-disabled text-bold text-uppercase'>
               {t('dragonLair')}
             </span>
-            {totalTVL === '0' ? (
-              <Skeleton width='100%' height={40} />
+            {extraInfo && extraInfo.rewards ? (
+              <h5>${extraInfo.rewards}</h5>
             ) : (
-              <h5>${rewards}</h5>
+              <Skeleton width='100%' height={40} />
             )}
           </Box>
         </Grid>

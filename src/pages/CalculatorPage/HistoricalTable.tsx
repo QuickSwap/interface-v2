@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box } from '@material-ui/core';
@@ -39,9 +39,7 @@ export const HistoricalTable: React.FC<{
   prices: number[];
   dates: number[];
 }> = ({ prices, dates }) => {
-  const [data, setData] = useState<HistoricalPrice[]>([]);
-
-  useEffect(() => {
+  const data = useMemo(() => {
     if (Array.isArray(prices) && Array.isArray(dates)) {
       let lastPrice: number | undefined = undefined;
       const pricePonints: HistoricalPrice[] = prices.map((p, i) => {
@@ -61,9 +59,10 @@ export const HistoricalTable: React.FC<{
       });
 
       pricePonints.reverse().pop();
-      setData(pricePonints);
+      return pricePonints;
     }
-  }, [prices, dates]);
+    return [];
+  }, [dates, prices]);
 
   const { t } = useTranslation();
   return (
