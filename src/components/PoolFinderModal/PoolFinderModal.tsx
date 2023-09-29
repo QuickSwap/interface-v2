@@ -49,7 +49,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
       addPair(pair);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pair?.liquidityToken.address, addPair]);
+  }, [pair?.liquidityToken.address]);
 
   const validPairNoLiquidity: boolean =
     pairState === PairState.NOT_EXISTS ||

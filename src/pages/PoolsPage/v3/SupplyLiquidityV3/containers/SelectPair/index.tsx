@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import './index.scss';
 import { IDerivedMintInfo } from 'state/mint/v3/hooks';
