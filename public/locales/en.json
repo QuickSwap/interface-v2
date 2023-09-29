@@ -51,6 +51,7 @@
   "features": "Features",
   "joinCommunity": "Join the ever-growing dragon community",
   "day": "day",
+  "days": "days",
   "stakingLPTokens": "Staking LP Tokens",
   "stakeLPTokens": "Stake LP Tokens",
   "mydeposits": "My deposits",
@@ -746,5 +747,6 @@
   "signToPerformGaslessSwap": "Sign to perform gasless swap.",
   "liquidityHubFailed": "Liquidity Hub failed",
   "awaitingApproval": "Awaiting Approval",
-  "buyBond": "Buy a Bond"
+  "buyBond": "Buy a Bond",
+  "approveBond": "Approve a Bond"
 }

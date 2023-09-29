@@ -43,6 +43,8 @@ import {
   AAVE,
 } from './v3/addresses';
 
+export const bondAPIV2BaseURL = 'https://api-v2.apeswap.finance';
+
 export const AVERAGE_L1_BLOCK_TIME = 12000;
 
 export const CHAIN_IDS_TO_NAMES = {
@@ -53,15 +55,6 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.ZKEVM]: 'zkevm',
   [ChainId.ZKTESTNET]: 'zkevm_testnet',
 };
-
-export enum ZapType {
-  ZAP = 0,
-  ZAP_LP_MIGRATOR = 1,
-  ZAP_LP_POOL = 2,
-  ZAP_SINGLE_ASSET_POOL = 3,
-  ZAP_T_BILL = 4,
-  ZAP_MINI_APE = 5,
-}
 
 export enum TxnType {
   SWAP,

@@ -19,6 +19,14 @@
   }
 }
 
+.dualCurrencyDropdownWrapper {
+  background-color: $grey12;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 10px;
+}
+
 .dualCurrencyMaxButton {
   width: 46px;
   height: 23px;

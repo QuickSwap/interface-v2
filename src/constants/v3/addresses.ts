@@ -253,6 +253,10 @@ export const BANANA_ADDRESSES: AddressMap = {
   [ChainId.MATIC]: '0x5d47baba0d66083c52009271faf3f50dcc01023c',
 };
 
+export const ZAP_ADDRESS: AddressMap = {
+  [ChainId.MATIC]: '0x236290f7da54465BF7A26f279d2B3553e5402780',
+};
+
 export const LENDING_QS_POOLS: { [chainId: number]: string[] } = {
   [ChainId.MATIC]: [
     '0x4514EC28a1e91b0999d803775D716DB0e597992d',

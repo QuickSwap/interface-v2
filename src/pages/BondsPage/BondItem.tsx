@@ -7,9 +7,11 @@ import BondTokenDisplay from './BondTokenDisplay';
 import { formatCompact, formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { BigNumber } from 'ethers';
+import { Bond } from 'types/bond';
+import { Skeleton } from '@material-ui/lab';
 
 interface BondItemProps {
-  bond: any;
+  bond: Bond;
 }
 
 const BondItem: React.FC<BondItemProps> = ({ bond }) => {
@@ -69,16 +71,26 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
             <QuestionHelper text={t('bondDiscountTooltip')} size={16} />
           </Box>
         </Box>
-        <Box className='flex items-end'>
-          <p className={bond.discount > 0 ? 'text-success' : 'text-error'}>
-            {formatNumber(bond.discount)}%
-          </p>
-          <Box className='flex' margin='0 0 3px 4px'>
-            <span className='text-secondary'>
-              (${formatNumber(bond.priceUsd)})
-            </span>
+        {bond.loading ? (
+          <Skeleton width={80} height={20} />
+        ) : (
+          <Box className='flex items-end'>
+            <p
+              className={
+                bond.discount && bond.discount > 0
+                  ? 'text-success'
+                  : 'text-error'
+              }
+            >
+              {formatNumber(bond.discount)}%
+            </p>
+            <Box className='flex' margin='0 0 3px 4px'>
+              <span className='text-secondary'>
+                (${formatNumber(bond.priceUsd)})
+              </span>
+            </Box>
           </Box>
-        </Box>
+        )}
       </Box>
       <Box width='20%'>
         <Box className='flex items-center'>
@@ -88,18 +100,30 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
           </Box>
         </Box>
         <Box className='flex'>
-          <p>{vestingDays} days</p>
+          {bond.loading ? (
+            <Skeleton width={50} height={20} />
+          ) : (
+            <p>
+              {vestingDays} {t('days')}
+            </p>
+          )}
         </Box>
       </Box>
       <Box width='20%'>
         <Box className='flex items-center'>
           <small>{t('availableTokens')}</small>
-          <Box className='flex' ml='5px'>
-            <QuestionHelper text={availableTokensTooltip} size={16} />
-          </Box>
+          {!bond.loading && (
+            <Box className='flex' ml='5px'>
+              <QuestionHelper text={availableTokensTooltip} size={16} />
+            </Box>
+          )}
         </Box>
         <Box className='flex'>
-          <p>{formatCompact(displayAvailable, 0)}</p>
+          {bond.loading ? (
+            <Skeleton width={50} height={20} />
+          ) : (
+            <p>{formatCompact(displayAvailable, 0)}</p>
+          )}
         </Box>
       </Box>
       <Box width='10%'>

@@ -39,6 +39,7 @@ import {
   NEW_LAIR_ADDRESS,
   QUICK_CONVERSION,
   DL_QUICK_ADDRESS,
+  ZAP_ADDRESS,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
@@ -54,6 +55,7 @@ import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import PRICE_GETTER_ABI from 'constants/abis/price-getter.json';
 import BOND_ABI from 'constants/abis/bond.json';
 import BOND_NFT_ABI from 'constants/abis/bondNFT.json';
+import ZAP_ABI from 'constants/abis/zap.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -394,3 +396,12 @@ export const useBondContract = (address: string) => {
 export const useBondNFTContract = (address: string) => {
   return useContract(address, BOND_NFT_ABI);
 };
+
+export function useZapContract(withSignerIfPossible?: boolean) {
+  const { chainId } = useActiveWeb3React();
+  return useContract(
+    chainId ? ZAP_ADDRESS[chainId] : undefined,
+    ZAP_ABI,
+    withSignerIfPossible,
+  );
+}

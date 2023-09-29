@@ -1,9 +1,9 @@
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
-import { Pair, ChainId } from '@uniswap/sdk';
+import { ChainId, Pair } from '@uniswap/sdk';
 import { createAction } from '@reduxjs/toolkit';
 import { PairState } from 'data/Reserves';
 import JSBI from 'jsbi';
-import { ZapType } from 'constants/index';
+import { ZapType } from '@ape.swap/v2-zap-sdk';
 
 export enum Field {
   INPUT = 'INPUT',
@@ -11,29 +11,29 @@ export enum Field {
 }
 
 type CurrencyOut = {
-  outputCurrency: Token | undefined;
+  outputCurrency: Token;
   path: Token[];
-  outputAmount: CurrencyAmount<Currency> | undefined;
-  minOutputAmount: string | undefined;
+  outputAmount: CurrencyAmount<Currency>;
+  minOutputAmount: string;
 };
 
 export type MergedZap = {
   currencyIn: {
-    currency: Currency | undefined;
+    currency: Currency;
     inputAmount: JSBI;
   };
   currencyOut1: CurrencyOut;
   currencyOut2: CurrencyOut;
   pairOut: {
-    pair: Pair | null;
+    pair: Pair;
     pairState: PairState;
     inAmount: {
       token1: CurrencyAmount<Currency> | undefined;
       token2: CurrencyAmount<Currency> | undefined;
     };
-    minInAmount: { token1: string | undefined; token2: string | undefined };
-    totalPairSupply: CurrencyAmount<Token> | undefined;
-    liquidityMinted: CurrencyAmount<Token> | undefined;
+    minInAmount: { token1: string; token2: string };
+    totalPairSupply: CurrencyAmount<Token>;
+    liquidityMinted: CurrencyAmount<Token>;
     poolTokenPercentage: Percent | null | undefined;
   };
   liquidityProviderFee: CurrencyAmount<Currency> | null | undefined;

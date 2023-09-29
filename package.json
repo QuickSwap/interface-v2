@@ -123,6 +123,8 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@0xsquid/widget": "1.6.0",
+    "@ape.swap/apeswap-lists": "1.5.18",
+    "@ape.swap/v2-zap-sdk": "^1.0.0-alpha.12",
     "@cryption/df-sdk-core": "0.0.26",
     "@deficonnect/web3-connector": "^2.0.3",
     "@intract/attribution": "^2.0.0",
@@ -153,7 +155,6 @@
     "sass": "^1.51.0",
     "slick-carousel": "^1.8.1",
     "tiny-warning": "^1.0.3",
-    "wido": "^0.4.1",
-    "@ape.swap/apeswap-lists": "1.5.18"
+    "wido": "^0.4.1"
   }
 }
