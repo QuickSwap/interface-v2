@@ -69,14 +69,11 @@ const SwapPage: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      <Box mb={1} sx={{ display: { xs: 'block', md: 'none' } }}>
-        <LiquidityHubAd />
-      </Box>
 
       <SwapPageHeader proMode={isProMode} />
-      {/* <Box margin='24px auto'>
+      <Box margin='24px auto'>
         <HypeLabAds />
-      </Box> */}
+      </Box>
 
       {isProMode ? (
         <SwapProMain
@@ -86,10 +83,16 @@ const SwapPage: React.FC = () => {
           token2={isV2 ? token2 : token2V3}
         />
       ) : (
-        <SwapDefaultMode
-          token1={isV2 ? token1 : token1V3}
-          token2={isV2 ? token2 : token2V3}
-        />
+        <>
+          <Box mb={1} sx={{ display: { xs: 'block', md: 'none' } }}>
+            <LiquidityHubAd />
+          </Box>
+
+          <SwapDefaultMode
+            token1={isV2 ? token1 : token1V3}
+            token2={isV2 ? token2 : token2V3}
+          />
+        </>
       )}
     </Box>
   );
