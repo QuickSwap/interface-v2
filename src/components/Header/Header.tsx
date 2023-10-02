@@ -492,7 +492,7 @@ const Header: React.FC = () => {
                 <img src={config['nativeCurrencyImage']} alt='network Image' />
               </Box>
             )}
-            <small className='weight-600'>
+            <small className='network-name'>
               {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
             </small>
             <KeyboardArrowDown />

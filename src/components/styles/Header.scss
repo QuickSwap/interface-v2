@@ -8,6 +8,22 @@
   z-index: 3;
 }
 
+@media (max-width: 768px) {
+  .header {
+    background-color: #121319;
+  }
+}
+
+.network-name {
+  font-weight: 600;
+}
+
+@media (max-width: 420px) {
+  .network-name {
+    display: none;
+  }
+}
+
 .newsletterBar {
   position: relative;
   background: linear-gradient(
