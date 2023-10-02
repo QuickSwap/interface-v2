@@ -8,21 +8,12 @@
   z-index: 3;
 }
 
-@media (max-width: 768px) {
-  .header {
-    background-color: #121319;
-  }
-}
+
 
 .network-name {
   font-weight: 600;
 }
 
-@media (max-width: 420px) {
-  .network-name {
-    display: none;
-  }
-}
 
 .newsletterBar {
   position: relative;
@@ -365,4 +356,27 @@
   position: relative;
   display: flex;
   margin-right: 8px;
+}
+
+@media (max-width: 959px) {
+  .header {
+    background-color: #121319;
+  }
+
+  .networkSelection {
+    background-color: #1b1e29;
+    border-radius: 12px;
+  }
+
+  .accountDetails {
+    border: none;
+    border-radius: 12px;
+    background-color: #1b1e29;
+  }
+}
+
+@media (max-width: 420px) {
+  .network-name {
+    display: none;
+  }
 }
