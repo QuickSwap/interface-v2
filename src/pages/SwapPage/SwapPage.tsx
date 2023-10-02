@@ -12,6 +12,7 @@ import SwapDefaultMode from './SwapDefaultMode';
 import SwapPageHeader from './SwapPageHeader';
 import SwapProMain from './SwapProMain';
 import { useQuery } from '@tanstack/react-query';
+import { LiquidityHubAd } from './LiquidityHubAd';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -68,10 +69,15 @@ const SwapPage: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      <SwapPageHeader proMode={isProMode} />
-      <Box margin='24px auto'>
-        <HypeLabAds />
+      <Box mb={1} sx={{ display: { xs: 'block', md: 'none' } }}>
+        <LiquidityHubAd />
       </Box>
+
+      <SwapPageHeader proMode={isProMode} />
+      {/* <Box margin='24px auto'>
+        <HypeLabAds />
+      </Box> */}
+
       {isProMode ? (
         <SwapProMain
           pairId={data?.pairId}
