@@ -18,7 +18,7 @@ export interface PageLayoutProps {
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const { chainId, account } = useActiveWeb3React();
   const isProMode = useIsProMode();
-  const arcxSDK = (window as any).arcx;
+  // const arcxSDK = (window as any).arcx;
   const [openPassModal, setOpenPassModal] = useState(false);
   const { location } = useHistory();
   const pageWrapperClassName = useMemo(() => {
@@ -66,13 +66,13 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     }
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      if (arcxSDK && account && chainId) {
-        await arcxSDK.connectWallet({ account, chain: chainId });
-      }
-    })();
-  }, [account, chainId, arcxSDK]);
+  // useEffect(() => {
+  //   (async () => {
+  //     if (arcxSDK && account && chainId) {
+  //       await arcxSDK.connectWallet({ account, chain: chainId });
+  //     }
+  //   })();
+  // }, [account, chainId, arcxSDK]);
 
   const PasswordModal = () => {
     const [devPass, setDevPass] = useState('');

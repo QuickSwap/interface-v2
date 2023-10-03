@@ -16,6 +16,7 @@ const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ContestPage = lazy(() => import('./pages/ContestPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
 const BondsPage = lazy(() => import('./pages/BondsPage'));
+const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -227,6 +228,11 @@ const App: React.FC = () => {
                   <Route exact path='/analytics/:version/pair/:id'>
                     <PageLayout>
                       <AnalyticsPairDetails />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/calculator/0.01-eth-to-usd'>
+                    <PageLayout>
+                      <CalculatorPage />
                     </PageLayout>
                   </Route>
                   <Route path='*'>

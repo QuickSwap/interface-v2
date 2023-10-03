@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import StartingPrice from '../../components/StartingPrice';

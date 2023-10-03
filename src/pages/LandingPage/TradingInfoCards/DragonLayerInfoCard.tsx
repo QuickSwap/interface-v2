@@ -1,5 +1,5 @@
 import { Box } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DLQUICK } from 'constants/v3/addresses';
 import { useNewLairInfo } from 'state/stake/hooks';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
@@ -21,32 +21,27 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
   const lairInfo = useNewLairInfo();
   const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
 
-  const [rewards, setRewards] = useState('0');
-  const [apy, setApy] = useState('0');
   const [openStakeModal, setOpenStakeModal] = useState(false);
 
   const quickToken = DLQUICK[chainId];
-  const loading = lairInfo?.loading;
 
   const oldLair = config['lair']?.oldLair;
   const newLair = config['lair']?.newLair;
 
   const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
 
-  useEffect(() => {
+  const rewards = useMemo(() => {
     if (lairInfo && quickPrice) {
       const balance = Number(lairInfo.totalQuickBalance.toExact());
       if (balance > 0) {
         const newReward = balance * quickPrice;
         const formattedReward = formatCompact(newReward, 18, 3, 3);
-        if (formattedReward !== rewards) {
-          setRewards(formattedReward);
-          setApy(dQUICKAPY);
-        }
+        return formattedReward;
       }
+      return '0';
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quickPrice, lairInfo, dQUICKAPY]);
+    return '0';
+  }, [lairInfo, quickPrice]);
 
   return (
     <>
@@ -66,7 +61,7 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
                 <h3>{rewards}</h3>
               </Box>
               <Box className='text-success text-center'>
-                <small>{apy}%</small>
+                <small>{dQUICKAPY}%</small>
               </Box>
             </Box>
           ) : (
