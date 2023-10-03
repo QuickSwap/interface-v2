@@ -10,7 +10,7 @@ import useGetWidoTokenAllowance from 'state/zap/providers/wido/useGetWidoTokenAl
 import { ZapVersion } from '@ape.swap/apeswap-lists';
 import { MergedZap } from 'state/zap/actions';
 import { useActiveWeb3React } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
+import { ChainId, JSBI, Token } from '@uniswap/sdk';
 import { Button } from '@material-ui/core';
 import { V3TradeState } from 'hooks/v3/useBestV3Trade';
 import {
@@ -19,11 +19,11 @@ import {
 } from 'state/application/hooks';
 import { useIsSupportedNetwork } from 'utils';
 import { parseUnits } from 'ethers/lib/utils';
-import { BigNumber } from 'ethers';
+import { useTokenAllowance } from 'data/Allowances';
 
 export interface BondActionsProps {
   bond: any;
-  zap: MergedZap;
+  zap?: MergedZap;
   zapRouteState: V3TradeState;
   handleBuy: () => void;
   bondValue: number;
@@ -99,15 +99,26 @@ const BondActions: React.FC<BondActionsProps> = ({
     lpToken?.address?.[chainId] ?? '',
     contractAddress[chainId] ?? '',
   );
+  const bondLPToken = lpToken
+    ? new Token(
+        chainId,
+        lpToken?.address?.[chainId],
+        lpToken?.decimals?.[chainId] ?? 18,
+      )
+    : undefined;
+  const allowance = useTokenAllowance(
+    bondLPToken,
+    account,
+    contractAddress[chainId] ?? '',
+  );
 
-  const lpTokenDecimals = Number(bond?.lpToken?.decimals?.[chainId] ?? 18);
+  const lpTokenDecimals = Number(lpToken?.decimals?.[chainId] ?? 18);
   const parsedValue = parseUnits(
     Number(value).toFixed(lpTokenDecimals),
     lpTokenDecimals,
   );
-  const showApproveLP = BigNumber.from(bond?.userData?.allowance).lt(
-    parsedValue,
-  );
+  const showApproveLP =
+    !allowance || allowance.lessThan(JSBI.BigInt(parsedValue));
   const [pendingApprove, setPendingApprove] = useState(false);
   const { t } = useTranslation();
 
@@ -153,7 +164,7 @@ const BondActions: React.FC<BondActionsProps> = ({
         zapVersion === ZapVersion.ZapV1:
         return (
           <Button onClick={handleLPApprove} disabled={pendingApprove} fullWidth>
-            {t('Enable')}
+            {pendingApprove ? t('Enabling') : t('Enable')}
           </Button>
         );
       default:

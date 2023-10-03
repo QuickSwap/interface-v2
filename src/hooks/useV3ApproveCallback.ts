@@ -161,7 +161,7 @@ export function useApproveCallbackFromTrade(
 }
 
 export function useApproveCallbackFromZap(
-  zap: MergedZap,
+  zap?: MergedZap,
 ): [ApprovalState, () => Promise<void>] {
   const { chainId } = useActiveWeb3React();
 

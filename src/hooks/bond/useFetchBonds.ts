@@ -184,7 +184,7 @@ export const useFetchBonds = () => {
     const call = bondTrueBillPriceCalls[ind];
     const data =
       !call.loading && call.result && call.result.length > 0
-        ? call.result[0]
+        ? call.result[0].toString()
         : undefined;
     return { loading: call.loading, data, address };
   });
@@ -197,7 +197,7 @@ export const useFetchBonds = () => {
     const call = bondTotalPayoutGivenCalls[ind];
     const data =
       !call.loading && call.result && call.result.length > 0
-        ? call.result[0]
+        ? call.result[0].toString()
         : undefined;
     return { loading: call.loading, data, address };
   });
@@ -206,7 +206,7 @@ export const useFetchBonds = () => {
       const call = v2bondsMaxTotalPayoutCalls[index];
       const maxTotalPayout =
         !call.loading && call.result && call.result.length > 0
-          ? call.result[0]
+          ? call.result[0].toString()
           : undefined;
       return { address, maxTotalPayout, loading: call.loading };
     })
@@ -215,7 +215,7 @@ export const useFetchBonds = () => {
         const call = v1bondsMaxTotalPayoutCalls[index];
         const maxTotalPayout =
           !call.loading && call.result && call.result.length > 0
-            ? call.result[0]
+            ? call.result[0].toString()
             : undefined;
         return { address, maxTotalPayout, loading: call.loading };
       }),

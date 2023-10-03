@@ -88,7 +88,6 @@ export interface Bond extends BondConfig {
   maxDebt?: string;
   lpPriceUsd?: number;
   earnTokenPrice?: number;
-  billNftAddress?: string;
   userData?: {
     allowance?: string;
     stakingTokenBalance?: string;

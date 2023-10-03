@@ -37,6 +37,9 @@ import { useSignTransaction } from 'state/transactions/hooks';
 import { useZapCallback } from 'hooks/bond/useZapCallback';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { ZapType } from 'constants/index';
+import { formatUnits } from 'ethers/lib/utils';
+import { ChainId } from '@uniswap/sdk';
+import UserBondModalView from './UserBondModalView';
 
 interface BuyBondModalProps {
   open: boolean;
@@ -58,7 +61,7 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
   const { onCurrencySelection, onUserInput } = useZapActionHandlers();
   const [zapSlippage, setZapSlippage] = useUserZapSlippageTolerance();
   const { signTransaction } = useSignTransaction();
-  const [billId, setBillId] = useState('');
+  const [bondId, setBondId] = useState('');
   const [txSubmitted, setTxSubmitted] = useState(false);
   const routerQuery = useParsedQueryString();
   const { mutate: postBillReference } = usePostBillReference();
@@ -144,10 +147,8 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
   const consideredValue = currencyB
     ? typedValue
     : zap?.pairOut?.liquidityMinted?.toExact();
-  const billValue =
-    bond && Number(bond.price) > 0
-      ? Number(consideredValue) / Number(bond.price)
-      : 0;
+  const bondPrice = bond ? Number(formatUnits(bond.price ?? 0)) : 0;
+  const bondValue = bondPrice > 0 ? Number(consideredValue) / bondPrice : 0;
 
   const selectedCurrencyBalance = useCurrencyBalance(
     account ?? undefined,
@@ -203,9 +204,9 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
       const getBillNftIndex =
         findBillNftLog.topics[findBillNftLog.topics.length - 1];
       const convertHexId = parseInt(getBillNftIndex, 16);
-      setBillId(convertHexId.toString());
+      setBondId(convertHexId.toString());
     },
-    [setBillId],
+    [setBondId],
   );
 
   const liquidityDex =
@@ -222,15 +223,14 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
     }
 
     if (currencyB && lpTokenZapVersion !== ZapVersion.ZapV1) {
-      return principalToken;
+      return principalToken?.wrapped;
     }
 
     if (currencyA?.isNative) {
       return { ...currencyA, address: NATIVE_TOKEN_ADDRESS };
     }
 
-    // @ts-ignore
-    return currencyA?.tokenInfo;
+    return currencyA;
   };
 
   const inputCurrency = getInputCurrency();
@@ -257,7 +257,7 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
     inputTokenDecimals: decimals,
     toTokenAddress: bondContractAddress,
     zapVersion,
-    fromChainId: inputTokenChainId,
+    fromChainId: inputTokenChainId as ChainId,
     toChainId: chainId,
   });
 
@@ -269,7 +269,7 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
     inputTokenDecimals: decimals,
     toTokenAddress: bondContractAddress,
     zapVersion: lpTokenZapVersion,
-    fromChainId: inputTokenChainId,
+    fromChainId: inputTokenChainId as ChainId,
     toChainId: chainId,
   });
 
@@ -311,8 +311,11 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
     }
   };
 
+  const billNftAddress =
+    bond && bond.billNnftAddress ? bond.billNnftAddress[chainId] : undefined;
+
   const handleBuy = useCallback(async () => {
-    if (!provider || !chainId || !bond.billNftAddress || !account) return;
+    if (!provider || !chainId || !billNftAddress || !account) return;
     setPendingTrx(true);
     if (zapVersion === ZapVersion.Wido && isWidoSupported) {
       signTransaction({
@@ -328,13 +331,12 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
               const { logs } = receipt;
               const findBillNftLog = logs.find(
                 (log) =>
-                  log.address.toLowerCase() ===
-                  bond.billNftAddress?.toLowerCase(),
+                  log.address.toLowerCase() === billNftAddress.toLowerCase(),
               );
               const getBillNftIndex =
                 findBillNftLog?.topics[findBillNftLog.topics.length - 1];
               const convertHexId = parseInt(getBillNftIndex ?? '', 16);
-              setBillId(convertHexId.toString());
+              setBondId(convertHexId.toString());
               const billsReference: Partial<BillReferenceData> = {
                 chainId,
                 transactionHash: hash,
@@ -362,7 +364,7 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
       if (currencyB) {
         await onBuyBond()
           .then((resp: any) => {
-            searchForBillId(resp, bond.billNftAddress ?? '');
+            searchForBillId(resp, billNftAddress ?? '');
             const billsReference: Partial<BillReferenceData> = {
               chainId,
               transactionHash: resp?.transactionHash,
@@ -394,13 +396,12 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
                 const { logs } = receipt;
                 const findBillNftLog = logs.find(
                   (log) =>
-                    log.address.toLowerCase() ===
-                    bond.billNftAddress?.toLowerCase(),
+                    log.address.toLowerCase() === billNftAddress.toLowerCase(),
                 );
                 const getBillNftIndex =
                   findBillNftLog?.topics[findBillNftLog.topics.length - 1];
                 const convertHexId = parseInt(getBillNftIndex ?? '', 16);
-                setBillId(convertHexId.toString());
+                setBondId(convertHexId.toString());
               })
               .catch((e) => {
                 console.error(e);
@@ -419,8 +420,7 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
   }, [
     provider,
     chainId,
-    bond.billNftAddress,
-    bond?.contractAddress,
+    billNftAddress,
     account,
     zapVersion,
     isWidoSupported,
@@ -432,6 +432,7 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
     setZapSlippage,
     originalSlippage,
     routerQuery?.referenceId,
+    bond?.contractAddress,
     postBillReference,
     currencyB,
     onBuyBond,
@@ -441,85 +442,88 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
 
   return (
     <CustomModal open={open} onClose={onClose} modalWrapper='bondModalWrapper'>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={6}>
-          <img src={BillImage} width='100%' />
-        </Grid>
-        <Grid item xs={12} sm={12} md={6}>
-          <Box className='flex' mb={2}>
-            <Box className='bondTypeTag'>{bond.billType}</Box>
-          </Box>
-          <Box className='flex items-center'>
-            <BondTokenDisplay
-              token1Obj={token1Obj}
-              token2Obj={token2Obj}
-              token3Obj={token3Obj}
-              stakeLP={stakeLP}
-            />
-            <Box className='flex' mx='12px'>
-              <h6 className='weight-600 text-gray32'>
-                {token1Obj?.symbol}
-                {stakeLP ? `/${token2Obj?.symbol}` : ''}
-              </h6>
+      {bond && bondId ? (
+        <UserBondModalView bond={bond} billId={bondId} onDismiss={onClose} />
+      ) : (
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={6}>
+            <img src={BillImage} width='100%' />
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <Box className='flex' mb={2}>
+              <Box className='bondTypeTag'>{bond.billType}</Box>
             </Box>
-          </Box>
-          <Box mt={2}>
-            <small className='text-secondary'>
-              {bond.earnToken?.symbol} {t('marketPrice')}&nbsp;
-              <span style={{ textDecoration: 'line-through' }}>
-                ${formatNumber(bond?.earnTokenPrice ?? 0)}
-              </span>
-            </small>
-            <Box mt='4px' className='flex items-center'>
-              <BondTokenDisplay token1Obj={bond.earnToken} />
-              <Box ml={1}>
-                <h4 className='font-bold text-white'>
-                  ${formatNumber(discountEarnTokenPrice)} (
-                  {formatNumber(bond?.discount ?? 0)}% {t('discount')})
-                </h4>
+            <Box className='flex items-center'>
+              <BondTokenDisplay
+                token1Obj={token1Obj}
+                token2Obj={token2Obj}
+                token3Obj={token3Obj}
+                stakeLP={stakeLP}
+              />
+              <Box className='flex' mx='12px'>
+                <h6 className='weight-600 text-gray32'>
+                  {token1Obj?.symbol}
+                  {stakeLP ? `/${token2Obj?.symbol}` : ''}
+                </h6>
               </Box>
             </Box>
-            {billsCurrencies && (
-              <Box mt={2}>
-                <DualCurrencyPanel
-                  handleMaxInput={handleMaxInput}
-                  onUserInput={onHandleValueChange}
-                  value={typedValue}
-                  onCurrencySelect={handleCurrencySelect}
-                  inputCurrencies={
-                    bond?.billType !== 'reserve'
-                      ? inputCurrencies
-                      : [inputCurrencies[0]]
-                  }
-                  lpList={[billsCurrencies]}
-                  principalToken={principalToken ?? null}
-                  enableZap={getIsZapCurrDropdownEnabled()}
-                  lpUsdVal={bond?.lpPrice}
-                />
+            <Box mt={2}>
+              <small className='text-secondary'>
+                {bond.earnToken?.symbol} {t('marketPrice')}&nbsp;
+                <span style={{ textDecoration: 'line-through' }}>
+                  ${formatNumber(bond?.earnTokenPrice ?? 0)}
+                </span>
+              </small>
+              <Box mt='4px' className='flex items-center'>
+                <BondTokenDisplay token1Obj={bond.earnToken} />
+                <Box ml={1}>
+                  <h4 className='font-bold text-white'>
+                    ${formatNumber(discountEarnTokenPrice)} (
+                    {formatNumber(bond?.discount ?? 0)}% {t('discount')})
+                  </h4>
+                </Box>
               </Box>
-            )}
-            <Box my='12px' className='flex justify-between'>
-              <small>
-                {t('bondValue')} {billValue} {bond?.earnToken?.symbol}
-              </small>
-              <small>
-                {t('maxPerBond')} {formatNumber(displayAvailable)}{' '}
-                {bond?.earnToken?.symbol}
-              </small>
-            </Box>
-            <Box className='bondModalButtonsWrapper'>
-              {stakeLP && (
-                <Button disabled={getLPDisabled} onClick={getLP}>
-                  {t('getLP')}
-                </Button>
+              {billsCurrencies && (
+                <Box mt={2}>
+                  <DualCurrencyPanel
+                    handleMaxInput={handleMaxInput}
+                    onUserInput={onHandleValueChange}
+                    value={typedValue}
+                    onCurrencySelect={handleCurrencySelect}
+                    inputCurrencies={
+                      bond?.billType !== 'reserve'
+                        ? inputCurrencies
+                        : [inputCurrencies[0]]
+                    }
+                    lpList={[billsCurrencies]}
+                    principalToken={principalToken ?? null}
+                    enableZap={getIsZapCurrDropdownEnabled()}
+                    lpUsdVal={bond?.lpPrice}
+                  />
+                </Box>
               )}
-              {zap && (
+              <Box my='12px' className='flex justify-between'>
+                <small>
+                  {t('bondValue')} {formatNumber(bondValue)}{' '}
+                  {bond?.earnToken?.symbol}
+                </small>
+                <small>
+                  {t('maxPerBond')} {formatNumber(displayAvailable)}{' '}
+                  {bond?.earnToken?.symbol}
+                </small>
+              </Box>
+              <Box className='bondModalButtonsWrapper'>
+                {stakeLP && (
+                  <Button disabled={getLPDisabled} onClick={getLP}>
+                    {t('getLP')}
+                  </Button>
+                )}
                 <BondActions
                   bond={bond}
                   zap={zap}
                   zapRouteState={zapRouteState}
                   handleBuy={handleBuy}
-                  bondValue={billValue}
+                  bondValue={bondValue}
                   value={typedValue}
                   purchaseLimit={displayAvailable.toString()}
                   balance={selectedCurrencyBalance?.toExact() ?? ''}
@@ -537,14 +541,14 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
                   inputTokenAddress={inputTokenAddress}
                   inputTokenDecimals={decimals}
                   toTokenAddress={bondContractAddress}
-                  inputTokenChainId={inputTokenChainId}
+                  inputTokenChainId={inputTokenChainId as ChainId}
                   isInputCurrencyPrincipal={isInputCurrencyPrincipal}
                 />
-              )}
+              </Box>
             </Box>
-          </Box>
+          </Grid>
         </Grid>
-      </Grid>
+      )}
     </CustomModal>
   );
 };

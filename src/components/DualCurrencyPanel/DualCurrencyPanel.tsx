@@ -123,7 +123,7 @@ const DualCurrencyPanel: React.FC<DualCurrencyPanelProps> = ({
                 <CircularProgress size={15} />
               </Box>
             )}
-            {parseFloat(currencyBalance ?? '0') > 0 && (
+            {Number(currencyBalance ?? '0') > 0 && (
               <Box
                 ml={0.5}
                 className='dualCurrencyMaxButton'
