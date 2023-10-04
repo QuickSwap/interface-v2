@@ -19,6 +19,7 @@ import {
   walletConnectConnection,
   zengoConnectConnection,
 } from 'connectors';
+import KavaImage from 'assets/images/KAVA.png';
 
 const NetworkSelectionModal: React.FC = () => {
   const { t } = useTranslation();
@@ -103,6 +104,17 @@ const NetworkSelectionModal: React.FC = () => {
             </Box>
           );
         })}
+        <Box
+          className='networkItemWrapper'
+          onClick={() => {
+            window.open('https://dex.kinetix.finance', '_blank');
+          }}
+        >
+          <Box className='flex items-center'>
+            <img src={KavaImage} alt='network Image' />
+            <small className='weight-600'>Kava - Kinetix</small>
+          </Box>
+        </Box>
       </Box>
     </CustomModal>
   );

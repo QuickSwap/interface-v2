@@ -34,6 +34,7 @@ import useDeviceWidth from 'hooks/useDeviceWidth';
 import { USDC, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 import { networkConnection, walletConnectConnection } from 'connectors';
+import { MobileMenuDrawer } from './MobileMenuDrawer';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -404,83 +405,7 @@ const Header: React.FC = () => {
             )}
           </Box>
         )}
-        {tabletWindowSize && (
-          <Box className='mobileMenuContainer'>
-            <Box className='mobileMenu'>
-              {menuItems.slice(0, 4).map((val) => (
-                <Box
-                  key={val.id}
-                  id={val.id}
-                  className={`menuItem ${
-                    pathname !== '/' && val.link.includes(pathname)
-                      ? 'active'
-                      : ''
-                  }`}
-                  onClick={() => {
-                    if (val.onClick) {
-                      val.onClick();
-                    } else {
-                      if (val.isExternal) {
-                        window.open(val.externalLink, val.target ?? '_blank');
-                      } else {
-                        history.push(val.link);
-                      }
-                    }
-                  }}
-                >
-                  <small>{val.text}</small>
-                </Box>
-              ))}
-              {menuItems.length > 4 && (
-                <Box className='flex menuItem'>
-                  <ThreeDotIcon
-                    onClick={() => setOpenDetailMenu(!openDetailMenu)}
-                  />
-                  {openDetailMenu && (
-                    <Box className='subMenuWrapper'>
-                      <Box className='subMenu'>
-                        {menuItems.slice(4, menuItems.length).map((val) => (
-                          <Box
-                            className={`subMenuItem ${
-                              pathname !== '/' && val.link.includes(pathname)
-                                ? 'active'
-                                : ''
-                            }`}
-                            key={val.id}
-                            id={val.id}
-                            onClick={() => {
-                              setOpenDetailMenu(false);
-                              if (val.onClick) {
-                                val.onClick();
-                              } else {
-                                if (val.isExternal) {
-                                  window.open(val.externalLink, val.target);
-                                } else {
-                                  history.push(val.link);
-                                }
-                              }
-                            }}
-                          >
-                            <small>{val.text}</small>
-                          </Box>
-                        ))}
-                        {outLinks.map((item, ind) => (
-                          <a
-                            href={item.link}
-                            key={ind}
-                            onClick={() => setOpenDetailMenu(false)}
-                          >
-                            <small>{item.text}</small>
-                          </a>
-                        ))}
-                      </Box>
-                    </Box>
-                  )}
-                </Box>
-              )}
-            </Box>
-          </Box>
-        )}
+        {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
         <Box>
           <Box
             className='networkSelection'
@@ -492,7 +417,7 @@ const Header: React.FC = () => {
                 <img src={config['nativeCurrencyImage']} alt='network Image' />
               </Box>
             )}
-            <small className='weight-600'>
+            <small className='network-name'>
               {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
             </small>
             <KeyboardArrowDown />
