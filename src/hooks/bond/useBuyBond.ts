@@ -47,6 +47,7 @@ const useBuyBond = (
     finalizeTransaction(resp, {
       summary: t('buyBond'),
     });
+    return resp;
   }, [
     bondContract,
     parsedAmount,

@@ -45,28 +45,28 @@ const VestedTimer: React.FC<{
   }, []);
 
   return transferModalFlag ? (
-    <p>
+    <h5 className='text-gray32'>
       {vestingTime.days}d, {vestingTime.hours}h, {vestingTime.minutes}m
-    </p>
+    </h5>
   ) : userModalFlag ? (
-    <p className='font-bold'>
+    <h5 className='font-bold text-gray32'>
       {vestingTime ? (
         `${vestingTime.days}d, ${vestingTime.hours}h, ${vestingTime.minutes}m`
       ) : (
         <Skeleton width='150px' height='32.5px' />
       )}
-    </p>
+    </h5>
   ) : mobileFlag ? (
     <Box className='flex'>
-      <p>Fully Vested</p>
-      <p>{`${vestingTime.days}d, ${vestingTime.hours}h, ${vestingTime.minutes}m`}</p>
-      <QuestionHelper text='This is the time remaining until all tokens from the bill are available to claim.' />
+      <p>{t('fullyVested')}</p>
+      <h5>{`${vestingTime.days}d, ${vestingTime.hours}h, ${vestingTime.minutes}m`}</h5>
+      <QuestionHelper text={t('userBondVestedTimeTooltip')} />
     </Box>
   ) : (
     <Box className='flex'>
-      <p>Fully Vested</p>
-      <p>{`${vestingTime.days}d, ${vestingTime.hours}h, ${vestingTime.minutes}m`}</p>
-      <QuestionHelper text='This is the time remaining until all tokens from the bill are available to claim.' />
+      <p>{t('fullyVested')}</p>
+      <h5>{`${vestingTime.days}d, ${vestingTime.hours}h, ${vestingTime.minutes}m`}</h5>
+      <QuestionHelper text={t('userBondVestedTimeTooltip')} />
     </Box>
   );
 };

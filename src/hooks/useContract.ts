@@ -393,6 +393,10 @@ export const useBondContract = (address: string) => {
   return useContract(address, BOND_ABI);
 };
 
+export const useBondContracts = (addresses: string[]) => {
+  return useContracts(addresses, BOND_ABI);
+};
+
 export const useBondNFTContract = (address: string) => {
   return useContract(address, BOND_NFT_ABI);
 };

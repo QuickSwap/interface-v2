@@ -59,14 +59,16 @@ export interface UserBondNft {
 
 export interface UserBond {
   address: string;
+  bond: Bond;
   id: string;
-  vesting: string;
-  payout: string;
-  truePricePaid: string;
-  lastBlockTimestamp: string;
-  pendingRewards: string;
-  billNftAddress: string;
+  vesting?: string;
+  payout?: string;
+  truePricePaid?: string;
+  lastBlockTimestamp?: string;
+  pendingRewards?: string;
+  billNftAddress?: string;
   nftData?: UserBondNft;
+  loading?: boolean;
 }
 
 export interface Bond extends BondConfig {

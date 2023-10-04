@@ -310,6 +310,79 @@ export function useMultipleContractMultipleData(
   }, [contracts, calls, results, latestBlockNumber]);
 }
 
+export function useMultipleContractsMultipleData(
+  contracts: (Contract | null | undefined)[],
+  methodNames: string[],
+  callInputsArr: OptionalMethodInputs[][],
+  options: Partial<V3ListenerOptions> & { gasRequired?: number } = {},
+): CallState[][] {
+  const blocksPerFetch = options?.blocksPerFetch;
+  const gasRequired = options?.gasRequired;
+
+  const calls = useMemo(() => {
+    let i = 0;
+    return contracts.reduce<
+      {
+        call: Call | undefined;
+        contract: Contract | null | undefined;
+        fragment: FunctionFragment | undefined;
+        callIndex: number;
+        contractIndex: number;
+      }[]
+    >((memo, contract, index) => {
+      const callInputs = callInputsArr[index];
+      if (callInputs.length > 0) {
+        for (const inputs of callInputs) {
+          const fragment = contract
+            ? contract.interface.getFunction(methodNames[index])
+            : undefined;
+          const call =
+            contract && fragment && isValidMethodArgs(inputs)
+              ? {
+                  address: contract.address,
+                  callData: contract.interface.encodeFunctionData(
+                    fragment,
+                    inputs,
+                  ),
+                  ...(gasRequired ? { gasRequired } : {}),
+                }
+              : undefined;
+          memo.push({
+            call,
+            contract,
+            fragment,
+            callIndex: i,
+            contractIndex: index,
+          });
+          i++;
+        }
+      }
+      return memo;
+    }, []);
+  }, [callInputsArr, contracts, gasRequired, methodNames]);
+
+  const results = useCallsData(
+    calls.map((call) => call.call),
+    blocksPerFetch ? { blocksPerFetch } : undefined,
+  );
+
+  const latestBlockNumber = useBlockNumber();
+
+  return useMemo(() => {
+    return contracts.map((_, ind) => {
+      const filteredCalls = calls.filter((call) => call.contractIndex === ind);
+      return filteredCalls.map((call) =>
+        toCallState(
+          results[call.callIndex],
+          call.contract?.interface,
+          call.fragment,
+          latestBlockNumber,
+        ),
+      );
+    });
+  }, [contracts, calls, results, latestBlockNumber]);
+}
+
 export function useMultipleContractSingleData(
   addresses: (string | undefined)[],
   contractInterface: Interface,

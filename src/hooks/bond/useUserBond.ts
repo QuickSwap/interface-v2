@@ -1,87 +1,156 @@
 import { BillVersion } from '@ape.swap/apeswap-lists';
-import { useSelector } from 'react-redux';
-import { AppState } from 'state';
 import { useActiveWeb3React } from 'hooks';
 import { Bond, BondConfig, UserBond } from 'types/bond';
-import { ChainId } from '@uniswap/sdk';
 import bondABI from 'constants/abis/bond.json';
 import erc20ABI from 'constants/abis/erc20.json';
 import {
-  useMultipleContractMultipleData,
+  useMultipleContractsMultipleData,
   useMultipleContractSingleData,
-  useSingleCallResult,
 } from 'state/multicall/v3/hooks';
 import { Interface } from 'ethers/lib/utils';
 import { useMemo } from 'react';
-import { useBondContract, useContract } from 'hooks/useContract';
+import { useBondContracts } from 'hooks/useContract';
 
-export const useUserOwnedBond = (bond: Bond) => {
+export const useUserOwnedBonds = (bonds: Bond[]) => {
   const { chainId, account } = useActiveWeb3React();
-  const bondContract = useBondContract(bond.contractAddress[chainId] ?? '');
-  const bondIdCall = useSingleCallResult(bondContract, 'getBillIds', [account]);
-  const bondId =
-    !bondIdCall.loading && bondIdCall.result && bondIdCall.result.length > 0
-      ? bondIdCall.result[0].toString()
-      : undefined;
-
-  const bondDataCall = useSingleCallResult(
-    bondContract,
-    bond.billVersion === BillVersion.V2 ? 'getBillInfo' : 'billInfo',
-    [bondId],
+  const bondAddresses = bonds.map(
+    (bond) => bond.contractAddress[chainId] ?? '',
   );
-  const bondData =
-    !bondDataCall.loading && bondDataCall.result
-      ? bondDataCall.result
-      : undefined;
-
-  const bondPendingRewardCall = useSingleCallResult(
-    bondContract,
-    bond.billVersion === BillVersion.V2
-      ? 'claimablePayout'
-      : 'pendingPayoutFor',
-    [bondId],
+  const bondContracts = useBondContracts(bondAddresses);
+  const bondIdCalls = useMultipleContractSingleData(
+    bondAddresses,
+    new Interface(bondABI),
+    'getBillIds',
+    [account],
+  );
+  const bondIds: string[][] = bondIdCalls.map((call) =>
+    !call.loading && call.result && call.result.length > 0
+      ? call.result[0].map((id: any) => id.toString())
+      : [],
   );
 
-  const bondPendingReward =
-    !bondPendingRewardCall.loading && bondPendingRewardCall.result
-      ? bondPendingRewardCall.result
-      : undefined;
+  const bondDataCalls = useMultipleContractsMultipleData(
+    bondContracts,
+    bonds.map((bond) =>
+      bond.billVersion === BillVersion.V2 ? 'getBillInfo' : 'billInfo',
+    ),
+    bonds.map((_, ind) => bondIds[ind].map((id) => [id])),
+  );
 
-  const bondNFTCall = useSingleCallResult(bondContract, 'billNFT');
+  const bondsData = bondDataCalls.map((callStates, ind) => {
+    return callStates.map((call) => {
+      const data = !call.loading ? call.result : undefined;
+      return { loading: call.loading, data };
+    });
+  });
 
-  const bondNFT =
-    !bondNFTCall.loading && bondNFTCall.result ? bondNFTCall.result : undefined;
+  const bondPendingRewardCalls = useMultipleContractsMultipleData(
+    bondContracts,
+    bonds.map((bond) =>
+      bond.billVersion === BillVersion.V2
+        ? 'claimablePayout'
+        : 'pendingPayoutFor',
+    ),
+    bonds.map((_, ind) => bondIds[ind].map((id: any) => [id])),
+  );
 
-  return;
+  const bondsPendingRewards = bondPendingRewardCalls.map((callStates, ind) => {
+    return callStates.map((call) => {
+      const data =
+        !call.loading && call.result && call.result.length > 0
+          ? call.result[0]
+          : undefined;
+      return { loading: call.loading, data };
+    });
+  });
 
-  // const data =
-  //   bond.billVersion === BillVersion.V2
-  //     ? {
-  //         address: bondPendingRewardCall.result.address,
-  //         id: billsPendingRewardCall[i].params[0].toString(),
-  //         payout: new BigNumber(billData[billDataPos][0]?.payout.toString())
-  //           .minus(billData[billDataPos][0]?.payoutClaimed.toString())
-  //           .toString(),
-  //         billNftAddress: billData[billDataPos + 1][0].toString(),
-  //         vesting: billData[billDataPos][0]?.vesting.toString(),
-  //         lastBlockTimestamp: billData[
-  //           billDataPos
-  //         ][0]?.lastClaimTimestamp.toString(),
-  //         truePricePaid: billData[billDataPos][0]?.truePricePaid.toString(),
-  //         pendingRewards: pendingRewardsCall[i][0].toString(),
-  //       }
-  //     : {
-  //         address: billsPendingRewardCall[i].address,
-  //         id: billsPendingRewardCall[i].params[0].toString(),
-  //         payout: billData[billDataPos][0].toString(),
-  //         billNftAddress: billData[billDataPos + 1][0].toString(),
-  //         vesting: billData[billDataPos][1].toString(),
-  //         lastBlockTimestamp: billData[billDataPos][2].toString(),
-  //         truePricePaid: billData[billDataPos][3].toString(),
-  //         pendingRewards: pendingRewardsCall[i][0].toString(),
-  //       };
+  const userBonds: UserBond[] = bonds.reduce((memo: UserBond[], bond, ind) => {
+    const idArray = bondIds[ind];
+    const bondData = bondsData[ind];
+    const bondPendingRewards = bondsPendingRewards[ind];
+    const bondAddress = bond.contractAddress[chainId] ?? '';
+    idArray.forEach((id, index) => {
+      const userBondData = bondData[index];
+      const userBondPendingReward = bondPendingRewards[index];
+      const userbond = memo.find(
+        (item) =>
+          item.address.toLowerCase() === bondAddress.toLowerCase() &&
+          item.id === id,
+      );
+      const loading = userBondData.loading || userBondPendingReward.loading;
+      if (!userbond) {
+        if (bond.billVersion === BillVersion.V2) {
+          const userBondDetail =
+            userBondData.data && userBondData.data.length > 0
+              ? userBondData.data[0]
+              : undefined;
+          memo.push({
+            loading,
+            address: bondAddress,
+            id,
+            payout:
+              userBondDetail && userBondDetail.payout > 0
+                ? userBondDetail.payout.toString()
+                : undefined,
+            vesting:
+              userBondDetail && userBondDetail.vesting
+                ? userBondDetail.vesting.toString()
+                : undefined,
+            lastBlockTimestamp:
+              userBondDetail && userBondDetail.lastClaimTimestamp
+                ? userBondDetail.lastClaimTimestamp.toString()
+                : undefined,
+            truePricePaid:
+              userBondDetail && userBondDetail.truePricePaid
+                ? userBondDetail.truePricePaid.toString()
+                : undefined,
+            pendingRewards: userBondPendingReward.data
+              ? userBondPendingReward.data.toString()
+              : undefined,
+            bond,
+          });
+        } else {
+          memo.push({
+            address: bondAddress,
+            id,
+            payout:
+              userBondData.data &&
+              userBondData.data.length > 0 &&
+              userBondData.data[0]
+                ? userBondData.data[0].toString()
+                : undefined,
+            vesting:
+              userBondData.data &&
+              userBondData.data.length > 1 &&
+              userBondData.data[1]
+                ? userBondData.data[1].toString()
+                : undefined,
+            lastBlockTimestamp:
+              userBondData.data &&
+              userBondData.data.length > 2 &&
+              userBondData.data[2]
+                ? userBondData.data[2].toString()
+                : undefined,
+            truePricePaid:
+              userBondData.data &&
+              userBondData.data.length > 3 &&
+              userBondData.data[3]
+                ? userBondData.data[3].toString()
+                : undefined,
+            pendingRewards: userBondPendingReward.data
+              ? userBondPendingReward.data.toString()
+              : undefined,
+            loading,
+            bond,
+          });
+        }
+      }
+    });
 
-  // return data;
+    return memo;
+  }, []);
+
+  return userBonds;
 };
 
 export const useBondUserBalances = (bonds: BondConfig[] | undefined) => {

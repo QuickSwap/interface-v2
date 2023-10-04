@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useTransferBond from 'hooks/bond/useTransferBond';
-import { Button } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 
 interface TransferProps {
@@ -32,13 +32,15 @@ const Transfer: React.FC<TransferProps> = ({
     setPendingTrx(false);
   };
   return (
-    <Button
-      onClick={handleTransfer}
-      endIcon={pendingTrx}
-      disabled={pendingTrx || disabled}
-    >
-      {t('CONFIRM')}
-    </Button>
+    <Box className='bondModalButtonsWrapper'>
+      <Button
+        onClick={handleTransfer}
+        endIcon={pendingTrx}
+        disabled={pendingTrx || disabled}
+      >
+        {t('confirm')}
+      </Button>
+    </Box>
   );
 };
 

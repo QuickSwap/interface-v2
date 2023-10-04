@@ -9,7 +9,7 @@ import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { Currency, Percent } from '@uniswap/sdk-core';
-import { BigNumber } from 'ethers';
+import { BigNumber, ContractReceipt } from 'ethers';
 import {
   useDerivedZapInfo,
   useZapActionHandlers,
@@ -195,16 +195,18 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
   );
 
   const searchForBillId = useCallback(
-    (resp: any, billNftAddress: string) => {
+    (resp: ContractReceipt, billNftAddress: string) => {
       const { logs } = resp;
       const findBillNftLog = logs.find(
         (log: any) =>
           log.address.toLowerCase() === billNftAddress.toLowerCase(),
       );
-      const getBillNftIndex =
-        findBillNftLog.topics[findBillNftLog.topics.length - 1];
-      const convertHexId = parseInt(getBillNftIndex, 16);
-      setBondId(convertHexId.toString());
+      if (findBillNftLog) {
+        const getBillNftIndex =
+          findBillNftLog.topics[findBillNftLog.topics.length - 1];
+        const convertHexId = parseInt(getBillNftIndex, 16);
+        setBondId(convertHexId.toString());
+      }
     },
     [setBondId],
   );
@@ -514,36 +516,40 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
               </Box>
               <Box className='bondModalButtonsWrapper'>
                 {stakeLP && (
-                  <Button disabled={getLPDisabled} onClick={getLP}>
-                    {t('getLP')}
-                  </Button>
+                  <Box width='49%'>
+                    <Button disabled={getLPDisabled} onClick={getLP}>
+                      {t('getLP')}
+                    </Button>
+                  </Box>
                 )}
-                <BondActions
-                  bond={bond}
-                  zap={zap}
-                  zapRouteState={zapRouteState}
-                  handleBuy={handleBuy}
-                  bondValue={bondValue}
-                  value={typedValue}
-                  purchaseLimit={displayAvailable.toString()}
-                  balance={selectedCurrencyBalance?.toExact() ?? ''}
-                  pendingTrx={pendingTrx}
-                  errorMessage={
-                    zapSlippage &&
-                    zapSlippage.lessThan(priceImpact ?? '0') &&
-                    !currencyB
-                      ? 'Change Slippage'
-                      : null
-                  }
-                  isWidoSupported={isWidoSupported}
-                  widoQuote={widoQuote}
-                  zapVersion={zapVersion}
-                  inputTokenAddress={inputTokenAddress}
-                  inputTokenDecimals={decimals}
-                  toTokenAddress={bondContractAddress}
-                  inputTokenChainId={inputTokenChainId as ChainId}
-                  isInputCurrencyPrincipal={isInputCurrencyPrincipal}
-                />
+                <Box width={stakeLP ? '49%' : '100%'}>
+                  <BondActions
+                    bond={bond}
+                    zap={zap}
+                    zapRouteState={zapRouteState}
+                    handleBuy={handleBuy}
+                    bondValue={bondValue}
+                    value={typedValue}
+                    purchaseLimit={displayAvailable.toString()}
+                    balance={selectedCurrencyBalance?.toExact() ?? ''}
+                    pendingTrx={pendingTrx}
+                    errorMessage={
+                      zapSlippage &&
+                      zapSlippage.lessThan(priceImpact ?? '0') &&
+                      !currencyB
+                        ? 'Change Slippage'
+                        : null
+                    }
+                    isWidoSupported={isWidoSupported}
+                    widoQuote={widoQuote}
+                    zapVersion={zapVersion}
+                    inputTokenAddress={inputTokenAddress}
+                    inputTokenDecimals={decimals}
+                    toTokenAddress={bondContractAddress}
+                    inputTokenChainId={inputTokenChainId as ChainId}
+                    isInputCurrencyPrincipal={isInputCurrencyPrincipal}
+                  />
+                </Box>
               </Box>
             </Box>
           </Grid>
