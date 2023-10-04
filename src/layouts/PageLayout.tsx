@@ -3,7 +3,7 @@ import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
-// import NewsletterSignupPanel from './NewsletterSignupPanel';
+import NewsletterSignupPanel from './NewsletterSignupPanel';
 const Header = lazy(() => import('components/Header'));
 const Footer = lazy(() => import('components/Footer'));
 const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
@@ -106,7 +106,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     <Box className='page'>
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
-      {/* <NewsletterSignupPanel /> */}
+      <NewsletterSignupPanel />
       <Header />
       {!isProMode && <Background fallback={false} />}
       <Box className={pageWrapperClassName}>{children}</Box>
