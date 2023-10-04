@@ -4,7 +4,7 @@
 .networkSelectionModalWrapper {
   padding: 20px;
   max-width: 368px;
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 16px;
   }
 }
@@ -24,8 +24,9 @@
     width: 24px;
     height: 24px;
     margin-right: 8px;
+    border-radius: 12px;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 0 12px;
   }
 }
