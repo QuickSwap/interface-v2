@@ -57,16 +57,24 @@ const VestedTimer: React.FC<{
       )}
     </h5>
   ) : mobileFlag ? (
-    <Box className='flex'>
-      <p>{t('fullyVested')}</p>
-      <h5>{`${vestingTime.days}d, ${vestingTime.hours}h, ${vestingTime.minutes}m`}</h5>
-      <QuestionHelper text={t('userBondVestedTimeTooltip')} />
+    <Box className='flex justify-between items-center'>
+      <Box className='flex items-center'>
+        <small>{t('fullyVested')}</small>
+        <Box className='flex' ml='5px'>
+          <QuestionHelper text={t('userBondVestedTimeTooltip')} />
+        </Box>
+      </Box>
+      <p>{`${vestingTime.days}d, ${vestingTime.hours}h, ${vestingTime.minutes}m`}</p>
     </Box>
   ) : (
-    <Box className='flex'>
-      <p>{t('fullyVested')}</p>
-      <h5>{`${vestingTime.days}d, ${vestingTime.hours}h, ${vestingTime.minutes}m`}</h5>
-      <QuestionHelper text={t('userBondVestedTimeTooltip')} />
+    <Box>
+      <Box className='flex items-center'>
+        <small>{t('fullyVested')}</small>
+        <Box className='flex' ml='5px'>
+          <QuestionHelper text={t('userBondVestedTimeTooltip')} />
+        </Box>
+      </Box>
+      <p>{`${vestingTime.days}d, ${vestingTime.hours}h, ${vestingTime.minutes}m`}</p>
     </Box>
   );
 };

@@ -1,16 +1,16 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button } from '@material-ui/core';
-import { QuestionHelper } from 'components';
-import BuyBondModal from './BuyBondModal';
+import { Box, Button, useTheme, useMediaQuery } from '@material-ui/core';
+import { CustomModal, QuestionHelper } from 'components';
 import BondTokenDisplay from './BondTokenDisplay';
-import { formatCompact, formatNumber } from 'utils';
+import { formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { BigNumber } from 'ethers';
-import { Bond, UserBond } from 'types/bond';
+import { UserBond } from 'types/bond';
 import { Skeleton } from '@material-ui/lab';
 import { formatUnits } from 'ethers/lib/utils';
 import VestedTimer from './VestedTimer';
+import UserBondModalView from './UserBondModalView';
+import ClaimBond from './ClaimBond';
 
 interface BondItemProps {
   userBond: UserBond;
@@ -20,6 +20,9 @@ const UserBondItem: React.FC<BondItemProps> = ({ userBond }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const [openModal, setOpenModal] = useState(false);
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isTablet = useMediaQuery(breakpoints.down('sm'));
 
   const token1Obj = userBond.bond.token;
   const token2Obj =
@@ -45,7 +48,26 @@ const UserBondItem: React.FC<BondItemProps> = ({ userBond }) => {
 
   return (
     <Box mb={2} className='bondItemWrapper'>
-      <Box className='flex items-center' width='30%'>
+      {openModal && (
+        <CustomModal
+          open={openModal}
+          modalWrapper='bondModalWrapper'
+          onClose={() => {
+            setOpenModal(false);
+          }}
+        >
+          <UserBondModalView
+            bond={userBond.bond}
+            billId={userBond.id}
+            onDismiss={() => setOpenModal(false)}
+          />
+        </CustomModal>
+      )}
+      <Box
+        className='flex items-center'
+        width={isMobile ? '100%' : isTablet ? '51%' : '30%'}
+        my='6px'
+      >
         <BondTokenDisplay
           token1Obj={token1Obj}
           token2Obj={token2Obj}
@@ -60,7 +82,11 @@ const UserBondItem: React.FC<BondItemProps> = ({ userBond }) => {
           </h6>
         </Box>
       </Box>
-      <Box width='20%'>
+      <Box
+        width={isMobile ? '100%' : isTablet ? '49%' : '17%'}
+        my='6px'
+        className={isMobile ? 'flex items-center justify-between' : ''}
+      >
         <Box className='flex items-center'>
           <small>{t('claimable')}</small>
           <Box className='flex' ml='5px'>
@@ -81,7 +107,11 @@ const UserBondItem: React.FC<BondItemProps> = ({ userBond }) => {
           </Box>
         )}
       </Box>
-      <Box width='20%'>
+      <Box
+        width={isMobile ? '100%' : isTablet ? '51%' : '17%'}
+        my='6px'
+        className={isMobile ? 'flex items-center justify-between' : ''}
+      >
         <Box className='flex items-center'>
           <small>{t('pending')}</small>
           <Box className='flex' ml='5px'>
@@ -104,30 +134,29 @@ const UserBondItem: React.FC<BondItemProps> = ({ userBond }) => {
           )}
         </Box>
       </Box>
-      <Box width='20%'>
-        <Box className='flex items-center'>
-          <small>{t('fullyVested')}</small>
-
-          <Box className='flex' ml='5px'>
-            <QuestionHelper text={t('userBondVestedTimeTooltip')} size={16} />
-          </Box>
-        </Box>
-        <Box className='flex'>
-          {userBond.loading ? (
-            <Skeleton width={50} height={20} />
-          ) : (
-            <VestedTimer
-              lastBlockTimestamp={userBond.lastBlockTimestamp ?? '0'}
-              vesting={userBond.vesting ?? '0'}
-              mobileFlag
-            />
-          )}
-        </Box>
+      <Box width={isMobile ? '100%' : isTablet ? '49%' : '16%'} my='6px'>
+        <VestedTimer
+          lastBlockTimestamp={userBond.lastBlockTimestamp ?? '0'}
+          vesting={userBond.vesting ?? '0'}
+          mobileFlag={isMobile}
+        />
       </Box>
-      <Box width='10%'>
-        <Button fullWidth onClick={() => setOpenModal(true)}>
-          {t('buy')}
-        </Button>
+      <Box
+        width={isTablet ? '100%' : '20%'}
+        className='flex justify-between'
+        my='6px'
+      >
+        <Box width='49%'>
+          <ClaimBond
+            billAddress={userBond.address}
+            billIds={[userBond.id]}
+            pendingRewards={userBond.pendingRewards ?? '0'}
+            earnToken={userBond.bond.earnToken.symbol}
+          />
+        </Box>
+        <Box width='49%'>
+          <Button onClick={() => setOpenModal(true)}>{t('view')}</Button>
+        </Box>
       </Box>
     </Box>
   );

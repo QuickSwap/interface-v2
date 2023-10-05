@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
@@ -18,6 +18,9 @@ import BondsList from './BondsList';
 const BondsPage: React.FC = () => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isTablet = useMediaQuery(breakpoints.down('sm'));
 
   const config = getConfig(chainId);
   const showBonds = config['bonds']['available'];
@@ -128,14 +131,29 @@ const BondsPage: React.FC = () => {
         <HypeLabAds />
       </Box>
       <Box className='bg-palette' borderRadius={10} mb={4}>
-        <Box className='flex justify-between border-bottom' px={3} py={3}>
-          <CustomSwitch
-            height={36}
-            items={bondsTypeItems}
-            activeItemClass='availableBondsSwitch'
-          />
-          <Box className='flex'>
-            <Box mr={3}>
+        <Box
+          className='flex justify-between border-bottom flex-wrap'
+          px={3}
+          py={2}
+        >
+          <Box my={1} width={isTablet ? '100%' : '300px'}>
+            <CustomSwitch
+              width='100%'
+              height={36}
+              items={bondsTypeItems}
+              activeItemClass='availableBondsSwitch'
+            />
+          </Box>
+          <Box
+            className={`flex flex-wrap ${isTablet ? 'justify-between' : ''}`}
+            my={1}
+            width={isTablet ? '100%' : 'auto'}
+          >
+            <Box
+              mr={isTablet ? 0 : 3}
+              mb={isMobile ? 2 : 0}
+              width={isMobile ? '100%' : isTablet ? '49%' : 'auto'}
+            >
               <SearchInput
                 placeholder={t('search')}
                 value={search}
@@ -143,7 +161,11 @@ const BondsPage: React.FC = () => {
                 height={36}
               />
             </Box>
-            <CustomSwitch width={214} height={36} items={bondsStatusItems} />
+            <CustomSwitch
+              width={isMobile ? '100%' : isTablet ? '49%' : 214}
+              height={36}
+              items={bondsStatusItems}
+            />
           </Box>
         </Box>
         <Box p={3}>

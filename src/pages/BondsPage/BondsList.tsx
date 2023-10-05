@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useFetchBonds } from 'hooks/bond/useFetchBonds';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import Loader from 'components/Loader';
@@ -8,6 +8,8 @@ import { useUserOwnedBonds } from 'hooks/bond/useUserBond';
 import { useTranslation } from 'react-i18next';
 import UserBondItem from './UserBondItem';
 import { useActiveWeb3React } from 'hooks';
+import { formatUnits } from 'ethers/lib/utils';
+import { BigNumber } from 'ethers';
 
 interface BondsListProps {
   search: string;
@@ -29,6 +31,64 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
   const { loading, data: bonds } = useFetchBonds();
   const userBonds = useUserOwnedBonds(bonds);
 
+  const filteredBonds = useMemo(() => {
+    if (!bonds) return [];
+    return bonds.filter((bond) => {
+      const available = Number(
+        formatUnits(
+          BigNumber.from(bond?.maxTotalPayOut ?? '0').sub(
+            BigNumber.from(bond?.totalPayoutGiven ?? '0'),
+          ),
+          bond.earnToken?.decimals?.[chainId] ?? undefined,
+        ),
+      );
+      const thresholdToHide =
+        bond && bond.earnTokenPrice && bond.earnTokenPrice > 0
+          ? 100 / bond.earnTokenPrice
+          : 0;
+      const disabled =
+        bond.maxTotalPayOut && bond.totalPayoutGiven && bond.earnTokenPrice
+          ? available <= thresholdToHide || Number(bond.discount) === 100
+          : false;
+      const bondStatusCondition = !disabled === (bondsStatus === 'available');
+
+      const searchCondition =
+        bond.earnToken.symbol.toLowerCase().includes(search.toLowerCase()) ||
+        bond.token.symbol.toLowerCase().includes(search.toLowerCase()) ||
+        bond.lpToken.symbol.toLowerCase().includes(search.toLowerCase());
+      return searchCondition && bondStatusCondition;
+    });
+  }, [bonds, bondsStatus, chainId, search]);
+
+  const filteredUserBonds = useMemo(() => {
+    if (!userBonds) return [];
+    return userBonds.filter((userBond) => {
+      const { bond } = userBond;
+      const available = Number(
+        formatUnits(
+          BigNumber.from(bond?.maxTotalPayOut ?? '0').sub(
+            BigNumber.from(bond?.totalPayoutGiven ?? '0'),
+          ),
+          bond.earnToken?.decimals?.[chainId] ?? undefined,
+        ),
+      );
+      const thresholdToHide =
+        bond && bond.earnTokenPrice && bond.earnTokenPrice > 0
+          ? 100 / bond.earnTokenPrice
+          : 0;
+      const disabled =
+        bond.maxTotalPayOut && bond.totalPayoutGiven && bond.earnTokenPrice
+          ? available <= thresholdToHide || Number(bond.discount) === 100
+          : false;
+
+      const searchCondition =
+        bond.earnToken.symbol.toLowerCase().includes(search.toLowerCase()) ||
+        bond.token.symbol.toLowerCase().includes(search.toLowerCase()) ||
+        bond.lpToken.symbol.toLowerCase().includes(search.toLowerCase());
+      return searchCondition;
+    });
+  }, [chainId, search, userBonds]);
+
   return (
     <Box pb={2} px={3}>
       {bondsType === 'availableBonds' &&
@@ -36,9 +96,9 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
           <Box className='flex justify-center items-center' height='100px'>
             <Loader size='32px' />
           </Box>
-        ) : bonds && bonds.length > 0 ? (
+        ) : filteredBonds.length > 0 ? (
           <>
-            {bonds.map((bond) => (
+            {filteredBonds.map((bond) => (
               <BondItem key={bond.index} bond={bond} />
             ))}
           </>
@@ -52,9 +112,9 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
           </Box>
         ))}
       {bondsType === 'myBonds' &&
-        (userBonds && userBonds.length > 0 ? (
+        (filteredUserBonds && filteredUserBonds.length > 0 ? (
           <>
-            {userBonds.map((userBond) => (
+            {filteredUserBonds.map((userBond) => (
               <UserBondItem key={userBond.id} userBond={userBond} />
             ))}
           </>

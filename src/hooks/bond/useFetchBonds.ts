@@ -110,10 +110,10 @@ export const useFetchBonds = () => {
   const lpPrices = bondAddresses.map((address, index) => {
     const call = lpPriceCalls[index];
     const price =
-      !call.loading && call.result && call.result.length > 0
+      call && !call.loading && call.result && call.result.length > 0
         ? call.result[0]
         : undefined;
-    return { loading: call.loading, price, address };
+    return { loading: call && call.loading, price, address };
   });
 
   const earnTokenPriceParams = useMemo(() => {
@@ -147,10 +147,10 @@ export const useFetchBonds = () => {
   const earnTokenPrices = bondAddresses.map((address, index) => {
     const call = earnTokenPriceCalls[index];
     const price =
-      !call.loading && call.result && call.result.length > 0
+      call && !call.loading && call.result && call.result.length > 0
         ? call.result[0]
         : undefined;
-    return { loading: call.loading, address, price };
+    return { loading: call && call.loading, address, price };
   });
 
   const bondInterface = new Interface(BondABI);
@@ -183,47 +183,47 @@ export const useFetchBonds = () => {
   const bondTrueBillPrices = bondAddresses.map((address, ind) => {
     const call = bondTrueBillPriceCalls[ind];
     const data =
-      !call.loading && call.result && call.result.length > 0
+      call && !call.loading && call.result && call.result.length > 0
         ? call.result[0].toString()
         : undefined;
-    return { loading: call.loading, data, address };
+    return { loading: call && call.loading, data, address };
   });
   const bondTerms = bondAddresses.map((address, ind) => {
     const call = bondTermsCalls[ind];
-    const data = !call.loading ? call.result : undefined;
-    return { loading: call.loading, data, address };
+    const data = call && !call.loading ? call.result : undefined;
+    return { loading: call && call.loading, data, address };
   });
   const bondTotalPayoutGivens = bondAddresses.map((address, ind) => {
     const call = bondTotalPayoutGivenCalls[ind];
     const data =
-      !call.loading && call.result && call.result.length > 0
+      call && !call.loading && call.result && call.result.length > 0
         ? call.result[0].toString()
         : undefined;
-    return { loading: call.loading, data, address };
+    return { loading: call && call.loading, data, address };
   });
   const bondMaxTotalPayouts = v2BondAddresses
     .map((address, index) => {
       const call = v2bondsMaxTotalPayoutCalls[index];
       const maxTotalPayout =
-        !call.loading && call.result && call.result.length > 0
+        call && !call.loading && call.result && call.result.length > 0
           ? call.result[0].toString()
           : undefined;
-      return { address, maxTotalPayout, loading: call.loading };
+      return { address, maxTotalPayout, loading: call && call.loading };
     })
     .concat(
       v1BondAddresses.map((address, index) => {
         const call = v1bondsMaxTotalPayoutCalls[index];
         const maxTotalPayout =
-          !call.loading && call.result && call.result.length > 0
+          call && !call.loading && call.result && call.result.length > 0
             ? call.result[0].toString()
             : undefined;
-        return { address, maxTotalPayout, loading: call.loading };
+        return { address, maxTotalPayout, loading: call && call.loading };
       }),
     );
 
   const updatedBonds: Bond[] = useMemo(() => {
     if (!bonds) return [];
-    return bonds.map((bond, index) => {
+    return bonds.map((bond) => {
       const address = bond.contractAddress[chainId];
       const trueBillPrice = bondTrueBillPrices.find(
         (item) =>

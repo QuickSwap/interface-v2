@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { QuestionHelper } from 'components';
 import BuyBondModal from './BuyBondModal';
 import BondTokenDisplay from './BondTokenDisplay';
@@ -9,6 +9,7 @@ import { useActiveWeb3React } from 'hooks';
 import { BigNumber } from 'ethers';
 import { Bond } from 'types/bond';
 import { Skeleton } from '@material-ui/lab';
+import { formatUnits } from 'ethers/lib/utils';
 
 interface BondItemProps {
   bond: Bond;
@@ -18,6 +19,9 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const [openModal, setOpenModal] = useState(false);
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isTablet = useMediaQuery(breakpoints.down('sm'));
 
   const token1Obj = bond.token;
   const token2Obj =
@@ -28,28 +32,48 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
     if (!bond || !bond.vestingTerm) return 0;
     return Math.floor(Number(bond.vestingTerm) / (3600 * 24));
   }, [bond]);
-  const available = BigNumber.from(bond?.maxTotalPayOut ?? '0')
-    .sub(BigNumber.from(bond?.totalPayoutGiven ?? '0'))
-    .div(BigNumber.from(10).pow(token3Obj?.decimals?.[chainId] ?? '0'));
+  const available = Number(
+    formatUnits(
+      BigNumber.from(bond?.maxTotalPayOut ?? '0').sub(
+        BigNumber.from(bond?.totalPayoutGiven ?? '0'),
+      ),
+      token3Obj?.decimals?.[chainId] ?? undefined,
+    ),
+  );
   const thresholdToShow =
     bond && bond.earnTokenPrice && bond.earnTokenPrice > 0
       ? 5 / bond.earnTokenPrice
       : 0;
-  const displayAvailable = Number(available) - thresholdToShow;
+  const thresholdToHide =
+    bond && bond.earnTokenPrice && bond.earnTokenPrice > 0
+      ? 100 / bond.earnTokenPrice
+      : 0;
+  const displayAvailable = available - thresholdToShow;
   const dollarAvailable =
     bond?.earnTokenPrice ?? 0 * (Number(displayAvailable) ?? 0);
   const availableTokensTooltip = `${formatNumber(displayAvailable)} ${
     bond?.earnToken?.symbol
   } ($${formatNumber(dollarAvailable)})`;
 
+  const disabled =
+    bond.maxTotalPayOut && bond.totalPayoutGiven && bond.earnTokenPrice
+      ? available <= thresholdToHide || Number(bond.discount) === 100
+      : false;
+
   return (
     <Box mb={2} className='bondItemWrapper'>
-      <BuyBondModal
-        bond={bond}
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-      />
-      <Box className='flex items-center' width='30%'>
+      {openModal && (
+        <BuyBondModal
+          bond={bond}
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+        />
+      )}
+      <Box
+        className='flex items-center'
+        width={isMobile ? '100%' : isTablet ? '50%' : '30%'}
+        my='6px'
+      >
         <BondTokenDisplay
           token1Obj={token1Obj}
           token2Obj={token2Obj}
@@ -64,7 +88,11 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
           </h6>
         </Box>
       </Box>
-      <Box width='20%'>
+      <Box
+        width={isMobile ? '100%' : isTablet ? '50%' : '20%'}
+        my='6px'
+        className={isMobile ? 'flex items-center justify-between' : ''}
+      >
         <Box className='flex items-center'>
           <small>{t('discount')}</small>
           <Box className='flex' ml='5px'>
@@ -92,7 +120,11 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
           </Box>
         )}
       </Box>
-      <Box width='20%'>
+      <Box
+        width={isMobile ? '100%' : isTablet ? '50%' : '20%'}
+        my='6px'
+        className={isMobile ? 'flex items-center justify-between' : ''}
+      >
         <Box className='flex items-center'>
           <small>{t('vestingTerm')}</small>
           <Box className='flex' ml='5px'>
@@ -109,7 +141,11 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
           )}
         </Box>
       </Box>
-      <Box width='20%'>
+      <Box
+        width={isMobile ? '100%' : isTablet ? '50%' : '20%'}
+        my='6px'
+        className={isMobile ? 'flex items-center justify-between' : ''}
+      >
         <Box className='flex items-center'>
           <small>{t('availableTokens')}</small>
           {!bond.loading && (
@@ -126,9 +162,12 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
           )}
         </Box>
       </Box>
-      <Box width='10%'>
-        <Button fullWidth onClick={() => setOpenModal(true)}>
-          {t('buy')}
+      <Box width={isTablet ? '100%' : '10%'} my='6px'>
+        <Button
+          disabled={disabled || !bond.discount}
+          onClick={() => setOpenModal(true)}
+        >
+          {disabled ? t('soldout') : t('buy')}
         </Button>
       </Box>
     </Box>

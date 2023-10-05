@@ -40,7 +40,7 @@ const Claim: React.FC<ClaimProps> = ({
       onClick={handleClaim}
       disabled={pendingTrx || parseFloat(pendingRewards) === 0}
     >
-      {t('CLAIM')}
+      {t('claim')}
     </Button>
   );
 };

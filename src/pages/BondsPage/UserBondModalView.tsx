@@ -10,6 +10,12 @@ import { Box, Button, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import BondTokenDisplay from './BondTokenDisplay';
 import BillNFTImage from 'assets/images/bonds/bill-nfts.gif';
+import {
+  useUserOwnedBondNftData,
+  useUserOwnedBonds,
+} from 'hooks/bond/useUserBond';
+import { formatUnits } from 'ethers/lib/utils';
+import { formatNumber } from 'utils';
 
 interface BondModalProps {
   onDismiss?: () => void;
@@ -30,46 +36,42 @@ const UserBondModalView: React.FC<BondModalProps> = ({
   bond,
   billId,
 }) => {
+  const userOwnedBonds = useUserOwnedBonds([bond]);
+
   const { chainId } = useActiveWeb3React();
   const { t } = useTranslation();
-  const {
-    token,
-    quoteToken,
-    earnToken,
-    lpToken,
-    index,
-    userOwnedBillsData,
-    userOwnedBillsNftData,
-    billType,
-  } = bond;
-  const userOwnedBill = userOwnedBillsData?.find(
+  const { token, quoteToken, earnToken, lpToken, index, billType } = bond;
+  const userBond = userOwnedBonds?.find(
     (b) => billId && parseInt(b.id) === parseInt(billId),
   );
-  const userOwnedBillNftData = userOwnedBillsNftData?.find(
-    (b) => billId && parseInt(b.tokenId) === parseInt(billId),
+  const { data: userOwnedBondNftData } = useUserOwnedBondNftData(
+    userBond,
+    chainId,
   );
-  const pending = userOwnedBill?.payout ?? 0;
-  const pendingUsd = (Number(pending) * (bond?.earnTokenPrice ?? 0))?.toFixed(
-    2,
+
+  const pending = formatUnits(
+    userBond?.payout ?? 0,
+    userBond?.bond?.earnToken?.decimals?.[chainId] ?? 18,
   );
-  const claimable = userOwnedBill?.pendingRewards ?? 0;
-  const attributes = userOwnedBillNftData?.attributes?.filter((attrib) =>
+  const pendingUsd = Number(pending) * (bond?.earnTokenPrice ?? 0);
+  const claimable = formatUnits(
+    userBond?.pendingRewards ?? 0,
+    userBond?.bond?.earnToken?.decimals?.[chainId] ?? 18,
+  );
+  const attributes = userOwnedBondNftData?.attributes?.filter((attrib: any) =>
     BILL_ATTRIBUTES.includes(attrib.trait_type),
   );
-  const claimableUsd = (
-    Number(claimable) * (bond?.earnTokenPrice ?? 0)
-  )?.toFixed(2);
+  const claimableUsd = Number(claimable) * (bond?.earnTokenPrice ?? 0);
 
   const [openTransferBondModal, setOpenTransferBondModal] = useState(false);
 
   return (
     <>
-      {openTransferBondModal && (
+      {openTransferBondModal && userBond && (
         <TransferBondModal
           open={openTransferBondModal}
           onClose={() => setOpenTransferBondModal(false)}
-          bond={bond}
-          billId={billId ?? ''}
+          userBond={userBond}
           chainId={chainId}
         />
       )}
@@ -79,10 +81,10 @@ const UserBondModalView: React.FC<BondModalProps> = ({
             <img
               width='100%'
               height='auto'
-              alt={userOwnedBillNftData?.image ? 'user bill' : 'loading bill'}
+              alt={userOwnedBondNftData?.image ? 'user bill' : 'loading bill'}
               src={`${
-                userOwnedBillNftData?.image
-                  ? `${userOwnedBillNftData?.image}?img-width=720`
+                userOwnedBondNftData?.image
+                  ? `${userOwnedBondNftData?.image}?img-width=720`
                   : BillNFTImage
               }`}
             />
@@ -116,12 +118,12 @@ const UserBondModalView: React.FC<BondModalProps> = ({
                 <Box margin='0 8px 0 12px'>
                   <h5>{lpToken.symbol}</h5>
                 </Box>
-                <p className='weight-600'>#{userOwnedBill?.id}</p>
+                <p className='weight-600'>#{userBond?.id}</p>
               </Box>
             </Box>
             <Box>
               {attributes
-                ? attributes.map((attrib) => {
+                ? attributes.map((attrib: any) => {
                     return (
                       <Box
                         key={attrib.value}
@@ -157,13 +159,16 @@ const UserBondModalView: React.FC<BondModalProps> = ({
                 <ClaimBond
                   billAddress={bond.contractAddress[chainId] ?? ''}
                   billIds={[billId ?? '0']}
-                  pendingRewards={userOwnedBill?.payout ?? '0'}
+                  pendingRewards={userBond?.payout ?? '0'}
                   mt={['0px']}
                   earnToken={bond.earnToken.symbol}
                 />
               </Box>
               <Box width='49%'>
-                <Button onClick={() => setOpenTransferBondModal(true)}>
+                <Button
+                  disabled={!userBond}
+                  onClick={() => setOpenTransferBondModal(true)}
+                >
                   {t('Transfer')}
                 </Button>
               </Box>
@@ -175,8 +180,8 @@ const UserBondModalView: React.FC<BondModalProps> = ({
         <Box>
           <p>{t('Fully Vested')}</p>
           <VestedTimer
-            lastBlockTimestamp={userOwnedBill?.lastBlockTimestamp ?? '0'}
-            vesting={userOwnedBill?.vesting ?? '0'}
+            lastBlockTimestamp={userBond?.lastBlockTimestamp ?? '0'}
+            vesting={userBond?.vesting ?? '0'}
             userModalFlag
           />
         </Box>
@@ -186,7 +191,9 @@ const UserBondModalView: React.FC<BondModalProps> = ({
             <BondTokenDisplay token1Obj={earnToken} size={25} />
             <Box ml='6px'>
               {claimable && claimable !== 'NaN' ? (
-                <h5>{`${claimable} ($${claimableUsd})`}</h5>
+                <h5>{`${formatNumber(claimable)} ($${formatNumber(
+                  claimableUsd,
+                )})`}</h5>
               ) : (
                 <Skeleton width='150px' height='32.5px' />
               )}
@@ -199,7 +206,9 @@ const UserBondModalView: React.FC<BondModalProps> = ({
             <BondTokenDisplay token1Obj={earnToken} size={25} />
             <Box ml='6px'>
               {pending && pending !== 'NaN' ? (
-                <h5>{`${pending} ($${pendingUsd})`}</h5>
+                <h5>{`${formatNumber(pending)} ($${formatNumber(
+                  pendingUsd,
+                )})`}</h5>
               ) : (
                 <Skeleton width='150px' height='32.5px' />
               )}

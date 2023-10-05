@@ -731,6 +731,7 @@
   "bondTransferUnderstand": "I understand the new wallet gains ownership of all unclaimed assets.",
   "noBond": "There are no bonds",
   "claimable": "Claimable",
+  "view": "View",
   "userBondClaimTooltip": "This is the amount of tokens that have vested and available to claim.",
   "userBondPendingTooltip": "This is the amount of unvested tokens that cannot be claimed yet.",
   "userBondVestedTimeTooltip": "This is the time remaining until all tokens from the bill are available to claim.",

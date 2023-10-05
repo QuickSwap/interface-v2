@@ -11,13 +11,16 @@
 
 .bondItemWrapper {
   background-color: $secondary1;
-  padding: 16px;
+  padding: 10px 16px;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   & button {
     border-radius: 12px;
+    height: 36px;
+    width: 100%;
   }
 }
 

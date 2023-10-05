@@ -2,37 +2,37 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import VestedTimer from './VestedTimer';
 import TransferBond from './TransferBond';
-import { Bond } from 'types/bond';
+import { UserBond } from 'types/bond';
 import { ChainId } from '@uniswap/sdk';
 import { CustomModal } from 'components';
 import BondTokenDisplay from './BondTokenDisplay';
 import { Box, Grid } from '@material-ui/core';
 import { Close, ReportProblemOutlined, Check } from '@material-ui/icons';
+import { formatUnits } from 'ethers/lib/utils';
+import { formatNumber } from 'utils';
 
 interface TransferBillModalProps {
   open: boolean;
   onClose?: () => void;
-  bond: Bond;
-  billId: string;
+  userBond: UserBond;
   chainId: ChainId;
 }
 
 const TransferBillModal: React.FC<TransferBillModalProps> = ({
   open,
   onClose,
-  bond,
-  billId,
+  userBond,
   chainId,
 }) => {
   const { t } = useTranslation();
   const [confirmSend, setConfirmSend] = useState(false);
   const [toAddress, setToAddress] = useState('');
-  const { token, earnToken, lpToken, quoteToken, userOwnedBillsData } = bond;
-  const billNftAddress = bond.billNnftAddress[chainId];
-  const userOwnedBill = userOwnedBillsData?.find(
-    (b) => parseInt(b.id) === parseInt(billId),
+  const { token, earnToken, lpToken, quoteToken } = userBond.bond;
+  const billNftAddress = userBond.bond.billNnftAddress[chainId];
+  const pending = formatUnits(
+    userBond?.payout ?? 0,
+    userBond?.bond?.earnToken?.decimals?.[chainId] ?? 18,
   );
-  const pending = userOwnedBill?.payout ?? 0;
 
   return (
     <CustomModal open={open} onClose={onClose}>
@@ -47,12 +47,14 @@ const TransferBillModal: React.FC<TransferBillModalProps> = ({
         <Box className='flex items-center' margin='8px 0 24px'>
           <BondTokenDisplay
             token1Obj={token}
-            token2Obj={bond.billType === 'reserve' ? earnToken : quoteToken}
-            stakeLP={bond.billType !== 'reserve'}
+            token2Obj={
+              userBond.bond.billType === 'reserve' ? earnToken : quoteToken
+            }
+            stakeLP={userBond.bond.billType !== 'reserve'}
           />
           <Box ml='12px'>
             <h5 className='text-gray32'>
-              {lpToken.symbol} #{userOwnedBill?.id}
+              {lpToken.symbol} #{userBond?.id}
             </h5>
           </Box>
         </Box>
@@ -60,8 +62,8 @@ const TransferBillModal: React.FC<TransferBillModalProps> = ({
           <Grid item xs={12} sm={6} md={6}>
             <p className='text-secondary'>{t('vestingTime')}</p>
             <VestedTimer
-              lastBlockTimestamp={userOwnedBill?.lastBlockTimestamp ?? '0'}
-              vesting={userOwnedBill?.vesting ?? '0'}
+              lastBlockTimestamp={userBond?.lastBlockTimestamp ?? '0'}
+              vesting={userBond?.vesting ?? '0'}
               transferModalFlag
             />
           </Grid>
@@ -70,7 +72,7 @@ const TransferBillModal: React.FC<TransferBillModalProps> = ({
             <Box className='flex items-center'>
               <BondTokenDisplay token1Obj={earnToken} size={20} />
               <Box ml='5px'>
-                <h5 className='text-gray32'>{pending}</h5>
+                <h5 className='text-gray32'>{formatNumber(pending)}</h5>
               </Box>
             </Box>
           </Grid>
@@ -101,7 +103,7 @@ const TransferBillModal: React.FC<TransferBillModalProps> = ({
         </Box>
         <TransferBond
           billNftAddress={billNftAddress ?? ''}
-          billId={billId}
+          billId={userBond.id}
           toAddress={toAddress}
           disabled={!confirmSend}
         />
