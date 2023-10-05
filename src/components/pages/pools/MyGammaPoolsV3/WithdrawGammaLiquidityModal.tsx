@@ -237,28 +237,10 @@ export default function WithdrawGammaLiquidityModal({
           <Box mb={2} className='flex items-center justify-between'>
             <h3>{percentForSlider}%</h3>
             <Box ml={1} className={styles.v3RemoveLiquidityPercentButtons}>
-              <Button
-                variant='contained'
-                onClick={() => onPercentSelectForSlider(25)}
-              >
-                25%
-              </Button>
-              <Button
-                variant='contained'
-                onClick={() => onPercentSelectForSlider(50)}
-              >
-                50%
-              </Button>
-              <Button
-                variant='contained'
-                onClick={() => onPercentSelectForSlider(75)}
-              >
-                75%
-              </Button>
-              <Button
-                variant='contained'
-                onClick={() => onPercentSelectForSlider(100)}
-              >
+              <Button onClick={() => onPercentSelectForSlider(25)}>25%</Button>
+              <Button onClick={() => onPercentSelectForSlider(50)}>50%</Button>
+              <Button onClick={() => onPercentSelectForSlider(75)}>75%</Button>
+              <Button onClick={() => onPercentSelectForSlider(100)}>
                 100%
               </Button>
             </Box>
@@ -299,7 +281,6 @@ export default function WithdrawGammaLiquidityModal({
         </Box>
         <Box mt={2}>
           <Button
-            variant='contained'
             className={styles.removeLiquidityButton}
             disabled={buttonDisabled}
             onClick={() => setShowConfirm(true)}

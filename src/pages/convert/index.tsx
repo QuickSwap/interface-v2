@@ -267,7 +267,6 @@ const ConvertQUICKPage = (
         </Box>
         <Box className='flex justify-center'>
           <Button
-            variant='contained'
             disabled={
               approving ||
               attemptConverting ||

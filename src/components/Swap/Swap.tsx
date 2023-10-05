@@ -782,7 +782,6 @@ const Swap: React.FC<{
         )}
         <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
-            variant='contained'
             fullWidth
             disabled={swapButtonDisabled as boolean}
             onClick={account && isSupportedNetwork ? onSwap : connectWallet}

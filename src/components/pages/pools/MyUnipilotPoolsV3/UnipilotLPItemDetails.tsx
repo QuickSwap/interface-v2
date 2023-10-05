@@ -180,14 +180,12 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
       <Box mt={2} className={styles.unipilotLiquidityItemButtons}>
         <Button
           className={styles.unipilotLiquidityItemButton}
-          variant='contained'
           onClick={() => setShowAddLPModal(true)}
         >
           <small>{t('addLiquidity')}</small>
         </Button>
         <Button
           className={styles.unipilotLiquidityItemButton}
-          variant='contained'
           disabled={position.farming}
           onClick={() => setShowWithdrawModal(true)}
         >

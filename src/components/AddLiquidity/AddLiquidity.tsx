@@ -544,7 +544,6 @@ const AddLiquidity: React.FC<{
                   width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
-                    variant='contained'
                     fullWidth
                     onClick={async () => {
                       setApprovingA(true);
@@ -572,7 +571,6 @@ const AddLiquidity: React.FC<{
                   width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
                 >
                   <Button
-                    variant='contained'
                     fullWidth
                     onClick={async () => {
                       setApprovingB(true);
@@ -598,7 +596,6 @@ const AddLiquidity: React.FC<{
             </Box>
           )}
         <Button
-          variant='contained'
           fullWidth
           disabled={
             Boolean(account) &&

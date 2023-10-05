@@ -92,7 +92,6 @@ const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
         </Box>
 
         <Button
-          variant='contained'
           className={styles.migratev2LiquidityButton}
           onClick={() =>
             router.push(

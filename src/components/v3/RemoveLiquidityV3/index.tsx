@@ -305,11 +305,7 @@ export default function RemoveLiquidityV3({
           </Box>
         )}
         <Box mt={2}>
-          <Button
-            variant='contained'
-            className={styles.v3RemoveLiquidityButton}
-            onClick={burn}
-          >
+          <Button className={styles.v3RemoveLiquidityButton} onClick={burn}>
             {t('confirm')}
           </Button>
         </Box>
@@ -384,30 +380,10 @@ export default function RemoveLiquidityV3({
         <Box mb={2} className='flex items-center justify-between'>
           <h3>{percentForSlider}%</h3>
           <Box ml={1} className={styles.v3RemoveLiquidityPercentButtons}>
-            <Button
-              variant='contained'
-              onClick={() => onPercentSelectForSlider(25)}
-            >
-              25%
-            </Button>
-            <Button
-              variant='contained'
-              onClick={() => onPercentSelectForSlider(50)}
-            >
-              50%
-            </Button>
-            <Button
-              variant='contained'
-              onClick={() => onPercentSelectForSlider(75)}
-            >
-              75%
-            </Button>
-            <Button
-              variant='contained'
-              onClick={() => onPercentSelectForSlider(100)}
-            >
-              100%
-            </Button>
+            <Button onClick={() => onPercentSelectForSlider(25)}>25%</Button>
+            <Button onClick={() => onPercentSelectForSlider(50)}>50%</Button>
+            <Button onClick={() => onPercentSelectForSlider(75)}>75%</Button>
+            <Button onClick={() => onPercentSelectForSlider(100)}>100%</Button>
           </Box>
         </Box>
         <ColoredSlider
@@ -479,7 +455,6 @@ export default function RemoveLiquidityV3({
         </Box>
       )}
       <Button
-        variant='contained'
         className={styles.v3RemoveLiquidityButton}
         disabled={removed || percent === 0 || !liquidityValue0}
         onClick={() => setShowConfirm(true)}

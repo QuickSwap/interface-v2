@@ -350,7 +350,7 @@ export default function IncreaseGammaLiquidityModal({
         <Box mt={2}>
           <Button
             fullWidth
-            className='gamma-liquidity-item-button'
+            className={styles.gammaLiquidityItemButton}
             onClick={addGammaLiquidity}
           >
             {t('confirm')}
@@ -478,7 +478,6 @@ export default function IncreaseGammaLiquidityModal({
         </Box>
         <Box mt={2}>
           <Button
-            variant='contained'
             className={styles.gammaLiquidityItemButton}
             disabled={buttonDisabled}
             onClick={() => (wrapAmount ? wrapETH() : setShowConfirm(true))}

@@ -105,7 +105,6 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
             <small>{t('viewAnalytics')}</small>
           </Button>
           <Button
-            variant='contained'
             className={styles.poolPositionButton}
             onClick={() => {
               router.push(
@@ -122,7 +121,6 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
             <small>{t('add')}</small>
           </Button>
           <Button
-            variant='contained'
             className={styles.poolPositionButton}
             onClick={() => {
               setOpenRemoveModal(true);

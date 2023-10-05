@@ -88,7 +88,6 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
             </p>
           </Box>
           <Button
-            variant='contained'
             fullWidth
             disabled={!readTerms || !agreeTerms}
             onClick={confirmTOS}

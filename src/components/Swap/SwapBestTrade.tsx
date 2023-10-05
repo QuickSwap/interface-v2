@@ -1152,7 +1152,6 @@ const SwapBestTrade: React.FC<{
         )}
         <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
-            variant='contained'
             fullWidth
             disabled={
               (bonusRouteLoading ||

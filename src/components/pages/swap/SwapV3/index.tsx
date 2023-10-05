@@ -757,12 +757,11 @@ const SwapV3Page: React.FC = () => {
 
         <Box className={styles.swapButtonWrapper}>
           {!account ? (
-            <Button variant='contained' fullWidth onClick={toggleWalletModal}>
+            <Button fullWidth onClick={toggleWalletModal}>
               {t('connectWallet')}
             </Button>
           ) : showWrap ? (
             <Button
-              variant='contained'
               fullWidth
               disabled={
                 Boolean(wrapInputError) ||
@@ -784,7 +783,6 @@ const SwapV3Page: React.FC = () => {
             </Button>
           ) : routeNotFound && userHasSpecifiedInputOutput ? (
             <Button
-              variant='contained'
               fullWidth
               disabled={routeNotFound && userHasSpecifiedInputOutput}
             >
@@ -800,7 +798,6 @@ const SwapV3Page: React.FC = () => {
             <>
               <Box width='48%'>
                 <Button
-                  variant='contained'
                   fullWidth
                   onClick={handleApprove}
                   disabled={
@@ -859,7 +856,6 @@ const SwapV3Page: React.FC = () => {
               </Box>
               <Box width='48%'>
                 <Button
-                  variant='contained'
                   fullWidth
                   onClick={() => {
                     if (isExpertMode) {
@@ -892,7 +888,6 @@ const SwapV3Page: React.FC = () => {
             </>
           ) : (
             <Button
-              variant='contained'
               fullWidth
               onClick={() => {
                 if (isExpertMode) {

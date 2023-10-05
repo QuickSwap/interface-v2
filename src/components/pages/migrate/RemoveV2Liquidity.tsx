@@ -242,7 +242,6 @@ const RemoveV2Liquidity: React.FC<{
 
   return (
     <Button
-      variant='contained'
       className={styles.v3MigrateDetailsButton}
       disabled={approving || removingV2Liquidity || !!removeErrorMessage}
       onClick={() => {

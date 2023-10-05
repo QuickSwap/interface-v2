@@ -175,7 +175,6 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
         <Box mt={3} className='flex items-center justify-between'>
           <Box width='48%'>
             <Button
-              variant='contained'
               className={styles.stakeButton}
               disabled={approving || approval !== ApprovalState.NOT_APPROVED}
               onClick={async () => {
@@ -193,7 +192,6 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
           </Box>
           <Box width='48%'>
             <Button
-              variant='contained'
               className={styles.stakeButton}
               disabled={
                 !!error || attempting || approval !== ApprovalState.APPROVED

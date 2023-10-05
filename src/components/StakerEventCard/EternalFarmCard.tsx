@@ -233,7 +233,6 @@ export function EternalFarmCard({
       <Box width={isMobile ? '100%' : '10%'}>
         {farmStatus === 'active' && (
           <Button
-            variant='contained'
             fullWidth
             style={{ height: 40, borderRadius: 10 }}
             onClick={farmHandler}

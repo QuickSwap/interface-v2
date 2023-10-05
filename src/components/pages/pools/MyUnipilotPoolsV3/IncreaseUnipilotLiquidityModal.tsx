@@ -325,7 +325,7 @@ export default function IncreaseUnipilotLiquidityModal({
         <Box mt={2}>
           <Button
             fullWidth
-            className='gamma-liquidity-item-button'
+            className={styles.unipilotLiquidityItemButton}
             onClick={addUnipilotLiquidity}
           >
             {t('confirm')}
@@ -476,7 +476,6 @@ export default function IncreaseUnipilotLiquidityModal({
         <Box mt={2}>
           <Button
             className={styles.unipilotLiquidityItemButton}
-            variant='contained'
             disabled={buttonDisabled}
             onClick={() => setShowConfirm(true)}
             fullWidth

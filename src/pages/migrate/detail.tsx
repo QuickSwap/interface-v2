@@ -757,7 +757,6 @@ const MigrateV2DetailsPage = (
             )}
             <Box mt={3} className='flex justify-between'>
               <Button
-                variant='contained'
                 className={styles.v3MigrateDetailsButton}
                 disabled={
                   attemptApproving ||
@@ -820,7 +819,6 @@ const MigrateV2DetailsPage = (
             </>
           ) : (
             <Button
-              variant='contained'
               className={styles.v3MigrateDetailsButton}
               disabled={
                 !v3Amount0Min ||

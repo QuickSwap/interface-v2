@@ -114,7 +114,6 @@ function TokenPrice({
                 onUserInput={(e: string) => setTokenQuotePrice(e)}
               />
               <Button
-                variant='contained'
                 disabled={!tokenQuotePrice}
                 onClick={() => changeQuotePriceHandler(tokenQuotePrice)}
               >
@@ -171,7 +170,6 @@ function USDPriceField({
                 placeholder={`${symbol} in $`}
               />
               <Button
-                variant='contained'
                 disabled={!userUSDVal}
                 onClick={() => changeHandler(userUSDVal)}
               >

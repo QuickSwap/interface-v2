@@ -72,7 +72,6 @@ const HeroSection: React.FC = () => {
       <Button
         fullWidth
         size='large'
-        variant='contained'
         onClick={() => {
           !isSupportedNetwork
             ? toggleNetworkSelectionModal()

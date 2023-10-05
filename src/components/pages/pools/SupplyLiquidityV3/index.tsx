@@ -308,7 +308,6 @@ export function SupplyLiquidityV3() {
           />
         ) : (
           <Button
-            variant='contained'
             className={styles.supplyLiquidityButton}
             onClick={() => {
               if (account) {

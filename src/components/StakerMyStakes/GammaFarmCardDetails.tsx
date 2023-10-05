@@ -422,7 +422,6 @@ const GammaFarmCardDetails: React.FC<{
             </Box>
             <Box mt={2}>
               <Button
-                variant='contained'
                 style={{ height: 40, borderRadius: 10 }}
                 disabled={stakeButtonDisabled}
                 fullWidth
@@ -464,7 +463,6 @@ const GammaFarmCardDetails: React.FC<{
             </Box>
             <Box mt={2}>
               <Button
-                variant='contained'
                 style={{ height: 40, borderRadius: 10 }}
                 disabled={unStakeButtonDisabled}
                 fullWidth
@@ -499,7 +497,6 @@ const GammaFarmCardDetails: React.FC<{
                 </Box>
                 <Box width='100%'>
                   <Button
-                    variant='contained'
                     fullWidth
                     style={{ height: 40, borderRadius: 10 }}
                     disabled={claimButtonDisabled}

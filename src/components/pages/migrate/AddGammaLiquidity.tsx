@@ -361,11 +361,7 @@ const AddGammaLiquidity: React.FC<{
           <Box width={showApprovalB === undefined ? '100%' : '49%'}>
             {showApprovalA ? (
               approvalA === ApprovalState.PENDING ? (
-                <Button
-                  variant='contained'
-                  className={styles.v3MigrateDetailsButton}
-                  disabled
-                >
+                <Button className={styles.v3MigrateDetailsButton} disabled>
                   {t('approving')} {token0?.symbol}
                   <span className='loadingDots' />
                 </Button>
@@ -378,11 +374,7 @@ const AddGammaLiquidity: React.FC<{
                 </Button>
               )
             ) : (
-              <Button
-                variant='contained'
-                className={styles.v3MigrateDetailsButton}
-                disabled
-              >
+              <Button className={styles.v3MigrateDetailsButton} disabled>
                 {t('approved')} {token0?.symbol}
               </Button>
             )}
@@ -392,17 +384,12 @@ const AddGammaLiquidity: React.FC<{
           <Box width={showApprovalA === undefined ? '100%' : '49%'}>
             {showApprovalB ? (
               approvalB === ApprovalState.PENDING ? (
-                <Button
-                  variant='contained'
-                  className={styles.v3MigrateDetailsButton}
-                  disabled
-                >
+                <Button className={styles.v3MigrateDetailsButton} disabled>
                   {t('approving')} {token1?.symbol}
                   <span className='loadingDots' />
                 </Button>
               ) : (
                 <Button
-                  variant='contained'
                   className={styles.v3MigrateDetailsButton}
                   onClick={approveBCallback}
                 >
@@ -410,11 +397,7 @@ const AddGammaLiquidity: React.FC<{
                 </Button>
               )
             ) : (
-              <Button
-                variant='contained'
-                className={styles.v3MigrateDetailsButton}
-                disabled
-              >
+              <Button className={styles.v3MigrateDetailsButton} disabled>
                 {t('approved')} {token1?.symbol}
               </Button>
             )}
@@ -426,7 +409,6 @@ const AddGammaLiquidity: React.FC<{
         approvalB === ApprovalState.APPROVED && (
           <Box mt={2}>
             <Button
-              variant='contained'
               className={styles.v3MigrateDetailsButton}
               onClick={amountToWrap ? onWrapMatic : onAddLiquidity}
               disabled={wrappingETH || addingLiquidity}

@@ -697,11 +697,7 @@ export function AddLiquidityButton({
           </Box>
         )}
         <Box mt={2}>
-          <Button
-            variant='contained'
-            className={styles.supplyLiquidityButton}
-            onClick={onAdd}
-          >
+          <Button className={styles.supplyLiquidityButton} onClick={onAdd}>
             {t('confirm')}
           </Button>
         </Box>
@@ -751,7 +747,6 @@ export function AddLiquidityButton({
         />
       )}
       <Button
-        variant='contained'
         className={styles.supplyLiquidityButton}
         disabled={!isReady}
         onClick={amountToWrap ? onWrapMatic : onAddLiquidity}

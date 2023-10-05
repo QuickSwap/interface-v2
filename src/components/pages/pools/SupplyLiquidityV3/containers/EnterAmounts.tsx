@@ -214,7 +214,6 @@ export function EnterAmounts({
                 </Box>
               ) : (
                 <Button
-                  variant='contained'
                   className={styles.tokenApproveButton}
                   onClick={approveACallback}
                 >
@@ -245,7 +244,6 @@ export function EnterAmounts({
                 </Box>
               ) : (
                 <Button
-                  variant='contained'
                   className={styles.tokenApproveButton}
                   onClick={approveBCallback}
                 >

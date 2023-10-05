@@ -350,7 +350,7 @@ export default function PositionListItemDetails({
           <p>{t('collectingFeesWillWithdraw')}.</p>
         </Box>
         <Box className='flex justify-center'>
-          <Button variant='contained' fullWidth size='large' onClick={collect}>
+          <Button fullWidth size='large' onClick={collect}>
             {t('collect')}
           </Button>
         </Box>
@@ -422,7 +422,6 @@ export default function PositionListItemDetails({
           <Box className='flex'>
             <Button
               className={styles.v3PoolLiquidityDetailsButton}
-              variant='contained'
               onClick={() => setOpenIncreaseLiquidityModal(true)}
             >
               {t('add')}
@@ -439,7 +438,6 @@ export default function PositionListItemDetails({
                   <div>
                     <Button
                       className={styles.v3PoolLiquidityDetailsButton}
-                      variant='contained'
                       disabled
                     >
                       {t('remove')}
@@ -449,7 +447,6 @@ export default function PositionListItemDetails({
               ) : (
                 <Button
                   className={styles.v3PoolLiquidityDetailsButton}
-                  variant='contained'
                   onClick={() => setOpenRemoveLiquidityModal(true)}
                 >
                   {t('remove')}
@@ -523,7 +520,6 @@ export default function PositionListItemDetails({
             !!collectMigrationHash) && (
             <Button
               className={styles.v3PoolLiquidityDetailsButton}
-              variant='contained'
               disabled={collecting || !!collectMigrationHash}
               onClick={() => showCollectConfirm(true)}
             >

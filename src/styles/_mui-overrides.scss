@@ -117,17 +117,6 @@ html {
     }
   }
 
-  .MuiButton-root {
-    &.MuiButton-containedPrimary {
-      & svg {
-        color: white;
-      }
-    }
-    &.Mui-disabled {
-      opacity: 0.3;
-    }
-  }
-
   .customTabWrapper {
     display: flex;
     align-items: center;

@@ -107,14 +107,12 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
       </Box>
       <Box mt={2} className={styles.gammaLiquidityItemButtons}>
         <Button
-          variant='contained'
           className={styles.gammaLiquidityItemButton}
           onClick={() => setShowAddLPModal(true)}
         >
           <small>{t('addLiquidity')}</small>
         </Button>
         <Button
-          variant='contained'
           className={styles.gammaLiquidityItemButton}
           disabled={
             gammaPosition.farming &&

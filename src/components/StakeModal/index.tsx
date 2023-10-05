@@ -469,14 +469,12 @@ export function FarmModal({
           {selectedTier === '' &&
           chunkedPositions &&
           chunkedPositions.length !== 0 ? (
-            <Button variant='contained' disabled>
-              {t('selectTier')}
-            </Button>
+            <Button disabled>{t('selectTier')}</Button>
           ) : selectedTier &&
             !isEnoughTokenForLock &&
             chunkedPositions &&
             chunkedPositions.length !== 0 ? (
-            <Button variant='contained' disabled>{`${t('notEnough')} ${
+            <Button disabled>{`${t('notEnough')} ${
               multiplierToken.symbol
             }`}</Button>
           ) : selectedNFT ? (
@@ -484,7 +482,6 @@ export function FarmModal({
               {selectedTier && (
                 <Box width='32%'>
                   <Button
-                    variant='contained'
                     disabled={!showApproval || !selectedTier}
                     onClick={approveCallback}
                   >
@@ -503,7 +500,6 @@ export function FarmModal({
               )}
               <Box width={selectedTier ? '32%' : '49%'}>
                 <Button
-                  variant='contained'
                   disabled={submitLoader || nftApproved}
                   onClick={approveNFTs}
                 >
@@ -521,7 +517,6 @@ export function FarmModal({
               </Box>
               <Box width={selectedTier ? '32%' : '49%'}>
                 <Button
-                  variant='contained'
                   disabled={submitLoader || !nftApproved}
                   onClick={() => farmNFTs(farmingType)}
                 >
@@ -537,9 +532,7 @@ export function FarmModal({
               </Box>
             </Box>
           ) : chunkedPositions && chunkedPositions.length !== 0 ? (
-            <Button variant='contained' disabled>
-              {t('selectPosition')}
-            </Button>
+            <Button disabled>{t('selectPosition')}</Button>
           ) : null}
         </div>
       )}

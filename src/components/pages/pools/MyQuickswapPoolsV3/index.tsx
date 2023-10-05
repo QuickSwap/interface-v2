@@ -88,11 +88,7 @@ const MyQuickswapPoolsV3: React.FC<{
             <p>{t('noLiquidityPositions')}.</p>
             {showConnectAWallet && (
               <Box maxWidth={250} margin='20px auto 0'>
-                <Button
-                  variant='contained'
-                  fullWidth
-                  onClick={toggleWalletModal}
-                >
+                <Button fullWidth onClick={toggleWalletModal}>
                   {t('connectWallet')}
                 </Button>
               </Box>
