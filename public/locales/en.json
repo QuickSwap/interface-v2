@@ -756,5 +756,6 @@
   "ethFaqQuestion3": "Which Wallets Can I Use to Trade on QuickSwap?",
   "ethFaqAnswer3": "You can use a variety of wallets to trade on QuickSwap, including MetaMask, Crypto.com DeFi Wallet, OKX Wallet, TrustWallet, Coinbase Wallet, and more.",
   "ethHistoricalTableHeading": "Historical Exchange Rate for 0.01 ETH to USD",
-  "swapEthButton": "Swap ETH"
+  "swapEthButton": "Swap ETH",
+  "installBlock": "Install Block Wallet"
 }
