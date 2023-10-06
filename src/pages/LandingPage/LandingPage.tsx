@@ -336,9 +336,9 @@ const LandingPage: React.FC = () => {
           ))}
         </Grid>
       </Box>
-      {/* <Box my={4}>
+      <Box my={4}>
         <NewsletterSignupForm />
-      </Box> */}
+      </Box>
       <Box className='communityContainer'>
         <Box className='featureHeading'>
           <h3>{t('faqs')}</h3>

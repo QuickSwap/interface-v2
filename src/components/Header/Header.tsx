@@ -49,7 +49,7 @@ const Header: React.FC = () => {
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
-  const [showNewsletter, setShowNewsletter] = useState(false);
+  const [showNewsletter, setShowNewsletter] = useState(true);
 
   const theme = useTheme();
   const allTransactions = useAllTransactions();
@@ -275,19 +275,14 @@ const Header: React.FC = () => {
     // },
   ];
 
-  const navigateToFooterSignUp = () => {
-    const newsletterForm = document.getElementById('footerNewsletterSignup');
-    if (newsletterForm) {
-      newsletterForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   return (
     <Box className='header'>
       {showNewsletter && (
         <Box className='newsletterBar'>
           <small className='text-white'>{t('signupnewsletterTopDesc')}</small>
-          <Button onClick={navigateToFooterSignUp}>{t('signup')}</Button>
+          <Button onClick={() => history.push('/newsletter')}>
+            {t('signup')}
+          </Button>
           <Box
             className='cursor-pointer'
             onClick={() => setShowNewsletter(false)}
