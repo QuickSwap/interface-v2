@@ -189,6 +189,24 @@ const WalletModal: React.FC<WalletModalProps> = ({
           />
         );
       } else if (
+        option.name === GlobalConst.walletName.BLOCKWALLET &&
+        !isBlockWallet
+      ) {
+        return (
+          <WalletOption
+            id={`connect-${option.name}`}
+            key={option.name}
+            color={option.color}
+            header={t('installBlock')}
+            subheader={null}
+            link={
+              'https://chrome.google.com/webstore/detail/blockwallet/bopcbmipnjdcdfflfgjdgdjejmgpoaab'
+            }
+            icon={option.iconName}
+            iconify={iconify}
+          />
+        );
+      } else if (
         option.name === GlobalConst.walletName.BRAVEWALLET &&
         !isBraveWallet
       ) {
