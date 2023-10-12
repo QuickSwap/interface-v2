@@ -291,7 +291,7 @@ export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
 export const USDC: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
-    '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
     6,
     'USDC',
     'USD Coin',
@@ -316,6 +316,16 @@ export const USDC: { [chainId: number]: Token } = {
     6,
     'USDC',
     'USD Coin',
+  ),
+};
+
+export const USDCE: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    6,
+    'USDC.e',
+    'Bridged USDC',
   ),
 };
 
@@ -839,6 +849,7 @@ export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
   [ChainId.MATIC]: [
     ...WETH_ONLY[ChainId.MATIC],
     USDC[ChainId.MATIC],
+    USDCE[ChainId.MATIC],
     USDT[ChainId.MATIC],
     OLD_QUICK[ChainId.MATIC],
     NEW_QUICK[ChainId.MATIC],
@@ -861,6 +872,7 @@ export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
 export const StableCoins: { [ChainId: number]: Token[] } = {
   [ChainId.MATIC]: [
     USDC[ChainId.MATIC],
+    USDCE[ChainId.MATIC],
     USDT[ChainId.MATIC],
     MI[ChainId.MATIC],
     DAI[ChainId.MATIC],
@@ -893,6 +905,7 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(MI[ChainId.MATIC]),
     toV3Token(WBTC[ChainId.MATIC]),
     toV3Token(NEW_QUICK[ChainId.MATIC]),
+    toV3Token(USDCE[ChainId.MATIC]),
   ],
   [ChainId.DOGECHAIN]: [
     WMATIC_EXTENDED[ChainId.DOGECHAIN],
@@ -925,11 +938,10 @@ export const SUGGESTED_BASES: {
     DAI[ChainId.MATIC],
     USDC[ChainId.MATIC],
     USDT[ChainId.MATIC],
-    OLD_QUICK[ChainId.MATIC],
     NEW_QUICK[ChainId.MATIC],
     ETHER[ChainId.MATIC],
     WBTC[ChainId.MATIC],
-    MI[ChainId.MATIC],
+    USDCE[ChainId.MATIC],
   ],
   [ChainId.DOGECHAIN]: [
     USDC[ChainId.DOGECHAIN],
@@ -964,6 +976,7 @@ export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
     NEW_QUICK[ChainId.MATIC],
     ETHER[ChainId.MATIC],
     WBTC[ChainId.MATIC],
+    USDCE[ChainId.MATIC],
   ],
   [ChainId.DOGECHAIN]: [
     WETH[ChainId.DOGECHAIN],
@@ -986,6 +999,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(NEW_QUICK[ChainId.MATIC]),
     toV3Token(ETHER[ChainId.MATIC]),
     toV3Token(WBTC[ChainId.MATIC]),
+    toV3Token(USDCE[ChainId.MATIC]),
   ],
   [ChainId.DOGECHAIN]: [
     WMATIC_EXTENDED[ChainId.DOGECHAIN],
@@ -1014,11 +1028,15 @@ export const V2_PINNED_PAIRS: {
 } = {
   [ChainId.MATIC]: [
     [USDC[ChainId.MATIC], USDT[ChainId.MATIC]],
+    [USDCE[ChainId.MATIC], USDT[ChainId.MATIC]],
     [USDC[ChainId.MATIC], DAI[ChainId.MATIC]],
+    [USDCE[ChainId.MATIC], DAI[ChainId.MATIC]],
     [ETHER[ChainId.MATIC], USDC[ChainId.MATIC]],
+    [ETHER[ChainId.MATIC], USDCE[ChainId.MATIC]],
     [WBTC[ChainId.MATIC], ETHER[ChainId.MATIC]],
     [WETH[ChainId.MATIC], USDT[ChainId.MATIC]],
     [WETH[ChainId.MATIC], USDC[ChainId.MATIC]],
+    [WETH[ChainId.MATIC], USDCE[ChainId.MATIC]],
     [WETH[ChainId.MATIC], ETHER[ChainId.MATIC]],
     [ETHER[ChainId.MATIC], OLD_QUICK[ChainId.MATIC]],
   ],
@@ -1029,11 +1047,15 @@ export const V3_PINNED_PAIRS: {
 } = {
   [ChainId.MATIC]: [
     [toV3Token(USDC[ChainId.MATIC]), toV3Token(USDT[ChainId.MATIC])],
+    [toV3Token(USDCE[ChainId.MATIC]), toV3Token(USDT[ChainId.MATIC])],
     [toV3Token(USDC[ChainId.MATIC]), toV3Token(DAI[ChainId.MATIC])],
+    [toV3Token(USDCE[ChainId.MATIC]), toV3Token(DAI[ChainId.MATIC])],
     [toV3Token(ETHER[ChainId.MATIC]), toV3Token(USDC[ChainId.MATIC])],
+    [toV3Token(ETHER[ChainId.MATIC]), toV3Token(USDCE[ChainId.MATIC])],
     [toV3Token(WBTC[ChainId.MATIC]), toV3Token(ETHER[ChainId.MATIC])],
     [toV3Token(WETH[ChainId.MATIC]), toV3Token(USDT[ChainId.MATIC])],
     [toV3Token(WETH[ChainId.MATIC]), toV3Token(USDC[ChainId.MATIC])],
+    [toV3Token(WETH[ChainId.MATIC]), toV3Token(USDCE[ChainId.MATIC])],
     [toV3Token(WETH[ChainId.MATIC]), toV3Token(ETHER[ChainId.MATIC])],
     [toV3Token(ETHER[ChainId.MATIC]), toV3Token(OLD_QUICK[ChainId.MATIC])],
   ],

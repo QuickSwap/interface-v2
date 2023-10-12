@@ -1,9 +1,10 @@
-import React from 'react';
-import { Box, Grid } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Box, Button, CircularProgress, Grid } from '@material-ui/core';
 import QUICKLogo from 'assets/images/quickLogo.png';
 import 'components/styles/Footer.scss';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
 const Footer: React.FC = () => {
   const history = useHistory();
@@ -19,6 +20,7 @@ const Footer: React.FC = () => {
         { title: t('farm'), link: '/farm' },
         { title: t('dragonslair'), link: '/dragons' },
         { title: t('convert'), link: '/convert' },
+        { title: t('calculator'), link: '/calculator/0.01-eth-to-usd' },
         { title: t('analytics'), link: '/analytics' },
       ],
     },
@@ -37,6 +39,14 @@ const Footer: React.FC = () => {
     },
   ];
 
+  const [email, setEmail] = useState('');
+  const { mutate, isLoading, data } = useSubscribeNewsletter(
+    process.env.REACT_APP_CONVERTKIT_FORM_ID,
+  );
+  const handleSignup = async () => {
+    await mutate({ email });
+  };
+
   return (
     <Box className='footer'>
       <Box className='footerContainer'>
@@ -45,6 +55,36 @@ const Footer: React.FC = () => {
             <img src={QUICKLogo} alt='QUICK' height={40} />
             <Box mt={2} maxWidth='240px'>
               <small className='text-secondary'>{t('socialDescription')}</small>
+            </Box>
+            <Box mt={2} id='footerNewsletterSignup'>
+              <small className='text-secondary'>{t('signupnewsletter')}</small>
+              <Box className='newsletterInput'>
+                <input
+                  placeholder={t('enterEmail')}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <Button disabled={isLoading} onClick={handleSignup}>
+                  {isLoading && (
+                    <CircularProgress
+                      size='20px'
+                      style={{ color: 'white', marginRight: 5 }}
+                    />
+                  )}
+                  {t('signup')}
+                </Button>
+              </Box>
+              {data && (
+                <Box mt={1} textAlign='center'>
+                  {data.subscription && (
+                    <span className='text-success'>
+                      {t('subscribeSuccess')}
+                    </span>
+                  )}
+                  {data.error && (
+                    <span className='text-error'>{t('subscribeError')}</span>
+                  )}
+                </Box>
+              )}
             </Box>
           </Grid>
           <Grid item container xs={12} sm={12} md={8} spacing={4}>

@@ -145,7 +145,7 @@ const ConvertQUICKPage: React.FC = () => {
   }, [showConvert]);
 
   return (
-    <Box width='100%' maxWidth={488} id='convertQUICKPage'>
+    <Box width='100%' maxWidth={488} mb='30px' id='convertQUICKPage'>
       <h1 className='h4'>{t('convert')} QUICK</h1>
       <Box className='convertQUICKWrapper'>
         <Box className='flex items-center' mb={3}>

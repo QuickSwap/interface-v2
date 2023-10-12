@@ -41,6 +41,7 @@ import {
   PUSH,
   LINK,
   AAVE,
+  USDCE,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -248,6 +249,7 @@ export const GlobalConst = {
     ZENGO_CONNECT: 'ZenGo',
     OKXWALLET: 'OKX Wallet',
     CRYPTOCOM: 'Crypto.com DeFi Wallet',
+    UNSTOPPABLEDOMAINS: 'Unstoppable Domains',
   },
 };
 
@@ -1151,6 +1153,28 @@ export const GammaPairs: {
         pid: 85,
       },
     ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xba777ae3a3c91fcd83ef85bfe65410592bdd0f7c': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xc12e821ff75b464702d2AD55A0F4504ca6441bE5',
+        token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+        token1Address: '0xba777ae3a3c91fcd83ef85bfe65410592bdd0f7c',
+        ableToFarm: true,
+        pid: 87,
+      },
+    ],
+    '0x27842334c55c01ddfe81bf687425f906816c5141-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x5cdc18b774c6cd6f1398faf19d4bd4f31bc53c57',
+        token0Address: '0x27842334c55c01ddfe81bf687425f906816c5141',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 88,
+      },
+    ],
   },
   [ChainId.MUMBAI]: {},
   [ChainId.DOEGCHAIN_TESTNET]: {},
@@ -1429,6 +1453,17 @@ export const GammaPairs: {
         pid: 25,
       },
     ],
+    '0x819d1daa794c1c46b841981b61cc978d95a17b8e-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
+      {
+        type: Presets.STABLE,
+        title: 'Stable',
+        address: '0x9902bc1eb18c5d1594dd97907f1bb427d8a153da',
+        token0Address: '0x819d1daa794c1c46b841981b61cc978d95a17b8e',
+        token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
+        ableToFarm: true,
+        pid: 26,
+      },
+    ],
   },
 };
 
@@ -1476,6 +1511,7 @@ export const GlobalValue = {
       [ChainId.MATIC]: [
         EMPTY[ChainId.MATIC],
         USDC[ChainId.MATIC],
+        USDCE[ChainId.MATIC],
         USDT[ChainId.MATIC],
         OLD_QUICK[ChainId.MATIC],
         NEW_QUICK[ChainId.MATIC],
@@ -1562,6 +1598,7 @@ export const GlobalData = {
   stableCoins: {
     [ChainId.MATIC]: [
       USDC[ChainId.MATIC],
+      USDCE[ChainId.MATIC],
       USDT[ChainId.MATIC],
       MI[ChainId.MATIC],
       DAI[ChainId.MATIC],
@@ -1589,6 +1626,7 @@ export const GlobalData = {
       ETHER[ChainId.MATIC],
       WBTC[ChainId.MATIC],
       USDC[ChainId.MATIC],
+      USDCE[ChainId.MATIC],
       USDT[ChainId.MATIC],
       DAI[ChainId.MATIC],
     ],

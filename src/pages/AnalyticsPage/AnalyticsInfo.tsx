@@ -3,7 +3,7 @@ import { Box } from '@material-ui/core';
 import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useIsV2 } from 'state/application/hooks';
-import { getFormattedPercent, getPriceClass } from 'utils';
+import { formatNumber, getFormattedPercent, getPriceClass } from 'utils';
 
 interface AnalyticsInfoProps {
   data: any;
@@ -18,19 +18,23 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
     v2: [
       {
         title: t('pairs'),
-        value: data.pairCount?.toLocaleString('us'),
+        value: data.pairCount ? formatNumber(data.pairCount) : '~',
         percentChange: null,
       },
       {
         title: t('24hTxs'),
-        value: data.oneDayTxns?.toLocaleString('us'),
+        value: data.oneDayTxns ? formatNumber(data.oneDayTxns) : '~',
         percentChange: null,
       },
       {
         title: t('24hFees'),
-        value: `$${(
-          data.oneDayVolumeUSD * GlobalConst.utils.FEEPERCENT
-        )?.toLocaleString('us')}`,
+        value: `$${
+          data.oneDayVolumeUSD
+            ? formatNumber(
+                Number(data.oneDayVolumeUSD) * GlobalConst.utils.FEEPERCENT,
+              )
+            : '~'
+        }`,
         percentChange: null,
       },
     ],
@@ -38,25 +42,19 @@ const AnalyticsInfo: React.FC<AnalyticsInfoProps> = ({ data }) => {
       {
         title: t('24hVol'),
         value: `$${
-          data.oneDayVolumeUSD !== undefined
-            ? data.oneDayVolumeUSD.toLocaleString('us')
-            : '~'
+          data.oneDayVolumeUSD ? formatNumber(data.oneDayVolumeUSD) : '~'
         }`,
         percentChange: data.volumeChangeUSD,
       },
       {
         title: t('24hFees'),
-        value: `$${
-          data.feesUSD === undefined ? '~' : data.feesUSD.toLocaleString('us')
-        }`,
+        value: `$${data.feesUSD ? formatNumber(data.feesUSD) : '~'}`,
         percentChange: data.feesUSDChange,
       },
       {
         title: t('tvl'),
         value: `$${
-          data.totalLiquidityUSD === undefined
-            ? '~'
-            : data.totalLiquidityUSD.toLocaleString('us')
+          data.totalLiquidityUSD ? formatNumber(data.totalLiquidityUSD) : '~'
         }`,
         percentChange: data.liquidityChangeUSD,
       },

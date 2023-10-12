@@ -18,6 +18,7 @@ import {
   phantomConnection,
   trustWalletConnection,
   walletConnectConnection,
+  unstoppableDomainsConnection,
 } from 'connectors';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
 import { useArgentWalletDetectorContract } from './useContract';
@@ -101,6 +102,8 @@ export function useGetConnection() {
           return okxWalletConnection;
         case ConnectionType.CRYPTOCOM:
           return cryptoComConnection;
+        case ConnectionType.UNSTOPPABLEDOMAINS:
+          return unstoppableDomainsConnection;
         default:
           throw Error('unsupported connector');
       }

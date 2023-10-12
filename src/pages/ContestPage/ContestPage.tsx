@@ -225,7 +225,7 @@ const ContestPage: React.FC = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchVal, contestLeaderBoard, durationIndex]);
+  }, [searchVal, contestLeaderBoard.length, durationIndex]);
 
   const searchCardColumns = [
     {

@@ -7,6 +7,8 @@ import { SwapBuySellMiniWidget } from './BuySellWidget';
 import LiquidityPools from './LiquidityPools';
 import SwapMain from './SwapMain';
 import SwapNewsWidget from './SwapNewWidget';
+import SwapNewsletterSignup from './SwapNewsletterSignUp';
+import { LiquidityHubAd } from './LiquidityHubAd';
 
 type NavParams = {
   swapIndex: string | undefined;
@@ -83,12 +85,18 @@ const SwapDefaultMode: React.FC<{
                       </Box>
                     )}
                   </Grid>
+                  <Grid item xs={12}>
+                    <SwapNewsletterSignup />
+                  </Grid>
                 </Grid>
               </Grid>
             )}
           </Grid>
         </Grid>
         <Grid item xs={12} sm={12} md={6} lg={4}>
+          <Box mb={1} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <LiquidityHubAd />
+          </Box>
           <Box className='wrapper'>
             <SwapMain />
           </Box>

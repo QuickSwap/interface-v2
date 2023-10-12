@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useHistory } from 'react-router-dom';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { KeyboardArrowDown } from '@material-ui/icons';
+import { Box, Button, useMediaQuery } from '@material-ui/core';
+import { KeyboardArrowDown, Close } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
 import {
-  useIsV2,
   useNetworkSelectionModalToggle,
   useUDDomain,
   useWalletModalToggle,
@@ -35,6 +34,7 @@ import useDeviceWidth from 'hooks/useDeviceWidth';
 import { USDC, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 import { networkConnection, walletConnectConnection } from 'connectors';
+import { MobileMenuDrawer } from './MobileMenuDrawer';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -49,6 +49,7 @@ const Header: React.FC = () => {
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
+  const [showNewsletter, setShowNewsletter] = useState(true);
 
   const theme = useTheme();
   const allTransactions = useAllTransactions();
@@ -274,120 +275,39 @@ const Header: React.FC = () => {
     // },
   ];
 
-  const { updateIsV2 } = useIsV2();
-
   return (
-    <Box className={`header ${tabletWindowSize ? '' : headerClass}`}>
-      <NetworkSelectionModal />
-      <WalletModal
-        ENSName={ENSName ?? undefined}
-        pendingTransactions={pending}
-        confirmedTransactions={confirmed}
-      />
-      <Link to='/'>
-        <img
-          src={mobileWindowSize ? QuickIcon : QuickLogo}
-          alt='QuickLogo'
-          height={mobileWindowSize ? 40 : 60}
-        />
-      </Link>
-      {!tabletWindowSize && (
-        <Box className='mainMenu'>
-          {menuItems.slice(0, menuItemCountToShow).map((val) => (
-            <Box
-              key={val.id}
-              id={val.id}
-              className={`menuItem ${
-                pathname !== '/' && val.link.includes(pathname) ? 'active' : ''
-              }`}
-              onClick={() => {
-                if (val.onClick) {
-                  val.onClick();
-                } else {
-                  if (val.isExternal) {
-                    window.open(val.externalLink, val.target);
-                  } else {
-                    history.push(val.link);
-                  }
-                }
-              }}
-            >
-              <small>{val.text}</small>
-              {val.isNew && (
-                <>
-                  <img src={NewTag} alt='new menu' width={46} />
-                  <img
-                    className='menuItemSparkle menuItemSparkleLeft'
-                    src={SparkleLeft}
-                    alt='menuItem sparkle left'
-                  />
-                  <img
-                    className='menuItemSparkle menuItemSparkleRight'
-                    src={SparkleRight}
-                    alt='menuItem sparkle right'
-                  />
-                  <img
-                    className='menuItemSparkle menuItemSparkleBottom'
-                    src={SparkleBottom}
-                    alt='menuItem sparkle bottom'
-                  />
-                  <img
-                    className='menuItemSparkle menuItemSparkleTop'
-                    src={SparkleTop}
-                    alt='menuItem sparkle top'
-                  />
-                </>
-              )}
-            </Box>
-          ))}
-          {menuItems.slice(menuItemCountToShow, menuItems.length).length >
-            0 && (
-            <Box display='flex' className='menuItem subMenuItem'>
-              <ThreeDotIcon />
-              <Box className='subMenuWrapper'>
-                <Box className='subMenu'>
-                  {menuItems
-                    .slice(menuItemCountToShow, menuItems.length)
-                    .map((val) => (
-                      <Box
-                        className={`subMenuItem ${
-                          pathname !== '/' && val.link.includes(pathname)
-                            ? 'active'
-                            : ''
-                        }`}
-                        key={val.id}
-                        id={val.id}
-                        onClick={() => {
-                          setOpenDetailMenu(false);
-                          if (val.onClick) {
-                            val.onClick();
-                          } else {
-                            if (val.isExternal) {
-                              window.open(val.externalLink, val.target);
-                            } else {
-                              history.push(val.link);
-                            }
-                          }
-                        }}
-                      >
-                        <small>{val.text}</small>
-                      </Box>
-                    ))}
-                  {outLinks.map((item, ind) => (
-                    <a href={item.link} key={ind}>
-                      <small>{item.text}</small>
-                    </a>
-                  ))}
-                </Box>
-              </Box>
-            </Box>
-          )}
+    <Box className='header'>
+      {showNewsletter && (
+        <Box className='newsletterBar'>
+          <small className='text-white'>{t('signupnewsletterTopDesc')}</small>
+          <Button onClick={() => history.push('/newsletter')}>
+            {t('signup')}
+          </Button>
+          <Box
+            className='cursor-pointer'
+            onClick={() => setShowNewsletter(false)}
+          >
+            <Close />
+          </Box>
         </Box>
       )}
-      {tabletWindowSize && (
-        <Box className='mobileMenuContainer'>
-          <Box className='mobileMenu'>
-            {menuItems.slice(0, 4).map((val) => (
+      <Box className={`menuBar ${tabletWindowSize ? '' : headerClass}`}>
+        <NetworkSelectionModal />
+        <WalletModal
+          ENSName={ENSName ?? undefined}
+          pendingTransactions={pending}
+          confirmedTransactions={confirmed}
+        />
+        <Link to='/'>
+          <img
+            src={mobileWindowSize ? QuickIcon : QuickLogo}
+            alt='QuickLogo'
+            height={mobileWindowSize ? 40 : 60}
+          />
+        </Link>
+        {!tabletWindowSize && (
+          <Box className='mainMenu'>
+            {menuItems.slice(0, menuItemCountToShow).map((val) => (
               <Box
                 key={val.id}
                 id={val.id}
@@ -401,7 +321,7 @@ const Header: React.FC = () => {
                     val.onClick();
                   } else {
                     if (val.isExternal) {
-                      window.open(val.externalLink, val.target ?? '_blank');
+                      window.open(val.externalLink, val.target);
                     } else {
                       history.push(val.link);
                     }
@@ -409,17 +329,42 @@ const Header: React.FC = () => {
                 }}
               >
                 <small>{val.text}</small>
+                {val.isNew && (
+                  <>
+                    <img src={NewTag} alt='new menu' width={46} />
+                    <img
+                      className='menuItemSparkle menuItemSparkleLeft'
+                      src={SparkleLeft}
+                      alt='menuItem sparkle left'
+                    />
+                    <img
+                      className='menuItemSparkle menuItemSparkleRight'
+                      src={SparkleRight}
+                      alt='menuItem sparkle right'
+                    />
+                    <img
+                      className='menuItemSparkle menuItemSparkleBottom'
+                      src={SparkleBottom}
+                      alt='menuItem sparkle bottom'
+                    />
+                    <img
+                      className='menuItemSparkle menuItemSparkleTop'
+                      src={SparkleTop}
+                      alt='menuItem sparkle top'
+                    />
+                  </>
+                )}
               </Box>
             ))}
-            {menuItems.length > 4 && (
-              <Box className='flex menuItem'>
-                <ThreeDotIcon
-                  onClick={() => setOpenDetailMenu(!openDetailMenu)}
-                />
-                {openDetailMenu && (
-                  <Box className='subMenuWrapper'>
-                    <Box className='subMenu'>
-                      {menuItems.slice(4, menuItems.length).map((val) => (
+            {menuItems.slice(menuItemCountToShow, menuItems.length).length >
+              0 && (
+              <Box display='flex' className='menuItem subMenuItem'>
+                <ThreeDotIcon />
+                <Box className='subMenuWrapper'>
+                  <Box className='subMenu'>
+                    {menuItems
+                      .slice(menuItemCountToShow, menuItems.length)
+                      .map((val) => (
                         <Box
                           className={`subMenuItem ${
                             pathname !== '/' && val.link.includes(pathname)
@@ -444,51 +389,53 @@ const Header: React.FC = () => {
                           <small>{val.text}</small>
                         </Box>
                       ))}
-                      {outLinks.map((item, ind) => (
-                        <a
-                          href={item.link}
-                          key={ind}
-                          onClick={() => setOpenDetailMenu(false)}
-                        >
-                          <small>{item.text}</small>
-                        </a>
-                      ))}
-                    </Box>
+                    {outLinks.map((item, ind) => (
+                      <a href={item.link} key={ind}>
+                        <small>{item.text}</small>
+                      </a>
+                    ))}
                   </Box>
-                )}
+                </Box>
               </Box>
             )}
           </Box>
-        </Box>
-      )}
-      <Box>
-        <Box className='networkSelection' onClick={toggleNetworkSelectionModal}>
-          {isSupportedNetwork && (
-            <Box className='networkSelectionImage'>
-              {chainId && <Box className='styledPollingDot' />}
-              <img src={config['nativeCurrencyImage']} alt='network Image' />
+        )}
+        {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
+        <Box>
+          <Box
+            className='networkSelection'
+            onClick={toggleNetworkSelectionModal}
+          >
+            {isSupportedNetwork && (
+              <Box className='networkSelectionImage'>
+                {chainId && <Box className='styledPollingDot' />}
+                <img src={config['nativeCurrencyImage']} alt='network Image' />
+              </Box>
+            )}
+            <small className='network-name'>
+              {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
+            </small>
+            <KeyboardArrowDown />
+          </Box>
+
+          {account ? (
+            <Box
+              id='web3-status-connected'
+              className='accountDetails'
+              onClick={toggleWalletModal}
+            >
+              <p>{udDomain ?? shortenAddress(account)}</p>
+              <img src={WalletIcon} alt='Wallet' />
+            </Box>
+          ) : (
+            <Box
+              className='connectButton bg-primary'
+              onClick={toggleWalletModal}
+            >
+              {t('connectWallet')}
             </Box>
           )}
-          <small className='weight-600'>
-            {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
-          </small>
-          <KeyboardArrowDown />
         </Box>
-
-        {account ? (
-          <Box
-            id='web3-status-connected'
-            className='accountDetails'
-            onClick={toggleWalletModal}
-          >
-            <p>{udDomain ?? shortenAddress(account)}</p>
-            <img src={WalletIcon} alt='Wallet' />
-          </Box>
-        ) : (
-          <Box className='connectButton bg-primary' onClick={toggleWalletModal}>
-            {t('connectWallet')}
-          </Box>
-        )}
       </Box>
     </Box>
   );

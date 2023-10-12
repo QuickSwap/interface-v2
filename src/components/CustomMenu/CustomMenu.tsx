@@ -27,7 +27,8 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
     if (selectedValue) {
       setMenuItem(menuItems.find((item) => item.text === selectedValue));
     }
-  }, [selectedValue, menuItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedValue]);
   return (
     <Box className='customMenuWrapper'>
       <Box className='customMenuHeader' onClick={() => setOpenMenu(!openMenu)}>

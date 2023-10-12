@@ -3,7 +3,7 @@ import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
-import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
+import NewsletterSignupPanel from './NewsletterSignupPanel';
 const Header = lazy(() => import('components/Header'));
 const Footer = lazy(() => import('components/Footer'));
 const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
@@ -18,12 +18,12 @@ export interface PageLayoutProps {
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const { chainId, account } = useActiveWeb3React();
   const isProMode = useIsProMode();
-  const arcxSDK = (window as any).arcx;
+  // const arcxSDK = (window as any).arcx;
   const [openPassModal, setOpenPassModal] = useState(false);
   const { location } = useHistory();
   const pageWrapperClassName = useMemo(() => {
     if (isProMode) {
-      return '';
+      return 'pageWrapper-proMode';
     } else if (location.pathname.includes('/swap')) {
       return 'pageWrapper-no-max';
     }
@@ -66,18 +66,18 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     }
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      if (arcxSDK && account && chainId) {
-        await arcxSDK.connectWallet({ account, chain: chainId });
-      }
-    })();
-  }, [account, chainId, arcxSDK]);
+  // useEffect(() => {
+  //   (async () => {
+  //     if (arcxSDK && account && chainId) {
+  //       await arcxSDK.connectWallet({ account, chain: chainId });
+  //     }
+  //   })();
+  // }, [account, chainId, arcxSDK]);
 
   const PasswordModal = () => {
     const [devPass, setDevPass] = useState('');
     const confirmPassword = () => {
-      if (devPass === 'gammaPass' || devPass === 'devPass') {
+      if (devPass === 'gammaPass' || devPass === 'testPass') {
         setOpenPassModal(false);
       }
     };
@@ -106,6 +106,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     <Box className='page'>
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
+      <NewsletterSignupPanel />
       <Header />
       {!isProMode && <Background fallback={false} />}
       <Box className={pageWrapperClassName}>{children}</Box>

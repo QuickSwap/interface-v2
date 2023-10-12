@@ -76,6 +76,7 @@ import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { getConfig } from 'config';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { useLiquidityHubAnalyticsListeners } from './LiquidityHub';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -325,7 +326,7 @@ const SwapBestTrade: React.FC<{
         amount: srcAmount,
         side: swapType,
         options: {
-          includeDEXS: 'quickswap,quickswapv3,quickswapv3.1',
+          includeDEXS: 'quickswap,quickswapv3,quickswapv3.1,quickperps',
           maxImpact: maxImpactAllowed,
           partner: 'quickswapv3',
           //@ts-ignore
@@ -660,6 +661,14 @@ const SwapBestTrade: React.FC<{
     txHash: undefined,
   });
 
+  useLiquidityHubAnalyticsListeners(
+    showConfirm,
+    attemptingTxn,
+    currencies[Field.INPUT],
+    currencies[Field.OUTPUT],
+    formattedAmounts[Field.INPUT],
+  );
+
   const handleTypeInput = useCallback(
     (value: string) => {
       onUserInput(Field.INPUT, value);
@@ -983,7 +992,7 @@ const SwapBestTrade: React.FC<{
       reFetchOptimalRate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [optimalRate]);
+  }, [!optimalRate]);
 
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 
