@@ -1026,9 +1026,7 @@ export function useV3DerivedMintInfo(
     currencyAAmount &&
     currencyBalances?.[Field.CURRENCY_A]?.lessThan(currencyAAmount)
   ) {
-    const msg = `Insufficient ${
-      currencies[Field.CURRENCY_A]?.wrapped.symbol
-    } balance`;
+    const msg = `Insufficient ${currencies[Field.CURRENCY_A]?.symbol} balance`;
     errorMessage = msg;
     token0ErrorMessage = msg;
     errorCode = errorCode ?? 4;
@@ -1038,9 +1036,7 @@ export function useV3DerivedMintInfo(
     currencyBAmount &&
     currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount)
   ) {
-    const msg = `Insufficient ${
-      currencies[Field.CURRENCY_B]?.wrapped.symbol
-    } balance`;
+    const msg = `Insufficient ${currencies[Field.CURRENCY_B]?.symbol} balance`;
     errorMessage = msg;
     token1ErrorMessage = msg;
     errorCode = errorCode ?? 5;
@@ -1052,7 +1048,7 @@ export function useV3DerivedMintInfo(
       (gammaPairReverted ? depositCap.deposit1Max : depositCap.deposit0Max)
   ) {
     const msg = `${
-      currencies[Field.CURRENCY_A]?.wrapped.symbol
+      currencies[Field.CURRENCY_A]?.symbol
     } deposit cap of ${(gammaPairReverted
       ? depositCap.deposit1Max
       : depositCap.deposit0Max
@@ -1070,7 +1066,7 @@ export function useV3DerivedMintInfo(
       (gammaPairReverted ? depositCap.deposit0Max : depositCap.deposit1Max)
   ) {
     const msg = `${
-      currencies[Field.CURRENCY_B]?.wrapped.symbol
+      currencies[Field.CURRENCY_B]?.symbol
     } deposit cap of ${(gammaPairReverted
       ? depositCap.deposit0Max
       : depositCap.deposit1Max

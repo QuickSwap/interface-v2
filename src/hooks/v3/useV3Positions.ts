@@ -465,6 +465,7 @@ export function useV3PositionsCount(
 
   const { positions: uniV3Positions } = useV3PositionsFromTokenIds(
     uniV3TokenIds,
+    true,
   );
 
   const uniV3PositionCount = useMemo(() => {

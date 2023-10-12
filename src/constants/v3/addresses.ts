@@ -882,6 +882,18 @@ export const StableCoins: { [ChainId: number]: Token[] } = {
     UND[ChainId.MATIC],
     USDD[ChainId.MATIC],
   ],
+  [ChainId.DOGECHAIN]: [
+    USDC[ChainId.DOGECHAIN],
+    USDT[ChainId.DOGECHAIN],
+    DAI[ChainId.ZKEVM],
+    MI[ChainId.DOGECHAIN],
+  ],
+  [ChainId.ZKEVM]: [
+    USDC[ChainId.ZKEVM],
+    USDT[ChainId.ZKEVM],
+    DAI[ChainId.ZKEVM],
+    FRAX[ChainId.ZKEVM],
+  ],
 };
 
 // Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these tokens.

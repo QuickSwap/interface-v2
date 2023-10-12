@@ -349,9 +349,12 @@ export function SupplyLiquidityV3() {
               />
             </Box>
           )}
-        <Box my={2}>
-          <SelectFeeTier mintInfo={mintInfo} />
-        </Box>
+        {liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+          <Box my={2}>
+            <SelectFeeTier mintInfo={mintInfo} />
+          </Box>
+        )}
         <SelectRange
           currencyA={baseCurrency}
           currencyB={quoteCurrency}
