@@ -832,6 +832,7 @@ export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
   [ChainId.MATIC]: [
     ...WETH_ONLY[ChainId.MATIC],
     USDC[ChainId.MATIC],
+    USDCE[ChainId.MATIC],
     USDT[ChainId.MATIC],
     OLD_QUICK[ChainId.MATIC],
     NEW_QUICK[ChainId.MATIC],
@@ -854,6 +855,7 @@ export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
 export const StableCoins: { [ChainId: number]: Token[] } = {
   [ChainId.MATIC]: [
     USDC[ChainId.MATIC],
+    USDCE[ChainId.MATIC],
     USDT[ChainId.MATIC],
     MI[ChainId.MATIC],
     DAI[ChainId.MATIC],
@@ -1009,11 +1011,15 @@ export const V2_PINNED_PAIRS: {
 } = {
   [ChainId.MATIC]: [
     [USDC[ChainId.MATIC], USDT[ChainId.MATIC]],
+    [USDCE[ChainId.MATIC], USDT[ChainId.MATIC]],
     [USDC[ChainId.MATIC], DAI[ChainId.MATIC]],
+    [USDCE[ChainId.MATIC], DAI[ChainId.MATIC]],
     [ETHER[ChainId.MATIC], USDC[ChainId.MATIC]],
+    [ETHER[ChainId.MATIC], USDCE[ChainId.MATIC]],
     [WBTC[ChainId.MATIC], ETHER[ChainId.MATIC]],
     [WETH[ChainId.MATIC], USDT[ChainId.MATIC]],
     [WETH[ChainId.MATIC], USDC[ChainId.MATIC]],
+    [WETH[ChainId.MATIC], USDCE[ChainId.MATIC]],
     [WETH[ChainId.MATIC], ETHER[ChainId.MATIC]],
     [ETHER[ChainId.MATIC], OLD_QUICK[ChainId.MATIC]],
   ],
@@ -1024,11 +1030,15 @@ export const V3_PINNED_PAIRS: {
 } = {
   [ChainId.MATIC]: [
     [toV3Token(USDC[ChainId.MATIC]), toV3Token(USDT[ChainId.MATIC])],
+    [toV3Token(USDCE[ChainId.MATIC]), toV3Token(USDT[ChainId.MATIC])],
     [toV3Token(USDC[ChainId.MATIC]), toV3Token(DAI[ChainId.MATIC])],
+    [toV3Token(USDCE[ChainId.MATIC]), toV3Token(DAI[ChainId.MATIC])],
     [toV3Token(ETHER[ChainId.MATIC]), toV3Token(USDC[ChainId.MATIC])],
+    [toV3Token(ETHER[ChainId.MATIC]), toV3Token(USDCE[ChainId.MATIC])],
     [toV3Token(WBTC[ChainId.MATIC]), toV3Token(ETHER[ChainId.MATIC])],
     [toV3Token(WETH[ChainId.MATIC]), toV3Token(USDT[ChainId.MATIC])],
     [toV3Token(WETH[ChainId.MATIC]), toV3Token(USDC[ChainId.MATIC])],
+    [toV3Token(WETH[ChainId.MATIC]), toV3Token(USDCE[ChainId.MATIC])],
     [toV3Token(WETH[ChainId.MATIC]), toV3Token(ETHER[ChainId.MATIC])],
     [toV3Token(ETHER[ChainId.MATIC]), toV3Token(OLD_QUICK[ChainId.MATIC])],
   ],
