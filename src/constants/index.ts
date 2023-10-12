@@ -41,6 +41,7 @@ import {
   PUSH,
   LINK,
   AAVE,
+  USDCE,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -1510,6 +1511,7 @@ export const GlobalValue = {
       [ChainId.MATIC]: [
         EMPTY[ChainId.MATIC],
         USDC[ChainId.MATIC],
+        USDCE[ChainId.MATIC],
         USDT[ChainId.MATIC],
         OLD_QUICK[ChainId.MATIC],
         NEW_QUICK[ChainId.MATIC],
@@ -1596,6 +1598,7 @@ export const GlobalData = {
   stableCoins: {
     [ChainId.MATIC]: [
       USDC[ChainId.MATIC],
+      USDCE[ChainId.MATIC],
       USDT[ChainId.MATIC],
       MI[ChainId.MATIC],
       DAI[ChainId.MATIC],
@@ -1623,6 +1626,7 @@ export const GlobalData = {
       ETHER[ChainId.MATIC],
       WBTC[ChainId.MATIC],
       USDC[ChainId.MATIC],
+      USDCE[ChainId.MATIC],
       USDT[ChainId.MATIC],
       DAI[ChainId.MATIC],
     ],
