@@ -43,7 +43,7 @@ import {
   AAVE,
 } from './v3/addresses';
 
-export const bondAPIV2BaseURL = 'https://apeswap-api-v2-pr-108.herokuapp.com';
+export const bondAPIV2BaseURL = 'https://apeswap-api-v2-pr-149.herokuapp.com/';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
 
