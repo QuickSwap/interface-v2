@@ -11,7 +11,10 @@ import {
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { useActiveWeb3React } from 'hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
+import {
+  NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+  UNI_NFT_POSITION_MANAGER_ADDRESS,
+} from 'constants/v3/addresses';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
@@ -113,6 +116,13 @@ export function EnterAmounts({
     currencyB.isNative
       ? currencyB.wrapped
       : currencyB;
+
+  const positionManagerAddress = useMemo(() => {
+    if (mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')) {
+      return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
+    }
+    return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
+  }, [chainId, mintInfo.feeTier]);
   const [approvalA, approveACallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A] ||
       tryParseAmount('1', currencyAApproval),
@@ -123,7 +133,7 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
-        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+        : positionManagerAddress
       : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
@@ -136,7 +146,7 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
-        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+        : positionManagerAddress
       : undefined,
   );
 

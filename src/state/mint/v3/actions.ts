@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
 import { Presets } from './reducer';
+import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
 
 export enum Field {
   CURRENCY_A = 'CURRENCY_A',
@@ -61,3 +62,7 @@ export const updateLiquidityRangeType = createAction<{
 export const updatePresetRange = createAction<{
   presetRange: IPresetArgs;
 }>('mintV3/setPresetRange');
+
+export const updateFeeTier = createAction<{
+  feeTier: IFeeTier;
+}>('mintV3/setFeeTier');

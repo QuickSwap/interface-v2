@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   useGammaUNIProxyContract,
+  useUNIV3NFTPositionManagerContract,
   useUniPilotVaultContract,
   useV3NFTPositionManagerContract,
   useWETHContract,
@@ -9,6 +10,7 @@ import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useActiveWeb3React } from 'hooks';
 import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
+import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
 import { Percent, Currency } from '@uniswap/sdk-core';
 import { useAppDispatch } from 'state/hooks';
 import {
@@ -26,7 +28,10 @@ import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
+import {
+  NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+  UNI_NFT_POSITION_MANAGER_ADDRESS,
+} from 'constants/v3/addresses';
 import {
   calculateGasMargin,
   calculateGasMarginV3,
@@ -77,8 +82,18 @@ export function AddLiquidityButton({
   const [manuallyInverted, setManuallyInverted] = useState(false);
   const preset = useActivePreset();
 
-  const positionManager = useV3NFTPositionManagerContract();
-
+  const algebraPositionManager = useV3NFTPositionManagerContract();
+  const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
+  const positionManager =
+    mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')
+      ? uniV3PositionManager
+      : algebraPositionManager;
+  const positionManagerAddress = useMemo(() => {
+    if (mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')) {
+      return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
+    }
+    return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
+  }, [chainId, mintInfo.feeTier]);
   const wethContract = useWETHContract();
 
   const deadline = useTransactionDeadline();
@@ -177,7 +192,7 @@ export function AddLiquidityButton({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
-        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+        : positionManagerAddress
       : undefined,
   );
   const [approvalB] = useApproveCallback(
@@ -189,7 +204,7 @@ export function AddLiquidityButton({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
-        : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
+        : positionManagerAddress
       : undefined,
   );
 
@@ -458,19 +473,28 @@ export function AddLiquidityButton({
           ? quoteCurrency
           : undefined;
 
-        const { calldata, value } = NonFunPosMan.addCallParameters(
-          mintInfo.position,
-          {
+        let callParams;
+        if (mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')) {
+          callParams = UniV3NonFunPosMan.addCallParameters(mintInfo.position, {
             slippageTolerance: allowedSlippagePercent,
             recipient: account,
             deadline: deadline.toString(),
             useNative,
             createPool: mintInfo.noLiquidity,
-          },
-        );
+          });
+        } else {
+          callParams = NonFunPosMan.addCallParameters(mintInfo.position, {
+            slippageTolerance: allowedSlippagePercent,
+            recipient: account,
+            deadline: deadline.toString(),
+            useNative,
+            createPool: mintInfo.noLiquidity,
+          });
+        }
+        const { calldata, value } = callParams;
 
         const txn: { to: string; data: string; value: string } = {
-          to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+          to: positionManagerAddress,
           data: calldata,
           value,
         };

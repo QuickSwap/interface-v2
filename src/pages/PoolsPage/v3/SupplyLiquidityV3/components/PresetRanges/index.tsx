@@ -4,11 +4,14 @@ import { PoolStats } from '../PoolStats';
 import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { Box } from '@material-ui/core';
-import { PoolState } from 'hooks/usePools';
+import { PoolState } from 'hooks/v3/usePools';
 import Loader from 'components/Loader';
 import { fetchPoolsAPR } from 'utils/api';
-import { computePoolAddress } from 'hooks/v3/computePoolAddress';
-import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
+import { computePoolAddress } from 'v3lib/utils/computePoolAddress';
+import {
+  POOL_DEPLOYER_ADDRESS,
+  UNI_V3_FACTORY_ADDRESS,
+} from 'constants/v3/addresses';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import PoolABI from 'constants/abis/v3/pool.json';
 import './index.scss';
@@ -318,11 +321,9 @@ export function PresetRanges({
     )
       return <Loader stroke='#22cbdc' />;
 
-    if (mintInfo.noLiquidity) return `0.01% ${t('fee').toLowerCase()}`;
-
-    return `${(mintInfo.dynamicFee / 10000).toFixed(3)}% ${t(
-      'fee',
-    ).toLowerCase()}`;
+    return `${(
+      (mintInfo.feeAmount ?? mintInfo.dynamicFee) / 10000
+    ).toLocaleString()}% ${t('fee').toLowerCase()}`;
   }, [mintInfo, t]);
 
   const aprString = useMemo(() => {
@@ -330,13 +331,17 @@ export function PresetRanges({
       return <Loader stroke='#22dc22' />;
 
     const poolAddress = computePoolAddress({
-      poolDeployer: POOL_DEPLOYER_ADDRESS[137],
+      poolDeployer:
+        mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')
+          ? UNI_V3_FACTORY_ADDRESS[chainId]
+          : POOL_DEPLOYER_ADDRESS[chainId],
       tokenA: baseCurrency.wrapped,
       tokenB: quoteCurrency.wrapped,
+      fee: mintInfo.feeAmount,
     }).toLowerCase();
 
     return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
-  }, [baseCurrency, quoteCurrency, aprs]);
+  }, [aprs, baseCurrency, quoteCurrency, mintInfo, chainId]);
 
   const gammaValuesLoaded =
     mintInfo.price && gammaValues.filter((value) => !value).length === 0;

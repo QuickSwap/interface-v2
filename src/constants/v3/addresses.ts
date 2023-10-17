@@ -51,7 +51,7 @@ export const MULTICALL_NETWORKS: { [chainId in ChainId]: string } = {
   [ChainId.DOEGCHAIN_TESTNET]: '0x02817C1e3543c2d908a590F5dB6bc97f933dB4BD',
   [ChainId.DOGECHAIN]: '0x0110B3b142031F85a80Afdc9C7bcAA80dAfe7C63',
   [ChainId.ZKTESTNET]: '0x54E11f6955B533CC3AcEe908c89C407e3e754fc0',
-  [ChainId.ZKEVM]: '0x450c0ff30a17b8f6ccbec25e41e4461cf89719d7',
+  [ChainId.ZKEVM]: '0x6a1d2eca13222E7ffDDfdf1Df701D41D3E4cC0BE',
 };
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
@@ -91,6 +91,23 @@ export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = {
   [ChainId.DOGECHAIN]: '0x0b012055F770AE7BB7a8303968A7Fb6088A2296e',
   [ChainId.ZKTESTNET]: '0xE86Ba90bf805cEa452c8FA6E37b4ae2D17D32599',
   [ChainId.ZKEVM]: '0xd8E1E7009802c914b0d39B31Fc1759A865b727B1',
+};
+
+export const UNI_V3_FACTORY_ADDRESS: AddressMap = {
+  [ChainId.ZKEVM]: '0xD9a2AD9E927Bd7014116CC5c7328f028D4318178',
+};
+
+export const UNI_NFT_POSITION_MANAGER_ADDRESS: AddressMap = {
+  [ChainId.ZKEVM]: '0x331F3a300b7115A45ba31E3428AC002267BB6D77',
+};
+
+export const UNI_SWAP_ROUTER: AddressMap = {
+  [ChainId.ZKEVM]: '0x1E7E4c855520b2106320952A570a3e5E3E618101',
+};
+
+export const GAMMA_UNIPROXY_ADDRESSES: AddressMap = {
+  [ChainId.MATIC]: '0xe0A61107E250f8B5B24bf272baBFCf638569830C',
+  [ChainId.ZKEVM]: '0x66CD859053c458688044d816117D5Bdf42A56813',
 };
 
 export const GAMMA_MASTERCHEF_ADDRESSES: AddressMap[] = [
@@ -864,6 +881,18 @@ export const StableCoins: { [ChainId: number]: Token[] } = {
     TUSD[ChainId.MATIC],
     UND[ChainId.MATIC],
     USDD[ChainId.MATIC],
+  ],
+  [ChainId.DOGECHAIN]: [
+    USDC[ChainId.DOGECHAIN],
+    USDT[ChainId.DOGECHAIN],
+    DAI[ChainId.ZKEVM],
+    MI[ChainId.DOGECHAIN],
+  ],
+  [ChainId.ZKEVM]: [
+    USDC[ChainId.ZKEVM],
+    USDT[ChainId.ZKEVM],
+    DAI[ChainId.ZKEVM],
+    FRAX[ChainId.ZKEVM],
   ],
 };
 

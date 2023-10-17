@@ -33,6 +33,7 @@ describe('Position', () => {
     0,
     POOL_TICK_CURRENT,
     [],
+    false,
   );
 
   it('can be constructed around 0 tick', () => {
@@ -347,6 +348,7 @@ describe('Position', () => {
             0,
             TickMath.MIN_TICK,
             [],
+            false,
           ),
           liquidity: 100e18,
           tickLower:
@@ -373,6 +375,7 @@ describe('Position', () => {
             0,
             TickMath.MAX_TICK - 1,
             [],
+            false,
           ),
           liquidity: 100e18,
           tickLower:
@@ -520,6 +523,7 @@ describe('Position', () => {
             0,
             TickMath.MIN_TICK,
             [],
+            false,
           ),
           liquidity: 100e18,
           tickLower:
@@ -546,6 +550,7 @@ describe('Position', () => {
             0,
             TickMath.MAX_TICK - 1,
             [],
+            false,
           ),
           liquidity: 100e18,
           tickLower:

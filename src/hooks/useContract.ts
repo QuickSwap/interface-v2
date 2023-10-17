@@ -39,6 +39,7 @@ import {
   NEW_LAIR_ADDRESS,
   QUICK_CONVERSION,
   DL_QUICK_ADDRESS,
+  UNI_NFT_POSITION_MANAGER_ADDRESS,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
@@ -47,6 +48,7 @@ import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
 import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import UNINFTPosMan from 'constants/abis/uni-v3/nft-position-manager.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
@@ -295,6 +297,16 @@ export function useV3NFTPositionManagerContract(
   return useContract(
     NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
     NFTPosMan,
+    withSignerIfPossible,
+  );
+}
+
+export function useUNIV3NFTPositionManagerContract(
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(
+    UNI_NFT_POSITION_MANAGER_ADDRESS,
+    UNINFTPosMan,
     withSignerIfPossible,
   );
 }
