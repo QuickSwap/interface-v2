@@ -35,6 +35,7 @@ import { WalletConnect } from 'connectors/WalletConnect';
 import { useGetConnection, useMasaAnalytics } from 'hooks';
 import { UAuthConnector } from '@uauth/web3-react';
 import UAuth from '@uauth/js';
+import { useArcxAnalytics } from '@arcxmoney/analytics';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -95,6 +96,14 @@ const WalletModal: React.FC<WalletModalProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, selectedWallet]);
+
+  const arcxSdk = useArcxAnalytics();
+  useEffect(() => {
+    if (arcxSdk && account && chainId) {
+      arcxSdk.wallet({ chainId, account });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, arcxSdk]);
 
   const tryActivation = async (connection: Connection) => {
     // log selected wallet
