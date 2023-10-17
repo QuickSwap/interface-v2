@@ -20,10 +20,12 @@ import {
   zengoConnectConnection,
 } from 'connectors';
 import KavaImage from 'assets/images/KAVA.png';
+import { useArcxAnalytics } from '@arcxmoney/analytics';
 
 const NetworkSelectionModal: React.FC = () => {
   const { t } = useTranslation();
-  const { chainId, connector } = useActiveWeb3React();
+  const arcxSdk = useArcxAnalytics();
+  const { chainId, connector, account } = useActiveWeb3React();
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
     const config = getConfig(chain);
     return config && config.isMainnet;
@@ -64,9 +66,12 @@ const NetworkSelectionModal: React.FC = () => {
       } else {
         await connector.activate(chainParam);
       }
+      if (arcxSdk && account) {
+        await arcxSdk.chain({ chainId, account });
+      }
       localStorage.setItem('localChainId', chainId.toString());
     },
-    [connector],
+    [account, arcxSdk, connector],
   );
 
   return (

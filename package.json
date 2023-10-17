@@ -123,6 +123,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@0xsquid/widget": "1.6.0",
+    "@arcxmoney/analytics": "^2.0.2",
     "@cryption/df-sdk-core": "0.0.26",
     "@deficonnect/web3-connector": "^2.0.3",
     "@intract/attribution": "^2.0.0",
