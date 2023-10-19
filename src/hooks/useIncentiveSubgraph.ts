@@ -754,14 +754,7 @@ export function useEternalFarms() {
 
       for (const farming of eternalFarmings) {
         try {
-          const virtualPoolContract = getContract(
-            farming.virtualPool,
-            VIRTUAL_POOL_ABI,
-            provider,
-          );
-          const reward = await virtualPoolContract.rewardReserve0();
-          const bonusReward = await virtualPoolContract.rewardReserve1();
-          const pool = await fetchPool(farming.pool, chainId);
+          const pool = farming.pool;
           const rewardToken = getTokenFromAddress(
             farming.rewardToken,
             chainId ?? ChainId.MATIC,
@@ -800,8 +793,6 @@ export function useEternalFarms() {
 
           _eternalFarmings.push({
             ...farming,
-            reward: reward.toString(),
-            bonusReward: bonusReward.toString(),
             rewardToken,
             bonusRewardToken,
             multiplierToken,

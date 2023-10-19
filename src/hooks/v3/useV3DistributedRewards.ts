@@ -30,15 +30,7 @@ export function useV3DistributedRewards(chainId?: ChainId) {
 
     for (const farming of eternalFarmings) {
       try {
-        const virtualPoolContract = getContract(
-          farming.virtualPool,
-          VIRTUAL_POOL_ABI,
-          provider,
-        );
-        const reward = await virtualPoolContract.rewardReserve0();
-        const bonusReward = await virtualPoolContract.rewardReserve1();
-
-        if (Number(reward) > 0 && Number(bonusReward) > 0) {
+        if (Number(farming.reward) > 0 && Number(farming.bonusReward) > 0) {
           _eternalFarmings.push(farming);
         }
 
