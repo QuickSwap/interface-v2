@@ -4,7 +4,6 @@ import { Contract } from 'ethers';
 import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
 import FARMING_CENTER_ABI from 'abis/farming-center.json';
 import FINITE_FARMING_ABI from 'abis/finite-farming.json';
-import VIRTUAL_POOL_ABI from 'abis/virtual-pool.json';
 import {
   FARMING_CENTER,
   FINITE_FARMING,
@@ -23,7 +22,7 @@ import {
   fetchPoolsAPR,
 } from 'utils/api';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { getContract, getTokenFromAddress } from 'utils';
+import { getTokenFromAddress } from 'utils';
 import { ChainId } from '@uniswap/sdk';
 import { formatTokenSymbol } from 'utils/v3-graph';
 import { useQuery } from '@tanstack/react-query';
