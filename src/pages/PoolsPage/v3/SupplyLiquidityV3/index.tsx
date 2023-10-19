@@ -44,6 +44,7 @@ import { CHAIN_INFO } from 'constants/v3/chains';
 import { ChainId } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
+import SelectFeeTier from './containers/SelectFeeTier';
 
 export function SupplyLiquidityV3() {
   const { t } = useTranslation();
@@ -87,8 +88,6 @@ export function SupplyLiquidityV3() {
 
   const dispatch = useAppDispatch();
 
-  const feeAmount = 100;
-
   const expertMode = useIsExpertMode();
 
   const [priceFormat, setPriceFormat] = useState(PriceFormats.TOKEN);
@@ -114,7 +113,6 @@ export function SupplyLiquidityV3() {
   const mintInfo = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,
-    feeAmount,
     baseCurrency ?? undefined,
     undefined,
   );
@@ -351,6 +349,12 @@ export function SupplyLiquidityV3() {
               />
             </Box>
           )}
+        {liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+          <Box my={2}>
+            <SelectFeeTier mintInfo={mintInfo} />
+          </Box>
+        )}
         <SelectRange
           currencyA={baseCurrency}
           currencyB={quoteCurrency}

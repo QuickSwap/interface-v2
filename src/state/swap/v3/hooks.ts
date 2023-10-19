@@ -111,8 +111,14 @@ export function tryParseAmount<T extends Currency>(
     return undefined;
   }
   try {
+    const splitedValueArray = value.split('.');
+    let valueStr = value;
+    if (splitedValueArray.length > 1) {
+      const decimalStr = splitedValueArray[1].substring(0, currency.decimals);
+      valueStr = `${splitedValueArray[0]}.${decimalStr}`;
+    }
     const typedValueParsed = parseUnits(
-      value !== 'NaN' ? value : '0',
+      value !== 'NaN' ? valueStr : '0',
       currency.decimals,
     ).toString();
     if (typedValueParsed !== '0') {

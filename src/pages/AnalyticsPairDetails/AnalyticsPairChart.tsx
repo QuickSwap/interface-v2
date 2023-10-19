@@ -33,7 +33,8 @@ const AnalyticsPairChart: React.FC<{
   pairData: any;
   token0Rate?: any;
   token1Rate?: any;
-}> = ({ pairData, token0Rate, token1Rate }) => {
+  isUni?: boolean;
+}> = ({ pairData, token0Rate, token1Rate, isUni }) => {
   const { t } = useTranslation();
   const match = useRouteMatch<{ id: string }>();
   const pairAddress = match.params.id;
@@ -54,7 +55,11 @@ const AnalyticsPairChart: React.FC<{
   const fetchChartData = async () => {
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-chart-data/${pairAddress}/${durationIndex}/${version}?chainId=${chainId}`,
+        `${
+          process.env.REACT_APP_LEADERBOARD_APP_URL
+        }/analytics/top-pair-chart-data/${pairAddress}/${durationIndex}/${version}?chainId=${chainId}${
+          isUni ? '&isUni=true' : ''
+        }`,
       );
       if (!res.ok) {
         return null;
@@ -616,6 +621,7 @@ const AnalyticsPairChart: React.FC<{
               <AnalyticsPairLiquidityChartV3
                 pairData={pairData}
                 pairAddress={pairAddress}
+                isUni={isUni}
               />
             ) : (
               <AreaChart

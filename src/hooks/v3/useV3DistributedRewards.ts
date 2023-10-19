@@ -2,9 +2,8 @@ import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
-import { getContract, getTokenFromAddress } from 'utils';
+import { getTokenFromAddress } from 'utils';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import VIRTUAL_POOL_ABI from 'abis/virtual-pool.json';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useQuery } from '@tanstack/react-query';
@@ -30,15 +29,7 @@ export function useV3DistributedRewards(chainId?: ChainId) {
 
     for (const farming of eternalFarmings) {
       try {
-        const virtualPoolContract = getContract(
-          farming.virtualPool,
-          VIRTUAL_POOL_ABI,
-          provider,
-        );
-        const reward = await virtualPoolContract.rewardReserve0();
-        const bonusReward = await virtualPoolContract.rewardReserve1();
-
-        if (Number(reward) > 0 && Number(bonusReward) > 0) {
+        if (Number(farming.reward) > 0 && Number(farming.bonusReward) > 0) {
           _eternalFarmings.push(farming);
         }
 

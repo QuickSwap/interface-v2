@@ -119,7 +119,7 @@ export function SelectRange({
   } = useRangeHopCallbacks(
     currencyA ?? undefined,
     currencyB ?? undefined,
-    mintInfo.dynamicFee,
+    mintInfo.feeAmount,
     tickLower,
     tickUpper,
     mintInfo.pool,
@@ -634,7 +634,6 @@ export function SelectRange({
         <LiquidityChartRangeInput
           currencyA={currencyA ?? undefined}
           currencyB={currencyB ?? undefined}
-          feeAmount={mintInfo.dynamicFee}
           ticksAtLimit={mintInfo.ticksAtLimit}
           price={
             priceFormat === PriceFormats.USD
@@ -651,6 +650,7 @@ export function SelectRange({
           onRightRangeInput={onRightRangeInput}
           interactive={false}
           priceFormat={priceFormat}
+          feeAmount={mintInfo.feeAmount}
         />
       </Box>
     </Box>

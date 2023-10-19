@@ -1175,6 +1175,24 @@ export const GammaPairs: {
         pid: 88,
       },
     ],
+    '0x18e73a5333984549484348a94f4d219f4fab7b81-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x80709a760Ff54112bD3e0CE31C104d912bA51774',
+        token0Address: '0x18e73a5333984549484348a94f4d219f4fab7b81',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      },
+    ],
+    '0x0c087f8d6a1f14f71bb7cc7e1b061ca297af7555-0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xf25645c4B5B1c040e9889E0FA4C252c2fC0b40bE',
+        token0Address: '0x0c087f8d6a1f14f71bb7cc7e1b061ca297af7555',
+        token1Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      },
+    ],
   },
   [ChainId.MUMBAI]: {},
   [ChainId.DOEGCHAIN_TESTNET]: {},

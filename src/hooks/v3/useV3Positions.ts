@@ -10,6 +10,7 @@ import { useEffect, useMemo } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useActiveWeb3React } from 'hooks';
 import {
+  useUNIV3NFTPositionManagerContract,
   useMasterChefContracts,
   useV3NFTPositionManagerContract,
 } from 'hooks/useContract';
@@ -38,15 +39,18 @@ interface UseV3PositionsResults {
 
 function useV3PositionsFromTokenIds(
   tokenIds: BigNumber[] | undefined,
+  isUni?: boolean,
 ): UseV3PositionsResults {
   const positionManager = useV3NFTPositionManagerContract();
+  const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
+
   const inputs = useMemo(
     () =>
       tokenIds ? tokenIds.map((tokenId) => [BigNumber.from(tokenId)]) : [],
     [tokenIds],
   );
   const results = useSingleContractMultipleData(
-    positionManager,
+    isUni ? uniV3PositionManager : positionManager,
     'positions',
     inputs,
   );
@@ -150,8 +154,12 @@ interface UseV3PositionResults {
 
 export function useV3PositionFromTokenId(
   tokenId: BigNumber | undefined,
+  isUni?: boolean,
 ): UseV3PositionResults {
-  const position = useV3PositionsFromTokenIds(tokenId ? [tokenId] : undefined);
+  const position = useV3PositionsFromTokenIds(
+    tokenId ? [tokenId] : undefined,
+    isUni,
+  );
   return {
     loading: position.loading,
     position: position.positions?.[0],
@@ -278,17 +286,77 @@ export function useV3Positions(
   };
 }
 
-export function useV3PositionsCount(
+export function useUniV3Positions(
   account: string | null | undefined,
-  hideClosePosition: boolean,
-  hideFarmingPosition: boolean,
-) {
-  const positionManager = useV3NFTPositionManagerContract();
+): UseV3PositionsResults {
+  const positionManager = useUNIV3NFTPositionManagerContract();
 
   const {
     loading: balanceLoading,
     result: balanceResult,
   } = useSingleCallResult(positionManager, 'balanceOf', [account ?? undefined]);
+
+  // we don't expect any account balance to ever exceed the bounds of max safe int
+  const accountBalance: number | undefined = balanceResult?.[0]?.toNumber();
+
+  const tokenIdsArgs = useMemo(() => {
+    if (accountBalance && account) {
+      const tokenRequests: any[] = [];
+      for (let i = 0; i < accountBalance; i++) {
+        tokenRequests.push([account, i]);
+      }
+      return tokenRequests;
+    }
+    return [];
+  }, [account, accountBalance]);
+
+  const tokenIdResults = useSingleContractMultipleData(
+    positionManager,
+    'tokenOfOwnerByIndex',
+    tokenIdsArgs,
+  );
+  const someTokenIdsLoading = useMemo(
+    () => tokenIdResults.some(({ loading }) => loading),
+    [tokenIdResults],
+  );
+
+  const tokenIds = useMemo(() => {
+    if (account) {
+      return tokenIdResults
+        .map(({ result }) => result)
+        .filter((result): result is Result => !!result)
+        .map((result) => BigNumber.from(result[0]));
+    }
+    return [];
+  }, [account, tokenIdResults]);
+
+  const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
+    tokenIds,
+    true,
+  );
+
+  return {
+    loading: someTokenIdsLoading || balanceLoading || positionsLoading,
+    positions: positions?.map((position) => {
+      return { ...position, isUni: true };
+    }),
+  };
+}
+
+export function useV3PositionsCount(
+  account: string | null | undefined,
+  hideClosePosition: boolean,
+  hideFarmingPosition: boolean,
+) {
+  const algebraPositionManager = useV3NFTPositionManagerContract();
+  const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
+
+  const {
+    loading: balanceLoading,
+    result: balanceResult,
+  } = useSingleCallResult(algebraPositionManager, 'balanceOf', [
+    account ?? undefined,
+  ]);
 
   const accountBalance = useMemo(() => {
     if (balanceResult && balanceResult.length > 0) {
@@ -309,7 +377,7 @@ export function useV3PositionsCount(
   }, [account, accountBalance]);
 
   const tokenIdResults = useSingleContractMultipleData(
-    positionManager,
+    algebraPositionManager,
     'tokenOfOwnerByIndex',
     tokenIdsArgs,
   );
@@ -354,8 +422,62 @@ export function useV3PositionsCount(
     ).length;
   }, [hideClosePosition, positions]);
 
+  const {
+    loading: uniV3BalanceLoading,
+    result: uniV3BalanceResult,
+  } = useSingleCallResult(uniV3PositionManager, 'balanceOf', [
+    account ?? undefined,
+  ]);
+
+  const uniV3AccountBalance = useMemo(() => {
+    if (uniV3BalanceResult && uniV3BalanceResult.length > 0) {
+      return uniV3BalanceResult[0].toNumber();
+    }
+    return 0;
+  }, [uniV3BalanceResult]);
+
+  const uniV3TokenIdsArgs = useMemo(() => {
+    if (uniV3AccountBalance && account) {
+      const tokenRequests: any[] = [];
+      for (let i = 0; i < uniV3AccountBalance; i++) {
+        tokenRequests.push([account, i]);
+      }
+      return tokenRequests;
+    }
+    return [];
+  }, [account, uniV3AccountBalance]);
+
+  const uniV3tokenIdResults = useSingleContractMultipleData(
+    uniV3PositionManager,
+    'tokenOfOwnerByIndex',
+    uniV3TokenIdsArgs,
+  );
+
+  const uniV3TokenIds = useMemo(() => {
+    if (account) {
+      return uniV3tokenIdResults
+        .map(({ result }) => result)
+        .filter((result): result is Result => !!result)
+        .map((result) => BigNumber.from(result[0]));
+    }
+    return [];
+  }, [account, uniV3tokenIdResults]);
+
+  const { positions: uniV3Positions } = useV3PositionsFromTokenIds(
+    uniV3TokenIds,
+    true,
+  );
+
+  const uniV3PositionCount = useMemo(() => {
+    if (!uniV3Positions) return 0;
+    return uniV3Positions.filter((position) =>
+      hideClosePosition ? position.liquidity.gt('0') : true,
+    ).length;
+  }, [hideClosePosition, uniV3Positions]);
+
   const totalCount =
     positionCount +
+    uniV3PositionCount +
     (hideFarmingPosition
       ? 0
       : farmingPositionsCount + oldFarmingPositionsCount);
@@ -365,7 +487,7 @@ export function useV3PositionsCount(
   const count = totalCount > 0 ? totalCount : prevCount ?? 0;
 
   return {
-    loading: balanceLoading || positionsOnFarmerLoading,
+    loading: balanceLoading || uniV3BalanceLoading || positionsOnFarmerLoading,
     count,
   };
 }
