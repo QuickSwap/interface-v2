@@ -8,17 +8,16 @@ import {
   TokenAmount,
   Token,
 } from '@uniswap/sdk';
-import { Currency as V3Currency, Token as V3Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import ERC20_INTERFACE from 'constants/abis/erc20';
 import { useAllTokens } from 'hooks/Tokens';
 import { useActiveWeb3React } from 'hooks';
-import { useMulticallContract } from 'hooks/useContract';
+import { useMulticall2Contract } from 'hooks/useContract';
 import { isAddress } from 'utils';
 import {
   useSingleContractMultipleData,
   useMultipleContractSingleData,
-} from 'state/multicall/hooks';
+} from 'state/multicall/v3/hooks';
 import { useIsV2 } from 'state/application/hooks';
 
 /**
@@ -30,7 +29,7 @@ export function useETHBalances(
 ): {
   [address: string]: CurrencyAmount | undefined;
 } {
-  const multicallContract = useMulticallContract();
+  const multicallContract = useMulticall2Contract();
 
   const addresses: string[] = useMemo(
     () =>

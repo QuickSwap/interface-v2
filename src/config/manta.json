@@ -1,0 +1,72 @@
+{
+  "v3": true,
+  "v2": false,
+  "rpc": "https://pacific-rpc.manta.network/http",
+  "blockExplorer": "https://pacific-explorer.manta.network",
+  "networkName": "Manta Pacific L2 Rollup",
+  "aprAPINetwork": "manta",
+  "chainId": 169,
+  "isMainnet": true,
+  "nativeCurrencyImage": "/zkevm.svg",
+  "nativeCurrency": {
+    "name": "Ether",
+    "symbol": "ETH",
+    "decimals": 18
+  },
+  "swap": {
+    "available": true,
+    "bestTrade": false,
+    "proMode": false,
+    "limitOrder": false,
+    "liquidityHub": false,
+    "crossChain": false
+  },
+  "pools": {
+    "available": true
+  },
+  "farm": {
+    "available": false
+  },
+  "lair": {
+    "available": false,
+    "oldLair": false,
+    "newLair": false,
+    "syrup": false
+  },
+  "convert": {
+    "available": false
+  },
+  "predictions": {
+    "available": false
+  },
+  "analytics": {
+    "available": true
+  },
+  "lending": {
+    "available": false
+  },
+  "migrate": {
+    "available": false
+  },
+  "gamingHub": {
+    "available": false
+  },
+  "leaderboard": {
+    "available": false
+  },
+  "safe": {
+    "available": false
+  },
+  "perps": {
+    "available": false
+  },
+  "bos": {
+    "available": false
+  },
+  "gamma": {
+    "available": false
+  },
+  "unipilot": {
+    "available": false
+  }
+}

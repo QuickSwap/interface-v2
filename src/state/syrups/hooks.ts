@@ -81,6 +81,8 @@ const EMPTY_LIST: SyrupInfoAddressMap = {
   [ChainId.DOEGCHAIN_TESTNET]: {},
   [ChainId.ZKTESTNET]: {},
   [ChainId.ZKEVM]: {},
+  [ChainId.MANTA]: {},
+  [ChainId.KAVA]: {},
 };
 
 const syrupCache: WeakMap<SyrupListInfo, SyrupInfoAddressMap> | null =
