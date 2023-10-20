@@ -12,12 +12,12 @@ import { useMemo } from 'react';
 import ERC20_INTERFACE from 'constants/abis/erc20';
 import { useAllTokens } from 'hooks/Tokens';
 import { useActiveWeb3React } from 'hooks';
-import { useMulticall2Contract } from 'hooks/useContract';
+import { useMulticallContract } from 'hooks/useContract';
 import { isAddress } from 'utils';
 import {
   useSingleContractMultipleData,
   useMultipleContractSingleData,
-} from 'state/multicall/v3/hooks';
+} from 'state/multicall/hooks';
 import { useIsV2 } from 'state/application/hooks';
 
 /**
@@ -29,7 +29,7 @@ export function useETHBalances(
 ): {
   [address: string]: CurrencyAmount | undefined;
 } {
-  const multicallContract = useMulticall2Contract();
+  const multicallContract = useMulticallContract();
 
   const addresses: string[] = useMemo(
     () =>
