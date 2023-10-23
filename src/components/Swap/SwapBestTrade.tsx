@@ -662,11 +662,11 @@ const SwapBestTrade: React.FC<{
   });
 
   useLiquidityHubAnalyticsListeners(
-    showConfirm,
-    attemptingTxn,
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],
     formattedAmounts[Field.INPUT],
+    showConfirm,
+    attemptingTxn,
   );
 
   const handleTypeInput = useCallback(

@@ -28,6 +28,8 @@ import ToggleSwitch from 'components/ToggleSwitch';
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
 
+const REQUEST_FILTERED_ERROR = 'requestFiltered';
+
 export const useLiquidityHubCallback = (
   srcToken?: string,
   destToken?: string,
@@ -35,15 +37,14 @@ export const useLiquidityHubCallback = (
   const [liquidityHubDisabled] = useLiquidityHubManager();
   const { account, library } = useActiveWeb3React();
   const liquidityHubState = useLiquidityHubState();
-  const {
-    onSetLiquidityHubState,
-    onResetLiquidityHubState,
-  } = useLiquidityHubActionHandlers();
-  const [userSlippageTolerance] = useUserSlippageTolerance();
+  const { onSetLiquidityHubState } = useLiquidityHubActionHandlers();
   const queryParam = useQueryParam();
-  const approve = useApprove(srcToken);
+  const approve = useApprove();
+  const isApproved = useApproved(srcToken);
   const swap = useSwap();
   const sign = useSign();
+  const firstQuote = useFirstQuote();
+  const secondQuote = useSecondQuote();
   const isSupported = useIsLiquidityHubSupported();
   return async (srcAmount?: string, minDestAmount?: string) => {
     if (!isSupported) {
@@ -65,46 +66,31 @@ export const useLiquidityHubCallback = (
     ) {
       return undefined;
     }
+    liquidityHubAnalytics.onInitTrade(minDestAmount);
+
     onSetLiquidityHubState({
       isLoading: true,
-      isWon: false,
-      isFailed: false,
-      outAmount: undefined,
     });
 
-    const quoteArgs = {
-      destToken,
-      srcAmount,
-      srcToken,
+    const quoteArgs: QuoteArgs = {
+      outToken: destToken,
+      inAmount: srcAmount,
+      inToken: srcToken,
       minDestAmount,
-      account,
-      force: queryParam === LiquidityHubControl.FORCE,
-      slippage: userSlippageTolerance / 100,
     };
 
     try {
-      const res = await quote(quoteArgs);
-      onSetLiquidityHubState({
-        isWon: true,
-        isLoading: false,
-        outAmount: res.outAmount,
-      });
-    } catch (error) {
-      onResetLiquidityHubState();
-      return undefined;
-    }
+      const approved = await isApproved(srcAmount);
 
-    try {
-      await approve(srcAmount);
-      const quoteResult = await quote(quoteArgs);
+      if (!approved) {
+        await firstQuote(quoteArgs);
+        await approve();
+      }
 
-      onSetLiquidityHubState({
-        outAmount: quoteResult.outAmount,
-      });
+      const quoteResult = await secondQuote(quoteArgs);
       const signature = await sign(quoteResult.permitData);
 
-      const txResponse = await swap({
-        account,
+      const response = await swap({
         srcToken,
         destToken,
         srcAmount,
@@ -113,34 +99,46 @@ export const useLiquidityHubCallback = (
         quoteResult,
       });
 
-      return txResponse;
+      return response;
     } catch (error) {
-      onResetLiquidityHubState();
-      onSetLiquidityHubState({
-        isFailed: true,
-      });
+      if (error.message !== REQUEST_FILTERED_ERROR) {
+        onSetLiquidityHubState({ isFailed: true });
+      }
       return undefined;
     } finally {
+      liquidityHubAnalytics.clearState();
       onSetLiquidityHubState({
         isLoading: false,
+        isWon: false,
+        outAmount: '',
       });
+    }
+  };
+};
+
+const useApproved = (srcToken?: string) => {
+  const tokenContract = useTokenContract(srcToken);
+  const { account } = useActiveWeb3React();
+
+  return async (srcAmount: string) => {
+    try {
+      const allowance = await tokenContract?.allowance(account, permit2Address);
+      return BN(allowance?.toString() || '0').gte(BN(srcAmount));
+    } catch (error) {
+      return false;
     }
   };
 };
 
 const useApprove = (srcToken?: string) => {
   const tokenContract = useTokenContract(srcToken);
-  const { account } = useActiveWeb3React();
   const { onSetLiquidityHubState } = useLiquidityHubActionHandlers();
-  return async (srcAmount: string) => {
+
+  return async () => {
+    const count = counter();
     try {
-      const allowance = await tokenContract?.allowance(account, permit2Address);
-      if (BN(allowance.toString()).gte(BN(srcAmount))) {
-        liquidityHubAnalytics.onTokenApproved();
-        return;
-      }
       onSetLiquidityHubState({ waitingForApproval: true });
-      liquidityHubAnalytics.onApproveRequest();
+      liquidityHubAnalytics.onApprovalRequest();
       const response = await tokenContract?.approve(
         permit2Address,
         maxUint256,
@@ -148,11 +146,15 @@ const useApprove = (srcToken?: string) => {
           gasLimit: 100_000,
         },
       );
-      liquidityHubAnalytics.onTokenApproved();
 
-      return response.wait();
+      const res = await response.wait();
+      liquidityHubAnalytics.onApprovalSuccess(count());
+      return res;
     } catch (error) {
-      liquidityHubAnalytics.onApproveFailed(error.message);
+      liquidityHubAnalytics.onApprovalFailed(error.message, count());
+      onSetLiquidityHubState({
+        isFailed: true,
+      });
       throw new Error(error.message);
     } finally {
       onSetLiquidityHubState({ waitingForApproval: false });
@@ -164,6 +166,8 @@ const useSign = () => {
   const { account, library } = useActiveWeb3React();
   const { onSetLiquidityHubState } = useLiquidityHubActionHandlers();
   return async (permitData: any) => {
+    const count = counter();
+
     try {
       if (!account || !library) {
         throw new Error('No account or library');
@@ -176,10 +180,13 @@ const useSign = () => {
       process.env.DEBUG = 'web3-candies';
 
       const signature = await signEIP712(account, permitData);
-      liquidityHubAnalytics.onSignatureSuccess(signature);
+      liquidityHubAnalytics.onSignatureSuccess(signature, count());
       return signature;
     } catch (error) {
-      liquidityHubAnalytics.onSignatureFailed(error.message);
+      liquidityHubAnalytics.onSignatureFailed(error.message, count());
+      onSetLiquidityHubState({
+        isFailed: true,
+      });
       throw new Error(error.message);
     } finally {
       onSetLiquidityHubState({ waitingForSignature: false });
@@ -188,18 +195,17 @@ const useSign = () => {
 };
 
 const useSwap = () => {
-  const { library } = useActiveWeb3React();
+  const { library, account } = useActiveWeb3React();
   return async (args: {
-    account: string;
     srcToken: string;
     destToken: string;
     srcAmount: string;
     minDestAmount: string;
     signature: string;
-    quoteResult: any;
+    quoteResult: QuoteResponse;
   }) => {
+    const count = counter();
     try {
-      const count = counter();
       liquidityHubAnalytics.onSwapRequest();
       const txHashResponse = await fetch(`${API_ENDPOINT}/swapx?chainId=137`, {
         method: 'POST',
@@ -207,24 +213,145 @@ const useSwap = () => {
           inToken: args.srcToken,
           outToken: args.destToken,
           inAmount: args.srcAmount,
-          outAmount: args.minDestAmount,
-          user: args.account,
+          user: account,
           signature: args.signature,
           ...args.quoteResult,
         }),
       });
       const swap = await txHashResponse.json();
-      if (!swap || !swap.txHash) {
-        throw new Error('Missing txHash');
+      if (!swap) {
+        throw new Error('Missing swap response');
       }
 
+      if (swap.error || (swap.message && !swap.txHash)) {
+        throw new Error(swap);
+      }
+
+      if (!swap.txHash) {
+        throw new Error('Missing txHash');
+      }
+      const tx = await waitForTx(swap.txHash, library);
       liquidityHubAnalytics.onSwapSuccess(swap.txHash, count());
-      return waitForTx(swap.txHash, library);
+      return tx;
     } catch (error) {
-      liquidityHubAnalytics.onSwapFailed(error.message);
+      const message = error.toString();
+      liquidityHubAnalytics.onSwapFailed(message, count());
+      throw new Error(message);
+    }
+  };
+};
+
+const useFirstQuote = () => {
+  const quoteCallback = useQuote();
+
+  return async (args: QuoteArgs) => {
+    const count = counter();
+    try {
+      liquidityHubAnalytics.onFirstQuoteRequest();
+
+      const res = await quoteCallback(args);
+      liquidityHubAnalytics.onFirstQuoteSuccess({
+        ...res,
+        time: count(),
+      });
+
+      return res;
+    } catch (error) {
+      liquidityHubAnalytics.onFirstQuoteFailed(error.message, count());
       throw new Error(error.message);
     }
   };
+};
+
+const useSecondQuote = () => {
+  const quoteCallback = useQuote();
+  const { onSetLiquidityHubState } = useLiquidityHubActionHandlers();
+
+  return async (args: QuoteArgs) => {
+    const count = counter();
+    try {
+      liquidityHubAnalytics.onSecondQuoteRequest();
+      const result = await quoteCallback(args);
+      liquidityHubAnalytics.onSecondQuoteSuccess({
+        ...result,
+        time: count(),
+      });
+      onSetLiquidityHubState({
+        isWon: true,
+        isLoading: false,
+        outAmount: result.outAmount,
+      });
+      return result;
+    } catch (error) {
+      liquidityHubAnalytics.onSecondQuoteFailed(error.message, count());
+      throw new Error(error.message);
+    }
+  };
+};
+
+const useQuote = () => {
+  const { account } = useActiveWeb3React();
+  const [userSlippageTolerance] = useUserSlippageTolerance();
+  const queryParam = useQueryParam();
+
+  return async (args: QuoteArgs) => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}/quote?chainId=137`, {
+        method: 'POST',
+        body: JSON.stringify({
+          inToken: args.inToken,
+          outToken: args.outToken,
+          inAmount: args.inAmount,
+          outAmount: args.minDestAmount,
+          user: account,
+          slippage: userSlippageTolerance / 1000,
+          qs: encodeURIComponent(window.location.hash),
+          sessionId: liquidityHubAnalytics.data.sessionId,
+        }),
+      });
+      const result = await response.json();
+
+      if (!result) {
+        throw new Error('Missing result from quote');
+      }
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      if (result.message) {
+        throw new Error(result.message);
+      }
+
+      if (!liquidityHubAnalytics.data.sessionId) {
+        liquidityHubAnalytics.setSessionId(result.sessionId);
+      }
+      if (
+        queryParam !== LiquidityHubControl.FORCE &&
+        BN(result.outAmount || '0').isLessThan(BN(args.minDestAmount || '0'))
+      ) {
+        throw new Error('Dex trade is better than Clob trade');
+      }
+      return result as QuoteResponse;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+};
+
+//utils
+
+const useIsLiquidityHubSupported = () => {
+  const { chainId } = useActiveWeb3React();
+
+  return useMemo(() => getConfig(chainId)?.swap?.liquidityHub, [chainId]);
+};
+
+export const useIsLiquidityHubEnabled = () => {
+  const isSupported = useIsLiquidityHubSupported();
+  const [liquidityHubDisabled] = useLiquidityHubManager();
+
+  return isSupported && !liquidityHubDisabled;
 };
 
 async function waitForTx(txHash: string, library: any) {
@@ -241,78 +368,8 @@ async function waitForTx(txHash: string, library: any) {
   }
 }
 
-interface QuoteResponse {
-  outAmount: string;
-  permitData: any;
-  serializedOrder: string;
-  callData: string;
-}
-
-const quote = async ({
-  destToken,
-  srcAmount,
-  srcToken,
-  minDestAmount,
-  account,
-  force,
-  slippage,
-}: {
-  minDestAmount: string;
-  srcAmount: string;
-  srcToken: string;
-  destToken: string;
-  account: string;
-  force: boolean;
-  slippage: number;
-}) => {
-  try {
-    liquidityHubAnalytics.onQuoteRequest(minDestAmount);
-    const count = counter();
-    const response = await fetch(`${API_ENDPOINT}/quote?chainId=137`, {
-      method: 'POST',
-      body: JSON.stringify({
-        inToken: srcToken,
-        outToken: destToken,
-        inAmount: srcAmount,
-        outAmount: minDestAmount,
-        user: account,
-        slippage,
-        qs: encodeURIComponent(window.location.hash),
-      }),
-    });
-    const result = await response.json();
-
-    if (!result) {
-      throw new Error('Missing result');
-    }
-
-    liquidityHubAnalytics.onQuoteSuccess(
-      result.outAmount,
-      result.serializedOrder,
-      result.callData,
-      result.permitData,
-      count(),
-    );
-
-    if (!force && BN(result.outAmount).isLessThan(BN(minDestAmount))) {
-      liquidityHubAnalytics.onClobLowAmountOut();
-      throw new Error('Dex trade is better than LiquidityHub trade');
-    }
-
-    return result as QuoteResponse;
-  } catch (error) {
-    liquidityHubAnalytics.onQuoteFailed(error.message);
-    throw new Error(error.message);
-  }
-};
-
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-enum LiquidityHubControl {
-  FORCE = '1',
-  SKIP = '2',
 }
 
 export const useQueryParam = () => {
@@ -324,6 +381,326 @@ export const useQueryParam = () => {
 
   return query.get('liquidity-hub')?.toLowerCase();
 };
+
+const initialData: Partial<LiquidityHubAnalyticsData> = {
+  _id: crypto.randomUUID(),
+  partner: 'QuickSwap',
+  chainId: 137,
+  isClobDisabled: false,
+  dexSwapSuccess: false,
+  dexSwapTxHash: '',
+  sessionId: undefined,
+  walletAddress: '',
+  dexAmountOut: '',
+  isClobTrade: false,
+  srcTokenAddress: '',
+  srcTokenSymbol: '',
+  dstTokenAddress: '',
+  dstTokenSymbol: '',
+  srcAmount: '',
+
+  firstQuoteState: '',
+  firstQuoteMillis: null,
+  firstQuoteAmountOut: '',
+  firstQuotePermitData: '',
+  firstQuoteSerializedOrder: '',
+  firstQuoteCallData: '',
+  firstQuoteError: '',
+
+  approvalState: '',
+  approvalError: '',
+  approvalMillis: null,
+
+  secondQuoteState: '',
+  secondQuoteMillis: null,
+  secondQuoteAmountOut: '',
+  secondQuotePermitData: '',
+  secondQuoteSerializedOrder: '',
+  secondQuoteCallData: '',
+  secondQuoteError: '',
+
+  signatureState: '',
+  signatureMillis: null,
+  signature: '',
+  signatureError: '',
+
+  swapState: '',
+  swapMillis: null,
+  txHash: '',
+  swapError: '',
+
+  swapClicked: false,
+  swapConfirmed: false,
+};
+
+const counter = () => {
+  const now = Date.now();
+
+  return () => {
+    return Date.now() - now;
+  };
+};
+
+class LiquidityHubAnalytics {
+  initialTimestamp = Date.now();
+  data = initialData;
+
+  private updateAndSend(values = {} as Partial<LiquidityHubAnalyticsData>) {
+    this.data = { ...this.data, ...values };
+
+    try {
+      fetch('https://bi.orbs.network/putes/clob-ui', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.data),
+      });
+    } catch (error) {}
+  }
+
+  onFirstQuoteRequest() {
+    this.updateAndSend({ firstQuoteState: 'pending' });
+  }
+
+  onFirstQuoteSuccess(args: QuoteSuccessArgs) {
+    this.updateAndSend({
+      firstQuoteAmountOut: args.outAmount,
+      firstQuotePermitData: args.permitData,
+      firstQuoteSerializedOrder: args.serializedOrder,
+      firstQuoteCallData: args.callData,
+      firstQuoteMillis: args.time,
+    });
+  }
+
+  onFirstQuoteFailed(error: string, time: number) {
+    this.updateAndSend({
+      firstQuoteError: error,
+      firstQuoteMillis: time,
+      firstQuoteState: 'failed',
+    });
+  }
+
+  onApprovalRequest() {
+    this.updateAndSend({ approvalState: 'pending' });
+  }
+
+  onDexSwapSuccess(dexSwapTxHash: string) {
+    this.updateAndSend({ dexSwapSuccess: true, dexSwapTxHash });
+  }
+
+  onApprovalSuccess(time: number) {
+    this.updateAndSend({ approvalMillis: time, approvalState: 'success' });
+  }
+
+  onApprovalFailed(error: string, time: number) {
+    this.updateAndSend({
+      approvalError: error,
+      approvalState: 'failed',
+      approvalMillis: time,
+    });
+  }
+
+  onSecondQuoteRequest() {
+    this.updateAndSend({ secondQuoteState: 'pending' });
+  }
+
+  onSecondQuoteSuccess(args: QuoteSuccessArgs) {
+    this.updateAndSend({
+      secondQuoteAmountOut: args.outAmount,
+      secondQuotePermitData: args.permitData,
+      secondQuoteSerializedOrder: args.serializedOrder,
+      secondQuoteCallData: args.callData,
+      secondQuoteMillis: args.time,
+      isClobTrade: true,
+      secondQuoteState: 'success',
+    });
+  }
+
+  onSecondQuoteFailed(error: string, time: number) {
+    this.updateAndSend({
+      secondQuoteError: error,
+      secondQuoteMillis: time,
+      secondQuoteState: 'failed',
+    });
+  }
+
+  onSignatureRequest() {
+    this.updateAndSend({ signatureState: 'pending' });
+  }
+
+  onSignatureSuccess(signature: string, time: number) {
+    this.updateAndSend({
+      signature,
+      signatureMillis: time,
+      signatureState: 'success',
+    });
+  }
+
+  onSignatureFailed(error: string, time: number) {
+    this.updateAndSend({
+      signatureError: error,
+      signatureState: 'failed',
+      signatureMillis: time,
+    });
+  }
+
+  onSwapRequest() {
+    this.updateAndSend({ swapState: 'pending' });
+  }
+
+  onSwapSuccess(txHash: string, time: number) {
+    this.updateAndSend({ txHash, swapMillis: time, swapState: 'success' });
+  }
+
+  onSwapFailed(error: string, time: number) {
+    this.updateAndSend({
+      swapError: error,
+      swapState: 'failed',
+      swapMillis: time,
+    });
+  }
+
+  onSwapClicked() {
+    this.updateAndSend({ swapClicked: true });
+  }
+
+  onSwapConfirmed() {
+    this.updateAndSend({ swapConfirmed: true });
+  }
+
+  setSessionId(id: string) {
+    this.data.sessionId = id;
+  }
+
+  onWalletConnected(walletAddress?: string) {
+    this.updateAndSend({ walletAddress: walletAddress || '' });
+  }
+
+  onSrcToken(address: string, symbol: string) {
+    this.updateAndSend({
+      srcTokenAddress: address || 'native',
+      srcTokenSymbol: symbol,
+    });
+  }
+
+  onDstToken(address: string, symbol: string) {
+    this.updateAndSend({
+      dstTokenAddress: address || 'native',
+      dstTokenSymbol: symbol,
+    });
+  }
+
+  onDisabled() {
+    this.updateAndSend({ isClobDisabled: true });
+  }
+
+  onSrcAmount(srcAmount: string) {
+    this.updateAndSend({ srcAmount });
+  }
+
+  onInitTrade(dexAmountOut: string) {
+    this.updateAndSend({ dexAmountOut });
+  }
+
+  clearState() {
+    const walletAddress = this.data.walletAddress;
+    this.data = {
+      ...initialData,
+      walletAddress,
+    };
+  }
+}
+export const liquidityHubAnalytics = new LiquidityHubAnalytics();
+
+export const useLiquidityHubAnalyticsListeners = (
+  srcToken?: any,
+  dstToken?: any,
+  srcAmount?: string,
+  showConfirm?: boolean,
+  attemptingTxn?: boolean,
+) => {
+  const { account } = useActiveWeb3React();
+
+  useEffect(() => {
+    if (showConfirm) {
+      liquidityHubAnalytics.onSwapClicked();
+    }
+  }, [showConfirm]);
+
+  useEffect(() => {
+    if (attemptingTxn) {
+      liquidityHubAnalytics.onSwapConfirmed();
+    }
+  }, [attemptingTxn]);
+
+  useEffect(() => {
+    if (srcAmount) {
+      liquidityHubAnalytics.onSrcAmount(srcAmount);
+    }
+  }, [srcAmount]);
+
+  useEffect(() => {
+    if (account) {
+      liquidityHubAnalytics.onWalletConnected(account);
+    }
+  }, [account]);
+
+  useEffect(() => {
+    if (srcToken?.symbol) {
+      liquidityHubAnalytics.onSrcToken(srcToken?.address, srcToken?.symbol);
+    }
+  }, [srcToken?.address, srcToken?.symbol]);
+
+  useEffect(() => {
+    if (dstToken?.symbol) {
+      liquidityHubAnalytics.onDstToken(dstToken?.address, dstToken?.symbol);
+    }
+  }, [dstToken?.address, dstToken?.symbol]);
+};
+
+export const useConfirmationPendingContent = (pendingText?: string) => {
+  const { t } = useTranslation();
+  const liquidityHubState = useLiquidityHubState();
+  return useMemo(() => {
+    if (liquidityHubState?.waitingForApproval) {
+      return {
+        title: t('optimizedRouteAvailable'),
+        pending: pendingText,
+        confirm: t('awaitingApproval'),
+      };
+    }
+    if (liquidityHubState?.isLoading) {
+      return {
+        title: t('seekingBestPrice'),
+      };
+    }
+    if (liquidityHubState?.isWon) {
+      return {
+        title: t('optimizedRouteAvailable'),
+        pending: pendingText,
+        confirm:
+          liquidityHubState.waitingForSignature &&
+          t('signToPerformGaslessSwap'),
+      };
+    }
+    return {
+      title: t('waitingConfirm'),
+      pending: pendingText,
+      confirm: t('confirmTxinWallet'),
+    };
+  }, [
+    liquidityHubState?.isLoading,
+    liquidityHubState?.isWon,
+    pendingText,
+    t,
+    liquidityHubState?.waitingForApproval,
+    liquidityHubState.waitingForSignature,
+  ]);
+};
+
+// components
 
 export const LiquidityHubTxSettings = () => {
   const [
@@ -453,332 +830,85 @@ const StyledLiquidityHubTxSettings = styled(Box)({
   },
 });
 
-interface State {
-  state: string;
+// types
+
+type actionState = 'pending' | 'success' | 'failed' | '';
+
+type QuoteSuccessArgs = {
+  outAmount: string;
+  serializedOrder: string;
+  callData: string;
+  permitData: string;
   time: number;
-}
+};
+
 interface LiquidityHubAnalyticsData {
   _id: string;
-  state: State;
-  walletAddress?: string;
+  partner: string;
+  chainId: number;
+  sessionId?: string;
+  walletAddress: string;
+  dexAmountOut: string;
+  isClobTrade: boolean;
   srcTokenAddress: string;
   srcTokenSymbol: string;
   dstTokenAddress: string;
   dstTokenSymbol: string;
   srcAmount: string;
-  dstAmountOut: string;
-  clobOutAmount: string;
-  approvalAmount: string;
-  approvalSpender: string;
-  approveFailedError: string;
-  clobAmountOut: string;
-  dexAmountOut: string;
-  isClobTrade: boolean;
-  quoteFailedError: string;
-  quoteRequestDurationMillis: number;
-  swapTxHash: string;
-  swapFailedError: string;
+
+  firstQuoteState: actionState;
+  firstQuoteMillis: number | null;
+  firstQuoteAmountOut: string;
+  firstQuotePermitData: string;
+  firstQuoteSerializedOrder: string;
+  firstQuoteCallData: string;
+  firstQuoteError: string;
+
+  approvalState: actionState;
+  approvalError: string;
+  approvalMillis: number | null;
+
+  secondQuoteState: actionState;
+  secondQuoteMillis: number | null;
+  secondQuoteAmountOut: string;
+  secondQuotePermitData: string;
+  secondQuoteSerializedOrder: string;
+  secondQuoteCallData: string;
+  secondQuoteError: string;
+
+  signatureState: actionState;
+  signatureMillis: number | null;
   signature: string;
+  signatureError: string;
+
+  swapState: actionState;
+  txHash: string;
+  swapMillis: number | null;
+  swapError: string;
+
+  swapClicked: boolean;
+  swapConfirmed: boolean;
+
+  isClobDisabled: boolean;
+  dexSwapSuccess: boolean;
+  dexSwapTxHash: string;
+}
+
+interface QuoteResponse {
+  outAmount: string;
+  permitData: any;
   serializedOrder: string;
   callData: string;
-  permitData: string;
-  signatureFailedError: string;
-  swapRequestDurationMillis: number;
 }
 
-const counter = () => {
-  const now = Date.now();
-
-  return () => {
-    return Date.now() - now;
-  };
+type QuoteArgs = {
+  minDestAmount: string;
+  inAmount: string;
+  inToken: string;
+  outToken: string;
 };
 
-class LiquidityHubAnalytics {
-  history: State[] = [];
-  initialTimestamp = Date.now();
-  data = { _id: crypto.randomUUID() } as LiquidityHubAnalyticsData;
-
-  private update({
-    newState,
-    values = {},
-  }: {
-    newState: string;
-    values?: Partial<LiquidityHubAnalyticsData>;
-  }) {
-    if (this.data.state) {
-      this.history.push(this.data.state);
-    }
-
-    this.data.state = {
-      state: newState,
-      time: Date.now() - this.initialTimestamp,
-    };
-    this.data = { ...this.data, ...values };
-
-    fetch('https://bi.orbs.network/putes/clob-ui', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...this.data, history: this.history }),
-    }).catch();
-  }
-
-  onWalletConnected(walletAddress?: string) {
-    this.update({
-      newState: 'walletConnected',
-      values: { walletAddress },
-    });
-  }
-
-  onSrcToken(srcTokenAddress: string, srcTokenSymbol: string) {
-    this.update({
-      newState: 'srcToken',
-      values: { srcTokenAddress, srcTokenSymbol },
-    });
-  }
-
-  onDstToken(dstTokenAddress: string, dstTokenSymbol: string) {
-    this.update({
-      newState: 'dstToken',
-      values: { dstTokenAddress, dstTokenSymbol },
-    });
-  }
-
-  onDisabled() {
-    this.update({
-      newState: 'clobDisabled',
-    });
-  }
-
-  onSrcAmount(srcAmount: string) {
-    this.update({
-      newState: 'srcAmount',
-      values: { srcAmount },
-    });
-  }
-
-  onPageLoaded() {
-    this.update({
-      newState: 'swapPageLoaded',
-    });
-  }
-
-  onApproveRequest() {
-    this.update({
-      newState: 'approveRequest',
-      values: {
-        approveFailedError: '',
-      },
-    });
-  }
-
-  onTokenApproved() {
-    this.update({
-      newState: 'approved',
-    });
-  }
-
-  onApproveFailed(approveFailedError: string) {
-    this.update({
-      newState: 'approveFailed',
-      values: { approveFailedError },
-    });
-  }
-
-  onSwapClick() {
-    this.update({
-      newState: 'swapClick',
-    });
-  }
-
-  onConfirmSwapClick() {
-    this.update({
-      newState: 'swapConfirmClick',
-    });
-  }
-
-  onQuoteRequest(dexAmountOut: string) {
-    this.update({
-      newState: 'quoteRequest',
-      values: {
-        dexAmountOut,
-        quoteFailedError: '',
-      },
-    });
-  }
-
-  onQuoteSuccess(
-    clobAmountOut: string,
-    serializedOrder: string,
-    callData: string,
-    permitData: any,
-    quoteRequestDurationMillis: number,
-  ) {
-    this.update({
-      newState: 'quoteSuccess',
-      values: {
-        clobAmountOut,
-        quoteRequestDurationMillis,
-        isClobTrade: BN(this.data.dexAmountOut).isLessThan(BN(clobAmountOut)),
-        serializedOrder,
-        callData,
-        permitData,
-      },
-    });
-  }
-  onQuoteFailed(quoteFailedError: string) {
-    this.update({
-      newState: 'quoteFailed',
-      values: {
-        quoteFailedError,
-      },
-    });
-  }
-
-  onClobLowAmountOut() {
-    this.update({
-      newState: 'clobLowAmountOut',
-    });
-  }
-
-  onSignatureRequest() {
-    this.update({
-      newState: 'signatureRequest',
-    });
-  }
-  onSignatureSuccess(signature: string) {
-    this.update({
-      newState: 'signatureSuccess',
-      values: { signature },
-    });
-  }
-
-  onSignatureFailed(signatureFailedError: string) {
-    this.update({
-      newState: 'signatureFailed',
-      values: { signatureFailedError },
-    });
-  }
-
-  onSwapRequest() {
-    this.update({
-      newState: 'swapRequest',
-      values: { swapFailedError: '' },
-    });
-  }
-
-  onSwapSuccess(swapTxHash: string, swapRequestDurationMillis: number) {
-    this.update({
-      newState: 'swapSuccess',
-      values: { swapTxHash, swapRequestDurationMillis },
-    });
-  }
-
-  onSwapFailed(swapFailedError: string) {
-    this.update({
-      newState: 'swapFailed',
-      values: { swapFailedError },
-    });
-  }
+enum LiquidityHubControl {
+  FORCE = '1',
+  SKIP = '2',
 }
-export const liquidityHubAnalytics = new LiquidityHubAnalytics();
-
-export const useLiquidityHubAnalyticsListeners = (
-  showConfirm: boolean,
-  attemptingTxn: boolean,
-  srcToken?: any,
-  dstToken?: any,
-  srcAmount?: string,
-) => {
-  const { account } = useActiveWeb3React();
-
-  useEffect(() => {
-    if (srcAmount) {
-      liquidityHubAnalytics.onSrcAmount(srcAmount);
-    }
-  }, [srcAmount]);
-
-  useEffect(() => {
-    if (showConfirm) {
-      liquidityHubAnalytics.onSwapClick();
-    }
-  }, [showConfirm]);
-
-  useEffect(() => {
-    if (attemptingTxn) {
-      liquidityHubAnalytics.onSwapRequest();
-    }
-  }, [attemptingTxn]);
-
-  useEffect(() => {
-    liquidityHubAnalytics.onWalletConnected(account);
-  }, [account]);
-
-  useEffect(() => {
-    liquidityHubAnalytics.onPageLoaded();
-  }, []);
-
-  useEffect(() => {
-    liquidityHubAnalytics.onSrcToken(srcToken?.address, srcToken?.symbol);
-  }, [srcToken?.address, srcToken?.symbol]);
-
-  useEffect(() => {
-    liquidityHubAnalytics.onDstToken(dstToken?.address, dstToken?.symbol);
-  }, [dstToken?.address, dstToken?.symbol]);
-};
-
-export const useConfirmationPendingContent = (pendingText?: string) => {
-  const { t } = useTranslation();
-  const liquidityHubState = useLiquidityHubState();
-  return useMemo(() => {
-    if (liquidityHubState?.waitingForApproval) {
-      return {
-        title: t('optimizedRouteAvailable'),
-        pending: pendingText,
-        confirm: t('awaitingApproval'),
-      };
-    }
-    if (liquidityHubState?.isLoading) {
-      return {
-        title: t('seekingBestPrice'),
-      };
-    }
-    if (liquidityHubState?.isWon) {
-      return {
-        title: t('optimizedRouteAvailable'),
-        pending: pendingText,
-        confirm:
-          liquidityHubState.waitingForSignature &&
-          t('signToPerformGaslessSwap'),
-      };
-    }
-    return {
-      title: t('waitingConfirm'),
-      pending: pendingText,
-      confirm: t('confirmTxinWallet'),
-    };
-  }, [
-    liquidityHubState?.isLoading,
-    liquidityHubState?.isWon,
-    pendingText,
-    t,
-    liquidityHubState?.waitingForApproval,
-    liquidityHubState.waitingForSignature,
-  ]);
-};
-
-const useIsLiquidityHubSupported = () => {
-  const { chainId } = useActiveWeb3React();
-
-  return useMemo(() => getConfig(chainId)?.swap?.liquidityHub, [chainId]);
-};
-
-export const useIsLiquidityHubEnabled = () => {
-  const isSupported = useIsLiquidityHubSupported();
-  const [liquidityHubDisabled] = useLiquidityHubManager();
-
-  return isSupported && !liquidityHubDisabled;
-};
