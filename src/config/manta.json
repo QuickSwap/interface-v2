@@ -7,7 +7,7 @@
   "aprAPINetwork": "manta",
   "chainId": 169,
   "isMainnet": true,
-  "nativeCurrencyImage": "/zkevm.svg",
+  "nativeCurrencyImage": "/manta.svg",
   "nativeCurrency": {
     "name": "Ether",
     "symbol": "ETH",
