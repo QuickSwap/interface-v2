@@ -16,14 +16,19 @@ import { useQuery } from '@tanstack/react-query';
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;
   pairAddress: string;
-}> = ({ pairData, pairAddress }) => {
+  isUni?: boolean;
+}> = ({ pairData, pairAddress, isUni }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
 
   const fetchLiquidityChartData = async () => {
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}`,
+        `${
+          process.env.REACT_APP_LEADERBOARD_APP_URL
+        }/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}${
+          isUni ? '&isUni=true' : ''
+        }`,
       );
       if (!res.ok) {
         return null;
@@ -65,6 +70,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
                       t.liquidityActive,
                       t.tickIdx,
                       mockTicks,
+                      isUni,
                     )
                   : undefined;
               const nextSqrtX96 = liquidityChartData.ticksProcessed[i - 1]

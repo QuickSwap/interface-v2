@@ -25,6 +25,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { CallMade } from '@material-ui/icons';
 import { getConfig } from 'config';
 import { useQuery } from '@tanstack/react-query';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -38,6 +39,12 @@ const AnalyticsPairDetails: React.FC = () => {
   const isV2 = version === 'v2';
   const { chainId } = useActiveWeb3React();
 
+  const parsedQuery = useParsedQueryString();
+  const isUni =
+    parsedQuery && parsedQuery.isUni && parsedQuery.isUni === 'true'
+      ? true
+      : false;
+
   const config = getConfig(chainId);
   const showAnalytics = config['analytics']['available'];
   useEffect(() => {
@@ -50,7 +57,11 @@ const AnalyticsPairDetails: React.FC = () => {
   const fetchPairData = async () => {
     if (chainId && version) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
+        `${
+          process.env.REACT_APP_LEADERBOARD_APP_URL
+        }/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}${
+          isUni ? '&isUni=true' : ''
+        }`,
       );
       if (!res.ok) {
         return null;
@@ -278,6 +289,7 @@ const AnalyticsPairDetails: React.FC = () => {
               pairData={pairData}
               token0Rate={token0Rate}
               token1Rate={token1Rate}
+              isUni={isUni}
             />
           </Box>
         </Grid>
@@ -323,7 +335,7 @@ const AnalyticsPairDetails: React.FC = () => {
                     borderRadius={6}
                     className='text-primaryText bg-gray30'
                   >
-                    {pairData.fee / 10000}% Fee
+                    {pairData.fee / 10000}% {isUni ? '(F)' : 'Fee'}
                   </Box>
                 )}
               </Box>

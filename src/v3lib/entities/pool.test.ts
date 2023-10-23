@@ -37,6 +37,7 @@ describe('Pool', () => {
           0,
           0,
           [],
+          false,
         );
       }).toThrow('CHAIN_IDS');
     });
@@ -51,13 +52,23 @@ describe('Pool', () => {
           0,
           0,
           [],
+          false,
         );
       }).toThrow('FEE');
     });
 
     it('fee cannot be more than 1e6', () => {
       expect(() => {
-        new Pool(USDC, WETH9[1], 1e6, encodeSqrtRatioX96(1, 1), 0, 0, []);
+        new Pool(
+          USDC,
+          WETH9[1],
+          FeeAmount.LOW,
+          encodeSqrtRatioX96(1, 1),
+          0,
+          0,
+          [],
+          false,
+        );
       }).toThrow('FEE');
     });
 
@@ -71,6 +82,7 @@ describe('Pool', () => {
           0,
           0,
           [],
+          false,
         );
       }).toThrow('ADDRESSES');
     });
@@ -85,6 +97,7 @@ describe('Pool', () => {
           0,
           1,
           [],
+          false,
         );
       }).toThrow('PRICE_BOUNDS');
       expect(() => {
@@ -96,6 +109,7 @@ describe('Pool', () => {
           0,
           -1,
           [],
+          false,
         );
       }).toThrow('PRICE_BOUNDS');
     });
@@ -109,6 +123,7 @@ describe('Pool', () => {
         0,
         0,
         [],
+        false,
       );
     });
 
@@ -121,6 +136,7 @@ describe('Pool', () => {
         0,
         0,
         [],
+        false,
       );
     });
 
@@ -133,6 +149,7 @@ describe('Pool', () => {
         0,
         0,
         [],
+        false,
       );
     });
   });
@@ -154,6 +171,7 @@ describe('Pool', () => {
         0,
         0,
         [],
+        false,
       );
       expect(pool.token0).toEqual(DAI);
       pool = new Pool(
@@ -164,6 +182,7 @@ describe('Pool', () => {
         0,
         0,
         [],
+        false,
       );
       expect(pool.token0).toEqual(DAI);
     });
@@ -178,6 +197,7 @@ describe('Pool', () => {
         0,
         0,
         [],
+        false,
       );
       expect(pool.token1).toEqual(USDC);
       pool = new Pool(
@@ -188,6 +208,7 @@ describe('Pool', () => {
         0,
         0,
         [],
+        false,
       );
       expect(pool.token1).toEqual(USDC);
     });
@@ -204,6 +225,7 @@ describe('Pool', () => {
           0,
           TickMath.getTickAtSqrtRatio(encodeSqrtRatioX96(101e6, 100e18)),
           [],
+          false,
         ).token0Price.toSignificant(5),
       ).toEqual('1.01');
       expect(
@@ -215,6 +237,7 @@ describe('Pool', () => {
           0,
           TickMath.getTickAtSqrtRatio(encodeSqrtRatioX96(101e6, 100e18)),
           [],
+          false,
         ).token0Price.toSignificant(5),
       ).toEqual('1.01');
     });
@@ -231,6 +254,7 @@ describe('Pool', () => {
           0,
           TickMath.getTickAtSqrtRatio(encodeSqrtRatioX96(101e6, 100e18)),
           [],
+          false,
         ).token1Price.toSignificant(5),
       ).toEqual('0.9901');
       expect(
@@ -242,6 +266,7 @@ describe('Pool', () => {
           0,
           TickMath.getTickAtSqrtRatio(encodeSqrtRatioX96(101e6, 100e18)),
           [],
+          false,
         ).token1Price.toSignificant(5),
       ).toEqual('0.9901');
     });
@@ -256,6 +281,7 @@ describe('Pool', () => {
       0,
       0,
       [],
+      false,
     );
     it('returns price of token in terms of other token', () => {
       expect(pool.priceOf(DAI)).toEqual(pool.token0Price);
@@ -277,6 +303,7 @@ describe('Pool', () => {
         0,
         0,
         [],
+        false,
       );
       expect(pool.chainId).toEqual(1);
       pool = new Pool(
@@ -287,6 +314,7 @@ describe('Pool', () => {
         0,
         0,
         [],
+        false,
       );
       expect(pool.chainId).toEqual(1);
     });
@@ -301,6 +329,7 @@ describe('Pool', () => {
       0,
       0,
       [],
+      false,
     );
     expect(pool.involvesToken(USDC)).toEqual(true);
     expect(pool.involvesToken(DAI)).toEqual(true);
@@ -336,6 +365,7 @@ describe('Pool', () => {
             liquidityGross: ONE_ETHER,
           },
         ],
+        false,
       );
     });
 
