@@ -1,4 +1,3 @@
-import { GlobalValue } from 'constants/index';
 import {
   ChainId,
   Currency,
@@ -18,7 +17,6 @@ import {
   useSingleContractMultipleData,
   useMultipleContractSingleData,
 } from 'state/multicall/hooks';
-import { useIsV2 } from 'state/application/hooks';
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
