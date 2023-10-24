@@ -40,8 +40,10 @@ import {
   QUICK_CONVERSION,
   DL_QUICK_ADDRESS,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
+  UNIV3_QUOTER_ADDRESSES,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
+import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
 import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
@@ -289,6 +291,9 @@ export function useRouterContract(): Contract | null {
 
 export function useV3Quoter() {
   return useContract(QUOTER_ADDRESSES, NewQuoterABI);
+}
+export function useUniV3Quoter() {
+  return useContract(UNIV3_QUOTER_ADDRESSES, UniV3QuoterABI);
 }
 
 export function useV3NFTPositionManagerContract(
