@@ -385,6 +385,13 @@ export const USDT: { [chainId: number]: Token } = {
     'USDT',
     'Tether USD',
   ),
+  [ChainId.MANTA]: new Token(
+    ChainId.MANTA,
+    '0xf417F5A458eC102B90352F697D6e2Ac3A3d2851f',
+    6,
+    'USDT',
+    'Tether USD',
+  ),
 };
 
 export const OLD_QUICK: { [chainId: number]: Token } = {
@@ -439,22 +446,29 @@ export const WBTC: { [chainId: number]: Token } = {
     ChainId.MATIC,
     '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
     8,
-    'wBTC',
-    'Wrapped Bitcoin',
+    'WBTC',
+    'Wrapped BTC',
   ),
   [ChainId.DOGECHAIN]: new Token(
     ChainId.DOGECHAIN,
     '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f',
     8,
-    'wBTC',
+    'WBTC',
     'Wrapped Bitcoin',
   ),
   [ChainId.ZKEVM]: new Token(
     ChainId.ZKEVM,
     '0xEA034fb02eB1808C2cc3adbC15f447B93CbE08e1',
     8,
-    'wBTC',
-    'Wrapped Bitcoin',
+    'WBTC',
+    'Wrapped BTC',
+  ),
+  [ChainId.MANTA]: new Token(
+    ChainId.MANTA,
+    '0x305E88d809c9DC03179554BFbf85Ac05Ce8F18d6',
+    8,
+    'WBTC',
+    'Wrapped BTC',
   ),
 };
 
@@ -476,6 +490,13 @@ export const DAI: { [chainId: number]: Token } = {
   [ChainId.ZKEVM]: new Token(
     ChainId.ZKEVM,
     '0xC5015b9d9161Dca7e18e32f6f25C4aD850731Fd4',
+    18,
+    'DAI',
+    'Dai Stablecoin',
+  ),
+  [ChainId.MANTA]: new Token(
+    ChainId.MANTA,
+    '0x1c466b9371f8aBA0D7c458bE10a62192Fcb8Aa71',
     18,
     'DAI',
     'Dai Stablecoin',
@@ -1001,6 +1022,12 @@ export const SUGGESTED_BASES: {
     WBTC[ChainId.ZKEVM],
     NEW_QUICK[ChainId.ZKEVM],
   ],
+  [ChainId.MANTA]: [
+    WETH[ChainId.ZKEVM],
+    USDT[ChainId.ZKEVM],
+    USDC[ChainId.ZKEVM],
+    WBTC[ChainId.ZKEVM],
+  ],
 };
 
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
@@ -1059,6 +1086,13 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(MATIC[ChainId.ZKEVM]),
     toV3Token(DAI[ChainId.ZKEVM]),
     toV3Token(WBTC[ChainId.ZKEVM]),
+  ],
+  [ChainId.MANTA]: [
+    WMATIC_EXTENDED[ChainId.MANTA],
+    toV3Token(USDT[ChainId.MANTA]),
+    toV3Token(USDC[ChainId.MANTA]),
+    toV3Token(DAI[ChainId.MANTA]),
+    toV3Token(WBTC[ChainId.MANTA]),
   ],
 };
 
