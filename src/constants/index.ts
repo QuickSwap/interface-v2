@@ -1195,17 +1195,17 @@ export const GammaPairs: {
         pid: 90,
       },
     ],
-    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x65ad509db5924ef0001d977590985f965ef1aaaa': [
-      {
-        type: Presets.GAMMA_NARROW,
-        title: 'Narrow',
-        address: '0xdb9f075bb2cd4d0683ac25bb0d8566a9b7fef774',
-        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-        token1Address: '0x65ad509db5924ef0001d977590985f965ef1aaaa',
-        ableToFarm: true,
-        pid: 91,
-      },
-    ],
+    // '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x65ad509db5924ef0001d977590985f965ef1aaaa': [
+    //   {
+    //     type: Presets.GAMMA_NARROW,
+    //     title: 'Narrow',
+    //     address: '0xdb9f075bb2cd4d0683ac25bb0d8566a9b7fef774',
+    //     token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+    //     token1Address: '0x65ad509db5924ef0001d977590985f965ef1aaaa',
+    //     ableToFarm: true,
+    //     pid: 91,
+    //   },
+    // ],
   },
   [ChainId.MUMBAI]: {},
   [ChainId.DOEGCHAIN_TESTNET]: {},
