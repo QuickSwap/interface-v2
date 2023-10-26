@@ -53,6 +53,8 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.DOEGCHAIN_TESTNET]: 'dogechain_testnet',
   [ChainId.ZKEVM]: 'zkevm',
   [ChainId.ZKTESTNET]: 'zkevm_testnet',
+  [ChainId.KAVA]: 'kava',
+  [ChainId.MANTA]: 'manta',
 };
 
 export enum TxnType {
@@ -72,7 +74,12 @@ export enum SmartRouter {
   QUICKSWAP = 'QUICKSWAP',
 }
 
-export const WALLCHAIN_PARAMS = {
+export const WALLCHAIN_PARAMS: {
+  [chainId in ChainId]?: {
+    [SmartRouter.PARASWAP]: { apiURL: string; apiKey: string };
+    [SmartRouter.QUICKSWAP]: { apiURL: string; apiKey: string };
+  };
+} = {
   [ChainId.MATIC]: {
     [SmartRouter.PARASWAP]: {
       apiURL: 'https://matic.wallchains.com/upgrade_txn/',
@@ -81,56 +88,6 @@ export const WALLCHAIN_PARAMS = {
     [SmartRouter.QUICKSWAP]: {
       apiURL: 'https://matic.wallchains.com/upgrade_txn/',
       apiKey: '50eaf751-196d-4fe0-9506-b983f7c83735',
-    },
-  },
-  [ChainId.MUMBAI]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-  },
-  [ChainId.DOEGCHAIN_TESTNET]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-  },
-  [ChainId.DOGECHAIN]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-  },
-  [ChainId.ZKTESTNET]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-  },
-  [ChainId.ZKEVM]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: '',
-      apiKey: '',
     },
   },
 };
@@ -142,6 +99,8 @@ export const BONUS_CUTOFF_AMOUNT = {
   [ChainId.DOGECHAIN]: 0,
   [ChainId.ZKTESTNET]: 0,
   [ChainId.ZKEVM]: 0,
+  [ChainId.MANTA]: 0,
+  [ChainId.KAVA]: 0,
 };
 
 export const GlobalConst = {
@@ -274,7 +233,7 @@ export interface GammaPair {
 }
 
 export const GammaPairs: {
-  [chainId in ChainId]: {
+  [chainId in ChainId]?: {
     [key: string]: GammaPair[];
   };
 } = {
@@ -1194,10 +1153,6 @@ export const GammaPairs: {
       },
     ],
   },
-  [ChainId.MUMBAI]: {},
-  [ChainId.DOEGCHAIN_TESTNET]: {},
-  [ChainId.DOGECHAIN]: {},
-  [ChainId.ZKTESTNET]: {},
   [ChainId.ZKEVM]: {
     '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
       {
@@ -1588,6 +1543,8 @@ export const GlobalValue = {
       [ChainId.MUMBAI]: [],
       [ChainId.DOEGCHAIN_TESTNET]: [],
       [ChainId.ZKTESTNET]: [],
+      [ChainId.KAVA]: [],
+      [ChainId.MANTA]: [],
     },
   },
   marketSDK: {
@@ -1637,6 +1594,8 @@ export const GlobalData = {
       FRAX[ChainId.ZKEVM],
     ],
     [ChainId.ZKTESTNET]: [],
+    [ChainId.KAVA]: [],
+    [ChainId.MANTA]: [],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -1665,6 +1624,8 @@ export const GlobalData = {
       DAI[ChainId.ZKEVM],
     ],
     [ChainId.ZKTESTNET]: [],
+    [ChainId.KAVA]: [],
+    [ChainId.MANTA]: [],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -1686,6 +1647,8 @@ export const GlobalData = {
       [frxETH[ChainId.ZKEVM], WETH[ChainId.ZKEVM]],
     ],
     [ChainId.ZKTESTNET]: [],
+    [ChainId.KAVA]: [],
+    [ChainId.MANTA]: [],
   },
 };
 

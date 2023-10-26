@@ -146,8 +146,11 @@ const AnalyticsPairChart: React.FC<{
   );
 
   const chartIndexesV3 = useMemo(
-    () => [CHART_LIQUIDITY, CHART_POOL_FEE, CHART_PRICE],
-    [],
+    () =>
+      isUni
+        ? [CHART_LIQUIDITY, CHART_PRICE]
+        : [CHART_LIQUIDITY, CHART_POOL_FEE, CHART_PRICE],
+    [isUni],
   );
 
   const chartIndexTexts = useMemo(() => [t('volume'), t('tvl'), t('fees')], [
@@ -160,8 +163,11 @@ const AnalyticsPairChart: React.FC<{
   );
 
   const chartIndexTextsV3 = useMemo(
-    () => [t('liquidity'), t('poolFee'), t('price')],
-    [t],
+    () =>
+      isUni
+        ? [t('liquidity'), t('price')]
+        : [t('liquidity'), t('poolFee'), t('price')],
+    [isUni, t],
   );
 
   const _chartIndexes = useMemo(
@@ -197,7 +203,7 @@ const AnalyticsPairChart: React.FC<{
         case CHART_FEES:
           return isV2
             ? Number(item.dailyVolumeUSD) * GlobalConst.utils.FEEPERCENT
-            : Number(item.feesUSD);
+            : Number(item.feesUSD ?? '0');
         case CHART_PRICE:
           return priceChartTokenIdx
             ? Number(item.token1Price)
@@ -278,14 +284,14 @@ const AnalyticsPairChart: React.FC<{
 
   const _chartData = useMemo(() => {
     if (!pairData || !pairChartData) return;
-    if (!isV2 && !pairFeeData) return;
+    if (!isV2 && !isUni && !pairFeeData) return;
     switch (chartIndex) {
       case CHART_POOL_FEE:
         return pairFeeData;
       default:
         return pairChartData;
     }
-  }, [pairData, chartIndex, pairFeeData, pairChartData, isV2]);
+  }, [pairData, pairChartData, isV2, isUni, pairFeeData, chartIndex]);
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 

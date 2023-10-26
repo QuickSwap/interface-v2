@@ -1,4 +1,3 @@
-import { GlobalValue } from 'constants/index';
 import {
   ChainId,
   Currency,
@@ -8,7 +7,6 @@ import {
   TokenAmount,
   Token,
 } from '@uniswap/sdk';
-import { Currency as V3Currency, Token as V3Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 import ERC20_INTERFACE from 'constants/abis/erc20';
 import { useAllTokens } from 'hooks/Tokens';
@@ -19,7 +17,6 @@ import {
   useSingleContractMultipleData,
   useMultipleContractSingleData,
 } from 'state/multicall/hooks';
-import { useIsV2 } from 'state/application/hooks';
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.

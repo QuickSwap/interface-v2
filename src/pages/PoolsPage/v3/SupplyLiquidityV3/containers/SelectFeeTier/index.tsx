@@ -20,12 +20,7 @@ interface SelectFeeTierProps {
 const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const feeTiers: { [chainId in ChainId]: IFeeTier[] } = {
-    [ChainId.MATIC]: [],
-    [ChainId.MUMBAI]: [],
-    [ChainId.DOGECHAIN]: [],
-    [ChainId.DOEGCHAIN_TESTNET]: [],
-    [ChainId.ZKTESTNET]: [],
+  const feeTiers: { [chainId in ChainId]?: IFeeTier[] } = {
     [ChainId.ZKEVM]: [
       {
         id: 'algebra-dynamic',
@@ -53,14 +48,37 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
         description: t('bestForExoticPair'),
       },
     ],
+    [ChainId.MANTA]: [
+      {
+        id: 'uni-0.01',
+        text: '0.01%',
+        description: t('availableForStablePair'),
+      },
+      {
+        id: 'uni-0.05',
+        text: '0.05%',
+        description: t('highlyLiquidPair'),
+      },
+      {
+        id: 'uni-0.3',
+        text: '0.3%',
+        description: t('bestForMostPair'),
+      },
+      {
+        id: 'uni-1',
+        text: '1%',
+        description: t('bestForExoticPair'),
+      },
+    ],
   };
   const { onChangeFeeTier } = useV3MintActionHandlers(mintInfo.noLiquidity);
   const [feeSelectionShow, setFeeSelectionShow] = useState(false);
 
+  const fees = feeTiers[chainId];
   useEffect(() => {
     if (!mintInfo.feeTier) {
-      if (feeTiers[chainId].length > 0) {
-        onChangeFeeTier(feeTiers[chainId][0]);
+      if (fees && fees.length > 0) {
+        onChangeFeeTier(fees[0]);
       } else {
         onChangeFeeTier({
           id: 'algebra-dynamic',
@@ -74,7 +92,7 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
 
   return (
     <Box>
-      {feeTiers[chainId].length > 0 && (
+      {fees && fees.length > 0 && (
         <>
           <small className='weight-600'>{t('selectFeeTier')}</small>
           <Box mt={2} className='feeTierWrapper'>
@@ -93,7 +111,7 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
             </Box>
             {feeSelectionShow && (
               <Box className='feeSelectionWrapper'>
-                {feeTiers[chainId].map((tier) => (
+                {fees.map((tier) => (
                   <Box
                     key={tier.id}
                     className='feeSelectionItem'

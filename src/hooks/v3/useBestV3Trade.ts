@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { useAllV3Routes } from './useAllV3Routes';
 import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { useV3Quoter } from 'hooks/useContract';
+import { useUniV3Quoter, useV3Quoter } from 'hooks/useContract';
 import { Route } from 'v3lib/entities/route';
 import { Trade } from 'lib/src/trade';
 import { encodeRouteToPath } from 'v3lib/utils/encodeRouteToPath';
@@ -39,29 +39,59 @@ export function useBestV3TradeExactIn(
 } {
   const { chainId } = useActiveWeb3React();
   const quoter = useV3Quoter();
+  const uniQuoter = useUniV3Quoter();
 
-  const { routes, loading: routesLoading } = useAllV3Routes(
+  const {
+    routes: algebraRoutes,
+    loading: algebraRoutesLoading,
+  } = useAllV3Routes(amountIn?.currency, currencyOut);
+
+  const { routes: uniRoutes, loading: uniRoutesLoading } = useAllV3Routes(
     amountIn?.currency,
     currencyOut,
+    true,
   );
+  const routes = algebraRoutes.concat(uniRoutes);
 
-  const quoteExactInInputs = useMemo(() => {
-    return routes.map((route) => [
+  const algebraQuoteExactInInputs = useMemo(() => {
+    return algebraRoutes.map((route) => [
       encodeRouteToPath(route, false),
       amountIn ? `0x${amountIn.quotient.toString(16)}` : undefined,
     ]);
-  }, [amountIn, routes]);
+  }, [amountIn, algebraRoutes]);
 
-  const quotesResults = useSingleContractMultipleData(
+  const uniQuoteExactInInputs = useMemo(() => {
+    return uniRoutes.map((route) => [
+      encodeRouteToPath(route, false, true),
+      amountIn ? `0x${amountIn.quotient.toString(16)}` : undefined,
+    ]);
+  }, [amountIn, uniRoutes]);
+
+  const routesLoading = algebraRoutesLoading || uniRoutesLoading;
+
+  const algebraQuotesResults = useSingleContractMultipleData(
     quoter,
     'quoteExactInput',
-    quoteExactInInputs,
+    algebraQuoteExactInInputs,
     {
       gasRequired: chainId
         ? QUOTE_GAS_OVERRIDES[chainId] ?? DEFAULT_GAS_QUOTE
         : undefined,
     },
   );
+
+  const uniQuotesResults = useSingleContractMultipleData(
+    uniQuoter,
+    'quoteExactInput',
+    uniQuoteExactInInputs,
+    {
+      gasRequired: chainId
+        ? QUOTE_GAS_OVERRIDES[chainId] ?? DEFAULT_GAS_QUOTE
+        : undefined,
+    },
+  );
+
+  const quotesResults = algebraQuotesResults.concat(uniQuotesResults);
 
   const trade = useMemo(() => {
     if (!amountIn || !currencyOut) {
@@ -116,7 +146,9 @@ export function useBestV3TradeExactIn(
       };
     }
 
-    const isSyncing = quotesResults.some(({ syncing }) => syncing);
+    const isSyncing = quotesResults
+      .concat(uniQuotesResults)
+      .some(({ syncing }) => syncing);
 
     return {
       state: isSyncing ? V3TradeState.SYNCING : V3TradeState.VALID,
@@ -130,7 +162,14 @@ export function useBestV3TradeExactIn(
         ),
       }),
     };
-  }, [amountIn, currencyOut, quotesResults, routes, routesLoading]);
+  }, [
+    amountIn,
+    currencyOut,
+    quotesResults,
+    routes,
+    routesLoading,
+    uniQuotesResults,
+  ]);
 
   return useMemo(() => {
     return trade;
@@ -151,29 +190,59 @@ export function useBestV3TradeExactOut(
 } {
   const { chainId } = useActiveWeb3React();
   const quoter = useV3Quoter();
+  const univ3Quoter = useUniV3Quoter();
 
-  const { routes, loading: routesLoading } = useAllV3Routes(
+  const {
+    routes: algebraRoutes,
+    loading: algebraRoutesLoading,
+  } = useAllV3Routes(currencyIn, amountOut?.currency);
+
+  const { routes: uniRoutes, loading: uniRoutesLoading } = useAllV3Routes(
     currencyIn,
     amountOut?.currency,
+    true,
   );
 
-  const quoteExactOutInputs = useMemo(() => {
-    return routes.map((route) => [
+  const routesLoading = algebraRoutesLoading || uniRoutesLoading;
+  const routes = algebraRoutes.concat(uniRoutes);
+
+  const algebraQuoteExactOutInputs = useMemo(() => {
+    return algebraRoutes.map((route) => [
       encodeRouteToPath(route, true),
       amountOut ? `0x${amountOut.quotient.toString(16)}` : undefined,
     ]);
-  }, [amountOut, routes]);
+  }, [amountOut, algebraRoutes]);
 
-  const quotesResults = useSingleContractMultipleData(
+  const uniQuoteExactOutInputs = useMemo(() => {
+    return uniRoutes.map((route) => [
+      encodeRouteToPath(route, true, true),
+      amountOut ? `0x${amountOut.quotient.toString(16)}` : undefined,
+    ]);
+  }, [amountOut, uniRoutes]);
+
+  const algebraQuotesResults = useSingleContractMultipleData(
     quoter,
     'quoteExactOutput',
-    quoteExactOutInputs,
+    algebraQuoteExactOutInputs,
     {
       gasRequired: chainId
         ? QUOTE_GAS_OVERRIDES[chainId] ?? DEFAULT_GAS_QUOTE
         : undefined,
     },
   );
+
+  const uniQuotesResults = useSingleContractMultipleData(
+    univ3Quoter,
+    'quoteExactOutput',
+    uniQuoteExactOutInputs,
+    {
+      gasRequired: chainId
+        ? QUOTE_GAS_OVERRIDES[chainId] ?? DEFAULT_GAS_QUOTE
+        : undefined,
+    },
+  );
+
+  const quotesResults = algebraQuotesResults.concat(uniQuotesResults);
 
   const trade = useMemo(() => {
     if (
