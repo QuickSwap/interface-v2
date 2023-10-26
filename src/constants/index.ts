@@ -42,6 +42,7 @@ import {
   LINK,
   AAVE,
   USDCE,
+  fxMETOD,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -761,7 +762,6 @@ export const GammaPairs: {
         address: '0x1825c76ced3c1625250b8af6204bf4fc4e5b9fcf',
         token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
         token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-        ableToFarm: true,
         pid: 49,
       },
     ],
@@ -772,7 +772,6 @@ export const GammaPairs: {
         address: '0x3273c153ecc6891a68af60ee0b67c16dd7b2c7e5',
         token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
         token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-        ableToFarm: true,
         pid: 50,
       },
     ],
@@ -1117,7 +1116,6 @@ export const GammaPairs: {
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
         pid: 81,
-        ableToFarm: true,
       },
     ],
     '0x236aa50979d5f3de3bd1eeb40e81137f22ab794b-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
@@ -1177,22 +1175,37 @@ export const GammaPairs: {
     ],
     '0x18e73a5333984549484348a94f4d219f4fab7b81-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
       {
-        type: Presets.GAMMA_WIDE,
-        title: 'Wide',
+        type: Presets.GAMMA_NARROW,
+        title: 'NARROW',
         address: '0x80709a760Ff54112bD3e0CE31C104d912bA51774',
         token0Address: '0x18e73a5333984549484348a94f4d219f4fab7b81',
         token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 89,
       },
     ],
     '0x0c087f8d6a1f14f71bb7cc7e1b061ca297af7555-0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': [
       {
-        type: Presets.GAMMA_WIDE,
-        title: 'Wide',
+        type: Presets.GAMMA_NARROW,
+        title: 'NARROW',
         address: '0xf25645c4B5B1c040e9889E0FA4C252c2fC0b40bE',
         token0Address: '0x0c087f8d6a1f14f71bb7cc7e1b061ca297af7555',
         token1Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        ableToFarm: true,
+        pid: 90,
       },
     ],
+    // '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x65ad509db5924ef0001d977590985f965ef1aaaa': [
+    //   {
+    //     type: Presets.GAMMA_NARROW,
+    //     title: 'Narrow',
+    //     address: '0xdb9f075bb2cd4d0683ac25bb0d8566a9b7fef774',
+    //     token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+    //     token1Address: '0x65ad509db5924ef0001d977590985f965ef1aaaa',
+    //     ableToFarm: true,
+    //     pid: 91,
+    //   },
+    // ],
   },
   [ChainId.MUMBAI]: {},
   [ChainId.DOEGCHAIN_TESTNET]: {},
@@ -1560,6 +1573,7 @@ export const GlobalValue = {
         RMATIC[ChainId.MATIC],
         WEFI[ChainId.MATIC],
         PUSH[ChainId.MATIC],
+        fxMETOD[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],
