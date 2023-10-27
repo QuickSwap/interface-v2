@@ -74,4 +74,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'Ether',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.ZKATANA]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://zkatana.blockscout.com',
+    infoLink: 'https://algebra.finance',
+    label: 'zKatana',
+    nativeCurrencySymbol: 'ETH',
+    nativeCurrencyName: 'Ether',
+    nativeCurrencyDecimals: 18,
+  },
 };

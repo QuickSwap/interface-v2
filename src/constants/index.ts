@@ -55,6 +55,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.ZKTESTNET]: 'zkevm_testnet',
   [ChainId.KAVA]: 'kava',
   [ChainId.MANTA]: 'manta',
+  [ChainId.ZKATANA]: 'zKatana',
 };
 
 export enum TxnType {
@@ -101,6 +102,7 @@ export const BONUS_CUTOFF_AMOUNT = {
   [ChainId.ZKEVM]: 0,
   [ChainId.MANTA]: 0,
   [ChainId.KAVA]: 0,
+  [ChainId.ZKATANA]: 0,
 };
 
 export const GlobalConst = {
@@ -219,6 +221,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.DOEGCHAIN_TESTNET,
   ChainId.ZKTESTNET,
   ChainId.ZKEVM,
+  ChainId.ZKATANA,
 ];
 
 export interface GammaPair {
@@ -1545,6 +1548,7 @@ export const GlobalValue = {
       [ChainId.ZKTESTNET]: [],
       [ChainId.KAVA]: [],
       [ChainId.MANTA]: [],
+      [ChainId.ZKATANA]: [],
     },
   },
   marketSDK: {
@@ -1585,7 +1589,12 @@ export const GlobalData = {
       DAVOS[ChainId.MATIC],
     ],
     [ChainId.MUMBAI]: [],
-    [ChainId.DOGECHAIN]: [USDC[ChainId.DOGECHAIN], MI[ChainId.DOGECHAIN]],
+    [ChainId.DOGECHAIN]: [
+      USDC[ChainId.DOGECHAIN],
+      USDT[ChainId.DOGECHAIN],
+      DAI[ChainId.ZKEVM],
+      MI[ChainId.DOGECHAIN],
+    ],
     [ChainId.DOEGCHAIN_TESTNET]: [],
     [ChainId.ZKEVM]: [
       USDC[ChainId.ZKEVM],
@@ -1595,7 +1604,12 @@ export const GlobalData = {
     ],
     [ChainId.ZKTESTNET]: [],
     [ChainId.KAVA]: [],
-    [ChainId.MANTA]: [],
+    [ChainId.MANTA]: [
+      USDC[ChainId.MANTA],
+      USDT[ChainId.MANTA],
+      DAI[ChainId.MANTA],
+    ],
+    [ChainId.ZKATANA]: [USDC[ChainId.ZKATANA]],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -1625,7 +1639,14 @@ export const GlobalData = {
     ],
     [ChainId.ZKTESTNET]: [],
     [ChainId.KAVA]: [],
-    [ChainId.MANTA]: [],
+    [ChainId.MANTA]: [
+      WETH[ChainId.MANTA],
+      WBTC[ChainId.MANTA],
+      USDC[ChainId.MANTA],
+      USDT[ChainId.MANTA],
+      DAI[ChainId.MANTA],
+    ],
+    [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -1649,6 +1670,7 @@ export const GlobalData = {
     [ChainId.ZKTESTNET]: [],
     [ChainId.KAVA]: [],
     [ChainId.MANTA]: [],
+    [ChainId.ZKATANA]: [],
   },
 };
 

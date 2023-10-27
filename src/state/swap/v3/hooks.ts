@@ -37,8 +37,8 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
-import { StableCoins } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
+import { GlobalData } from 'constants/index';
 
 export function useSwapState(): AppState['swapV3'] {
   return useAppSelector((state) => {
@@ -256,7 +256,7 @@ export function useDerivedSwapInfo(): {
   }
 
   useEffect(() => {
-    const stableCoins = StableCoins[chainIdToUse];
+    const stableCoins = GlobalData.stableCoins[chainIdToUse];
     const stableCoinAddresses =
       stableCoins && stableCoins.length > 0
         ? stableCoins.map((token) => token.address.toLowerCase())
