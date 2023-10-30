@@ -607,13 +607,19 @@ export function useUnipilotPositions(
             library,
           );
           const stakedAmount = await farmContract.balanceOf(account ?? '');
+          if (Number(stakedAmount) > 0) {
+            return {
+              ...item,
+              balance: JSBI.add(
+                JSBI.BigInt(stakedAmount),
+                JSBI.BigInt(item.balance),
+              ).toString(),
+              farming: true,
+            };
+          }
           return {
             ...item,
-            balance: JSBI.add(
-              JSBI.BigInt(stakedAmount),
-              JSBI.BigInt(item.balance),
-            ).toString(),
-            farming: true,
+            farming: false,
           };
         }
         return { ...item, farming: false };
