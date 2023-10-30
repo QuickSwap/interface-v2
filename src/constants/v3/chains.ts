@@ -65,4 +65,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'Ether',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.MANTA]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://pacific-explorer.manta.network',
+    infoLink: 'https://algebra.finance',
+    label: 'Manta',
+    nativeCurrencySymbol: 'ETH',
+    nativeCurrencyName: 'Ether',
+    nativeCurrencyDecimals: 18,
+  },
 };

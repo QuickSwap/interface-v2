@@ -9,7 +9,7 @@ import {
 import { Trade as V3Trade } from 'lib/src/trade';
 import { splitSignature } from 'ethers/lib/utils';
 import { useMemo, useState } from 'react';
-import { SWAP_ROUTER_ADDRESSES } from 'constants/v3/addresses';
+import { SWAP_ROUTER_ADDRESSES, UNI_SWAP_ROUTER } from 'constants/v3/addresses';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -283,8 +283,11 @@ export function useERC20PermitFromTrade(
   allowedSlippage: Percent,
 ) {
   const { chainId } = useActiveWeb3React();
+  const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
   const swapRouterAddress = chainId
-    ? SWAP_ROUTER_ADDRESSES[chainId]
+    ? isUni
+      ? UNI_SWAP_ROUTER[chainId]
+      : SWAP_ROUTER_ADDRESSES[chainId]
     : undefined;
   const amountToApprove = useMemo(
     () => (trade ? trade.maximumAmountIn(allowedSlippage) : undefined),

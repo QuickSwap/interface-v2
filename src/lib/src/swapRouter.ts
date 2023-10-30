@@ -12,6 +12,7 @@ import { Trade } from './trade';
 import { PermitOptions, SelfPermit } from './selfPermit';
 import { MethodParameters, toHex } from './utils/calldata';
 import abi from 'constants/abis/v3/swap-router.json';
+import uniV3ABI from 'constants/abis/uni-v3/swap-router.json';
 import { ADDRESS_ZERO } from 'v3lib/utils/v3constants';
 import { encodeRouteToPath } from 'v3lib/utils/encodeRouteToPath';
 
@@ -72,6 +73,7 @@ export interface SwapOptions {
  */
 export abstract class SwapRouter extends SelfPermit {
   public static INTERFACE: Interface = new Interface(abi);
+  public static UNIV3INTERFACE: Interface = new Interface(uniV3ABI);
 
   /**
    * Cannot be constructed.
@@ -188,12 +190,17 @@ export abstract class SwapRouter extends SelfPermit {
               sqrtPriceLimitX96: toHex(options.sqrtPriceLimitX96 ?? 0),
             };
             calldatas.push(
-              SwapRouter.INTERFACE.encodeFunctionData(
-                options.feeOnTransfer && !inputIsNative
-                  ? 'exactInputSingleSupportingFeeOnTransferTokens'
-                  : 'exactInputSingle',
-                [exactInputSingleParams],
-              ),
+              route.pools[0].isUni
+                ? SwapRouter.UNIV3INTERFACE.encodeFunctionData(
+                    'exactInputSingle',
+                    [exactInputSingleParams],
+                  )
+                : SwapRouter.INTERFACE.encodeFunctionData(
+                    options.feeOnTransfer && !inputIsNative
+                      ? 'exactInputSingleSupportingFeeOnTransferTokens'
+                      : 'exactInputSingle',
+                    [exactInputSingleParams],
+                  ),
             );
           } else {
             const exactOutputSingleParams = {
@@ -208,9 +215,14 @@ export abstract class SwapRouter extends SelfPermit {
             };
 
             calldatas.push(
-              SwapRouter.INTERFACE.encodeFunctionData('exactOutputSingle', [
-                exactOutputSingleParams,
-              ]),
+              route.pools[0].isUni
+                ? SwapRouter.UNIV3INTERFACE.encodeFunctionData(
+                    'exactOutputSingle',
+                    [exactOutputSingleParams],
+                  )
+                : SwapRouter.INTERFACE.encodeFunctionData('exactOutputSingle', [
+                    exactOutputSingleParams,
+                  ]),
             );
           }
         } else {
@@ -222,6 +234,7 @@ export abstract class SwapRouter extends SelfPermit {
           const path: string = encodeRouteToPath(
             route,
             trade.tradeType === TradeType.EXACT_OUTPUT,
+            route.pools[0].isUni,
           );
 
           if (trade.tradeType === TradeType.EXACT_INPUT) {
@@ -234,9 +247,13 @@ export abstract class SwapRouter extends SelfPermit {
             };
 
             calldatas.push(
-              SwapRouter.INTERFACE.encodeFunctionData('exactInput', [
-                exactInputParams,
-              ]),
+              route.pools[0].isUni
+                ? SwapRouter.UNIV3INTERFACE.encodeFunctionData('exactInput', [
+                    exactInputParams,
+                  ])
+                : SwapRouter.INTERFACE.encodeFunctionData('exactInput', [
+                    exactInputParams,
+                  ]),
             );
           } else {
             const exactOutputParams = {
@@ -248,9 +265,13 @@ export abstract class SwapRouter extends SelfPermit {
             };
 
             calldatas.push(
-              SwapRouter.INTERFACE.encodeFunctionData('exactOutput', [
-                exactOutputParams,
-              ]),
+              route.pools[0].isUni
+                ? SwapRouter.UNIV3INTERFACE.encodeFunctionData('exactOutput', [
+                    exactOutputParams,
+                  ])
+                : SwapRouter.INTERFACE.encodeFunctionData('exactOutput', [
+                    exactOutputParams,
+                  ]),
             );
           }
         }

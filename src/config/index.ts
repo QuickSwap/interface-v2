@@ -2,6 +2,7 @@ import polygon from './polygon.json';
 import dogechain from './dogechain.json';
 import zktestnet from './zktestnet.json';
 import zkmainnet from './zkmainnet.json';
+import manta from './manta.json';
 import qlpmanager from './qlpmanager.json';
 import { ChainId } from '@uniswap/sdk';
 const configs: any = {
@@ -9,6 +10,7 @@ const configs: any = {
   [ChainId.DOGECHAIN]: dogechain,
   [ChainId.ZKTESTNET]: zktestnet,
   [ChainId.ZKEVM]: zkmainnet,
+  [ChainId.MANTA]: manta,
 };
 
 export const getConfig = (network: ChainId | undefined) => {
