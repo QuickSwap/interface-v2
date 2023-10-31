@@ -53,6 +53,7 @@ import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -369,6 +370,13 @@ export function useUniPilotVaultContract(
   withSignerIfPossible?: boolean,
 ) {
   return useContract(address, UNIPILOT_VAULT_ABI, withSignerIfPossible);
+}
+
+export function useDefiedgeStrategyContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, DEFIEDGE_STRATEGY_ABI, withSignerIfPossible);
 }
 
 export function useUnipilotFarmingContract(
