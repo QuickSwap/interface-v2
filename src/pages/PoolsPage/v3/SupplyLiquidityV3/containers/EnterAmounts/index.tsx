@@ -100,6 +100,7 @@ export function EnterAmounts({
       : undefined;
 
   const uniPilotVaultAddress = mintInfo.presetRange?.address;
+  const defiedgeStrategyAddress = mintInfo.presetRange?.address;
 
   // check whether the user has approved the router on the tokens
   const currencyAApproval =
@@ -123,6 +124,7 @@ export function EnterAmounts({
     }
     return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
   }, [chainId, mintInfo.feeTier]);
+
   const [approvalA, approveACallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A] ||
       tryParseAmount('1', currencyAApproval),
@@ -133,6 +135,9 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+        ? defiedgeStrategyAddress
         : positionManagerAddress
       : undefined,
   );
@@ -146,6 +151,9 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+        ? defiedgeStrategyAddress
         : positionManagerAddress
       : undefined,
   );
