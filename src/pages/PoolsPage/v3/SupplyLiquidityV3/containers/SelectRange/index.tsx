@@ -11,6 +11,7 @@ import {
   useV3MintState,
   useInitialUSDPrices,
   useGetUnipilotVaults,
+  useGetDefiedgeStrategies,
 } from 'state/mint/v3/hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { useAppDispatch } from 'state/hooks';
@@ -28,6 +29,7 @@ import { StableCoins } from 'constants/v3/addresses';
 import { getEternalFarmFromTokens, getGammaPairsForTokens } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
 import UnipilotLogo from 'assets/images/unipilot.png';
+import DefiedgeLogo from 'assets/images/defiedge.png';
 import AutomaticImage from 'assets/images/automatic.svg';
 import AutomaticImageDark from 'assets/images/automaticDark.svg';
 import { Trans, useTranslation } from 'react-i18next';
@@ -365,12 +367,30 @@ export function SelectRange({
     );
   });
 
+  const defiedgeStrategies = useGetDefiedgeStrategies();
+  const defiedgeStrategiesForPair = defiedgeStrategies.filter((item) => {
+    return (
+      (item.token0 &&
+        item.token1 &&
+        item.token0.toLowerCase() === currencyAAddress.toLowerCase() &&
+        item.token1.toLowerCase() === currencyBAddress.toLowerCase()) ||
+      (item.token0 &&
+        item.token1 &&
+        item.token0.toLowerCase() === currencyBAddress.toLowerCase() &&
+        item.token1.toLowerCase() === currencyAAddress.toLowerCase())
+    );
+  });
+
   useEffect(() => {
     if (gammaPair) {
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.GAMMA_RANGE);
     } else if (unipilotVaultsForPair.length > 0) {
       onChangeLiquidityRangeType(
         GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+      );
+    } else if (defiedgeStrategiesForPair.length > 0) {
+      onChangeLiquidityRangeType(
+        GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
       );
     } else {
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
@@ -387,14 +407,18 @@ export function SelectRange({
   return (
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
-      {(gammaPair || unipilotVaultsForPair.length > 0) && (
+      {(gammaPair ||
+        unipilotVaultsForPair.length > 0 ||
+        defiedgeStrategiesForPair.length > 0) && (
         <Box className='buttonGroup poolRangeButtonGroup'>
           <ButtonGroup>
-            {gammaPair && (
+            {(gammaPair || defiedgeStrategiesForPair.length > 0) && (
               <Button
                 className={
                   liquidityRangeType ===
-                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+                    GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+                  liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
                     ? 'active'
                     : ''
                 }
@@ -407,7 +431,9 @@ export function SelectRange({
                 <img
                   src={
                     liquidityRangeType ===
-                    GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+                      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+                    liquidityRangeType ===
+                      GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
                       ? AutomaticImageDark
                       : AutomaticImage
                   }
@@ -481,6 +507,65 @@ export function SelectRange({
           </Box>
         </>
       )}
+      {liquidityRangeType ===
+        GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE && (
+        <>
+          <Box my={1.5} className='poolRangePowerGamma'>
+            <span className='text-secondary'>{t('poweredBy')}</span>
+            <img
+              src={DefiedgeLogo}
+              alt='Defiedge Logo'
+              style={{ height: '28px' }}
+            />
+          </Box>
+          <Box mb={1.5}>
+            <small className='weight-600'>{t('selectStrategy')}</small>
+          </Box>
+        </>
+      )}
+
+      <Box my={1} className='preset-buttons poolRangePowerGamma'>
+        {gammaPair && defiedgeStrategiesForPair.length > 0 ? (
+          <>
+            <button
+              className={`${
+                liquidityRangeType ===
+                GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+                  ? 'active-preset'
+                  : ''
+              }`}
+              onClick={() => {
+                onChangeLiquidityRangeType(
+                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
+                );
+              }}
+            >
+              <img src={GammaLogo} alt='Gamma Logo' />
+            </button>
+            <button
+              className={`${
+                liquidityRangeType ===
+                GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+                  ? 'active-preset'
+                  : ''
+              } flex items-center justify-center py-2`}
+              onClick={() => {
+                onChangeLiquidityRangeType(
+                  GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
+                );
+              }}
+            >
+              <img
+                src={DefiedgeLogo}
+                alt='Defiedge Logo'
+                style={{ height: '20px' }}
+              />
+            </button>
+          </>
+        ) : (
+          undefined
+        )}
+      </Box>
       <Box my={1}>
         <PresetRanges
           mintInfo={mintInfo}
@@ -499,8 +584,13 @@ export function SelectRange({
             liquidityRangeType ===
             GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
           }
+          isDefiedge={
+            liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+          }
           gammaPair={gammaPair}
           unipilotPairs={unipilotVaultsForPair}
+          defiedgeStrategies={defiedgeStrategiesForPair}
         />
       </Box>
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
