@@ -25,6 +25,7 @@ import {
 import { useTokenContract } from 'hooks/useContract';
 import { getConfig } from 'config';
 import ToggleSwitch from 'components/ToggleSwitch';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
 
@@ -39,14 +40,20 @@ export const useLiquidityHubCallback = (
   const liquidityHubState = useLiquidityHubState();
   const { onSetLiquidityHubState } = useLiquidityHubActionHandlers();
   const queryParam = useQueryParam();
-  const approve = useApprove();
+  const approve = useApprove(srcToken);
   const isApproved = useApproved(srcToken);
   const swap = useSwap();
   const sign = useSign();
   const firstQuote = useFirstQuote();
   const secondQuote = useSecondQuote();
   const isSupported = useIsLiquidityHubSupported();
-  return async (srcAmount?: string, minDestAmount?: string) => {
+  const dstTokenUsdValue = useUSDCPriceFromAddress(destToken || '');
+
+  return async (
+    srcAmount?: string,
+    minDestAmount?: string,
+    dstDecimals?: number,
+  ) => {
     if (!isSupported) {
       return undefined;
     }
@@ -66,7 +73,12 @@ export const useLiquidityHubCallback = (
     ) {
       return undefined;
     }
-    liquidityHubAnalytics.onInitTrade(minDestAmount);
+
+    liquidityHubAnalytics.onInitTrade(
+      minDestAmount,
+      dstTokenUsdValue,
+      dstDecimals,
+    );
 
     onSetLiquidityHubState({
       isLoading: true,
@@ -85,6 +97,8 @@ export const useLiquidityHubCallback = (
       if (!approved) {
         await firstQuote(quoteArgs);
         await approve();
+      } else {
+        liquidityHubAnalytics.onUserAlreadyApproved();
       }
 
       const quoteResult = await secondQuote(quoteArgs);
@@ -245,20 +259,13 @@ const useFirstQuote = () => {
   const quoteCallback = useQuote();
 
   return async (args: QuoteArgs) => {
-    const count = counter();
     try {
-      liquidityHubAnalytics.onFirstQuoteRequest();
-
-      const res = await quoteCallback(args);
-      liquidityHubAnalytics.onFirstQuoteSuccess({
-        ...res,
-        time: count(),
-      });
-
-      return res;
+      const quoteResponse = await quoteCallback(args);
+      return quoteResponse;
     } catch (error) {
-      liquidityHubAnalytics.onFirstQuoteFailed(error.message, count());
       throw new Error(error.message);
+    } finally {
+      liquidityHubAnalytics.incrementQuoteIndex();
     }
   };
 };
@@ -268,22 +275,17 @@ const useSecondQuote = () => {
   const { onSetLiquidityHubState } = useLiquidityHubActionHandlers();
 
   return async (args: QuoteArgs) => {
-    const count = counter();
     try {
-      liquidityHubAnalytics.onSecondQuoteRequest();
-      const result = await quoteCallback(args);
-      liquidityHubAnalytics.onSecondQuoteSuccess({
-        ...result,
-        time: count(),
-      });
+      const quoteResponse = await quoteCallback(args);
       onSetLiquidityHubState({
         isWon: true,
         isLoading: false,
-        outAmount: result.outAmount,
+        outAmount: quoteResponse.outAmount,
       });
-      return result;
+      liquidityHubAnalytics.onClobTrade();
+      liquidityHubAnalytics.onUserAlreadyApproved();
+      return quoteResponse;
     } catch (error) {
-      liquidityHubAnalytics.onSecondQuoteFailed(error.message, count());
       throw new Error(error.message);
     }
   };
@@ -295,7 +297,10 @@ const useQuote = () => {
   const queryParam = useQueryParam();
 
   return async (args: QuoteArgs) => {
+    let quoteResponse: any;
+    const count = counter();
     try {
+      liquidityHubAnalytics.onQuoteRequest();
       const response = await fetch(`${API_ENDPOINT}/quote?chainId=137`, {
         method: 'POST',
         body: JSON.stringify({
@@ -309,31 +314,39 @@ const useQuote = () => {
           sessionId: liquidityHubAnalytics.data.sessionId,
         }),
       });
-      const result = await response.json();
+      quoteResponse = await response.json();
 
-      if (!result) {
+      if (!quoteResponse) {
         throw new Error('Missing result from quote');
       }
 
-      if (result.error) {
-        throw new Error(result.error);
+      if (quoteResponse.error) {
+        throw new Error(quoteResponse.error);
       }
 
-      if (result.message) {
-        throw new Error(result.message);
+      if (quoteResponse.message) {
+        throw new Error(quoteResponse.message);
       }
 
       if (!liquidityHubAnalytics.data.sessionId) {
-        liquidityHubAnalytics.setSessionId(result.sessionId);
+        liquidityHubAnalytics.setSessionId(quoteResponse.sessionId);
       }
       if (
         queryParam !== LiquidityHubControl.FORCE &&
-        BN(result.outAmount || '0').isLessThan(BN(args.minDestAmount || '0'))
+        BN(quoteResponse.outAmount || '0').isLessThan(
+          BN(args.minDestAmount || '0'),
+        )
       ) {
         throw new Error('Dex trade is better than Clob trade');
       }
-      return result as QuoteResponse;
+      liquidityHubAnalytics.onQuoteSuccess(quoteResponse, count());
+      return quoteResponse as QuoteResponse;
     } catch (error) {
+      liquidityHubAnalytics.onQuoteFailed(
+        error.message,
+        count(),
+        quoteResponse,
+      );
       throw new Error(error.message);
     }
   };
@@ -398,26 +411,11 @@ const initialData: Partial<LiquidityHubAnalyticsData> = {
   dstTokenAddress: '',
   dstTokenSymbol: '',
   srcAmount: '',
-
-  firstQuoteState: '',
-  firstQuoteMillis: null,
-  firstQuoteAmountOut: '',
-  firstQuotePermitData: '',
-  firstQuoteSerializedOrder: '',
-  firstQuoteCallData: '',
-  firstQuoteError: '',
+  quoteIndex: 1,
 
   approvalState: '',
   approvalError: '',
   approvalMillis: null,
-
-  secondQuoteState: '',
-  secondQuoteMillis: null,
-  secondQuoteAmountOut: '',
-  secondQuotePermitData: '',
-  secondQuoteSerializedOrder: '',
-  secondQuoteCallData: '',
-  secondQuoteError: '',
 
   signatureState: '',
   signatureMillis: null,
@@ -431,6 +429,8 @@ const initialData: Partial<LiquidityHubAnalyticsData> = {
 
   swapClicked: false,
   swapConfirmed: false,
+
+  isAlreadyApproved: false,
 };
 
 const counter = () => {
@@ -449,7 +449,7 @@ class LiquidityHubAnalytics {
     this.data = { ...this.data, ...values };
 
     try {
-      fetch('https://bi.orbs.network/putes/clob-ui', {
+      fetch('https://bi.orbs.network/putes/clob-ui-1', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -460,26 +460,53 @@ class LiquidityHubAnalytics {
     } catch (error) {}
   }
 
-  onFirstQuoteRequest() {
-    this.updateAndSend({ firstQuoteState: 'pending' });
-  }
-
-  onFirstQuoteSuccess(args: QuoteSuccessArgs) {
+  incrementQuoteIndex() {
     this.updateAndSend({
-      firstQuoteAmountOut: args.outAmount,
-      firstQuotePermitData: args.permitData,
-      firstQuoteSerializedOrder: args.serializedOrder,
-      firstQuoteCallData: args.callData,
-      firstQuoteMillis: args.time,
+      quoteIndex: !this.data.quoteIndex ? 1 : this.data.quoteIndex + 1,
     });
   }
 
-  onFirstQuoteFailed(error: string, time: number) {
+  onQuoteRequest() {
+    this.updateAndSend({ [`quote-${this.data.quoteIndex}-state`]: 'pending' });
+  }
+
+  onQuoteSuccess(quoteResponse: QuoteResponse, time: number) {
+    this.updateAndSend({ [`quote-${this.data.quoteIndex}-state`]: 'success' });
+    this.onQuoteData(quoteResponse, time);
+  }
+
+  onClobTrade() {
+    this.updateAndSend({ isClobTrade: true });
+  }
+
+  onQuoteFailed(error: string, time: number, quoteResponse?: QuoteResponse) {
     this.updateAndSend({
-      firstQuoteError: error,
-      firstQuoteMillis: time,
-      firstQuoteState: 'failed',
+      [`quote-${this.data.quoteIndex}-error`]: error,
+      [`quote-${this.data.quoteIndex}-state`]: 'failed',
     });
+
+    this.onQuoteData(quoteResponse, time);
+  }
+
+  onQuoteData(quoteResponse?: QuoteResponse, time?: number) {
+    const diff = new BN(quoteResponse?.outAmount || '0')
+      .dividedBy(new BN(this.data.dexAmountOut || '0'))
+      .minus(1)
+      .multipliedBy(100)
+      .toFixed(2);
+
+    this.updateAndSend({
+      [`quote-${this.data.quoteIndex}-amount-out`]: quoteResponse?.outAmount,
+      [`quote-${this.data.quoteIndex}-permit-data`]: quoteResponse?.permitData,
+      [`quote-${this.data.quoteIndex}-serialized-order`]: quoteResponse?.serializedOrder,
+      [`quote-${this.data.quoteIndex}-quote-call-data`]: quoteResponse?.callData,
+      [`quote-${this.data.quoteIndex}-quote-millis`]: time,
+      [`quote-${this.data.quoteIndex}-clob-dex-price-diff-percent`]: diff,
+    });
+  }
+
+  onUserAlreadyApproved() {
+    this.updateAndSend({ isAlreadyApproved: true });
   }
 
   onApprovalRequest() {
@@ -499,30 +526,6 @@ class LiquidityHubAnalytics {
       approvalError: error,
       approvalState: 'failed',
       approvalMillis: time,
-    });
-  }
-
-  onSecondQuoteRequest() {
-    this.updateAndSend({ secondQuoteState: 'pending' });
-  }
-
-  onSecondQuoteSuccess(args: QuoteSuccessArgs) {
-    this.updateAndSend({
-      secondQuoteAmountOut: args.outAmount,
-      secondQuotePermitData: args.permitData,
-      secondQuoteSerializedOrder: args.serializedOrder,
-      secondQuoteCallData: args.callData,
-      secondQuoteMillis: args.time,
-      isClobTrade: true,
-      secondQuoteState: 'success',
-    });
-  }
-
-  onSecondQuoteFailed(error: string, time: number) {
-    this.updateAndSend({
-      secondQuoteError: error,
-      secondQuoteMillis: time,
-      secondQuoteState: 'failed',
     });
   }
 
@@ -600,8 +603,19 @@ class LiquidityHubAnalytics {
     this.updateAndSend({ srcAmount });
   }
 
-  onInitTrade(dexAmountOut: string) {
-    this.updateAndSend({ dexAmountOut });
+  onInitTrade(
+    dexAmountOut: string,
+    srcTokenUsdValue: number,
+    dstDecimals?: number,
+  ) {
+    const dexAmountOutBN = new BN(dexAmountOut);
+    const dstAmountOutUsd = dexAmountOutBN
+      .multipliedBy(srcTokenUsdValue || 0)
+
+      .dividedBy(new BN(10).pow(new BN(dstDecimals || 0)))
+      .toFixed(2);
+
+    this.updateAndSend({ dexAmountOut, dstAmountOutUsd });
   }
 
   clearState() {
@@ -834,14 +848,6 @@ const StyledLiquidityHubTxSettings = styled(Box)({
 
 type actionState = 'pending' | 'success' | 'failed' | '';
 
-type QuoteSuccessArgs = {
-  outAmount: string;
-  serializedOrder: string;
-  callData: string;
-  permitData: string;
-  time: number;
-};
-
 interface LiquidityHubAnalyticsData {
   _id: string;
   partner: string;
@@ -855,26 +861,11 @@ interface LiquidityHubAnalyticsData {
   dstTokenAddress: string;
   dstTokenSymbol: string;
   srcAmount: string;
-
-  firstQuoteState: actionState;
-  firstQuoteMillis: number | null;
-  firstQuoteAmountOut: string;
-  firstQuotePermitData: string;
-  firstQuoteSerializedOrder: string;
-  firstQuoteCallData: string;
-  firstQuoteError: string;
+  quoteIndex: number;
 
   approvalState: actionState;
   approvalError: string;
   approvalMillis: number | null;
-
-  secondQuoteState: actionState;
-  secondQuoteMillis: number | null;
-  secondQuoteAmountOut: string;
-  secondQuotePermitData: string;
-  secondQuoteSerializedOrder: string;
-  secondQuoteCallData: string;
-  secondQuoteError: string;
 
   signatureState: actionState;
   signatureMillis: number | null;
@@ -892,6 +883,9 @@ interface LiquidityHubAnalyticsData {
   isClobDisabled: boolean;
   dexSwapSuccess: boolean;
   dexSwapTxHash: string;
+
+  isAlreadyApproved: boolean;
+  dstAmountOutUsd: string;
 }
 
 interface QuoteResponse {
