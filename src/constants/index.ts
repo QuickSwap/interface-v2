@@ -221,7 +221,6 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.DOEGCHAIN_TESTNET,
   ChainId.ZKTESTNET,
   ChainId.ZKEVM,
-  ChainId.ZKATANA,
 ];
 
 export interface GammaPair {
