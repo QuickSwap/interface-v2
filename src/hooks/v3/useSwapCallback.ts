@@ -80,6 +80,7 @@ function useSwapCallArguments(
 
     swapMethods.push(
       SwapRouter.swapCallParameters(trade, {
+        isUni,
         feeOnTransfer: false,
         recipient,
         slippageTolerance: allowedSlippage,
