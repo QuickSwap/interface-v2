@@ -399,8 +399,8 @@ export const USDCE: { [chainId: number]: Token } = {
 };
 
 export const USDCT: { [chainId: number]: Token } = {
-  [ChainId.MATIC]: new Token(
-    ChainId.MATIC,
+  [ChainId.BTTC]: new Token(
+    ChainId.BTTC,
     '0x935faA2FCec6Ab81265B301a30467Bbc804b43d3',
     6,
     'USDC.t',

@@ -7,7 +7,7 @@
   "aprAPINetwork": "bttc",
   "chainId": 199,
   "isMainnet": true,
-  "nativeCurrencyImage": "/manta.svg",
+  "nativeCurrencyImage": "/BTT.png",
   "nativeCurrency": {
     "name": "BitTorrent Token",
     "symbol": "BTT",
