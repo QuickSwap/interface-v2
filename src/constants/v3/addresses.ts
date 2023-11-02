@@ -383,7 +383,7 @@ export const USDC: { [chainId: number]: Token } = {
     ChainId.BTTC,
     '0xAE17940943BA9440540940DB0F1877f101D39e8b',
     6,
-    'USDC_e',
+    'USDC.e',
     'USD Coin_Ethereum',
   ),
 };
@@ -395,6 +395,16 @@ export const USDCE: { [chainId: number]: Token } = {
     6,
     'USDC.e',
     'Bridged USDC',
+  ),
+};
+
+export const USDCT: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x935faA2FCec6Ab81265B301a30467Bbc804b43d3',
+    6,
+    'USDC.t',
+    'USD Coin_TRON',
   ),
 };
 
@@ -433,6 +443,23 @@ export const USDT: { [chainId: number]: Token } = {
     6,
     'USDT',
     'Tether USD',
+  ),
+  [ChainId.BTTC]: new Token(
+    ChainId.BTTC,
+    '0xE887512ab8BC60BcC9224e1c3b5Be68E26048B8B',
+    6,
+    'USDT.e',
+    'Tether USD_Ethereum',
+  ),
+};
+
+export const USDTT: { [chainId: number]: Token } = {
+  [ChainId.BTTC]: new Token(
+    ChainId.BTTC,
+    '0xdB28719F7f938507dBfe4f0eAe55668903D34a15',
+    6,
+    'USDT.t',
+    'Tether USD_TRON',
   ),
 };
 
@@ -561,6 +588,13 @@ export const ETHER: { [chainId: number]: Token } = {
     //Due to Uniswap SDK implmentation
     'ETH',
     'Ether',
+  ),
+  [ChainId.BTTC]: new Token(
+    ChainId.BTTC,
+    '0x1249C65AfB11D179FFB3CE7D4eEDd1D9b98AD006',
+    18,
+    'ETH',
+    'ETH',
   ),
 };
 
@@ -1054,7 +1088,7 @@ export const SUGGESTED_BASES: {
     WBTC[ChainId.MANTA],
   ],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
-  [ChainId.BTTC]: [WETH[ChainId.BTTC], USDC[ChainId.BTTC]],
+  [ChainId.BTTC]: [WETH[ChainId.BTTC], USDC[ChainId.BTTC], USDT[ChainId.BTTC]],
 };
 
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {

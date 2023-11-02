@@ -43,6 +43,8 @@ import {
   AAVE,
   USDCE,
   fxMETOD,
+  USDCT,
+  USDTT,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -1628,7 +1630,12 @@ export const GlobalData = {
       DAI[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [USDC[ChainId.ZKATANA]],
-    [ChainId.BTTC]: [],
+    [ChainId.BTTC]: [
+      USDC[ChainId.BTTC],
+      USDCT[ChainId.BTTC],
+      USDT[ChainId.BTTC],
+      USDTT[ChainId.BTTC],
+    ],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -1666,7 +1673,12 @@ export const GlobalData = {
       DAI[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
-    [ChainId.BTTC]: [],
+    [ChainId.BTTC]: [
+      WETH[ChainId.BTTC],
+      ETHER[ChainId.BTTC],
+      USDC[ChainId.BTTC],
+      USDT[ChainId.BTTC],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
