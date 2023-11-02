@@ -304,15 +304,30 @@ export abstract class SwapRouter extends SelfPermit {
             );
           }
         } else {
-          calldatas.push(
-            SwapRouter.INTERFACE.encodeFunctionData('sweepTokenWithFee', [
-              sampleTrade.outputAmount.currency.wrapped.address,
-              toHex(totalAmountOut.quotient),
-              recipient,
-              fee,
-              feeRecipient,
-            ]),
-          );
+          if (options.isUni) {
+            calldatas.push(
+              SwapRouter.UNIV3INTERFACE.encodeFunctionData(
+                'sweepTokenWithFee',
+                [
+                  sampleTrade.outputAmount.currency.wrapped.address,
+                  toHex(totalAmountOut.quotient),
+                  recipient,
+                  fee,
+                  feeRecipient,
+                ],
+              ),
+            );
+          } else {
+            calldatas.push(
+              SwapRouter.INTERFACE.encodeFunctionData('sweepTokenWithFee', [
+                sampleTrade.outputAmount.currency.wrapped.address,
+                toHex(totalAmountOut.quotient),
+                recipient,
+                fee,
+                feeRecipient,
+              ]),
+            );
+          }
         }
       } else {
         if (options.isUni) {
