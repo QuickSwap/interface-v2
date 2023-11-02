@@ -116,6 +116,10 @@ export const networkInfoMap: NetworkInfoChainMap = {
     rpcUrl: 'https://pacific-rpc.manta.network/http',
     scanUrl: 'https://pacific-explorer.manta.network/',
   },
+  [ChainId.ZKATANA]: {
+    rpcUrl: 'https://rpc.zkatana.gelato.digital',
+    scanUrl: 'https://zkatana.blockscout.com/',
+  },
 };
 
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;

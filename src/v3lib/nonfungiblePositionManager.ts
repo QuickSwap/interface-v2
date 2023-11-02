@@ -94,12 +94,12 @@ export interface CollectOptions {
   /**
    * Expected value of tokensOwed0, including as-of-yet-unaccounted-for fees/liquidity value to be burned
    */
-  expectedCurrencyOwed0: CurrencyAmount<Currency>;
+  expectedCurrencyOwed0?: CurrencyAmount<Currency>;
 
   /**
    * Expected value of tokensOwed1, including as-of-yet-unaccounted-for fees/liquidity value to be burned
    */
-  expectedCurrencyOwed1: CurrencyAmount<Currency>;
+  expectedCurrencyOwed1?: CurrencyAmount<Currency>;
 
   /**
    * The account that should receive the tokens.
@@ -386,18 +386,22 @@ export abstract class NonfungiblePositionManager extends SelfPermit {
       ...NonfungiblePositionManager.encodeCollect({
         tokenId: options.tokenId,
         // add the underlying value to the expected currency already owed
-        expectedCurrencyOwed0: expectedCurrencyOwed0.add(
-          CurrencyAmount.fromRawAmount(
-            expectedCurrencyOwed0.currency,
-            amount0Min,
-          ),
-        ),
-        expectedCurrencyOwed1: expectedCurrencyOwed1.add(
-          CurrencyAmount.fromRawAmount(
-            expectedCurrencyOwed1.currency,
-            amount1Min,
-          ),
-        ),
+        expectedCurrencyOwed0: expectedCurrencyOwed0
+          ? expectedCurrencyOwed0.add(
+              CurrencyAmount.fromRawAmount(
+                expectedCurrencyOwed0.currency,
+                amount0Min,
+              ),
+            )
+          : undefined,
+        expectedCurrencyOwed1: expectedCurrencyOwed1
+          ? expectedCurrencyOwed1.add(
+              CurrencyAmount.fromRawAmount(
+                expectedCurrencyOwed1.currency,
+                amount1Min,
+              ),
+            )
+          : undefined,
         ...rest,
       }),
     );
@@ -436,8 +440,10 @@ export abstract class NonfungiblePositionManager extends SelfPermit {
     const tokenId = toHex(options.tokenId);
 
     const involvesETH =
-      options.expectedCurrencyOwed0.currency.isNative ||
-      options.expectedCurrencyOwed1.currency.isNative;
+      (options.expectedCurrencyOwed0 &&
+        options.expectedCurrencyOwed0.currency.isNative) ||
+      (options.expectedCurrencyOwed1 &&
+        options.expectedCurrencyOwed1.currency.isNative);
 
     const recipient = validateAndParseAddress(options.recipient);
 
@@ -454,29 +460,48 @@ export abstract class NonfungiblePositionManager extends SelfPermit {
     );
 
     if (involvesETH) {
-      const ethAmount = options.expectedCurrencyOwed0.currency.isNative
-        ? options.expectedCurrencyOwed0.quotient
-        : options.expectedCurrencyOwed1.quotient;
-      const token = options.expectedCurrencyOwed0.currency.isNative
-        ? (options.expectedCurrencyOwed1.currency as Token)
-        : (options.expectedCurrencyOwed0.currency as Token);
-      const tokenAmount = options.expectedCurrencyOwed0.currency.isNative
-        ? options.expectedCurrencyOwed1.quotient
-        : options.expectedCurrencyOwed0.quotient;
+      const ethAmount =
+        options.expectedCurrencyOwed0 &&
+        options.expectedCurrencyOwed0.currency.isNative
+          ? options.expectedCurrencyOwed0.quotient
+          : options.expectedCurrencyOwed1
+          ? options.expectedCurrencyOwed1.quotient
+          : undefined;
+      const token =
+        options.expectedCurrencyOwed0 &&
+        options.expectedCurrencyOwed0.currency.isNative
+          ? options.expectedCurrencyOwed1
+            ? (options.expectedCurrencyOwed1.currency as Token)
+            : undefined
+          : options.expectedCurrencyOwed0
+          ? (options.expectedCurrencyOwed0.currency as Token)
+          : undefined;
+      const tokenAmount =
+        options.expectedCurrencyOwed0 &&
+        options.expectedCurrencyOwed0.currency.isNative
+          ? options.expectedCurrencyOwed1
+            ? options.expectedCurrencyOwed1.quotient
+            : undefined
+          : options.expectedCurrencyOwed0
+          ? options.expectedCurrencyOwed0.quotient
+          : undefined;
 
-      calldatas.push(
-        NonfungiblePositionManager.INTERFACE.encodeFunctionData(
-          'unwrapWNativeToken',
-          [toHex(ethAmount), recipient],
-        ),
-      );
-      calldatas.push(
-        NonfungiblePositionManager.INTERFACE.encodeFunctionData('sweepToken', [
-          token.address,
-          toHex(tokenAmount),
-          recipient,
-        ]),
-      );
+      if (ethAmount) {
+        calldatas.push(
+          NonfungiblePositionManager.INTERFACE.encodeFunctionData(
+            'unwrapWNativeToken',
+            [toHex(ethAmount), recipient],
+          ),
+        );
+      }
+      if (token && tokenAmount) {
+        calldatas.push(
+          NonfungiblePositionManager.INTERFACE.encodeFunctionData(
+            'sweepToken',
+            [token.address, toHex(tokenAmount), recipient],
+          ),
+        );
+      }
     }
 
     return calldatas;

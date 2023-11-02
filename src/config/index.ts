@@ -3,6 +3,7 @@ import dogechain from './dogechain.json';
 import zktestnet from './zktestnet.json';
 import zkmainnet from './zkmainnet.json';
 import manta from './manta.json';
+import zkartana from './zkartana.json';
 import qlpmanager from './qlpmanager.json';
 import { ChainId } from '@uniswap/sdk';
 const configs: any = {
@@ -11,6 +12,7 @@ const configs: any = {
   [ChainId.ZKTESTNET]: zktestnet,
   [ChainId.ZKEVM]: zkmainnet,
   [ChainId.MANTA]: manta,
+  [ChainId.ZKATANA]: zkartana,
 };
 
 export const getConfig = (network: ChainId | undefined) => {

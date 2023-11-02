@@ -131,8 +131,6 @@ export default function RemoveLiquidityV3({
       !deadline ||
       !account ||
       !chainId ||
-      !feeValue0 ||
-      !feeValue1 ||
       !positionSDK ||
       !liquidityPercentage ||
       !library
@@ -377,13 +375,14 @@ export default function RemoveLiquidityV3({
         <Box className='flex items-center'>
           <Box className='flex' mr={1}>
             <DoubleCurrencyLogo
-              currency0={feeValue0?.currency}
-              currency1={feeValue1?.currency}
+              currency0={liquidityValue0?.currency}
+              currency1={liquidityValue1?.currency}
               size={32}
             />
           </Box>
           <h5>
-            {feeValue0?.currency.symbol}-{feeValue1?.currency.symbol}
+            {liquidityValue0?.currency.symbol}-
+            {liquidityValue1?.currency.symbol}
           </h5>
         </Box>
         <RangeBadge removed={removed} inRange={!outOfRange} />
