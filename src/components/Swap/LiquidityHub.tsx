@@ -2,10 +2,11 @@ import React, { useEffect, useMemo } from 'react';
 import Web3 from 'web3';
 import BN from 'bignumber.js';
 import {
+  useExpertModeManager,
   useLiquidityHubManager,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useIsProMode } from 'hooks';
 import { useLocation } from 'react-router-dom';
 import { styled } from '@material-ui/styles';
 import { Box, Divider } from '@material-ui/core';
@@ -26,68 +27,91 @@ import { useTokenContract } from 'hooks/useContract';
 import { getConfig } from 'config';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { useToken } from 'hooks/Tokens';
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
 
 const REQUEST_FILTERED_ERROR = 'requestFiltered';
 
 export const useLiquidityHubCallback = (
-  srcToken?: string,
-  destToken?: string,
+  srcTokenAddress?: string,
+  destTokenAddress?: string,
 ) => {
   const [liquidityHubDisabled] = useLiquidityHubManager();
   const { account, library } = useActiveWeb3React();
   const liquidityHubState = useLiquidityHubState();
   const { onSetLiquidityHubState } = useLiquidityHubActionHandlers();
   const queryParam = useQueryParam();
-  const approve = useApprove(srcToken);
-  const isApproved = useApproved(srcToken);
+  const approve = useApprove(srcTokenAddress);
+  const isApproved = useApproved(srcTokenAddress);
   const swap = useSwap();
   const sign = useSign();
   const firstQuote = useFirstQuote();
   const secondQuote = useSecondQuote();
   const isSupported = useIsLiquidityHubSupported();
-  const dstTokenUsdValue = useUSDCPriceFromAddress(destToken || '');
+  const dstTokenUsdValue = useUSDCPriceFromAddress(destTokenAddress || '');
+  const isProMode = useIsProMode();
+  const [expertMode] = useExpertModeManager();
+  const srcToken = useToken(srcTokenAddress);
+  const destToken = useToken(destTokenAddress);
+  const [userSlippageTolerance] = useUserSlippageTolerance();
 
-  return async (
-    srcAmount?: string,
-    minDestAmount?: string,
-    dstDecimals?: number,
-  ) => {
+  return async (srcAmount?: string, minDestAmount?: string) => {
+    const skipped = queryParam === LiquidityHubControl.SKIP;
+    if (isProMode) {
+      liquidityHubAnalytics.onIsProMode();
+    }
+    if (expertMode) {
+      liquidityHubAnalytics.onExpertMode();
+    }
+
+    if (skipped) {
+      liquidityHubAnalytics.onClobSkipped();
+    }
+    if (liquidityHubState.isFailed) {
+      liquidityHubAnalytics.onClobFailedAndSkipped();
+    }
     if (!isSupported) {
+      liquidityHubAnalytics.onNotSupported();
       return undefined;
     }
     if (liquidityHubDisabled) {
       liquidityHubAnalytics.onDisabled();
+      return undefined;
     }
     if (
       !minDestAmount ||
       !destToken ||
       !srcAmount ||
       !srcToken ||
-      liquidityHubDisabled ||
       !library ||
       !account ||
-      queryParam === LiquidityHubControl.SKIP ||
+      skipped ||
       (liquidityHubState.isFailed && queryParam !== LiquidityHubControl.FORCE)
     ) {
       return undefined;
     }
 
-    liquidityHubAnalytics.onInitTrade(
-      minDestAmount,
+    liquidityHubAnalytics.onInitTrade({
+      dexAmountOut: minDestAmount,
       dstTokenUsdValue,
-      dstDecimals,
-    );
+      dstDecimals: destToken.decimals,
+      srcTokenAddress: srcToken.address,
+      srcTokenSymbol: srcToken.symbol,
+      dstTokenAddress: destToken.address,
+      dstTokenSymbol: destToken.symbol,
+      srcAmount,
+      slippage: userSlippageTolerance / 100,
+    });
 
     onSetLiquidityHubState({
       isLoading: true,
     });
 
     const quoteArgs: QuoteArgs = {
-      outToken: destToken,
+      outToken: destToken.address,
       inAmount: srcAmount,
-      inToken: srcToken,
+      inToken: srcToken.address,
       minDestAmount,
     };
 
@@ -105,8 +129,8 @@ export const useLiquidityHubCallback = (
       const signature = await sign(quoteResult.permitData);
 
       const response = await swap({
-        srcToken,
-        destToken,
+        srcToken: srcToken.address,
+        destToken: destToken.address,
         srcAmount,
         minDestAmount,
         signature,
@@ -260,12 +284,11 @@ const useFirstQuote = () => {
 
   return async (args: QuoteArgs) => {
     try {
+      liquidityHubAnalytics.incrementQuoteIndex();
       const quoteResponse = await quoteCallback(args);
       return quoteResponse;
     } catch (error) {
       throw new Error(error.message);
-    } finally {
-      liquidityHubAnalytics.incrementQuoteIndex();
     }
   };
 };
@@ -276,6 +299,7 @@ const useSecondQuote = () => {
 
   return async (args: QuoteArgs) => {
     try {
+      liquidityHubAnalytics.incrementQuoteIndex();
       const quoteResponse = await quoteCallback(args);
       onSetLiquidityHubState({
         isWon: true,
@@ -299,6 +323,7 @@ const useQuote = () => {
   return async (args: QuoteArgs) => {
     let quoteResponse: any;
     const count = counter();
+    console.log(userSlippageTolerance / 100);
     try {
       liquidityHubAnalytics.onQuoteRequest();
       const response = await fetch(`${API_ENDPOINT}/quote?chainId=137`, {
@@ -309,7 +334,7 @@ const useQuote = () => {
           inAmount: args.inAmount,
           outAmount: args.minDestAmount,
           user: account,
-          slippage: userSlippageTolerance / 1000,
+          slippage: userSlippageTolerance / 100,
           qs: encodeURIComponent(window.location.hash),
           sessionId: liquidityHubAnalytics.data.sessionId,
         }),
@@ -319,7 +344,9 @@ const useQuote = () => {
       if (!quoteResponse) {
         throw new Error('Missing result from quote');
       }
-
+      if (!liquidityHubAnalytics.data.sessionId) {
+        liquidityHubAnalytics.setSessionId(quoteResponse.sessionId);
+      }
       if (quoteResponse.error) {
         throw new Error(quoteResponse.error);
       }
@@ -328,9 +355,6 @@ const useQuote = () => {
         throw new Error(quoteResponse.message);
       }
 
-      if (!liquidityHubAnalytics.data.sessionId) {
-        liquidityHubAnalytics.setSessionId(quoteResponse.sessionId);
-      }
       if (
         queryParam !== LiquidityHubControl.FORCE &&
         BN(quoteResponse.outAmount || '0').isLessThan(
@@ -411,7 +435,7 @@ const initialData: Partial<LiquidityHubAnalyticsData> = {
   dstTokenAddress: '',
   dstTokenSymbol: '',
   srcAmount: '',
-  quoteIndex: 1,
+  quoteIndex: 0,
 
   approvalState: '',
   approvalError: '',
@@ -427,10 +451,12 @@ const initialData: Partial<LiquidityHubAnalyticsData> = {
   txHash: '',
   swapError: '',
 
-  swapClicked: false,
-  swapConfirmed: false,
-
   isAlreadyApproved: false,
+  isProMode: false,
+  clobSkippedByQs: false,
+  clobNotSupported: false,
+  expertMode: false,
+  clobFailedAndSkipped: false,
 };
 
 const counter = () => {
@@ -565,114 +591,87 @@ class LiquidityHubAnalytics {
     });
   }
 
-  onSwapClicked() {
-    this.updateAndSend({ swapClicked: true });
-  }
-
-  onSwapConfirmed() {
-    this.updateAndSend({ swapConfirmed: true });
-  }
-
   setSessionId(id: string) {
     this.data.sessionId = id;
-  }
-
-  onWalletConnected(walletAddress?: string) {
-    this.updateAndSend({ walletAddress: walletAddress || '' });
-  }
-
-  onSrcToken(address: string, symbol: string) {
-    this.updateAndSend({
-      srcTokenAddress: address || 'native',
-      srcTokenSymbol: symbol,
-    });
-  }
-
-  onDstToken(address: string, symbol: string) {
-    this.updateAndSend({
-      dstTokenAddress: address || 'native',
-      dstTokenSymbol: symbol,
-    });
   }
 
   onDisabled() {
     this.updateAndSend({ isClobDisabled: true });
   }
 
-  onSrcAmount(srcAmount: string) {
-    this.updateAndSend({ srcAmount });
+  onIsProMode() {
+    this.updateAndSend({ isProMode: true });
   }
 
-  onInitTrade(
-    dexAmountOut: string,
-    srcTokenUsdValue: number,
-    dstDecimals?: number,
-  ) {
-    const dexAmountOutBN = new BN(dexAmountOut);
+  onExpertMode() {
+    this.updateAndSend({ expertMode: true });
+  }
+
+  onClobSkipped() {
+    this.updateAndSend({ clobSkippedByQs: true });
+  }
+
+  onNotSupported() {
+    this.updateAndSend({ clobNotSupported: true });
+  }
+
+  onClobFailedAndSkipped() {
+    this.updateAndSend({ clobFailedAndSkipped: true });
+  }
+
+  onInitTrade({
+    srcTokenAddress,
+    dstTokenAddress,
+    srcTokenSymbol,
+    dstTokenSymbol,
+    walletAddress,
+    slippage,
+    srcAmount,
+    dstTokenUsdValue,
+    dstDecimals,
+    dexAmountOut,
+  }: {
+    srcTokenAddress?: string;
+    dstTokenAddress?: string;
+    srcTokenSymbol?: string;
+    dstTokenSymbol?: string;
+    walletAddress?: string;
+    slippage: number;
+    srcAmount?: string;
+    dexAmountOut?: string;
+    dstTokenUsdValue?: number;
+    dstDecimals?: number;
+  }) {
+    const dexAmountOutBN = new BN(dexAmountOut || '0');
     const dstAmountOutUsd = dexAmountOutBN
-      .multipliedBy(srcTokenUsdValue || 0)
+      .multipliedBy(dstTokenUsdValue || 0)
 
       .dividedBy(new BN(10).pow(new BN(dstDecimals || 0)))
       .toFixed(2);
 
-    this.updateAndSend({ dexAmountOut, dstAmountOutUsd });
+    this.updateAndSend({
+      dexAmountOut,
+      dstAmountOutUsd,
+      srcAmount,
+      srcTokenAddress,
+      srcTokenSymbol,
+      dstTokenAddress,
+      dstTokenSymbol,
+      walletAddress,
+      slippage,
+    });
   }
 
   clearState() {
     const walletAddress = this.data.walletAddress;
     this.data = {
       ...initialData,
+      _id: crypto.randomUUID(),
       walletAddress,
     };
   }
 }
 export const liquidityHubAnalytics = new LiquidityHubAnalytics();
-
-export const useLiquidityHubAnalyticsListeners = (
-  srcToken?: any,
-  dstToken?: any,
-  srcAmount?: string,
-  showConfirm?: boolean,
-  attemptingTxn?: boolean,
-) => {
-  const { account } = useActiveWeb3React();
-
-  useEffect(() => {
-    if (showConfirm) {
-      liquidityHubAnalytics.onSwapClicked();
-    }
-  }, [showConfirm]);
-
-  useEffect(() => {
-    if (attemptingTxn) {
-      liquidityHubAnalytics.onSwapConfirmed();
-    }
-  }, [attemptingTxn]);
-
-  useEffect(() => {
-    if (srcAmount) {
-      liquidityHubAnalytics.onSrcAmount(srcAmount);
-    }
-  }, [srcAmount]);
-
-  useEffect(() => {
-    if (account) {
-      liquidityHubAnalytics.onWalletConnected(account);
-    }
-  }, [account]);
-
-  useEffect(() => {
-    if (srcToken?.symbol) {
-      liquidityHubAnalytics.onSrcToken(srcToken?.address, srcToken?.symbol);
-    }
-  }, [srcToken?.address, srcToken?.symbol]);
-
-  useEffect(() => {
-    if (dstToken?.symbol) {
-      liquidityHubAnalytics.onDstToken(dstToken?.address, dstToken?.symbol);
-    }
-  }, [dstToken?.address, dstToken?.symbol]);
-};
 
 export const useConfirmationPendingContent = (pendingText?: string) => {
   const { t } = useTranslation();
@@ -862,6 +861,7 @@ interface LiquidityHubAnalyticsData {
   dstTokenSymbol: string;
   srcAmount: string;
   quoteIndex: number;
+  slippage: number;
 
   approvalState: actionState;
   approvalError: string;
@@ -877,15 +877,17 @@ interface LiquidityHubAnalyticsData {
   swapMillis: number | null;
   swapError: string;
 
-  swapClicked: boolean;
-  swapConfirmed: boolean;
-
   isClobDisabled: boolean;
   dexSwapSuccess: boolean;
   dexSwapTxHash: string;
 
   isAlreadyApproved: boolean;
   dstAmountOutUsd: string;
+  isProMode: boolean;
+  clobSkippedByQs: boolean;
+  clobNotSupported: boolean;
+  expertMode: boolean;
+  clobFailedAndSkipped: boolean;
 }
 
 interface QuoteResponse {
