@@ -120,6 +120,10 @@ export const networkInfoMap: NetworkInfoChainMap = {
     rpcUrl: 'https://rpc.zkatana.gelato.digital',
     scanUrl: 'https://zkatana.blockscout.com/',
   },
+  [ChainId.BTTC]: {
+    rpcUrl: 'https://rpc.bt.io',
+    scanUrl: 'https://bttcscan.com/',
+  },
 };
 
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;

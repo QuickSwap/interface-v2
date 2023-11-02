@@ -15,6 +15,7 @@ export const rpcMap = {
   [ChainId.KAVA]: '',
   [ChainId.MANTA]: 'https://pacific-rpc.manta.network/http',
   [ChainId.ZKATANA]: 'https://rpc.zkatana.gelato.digital',
+  [ChainId.BTTC]: 'https://rpc.bt.io',
 };
 
 class AppJsonRpcProvider extends StaticJsonRpcProvider {
@@ -76,4 +77,5 @@ export const RPC_PROVIDERS: {
   [ChainId.KAVA]: new AppJsonRpcProvider(ChainId.KAVA),
   [ChainId.MANTA]: new AppJsonRpcProvider(ChainId.MANTA),
   [ChainId.ZKATANA]: new AppJsonRpcProvider(ChainId.ZKATANA),
+  [ChainId.BTTC]: new AppJsonRpcProvider(ChainId.BTTC),
 };
