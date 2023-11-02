@@ -878,6 +878,16 @@ export const AAVE: { [chainId: number]: Token } = {
   ),
 };
 
+export const fxMETOD: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x65ad509db5924ef0001d977590985f965ef1aaaa',
+    18,
+    'fxMETOD',
+    'META TOY DRAGONZ TOKEN (FXERC20)',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
