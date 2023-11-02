@@ -57,7 +57,11 @@ import { warningSeverity } from 'utils/v3/prices';
 import { Box, Button } from '@material-ui/core';
 import { ChainId, ETHER, WETH } from '@uniswap/sdk';
 import { AddressInput, CustomTooltip } from 'components';
-import { SWAP_ROUTER_ADDRESSES, WMATIC_EXTENDED } from 'constants/v3/addresses';
+import {
+  SWAP_ROUTER_ADDRESSES,
+  UNI_SWAP_ROUTER,
+  WMATIC_EXTENDED,
+} from 'constants/v3/addresses';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import { CHAIN_INFO } from 'constants/v3/chains';
@@ -324,6 +328,7 @@ const SwapV3Page: React.FC = () => {
     currencies[Field.INPUT]?.wrapped.address ?? '',
   );
 
+  const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
   const handleSwap = useCallback(() => {
     if (!swapCallback) {
       return;
@@ -388,7 +393,9 @@ const SwapV3Page: React.FC = () => {
             fireEvent('trade', {
               user_address: account,
               network: config['networkName'],
-              contract_address: SWAP_ROUTER_ADDRESSES[chainId],
+              contract_address: isUni
+                ? UNI_SWAP_ROUTER[chainId]
+                : SWAP_ROUTER_ADDRESSES[chainId],
               asset_amount: formattedAmounts[Field.INPUT],
               asset_ticker: currencies[Field.INPUT].symbol ?? '',
               additionalEventData: {
@@ -437,6 +444,7 @@ const SwapV3Page: React.FC = () => {
     recipient,
     recipientAddress,
     trade,
+    isUni,
   ]);
 
   // errors
