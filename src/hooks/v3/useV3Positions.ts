@@ -19,6 +19,7 @@ import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import {
+  getAllDefiedgeStrategies,
   getAllGammaPairs,
   getContract,
   getUnipilotPositions,
@@ -31,6 +32,7 @@ import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 import { getConfig } from 'config';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -653,4 +655,45 @@ export function useUnipilotPositions(
     loading: positionsLoading,
     unipilotPositions,
   };
+}
+
+export function useDefiedgePositions(
+  account: string | null | undefined,
+  chainId: ChainId | undefined,
+) {
+  const allDefidegeStrategies = getAllDefiedgeStrategies(chainId);
+
+  const lpBalancesData = useMultipleContractSingleData(
+    allDefidegeStrategies.map((strategy) => strategy.id),
+    new Interface(DEFIEDGE_STRATEGY_ABI),
+    'balanceOf',
+    [account ?? undefined],
+  );
+
+  const lpBalances = lpBalancesData.map((callData) => {
+    const amount =
+      !callData.loading && callData.result && callData.result.length > 0
+        ? Number(formatUnits(callData.result[0], 18))
+        : 0;
+    return amount;
+  });
+
+  const lpBalancesLoading = !!lpBalancesData.find(
+    (callState) => !!callState.loading,
+  );
+
+  const positions = allDefidegeStrategies.map((strategy, i) => {
+    const share = lpBalances[i];
+
+    return {
+      ...strategy,
+      share,
+    };
+  });
+
+  const count = useMemo(() => {
+    return lpBalances.filter((balance) => balance > 0).length;
+  }, [lpBalances]);
+
+  return { loading: lpBalancesLoading, count, positions };
 }
