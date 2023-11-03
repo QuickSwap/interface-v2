@@ -56,7 +56,11 @@ import {
 } from 'hooks/useContract';
 import { useSingleCallResult } from 'state/multicall/hooks';
 import { ETHER, WETH } from '@uniswap/sdk';
-import { getGammaPairsForTokens, maxAmountSpend } from 'utils';
+import {
+  getAllDefiedgeStrategies,
+  getGammaPairsForTokens,
+  maxAmountSpend,
+} from 'utils';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
@@ -917,7 +921,8 @@ export function useV3DerivedMintInfo(
 
   // sorted for token order
   const depositADisabled =
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) &&
     (invalidRange ||
       Boolean(
         (deposit0Disabled &&
@@ -930,7 +935,8 @@ export function useV3DerivedMintInfo(
             poolForPosition.token1.equals(tokenA)),
       ));
   const depositBDisabled =
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) &&
     (invalidRange ||
       Boolean(
         (deposit0Disabled &&
@@ -1367,9 +1373,7 @@ export function useGetUnipilotVaults() {
 
 export function useGetDefiedgeStrategies() {
   const { chainId } = useActiveWeb3React();
-  const config = getConfig(chainId);
-  const defiedgeAvailable = config['defiedge']['available'];
-  const strategies = defiedgeAvailable ? DefiedgeStrategies[chainId] ?? [] : [];
+  const strategies = getAllDefiedgeStrategies(chainId);
   const strategyIds = strategies.map((s) => s.id);
 
   const strategyTickResult = useMultipleContractSingleData(
@@ -1389,13 +1393,17 @@ export function useGetDefiedgeStrategies() {
         ? strategyTickCallData.result
         : undefined;
 
+    const tickLower = strategyTicksResult ? strategyTicksResult[0] : undefined;
+    const tickUpper = strategyTicksResult ? strategyTicksResult[1] : undefined;
+
     return {
       id: strategy.id,
       token0: strategy.token0,
       token1: strategy.token1,
       pool: strategy.pool,
-      tickLower: strategyTicksResult ? strategyTicksResult[0] : undefined,
-      tickUpper: strategyTicksResult ? strategyTicksResult[1] : undefined,
+      tickLower,
+      tickUpper,
+      onHold: !tickLower && !tickUpper,
     };
   });
 }
