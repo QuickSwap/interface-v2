@@ -634,6 +634,8 @@
   "withdrewGammaLiquidity": "Withdrew Gamma Liquidity",
   "withdrawingUnipilotLiquidity": "Withdrawing Unipilot Liquidity",
   "withdrewUnipilotLiquidity": "Withdrew Unipilot Liquidity",
+  "withdrawingDefiedgeLiquidity": "Withdrawing Defiedge Liquidity",
+  "withdrewDefiedgeLiquidity": "Withdrew Defiedge Liquidity",
   "fetchingGammaDepositRange": "Fetching Gamma Deposit Range",
   "available": "Available",
   "noGammaFarms": "No Gamma Farms",
