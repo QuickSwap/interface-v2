@@ -1502,7 +1502,7 @@ export const UnipilotVaults: {
   ],
 };
 
-interface DefiedgeStrategy {
+export interface DefiedgeStrategy {
   id: string;
   token0: string;
   token1: string;
