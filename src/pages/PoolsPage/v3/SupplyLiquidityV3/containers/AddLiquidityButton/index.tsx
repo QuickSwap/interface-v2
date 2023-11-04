@@ -29,6 +29,7 @@ import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { CurrencyAmount } from '@uniswap/sdk-core';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
@@ -496,8 +497,6 @@ export function AddLiquidityButton({
       const token0Address = mintInfo.presetRange.tokenStr.split('-')[0];
 
       if (
-        !amountA ||
-        !amountB ||
         !defiedgeStrategyAddress ||
         !baseCurrencyAddress ||
         !quoteCurrencyAddress
@@ -508,35 +507,38 @@ export function AddLiquidityButton({
 
       setAttemptingTxn(true);
 
+      const zeroCurrencyAmount = CurrencyAmount.fromRawAmount(quoteCurrency, 0);
+      console.log(zeroCurrencyAmount.numerator.toString());
+
       try {
         const estimatedGas = await defiedgeStrategyContract.estimateGas.mint(
           (token0Address.toLowerCase() === baseCurrencyAddress
-            ? amountA
-            : amountB
+            ? amountA ?? zeroCurrencyAmount
+            : amountB ?? zeroCurrencyAmount
           ).numerator.toString(),
           (token0Address.toLowerCase() === baseCurrencyAddress
-            ? amountB
-            : amountA
+            ? amountB ?? zeroCurrencyAmount
+            : amountA ?? zeroCurrencyAmount
           ).numerator.toString(),
           '0',
           '0',
           '0',
           {
             value: baseCurrency.isNative
-              ? amountA.numerator.toString()
+              ? (amountA ?? zeroCurrencyAmount).numerator.toString()
               : quoteCurrency.isNative
-              ? amountB.numerator.toString()
+              ? (amountB ?? zeroCurrencyAmount).numerator.toString()
               : '0',
           },
         );
         const response: TransactionResponse = await defiedgeStrategyContract.mint(
           (token0Address.toLowerCase() === baseCurrencyAddress
-            ? amountA
-            : amountB
+            ? amountA ?? zeroCurrencyAmount
+            : amountB ?? zeroCurrencyAmount
           ).numerator.toString(),
           (token0Address.toLowerCase() === baseCurrencyAddress
-            ? amountB
-            : amountA
+            ? amountB ?? zeroCurrencyAmount
+            : amountA ?? zeroCurrencyAmount
           ).numerator.toString(),
           '0',
           '0',
@@ -544,9 +546,9 @@ export function AddLiquidityButton({
           {
             gasLimit: calculateGasMargin(estimatedGas),
             value: baseCurrency.isNative
-              ? amountA.numerator.toString()
+              ? (amountA ?? zeroCurrencyAmount).numerator.toString()
               : quoteCurrency.isNative
-              ? amountB.numerator.toString()
+              ? (amountB ?? zeroCurrencyAmount).numerator.toString()
               : '0',
           },
         );
