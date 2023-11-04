@@ -83,4 +83,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'Ether',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.BTTC]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://bttcscan.com',
+    infoLink: 'https://algebra.finance',
+    label: 'bttc',
+    nativeCurrencySymbol: 'BTT',
+    nativeCurrencyName: 'BitTorrent Token',
+    nativeCurrencyDecimals: 18,
+  },
 };

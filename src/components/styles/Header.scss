@@ -8,12 +8,9 @@
   z-index: 3;
 }
 
-
-
 .network-name {
   font-weight: 600;
 }
-
 
 .newsletterBar {
   position: relative;
@@ -297,7 +294,7 @@
 .mobileMenuClosedContainer {
   display: flex;
   justify-content: space-between;
-  width: 100%; 
+  width: 100%;
 }
 
 .mobileMenuDrawerContainer {
@@ -315,7 +312,6 @@
     color: #448aff;
   }
 }
-
 
 .mobileMenuItem {
   color: #c7cad9;
@@ -401,6 +397,9 @@
   position: relative;
   display: flex;
   margin-right: 8px;
+  & img {
+    border-radius: 50%;
+  }
 }
 
 @media (max-width: 959px) {
