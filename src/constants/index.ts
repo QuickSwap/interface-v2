@@ -59,6 +59,14 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.ZKATANA]: 'zKatana',
 };
 
+export enum SteerVaultState {
+  PendingApproval,
+  PendingThreshold,
+  Paused,
+  Active,
+  Retired,
+}
+
 export enum TxnType {
   SWAP,
   ADD,
@@ -174,6 +182,7 @@ export const GlobalConst = {
       quickswap: '0',
       unipilot: '1',
       gamma: '2',
+      steer: '3',
     },
   },
   analyticChart: {
@@ -193,6 +202,7 @@ export const GlobalConst = {
     MANUAL_RANGE: '0',
     GAMMA_RANGE: '1',
     UNIPILOT_RANGE: '2',
+    STEER_RANGE: '3',
   },
   walletName: {
     METAMASK: 'Metamask',

@@ -57,5 +57,8 @@
   },
   "perps": {
     "available": false
+  },
+  "steer": {
+    "available": false
   }
 }

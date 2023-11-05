@@ -68,5 +68,8 @@
   },
   "unipilot": {
     "available": true
+  },
+  "steer": {
+    "available": false
   }
 }

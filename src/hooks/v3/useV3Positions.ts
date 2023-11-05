@@ -31,6 +31,9 @@ import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 import { getConfig } from 'config';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import { useSteerStakedPools, useSteerVaults } from './useSteerData';
+import { Token } from '@uniswap/sdk-core';
+import { useTokenBalances } from 'state/wallet/v3/hooks';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -660,3 +663,61 @@ export function useUnipilotPositions(
     unipilotPositions,
   };
 }
+
+export const useV3SteerPositionsCount = () => {
+  const { chainId, account } = useActiveWeb3React();
+  const { loading, data: vaults } = useSteerVaults(chainId);
+  const { loading: loadingFarms, data: steerFarms } = useSteerStakedPools(
+    chainId,
+    account,
+  );
+  const vaultTokens = vaults.map(
+    (item) => new Token(chainId, item.address, item.vaultDecimals),
+  );
+  const vaultBalances = useTokenBalances(account, vaultTokens);
+  const positions = vaults.filter((vault) => {
+    const vaultBalanceItems = Object.values(vaultBalances);
+    const vaultBalance = vaultBalanceItems.find(
+      (item) =>
+        item &&
+        vault &&
+        vault.address &&
+        item.currency.address.toLowerCase() === vault.address.toLowerCase(),
+    );
+    const steerFarm = steerFarms.find(
+      (farm: any) =>
+        farm.stakingToken.toLowerCase() === vault.address.toLowerCase(),
+    );
+    return (
+      Number(vaultBalance?.toExact() ?? 0) + (steerFarm?.stakedAmount ?? 0) > 0
+    );
+  });
+  return { loading: loading || loadingFarms, count: positions.length };
+};
+
+export const useV3SteerPositions = () => {
+  const { chainId, account } = useActiveWeb3React();
+  const { data: vaults } = useSteerVaults(chainId);
+  const { data: steerFarms } = useSteerStakedPools(chainId, account);
+  const vaultTokens = vaults.map(
+    (item) => new Token(chainId, item.address, item.vaultDecimals),
+  );
+  const vaultBalances = useTokenBalances(account, vaultTokens);
+  return vaults.filter((vault) => {
+    const vaultBalanceItems = Object.values(vaultBalances);
+    const vaultBalance = vaultBalanceItems.find(
+      (item) =>
+        item &&
+        vault &&
+        vault.address &&
+        item.currency.address.toLowerCase() === vault.address.toLowerCase(),
+    );
+    const steerFarm = steerFarms.find(
+      (farm: any) =>
+        farm.stakingToken.toLowerCase() === vault.address.toLowerCase(),
+    );
+    return (
+      Number(vaultBalance?.toExact() ?? 0) + (steerFarm?.stakedAmount ?? 0) > 0
+    );
+  });
+};

@@ -55,6 +55,9 @@ import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
+import SteerContracts from '@steerprotocol/contracts/deployments/polygon.json';
+import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
+import STEER_DUAL_STAKING_ABI from 'constants/abis/steer-staking-dual.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -389,6 +392,56 @@ export function useUnipilotFarmingContract(
   const dualContract = useContract(
     address,
     UNIPILOT_DUAL_REWARD_ABI,
+    withSignerIfPossible,
+  );
+  return isDual ? dualContract : singleContract;
+}
+
+export function useSteerPeripheryContract(withSignerIfPossible?: boolean) {
+  const steerPeriphery = SteerContracts['contracts']['SteerPeriphery'];
+  const contract = useContract(
+    steerPeriphery['address'],
+    steerPeriphery['abi'],
+    withSignerIfPossible,
+  );
+  return contract;
+}
+
+export function useSteerVaultRegistryContract(withSignerIfPossible?: boolean) {
+  const vaultRegistry = SteerContracts['contracts']['VaultRegistry'];
+  const contract = useContract(
+    vaultRegistry['address'],
+    vaultRegistry['abi'],
+    withSignerIfPossible,
+  );
+  return contract;
+}
+
+export function useSteerVaultContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  const vaultABI =
+    SteerContracts['contracts']['QuickSwapMultiPositionLiquidityManager'][
+      'abi'
+    ];
+  const contract = useContract(address, vaultABI, withSignerIfPossible);
+  return contract;
+}
+
+export function useSteerFarmingContract(
+  address?: string,
+  isDual?: boolean,
+  withSignerIfPossible?: boolean,
+) {
+  const singleContract = useContract(
+    address,
+    STEER_STAKING_ABI,
+    withSignerIfPossible,
+  );
+  const dualContract = useContract(
+    address,
+    STEER_DUAL_STAKING_ABI,
     withSignerIfPossible,
   );
   return isDual ? dualContract : singleContract;
