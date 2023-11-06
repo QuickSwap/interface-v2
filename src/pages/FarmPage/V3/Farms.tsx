@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
 import GammaFarmsPage from 'pages/GammaFarmsPage';
+import DefiedgeFarmsPage from 'pages/DefiedgeFarmsPage';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
@@ -15,7 +16,7 @@ import { SearchInput, SortColumns, CustomSwitch } from 'components';
 import { GlobalConst } from 'constants/index';
 import { useUnipilotFarms } from 'hooks/v3/useUnipilotFarms';
 import UnipilotFarmsPage from 'pages/UnipilotFarmsPage';
-import { getAllGammaPairs } from 'utils';
+import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
 
 interface FarmCategory {
   id: number;
@@ -40,6 +41,10 @@ export default function Farms() {
   const history = useHistory();
 
   const allGammaFarms = getAllGammaPairs(chainId).filter(
+    (item) => item.ableToFarm,
+  );
+
+  const allDefiedgeFarms = getAllDefiedgeStrategies(chainId).filter(
     (item) => item.ableToFarm,
   );
 
@@ -72,6 +77,8 @@ export default function Farms() {
       ? 'gamma-farms'
       : unipilotFarms.length > 0
       ? 'unipilot-farms'
+      : allDefiedgeFarms.length > 0
+      ? 'defiedge-farms'
       : 'eternal-farms';
 
   const v3FarmCategories = useMemo(() => {
@@ -103,8 +110,16 @@ export default function Farms() {
         hasSeparator: true,
       });
     }
+    if (allDefiedgeFarms.length > 0) {
+      farmCategories.push({
+        text: t('defiedgeFarms'),
+        id: 4,
+        link: 'defiedge-farms',
+        hasSeparator: true,
+      });
+    }
     return farmCategories;
-  }, [t, allGammaFarms, unipilotFarms]);
+  }, [t, allGammaFarms, unipilotFarms, allDefiedgeFarms]);
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
       history.push(`?tab=${selected?.link}`);
@@ -292,6 +307,14 @@ export default function Farms() {
       )}
       {selectedFarmCategory?.id === 3 && (
         <UnipilotFarmsPage
+          farmFilter={farmFilter}
+          search={searchValue}
+          sortBy={sortBy}
+          sortDesc={sortDesc}
+        />
+      )}
+      {selectedFarmCategory?.id === 4 && (
+        <DefiedgeFarmsPage
           farmFilter={farmFilter}
           search={searchValue}
           sortBy={sortBy}
