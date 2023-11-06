@@ -1507,6 +1507,10 @@ export interface DefiedgeStrategy {
   token0: string;
   token1: string;
   pool: string;
+  ableToFarm?: boolean;
+  pid?: number;
+  miniChefAddress?: string;
+  rewardToken?: string;
 }
 
 export const DefiedgeStrategies: {
@@ -1518,6 +1522,10 @@ export const DefiedgeStrategies: {
       token0: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', // WBTC
       token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
       pool: '0xac4494e30a85369e332bdb5230d6d694d4259dbc',
+      ableToFarm: true,
+      pid: 0,
+      miniChefAddress: '0xABeCD28Ef2b4aF6B3ea046a00C435A4f44f576AE',
+      rewardToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
     },
   ],
 };
