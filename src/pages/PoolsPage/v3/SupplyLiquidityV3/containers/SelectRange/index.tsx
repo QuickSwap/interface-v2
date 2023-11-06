@@ -484,14 +484,12 @@ export function SelectRange({
           </ButtonGroup>
         </Box>
       )}
+
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
         <>
           <Box my={1.5} className='poolRangePowerGamma'>
             <span className='text-secondary'>{t('poweredBy')}</span>
             <img src={GammaLogo} alt='Gamma Logo' />
-          </Box>
-          <Box mb={1.5}>
-            <small className='weight-600'>{t('selectStrategy')}</small>
           </Box>
         </>
       )}
@@ -501,9 +499,6 @@ export function SelectRange({
           <Box my={1.5} className='poolRangePowerGamma'>
             <span className='text-secondary'>{t('poweredBy')}</span>
             <img src={UnipilotLogo} alt='Unipilot Logo' />
-          </Box>
-          <Box mb={1.5}>
-            <small className='weight-600'>{t('selectStrategy')}</small>
           </Box>
         </>
       )}
@@ -518,15 +513,19 @@ export function SelectRange({
               style={{ height: '28px' }}
             />
           </Box>
-          <Box mb={1.5}>
-            <small className='weight-600'>{t('selectStrategy')}</small>
-          </Box>
         </>
       )}
 
-      <Box my={1} className='preset-buttons poolRangePowerGamma'>
-        {gammaPair && defiedgeStrategiesForPair.length > 0 ? (
-          <>
+      {(liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+        liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) &&
+      gammaPair &&
+      defiedgeStrategiesForPair.length > 0 ? (
+        <>
+          <Box mb={1.5}>
+            <small className='weight-600'>{t('selectVault')}</small>
+          </Box>
+          <Box my={1} className='preset-buttons poolRangePowerGamma'>
             <button
               className={`${
                 liquidityRangeType ===
@@ -539,6 +538,7 @@ export function SelectRange({
                   GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
                 );
               }}
+              style={{ minHeight: '64px' }}
             >
               <img src={GammaLogo} alt='Gamma Logo' />
             </button>
@@ -554,6 +554,7 @@ export function SelectRange({
                   GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
                 );
               }}
+              style={{ minHeight: '64px' }}
             >
               <img
                 src={DefiedgeLogo}
@@ -561,11 +562,12 @@ export function SelectRange({
                 style={{ height: '20px' }}
               />
             </button>
-          </>
-        ) : (
-          undefined
-        )}
-      </Box>
+          </Box>
+        </>
+      ) : (
+        undefined
+      )}
+
       <Box my={1}>
         <PresetRanges
           mintInfo={mintInfo}
