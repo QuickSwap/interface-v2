@@ -470,6 +470,7 @@
   "submittedTxIncreaseLiquidity": "Submitted transaction to increase liquidity",
   "successfullyIncreasedLiquidity": "Successfully increased liquidity",
   "selectRange": "Select Range",
+  "selectVault": "Select Vault",
   "fee": "Fee",
   "minPrice": "Min Price",
   "per": "per",

@@ -398,10 +398,9 @@ export function useUnipilotFarmingContract(
 }
 
 export function useSteerPeripheryContract(withSignerIfPossible?: boolean) {
-  const steerPeriphery = SteerContracts['contracts']['SteerPeriphery'];
   const contract = useContract(
-    steerPeriphery['address'],
-    steerPeriphery['abi'],
+    SteerContracts['contracts']['SteerPeriphery']['address'],
+    SteerContracts['contracts']['SteerPeriphery_Implentation']['abi'],
     withSignerIfPossible,
   );
   return contract;

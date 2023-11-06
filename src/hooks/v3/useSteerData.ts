@@ -20,6 +20,7 @@ import { Token } from '@uniswap/sdk-core';
 import { GlobalConst } from 'constants/index';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
+import PoolABI from 'constants/abis/v3/pool.json';
 import { ERC20_ABI } from 'constants/abis/erc20';
 
 export interface SteerVault {
@@ -127,36 +128,11 @@ export const useSteerVaults = (chainId: ChainId) => {
       .map((vault) => vault.poolAddress)
       .filter((item, ind, self) => self.indexOf(item) === ind);
   }, [vaults]);
-  const slot0ABI = [
-    {
-      inputs: [],
-      name: 'slot0',
-      outputs: [
-        { internalType: 'uint160', name: 'sqrtPriceX96', type: 'uint160' },
-        { internalType: 'int24', name: 'tick', type: 'int24' },
-        { internalType: 'uint16', name: 'observationIndex', type: 'uint16' },
-        {
-          internalType: 'uint16',
-          name: 'observationCardinality',
-          type: 'uint16',
-        },
-        {
-          internalType: 'uint16',
-          name: 'observationCardinalityNext',
-          type: 'uint16',
-        },
-        { internalType: 'uint8', name: 'feeProtocol', type: 'uint8' },
-        { internalType: 'bool', name: 'unlocked', type: 'bool' },
-      ],
-      stateMutability: 'view',
-      type: 'function',
-    },
-  ];
-  const slot0Interface = new Interface(slot0ABI);
+  const poolInterface = new Interface(PoolABI);
   const slot0Calls = useMultipleContractSingleData(
     poolAddresses,
-    slot0Interface,
-    'slot0',
+    poolInterface,
+    'globalState',
     [],
   );
   const slot0Items = slot0Calls.map((call, ind) => {
@@ -200,6 +176,8 @@ export const useSteerVaults = (chainId: ChainId) => {
     return { vaultAddress: vaultAddresses[ind], lowerTicks, upperTicks };
   });
 
+  console.log('bbb', slot0Items);
+
   const vaultRegistryDetailCalls = useSingleContractMultipleData(
     vaultRegistryContract,
     'getVaultDetails',
@@ -208,7 +186,7 @@ export const useSteerVaults = (chainId: ChainId) => {
 
   const vaultDetailCalls = useSingleContractMultipleData(
     peripheryContract,
-    'vaultDetailsByAddress',
+    'algebraVaultDetailsByAddress',
     vaultAddresses.map((address) => [address]),
   );
   const vaultDetails: SteerVault[] = vaultDetailCalls.map((call, index) => {
@@ -280,16 +258,14 @@ export const useSteerVaults = (chainId: ChainId) => {
         : undefined;
     const token0 = token0V2 ? toV3Token(token0V2) : undefined;
     const token1 = token1V2 ? toV3Token(token1V2) : undefined;
-    const feeTier =
-      vaultData && vaultData.length > 12 ? vaultData[12] : undefined;
     const totalLPTokensIssued =
-      vaultData && vaultData.length > 13 ? vaultData[13] : undefined;
+      vaultData && vaultData.length > 12 ? vaultData[12] : undefined;
     const token0Balance =
-      vaultData && vaultData.length > 14 ? vaultData[14] : undefined;
+      vaultData && vaultData.length > 13 ? vaultData[13] : undefined;
     const token1Balance =
-      vaultData && vaultData.length > 15 ? vaultData[15] : undefined;
+      vaultData && vaultData.length > 14 ? vaultData[14] : undefined;
     const vaultCreator =
-      vaultData && vaultData.length > 16 ? vaultData[16] : undefined;
+      vaultData && vaultData.length > 15 ? vaultData[15] : undefined;
 
     const vaultItem = vaults?.find((item) => item.address === vaultAddress);
     const slot0 = slot0Items.find(
@@ -319,7 +295,7 @@ export const useSteerVaults = (chainId: ChainId) => {
       token1Name,
       token1Symbol,
       token1Decimals,
-      feeTier,
+      feeTier: undefined,
       totalLPTokensIssued,
       token0Balance,
       token1Balance,

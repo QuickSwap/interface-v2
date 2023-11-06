@@ -20,7 +20,7 @@ import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
 import { GlobalConst, GlobalData, SteerVaultState } from 'constants/index';
-import { Box, ButtonGroup, Button } from '@material-ui/core';
+import { Box, ButtonGroup, Button, Grid } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId, JSBI } from '@uniswap/sdk';
@@ -418,6 +418,11 @@ export function SelectRange({
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ||
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE;
 
+  const selectVaultEnabled =
+    (gammaPairExists && unipilotVaultExists) ||
+    (gammaPairExists && steerVaultExists) ||
+    (unipilotVaultExists && steerVaultExists);
+
   return (
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
@@ -664,6 +669,26 @@ export function SelectRange({
           priceFormat={priceFormat}
           feeAmount={mintInfo.feeAmount}
         />
+      </Box>
+
+      <Box mt={2}>
+        <small className='weight-600'>{t('selectVault')}</small>
+        <Grid container spacing={2} className='pool-select-vault-wrapper'>
+          <Grid item xs={4}>
+            <Box className='pool-select-vault-panel'>
+              <img src={GammaLogo} alt='Gamma Logo' />
+              <small className='text-success'>15.34%</small>
+              <span>{t('apr')}</span>
+            </Box>
+          </Grid>
+          <Grid item xs={4}>
+            <Box className='pool-select-vault-panel'>
+              <p>Steer</p>
+              <small className='text-success'>15.34%</small>
+              <span>{t('apr')}</span>
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   );
