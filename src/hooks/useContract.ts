@@ -54,6 +54,7 @@ import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
+import DEFIEDGE_MINICHEF_ABI from 'constants/abis/defiedge-minichef.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -348,6 +349,13 @@ export function useMasterChefContract(
     abi ?? GammaMasterChef,
     withSignerIfPossible,
   );
+}
+
+export function useMiniChefContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, DEFIEDGE_MINICHEF_ABI, withSignerIfPossible);
 }
 
 export function useMasterChefContracts(withSignerIfPossible?: boolean) {
