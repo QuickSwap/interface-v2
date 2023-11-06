@@ -80,6 +80,7 @@ function useSwapCallArguments(
 
     swapMethods.push(
       SwapRouter.swapCallParameters(trade, {
+        isUni,
         feeOnTransfer: false,
         recipient,
         slippageTolerance: allowedSlippage,
@@ -322,9 +323,7 @@ export function useSwapCallback(
 
         // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
         const bestCallOption = estimatedCalls.find(
-          (el, ix, list): el is SuccessfulCall =>
-            'gasEstimate' in el &&
-            (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
+          (el): el is SuccessfulCall => 'gasEstimate' in el,
         );
 
         // check if any calls errored with a recognizable error
