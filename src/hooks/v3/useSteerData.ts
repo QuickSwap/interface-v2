@@ -176,8 +176,6 @@ export const useSteerVaults = (chainId: ChainId) => {
     return { vaultAddress: vaultAddresses[ind], lowerTicks, upperTicks };
   });
 
-  console.log('bbb', slot0Items);
-
   const vaultRegistryDetailCalls = useSingleContractMultipleData(
     vaultRegistryContract,
     'getVaultDetails',

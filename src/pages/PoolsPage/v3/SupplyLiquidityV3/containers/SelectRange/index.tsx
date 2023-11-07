@@ -24,13 +24,21 @@ import { Box, ButtonGroup, Button, Grid } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId, JSBI } from '@uniswap/sdk';
-import { getEternalFarmFromTokens, getGammaPairsForTokens } from 'utils';
+import {
+  formatNumber,
+  getEternalFarmFromTokens,
+  getGammaData,
+  getGammaPairsForTokens,
+} from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
 import UnipilotLogo from 'assets/images/unipilot.png';
 import AutomaticImage from 'assets/images/automatic.svg';
 import AutomaticImageDark from 'assets/images/automaticDark.svg';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
+import { useQuery } from '@tanstack/react-query';
+import { useLastTransactionHash } from 'state/transactions/hooks';
+import { useUnipilotFarmData } from 'hooks/v3/useUnipilotFarms';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -423,6 +431,78 @@ export function SelectRange({
     (gammaPairExists && steerVaultExists) ||
     (unipilotVaultExists && steerVaultExists);
 
+  const fetchGammaData = async () => {
+    const gammaData = await getGammaData(chainId);
+    return gammaData;
+  };
+
+  const lastTxHash = useLastTransactionHash();
+
+  const { data: gammaData, refetch: refetchGammaData } = useQuery({
+    queryKey: ['fetchGammaDataPools', lastTxHash, chainId],
+    queryFn: fetchGammaData,
+  });
+
+  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const _currentTime = Math.floor(Date.now() / 1000);
+      setCurrentTime(_currentTime);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    refetchGammaData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  const gammaAddress: any =
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+      ? presetRange?.address
+      : gammaPair && gammaPair[0]
+      ? gammaPair[0].address
+      : undefined;
+  const gammaPoolAPR =
+    gammaData &&
+    gammaAddress &&
+    gammaData[gammaAddress.toLowerCase()] &&
+    gammaData[gammaAddress.toLowerCase()]['returns'] &&
+    gammaData[gammaAddress.toLowerCase()]['returns']['allTime'] &&
+    gammaData[gammaAddress.toLowerCase()]['returns']['allTime']['feeApr']
+      ? Number(
+          gammaData[gammaAddress.toLowerCase()]['returns']['allTime']['feeApr'],
+        )
+      : 0;
+
+  const steerVault =
+    steerVaultsForPair.find(
+      (item) =>
+        item.address.toLowerCase() === presetRange?.address?.toLowerCase(),
+    ) ?? steerVaultsForPair
+      ? steerVaultsForPair[0]
+      : undefined;
+
+  const { data: unipilotFarmData } = useUnipilotFarmData(
+    unipilotVaultsForPair.map((pair) => pair.id),
+    chainId,
+  );
+
+  const unipilotVaultAddress =
+    unipilotVaultsForPair && unipilotVaultsForPair[0]
+      ? unipilotVaultsForPair[0].id
+      : undefined;
+  const unipilotAPR =
+    unipilotFarmData &&
+    unipilotVaultAddress &&
+    unipilotFarmData[unipilotVaultAddress.toLocaleLowerCase()]
+      ? Number(
+          unipilotFarmData[unipilotVaultAddress.toLocaleLowerCase()]['stats'] ??
+            0,
+        )
+      : 0;
+
   return (
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
@@ -448,12 +528,7 @@ export function SelectRange({
               }}
             >
               <img
-                src={
-                  liquidityRangeType ===
-                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-                    ? AutomaticImageDark
-                    : AutomaticImage
-                }
+                src={isAutomatic ? AutomaticImageDark : AutomaticImage}
                 alt='automatic range'
               />
             </Button>
@@ -475,29 +550,6 @@ export function SelectRange({
           </ButtonGroup>
         </Box>
       )}
-      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
-        <>
-          <Box my={1.5} className='poolRangePowerGamma'>
-            <span className='text-secondary'>{t('poweredBy')}</span>
-            <img src={GammaLogo} alt='Gamma Logo' />
-          </Box>
-          <Box mb={1.5}>
-            <small className='weight-600'>{t('selectStrategy')}</small>
-          </Box>
-        </>
-      )}
-      {liquidityRangeType ===
-        GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE && (
-        <>
-          <Box my={1.5} className='poolRangePowerGamma'>
-            <span className='text-secondary'>{t('poweredBy')}</span>
-            <img src={UnipilotLogo} alt='Unipilot Logo' />
-          </Box>
-          <Box mb={1.5}>
-            <small className='weight-600'>{t('selectStrategy')}</small>
-          </Box>
-        </>
-      )}
       <Box my={1}>
         <PresetRanges
           mintInfo={mintInfo}
@@ -518,6 +570,10 @@ export function SelectRange({
           }
           gammaPair={gammaPair}
           unipilotPairs={unipilotVaultsForPair}
+          isSteer={
+            liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE
+          }
+          steerPairs={steerVaultsForPair}
         />
       </Box>
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
@@ -671,25 +727,80 @@ export function SelectRange({
         />
       </Box>
 
-      <Box mt={2}>
-        <small className='weight-600'>{t('selectVault')}</small>
-        <Grid container spacing={2} className='pool-select-vault-wrapper'>
-          <Grid item xs={4}>
-            <Box className='pool-select-vault-panel'>
-              <img src={GammaLogo} alt='Gamma Logo' />
-              <small className='text-success'>15.34%</small>
-              <span>{t('apr')}</span>
-            </Box>
+      {selectVaultEnabled && (
+        <Box mt={2}>
+          <small className='weight-600'>{t('selectVault')}</small>
+          <Grid container spacing={2} className='pool-select-vault-wrapper'>
+            {gammaPairExists && (
+              <Grid item xs={4}>
+                <Box
+                  className={`pool-select-vault-panel${
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+                      ? ' pool-select-vault-selected'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    onChangeLiquidityRangeType(
+                      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
+                    );
+                  }}
+                >
+                  <img src={GammaLogo} alt='Gamma Logo' />
+                  <small className='text-success'>
+                    {formatNumber(gammaPoolAPR * 100)}%
+                  </small>
+                  <span>{t('apr')}</span>
+                </Box>
+              </Grid>
+            )}
+            {unipilotVaultExists && (
+              <Grid item xs={4}>
+                <Box
+                  className={`pool-select-vault-panel${
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+                      ? ' pool-select-vault-selected'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    onChangeLiquidityRangeType(
+                      GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+                    );
+                  }}
+                >
+                  <img src={UnipilotLogo} alt='Gamma Logo' />
+                  <small className='text-success'>
+                    {formatNumber(unipilotAPR)}%
+                  </small>
+                  <span>{t('apr')}</span>
+                </Box>
+              </Grid>
+            )}
+            {steerVaultExists && (
+              <Grid item xs={4}>
+                <Box
+                  className={`pool-select-vault-panel${
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.STEER_RANGE
+                      ? ' pool-select-vault-selected'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    onChangeLiquidityRangeType(
+                      GlobalConst.v3LiquidityRangeType.STEER_RANGE,
+                    );
+                  }}
+                >
+                  <p>Steer</p>
+                  <small className='text-success'>{steerVault?.apr}%</small>
+                  <span>{t('apr')}</span>
+                </Box>
+              </Grid>
+            )}
           </Grid>
-          <Grid item xs={4}>
-            <Box className='pool-select-vault-panel'>
-              <p>Steer</p>
-              <small className='text-success'>15.34%</small>
-              <span>{t('apr')}</span>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      )}
     </Box>
   );
 }
