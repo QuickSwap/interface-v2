@@ -146,9 +146,7 @@ export function useBestV3TradeExactIn(
       };
     }
 
-    const isSyncing = quotesResults
-      .concat(uniQuotesResults)
-      .some(({ syncing }) => syncing);
+    const isSyncing = quotesResults.some(({ syncing }) => syncing);
 
     return {
       state: isSyncing ? V3TradeState.SYNCING : V3TradeState.VALID,
@@ -162,14 +160,7 @@ export function useBestV3TradeExactIn(
         ),
       }),
     };
-  }, [
-    amountIn,
-    currencyOut,
-    quotesResults,
-    routes,
-    routesLoading,
-    uniQuotesResults,
-  ]);
+  }, [amountIn, currencyOut, quotesResults, routes, routesLoading]);
 
   return useMemo(() => {
     return trade;
