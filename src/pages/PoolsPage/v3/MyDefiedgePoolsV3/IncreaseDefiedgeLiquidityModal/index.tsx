@@ -22,12 +22,14 @@ import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useDefiedgeStrategyContract,
-  useGammaUNIProxyContract,
   useWETHContract,
 } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
+import {
+  useDefiedgeLiquidityRatio,
+  useDefiedgeTicks,
+} from 'hooks/v3/useDefiedgeStrategyData';
 
 interface IncreaseDefiedgeLiquidityModalProps {
   open: boolean;
@@ -43,15 +45,24 @@ export default function IncreaseDefiedgeLiquidityModal({
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
-  const strategyContract = useDefiedgeStrategyContract(position.id);
   const [deposit0, setDeposit0] = useState('');
   const [deposit1, setDeposit1] = useState('');
 
-  const independentToken = isBaseInput ? position.token0 : position.token1;
-  const dependentToken = isBaseInput ? position.token1 : position.token0;
-  const independentDeposit = isBaseInput
-    ? Number(deposit0).toFixed(position.token0.decimals)
-    : Number(deposit1).toFixed(position.token1.decimals);
+  const strategyContract = useDefiedgeStrategyContract(position.id);
+  const {
+    loading: depositRatioLoading,
+    ratio: depositRatio,
+  } = useDefiedgeLiquidityRatio(
+    position.id,
+    position.pool,
+    position.token0,
+    position.token1,
+  );
+
+  const { tickLower, tickUpper, currentTick } = useDefiedgeTicks(
+    position.id,
+    position.pool,
+  );
 
   const ethBalance = useCurrencyBalance(
     account ?? undefined,
@@ -97,8 +108,7 @@ export default function IncreaseDefiedgeLiquidityModal({
   const finalizedTransaction = useTransactionFinalizer();
 
   const buttonDisabled =
-    !Number(deposit0) ||
-    !Number(deposit1) ||
+    depositRatioLoading ||
     !account ||
     JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI) ||
     JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI) ||
@@ -213,7 +223,7 @@ export default function IncreaseDefiedgeLiquidityModal({
     }
   };
 
-  const addGammaLiquidity = async () => {
+  const addDefiedgeLiquidity = async () => {
     if (!strategyContract || !account) return;
     setAttemptingTxn(true);
     try {
@@ -259,16 +269,38 @@ export default function IncreaseDefiedgeLiquidityModal({
     }
   };
 
+  const deposit0Disabled = useMemo(() => currentTick >= tickUpper, [
+    currentTick,
+    tickUpper,
+  ]);
+
+  const deposit1Disabled = useMemo(() => currentTick <= tickLower, [
+    currentTick,
+    tickLower,
+  ]);
+
   useEffect(() => {
+    if (!depositRatio) return;
+
     if (isBaseInput) {
-      if (Number(deposit0) > 0) {
-        setDeposit1((Number(deposit0) * 1.1).toFixed(position.token1.decimals));
+      if (deposit1Disabled) {
+        setDeposit1('');
+      } else if (Number(deposit0) > 0) {
+        setDeposit1(
+          (Number(deposit0) * depositRatio).toFixed(position.token1.decimals),
+        );
       } else {
         setDeposit1('');
       }
     } else {
-      if (Number(deposit1) > 0) {
-        setDeposit0((Number(deposit1) * 0.9).toFixed(position.token0.decimals));
+      if (deposit0Disabled) {
+        setDeposit0('');
+      } else if (Number(deposit1) > 0) {
+        setDeposit0(
+          (Number(deposit1) * (1 / depositRatio)).toFixed(
+            position.token0.decimals,
+          ),
+        );
       } else {
         setDeposit0('');
       }
@@ -279,6 +311,9 @@ export default function IncreaseDefiedgeLiquidityModal({
     isBaseInput,
     position.token1.decimals,
     position.token0.decimals,
+    depositRatio,
+    deposit0Disabled,
+    deposit1Disabled,
   ]);
 
   const pendingText = t('addingLiquidityTokens', {
@@ -314,7 +349,7 @@ export default function IncreaseDefiedgeLiquidityModal({
           <Button
             fullWidth
             className='gamma-liquidity-item-button'
-            onClick={addGammaLiquidity}
+            onClick={addDefiedgeLiquidity}
           >
             {t('confirm')}
           </Button>
@@ -401,13 +436,14 @@ export default function IncreaseDefiedgeLiquidityModal({
             currency={position.token0}
             id='add-gamma-liquidity-input-tokena'
             shallow={true}
-            disabled={false}
+            disabled={depositRatioLoading}
             swap={false}
             showETH={
               chainId &&
               position.token0.address.toLowerCase() ===
                 WETH[chainId].address.toLowerCase()
             }
+            locked={deposit0Disabled}
           />
         </Box>
         <Box mt={2} className='v3-increase-liquidity-input'>
@@ -430,13 +466,14 @@ export default function IncreaseDefiedgeLiquidityModal({
             currency={position.token1}
             id='add-gamma-liquidity-input-tokenb'
             shallow={true}
-            disabled={false}
+            disabled={depositRatioLoading}
             swap={false}
             showETH={
               chainId &&
               position.token1.address.toLowerCase() ===
                 WETH[chainId].address.toLowerCase()
             }
+            locked={deposit1Disabled}
           />
         </Box>
         <Box mt={2}>
