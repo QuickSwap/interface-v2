@@ -12,15 +12,17 @@ import {
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import SteerContracts from '@steerprotocol/contracts/deployments/polygon.json';
+import MantaSteerContracts from '@steerprotocol/contracts/deployments/manta.json';
 import { BigNumber } from 'ethers';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { getTokenFromAddress } from 'utils';
+import { getSteerDexName, getTokenFromAddress } from 'utils';
 import { toV3Token } from 'constants/v3/addresses';
 import { Token } from '@uniswap/sdk-core';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
 import PoolABI from 'constants/abis/v3/pool.json';
+import UniV3PoolABI from 'constants/abis/v3/univ3Pool.json';
 import { ERC20_ABI } from 'constants/abis/erc20';
 
 export interface SteerVault {
@@ -56,7 +58,9 @@ export const useSteerVaults = (chainId: ChainId) => {
     const steerAPIURL = process.env.REACT_APP_STEER_API_URL;
     if (!steerAvailable || !chainId || !steerAPIURL) return [];
     const res = await fetch(
-      `${steerAPIURL}/getSmartPools?chainId=${chainId}&dexName=quickswap`,
+      `${steerAPIURL}/getSmartPools?chainId=${chainId}&dexName=${getSteerDexName(
+        chainId,
+      )}`,
     );
     const data = await res.json();
     if (data && data.pools) {
@@ -129,10 +133,11 @@ export const useSteerVaults = (chainId: ChainId) => {
       .filter((item, ind, self) => self.indexOf(item) === ind);
   }, [vaults]);
   const poolInterface = new Interface(PoolABI);
+  const uniV3PoolInterface = new Interface(UniV3PoolABI);
   const slot0Calls = useMultipleContractSingleData(
     poolAddresses,
-    poolInterface,
-    'globalState',
+    chainId === ChainId.MANTA ? uniV3PoolInterface : poolInterface,
+    chainId === ChainId.MANTA ? 'slot0' : 'globalState',
     [],
   );
   const slot0Items = slot0Calls.map((call, ind) => {
@@ -145,8 +150,8 @@ export const useSteerVaults = (chainId: ChainId) => {
     return { poolAddress: poolAddresses[ind], sqrtPriceX96, tick };
   });
 
-  const peripheryContract = useSteerPeripheryContract();
-  const vaultRegistryContract = useSteerVaultRegistryContract();
+  const peripheryContract = useSteerPeripheryContract(chainId);
+  const vaultRegistryContract = useSteerVaultRegistryContract(chainId);
   const vaultAddresses = useMemo(() => {
     if (!vaults) return [];
     return vaults.map((vault) => vault.address);
@@ -184,7 +189,9 @@ export const useSteerVaults = (chainId: ChainId) => {
 
   const vaultDetailCalls = useSingleContractMultipleData(
     peripheryContract,
-    'algebraVaultDetailsByAddress',
+    chainId === ChainId.MANTA
+      ? 'vaultDetailsByAddress'
+      : 'algebraVaultDetailsByAddress',
     vaultAddresses.map((address) => [address]),
   );
   const vaultDetails: SteerVault[] = vaultDetailCalls.map((call, index) => {
@@ -256,14 +263,32 @@ export const useSteerVaults = (chainId: ChainId) => {
         : undefined;
     const token0 = token0V2 ? toV3Token(token0V2) : undefined;
     const token1 = token1V2 ? toV3Token(token1V2) : undefined;
+    const feeTier =
+      chainId === ChainId.MANTA
+        ? vaultData && vaultData.length > 12
+          ? vaultData[12]
+          : undefined
+        : undefined;
+    const totalLPIndex = chainId === ChainId.MANTA ? 13 : 12;
     const totalLPTokensIssued =
-      vaultData && vaultData.length > 12 ? vaultData[12] : undefined;
+      vaultData && vaultData.length > totalLPIndex
+        ? vaultData[totalLPIndex]
+        : undefined;
+    const token0BalanceIndex = chainId === ChainId.MANTA ? 14 : 13;
     const token0Balance =
-      vaultData && vaultData.length > 13 ? vaultData[13] : undefined;
+      vaultData && vaultData.length > token0BalanceIndex
+        ? vaultData[token0BalanceIndex]
+        : undefined;
+    const token1BalanceIndex = chainId === ChainId.MANTA ? 15 : 14;
     const token1Balance =
-      vaultData && vaultData.length > 14 ? vaultData[14] : undefined;
+      vaultData && vaultData.length > token1BalanceIndex
+        ? vaultData[token1BalanceIndex]
+        : undefined;
+    const vaultCreatorIndex = chainId === ChainId.MANTA ? 16 : 15;
     const vaultCreator =
-      vaultData && vaultData.length > 15 ? vaultData[15] : undefined;
+      vaultData && vaultData.length > vaultCreatorIndex
+        ? vaultData[vaultCreatorIndex]
+        : undefined;
 
     const vaultItem = vaults?.find((item) => item.address === vaultAddress);
     const slot0 = slot0Items.find(
@@ -293,7 +318,7 @@ export const useSteerVaults = (chainId: ChainId) => {
       token1Name,
       token1Symbol,
       token1Decimals,
-      feeTier: undefined,
+      feeTier,
       totalLPTokensIssued,
       token0Balance,
       token1Balance,

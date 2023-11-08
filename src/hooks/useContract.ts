@@ -56,8 +56,10 @@ import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import SteerContracts from '@steerprotocol/contracts/deployments/polygon.json';
+import MantaSteerContracts from '@steerprotocol/contracts/deployments/manta.json';
 import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
 import STEER_DUAL_STAKING_ABI from 'constants/abis/steer-staking-dual.json';
+import SteerPeripheryABI from 'constants/abis/SteerPerhery.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -397,17 +399,27 @@ export function useUnipilotFarmingContract(
   return isDual ? dualContract : singleContract;
 }
 
-export function useSteerPeripheryContract(withSignerIfPossible?: boolean) {
+export function useSteerPeripheryContract(
+  chainId?: ChainId,
+  withSignerIfPossible?: boolean,
+) {
+  const contracts =
+    chainId === ChainId.MANTA ? MantaSteerContracts : SteerContracts;
   const contract = useContract(
-    SteerContracts['contracts']['SteerPeriphery']['address'],
-    SteerContracts['contracts']['SteerPeriphery_Implentation']['abi'],
+    contracts['contracts']['SteerPeriphery']['address'],
+    SteerPeripheryABI,
     withSignerIfPossible,
   );
   return contract;
 }
 
-export function useSteerVaultRegistryContract(withSignerIfPossible?: boolean) {
-  const vaultRegistry = SteerContracts['contracts']['VaultRegistry'];
+export function useSteerVaultRegistryContract(
+  chainId?: ChainId,
+  withSignerIfPossible?: boolean,
+) {
+  const contracts =
+    chainId === ChainId.MANTA ? MantaSteerContracts : SteerContracts;
+  const vaultRegistry = contracts['contracts']['VaultRegistry'];
   const contract = useContract(
     vaultRegistry['address'],
     vaultRegistry['abi'],

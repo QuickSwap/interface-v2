@@ -70,6 +70,6 @@
     "available": false
   },
   "steer": {
-    "available": false
+    "available": true
   }
 }
