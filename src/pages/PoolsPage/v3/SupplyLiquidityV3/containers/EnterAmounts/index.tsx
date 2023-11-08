@@ -25,6 +25,7 @@ import { Check } from '@material-ui/icons';
 import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getGammaPairsForTokens } from 'utils';
+import { useSteerPeripheryContract } from 'hooks/useContract';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;
@@ -123,6 +124,7 @@ export function EnterAmounts({
     }
     return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
   }, [chainId, mintInfo.feeTier]);
+  const steerPeripheryContract = useSteerPeripheryContract();
   const [approvalA, approveACallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A] ||
       tryParseAmount('1', currencyAApproval),
@@ -133,6 +135,9 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE
+        ? steerPeripheryContract?.address
         : positionManagerAddress
       : undefined,
   );
@@ -146,6 +151,9 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE
+        ? steerPeripheryContract?.address
         : positionManagerAddress
       : undefined,
   );

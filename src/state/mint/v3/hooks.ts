@@ -52,12 +52,13 @@ import {
 } from 'hooks/useContract';
 import { useSingleCallResult } from 'state/multicall/hooks';
 import { ETHER, WETH } from '@uniswap/sdk';
-import { getGammaPairsForTokens, maxAmountSpend } from 'utils';
+import { getGammaPairsForTokens, getSteerRatio, maxAmountSpend } from 'utils';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import { getConfig } from 'config';
 import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
+import { useSteerVaults } from 'hooks/v3/useSteerData';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -738,6 +739,14 @@ export function useV3DerivedMintInfo(
     unipilotToken1VaultBalance,
   ]);
 
+  const { data: steerVaults } = useSteerVaults(chainId);
+  const steerVault = steerVaults.find(
+    (item) =>
+      presetRange &&
+      presetRange.address &&
+      item.address.toLowerCase() === presetRange.address.toLowerCase(),
+  );
+
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
     const dependentCurrency =
       dependentField === Field.CURRENCY_B ? currencyB : currencyA;
@@ -816,6 +825,26 @@ export function useV3DerivedMintInfo(
 
       return CurrencyAmount.fromRawAmount(dependentCurrency, dependentDeposit);
     }
+
+    if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) {
+      if (!independentAmount || !dependentCurrency || !steerVault) return;
+      const tokenType =
+        dependentCurrency.isToken &&
+        steerVault.token0 &&
+        dependentCurrency.address.toLowerCase() ===
+          steerVault.token0.address.toLowerCase()
+          ? 0
+          : 1;
+      const steerRatio = getSteerRatio(tokenType, steerVault);
+      const dependentDeposit = steerRatio * Number(independentAmount.toExact());
+      return CurrencyAmount.fromRawAmount(
+        dependentCurrency,
+        JSBI.BigInt(
+          (dependentDeposit * 10 ** dependentCurrency.decimals).toFixed(0),
+        ),
+      );
+    }
+
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
     if (
@@ -876,7 +905,9 @@ export function useV3DerivedMintInfo(
     presetRange,
     depositAmount,
     vaultToken0,
-    uniPilotVaultReserve,
+    uniPilotVaultReserve?.token1,
+    uniPilotVaultReserve?.token0,
+    steerVault,
     outOfRange,
     invalidRange,
   ]);

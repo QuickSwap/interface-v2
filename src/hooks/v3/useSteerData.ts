@@ -17,7 +17,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
 import { toV3Token } from 'constants/v3/addresses';
 import { Token } from '@uniswap/sdk-core';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalData } from 'constants/index';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
 import PoolABI from 'constants/abis/v3/pool.json';
@@ -329,6 +329,7 @@ export const useSteerStakingPools = (chainId: ChainId, farmStatus?: string) => {
         const isActive = Date.now() < Number(pool.periodFinish) * 1000;
         return (
           pool.chainId === chainId &&
+          pool.protocol === 'quickswap' &&
           (farmStatus ? isActive === (farmStatus === 'active') : true)
         );
       });
@@ -389,6 +390,7 @@ export function useSteerFilteredFarms(
   searchVal?: string,
   sortBy?: string,
   sortDesc?: boolean,
+  farmFilter?: string,
 ) {
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
   const sortMultiplier = sortDesc ? -1 : 1;
@@ -553,7 +555,72 @@ export function useSteerFilteredFarms(
           item.token1.address.toLowerCase().includes(search.toLowerCase())) ||
         item.staking.name.toLowerCase().includes(search.toLowerCase());
 
-      return searchCondition;
+      const blueChipCondition =
+        !!GlobalData.blueChips[chainId].find(
+          (token) =>
+            item.token0 &&
+            token.address.toLowerCase() === item.token0.address.toLowerCase(),
+        ) &&
+        !!GlobalData.blueChips[chainId].find(
+          (token) =>
+            item.token1 &&
+            token.address.toLowerCase() === item.token1.address.toLowerCase(),
+        );
+      const stableCoinCondition =
+        !!GlobalData.stableCoins[chainId].find(
+          (token) =>
+            item.token0 &&
+            token.address.toLowerCase() === item.token0.address.toLowerCase(),
+        ) &&
+        !!GlobalData.stableCoins[chainId].find(
+          (token) =>
+            item.token1 &&
+            token.address.toLowerCase() === item.token1.address.toLowerCase(),
+        );
+
+      const stablePair0 = GlobalData.stablePairs[chainId].find(
+        (tokens) =>
+          !!tokens.find(
+            (token) =>
+              item.token0 &&
+              token.address.toLowerCase() === item.token0.address.toLowerCase(),
+          ),
+      );
+      const stablePair1 = GlobalData.stablePairs[chainId].find(
+        (tokens) =>
+          !!tokens.find(
+            (token) =>
+              item.token1 &&
+              token.address.toLowerCase() === item.token1.address.toLowerCase(),
+          ),
+      );
+      const stableLPCondition =
+        item.token0 &&
+        item.token1 &&
+        ((stablePair0 &&
+          stablePair0.find(
+            (token) =>
+              token.address.toLowerCase() === item.token1.address.toLowerCase(),
+          )) ||
+          (stablePair1 &&
+            stablePair1.find(
+              (token) =>
+                token.address.toLowerCase() ===
+                item.token0.address.toLowerCase(),
+            )));
+
+      return (
+        searchCondition &&
+        (farmFilter === v3FarmFilter.blueChip
+          ? blueChipCondition
+          : farmFilter === v3FarmFilter.stableCoin
+          ? stableCoinCondition
+          : farmFilter === v3FarmFilter.stableLP
+          ? stableLPCondition
+          : farmFilter === v3FarmFilter.otherLP
+          ? !blueChipCondition && !stableCoinCondition && !stableLPCondition
+          : true)
+      );
     })
     .sort((farm0: any, farm1: any) => {
       if (sortBy === v3FarmSortBy.pool) {

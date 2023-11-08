@@ -888,6 +888,16 @@ export const fxMETOD: { [chainId: number]: Token } = {
   ),
 };
 
+export const PKR: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x140a4e80dd8184536acc45f1c452d7540472e6e1',
+    18,
+    'PKR',
+    'POLKER',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,

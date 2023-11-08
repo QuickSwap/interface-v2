@@ -43,6 +43,7 @@ import {
   AAVE,
   USDCE,
   fxMETOD,
+  PKR,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -1542,6 +1543,7 @@ export const GlobalValue = {
         WEFI[ChainId.MATIC],
         PUSH[ChainId.MATIC],
         fxMETOD[ChainId.MATIC],
+        PKR[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],

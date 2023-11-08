@@ -12,10 +12,11 @@ import {
 import useParsedQueryString from 'hooks/useParsedQueryString';
 
 const SteerFarmsPage: React.FC<{
+  farmFilter: string;
   search: string;
   sortBy: string;
   sortDesc: boolean;
-}> = ({ search, sortBy, sortDesc }) => {
+}> = ({ search, sortBy, sortDesc, farmFilter }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
 
@@ -36,6 +37,7 @@ const SteerFarmsPage: React.FC<{
     search,
     sortBy,
     sortDesc,
+    farmFilter,
   );
 
   return (
