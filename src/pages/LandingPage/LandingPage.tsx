@@ -129,11 +129,6 @@ const LandingPage: React.FC = () => {
       title: 'Instagram',
     },
     {
-      link: 'https://quickswap-layer2.medium.com/',
-      icon: <MediumIcon />,
-      title: 'Medium',
-    },
-    {
       link: 'https://www.coingecko.com/en/exchanges/quickswap',
       icon: <CoingeckoIcon />,
       title: 'CoinGecko',
