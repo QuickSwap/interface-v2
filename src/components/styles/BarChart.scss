@@ -8,16 +8,20 @@
     $blue2 63%,
     $blue1
   );
-  opacity: 0.1;
+  opacity: 0.2;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   cursor: pointer;
   &:hover {
-    opacity: 0.8;
+    opacity: 1;
   }
 
   &.isV3 {
     background: linear-gradient(to bottom, $primary, $blue1);
+    opacity: 0.4;
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 

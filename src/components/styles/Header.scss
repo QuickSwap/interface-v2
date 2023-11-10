@@ -5,15 +5,12 @@
   top: 0px;
   position: fixed;
   width: 100%;
-  z-index: 3;
+  z-index: 12;
 }
-
-
 
 .network-name {
   font-weight: 600;
 }
-
 
 .newsletterBar {
   position: relative;
@@ -297,7 +294,7 @@
 .mobileMenuClosedContainer {
   display: flex;
   justify-content: space-between;
-  width: 100%; 
+  width: 100%;
 }
 
 .mobileMenuDrawerContainer {
@@ -315,7 +312,6 @@
     color: #448aff;
   }
 }
-
 
 .mobileMenuItem {
   color: #c7cad9;

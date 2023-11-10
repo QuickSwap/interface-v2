@@ -119,6 +119,7 @@ const Header: React.FC = () => {
   const showSafe = config['safe']['available'];
   const showPerps = config['perps']['available'];
   const showBOS = config['bos']['available'];
+  const showDappOS = config['dappos']['available'];
   const menuItems = [];
 
   const swapCurrencyStr = useMemo(() => {
@@ -236,6 +237,17 @@ const Header: React.FC = () => {
       id: 'convert-quick',
     });
   }
+  if (showDappOS) {
+    menuItems.push({
+      link: '/dappos',
+      text: 'DappOS',
+      id: 'dappos-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+      isNew: true,
+    });
+  }
   if (showLending) {
     menuItems.push({
       link: '/lend',
@@ -251,33 +263,6 @@ const Header: React.FC = () => {
       id: 'analytics-page-link',
     });
   }
-
-  const outLinks: any[] = [
-    // {
-    //   link: '/',
-    //   text: 'Governance',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Docs',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'For Developers',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Help & Tutorials',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Knowledge Base',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'News',
-    // },
-  ];
 
   const parsedQuery = useParsedQueryString();
   const parsedChain =
@@ -424,11 +409,6 @@ const Header: React.FC = () => {
                           <small>{val.text}</small>
                         </Box>
                       ))}
-                    {outLinks.map((item, ind) => (
-                      <a href={item.link} key={ind}>
-                        <small>{item.text}</small>
-                      </a>
-                    ))}
                   </Box>
                 </Box>
               </Box>
