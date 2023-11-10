@@ -12,7 +12,6 @@ import {
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import SteerContracts from '@steerprotocol/contracts/deployments/polygon.json';
-import MantaSteerContracts from '@steerprotocol/contracts/deployments/manta.json';
 import { BigNumber } from 'ethers';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getSteerDexName, getTokenFromAddress } from 'utils';
@@ -354,7 +353,7 @@ export const useSteerStakingPools = (chainId: ChainId, farmStatus?: string) => {
         const isActive = Date.now() < Number(pool.periodFinish) * 1000;
         return (
           pool.chainId === chainId &&
-          pool.protocol === 'quickswap' &&
+          pool.protocol.toLowerCase() === getSteerDexName(chainId) &&
           (farmStatus ? isActive === (farmStatus === 'active') : true)
         );
       });
@@ -543,18 +542,34 @@ export function useSteerFilteredFarms(
 
       const farmAPR = tvl > 0 ? (farmRewardUSD * 365 * 100) / tvl : 0;
 
-      const token0 = getTokenFromAddress(
-        farm.vaultTokens.token0.address,
-        chainId,
-        tokenMap,
-        [],
-      );
-      const token1 = getTokenFromAddress(
-        farm.vaultTokens.token1.address,
-        chainId,
-        tokenMap,
-        [],
-      );
+      const token0 =
+        farm &&
+        farm.vaultTokens &&
+        farm.vaultTokens.token0 &&
+        farm.vaultTokens.token0.address
+          ? getTokenFromAddress(
+              farm.vaultTokens.token0.address,
+              chainId,
+              tokenMap,
+              [],
+            )
+          : vaultInfo
+          ? vaultInfo.token0
+          : undefined;
+      const token1 =
+        farm &&
+        farm.vaultTokens &&
+        farm.vaultTokens.token0 &&
+        farm.vaultTokens.token0.address
+          ? getTokenFromAddress(
+              farm.vaultTokens.token1.address,
+              chainId,
+              tokenMap,
+              [],
+            )
+          : vaultInfo
+          ? vaultInfo.token1
+          : undefined;
       return {
         ...farm,
         token0,

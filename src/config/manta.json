@@ -25,6 +25,9 @@
     "available": true
   },
   "farm": {
+    "available": true
+  },
+  "qsFarm": {
     "available": false
   },
   "lair": {
