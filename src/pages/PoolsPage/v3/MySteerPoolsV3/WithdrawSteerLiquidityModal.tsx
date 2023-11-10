@@ -21,11 +21,7 @@ import {
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JSBI } from '@uniswap/sdk';
-import { formatUnits } from 'ethers/lib/utils';
-import {
-  useSteerPeripheryContract,
-  useSteerVaultContract,
-} from 'hooks/useContract';
+import { useSteerVaultContract } from 'hooks/useContract';
 import { SteerVault } from 'hooks/v3/useSteerData';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { Token } from '@uniswap/sdk-core';
@@ -109,11 +105,11 @@ export default function WithdrawSteerLiquidityModal({
       setTxPending(true);
       setTxnHash(response.hash);
       addTransaction(response, {
-        summary: t('withdrawingUnipilotLiquidity'),
+        summary: t('withdrawingSteerLiquidity'),
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('withdrewUnipilotLiquidity'),
+        summary: t('withdrewSteerLiquidity'),
       });
       setTxPending(false);
     } catch (e) {
