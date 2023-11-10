@@ -51,7 +51,7 @@ import {
   useUniPilotVaultContract,
 } from 'hooks/useContract';
 import { useSingleCallResult } from 'state/multicall/hooks';
-import { ETHER, WETH } from '@uniswap/sdk';
+import { ChainId, ETHER, WETH } from '@uniswap/sdk';
 import { getGammaPairsForTokens, getSteerRatio, maxAmountSpend } from 'utils';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
@@ -323,9 +323,13 @@ export function useV3DerivedMintInfo(
   };
 
   const feeAmount = useMemo(() => {
+    const algebraChains = [ChainId.MATIC, ChainId.DOGECHAIN, ChainId.ZKEVM];
     if (existingPosition && existingPosition.pool.isUni)
       return existingPosition.pool.fee;
-    if (!feeTier) return;
+    if (!feeTier) {
+      if (!algebraChains.includes(chainId)) return FeeAmount.LOWEST;
+      return;
+    }
     switch (feeTier.id) {
       case 'uni-0.01':
         return FeeAmount.LOWEST;
@@ -338,7 +342,7 @@ export function useV3DerivedMintInfo(
       default:
         return;
     }
-  }, [feeTier, existingPosition]);
+  }, [existingPosition, feeTier, chainId]);
 
   // pool
   //TODO

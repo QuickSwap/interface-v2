@@ -44,6 +44,8 @@ import {
   USDCE,
   fxMETOD,
   PKR,
+  SLING,
+  NINJAZ,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -234,6 +236,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.ZKTESTNET,
   ChainId.ZKEVM,
   ChainId.MANTA,
+  ChainId.ZKATANA,
 ];
 
 export interface GammaPair {
@@ -1168,17 +1171,39 @@ export const GammaPairs: {
         pid: 90,
       },
     ],
-    // '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x65ad509db5924ef0001d977590985f965ef1aaaa': [
-    //   {
-    //     type: Presets.GAMMA_NARROW,
-    //     title: 'Narrow',
-    //     address: '0xdb9f075bb2cd4d0683ac25bb0d8566a9b7fef774',
-    //     token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-    //     token1Address: '0x65ad509db5924ef0001d977590985f965ef1aaaa',
-    //     ableToFarm: true,
-    //     pid: 91,
-    //   },
-    // ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x65ad509db5924ef0001d977590985f965ef1aaaa': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xdb9f075bb2cd4d0683ac25bb0d8566a9b7fef774',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x65ad509db5924ef0001d977590985f965ef1aaaa',
+        ableToFarm: true,
+        pid: 91,
+      },
+    ],
+    '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359-0xfc9fa9771145fbb98d15c8c2cc94b837a56d554c': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xacb6a2c03c8012c2817efc4d81e33cc0978e3abd',
+        token0Address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
+        token1Address: '0xfc9fa9771145fbb98d15c8c2cc94b837a56d554c',
+        ableToFarm: true,
+        pid: 92,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x10acbe3b9e6a2ff7f341e5cbf4b6617741ff44aa': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x1298b1da33c1d091a2e1340ae1c7983ebe91da8d',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x10acbe3b9e6a2ff7f341e5cbf4b6617741ff44aa',
+        ableToFarm: true,
+        pid: 93,
+      },
+    ],
   },
   [ChainId.ZKEVM]: {
     '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
@@ -1544,6 +1569,8 @@ export const GlobalValue = {
         PUSH[ChainId.MATIC],
         fxMETOD[ChainId.MATIC],
         PKR[ChainId.MATIC],
+        SLING[ChainId.MATIC],
+        NINJAZ[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],

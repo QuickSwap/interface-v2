@@ -60,5 +60,8 @@
   },
   "steer": {
     "available": false
+  },
+  "dappos": {
+    "available": false
   }
 }

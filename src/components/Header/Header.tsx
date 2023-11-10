@@ -33,8 +33,13 @@ import { getConfig } from 'config/index';
 import useDeviceWidth from 'hooks/useDeviceWidth';
 import { USDC, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
-import { networkConnection, walletConnectConnection } from 'connectors';
+import {
+  networkConnection,
+  walletConnectConnection,
+  zengoConnectConnection,
+} from 'connectors';
 import { MobileMenuDrawer } from './MobileMenuDrawer';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -44,7 +49,7 @@ const Header: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const { pathname } = useLocation();
-  const { account } = useActiveWeb3React();
+  const { account, chainId, connector } = useActiveWeb3React();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
@@ -101,7 +106,6 @@ const Header: React.FC = () => {
     return 1;
   }, [deviceWidth]);
 
-  const { chainId, connector } = useActiveWeb3React();
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
   const showPool = config['pools']['available'];
@@ -115,6 +119,7 @@ const Header: React.FC = () => {
   const showSafe = config['safe']['available'];
   const showPerps = config['perps']['available'];
   const showBOS = config['bos']['available'];
+  const showDappOS = config['dappos']['available'];
   const menuItems = [];
 
   const swapCurrencyStr = useMemo(() => {
@@ -232,6 +237,17 @@ const Header: React.FC = () => {
       id: 'convert-quick',
     });
   }
+  if (showDappOS) {
+    menuItems.push({
+      link: '/dappos',
+      text: 'DappOS',
+      id: 'dappos-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+      isNew: true,
+    });
+  }
   if (showLending) {
     menuItems.push({
       link: '/lend',
@@ -248,32 +264,36 @@ const Header: React.FC = () => {
     });
   }
 
-  const outLinks: any[] = [
-    // {
-    //   link: '/',
-    //   text: 'Governance',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Docs',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'For Developers',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Help & Tutorials',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Knowledge Base',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'News',
-    // },
-  ];
+  const parsedQuery = useParsedQueryString();
+  const parsedChain =
+    parsedQuery && parsedQuery.chainId
+      ? Number(parsedQuery.chainId)
+      : undefined;
+
+  useEffect(() => {
+    (async () => {
+      if (parsedChain && chainId !== parsedChain) {
+        const config = getConfig(parsedChain);
+        const chainParam = {
+          chainId: parsedChain,
+          chainName: `${config['networkName']} Network`,
+          rpcUrls: [config['rpc']],
+          nativeCurrency: config['nativeCurrency'],
+          blockExplorerUrls: [config['blockExplorer']],
+        };
+        if (
+          connector === walletConnectConnection.connector ||
+          connector === zengoConnectConnection.connector ||
+          connector === networkConnection.connector
+        ) {
+          await connector.activate(parsedChain);
+        } else {
+          await connector.activate(chainParam);
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId, parsedChain]);
 
   return (
     <Box className='header'>
@@ -389,11 +409,6 @@ const Header: React.FC = () => {
                           <small>{val.text}</small>
                         </Box>
                       ))}
-                    {outLinks.map((item, ind) => (
-                      <a href={item.link} key={ind}>
-                        <small>{item.text}</small>
-                      </a>
-                    ))}
                   </Box>
                 </Box>
               </Box>
@@ -402,21 +417,26 @@ const Header: React.FC = () => {
         )}
         {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
         <Box>
-          <Box
-            className='networkSelection'
-            onClick={toggleNetworkSelectionModal}
-          >
-            {isSupportedNetwork && (
-              <Box className='networkSelectionImage'>
-                {chainId && <Box className='styledPollingDot' />}
-                <img src={config['nativeCurrencyImage']} alt='network Image' />
-              </Box>
-            )}
-            <small className='network-name'>
-              {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
-            </small>
-            <KeyboardArrowDown />
-          </Box>
+          {!parsedChain && (
+            <Box
+              className='networkSelection'
+              onClick={toggleNetworkSelectionModal}
+            >
+              {isSupportedNetwork && (
+                <Box className='networkSelectionImage'>
+                  {chainId && <Box className='styledPollingDot' />}
+                  <img
+                    src={config['nativeCurrencyImage']}
+                    alt='network Image'
+                  />
+                </Box>
+              )}
+              <small className='network-name'>
+                {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
+              </small>
+              <KeyboardArrowDown />
+            </Box>
+          )}
 
           {account ? (
             <Box

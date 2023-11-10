@@ -75,6 +75,8 @@ export function useParaswapCallback(
   const liquidutyHubCallback = useLiquidityHubCallback(
     priceRoute?.srcToken,
     priceRoute?.destToken,
+    inputCurrency,
+    outputCurrency,
   );
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =
@@ -147,7 +149,6 @@ export function useParaswapCallback(
         const liquidityHubResult = await liquidutyHubCallback(
           maxSrcAmount,
           minDestAmount,
-          outputCurrency?.decimals,
         );
 
         if (liquidityHubResult) {

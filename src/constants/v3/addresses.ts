@@ -898,6 +898,26 @@ export const PKR: { [chainId: number]: Token } = {
   ),
 };
 
+export const SLING: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xfc9fa9771145fbb98d15c8c2cc94b837a56d554c',
+    18,
+    'SLING',
+    'Slingshot',
+  ),
+};
+
+export const NINJAZ: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x10acbe3b9e6a2ff7f341e5cbf4b6617741ff44aa',
+    18,
+    'NINJAZ',
+    'NINJAZ@polygon',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
