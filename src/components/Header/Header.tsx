@@ -33,8 +33,13 @@ import { getConfig } from 'config/index';
 import useDeviceWidth from 'hooks/useDeviceWidth';
 import { USDC, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
-import { networkConnection, walletConnectConnection } from 'connectors';
+import {
+  networkConnection,
+  walletConnectConnection,
+  zengoConnectConnection,
+} from 'connectors';
 import { MobileMenuDrawer } from './MobileMenuDrawer';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -44,7 +49,7 @@ const Header: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const { pathname } = useLocation();
-  const { account } = useActiveWeb3React();
+  const { account, chainId, connector } = useActiveWeb3React();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
@@ -101,7 +106,6 @@ const Header: React.FC = () => {
     return 1;
   }, [deviceWidth]);
 
-  const { chainId, connector } = useActiveWeb3React();
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
   const showPool = config['pools']['available'];
@@ -260,6 +264,37 @@ const Header: React.FC = () => {
     });
   }
 
+  const parsedQuery = useParsedQueryString();
+  const parsedChain =
+    parsedQuery && parsedQuery.chainId
+      ? Number(parsedQuery.chainId)
+      : undefined;
+
+  useEffect(() => {
+    (async () => {
+      if (parsedChain && chainId !== parsedChain) {
+        const config = getConfig(parsedChain);
+        const chainParam = {
+          chainId: parsedChain,
+          chainName: `${config['networkName']} Network`,
+          rpcUrls: [config['rpc']],
+          nativeCurrency: config['nativeCurrency'],
+          blockExplorerUrls: [config['blockExplorer']],
+        };
+        if (
+          connector === walletConnectConnection.connector ||
+          connector === zengoConnectConnection.connector ||
+          connector === networkConnection.connector
+        ) {
+          await connector.activate(parsedChain);
+        } else {
+          await connector.activate(chainParam);
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId, parsedChain]);
+
   return (
     <Box className='header'>
       {showNewsletter && (
@@ -382,21 +417,26 @@ const Header: React.FC = () => {
         )}
         {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
         <Box>
-          <Box
-            className='networkSelection'
-            onClick={toggleNetworkSelectionModal}
-          >
-            {isSupportedNetwork && (
-              <Box className='networkSelectionImage'>
-                {chainId && <Box className='styledPollingDot' />}
-                <img src={config['nativeCurrencyImage']} alt='network Image' />
-              </Box>
-            )}
-            <small className='network-name'>
-              {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
-            </small>
-            <KeyboardArrowDown />
-          </Box>
+          {!parsedChain && (
+            <Box
+              className='networkSelection'
+              onClick={toggleNetworkSelectionModal}
+            >
+              {isSupportedNetwork && (
+                <Box className='networkSelectionImage'>
+                  {chainId && <Box className='styledPollingDot' />}
+                  <img
+                    src={config['nativeCurrencyImage']}
+                    alt='network Image'
+                  />
+                </Box>
+              )}
+              <small className='network-name'>
+                {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
+              </small>
+              <KeyboardArrowDown />
+            </Box>
+          )}
 
           {account ? (
             <Box
