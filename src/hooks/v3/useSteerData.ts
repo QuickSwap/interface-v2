@@ -353,7 +353,7 @@ export const useSteerStakingPools = (chainId: ChainId, farmStatus?: string) => {
         const isActive = Date.now() < Number(pool.periodFinish) * 1000;
         return (
           pool.chainId === chainId &&
-          pool.protocol.toLowerCase() === getSteerDexName(chainId) &&
+          pool.protocol === 'QuickSwapV3' &&
           (farmStatus ? isActive === (farmStatus === 'active') : true)
         );
       });
