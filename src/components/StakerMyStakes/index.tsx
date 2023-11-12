@@ -191,7 +191,9 @@ export const FarmingMyFarms: React.FC<{
     }, []);
   }, [shallowPositions]);
 
-  const rewardTokenPrices = useUSDCPricesFromAddresses(rewardTokenAddresses);
+  const { prices: rewardTokenPrices } = useUSDCPricesFromAddresses(
+    rewardTokenAddresses,
+  );
 
   const farmedNFTs = useMemo(() => {
     if (!shallowPositions) return;
@@ -638,7 +640,7 @@ export const FarmingMyFarms: React.FC<{
     return gammaRewardTokenAddresses.concat([qiTokenAddress]);
   }, [gammaRewardTokenAddresses]);
 
-  const gammaRewardsWithUSDPrice = useUSDCPricesFromAddresses(
+  const { prices: gammaRewardsWithUSDPrice } = useUSDCPricesFromAddresses(
     gammaRewardTokenAddressesWithQI,
   );
 

@@ -22,7 +22,9 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
     ? new Token(chainId, gammaPosition.pairAddress, 18)
     : undefined;
   const lpTokenBalance = useTokenBalance(account ?? undefined, lpToken);
-  const token0USDPrice = useUSDCPriceFromAddress(gammaPosition?.token0.address);
+  const { price: token0USDPrice } = useUSDCPriceFromAddress(
+    gammaPosition?.token0.address,
+  );
   const token0PooledPercent =
     token0USDPrice &&
     gammaPosition &&

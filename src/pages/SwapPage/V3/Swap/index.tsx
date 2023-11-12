@@ -324,7 +324,7 @@ const SwapV3Page: React.FC = () => {
   const config = getConfig(chainId);
   const { selectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
-  const fromTokenUSDPrice = useUSDCPriceFromAddress(
+  const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     currencies[Field.INPUT]?.wrapped.address ?? '',
   );
 
