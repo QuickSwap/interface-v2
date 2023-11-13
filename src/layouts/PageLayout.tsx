@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useMemo, useState } from 'react';
+import React, { lazy, useEffect, useMemo, useState, useRef } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
 import { useHistory } from 'react-router-dom';
@@ -16,6 +16,8 @@ export interface PageLayoutProps {
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
+  const headerRef = useRef(null);
+  const [headerClass, setHeaderClass] = useState('');
   const { chainId, account } = useActiveWeb3React();
   const isProMode = useIsProMode();
   // const arcxSDK = (window as any).arcx;
@@ -107,9 +109,13 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
       <NewsletterSignupPanel />
-      <Header />
+      <Header
+        onUpdateNewsletter={(val) => {
+          setHeaderClass(val ? '' : 'pageWrapper-no-max-no-news');
+        }}
+      />
       {!isProMode && <Background fallback={false} />}
-      <Box className={pageWrapperClassName}>{children}</Box>
+      <Box className={`${pageWrapperClassName} ${headerClass}`}>{children}</Box>
       <Footer />
     </Box>
   );

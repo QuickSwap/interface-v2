@@ -1,4 +1,4 @@
-import { Box, Button, Menu, MenuItem } from '@material-ui/core';
+import { Box, Button, Menu, MenuItem, Typography } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { SettingsModal, Swap, ToggleSwitch } from 'components';
@@ -213,6 +213,33 @@ const SwapMain: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
+      {/* Header */}
+      <Box display={'flex'} mb={2}>
+        <Box my={'auto'}>
+          <Typography variant='h6'>{t('swap')}</Typography>
+        </Box>
+        <Box display={'flex'} ml={'auto'}>
+          {showProMode && (
+            <Box className='flex items-center' mr={1}>
+              <span
+                className='text-secondary text-uppercase'
+                style={{ marginRight: 8 }}
+              >
+                {t('proMode')}
+              </span>
+              <ToggleSwitch
+                toggled={isProMode}
+                onToggle={() => {
+                  redirectWithProMode(!isProMode);
+                }}
+              />
+            </Box>
+          )}
+          <Box>
+            <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+          </Box>
+        </Box>
+      </Box>
       <Box
         className={`flex flex-wrap items-center justify-between ${
           isProMode ? ' proModeWrapper' : ''
@@ -295,7 +322,7 @@ const SwapMain: React.FC = () => {
               ))}
             </>
           )}
-          {
+          {/* {
             <Box
               style={{
                 marginLeft: 'auto',
@@ -325,9 +352,10 @@ const SwapMain: React.FC = () => {
                 </Box>
               </Box>
             </Box>
-          }
+          } */}
         </Box>
       </Box>
+      {/* Tabs */}
       {swapTabs.length > 0 && (
         <Box
           margin={isProMode ? '28px 0' : '28px 0 0'}
@@ -354,6 +382,7 @@ const SwapMain: React.FC = () => {
           ))}
         </Box>
       )}
+      {/* Widget Body */}
       <Box
         style={{
           backgroundImage: isProMode

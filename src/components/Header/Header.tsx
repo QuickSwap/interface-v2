@@ -40,7 +40,9 @@ const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
 };
 
-const Header: React.FC = () => {
+const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
+  onUpdateNewsletter,
+}) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { pathname } = useLocation();
@@ -70,6 +72,11 @@ const Header: React.FC = () => {
   const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const deviceWidth = useDeviceWidth();
   const [headerClass, setHeaderClass] = useState('');
+
+  const handleShowNewsletter = (val: boolean) => {
+    setShowNewsletter(val);
+    onUpdateNewsletter(val);
+  };
 
   const changeHeaderBg = () => {
     if (window.scrollY > 0) {
@@ -285,7 +292,7 @@ const Header: React.FC = () => {
           </Button>
           <Box
             className='cursor-pointer'
-            onClick={() => setShowNewsletter(false)}
+            onClick={() => handleShowNewsletter(false)}
           >
             <Close />
           </Box>

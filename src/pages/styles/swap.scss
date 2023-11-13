@@ -55,8 +55,8 @@
   // padding-left: 1rem;
   // padding-right: 1rem;
   border-radius: 2rem;
-  border: 1px solid rgba(130, 177, 255, 0.08);
-  background: rgba(130, 177, 255, 0.03);
+  // border: 1px solid rgba(130, 177, 255, 0.08);
+  // background: rgba(130, 177, 255, 0.03);
   color: #696c80;
 }
 
@@ -67,7 +67,6 @@
 
 .tab {
   background-color: transparent;
-  border-radius: 2rem;
   padding: 0 16px;
   height: 46px;
   display: flex;
@@ -88,12 +87,9 @@
 }
 
 .activeTab {
-  border-radius: 2rem;
-  border: 1px solid #448aff;
-  background: rgba(68, 138, 255, 0.3);
-  & p {
-    color: #c7cad9;
-  }
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #282d3d;
 }
 
 .swap-bg-highlight {
@@ -385,13 +381,17 @@ div.buy {
   align-items: center;
   & small {
     color: $textSecondary;
+    height: 100%;
+    padding-top: 9px;
+    padding-left: 6px;
+    padding-right: 6px;
   }
 }
 
 .activeSwapLimitTab {
-  background-color: $grey32;
   & small {
-    color: $bgPalette;
+    color: #fff;
+    border-bottom: 2px solid #448aff;
   }
 }
 
