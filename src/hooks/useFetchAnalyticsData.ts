@@ -26,7 +26,7 @@ export const useAnalyticsGlobalData = (version: string, chainId: ChainId) => {
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 60000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
@@ -69,7 +69,7 @@ export const useAnalyticsTopTokens = (
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 60000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
@@ -104,7 +104,7 @@ export const useAnalyticsTopPairs = (version: string, chainId: ChainId) => {
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 60000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 
@@ -146,7 +146,7 @@ export const useAnalyticsTokenDetails = (
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 60000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 

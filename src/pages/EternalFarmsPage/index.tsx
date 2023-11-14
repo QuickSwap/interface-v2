@@ -107,7 +107,9 @@ const EternalFarmsPage: React.FC<{
     }, []);
   }, [eternalFarms]);
 
-  const rewardTokenPrices = useUSDCPricesFromAddresses(rewardTokenAddresses);
+  const { prices: rewardTokenPrices } = useUSDCPricesFromAddresses(
+    rewardTokenAddresses,
+  );
 
   const eternalFarmsFiltered = useMemo(() => {
     if (!eternalFarms || !eternalFarms.length) return [];

@@ -232,10 +232,10 @@ export default function StartingPrice({
   const initialUSDPrices = useInitialUSDPrices();
   const initialTokenPrice = useInitialTokenPrice();
 
-  const basePriceUSD = useUSDCPriceFromAddress(
+  const { price: basePriceUSD } = useUSDCPriceFromAddress(
     currencyA?.wrapped.address ?? '',
   );
-  const quotePriceUSD = useUSDCPriceFromAddress(
+  const { price: quotePriceUSD } = useUSDCPriceFromAddress(
     currencyB?.wrapped.address ?? '',
   );
 

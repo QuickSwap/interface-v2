@@ -21,7 +21,6 @@ import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.
 import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
 import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
 import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
-import { ReactComponent as MediumIcon } from 'assets/images/social/Medium.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';

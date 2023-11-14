@@ -29,8 +29,7 @@ import ToggleSwitch from 'components/ToggleSwitch';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
-import { Currency } from '@uniswap/sdk';
-import { WMATIC } from 'lib/src/wmatic';
+import { Currency, WETH } from '@uniswap/sdk';
 
 const REQUEST_FILTERED_ERROR = 'requestFiltered';
 
@@ -54,8 +53,8 @@ export const useLiquidityHubCallback = (
   const isSupported = useIsLiquidityHubSupported();
   const isNativeOut = outTokenCurrency?.symbol === 'MATIC';
 
-  const outTokenUSD = useUSDCPriceFromAddress(
-    isNativeOut ? WMATIC[chainId].address : outTokenAddress || '',
+  const { price: outTokenUSD } = useUSDCPriceFromAddress(
+    isNativeOut ? WETH[chainId].address : outTokenAddress || '',
   );
 
   const isProMode = useIsProMode();
