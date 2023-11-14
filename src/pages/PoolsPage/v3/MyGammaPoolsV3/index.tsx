@@ -6,7 +6,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import GammaLPList from './GammaLPList';
 import { useQuery } from '@tanstack/react-query';
-import { getAllGammaPairs, getGammaData, getGammaPositions } from 'utils';
+import { getAllGammaPairs, getGammaData } from 'utils';
 import { useMasterChefContracts } from 'hooks/useContract';
 import {
   useMultipleContractMultipleData,
@@ -14,8 +14,6 @@ import {
 } from 'state/multicall/v3/hooks';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
-import { Token } from '@uniswap/sdk';
-import { useTokenBalances } from 'state/wallet/hooks';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 
 export default function MyGammaPoolsV3() {
@@ -25,12 +23,6 @@ export default function MyGammaPoolsV3() {
   const showConnectAWallet = Boolean(!account);
 
   const toggleWalletModal = useWalletModalToggle();
-
-  const fetchGammaPositions = async () => {
-    if (!account || !chainId) return;
-    const gammaPositions = await getGammaPositions(account, chainId);
-    return gammaPositions;
-  };
 
   const fetchGammaData = async () => {
     const gammaData = await getGammaData(chainId);
@@ -44,7 +36,7 @@ export default function MyGammaPoolsV3() {
     data: gammaData,
     refetch: refetchGammaData,
   } = useQuery({
-    queryKey: ['fetchGammaDataPools', lastTxHash, chainId],
+    queryKey: ['fetchGammaDataPools', chainId],
     queryFn: fetchGammaData,
   });
 
@@ -61,7 +53,7 @@ export default function MyGammaPoolsV3() {
   useEffect(() => {
     refetchGammaData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, lastTxHash]);
 
   const allGammaPairsToFarm = getAllGammaPairs(chainId);
 

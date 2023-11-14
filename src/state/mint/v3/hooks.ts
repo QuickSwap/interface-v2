@@ -544,7 +544,8 @@ export function useV3DerivedMintInfo(
     | CurrencyAmount<Currency>
     | undefined = tryParseAmount(
     typedValue,
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) &&
       independentCurrency &&
       independentCurrency.isNative
       ? independentCurrency.wrapped
@@ -833,18 +834,22 @@ export function useV3DerivedMintInfo(
     if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) {
       if (!independentAmount || !dependentCurrency || !steerVault) return;
       const tokenType =
-        dependentCurrency.isToken &&
         steerVault.token0 &&
-        dependentCurrency.address.toLowerCase() ===
+        dependentCurrency.wrapped.address.toLowerCase() ===
           steerVault.token0.address.toLowerCase()
           ? 0
           : 1;
       const steerRatio = getSteerRatio(tokenType, steerVault);
       const dependentDeposit = steerRatio * Number(independentAmount.toExact());
       return CurrencyAmount.fromRawAmount(
-        dependentCurrency,
+        dependentCurrency.isNative
+          ? dependentCurrency.wrapped
+          : dependentCurrency,
         JSBI.BigInt(
-          (dependentDeposit * 10 ** dependentCurrency.decimals).toFixed(0),
+          parseUnits(
+            dependentDeposit.toFixed(dependentCurrency.decimals),
+            dependentCurrency.decimals,
+          ),
         ),
       );
     }

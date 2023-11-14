@@ -439,7 +439,7 @@ export function SelectRange({
   const lastTxHash = useLastTransactionHash();
 
   const { data: gammaData, refetch: refetchGammaData } = useQuery({
-    queryKey: ['fetchGammaDataPools', lastTxHash, chainId],
+    queryKey: ['fetchGammaDataPools', chainId],
     queryFn: fetchGammaData,
   });
 
@@ -456,7 +456,7 @@ export function SelectRange({
   useEffect(() => {
     refetchGammaData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, lastTxHash]);
 
   const gammaAddress: any =
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE

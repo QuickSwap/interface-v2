@@ -159,7 +159,7 @@ export default function MyLiquidityPoolsV3() {
                   : ''
               }`}
             >
-              {gammaPoolsCount}
+              {steerPoolsCount}
             </Box>
           </Box>
         ),

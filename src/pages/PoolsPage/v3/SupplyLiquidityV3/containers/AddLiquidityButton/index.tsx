@@ -141,8 +141,10 @@ export function AddLiquidityButton({
       !amountA ||
       !amountB ||
       !chainId ||
-      mintInfo.liquidityRangeType !==
-        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+      (mintInfo.liquidityRangeType !==
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+        mintInfo.liquidityRangeType !==
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE)
     )
       return;
     if (

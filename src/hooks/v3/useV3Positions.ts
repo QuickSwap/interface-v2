@@ -639,7 +639,7 @@ export function useUnipilotPositions(
     data: unipilotPositions,
     refetch: refetchUnipilotPositions,
   } = useQuery({
-    queryKey: ['fetchUnipilotPositions', account, lastTxHash, chainId],
+    queryKey: ['fetchUnipilotPositions', account, chainId],
     queryFn: fetchUnipilotPositions,
   });
 
@@ -656,7 +656,7 @@ export function useUnipilotPositions(
   useEffect(() => {
     refetchUnipilotPositions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, lastTxHash]);
 
   return {
     loading: positionsLoading,

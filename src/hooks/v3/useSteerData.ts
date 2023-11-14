@@ -11,7 +11,6 @@ import {
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
-import SteerContracts from '@steerprotocol/contracts/deployments/polygon.json';
 import { BigNumber } from 'ethers';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getSteerDexName, getTokenFromAddress } from 'utils';
@@ -23,6 +22,7 @@ import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
 import PoolABI from 'constants/abis/v3/pool.json';
 import UniV3PoolABI from 'constants/abis/v3/univ3Pool.json';
 import { ERC20_ABI } from 'constants/abis/erc20';
+import SteerVaultABI from 'constants/abis/steer-vault.json';
 
 export interface SteerVault {
   address: string;
@@ -149,20 +149,16 @@ export const useSteerVaults = (chainId: ChainId) => {
     return { poolAddress: poolAddresses[ind], sqrtPriceX96, tick };
   });
 
-  const peripheryContract = useSteerPeripheryContract(chainId);
-  const vaultRegistryContract = useSteerVaultRegistryContract(chainId);
+  const peripheryContract = useSteerPeripheryContract();
+  const vaultRegistryContract = useSteerVaultRegistryContract();
   const vaultAddresses = useMemo(() => {
     if (!vaults) return [];
     return vaults.map((vault) => vault.address);
   }, [vaults]);
 
-  const vaultABI =
-    SteerContracts['contracts']['QuickSwapMultiPositionLiquidityManager'][
-      'abi'
-    ];
   const vaultPositionCalls = useMultipleContractSingleData(
     vaultAddresses,
-    new Interface(vaultABI),
+    new Interface(SteerVaultABI),
     'getPositions',
     [],
   );

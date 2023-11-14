@@ -18,12 +18,13 @@ import {
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import './SteerLPItemDetails/index.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
-import { JSBI } from '@uniswap/sdk';
+import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useSteerPeripheryContract } from 'hooks/useContract';
+import { useSteerPeripheryContract, useWETHContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { SteerVault } from 'hooks/v3/useSteerData';
 import { WrappedCurrency } from 'models/types';
+import { useCurrencyBalance } from 'state/wallet/hooks';
 
 interface IncreaseSteerLiquidityModalProps {
   open: boolean;
@@ -37,10 +38,11 @@ export default function IncreaseSteerLiquidityModal({
   onClose,
 }: IncreaseSteerLiquidityModalProps) {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
   const [deposit0, setDeposit0] = useState('');
   const [deposit1, setDeposit1] = useState('');
+  const [wrappingETH, setWrappingETH] = useState(false);
 
   const steerPeripheryContract = useSteerPeripheryContract();
 
@@ -50,12 +52,29 @@ export default function IncreaseSteerLiquidityModal({
   const token0Balance = useTokenBalance(account ?? undefined, position.token0);
   const token1Balance = useTokenBalance(account ?? undefined, position.token1);
 
-  const token0BalanceJSBI = token0Balance
-    ? token0Balance.numerator
-    : JSBI.BigInt('0');
-  const token1BalanceJSBI = token1Balance
-    ? token1Balance.numerator
-    : JSBI.BigInt('0');
+  const token0isWETH =
+    chainId &&
+    position.token0 &&
+    position.token0.address.toLowerCase() ===
+      WETH[chainId].address.toLowerCase();
+  const token1isWETH =
+    chainId &&
+    position.token1 &&
+    position.token1.address.toLowerCase() ===
+      WETH[chainId].address.toLowerCase();
+
+  const ethBalance = useCurrencyBalance(
+    account ?? undefined,
+    chainId ? ETHER[chainId] : undefined,
+  );
+  const token0BalanceJSBI = JSBI.add(
+    token0isWETH && ethBalance ? ethBalance.numerator : JSBI.BigInt('0'),
+    token0Balance ? token0Balance.numerator : JSBI.BigInt('0'),
+  );
+  const token1BalanceJSBI = JSBI.add(
+    token1isWETH && ethBalance ? ethBalance.numerator : JSBI.BigInt('0'),
+    token1Balance ? token1Balance.numerator : JSBI.BigInt('0'),
+  );
 
   const deposit0JSBI = JSBI.BigInt(
     parseUnits(
@@ -83,9 +102,38 @@ export default function IncreaseSteerLiquidityModal({
     !Number(deposit1) ||
     !account ||
     JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI) ||
-    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI);
+    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI) ||
+    wrappingETH;
+
+  const wrapAmount = useMemo(() => {
+    if (token0isWETH) {
+      const token0BalanceJSBI = token0Balance
+        ? token0Balance.numerator
+        : JSBI.BigInt('0');
+      if (JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI))
+        return JSBI.subtract(deposit0JSBI, token0BalanceJSBI);
+      return;
+    } else if (token1isWETH) {
+      const token1BalanceJSBI = token1Balance
+        ? token1Balance.numerator
+        : JSBI.BigInt('0');
+      if (JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI))
+        return JSBI.subtract(deposit1JSBI, token1BalanceJSBI);
+      return;
+    }
+    return;
+  }, [
+    deposit0JSBI,
+    deposit1JSBI,
+    token0Balance,
+    token0isWETH,
+    token1Balance,
+    token1isWETH,
+  ]);
 
   const buttonText = useMemo(() => {
+    if (wrappingETH)
+      return t('wrappingMATIC', { symbol: ETHER[chainId].symbol });
     if (!account) return t('connectWallet');
     if (JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI))
       return t('insufficientBalance', {
@@ -96,10 +144,13 @@ export default function IncreaseSteerLiquidityModal({
         symbol: position.token1?.symbol,
       });
     if (!Number(deposit0) || !Number(deposit1)) return t('enterAmount');
+    if (wrapAmount) return t('wrapMATIC', { symbol: ETHER[chainId].symbol });
     return t('addLiquidity');
   }, [
-    account,
+    wrappingETH,
     t,
+    chainId,
+    account,
     deposit0JSBI,
     token0BalanceJSBI,
     position.token0?.symbol,
@@ -108,6 +159,7 @@ export default function IncreaseSteerLiquidityModal({
     token1BalanceJSBI,
     deposit0,
     deposit1,
+    wrapAmount,
   ]);
 
   const handleDismissConfirmation = useCallback(() => {
@@ -121,6 +173,39 @@ export default function IncreaseSteerLiquidityModal({
     setTxPending(false);
     setAddErrorMessage('');
   }, [txnHash]);
+
+  const wethContract = useWETHContract();
+  const wrapETH = async () => {
+    if (!chainId || !account || !wethContract || !wrapAmount) return;
+
+    setWrappingETH(true);
+    try {
+      const wrapEstimateGas = await wethContract.estimateGas.deposit({
+        value: wrapAmount.toString(),
+      });
+      const wrapResponse: TransactionResponse = await wethContract.deposit({
+        gasLimit: calculateGasMargin(wrapEstimateGas),
+        value: wrapAmount.toString(),
+      });
+      setAttemptingTxn(false);
+      setTxPending(true);
+      const summary = `Wrap ${formatUnits(
+        wrapAmount.toString(),
+        18,
+      )} ETH to WETH`;
+      addTransaction(wrapResponse, {
+        summary,
+      });
+      const receipt = await wrapResponse.wait();
+      finalizedTransaction(receipt, {
+        summary,
+      });
+      setWrappingETH(false);
+    } catch (e) {
+      console.error(e);
+      setWrappingETH(false);
+    }
+  };
 
   const addSteerLiquidity = async () => {
     if (!steerPeripheryContract || !account) return;
@@ -316,6 +401,12 @@ export default function IncreaseSteerLiquidityModal({
             shallow={true}
             disabled={false}
             swap={false}
+            showETH={
+              chainId &&
+              position.token0 &&
+              position.token0.address.toLowerCase() ===
+                WETH[chainId].address.toLowerCase()
+            }
           />
         </Box>
         <Box mt={2} className='v3-increase-liquidity-input'>
@@ -340,13 +431,19 @@ export default function IncreaseSteerLiquidityModal({
             shallow={true}
             disabled={false}
             swap={false}
+            showETH={
+              chainId &&
+              position.token1 &&
+              position.token1.address.toLowerCase() ===
+                WETH[chainId].address.toLowerCase()
+            }
           />
         </Box>
         <Box mt={2}>
           <Button
             className='steer-liquidity-item-button'
             disabled={buttonDisabled}
-            onClick={() => setShowConfirm(true)}
+            onClick={() => (wrapAmount ? wrapETH() : setShowConfirm(true))}
             fullWidth
           >
             {buttonText}
