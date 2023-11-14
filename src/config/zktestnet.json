@@ -57,5 +57,8 @@
   },
   "perps": {
     "available": false
+  },
+  "dappos": {
+    "available": false
   }
 }
