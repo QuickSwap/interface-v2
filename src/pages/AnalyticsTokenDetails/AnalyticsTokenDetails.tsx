@@ -289,7 +289,7 @@ const AnalyticsTokenDetails: React.FC = () => {
       {isLoading ? (
         <Skeleton width='100%' height={100} />
       ) : data && data.token ? (
-        <>
+        <Box mb={4} width={1}>
           <Box width={1} className='flex flex-wrap justify-between'>
             <Box display='flex'>
               <CurrencyLogo currency={currency} size='32px' />
@@ -358,7 +358,7 @@ const AnalyticsTokenDetails: React.FC = () => {
               tokenTransactions={tokenTransactionsList}
             />
           )}
-        </>
+        </Box>
       ) : (
         <Box py={4}>
           <h5>{t('tokenNotExist')}</h5>

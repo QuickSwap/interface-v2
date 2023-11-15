@@ -83,7 +83,7 @@ export interface NetworkInfo {
 
 export type NetworkInfoChainMap = Readonly<
   {
-    [chainId in ChainId]: NetworkInfo;
+    [chainId in ChainId]?: NetworkInfo;
   }
 >;
 
@@ -111,6 +111,14 @@ export const networkInfoMap: NetworkInfoChainMap = {
   [ChainId.ZKEVM]: {
     rpcUrl: 'https://zkevm-rpc.com',
     scanUrl: 'https://zkevm.polygonscan.com/',
+  },
+  [ChainId.MANTA]: {
+    rpcUrl: 'https://pacific-rpc.manta.network/http',
+    scanUrl: 'https://pacific-explorer.manta.network/',
+  },
+  [ChainId.ZKATANA]: {
+    rpcUrl: 'https://rpc.zkatana.gelato.digital',
+    scanUrl: 'https://zkatana.blockscout.com/',
   },
 };
 

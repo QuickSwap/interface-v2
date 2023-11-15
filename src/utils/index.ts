@@ -1140,7 +1140,10 @@ export const getAllGammaPairs = (chainId?: ChainId) => {
   const config = getConfig(chainId);
   const gammaAvailable = config['gamma']['available'];
   if (gammaAvailable && chainId) {
-    return ([] as GammaPair[]).concat(...Object.values(GammaPairs[chainId]));
+    const gammaPairs = GammaPairs[chainId];
+    return gammaPairs
+      ? ([] as GammaPair[]).concat(...Object.values(gammaPairs))
+      : [];
   }
   return [];
 };
@@ -1153,14 +1156,12 @@ export const getGammaPairsForTokens = (
   const config = getConfig(chainId);
   const gammaAvailable = config['gamma']['available'];
   if (gammaAvailable && chainId && address0 && address1) {
+    const gammaPairs = GammaPairs[chainId];
+    if (!gammaPairs) return;
     const pairs =
-      GammaPairs[chainId][
-        address0.toLowerCase() + '-' + address1.toLowerCase()
-      ];
+      gammaPairs[address0.toLowerCase() + '-' + address1.toLowerCase()];
     const reversedPairs =
-      GammaPairs[chainId][
-        address1.toLowerCase() + '-' + address0.toLowerCase()
-      ];
+      gammaPairs[address1.toLowerCase() + '-' + address0.toLowerCase()];
     if (pairs) {
       return { reversed: false, pairs };
     } else if (reversedPairs) {

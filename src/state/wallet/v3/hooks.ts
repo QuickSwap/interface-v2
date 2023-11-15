@@ -2,7 +2,7 @@ import { Currency, CurrencyAmount, Ether, Token } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import { useMemo } from 'react';
 import { useAllTokens } from 'hooks/Tokens';
-import { useMulticallContract } from 'hooks/useContract';
+import { useMulticall2Contract } from 'hooks/useContract';
 import { Interface } from '@ethersproject/abi';
 import ERC20ABI from '../../../constants/abis/erc20.json';
 import { Erc20Interface } from 'abis/types/Erc20';
@@ -23,7 +23,7 @@ export function useETHBalances(
   [address: string]: CurrencyAmount<Currency> | undefined;
 } {
   const { chainId } = useActiveWeb3React();
-  const multicallContract = useMulticallContract();
+  const multicallContract = useMulticall2Contract();
 
   const addresses: string[] = useMemo(
     () =>

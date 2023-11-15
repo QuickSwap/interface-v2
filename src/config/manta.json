@@ -1,11 +1,13 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://rpc.public.zkevm-test.net",
-  "blockExplorer": "https://testnet-zkevm.polygonscan.com",
-  "networkName": "Polygon zkEVM Testnet",
-  "chainId": 1442,
-  "nativeCurrencyImage": "/zkevm.svg",
+  "rpc": "https://pacific-rpc.manta.network/http",
+  "blockExplorer": "https://pacific-explorer.manta.network",
+  "networkName": "Manta Pacific L2 Rollup",
+  "aprAPINetwork": "manta",
+  "chainId": 169,
+  "isMainnet": true,
+  "nativeCurrencyImage": "/manta.svg",
   "nativeCurrency": {
     "name": "Ether",
     "symbol": "ETH",
@@ -38,7 +40,7 @@
     "available": false
   },
   "analytics": {
-    "available": false
+    "available": true
   },
   "lending": {
     "available": false
@@ -58,7 +60,16 @@
   "perps": {
     "available": false
   },
-  "dappos": {
+  "bos": {
     "available": false
+  },
+  "gamma": {
+    "available": false
+  },
+  "unipilot": {
+    "available": false
+  },
+  "dappos": {
+    "available": true
   }
 }

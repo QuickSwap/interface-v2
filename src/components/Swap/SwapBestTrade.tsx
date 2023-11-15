@@ -76,7 +76,6 @@ import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { getConfig } from 'config';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { useLiquidityHubAnalyticsListeners } from './LiquidityHub';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -660,14 +659,6 @@ const SwapBestTrade: React.FC<{
     swapErrorMessage: undefined,
     txHash: undefined,
   });
-
-  useLiquidityHubAnalyticsListeners(
-    showConfirm,
-    attemptingTxn,
-    currencies[Field.INPUT],
-    currencies[Field.OUTPUT],
-    formattedAmounts[Field.INPUT],
-  );
 
   const handleTypeInput = useCallback(
     (value: string) => {

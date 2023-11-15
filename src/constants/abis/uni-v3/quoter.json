@@ -8,12 +8,7 @@
       },
       {
         "internalType": "address",
-        "name": "_WNativeToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_poolDeployer",
+        "name": "_WETH9",
         "type": "address"
       }
     ],
@@ -22,7 +17,7 @@
   },
   {
     "inputs": [],
-    "name": "WNativeToken",
+    "name": "WETH9",
     "outputs": [
       {
         "internalType": "address",
@@ -30,48 +25,12 @@
         "type": "address"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "int256",
-        "name": "amount0Delta",
-        "type": "int256"
-      },
-      {
-        "internalType": "int256",
-        "name": "amount1Delta",
-        "type": "int256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "path",
-        "type": "bytes"
-      }
-    ],
-    "name": "algebraSwapCallback",
-    "outputs": [],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "factory",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "poolDeployer",
     "outputs": [
       {
         "internalType": "address",
@@ -101,11 +60,6 @@
         "internalType": "uint256",
         "name": "amountOut",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint16[]",
-        "name": "fees",
-        "type": "uint16[]"
       }
     ],
     "stateMutability": "nonpayable",
@@ -124,13 +78,18 @@
         "type": "address"
       },
       {
+        "internalType": "uint24",
+        "name": "fee",
+        "type": "uint24"
+      },
+      {
         "internalType": "uint256",
         "name": "amountIn",
         "type": "uint256"
       },
       {
         "internalType": "uint160",
-        "name": "limitSqrtPrice",
+        "name": "sqrtPriceLimitX96",
         "type": "uint160"
       }
     ],
@@ -140,11 +99,6 @@
         "internalType": "uint256",
         "name": "amountOut",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint16",
-        "name": "fee",
-        "type": "uint16"
       }
     ],
     "stateMutability": "nonpayable",
@@ -169,11 +123,6 @@
         "internalType": "uint256",
         "name": "amountIn",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint16[]",
-        "name": "fees",
-        "type": "uint16[]"
       }
     ],
     "stateMutability": "nonpayable",
@@ -192,13 +141,18 @@
         "type": "address"
       },
       {
+        "internalType": "uint24",
+        "name": "fee",
+        "type": "uint24"
+      },
+      {
         "internalType": "uint256",
         "name": "amountOut",
         "type": "uint256"
       },
       {
         "internalType": "uint160",
-        "name": "limitSqrtPrice",
+        "name": "sqrtPriceLimitX96",
         "type": "uint160"
       }
     ],
@@ -208,14 +162,32 @@
         "internalType": "uint256",
         "name": "amountIn",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint16",
-        "name": "fee",
-        "type": "uint16"
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "int256",
+        "name": "amount0Delta",
+        "type": "int256"
+      },
+      {
+        "internalType": "int256",
+        "name": "amount1Delta",
+        "type": "int256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "path",
+        "type": "bytes"
+      }
+    ],
+    "name": "uniswapV3SwapCallback",
+    "outputs": [],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

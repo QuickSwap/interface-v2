@@ -37,8 +37,7 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { RouterTypes, SmartRouter } from 'constants/index';
-import { StableCoins } from 'constants/v3/addresses';
+import { GlobalData, RouterTypes, SmartRouter } from 'constants/index';
 import useFindBestRoute from 'hooks/useFindBestRoute';
 
 export function useSwapState(): AppState['swap'] {
@@ -275,7 +274,7 @@ export function useDerivedSwapInfo(): {
   }
 
   useEffect(() => {
-    const stableCoins = StableCoins[chainIdToUse];
+    const stableCoins = GlobalData.stableCoins[chainIdToUse];
     const stableCoinAddresses =
       stableCoins && stableCoins.length > 0
         ? stableCoins.map((token) => token.address.toLowerCase())

@@ -246,9 +246,7 @@ export function useSwapCallback(
 
         // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
         const successfulEstimation = estimatedCalls.find(
-          (el, ix, list): el is SuccessfulCall =>
-            'gasEstimate' in el &&
-            (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
+          (el): el is SuccessfulCall => 'gasEstimate' in el,
         );
 
         if (!successfulEstimation) {

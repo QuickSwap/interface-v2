@@ -14,6 +14,7 @@ import { Token } from '@uniswap/sdk-core';
 export function useV3SwapPools(
   currencyIn?: Currency,
   currencyOut?: Currency,
+  isUni?: boolean,
 ): {
   pools: Pool[];
   loading: boolean;
@@ -58,9 +59,12 @@ export function useV3SwapPools(
     [allCurrencyCombinations],
   );
 
-  const uniPools = usePools(allCurrencyCombinationsWithAllFees, true);
-  const algebrapools = usePools(allCurrencyCombinationsWithoutFees);
-  const pools = uniPools.concat(algebrapools);
+  const pools = usePools(
+    isUni
+      ? allCurrencyCombinationsWithAllFees
+      : allCurrencyCombinationsWithoutFees,
+    isUni,
+  );
 
   return useMemo(() => {
     return {

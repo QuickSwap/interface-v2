@@ -20,12 +20,11 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalData } from 'constants/index';
 import { Box, ButtonGroup, Button } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId, JSBI } from '@uniswap/sdk';
-import { StableCoins } from 'constants/v3/addresses';
 import { getEternalFarmFromTokens, getGammaPairsForTokens } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
 import UnipilotLogo from 'assets/images/unipilot.png';
@@ -90,8 +89,8 @@ export function SelectRange({
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
 
-    const stablecoins = StableCoins[chainIdToUse]
-      ? StableCoins[chainIdToUse].map((token) => token.address)
+    const stablecoins = GlobalData.stableCoins[chainIdToUse]
+      ? GlobalData.stableCoins[chainIdToUse].map((token) => token.address)
       : [];
 
     return (

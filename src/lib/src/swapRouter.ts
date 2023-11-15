@@ -12,6 +12,7 @@ import { Trade } from './trade';
 import { PermitOptions, SelfPermit } from './selfPermit';
 import { MethodParameters, toHex } from './utils/calldata';
 import abi from 'constants/abis/v3/swap-router.json';
+import uniV3ABI from 'constants/abis/uni-v3/swap-router.json';
 import { ADDRESS_ZERO } from 'v3lib/utils/v3constants';
 import { encodeRouteToPath } from 'v3lib/utils/encodeRouteToPath';
 
@@ -65,6 +66,8 @@ export interface SwapOptions {
    * Optional information for taking a fee on output.
    */
   fee?: FeeOptions;
+
+  isUni?: boolean;
 }
 
 /**
@@ -72,6 +75,7 @@ export interface SwapOptions {
  */
 export abstract class SwapRouter extends SelfPermit {
   public static INTERFACE: Interface = new Interface(abi);
+  public static UNIV3INTERFACE: Interface = new Interface(uniV3ABI);
 
   /**
    * Cannot be constructed.
@@ -188,12 +192,17 @@ export abstract class SwapRouter extends SelfPermit {
               sqrtPriceLimitX96: toHex(options.sqrtPriceLimitX96 ?? 0),
             };
             calldatas.push(
-              SwapRouter.INTERFACE.encodeFunctionData(
-                options.feeOnTransfer && !inputIsNative
-                  ? 'exactInputSingleSupportingFeeOnTransferTokens'
-                  : 'exactInputSingle',
-                [exactInputSingleParams],
-              ),
+              options.isUni
+                ? SwapRouter.UNIV3INTERFACE.encodeFunctionData(
+                    'exactInputSingle',
+                    [exactInputSingleParams],
+                  )
+                : SwapRouter.INTERFACE.encodeFunctionData(
+                    options.feeOnTransfer && !inputIsNative
+                      ? 'exactInputSingleSupportingFeeOnTransferTokens'
+                      : 'exactInputSingle',
+                    [exactInputSingleParams],
+                  ),
             );
           } else {
             const exactOutputSingleParams = {
@@ -208,9 +217,14 @@ export abstract class SwapRouter extends SelfPermit {
             };
 
             calldatas.push(
-              SwapRouter.INTERFACE.encodeFunctionData('exactOutputSingle', [
-                exactOutputSingleParams,
-              ]),
+              options.isUni
+                ? SwapRouter.UNIV3INTERFACE.encodeFunctionData(
+                    'exactOutputSingle',
+                    [exactOutputSingleParams],
+                  )
+                : SwapRouter.INTERFACE.encodeFunctionData('exactOutputSingle', [
+                    exactOutputSingleParams,
+                  ]),
             );
           }
         } else {
@@ -222,6 +236,7 @@ export abstract class SwapRouter extends SelfPermit {
           const path: string = encodeRouteToPath(
             route,
             trade.tradeType === TradeType.EXACT_OUTPUT,
+            options.isUni,
           );
 
           if (trade.tradeType === TradeType.EXACT_INPUT) {
@@ -234,9 +249,13 @@ export abstract class SwapRouter extends SelfPermit {
             };
 
             calldatas.push(
-              SwapRouter.INTERFACE.encodeFunctionData('exactInput', [
-                exactInputParams,
-              ]),
+              options.isUni
+                ? SwapRouter.UNIV3INTERFACE.encodeFunctionData('exactInput', [
+                    exactInputParams,
+                  ])
+                : SwapRouter.INTERFACE.encodeFunctionData('exactInput', [
+                    exactInputParams,
+                  ]),
             );
           } else {
             const exactOutputParams = {
@@ -248,9 +267,13 @@ export abstract class SwapRouter extends SelfPermit {
             };
 
             calldatas.push(
-              SwapRouter.INTERFACE.encodeFunctionData('exactOutput', [
-                exactOutputParams,
-              ]),
+              route.pools[0].isUni
+                ? SwapRouter.UNIV3INTERFACE.encodeFunctionData('exactOutput', [
+                    exactOutputParams,
+                  ])
+                : SwapRouter.INTERFACE.encodeFunctionData('exactOutput', [
+                    exactOutputParams,
+                  ]),
             );
           }
         }
@@ -265,44 +288,87 @@ export abstract class SwapRouter extends SelfPermit {
         );
         const fee = toHex(options.fee.fee.multiply(10_000).quotient);
         if (outputIsNative) {
+          if (options.isUni) {
+            calldatas.push(
+              SwapRouter.UNIV3INTERFACE.encodeFunctionData(
+                'unwrapWETH9WithFee',
+                [toHex(totalAmountOut.quotient), recipient, fee, feeRecipient],
+              ),
+            );
+          } else {
+            calldatas.push(
+              SwapRouter.INTERFACE.encodeFunctionData(
+                'unwrapWNativeTokenWithFee',
+                [toHex(totalAmountOut.quotient), recipient, fee, feeRecipient],
+              ),
+            );
+          }
+        } else {
+          if (options.isUni) {
+            calldatas.push(
+              SwapRouter.UNIV3INTERFACE.encodeFunctionData(
+                'sweepTokenWithFee',
+                [
+                  sampleTrade.outputAmount.currency.wrapped.address,
+                  toHex(totalAmountOut.quotient),
+                  recipient,
+                  fee,
+                  feeRecipient,
+                ],
+              ),
+            );
+          } else {
+            calldatas.push(
+              SwapRouter.INTERFACE.encodeFunctionData('sweepTokenWithFee', [
+                sampleTrade.outputAmount.currency.wrapped.address,
+                toHex(totalAmountOut.quotient),
+                recipient,
+                fee,
+                feeRecipient,
+              ]),
+            );
+          }
+        }
+      } else {
+        if (options.isUni) {
           calldatas.push(
-            SwapRouter.INTERFACE.encodeFunctionData(
-              'unwrapWNativeTokenWithFee',
-              [toHex(totalAmountOut.quotient), recipient, fee, feeRecipient],
-            ),
+            SwapRouter.UNIV3INTERFACE.encodeFunctionData('unwrapWETH9', [
+              toHex(totalAmountOut.quotient),
+              recipient,
+            ]),
           );
         } else {
           calldatas.push(
-            SwapRouter.INTERFACE.encodeFunctionData('sweepTokenWithFee', [
-              sampleTrade.outputAmount.currency.wrapped.address,
+            SwapRouter.INTERFACE.encodeFunctionData('unwrapWNativeToken', [
               toHex(totalAmountOut.quotient),
               recipient,
-              fee,
-              feeRecipient,
             ]),
           );
         }
-      } else {
-        calldatas.push(
-          SwapRouter.INTERFACE.encodeFunctionData('unwrapWNativeToken', [
-            toHex(totalAmountOut.quotient),
-            recipient,
-          ]),
-        );
       }
     }
 
     // refund
     if (mustRefund) {
-      calldatas.push(
-        SwapRouter.INTERFACE.encodeFunctionData('refundNativeToken'),
-      );
+      if (options.isUni) {
+        calldatas.push(
+          SwapRouter.UNIV3INTERFACE.encodeFunctionData('refundETH'),
+        );
+      } else {
+        calldatas.push(
+          SwapRouter.INTERFACE.encodeFunctionData('refundNativeToken'),
+        );
+      }
     }
 
     return {
       calldata:
         calldatas.length === 1
           ? calldatas[0]
+          : options.isUni
+          ? SwapRouter.UNIV3INTERFACE.encodeFunctionData('multicall', [
+              calldatas,
+            ])
           : SwapRouter.INTERFACE.encodeFunctionData('multicall', [calldatas]),
       value: toHex(totalValue.quotient),
     };

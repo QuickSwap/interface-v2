@@ -1,11 +1,13 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://rpc.public.zkevm-test.net",
-  "blockExplorer": "https://testnet-zkevm.polygonscan.com",
-  "networkName": "Polygon zkEVM Testnet",
-  "chainId": 1442,
-  "nativeCurrencyImage": "/zkevm.svg",
+  "rpc": "https://rpc.zkatana.gelato.digital",
+  "blockExplorer": "https://zkatana.blockscout.com",
+  "networkName": "zKatana",
+  "aprAPINetwork": "zkatana",
+  "chainId": 1261120,
+  "isMainnet": true,
+  "nativeCurrencyImage": "/zkartana.png",
   "nativeCurrency": {
     "name": "Ether",
     "symbol": "ETH",
@@ -56,6 +58,15 @@
     "available": false
   },
   "perps": {
+    "available": false
+  },
+  "bos": {
+    "available": false
+  },
+  "gamma": {
+    "available": false
+  },
+  "unipilot": {
     "available": false
   },
   "dappos": {
