@@ -7,6 +7,7 @@ import { formatCompact, useLairDQUICKAPY } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { StakeQuickModal } from 'components';
 import { useTranslation } from 'react-i18next';
+import { useActiveWeb3React } from 'hooks';
 
 interface DragonLayerInfoCardProps {
   chainId: any;
@@ -17,6 +18,7 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
   chainId,
   config = {},
 }) => {
+  const { account } = useActiveWeb3React();
   const { t } = useTranslation();
   const lairInfo = useNewLairInfo();
   const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
@@ -28,7 +30,10 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
   const oldLair = config['lair']?.oldLair;
   const newLair = config['lair']?.newLair;
 
-  const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
+  const {
+    loading: loadingQuickPrice,
+    price: quickPrice,
+  } = useUSDCPriceFromAddress(quickToken?.address ?? '');
 
   const rewards = useMemo(() => {
     if (lairInfo && quickPrice) {
@@ -43,6 +48,8 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
     return '0';
   }, [lairInfo, quickPrice]);
 
+  const loading = lairInfo?.loading || loadingQuickPrice;
+
   return (
     <>
       {openStakeModal && (
@@ -54,7 +61,9 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
       )}
       {(oldLair || newLair) && (
         <Box className='tradingSection' pt='20px'>
-          {dQUICKAPY ? (
+          {loading ? (
+            <Skeleton variant='rect' width={100} height={45} />
+          ) : (
             <Box>
               <Box display='flex'>
                 <h6>$</h6>
@@ -64,13 +73,13 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
                 <small>{dQUICKAPY}%</small>
               </Box>
             </Box>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
           )}
           <p>{t('dragonslair')}</p>
-          <h4 onClick={() => setOpenStakeModal(true)}>
-            {t('stake')} {'>'}
-          </h4>
+          {account && (
+            <h4 onClick={() => setOpenStakeModal(true)}>
+              {t('stake')} {'>'}
+            </h4>
+          )}
         </Box>
       )}
     </>

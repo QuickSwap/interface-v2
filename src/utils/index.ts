@@ -609,7 +609,9 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     ? chainIdToUse
     : ChainId.MATIC;
   const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
-  const quickPrice = useUSDCPriceFromAddress(quickToken.address);
+  const { price: quickPrice } = useUSDCPriceFromAddress(
+    quickToken?.address ?? '',
+  );
 
   const { data: v3Data } = useAnalyticsGlobalData('v3', chainId);
   const { data: v2Data } = useAnalyticsGlobalData('v2', chainId);
@@ -625,11 +627,12 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     return feePercent;
   }, [v2, v2Data, v3, v3Data]);
 
-  if (!lair || !quickPrice) return '';
+  if (!lair) return '';
+  const lairQuickBalance = Number(lair.totalQuickBalance.toExact());
+  if (!lairQuickBalance || !quickPrice) return '';
 
   const dQUICKAPR =
-    (feesPercent * daysCurrentYear) /
-    (Number(lair.totalQuickBalance.toExact()) * quickPrice);
+    (feesPercent * daysCurrentYear) / (lairQuickBalance * quickPrice);
 
   if (!dQUICKAPR) return '';
   const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;

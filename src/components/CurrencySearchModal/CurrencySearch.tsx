@@ -129,7 +129,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     })
     .filter((address, ind, self) => self.indexOf(address) === ind);
 
-  const usdPrices = useUSDCPricesFromAddresses(tokenAddresses);
+  const { prices: usdPrices } = useUSDCPricesFromAddresses(tokenAddresses);
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
