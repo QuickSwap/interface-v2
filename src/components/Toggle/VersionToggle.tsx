@@ -9,7 +9,7 @@ import { useAnalyticsVersion } from 'hooks';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
-  const { isV2, updateIsV2 } = useIsV2();
+  const { updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
@@ -49,7 +49,7 @@ const VersionToggle: React.FC = () => {
   return (
     <Box className='version-toggle-container'>
       <Box
-        className={isV2 && version !== 'total' ? 'version-toggle-active' : ''}
+        className={version === 'v2' ? 'version-toggle-active' : ''}
         onClick={() => {
           redirectWithVersion('v2');
         }}
@@ -58,7 +58,7 @@ const VersionToggle: React.FC = () => {
       </Box>
 
       <Box
-        className={!isV2 && version !== 'total' ? 'version-toggle-active' : ''}
+        className={version === 'v3' ? 'version-toggle-active' : ''}
         onClick={() => {
           redirectWithVersion('v3');
         }}
@@ -67,14 +67,26 @@ const VersionToggle: React.FC = () => {
       </Box>
 
       {isAnalyticsPage && (
-        <Box
-          className={version === 'total' ? 'version-toggle-active' : ''}
-          onClick={() => {
-            redirectWithVersion('total');
-          }}
-        >
-          <small>{t('total')}</small>
-        </Box>
+        <>
+          <Box
+            className={
+              version === 'liquidityhub' ? 'version-toggle-active' : ''
+            }
+            onClick={() => {
+              redirectWithVersion('liquidityhub');
+            }}
+          >
+            <small>{t('liquidityHub')}</small>
+          </Box>
+          <Box
+            className={version === 'total' ? 'version-toggle-active' : ''}
+            onClick={() => {
+              redirectWithVersion('total');
+            }}
+          >
+            <small>{t('total')}</small>
+          </Box>
+        </>
       )}
     </Box>
   );

@@ -49,6 +49,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   }, [updateIsV2, v2, v3]);
   const version = useAnalyticsVersion();
   const isPairDetails = history.location.pathname.includes('pair/');
+  const isLiquidityHub = version === 'liquidityhub';
 
   return (
     <Box width='100%' mb={3}>
@@ -105,7 +106,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
               </span>
             </Box>
           )}
-          {!type && (
+          {!type && !isLiquidityHub && (
             <>
               <Box
                 className={`topTab ${pathname.indexOf('pair') === -1 &&
@@ -133,7 +134,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
           )}
         </Box>
 
-        <AnalyticsSearch />
+        {!isLiquidityHub && <AnalyticsSearch />}
       </Box>
     </Box>
   );
