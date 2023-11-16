@@ -467,7 +467,9 @@ export function useSteerFilteredFarms(
     return memo;
   }, []);
 
-  const tokenUSDPrices = useUSDCPricesFromAddresses(farmTokenAddresses);
+  const { prices: tokenUSDPrices } = useUSDCPricesFromAddresses(
+    farmTokenAddresses,
+  );
 
   const filteredFarms = steerFarms
     .map((farm, ind) => {
