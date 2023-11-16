@@ -1219,7 +1219,7 @@ export const FarmingMyFarms: React.FC<{
             <Box py={5} className='flex justify-center'>
               <Loader stroke={'white'} size={'1.5rem'} />
             </Box>
-          ) : chainId ? (
+          ) : chainId && filteredSteerFarms.length > 0 ? (
             <Box padding='24px'>
               {!isMobile && (
                 <Box px={1.5}>
@@ -1243,7 +1243,13 @@ export const FarmingMyFarms: React.FC<{
               </Box>
             </Box>
           ) : (
-            <></>
+            <Box
+              className='flex items-center justify-center'
+              width='100%'
+              height={100}
+            >
+              <p>{t('noSteerFarms')}</p>
+            </Box>
           )}
         </Box>
       )}
