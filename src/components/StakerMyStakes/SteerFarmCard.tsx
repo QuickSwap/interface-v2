@@ -8,8 +8,6 @@ import { ChevronDown, ChevronUp } from 'react-feather';
 import SteerFarmCardDetails from './SteerFarmCardDetails';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import { formatUnits } from 'ethers/lib/utils';
-// import { useUnipilotFarmAPR } from 'hooks/v3/useUnipilotFarms';
 
 const SteerFarmCard: React.FC<{
   data: any;
