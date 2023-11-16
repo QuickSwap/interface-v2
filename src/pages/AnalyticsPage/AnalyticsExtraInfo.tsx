@@ -22,7 +22,7 @@ const AnalyticsExtraInfo: React.FC<AnalyticsInfoProps> = ({
 
   const lairInfo = useNewLairInfo();
   const quickToken = DLQUICK[chainId];
-  const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
+  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken?.address);
 
   const extraInfo = useMemo(() => {
     if (lairInfo && quickPrice) {

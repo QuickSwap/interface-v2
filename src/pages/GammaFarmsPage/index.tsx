@@ -211,7 +211,7 @@ const GammaFarmsPage: React.FC<{
     return gammaRewardTokenAddresses.concat([qiTokenAddress]);
   }, [gammaRewardTokenAddresses]);
 
-  const gammaRewardsWithUSDPrice = useUSDCPricesFromAddresses(
+  const { prices: gammaRewardsWithUSDPrice } = useUSDCPricesFromAddresses(
     gammaRewardTokenAddressesWithQI,
   );
 

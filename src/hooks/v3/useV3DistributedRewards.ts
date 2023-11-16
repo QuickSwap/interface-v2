@@ -74,7 +74,9 @@ export function useV3DistributedRewards(chainId?: ChainId) {
         )
     : [];
 
-  const rewardTokenPrices = useUSDCPricesFromAddresses(allRewardTokenAddresses);
+  const { prices: rewardTokenPrices } = useUSDCPricesFromAddresses(
+    allRewardTokenAddresses,
+  );
 
   const totalRewardsUSD =
     eternalFarms && rewardTokenPrices

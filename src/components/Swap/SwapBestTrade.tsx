@@ -720,7 +720,7 @@ const SwapBestTrade: React.FC<{
   const { selectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
   const fromTokenWrapped = wrappedCurrency(currencies[Field.INPUT], chainId);
-  const fromTokenUSDPrice = useUSDCPriceFromAddress(
+  const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     fromTokenWrapped?.address ?? '',
   );
 
