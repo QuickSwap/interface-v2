@@ -119,7 +119,7 @@ export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
     data,
     refetch: refetchUnipilotUserFarms,
   } = useQuery({
-    queryKey: ['fetchUnipilotUserFarms', chainId, account, lastTxHash],
+    queryKey: ['fetchUnipilotUserFarms', chainId, account],
     queryFn: fetchUnipilotUserFarms,
   });
 
@@ -136,7 +136,7 @@ export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
   useEffect(() => {
     refetchUnipilotUserFarms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, lastTxHash]);
 
   return { loading: farmsLoading, data };
 }

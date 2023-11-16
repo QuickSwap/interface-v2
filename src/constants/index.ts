@@ -43,6 +43,7 @@ import {
   AAVE,
   USDCE,
   fxMETOD,
+  PKR,
   SLING,
   NINJAZ,
 } from './v3/addresses';
@@ -60,6 +61,14 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.MANTA]: 'manta',
   [ChainId.ZKATANA]: 'zKatana',
 };
+
+export enum SteerVaultState {
+  PendingApproval,
+  PendingThreshold,
+  Paused,
+  Active,
+  Retired,
+}
 
 export enum TxnType {
   SWAP,
@@ -176,6 +185,7 @@ export const GlobalConst = {
       quickswap: '0',
       unipilot: '1',
       gamma: '2',
+      steer: '3',
     },
   },
   analyticChart: {
@@ -195,6 +205,7 @@ export const GlobalConst = {
     MANUAL_RANGE: '0',
     GAMMA_RANGE: '1',
     UNIPILOT_RANGE: '2',
+    STEER_RANGE: '3',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -1557,6 +1568,7 @@ export const GlobalValue = {
         WEFI[ChainId.MATIC],
         PUSH[ChainId.MATIC],
         fxMETOD[ChainId.MATIC],
+        PKR[ChainId.MATIC],
         SLING[ChainId.MATIC],
         NINJAZ[ChainId.MATIC],
       ],
