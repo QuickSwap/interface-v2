@@ -641,6 +641,8 @@
   "fetchingGammaDepositRange": "Fetching Gamma Deposit Range",
   "available": "Available",
   "noGammaFarms": "No Gamma Farms",
+  "noUnipilotFarms": "No Unipilot Farms",
+  "noSteerFarms": "No Steer Farms",
   "addingLiquidity": "Adding Liquidity",
   "selectStrategy": "Select Strategy",
   "allFarms": "All Farms",

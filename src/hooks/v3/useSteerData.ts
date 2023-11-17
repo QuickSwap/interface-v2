@@ -44,6 +44,7 @@ export interface SteerVault {
   poolAddress?: string;
   sqrtPriceX96?: BigNumber;
   tick?: BigNumber;
+  totalBalance?: number;
   token0BalanceWallet?: number;
   token1BalanceWallet?: number;
   apr?: number;
@@ -467,7 +468,9 @@ export function useSteerFilteredFarms(
     return memo;
   }, []);
 
-  const tokenUSDPrices = useUSDCPricesFromAddresses(farmTokenAddresses);
+  const { prices: tokenUSDPrices } = useUSDCPricesFromAddresses(
+    farmTokenAddresses,
+  );
 
   const filteredFarms = steerFarms
     .map((farm, ind) => {

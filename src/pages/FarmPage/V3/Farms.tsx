@@ -54,7 +54,7 @@ export default function Farms() {
     return unipilotFarmsArray;
   }, [unipilotFarmsArray]);
 
-  const { data: steerFarmsArray } = useSteerStakingPools(chainId, farmStatus);
+  const { data: steerFarmsArray } = useSteerStakingPools(chainId);
   const steerFarms = useMemo(() => {
     if (!steerFarmsArray) return [];
     return steerFarmsArray;

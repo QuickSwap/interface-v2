@@ -12,6 +12,7 @@ import { SteerVault, useSteerStakedPools } from 'hooks/v3/useSteerData';
 import { useTotalSupply } from 'hooks/v3/useTotalSupply';
 import { Token } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
+import { JSBI } from '@uniswap/sdk';
 
 const SteerLPItemDetails: React.FC<{ position: SteerVault }> = ({
   position,
@@ -63,6 +64,7 @@ const SteerLPItemDetails: React.FC<{ position: SteerVault }> = ({
 
   const positionWithTokenBalances = {
     ...position,
+    totalBalance: vaultBalanceNum,
     token0BalanceWallet: token0Balance,
     token1BalanceWallet: token1Balance,
   };
@@ -122,7 +124,7 @@ const SteerLPItemDetails: React.FC<{ position: SteerVault }> = ({
         </Button>
         <Button
           className='steer-liquidity-item-button'
-          disabled={stakedAmount > 0}
+          disabled={!vaultBalance || vaultBalance.equalTo(JSBI.BigInt('0'))}
           onClick={() => setShowWithdrawModal(true)}
         >
           <small>{t('withdraw')}</small>

@@ -52,7 +52,7 @@ const UnipilotFarmsPage: React.FC<{
           style={{ padding: '16px 0' }}
         >
           <Frown size={'2rem'} stroke={'white'} />
-          <p style={{ marginTop: 12 }}>{t('noGammaFarms')}</p>
+          <p style={{ marginTop: 12 }}>{t('noUnipilotFarms')}</p>
         </div>
       ) : !unipilotFarmsLoading && filteredFarms.length > 0 && chainId ? (
         <Box>
