@@ -628,6 +628,7 @@ export function useUnipilotPositions(
           }
           return {
             ...item,
+            lpBalance: JSBI.BigInt(item.balance),
             farming: false,
           };
         }
