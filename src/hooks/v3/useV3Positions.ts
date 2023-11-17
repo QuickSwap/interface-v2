@@ -538,45 +538,50 @@ export function useGammaPositionsCount(
     (callStates) => !!callStates.find((callData) => callData.loading),
   );
 
-  const stakedLPs = allGammaPairsToFarm
-    .map((item) => {
-      const masterChefIndex = item.masterChefIndex ?? 0;
-      const sItem =
-        stakedAmounts && stakedAmounts.length > masterChefIndex
-          ? stakedAmounts[masterChefIndex].find(
-              (sAmount) => sAmount.pid === item.pid,
-            )
-          : undefined;
-      return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
-    })
-    .filter((item) => {
-      return item.stakedAmount > 0;
-    });
+  const stakedLPs = allGammaPairsToFarm.map((item) => {
+    const masterChefIndex = item.masterChefIndex ?? 0;
+    const sItem =
+      stakedAmounts && stakedAmounts.length > masterChefIndex
+        ? stakedAmounts[masterChefIndex].find(
+            (sAmount) => sAmount.pid === item.pid,
+          )
+        : undefined;
+    return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
+  });
 
+  const gammaPairAddresses = allGammaPairsToFarm.map((pair) => pair.address);
   const lpBalancesData = useMultipleContractSingleData(
-    allGammaPairsToFarm.map((pair) => pair.address),
+    gammaPairAddresses,
     new Interface(GammaPairABI),
     'balanceOf',
     [account ?? undefined],
   );
 
-  const lpBalances = lpBalancesData.map((callData) => {
+  const lpBalances = lpBalancesData.map((callData, ind) => {
     const amount =
       !callData.loading && callData.result && callData.result.length > 0
         ? Number(formatUnits(callData.result[0], 18))
         : 0;
-    return amount;
+    return { address: gammaPairAddresses[ind], amount };
   });
 
   const lpBalancesLoading = !!lpBalancesData.find(
     (callState) => !!callState.loading,
   );
 
+  const pairWithBalances = gammaPairAddresses.map((address) => {
+    const stakedAmount =
+      stakedLPs.find((lp) => lp.address.toLowerCase() === address.toLowerCase())
+        ?.stakedAmount ?? 0;
+    const lpBalance =
+      lpBalances.find(
+        (lp) => lp.address.toLowerCase() === address.toLowerCase(),
+      )?.amount ?? 0;
+    return stakedAmount + lpBalance;
+  });
   const count = useMemo(() => {
-    return (
-      lpBalances.filter((balance) => balance > 0).length + stakedLPs.length
-    );
-  }, [lpBalances, stakedLPs]);
+    return pairWithBalances.filter((balance) => balance > 0).length;
+  }, [pairWithBalances]);
 
   return { loading: lpBalancesLoading || stakedLoading, count };
 }
@@ -617,6 +622,7 @@ export function useUnipilotPositions(
                 JSBI.BigInt(stakedAmount),
                 JSBI.BigInt(item.balance),
               ).toString(),
+              lpBalance: JSBI.BigInt(item.balance),
               farming: true,
             };
           }

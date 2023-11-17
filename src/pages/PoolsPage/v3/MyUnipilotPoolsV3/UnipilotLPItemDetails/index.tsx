@@ -105,6 +105,8 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
     token1Balance,
   };
 
+  const lpBalance = position?.lpBalance ?? JSBI.BigInt(0);
+
   return (
     <Box>
       {showAddLPModal && (
@@ -187,7 +189,7 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
         </Button>
         <Button
           className='unipilot-liquidity-item-button'
-          disabled={position.farming}
+          disabled={lpBalance.equalTo(JSBI.BigInt(0))}
           onClick={() => setShowWithdrawModal(true)}
         >
           <small>{t('withdraw')}</small>

@@ -70,7 +70,8 @@ export default function WithdrawUnipilotLiquidityModal({
   }, [onPercentSelectForSlider, txnHash]);
 
   const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
-  const lpBalance = JSBI.BigInt(position.balance);
+  const lpBalance = position?.lpBalance ?? JSBI.BigInt(0);
+  const totalBalance = position?.balance ?? JSBI.BigInt(0);
   const withdrawGammaLiquidity = async () => {
     if (!account || !uniPilotVaultContract) return;
     setAttemptingTxn(true);
@@ -109,31 +110,29 @@ export default function WithdrawUnipilotLiquidityModal({
 
   const token0Amount = useMemo(() => {
     if (!position.token0Balance) return 0;
+    const amountBigInt = JSBI.multiply(
+      JSBI.divide(position.token0Balance, totalBalance),
+      lpBalance,
+    );
     return (
-      (Number(
-        formatUnits(
-          position.token0Balance.toString(),
-          position.token0?.decimals,
-        ),
-      ) *
+      (Number(formatUnits(amountBigInt.toString(), position.token0?.decimals)) *
         percent) /
       100
     );
-  }, [percent, position.token0?.decimals, position.token0Balance]);
+  }, [lpBalance, percent, position, totalBalance]);
 
   const token1Amount = useMemo(() => {
     if (!position.token1Balance) return 0;
+    const amountBigInt = JSBI.multiply(
+      JSBI.divide(position.token1Balance, totalBalance),
+      lpBalance,
+    );
     return (
-      (Number(
-        formatUnits(
-          position.token1Balance.toString(),
-          position.token1?.decimals,
-        ),
-      ) *
+      (Number(formatUnits(amountBigInt.toString(), position.token1?.decimals)) *
         percent) /
       100
     );
-  }, [percent, position.token1?.decimals, position.token1Balance]);
+  }, [lpBalance, percent, position, totalBalance]);
 
   const pendingText = t('removingLiquidityMsg', {
     amount1: formatNumber(token0Amount),
