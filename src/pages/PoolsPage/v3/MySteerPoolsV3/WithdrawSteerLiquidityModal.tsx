@@ -118,15 +118,31 @@ export default function WithdrawSteerLiquidityModal({
     }
   };
 
+  const token0BalanceWallet = useMemo(() => {
+    if (!position.token0BalanceWallet || !position.totalBalance) return 0;
+    return (
+      (position.token0BalanceWallet / position.totalBalance) *
+      Number(lpBalance?.toExact() ?? 0)
+    );
+  }, [lpBalance, position]);
+
+  const token1BalanceWallet = useMemo(() => {
+    if (!position.token1BalanceWallet || !position.totalBalance) return 0;
+    return (
+      (position.token1BalanceWallet / position.totalBalance) *
+      Number(lpBalance?.toExact() ?? 0)
+    );
+  }, [lpBalance, position]);
+
   const token0Amount = useMemo(() => {
-    if (!position.token0BalanceWallet) return 0;
-    return (position.token0BalanceWallet * percent) / 100;
-  }, [percent, position.token0BalanceWallet]);
+    if (!token0BalanceWallet) return 0;
+    return (token0BalanceWallet * percent) / 100;
+  }, [percent, token0BalanceWallet]);
 
   const token1Amount = useMemo(() => {
-    if (!position.token1BalanceWallet) return 0;
-    return (position.token1BalanceWallet * percent) / 100;
-  }, [percent, position.token1BalanceWallet]);
+    if (!token1BalanceWallet) return 0;
+    return (token1BalanceWallet * percent) / 100;
+  }, [percent, token1BalanceWallet]);
 
   const pendingText = t('removingLiquidityMsg', {
     amount1: formatNumber(token0Amount),
@@ -253,7 +269,7 @@ export default function WithdrawSteerLiquidityModal({
               {t('pooled')} {position.token0?.symbol}
             </p>
             <Box className='flex items-center'>
-              <p>{formatNumber(position.token0BalanceWallet)}</p>
+              <p>{formatNumber(token0BalanceWallet)}</p>
               <Box className='flex' ml={1}>
                 <CurrencyLogo size='24px' currency={position.token0} />
               </Box>
@@ -264,7 +280,7 @@ export default function WithdrawSteerLiquidityModal({
               {t('pooled')} {position.token1?.symbol}
             </p>
             <Box className='flex items-center'>
-              <p>{formatNumber(position.token1BalanceWallet)}</p>
+              <p>{formatNumber(token1BalanceWallet)}</p>
               <Box className='flex' ml={1}>
                 <CurrencyLogo size='24px' currency={position.token1} />
               </Box>

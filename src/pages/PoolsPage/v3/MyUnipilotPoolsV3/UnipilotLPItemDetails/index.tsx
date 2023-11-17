@@ -189,7 +189,7 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
         </Button>
         <Button
           className='unipilot-liquidity-item-button'
-          disabled={lpBalance.equalTo(JSBI.BigInt(0))}
+          disabled={JSBI.equal(lpBalance, JSBI.BigInt(0))}
           onClick={() => setShowWithdrawModal(true)}
         >
           <small>{t('withdraw')}</small>

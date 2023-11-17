@@ -44,6 +44,7 @@ export interface SteerVault {
   poolAddress?: string;
   sqrtPriceX96?: BigNumber;
   tick?: BigNumber;
+  totalBalance?: number;
   token0BalanceWallet?: number;
   token1BalanceWallet?: number;
   apr?: number;

@@ -64,6 +64,7 @@ const SteerLPItemDetails: React.FC<{ position: SteerVault }> = ({
 
   const positionWithTokenBalances = {
     ...position,
+    totalBalance: vaultBalanceNum,
     token0BalanceWallet: token0Balance,
     token1BalanceWallet: token1Balance,
   };

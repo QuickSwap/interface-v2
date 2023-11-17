@@ -72,6 +72,7 @@ export default function WithdrawUnipilotLiquidityModal({
   const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
   const lpBalance = position?.lpBalance ?? JSBI.BigInt(0);
   const totalBalance = position?.balance ?? JSBI.BigInt(0);
+
   const withdrawGammaLiquidity = async () => {
     if (!account || !uniPilotVaultContract) return;
     setAttemptingTxn(true);
