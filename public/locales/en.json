@@ -744,6 +744,7 @@
   "signToPerformGaslessSwap": "Sign to perform gasless swap.",
   "liquidityHubFailed": "Liquidity Hub failed",
   "awaitingApproval": "Awaiting Approval",
+  "awaitingWrap": "Awaiting Wrap",
   "calculatorHeading": "0.01 ETH to USD (Convert Ethereum to US Dollar)",
   "howMuchETH": "How much is 0.01 ETH to USD?",
   "aboutETH": "About ETH (Ethereum)",
@@ -771,5 +772,7 @@
   "ethFaqAnswer3": "You can use a variety of wallets to trade on QuickSwap, including MetaMask, Crypto.com DeFi Wallet, OKX Wallet, TrustWallet, Coinbase Wallet, and more.",
   "ethHistoricalTableHeading": "Historical Exchange Rate for 0.01 ETH to USD",
   "swapEthButton": "Swap ETH",
-  "installBlock": "Install Block Wallet"
+  "installBlock": "Install Block Wallet",
+  "newsletterSignupMasaDetails": "QuickSwap has partnered with Masa to provide you with an exclusive SBT mint: the Mighty Soulbound Dragons! Mint yours for FREE to enter to WIN your part of the <bold>2,000 USDC prize pool</bold>, with an <bold>additional $300 in QUICK token</bold> prize bonus pool.",
+  "newsletterMasaSignupForm": "Masa Campaign Sign-Up Form"
 }
