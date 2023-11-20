@@ -568,6 +568,13 @@ export const MATIC: { [chainId: number]: Token } = {
     'MATIC',
     'Matic',
   ),
+  [ChainId.MANTA]: new Token(
+    ChainId.MANTA,
+    '0x0f52A51287f9b3894d73Df05164D0Ee2533ccBB4',
+    18,
+    'MATIC',
+    'Matic',
+  ),
 };
 
 export const MI: { [chainId: number]: Token } = {
@@ -1032,6 +1039,13 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(FRAX[ChainId.ZKEVM]),
     toV3Token(frxETH[ChainId.ZKEVM]),
   ],
+  [ChainId.MANTA]: [
+    WMATIC_EXTENDED[ChainId.MANTA],
+    toV3Token(USDT[ChainId.MANTA]),
+    toV3Token(USDC[ChainId.MANTA]),
+    toV3Token(WBTC[ChainId.MANTA]),
+    toV3Token(MATIC[ChainId.MANTA]),
+  ],
 };
 
 export const SUGGESTED_BASES: {
@@ -1071,6 +1085,7 @@ export const SUGGESTED_BASES: {
     USDT[ChainId.MANTA],
     USDC[ChainId.MANTA],
     WBTC[ChainId.MANTA],
+    MATIC[ChainId.MANTA],
   ],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
 };
@@ -1138,6 +1153,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(USDC[ChainId.MANTA]),
     toV3Token(DAI[ChainId.MANTA]),
     toV3Token(WBTC[ChainId.MANTA]),
+    toV3Token(MATIC[ChainId.MANTA]),
   ],
   [ChainId.ZKATANA]: [
     WMATIC_EXTENDED[ChainId.ZKATANA],
