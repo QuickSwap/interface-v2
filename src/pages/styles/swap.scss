@@ -38,8 +38,46 @@
   }
 }
 
-.trade-btn:hover {
-  color: #c7cad9;
+.trade-btn {
+  font-size: 16px;
+  &:hover {
+    color: #c7cad9;
+  }
+}
+
+#swap-menu {
+  > div:nth-child(3) {
+    background-color: #2b2f3e;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 16px;
+    color: #c7cad9;
+  }
+}
+
+.selectedMenuDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #00ff00;
+  margin-right: 6px;
+}
+
+.swap-menu-item {
+  background-color: #2b2f3e;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.swap-menu-item-selected {
+  background-color: #404557 !important;
+  color: #fff !important;
+  border-radius: 10px;
+}
+
+.cross-chain-icon {
+  margin-top: 5px;
 }
 
 .activeSwap {
@@ -55,8 +93,8 @@
   // padding-left: 1rem;
   // padding-right: 1rem;
   border-radius: 2rem;
-  border: 1px solid rgba(130, 177, 255, 0.08);
-  background: rgba(130, 177, 255, 0.03);
+  // border: 1px solid rgba(130, 177, 255, 0.08);
+  // background: rgba(130, 177, 255, 0.03);
   color: #696c80;
 }
 
@@ -67,7 +105,6 @@
 
 .tab {
   background-color: transparent;
-  border-radius: 2rem;
   padding: 0 16px;
   height: 46px;
   display: flex;
@@ -82,18 +119,16 @@
   cursor: pointer;
   background: rgba(68, 138, 255, 0.3) !important;
   color: white !important;
-  & p {
+  border-radius: 0.5rem;
+  & div {
     color: white;
   }
 }
 
 .activeTab {
-  border-radius: 2rem;
-  border: 1px solid #448aff;
-  background: rgba(68, 138, 255, 0.3);
-  & p {
-    color: #c7cad9;
-  }
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #282d3d;
 }
 
 .swap-bg-highlight {
@@ -385,13 +420,17 @@ div.buy {
   align-items: center;
   & small {
     color: $textSecondary;
+    height: 100%;
+    padding-top: 9px;
+    padding-left: 6px;
+    padding-right: 6px;
   }
 }
 
 .activeSwapLimitTab {
-  background-color: $grey32;
   & small {
-    color: $bgPalette;
+    color: #fff;
+    border-bottom: 2px solid #448aff;
   }
 }
 

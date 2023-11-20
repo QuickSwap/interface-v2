@@ -13,7 +13,8 @@ import { useQuery } from '@tanstack/react-query';
 
 const SwapTokenDetailsHorizontal: React.FC<{
   token: Token;
-}> = ({ token }) => {
+  isTablet: boolean;
+}> = ({ token, isTablet = false }) => {
   const { chainId } = useActiveWeb3React();
   const currency = unwrappedToken(token);
   const tokenAddress = token.address;
@@ -127,78 +128,128 @@ const SwapTokenDetailsHorizontal: React.FC<{
 
   return (
     <Grid container spacing={1}>
-      <Grid item xs={4}>
-        <Box className='flex items-center'>
-          <CurrencyLogo currency={currency} size='28px' />
-          <Box ml={0.5}>
-            <small>{currency.symbol}</small>
-          </Box>
-        </Box>
-      </Grid>
-      <Grid item xs={3}>
-        <Box>
-          <small className='swapTxInfoHeader'>Price</small>
-          {loadingTokenData ? (
-            <Skeleton variant='rect' width={80} height={20} />
-          ) : tokenData ? (
-            <Box>${formatNumber(tokenData.priceUSD)}</Box>
-          ) : (
-            <></>
-          )}
-        </Box>
-      </Grid>
-      <Grid item xs={2}>
-        <Box>
-          <small className='swapTxInfoHeader'>24h</small>
-          {loadingTokenData ? (
-            <Skeleton variant='rect' width={60} height={20} />
-          ) : tokenData ? (
-            <Box className={`${priceUp ? 'text-success' : 'text-error'}`}>
-              {priceUp ? '+' : ''}
-              {priceUpPercent}%
+      {isTablet ? (
+        <>
+          {/* Token Symbol */}
+          <Grid item xs={5}>
+            <Box className='flex items-center'>
+              <CurrencyLogo currency={currency} size='28px' />
+              <Box ml={1.5}>
+                <small>{currency.symbol}</small>
+              </Box>
             </Box>
-          ) : (
-            <></>
-          )}
-        </Box>
-      </Grid>
-      <Grid item xs={3}>
-        {loadingTokenData || loadingPriceData ? (
-          <Skeleton variant='rect' width={88} height={47} />
-        ) : tokenData && priceData ? (
-          <Box width={88} height={47} position='relative'>
-            <Box position='absolute' top={-30} width={1}>
-              {prices.length > 0 && (
-                <LineChart
-                  data={prices}
-                  width='100%'
-                  height={120}
-                  color={priceUp ? palette.success.main : palette.error.main}
-                />
+          </Grid>
+
+          {/* Token Price */}
+          <Grid item xs={4}>
+            <Box className='flex items-center'>
+              {loadingTokenData ? (
+                <Skeleton variant='rect' width={140} height={30} />
+              ) : tokenData ? (
+                <Box pt={0.6}>${formatNumber(tokenData.priceUSD)}</Box>
+              ) : (
+                <></>
               )}
             </Box>
-          </Box>
-        ) : (
-          <></>
-        )}
-      </Grid>
-      <Grid item xs={12}>
-        <Box className='flex items-center' py={1}>
-          <a
-            href={`${config.blockExplorer}/token/${tokenAddress}`}
-            target='_blank'
-            rel='noopener noreferrer'
-            className='no-decoration'
-          >
-            <small className='text-primary'>
-              {shortenAddress(tokenAddress)}
-            </small>
-          </a>
-          <Box className='flex' ml='5px'>
-            <CopyHelper toCopy={tokenAddress} />
-          </Box>
-        </Box>
-      </Grid>
+          </Grid>
+
+          {/* Change in Price */}
+          <Grid item xs={3}>
+            <Box className='flex'>
+              {loadingTokenData ? (
+                <Skeleton variant='rect' width={140} height={30} />
+              ) : tokenData ? (
+                <Box
+                  ml='auto'
+                  className={` ${priceUp ? 'box-success' : 'box-error'}`}
+                >
+                  {priceUp ? '+' : ''}
+                  {priceUpPercent}%
+                </Box>
+              ) : (
+                <></>
+              )}
+            </Box>
+          </Grid>
+        </>
+      ) : (
+        <>
+          <Grid item xs={4}>
+            <Box className='flex items-center'>
+              <CurrencyLogo currency={currency} size='28px' />
+              <Box ml={0.5}>
+                <small>{currency.symbol}</small>
+              </Box>
+            </Box>
+          </Grid>
+          <Grid item xs={3}>
+            <Box>
+              <small className='swapTxInfoHeader'>Price</small>
+              {loadingTokenData ? (
+                <Skeleton variant='rect' width={80} height={20} />
+              ) : tokenData ? (
+                <Box>${formatNumber(tokenData.priceUSD)}</Box>
+              ) : (
+                <></>
+              )}
+            </Box>
+          </Grid>
+          <Grid item xs={2}>
+            <Box>
+              <small className='swapTxInfoHeader'>24h</small>
+              {loadingTokenData ? (
+                <Skeleton variant='rect' width={60} height={20} />
+              ) : tokenData ? (
+                <Box className={`${priceUp ? 'text-success' : 'text-error'}`}>
+                  {priceUp ? '+' : ''}
+                  {priceUpPercent}%
+                </Box>
+              ) : (
+                <></>
+              )}
+            </Box>
+          </Grid>
+          <Grid item xs={3}>
+            {loadingTokenData || loadingPriceData ? (
+              <Skeleton variant='rect' width={88} height={47} />
+            ) : tokenData && priceData ? (
+              <Box width={88} height={47} position='relative'>
+                <Box position='absolute' top={-30} width={1}>
+                  {prices.length > 0 && (
+                    <LineChart
+                      data={prices}
+                      width='100%'
+                      height={120}
+                      color={
+                        priceUp ? palette.success.main : palette.error.main
+                      }
+                    />
+                  )}
+                </Box>
+              </Box>
+            ) : (
+              <></>
+            )}
+          </Grid>
+          <Grid item xs={12}>
+            <Box className='flex items-center' py={1}>
+              <a
+                href={`${config.blockExplorer}/token/${tokenAddress}`}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='no-decoration'
+              >
+                <small className='text-primary'>
+                  {shortenAddress(tokenAddress)}
+                </small>
+              </a>
+              <Box className='flex' ml='5px'>
+                <CopyHelper toCopy={tokenAddress} />
+              </Box>
+            </Box>
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 };
