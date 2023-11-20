@@ -17,6 +17,7 @@ const ContestPage = lazy(() => import('./pages/ContestPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
 const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
+const NewsletterMasaPage = lazy(() => import('./pages/NewsletterMasaPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -197,6 +198,11 @@ const App: React.FC = () => {
                     <Route exact path='/newsletter'>
                       <PageLayout>
                         <NewsletterPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/masa'>
+                      <PageLayout>
+                        <NewsletterMasaPage />
                       </PageLayout>
                     </Route>
                     <Route exact path='/gamehub'>
