@@ -38,8 +38,46 @@
   }
 }
 
-.trade-btn:hover {
-  color: #c7cad9;
+.trade-btn {
+  font-size: 16px;
+  &:hover {
+    color: #c7cad9;
+  }
+}
+
+#swap-menu {
+  > div:nth-child(3) {
+    background-color: #2b2f3e;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 16px;
+    color: #c7cad9;
+  }
+}
+
+.selectedMenuDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #00ff00;
+  margin-right: 6px;
+}
+
+.swap-menu-item {
+  background-color: #2b2f3e;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.swap-menu-item-selected {
+  background-color: #404557 !important;
+  color: #fff !important;
+  border-radius: 10px;
+}
+
+.cross-chain-icon {
+  margin-top: 5px;
 }
 
 .activeSwap {
@@ -81,7 +119,8 @@
   cursor: pointer;
   background: rgba(68, 138, 255, 0.3) !important;
   color: white !important;
-  & p {
+  border-radius: 0.5rem;
+  & div {
     color: white;
   }
 }

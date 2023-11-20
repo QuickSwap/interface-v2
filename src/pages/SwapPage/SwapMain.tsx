@@ -1,6 +1,7 @@
 import { Box, Button, Menu, MenuItem, Typography } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
+import { ReactComponent as CrossChainIcon } from 'assets/images/crossChainIcon.svg';
 import { SettingsModal, Swap, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
 import { getConfig } from 'config';
@@ -279,12 +280,20 @@ const SwapMain: React.FC = () => {
                   {SwapDropdownTabs.filter((d) => d.visible !== false).map(
                     (option, index) => (
                       <MenuItem
+                        className={`swap-menu-item ${
+                          option.key === selectedIndex
+                            ? 'swap-menu-item-selected'
+                            : ''
+                        }`}
                         key={option.key}
                         disabled={option.key === selectedIndex}
                         selected={option.key === selectedIndex}
                         onClick={(event) => handleMenuItemClick(event, index)}
                       >
                         {t(option.name)}
+                        {option.key === selectedIndex && (
+                          <Box ml={5} className='selectedMenuDot' />
+                        )}
                       </MenuItem>
                     ),
                   )}
@@ -301,7 +310,13 @@ const SwapMain: React.FC = () => {
                       redirectWithSwapType(SWAP_CROSS_CHAIN);
                     }}
                   >
-                    <p className='trade-btn'>{t('crossChain')}</p>
+                    <Box pr={1}>
+                      <CrossChainIcon
+                        className='cross-chain-icon'
+                        scale={1.5}
+                      />
+                    </Box>
+                    <Box className='trade-btn'>{t('crossChain')}</Box>
                   </Box>
                 )}
               </Box>
