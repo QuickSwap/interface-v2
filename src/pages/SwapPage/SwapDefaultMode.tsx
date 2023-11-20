@@ -50,7 +50,9 @@ const SwapDefaultMode: React.FC<{
             <SwapMain />
           </Box>
           <Box className='wrapper' mt={2}>
-            {token1 && <SwapTokenDetailsHorizontal token={token1} />}
+            {token1 && (
+              <SwapTokenDetailsHorizontal token={token1} isTablet={isTablet} />
+            )}
             <Divider
               style={{
                 marginLeft: '-24px',
@@ -59,7 +61,9 @@ const SwapDefaultMode: React.FC<{
                 marginBottom: '12px',
               }}
             />
-            {token2 && <SwapTokenDetailsHorizontal token={token2} />}
+            {token2 && (
+              <SwapTokenDetailsHorizontal token={token2} isTablet={isTablet} />
+            )}
           </Box>
           {token1 && token2 && (
             <Box className='wrapper' mt={2}>
@@ -105,7 +109,10 @@ const SwapDefaultMode: React.FC<{
                           sx={{ marginTop: { xs: '-16px', lg: '0px' } }}
                         >
                           {token1 && (
-                            <SwapTokenDetailsHorizontal token={token1} />
+                            <SwapTokenDetailsHorizontal
+                              token={token1}
+                              isTablet={isTablet}
+                            />
                           )}
                           <Divider
                             style={{
@@ -116,7 +123,10 @@ const SwapDefaultMode: React.FC<{
                             }}
                           />
                           {token2 && (
-                            <SwapTokenDetailsHorizontal token={token2} />
+                            <SwapTokenDetailsHorizontal
+                              token={token2}
+                              isTablet={isTablet}
+                            />
                           )}
                         </Box>
                       </Grid>
