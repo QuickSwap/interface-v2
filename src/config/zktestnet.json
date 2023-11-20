@@ -57,5 +57,11 @@
   },
   "perps": {
     "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
   }
 }

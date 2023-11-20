@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers';
 
 export interface PositionPool {
-  fee: undefined | string;
+  fee: number | undefined;
   feeGrowthInside0LastX128: BigNumber;
   feeGrowthInside1LastX128: BigNumber;
   liquidity: BigNumber;
@@ -16,4 +16,5 @@ export interface PositionPool {
   tokensOwed1: BigNumber;
   onFarming?: boolean;
   oldFarming?: boolean;
+  isUni?: boolean;
 }

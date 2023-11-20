@@ -6,7 +6,7 @@ import computeSurroundingTicks from 'utils/v3/computeSurroundingTicks';
 import { useAllV3TicksQuery } from 'state/data/enhanced';
 import { AllV3TicksQuery } from 'state/data/generated';
 import { skipToken } from '@reduxjs/toolkit/query/react';
-import { FeeAmount } from 'v3lib/utils/v3constants';
+import { FeeAmount, TICK_SPACINGS } from 'v3lib/utils/v3constants';
 import { Pool } from 'v3lib/entities/pool';
 import { tickToPrice } from 'v3lib/utils/priceTickConversions';
 
@@ -23,7 +23,12 @@ export interface TickProcessed {
 const getActiveTick = (
   tickCurrent: number | undefined,
   feeAmount: FeeAmount | undefined,
-) => (tickCurrent && feeAmount ? Math.floor(tickCurrent / 60) * 60 : undefined);
+) => {
+  const tickSpacing = feeAmount ? TICK_SPACINGS[feeAmount] : 60;
+  return tickCurrent
+    ? Math.floor(tickCurrent / tickSpacing) * tickSpacing
+    : undefined;
+};
 
 // Fetches all ticks for a given pool
 export function useAllV3Ticks(
@@ -32,7 +37,7 @@ export function useAllV3Ticks(
   feeAmount: FeeAmount | undefined,
 ) {
   const poolAddress =
-    currencyA && currencyB && feeAmount
+    currencyA && currencyB
       ? Pool.getAddress(currencyA?.wrapped, currencyB?.wrapped, feeAmount)
       : undefined;
 
@@ -73,7 +78,7 @@ export function usePoolActiveLiquidity(
   activeTick: number | undefined;
   data: TickProcessed[] | undefined;
 } {
-  const pool = usePool(currencyA, currencyB);
+  const pool = usePool(currencyA, currencyB, feeAmount, !!feeAmount);
 
   // Find nearest valid tick for pool in case tick is not initialized.
   const activeTick = useMemo(

@@ -34,7 +34,12 @@ export function useDerivedV3BurnInfo(
   const token0 = useToken(position?.token0);
   const token1 = useToken(position?.token1);
 
-  const [, pool] = usePool(token0 ?? undefined, token1 ?? undefined);
+  const [, pool] = usePool(
+    token0 ?? undefined,
+    token1 ?? undefined,
+    position?.fee,
+    position?.isUni,
+  );
 
   const positionSDK = useMemo(
     () =>

@@ -37,6 +37,7 @@ describe('NonfungiblePositionManager', () => {
     0,
     0,
     [],
+    false,
   );
   const pool_1_weth = new Pool(
     token1,
@@ -46,6 +47,7 @@ describe('NonfungiblePositionManager', () => {
     0,
     0,
     [],
+    false,
   );
 
   const recipient = '0x0000000000000000000000000000000000000003';

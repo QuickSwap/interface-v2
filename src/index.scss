@@ -151,7 +151,7 @@ wcm-modal {
 .pageWrapper {
   max-width: 1312px;
   position: relative;
-  z-index: 2;
+  z-index: 11;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -171,7 +171,7 @@ wcm-modal {
 
 .pageWrapper-no-max {
   position: relative;
-  z-index: 2;
+  z-index: 11;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -453,6 +453,7 @@ wcm-modal {
   text-align: center;
   backdrop-filter: blur(3px);
   background-color: $bgPalette1;
+  z-index: 12;
   & p {
     color: $textSecondary;
     font-size: 13px;

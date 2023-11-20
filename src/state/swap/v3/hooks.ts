@@ -37,8 +37,8 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
-import { StableCoins } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
+import { GlobalData } from 'constants/index';
 
 export function useSwapState(): AppState['swapV3'] {
   return useAppSelector((state) => {
@@ -111,8 +111,14 @@ export function tryParseAmount<T extends Currency>(
     return undefined;
   }
   try {
+    const splitedValueArray = value.split('.');
+    let valueStr = value;
+    if (splitedValueArray.length > 1) {
+      const decimalStr = splitedValueArray[1].substring(0, currency.decimals);
+      valueStr = `${splitedValueArray[0]}.${decimalStr}`;
+    }
     const typedValueParsed = parseUnits(
-      value !== 'NaN' ? value : '0',
+      value !== 'NaN' ? valueStr : '0',
       currency.decimals,
     ).toString();
     if (typedValueParsed !== '0') {
@@ -250,7 +256,7 @@ export function useDerivedSwapInfo(): {
   }
 
   useEffect(() => {
-    const stableCoins = StableCoins[chainIdToUse];
+    const stableCoins = GlobalData.stableCoins[chainIdToUse];
     const stableCoinAddresses =
       stableCoins && stableCoins.length > 0
         ? stableCoins.map((token) => token.address.toLowerCase())

@@ -93,7 +93,7 @@ export default function CurrencyInputPanel({
     currency?.isNative ? nativeCurrency : currency ?? undefined,
   );
 
-  const currentPrice = useUSDCPriceFromAddress(
+  const { price: currentPrice } = useUSDCPriceFromAddress(
     currency?.address ?? currency?.wrapped?.address ?? '',
   );
 

@@ -24,7 +24,10 @@ import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
 import { useSwapActionHandlers } from 'state/swap/hooks';
 import { BigNumber } from 'ethers';
-import { useLiquidityHubCallback } from 'components/Swap/LiquidityHub';
+import {
+  liquidityHubAnalytics,
+  useLiquidityHubCallback,
+} from 'components/Swap/LiquidityHub';
 
 export enum SwapCallbackState {
   INVALID,
@@ -72,6 +75,8 @@ export function useParaswapCallback(
   const liquidutyHubCallback = useLiquidityHubCallback(
     priceRoute?.srcToken,
     priceRoute?.destToken,
+    inputCurrency,
+    outputCurrency,
   );
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =
@@ -216,7 +221,7 @@ export function useParaswapCallback(
 
         try {
           const response = await signer.sendTransaction(ethersTxParams);
-
+          liquidityHubAnalytics.onDexSwapSuccess(response.hash);
           addTransaction(response, {
             summary,
           });

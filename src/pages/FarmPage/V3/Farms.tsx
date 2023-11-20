@@ -16,6 +16,9 @@ import { GlobalConst } from 'constants/index';
 import { useUnipilotFarms } from 'hooks/v3/useUnipilotFarms';
 import UnipilotFarmsPage from 'pages/UnipilotFarmsPage';
 import { getAllGammaPairs } from 'utils';
+import SteerFarmsPage from 'pages/SteerFarmsPage';
+import { useSteerStakingPools } from 'hooks/v3/useSteerData';
+import { getConfig } from 'config';
 
 interface FarmCategory {
   id: number;
@@ -27,6 +30,8 @@ interface FarmCategory {
 export default function Farms() {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const qsFarmAvailable = config['qsFarm']['available'];
   const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const parsedQuery = useParsedQueryString();
@@ -48,6 +53,12 @@ export default function Farms() {
     if (!unipilotFarmsArray) return [];
     return unipilotFarmsArray;
   }, [unipilotFarmsArray]);
+
+  const { data: steerFarmsArray } = useSteerStakingPools(chainId);
+  const steerFarms = useMemo(() => {
+    if (!steerFarmsArray) return [];
+    return steerFarmsArray;
+  }, [steerFarmsArray]);
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -81,12 +92,14 @@ export default function Farms() {
         id: 0,
         link: 'my-farms',
       },
-      {
+    ];
+    if (qsFarmAvailable) {
+      farmCategories.push({
         text: t('quickswapFarms'),
         id: 1,
         link: 'eternal-farms',
-      },
-    ];
+      });
+    }
     if (allGammaFarms.length > 0) {
       farmCategories.push({
         text: t('gammaFarms'),
@@ -103,8 +116,22 @@ export default function Farms() {
         hasSeparator: true,
       });
     }
+    if (steerFarms.length > 0) {
+      farmCategories.push({
+        text: t('steerFarms'),
+        id: 4,
+        link: 'steer-farms',
+        hasSeparator: true,
+      });
+    }
     return farmCategories;
-  }, [t, allGammaFarms, unipilotFarms]);
+  }, [
+    t,
+    qsFarmAvailable,
+    allGammaFarms.length,
+    unipilotFarms.length,
+    steerFarms.length,
+  ]);
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
       history.push(`?tab=${selected?.link}`);
@@ -292,6 +319,14 @@ export default function Farms() {
       )}
       {selectedFarmCategory?.id === 3 && (
         <UnipilotFarmsPage
+          farmFilter={farmFilter}
+          search={searchValue}
+          sortBy={sortBy}
+          sortDesc={sortDesc}
+        />
+      )}
+      {selectedFarmCategory?.id === 4 && (
+        <SteerFarmsPage
           farmFilter={farmFilter}
           search={searchValue}
           sortBy={sortBy}

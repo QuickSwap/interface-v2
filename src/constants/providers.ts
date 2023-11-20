@@ -12,6 +12,9 @@ export const rpcMap = {
   [ChainId.DOEGCHAIN_TESTNET]: 'https://rpc-testnet.dogechain.dog',
   [ChainId.ZKTESTNET]: 'https://rpc.public.zkevm-test.net',
   [ChainId.ZKEVM]: 'https://zkevm-rpc.com',
+  [ChainId.KAVA]: '',
+  [ChainId.MANTA]: 'https://pacific-rpc.manta.network/http',
+  [ChainId.ZKATANA]: 'https://rpc.zkatana.gelato.digital',
 };
 
 class AppJsonRpcProvider extends StaticJsonRpcProvider {
@@ -70,4 +73,7 @@ export const RPC_PROVIDERS: {
   ),
   [ChainId.ZKEVM]: new AppJsonRpcProvider(ChainId.ZKEVM),
   [ChainId.ZKTESTNET]: new AppJsonRpcProvider(ChainId.ZKTESTNET),
+  [ChainId.KAVA]: new AppJsonRpcProvider(ChainId.KAVA),
+  [ChainId.MANTA]: new AppJsonRpcProvider(ChainId.MANTA),
+  [ChainId.ZKATANA]: new AppJsonRpcProvider(ChainId.ZKATANA),
 };

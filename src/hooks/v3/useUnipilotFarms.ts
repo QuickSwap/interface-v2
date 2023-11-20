@@ -119,7 +119,7 @@ export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
     data,
     refetch: refetchUnipilotUserFarms,
   } = useQuery({
-    queryKey: ['fetchUnipilotUserFarms', chainId, account, lastTxHash],
+    queryKey: ['fetchUnipilotUserFarms', chainId, account],
     queryFn: fetchUnipilotUserFarms,
   });
 
@@ -136,7 +136,7 @@ export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
   useEffect(() => {
     refetchUnipilotUserFarms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, lastTxHash]);
 
   return { loading: farmsLoading, data };
 }
@@ -332,7 +332,9 @@ export function useUnipilotFilteredFarms(
     [],
   );
 
-  const rewardsWithUSDPrice = useUSDCPricesFromAddresses(farmTokenAddresses);
+  const { prices: rewardsWithUSDPrice } = useUSDCPricesFromAddresses(
+    farmTokenAddresses,
+  );
 
   const filteredFarms = unipilotFarms
     .map((farm: any) => {
@@ -665,12 +667,12 @@ export function useUnipilotFarmAPR(data: any) {
         24 *
         3600
       : 0;
-  const rewardTokenAUsd = useUSDCPriceFromAddress(
+  const { price: rewardTokenAUsd } = useUSDCPriceFromAddress(
     data && data.rewardRate && data.rewardRate.tokenA
       ? data.rewardRate.tokenA.address
       : '',
   );
-  const rewardTokenBUsd = useUSDCPriceFromAddress(
+  const { price: rewardTokenBUsd } = useUSDCPriceFromAddress(
     data && data.rewardRate && data.rewardRate.tokenB
       ? data.rewardRate.tokenB.address
       : '',

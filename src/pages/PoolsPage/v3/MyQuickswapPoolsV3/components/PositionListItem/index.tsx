@@ -16,7 +16,6 @@ import { formatTickPrice } from 'utils/v3/formatTickPrice';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { Position } from 'v3lib/entities/position';
 import { USDC, USDT, WMATIC_EXTENDED } from 'constants/v3/addresses';
-import { GlobalValue } from 'constants/index';
 import { toToken } from 'constants/v3/routing';
 import { Box } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
@@ -121,6 +120,8 @@ export default function PositionListItem({
     tickLower: _tickLower,
     tickUpper: _tickUpper,
     onFarming: _onFarming,
+    fee: _fee,
+    isUni: _isUni,
   } = useMemo(() => {
     if (
       !positionDetails &&
@@ -142,7 +143,10 @@ export default function PositionListItem({
   const [poolState, pool] = usePool(
     currency0 ?? undefined,
     currency1 ?? undefined,
+    _fee,
+    _isUni,
   );
+
   const [prevPoolState, prevPool] = usePrevious([poolState, pool]) || [];
   const [_poolState, _pool] = useMemo(() => {
     if (!pool && prevPool && prevPoolState) {

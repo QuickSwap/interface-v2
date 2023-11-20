@@ -70,7 +70,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
     }
     if (tokenV3) {
       return tokenV3;
-    } else if (v2 && !tokenV3.priceUSD) {
+    } else if (v2 && (!tokenV3 || !tokenV3.priceUSD)) {
       const res = await fetch(
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
       );
@@ -111,7 +111,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
     const interval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 60000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 

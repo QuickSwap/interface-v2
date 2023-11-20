@@ -41,6 +41,11 @@ import {
   PUSH,
   LINK,
   AAVE,
+  USDCE,
+  fxMETOD,
+  PKR,
+  SLING,
+  NINJAZ,
 } from './v3/addresses';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -52,7 +57,18 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.DOEGCHAIN_TESTNET]: 'dogechain_testnet',
   [ChainId.ZKEVM]: 'zkevm',
   [ChainId.ZKTESTNET]: 'zkevm_testnet',
+  [ChainId.KAVA]: 'kava',
+  [ChainId.MANTA]: 'manta',
+  [ChainId.ZKATANA]: 'zKatana',
 };
+
+export enum SteerVaultState {
+  PendingApproval,
+  PendingThreshold,
+  Paused,
+  Active,
+  Retired,
+}
 
 export enum TxnType {
   SWAP,
@@ -71,7 +87,12 @@ export enum SmartRouter {
   QUICKSWAP = 'QUICKSWAP',
 }
 
-export const WALLCHAIN_PARAMS = {
+export const WALLCHAIN_PARAMS: {
+  [chainId in ChainId]?: {
+    [SmartRouter.PARASWAP]: { apiURL: string; apiKey: string };
+    [SmartRouter.QUICKSWAP]: { apiURL: string; apiKey: string };
+  };
+} = {
   [ChainId.MATIC]: {
     [SmartRouter.PARASWAP]: {
       apiURL: 'https://matic.wallchains.com/upgrade_txn/',
@@ -80,56 +101,6 @@ export const WALLCHAIN_PARAMS = {
     [SmartRouter.QUICKSWAP]: {
       apiURL: 'https://matic.wallchains.com/upgrade_txn/',
       apiKey: '50eaf751-196d-4fe0-9506-b983f7c83735',
-    },
-  },
-  [ChainId.MUMBAI]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-  },
-  [ChainId.DOEGCHAIN_TESTNET]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-  },
-  [ChainId.DOGECHAIN]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-  },
-  [ChainId.ZKTESTNET]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-  },
-  [ChainId.ZKEVM]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: '',
-      apiKey: '',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: '',
-      apiKey: '',
     },
   },
 };
@@ -141,6 +112,9 @@ export const BONUS_CUTOFF_AMOUNT = {
   [ChainId.DOGECHAIN]: 0,
   [ChainId.ZKTESTNET]: 0,
   [ChainId.ZKEVM]: 0,
+  [ChainId.MANTA]: 0,
+  [ChainId.KAVA]: 0,
+  [ChainId.ZKATANA]: 0,
 };
 
 export const GlobalConst = {
@@ -211,6 +185,7 @@ export const GlobalConst = {
       quickswap: '0',
       unipilot: '1',
       gamma: '2',
+      steer: '3',
     },
   },
   analyticChart: {
@@ -230,6 +205,7 @@ export const GlobalConst = {
     MANUAL_RANGE: '0',
     GAMMA_RANGE: '1',
     UNIPILOT_RANGE: '2',
+    STEER_RANGE: '3',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -259,6 +235,8 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.DOEGCHAIN_TESTNET,
   ChainId.ZKTESTNET,
   ChainId.ZKEVM,
+  ChainId.MANTA,
+  ChainId.ZKATANA,
 ];
 
 export interface GammaPair {
@@ -273,7 +251,7 @@ export interface GammaPair {
 }
 
 export const GammaPairs: {
-  [chainId in ChainId]: {
+  [chainId in ChainId]?: {
     [key: string]: GammaPair[];
   };
 } = {
@@ -760,7 +738,6 @@ export const GammaPairs: {
         address: '0x1825c76ced3c1625250b8af6204bf4fc4e5b9fcf',
         token0Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
         token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-        ableToFarm: true,
         pid: 49,
       },
     ],
@@ -771,7 +748,6 @@ export const GammaPairs: {
         address: '0x3273c153ecc6891a68af60ee0b67c16dd7b2c7e5',
         token0Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
         token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
-        ableToFarm: true,
         pid: 50,
       },
     ],
@@ -1116,7 +1092,6 @@ export const GammaPairs: {
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xa3fa99a148fa48d14ed51d610c367c61876997f1',
         pid: 81,
-        ableToFarm: true,
       },
     ],
     '0x236aa50979d5f3de3bd1eeb40e81137f22ab794b-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
@@ -1174,11 +1149,62 @@ export const GammaPairs: {
         pid: 88,
       },
     ],
+    '0x18e73a5333984549484348a94f4d219f4fab7b81-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'NARROW',
+        address: '0x80709a760Ff54112bD3e0CE31C104d912bA51774',
+        token0Address: '0x18e73a5333984549484348a94f4d219f4fab7b81',
+        token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+        ableToFarm: true,
+        pid: 89,
+      },
+    ],
+    '0x0c087f8d6a1f14f71bb7cc7e1b061ca297af7555-0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'NARROW',
+        address: '0xf25645c4B5B1c040e9889E0FA4C252c2fC0b40bE',
+        token0Address: '0x0c087f8d6a1f14f71bb7cc7e1b061ca297af7555',
+        token1Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        ableToFarm: true,
+        pid: 90,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x65ad509db5924ef0001d977590985f965ef1aaaa': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xdb9f075bb2cd4d0683ac25bb0d8566a9b7fef774',
+        token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        token1Address: '0x65ad509db5924ef0001d977590985f965ef1aaaa',
+        ableToFarm: true,
+        pid: 91,
+      },
+    ],
+    '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359-0xfc9fa9771145fbb98d15c8c2cc94b837a56d554c': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xacb6a2c03c8012c2817efc4d81e33cc0978e3abd',
+        token0Address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
+        token1Address: '0xfc9fa9771145fbb98d15c8c2cc94b837a56d554c',
+        ableToFarm: true,
+        pid: 92,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x10acbe3b9e6a2ff7f341e5cbf4b6617741ff44aa': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x1298b1da33c1d091a2e1340ae1c7983ebe91da8d',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x10acbe3b9e6a2ff7f341e5cbf4b6617741ff44aa',
+        ableToFarm: true,
+        pid: 93,
+      },
+    ],
   },
-  [ChainId.MUMBAI]: {},
-  [ChainId.DOEGCHAIN_TESTNET]: {},
-  [ChainId.DOGECHAIN]: {},
-  [ChainId.ZKTESTNET]: {},
   [ChainId.ZKEVM]: {
     '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
       {
@@ -1510,6 +1536,7 @@ export const GlobalValue = {
       [ChainId.MATIC]: [
         EMPTY[ChainId.MATIC],
         USDC[ChainId.MATIC],
+        USDCE[ChainId.MATIC],
         USDT[ChainId.MATIC],
         OLD_QUICK[ChainId.MATIC],
         NEW_QUICK[ChainId.MATIC],
@@ -1540,6 +1567,10 @@ export const GlobalValue = {
         RMATIC[ChainId.MATIC],
         WEFI[ChainId.MATIC],
         PUSH[ChainId.MATIC],
+        fxMETOD[ChainId.MATIC],
+        PKR[ChainId.MATIC],
+        SLING[ChainId.MATIC],
+        NINJAZ[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],
@@ -1568,6 +1599,9 @@ export const GlobalValue = {
       [ChainId.MUMBAI]: [],
       [ChainId.DOEGCHAIN_TESTNET]: [],
       [ChainId.ZKTESTNET]: [],
+      [ChainId.KAVA]: [],
+      [ChainId.MANTA]: [],
+      [ChainId.ZKATANA]: [],
     },
   },
   marketSDK: {
@@ -1596,6 +1630,7 @@ export const GlobalData = {
   stableCoins: {
     [ChainId.MATIC]: [
       USDC[ChainId.MATIC],
+      USDCE[ChainId.MATIC],
       USDT[ChainId.MATIC],
       MI[ChainId.MATIC],
       DAI[ChainId.MATIC],
@@ -1607,7 +1642,12 @@ export const GlobalData = {
       DAVOS[ChainId.MATIC],
     ],
     [ChainId.MUMBAI]: [],
-    [ChainId.DOGECHAIN]: [USDC[ChainId.DOGECHAIN], MI[ChainId.DOGECHAIN]],
+    [ChainId.DOGECHAIN]: [
+      USDC[ChainId.DOGECHAIN],
+      USDT[ChainId.DOGECHAIN],
+      DAI[ChainId.ZKEVM],
+      MI[ChainId.DOGECHAIN],
+    ],
     [ChainId.DOEGCHAIN_TESTNET]: [],
     [ChainId.ZKEVM]: [
       USDC[ChainId.ZKEVM],
@@ -1616,6 +1656,13 @@ export const GlobalData = {
       FRAX[ChainId.ZKEVM],
     ],
     [ChainId.ZKTESTNET]: [],
+    [ChainId.KAVA]: [],
+    [ChainId.MANTA]: [
+      USDC[ChainId.MANTA],
+      USDT[ChainId.MANTA],
+      DAI[ChainId.MANTA],
+    ],
+    [ChainId.ZKATANA]: [USDC[ChainId.ZKATANA]],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -1623,6 +1670,7 @@ export const GlobalData = {
       ETHER[ChainId.MATIC],
       WBTC[ChainId.MATIC],
       USDC[ChainId.MATIC],
+      USDCE[ChainId.MATIC],
       USDT[ChainId.MATIC],
       DAI[ChainId.MATIC],
     ],
@@ -1643,6 +1691,15 @@ export const GlobalData = {
       DAI[ChainId.ZKEVM],
     ],
     [ChainId.ZKTESTNET]: [],
+    [ChainId.KAVA]: [],
+    [ChainId.MANTA]: [
+      WETH[ChainId.MANTA],
+      WBTC[ChainId.MANTA],
+      USDC[ChainId.MANTA],
+      USDT[ChainId.MANTA],
+      DAI[ChainId.MANTA],
+    ],
+    [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -1664,6 +1721,9 @@ export const GlobalData = {
       [frxETH[ChainId.ZKEVM], WETH[ChainId.ZKEVM]],
     ],
     [ChainId.ZKTESTNET]: [],
+    [ChainId.KAVA]: [],
+    [ChainId.MANTA]: [],
+    [ChainId.ZKATANA]: [],
   },
 };
 

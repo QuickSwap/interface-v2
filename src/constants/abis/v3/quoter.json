@@ -34,19 +34,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "factory",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "int256",
@@ -64,8 +51,21 @@
         "type": "bytes"
       }
     ],
-    "name": "AlgebraSwapCallback",
+    "name": "algebraSwapCallback",
     "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "factory",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -101,6 +101,11 @@
         "internalType": "uint256",
         "name": "amountOut",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "fees",
+        "type": "uint16[]"
       }
     ],
     "stateMutability": "nonpayable",
@@ -125,7 +130,7 @@
       },
       {
         "internalType": "uint160",
-        "name": "sqrtPriceLimitX96",
+        "name": "limitSqrtPrice",
         "type": "uint160"
       }
     ],
@@ -135,6 +140,11 @@
         "internalType": "uint256",
         "name": "amountOut",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "fee",
+        "type": "uint16"
       }
     ],
     "stateMutability": "nonpayable",
@@ -159,6 +169,11 @@
         "internalType": "uint256",
         "name": "amountIn",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "fees",
+        "type": "uint16[]"
       }
     ],
     "stateMutability": "nonpayable",
@@ -183,7 +198,7 @@
       },
       {
         "internalType": "uint160",
-        "name": "sqrtPriceLimitX96",
+        "name": "limitSqrtPrice",
         "type": "uint160"
       }
     ],
@@ -193,6 +208,11 @@
         "internalType": "uint256",
         "name": "amountIn",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "fee",
+        "type": "uint16"
       }
     ],
     "stateMutability": "nonpayable",

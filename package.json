@@ -21,7 +21,7 @@
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
     "@uniswap/liquidity-staker": "^1.0.2",
-    "@uniswap/sdk": "npm:quickswap-sdk@3.0.20",
+    "@uniswap/sdk": "npm:quickswap-sdk@3.0.23",
     "@uniswap/sdk-core": "^3.2.2",
     "@uniswap/token-lists": "npm:quickswap-token-lists@^1.0.1",
     "@uniswap/v2-core": "1.0.0",
@@ -123,6 +123,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@0xsquid/widget": "1.6.0",
+    "@arcxmoney/analytics": "^2.0.2",
     "@cryption/df-sdk-core": "0.0.26",
     "@deficonnect/web3-connector": "^2.0.3",
     "@intract/attribution": "^2.0.0",
