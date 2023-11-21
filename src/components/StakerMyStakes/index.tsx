@@ -1225,9 +1225,9 @@ export const FarmingMyFarms: React.FC<{
                 <Box px={1.5}>
                   <Box width='90%'>
                     <SortColumns
-                      sortColumns={sortByDesktopItemsUnipilot}
-                      selectedSort={sortByUnipilot}
-                      sortDesc={sortDescUnipilot}
+                      sortColumns={sortByDesktopItemsSteer}
+                      selectedSort={sortBySteer}
+                      sortDesc={sortDescSteer}
                     />
                   </Box>
                 </Box>
