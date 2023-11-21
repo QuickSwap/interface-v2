@@ -251,6 +251,8 @@ const SteerFarmCardDetails: React.FC<{
     );
   }, [attemptClaiming, data.isDualFactory, rewardA, rewardB]);
 
+  const isActive = Date.now() < Number(data.periodFinish) * 1000;
+
   return (
     <Box>
       <Divider />
@@ -297,47 +299,49 @@ const SteerFarmCardDetails: React.FC<{
       )}
       <Box padding={1.5}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
-            <Box className='flex justify-between'>
-              <small className='text-secondary'>{t('available')}:</small>
-              <small>{lpBalance?.toSignificant(2)} LP</small>
-            </Box>
-            <Box
-              className='flex items-center bg-palette'
-              p='12px 16px'
-              borderRadius='10px'
-              mt={2}
-            >
-              <NumericalInput
-                value={stakeAmount}
-                onUserInput={setStakeAmount}
-              />
-              <span
-                className='cursor-pointer weight-600 text-primary'
-                onClick={() => setStakeAmount(lpBalance?.toExact() ?? '')}
+          {isActive && (
+            <Grid item xs={12} sm={4}>
+              <Box className='flex justify-between'>
+                <small className='text-secondary'>{t('available')}:</small>
+                <small>{lpBalance?.toSignificant(2)} LP</small>
+              </Box>
+              <Box
+                className='flex items-center bg-palette'
+                p='12px 16px'
+                borderRadius='10px'
+                mt={2}
               >
-                {t('max')}
-              </span>
-            </Box>
-            <Box mt={2}>
-              <Button
-                style={{ height: 40, borderRadius: 10 }}
-                disabled={stakeButtonDisabled}
-                fullWidth
-                onClick={approveOrStakeLP}
-              >
-                {approval === ApprovalState.APPROVED
-                  ? approveOrStaking
-                    ? t('stakingLPTokens')
-                    : t('stakeLPTokens')
-                  : approveOrStaking
-                  ? t('approving')
-                  : t('approve')}
-              </Button>
-            </Box>
-          </Grid>
+                <NumericalInput
+                  value={stakeAmount}
+                  onUserInput={setStakeAmount}
+                />
+                <span
+                  className='cursor-pointer weight-600 text-primary'
+                  onClick={() => setStakeAmount(lpBalance?.toExact() ?? '')}
+                >
+                  {t('max')}
+                </span>
+              </Box>
+              <Box mt={2}>
+                <Button
+                  style={{ height: 40, borderRadius: 10 }}
+                  disabled={stakeButtonDisabled}
+                  fullWidth
+                  onClick={approveOrStakeLP}
+                >
+                  {approval === ApprovalState.APPROVED
+                    ? approveOrStaking
+                      ? t('stakingLPTokens')
+                      : t('stakeLPTokens')
+                    : approveOrStaking
+                    ? t('approving')
+                    : t('approve')}
+                </Button>
+              </Box>
+            </Grid>
+          )}
 
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={isActive ? 4 : 6}>
             <Box className='flex justify-between'>
               <small className='text-secondary'>{t('deposited')}: </small>
               <small>{formatNumber(stakedAmount)} LP</small>
@@ -372,7 +376,7 @@ const SteerFarmCardDetails: React.FC<{
               </Button>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={isActive ? 4 : 6}>
             <Box height='100%' className='flex flex-col justify-between'>
               <small className='text-secondary'>{t('earnedRewards')}</small>
               <Box my={2}>
