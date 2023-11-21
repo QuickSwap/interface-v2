@@ -178,7 +178,13 @@ wcm-modal {
   margin: 24px auto;
   padding: 128px 32px 0;
   @include media('screen', '<tablet') {
-    padding: 190px 12px 0;
+    padding: 172px 12px 0;
+  }
+}
+
+.pageWrapper-no-max-no-news {
+  @include media('screen', '<tablet') {
+    padding-top: 64px !important;
   }
 }
 

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="13.333" height="13.333" viewBox="0 0 13.333 13.333">
+    <defs>
+        <linearGradient id="sogji6p4ma" x1="-.182" y1="-.106" x2="1.081" y2="1.533" gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#0f72c6"/>
+            <stop offset=".69" stop-color="#823dd3"/>
+            <stop offset="1" stop-color="#14716a"/>
+        </linearGradient>
+    </defs>
+    <path data-name="Path 16719" d="M17.333 8.333V4.667A.667.667 0 0 0 16.667 4H13a.667.667 0 0 0-.667.667.667.667 0 0 0 .667.666h2.067L10.4 10H4.667a.667.667 0 0 0-.667.667.667.667 0 0 0 .667.667H10.4L15.067 16H13a.667.667 0 0 0-.667.667.667.667 0 0 0 .667.667h3.667a.667.667 0 0 0 .667-.667V13a.667.667 0 0 0-.667-.667A.667.667 0 0 0 16 13v2.067l-4.4-4.4 4.4-4.4v2.066a.667.667 0 0 0 .667.667.667.667 0 0 0 .666-.667z" transform="translate(-4 -4)" style="fill:url(#sogji6p4ma)"/>
+</svg>

@@ -93,7 +93,7 @@ export const networkInfoMap: NetworkInfoChainMap = {
     scanUrl: 'https://polygonscan.com/',
   },
   [ChainId.DOGECHAIN]: {
-    rpcUrl: 'https://rpc-sg.dogechain.dog/',
+    rpcUrl: 'https://rpc.dogechain.dog/',
     scanUrl: 'https://explorer.dogechain.dog/',
   },
   [ChainId.MUMBAI]: {

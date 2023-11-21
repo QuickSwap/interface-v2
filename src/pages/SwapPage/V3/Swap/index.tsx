@@ -10,7 +10,6 @@ import CurrencyLogo from 'components/CurrencyLogo';
 import Loader from 'components/Loader';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import { AdvancedSwapDetails } from 'components/v3/swap/AdvancedSwapDetails';
-import confirmPriceImpactWithoutFee from 'components/v3/swap/confirmPriceImpactWithoutFee';
 import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
 import SwapCallbackError from 'components/v3/swap/SwapCallbackError';
 import SwapHeader from 'components/v3/swap/SwapHeader';
@@ -165,10 +164,6 @@ const SwapV3Page: React.FC = () => {
 
   const fiatValueInput = useUSDCValue(parsedAmounts[Field.INPUT]);
   const fiatValueOutput = useUSDCValue(parsedAmounts[Field.OUTPUT]);
-  const priceImpact = computeFiatValuePriceImpact(
-    fiatValueInput,
-    fiatValueOutput,
-  );
 
   const {
     onCurrencySelection,
@@ -340,9 +335,6 @@ const SwapV3Page: React.FC = () => {
     if (!swapCallback) {
       return;
     }
-    if (priceImpact && !confirmPriceImpactWithoutFee(priceImpact, t)) {
-      return;
-    }
 
     setSwapState({
       attemptingTxn: true,
@@ -434,8 +426,6 @@ const SwapV3Page: React.FC = () => {
       });
   }, [
     swapCallback,
-    priceImpact,
-    t,
     account,
     currencies,
     selectedWallet,
@@ -461,14 +451,8 @@ const SwapV3Page: React.FC = () => {
   // warnings on the greater of fiat value price impact and execution price impact
   const priceImpactSeverity = useMemo(() => {
     const executionPriceImpact = trade?.priceImpact;
-    return warningSeverity(
-      executionPriceImpact && priceImpact
-        ? executionPriceImpact.greaterThan(priceImpact)
-          ? executionPriceImpact
-          : priceImpact
-        : executionPriceImpact ?? priceImpact,
-    );
-  }, [priceImpact, trade]);
+    return warningSeverity(executionPriceImpact);
+  }, [trade]);
 
   // show approve flow when: no error on inputs, not approved or pending, or approved in current session
   // never show if price impact is above threshold in non expert mode
@@ -711,7 +695,7 @@ const SwapV3Page: React.FC = () => {
             showHalfButton={false}
             hideBalance={false}
             fiatValue={fiatValueOutput ?? undefined}
-            priceImpact={priceImpact}
+            priceImpact={trade?.priceImpact}
             currency={currencies[Field.OUTPUT] as WrappedCurrency}
             onCurrencySelect={handleOutputSelect}
             otherCurrency={currencies[Field.INPUT]}

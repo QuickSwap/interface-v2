@@ -82,7 +82,7 @@ export const FarmingMyFarms: React.FC<{
 
   const allGammaPairsToFarm = getAllGammaPairs(chainId);
 
-  const allGammaFarms = allGammaPairsToFarm.filter((item) => item.ableToFarm);
+  const allGammaFarms = allGammaPairsToFarm;
   const { eternalOnlyCollectRewardHandler } = useFarmingHandlers();
 
   const { data: rewardsResult } = useFarmRewards();
@@ -943,7 +943,7 @@ export const FarmingMyFarms: React.FC<{
     sortDescUnipilot,
   );
 
-  const { data: steerFarmsArray } = useSteerStakingPools(chainId, 'active');
+  const { data: steerFarmsArray } = useSteerStakingPools(chainId);
   const steerFarms = useMemo(() => {
     if (!steerFarmsArray) return [];
     return steerFarmsArray;
@@ -1225,9 +1225,9 @@ export const FarmingMyFarms: React.FC<{
                 <Box px={1.5}>
                   <Box width='90%'>
                     <SortColumns
-                      sortColumns={sortByDesktopItemsUnipilot}
-                      selectedSort={sortByUnipilot}
-                      sortDesc={sortDescUnipilot}
+                      sortColumns={sortByDesktopItemsSteer}
+                      selectedSort={sortBySteer}
+                      sortDesc={sortDescSteer}
                     />
                   </Box>
                 </Box>
