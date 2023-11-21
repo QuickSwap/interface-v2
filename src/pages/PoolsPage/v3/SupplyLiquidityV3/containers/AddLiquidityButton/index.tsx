@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   useGammaUNIProxyContract,
+  useSteerPeripheryContract,
   useUNIV3NFTPositionManagerContract,
   useUniPilotVaultContract,
   useV3NFTPositionManagerContract,
@@ -140,8 +141,10 @@ export function AddLiquidityButton({
       !amountA ||
       !amountB ||
       !chainId ||
-      mintInfo.liquidityRangeType !==
-        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+      (mintInfo.liquidityRangeType !==
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+        mintInfo.liquidityRangeType !==
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE)
     )
       return;
     if (
@@ -180,8 +183,10 @@ export function AddLiquidityButton({
     wmaticBalance,
   ]);
 
-  const uniPilotVaultAddress = mintInfo.presetRange?.address;
-  const uniPilotVaultContract = useUniPilotVaultContract(uniPilotVaultAddress);
+  const vaultAddress = mintInfo.presetRange?.address;
+  const uniPilotVaultContract = useUniPilotVaultContract(vaultAddress);
+
+  const steerPeripheryContract = useSteerPeripheryContract();
 
   const [approvalA] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A],
@@ -191,7 +196,10 @@ export function AddLiquidityButton({
         ? gammaPairAddress
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
-        ? uniPilotVaultAddress
+        ? vaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE
+        ? steerPeripheryContract?.address
         : positionManagerAddress
       : undefined,
   );
@@ -203,7 +211,10 @@ export function AddLiquidityButton({
         ? gammaPairAddress
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
-        ? uniPilotVaultAddress
+        ? vaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE
+        ? steerPeripheryContract?.address
         : positionManagerAddress
       : undefined,
   );
@@ -361,6 +372,97 @@ export function AddLiquidityButton({
             : t('errorInTx'),
         );
       }
+    }
+    if (
+      mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.STEER_RANGE
+    ) {
+      if (
+        !steerPeripheryContract ||
+        !mintInfo.presetRange ||
+        !mintInfo.presetRange.tokenStr
+      )
+        return;
+      const baseCurrencyAddress = baseCurrency.wrapped
+        ? baseCurrency.wrapped.address.toLowerCase()
+        : undefined;
+      const quoteCurrencyAddress = quoteCurrency.wrapped
+        ? quoteCurrency.wrapped.address.toLowerCase()
+        : undefined;
+      const steerToken0Address = mintInfo.presetRange.tokenStr.split('-')[0];
+      if (
+        !amountA ||
+        !amountB ||
+        !vaultAddress ||
+        !baseCurrencyAddress ||
+        !quoteCurrencyAddress
+      )
+        return;
+      setRejected && setRejected(false);
+      setAttemptingTxn(true);
+      try {
+        const estimatedGas = await steerPeripheryContract.estimateGas.deposit(
+          vaultAddress,
+          (steerToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountA
+            : amountB
+          ).numerator.toString(),
+          (steerToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountB
+            : amountA
+          ).numerator.toString(),
+          0,
+          0,
+          account,
+        );
+        const response: TransactionResponse = await steerPeripheryContract.deposit(
+          vaultAddress,
+          (steerToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountA
+            : amountB
+          ).numerator.toString(),
+          (steerToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountB
+            : amountA
+          ).numerator.toString(),
+          0,
+          0,
+          account,
+          { gasLimit: calculateGasMarginV3(chainId, estimatedGas) },
+        );
+        const summary = mintInfo.noLiquidity
+          ? t('createPoolandaddLiquidity', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            })
+          : t('addLiquidityWithTokens', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            });
+        setAttemptingTxn(false);
+        setTxPending(true);
+        addTransaction(response, {
+          summary,
+        });
+        dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary,
+        });
+        setTxPending(false);
+        handleAddLiquidity();
+      } catch (error) {
+        console.error('Failed to send transaction', error);
+        const errorMsg =
+          error && error.message
+            ? error.message.toLowerCase()
+            : error && error.data && error.data.message
+            ? error.data.message.toLowerCase()
+            : '';
+        setAttemptingTxn(false);
+        setTxPending(false);
+        setAddLiquidityErrorMessage(t('errorInTx'));
+      }
     } else if (
       mintInfo.liquidityRangeType ===
       GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
@@ -383,7 +485,7 @@ export function AddLiquidityButton({
       if (
         !amountA ||
         !amountB ||
-        !uniPilotVaultAddress ||
+        !vaultAddress ||
         !baseCurrencyAddress ||
         !quoteCurrencyAddress
       )

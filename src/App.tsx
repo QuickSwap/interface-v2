@@ -17,6 +17,7 @@ const ContestPage = lazy(() => import('./pages/ContestPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
 const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
+const NewsletterMasaPage = lazy(() => import('./pages/NewsletterMasaPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -66,6 +67,9 @@ import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import { Environment, HypeLab, HypeLabContext } from 'hypelab-react';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
+import { liquidityHubAnalytics } from 'components/Swap/LiquidityHub';
+
+liquidityHubAnalytics.onLoad();
 
 const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {
   const theme = mainTheme;
@@ -197,6 +201,11 @@ const App: React.FC = () => {
                     <Route exact path='/newsletter'>
                       <PageLayout>
                         <NewsletterPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/masa'>
+                      <PageLayout>
+                        <NewsletterMasaPage />
                       </PageLayout>
                     </Route>
                     <Route exact path='/gamehub'>

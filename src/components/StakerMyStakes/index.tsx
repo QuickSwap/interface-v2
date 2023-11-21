@@ -55,6 +55,13 @@ import {
   useUnipilotUserFarms,
 } from 'hooks/v3/useUnipilotFarms';
 import { FarmingType } from 'models/enums';
+import { getConfig } from 'config';
+import {
+  useSteerFilteredFarms,
+  useSteerStakedPools,
+  useSteerStakingPools,
+} from 'hooks/v3/useSteerData';
+import SteerFarmCard from './SteerFarmCard';
 
 export const FarmingMyFarms: React.FC<{
   search: string;
@@ -65,6 +72,8 @@ export const FarmingMyFarms: React.FC<{
   const tokenMap = useSelectedTokenList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const config = getConfig(chainId);
+  const qsFarmAvailable = config['qsFarm']['available'];
 
   const { v3FarmSortBy } = GlobalConst.utils;
   const [sortByQuick, setSortByQuick] = useState(v3FarmSortBy.pool);
@@ -73,7 +82,7 @@ export const FarmingMyFarms: React.FC<{
 
   const allGammaPairsToFarm = getAllGammaPairs(chainId);
 
-  const allGammaFarms = allGammaPairsToFarm.filter((item) => item.ableToFarm);
+  const allGammaFarms = allGammaPairsToFarm;
   const { eternalOnlyCollectRewardHandler } = useFarmingHandlers();
 
   const { data: rewardsResult } = useFarmRewards();
@@ -362,6 +371,10 @@ export const FarmingMyFarms: React.FC<{
 
   const [sortDescUnipilot, setSortDescUnipilot] = useState(false);
 
+  const [sortBySteer, setSortBySteer] = useState(v3FarmSortBy.pool);
+
+  const [sortDescSteer, setSortDescSteer] = useState(false);
+
   const sortColumnsQuickSwap = [
     {
       text: t('pool'),
@@ -437,6 +450,33 @@ export const FarmingMyFarms: React.FC<{
     },
   ];
 
+  const sortColumnsSteer = [
+    {
+      text: t('pool'),
+      index: v3FarmSortBy.pool,
+      width: 0.3,
+      justify: 'flex-start',
+    },
+    {
+      text: t('tvl'),
+      index: v3FarmSortBy.tvl,
+      width: 0.2,
+      justify: 'flex-start',
+    },
+    {
+      text: t('rewards'),
+      index: v3FarmSortBy.rewards,
+      width: 0.3,
+      justify: 'flex-start',
+    },
+    {
+      text: t('apr'),
+      index: v3FarmSortBy.apr,
+      width: 0.2,
+      justify: 'flex-start',
+    },
+  ];
+
   const sortByDesktopItemsQuick = sortColumnsQuickSwap.map((item) => {
     return {
       ...item,
@@ -474,6 +514,20 @@ export const FarmingMyFarms: React.FC<{
         } else {
           setSortByUnipilot(item.index);
           setSortDescUnipilot(false);
+        }
+      },
+    };
+  });
+
+  const sortByDesktopItemsSteer = sortColumnsSteer.map((item) => {
+    return {
+      ...item,
+      onClick: () => {
+        if (sortBySteer === item.index) {
+          setSortDescSteer(!sortBySteer);
+        } else {
+          setSortBySteer(item.index);
+          setSortDescSteer(false);
         }
       },
     };
@@ -883,129 +937,160 @@ export const FarmingMyFarms: React.FC<{
   const filteredUnipilotFarms = useUnipilotFilteredFarms(
     myUnipilotFarms,
     unipilotFarmData,
+    'active',
+    search,
+    sortByUnipilot,
+    sortDescUnipilot,
+  );
+
+  const { data: steerFarmsArray } = useSteerStakingPools(chainId);
+  const steerFarms = useMemo(() => {
+    if (!steerFarmsArray) return [];
+    return steerFarmsArray;
+  }, [steerFarmsArray]);
+
+  const {
+    loading: mySteerFarmsLoading,
+    data: mySteerFarms,
+  } = useSteerStakedPools(chainId, account);
+
+  const filteredSteerFarms = useSteerFilteredFarms(
+    mySteerFarms ?? [],
+    chainId,
+    search,
+    sortBySteer,
+    sortDescSteer,
   );
 
   return (
     <Box mt={2}>
-      <Divider />
-      {shallowRewards.length ? (
-        <Box px={2} my={2}>
-          <h6>Unclaimed Rewards</h6>
-          <Box my={2} className='flex'>
-            {shallowRewards.map((reward, index) =>
-              reward.trueAmount ? (
-                <Box key={index} className='flex items-center' mr={2}>
-                  <CurrencyLogo
-                    size='28px'
-                    currency={
-                      new Token(
-                        chainId ?? ChainId.MATIC,
-                        reward.rewardAddress,
-                        18,
-                        reward.symbol,
-                      )
-                    }
-                  />
-                  <Box mx={2}>
-                    <Box>{reward.name}</Box>
-                    <Box>{formatReward(reward.amount)}</Box>
-                  </Box>
-                  <Button
-                    disabled={
-                      selectedTokenId === reward.id &&
-                      txType === 'eternalOnlyCollectReward' &&
-                      !txConfirmed &&
-                      !txError
-                    }
-                    onClick={() => {
-                      eternalOnlyCollectRewardHandler(reward);
-                    }}
-                  >
-                    {selectedTokenId === reward.id &&
-                    txType === 'eternalOnlyCollectReward' &&
-                    !txConfirmed &&
-                    !txError ? (
-                      <>
-                        <Loader size={'1rem'} stroke={'var(--white)'} />
-                        <Box ml='5px'>
-                          <small>{t('claiming')}</small>
-                        </Box>
-                      </>
-                    ) : (
-                      <>
-                        <small>{t('claim')}</small>
-                      </>
-                    )}
-                  </Button>
-                </Box>
-              ) : null,
-            )}
-          </Box>
+      {qsFarmAvailable && (
+        <>
           <Divider />
-        </Box>
-      ) : null}
-      <Box px={2} my={2}>
-        <h6>QuickSwap {t('farms')}</h6>
-      </Box>
-      {transferredPositionsLoading ||
-      eternalFarmPoolAprsLoading ||
-      eternalFarmAprsLoading ||
-      !shallowPositions ? (
-        <Box py={5} className='flex justify-center'>
-          <Loader stroke={'white'} size={'1.5rem'} />
-        </Box>
-      ) : shallowPositions && shallowPositions.length === 0 ? (
-        <Box py={5} className='flex flex-col items-center'>
-          <Frown size={35} stroke={'white'} />
-          <Box mb={3} mt={1}>
-            {t('nofarms')}
+          {shallowRewards.length ? (
+            <Box px={2} my={2}>
+              <h6>Unclaimed Rewards</h6>
+              <Box my={2} className='flex'>
+                {shallowRewards.map((reward, index) =>
+                  reward.trueAmount ? (
+                    <Box key={index} className='flex items-center' mr={2}>
+                      <CurrencyLogo
+                        size='28px'
+                        currency={
+                          new Token(
+                            chainId ?? ChainId.MATIC,
+                            reward.rewardAddress,
+                            18,
+                            reward.symbol,
+                          )
+                        }
+                      />
+                      <Box mx={2}>
+                        <Box>{reward.name}</Box>
+                        <Box>{formatReward(reward.amount)}</Box>
+                      </Box>
+                      <Button
+                        disabled={
+                          selectedTokenId === reward.id &&
+                          txType === 'eternalOnlyCollectReward' &&
+                          !txConfirmed &&
+                          !txError
+                        }
+                        onClick={() => {
+                          eternalOnlyCollectRewardHandler(reward);
+                        }}
+                      >
+                        {selectedTokenId === reward.id &&
+                        txType === 'eternalOnlyCollectReward' &&
+                        !txConfirmed &&
+                        !txError ? (
+                          <>
+                            <Loader size={'1rem'} stroke={'var(--white)'} />
+                            <Box ml='5px'>
+                              <small>{t('claiming')}</small>
+                            </Box>
+                          </>
+                        ) : (
+                          <>
+                            <small>{t('claim')}</small>
+                          </>
+                        )}
+                      </Button>
+                    </Box>
+                  ) : null,
+                )}
+              </Box>
+              <Divider />
+            </Box>
+          ) : null}
+        </>
+      )}
+      {qsFarmAvailable && (
+        <>
+          <Box px={2} my={2}>
+            <h6>QuickSwap {t('farms')}</h6>
           </Box>
-        </Box>
-      ) : shallowPositions && shallowPositions.length !== 0 ? (
-        <Box padding='24px'>
-          {farmedNFTs && farmedNFTs.length > 0 && chainId && (
-            <Box pb={2}>
-              {!isMobile && (
-                <Box px={3.5}>
-                  <Box width='85%'>
-                    <SortColumns
-                      sortColumns={sortByDesktopItemsQuick}
-                      selectedSort={sortByQuick}
-                      sortDesc={sortDescQuick}
-                    />
+          {transferredPositionsLoading ||
+          eternalFarmPoolAprsLoading ||
+          eternalFarmAprsLoading ||
+          !shallowPositions ? (
+            <Box py={5} className='flex justify-center'>
+              <Loader stroke={'white'} size={'1.5rem'} />
+            </Box>
+          ) : shallowPositions && shallowPositions.length === 0 ? (
+            <Box py={5} className='flex flex-col items-center'>
+              <Frown size={35} stroke={'white'} />
+              <Box mb={3} mt={1}>
+                {t('nofarms')}
+              </Box>
+            </Box>
+          ) : shallowPositions && shallowPositions.length !== 0 ? (
+            <Box padding='24px'>
+              {farmedNFTs && farmedNFTs.length > 0 && chainId && (
+                <Box pb={2}>
+                  {!isMobile && (
+                    <Box px={3.5}>
+                      <Box width='85%'>
+                        <SortColumns
+                          sortColumns={sortByDesktopItemsQuick}
+                          selectedSort={sortByQuick}
+                          sortDesc={sortDescQuick}
+                        />
+                      </Box>
+                    </Box>
+                  )}
+                  <Box mt={2}>
+                    {farmedNFTs.map((el, i) => {
+                      return (
+                        <div
+                          className={'v3-my-farms-position-card'}
+                          key={i}
+                          data-navigatedto={hash == `#${el.id}`}
+                        >
+                          <FarmCard
+                            chainId={chainId}
+                            el={el}
+                            poolApr={
+                              eternalFarmPoolAprs
+                                ? eternalFarmPoolAprs[el.pool.id]
+                                : undefined
+                            }
+                            farmApr={
+                              eternalFarmAprs
+                                ? eternalFarmAprs[el.farmId]
+                                : undefined
+                            }
+                          />
+                        </div>
+                      );
+                    })}
                   </Box>
                 </Box>
               )}
-              <Box mt={2}>
-                {farmedNFTs.map((el, i) => {
-                  return (
-                    <div
-                      className={'v3-my-farms-position-card'}
-                      key={i}
-                      data-navigatedto={hash == `#${el.id}`}
-                    >
-                      <FarmCard
-                        chainId={chainId}
-                        el={el}
-                        poolApr={
-                          eternalFarmPoolAprs
-                            ? eternalFarmPoolAprs[el.pool.id]
-                            : undefined
-                        }
-                        farmApr={
-                          eternalFarmAprs
-                            ? eternalFarmAprs[el.farmId]
-                            : undefined
-                        }
-                      />
-                    </div>
-                  );
-                })}
-              </Box>
             </Box>
-          )}
-        </Box>
-      ) : null}
+          ) : null}
+        </>
+      )}
 
       {allGammaFarms.length > 0 && (
         <Box my={2}>
@@ -1079,7 +1164,7 @@ export const FarmingMyFarms: React.FC<{
         </Box>
       )}
 
-      {filteredUnipilotFarms.length > 0 && (
+      {myUnipilotFarms && myUnipilotFarms.length > 0 && (
         <Box my={2}>
           <Divider />
           <Box px={2} mt={2}>
@@ -1121,6 +1206,50 @@ export const FarmingMyFarms: React.FC<{
             </Box>
           ) : (
             <></>
+          )}
+        </Box>
+      )}
+      {steerFarms.length > 0 && (
+        <Box my={2}>
+          <Divider />
+          <Box px={2} mt={2}>
+            <h6>Steer {t('farms')}</h6>
+          </Box>
+          {mySteerFarmsLoading ? (
+            <Box py={5} className='flex justify-center'>
+              <Loader stroke={'white'} size={'1.5rem'} />
+            </Box>
+          ) : chainId && filteredSteerFarms.length > 0 ? (
+            <Box padding='24px'>
+              {!isMobile && (
+                <Box px={1.5}>
+                  <Box width='90%'>
+                    <SortColumns
+                      sortColumns={sortByDesktopItemsSteer}
+                      selectedSort={sortBySteer}
+                      sortDesc={sortDescSteer}
+                    />
+                  </Box>
+                </Box>
+              )}
+              <Box pb={2}>
+                {filteredSteerFarms.map((farm: any) => {
+                  return (
+                    <Box mt={2} key={farm.address}>
+                      <SteerFarmCard data={farm} />
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+          ) : (
+            <Box
+              className='flex items-center justify-center'
+              width='100%'
+              height={100}
+            >
+              <p>{t('noSteerFarms')}</p>
+            </Box>
           )}
         </Box>
       )}

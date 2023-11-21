@@ -69,6 +69,7 @@ import { getConfig } from 'config';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import { useV2TradeTypeAnalyticsCallback } from './LiquidityHub';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
@@ -513,7 +514,13 @@ const Swap: React.FC<{
     fromTokenWrapped?.address ?? '',
   );
 
+  const onV2TradeAnalytics = useV2TradeTypeAnalyticsCallback(
+    currencies,
+    allowedSlippage,
+  );
+
   const handleSwap = useCallback(() => {
+    onV2TradeAnalytics(trade);
     if (
       priceImpactWithoutFee &&
       !confirmPriceImpactWithoutFee(priceImpactWithoutFee, t)
@@ -618,8 +625,7 @@ const Swap: React.FC<{
     recipient,
     recipientAddress,
     account,
-    trade?.inputAmount?.currency?.symbol,
-    trade?.outputAmount?.currency?.symbol,
+    trade,
     fromTokenWrapped,
     selectedWallet,
     chainId,
@@ -628,6 +634,7 @@ const Swap: React.FC<{
     config,
     formattedAmounts,
     fromTokenUSDPrice,
+    onV2TradeAnalytics,
   ]);
 
   const fetchingBestRoute =

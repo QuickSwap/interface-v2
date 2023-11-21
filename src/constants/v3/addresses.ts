@@ -277,6 +277,16 @@ export const LENDING_QS_POOLS: { [chainId: number]: string[] } = {
   ],
 };
 
+export const STEER_PERIPHERY: AddressMap = {
+  [ChainId.MATIC]: '0x29E1888F7DD0757f2873E494463Ec389dab38D27',
+  [ChainId.MANTA]: '0xD90c8970708FfdFC403bdb56636621e3E9CCe921',
+};
+
+export const STEER_VAULT_REGISTRY: AddressMap = {
+  [ChainId.MATIC]: '0x24825B3C44742600D3995d1D3760cceE999A7f0b',
+  [ChainId.MANTA]: '0x38a07152ee64C7067fEeBA904D72ABc9a9DA0C77',
+};
+
 export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
   [ChainId.MATIC]: new TokenV3(
     ChainId.MATIC,
@@ -892,6 +902,16 @@ export const fxMETOD: { [chainId: number]: Token } = {
     18,
     'fxMETOD',
     'META TOY DRAGONZ TOKEN (FXERC20)',
+  ),
+};
+
+export const PKR: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x140a4e80dd8184536acc45f1c452d7540472e6e1',
+    18,
+    'PKR',
+    'POLKER',
   ),
 };
 

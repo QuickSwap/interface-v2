@@ -27,6 +27,9 @@
   "farm": {
     "available": true
   },
+  "qsFarm": {
+    "available": true
+  },
   "lair": {
     "available": true,
     "oldLair": false,
@@ -68,6 +71,9 @@
   },
   "unipilot": {
     "available": true
+  },
+  "steer": {
+    "available": false
   },
   "dappos": {
     "available": false

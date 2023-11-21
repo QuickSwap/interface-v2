@@ -41,6 +41,8 @@ import {
   DL_QUICK_ADDRESS,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
   UNIV3_QUOTER_ADDRESSES,
+  STEER_PERIPHERY,
+  STEER_VAULT_REGISTRY,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
@@ -55,6 +57,11 @@ import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
+import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
+import STEER_DUAL_STAKING_ABI from 'constants/abis/steer-staking-dual.json';
+import SteerPeripheryABI from 'constants/abis/steer-periphery.json';
+import SteerVaultABI from 'constants/abis/steer-vault.json';
+import SteerVaultRegistryABI from 'constants/abis/steer-vault-registry.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -389,6 +396,50 @@ export function useUnipilotFarmingContract(
   const dualContract = useContract(
     address,
     UNIPILOT_DUAL_REWARD_ABI,
+    withSignerIfPossible,
+  );
+  return isDual ? dualContract : singleContract;
+}
+
+export function useSteerPeripheryContract(withSignerIfPossible?: boolean) {
+  const contract = useContract(
+    STEER_PERIPHERY,
+    SteerPeripheryABI,
+    withSignerIfPossible,
+  );
+  return contract;
+}
+
+export function useSteerVaultRegistryContract(withSignerIfPossible?: boolean) {
+  const contract = useContract(
+    STEER_VAULT_REGISTRY,
+    SteerVaultRegistryABI,
+    withSignerIfPossible,
+  );
+  return contract;
+}
+
+export function useSteerVaultContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  const contract = useContract(address, SteerVaultABI, withSignerIfPossible);
+  return contract;
+}
+
+export function useSteerFarmingContract(
+  address?: string,
+  isDual?: boolean,
+  withSignerIfPossible?: boolean,
+) {
+  const singleContract = useContract(
+    address,
+    STEER_STAKING_ABI,
+    withSignerIfPossible,
+  );
+  const dualContract = useContract(
+    address,
+    STEER_DUAL_STAKING_ABI,
     withSignerIfPossible,
   );
   return isDual ? dualContract : singleContract;

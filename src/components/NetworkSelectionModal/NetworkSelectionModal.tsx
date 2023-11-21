@@ -43,6 +43,8 @@ const NetworkSelectionModal: React.FC = () => {
       connector === networkConnection.connector
     ) {
       connector.activate(Number(localChainId));
+    } else {
+      connector.activate(chainId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

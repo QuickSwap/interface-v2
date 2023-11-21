@@ -31,6 +31,9 @@ import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 import { getConfig } from 'config';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import { useSteerStakedPools, useSteerVaults } from './useSteerData';
+import { Token } from '@uniswap/sdk-core';
+import { useTokenBalances } from 'state/wallet/v3/hooks';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -535,45 +538,50 @@ export function useGammaPositionsCount(
     (callStates) => !!callStates.find((callData) => callData.loading),
   );
 
-  const stakedLPs = allGammaPairsToFarm
-    .map((item) => {
-      const masterChefIndex = item.masterChefIndex ?? 0;
-      const sItem =
-        stakedAmounts && stakedAmounts.length > masterChefIndex
-          ? stakedAmounts[masterChefIndex].find(
-              (sAmount) => sAmount.pid === item.pid,
-            )
-          : undefined;
-      return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
-    })
-    .filter((item) => {
-      return item.stakedAmount > 0;
-    });
+  const stakedLPs = allGammaPairsToFarm.map((item) => {
+    const masterChefIndex = item.masterChefIndex ?? 0;
+    const sItem =
+      stakedAmounts && stakedAmounts.length > masterChefIndex
+        ? stakedAmounts[masterChefIndex].find(
+            (sAmount) => sAmount.pid === item.pid,
+          )
+        : undefined;
+    return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
+  });
 
+  const gammaPairAddresses = allGammaPairsToFarm.map((pair) => pair.address);
   const lpBalancesData = useMultipleContractSingleData(
-    allGammaPairsToFarm.map((pair) => pair.address),
+    gammaPairAddresses,
     new Interface(GammaPairABI),
     'balanceOf',
     [account ?? undefined],
   );
 
-  const lpBalances = lpBalancesData.map((callData) => {
+  const lpBalances = lpBalancesData.map((callData, ind) => {
     const amount =
       !callData.loading && callData.result && callData.result.length > 0
         ? Number(formatUnits(callData.result[0], 18))
         : 0;
-    return amount;
+    return { address: gammaPairAddresses[ind], amount };
   });
 
   const lpBalancesLoading = !!lpBalancesData.find(
     (callState) => !!callState.loading,
   );
 
+  const pairWithBalances = gammaPairAddresses.map((address) => {
+    const stakedAmount =
+      stakedLPs.find((lp) => lp.address.toLowerCase() === address.toLowerCase())
+        ?.stakedAmount ?? 0;
+    const lpBalance =
+      lpBalances.find(
+        (lp) => lp.address.toLowerCase() === address.toLowerCase(),
+      )?.amount ?? 0;
+    return stakedAmount + lpBalance;
+  });
   const count = useMemo(() => {
-    return (
-      lpBalances.filter((balance) => balance > 0).length + stakedLPs.length
-    );
-  }, [lpBalances, stakedLPs]);
+    return pairWithBalances.filter((balance) => balance > 0).length;
+  }, [pairWithBalances]);
 
   return { loading: lpBalancesLoading || stakedLoading, count };
 }
@@ -614,11 +622,13 @@ export function useUnipilotPositions(
                 JSBI.BigInt(stakedAmount),
                 JSBI.BigInt(item.balance),
               ).toString(),
+              lpBalance: JSBI.BigInt(item.balance),
               farming: true,
             };
           }
           return {
             ...item,
+            lpBalance: JSBI.BigInt(item.balance),
             farming: false,
           };
         }
@@ -636,7 +646,7 @@ export function useUnipilotPositions(
     data: unipilotPositions,
     refetch: refetchUnipilotPositions,
   } = useQuery({
-    queryKey: ['fetchUnipilotPositions', account, lastTxHash, chainId],
+    queryKey: ['fetchUnipilotPositions', account, chainId],
     queryFn: fetchUnipilotPositions,
   });
 
@@ -653,10 +663,68 @@ export function useUnipilotPositions(
   useEffect(() => {
     refetchUnipilotPositions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, lastTxHash]);
 
   return {
     loading: positionsLoading,
     unipilotPositions,
   };
 }
+
+export const useV3SteerPositionsCount = () => {
+  const { chainId, account } = useActiveWeb3React();
+  const { loading, data: vaults } = useSteerVaults(chainId);
+  const { loading: loadingFarms, data: steerFarms } = useSteerStakedPools(
+    chainId,
+    account,
+  );
+  const vaultTokens = vaults.map(
+    (item) => new Token(chainId, item.address, item.vaultDecimals),
+  );
+  const vaultBalances = useTokenBalances(account, vaultTokens);
+  const positions = vaults.filter((vault) => {
+    const vaultBalanceItems = Object.values(vaultBalances);
+    const vaultBalance = vaultBalanceItems.find(
+      (item) =>
+        item &&
+        vault &&
+        vault.address &&
+        item.currency.address.toLowerCase() === vault.address.toLowerCase(),
+    );
+    const steerFarm = steerFarms.find(
+      (farm: any) =>
+        farm.stakingToken.toLowerCase() === vault.address.toLowerCase(),
+    );
+    return (
+      Number(vaultBalance?.toExact() ?? 0) + (steerFarm?.stakedAmount ?? 0) > 0
+    );
+  });
+  return { loading: loading || loadingFarms, count: positions.length };
+};
+
+export const useV3SteerPositions = () => {
+  const { chainId, account } = useActiveWeb3React();
+  const { data: vaults } = useSteerVaults(chainId);
+  const { data: steerFarms } = useSteerStakedPools(chainId, account);
+  const vaultTokens = vaults.map(
+    (item) => new Token(chainId, item.address, item.vaultDecimals),
+  );
+  const vaultBalances = useTokenBalances(account, vaultTokens);
+  return vaults.filter((vault) => {
+    const vaultBalanceItems = Object.values(vaultBalances);
+    const vaultBalance = vaultBalanceItems.find(
+      (item) =>
+        item &&
+        vault &&
+        vault.address &&
+        item.currency.address.toLowerCase() === vault.address.toLowerCase(),
+    );
+    const steerFarm = steerFarms.find(
+      (farm: any) =>
+        farm.stakingToken.toLowerCase() === vault.address.toLowerCase(),
+    );
+    return (
+      Number(vaultBalance?.toExact() ?? 0) + (steerFarm?.stakedAmount ?? 0) > 0
+    );
+  });
+};
