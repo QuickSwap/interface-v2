@@ -18,7 +18,7 @@ import UnipilotFarmsPage from 'pages/UnipilotFarmsPage';
 import { getAllGammaPairs } from 'utils';
 import SteerFarmsPage from 'pages/SteerFarmsPage';
 import { useSteerStakingPools } from 'hooks/v3/useSteerData';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 
 interface FarmCategory {
   id: number;
