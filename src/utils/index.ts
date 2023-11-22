@@ -1207,12 +1207,13 @@ export const convertToTokenValue = (
   numberString: string,
   decimals: number,
 ): BigNumber => {
-  if (isNaN(parseFloat(numberString))) {
+  const num = Number(numberString);
+  if (isNaN(num)) {
     console.error('Error: numberString to parse is not a number');
     return parseUnits('0', decimals);
   }
 
-  const tokenValue = parseUnits(numberString, decimals);
+  const tokenValue = parseUnits(num.toFixed(decimals), decimals);
   return tokenValue;
 };
 
