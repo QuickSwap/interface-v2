@@ -937,7 +937,7 @@ export const FarmingMyFarms: React.FC<{
   const filteredUnipilotFarms = useUnipilotFilteredFarms(
     myUnipilotFarms,
     unipilotFarmData,
-    'active',
+    undefined,
     search,
     sortByUnipilot,
     sortDescUnipilot,
@@ -958,6 +958,7 @@ export const FarmingMyFarms: React.FC<{
     mySteerFarms ?? [],
     chainId,
     search,
+    undefined,
     sortBySteer,
     sortDescSteer,
   );

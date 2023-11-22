@@ -409,9 +409,9 @@ export function useSteerFilteredFarms(
   steerFarms: any[],
   chainId: ChainId,
   searchVal?: string,
+  farmFilter?: string,
   sortBy?: string,
   sortDesc?: boolean,
-  farmFilter?: string,
 ) {
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
   const sortMultiplier = sortDesc ? -1 : 1;

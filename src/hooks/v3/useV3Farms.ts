@@ -13,21 +13,143 @@ import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
+import {
+  useEternalFarmAprs,
+  useEternalFarmPoolAPRs,
+  useEternalFarmTvls,
+} from 'hooks/useIncentiveSubgraph';
 
-// export const useEternalFarmsFiltered = (
-//   searchVal?: string,
-//   sortBy?: string,
-//   sortDesc?: boolean,
-//   farmFilter?: string,
-// ) => {};
+export const useEternalFarmsFiltered = (
+  farms: any[],
+  chainId: ChainId,
+  searchVal?: string,
+  farmFilter?: string,
+) => {
+  const {
+    data: eternalFarmPoolAprs,
+    isLoading: eternalFarmPoolAprsLoading,
+  } = useEternalFarmPoolAPRs();
+  const {
+    data: eternalFarmAprs,
+    isLoading: eternalFarmAprsLoading,
+  } = useEternalFarmAprs();
+  const {
+    data: eternalFarmTvls,
+    isLoading: eternalFarmTvlsLoading,
+  } = useEternalFarmTvls();
+  const { v3FarmFilter } = GlobalConst.utils;
+
+  return farms
+    .map((farm) => {
+      const tvl =
+        eternalFarmTvls && farm && farm.id
+          ? Number(eternalFarmTvls[farm.id])
+          : 0;
+      const farmAPR =
+        eternalFarmAprs && farm && farm.id
+          ? Number(eternalFarmAprs[farm.id])
+          : 0;
+      const poolAPR =
+        eternalFarmPoolAprs && farm && farm.pool && farm.pool.id
+          ? Number(eternalFarmPoolAprs[farm.pool.id])
+          : 0;
+      return { ...farm, tvl, poolAPR, farmAPR };
+    })
+    .filter((farm) => {
+      const farmToken0Name =
+        farm && farm.pool && farm.pool.token0 && farm.pool.token0.name
+          ? farm.pool.token0.name
+          : '';
+      const farmToken1Name =
+        farm && farm.pool && farm.pool.token1 && farm.pool.token1.name
+          ? farm.pool.token1.name
+          : '';
+      const farmToken0Symbol =
+        farm && farm.pool && farm.pool.token0 && farm.pool.token0.symbol
+          ? farm.pool.token0.symbol
+          : '';
+      const farmToken1Symbol =
+        farm && farm.pool && farm.pool.token1 && farm.pool.token1.symbol
+          ? farm.pool.token1.symbol
+          : '';
+      const farmToken0Id =
+        farm && farm.pool && farm.pool.token0
+          ? farm.pool.token0.id ?? farm.pool.token0.address ?? ''
+          : '';
+      const farmToken1Id =
+        farm && farm.pool && farm.pool.token1
+          ? farm.pool.token1.id ?? farm.pool.token1.address ?? ''
+          : '';
+      const searchCondition =
+        farmToken0Name.toLowerCase().includes(searchVal) ||
+        farmToken1Name.toLowerCase().includes(searchVal) ||
+        farmToken0Symbol.toLowerCase().includes(searchVal) ||
+        farmToken1Symbol.toLowerCase().includes(searchVal) ||
+        farmToken0Id.toLowerCase().includes(searchVal) ||
+        farmToken1Id.toLowerCase().includes(searchVal);
+
+      const blueChipCondition =
+        !!GlobalData.blueChips[chainId].find(
+          (token) => token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+        ) &&
+        !!GlobalData.blueChips[chainId].find(
+          (token) => token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+        );
+      const stableCoinCondition =
+        !!GlobalData.stableCoins[chainId].find(
+          (token) => token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+        ) &&
+        !!GlobalData.stableCoins[chainId].find(
+          (token) => token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+        );
+      const stablePair0 = GlobalData.stablePairs[chainId].find(
+        (tokens) =>
+          !!tokens.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+          ),
+      );
+      const stablePair1 = GlobalData.stablePairs[chainId].find(
+        (tokens) =>
+          !!tokens.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+          ),
+      );
+      const stableLPCondition =
+        (stablePair0 &&
+          stablePair0.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+          )) ||
+        (stablePair1 &&
+          stablePair1.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+          ));
+
+      return (
+        searchCondition &&
+        (farmFilter === v3FarmFilter.blueChip
+          ? blueChipCondition
+          : farmFilter === v3FarmFilter.stableCoin
+          ? stableCoinCondition
+          : farmFilter === v3FarmFilter.stableLP
+          ? stableLPCondition
+          : farmFilter === v3FarmFilter.otherLP
+          ? !blueChipCondition && !stableCoinCondition && !stableLPCondition
+          : true)
+      );
+    });
+};
 
 export const useGammaFarmsFiltered = (
   gammaPairs: GammaPair[],
   chainId: ChainId,
   searchVal?: string,
+  farmFilter?: string,
   sortBy?: string,
   sortDesc?: boolean,
-  farmFilter?: string,
 ) => {
   const fetchGammaRewards = async () => {
     const gammaRewards = await getGammaRewards(chainId);
@@ -262,17 +384,21 @@ export const useGammaFarmsFiltered = (
           ? Number(gammaReward['stakedAmountUSD'])
           : 0;
 
-      const rewards = gammaReward ? gammaReward['rewarders'] : undefined;
-      const rewardUSD = rewards
-        ? Object.values(rewards).reduce((total: number, rewarder: any) => {
-            const rewardUSD = gammaRewardsWithUSDPrice?.find(
-              (item) =>
-                item.address.toLowerCase() ===
-                rewarder.rewardToken.toLowerCase(),
-            );
-            return total + (rewardUSD?.price ?? 0) * rewarder.rewardPerSecond;
-          }, 0)
-        : 0;
+      const rewardsObj = gammaReward ? gammaReward['rewarders'] : undefined;
+      const rewards = rewardsObj
+        ? Object.values(rewardsObj).filter(
+            (reward: any) => reward && Number(reward['rewardPerSecond']) > 0,
+          )
+        : [];
+      const rewardUSD = rewards.reduce((total: number, rewarder: any) => {
+        const rewardUSD = gammaRewardsWithUSDPrice?.find(
+          (item) =>
+            item.address.toLowerCase() === rewarder.rewardToken.toLowerCase(),
+        );
+        return (
+          total + (rewardUSD?.price ?? 0) * rewarder.rewardPerSecond * 3600 * 24
+        );
+      }, 0);
 
       const gammaFarmData = gammaData
         ? gammaData[pair.address.toLowerCase()]
@@ -289,8 +415,8 @@ export const useGammaFarmsFiltered = (
 
       return {
         ...pair,
-        token0: token0 ?? null,
-        token1: token1 ?? null,
+        token0,
+        token1,
         tvl,
         rewardUSD,
         rewards,
@@ -402,7 +528,6 @@ export const useGammaFarmsFiltered = (
       }
       return 1;
     });
-
   return {
     loading: gammaRewardsLoading || gammaFarmsLoading,
     data: filteredFarms,

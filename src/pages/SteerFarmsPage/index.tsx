@@ -35,9 +35,9 @@ const SteerFarmsPage: React.FC<{
     steerFarms ?? [],
     chainId,
     search,
+    farmFilter,
     sortBy,
     sortDesc,
-    farmFilter,
   );
 
   return (
