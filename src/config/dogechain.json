@@ -1,7 +1,7 @@
 {
   "v3": true,
   "v2": true,
-  "rpc": "https://rpc-sg.dogechain.dog",
+  "rpc": "https://rpc.dogechain.dog",
   "blockExplorer": "https://explorer.dogechain.dog",
   "aprAPINetwork": "DogeChain",
   "networkName": "DogeChain",
@@ -25,6 +25,9 @@
     "available": true
   },
   "farm": {
+    "available": true
+  },
+  "qsFarm": {
     "available": true
   },
   "lair": {
@@ -70,6 +73,12 @@
     "available": true
   },
   "bonds": {
-    "available": true
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
   }
 }

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Currency, Token, Price } from '@uniswap/sdk-core';
-import useUSDCPrice from 'hooks/v3/useUSDCPrice';
+import { Currency } from '@uniswap/sdk-core';
 import './index.scss';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import {
@@ -19,14 +18,14 @@ import Input from 'components/NumericalInput';
 import { Box, Button } from '@material-ui/core';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import { Error } from '@material-ui/icons';
-import { JSBI } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 interface IPrice {
   baseCurrency: Currency | undefined;
   quoteCurrency: Currency | undefined;
-  basePrice: Price<Currency, Token> | undefined;
-  quotePrice: Price<Currency, Token> | undefined;
+  basePrice: number | undefined;
+  quotePrice: number | undefined;
   isLocked: boolean;
   isSelected: boolean;
 }
@@ -68,28 +67,15 @@ function TokenPrice({
   const tokenRatio = useMemo(() => {
     if (!basePrice || !quotePrice) return `Loading...`;
 
-    return basePrice.baseCurrency.decimals < quotePrice.baseCurrency.decimals
-      ? basePrice
-          .divide(quotePrice)
-          .divide(
-            JSBI.BigInt(
-              10 **
-                (quotePrice.baseCurrency.decimals -
-                  basePrice.baseCurrency.decimals),
-            ),
-          )
-          .toSignificant(8)
-      : basePrice
-          .divide(quotePrice)
-          .multiply(
-            JSBI.BigInt(
-              10 **
-                (basePrice.baseCurrency.decimals -
-                  quotePrice.baseCurrency.decimals),
-            ),
-          )
-          .toSignificant(8);
+    return (basePrice / quotePrice).toString();
   }, [basePrice, quotePrice]);
+
+  useEffect(() => {
+    if (isLocked && tokenRatio) {
+      changeQuotePriceHandler(tokenRatio);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLocked, tokenRatio]);
 
   return (
     <Box className='v3-pool-starting-token-price'>
@@ -137,16 +123,15 @@ function USDPriceField({
   changeHandler,
 }: {
   symbol: string | undefined;
-  price: Price<Currency, Token> | undefined;
+  price: number | undefined;
   isSelected: boolean;
   userUSD: string | undefined;
   changeHandler: (price: string) => void;
 }) {
   const { t } = useTranslation();
-  const _price = useMemo(
-    () => (price ? price.toSignificant(5) : `Loading...`),
-    [price],
-  );
+  const _price = useMemo(() => (price ? price.toString() : `Loading...`), [
+    price,
+  ]);
   const [userUSDVal, setUserUSDVal] = useState(userUSD || '');
 
   return (
@@ -213,7 +198,7 @@ function USDPrice({
         isSelected={isSelected}
         userUSD={userBaseCurrencyUSD}
         changeHandler={changeBaseCurrencyUSDHandler}
-      ></USDPriceField>
+      />
       <Box ml={1}>
         <USDPriceField
           symbol={quoteSymbol}
@@ -221,7 +206,7 @@ function USDPrice({
           isSelected={isSelected}
           userUSD={userQuoteCurrencyUSD}
           changeHandler={changeQuoteCurrencyUSDHandler}
-        ></USDPriceField>
+        />
       </Box>
     </Box>
   );
@@ -247,8 +232,12 @@ export default function StartingPrice({
   const initialUSDPrices = useInitialUSDPrices();
   const initialTokenPrice = useInitialTokenPrice();
 
-  const basePriceUSD = useUSDCPrice(currencyA ?? undefined);
-  const quotePriceUSD = useUSDCPrice(currencyB ?? undefined);
+  const { price: basePriceUSD } = useUSDCPriceFromAddress(
+    currencyA?.wrapped.address ?? '',
+  );
+  const { price: quotePriceUSD } = useUSDCPriceFromAddress(
+    currencyB?.wrapped.address ?? '',
+  );
 
   const isSorted =
     currencyA &&
@@ -280,7 +269,7 @@ export default function StartingPrice({
       dispatch(
         setInitialUSDPrices({
           field: Field.CURRENCY_A,
-          typedValue: basePriceUSD.toSignificant(8),
+          typedValue: basePriceUSD.toString(),
         }),
       );
     }
@@ -288,36 +277,20 @@ export default function StartingPrice({
       dispatch(
         setInitialUSDPrices({
           field: Field.CURRENCY_B,
-          typedValue: quotePriceUSD.toSignificant(8),
+          typedValue: quotePriceUSD.toString(),
         }),
       );
     }
-    if (!initialTokenPrice && basePriceUSD && quotePriceUSD) {
+    if (
+      !initialTokenPrice &&
+      basePriceUSD &&
+      quotePriceUSD &&
+      currencyA &&
+      currencyB
+    ) {
       dispatch(
         setInitialTokenPrice({
-          typedValue:
-            basePriceUSD.baseCurrency.decimals <
-            quotePriceUSD.baseCurrency.decimals
-              ? basePriceUSD
-                  .divide(quotePriceUSD)
-                  .divide(
-                    JSBI.BigInt(
-                      10 **
-                        (quotePriceUSD.baseCurrency.decimals -
-                          basePriceUSD.baseCurrency.decimals),
-                    ),
-                  )
-                  .toFixed(quotePriceUSD.baseCurrency.decimals)
-              : basePriceUSD
-                  .divide(quotePriceUSD)
-                  .multiply(
-                    JSBI.BigInt(
-                      10 **
-                        (basePriceUSD.baseCurrency.decimals -
-                          quotePriceUSD.baseCurrency.decimals),
-                    ),
-                  )
-                  .toFixed(quotePriceUSD.baseCurrency.decimals),
+          typedValue: (basePriceUSD / quotePriceUSD).toString(),
         }),
       );
     }
@@ -353,8 +326,7 @@ export default function StartingPrice({
 
       if (field === Field.CURRENCY_A) {
         setUserBaseCurrencyUSD(_typedValue);
-        const priceB =
-          initialUSDPrices.CURRENCY_B || quotePriceUSD?.toSignificant(5);
+        const priceB = initialUSDPrices.CURRENCY_B || quotePriceUSD?.toString();
         if (priceB) {
           if (!+typedValue) {
             startPriceHandler('');
@@ -373,8 +345,7 @@ export default function StartingPrice({
 
       if (field === Field.CURRENCY_B) {
         setUserQuoteCurrencyUSD(_typedValue);
-        const priceA =
-          initialUSDPrices.CURRENCY_A || basePriceUSD?.toSignificant(5);
+        const priceA = initialUSDPrices.CURRENCY_A || basePriceUSD?.toString();
         if (priceA) {
           if (!+typedValue) {
             startPriceHandler('');
@@ -424,10 +395,8 @@ export default function StartingPrice({
 
       startPriceHandler(typedValue);
 
-      const usdA =
-        basePriceUSD?.toSignificant(5) || initialUSDPrices.CURRENCY_A;
-      const usdB =
-        quotePriceUSD?.toSignificant(5) || initialUSDPrices.CURRENCY_B;
+      const usdA = basePriceUSD?.toString() || initialUSDPrices.CURRENCY_A;
+      const usdB = quotePriceUSD?.toString() || initialUSDPrices.CURRENCY_B;
 
       if (usdA && usdA !== '0') {
         if (!basePriceUSD) {
@@ -552,7 +521,7 @@ export default function StartingPrice({
           userQuoteCurrencyToken={userQuoteCurrencyToken}
           changeQuotePriceHandler={(v: string) => handleTokenChange(v)}
           isSelected={priceFormat === PriceFormats.TOKEN}
-        ></TokenPrice>
+        />
       ) : (
         <USDPrice
           baseCurrency={currencyA}
@@ -569,7 +538,7 @@ export default function StartingPrice({
             handleUSDChange(Field.CURRENCY_B, v)
           }
           isSelected={priceFormat === PriceFormats.USD}
-        ></USDPrice>
+        />
       )}
     </Box>
   );

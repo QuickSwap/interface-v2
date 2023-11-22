@@ -10,12 +10,14 @@ import {
   useGammaPositionsCount,
   useV3PositionsCount,
   useUnipilotPositions,
+  useV3SteerPositionsCount,
 } from 'hooks/v3/useV3Positions';
 import Loader from 'components/Loader';
 import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
 import MyGammaPoolsV3 from '../MyGammaPoolsV3';
 import FilterPanelItem from '../FilterPanelItem';
 import MyUnipilotPoolsV3 from '../MyUnipilotPoolsV3';
+import MySteerPoolsV3 from '../MySteerPoolsV3';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
@@ -68,8 +70,16 @@ export default function MyLiquidityPoolsV3() {
     unipilotPositions,
   } = useUnipilotPositions(account, chainId);
 
+  const {
+    loading: steerPoolsLoading,
+    count: steerPoolsCount,
+  } = useV3SteerPositionsCount();
+
   const loading =
-    quickPoolsLoading || gammaPoolsLoading || uniPilotPositionsLoading;
+    quickPoolsLoading ||
+    gammaPoolsLoading ||
+    uniPilotPositionsLoading ||
+    steerPoolsLoading;
 
   const [poolFilter, setPoolFilter] = useState(
     GlobalConst.utils.poolsFilter.quickswap,
@@ -135,8 +145,34 @@ export default function MyLiquidityPoolsV3() {
         ),
       });
     }
+    if (steerPoolsCount > 0) {
+      filters.push({
+        id: GlobalConst.utils.poolsFilter.steer,
+        text: (
+          <Box className='flex items-center'>
+            <small>Steer</small>
+            <Box
+              ml='6px'
+              className={`myV3PoolCountWrapper ${
+                poolFilter === GlobalConst.utils.poolsFilter.steer
+                  ? 'activeMyV3PoolCountWrapper'
+                  : ''
+              }`}
+            >
+              {steerPoolsCount}
+            </Box>
+          </Box>
+        ),
+      });
+    }
     return filters;
-  }, [poolFilter, quickPoolsCount, unipilotPositions, gammaPoolsCount]);
+  }, [
+    poolFilter,
+    quickPoolsCount,
+    unipilotPositions,
+    gammaPoolsCount,
+    steerPoolsCount,
+  ]);
 
   return (
     <Box>
@@ -190,6 +226,9 @@ export default function MyLiquidityPoolsV3() {
             )}
             {poolFilter === GlobalConst.utils.poolsFilter.gamma && (
               <MyGammaPoolsV3 />
+            )}
+            {poolFilter === GlobalConst.utils.poolsFilter.steer && (
+              <MySteerPoolsV3 />
             )}
           </Box>
         </>

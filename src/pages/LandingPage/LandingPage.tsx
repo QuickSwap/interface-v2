@@ -21,7 +21,6 @@ import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.
 import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
 import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
 import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
-import { ReactComponent as MediumIcon } from 'assets/images/social/Medium.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
@@ -127,11 +126,6 @@ const LandingPage: React.FC = () => {
       link: 'https://www.instagram.com/quickswapofficial',
       icon: <img src={InstagramIcon} alt='Instagram' />,
       title: 'Instagram',
-    },
-    {
-      link: 'https://quickswap-layer2.medium.com/',
-      icon: <MediumIcon />,
-      title: 'Medium',
     },
     {
       link: 'https://www.coingecko.com/en/exchanges/quickswap',
@@ -336,9 +330,9 @@ const LandingPage: React.FC = () => {
           ))}
         </Grid>
       </Box>
-      {/* <Box my={4}>
+      <Box my={4}>
         <NewsletterSignupForm />
-      </Box> */}
+      </Box>
       <Box className='communityContainer'>
         <Box className='featureHeading'>
           <h3>{t('faqs')}</h3>

@@ -60,7 +60,6 @@ export default function MigrateV2DetailsPage() {
   const { t } = useTranslation();
   const v2Exchange = V2Exchanges.Quickswap;
   const percentageToMigrate = 100;
-  const feeAmount = FeeAmount.MEDIUM;
   const [largePriceDiffDismissed, setLargePriceDiffDismissed] = useState(false);
   const [attemptApproving, setAttemptApproving] = useState(false);
 
@@ -151,7 +150,6 @@ export default function MigrateV2DetailsPage() {
   const derivedMintInfo = useV3DerivedMintInfo(
     currency0 ?? undefined,
     quoteCurrency ?? undefined,
-    feeAmount,
     currency0 ?? undefined,
     undefined,
   );
@@ -324,7 +322,17 @@ export default function MigrateV2DetailsPage() {
     ) {
       return Position.fromAmounts({
         pool:
-          pool ?? new Pool(token0, token1, feeAmount, sqrtPrice, 0, tick, []),
+          pool ??
+          new Pool(
+            token0,
+            token1,
+            undefined,
+            sqrtPrice,
+            0,
+            tick,
+            [],
+            undefined,
+          ),
         tickLower,
         tickUpper,
         amount0: token0Value.quotient,
@@ -344,7 +352,6 @@ export default function MigrateV2DetailsPage() {
     token1Value,
     mintInfo.invalidRange,
     pool,
-    feeAmount,
   ]);
 
   const { amount0: v3Amount0Min, amount1: v3Amount1Min } = useMemo(
@@ -564,7 +571,7 @@ export default function MigrateV2DetailsPage() {
 
   return (
     <>
-      <Box className='wrapper' maxWidth='464px' width='100%'>
+      <Box className='wrapper' maxWidth='464px' width='100%' mb={4}>
         <Box className='flex justify-between items-center'>
           <Box
             className='flex cursor-pointer'
@@ -578,11 +585,8 @@ export default function MigrateV2DetailsPage() {
             height={28}
             className='flex items-center justify-center'
           >
-            <QuestionHelper size={24} className='text-secondary' text='' />
+            {/* <QuestionHelper size={24} className='text-secondary' text='' /> */}
           </Box>
-        </Box>
-        <Box mt={3}>
-          <BetaWarningBanner />
         </Box>
         {liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (

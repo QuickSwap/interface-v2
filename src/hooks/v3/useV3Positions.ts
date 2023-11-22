@@ -10,6 +10,7 @@ import { useEffect, useMemo } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useActiveWeb3React } from 'hooks';
 import {
+  useUNIV3NFTPositionManagerContract,
   useMasterChefContracts,
   useV3NFTPositionManagerContract,
 } from 'hooks/useContract';
@@ -30,6 +31,9 @@ import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 import { getConfig } from 'config/index';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import { useSteerStakedPools, useSteerVaults } from './useSteerData';
+import { Token } from '@uniswap/sdk-core';
+import { useTokenBalances } from 'state/wallet/v3/hooks';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -38,15 +42,18 @@ interface UseV3PositionsResults {
 
 function useV3PositionsFromTokenIds(
   tokenIds: BigNumber[] | undefined,
+  isUni?: boolean,
 ): UseV3PositionsResults {
   const positionManager = useV3NFTPositionManagerContract();
+  const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
+
   const inputs = useMemo(
     () =>
       tokenIds ? tokenIds.map((tokenId) => [BigNumber.from(tokenId)]) : [],
     [tokenIds],
   );
   const results = useSingleContractMultipleData(
-    positionManager,
+    isUni ? uniV3PositionManager : positionManager,
     'positions',
     inputs,
   );
@@ -150,8 +157,12 @@ interface UseV3PositionResults {
 
 export function useV3PositionFromTokenId(
   tokenId: BigNumber | undefined,
+  isUni?: boolean,
 ): UseV3PositionResults {
-  const position = useV3PositionsFromTokenIds(tokenId ? [tokenId] : undefined);
+  const position = useV3PositionsFromTokenIds(
+    tokenId ? [tokenId] : undefined,
+    isUni,
+  );
   return {
     loading: position.loading,
     position: position.positions?.[0],
@@ -278,17 +289,77 @@ export function useV3Positions(
   };
 }
 
-export function useV3PositionsCount(
+export function useUniV3Positions(
   account: string | null | undefined,
-  hideClosePosition: boolean,
-  hideFarmingPosition: boolean,
-) {
-  const positionManager = useV3NFTPositionManagerContract();
+): UseV3PositionsResults {
+  const positionManager = useUNIV3NFTPositionManagerContract();
 
   const {
     loading: balanceLoading,
     result: balanceResult,
   } = useSingleCallResult(positionManager, 'balanceOf', [account ?? undefined]);
+
+  // we don't expect any account balance to ever exceed the bounds of max safe int
+  const accountBalance: number | undefined = balanceResult?.[0]?.toNumber();
+
+  const tokenIdsArgs = useMemo(() => {
+    if (accountBalance && account) {
+      const tokenRequests: any[] = [];
+      for (let i = 0; i < accountBalance; i++) {
+        tokenRequests.push([account, i]);
+      }
+      return tokenRequests;
+    }
+    return [];
+  }, [account, accountBalance]);
+
+  const tokenIdResults = useSingleContractMultipleData(
+    positionManager,
+    'tokenOfOwnerByIndex',
+    tokenIdsArgs,
+  );
+  const someTokenIdsLoading = useMemo(
+    () => tokenIdResults.some(({ loading }) => loading),
+    [tokenIdResults],
+  );
+
+  const tokenIds = useMemo(() => {
+    if (account) {
+      return tokenIdResults
+        .map(({ result }) => result)
+        .filter((result): result is Result => !!result)
+        .map((result) => BigNumber.from(result[0]));
+    }
+    return [];
+  }, [account, tokenIdResults]);
+
+  const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
+    tokenIds,
+    true,
+  );
+
+  return {
+    loading: someTokenIdsLoading || balanceLoading || positionsLoading,
+    positions: positions?.map((position) => {
+      return { ...position, isUni: true };
+    }),
+  };
+}
+
+export function useV3PositionsCount(
+  account: string | null | undefined,
+  hideClosePosition: boolean,
+  hideFarmingPosition: boolean,
+) {
+  const algebraPositionManager = useV3NFTPositionManagerContract();
+  const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
+
+  const {
+    loading: balanceLoading,
+    result: balanceResult,
+  } = useSingleCallResult(algebraPositionManager, 'balanceOf', [
+    account ?? undefined,
+  ]);
 
   const accountBalance = useMemo(() => {
     if (balanceResult && balanceResult.length > 0) {
@@ -309,7 +380,7 @@ export function useV3PositionsCount(
   }, [account, accountBalance]);
 
   const tokenIdResults = useSingleContractMultipleData(
-    positionManager,
+    algebraPositionManager,
     'tokenOfOwnerByIndex',
     tokenIdsArgs,
   );
@@ -354,8 +425,62 @@ export function useV3PositionsCount(
     ).length;
   }, [hideClosePosition, positions]);
 
+  const {
+    loading: uniV3BalanceLoading,
+    result: uniV3BalanceResult,
+  } = useSingleCallResult(uniV3PositionManager, 'balanceOf', [
+    account ?? undefined,
+  ]);
+
+  const uniV3AccountBalance = useMemo(() => {
+    if (uniV3BalanceResult && uniV3BalanceResult.length > 0) {
+      return uniV3BalanceResult[0].toNumber();
+    }
+    return 0;
+  }, [uniV3BalanceResult]);
+
+  const uniV3TokenIdsArgs = useMemo(() => {
+    if (uniV3AccountBalance && account) {
+      const tokenRequests: any[] = [];
+      for (let i = 0; i < uniV3AccountBalance; i++) {
+        tokenRequests.push([account, i]);
+      }
+      return tokenRequests;
+    }
+    return [];
+  }, [account, uniV3AccountBalance]);
+
+  const uniV3tokenIdResults = useSingleContractMultipleData(
+    uniV3PositionManager,
+    'tokenOfOwnerByIndex',
+    uniV3TokenIdsArgs,
+  );
+
+  const uniV3TokenIds = useMemo(() => {
+    if (account) {
+      return uniV3tokenIdResults
+        .map(({ result }) => result)
+        .filter((result): result is Result => !!result)
+        .map((result) => BigNumber.from(result[0]));
+    }
+    return [];
+  }, [account, uniV3tokenIdResults]);
+
+  const { positions: uniV3Positions } = useV3PositionsFromTokenIds(
+    uniV3TokenIds,
+    true,
+  );
+
+  const uniV3PositionCount = useMemo(() => {
+    if (!uniV3Positions) return 0;
+    return uniV3Positions.filter((position) =>
+      hideClosePosition ? position.liquidity.gt('0') : true,
+    ).length;
+  }, [hideClosePosition, uniV3Positions]);
+
   const totalCount =
     positionCount +
+    uniV3PositionCount +
     (hideFarmingPosition
       ? 0
       : farmingPositionsCount + oldFarmingPositionsCount);
@@ -365,7 +490,7 @@ export function useV3PositionsCount(
   const count = totalCount > 0 ? totalCount : prevCount ?? 0;
 
   return {
-    loading: balanceLoading || positionsOnFarmerLoading,
+    loading: balanceLoading || uniV3BalanceLoading || positionsOnFarmerLoading,
     count,
   };
 }
@@ -413,45 +538,50 @@ export function useGammaPositionsCount(
     (callStates) => !!callStates.find((callData) => callData.loading),
   );
 
-  const stakedLPs = allGammaPairsToFarm
-    .map((item) => {
-      const masterChefIndex = item.masterChefIndex ?? 0;
-      const sItem =
-        stakedAmounts && stakedAmounts.length > masterChefIndex
-          ? stakedAmounts[masterChefIndex].find(
-              (sAmount) => sAmount.pid === item.pid,
-            )
-          : undefined;
-      return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
-    })
-    .filter((item) => {
-      return item.stakedAmount > 0;
-    });
+  const stakedLPs = allGammaPairsToFarm.map((item) => {
+    const masterChefIndex = item.masterChefIndex ?? 0;
+    const sItem =
+      stakedAmounts && stakedAmounts.length > masterChefIndex
+        ? stakedAmounts[masterChefIndex].find(
+            (sAmount) => sAmount.pid === item.pid,
+          )
+        : undefined;
+    return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
+  });
 
+  const gammaPairAddresses = allGammaPairsToFarm.map((pair) => pair.address);
   const lpBalancesData = useMultipleContractSingleData(
-    allGammaPairsToFarm.map((pair) => pair.address),
+    gammaPairAddresses,
     new Interface(GammaPairABI),
     'balanceOf',
     [account ?? undefined],
   );
 
-  const lpBalances = lpBalancesData.map((callData) => {
+  const lpBalances = lpBalancesData.map((callData, ind) => {
     const amount =
       !callData.loading && callData.result && callData.result.length > 0
         ? Number(formatUnits(callData.result[0], 18))
         : 0;
-    return amount;
+    return { address: gammaPairAddresses[ind], amount };
   });
 
   const lpBalancesLoading = !!lpBalancesData.find(
     (callState) => !!callState.loading,
   );
 
+  const pairWithBalances = gammaPairAddresses.map((address) => {
+    const stakedAmount =
+      stakedLPs.find((lp) => lp.address.toLowerCase() === address.toLowerCase())
+        ?.stakedAmount ?? 0;
+    const lpBalance =
+      lpBalances.find(
+        (lp) => lp.address.toLowerCase() === address.toLowerCase(),
+      )?.amount ?? 0;
+    return stakedAmount + lpBalance;
+  });
   const count = useMemo(() => {
-    return (
-      lpBalances.filter((balance) => balance > 0).length + stakedLPs.length
-    );
-  }, [lpBalances, stakedLPs]);
+    return pairWithBalances.filter((balance) => balance > 0).length;
+  }, [pairWithBalances]);
 
   return { loading: lpBalancesLoading || stakedLoading, count };
 }
@@ -485,13 +615,21 @@ export function useUnipilotPositions(
             library,
           );
           const stakedAmount = await farmContract.balanceOf(account ?? '');
+          if (Number(stakedAmount) > 0) {
+            return {
+              ...item,
+              balance: JSBI.add(
+                JSBI.BigInt(stakedAmount),
+                JSBI.BigInt(item.balance),
+              ).toString(),
+              lpBalance: JSBI.BigInt(item.balance),
+              farming: true,
+            };
+          }
           return {
             ...item,
-            balance: JSBI.add(
-              JSBI.BigInt(stakedAmount),
-              JSBI.BigInt(item.balance),
-            ).toString(),
-            farming: true,
+            lpBalance: JSBI.BigInt(item.balance),
+            farming: false,
           };
         }
         return { ...item, farming: false };
@@ -508,7 +646,7 @@ export function useUnipilotPositions(
     data: unipilotPositions,
     refetch: refetchUnipilotPositions,
   } = useQuery({
-    queryKey: ['fetchUnipilotPositions', account, lastTxHash, chainId],
+    queryKey: ['fetchUnipilotPositions', account, chainId],
     queryFn: fetchUnipilotPositions,
   });
 
@@ -525,10 +663,68 @@ export function useUnipilotPositions(
   useEffect(() => {
     refetchUnipilotPositions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [currentTime, lastTxHash]);
 
   return {
     loading: positionsLoading,
     unipilotPositions,
   };
 }
+
+export const useV3SteerPositionsCount = () => {
+  const { chainId, account } = useActiveWeb3React();
+  const { loading, data: vaults } = useSteerVaults(chainId);
+  const { loading: loadingFarms, data: steerFarms } = useSteerStakedPools(
+    chainId,
+    account,
+  );
+  const vaultTokens = vaults.map(
+    (item) => new Token(chainId, item.address, item.vaultDecimals),
+  );
+  const vaultBalances = useTokenBalances(account, vaultTokens);
+  const positions = vaults.filter((vault) => {
+    const vaultBalanceItems = Object.values(vaultBalances);
+    const vaultBalance = vaultBalanceItems.find(
+      (item) =>
+        item &&
+        vault &&
+        vault.address &&
+        item.currency.address.toLowerCase() === vault.address.toLowerCase(),
+    );
+    const steerFarm = steerFarms.find(
+      (farm: any) =>
+        farm.stakingToken.toLowerCase() === vault.address.toLowerCase(),
+    );
+    return (
+      Number(vaultBalance?.toExact() ?? 0) + (steerFarm?.stakedAmount ?? 0) > 0
+    );
+  });
+  return { loading: loading || loadingFarms, count: positions.length };
+};
+
+export const useV3SteerPositions = () => {
+  const { chainId, account } = useActiveWeb3React();
+  const { data: vaults } = useSteerVaults(chainId);
+  const { data: steerFarms } = useSteerStakedPools(chainId, account);
+  const vaultTokens = vaults.map(
+    (item) => new Token(chainId, item.address, item.vaultDecimals),
+  );
+  const vaultBalances = useTokenBalances(account, vaultTokens);
+  return vaults.filter((vault) => {
+    const vaultBalanceItems = Object.values(vaultBalances);
+    const vaultBalance = vaultBalanceItems.find(
+      (item) =>
+        item &&
+        vault &&
+        vault.address &&
+        item.currency.address.toLowerCase() === vault.address.toLowerCase(),
+    );
+    const steerFarm = steerFarms.find(
+      (farm: any) =>
+        farm.stakingToken.toLowerCase() === vault.address.toLowerCase(),
+    );
+    return (
+      Number(vaultBalance?.toExact() ?? 0) + (steerFarm?.stakedAmount ?? 0) > 0
+    );
+  });
+};

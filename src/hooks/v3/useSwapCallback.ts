@@ -9,7 +9,7 @@ import { Version } from './useToggledVersion';
 // import abi from '../abis/swap-router.json'
 import { calculateGasMargin, isAddress, isZero, shortenAddress } from 'utils';
 import useENS from 'hooks/useENS';
-import { SWAP_ROUTER_ADDRESSES } from 'constants/v3/addresses';
+import { SWAP_ROUTER_ADDRESSES, UNI_SWAP_ROUTER } from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
 import { SwapRouter } from 'lib/src/swapRouter';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -66,8 +66,11 @@ function useSwapCallArguments(
     if (!trade || !recipient || !library || !account || !chainId || !deadline)
       return [];
 
+    const isUni = trade.swaps[0]?.route?.pools[0]?.isUni;
     const swapRouterAddress = chainId
-      ? SWAP_ROUTER_ADDRESSES[chainId]
+      ? isUni
+        ? UNI_SWAP_ROUTER[chainId]
+        : SWAP_ROUTER_ADDRESSES[chainId]
       : undefined;
 
     if (!swapRouterAddress) return [];
@@ -77,6 +80,7 @@ function useSwapCallArguments(
 
     swapMethods.push(
       SwapRouter.swapCallParameters(trade, {
+        isUni,
         feeOnTransfer: false,
         recipient,
         slippageTolerance: allowedSlippage,
@@ -319,9 +323,7 @@ export function useSwapCallback(
 
         // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
         const bestCallOption = estimatedCalls.find(
-          (el, ix, list): el is SuccessfulCall =>
-            'gasEstimate' in el &&
-            (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
+          (el): el is SuccessfulCall => 'gasEstimate' in el,
         );
 
         // check if any calls errored with a recognizable error

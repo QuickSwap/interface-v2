@@ -76,7 +76,6 @@ import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { getConfig } from 'config/index';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { useLiquidityHubAnalyticsListeners } from './LiquidityHub';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -661,14 +660,6 @@ const SwapBestTrade: React.FC<{
     txHash: undefined,
   });
 
-  useLiquidityHubAnalyticsListeners(
-    showConfirm,
-    attemptingTxn,
-    currencies[Field.INPUT],
-    currencies[Field.OUTPUT],
-    formattedAmounts[Field.INPUT],
-  );
-
   const handleTypeInput = useCallback(
     (value: string) => {
       onUserInput(Field.INPUT, value);
@@ -729,7 +720,7 @@ const SwapBestTrade: React.FC<{
   const { selectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
   const fromTokenWrapped = wrappedCurrency(currencies[Field.INPUT], chainId);
-  const fromTokenUSDPrice = useUSDCPriceFromAddress(
+  const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     fromTokenWrapped?.address ?? '',
   );
 

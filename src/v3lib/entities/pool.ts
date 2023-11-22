@@ -1,9 +1,19 @@
 import { ChainId } from '@uniswap/sdk';
 import { BigintIsh, CurrencyAmount, Price, Token } from '@uniswap/sdk-core';
-import { POOL_DEPLOYER_ADDRESS } from 'constants/v3/addresses';
+import {
+  POOL_DEPLOYER_ADDRESS,
+  UNI_V3_FACTORY_ADDRESS,
+} from 'constants/v3/addresses';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
-import { FeeAmount, NEGATIVE_ONE, ONE, Q192, ZERO } from 'v3lib/utils';
+import {
+  FeeAmount,
+  NEGATIVE_ONE,
+  ONE,
+  Q192,
+  TICK_SPACINGS,
+  ZERO,
+} from 'v3lib/utils';
 import { computePoolAddress } from '../utils/computePoolAddress';
 import { LiquidityMath } from '../utils/liquidityMath';
 import { SwapMath } from '../utils/swapMath';
@@ -33,11 +43,12 @@ const NO_TICK_DATA_PROVIDER_DEFAULT = new NoTickDataProvider();
 export class Pool {
   public readonly token0: Token;
   public readonly token1: Token;
-  public readonly fee: FeeAmount;
+  public readonly fee: FeeAmount | undefined;
   public readonly sqrtRatioX96: JSBI;
   public readonly liquidity: JSBI;
   public readonly tickCurrent: number;
   public readonly tickDataProvider: TickDataProvider;
+  public readonly isUni: boolean | undefined;
 
   /**
    * Construct a pool
@@ -52,15 +63,16 @@ export class Pool {
   public constructor(
     tokenA: Token,
     tokenB: Token,
-    fee: FeeAmount,
+    fee: FeeAmount | undefined,
     sqrtRatioX96: BigintIsh,
     liquidity: BigintIsh,
     tickCurrent: number,
     ticks:
       | TickDataProvider
       | (Tick | TickConstructorArgs)[] = NO_TICK_DATA_PROVIDER_DEFAULT,
+    isUni: boolean | undefined,
   ) {
-    invariant(Number.isInteger(fee) && fee < 1_000_000, 'FEE');
+    invariant(!fee || (Number.isInteger(fee) && fee < 1_000_000), 'FEE');
 
     const tickCurrentSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent);
     const nextTickSqrtRatioX96 = TickMath.getSqrtRatioAtTick(tickCurrent + 1);
@@ -77,11 +89,15 @@ export class Pool {
       ? [tokenA, tokenB]
       : [tokenB, tokenA];
     this.fee = fee;
+    this.isUni = isUni;
     this.sqrtRatioX96 = JSBI.BigInt(sqrtRatioX96);
     this.liquidity = JSBI.BigInt(liquidity);
     this.tickCurrent = tickCurrent;
     this.tickDataProvider = Array.isArray(ticks)
-      ? new TickListDataProvider(ticks, 60)
+      ? new TickListDataProvider(
+          ticks,
+          isUni ? (fee ? TICK_SPACINGS[fee] : 60) : 60,
+        )
       : ticks;
   }
 
@@ -127,17 +143,19 @@ export class Pool {
   }
 
   public get tickSpacing(): number {
-    return 60;
+    return this.isUni && this.fee ? TICK_SPACINGS[this.fee] : 60;
   }
 
   public static getAddress(
     tokenA: Token,
     tokenB: Token,
-    fee: FeeAmount,
+    fee?: FeeAmount,
     initCodeHashManualOverride?: string,
   ): string {
     return computePoolAddress({
-      factoryAddress: POOL_DEPLOYER_ADDRESS[ChainId.MATIC],
+      poolDeployer: fee
+        ? UNI_V3_FACTORY_ADDRESS[tokenA.chainId]
+        : POOL_DEPLOYER_ADDRESS[tokenA.chainId],
       fee,
       tokenA,
       tokenB,
@@ -198,6 +216,7 @@ export class Pool {
         liquidity,
         tickCurrent,
         this.tickDataProvider,
+        this.isUni,
       ),
     ];
   }
@@ -241,6 +260,7 @@ export class Pool {
         liquidity,
         tickCurrent,
         this.tickDataProvider,
+        this.isUni,
       ),
     ];
   }
@@ -343,7 +363,7 @@ export class Pool {
           : step.sqrtPriceNextX96,
         state.liquidity,
         state.amountSpecifiedRemaining,
-        this.fee,
+        this.fee ?? FeeAmount.LOWEST,
       );
 
       if (exactInput) {

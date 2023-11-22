@@ -33,22 +33,30 @@ import { getConfig } from 'config/index';
 import useDeviceWidth from 'hooks/useDeviceWidth';
 import { USDC, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
-import { networkConnection, walletConnectConnection } from 'connectors';
+import {
+  networkConnection,
+  walletConnectConnection,
+  zengoConnectConnection,
+} from 'connectors';
+import { MobileMenuDrawer } from './MobileMenuDrawer';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
 };
 
-const Header: React.FC = () => {
+const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
+  onUpdateNewsletter,
+}) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { pathname } = useLocation();
-  const { account } = useActiveWeb3React();
+  const { account, chainId, connector } = useActiveWeb3React();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
-  const [showNewsletter, setShowNewsletter] = useState(false);
+  const [showNewsletter, setShowNewsletter] = useState(true);
 
   const theme = useTheme();
   const allTransactions = useAllTransactions();
@@ -69,6 +77,11 @@ const Header: React.FC = () => {
   const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const deviceWidth = useDeviceWidth();
   const [headerClass, setHeaderClass] = useState('');
+
+  const handleShowNewsletter = (val: boolean) => {
+    setShowNewsletter(val);
+    onUpdateNewsletter(val);
+  };
 
   const changeHeaderBg = () => {
     if (window.scrollY > 0) {
@@ -100,7 +113,6 @@ const Header: React.FC = () => {
     return 1;
   }, [deviceWidth]);
 
-  const { chainId, connector } = useActiveWeb3React();
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
   const showPool = config['pools']['available'];
@@ -115,6 +127,7 @@ const Header: React.FC = () => {
   const showPerps = config['perps']['available'];
   const showBOS = config['bos']['available'];
   const showBonds = config['bonds']['available'];
+  const showDappOS = config['dappos']['available'];
   const menuItems = [];
 
   const swapCurrencyStr = useMemo(() => {
@@ -239,6 +252,17 @@ const Header: React.FC = () => {
       id: 'convert-quick',
     });
   }
+  if (showDappOS) {
+    menuItems.push({
+      link: '/dappos',
+      text: 'DappOS',
+      id: 'dappos-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+      isNew: true,
+    });
+  }
   if (showLending) {
     menuItems.push({
       link: '/lend',
@@ -255,49 +279,48 @@ const Header: React.FC = () => {
     });
   }
 
-  const outLinks: any[] = [
-    // {
-    //   link: '/',
-    //   text: 'Governance',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Docs',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'For Developers',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Help & Tutorials',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'Knowledge Base',
-    // },
-    // {
-    //   link: '/',
-    //   text: 'News',
-    // },
-  ];
+  const parsedQuery = useParsedQueryString();
+  const parsedChain =
+    parsedQuery && parsedQuery.chainId
+      ? Number(parsedQuery.chainId)
+      : undefined;
 
-  const navigateToFooterSignUp = () => {
-    const newsletterForm = document.getElementById('footerNewsletterSignup');
-    if (newsletterForm) {
-      newsletterForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
+  useEffect(() => {
+    (async () => {
+      if (parsedChain && chainId !== parsedChain) {
+        const config = getConfig(parsedChain);
+        const chainParam = {
+          chainId: parsedChain,
+          chainName: `${config['networkName']} Network`,
+          rpcUrls: [config['rpc']],
+          nativeCurrency: config['nativeCurrency'],
+          blockExplorerUrls: [config['blockExplorer']],
+        };
+        if (
+          connector === walletConnectConnection.connector ||
+          connector === zengoConnectConnection.connector ||
+          connector === networkConnection.connector
+        ) {
+          await connector.activate(parsedChain);
+        } else {
+          await connector.activate(chainParam);
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId, parsedChain]);
 
   return (
     <Box className='header'>
       {showNewsletter && (
         <Box className='newsletterBar'>
           <small className='text-white'>{t('signupnewsletterTopDesc')}</small>
-          <Button onClick={navigateToFooterSignUp}>{t('signup')}</Button>
+          <Button onClick={() => history.push('/newsletter')}>
+            {t('signup')}
+          </Button>
           <Box
             className='cursor-pointer'
-            onClick={() => setShowNewsletter(false)}
+            onClick={() => handleShowNewsletter(false)}
           >
             <Close />
           </Box>
@@ -401,110 +424,34 @@ const Header: React.FC = () => {
                           <small>{val.text}</small>
                         </Box>
                       ))}
-                    {outLinks.map((item, ind) => (
-                      <a href={item.link} key={ind}>
-                        <small>{item.text}</small>
-                      </a>
-                    ))}
                   </Box>
                 </Box>
               </Box>
             )}
           </Box>
         )}
-        {tabletWindowSize && (
-          <Box className='mobileMenuContainer'>
-            <Box className='mobileMenu'>
-              {menuItems.slice(0, 4).map((val) => (
-                <Box
-                  key={val.id}
-                  id={val.id}
-                  className={`menuItem ${
-                    pathname !== '/' && val.link.includes(pathname)
-                      ? 'active'
-                      : ''
-                  }`}
-                  onClick={() => {
-                    if (val.onClick) {
-                      val.onClick();
-                    } else {
-                      if (val.isExternal) {
-                        window.open(val.externalLink, val.target ?? '_blank');
-                      } else {
-                        history.push(val.link);
-                      }
-                    }
-                  }}
-                >
-                  <small>{val.text}</small>
-                </Box>
-              ))}
-              {menuItems.length > 4 && (
-                <Box className='flex menuItem'>
-                  <ThreeDotIcon
-                    onClick={() => setOpenDetailMenu(!openDetailMenu)}
+        {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
+        <Box>
+          {!parsedChain && (
+            <Box
+              className='networkSelection'
+              onClick={toggleNetworkSelectionModal}
+            >
+              {isSupportedNetwork && (
+                <Box className='networkSelectionImage'>
+                  {chainId && <Box className='styledPollingDot' />}
+                  <img
+                    src={config['nativeCurrencyImage']}
+                    alt='network Image'
                   />
-                  {openDetailMenu && (
-                    <Box className='subMenuWrapper'>
-                      <Box className='subMenu'>
-                        {menuItems.slice(4, menuItems.length).map((val) => (
-                          <Box
-                            className={`subMenuItem ${
-                              pathname !== '/' && val.link.includes(pathname)
-                                ? 'active'
-                                : ''
-                            }`}
-                            key={val.id}
-                            id={val.id}
-                            onClick={() => {
-                              setOpenDetailMenu(false);
-                              if (val.onClick) {
-                                val.onClick();
-                              } else {
-                                if (val.isExternal) {
-                                  window.open(val.externalLink, val.target);
-                                } else {
-                                  history.push(val.link);
-                                }
-                              }
-                            }}
-                          >
-                            <small>{val.text}</small>
-                          </Box>
-                        ))}
-                        {outLinks.map((item, ind) => (
-                          <a
-                            href={item.link}
-                            key={ind}
-                            onClick={() => setOpenDetailMenu(false)}
-                          >
-                            <small>{item.text}</small>
-                          </a>
-                        ))}
-                      </Box>
-                    </Box>
-                  )}
                 </Box>
               )}
+              <small className='network-name'>
+                {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
+              </small>
+              <KeyboardArrowDown />
             </Box>
-          </Box>
-        )}
-        <Box>
-          <Box
-            className='networkSelection'
-            onClick={toggleNetworkSelectionModal}
-          >
-            {isSupportedNetwork && (
-              <Box className='networkSelectionImage'>
-                {chainId && <Box className='styledPollingDot' />}
-                <img src={config['nativeCurrencyImage']} alt='network Image' />
-              </Box>
-            )}
-            <small className='weight-600'>
-              {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
-            </small>
-            <KeyboardArrowDown />
-          </Box>
+          )}
 
           {account ? (
             <Box

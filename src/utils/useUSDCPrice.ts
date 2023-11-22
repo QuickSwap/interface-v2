@@ -70,6 +70,7 @@ export function useUSDCPricesFromAddresses(
   const addressStr = addressArray.join('_');
 
   const fetchTokenPrices = async () => {
+    if (!addressStr) return [];
     const addresses = addressStr.split('_');
 
     let pricesV2: any[] = [];
@@ -131,7 +132,7 @@ export function useUSDCPricesFromAddresses(
     return prices;
   };
 
-  const { data: prices, refetch } = useQuery({
+  const { isLoading, data: prices, refetch } = useQuery({
     queryKey: ['fetchTokenPrices', chainId, addressStr, v2],
     queryFn: fetchTokenPrices,
   });
@@ -151,15 +152,18 @@ export function useUSDCPricesFromAddresses(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);
 
-  return prices;
+  return { loading: isLoading, prices };
 }
 
 export function useUSDCPriceFromAddress(address: string, onlyV3?: boolean) {
-  const usdPrices = useUSDCPricesFromAddresses([address], onlyV3);
-  if (usdPrices) {
-    return usdPrices[0].price;
-  }
-  return;
+  const { loading, prices: usdPrices } = useUSDCPricesFromAddresses(
+    [address],
+    onlyV3,
+  );
+  return {
+    loading,
+    price: usdPrices && usdPrices[0] ? usdPrices[0].price : 0,
+  };
 }
 
 export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {

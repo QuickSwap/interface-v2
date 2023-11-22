@@ -10,6 +10,7 @@ import { useAddPopup } from 'state/application/hooks';
 import { AppDispatch, AppState } from 'state';
 import { addTransaction, finalizeTransaction } from './actions';
 import { TransactionDetails } from './reducer';
+import { useArcxAnalytics } from '@arcxmoney/analytics';
 
 interface TransactionData {
   summary?: string;
@@ -24,7 +25,7 @@ export function useTransactionAdder(): (
 ) => void {
   const { chainId, account } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
-  // const arcxSDK = (window as any).arcx;
+  const arcxSDK = useArcxAnalytics();
 
   return useCallback(
     async (
@@ -45,12 +46,12 @@ export function useTransactionAdder(): (
       if (!hash) {
         throw Error('No transaction hash found.');
       }
-      // if (arcxSDK) {
-      //   await arcxSDK.transaction({
-      //     chain: chainId,
-      //     transactionHash: hash,
-      //   });
-      // }
+      if (arcxSDK) {
+        await arcxSDK.transaction({
+          chainId,
+          transactionHash: hash,
+        });
+      }
       dispatch(
         addTransaction({
           hash,
@@ -62,7 +63,7 @@ export function useTransactionAdder(): (
         }),
       );
     },
-    [account, chainId, dispatch],
+    [account, arcxSDK, chainId, dispatch],
   );
 }
 

@@ -8,7 +8,11 @@ import {
 } from '@uniswap/sdk-core';
 import { Trade as V3Trade } from 'lib/src/trade';
 import { useCallback, useMemo } from 'react';
-import { SWAP_ROUTER_ADDRESSES, ZAP_ADDRESS } from '../constants/v3/addresses';
+import {
+  SWAP_ROUTER_ADDRESSES,
+  UNI_SWAP_ROUTER,
+  ZAP_ADDRESS,
+} from '../constants/v3/addresses';
 import {
   useHasPendingApproval,
   useTransactionAdder,
@@ -140,8 +144,11 @@ export function useApproveCallbackFromTrade(
   allowedSlippage: Percent,
 ) {
   const { chainId } = useActiveWeb3React();
+  const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
   const v3SwapRouterAddress = chainId
-    ? SWAP_ROUTER_ADDRESSES[chainId]
+    ? isUni
+      ? UNI_SWAP_ROUTER[chainId]
+      : SWAP_ROUTER_ADDRESSES[chainId]
     : undefined;
   const amountToApprove = useMemo(
     () =>

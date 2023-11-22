@@ -4,7 +4,6 @@ import { Contract } from 'ethers';
 import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
 import FARMING_CENTER_ABI from 'abis/farming-center.json';
 import FINITE_FARMING_ABI from 'abis/finite-farming.json';
-import VIRTUAL_POOL_ABI from 'abis/virtual-pool.json';
 import {
   FARMING_CENTER,
   FINITE_FARMING,
@@ -23,7 +22,7 @@ import {
   fetchPoolsAPR,
 } from 'utils/api';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { getContract, getTokenFromAddress } from 'utils';
+import { getTokenFromAddress } from 'utils';
 import { ChainId } from '@uniswap/sdk';
 import { formatTokenSymbol } from 'utils/v3-graph';
 import { useQuery } from '@tanstack/react-query';
@@ -754,14 +753,7 @@ export function useEternalFarms() {
 
       for (const farming of eternalFarmings) {
         try {
-          const virtualPoolContract = getContract(
-            farming.virtualPool,
-            VIRTUAL_POOL_ABI,
-            provider,
-          );
-          const reward = await virtualPoolContract.rewardReserve0();
-          const bonusReward = await virtualPoolContract.rewardReserve1();
-          const pool = await fetchPool(farming.pool, chainId);
+          const pool = farming.pool;
           const rewardToken = getTokenFromAddress(
             farming.rewardToken,
             chainId ?? ChainId.MATIC,
@@ -800,8 +792,6 @@ export function useEternalFarms() {
 
           _eternalFarmings.push({
             ...farming,
-            reward: reward.toString(),
-            bonusReward: bonusReward.toString(),
             rewardToken,
             bonusRewardToken,
             multiplierToken,

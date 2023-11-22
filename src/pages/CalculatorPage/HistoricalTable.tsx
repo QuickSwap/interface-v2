@@ -79,10 +79,10 @@ export const HistoricalTable: React.FC<{
               <TableRow>
                 <TableCell className='text-dark dark-border'>Date</TableCell>
                 <TableCell className='text-dark dark-border' align='center'>
-                  Difference
+                  0.01 ETH to USD
                 </TableCell>
                 <TableCell className='text-dark dark-border' align='center'>
-                  0.01 ETH to USD
+                  Difference
                 </TableCell>
                 <TableCell className='text-dark dark-border' align='right'>
                   Change

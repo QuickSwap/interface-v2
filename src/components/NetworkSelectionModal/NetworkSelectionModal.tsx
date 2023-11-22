@@ -19,10 +19,13 @@ import {
   walletConnectConnection,
   zengoConnectConnection,
 } from 'connectors';
+import KavaImage from 'assets/images/KAVA.png';
+import { useArcxAnalytics } from '@arcxmoney/analytics';
 
 const NetworkSelectionModal: React.FC = () => {
   const { t } = useTranslation();
-  const { chainId, connector } = useActiveWeb3React();
+  const arcxSdk = useArcxAnalytics();
+  const { chainId, connector, account } = useActiveWeb3React();
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
     const config = getConfig(chain);
     return config && config.isMainnet;
@@ -40,6 +43,8 @@ const NetworkSelectionModal: React.FC = () => {
       connector === networkConnection.connector
     ) {
       connector.activate(Number(localChainId));
+    } else {
+      connector.activate(chainId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -63,9 +68,12 @@ const NetworkSelectionModal: React.FC = () => {
       } else {
         await connector.activate(chainParam);
       }
+      if (arcxSdk && account) {
+        await arcxSdk.chain({ chainId, account });
+      }
       localStorage.setItem('localChainId', chainId.toString());
     },
-    [connector],
+    [account, arcxSdk, connector],
   );
 
   return (
@@ -103,6 +111,17 @@ const NetworkSelectionModal: React.FC = () => {
             </Box>
           );
         })}
+        <Box
+          className='networkItemWrapper'
+          onClick={() => {
+            window.open('https://dex.kinetix.finance', '_blank');
+          }}
+        >
+          <Box className='flex items-center'>
+            <img src={KavaImage} alt='network Image' />
+            <small className='weight-600'>Kava - Kinetix</small>
+          </Box>
+        </Box>
       </Box>
     </CustomModal>
   );

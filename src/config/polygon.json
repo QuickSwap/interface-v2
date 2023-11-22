@@ -27,6 +27,9 @@
   "farm": {
     "available": true
   },
+  "qsFarm": {
+    "available": true
+  },
   "lair": {
     "available": true,
     "oldLair": true,
@@ -70,6 +73,12 @@
     "available": false
   },
   "bonds": {
+    "available": true
+  },
+  "steer": {
+    "available": true
+  },
+  "dappos": {
     "available": true
   }
 }

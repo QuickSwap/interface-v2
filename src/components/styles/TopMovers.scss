@@ -10,7 +10,7 @@
   align-items: flex-start;
   border-radius: 10px;
   padding: 20px 20px 4px;
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     align-items: center;
   }
 }
@@ -37,7 +37,7 @@
   &:last-child {
     margin-right: 0;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     width: 180px;
     justify-content: flex-start;
   }

@@ -13,6 +13,7 @@ import {
   ALLOWED_PRICE_IMPACT_MEDIUM,
   BLOCKED_PRICE_IMPACT_NON_EXPERT,
 } from 'constants/v3/misc';
+import { FeeAmount } from 'v3lib/utils';
 
 const THIRTY_BIPS_FEE = new Percent(JSBI.BigInt(30), JSBI.BigInt(10000));
 const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000));
@@ -26,7 +27,9 @@ export function computeRealizedLPFeePercent(
     trade.route.pools.reduce<Percent>(
       (currentFee: Percent, pool): Percent =>
         currentFee.multiply(
-          ONE_HUNDRED_PERCENT.subtract(new Fraction(pool.fee, 1_000_000)),
+          ONE_HUNDRED_PERCENT.subtract(
+            new Fraction(pool.fee ?? FeeAmount.LOWEST, 1_000_000),
+          ),
         ),
       ONE_HUNDRED_PERCENT,
     ),

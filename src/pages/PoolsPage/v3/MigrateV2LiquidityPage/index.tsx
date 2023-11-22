@@ -38,7 +38,7 @@ export default function MigrateV2LiquidityPage() {
           onClose={() => setOpenPoolFinder(false)}
         />
       )}
-      <Box className='wrapper' maxWidth='464px' width='100%'>
+      <Box className='wrapper' maxWidth='464px' width='100%' mb={6}>
         <Box className='flex justify-between items-center'>
           <Box
             className='flex cursor-pointer'
@@ -52,7 +52,7 @@ export default function MigrateV2LiquidityPage() {
             height={28}
             className='flex items-center justify-center'
           >
-            <QuestionHelper size={24} className='text-secondary' text='' />
+            {/* <QuestionHelper size={24} className='text-secondary' text='' /> */}
           </Box>
         </Box>
         <Box mt={3}>
