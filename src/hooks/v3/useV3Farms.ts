@@ -18,12 +18,15 @@ import {
   useEternalFarmPoolAPRs,
   useEternalFarmTvls,
 } from 'hooks/useIncentiveSubgraph';
+import { V3Farm } from 'pages/FarmPage/V3/Farms';
 
 export const useEternalFarmsFiltered = (
   farms: any[],
   chainId: ChainId,
   searchVal?: string,
   farmFilter?: string,
+  sortBy?: string,
+  sortDesc?: boolean,
 ) => {
   const {
     data: eternalFarmPoolAprs,
@@ -37,9 +40,37 @@ export const useEternalFarmsFiltered = (
     data: eternalFarmTvls,
     isLoading: eternalFarmTvlsLoading,
   } = useEternalFarmTvls();
-  const { v3FarmFilter } = GlobalConst.utils;
+  const sortMultiplier = sortDesc ? -1 : 1;
+  const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
+  const rewardTokenAddresses = useMemo(() => {
+    return farms.reduce<string[]>((memo, farm) => {
+      const rewardTokenAddress = memo.find(
+        (item) =>
+          farm &&
+          farm.rewardToken &&
+          farm.rewardToken.address.toLowerCase() === item,
+      );
+      const bonusRewardTokenAddress = memo.find(
+        (item) =>
+          farm &&
+          farm.bonusRewardToken &&
+          farm.bonusRewardToken.address.toLowerCase() === item,
+      );
+      if (!rewardTokenAddress && farm && farm.rewardToken) {
+        memo.push(farm.rewardToken.address.toLowerCase());
+      }
+      if (!bonusRewardTokenAddress && farm.bonusRewardToken) {
+        memo.push(farm.bonusRewardToken.address.toLowerCase());
+      }
+      return memo;
+    }, []);
+  }, [farms]);
 
-  return farms
+  const { prices: rewardTokenPrices } = useUSDCPricesFromAddresses(
+    rewardTokenAddresses,
+  );
+
+  const filteredFarms: V3Farm[] = farms
     .map((farm) => {
       const tvl =
         eternalFarmTvls && farm && farm.id
@@ -53,7 +84,52 @@ export const useEternalFarmsFiltered = (
         eternalFarmPoolAprs && farm && farm.pool && farm.pool.id
           ? Number(eternalFarmPoolAprs[farm.pool.id])
           : 0;
-      return { ...farm, tvl, poolAPR, farmAPR };
+      const farmRewardTokenPrice = rewardTokenPrices?.find(
+        (item) =>
+          farm &&
+          item.address.toLowerCase() === farm.rewardToken.address.toLowerCase(),
+      );
+      const farmBonusRewardTokenPrice = rewardTokenPrices?.find(
+        (item) =>
+          farm &&
+          item.address.toLowerCase() ===
+            farm.bonusRewardToken.address.toLowerCase(),
+      );
+      const farmReward =
+        farm && farm.rewardRate && farmRewardTokenPrice
+          ? Number(formatUnits(farm.rewardRate, farm.rewardToken.decimals)) *
+            farmRewardTokenPrice.price
+          : 0;
+      const farmBonusReward =
+        farm && farm.bonusRewardRate && farmBonusRewardTokenPrice
+          ? Number(
+              formatUnits(farm.bonusRewardRate, farm.bonusRewardToken.decimals),
+            ) * farmBonusRewardTokenPrice.price
+          : 0;
+      return {
+        ...farm,
+        token0: farm.pool.token0,
+        token1: farm.pool.token1,
+        tvl,
+        poolAPR,
+        farmAPR,
+        rewardUSD: farmReward + farmBonusReward,
+        rewards: [
+          {
+            amount: Number(
+              formatUnits(farm.rewardRate, farm.rewardToken.decimals),
+            ),
+            token: farm.rewardToken,
+          },
+          {
+            amount: Number(
+              formatUnits(farm.bonusRewardRate, farm.bonusRewardToken.decimals),
+            ),
+            token: farm.bonusRewardToken,
+          },
+        ],
+        type: 'quickswap',
+      };
     })
     .filter((farm) => {
       const farmToken0Name =
@@ -140,7 +216,39 @@ export const useEternalFarmsFiltered = (
           ? !blueChipCondition && !stableCoinCondition && !stableLPCondition
           : true)
       );
+    })
+    .sort((farm0, farm1) => {
+      if (sortBy === v3FarmSortBy.pool) {
+        const farm0Title =
+          (farm0.token0?.symbol ?? '') +
+          (farm0.token1?.symbol ?? '') +
+          farm0.title;
+        const farm1Title =
+          (farm1.token0?.symbol ?? '') +
+          (farm1.token1?.symbol ?? '') +
+          farm1.title;
+        return farm0Title > farm1Title ? sortMultiplier : -1 * sortMultiplier;
+      } else if (sortBy === v3FarmSortBy.tvl) {
+        return farm0.tvl > farm1.tvl ? sortMultiplier : -1 * sortMultiplier;
+      } else if (sortBy === v3FarmSortBy.rewards) {
+        return farm0.rewardUSD > farm1.rewardUSD
+          ? sortMultiplier
+          : -1 * sortMultiplier;
+      } else if (sortBy === v3FarmSortBy.apr) {
+        return farm0.poolAPR + farm0.farmAPR > farm1.poolAPR + farm1.poolAPR
+          ? sortMultiplier
+          : -1 * sortMultiplier;
+      }
+      return 1;
     });
+
+  return {
+    loading:
+      eternalFarmPoolAprsLoading ||
+      eternalFarmAprsLoading ||
+      eternalFarmTvlsLoading,
+    data: filteredFarms,
+  };
 };
 
 export const useGammaFarmsFiltered = (
@@ -288,8 +396,7 @@ export const useGammaFarmsFiltered = (
             for (const rewarder of rewarders) {
               if (
                 rewarder &&
-                rewarder['rewardPerSecond'] &&
-                Number(rewarder['rewardPerSecond']) > 0 &&
+                Number(rewarder.rewardPerSecond ?? 0) > 0 &&
                 rewarder.rewardToken &&
                 !memo.includes(rewarder.rewardToken)
               ) {
@@ -349,7 +456,7 @@ export const useGammaFarmsFiltered = (
     ] = qiRewardsData;
   }
 
-  const filteredFarms = gammaPairs
+  const filteredFarms: V3Farm[] = gammaPairs
     .map((pair) => {
       const token0 = getTokenFromAddress(
         pair.token0Address,
@@ -379,15 +486,12 @@ export const useGammaFarmsFiltered = (
               pair.address.toLowerCase()
             ]
           : undefined;
-      const tvl =
-        gammaReward && gammaReward['stakedAmountUSD']
-          ? Number(gammaReward['stakedAmountUSD'])
-          : 0;
+      const tvl = Number(gammaReward?.stakedAmountUSD ?? 0);
 
-      const rewardsObj = gammaReward ? gammaReward['rewarders'] : undefined;
+      const rewardsObj = gammaReward?.rewarders;
       const rewards = rewardsObj
         ? Object.values(rewardsObj).filter(
-            (reward: any) => reward && Number(reward['rewardPerSecond']) > 0,
+            (reward: any) => Number(reward?.rewardPerSecond ?? 0) > 0,
           )
         : [];
       const rewardUSD = rewards.reduce((total: number, rewarder: any) => {
@@ -403,15 +507,8 @@ export const useGammaFarmsFiltered = (
       const gammaFarmData = gammaData
         ? gammaData[pair.address.toLowerCase()]
         : undefined;
-      const poolAPR =
-        gammaFarmData &&
-        gammaFarmData['returns'] &&
-        gammaFarmData['returns']['allTime'] &&
-        gammaFarmData['returns']['allTime']['feeApr']
-          ? Number(gammaFarmData['returns']['allTime']['feeApr'])
-          : 0;
-      const farmAPR =
-        gammaReward && gammaReward['apr'] ? Number(gammaReward['apr']) : 0;
+      const poolAPR = Number(gammaFarmData?.returns?.allTime?.feeApr ?? 0);
+      const farmAPR = Number(gammaReward?.apr ?? 0);
 
       return {
         ...pair,
@@ -419,76 +516,84 @@ export const useGammaFarmsFiltered = (
         token1,
         tvl,
         rewardUSD,
-        rewards,
+        rewards: rewards.map((item: any) => {
+          return {
+            amount: Number(item?.rewardPerSecond ?? 0),
+            token: {
+              address: item?.rewardToken ?? '',
+              symbol: item?.rewardTokenSymbol ?? '',
+              decimals: item?.rewardTokenDecimals ?? 18,
+            },
+          };
+        }),
         poolAPR,
         farmAPR,
+        type: 'gamma',
       };
     })
     .filter((item) => {
       const search = searchVal ?? '';
+      const token0Symbol = item.token0?.symbol ?? '';
+      const token0Address = item.token0?.address ?? '';
+      const token1Symbol = item.token1?.symbol ?? '';
+      const token1Address = item.token1?.address ?? '';
       const searchCondition =
-        (item.token0 &&
-          item.token0.symbol &&
-          item.token0.symbol.toLowerCase().includes(search.toLowerCase())) ||
-        (item.token0 &&
-          item.token0.address.toLowerCase().includes(search.toLowerCase())) ||
-        (item.token1 &&
-          item.token1.symbol &&
-          item.token1.symbol.toLowerCase().includes(search.toLowerCase())) ||
-        (item.token1 &&
-          item.token1.address.toLowerCase().includes(search.toLowerCase())) ||
+        token0Symbol.toLowerCase().includes(search.toLowerCase()) ||
+        token0Address.toLowerCase().includes(search.toLowerCase()) ||
+        token1Symbol.toLowerCase().includes(search.toLowerCase()) ||
+        token1Address.toLowerCase().includes(search.toLowerCase()) ||
         item.title.toLowerCase().includes(search.toLowerCase());
       const blueChipCondition =
         !!GlobalData.blueChips[chainId].find(
           (token) =>
-            item.token0 &&
-            token.address.toLowerCase() === item.token0.address.toLowerCase(),
+            token.address.toLowerCase() ===
+            (item.token0?.address ?? '').toLowerCase(),
         ) &&
         !!GlobalData.blueChips[chainId].find(
           (token) =>
-            item.token1 &&
-            token.address.toLowerCase() === item.token1.address.toLowerCase(),
+            token.address.toLowerCase() ===
+            (item.token1?.address ?? '').toLowerCase(),
         );
       const stableCoinCondition =
         !!GlobalData.stableCoins[chainId].find(
           (token) =>
-            item.token0 &&
-            token.address.toLowerCase() === item.token0.address.toLowerCase(),
+            token.address.toLowerCase() ===
+            (item.token0?.address ?? '').toLowerCase(),
         ) &&
         !!GlobalData.stableCoins[chainId].find(
           (token) =>
-            item.token1 &&
-            token.address.toLowerCase() === item.token1.address.toLowerCase(),
+            token.address.toLowerCase() ===
+            (item.token1?.address ?? '').toLowerCase(),
         );
 
       const stablePair0 = GlobalData.stablePairs[chainId].find(
         (tokens) =>
           !!tokens.find(
             (token) =>
-              item.token0 &&
-              token.address.toLowerCase() === item.token0.address.toLowerCase(),
+              token.address.toLowerCase() ===
+              (item.token0?.address ?? '').toLowerCase(),
           ),
       );
       const stablePair1 = GlobalData.stablePairs[chainId].find(
         (tokens) =>
           !!tokens.find(
             (token) =>
-              item.token1 &&
-              token.address.toLowerCase() === item.token1.address.toLowerCase(),
+              token.address.toLowerCase() ===
+              (item.token1?.address ?? '').toLowerCase(),
           ),
       );
       const stableLPCondition =
         (stablePair0 &&
           stablePair0.find(
             (token) =>
-              item.token1 &&
-              token.address.toLowerCase() === item.token1.address.toLowerCase(),
+              token.address.toLowerCase() ===
+              (item.token1?.address ?? '').toLowerCase(),
           )) ||
         (stablePair1 &&
           stablePair1.find(
             (token) =>
-              item.token0 &&
-              token.address.toLowerCase() === item.token0.address.toLowerCase(),
+              token.address.toLowerCase() ===
+              (item.token0?.address ?? '').toLowerCase(),
           ));
 
       return (

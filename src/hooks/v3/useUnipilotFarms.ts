@@ -22,6 +22,7 @@ import {
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 import { getConfig } from 'config';
+import { V3Farm } from 'pages/FarmPage/V3/Farms';
 
 interface RewardRate {
   rewardA?: BigNumber;
@@ -336,7 +337,7 @@ export function useUnipilotFilteredFarms(
     farmTokenAddresses,
   );
 
-  const filteredFarms = unipilotFarms
+  const filteredFarms: V3Farm[] = unipilotFarms
     .map((farm: any) => {
       const rewardRate = rewardRates.find(
         (rate) =>
@@ -357,22 +358,89 @@ export function useUnipilotFilteredFarms(
       const tvl =
         totalLockedTokenA * (farmTokenAUSD?.price ?? 0) +
         totalLockedTokenB * (farmTokenBUSD?.price ?? 0);
-      if (chainId) {
-        const token0 = getTokenFromAddress(
-          farm.token0.id,
-          chainId,
-          tokenMap,
-          [],
-        );
-        const token1 = getTokenFromAddress(
-          farm.token1.id,
-          chainId,
-          tokenMap,
-          [],
-        );
-        return { ...farm, token0, token1, rewardRate, tvl };
-      }
-      return { ...farm, token0: undefined, token1: undefined, rewardRate, tvl };
+
+      const farmRewardA =
+        farm.rewardRate && farm.rewardRate.rateA && farm.rewardRate.tokenA
+          ? Number(
+              formatUnits(
+                farm.rewardRate.rateA,
+                farm.rewardRate.tokenA.decimals,
+              ),
+            )
+          : 0;
+      const farmRewardB =
+        farm.rewardRate && farm.rewardRate.rateB && farm.rewardRate.tokenB
+          ? Number(
+              formatUnits(
+                farm.rewardRate.rateB,
+                farm.rewardRate.tokenB.decimals,
+              ),
+            )
+          : 0;
+      const farmRewardTokenAUSD = rewardsWithUSDPrice?.find(
+        (item) =>
+          farm.rewardRate &&
+          farm.rewardRate.tokenA &&
+          item.address.toLowerCase() ===
+            farm.rewardRate.tokenA.address.toLowerCase(),
+      );
+      const farmRewardTokenBUSD = rewardsWithUSDPrice?.find(
+        (item) =>
+          farm.rewardRate &&
+          farm.rewardRate.tokenB &&
+          item.address.toLowerCase() ===
+            farm.rewardRate.tokenB.address.toLowerCase(),
+      );
+      const rewardUSD =
+        farmRewardA * (farmRewardTokenAUSD?.price ?? 0) +
+        farmRewardB * (farmRewardTokenBUSD?.price ?? 0);
+
+      const token0 = getTokenFromAddress(farm.token0.id, chainId, tokenMap, []);
+      const token1 = getTokenFromAddress(farm.token1.id, chainId, tokenMap, []);
+
+      const farmData =
+        unipilotFarmData && farm && farm.id
+          ? unipilotFarmData[farm.id.toLowerCase()]
+          : undefined;
+      const poolAPR = Number(farmData?.stats ?? 0);
+
+      const farmTVL = farm?.tvl ?? 1000;
+      const farmAPR =
+        ((farmRewardA * 24 * 3600 * (farmRewardTokenAUSD?.price ?? 0) +
+          farmRewardB * 24 * 3600 * (farmRewardTokenBUSD?.price ?? 0)) /
+          farmTVL) *
+        36500;
+
+      return {
+        ...farm,
+        token0,
+        token1,
+        rewards: [
+          {
+            amount: Number(
+              formatUnits(
+                rewardRate?.rewardA ?? '0',
+                rewardRate?.tokenA?.decimals ?? 18,
+              ),
+            ),
+            token: rewardRate?.tokenA,
+          },
+          {
+            amount: Number(
+              formatUnits(
+                rewardRate?.rewardB ?? '0',
+                rewardRate?.tokenB?.decimals ?? 18,
+              ),
+            ),
+            token: rewardRate?.tokenB,
+          },
+        ],
+        tvl,
+        rewardUSD,
+        poolAPR,
+        farmAPR,
+        type: 'unipilot',
+      };
     })
     .filter((item: any) => {
       const search = searchVal ?? '';
@@ -469,178 +537,11 @@ export function useUnipilotFilteredFarms(
       } else if (sortBy === v3FarmSortBy.tvl) {
         return farm0.tvl > farm1.tvl ? sortMultiplier : -1 * sortMultiplier;
       } else if (sortBy === v3FarmSortBy.rewards) {
-        const farm0RewardA =
-          farm0.rewardRate && farm0.rewardRate.rateA && farm0.rewardRate.tokenA
-            ? Number(
-                formatUnits(
-                  farm0.rewardRate.rateA,
-                  farm0.rewardRate.tokenA.decimals,
-                ),
-              )
-            : 0;
-        const farm0RewardB =
-          farm0.rewardRate && farm0.rewardRate.rateB && farm0.rewardRate.tokenB
-            ? Number(
-                formatUnits(
-                  farm0.rewardRate.rateB,
-                  farm0.rewardRate.tokenB.decimals,
-                ),
-              )
-            : 0;
-        const farm0RewardTokenAUSD = rewardsWithUSDPrice?.find(
-          (item) =>
-            farm0.rewardRate &&
-            farm0.rewardRate.tokenA &&
-            item.address.toLowerCase() ===
-              farm0.rewardRate.tokenA.address.toLowerCase(),
-        );
-        const farm0RewardTokenBUSD = rewardsWithUSDPrice?.find(
-          (item) =>
-            farm0.rewardRate &&
-            farm0.rewardRate.tokenB &&
-            item.address.toLowerCase() ===
-              farm0.rewardRate.tokenB.address.toLowerCase(),
-        );
-        const farm0RewardUSD =
-          farm0RewardA * (farm0RewardTokenAUSD?.price ?? 0) +
-          farm0RewardB * (farm0RewardTokenBUSD?.price ?? 0);
-
-        const farm1RewardA =
-          farm1.rewardRate && farm1.rewardRate.rateA && farm1.rewardRate.tokenA
-            ? Number(
-                formatUnits(
-                  farm1.rewardRate.rateA,
-                  farm1.rewardRate.tokenA.decimals,
-                ),
-              )
-            : 0;
-        const farm1RewardB =
-          farm1.rewardRate && farm1.rewardRate.rateB && farm1.rewardRate.tokenB
-            ? Number(
-                formatUnits(
-                  farm1.rewardRate.rateB,
-                  farm1.rewardRate.tokenB.decimals,
-                ),
-              )
-            : 0;
-        const farm1RewardTokenAUSD = rewardsWithUSDPrice?.find(
-          (item) =>
-            farm1.rewardRate &&
-            farm1.rewardRate.tokenA &&
-            item.address.toLowerCase() ===
-              farm1.rewardRate.tokenA.address.toLowerCase(),
-        );
-        const farm1RewardTokenBUSD = rewardsWithUSDPrice?.find(
-          (item) =>
-            farm1.rewardRate &&
-            farm1.rewardRate.tokenB &&
-            item.address.toLowerCase() ===
-              farm1.rewardRate.tokenB.address.toLowerCase(),
-        );
-        const farm1RewardUSD =
-          farm1RewardA * (farm1RewardTokenAUSD?.price ?? 0) +
-          farm1RewardB * (farm1RewardTokenBUSD?.price ?? 0);
-
-        return farm0RewardUSD > farm1RewardUSD
+        return farm0.rewardUSD > farm1.rewardUSD
           ? sortMultiplier
           : -1 * sortMultiplier;
       } else if (sortBy === v3FarmSortBy.apr) {
-        const farm0Data =
-          unipilotFarmData && farm0 && farm0.id
-            ? unipilotFarmData[farm0.id.toLowerCase()]
-            : undefined;
-        const farm0VaultApr = farm0Data ? Number(farm0Data['stats']) : 0;
-        const farm0RewardTokenAUSD = rewardsWithUSDPrice?.find(
-          (item) =>
-            farm0.rewardRate &&
-            farm0.rewardRate.tokenA &&
-            item.address.toLowerCase() ===
-              farm0.rewardRate.tokenA.address.toLowerCase(),
-        );
-        const farm0RewardTokenBUSD = rewardsWithUSDPrice?.find(
-          (item) =>
-            farm0.rewardRate &&
-            farm0.rewardRate.tokenB &&
-            item.address.toLowerCase() ===
-              farm0.rewardRate.tokenB.address.toLowerCase(),
-        );
-        const farm0TVL = farm0.tvl ?? 1000;
-        const farm0RewardA =
-          farm0.rewardRate && farm0.rewardRate.rateA && farm0.rewardRate.tokenA
-            ? Number(
-                formatUnits(
-                  farm0.rewardRate.rateA,
-                  farm0.rewardRate.tokenA.decimals,
-                ),
-              ) *
-              24 *
-              3600
-            : 0;
-        const farm0RewardB =
-          farm0.rewardRate && farm0.rewardRate.rateB && farm0.rewardRate.tokenB
-            ? Number(
-                formatUnits(
-                  farm0.rewardRate.rateB,
-                  farm0.rewardRate.tokenB.decimals,
-                ),
-              ) *
-              24 *
-              3600
-            : 0;
-        const farm0FarmAPR =
-          ((farm0RewardA * (farm0RewardTokenAUSD?.price ?? 0) +
-            farm0RewardB * (farm0RewardTokenBUSD?.price ?? 0)) /
-            farm0TVL) *
-          36500;
-
-        const farm1Data =
-          unipilotFarmData && farm1 && farm1.id
-            ? unipilotFarmData[farm1.id.toLowerCase()]
-            : undefined;
-        const farm1VaultApr = farm1Data ? Number(farm1Data['stats']) : 0;
-        const farm1RewardTokenAUSD = rewardsWithUSDPrice?.find(
-          (item) =>
-            farm1.rewardRate &&
-            farm1.rewardRate.tokenA &&
-            item.address.toLowerCase() ===
-              farm1.rewardRate.tokenA.address.toLowerCase(),
-        );
-        const farm1RewardTokenBUSD = rewardsWithUSDPrice?.find(
-          (item) =>
-            farm1.rewardRate &&
-            farm1.rewardRate.tokenB &&
-            item.address.toLowerCase() ===
-              farm1.rewardRate.tokenB.address.toLowerCase(),
-        );
-        const farm1TVL = farm1.tvl ?? 1000;
-        const farm1RewardA =
-          farm1.rewardRate && farm1.rewardRate.rateA && farm1.rewardRate.tokenA
-            ? Number(
-                formatUnits(
-                  farm1.rewardRate.rateA,
-                  farm1.rewardRate.tokenA.decimals,
-                ),
-              ) *
-              24 *
-              3600
-            : 0;
-        const farm1RewardB =
-          farm1.rewardRate && farm1.rewardRate.rateB && farm1.rewardRate.tokenB
-            ? Number(
-                formatUnits(
-                  farm1.rewardRate.rateB,
-                  farm1.rewardRate.tokenB.decimals,
-                ),
-              ) *
-              24 *
-              3600
-            : 0;
-        const farm1FarmAPR =
-          ((farm1RewardA * (farm1RewardTokenAUSD?.price ?? 0) +
-            farm1RewardB * (farm1RewardTokenBUSD?.price ?? 0)) /
-            farm1TVL) *
-          36500;
-        return farm0VaultApr + farm0FarmAPR > farm1VaultApr + farm1FarmAPR
+        return farm0.poolAPR + farm0.farmAPR > farm1.poolAPR + farm1.farmAPR
           ? sortMultiplier
           : -1 * sortMultiplier;
       }

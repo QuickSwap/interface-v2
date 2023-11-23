@@ -12,36 +12,38 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
 import { SearchInput, SortColumns, CustomSwitch } from 'components';
-import { GlobalConst, GlobalData } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import {
   useUnipilotFarmData,
   useUnipilotFarms,
   useUnipilotFilteredFarms,
 } from 'hooks/v3/useUnipilotFarms';
 import UnipilotFarmsPage from 'pages/UnipilotFarmsPage';
-import { getAllGammaPairs, getTokenFromAddress } from 'utils';
+import { getAllGammaPairs } from 'utils';
 import SteerFarmsPage from 'pages/SteerFarmsPage';
 import {
   useSteerFilteredFarms,
   useSteerStakingPools,
 } from 'hooks/v3/useSteerData';
+import { useEternalFarms } from 'hooks/useIncentiveSubgraph';
 import {
-  useEternalFarmAprs,
-  useEternalFarmPoolAPRs,
-  useEternalFarmTvls,
-  useEternalFarms,
-} from 'hooks/useIncentiveSubgraph';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { useGammaFarmsFiltered } from 'hooks/v3/useV3Farms';
+  useEternalFarmsFiltered,
+  useGammaFarmsFiltered,
+} from 'hooks/v3/useV3Farms';
 
-interface V3Farm {
-  token0: Token;
-  token1: Token;
+export interface V3Farm {
+  token0?: Token;
+  token1?: Token;
+  title?: string;
   tvl: number;
-  rewards: { amount: number; token: Token }[];
+  rewards: {
+    amount: number;
+    token: { address: string; symbol: string; decimals: number };
+  }[];
   rewardUSD: number;
   poolAPR: number;
   farmAPR: number;
+  type: string;
 }
 
 export default function Farms() {
@@ -59,7 +61,6 @@ export default function Farms() {
 
   const history = useHistory();
 
-  const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
   const [searchValue, setSearchValue] = useState('');
 
   const farmFilters = useMemo(
@@ -93,18 +94,6 @@ export default function Farms() {
     data: allEternalFarms,
     isLoading: eternalFarmsLoading,
   } = useEternalFarms();
-  const {
-    data: eternalFarmPoolAprs,
-    isLoading: eternalFarmPoolAprsLoading,
-  } = useEternalFarmPoolAPRs();
-  const {
-    data: eternalFarmAprs,
-    isLoading: eternalFarmAprsLoading,
-  } = useEternalFarmAprs();
-  const {
-    data: eternalFarmTvls,
-    isLoading: eternalFarmTvlsLoading,
-  } = useEternalFarmTvls();
   const eternalFarmsByStatus = useMemo(() => {
     if (!allEternalFarms) return [];
     return allEternalFarms
@@ -126,6 +115,15 @@ export default function Farms() {
         };
       });
   }, [allEternalFarms, farmStatus]);
+  const {
+    loading: loadingQSFarms,
+    data: filteredEternalFarms,
+  } = useEternalFarmsFiltered(
+    eternalFarmsByStatus,
+    chainId,
+    searchValue,
+    farmFilter,
+  );
 
   const allGammaPairs = getAllGammaPairs(chainId).filter(
     (item) => item.ableToFarm === (farmStatus === 'active'),
@@ -172,192 +170,47 @@ export default function Farms() {
 
   const loading =
     eternalFarmsLoading ||
+    loadingQSFarms ||
     loadingGamma ||
     unipilotFarmsLoading ||
+    unipilotFarmDataLoading ||
     steerFarmsLoading;
 
-  const tokenMap = useSelectedTokenList();
+  const v3Farms = filteredEternalFarms
+    .concat(filteredGammaFarms)
+    .concat(filteredUnipilotFarms)
+    .concat(filteredSteerFarms)
+    .reduce(
+      (memo: { token0: Token; token1: Token; farms: V3Farm[] }[], farm) => {
+        if (farm.token0 && farm.token1) {
+          const token0Address = farm.token0?.address ?? '';
+          const token1Address = farm.token1?.address ?? '';
+          const farmIndex = memo.findIndex(
+            (item) =>
+              ((item.token0?.address ?? '').toLowerCase() ===
+                token0Address.toLowerCase() &&
+                (item.token1?.address ?? '').toLowerCase() ===
+                  token1Address.toLowerCase()) ||
+              ((item.token0?.address ?? '').toLowerCase() ===
+                token1Address.toLowerCase() &&
+                (item.token1?.address ?? '').toLowerCase() ===
+                  token0Address.toLowerCase()),
+          );
+          if (farmIndex > -1) {
+            memo[farmIndex].farms.push(farm);
+          } else {
+            memo.push({
+              token0: farm.token0,
+              token1: farm.token1,
+              farms: [farm],
+            });
+          }
+        }
 
-  // const v3Farms = useMemo(() => {
-  //   const pairs: { token0: string; token1: string }[] = [];
-  //   if (eternalFarmsByStatus && eternalFarmsByStatus.length > 0) {
-  //     for (const farm of eternalFarmsByStatus) {
-  //       const token0Address =
-  //         farm?.pool?.token0?.id ?? farm?.pool?.token0?.address ?? '';
-  //       const token1Address =
-  //         farm?.pool?.token1?.id ?? farm?.pool?.token1?.address ?? '';
-  //       const token0Name = farm?.pool?.token0?.name ?? '';
-  //       const token1Name = farm?.pool?.token1?.name ?? '';
-  //       const token0Symbol = farm?.pool?.token0?.symbol ?? '';
-  //       const token1Symbol = farm?.pool?.token1?.symbol ?? '';
-
-  //       const searchCondition =
-  //         token0Name.toLowerCase().includes(searchValue) ||
-  //         token1Name.toLowerCase().includes(searchValue) ||
-  //         token0Symbol.toLowerCase().includes(searchValue) ||
-  //         token1Symbol.toLowerCase().includes(searchValue) ||
-  //         token0Address.toLowerCase().includes(searchValue) ||
-  //         token1Address.toLowerCase().includes(searchValue);
-
-  //       const pairExists = pairs.find(
-  //         (pair) =>
-  //           (pair.token0.toLowerCase() === token0Address.toLowerCase() &&
-  //             pair.token1.toLowerCase() === token1Address.toLowerCase()) ||
-  //           (pair.token1.toLowerCase() === token0Address.toLowerCase() &&
-  //             pair.token0.toLowerCase() === token1Address.toLowerCase()),
-  //       );
-
-  //       if (token0Address && token1Address && !pairExists && searchCondition) {
-  //         pairs.push({ token0: token0Address, token1: token1Address });
-  //       }
-  //     }
-  //   }
-  //   if (filteredGammaFarms && filteredGammaFarms.length > 0) {
-  //     for (const farm of filteredGammaFarms) {
-  //       const pairExists = pairs.find(
-  //         (pair) =>
-  //           (pair.token0.toLowerCase() === farm.token0Address.toLowerCase() &&
-  //             pair.token1.toLowerCase() === farm.token1Address.toLowerCase()) ||
-  //           (pair.token1.toLowerCase() === farm.token0Address.toLowerCase() &&
-  //             pair.token0.toLowerCase() === farm.token1Address.toLowerCase()),
-  //       );
-  //       if (!pairExists) {
-  //         pairs.push({
-  //           token0: farm.token0Address,
-  //           token1: farm.token1Address,
-  //         });
-  //       }
-  //     }
-  //   }
-  //   if (unipilotFarms.length > 0) {
-  //     for (const farm of unipilotFarms) {
-  //       const token0Address = farm?.token0?.id;
-  //       const token1Address = farm?.token1?.id;
-  //       const pairExists = pairs.find(
-  //         (pair) =>
-  //           (token0Address &&
-  //             token1Address &&
-  //             pair.token0.toLowerCase() === token0Address.toLowerCase() &&
-  //             pair.token1.toLowerCase() === token1Address.toLowerCase()) ||
-  //           (token0Address &&
-  //             token1Address &&
-  //             pair.token1.toLowerCase() === token0Address.toLowerCase() &&
-  //             pair.token0.toLowerCase() === token1Address.toLowerCase()),
-  //       );
-  //       if (token0Address && token1Address && !pairExists) {
-  //         pairs.push({ token0: token0Address, token1: token1Address });
-  //       }
-  //     }
-  //   }
-  //   if (steerFarms.length > 0) {
-  //     for (const farm of steerFarms) {
-  //       const token0Address = farm?.vaultTokens?.token0?.address;
-  //       const token1Address = farm?.vaultTokens?.token1?.address;
-  //       const pairExists = pairs.find(
-  //         (pair) =>
-  //           (token0Address &&
-  //             token1Address &&
-  //             pair.token0.toLowerCase() === token0Address.toLowerCase() &&
-  //             pair.token1.toLowerCase() === token1Address.toLowerCase()) ||
-  //           (token0Address &&
-  //             token1Address &&
-  //             pair.token1.toLowerCase() === token0Address.toLowerCase() &&
-  //             pair.token0.toLowerCase() === token1Address.toLowerCase()),
-  //       );
-  //       if (token0Address && token1Address && !pairExists) {
-  //         pairs.push({ token0: token0Address, token1: token1Address });
-  //       }
-  //     }
-  //   }
-
-  //   return pairs
-  //     .map((pair) => {
-  //       const token0 = getTokenFromAddress(pair.token0, chainId, tokenMap, []);
-  //       const token1 = getTokenFromAddress(pair.token1, chainId, tokenMap, []);
-  //       return { token0, token1 };
-  //     })
-  //     .filter(({ token0, token1 }) => {
-  //       const token0Address = token0?.address ?? '';
-  //       const token1Address = token1?.address ?? '';
-  //       const token0Symbol = token0?.symbol ?? '';
-  //       const token1Symbol = token1?.symbol ?? '';
-  //       const token0Name = token0?.name ?? '';
-  //       const token1Name = token1?.name ?? '';
-  //       const searchCondition =
-  //         token0Address.toLowerCase().includes(searchValue.toLowerCase()) ||
-  //         token0Symbol.toLowerCase().includes(searchValue.toLowerCase()) ||
-  //         token0Name.toLowerCase().includes(searchValue.toLowerCase()) ||
-  //         token1Address.toLowerCase().includes(searchValue.toLowerCase()) ||
-  //         token1Symbol.toLowerCase().includes(searchValue.toLowerCase()) ||
-  //         token1Name.toLowerCase().includes(searchValue.toLowerCase());
-  //       const blueChipCondition =
-  //         !!GlobalData.blueChips[chainId].find(
-  //           (token) =>
-  //             token.address.toLowerCase() === token0Address.toLowerCase(),
-  //         ) &&
-  //         !!GlobalData.blueChips[chainId].find(
-  //           (token) =>
-  //             token.address.toLowerCase() === token1Address.toLowerCase(),
-  //         );
-  //       const stableCoinCondition =
-  //         !!GlobalData.stableCoins[chainId].find(
-  //           (token) =>
-  //             token.address.toLowerCase() === token0Address.toLowerCase(),
-  //         ) &&
-  //         !!GlobalData.stableCoins[chainId].find(
-  //           (token) =>
-  //             token.address.toLowerCase() === token1Address.toLowerCase(),
-  //         );
-  //       const stablePair0 = GlobalData.stablePairs[chainId].find(
-  //         (tokens) =>
-  //           !!tokens.find(
-  //             (token) =>
-  //               token.address.toLowerCase() === token0Address.toLowerCase(),
-  //           ),
-  //       );
-  //       const stablePair1 = GlobalData.stablePairs[chainId].find(
-  //         (tokens) =>
-  //           !!tokens.find(
-  //             (token) =>
-  //               token.address.toLowerCase() === token1Address.toLowerCase(),
-  //           ),
-  //       );
-  //       const stableLPCondition =
-  //         (stablePair0 &&
-  //           stablePair0.find(
-  //             (token) =>
-  //               token.address.toLowerCase() === token1Address.toLowerCase(),
-  //           )) ||
-  //         (stablePair1 &&
-  //           stablePair1.find(
-  //             (token) =>
-  //               token.address.toLowerCase() === token0Address.toLowerCase(),
-  //           ));
-
-  //       return (
-  //         searchCondition &&
-  //         (farmFilter === v3FarmFilter.blueChip
-  //           ? blueChipCondition
-  //           : farmFilter === v3FarmFilter.stableCoin
-  //           ? stableCoinCondition
-  //           : farmFilter === v3FarmFilter.stableLP
-  //           ? stableLPCondition
-  //           : farmFilter === v3FarmFilter.otherLP
-  //           ? !blueChipCondition && !stableCoinCondition && !stableLPCondition
-  //           : true)
-  //       );
-  //     });
-  // }, [
-  //   eternalFarmsByStatus,
-  //   filteredGammaFarms,
-  //   unipilotFarms,
-  //   steerFarms,
-  //   searchValue,
-  //   chainId,
-  //   tokenMap,
-  //   farmFilter,
-  //   v3FarmFilter,
-  // ]);
+        return memo;
+      },
+      [],
+    );
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
