@@ -1210,13 +1210,13 @@ export const GammaPairs: {
         pid: 94,
       },
     ],
-    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x3c499c542cef5e3811e1192ce70d8cC03d5c3359': [
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x3c499c542cef5e3811e1192ce70d8cc03d5c3359': [
       {
         type: Presets.GAMMA_STABLE,
         title: 'Stable',
         address: '0x472de51a83e052d5d7aca104d4cf4c1f45394130',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-        token1Address: '0x3c499c542cef5e3811e1192ce70d8cC03d5c3359',
+        token1Address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
         ableToFarm: true,
         pid: 95,
       },
