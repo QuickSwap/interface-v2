@@ -558,8 +558,8 @@ export function useSteerFilteredFarms(
       const token1 =
         farm &&
         farm.vaultTokens &&
-        farm.vaultTokens.token0 &&
-        farm.vaultTokens.token0.address
+        farm.vaultTokens.token1 &&
+        farm.vaultTokens.token1.address
           ? getTokenFromAddress(
               farm.vaultTokens.token1.address,
               chainId,
