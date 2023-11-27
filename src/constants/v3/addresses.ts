@@ -783,6 +783,13 @@ export const WSTETH: { [chainId: number]: Token } = {
     'wstETH',
     'Wrapped liquid staked Ether 2.0',
   ),
+  [ChainId.MANTA]: new Token(
+    ChainId.MANTA,
+    '0x2FE3AD97a60EB7c79A976FC18Bb5fFD07Dd94BA5',
+    18,
+    'wstETH',
+    'Wrapped liquid staked Ether 2.0',
+  ),
 };
 
 export const ANKRMATIC: { [chainId: number]: Token } = {

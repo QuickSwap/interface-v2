@@ -1721,6 +1721,7 @@ export const GlobalData = {
       USDC[ChainId.MANTA],
       USDT[ChainId.MANTA],
       DAI[ChainId.MANTA],
+      MATIC[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   },
@@ -1745,7 +1746,10 @@ export const GlobalData = {
     ],
     [ChainId.ZKTESTNET]: [],
     [ChainId.KAVA]: [],
-    [ChainId.MANTA]: [],
+    [ChainId.MANTA]: [
+      [MATICX[ChainId.MANTA], MATIC[ChainId.MANTA]],
+      [WETH[ChainId.MANTA], WSTETH[ChainId.MANTA]],
+    ],
     [ChainId.ZKATANA]: [],
   },
 };
