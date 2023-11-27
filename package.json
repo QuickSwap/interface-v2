@@ -126,6 +126,7 @@
     "@arcxmoney/analytics": "^2.0.2",
     "@cryption/df-sdk-core": "0.0.26",
     "@deficonnect/web3-connector": "^2.0.3",
+    "@ichidao/ichi-vaults-sdk": "^0.0.9",
     "@intract/attribution": "^2.0.0",
     "@masa-finance/analytics-react": "^0.12.4",
     "@material-ui/core": "^4.12.3",

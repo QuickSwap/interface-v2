@@ -33,6 +33,8 @@ const FarmPage: React.FC = () => {
   const farmAvailable = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
+  const ichiEnabled = config['ichi']['available'];
+  const showVersion = (v2 && v3) || (v2 && ichiEnabled) || (v3 && ichiEnabled);
   const { isV2, updateIsV2 } = useIsV2();
 
   const lpFarms = useDefaultFarmList();
@@ -143,7 +145,7 @@ const FarmPage: React.FC = () => {
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
           <h1 className='h4'>{t('farm')}</h1>
-          {v2 && v3 && (
+          {showVersion && (
             <Box ml={2}>
               <VersionToggle />
             </Box>
