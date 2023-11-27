@@ -749,6 +749,13 @@ export const MATICX: { [chainId: number]: Token } = {
     'MaticX',
     'Liquid Staking Matic',
   ),
+  [ChainId.MANTA]: new Token(
+    ChainId.MANTA,
+    '0x01d27580c464d5b3b26f78bee12e684901dbc02a',
+    18,
+    'MaticX',
+    'Liquid Staking Matic',
+  ),
 };
 
 export const STMATIC: { [chainId: number]: Token } = {
@@ -952,6 +959,13 @@ export const EMPTY: { [chainId: number]: Token } = {
   ),
   [ChainId.ZKEVM]: new Token(
     ChainId.ZKEVM,
+    '0x0000000000000000000000000000000000000000',
+    0,
+    'EMPTY',
+    'EMPTY',
+  ),
+  [ChainId.MANTA]: new Token(
+    ChainId.MANTA,
     '0x0000000000000000000000000000000000000000',
     0,
     'EMPTY',

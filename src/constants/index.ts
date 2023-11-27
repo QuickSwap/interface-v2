@@ -1623,7 +1623,7 @@ export const GlobalValue = {
       [ChainId.DOEGCHAIN_TESTNET]: [],
       [ChainId.ZKTESTNET]: [],
       [ChainId.KAVA]: [],
-      [ChainId.MANTA]: [],
+      [ChainId.MANTA]: [EMPTY[ChainId.MANTA], MATICX[ChainId.MANTA]],
       [ChainId.ZKATANA]: [],
     },
   },
