@@ -7,11 +7,9 @@ import {
   useWalletModalToggle,
 } from 'state/application/hooks';
 import { useIsSupportedNetwork } from 'utils';
-import { useIsExpertMode } from 'state/user/hooks';
 import { Box, Button } from '@material-ui/core';
 import { SettingsModal } from 'components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import { useAppDispatch } from 'state/hooks';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
 import { useTranslation } from 'react-i18next';
 import V3CurrencySelect from 'components/v3/CurrencySelect';
@@ -19,7 +17,10 @@ import SingleTokenSelectPool from './components/SelectPool';
 import SingleTokenEnterAmount from './components/EnterAmount';
 import ICHILogo from 'assets/images/ichi_logo.png';
 import './index.scss';
-import { useSingleTokenCurrency } from 'state/singleToken/hooks';
+import {
+  useSingleTokenCurrency,
+  useSingleTokenVault,
+} from 'state/singleToken/hooks';
 import SingleTokenDepositButton from './components/DepositButton';
 
 export function SingleTokenSupplyLiquidity() {
@@ -29,13 +30,10 @@ export function SingleTokenSupplyLiquidity() {
   const { account } = useActiveWeb3React();
 
   const currency = useSingleTokenCurrency();
+  const { selectedVault } = useSingleTokenVault();
 
   const toggleWalletModal = useWalletModalToggle(); // toggle wallet when disconnected
   const toggletNetworkSelectionModal = useNetworkSelectionModalToggle();
-
-  const dispatch = useAppDispatch();
-
-  const expertMode = useIsExpertMode();
 
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
 
@@ -108,13 +106,18 @@ export function SingleTokenSupplyLiquidity() {
       </Box>
       <Box mt={3} position='relative'>
         {(!currency || !account || !isSupportedNetwork) && (
-          <Box className='singleToken-supply-liquidity-overlay' />
+          <Box className='singleTokenSupplyLiquidityOverlay' />
         )}
         <SingleTokenSelectPool currency={currency ?? undefined} />
-        <Box my={3}>
+        <Box my={3} position='relative'>
+          {!selectedVault && (
+            <Box className='singleTokenSupplyLiquidityOverlay' />
+          )}
           <SingleTokenEnterAmount />
+          <Box mt={2}>
+            <SingleTokenDepositButton />
+          </Box>
         </Box>
-        <SingleTokenDepositButton />
       </Box>
     </Box>
   );

@@ -7,6 +7,7 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { CHAIN_INFO } from 'constants/v3/chains';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency } from 'hooks/v3/Tokens';
+import { ICHIVault } from 'hooks/useICHIData';
 
 export function useSingleTokenState(): AppState['singleToken'] {
   return useSelector<AppState, AppState['singleToken']>(
@@ -39,7 +40,7 @@ export function useSingleTokenVault() {
 
   const dispatch = useDispatch();
   const _selectVault = useCallback(
-    (vault: string) => {
+    (vault: ICHIVault | undefined) => {
       dispatch(selectVault({ vault }));
     },
     [dispatch],

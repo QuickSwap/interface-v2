@@ -1,14 +1,15 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { selectVault, typeInput } from './actions';
+import { ICHIVault } from 'hooks/useICHIData';
 
 export interface SingleTokenState {
   readonly typedValue: string;
-  readonly selectedVault: string | undefined;
+  readonly selectedVault: ICHIVault | undefined;
 }
 
 const initialState: SingleTokenState = {
   typedValue: '',
-  selectedVault: '',
+  selectedVault: undefined,
 };
 
 export default createReducer<SingleTokenState>(initialState, (builder) =>

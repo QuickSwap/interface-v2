@@ -51,20 +51,23 @@ const SingleTokenSelectPool: React.FC<{ currency?: Currency }> = ({
                 onClick={() => {
                   if (
                     selectedVault &&
-                    vault.address.toLowerCase() === selectedVault.toLowerCase()
+                    vault.address.toLowerCase() ===
+                      selectedVault.address.toLowerCase()
                   ) {
-                    selectVault('');
+                    selectVault(undefined);
                   } else {
-                    selectVault(vault.address);
+                    selectVault(vault);
                   }
                 }}
                 selected={
                   !!selectedVault &&
-                  vault.address.toLowerCase() === selectedVault.toLowerCase()
+                  vault.address.toLowerCase() ===
+                    selectedVault.address.toLowerCase()
                 }
                 unselected={
                   !!selectedVault &&
-                  vault.address.toLowerCase() !== selectedVault.toLowerCase()
+                  vault.address.toLowerCase() !==
+                    selectedVault.address.toLowerCase()
                 }
               />
             ))}

@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.singleToken-supply-liquidity-overlay {
+.singleTokenSupplyLiquidityOverlay {
   position: absolute;
   width: calc(100% + 48px);
   height: calc(100% + 48px);
@@ -11,12 +11,6 @@
   top: -24px;
   z-index: 20;
   border-radius: 20px;
-}
-
-button.singleToken-supply-liquidity-button {
-  width: 100%;
-  height: 48px;
-  border-radius: 16px;
 }
 
 .singleTokenSelectPoolWarning {
@@ -76,4 +70,56 @@ button.singleToken-supply-liquidity-button {
   width: 100%;
   height: 48px;
   border-radius: 14px;
+  &.Mui-disabled {
+    background-color: $secondary1;
+  }
+}
+
+.singleTokenInputWrapper {
+  padding: 16px;
+  background: $secondary1;
+  border-radius: 16px;
+  & p {
+    margin-left: 8px;
+  }
+}
+
+.singleTokenInputMax {
+  cursor: pointer;
+  background-color: $grey4;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $primary;
+  display: flex;
+  align-items: center;
+}
+
+.singleTokenInfoWrapper {
+  padding: 16px;
+  display: flex;
+  border: 1px solid;
+  border-radius: 16px;
+  & svg {
+    width: 16px;
+  }
+  & small {
+    flex: 1;
+    margin-left: 8px;
+  }
+}
+
+.singleTokenHelp {
+  background-color: $grey36;
+  color: $textPrimary;
+  & a {
+    color: $textPrimary;
+  }
+}
+
+.singleTokenWarning {
+  background-color: $yellow8;
+  color: $yellow9;
 }
