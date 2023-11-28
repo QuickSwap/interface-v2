@@ -42,8 +42,12 @@ export function encodeRouteToPath(
       } else {
         return {
           inputToken: outputToken,
-          types: [...types, 'address'],
-          path: [...path, outputToken.address],
+          types: isUni
+            ? [...types, 'uint24', 'address']
+            : [...types, 'address'],
+          path: isUni
+            ? [...path, pool.fee as FeeAmount, outputToken.address]
+            : [...path, outputToken.address],
         };
       }
     },
