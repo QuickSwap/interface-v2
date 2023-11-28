@@ -9,7 +9,7 @@ import { useActiveWeb3React } from 'hooks';
 import { Box, Button, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import BondTokenDisplay from './BondTokenDisplay';
-import BillNFTImage from 'assets/images/bonds/bill-nfts.gif';
+import BillNFTImage from 'assets/images/bonds/quickBond.jpg';
 import {
   useUserOwnedBondNftData,
   useUserOwnedBonds,

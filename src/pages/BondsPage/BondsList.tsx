@@ -49,7 +49,7 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
       const disabled =
         bond.maxTotalPayOut && bond.totalPayoutGiven && bond.earnTokenPrice
           ? available <= thresholdToHide || Number(bond.discount) === 100
-          : false;
+          : true;
       const bondStatusCondition = !disabled === (bondsStatus === 'available');
 
       const searchCondition =
@@ -64,22 +64,6 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
     if (!userBonds) return [];
     return userBonds.filter((userBond) => {
       const { bond } = userBond;
-      const available = Number(
-        formatUnits(
-          BigNumber.from(bond?.maxTotalPayOut ?? '0').sub(
-            BigNumber.from(bond?.totalPayoutGiven ?? '0'),
-          ),
-          bond.earnToken?.decimals?.[chainId] ?? undefined,
-        ),
-      );
-      const thresholdToHide =
-        bond && bond.earnTokenPrice && bond.earnTokenPrice > 0
-          ? 100 / bond.earnTokenPrice
-          : 0;
-      const disabled =
-        bond.maxTotalPayOut && bond.totalPayoutGiven && bond.earnTokenPrice
-          ? available <= thresholdToHide || Number(bond.discount) === 100
-          : false;
 
       const searchCondition =
         bond.earnToken.symbol.toLowerCase().includes(search.toLowerCase()) ||
@@ -87,7 +71,7 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
         bond.lpToken.symbol.toLowerCase().includes(search.toLowerCase());
       return searchCondition;
     });
-  }, [chainId, search, userBonds]);
+  }, [search, userBonds]);
 
   return (
     <Box pb={2} px={3}>

@@ -8,7 +8,7 @@ import { getConfig } from 'config/index';
 import { useHistory } from 'react-router-dom';
 import { CustomSwitch, HypeLabAds, SearchInput } from 'components';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import BillNFTImage from 'assets/images/bonds/bill-nfts.gif';
+import BillNFTImage from 'assets/images/bonds/quickBond.jpg';
 import ApeSwapLogo from 'assets/images/bonds/apeSwapLogo.svg';
 import { ReactComponent as BillSvg1 } from 'assets/images/bonds/billSvg1.svg';
 import { ReactComponent as BillSvg2 } from 'assets/images/bonds/billSvg2.svg';
@@ -150,9 +150,17 @@ const BondsPage: React.FC = () => {
             width={isTablet ? '100%' : 'auto'}
           >
             <Box
-              mr={isTablet ? 0 : 3}
-              mb={isMobile ? 2 : 0}
-              width={isMobile ? '100%' : isTablet ? '49%' : 'auto'}
+              mr={isTablet || bondsType === 'myBonds' ? 0 : 3}
+              mb={isMobile && bondsType === 'availableBonds' ? 2 : 0}
+              width={
+                isMobile
+                  ? '100%'
+                  : isTablet
+                  ? bondsType === 'availableBonds'
+                    ? '49%'
+                    : '100%'
+                  : 'auto'
+              }
             >
               <SearchInput
                 placeholder={t('search')}
@@ -161,11 +169,13 @@ const BondsPage: React.FC = () => {
                 height={36}
               />
             </Box>
-            <CustomSwitch
-              width={isMobile ? '100%' : isTablet ? '49%' : 214}
-              height={36}
-              items={bondsStatusItems}
-            />
+            {bondsType === 'availableBonds' && (
+              <CustomSwitch
+                width={isMobile ? '100%' : isTablet ? '49%' : 214}
+                height={36}
+                items={bondsStatusItems}
+              />
+            )}
           </Box>
         </Box>
         <Box p={3}>

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, Grid } from '@material-ui/core';
 import { CustomModal, DualCurrencyPanel } from 'components';
-import BillImage from 'assets/images/bonds/hidden-bill.jpg';
+import BillImage from 'assets/images/bonds/quickBond.jpg';
 import BondTokenDisplay from './BondTokenDisplay';
 import { useTranslation } from 'react-i18next';
 import { formatNumber } from 'utils';
