@@ -5,7 +5,10 @@ import { Pool } from 'v3lib/entities/pool';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { useBlockNumber } from 'state/application/hooks';
 import { unwrappedToken } from 'utils/unwrappedToken';
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import {
+  useUNIV3NFTPositionManagerContract,
+  useV3NFTPositionManagerContract,
+} from 'hooks/useContract';
 
 const MAX_UINT128 = BigNumber.from(2)
   .pow(128)
@@ -19,7 +22,11 @@ export function useV3PositionFees(
 ):
   | [CurrencyAmount<Currency>, CurrencyAmount<Currency>]
   | [undefined, undefined] {
-  const positionManager = useV3NFTPositionManagerContract(false);
+  const algebrapositionManager = useV3NFTPositionManagerContract(false);
+  const uniPositionManager = useUNIV3NFTPositionManagerContract();
+  const positionManager = pool?.isUni
+    ? uniPositionManager
+    : algebrapositionManager;
   const owner: string | undefined = useSingleCallResult(
     tokenId ? positionManager : null,
     'ownerOf',
