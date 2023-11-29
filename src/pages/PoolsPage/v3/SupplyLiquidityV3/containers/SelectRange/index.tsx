@@ -381,6 +381,8 @@ export function SelectRange({
     return (
       item.state !== SteerVaultState.Paused &&
       item.state !== SteerVaultState.Retired &&
+      item.feeTier &&
+      Number(item.feeTier) === mintInfo.feeAmount &&
       lowerTick < currentTick &&
       currentTick < upperTick &&
       ((item.token0 &&
