@@ -349,8 +349,10 @@ export function SupplyLiquidityV3() {
               />
             </Box>
           )}
-        {liquidityRangeType ===
-          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+        {(liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
+          liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.STEER_RANGE) && (
           <Box my={2}>
             <SelectFeeTier mintInfo={mintInfo} />
           </Box>
