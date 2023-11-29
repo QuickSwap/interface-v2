@@ -27,9 +27,6 @@ import { useTokenContract, useWETHContract } from 'hooks/useContract';
 import { getConfig } from 'config';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-const API_ENDPOINT = 'https://hub.orbs.network';
-const WEBSITE = 'https://www.orbs.com';
-const BI_ENDPOINT = 'https://bi.orbs.network/putes/liquidity-hub-ui';
 import { ChainId, ETHER, Trade, WETH, Currency } from '@uniswap/sdk';
 import { Contract } from 'ethers';
 import { useSwapActionHandlers } from 'state/swap/hooks';
@@ -38,6 +35,11 @@ import { Currency as CoreCurrency, Percent } from '@uniswap/sdk-core';
 import { ZERO_ADDRESS } from 'constants/v3/misc';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { parseUnits } from 'ethers/lib/utils';
+const API_ENDPOINT = 'https://hub.orbs.network';
+const WEBSITE = 'https://www.orbs.com';
+const BI_ENDPOINT = 'https://bi.orbs.network/putes/liquidity-hub-ui';
+const DEX_PRICE_BETTER_ERROR = 'Dex trade is better than Clob trade';
+const PARTNER = 'QuickSwap';
 
 export const useLiquidityHubCallback = (
   inTokenAddress?: string,
@@ -80,6 +82,7 @@ export const useLiquidityHubCallback = (
       .multipliedBy(outTokenUSD || 0)
       .dividedBy(new BN(10).pow(new BN(outTokenCurrency?.decimals || 0)))
       .toNumber();
+    const isForce = lhControl === LiquidityHubControl.FORCE;
 
     liquidityHubAnalytics.onBestTrade({
       dexAmountOut: minDestAmount,
@@ -99,50 +102,45 @@ export const useLiquidityHubCallback = (
     if (expertMode) {
       liquidityHubAnalytics.onExpertMode();
     }
-
-    if (lhControl === LiquidityHubControl.SKIP) {
-      liquidityHubAnalytics.onSkipped('query param');
-      return;
+    if (isForce) {
+      liquidityHubAnalytics.onForceClob();
     }
-    if (liquidityHubState.isFailed) {
-      liquidityHubAnalytics.onSkipped('previous failure');
-      if (lhControl !== LiquidityHubControl.FORCE) {
-        return;
+
+    try {
+      if (liquidityHubState.isFailed) {
+        if (!isForce) {
+          throw new Error('previous failure');
+        }
       }
-    }
-    if (!isSupported) {
-      liquidityHubAnalytics.onSkipped('clob not supported');
-      return;
-    }
-    if (liquidityHubDisabled) {
-      liquidityHubAnalytics.onSkipped('clob disabled');
-      return;
-    }
-    if (!minDestAmount) {
-      liquidityHubAnalytics.onSkipped('minDestAmount is not defined');
-      return;
-    }
-    if (!inTokenAddress) {
-      liquidityHubAnalytics.onSkipped('inTokenAddress is not defined');
-      return;
-    }
-
-    if (!outTokenAddress) {
-      liquidityHubAnalytics.onSkipped('outTokenAddress is not defined');
-      return;
-    }
-
-    if (!library) {
-      liquidityHubAnalytics.onSkipped('library is not defined');
-      return;
-    }
-
-    if (!account) {
-      liquidityHubAnalytics.onSkipped('account is not defined');
-      return;
-    }
-    if (!srcAmount) {
-      liquidityHubAnalytics.onSkipped('srcAmount is not defined');
+      if (lhControl === LiquidityHubControl.SKIP) {
+        throw new Error('query param');
+      }
+      if (!isSupported) {
+        throw new Error('clob not supported');
+      }
+      if (liquidityHubDisabled) {
+        throw new Error('clob disabled');
+      }
+      if (!minDestAmount) {
+        throw new Error('minDestAmount is not defined');
+      }
+      if (!inTokenAddress) {
+        throw new Error('inTokenAddress is not defined');
+      }
+      if (!outTokenAddress) {
+        throw new Error('outTokenAddress is not defined');
+      }
+      if (!library) {
+        throw new Error('library is not defined');
+      }
+      if (!account) {
+        throw new Error('account is not defined');
+      }
+      if (!srcAmount) {
+        throw new Error('srcAmount is not defined');
+      }
+    } catch (error) {
+      liquidityHubAnalytics.onNotClobTrade(error.message);
       return;
     }
 
@@ -160,23 +158,24 @@ export const useLiquidityHubCallback = (
     const nativeInStartFlow = async () => {
       await quote(quoteArgs);
       await wrap(srcAmount);
-
       onCurrencySelection(Field.INPUT, WETH[chainIdToUse]);
       const approved = await isApproved(srcAmount, wethContract);
       if (!approved) {
+        liquidityHubAnalytics.onApprovedBeforeTheTrade(false);
         await approve(wethContract);
       } else {
-        liquidityHubAnalytics.onApprovedBeforeTheTrade();
+        liquidityHubAnalytics.onApprovedBeforeTheTrade(true);
       }
     };
 
     const regularStartFlow = async () => {
       const approved = await isApproved(srcAmount, inTokenContract);
       if (!approved) {
+        liquidityHubAnalytics.onApprovedBeforeTheTrade(false);
         await quote(quoteArgs);
         await approve(inTokenContract);
       } else {
-        liquidityHubAnalytics.onApprovedBeforeTheTrade();
+        liquidityHubAnalytics.onApprovedBeforeTheTrade(true);
       }
     };
 
@@ -193,7 +192,6 @@ export const useLiquidityHubCallback = (
         isLoading: false,
         outAmount: quoteResult.outAmount,
       });
-      liquidityHubAnalytics.onClobTrade();
       const signature = await sign(quoteResult.permitData);
 
       const response = await swap({
@@ -204,7 +202,7 @@ export const useLiquidityHubCallback = (
         signature,
         quoteResult,
       });
-      liquidityHubAnalytics.onClobSuccess();
+      liquidityHubAnalytics.onClobSuccess(response);
       return response;
     } catch (error) {
       liquidityHubAnalytics.onClobFailure();
@@ -400,14 +398,14 @@ const useQuote = () => {
       if (quoteResponse.message) {
         throw new Error(quoteResponse.message);
       }
-
+      const isForce = lhControl === LiquidityHubControl.FORCE;
       if (
-        lhControl !== LiquidityHubControl.FORCE &&
+        !isForce &&
         BN(quoteResponse.outAmount || '0').isLessThan(
           BN(args.minDestAmount || '0'),
         )
       ) {
-        throw new Error('Dex trade is better than Clob trade');
+        throw new Error(DEX_PRICE_BETTER_ERROR);
       }
       liquidityHubAnalytics.onQuoteSuccess(quoteResponse, count());
       return quoteResponse as QuoteResponse;
@@ -417,6 +415,7 @@ const useQuote = () => {
         count(),
         quoteResponse,
       );
+
       throw new Error(error.message);
     }
   };
@@ -489,9 +488,23 @@ type InitTradeArgs = {
 
 const initialData: Partial<LiquidityHubAnalyticsData> = {
   _id: crypto.randomUUID(),
-  partner: 'QuickSwap',
+  partner: PARTNER,
   chainId: 137,
+  isClobTrade: false,
+  isNotClobTradeReason: 'null',
+  firstFailureSessionId: 'null',
+  clobDexPriceDiffPercent: 'null',
   quoteIndex: 0,
+  'quote-1-state': 'null',
+  approvalState: 'null',
+  'quote-2-state': 'null',
+  signatureState: 'null',
+  swapState: 'null',
+  wrapState: 'null',
+  onChainSwapState: 'null',
+  dexSwapSuccess: false,
+  userWasApprovedBeforeTheTrade: 'null',
+  isForceClob: false,
 };
 
 const counter = () => {
@@ -523,7 +536,19 @@ class LiquidityHubAnalytics {
   }
 
   onLoad() {
-    this.updateAndSend();
+    try {
+      fetch(BI_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          partner: PARTNER,
+          chainId: 137,
+        }),
+      });
+    } catch (error) {}
   }
 
   incrementQuoteIndex() {
@@ -539,33 +564,6 @@ class LiquidityHubAnalytics {
   onQuoteSuccess(quoteResponse: QuoteResponse, time: number) {
     this.updateAndSend({ [`quote-${this.data.quoteIndex}-state`]: 'success' });
     this.onQuoteData(quoteResponse, time);
-  }
-
-  onClobTrade() {
-    this.updateAndSend({ isClobTrade: true });
-  }
-
-  onSkipped(skippedReason: string) {
-    this.updateAndSend({ skipped: true, skippedReason });
-  }
-
-  onTradeType(
-    tradeType: TradeType,
-    values: {
-      srcTokenAddress: string;
-      dstTokenAddress: string;
-      dstTokenSymbol: string;
-      srcTokenSymbol: string;
-      srcAmount: string;
-      dexAmountOut: string;
-      dstAmountOutUsd: number;
-      walletAddress: string;
-    },
-  ) {
-    this.updateAndSend({
-      tradeType: tradeType,
-      ...values,
-    });
   }
 
   onBestTrade(values: InitTradeArgs) {
@@ -588,10 +586,18 @@ class LiquidityHubAnalytics {
   }
 
   onQuoteFailed(error: string, time: number, quoteResponse?: QuoteResponse) {
-    this.updateAndSend({
-      [`quote-${this.data.quoteIndex}-error`]: error,
-      [`quote-${this.data.quoteIndex}-state`]: 'failed',
-    });
+    if (error == DEX_PRICE_BETTER_ERROR) {
+      this.updateAndSend({
+        isNotClobTradeReason: DEX_PRICE_BETTER_ERROR,
+        [`quote-${this.data.quoteIndex}-state`]: 'success',
+      });
+    } else {
+      this.updateAndSend({
+        [`quote-${this.data.quoteIndex}-error`]: error,
+        [`quote-${this.data.quoteIndex}-state`]: 'failed',
+        isNotClobTradeReason: 'quote-failed',
+      });
+    }
 
     this.onQuoteData(quoteResponse, time);
   }
@@ -615,12 +621,12 @@ class LiquidityHubAnalytics {
       [`quote-${this.data.quoteIndex}-quote-call-data`]: quoteResponse?.callData,
       [`quote-${this.data.quoteIndex}-quote-millis`]: time,
       [`quote-${this.data.quoteIndex}-quote-raw-data`]: quoteResponse?.rawData,
-      [`quote-${this.data.quoteIndex}-clob-dex-price-diff-percent`]: getDiff(),
+      clobDexPriceDiffPercent: getDiff(),
     });
   }
 
-  onApprovedBeforeTheTrade() {
-    this.updateAndSend({ userWasApprovedBeforeTheTrade: true });
+  onApprovedBeforeTheTrade(userWasApprovedBeforeTheTrade: boolean) {
+    this.updateAndSend({ userWasApprovedBeforeTheTrade });
   }
 
   onApprovalRequest() {
@@ -640,6 +646,7 @@ class LiquidityHubAnalytics {
       approvalError: error,
       approvalState: 'failed',
       approvalMillis: time,
+      isNotClobTradeReason: 'approval failed',
     });
   }
 
@@ -664,6 +671,7 @@ class LiquidityHubAnalytics {
       wrapError: error,
       wrapState: 'failed',
       wrapMillis: time,
+      isNotClobTradeReason: 'wrap failed',
     });
   }
 
@@ -680,6 +688,7 @@ class LiquidityHubAnalytics {
       signatureError: error,
       signatureState: 'failed',
       signatureMillis: time,
+      isNotClobTradeReason: 'signature failed',
     });
   }
 
@@ -688,7 +697,12 @@ class LiquidityHubAnalytics {
   }
 
   onSwapSuccess(txHash: string, time: number) {
-    this.updateAndSend({ txHash, swapMillis: time, swapState: 'success' });
+    this.updateAndSend({
+      txHash,
+      swapMillis: time,
+      swapState: 'success',
+      isClobTrade: true,
+    });
   }
 
   onSwapFailed(error: string, time: number) {
@@ -696,11 +710,16 @@ class LiquidityHubAnalytics {
       swapError: error,
       swapState: 'failed',
       swapMillis: time,
+      isNotClobTradeReason: 'swap failed',
     });
   }
 
   setSessionId(id: string) {
     this.data.sessionId = id;
+  }
+
+  onForceClob() {
+    this.updateAndSend({ isForceClob: true });
   }
 
   onIsProMode() {
@@ -723,14 +742,35 @@ class LiquidityHubAnalytics {
     };
   }
 
-  onClobSuccess() {
+  async onClobSuccess(response: any) {
+    this.updateAndSend({ onChainSwapState: 'pending' });
+    try {
+      const receipt = await response.wait();
+      if (receipt.status === 1) {
+        this.updateAndSend({ onChainSwapState: 'success' });
+      } else {
+        throw new Error('Transaction failed');
+      }
+    } catch (error) {
+      this.updateAndSend({
+        onChainSwapState: 'failed',
+        isNotClobTradeReason: 'onchain swap error',
+      });
+    }
+
     this.clearState();
+  }
+
+  onNotClobTrade(message: string) {
+    this.updateAndSend({ isNotClobTradeReason: message });
   }
 
   onClobFailure() {
     this.firstFailureSessionId =
       this.firstFailureSessionId || this.data.sessionId || '';
-    this.clearState({ firstFailureSessionId: this.firstFailureSessionId });
+    this.clearState({
+      firstFailureSessionId: this.firstFailureSessionId,
+    });
   }
 }
 
@@ -914,12 +954,13 @@ const StyledLiquidityHubTxSettings = styled(Box)({
 
 // types
 
-type actionState = 'pending' | 'success' | 'failed' | '';
+type actionState = 'pending' | 'success' | 'failed' | 'null' | '';
 
 interface LiquidityHubAnalyticsData {
   _id: string;
   partner: string;
   chainId: number;
+  isForceClob: boolean;
   firstFailureSessionId?: string;
   sessionId?: string;
   walletAddress: string;
@@ -932,8 +973,9 @@ interface LiquidityHubAnalyticsData {
   srcAmount: string;
   quoteIndex: number;
   slippage: number;
-  skippedReason: string;
-  skipped: boolean;
+  'quote-1-state': actionState;
+  'quote-2-state': string;
+  clobDexPriceDiffPercent: string;
 
   approvalState: actionState;
   approvalError: string;
@@ -957,11 +999,13 @@ interface LiquidityHubAnalyticsData {
   dexSwapSuccess: boolean;
   dexSwapTxHash: string;
 
-  userWasApprovedBeforeTheTrade?: boolean;
+  userWasApprovedBeforeTheTrade?: boolean | string;
   dstAmountOutUsd: number;
   isProMode: boolean;
   expertMode: boolean;
   tradeType?: TradeType | null;
+  isNotClobTradeReason: string;
+  onChainSwapState: actionState;
 }
 
 interface QuoteResponse {
