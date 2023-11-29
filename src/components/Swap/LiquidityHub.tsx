@@ -595,7 +595,7 @@ class LiquidityHubAnalytics {
       this.updateAndSend({
         [`quote-${this.data.quoteIndex}-error`]: error,
         [`quote-${this.data.quoteIndex}-state`]: 'failed',
-        isNotClobTradeReason: 'quote-failed',
+        isNotClobTradeReason: `quote-${this.data.quoteIndex}-failed`,
       });
     }
 
