@@ -186,10 +186,8 @@ const SwapBestTrade: React.FC<{
     return { ...outputCurrency, isNative: false, isToken: true } as Currency;
   }, [chainId, outputCurrency]);
 
-  const [optimalRateError, setOptimalRateError] = useState('');
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
   const [mainPrice, setMainPrice] = useState(true);
-  const isValid = !swapInputError && !optimalRateError;
 
   //TODO: move to utils
   const connectWallet = () => {
@@ -334,15 +332,17 @@ const SwapBestTrade: React.FC<{
         },
       });
 
-      setOptimalRateError('');
-      return rate;
+      return { error: undefined, rate };
     } catch (err) {
-      setOptimalRateError(err.message);
-      return null;
+      return { error: err.message, rate: undefined };
     }
   };
 
-  const { data: optimalRate, refetch: reFetchOptimalRate } = useQuery({
+  const {
+    isLoading: loadingOptimalRate,
+    data: optimalRateData,
+    refetch: reFetchOptimalRate,
+  } = useQuery({
     queryKey: [
       'fetchOptimalRate',
       srcToken,
@@ -355,6 +355,18 @@ const SwapBestTrade: React.FC<{
     ],
     queryFn: fetchOptimalRate,
   });
+
+  const optimalRate = useMemo(() => {
+    if (!optimalRateData) return;
+    return optimalRateData.rate;
+  }, [optimalRateData]);
+
+  const optimalRateError = useMemo(() => {
+    if (!optimalRateData) return;
+    return optimalRateData.error;
+  }, [optimalRateData]);
+
+  const isValid = !swapInputError && !optimalRateError && !!optimalRate;
 
   const parsedAmounts = useMemo(() => {
     const parsedAmountInput =
@@ -524,6 +536,8 @@ const SwapBestTrade: React.FC<{
           : wrapType === WrapType.UNWRAPPING
           ? t('unwrappingMATIC', { symbol: WETH[chainId].symbol })
           : '';
+      } else if (loadingOptimalRate) {
+        return t('loading');
       } else if (
         optimalRateError === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT'
       ) {
@@ -559,6 +573,7 @@ const SwapBestTrade: React.FC<{
     currencies,
     formattedAmounts,
     showWrap,
+    loadingOptimalRate,
     optimalRateError,
     swapInputError,
     noRoute,
@@ -972,11 +987,6 @@ const SwapBestTrade: React.FC<{
       setApprovalSubmitted(false);
     }
   }, [approval, bonusRouteFound]);
-
-  useEffect(() => {
-    fetchOptimalRate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typedValue, independentField, inputCurrency, outputCurrency]);
 
   useEffect(() => {
     if (!optimalRate) {
