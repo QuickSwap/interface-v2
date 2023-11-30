@@ -1183,6 +1183,8 @@ export const getAllDefiedgeStrategies = (chainId?: ChainId) => {
     return DefiedgeStrategies[chainId] ?? [];
   }
   return [];
+};
+
 export const calculatePositionWidth = (
   currentTick: number,
   upperTick: number,
