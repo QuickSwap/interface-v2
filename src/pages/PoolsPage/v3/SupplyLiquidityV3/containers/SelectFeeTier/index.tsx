@@ -6,6 +6,7 @@ import { Check } from '@material-ui/icons';
 import './index.scss';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 export interface IFeeTier {
   id: string;
@@ -20,6 +21,7 @@ interface SelectFeeTierProps {
 const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
+  const parsedQuery = useParsedQueryString();
   const feeTiers: { [chainId in ChainId]?: IFeeTier[] } = {
     [ChainId.ZKEVM]: [
       {
@@ -93,24 +95,33 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
       },
     ],
   };
+  const feeTierQuery = parsedQuery?.feeTier;
+  const feeTierIdQuery = feeTierQuery
+    ? `uni-${Number(feeTierQuery) / 10000}`
+    : undefined;
   const { onChangeFeeTier } = useV3MintActionHandlers(mintInfo.noLiquidity);
   const [feeSelectionShow, setFeeSelectionShow] = useState(false);
 
   const fees = feeTiers[chainId];
   useEffect(() => {
-    if (!mintInfo.feeTier) {
-      if (fees && fees.length > 0) {
-        onChangeFeeTier(fees[0]);
-      } else {
-        onChangeFeeTier({
-          id: 'algebra-dynamic',
-          text: 'Dynamic',
-          description: t('bestForAllPair'),
-        });
+    const feeTierFromQuery = fees?.find((item) => item.id === feeTierIdQuery);
+    if (feeTierFromQuery) {
+      onChangeFeeTier(feeTierFromQuery);
+    } else {
+      if (!mintInfo.feeTier) {
+        if (fees && fees.length > 0) {
+          onChangeFeeTier(fees[0]);
+        } else {
+          onChangeFeeTier({
+            id: 'algebra-dynamic',
+            text: 'Dynamic',
+            description: t('bestForAllPair'),
+          });
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mintInfo.feeTier, chainId]);
+  }, [!!mintInfo.feeTier, feeTierIdQuery, chainId]);
 
   return (
     <Box>
