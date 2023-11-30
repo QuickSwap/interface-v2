@@ -520,6 +520,7 @@ export function PresetRanges({
       handlePresetRangeSelection(ranges[0]);
       onChangePresetRange(ranges[0]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [steerLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
 
   return (
