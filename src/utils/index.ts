@@ -28,6 +28,8 @@ import {
   GlobalConst,
   GlobalValue,
   SUPPORTED_CHAINIDS,
+  DefiedgeStrategies,
+  DefiedgeStrategy,
 } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
@@ -1174,6 +1176,13 @@ export const getGammaPairsForTokens = (
   return;
 };
 
+export const getAllDefiedgeStrategies = (chainId?: ChainId) => {
+  const config = getConfig(chainId);
+  const defiedgeAvailable = config['defiedge']['available'];
+  if (defiedgeAvailable && chainId) {
+    return DefiedgeStrategies[chainId] ?? [];
+  }
+  return [];
 export const calculatePositionWidth = (
   currentTick: number,
   upperTick: number,

@@ -57,6 +57,8 @@ import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
+import DEFIEDGE_MINICHEF_ABI from 'constants/abis/defiedge-minichef.json';
 import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
 import STEER_DUAL_STAKING_ABI from 'constants/abis/steer-staking-dual.json';
 import SteerPeripheryABI from 'constants/abis/steer-periphery.json';
@@ -361,6 +363,13 @@ export function useMasterChefContract(
   );
 }
 
+export function useMiniChefContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, DEFIEDGE_MINICHEF_ABI, withSignerIfPossible);
+}
+
 export function useMasterChefContracts(withSignerIfPossible?: boolean) {
   return useContracts(
     GAMMA_MASTERCHEF_ADDRESSES,
@@ -381,6 +390,13 @@ export function useUniPilotVaultContract(
   withSignerIfPossible?: boolean,
 ) {
   return useContract(address, UNIPILOT_VAULT_ABI, withSignerIfPossible);
+}
+
+export function useDefiedgeStrategyContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, DEFIEDGE_STRATEGY_ABI, withSignerIfPossible);
 }
 
 export function useUnipilotFarmingContract(

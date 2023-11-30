@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import EternalFarmsPage from 'pages/EternalFarmsPage';
 import GammaFarmsPage from 'pages/GammaFarmsPage';
+import DefiedgeFarmsPage from 'pages/DefiedgeFarmsPage';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
@@ -15,6 +16,7 @@ import { SearchInput, SortColumns, CustomSwitch } from 'components';
 import { GlobalConst } from 'constants/index';
 import { useUnipilotFarms } from 'hooks/v3/useUnipilotFarms';
 import UnipilotFarmsPage from 'pages/UnipilotFarmsPage';
+import { getAllDefiedgeStrategies } from 'utils';
 import { getAllGammaPairs } from 'utils';
 import SteerFarmsPage from 'pages/SteerFarmsPage';
 import { useSteerStakingPools } from 'hooks/v3/useSteerData';
@@ -45,6 +47,10 @@ export default function Farms() {
   const history = useHistory();
 
   const allGammaFarms = getAllGammaPairs(chainId).filter(
+    (item) => item.ableToFarm,
+  );
+
+  const allDefiedgeFarms = getAllDefiedgeStrategies(chainId).filter(
     (item) => item.ableToFarm,
   );
 
@@ -83,6 +89,8 @@ export default function Farms() {
       ? 'gamma-farms'
       : unipilotFarms.length > 0
       ? 'unipilot-farms'
+      : allDefiedgeFarms.length > 0
+      ? 'defiedge-farms'
       : 'eternal-farms';
 
   const v3FarmCategories = useMemo(() => {
@@ -116,10 +124,18 @@ export default function Farms() {
         hasSeparator: true,
       });
     }
+    if (allDefiedgeFarms.length > 0) {
+      farmCategories.push({
+        text: t('defiedgeFarms'),
+        id: 4,
+        link: 'defiedge-farms',
+        hasSeparator: true,
+      });
+    }
     if (steerFarms.length > 0) {
       farmCategories.push({
         text: t('steerFarms'),
-        id: 4,
+        id: 5,
         link: 'steer-farms',
         hasSeparator: true,
       });
@@ -127,9 +143,10 @@ export default function Farms() {
     return farmCategories;
   }, [
     t,
+    allGammaFarms,
+    unipilotFarms,
+    allDefiedgeFarms,
     qsFarmAvailable,
-    allGammaFarms.length,
-    unipilotFarms.length,
     steerFarms.length,
   ]);
   const onChangeFarmCategory = useCallback(
@@ -326,6 +343,14 @@ export default function Farms() {
         />
       )}
       {selectedFarmCategory?.id === 4 && (
+        <DefiedgeFarmsPage
+          farmFilter={farmFilter}
+          search={searchValue}
+          sortBy={sortBy}
+          sortDesc={sortDesc}
+        />
+      )}
+      {selectedFarmCategory?.id === 5 && (
         <SteerFarmsPage
           farmFilter={farmFilter}
           search={searchValue}

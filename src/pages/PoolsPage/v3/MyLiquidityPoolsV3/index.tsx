@@ -10,6 +10,7 @@ import {
   useGammaPositionsCount,
   useV3PositionsCount,
   useUnipilotPositions,
+  useDefiedgePositions,
   useV3SteerPositionsCount,
 } from 'hooks/v3/useV3Positions';
 import Loader from 'components/Loader';
@@ -17,6 +18,7 @@ import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
 import MyGammaPoolsV3 from '../MyGammaPoolsV3';
 import FilterPanelItem from '../FilterPanelItem';
 import MyUnipilotPoolsV3 from '../MyUnipilotPoolsV3';
+import MyDefiedgePoolsV3 from '../MyDefiedgePoolsV3';
 import MySteerPoolsV3 from '../MySteerPoolsV3';
 
 export default function MyLiquidityPoolsV3() {
@@ -71,6 +73,11 @@ export default function MyLiquidityPoolsV3() {
   } = useUnipilotPositions(account, chainId);
 
   const {
+    loading: defiedgeStrategiesLoading,
+    count: defiedgeStrategiesCount,
+  } = useDefiedgePositions(account, chainId);
+
+  const {
     loading: steerPoolsLoading,
     count: steerPoolsCount,
   } = useV3SteerPositionsCount();
@@ -79,6 +86,7 @@ export default function MyLiquidityPoolsV3() {
     quickPoolsLoading ||
     gammaPoolsLoading ||
     uniPilotPositionsLoading ||
+    defiedgeStrategiesLoading ||
     steerPoolsLoading;
 
   const [poolFilter, setPoolFilter] = useState(
@@ -145,6 +153,26 @@ export default function MyLiquidityPoolsV3() {
         ),
       });
     }
+    if (defiedgeStrategiesCount > 0) {
+      filters.push({
+        id: GlobalConst.utils.poolsFilter.defiedge,
+        text: (
+          <Box className='flex items-center'>
+            <small>Defiedge</small>
+            <Box
+              ml='6px'
+              className={`myV3PoolCountWrapper ${
+                poolFilter === GlobalConst.utils.poolsFilter.defiedge
+                  ? 'activeMyV3PoolCountWrapper'
+                  : ''
+              }`}
+            >
+              {defiedgeStrategiesCount}
+            </Box>
+          </Box>
+        ),
+      });
+    }
     if (steerPoolsCount > 0) {
       filters.push({
         id: GlobalConst.utils.poolsFilter.steer,
@@ -171,6 +199,7 @@ export default function MyLiquidityPoolsV3() {
     quickPoolsCount,
     unipilotPositions,
     gammaPoolsCount,
+    defiedgeStrategiesCount,
     steerPoolsCount,
   ]);
 
@@ -226,6 +255,9 @@ export default function MyLiquidityPoolsV3() {
             )}
             {poolFilter === GlobalConst.utils.poolsFilter.gamma && (
               <MyGammaPoolsV3 />
+            )}
+            {poolFilter === GlobalConst.utils.poolsFilter.defiedge && (
+              <MyDefiedgePoolsV3 />
             )}
             {poolFilter === GlobalConst.utils.poolsFilter.steer && (
               <MySteerPoolsV3 />
