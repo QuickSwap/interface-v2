@@ -45,10 +45,20 @@ const SteerFarmCard: React.FC<{
                   size={30}
                 />
                 <Box ml='6px'>
-                  <small className='weight-600'>{`${data.token0.symbol}/${data.token1.symbol}`}</small>
+                  <Box className='flex items-center flex-wrap' gridGap={2}>
+                    <small className='weight-600'>{`${data.token0.symbol}/${data.token1.symbol}`}</small>
+                    <Box
+                      paddingY='1px'
+                      paddingX='5px'
+                      borderRadius={6}
+                      className='text-primaryText bg-gray30'
+                    >
+                      {formatNumber(Number(data.feeTier) / 10000)}% (F)
+                    </Box>
+                  </Box>
                   <Box className='cursor-pointer'>
                     <Link
-                      to={`/pools?currency0=${data.token0.address}&currency1=${data.token1.address}`}
+                      to={`/pools?currency0=${data.token0.address}&currency1=${data.token1.address}&feeTier=${data.feeTier}`}
                       target='_blank'
                       className='no-decoration'
                     >
