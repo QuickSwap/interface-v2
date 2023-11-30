@@ -60,7 +60,6 @@ export const useLiquidityHubCallback = (
   const sign = useSign();
   const quote = useQuote();
   const wrap = useWrap();
-  const { onCurrencySelection } = useSwapActionHandlers();
   const isSupported = useIsLiquidityHubSupported();
 
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
@@ -158,7 +157,7 @@ export const useLiquidityHubCallback = (
     const nativeInStartFlow = async () => {
       await quote(quoteArgs);
       await wrap(srcAmount);
-      onCurrencySelection(Field.INPUT, WETH[chainIdToUse]);
+
       const approved = await isApproved(srcAmount, wethContract);
       if (!approved) {
         liquidityHubAnalytics.onApprovedBeforeTheTrade(false);
@@ -221,8 +220,12 @@ export const useLiquidityHubCallback = (
 const useWrap = () => {
   const wethContract = useWETHContract();
   const { onSetLiquidityHubState } = useLiquidityHubActionHandlers();
+  const { onCurrencySelection } = useSwapActionHandlers();
+  const { chainId } = useActiveWeb3React();
 
   return async (inAmount: string) => {
+    const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+
     const count = counter();
     onSetLiquidityHubState({ waitingForWrap: true });
     liquidityHubAnalytics.onWrapRequest();
@@ -230,6 +233,7 @@ const useWrap = () => {
       const txReceipt = await wethContract?.deposit({
         value: `0x${new BN(inAmount).toString(16)}`,
       });
+      onCurrencySelection(Field.INPUT, WETH[chainIdToUse]);
       const res = await txReceipt.wait();
       liquidityHubAnalytics.onWrapSuccess(res.transactionHash, count());
       return res;
