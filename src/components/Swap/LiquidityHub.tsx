@@ -153,10 +153,10 @@ export const useLiquidityHubCallback = (
       inToken: isNativeIn ? wethContract?.address || '' : inTokenAddress,
       minDestAmount,
     };
-
+    let wrapped = false;
     const nativeInStartFlow = async () => {
       await quote(quoteArgs);
-      await wrap(srcAmount);
+      wrapped = await wrap(srcAmount);
 
       const approved = await isApproved(srcAmount, wethContract);
       if (!approved) {
@@ -206,6 +206,11 @@ export const useLiquidityHubCallback = (
     } catch (error) {
       liquidityHubAnalytics.onClobFailure();
       onSetLiquidityHubState({ isFailed: true });
+      if (wrapped) {
+        throw new Error(
+          'Transaction reverted, Please try again. Note! Your MATIC has been wrapped and are now wMATIC',
+        );
+      }
       return undefined;
     } finally {
       onSetLiquidityHubState({
@@ -236,7 +241,7 @@ const useWrap = () => {
       onCurrencySelection(Field.INPUT, WETH[chainIdToUse]);
       const res = await txReceipt.wait();
       liquidityHubAnalytics.onWrapSuccess(res.transactionHash, count());
-      return res;
+      return true;
     } catch (error) {
       liquidityHubAnalytics.onWrapFailed(error.message, count());
       throw new Error(error.message);
@@ -303,7 +308,6 @@ const useSign = () => {
         setWeb3Instance(new Web3(library.provider as any));
       }
       process.env.DEBUG = 'web3-candies';
-
       const signature = await signEIP712(account, permitData);
       liquidityHubAnalytics.onSignatureSuccess(signature, count());
       return signature;
