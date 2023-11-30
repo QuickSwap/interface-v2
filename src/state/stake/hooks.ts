@@ -110,7 +110,7 @@ export function useTotalRewardsDistributed(
             item && address && item.toLowerCase() === address.toLowerCase(),
         ) === index,
     );
-  const usdTokenPrices = useUSDCPricesFromAddresses(tokenAddresses);
+  const { prices: usdTokenPrices } = useUSDCPricesFromAddresses(tokenAddresses);
   const syrupRewardsUSD = usdTokenPrices
     ? syrupRewardsInfo.reduce((total, item, index) => {
         const usdPriceToken = usdTokenPrices.find(
@@ -301,11 +301,11 @@ export function useFilteredSyrupInfo(
     'totalSupply',
   );
 
-  const usdTokenPrices = useUSDCPricesFromAddresses(
+  const { prices: usdTokenPrices } = useUSDCPricesFromAddresses(
     info.map((item) => item.token.address),
   );
 
-  const stakingTokenPrices = useUSDCPricesFromAddresses(
+  const { prices: stakingTokenPrices } = useUSDCPricesFromAddresses(
     info.map((item) => item.stakingToken.address),
   );
 

@@ -5,7 +5,7 @@
   position: relative;
   max-width: 100%;
   display: none;
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     display: block;
   }
 }
@@ -25,9 +25,9 @@
   right: 40px;
   max-width: 355px !important;
   width: 100%;
-  z-index: 3;
+  z-index: 12;
 
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     display: none;
   }
 }
@@ -39,7 +39,7 @@
   & .MuiLinearProgress-root {
     background: $yellow2;
     & .MuiLinearProgress-bar {
-      background: $yellow3
+      background: $yellow3;
     }
   }
 }

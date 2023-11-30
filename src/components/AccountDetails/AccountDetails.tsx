@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useUDDomain } from 'state/application/hooks';
 import { useSelectedWallet } from 'state/user/hooks';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
+import { networkConnection } from 'connectors';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -84,6 +85,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                 }
                 await connector.resetState();
                 updateSelectedWallet(undefined);
+
+                const localChainId = localStorage.getItem('localChainId');
+                await networkConnection.connector.activate(
+                  Number(localChainId),
+                );
               }}
             >
               {t('disconnect')}

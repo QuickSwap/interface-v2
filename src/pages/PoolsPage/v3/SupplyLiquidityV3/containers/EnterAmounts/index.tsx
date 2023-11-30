@@ -25,6 +25,7 @@ import { Check } from '@material-ui/icons';
 import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getGammaPairsForTokens } from 'utils';
+import { useSteerPeripheryContract } from 'hooks/useContract';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;
@@ -101,20 +102,19 @@ export function EnterAmounts({
 
   const uniPilotVaultAddress = mintInfo.presetRange?.address;
   const defiedgeStrategyAddress = mintInfo.presetRange?.address;
+  const isWithNative =
+    mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+    mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.STEER_RANGE;
 
   // check whether the user has approved the router on the tokens
   const currencyAApproval =
-    mintInfo.liquidityRangeType ===
-      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
-    currencyA &&
-    currencyA.isNative
+    isWithNative && currencyA && currencyA.isNative
       ? currencyA.wrapped
       : currencyA;
   const currencyBApproval =
-    mintInfo.liquidityRangeType ===
-      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
-    currencyB &&
-    currencyB.isNative
+    isWithNative && currencyB && currencyB.isNative
       ? currencyB.wrapped
       : currencyB;
 
@@ -125,6 +125,7 @@ export function EnterAmounts({
     return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
   }, [chainId, mintInfo.feeTier]);
 
+  const steerPeripheryContract = useSteerPeripheryContract();
   const [approvalA, approveACallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A] ||
       tryParseAmount('1', currencyAApproval),
@@ -138,6 +139,9 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
         ? defiedgeStrategyAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE
+        ? steerPeripheryContract?.address
         : positionManagerAddress
       : undefined,
   );
@@ -154,6 +158,9 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
         ? defiedgeStrategyAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE
+        ? steerPeripheryContract?.address
         : positionManagerAddress
       : undefined,
   );
@@ -197,6 +204,7 @@ export function EnterAmounts({
           error={mintInfo.token0ErrorMessage}
           priceFormat={priceFormat}
           isBase={false}
+          isDual={isWithNative}
         />
       </Box>
       <TokenAmountCard
@@ -218,6 +226,7 @@ export function EnterAmounts({
         error={mintInfo.token1ErrorMessage}
         priceFormat={priceFormat}
         isBase={true}
+        isDual={isWithNative}
       />
 
       <Box mt={2} className='flex justify-between'>

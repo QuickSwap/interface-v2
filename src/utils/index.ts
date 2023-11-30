@@ -52,6 +52,7 @@ import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
 import { Connector } from '@web3-react/types';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
+import { SteerVault } from 'hooks/v3/useSteerData';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -610,7 +611,9 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     ? chainIdToUse
     : ChainId.MATIC;
   const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
-  const quickPrice = useUSDCPriceFromAddress(quickToken.address);
+  const { price: quickPrice } = useUSDCPriceFromAddress(
+    quickToken?.address ?? '',
+  );
 
   const { data: v3Data } = useAnalyticsGlobalData('v3', chainId);
   const { data: v2Data } = useAnalyticsGlobalData('v2', chainId);
@@ -626,11 +629,12 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     return feePercent;
   }, [v2, v2Data, v3, v3Data]);
 
-  if (!lair || !quickPrice) return '';
+  if (!lair) return '';
+  const lairQuickBalance = Number(lair.totalQuickBalance.toExact());
+  if (!lairQuickBalance || !quickPrice) return '';
 
   const dQUICKAPR =
-    (feesPercent * daysCurrentYear) /
-    (Number(lair.totalQuickBalance.toExact()) * quickPrice);
+    (feesPercent * daysCurrentYear) / (lairQuickBalance * quickPrice);
 
   if (!dQUICKAPR) return '';
   const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;
@@ -1179,4 +1183,77 @@ export const getAllDefiedgeStrategies = (chainId?: ChainId) => {
     return DefiedgeStrategies[chainId] ?? [];
   }
   return [];
+export const calculatePositionWidth = (
+  currentTick: number,
+  upperTick: number,
+  lowerTick: number,
+): number => {
+  const currentPrice = Math.pow(1.0001, Number(currentTick));
+  const upperPrice = Math.pow(1.0001, Number(upperTick));
+  const lowerPrice = Math.pow(1.0001, Number(lowerTick));
+
+  // Calculate upper and lower bounds width in percentage
+  const upperBoundWidthPercent =
+    ((upperPrice - currentPrice) / currentPrice) * 100;
+  const lowerBoundWidthPercent =
+    ((currentPrice - lowerPrice) / currentPrice) * 100;
+
+  // Calculate average width of the position
+  const positionWidthPercent =
+    (upperBoundWidthPercent + lowerBoundWidthPercent) / 2;
+
+  return Math.abs(positionWidthPercent);
+};
+
+export const percentageToMultiplier = (percentage: number): number => {
+  const multiplier = 1 + percentage / 100;
+  return multiplier;
+};
+
+export const getSteerRatio = (tokenType: number, steerVault: SteerVault) => {
+  let steerRatio;
+  const steerVaultToken0BalanceNum = Number(
+    formatUnits(steerVault.token0Balance ?? '0', steerVault.token0?.decimals),
+  );
+  const steerVaultToken1BalanceNum = Number(
+    formatUnits(steerVault.token1Balance ?? '0', steerVault.token1?.decimals),
+  );
+  if (steerVaultToken0BalanceNum === 0 && steerVaultToken1BalanceNum === 0) {
+    const price = BigNumber.from(steerVault?.sqrtPriceX96 ?? '0')
+      .pow(2)
+      .mul(BigNumber.from('10').pow(18))
+      .div(BigNumber.from('2').pow(192));
+    const nativeTokenRatio = price.div(BigNumber.from('10').pow(18));
+    if (tokenType === 0 && nativeTokenRatio.gt(BigNumber.from('0'))) {
+      steerRatio = Number(
+        formatUnits(
+          BigNumber.from('10')
+            .pow(18)
+            .div(nativeTokenRatio),
+        ),
+      );
+    } else {
+      steerRatio = Number(formatUnits(nativeTokenRatio));
+    }
+  } else {
+    if (tokenType === 1) {
+      if (steerVaultToken0BalanceNum > 0) {
+        steerRatio = steerVaultToken1BalanceNum / steerVaultToken0BalanceNum;
+      } else {
+        steerRatio = steerVaultToken1BalanceNum;
+      }
+    } else {
+      if (steerVaultToken1BalanceNum > 0) {
+        steerRatio = steerVaultToken0BalanceNum / steerVaultToken1BalanceNum;
+      } else {
+        steerRatio = steerVaultToken0BalanceNum;
+      }
+    }
+  }
+  return steerRatio;
+};
+
+export const getSteerDexName = (chainId?: ChainId) => {
+  if (chainId === ChainId.MANTA) return 'quickswapv3';
+  return 'quickswap';
 };
