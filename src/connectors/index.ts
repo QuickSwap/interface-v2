@@ -22,7 +22,8 @@ import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
 import ZengoIcon from 'assets/images/zengo.png';
-import { GlobalConst } from 'constants/index';
+import BinanceIcon from 'assets/images/binance-wallet.webp';
+import { GlobalConst, SUPPORTED_CHAINIDS } from 'constants/index';
 import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 import { SecretType } from '@venly/web3-provider';
 import { Phantom } from './Phantom';
@@ -35,6 +36,7 @@ import { isMobile } from 'react-device-detect';
 import { OkxWallet } from './OkxWallet';
 import { Cryptocom } from './Cryptocom';
 import { UAuthConnector } from '@uauth/web3-react';
+import { getWeb3Connector } from '@binance/w3w-web3-connector';
 
 const POLLING_INTERVAL = 12000;
 
@@ -58,6 +60,7 @@ export enum ConnectionType {
   OKXWALLET = 'OKXWALLET',
   CRYPTOCOM = 'CRYPTO_COM',
   UNSTOPPABLEDOMAINS = 'UNSTOPPABLE_DOMAINS',
+  BINANCEWALLET = 'BINANCE_WEB3_WALLET',
 }
 
 export interface Connection {
@@ -467,6 +470,27 @@ export const unstoppableDomainsConnection: Connection = {
   description: 'Connect to Unstoppable Domains',
 };
 
+const BinanceConnector = getWeb3Connector();
+const [web3BinanceWallet, web3BinanceWalletHooks] = initializeConnector<any>(
+  () =>
+    new BinanceConnector({
+      supportedChainIds: SUPPORTED_CHAINIDS,
+      rpc: rpcMap,
+    }),
+);
+
+export const binanceWalletConnection: Connection = {
+  key: 'BinanceWeb3Wallet',
+  name: GlobalConst.walletName.BINANCEWALLET,
+  connector: web3BinanceWallet,
+  hooks: web3BinanceWalletHooks,
+  type: ConnectionType.BINANCEWALLET,
+  iconName: BinanceIcon,
+  color: '#E8831D',
+  description: 'Connect to Binance Web3 Wallet.',
+  mobile: true,
+};
+
 export function getConnections() {
   return isMobile
     ? [
@@ -474,6 +498,7 @@ export function getConnections() {
         cypherDConnection,
         metamaskConnection,
         trustWalletConnection,
+        binanceWalletConnection,
         okxWalletConnection,
         phantomConnection,
         braveWalletConnection,
@@ -490,6 +515,7 @@ export function getConnections() {
         cypherDConnection,
         metamaskConnection,
         trustWalletConnection,
+        binanceWalletConnection,
         okxWalletConnection,
         phantomConnection,
         braveWalletConnection,

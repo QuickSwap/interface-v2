@@ -225,6 +225,7 @@ export const GlobalConst = {
     OKXWALLET: 'OKX Wallet',
     CRYPTOCOM: 'Crypto.com DeFi Wallet',
     UNSTOPPABLEDOMAINS: 'Unstoppable Domains',
+    BINANCEWALLET: 'Binance Web3 Wallet',
   },
 };
 
