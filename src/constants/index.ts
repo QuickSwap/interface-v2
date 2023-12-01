@@ -60,6 +60,8 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.KAVA]: 'kava',
   [ChainId.MANTA]: 'manta',
   [ChainId.ZKATANA]: 'zKatana',
+  [ChainId.BTTC]: 'bttc',
+  [ChainId.X1]: 'x1',
 };
 
 export enum SteerVaultState {
@@ -105,7 +107,7 @@ export const WALLCHAIN_PARAMS: {
   },
 };
 
-export const BONUS_CUTOFF_AMOUNT = {
+export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
   [ChainId.MUMBAI]: 0,
   [ChainId.MATIC]: 0,
   [ChainId.DOEGCHAIN_TESTNET]: 0,
@@ -238,6 +240,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.ZKEVM,
   ChainId.MANTA,
   ChainId.ZKATANA,
+  ChainId.X1,
 ];
 
 export interface GammaPair {
@@ -1626,6 +1629,8 @@ export const GlobalValue = {
       [ChainId.KAVA]: [],
       [ChainId.MANTA]: [EMPTY[ChainId.MANTA], MATICX[ChainId.MANTA]],
       [ChainId.ZKATANA]: [],
+      [ChainId.BTTC]: [],
+      [ChainId.X1]: [],
     },
   },
   marketSDK: {
@@ -1687,6 +1692,8 @@ export const GlobalData = {
       DAI[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [USDC[ChainId.ZKATANA]],
+    [ChainId.BTTC]: [],
+    [ChainId.X1]: [],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -1725,6 +1732,8 @@ export const GlobalData = {
       MATIC[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
+    [ChainId.BTTC]: [],
+    [ChainId.X1]: [],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -1752,6 +1761,8 @@ export const GlobalData = {
       [WETH[ChainId.MANTA], WSTETH[ChainId.MANTA]],
     ],
     [ChainId.ZKATANA]: [],
+    [ChainId.BTTC]: [],
+    [ChainId.X1]: [],
   },
 };
 
