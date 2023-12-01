@@ -447,12 +447,17 @@ export function SelectRange({
   const isAutomatic =
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ||
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ||
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE;
 
   const selectVaultEnabled =
     (gammaPairExists && unipilotVaultExists) ||
+    (gammaPairExists && defiedgeStrategyExists) ||
     (gammaPairExists && steerVaultExists) ||
-    (unipilotVaultExists && steerVaultExists);
+    (unipilotVaultExists && steerVaultExists) ||
+    (unipilotVaultExists && defiedgeStrategyExists) ||
+    (defiedgeStrategyExists && steerVaultExists);
+
 
   const fetchGammaData = async () => {
     const gammaData = await getGammaData(chainId);
@@ -892,6 +897,31 @@ export function SelectRange({
                   <small className='text-success'>
                     {formatNumber(unipilotAPR)}%
                   </small>
+                  <span>{t('apr')}</span>
+                </Box>
+              </Grid>
+            )}
+            {defiedgeStrategyExists && (
+              <Grid item xs={4}>
+                <Box
+                  className={`pool-select-vault-panel${
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+                      ? ' pool-select-vault-selected'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    onChangeLiquidityRangeType(
+                      GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
+                    );
+                  }}
+                >
+                  <img
+                  src={DefiedgeLogo}
+                  alt='Defiedge Logo'
+                  style={{ height: '20px' }}
+                />
+                  <small className='text-success'>{'-'}%</small>
                   <span>{t('apr')}</span>
                 </Box>
               </Grid>
