@@ -185,8 +185,8 @@ export const GlobalConst = {
       quickswap: '0',
       unipilot: '1',
       gamma: '2',
-      defiedge: '3',
       steer: '3',
+      defiedge: '4',
     },
   },
   analyticChart: {
