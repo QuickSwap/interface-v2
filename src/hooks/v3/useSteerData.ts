@@ -416,7 +416,9 @@ export function useSteerFilteredFarms(
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
   const sortMultiplier = sortDesc ? -1 : 1;
   const tokenMap = useSelectedTokenList();
-  const { data: steerVaults } = useSteerVaults(chainId);
+  const { loading: loadingSteerVaults, data: steerVaults } = useSteerVaults(
+    chainId,
+  );
 
   const farmAddresses = steerFarms.map((farm) => farm.stakingPool);
   const farmTotalSupplyCalls = useMultipleContractSingleData(
@@ -468,9 +470,10 @@ export function useSteerFilteredFarms(
     return memo;
   }, []);
 
-  const { prices: tokenUSDPrices } = useUSDCPricesFromAddresses(
-    farmTokenAddresses,
-  );
+  const {
+    loading: loadingUSDPrice,
+    prices: tokenUSDPrices,
+  } = useUSDCPricesFromAddresses(farmTokenAddresses);
 
   const filteredFarms = steerFarms
     .map((farm, ind) => {
@@ -534,7 +537,10 @@ export function useSteerFilteredFarms(
         (farm.dailyEmissionRewardA ?? 0) * (farmRewardTokenAUSD?.price ?? 0) +
         (farm.dailyEmissionRewardB ?? 0) * (farmRewardTokenBUSD?.price ?? 0);
 
-      const farmAPR = tvl > 0 ? (farmRewardUSD * 365 * 100) / tvl : 0;
+      const totalRewardsUSD =
+        (farmRewardUSD * Number(farm.rewardsDuration)) / 86400;
+      const farmAPR =
+        tvl > 0 ? (farmRewardUSD * 365 * 100) / tvl : totalRewardsUSD;
 
       const token0Address = farm?.vaultTokens?.token0?.address;
       const token1Address = farm?.vaultTokens?.token1?.address;
@@ -564,6 +570,7 @@ export function useSteerFilteredFarms(
         farmAPR,
         poolAPR: vaultInfo?.apr ?? 0,
         type: 'steer',
+        loading: loadingUSDPrice || loadingSteerVaults,
       };
     })
     .filter((item: any) => {

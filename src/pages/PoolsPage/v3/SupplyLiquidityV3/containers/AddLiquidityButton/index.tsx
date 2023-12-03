@@ -788,7 +788,11 @@ export function AddLiquidityButton({
               width={priceUpper ? '49%' : '100%'}
             >
               <p>{t('minPrice')}</p>
-              <h6>{priceLower.toSignificant()}</h6>
+              <h6>
+                {mintInfo.ticksAtLimit[Bound.LOWER]
+                  ? '0'
+                  : priceLower.toSignificant()}
+              </h6>
               <p>
                 {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
               </p>
@@ -804,8 +808,12 @@ export function AddLiquidityButton({
               className='v3-supply-liquidity-price-wrapper'
               width={priceLower ? '49%' : '100%'}
             >
-              <p>{t('minPrice')}</p>
-              <h6>{priceUpper.toSignificant()}</h6>
+              <p>{t('maxPrice')}</p>
+              <h6>
+                {mintInfo.ticksAtLimit[Bound.UPPER]
+                  ? '∞'
+                  : priceUpper.toSignificant()}
+              </h6>
               <p>
                 {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
               </p>

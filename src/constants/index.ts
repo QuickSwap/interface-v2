@@ -225,6 +225,7 @@ export const GlobalConst = {
     OKXWALLET: 'OKX Wallet',
     CRYPTOCOM: 'Crypto.com DeFi Wallet',
     UNSTOPPABLEDOMAINS: 'Unstoppable Domains',
+    BINANCEWALLET: 'Binance Web3 Wallet',
   },
 };
 
@@ -1195,7 +1196,6 @@ export const GammaPairs: {
         address: '0x1298b1da33c1d091a2e1340ae1c7983ebe91da8d',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0x10acbe3b9e6a2ff7f341e5cbf4b6617741ff44aa',
-        ableToFarm: true,
         pid: 93,
       },
     ],
@@ -1624,7 +1624,7 @@ export const GlobalValue = {
       [ChainId.DOEGCHAIN_TESTNET]: [],
       [ChainId.ZKTESTNET]: [],
       [ChainId.KAVA]: [],
-      [ChainId.MANTA]: [],
+      [ChainId.MANTA]: [EMPTY[ChainId.MANTA], MATICX[ChainId.MANTA]],
       [ChainId.ZKATANA]: [],
     },
   },
@@ -1722,6 +1722,7 @@ export const GlobalData = {
       USDC[ChainId.MANTA],
       USDT[ChainId.MANTA],
       DAI[ChainId.MANTA],
+      MATIC[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   },
@@ -1746,7 +1747,10 @@ export const GlobalData = {
     ],
     [ChainId.ZKTESTNET]: [],
     [ChainId.KAVA]: [],
-    [ChainId.MANTA]: [],
+    [ChainId.MANTA]: [
+      [MATICX[ChainId.MANTA], MATIC[ChainId.MANTA]],
+      [WETH[ChainId.MANTA], WSTETH[ChainId.MANTA]],
+    ],
     [ChainId.ZKATANA]: [],
   },
 };

@@ -25,6 +25,7 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { useSingleCallResult } from 'state/multicall/hooks';
 import { useSteerFarmingContract } from 'hooks/useContract';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
+import Loader from 'components/Loader';
 
 const SteerFarmCardDetails: React.FC<{
   data: any;
@@ -39,7 +40,7 @@ const SteerFarmCardDetails: React.FC<{
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const tokenMap = useSelectedTokenList();
   const farmingContract = useSteerFarmingContract(
@@ -258,7 +259,11 @@ const SteerFarmCardDetails: React.FC<{
         <Box padding={1.5}>
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('tvl')}</small>
-            <small className='weight-600'>${formatNumber(data.tvl)}</small>
+            {data.loading ? (
+              <Loader />
+            ) : (
+              <small className='weight-600'>${formatNumber(data.tvl)}</small>
+            )}
           </Box>
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('rewards')}</small>
@@ -283,15 +288,23 @@ const SteerFarmCardDetails: React.FC<{
           </Box>
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('vaultAPR')}</small>
-            <small className='text-success weight-600'>
-              {formatNumber(data.feeAPR)}%
-            </small>
+            {data.loading ? (
+              <Loader />
+            ) : (
+              <small className='text-success weight-600'>
+                {formatNumber(data.feeAPR)}%
+              </small>
+            )}
           </Box>
           <Box className='flex justify-between'>
             <small className='text-secondary'>{t('farmAPR')}</small>
-            <small className='text-success weight-600'>
-              {formatNumber(data.farmAPR)}%
-            </small>
+            {data.loading ? (
+              <Loader />
+            ) : (
+              <small className='text-success weight-600'>
+                {formatNumber(data.farmAPR)}%
+              </small>
+            )}
           </Box>
         </Box>
       )}
