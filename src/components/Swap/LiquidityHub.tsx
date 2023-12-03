@@ -513,6 +513,7 @@ const initialData: Partial<LiquidityHubAnalyticsData> = {
   dexSwapSuccess: false,
   userWasApprovedBeforeTheTrade: 'null',
   isForceClob: false,
+  version: 0,
 };
 
 const counter = () => {
@@ -1014,6 +1015,7 @@ interface LiquidityHubAnalyticsData {
   tradeType?: TradeType | null;
   isNotClobTradeReason: string;
   onChainSwapState: actionState;
+  version: number;
 }
 
 interface QuoteResponse {
