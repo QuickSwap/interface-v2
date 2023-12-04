@@ -458,7 +458,6 @@ export function SelectRange({
     (unipilotVaultExists && defiedgeStrategyExists) ||
     (defiedgeStrategyExists && steerVaultExists);
 
-
   const fetchGammaData = async () => {
     const gammaData = await getGammaData(chainId);
     return gammaData;
@@ -586,87 +585,26 @@ export function SelectRange({
         </Box>
       )}
 
-      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
-        <>
-          <Box my={1.5} className='poolRangePowerGamma'>
-            <span className='text-secondary'>{t('poweredBy')}</span>
+      {isAutomatic && (
+        <Box my={1.5} className='poolRangePowerGamma'>
+          <span className='text-secondary'>{t('poweredBy')}</span>
+          {liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
             <img src={GammaLogo} alt='Gamma Logo' />
-          </Box>
-        </>
-      )}
-      {liquidityRangeType ===
-        GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE && (
-        <>
-          <Box my={1.5} className='poolRangePowerGamma'>
-            <span className='text-secondary'>{t('poweredBy')}</span>
+          ) : liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ? (
             <img src={UnipilotLogo} alt='Unipilot Logo' />
-          </Box>
-        </>
-      )}
-      {liquidityRangeType ===
-        GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE && (
-        <>
-          <Box my={1.5} className='poolRangePowerGamma'>
-            <span className='text-secondary'>{t('poweredBy')}</span>
+          ) : liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ? (
             <img
               src={DefiedgeLogo}
               alt='Defiedge Logo'
               style={{ height: '28px' }}
             />
-          </Box>
-        </>
-      )}
-
-      {(liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
-        liquidityRangeType ===
-          GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) &&
-      gammaPair &&
-      defiedgeStrategiesForPair.length > 0 ? (
-        <>
-          <Box mb={1.5}>
-            <small className='weight-600'>{t('selectVault')}</small>
-          </Box>
-          <Box my={1} className='preset-buttons poolRangePowerGamma'>
-            <button
-              className={`${
-                liquidityRangeType ===
-                GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-                  ? 'active-preset'
-                  : ''
-              }`}
-              onClick={() => {
-                onChangeLiquidityRangeType(
-                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
-                );
-              }}
-              style={{ minHeight: '64px' }}
-            >
-              <img src={GammaLogo} alt='Gamma Logo' />
-            </button>
-            <button
-              className={`${
-                liquidityRangeType ===
-                GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
-                  ? 'active-preset'
-                  : ''
-              } flex items-center justify-center py-2`}
-              onClick={() => {
-                onChangeLiquidityRangeType(
-                  GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
-                );
-              }}
-              style={{ minHeight: '64px' }}
-            >
-              <img
-                src={DefiedgeLogo}
-                alt='Defiedge Logo'
-                style={{ height: '20px' }}
-              />
-            </button>
-          </Box>
-        </>
-      ) : (
-        undefined
+          ) : (
+            <small className='text-bold'>&nbsp;Steer</small>
+          )}
+        </Box>
       )}
 
       <Box my={1}>
