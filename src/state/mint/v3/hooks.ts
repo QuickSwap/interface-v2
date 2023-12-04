@@ -69,6 +69,7 @@ import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 import { getConfig } from 'config';
 import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
+import { useQuery } from '@tanstack/react-query';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -1425,7 +1426,24 @@ export function useGetDefiedgeStrategies() {
     [0],
   );
 
-  return strategies.map((strategy, index) => {
+  const fetchDefiedgeStrategiesWithApr = async () => {
+    const defiedgeAPIURL = process.env.REACT_APP_DEFIEDGE_API_URL;
+    if (!defiedgeAPIURL) return [];
+
+    const res = await fetch(
+      `${defiedgeAPIURL}/polygon/details?strategies=${strategies.map(e => e.id).join()}`,
+    );
+    const data = await res.json();
+    if(data) return data
+    return
+  }
+
+  const { isLoading, data: defiedgeStrategiesWithApr } = useQuery({
+    queryKey: ['fetchDefiedgeStrategiesWithApr', strategies],
+    queryFn: fetchDefiedgeStrategiesWithApr,
+  });
+
+  const defiedgeStrategies = strategies.map((strategy, index) => {
     const strategyTickCallData = strategyTickResult[index];
 
     const strategyTicksResult =
@@ -1438,6 +1456,8 @@ export function useGetDefiedgeStrategies() {
     const tickLower = strategyTicksResult ? strategyTicksResult[0] : undefined;
     const tickUpper = strategyTicksResult ? strategyTicksResult[1] : undefined;
 
+    const strategyItem = defiedgeStrategiesWithApr?.find((e: any) => e.strategy.address.toLowerCase() === strategy.id.toLowerCase());
+
     return {
       id: strategy.id,
       token0: strategy.token0,
@@ -1446,6 +1466,9 @@ export function useGetDefiedgeStrategies() {
       tickLower,
       tickUpper,
       onHold: !tickLower && !tickUpper,
+      apr: strategyItem?.strategy?.fees_apr
     };
   });
+
+  return {isLoading, defiedgeStrategies}
 }
