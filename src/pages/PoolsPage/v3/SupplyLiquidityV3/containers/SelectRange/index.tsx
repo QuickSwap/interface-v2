@@ -375,7 +375,7 @@ export function SelectRange({
     );
   });
 
-  const defiedgeStrategies = useGetDefiedgeStrategies();
+  const { defiedgeStrategies } = useGetDefiedgeStrategies();
   const defiedgeStrategiesForPair = defiedgeStrategies.filter((item) => {
     return (
       (item.token0 &&
@@ -854,12 +854,8 @@ export function SelectRange({
                     );
                   }}
                 >
-                  <img
-                    src={DefiedgeLogo}
-                    alt='Defiedge Logo'
-                    style={{ height: '20px', margin: '-5px 0' }}
-                  />
-                  <small className='text-success'>{'-'}%</small>
+                 <p>Defiedge</p>
+                  <small className='text-success'>{formatNumber(defiedgeStrategiesForPair[0]?.apr)}%</small>
                   <span>{t('apr')}</span>
                 </Box>
               </Grid>
