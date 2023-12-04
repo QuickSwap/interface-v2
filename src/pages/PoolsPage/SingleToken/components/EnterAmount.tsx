@@ -1,44 +1,31 @@
 import { Box } from '@material-ui/core';
-import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { ETHER, WETH } from '@uniswap/sdk';
 import { CurrencyLogo, DoubleCurrencyLogo, NumericalInput } from 'components';
 import { formatUnits } from 'ethers/lib/utils';
 import { useActiveWeb3React } from 'hooks';
-import React, { useMemo } from 'react';
+import { useICHIVaultDepositData } from 'hooks/useICHIData';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useSingleTokenCurrency,
   useSingleTokenTypeInput,
   useSingleTokenVault,
 } from 'state/singleToken/hooks';
-import { useCurrencyBalance } from 'state/wallet/hooks';
 import { formatNumber } from 'utils';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 const SingleTokenEnterAmount: React.FC = () => {
   const { t } = useTranslation();
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const currency = useSingleTokenCurrency();
   const { selectedVault } = useSingleTokenVault();
   const { typedValue, typeInput } = useSingleTokenTypeInput();
-  const tokenBalance = useCurrencyBalance(account, currency);
   const { price: usdPrice } = useUSDCPriceFromAddress(
     currency?.wrapped.address ?? '',
   );
-  const isNativeToken =
-    currency &&
-    currency.wrapped.address.toLowerCase() ===
-      WETH[chainId].address.toLowerCase();
-  const ethBalance = useCurrencyBalance(account, ETHER[chainId]);
-  const wethBalance = useCurrencyBalance(account, WETH[chainId]);
-  const ethBalanceBN = ethBalance?.numerator ?? JSBI.BigInt(0);
-  const wethBalanceBN = wethBalance?.numerator ?? JSBI.BigInt(0);
-  const tokenBalanceBN = tokenBalance?.numerator ?? JSBI.BigInt(0);
-  const balanceBN = useMemo(() => {
-    if (isNativeToken) {
-      return JSBI.add(ethBalanceBN, wethBalanceBN);
-    }
-    return tokenBalanceBN;
-  }, [ethBalanceBN, isNativeToken, tokenBalanceBN, wethBalanceBN]);
+  const {
+    data: { isNativeToken, availableAmount },
+  } = useICHIVaultDepositData(Number(typedValue), currency, selectedVault);
 
   return (
     <>
@@ -87,7 +74,7 @@ const SingleTokenEnterAmount: React.FC = () => {
               <small className='text-secondary'>{t('available')}: </small>
               <small>
                 {formatNumber(
-                  formatUnits(balanceBN.toString(), currency?.decimals),
+                  formatUnits(availableAmount.toString(), currency?.decimals),
                 )}
               </small>
             </small>
@@ -96,7 +83,7 @@ const SingleTokenEnterAmount: React.FC = () => {
               ml='4px'
               onClick={() => {
                 typeInput(
-                  formatUnits(balanceBN.toString(), currency?.decimals),
+                  formatUnits(availableAmount.toString(), currency?.decimals),
                 );
               }}
             >

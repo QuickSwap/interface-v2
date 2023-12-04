@@ -1,4 +1,3 @@
-import { JSBI } from '@uniswap/sdk';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { useCallback } from 'react';

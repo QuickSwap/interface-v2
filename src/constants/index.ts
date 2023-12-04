@@ -1532,64 +1532,20 @@ export const UnipilotVaults: {
 };
 
 export const IchiVaults: {
-  [chainId in ChainId]?: { token0: string; token1: string; address: string }[];
+  [chainId in ChainId]?: string[];
 } = {
   [ChainId.MATIC]: [
-    {
-      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
-      token1: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
-      address: '0x74b706767f18a360c0083854ab42c1b96e076229',
-    },
-    {
-      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
-      token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-      address: '0xCBD1f4Bc3E6d05b10fEb5dc454d27364767e76B5',
-    },
-    {
-      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
-      token1: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
-      address: '0x5D73D117Ffb8AD26e6CC9f2621d52f479AAA8C5B',
-    },
-    {
-      token0: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-      token1: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
-      address: '0xc46FAb3Af8aA7A56feDa351a22B56749dA313473',
-    },
-    {
-      token0: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
-      token1: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-      address: '0x5403e11D5Edf6564C27b47757d62A515a81D9781',
-    },
-    {
-      token0: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
-      token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-      address: '0x5D1b077212b624fe580a84384Ffea44da752ccb3',
-    },
-    {
-      token0: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-      token1: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
-      address: '0xe8Aa60c966eE8BE1340aBf1d871D0163d5739B95',
-    },
-    {
-      token0: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-      token1: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
-      address: '0x425D80e10A8103bedb57F5C08FF8d59253D6a259',
-    },
-    {
-      token0: '0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39',
-      token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-      address: '0x318047C9584cFD77C6dfc28d3df8BD0d8a29E095',
-    },
-    {
-      token0: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-      token1: '0xD6DF932A45C0f255f85145f286eA0b292B21C90B',
-      address: '0xb2B34446D9cFb6719543ef5246481F218367b43a',
-    },
-    {
-      token0: '0x111111517e4929D3dcbdfa7CCe55d30d4B6BC4d6',
-      token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-      address: '0x891F0c3159aCf7306c0c252757310db8F47B59B2',
-    },
+    '0x74b706767f18a360c0083854ab42c1b96e076229',
+    '0xCBD1f4Bc3E6d05b10fEb5dc454d27364767e76B5',
+    '0x5D73D117Ffb8AD26e6CC9f2621d52f479AAA8C5B',
+    '0xc46FAb3Af8aA7A56feDa351a22B56749dA313473',
+    '0x5403e11D5Edf6564C27b47757d62A515a81D9781',
+    '0x5D1b077212b624fe580a84384Ffea44da752ccb3',
+    '0xe8Aa60c966eE8BE1340aBf1d871D0163d5739B95',
+    '0x425D80e10A8103bedb57F5C08FF8d59253D6a259',
+    '0x318047C9584cFD77C6dfc28d3df8BD0d8a29E095',
+    '0xb2B34446D9cFb6719543ef5246481F218367b43a',
+    '0x891F0c3159aCf7306c0c252757310db8F47B59B2',
   ],
 };
 

@@ -8,24 +8,27 @@ import {
 } from 'state/singleToken/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
 import { ReportProblem } from '@material-ui/icons';
-import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import {
-  isDepositTokenApproved,
   SupportedDex,
   approveDepositToken,
   deposit,
 } from '@ichidao/ichi-vaults-sdk';
-import { useQuery } from '@tanstack/react-query';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { ETHER, JSBI, WETH } from '@uniswap/sdk';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { ETHER } from '@uniswap/sdk';
+import { formatUnits } from 'ethers/lib/utils';
 import { useWETHContract } from 'hooks/useContract';
-import { calculateGasMargin } from 'utils';
+import { calculateGasMargin, formatNumber } from 'utils';
+import {
+  useICHIVaultApproval,
+  useICHIVaultDepositData,
+  useICHIVaultShare,
+} from 'hooks/useICHIData';
+import Loader from 'components/Loader';
 
 const SingleTokenDepositButton: React.FC = () => {
   const { t } = useTranslation();
@@ -33,82 +36,23 @@ const SingleTokenDepositButton: React.FC = () => {
   const currency = useSingleTokenCurrency();
   const { selectedVault } = useSingleTokenVault();
   const { typedValue } = useSingleTokenTypeInput();
-  const tokenBalance = useCurrencyBalance(account, currency);
   const [approveOrDepositing, setApproveOrDepositing] = useState(false);
   const [wrappingETH, setWrappingETH] = useState(false);
 
-  const isNativeToken =
-    currency &&
-    currency.wrapped.address.toLowerCase() ===
-      WETH[chainId].address.toLowerCase();
-  const ethBalance = useCurrencyBalance(account, ETHER[chainId]);
-  const wethBalance = useCurrencyBalance(account, WETH[chainId]);
-  const ethBalanceBN = ethBalance?.numerator ?? JSBI.BigInt(0);
-  const wethBalanceBN = wethBalance?.numerator ?? JSBI.BigInt(0);
-  const tokenBalanceBN = tokenBalance?.numerator ?? JSBI.BigInt(0);
-  const balanceBN = useMemo(() => {
-    if (isNativeToken) {
-      return JSBI.add(ethBalanceBN, wethBalanceBN);
-    }
-    return tokenBalanceBN;
-  }, [ethBalanceBN, isNativeToken, tokenBalanceBN, wethBalanceBN]);
-  const typedValueBN = JSBI.BigInt(
-    parseUnits(
-      Number(typedValue).toFixed(currency?.decimals),
-      currency?.decimals,
-    ),
+  const { loading: loadingShare, data: vaultShare } = useICHIVaultShare(
+    selectedVault,
   );
 
-  const isInsufficientBalance = JSBI.greaterThan(typedValueBN, balanceBN);
+  const {
+    isLoading: loadingDepositData,
+    data: { tokenIdx, wrapAmount, isMorethanAvailable },
+  } = useICHIVaultDepositData(Number(typedValue), currency, selectedVault);
 
-  const tokenIdx = useMemo(() => {
-    if (selectedVault && currency && selectedVault.token1) {
-      if (
-        currency.wrapped.address.toLowerCase() ===
-        selectedVault.token1.address.toLowerCase()
-      )
-        return 1;
-      return 0;
-    }
-    return -1;
-  }, [currency, selectedVault]);
-
-  const { isLoading: loadingApproved, data: isApproved } = useQuery({
-    queryKey: [
-      'single-token-deposit-approval',
-      account,
-      selectedVault?.address,
-      typedValue,
-      tokenIdx,
-    ],
-    queryFn: async () => {
-      if (!account || !selectedVault || !provider || tokenIdx === -1)
-        return false;
-      try {
-        const approved = await isDepositTokenApproved(
-          account,
-          tokenIdx,
-          Number(typedValue),
-          selectedVault.address,
-          provider,
-          SupportedDex.Quickswap,
-        );
-        return approved;
-      } catch (e) {
-        console.log('Error getting vault approval', e);
-        return false;
-      }
-    },
-  });
-
-  const wrapAmount = useMemo(() => {
-    if (isNativeToken) {
-      if (JSBI.greaterThan(typedValueBN, wethBalanceBN))
-        return JSBI.subtract(typedValueBN, wethBalanceBN);
-      return;
-    }
-    return;
-  }, [isNativeToken, typedValueBN, wethBalanceBN]);
+  const { isLoading: loadingApproved, data: isApproved } = useICHIVaultApproval(
+    selectedVault,
+    Number(typedValue),
+    tokenIdx,
+  );
 
   const wethContract = useWETHContract();
 
@@ -146,9 +90,11 @@ const SingleTokenDepositButton: React.FC = () => {
     if (!currency) return t('selectToken');
     if (!selectedVault) return t('selectPool');
     if (!typedValue) return t('enterAmount');
-    if (isInsufficientBalance)
-      return t('insufficientBalance', { symbol: currency.symbol });
-    if (!isApproved) return approveOrDepositing ? t('approving') : t('approve');
+    if (isMorethanAvailable) return t('morethanAvailable');
+    if (!isApproved)
+      return `${approveOrDepositing ? t('approving') : t('approve')} ${
+        currency.symbol
+      }`;
     if (wrapAmount) return t('wrapMATIC', { symbol: ETHER[chainId].symbol });
     if (wrappingETH)
       return t('wrappingMATIC', { symbol: ETHER[chainId].symbol });
@@ -158,7 +104,7 @@ const SingleTokenDepositButton: React.FC = () => {
     chainId,
     currency,
     isApproved,
-    isInsufficientBalance,
+    isMorethanAvailable,
     selectedVault,
     t,
     typedValue,
@@ -170,16 +116,18 @@ const SingleTokenDepositButton: React.FC = () => {
     !currency ||
     !selectedVault ||
     !typedValue ||
+    loadingDepositData ||
     loadingApproved ||
     approveOrDepositing ||
     wrappingETH ||
-    isInsufficientBalance;
+    isMorethanAvailable;
 
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
 
   const depositSingleToken = async () => {
-    if (!account || !selectedVault || !provider || tokenIdx === -1) return;
+    if (!account || !selectedVault || !provider || tokenIdx === undefined)
+      return;
     setApproveOrDepositing(true);
     let txn: TransactionResponse;
     const summary = isApproved
@@ -224,7 +172,7 @@ const SingleTokenDepositButton: React.FC = () => {
         <>
           <Box className='flex justify-between'>
             <p className='text-secondary'>{t('yourshareinvault')}</p>
-            <p>%</p>
+            {loadingShare ? <Loader /> : <p>{formatNumber(vaultShare)}%</p>}
           </Box>
           <Box className='singleTokenInfoWrapper singleTokenHelp' mt={2}>
             <HelpIcon />

@@ -8,6 +8,7 @@ import SingleTokenPoolCard from './SingleTokenPoolCard';
 import { useICHIVaults } from 'hooks/useICHIData';
 import { useSingleTokenVault } from 'state/singleToken/hooks';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import Loader from 'components/Loader';
 
 const SingleTokenSelectPool: React.FC<{ currency?: Currency }> = ({
   currency,
@@ -19,13 +20,15 @@ const SingleTokenSelectPool: React.FC<{ currency?: Currency }> = ({
       ? WETH[chainId].address
       : currency.address
     : '';
-  const allVaults = useICHIVaults();
+  const { loading, data: allVaults } = useICHIVaults();
   const vaults = allVaults?.filter((vault) => {
     const token0Address = vault.token0?.address ?? '';
     const token1Address = vault.token1?.address ?? '';
     return (
-      token0Address.toLowerCase() === tokenAddress.toLowerCase() ||
-      token1Address.toLowerCase() === tokenAddress.toLowerCase()
+      (token0Address.toLowerCase() === tokenAddress.toLowerCase() &&
+        vault.allowToken0) ||
+      (token1Address.toLowerCase() === tokenAddress.toLowerCase() &&
+        vault.allowToken1)
     );
   });
 
@@ -49,7 +52,11 @@ const SingleTokenSelectPool: React.FC<{ currency?: Currency }> = ({
     <Box>
       <small className='weight-600'>2. {t('selectPool')}</small>
       <Box mt={2}>
-        {vaults && vaults.length > 0 ? (
+        {loading ? (
+          <Box py={2} className='flex justify-center items-center'>
+            <Loader />
+          </Box>
+        ) : vaults && vaults.length > 0 ? (
           <Box className='singleTokenPoolsWrapper'>
             <Box className='flex items-center' padding='0 16px'>
               <Box width='80%'>

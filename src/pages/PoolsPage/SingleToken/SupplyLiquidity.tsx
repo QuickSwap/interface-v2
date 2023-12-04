@@ -30,7 +30,7 @@ export function SingleTokenSupplyLiquidity() {
   const { account } = useActiveWeb3React();
 
   const currency = useSingleTokenCurrency();
-  const { selectedVault } = useSingleTokenVault();
+  const { selectedVault, selectVault } = useSingleTokenVault();
 
   const toggleWalletModal = useWalletModalToggle(); // toggle wallet when disconnected
   const toggletNetworkSelectionModal = useNetworkSelectionModalToggle();
@@ -42,8 +42,9 @@ export function SingleTokenSupplyLiquidity() {
   const handleCurrencySelect = useCallback(
     (currencyNew: Currency) => {
       redirectWithCurrencySingleToken(currencyNew);
+      selectVault(undefined);
     },
-    [redirectWithCurrencySingleToken],
+    [redirectWithCurrencySingleToken, selectVault],
   );
 
   return (
