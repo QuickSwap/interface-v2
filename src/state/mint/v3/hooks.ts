@@ -1431,12 +1431,14 @@ export function useGetDefiedgeStrategies() {
     if (!defiedgeAPIURL) return [];
 
     const res = await fetch(
-      `${defiedgeAPIURL}/polygon/details?strategies=${strategies.map(e => e.id).join()}`,
+      `${defiedgeAPIURL}/polygon/details?strategies=${strategies
+        .map((e) => e.id)
+        .join()}`,
     );
     const data = await res.json();
-    if(data) return data
-    return
-  }
+    if (data) return data;
+    return;
+  };
 
   const { isLoading, data: defiedgeStrategiesWithApr } = useQuery({
     queryKey: ['fetchDefiedgeStrategiesWithApr', strategies],
@@ -1456,7 +1458,10 @@ export function useGetDefiedgeStrategies() {
     const tickLower = strategyTicksResult ? strategyTicksResult[0] : undefined;
     const tickUpper = strategyTicksResult ? strategyTicksResult[1] : undefined;
 
-    const strategyItem = defiedgeStrategiesWithApr?.find((e: any) => e.strategy.address.toLowerCase() === strategy.id.toLowerCase());
+    const strategyItem = defiedgeStrategiesWithApr?.find(
+      (e: any) =>
+        e.strategy.address.toLowerCase() === strategy.id.toLowerCase(),
+    );
 
     return {
       id: strategy.id,
@@ -1466,9 +1471,9 @@ export function useGetDefiedgeStrategies() {
       tickLower,
       tickUpper,
       onHold: !tickLower && !tickUpper,
-      apr: strategyItem?.strategy?.fees_apr
+      apr: strategyItem?.strategy?.fees_apr,
     };
   });
 
-  return {isLoading, defiedgeStrategies}
+  return { isLoading, defiedgeStrategies };
 }
