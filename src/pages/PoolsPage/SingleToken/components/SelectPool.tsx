@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import SingleTokenPoolCard from './SingleTokenPoolCard';
 import { useICHIVaults } from 'hooks/useICHIData';
 import { useSingleTokenVault } from 'state/singleToken/hooks';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 
 const SingleTokenSelectPool: React.FC<{ currency?: Currency }> = ({
   currency,
@@ -30,6 +31,20 @@ const SingleTokenSelectPool: React.FC<{ currency?: Currency }> = ({
 
   const { selectVault, selectedVault } = useSingleTokenVault();
 
+  const allTokenAddresses = allVaults.reduce((memo: string[], vault) => {
+    if (vault.token0 && !memo.includes(vault.token0.address.toLowerCase())) {
+      memo.push(vault.token0.address.toLowerCase());
+    }
+    if (vault.token1 && !memo.includes(vault.token1.address.toLowerCase())) {
+      memo.push(vault.token1.address.toLowerCase());
+    }
+    return memo;
+  }, []);
+  const {
+    loading: loadingUSDPrices,
+    prices: usdPrices,
+  } = useUSDCPricesFromAddresses(allTokenAddresses);
+
   return (
     <Box>
       <small className='weight-600'>2. {t('selectPool')}</small>
@@ -48,6 +63,8 @@ const SingleTokenSelectPool: React.FC<{ currency?: Currency }> = ({
               <SingleTokenPoolCard
                 key={vault.address}
                 vault={vault}
+                usdPrices={usdPrices}
+                loadingUSDPrices={loadingUSDPrices}
                 onClick={() => {
                   if (
                     selectedVault &&

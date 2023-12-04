@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import { Currency } from '@uniswap/sdk-core';

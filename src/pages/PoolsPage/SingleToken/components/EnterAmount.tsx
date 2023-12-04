@@ -1,27 +1,44 @@
 import { Box } from '@material-ui/core';
-import { CurrencyLogo, NumericalInput } from 'components';
+import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { CurrencyLogo, DoubleCurrencyLogo, NumericalInput } from 'components';
+import { formatUnits } from 'ethers/lib/utils';
 import { useActiveWeb3React } from 'hooks';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useSingleTokenCurrency,
   useSingleTokenTypeInput,
   useSingleTokenVault,
 } from 'state/singleToken/hooks';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
+import { useCurrencyBalance } from 'state/wallet/hooks';
 import { formatNumber } from 'utils';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 const SingleTokenEnterAmount: React.FC = () => {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const currency = useSingleTokenCurrency();
   const { selectedVault } = useSingleTokenVault();
   const { typedValue, typeInput } = useSingleTokenTypeInput();
-  const balance = useCurrencyBalance(account, currency);
+  const tokenBalance = useCurrencyBalance(account, currency);
   const { price: usdPrice } = useUSDCPriceFromAddress(
     currency?.wrapped.address ?? '',
   );
+  const isNativeToken =
+    currency &&
+    currency.wrapped.address.toLowerCase() ===
+      WETH[chainId].address.toLowerCase();
+  const ethBalance = useCurrencyBalance(account, ETHER[chainId]);
+  const wethBalance = useCurrencyBalance(account, WETH[chainId]);
+  const ethBalanceBN = ethBalance?.numerator ?? JSBI.BigInt(0);
+  const wethBalanceBN = wethBalance?.numerator ?? JSBI.BigInt(0);
+  const tokenBalanceBN = tokenBalance?.numerator ?? JSBI.BigInt(0);
+  const balanceBN = useMemo(() => {
+    if (isNativeToken) {
+      return JSBI.add(ethBalanceBN, wethBalanceBN);
+    }
+    return tokenBalanceBN;
+  }, [ethBalanceBN, isNativeToken, tokenBalanceBN, wethBalanceBN]);
 
   return (
     <>
@@ -43,8 +60,19 @@ const SingleTokenEnterAmount: React.FC = () => {
           <NumericalInput onUserInput={typeInput} value={typedValue} />
           {currency ? (
             <Box className='flex items-center'>
-              <CurrencyLogo currency={currency} size='18px' />
-              <p className='font-bold'>{currency?.symbol}</p>
+              {isNativeToken ? (
+                <DoubleCurrencyLogo
+                  currency0={ETHER[chainId]}
+                  currency1={WETH[chainId]}
+                />
+              ) : (
+                <CurrencyLogo currency={currency} size='18px' />
+              )}
+              <p className='font-bold'>
+                {isNativeToken
+                  ? `${ETHER[chainId].symbol}+${WETH[chainId].symbol}`
+                  : currency?.symbol}
+              </p>
             </Box>
           ) : (
             <p>{t('selectToken')}</p>
@@ -52,18 +80,24 @@ const SingleTokenEnterAmount: React.FC = () => {
         </Box>
         <Box mt={2} className='flex justify-between items-center'>
           <small className='text-secondary'>
-            ${formatNumber(usdPrice * Number(balance?.toSignificant() ?? 0))}
+            ${formatNumber(usdPrice * Number(typedValue))}
           </small>
           <Box className='flex items-center'>
             <small>
               <small className='text-secondary'>{t('available')}: </small>
-              <small>{formatNumber(balance?.toExact() ?? 0)}</small>
+              <small>
+                {formatNumber(
+                  formatUnits(balanceBN.toString(), currency?.decimals),
+                )}
+              </small>
             </small>
             <Box
               className='singleTokenInputMax'
               ml='4px'
               onClick={() => {
-                typeInput(balance?.toExact() ?? '0');
+                typeInput(
+                  formatUnits(balanceBN.toString(), currency?.decimals),
+                );
               }}
             >
               {t('max')}

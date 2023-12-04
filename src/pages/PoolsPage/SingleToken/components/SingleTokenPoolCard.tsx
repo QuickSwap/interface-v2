@@ -1,18 +1,32 @@
 import { Box } from '@material-ui/core';
 import { DoubleCurrencyLogo } from 'components';
-import { ICHIVault } from 'hooks/useICHIData';
+import { ICHIVault, useICHIVaultAPR } from 'hooks/useICHIData';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatNumber } from 'utils';
 import { Check } from '@material-ui/icons';
+import Loader from 'components/Loader';
 
 const SingleTokenPoolCard: React.FC<{
   vault: ICHIVault;
   onClick: () => void;
   selected: boolean;
   unselected: boolean;
-}> = ({ vault, onClick, selected, unselected }) => {
+  usdPrices?: {
+    address: string;
+    price: any;
+  }[];
+  loadingUSDPrices: boolean;
+}> = ({
+  vault,
+  onClick,
+  selected,
+  unselected,
+  usdPrices,
+  loadingUSDPrices,
+}) => {
   const { t } = useTranslation();
+  const { isLoading, apr } = useICHIVaultAPR(vault, usdPrices);
 
   return (
     <Box
@@ -39,7 +53,13 @@ const SingleTokenPoolCard: React.FC<{
           {formatNumber(vault.fee)}% {t('fee')}
         </Box>
       </Box>
-      <Box width='20%'>{}%</Box>
+      <Box width='20%'>
+        {isLoading || loadingUSDPrices ? (
+          <Loader />
+        ) : (
+          <p className='small'>{formatNumber(apr)}%</p>
+        )}
+      </Box>
     </Box>
   );
 };
