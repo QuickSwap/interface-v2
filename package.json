@@ -123,7 +123,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@0xsquid/widget": "1.6.0",
-    "@ape.swap/apeswap-lists": "1.5.18",
+    "@ape.swap/apeswap-lists": "1.5.62",
     "@arcxmoney/analytics": "^2.0.2",
     "@binance/w3w-web3-connector": "^1.0.0",
     "@cryption/df-sdk-core": "0.0.26",
