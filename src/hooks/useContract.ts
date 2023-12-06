@@ -44,6 +44,7 @@ import {
   UNIV3_QUOTER_ADDRESSES,
   STEER_PERIPHERY,
   STEER_VAULT_REGISTRY,
+  PRICE_GETTER_ADDRESS,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
@@ -406,11 +407,12 @@ export function useUnipilotFarmingContract(
   return isDual ? dualContract : singleContract;
 }
 
-export function usePriceGetterContract(
-  address?: string,
-  withSignerIfPossible?: boolean,
-) {
-  return useContract(address, PRICE_GETTER_ABI, withSignerIfPossible);
+export function usePriceGetterContract(withSignerIfPossible?: boolean) {
+  return useContract(
+    PRICE_GETTER_ADDRESS,
+    PRICE_GETTER_ABI,
+    withSignerIfPossible,
+  );
 }
 
 export const useBondContract = (address: string) => {

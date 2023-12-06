@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { DropdownItemProps, dropdownItemPadding, sizes } from './types';
+import { DropdownItemProps, sizes } from './types';
 import { Link } from 'react-router-dom';
 
 const Element: React.FC<DropdownItemProps> = ({ onClick, url, children }) => {
@@ -22,17 +22,7 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
   ...props
 }) => {
   return (
-    <Box
-      className='cursor-pointer'
-      {...props}
-      sx={{
-        px: dropdownItemPadding[size].x,
-        py: dropdownItemPadding[size].y,
-        width: '100%',
-        color: 'text',
-        borderRadius: '10px',
-      }}
-    >
+    <Box className='cursor-pointer' {...props}>
       <Element url={url} onClick={onClick} active={active} size={size}>
         {children}
       </Element>

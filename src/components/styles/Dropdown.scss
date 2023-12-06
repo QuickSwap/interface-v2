@@ -1,2 +1,19 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
+
+.dropdownWrapper {
+  background-color: $grey12;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.dropdownItemsWrapper {
+  position: absolute;
+  overflow: hidden;
+  margin-top: 5px;
+  border-radius: 0 10px 10px 0;
+  width: fit-content;
+  top: 85%;
+}

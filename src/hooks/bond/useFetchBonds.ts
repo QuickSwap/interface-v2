@@ -76,9 +76,7 @@ export const useFetchBonds = () => {
       .map((item: any) => item.contractAddress[chainId]);
   }, [bonds, chainId]);
 
-  const priceGetterContract = usePriceGetterContract(
-    PRICE_GETTER_ADDRESS[chainId],
-  );
+  const priceGetterContract = usePriceGetterContract();
   const lpPriceParams = useMemo(() => {
     if (!bonds) return [];
     return bonds.map((bond) => {
@@ -89,7 +87,7 @@ export const useFetchBonds = () => {
       const protocol =
         bond && bond.lpToken && bond.lpToken.liquidityDex
           ? getLiquidityDexIndex(bond.lpToken.liquidityDex[chainId], true)
-          : undefined;
+          : LiquidityProtocol.V2;
       const factoryV2 =
         protocol === LiquidityProtocol.V2
           ? V2_FACTORY_ADDRESSES[chainId]

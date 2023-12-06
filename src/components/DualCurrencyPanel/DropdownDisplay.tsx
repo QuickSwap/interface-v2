@@ -30,13 +30,6 @@ const DropdownDisplay: React.FC<{
 
   return (
     <Box className='flex items-center' width={active ? '100%' : '170px'}>
-      <Box
-        className='flex items-center'
-        mr='5px'
-        minWidth={inputCurrencies[1] ? '30px' : '35px'}
-      >
-        {!inputCurrencies[1] && !active && <ZapIcon />}
-      </Box>
       <Box className='dualCurrencyDropdownWrapper'>
         <Box className='flex' mr='5px'>
           {inputCurrencies[1] ? (

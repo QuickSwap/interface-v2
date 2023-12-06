@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import { DropdownProps, dropdownPadding, sizes } from './types';
+import { DropdownProps, sizes } from './types';
 import 'components/styles/Dropdown.scss';
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -16,36 +16,18 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   return (
     <Box
-      borderRadius='10px'
       className='dropdownWrapper'
+      borderRadius='10px'
       width='100%'
       onClick={handleClick}
       {...props}
     >
-      <Box
-        className='flex'
-        sx={{
-          px: dropdownPadding[size].x,
-          py: dropdownPadding[size].y,
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
+      <Box className='flex items-center cursor-pointer'>
         {component}
         {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       </Box>
       {open && (
-        <Box
-          className='absolute'
-          width='fit-content'
-          overflow='hidden'
-          mt='5px'
-          top='85%'
-          style={{
-            borderBottomRightRadius: '10px',
-            borderBottomLeftRadius: '10px',
-          }}
-        >
+        <Box className='dropdownItemsWrapper' width='fit-content'>
           {children}
         </Box>
       )}

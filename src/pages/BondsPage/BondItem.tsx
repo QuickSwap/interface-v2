@@ -50,7 +50,7 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
       : 0;
   const displayAvailable = available - thresholdToShow;
   const dollarAvailable =
-    bond?.earnTokenPrice ?? 0 * (Number(displayAvailable) ?? 0);
+    (bond?.earnTokenPrice ?? 0) * (Number(displayAvailable) ?? 0);
   const availableTokensTooltip = `${formatNumber(displayAvailable)} ${
     bond?.earnToken?.symbol
   } ($${formatNumber(dollarAvailable)})`;
