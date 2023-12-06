@@ -24,7 +24,7 @@ import {
   useLiquidityHubState,
 } from 'state/swap/liquidity-hub/hooks';
 import { useTokenContract, useWETHContract } from 'hooks/useContract';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import ToggleSwitch from 'components/ToggleSwitch';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { ChainId, ETHER, Trade, WETH, Currency } from '@uniswap/sdk';

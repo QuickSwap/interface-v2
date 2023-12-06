@@ -21,7 +21,7 @@ import {
 } from 'utils/useUSDCPrice';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useLastTransactionHash } from 'state/transactions/hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 
 interface RewardRate {
   rewardA?: BigNumber;

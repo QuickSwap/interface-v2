@@ -1,4 +1,4 @@
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import { useCNTFarmListCallback } from 'hooks/useCNTFarmListCallback';
 import useInterval from 'hooks/useInterval';

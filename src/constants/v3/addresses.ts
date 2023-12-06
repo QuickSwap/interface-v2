@@ -29,6 +29,16 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA]],
 };
 
+export const toV2Token = (t: {
+  chainId: number;
+  address: string;
+  decimals: number;
+  symbol?: string;
+  name?: string;
+}): Token => {
+  return new Token(t.chainId, t.address, t.decimals, t.symbol, t.name);
+};
+
 export const toV3Token = (t: {
   chainId: number;
   address: string;
@@ -46,6 +56,13 @@ export const toV3Currency = (t: {
   name?: string;
 }): V3Currency => {
   return new V3Currency(t.chainId, t.decimals, t.symbol, t.name);
+};
+
+export const NATIVE_TOKEN_ADDRESS =
+  '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
+export const PRICE_GETTER_ADDRESS: AddressMap = {
+  [ChainId.MATIC]: '0x241ebA867Bee0Dd50a8Ca54732A6C05815C50Cc5',
 };
 
 export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
@@ -267,6 +284,14 @@ export const LENDING_QS_POOL_DIRECTORY: AddressMap = {
 
 export const LENDING_LENS: AddressMap = {
   [ChainId.MATIC]: '0x4B1dfA99d53FFA6E4c0123956ec4Ac2a6D9F4c75',
+};
+
+export const BANANA_ADDRESSES: AddressMap = {
+  [ChainId.MATIC]: '0x5d47baba0d66083c52009271faf3f50dcc01023c',
+};
+
+export const ZAP_ADDRESS: AddressMap = {
+  [ChainId.MATIC]: '0x236290f7da54465BF7A26f279d2B3553e5402780',
 };
 
 export const LENDING_QS_POOLS: { [chainId: number]: string[] } = {

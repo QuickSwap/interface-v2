@@ -2,13 +2,11 @@
 @use 'styles/breakpoints' as *;
 
 .searchInput {
-  height: 40px;
   border: 1px solid $grey2;
   border-radius: 10px;
   display: flex;
   align-items: center;
   padding: 0 10px;
-  width: 100%;
   & input {
     background: transparent;
     border: none;
@@ -20,14 +18,14 @@
     color: $textPrimary;
     width: 100%;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     min-width: unset;
-    margin-right: 0
+    margin-right: 0;
   }
 }
 .focusedSearchInput {
   border: 1px solid $primary;
   & svg path {
-    fill: $primary !important
+    fill: $primary !important;
   }
 }

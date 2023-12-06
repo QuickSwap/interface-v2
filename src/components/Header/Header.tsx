@@ -126,6 +126,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const showSafe = config['safe']['available'];
   const showPerps = config['perps']['available'];
   const showBOS = config['bos']['available'];
+  const showBonds = config['bonds']['available'];
   const showDappOS = config['dappos']['available'];
   const menuItems = [];
 
@@ -188,6 +189,13 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       link: `/farm`,
       text: t('farm'),
       id: 'farm-page-link',
+    });
+  }
+  if (showBonds) {
+    menuItems.push({
+      link: `/bonds`,
+      text: t('bonds'),
+      id: 'bonds-page-link',
     });
   }
   if (showSafe) {

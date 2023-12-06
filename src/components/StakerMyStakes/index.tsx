@@ -55,7 +55,7 @@ import {
   useUnipilotUserFarms,
 } from 'hooks/v3/useUnipilotFarms';
 import { FarmingType } from 'models/enums';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import {
   useSteerFilteredFarms,
   useSteerStakedPools,

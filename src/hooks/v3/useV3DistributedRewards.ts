@@ -1,5 +1,5 @@
 import { ChainId } from '@uniswap/sdk';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
 import { getTokenFromAddress } from 'utils';

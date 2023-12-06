@@ -12,14 +12,16 @@ import { addTransaction, finalizeTransaction } from './actions';
 import { TransactionDetails } from './reducer';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
 
+interface TransactionData {
+  summary?: string;
+  approval?: { tokenAddress: string; spender: string };
+  claim?: { recipient: string };
+}
+
 // helper that can take a ethers library transaction response and add it to the list of transactions
 export function useTransactionAdder(): (
   response: TransactionResponse,
-  customData?: {
-    summary?: string;
-    approval?: { tokenAddress: string; spender: string };
-    claim?: { recipient: string };
-  },
+  customData?: TransactionData,
 ) => void {
   const { chainId, account } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
@@ -210,3 +212,24 @@ export function useLastTransactionHash() {
     .filter((tx) => tx.receipt);
   return sortedTransactions.length > 0 ? sortedTransactions[0].hash : '';
 }
+
+export const useSignTransaction = () => {
+  const { provider } = useActiveWeb3React();
+
+  const addTransaction = useTransactionAdder();
+
+  const signTransaction = async ({
+    dataToSign,
+    txInfo,
+  }: {
+    dataToSign: any;
+    txInfo: TransactionData;
+  }): Promise<string | undefined> => {
+    const tx = await provider?.getSigner().sendTransaction(dataToSign);
+    if (tx) {
+      addTransaction(tx, txInfo);
+    }
+    return tx?.hash;
+  };
+  return { signTransaction };
+};

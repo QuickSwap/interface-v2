@@ -66,7 +66,7 @@ import useSwapRedirects from 'hooks/useSwapRedirect';
 import { CHAIN_INFO } from 'constants/v3/chains';
 import { useTranslation } from 'react-i18next';
 import { useTransactionFinalizer } from 'state/transactions/hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { useV3TradeTypeAnalyticsCallback } from 'components/Swap/LiquidityHub';
 

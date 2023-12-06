@@ -1,6 +1,6 @@
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
 import { FarmingType } from 'models/enums';
-import { FarmListInfo } from 'types';
+import { FarmListInfo } from 'types/index';
 
 export const fetchFarmList: Readonly<{
   pending: ActionCreatorWithPayload<{ url: string; requestId: string }>;
