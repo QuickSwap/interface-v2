@@ -854,8 +854,10 @@ export function SelectRange({
                     );
                   }}
                 >
-                 <p>Defiedge</p>
-                  <small className='text-success'>{formatNumber(defiedgeStrategiesForPair[0]?.apr)}%</small>
+                  <p>Defiedge</p>
+                  <small className='text-success'>
+                    {formatNumber(defiedgeStrategiesForPair[0]?.apr)}%
+                  </small>
                   <span>{t('apr')}</span>
                 </Box>
               </Grid>

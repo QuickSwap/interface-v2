@@ -1534,5 +1534,5 @@ export function useGetDefiedgeStrategies() {
     };
   });
 
-  return {isLoading, defiedgeStrategies}
+  return { isLoading, defiedgeStrategies };
 }

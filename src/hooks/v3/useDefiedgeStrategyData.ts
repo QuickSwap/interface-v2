@@ -97,6 +97,7 @@ export function useDefiedgeLiquidityRatio(
 
       setRatio(getRatio(cp, pa, pb));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
   return {
