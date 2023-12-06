@@ -757,6 +757,14 @@ export function useV3DerivedMintInfo(
     unipilotToken1VaultBalance,
   ]);
 
+  const { defiedgeStrategies } = useGetDefiedgeStrategies();
+  const defiedgeStrategy = defiedgeStrategies.find(
+    (item) =>
+      presetRange &&
+      presetRange.address &&
+      item.id.toLowerCase() === presetRange.address.toLowerCase(),
+  );
+
   const { data: steerVaults } = useSteerVaults(chainId);
   const steerVault = steerVaults.find(
     (item) =>
@@ -842,6 +850,37 @@ export function useV3DerivedMintInfo(
       );
 
       return CurrencyAmount.fromRawAmount(dependentCurrency, dependentDeposit);
+    }
+
+    if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) {
+      if (!independentAmount || !dependentCurrency || !defiedgeStrategy) return;
+
+      const tokenType =
+        defiedgeStrategy.token0 &&
+        dependentCurrency.wrapped.address.toLowerCase() ===
+          defiedgeStrategy.token0.toLowerCase()
+          ? 0
+          : 1;
+
+      let dependentDeposit
+
+      if(tokenType === 0) {
+        dependentDeposit = (1 / defiedgeStrategy.ratio) * Number(independentAmount.toExact());
+      } else {
+        dependentDeposit =  defiedgeStrategy.ratio * Number(independentAmount.toExact());
+      }
+
+      return CurrencyAmount.fromRawAmount(
+        dependentCurrency.isNative
+          ? dependentCurrency.wrapped
+          : dependentCurrency,
+        JSBI.BigInt(
+          parseUnits(
+            dependentDeposit.toFixed(dependentCurrency.decimals),
+            dependentCurrency.decimals,
+          ),
+        ),
+      );
     }
 
     if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) {
@@ -1418,6 +1457,7 @@ export function useGetDefiedgeStrategies() {
   const { chainId } = useActiveWeb3React();
   const strategies = getAllDefiedgeStrategies(chainId);
   const strategyIds = strategies.map((s) => s.id);
+  const defiedgeAPIURL = process.env.REACT_APP_DEFIEDGE_API_URL;
 
   const strategyTickResult = useMultipleContractSingleData(
     strategyIds,
@@ -1426,8 +1466,24 @@ export function useGetDefiedgeStrategies() {
     [0],
   );
 
+  const fetchLiquidityRatio = useCallback(async (strategy: string) => {
+    if (!defiedgeAPIURL) return 0;
+
+    const res = await fetch(`${defiedgeAPIURL}/polygon/${strategy.toLowerCase()}/deposit/ratio`)
+    const data = await res.json();
+    return data?.ratio ?? 0;
+  }, [])
+
+  const fetchStrategiesLiquidityRatio = useCallback(async () => {
+    try {
+      const responses = await Promise.all(strategies.map(s => fetchLiquidityRatio(s.id)));
+      return responses
+    } catch (error) {
+      console.error('Error fetching liquidity ratios:', error);
+    }
+  }, [])
+
   const fetchDefiedgeStrategiesWithApr = async () => {
-    const defiedgeAPIURL = process.env.REACT_APP_DEFIEDGE_API_URL;
     if (!defiedgeAPIURL) return [];
 
    await fetch(
@@ -1443,6 +1499,11 @@ export function useGetDefiedgeStrategies() {
   const { isLoading, data: defiedgeStrategiesWithApr } = useQuery({
     queryKey: ['fetchDefiedgeStrategiesWithApr', strategies],
     queryFn: fetchDefiedgeStrategiesWithApr,
+  });
+
+  const { data: liquidityRatios } = useQuery({
+    queryKey: ['fetchStrategiesLiquidityRatio', strategies],
+    queryFn: fetchStrategiesLiquidityRatio,
   });
 
   const defiedgeStrategies = strategies.map((strategy, index) => {
@@ -1468,7 +1529,8 @@ export function useGetDefiedgeStrategies() {
       tickLower,
       tickUpper,
       onHold: !tickLower && !tickUpper,
-      apr:  strategyItem?.strategy?.fees_apr
+      apr:  strategyItem?.strategy?.fees_apr,
+      ratio: liquidityRatios && liquidityRatios[index]
     };
   });
 
