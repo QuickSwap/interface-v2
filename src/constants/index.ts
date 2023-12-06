@@ -1557,6 +1557,13 @@ export const DefiedgeStrategies: {
       miniChefAddress: '0xABeCD28Ef2b4aF6B3ea046a00C435A4f44f576AE',
       rewardToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
     },
+    {
+      id: '0x87a32726eeaf4b6f81f8555e0b9a3cd9c0ae081b',
+      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+      token1: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC
+      pool: '0xAE81FAc689A1b4b1e06e7ef4a2ab4CD8aC0A087D',
+      ableToFarm: false,
+    },
   ],
 };
 
