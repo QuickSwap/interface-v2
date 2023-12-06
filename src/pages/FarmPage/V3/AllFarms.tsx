@@ -66,7 +66,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
 
   const [sortBy, setSortBy] = useState(GlobalConst.utils.v3FarmSortBy.pool);
   const [sortDesc, setSortDesc] = useState(false);
-  const sortMultiplier = sortBy ? 1 : -1;
+  const sortMultiplier = sortDesc ? 1 : -1;
 
   const sortColumns = [
     {
@@ -82,15 +82,15 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       justify: 'flex-start',
     },
     {
-      text: t('rewards'),
-      index: GlobalConst.utils.v3FarmSortBy.rewards,
-      width: 0.3,
-      justify: 'flex-start',
-    },
-    {
       text: t('apr'),
       index: GlobalConst.utils.v3FarmSortBy.apr,
       width: 0.2,
+      justify: 'flex-start',
+    },
+    {
+      text: t('rewards'),
+      index: GlobalConst.utils.v3FarmSortBy.rewards,
+      width: 0.3,
       justify: 'flex-start',
     },
   ];
@@ -272,7 +272,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
         />
       </Box>
       {!isMobile && (
-        <Box mt={2} px={3.5}>
+        <Box mt={2} px={5}>
           <Box width='90%'>
             <SortColumns
               sortColumns={sortByDesktopItems}
@@ -287,11 +287,11 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           <Loader stroke={'white'} size={'1.5rem'} />
         </Box>
       ) : (
-        <>
+        <Box p={2}>
           {v3Farms.map((farm, ind) => (
             <V3FarmCard key={ind} farm={farm} />
           ))}
-        </>
+        </Box>
       )}
     </Box>
   );
