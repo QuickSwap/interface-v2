@@ -10,6 +10,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 const SwapTokenDetailsHorizontal: React.FC<{
   token: Token;
@@ -21,6 +22,8 @@ const SwapTokenDetailsHorizontal: React.FC<{
   const { palette } = useTheme();
   const config = getConfig(chainId);
   const v2 = config['v2'];
+
+  const { t } = useTranslation();
 
   const fetchTokenInterval = async () => {
     let tokenPriceDataV3;
@@ -169,6 +172,26 @@ const SwapTokenDetailsHorizontal: React.FC<{
               ) : (
                 <></>
               )}
+            </Box>
+          </Grid>
+
+          {/* Token Address */}
+          <Grid item xs={12}>
+            <Box className='flex items-center' py={1}>
+              <Box pr={1}>{t('address')}:</Box>
+              <a
+                href={`${config.blockExplorer}/token/${tokenAddress}`}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='no-decoration'
+              >
+                <Box className='text-primary'>
+                  {shortenAddress(tokenAddress)}
+                </Box>
+              </a>
+              <Box className='flex' ml='5px'>
+                <CopyHelper toCopy={tokenAddress} />
+              </Box>
             </Box>
           </Grid>
         </>

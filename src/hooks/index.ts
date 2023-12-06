@@ -19,6 +19,7 @@ import {
   trustWalletConnection,
   walletConnectConnection,
   unstoppableDomainsConnection,
+  binanceWalletConnection,
 } from 'connectors';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
 import {
@@ -110,6 +111,8 @@ export function useGetConnection() {
           return cryptoComConnection;
         case ConnectionType.UNSTOPPABLEDOMAINS:
           return unstoppableDomainsConnection;
+        case ConnectionType.BINANCEWALLET:
+          return binanceWalletConnection;
         default:
           throw Error('unsupported connector');
       }

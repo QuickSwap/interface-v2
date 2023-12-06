@@ -83,6 +83,8 @@ export default function Farms() {
       ? 'gamma-farms'
       : unipilotFarms.length > 0
       ? 'unipilot-farms'
+      : steerFarms.length > 0
+      ? 'steer-farms'
       : 'eternal-farms';
 
   const v3FarmCategories = useMemo(() => {

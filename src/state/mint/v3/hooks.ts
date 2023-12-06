@@ -289,7 +289,8 @@ export function useV3DerivedMintInfo(
 
   const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
     [Field.CURRENCY_A]:
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+        liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) &&
       currencyA &&
       chainId &&
       currencyA.wrapped.address.toLowerCase() ===
@@ -305,7 +306,8 @@ export function useV3DerivedMintInfo(
         ? balances[0]
         : undefined,
     [Field.CURRENCY_B]:
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+        liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) &&
       currencyB &&
       chainId &&
       currencyB.wrapped.address.toLowerCase() ===
