@@ -17,6 +17,7 @@ import burnV3 from './burn/v3/reducer';
 import multicall from './multicall/reducer';
 import multicallV3 from './multicall/v3/reducer';
 import swapV3 from './swap/v3/reducer';
+import zap from './zap/reducer';
 import liquidityHub from './swap/liquidity-hub/reducer';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { api as dataApi } from './data/slice';
@@ -49,6 +50,7 @@ const store = configureStore({
     cntFarms,
     dualFarms,
     syrups,
+    zap,
     liquidityHub,
     [dataApi.reducerPath]: dataApi.reducer,
   },

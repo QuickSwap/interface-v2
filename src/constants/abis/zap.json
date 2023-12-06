@@ -1,0 +1,872 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "contract IApeRouter02",
+        "name": "_router",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "contract IApePair",
+        "name": "lp",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract IApeRouter02",
+        "name": "fromRouter",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract IApeRouter02",
+        "name": "toRouter",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "LPMigrated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "lpTokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "Zap",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "contract IERC20",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract IBEP20RewardApeV5",
+        "name": "pool",
+        "type": "address"
+      }
+    ],
+    "name": "ZapLPPool",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract IBEP20RewardApeV5",
+        "name": "pool",
+        "type": "address"
+      }
+    ],
+    "name": "ZapLPPoolNative",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "contract IERC20",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "pid",
+        "type": "uint256"
+      }
+    ],
+    "name": "ZapMiniApeV2",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "pid",
+        "type": "uint256"
+      }
+    ],
+    "name": "ZapMiniApeV2Native",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "lpTokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "ZapNative",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "contract IERC20",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract IBEP20RewardApeV5",
+        "name": "pool",
+        "type": "address"
+      }
+    ],
+    "name": "ZapSingleAssetPool",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract IBEP20RewardApeV5",
+        "name": "pool",
+        "type": "address"
+      }
+    ],
+    "name": "ZapSingleAssetPoolNative",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "contract IERC20",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract ICustomBill",
+        "name": "bill",
+        "type": "address"
+      }
+    ],
+    "name": "ZapTBill",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract ICustomBill",
+        "name": "bill",
+        "type": "address"
+      }
+    ],
+    "name": "ZapTBillNative",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "WNATIVE",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "apeRouter",
+    "outputs": [
+      {
+        "internalType": "contract IApeRouter02",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "factory",
+    "outputs": [
+      {
+        "internalType": "contract IApeFactory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path1",
+        "type": "address[]"
+      }
+    ],
+    "name": "getMinAmounts",
+    "outputs": [
+      {
+        "internalType": "uint256[2]",
+        "name": "minAmountsSwap",
+        "type": "uint256[2]"
+      },
+      {
+        "internalType": "uint256[2]",
+        "name": "minAmountsLP",
+        "type": "uint256[2]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "router",
+    "outputs": [
+      {
+        "internalType": "contract IApeRouter02",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "lpTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path1",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsSwap",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsLP",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ],
+    "name": "zap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IApeRouter02",
+        "name": "router",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IApePair",
+        "name": "lp",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountAMinRemove",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountBMinRemove",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountAMinAdd",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountBMinAdd",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ],
+    "name": "zapLPMigrator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "lpTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path1",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsSwap",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsLP",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract IBEP20RewardApeV5",
+        "name": "pool",
+        "type": "address"
+      }
+    ],
+    "name": "zapLPPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "lpTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path1",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsSwap",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsLP",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract IBEP20RewardApeV5",
+        "name": "pool",
+        "type": "address"
+      }
+    ],
+    "name": "zapLPPoolNative",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "lpTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path1",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsSwap",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsLP",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract IMiniApeV2",
+        "name": "miniApe",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "pid",
+        "type": "uint256"
+      }
+    ],
+    "name": "zapMiniApeV2",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "lpTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path1",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsSwap",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsLP",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract IMiniApeV2",
+        "name": "miniApe",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "pid",
+        "type": "uint256"
+      }
+    ],
+    "name": "zapMiniApeV2Native",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "lpTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path1",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsSwap",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsLP",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ],
+    "name": "zapNative",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minAmountsSwap",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract IBEP20RewardApeV5",
+        "name": "pool",
+        "type": "address"
+      }
+    ],
+    "name": "zapSingleAssetPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "path",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minAmountsSwap",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract IBEP20RewardApeV5",
+        "name": "pool",
+        "type": "address"
+      }
+    ],
+    "name": "zapSingleAssetPoolNative",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "inputToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inputAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "lpTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path1",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsSwap",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsLP",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract ICustomBill",
+        "name": "bill",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "zapTBill",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "lpTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "path1",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsSwap",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "minAmountsLP",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract ICustomBill",
+        "name": "bill",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "zapTBillNative",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
+  }
+]

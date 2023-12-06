@@ -3,7 +3,7 @@ import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTranslation } from 'react-i18next';
-import { SyrupInfo } from 'types';
+import { SyrupInfo } from 'types/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo, StakeSyrupModal } from 'components';

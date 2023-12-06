@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { GlobalConst } from 'constants/index';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import {

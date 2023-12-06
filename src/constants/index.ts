@@ -48,6 +48,8 @@ import {
   NINJAZ,
 } from './v3/addresses';
 
+export const bondAPIV2BaseURL = 'https://api-v2-staging.apeswap.finance/';
+
 export const AVERAGE_L1_BLOCK_TIME = 12000;
 
 export const CHAIN_IDS_TO_NAMES = {
@@ -61,6 +63,15 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.MANTA]: 'manta',
   [ChainId.ZKATANA]: 'zKatana',
 };
+
+export enum ZapType {
+  ZAP = 0,
+  ZAP_LP_MIGRATOR = 1,
+  ZAP_LP_POOL = 2,
+  ZAP_SINGLE_ASSET_POOL = 3,
+  ZAP_T_BILL = 4,
+  ZAP_MINI_APE = 5,
+}
 
 export enum SteerVaultState {
   PendingApproval,
@@ -1832,3 +1843,21 @@ export const LeaderBoardAnalytics = {
 };
 
 export const unipilotVaultTypes = ['Wide', 'Balanced', 'Narrow'];
+
+export const BOND_QUERY_KEYS = {
+  INDUSTRY_STATS: 'industryStats',
+  HISTORICAL_INDUSTRY_STATS: 'historicalIndustryStats',
+  LHD_PROFILES: 'lhdProfiles',
+  LHD_PROFILE: 'lhdProfile',
+  LHD_PASSWORD_VERIFIED: 'lhdPasswordVerified',
+  HOMEPAGE_STATS: 'homepageStats',
+  LIVE_AND_UPCOMING: 'liveAndUpcoming',
+  TVL_STATS: 'tvlStats',
+  WIDO_QUOTE: 'widoQuote',
+  WIDO_ALLOWANCE: 'widoAllowance',
+  WIDO_APPROVAL: 'widoApproval',
+  WIDO_SIGN_APPROVAL: 'widoSignApproval',
+  TOKEN_HISTORIC: 'tokenHistoric',
+  BONDS_LANDING: 'bondsLanding',
+  BOND_POST_REFERENCE: 'bondPostReference',
+};

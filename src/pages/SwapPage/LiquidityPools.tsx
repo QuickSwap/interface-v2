@@ -6,7 +6,7 @@ import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@material-ui/lab';
 

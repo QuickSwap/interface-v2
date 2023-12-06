@@ -1,0 +1,40 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.dualCurrencyPanelWrapper {
+  margin-top: 12px;
+  background-color: $grey29;
+  padding: 10px;
+  border-radius: 16px;
+  & input {
+    flex: 1;
+    background-color: transparent;
+    box-shadow: none;
+    outline: none;
+    border: none;
+    color: $textPrimary;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+.dualCurrencyDropdownWrapper {
+  background-color: $grey12;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.dualCurrencyMaxButton {
+  width: 46px;
+  height: 23px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $grey35;
+  color: $textSecondary;
+  border-radius: 8px;
+  cursor: pointer;
+}

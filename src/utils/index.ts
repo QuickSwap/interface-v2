@@ -18,9 +18,10 @@ import {
 import {
   CurrencyAmount as CurrencyAmountV3,
   Currency as CurrencyV3,
+  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
-import { formatUnits } from 'ethers/lib/utils';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import {
   GammaPair,
@@ -37,15 +38,16 @@ import {
   StakingInfo,
   SyrupBasic,
   SyrupInfo,
-} from 'types';
+  DualStakingBasic,
+  StakingBasic,
+} from 'types/index';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
-import { DualStakingBasic, StakingBasic } from 'types';
 import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
 import { DLQUICK, EMPTY, OLD_QUICK } from 'constants/v3/addresses';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
 import { Connector } from '@web3-react/types';
@@ -54,6 +56,15 @@ import { SteerVault } from 'hooks/v3/useSteerData';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
+
+export function toNativeCurrency(chainId: ChainId | undefined) {
+  if (!chainId) return;
+  return {
+    ...ETHER[chainId],
+    isNative: true,
+    isToken: false,
+  } as NativeCurrency;
+}
 
 export function formatCompact(
   unformatted: number | string | BigNumber | BigNumberish | undefined | null,
@@ -1172,6 +1183,38 @@ export const getGammaPairsForTokens = (
     return;
   }
   return;
+};
+
+export enum LiquidityProtocol {
+  Both = 1,
+  V2 = 2,
+  V3 = 3,
+  Algebra = 4,
+  Gamma = 5,
+}
+
+export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
+  if (dex === 'Algebra') {
+    if (isLP) {
+      return LiquidityProtocol.Gamma;
+    }
+    return LiquidityProtocol.Algebra;
+  }
+  return LiquidityProtocol.V2;
+};
+
+export const convertToTokenValue = (
+  numberString: string,
+  decimals: number,
+): BigNumber => {
+  const num = Number(numberString);
+  if (isNaN(num)) {
+    console.error('Error: numberString to parse is not a number');
+    return parseUnits('0', decimals);
+  }
+
+  const tokenValue = parseUnits(num.toFixed(decimals), decimals);
+  return tokenValue;
 };
 
 export const calculatePositionWidth = (

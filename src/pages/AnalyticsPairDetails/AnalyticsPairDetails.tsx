@@ -23,7 +23,7 @@ import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { CallMade } from '@material-ui/icons';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 
