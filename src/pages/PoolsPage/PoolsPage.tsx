@@ -5,12 +5,13 @@ import SupplyLiquidity from './SupplyLiquidity';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import { useIsV2 } from 'state/application/hooks';
+import { useIsLpLock, useIsV2 } from 'state/application/hooks';
 import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 import { getConfig } from '../../config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { HypeLabAds } from 'components';
+import LockLiquidity from './lpLock/LockLiquidity';
 
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
@@ -18,6 +19,7 @@ const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
+  const { isLpLock, updateIsLpLock } = useIsLpLock();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
@@ -31,6 +33,12 @@ const PoolsPage: React.FC = () => {
       updateIsV2(false);
     }
   }, [updateIsV2, v2]);
+
+  useEffect(() => {
+    if (!isLpLock) {
+      updateIsLpLock(false);
+    }
+  }, [updateIsLpLock, isLpLock]);
 
   return (
     <Box width='100%' mb={3}>
@@ -60,7 +68,7 @@ const PoolsPage: React.FC = () => {
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>
           <Box className='wrapper'>
-            {!isV2 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
+            {isLpLock ? <LockLiquidity /> : !isV2 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={7}>

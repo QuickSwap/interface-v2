@@ -93,6 +93,8 @@ export const updateTokenDetails = createAction<TokenDetail>(
 
 export const updateIsV2 = createAction<boolean>('application/updateIsV2');
 
+export const updateIsLpLock = createAction<boolean>('application/updateIsLpLock');
+
 export const updateUDDomain = createAction<string | undefined>(
   'application/updateUDDomain',
 );

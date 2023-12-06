@@ -16,6 +16,7 @@ import {
   updateTokenDetails,
   updateMaticPrice,
   updateIsV2,
+  updateIsLpLock,
   updateUDDomain,
 } from './actions';
 
@@ -57,6 +58,7 @@ export interface ApplicationState {
   readonly tokenChartData: any;
   readonly tokenDetails: TokenDetail[];
   readonly isV2: boolean | undefined;
+  readonly isLpLock: boolean | undefined;
   readonly udDomain: string | undefined;
 }
 
@@ -73,6 +75,7 @@ const initialState: ApplicationState = {
   tokenChartData: null,
   tokenDetails: [],
   isV2: undefined,
+  isLpLock: undefined,
   udDomain: undefined,
 };
 
@@ -189,6 +192,9 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateIsV2, (state, { payload }) => {
       state.isV2 = payload;
+    })
+    .addCase(updateIsLpLock, (state, { payload }) => {
+      state.isLpLock = payload;
     })
     .addCase(updateUDDomain, (state, { payload }) => {
       state.udDomain = payload;

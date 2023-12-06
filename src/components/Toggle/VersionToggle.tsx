@@ -1,28 +1,38 @@
 import React, { useEffect } from 'react';
+import NewTag from 'assets/images/NewTag.png';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
-import { useIsV2 } from 'state/application/hooks';
+import { useIsLpLock, useIsV2 } from 'state/application/hooks';
 import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
 import { useAnalyticsVersion } from 'hooks';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
+  const { updateIsLpLock } = useIsLpLock();
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
+  const isPoolsPage = history.location.pathname.includes('/pools'); // TODO: how to check if we are on the pools page?
   const analyticsVersion = useAnalyticsVersion();
   const version =
     params && params.version
       ? params.version
       : isAnalyticsPage
       ? analyticsVersion
+      : isPoolsPage 
+      ? 'lpLocker' 
       : 'v3';
 
   useEffect(() => {
     updateIsV2(version === 'v2');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version]);
+
+  useEffect(() => {
+    updateIsLpLock(version === 'lpLocker');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
 
@@ -49,7 +59,7 @@ const VersionToggle: React.FC = () => {
   return (
     <Box className='version-toggle-container'>
       <Box
-        className={isV2 && version !== 'total' ? 'version-toggle-active' : ''}
+        className={isV2 && version !== 'total' && version !== 'lpLocker' ? 'version-toggle-active' : ''}
         onClick={() => {
           redirectWithVersion('v2');
         }}
@@ -58,7 +68,7 @@ const VersionToggle: React.FC = () => {
       </Box>
 
       <Box
-        className={!isV2 && version !== 'total' ? 'version-toggle-active' : ''}
+        className={!isV2 && (version !== 'total' && version !== 'lpLocker') ? 'version-toggle-active' : ''}
         onClick={() => {
           redirectWithVersion('v3');
         }}
@@ -76,6 +86,17 @@ const VersionToggle: React.FC = () => {
           <small>{t('total')}</small>
         </Box>
       )}
+      {isPoolsPage &&
+        <Box
+          className={version === 'lpLocker' ? 'version-toggle-active' : ''}
+          onClick={() => {
+            redirectWithVersion('lpLocker');
+          }}
+        >
+          <small>{t('Liquidity Locker')}</small>
+          <img src={NewTag} alt='new feature' width={46} />
+        </Box>
+      }
     </Box>
   );
 };
