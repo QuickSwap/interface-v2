@@ -1492,24 +1492,27 @@ export function useGetDefiedgeStrategies() {
       return responses;
     } catch (error) {
       console.error('Error fetching liquidity ratios:', error);
+      return null;
     }
   }, [fetchLiquidityRatio, strategies]);
 
   const fetchDefiedgeStrategiesWithApr = async () => {
     if (!defiedgeAPIURL) return [];
 
-    await fetch(
-      `${defiedgeAPIURL}/polygon/details?strategies=${strategies
-        .map((e) => e.id)
-        .join()}`,
-    )
-      .then(async (res) => {
-        const data = await res.json();
+    try {
+      const res = await fetch(
+        `${defiedgeAPIURL}/polygon/details?strategies=${strategies
+          .map((e) => e.id)
+          .join()}`,
+      );
+      const data = await res.json();
+      if (data && data.length > 0) {
         return data;
-      })
-      .catch(() => {
-        return [];
-      });
+      }
+      return [];
+    } catch {
+      return [];
+    }
   };
 
   const { isLoading, data: defiedgeStrategiesWithApr } = useQuery({
@@ -1535,7 +1538,7 @@ export function useGetDefiedgeStrategies() {
     const tickLower = strategyTicksResult ? strategyTicksResult[0] : undefined;
     const tickUpper = strategyTicksResult ? strategyTicksResult[1] : undefined;
 
-    const strategyItem: any = defiedgeStrategiesWithApr?.find(
+    const strategyItem = defiedgeStrategiesWithApr?.find(
       (e: any) =>
         e.strategy.address.toLowerCase() === strategy.id.toLowerCase(),
     );
