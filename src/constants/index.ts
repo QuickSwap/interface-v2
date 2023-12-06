@@ -48,7 +48,7 @@ import {
   NINJAZ,
 } from './v3/addresses';
 
-export const bondAPIV2BaseURL = 'https://apeswap-api-v2-pr-149.herokuapp.com/';
+export const bondAPIV2BaseURL = 'https://api-v2-staging.apeswap.finance/';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
 
