@@ -98,13 +98,18 @@ export const useEternalFarmsFiltered = (
       const farmReward =
         farm && farm.rewardRate && farmRewardTokenPrice
           ? Number(formatUnits(farm.rewardRate, farm.rewardToken.decimals)) *
-            farmRewardTokenPrice.price
+            farmRewardTokenPrice.price *
+            3600 *
+            24
           : 0;
       const farmBonusReward =
         farm && farm.bonusRewardRate && farmBonusRewardTokenPrice
           ? Number(
               formatUnits(farm.bonusRewardRate, farm.bonusRewardToken.decimals),
-            ) * farmBonusRewardTokenPrice.price
+            ) *
+            farmBonusRewardTokenPrice.price *
+            3600 *
+            24
           : 0;
       return {
         ...farm,
@@ -116,15 +121,22 @@ export const useEternalFarmsFiltered = (
         rewardUSD: farmReward + farmBonusReward,
         rewards: [
           {
-            amount: Number(
-              formatUnits(farm.rewardRate, farm.rewardToken.decimals),
-            ),
+            amount:
+              Number(formatUnits(farm.rewardRate, farm.rewardToken.decimals)) *
+              3600 *
+              24,
             token: farm.rewardToken,
           },
           {
-            amount: Number(
-              formatUnits(farm.bonusRewardRate, farm.bonusRewardToken.decimals),
-            ),
+            amount:
+              Number(
+                formatUnits(
+                  farm.bonusRewardRate,
+                  farm.bonusRewardToken.decimals,
+                ),
+              ) *
+              3600 *
+              24,
             token: farm.bonusRewardToken,
           },
         ],
@@ -518,7 +530,7 @@ export const useGammaFarmsFiltered = (
         rewardUSD,
         rewards: rewards.map((item: any) => {
           return {
-            amount: Number(item?.rewardPerSecond ?? 0),
+            amount: Number(item?.rewardPerSecond ?? 0) * 3600 * 24,
             token: {
               address: item?.rewardToken ?? '',
               symbol: item?.rewardTokenSymbol ?? '',
