@@ -852,7 +852,9 @@ export function useV3DerivedMintInfo(
       return CurrencyAmount.fromRawAmount(dependentCurrency, dependentDeposit);
     }
 
-    if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) {
+    if (
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+    ) {
       if (!independentAmount || !dependentCurrency || !defiedgeStrategy) return;
 
       const tokenType =
@@ -862,12 +864,14 @@ export function useV3DerivedMintInfo(
           ? 0
           : 1;
 
-      let dependentDeposit
+      let dependentDeposit;
 
-      if(tokenType === 0) {
-        dependentDeposit = (1 / defiedgeStrategy.ratio) * Number(independentAmount.toExact());
+      if (tokenType === 0) {
+        dependentDeposit =
+          (1 / defiedgeStrategy.ratio) * Number(independentAmount.toExact());
       } else {
-        dependentDeposit =  defiedgeStrategy.ratio * Number(independentAmount.toExact());
+        dependentDeposit =
+          defiedgeStrategy.ratio * Number(independentAmount.toExact());
       }
 
       return CurrencyAmount.fromRawAmount(
@@ -969,6 +973,7 @@ export function useV3DerivedMintInfo(
     vaultToken0,
     uniPilotVaultReserve?.token1,
     uniPilotVaultReserve?.token0,
+    defiedgeStrategy,
     steerVault,
     outOfRange,
     invalidRange,
@@ -1466,35 +1471,46 @@ export function useGetDefiedgeStrategies() {
     [0],
   );
 
-  const fetchLiquidityRatio = useCallback(async (strategy: string) => {
-    if (!defiedgeAPIURL) return 0;
+  const fetchLiquidityRatio = useCallback(
+    async (strategy: string) => {
+      if (!defiedgeAPIURL) return 0;
 
-    const res = await fetch(`${defiedgeAPIURL}/polygon/${strategy.toLowerCase()}/deposit/ratio`)
-    const data = await res.json();
-    return data?.ratio ?? 0;
-  }, [])
+      const res = await fetch(
+        `${defiedgeAPIURL}/polygon/${strategy.toLowerCase()}/deposit/ratio`,
+      );
+      const data = await res.json();
+      return data?.ratio ?? 0;
+    },
+    [defiedgeAPIURL],
+  );
 
   const fetchStrategiesLiquidityRatio = useCallback(async () => {
     try {
-      const responses = await Promise.all(strategies.map(s => fetchLiquidityRatio(s.id)));
-      return responses
+      const responses = await Promise.all(
+        strategies.map((s) => fetchLiquidityRatio(s.id)),
+      );
+      return responses;
     } catch (error) {
       console.error('Error fetching liquidity ratios:', error);
     }
-  }, [])
+  }, [fetchLiquidityRatio, strategies]);
 
   const fetchDefiedgeStrategiesWithApr = async () => {
     if (!defiedgeAPIURL) return [];
 
-   await fetch(
-      `${defiedgeAPIURL}/polygon/details?strategies=${strategies.map(e => e.id).join()}`,
-    ).then(async(res) => {
-      const data = await res.json();
-      return data
-    }).catch(() => {
-      return []
-    })
-  }
+    await fetch(
+      `${defiedgeAPIURL}/polygon/details?strategies=${strategies
+        .map((e) => e.id)
+        .join()}`,
+    )
+      .then(async (res) => {
+        const data = await res.json();
+        return data;
+      })
+      .catch(() => {
+        return [];
+      });
+  };
 
   const { isLoading, data: defiedgeStrategiesWithApr } = useQuery({
     queryKey: ['fetchDefiedgeStrategiesWithApr', strategies],
@@ -1519,7 +1535,10 @@ export function useGetDefiedgeStrategies() {
     const tickLower = strategyTicksResult ? strategyTicksResult[0] : undefined;
     const tickUpper = strategyTicksResult ? strategyTicksResult[1] : undefined;
 
-    const strategyItem: any = defiedgeStrategiesWithApr?.find((e: any) => e.strategy.address.toLowerCase() === strategy.id.toLowerCase());
+    const strategyItem: any = defiedgeStrategiesWithApr?.find(
+      (e: any) =>
+        e.strategy.address.toLowerCase() === strategy.id.toLowerCase(),
+    );
 
     return {
       id: strategy.id,
@@ -1529,8 +1548,8 @@ export function useGetDefiedgeStrategies() {
       tickLower,
       tickUpper,
       onHold: !tickLower && !tickUpper,
-      apr:  strategyItem?.strategy?.fees_apr,
-      ratio: liquidityRatios && liquidityRatios[index]
+      apr: strategyItem?.strategy?.fees_apr,
+      ratio: liquidityRatios && liquidityRatios[index],
     };
   });
 
