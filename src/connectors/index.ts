@@ -23,7 +23,7 @@ import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
 import ZengoIcon from 'assets/images/zengo.png';
 import BinanceIcon from 'assets/images/binance-wallet.webp';
-import { GlobalConst, SUPPORTED_CHAINIDS } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 import { SecretType } from '@venly/web3-provider';
 import { Phantom } from './Phantom';
@@ -474,8 +474,8 @@ const BinanceConnector = getWeb3Connector();
 const [web3BinanceWallet, web3BinanceWalletHooks] = initializeConnector<any>(
   () =>
     new BinanceConnector({
-      supportedChainIds: SUPPORTED_CHAINIDS,
-      rpc: rpcMap,
+      lng: 'zh-CN',
+      supportedChainIds: [ChainId.MATIC],
     }),
 );
 
