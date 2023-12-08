@@ -821,5 +821,10 @@
   "noRouteFound": "No Route found",
   "transferring": "Transferring",
   "claimBond": "Claim Bond",
-  "transferBond": "Transfer Bond"
+  "transferBond": "Transfer Bond",
+  "warning": "Warning",
+  "bondBuyWarningMessage": "The {{earnToken}} you recieve from this Bond at a <errSpan>{{bondDiscount}}%</errSpan> discount rate is priced at <sSpan>${{bondPriceUSD}}</sSpan>, which is higher than the current market rate of <sSpan>${{bondEarnTokenPrice}}</sSpan>",
+  "bondBuyWarningUnderstand": "I understand that I am purchasing {{billToken}} at a price above the current market rate, and would like to continue",
+  "bondTypeWarningMessage": "This is a pre-sale of the ABOND CEX Fund Bond. By purchasing now, you'll receive temporary ACF tokens representing your purchase. You'll need to keep this new token, which you'll be able to exchange for your actual ABOND Bond starting on December 14th.",
+  "bondTypeWarningUnderstand": "I understand that I am purchasing an ABOND CEX Fund Bond early and will receive ACF tokens until December 14th, when the actual ABOND Bonds will become redeemable"
 }

@@ -1,8 +1,9 @@
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, Checkbox } from '@material-ui/core';
 import { CustomModal } from 'components';
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Warning } from '@material-ui/icons';
+import { formatNumber } from 'utils';
 
 const WarningModal = ({
   open,
@@ -25,48 +26,49 @@ const WarningModal = ({
 
   return (
     <CustomModal open={open} onClose={onDismiss}>
-      <Box className='flex items-center justify-center' mt='10px'>
-        <Warning />
-        <h1>{t('warning')}</h1>
-        <Warning />
+      <Box p={2} className='bondWarningModalWrapper'>
+        <Box className='flex items-center justify-center' gridGap={8}>
+          <Warning />
+          <h4>{t('warning')}</h4>
+          <Warning />
+        </Box>
+        <Box my='20px'>
+          <p>
+            <Trans
+              i18nKey='bondBuyWarningMessage'
+              components={{
+                errSpan: <span className='p text-error' />,
+                sSpan: <span className='p text-underline' />,
+              }}
+              values={{
+                earnToken: bond?.earnToken?.symbol,
+                bondDiscount: formatNumber(bond?.discount),
+                bondPriceUSD: formatNumber(bond?.priceUsd),
+                bondEarnTokenPrice: formatNumber(bond?.earnTokenPrice),
+              }}
+            />
+          </p>
+        </Box>
+        <Box
+          className='cursor-pointer flex items-center'
+          gridGap={8}
+          mb={2}
+          onClick={() => setConfirmBuy((prev) => !prev)}
+        >
+          <Checkbox
+            checked={confirmBuy}
+            onChange={() => setConfirmBuy(!confirmBuy)}
+          />
+          <p>
+            {t('bondBuyWarningUnderstand', {
+              billToken: bond?.earnToken.symbol ?? '',
+            })}
+          </p>
+        </Box>
+        <Button fullWidth onClick={handleConfirm} disabled={!confirmBuy}>
+          {t('continue')}
+        </Button>
       </Box>
-      <Box
-        mt='30px'
-        mb='30px'
-        sx={{ alignItems: 'center', justifyContent: 'center' }}
-      >
-        <p>
-          The {bond?.earnToken?.symbol} you recieve from this Bond at a{' '}
-          <span style={{ color: 'rgba(223, 65, 65, 1)' }}>
-            {bond?.discount}%
-          </span>{' '}
-          discount rate is priced at{' '}
-          <span style={{ textDecoration: 'underline' }}>${bond?.priceUsd}</span>
-          , which is higher than the current market rate of{' '}
-          <span style={{ textDecoration: 'underline' }}>
-            ${bond?.earnTokenPrice?.toFixed(4)}{' '}
-          </span>
-        </p>
-      </Box>
-      <Box
-        className='cursor-pointer flex items-center'
-        mt='20px'
-        onClick={() => setConfirmBuy((prev) => !prev)}
-      >
-        {/* <CheckBox
-          checked={confirmBuy}
-          onChange={() => setConfirmBuy(!confirmBuy)}
-        /> */}
-        <small>
-          {t(
-            'I understand that I am purchasing %billToken% at a price above the current market rate, and would like to continue.',
-            { billToken: bond?.earnToken.symbol ?? '' },
-          )}
-        </small>
-      </Box>
-      <Button onClick={handleConfirm} disabled={!confirmBuy}>
-        {t('continue')}
-      </Button>
     </CustomModal>
   );
 };

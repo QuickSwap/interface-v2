@@ -233,3 +233,13 @@
 .zapSlippageErrorInput {
   border: 1px solid $errorMain;
 }
+
+.bondWarningModalWrapper {
+  & .MuiCheckbox-root {
+    color: $textPrimary;
+  }
+  button {
+    height: 48px;
+    border-radius: 12px;
+  }
+}

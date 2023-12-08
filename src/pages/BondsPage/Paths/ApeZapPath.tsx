@@ -188,11 +188,14 @@ const ApeZapPath = ({
 
   return (
     <Box>
-      <WarningModal
-        bond={bond}
-        open={openBuyWarning}
-        handlePurchase={handleApeZap}
-      />
+      {openBuyWarning && (
+        <WarningModal
+          bond={bond}
+          open={openBuyWarning}
+          onDismiss={() => setOpenBuyWarning(false)}
+          handlePurchase={handleApeZap}
+        />
+      )}
       <DisplayValues bond={bond} consideredValue={consideredValue} />
       <Box className='bondModalButtonsWrapper' gridGap={8}>
         <GetLPButton bond={bond} />

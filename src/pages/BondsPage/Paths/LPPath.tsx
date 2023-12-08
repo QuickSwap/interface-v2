@@ -137,7 +137,7 @@ const LpPath = ({
       {openBondTypeWarning && (
         <BondTypeWarningModal
           open={openBondTypeWarning}
-          onDismiss={() => setOpenBuyWarning(false)}
+          onDismiss={() => setOpenBondTypeWarning(false)}
           handlePurchase={handleBuy}
         />
       )}

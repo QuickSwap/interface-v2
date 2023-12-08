@@ -200,11 +200,11 @@ const SoulZapPath = ({
     : safeAvailable;
   const exceedsAvailable = displayAvailable.toNumber() < billValue;
 
-  const [openBuyWarning, seteOpenBuyWarning] = useState(false);
+  const [openBuyWarning, setOpenBuyWarning] = useState(false);
 
   const handleValidationBeforeTx = () => {
     if (parseFloat(bond?.discount as string) < 0) {
-      seteOpenBuyWarning(true);
+      setOpenBuyWarning(true);
     } else soulZapCallback();
   };
 
@@ -215,6 +215,7 @@ const SoulZapPath = ({
           bond={bond}
           open={openBuyWarning}
           handlePurchase={soulZapCallback}
+          onDismiss={() => setOpenBuyWarning(false)}
         />
       )}
       <DisplayValues bond={bond} consideredValue={bigValue} />
