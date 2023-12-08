@@ -20,6 +20,7 @@ import { JSBI } from '@uniswap/sdk';
 import { parseUnits } from 'ethers/lib/utils';
 import DisplayValues from '../DisplayValues';
 import GetLPButton from '../GetLPButton';
+import { useTranslation } from 'react-i18next';
 
 const LpPath = ({
   purchasePath,
@@ -34,7 +35,7 @@ const LpPath = ({
   inputTokenAddress: string;
   onTransactionSubmitted?: (value: boolean) => void;
 }) => {
-  // Hooks
+  const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const { typedValue } = useZapState();
   const routerQuery = useParsedQueryString();
@@ -78,7 +79,6 @@ const LpPath = ({
     bond.price ?? '',
     bond.lpToken?.decimals?.[chainId],
   );
-  const fromTokenAmountUsdValue = parseFloat(typedValue) * (bond?.lpPrice ?? 0);
 
   const handleBuy = useCallback(async () => {
     console.log('LP purchase');
@@ -152,7 +152,7 @@ const LpPath = ({
             disabled={pendingTx || !typedValue || parseFloat(typedValue) === 0}
             fullWidth
           >
-            Buy
+            {t('buy')}
           </Button>
         ) : (
           <Button
@@ -166,8 +166,8 @@ const LpPath = ({
             fullWidth
           >
             {pendingTx || approvalState === ApprovalState.PENDING
-              ? 'Enabling'
-              : 'Enable'}
+              ? t('enabling')
+              : t('enable')}
           </Button>
         )}
       </Box>

@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useWeb3React } from '@web3-react/core';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 // Components
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
@@ -31,6 +30,8 @@ import ZapSlippage from './DualAddLiquidity/ZapSlippage';
 import { ReactComponent as BondArrow } from 'assets/images/bondArrow.svg';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
+import ZapCurrencyInput from 'components/ZapCurrencyInput';
+import { useActiveWeb3React } from 'hooks';
 
 interface SoulZapAddLiquidityProps {
   open: boolean;
@@ -56,7 +57,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   const [pendingTx, setPendingTx] = useState(false);
 
   // Hooks
-  const { account, provider, chainId } = useWeb3React();
+  const { account, provider } = useActiveWeb3React();
   // const [onPresentSettingsModal] = useModal(<ZapSlippage />);
   const addTransaction = useTransactionAdder();
 
@@ -80,7 +81,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   )?.toSignificant(6);
   const consideredValue =
     zapData?.zapParams?.liquidityPath?.lpAmount.toString() ?? '0';
-  const bigValue = Number(formatUnits(consideredValue, 18));
+  const bigValue = formatUnits(consideredValue, 18);
 
   const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
     inputCurrency ?? undefined,
@@ -132,7 +133,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
             addTransaction(
               undefined,
               {
-                summary: 'Zap bond',
+                summary: t('zapBond'),
               },
               res.txHash,
             );
@@ -155,7 +156,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
           setPendingTx(false);
         });
     }
-  }, [addTransaction, provider, soulZap, zapData]);
+  }, [addTransaction, provider, soulZap, t, zapData]);
 
   // Approve logic
   const zapContractAddress = soulZap?.getZapContract().address;
@@ -212,26 +213,19 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
           </Box>
         </Box>
         <p>{t('from')}:</p>
-        <Box className='soulZapAddLiquidityInput' mt={1.5}>
-          <NumericalInput
-            value={typedValue}
-            onUserInput={(val) => onUserInput(Field.INPUT, val)}
+        <Box mt={1.5}>
+          <ZapCurrencyInput
+            currency={inputCurrency ?? undefined}
+            otherCurrency={undefined}
+            handleCurrencySelect={(cur: Currency) =>
+              handleCurrencySelect(Field.INPUT, [cur])
+            }
+            amount={typedValue}
+            setAmount={(val: string) => onUserInput(Field.INPUT, val)}
+            onMax={() => handleMaxInput(Field.INPUT)}
+            showMaxButton
           />
         </Box>
-        {/* <DexPanel
-          value={typedValue}
-          panelText='From:'
-          currency={inputCurrency}
-          otherCurrency={null}
-          fieldType={Field.INPUT}
-          onCurrencySelect={(cur: Currency) =>
-            handleCurrencySelect(Field.INPUT, [cur])
-          }
-          onUserInput={(val: string) => onUserInput(Field.INPUT, val)}
-          handleMaxInput={handleMaxInput}
-          isZapInput
-          pricing={Pricing.PRICEGETTER}
-        /> */}
         <Box className='soulZapAddLiquidityArrowWrapper'>
           <BondArrow />
         </Box>
@@ -240,7 +234,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
           <Box className='flex items-center'>
             <NumericalInput
               fontSize={22}
-              value={bigValue?.toString()}
+              value={bigValue}
               onUserInput={() => null}
             />
             <Box className='soulZapAddLiquidityCurrency' gridGap={8}>
@@ -277,11 +271,12 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
         approvalState === ApprovalState.PENDING ? (
           <Button
             onClick={handleApprove}
+            fullWidth
             disabled={approvalState === ApprovalState.PENDING || pendingTx}
           >
             {pendingTx || approvalState === ApprovalState.PENDING
-              ? 'ENABLING'
-              : 'ENABLE'}
+              ? t('enabling')
+              : t('enable')}
           </Button>
         ) : (
           <Button

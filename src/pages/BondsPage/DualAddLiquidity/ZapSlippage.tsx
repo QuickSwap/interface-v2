@@ -88,6 +88,8 @@ const ZapSlippage: React.FC<{ open: boolean; onClose: () => void }> = ({
     }
   }
 
+  console.log('aaa', deadlineError);
+
   return (
     <CustomModal
       open={open}
@@ -104,7 +106,7 @@ const ZapSlippage: React.FC<{ open: boolean; onClose: () => void }> = ({
           <CloseIcon className='cursor-pointer' onClick={onClose} />
         </Box>
         <h6>{t('slippageTolerance')}</h6>
-        <Box>
+        <Box className='flex items-center' my='12px' gridGap={8}>
           <Box
             className={`zapSlippageButton ${
               userSlippageTolerance.toFixed(2) === '0.10'
@@ -144,15 +146,13 @@ const ZapSlippage: React.FC<{ open: boolean; onClose: () => void }> = ({
           >
             <p> 1.0% </p>
           </Box>
-          <Box style={{ width: '45%', position: 'relative' }}>
+          <Box
+            className={`zapSlippageInput ${
+              slippageError ? 'zapSlippageErrorInput' : ''
+            }`}
+            gridGap={8}
+          >
             <NumericalInput
-              style={{
-                fontWeight: 700,
-                width: '100%',
-                height: '35px',
-                background: 'white3',
-                border: '0px',
-              }}
               value={
                 slippageInput.length > 0
                   ? slippageInput
@@ -163,53 +163,33 @@ const ZapSlippage: React.FC<{ open: boolean; onClose: () => void }> = ({
                 setSlippageInput('');
                 setSlippageError(false);
               }}
-              color={slippageError ? 'error' : ''}
             />
-            <Box
-              style={{
-                position: 'absolute',
-                right: 5,
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-              }}
-            >
-              <p>%</p>
-            </Box>
+            <p>%</p>
           </Box>
         </Box>
-        <Box
-          sx={{
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-            margin: '5px 0px',
-          }}
-        >
-          <p> tx deadline (mins) </p>
-          <NumericalInput
-            style={{
-              fontWeight: 700,
-              width: '45%',
-              height: '30px',
-              background: 'white3',
-              border: '0px',
-            }}
-            placeholder={(DEFAULT_DEADLINE_FROM_NOW / 60).toString()}
-            value={
-              deadlineInput.length > 0
-                ? deadlineInput
-                : deadline === DEFAULT_DEADLINE_FROM_NOW
-                ? ''
-                : (deadline / 60).toString()
-            }
-            onUserInput={parseCustomDeadline}
-            onBlur={() => {
-              setDeadlineInput('');
-              setDeadlineError(false);
-            }}
-            color={deadlineError ? 'error' : ''}
-          />
+        <Box className='flex items-center' gridGap={8}>
+          <p>{t('txDeadlineMin')}</p>
+          <Box
+            className={`zapSlippageDeadlineInput ${
+              deadlineError ? 'zapSlippageErrorInput' : ''
+            }`}
+          >
+            <NumericalInput
+              placeholder={(DEFAULT_DEADLINE_FROM_NOW / 60).toString()}
+              value={
+                deadlineInput.length > 0
+                  ? deadlineInput
+                  : deadline === DEFAULT_DEADLINE_FROM_NOW
+                  ? ''
+                  : (deadline / 60).toString()
+              }
+              onUserInput={parseCustomDeadline}
+              onBlur={() => {
+                setDeadlineInput('');
+                setDeadlineError(false);
+              }}
+            />
+          </Box>
         </Box>
       </Box>
     </CustomModal>

@@ -23,6 +23,7 @@ import { useSoulZap } from 'state/application/hooks';
 import { getLiquidityDEX } from 'utils';
 import DisplayValues from '../DisplayValues';
 import GetLPButton from '../GetLPButton';
+import { useTranslation } from 'react-i18next';
 
 const SoulZapPath = ({
   purchasePath,
@@ -38,6 +39,7 @@ const SoulZapPath = ({
   onTransactionSubmitted?: (value: boolean) => void;
 }) => {
   // Hooks
+  const { t } = useTranslation();
   const { chainId, account, provider } = useActiveWeb3React();
   const parsedQuery = useParsedQueryString();
   const { mutate: postBillReference } = usePostBillReference();
@@ -108,7 +110,7 @@ const SoulZapPath = ({
             addTransaction(
               undefined,
               {
-                summary: 'Zap bond',
+                summary: t('zapBond'),
               },
               res.txHash,
             );
@@ -151,17 +153,18 @@ const SoulZapPath = ({
         });
     }
   }, [
-    addTransaction,
-    bondContractAddress,
-    bondNftAddress,
-    chainId,
-    parsedQuery?.referenceId,
-    onBillId,
-    onTransactionSubmitted,
-    postBillReference,
-    provider,
     soulZap,
     zapData,
+    onTransactionSubmitted,
+    addTransaction,
+    t,
+    chainId,
+    parsedQuery?.referenceId,
+    bondContractAddress,
+    postBillReference,
+    provider,
+    onBillId,
+    bondNftAddress,
   ]);
 
   // Approve logic
@@ -217,12 +220,11 @@ const SoulZapPath = ({
       <DisplayValues bond={bond} consideredValue={bigValue} />
       <Box className='bondModalButtonsWrapper' gridGap={8}>
         <GetLPButton bond={bond} />
-        {purchasePath === PurchasePath.Loading ? (
+        {purchasePath === PurchasePath.Loading || !soulZap ? (
           <Button disabled>Loading</Button>
         ) : approvalState === ApprovalState.APPROVED ? (
           <Button
             onClick={handleValidationBeforeTx}
-            // load={pendingTx || loading}
             disabled={
               pendingTx ||
               !typedValue ||
@@ -234,17 +236,16 @@ const SoulZapPath = ({
             fullWidth
           >
             {loading
-              ? 'Loading'
+              ? t('loading')
               : notEnoughBalance
-              ? 'Not enough Balance'
+              ? t('insufficientBalance', { symbol: inputCurrency?.symbol })
               : exceedsAvailable
-              ? 'Exceeds limit'
-              : 'Buy'}
+              ? t('exceedLimit')
+              : t('buy')}
           </Button>
         ) : (
           <Button
             onClick={handleApprove}
-            // load={approvalState === ApprovalState.PENDING || pendingTx}
             disabled={
               approvalState === ApprovalState.PENDING ||
               pendingTx ||
@@ -254,8 +255,8 @@ const SoulZapPath = ({
             fullWidth
           >
             {pendingTx || approvalState === ApprovalState.PENDING
-              ? 'Enabling'
-              : 'Enable'}
+              ? t('enabling')
+              : t('enable')}
           </Button>
         )}
       </Box>

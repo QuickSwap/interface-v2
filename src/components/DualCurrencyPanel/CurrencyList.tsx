@@ -11,12 +11,22 @@ export default function CurrencyList({
   currenciesList: DualCurrencySelector[];
   onCurrencySelect: (currency: DualCurrencySelector, index: number) => void;
 }) {
-  const itemData: (DualCurrencySelector | undefined)[] = currenciesList;
+  const itemData = currenciesList;
 
   const Row = useCallback(
-    ({ data, index, style }: any) => {
+    ({
+      data,
+      index,
+      style,
+    }: {
+      data: DualCurrencySelector[];
+      index: number;
+      style?: any;
+    }) => {
       const currency: DualCurrencySelector = data[index];
-      const handleSelect = () => onCurrencySelect(currency, index);
+      const handleSelect = () => {
+        onCurrencySelect(currency, index);
+      };
       const key = index;
 
       return (
@@ -35,8 +45,7 @@ export default function CurrencyList({
 
   return (
     <Virtuoso
-      height={300}
-      width='100%'
+      style={{ height: '300px' }}
       totalCount={itemData.length}
       itemContent={(index) => Row({ data: itemData, index })}
     />

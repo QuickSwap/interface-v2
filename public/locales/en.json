@@ -811,5 +811,15 @@
   "newsletterSignupMasaDetails": "QuickSwap has partnered with Masa to provide you with an exclusive SBT mint: the Mighty Soulbound Dragons! Mint yours for FREE to enter to WIN your part of the <bold>2,000 USDC prize pool</bold>, with an <bold>additional $300 in QUICK token</bold> prize bonus pool.",
   "newsletterMasaSignupForm": "Masa Campaign Sign-Up Form",
   "learnMore": "Learn More",
-  "zapSettings": "Zap Settings"
+  "zapSettings": "Zap Settings",
+  "txDeadlineMin": "tx deadline (mins)",
+  "nameOrAddress": "Name or Address",
+  "zapBond": "Zap bond",
+  "enabling": "Enabling",
+  "enable": "Enable",
+  "exceedLimit": "Exceeds limit",
+  "noRouteFound": "No Route found",
+  "transferring": "Transferring",
+  "claimBond": "Claim Bond",
+  "transferBond": "Transfer Bond"
 }

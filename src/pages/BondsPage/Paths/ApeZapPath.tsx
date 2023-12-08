@@ -23,6 +23,7 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import WarningModal from '../WarningModal';
 import DisplayValues from '../DisplayValues';
 import GetLPButton from '../GetLPButton';
+import { useTranslation } from 'react-i18next';
 
 const ApeZapPath = ({
   purchasePath,
@@ -37,7 +38,7 @@ const ApeZapPath = ({
   inputTokenAddress: string;
   onTransactionSubmitted?: (value: boolean) => void;
 }) => {
-  // Hooks
+  const { t } = useTranslation();
   const { recipient, typedValue } = useZapState();
   const { chainId, provider, account } = useActiveWeb3React();
 
@@ -196,11 +197,10 @@ const ApeZapPath = ({
       <Box className='bondModalButtonsWrapper' gridGap={8}>
         <GetLPButton bond={bond} />
         {purchasePath === PurchasePath.Loading ? (
-          <Button disabled>Loading</Button>
+          <Button disabled>{t('loading')}</Button>
         ) : approvalState === ApprovalState.APPROVED ? (
           <Button
             onClick={handleValidationBeforeTx}
-            // load={pendingTx || zapRouteState === TradeState.LOADING}
             disabled={
               pendingTx ||
               !typedValue ||
@@ -213,14 +213,14 @@ const ApeZapPath = ({
             fullWidth
           >
             {zapRouteState === V3TradeState.LOADING
-              ? 'Loading'
+              ? t('loading')
               : zapRouteState === V3TradeState.NO_ROUTE_FOUND
-              ? 'No Route found'
+              ? t('noRouteFound')
               : notEnoughBalance
-              ? 'Not enough Balance'
+              ? t('insufficientBalance', { symbol: inputCurrency?.symbol })
               : exceedsAvailable
-              ? 'Exceeds limit'
-              : 'Buy'}
+              ? t('exceedLimit')
+              : t('buy')}
           </Button>
         ) : (
           <Button
@@ -235,8 +235,8 @@ const ApeZapPath = ({
             fullWidth
           >
             {pendingTx || approvalState === ApprovalState.PENDING
-              ? 'Enabling'
-              : 'Enable'}
+              ? t('enabling')
+              : t('enable')}
           </Button>
         )}
       </Box>

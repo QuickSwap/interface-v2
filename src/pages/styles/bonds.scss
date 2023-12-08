@@ -197,3 +197,39 @@
 .zapSlippageWrapper {
   max-width: 420px;
 }
+
+.zapSlippageInput {
+  flex: 1;
+  display: flex;
+  background-color: $grey12;
+  height: 35px;
+  border-radius: 12px;
+  padding: 0 8px;
+  align-items: center;
+}
+
+.zapSlippageButton {
+  width: 50px;
+  height: 35px;
+  border-radius: 12px;
+  background-color: $grey12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.activeZapSlippageButton {
+  background-color: $primary;
+}
+
+.zapSlippageDeadlineInput {
+  flex: 1;
+  background-color: $grey12;
+  padding: 8px;
+  border-radius: 12px;
+}
+
+.zapSlippageErrorInput {
+  border: 1px solid $errorMain;
+}

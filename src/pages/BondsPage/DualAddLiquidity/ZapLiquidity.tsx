@@ -166,7 +166,7 @@ const ZapLiquidity: React.FC<ZapLiquidityProps> = ({
     const zapMethod = shouldUseWido
       ? signTransaction({
           dataToSign: { to, data, value },
-          txInfo: { summary: 'Zap bond' },
+          txInfo: { summary: t('zapBond') },
         })
       : zapCallback();
 
@@ -189,6 +189,7 @@ const ZapLiquidity: React.FC<ZapLiquidityProps> = ({
     handleConfirmedTx,
     shouldUseWido,
     signTransaction,
+    t,
     to,
     value,
     zap,

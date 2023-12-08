@@ -17,6 +17,7 @@ import {
   updateMaticPrice,
   updateIsV2,
   updateUDDomain,
+  updateSoulZap,
 } from './actions';
 import { SoulZap_UniV2_ApeBond } from '@soulsolidity/soulzap-v1';
 
@@ -195,5 +196,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUDDomain, (state, { payload }) => {
       state.udDomain = payload;
+    })
+    .addCase(updateSoulZap, (state, { payload }) => {
+      state.soulZap = payload;
     }),
 );

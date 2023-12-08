@@ -42,3 +42,24 @@
   border-radius: 8px;
   cursor: pointer;
 }
+
+.dualCurrencySearchModalWrapper {
+  max-width: 420px;
+}
+
+.searcherDisplayItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  cursor: pointer;
+  &:hover {
+    background-color: $grey36;
+  }
+  & svg {
+    path {
+      fill: $textSecondary;
+    }
+  }
+}
