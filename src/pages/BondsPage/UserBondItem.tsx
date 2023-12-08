@@ -79,6 +79,8 @@ const UserBondItem: React.FC<BondItemProps> = ({ userBond }) => {
           <h6>
             {token1Obj?.symbol}
             {stakeLP ? `/${token2Obj?.symbol}` : ''}
+            {` -> `}
+            {stakeLP ? token3Obj?.symbol : token2Obj?.symbol}
           </h6>
         </Box>
       </Box>

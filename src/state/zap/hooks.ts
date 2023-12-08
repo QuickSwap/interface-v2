@@ -23,11 +23,11 @@ import { useAppDispatch } from 'state/hooks';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { V3TradeState, useBestV3TradeExactIn } from 'hooks/v3/useBestV3Trade';
 import { usePair } from 'data/Reserves';
-import { useCurrencyBalances } from 'state/wallet/hooks';
+import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import useENS from 'hooks/useENS';
 import JSBI from 'jsbi';
-import { BANANA_ADDRESSES } from 'constants/v3/addresses';
+import { BANANA_ADDRESSES, toV3Token } from 'constants/v3/addresses';
 import { mergeBestZaps } from './mergeBestZaps';
 import BigNumber from 'bignumber.js';
 import { ChainId } from '@uniswap/sdk';
@@ -167,7 +167,9 @@ export function useDerivedZapInfo() {
 
   const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
     inputCurrency ?? undefined,
-    outputPair?.[1]?.liquidityToken ?? undefined,
+    outputPair?.[1]?.liquidityToken
+      ? toV3Token(outputPair?.[1]?.liquidityToken)
+      : undefined,
   ]);
 
   // Change to currency amount. Divide the typed input by 2 to get correct distributions

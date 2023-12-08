@@ -106,3 +106,11 @@ export interface DualCurrencySelector {
   currencyA: Currency;
   currencyB: Currency | undefined;
 }
+
+export enum PurchasePath {
+  Loading,
+  LpPurchase,
+  ApeZap,
+  WidoZap,
+  SoulZap,
+}

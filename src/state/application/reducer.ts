@@ -17,7 +17,9 @@ import {
   updateMaticPrice,
   updateIsV2,
   updateUDDomain,
+  updateSoulZap,
 } from './actions';
+import { SoulZap_UniV2_ApeBond } from '@soulsolidity/soulzap-v1';
 
 type PopupList = Array<{
   key: string;
@@ -58,6 +60,7 @@ export interface ApplicationState {
   readonly tokenDetails: TokenDetail[];
   readonly isV2: boolean | undefined;
   readonly udDomain: string | undefined;
+  readonly soulZap: SoulZap_UniV2_ApeBond | null | undefined;
 }
 
 const initialState: ApplicationState = {
@@ -74,6 +77,7 @@ const initialState: ApplicationState = {
   tokenDetails: [],
   isV2: undefined,
   udDomain: undefined,
+  soulZap: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -192,5 +196,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUDDomain, (state, { payload }) => {
       state.udDomain = payload;
+    })
+    .addCase(updateSoulZap, (state, { payload }) => {
+      state.soulZap = payload;
     }),
 );

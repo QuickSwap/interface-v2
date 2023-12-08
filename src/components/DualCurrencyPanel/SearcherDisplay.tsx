@@ -6,9 +6,11 @@ import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
 import { ReactComponent as ZapIcon } from 'assets/images/bonds/ZapIcon.svg';
 import { DualCurrencySelector } from 'types/bond';
+import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
+import CurrencyLogo from 'components/CurrencyLogo';
 
 export function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
-  return <p title={balance?.toExact()}>{balance?.toSignificant(5)}</p>;
+  return <small className='text-bold'>{balance?.toSignificant(5)}</small>;
 }
 
 const SearcherDisplay: React.FC<{
@@ -23,22 +25,27 @@ const SearcherDisplay: React.FC<{
   );
 
   return (
-    <Box className='flex items-center'>
-      <Box className='flex items-center' minWidth='50px'>
-        {!currencyB && (
-          <Box sx={{ marginRight: '10px' }}>
-            <ZapIcon />
-          </Box>
-        )}
-      </Box>
+    <Box className='searcherDisplayItem' gridGap={12}>
+      {!currencyB && <ZapIcon />}
       <Box width='100%' className='flex items-center justify-between'>
-        <Box ml='10px'>
-          <p>
-            {currencyB
-              ? `${currencyA?.wrapped?.symbol}-${currencyB?.wrapped?.symbol}`
-              : currencyA?.symbol}
-          </p>
-          <small>{pair ? pair?.liquidityToken?.name : currencyA?.name}</small>
+        <Box className='flex items-center' gridGap={12}>
+          {currencyB ? (
+            <DoubleCurrencyLogo
+              currency0={currencyA}
+              currency1={currencyB}
+              size={32}
+            />
+          ) : (
+            <CurrencyLogo currency={currencyA} size='32px' />
+          )}
+          <Box>
+            <p>
+              {currencyB
+                ? `${currencyA?.wrapped?.symbol}-${currencyB?.wrapped?.symbol}`
+                : currencyA?.symbol}
+            </p>
+            <small>{pair ? pair?.liquidityToken?.name : currencyA?.name}</small>
+          </Box>
         </Box>
         <Box>
           {balance ? (

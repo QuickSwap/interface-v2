@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useWeb3React } from '@web3-react/core';
 import { useBondContract } from 'hooks/useContract';
 import {
   useTransactionAdder,
@@ -9,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import { TransactionResponse } from '@ethersproject/providers';
+import { useActiveWeb3React } from 'hooks';
 
 const DEFAULT_SLIPPAGE = 102; // Maximum of 2% slippage when buying Bill
 // Buy a Bill
@@ -19,7 +19,7 @@ const useBuyBond = (
   principalTokenDecimals: number | null | undefined = 18,
   slippage = DEFAULT_SLIPPAGE,
 ) => {
-  const { account } = useWeb3React();
+  const { account } = useActiveWeb3React();
   const { t } = useTranslation();
   const bondContract = useBondContract(billAddress);
   const maxPrice = price

@@ -20,8 +20,9 @@ interface TransactionData {
 
 // helper that can take a ethers library transaction response and add it to the list of transactions
 export function useTransactionAdder(): (
-  response: TransactionResponse,
+  response?: TransactionResponse,
   customData?: TransactionData,
+  txHash?: string,
 ) => void {
   const { chainId, account } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
@@ -29,7 +30,7 @@ export function useTransactionAdder(): (
 
   return useCallback(
     async (
-      response: TransactionResponse,
+      response?: TransactionResponse,
       {
         summary,
         approval,
@@ -39,10 +40,11 @@ export function useTransactionAdder(): (
         claim?: { recipient: string };
         approval?: { tokenAddress: string; spender: string };
       } = {},
+      txHash?: string,
     ) => {
       if (!account || !chainId) return;
+      const hash = response ? response.hash : txHash;
 
-      const { hash } = response;
       if (!hash) {
         throw Error('No transaction hash found.');
       }

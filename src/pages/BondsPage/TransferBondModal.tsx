@@ -42,7 +42,7 @@ const TransferBillModal: React.FC<TransferBillModalProps> = ({
           <Close />
         </Box>
         <Box className='flex' mt='20px'>
-          <p>{t('Transferring')}: </p>
+          <p>{t('transferring')}: </p>
         </Box>
         <Box className='flex items-center' margin='8px 0 24px'>
           <BondTokenDisplay
