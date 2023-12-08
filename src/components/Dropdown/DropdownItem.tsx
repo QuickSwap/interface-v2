@@ -22,7 +22,7 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
   ...props
 }) => {
   return (
-    <Box className='cursor-pointer' {...props}>
+    <Box className='dropdownItem' {...props}>
       <Element url={url} onClick={onClick} active={active} size={size}>
         {children}
       </Element>

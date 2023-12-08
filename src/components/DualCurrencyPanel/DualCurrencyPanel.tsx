@@ -93,7 +93,7 @@ const DualCurrencyPanel: React.FC<DualCurrencyPanelProps> = ({
   return (
     <Box className='dualCurrencyPanelWrapper'>
       <Box className='flex' mb='10px'>
-        <NumericalInput value={value} onUserInput={(val) => onUserInput(val)} />
+        <NumericalInput value={value} onUserInput={onUserInput} />
         {principalToken && (
           <DualCurrencyDropdown
             inputCurrencies={filteredInputCurrencies}
@@ -129,7 +129,7 @@ const DualCurrencyPanel: React.FC<DualCurrencyPanelProps> = ({
                 className='dualCurrencyMaxButton'
                 onClick={handleMaxInput}
               >
-                <small>{t('MAX')}</small>
+                <small>{t('max')}</small>
               </Box>
             )}
           </Box>

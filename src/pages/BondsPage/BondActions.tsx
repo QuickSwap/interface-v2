@@ -1,67 +1,34 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import useApproveBond from 'hooks/bond/useApproveBond';
-import {
-  ApprovalState,
-  useApproveCallbackFromZap,
-} from 'hooks/useV3ApproveCallback';
-import { QuoteResult } from 'wido';
-import useGetWidoTokenAllowance from 'state/zap/providers/wido/useGetWidoTokenAllowance';
-import { ZapVersion } from '@ape.swap/apeswap-lists';
-import { MergedZap } from 'state/zap/actions';
+import React from 'react';
+import { PurchasePath } from 'types/bond';
+import LPPath from './Paths/LPPath';
+import ApeZapPath from './Paths/ApeZapPath';
+import SoulZapPath from './Paths/SoulZapPath';
 import { useActiveWeb3React } from 'hooks';
-import { ChainId, JSBI, Token } from '@uniswap/sdk';
 import { Button } from '@material-ui/core';
-import { V3TradeState } from 'hooks/v3/useBestV3Trade';
+import { useTranslation } from 'react-i18next';
 import {
   useNetworkSelectionModalToggle,
   useWalletModalToggle,
 } from 'state/application/hooks';
 import { useIsSupportedNetwork } from 'utils';
-import { parseUnits } from 'ethers/lib/utils';
-import { useTokenAllowance } from 'data/Allowances';
 
 export interface BondActionsProps {
   bond: any;
-  zap?: MergedZap;
-  zapRouteState: V3TradeState;
-  handleBuy: () => void;
-  bondValue: number;
-  value: string;
-  purchaseLimit: string;
-  balance: string;
-  pendingTrx: boolean;
-  errorMessage: string | null;
-  isWidoSupported: boolean;
-  widoQuote: QuoteResult | undefined | null;
-  zapVersion: ZapVersion;
+  purchasePath: PurchasePath;
+  onBillId: ((billId: string) => void) | undefined;
   inputTokenAddress: string;
-  inputTokenDecimals: number;
-  toTokenAddress: string;
-  inputTokenChainId: ChainId;
-  isInputCurrencyPrincipal: boolean;
+  onTransactionSubmitted?: (value: boolean) => void;
 }
 
 const BondActions: React.FC<BondActionsProps> = ({
   bond,
-  zap,
-  handleBuy,
-  bondValue,
-  zapRouteState,
-  value,
-  purchaseLimit,
-  balance,
-  pendingTrx,
-  errorMessage,
-  isWidoSupported,
-  widoQuote,
-  zapVersion,
+  purchasePath,
+  onBillId,
   inputTokenAddress,
-  inputTokenDecimals,
-  toTokenAddress,
-  inputTokenChainId,
-  isInputCurrencyPrincipal,
+  onTransactionSubmitted,
 }) => {
+  const { account } = useActiveWeb3React();
+  const { t } = useTranslation();
   const toggleWalletModal = useWalletModalToggle();
   const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const isSupportedNetwork = useIsSupportedNetwork();
@@ -74,118 +41,42 @@ const BondActions: React.FC<BondActionsProps> = ({
     }
   };
 
-  const { lpToken, contractAddress } = bond;
-  const [approval, approveCallback] = useApproveCallbackFromZap(zap);
-  const { chainId, account } = useActiveWeb3React();
-
-  const showApproveZapFlow =
-    approval === ApprovalState.NOT_APPROVED ||
-    approval === ApprovalState.PENDING;
-
-  const {
-    requiresApproval: requiresApprovalWido,
-    approveWidoSpender,
-    isApproveWidoSpenderLoading,
-  } = useGetWidoTokenAllowance({
-    inputTokenAddress,
-    inputTokenDecimals,
-    toTokenAddress,
-    zapVersion,
-    fromChainId: inputTokenChainId,
-    toChainId: chainId,
-  });
-
-  const { onApprove } = useApproveBond(
-    lpToken?.address?.[chainId] ?? '',
-    contractAddress[chainId] ?? '',
-  );
-  const bondLPToken = lpToken
-    ? new Token(
-        chainId,
-        lpToken?.address?.[chainId],
-        lpToken?.decimals?.[chainId] ?? 18,
-      )
-    : undefined;
-  const allowance = useTokenAllowance(
-    bondLPToken,
-    account,
-    contractAddress[chainId] ?? '',
-  );
-
-  const lpTokenDecimals = Number(lpToken?.decimals?.[chainId] ?? 18);
-  const parsedValue = parseUnits(
-    Number(value).toFixed(lpTokenDecimals),
-    lpTokenDecimals,
-  );
-  const showApproveLP =
-    !allowance || allowance.lessThan(JSBI.BigInt(parsedValue));
-  const [pendingApprove, setPendingApprove] = useState(false);
-  const { t } = useTranslation();
-
-  const handleLPApprove = async () => {
-    setPendingApprove(true);
-    await onApprove().finally(() => {
-      setPendingApprove(false);
-    });
-  };
-
   const getBillActionButton = () => {
     switch (true) {
       case !account:
         return <Button onClick={connectWallet}>{t('connectWallet')}</Button>;
-      case isWidoSupported &&
-        requiresApprovalWido &&
-        zapVersion === ZapVersion.Wido:
+      case purchasePath === PurchasePath.LpPurchase:
         return (
-          <Button
-            onClick={() => approveWidoSpender()}
-            disabled={isApproveWidoSpenderLoading}
-            fullWidth
-          >
-            {isApproveWidoSpenderLoading ? t('Enabling') : t('Enable')}
-          </Button>
+          <LPPath
+            purchasePath={purchasePath}
+            bond={bond}
+            inputTokenAddress={inputTokenAddress}
+            onBillId={onBillId}
+            onTransactionSubmitted={onTransactionSubmitted}
+          />
         );
-      case !isInputCurrencyPrincipal &&
-        showApproveZapFlow &&
-        zapVersion === ZapVersion.ZapV1:
+      case purchasePath === PurchasePath.ApeZap:
         return (
-          <Button
-            onClick={approveCallback}
-            disabled={approval !== ApprovalState.NOT_APPROVED}
-            fullWidth
-          >
-            {approval === ApprovalState.PENDING
-              ? `${t('Enabling')} ${zap?.currencyIn?.currency?.symbol}`
-              : `${t('Enable')} ${zap?.currencyIn?.currency?.symbol}`}
-          </Button>
+          <ApeZapPath
+            purchasePath={purchasePath}
+            bond={bond}
+            inputTokenAddress={inputTokenAddress}
+            onBillId={onBillId}
+            onTransactionSubmitted={onTransactionSubmitted}
+          />
         );
-      case isInputCurrencyPrincipal &&
-        showApproveLP &&
-        zapVersion === ZapVersion.ZapV1:
+      case purchasePath === PurchasePath.SoulZap:
         return (
-          <Button onClick={handleLPApprove} disabled={pendingApprove} fullWidth>
-            {pendingApprove ? t('Enabling') : t('Enable')}
-          </Button>
+          <SoulZapPath
+            purchasePath={purchasePath}
+            bond={bond}
+            inputTokenAddress={inputTokenAddress}
+            onBillId={onBillId}
+            onTransactionSubmitted={onTransactionSubmitted}
+          />
         );
       default:
-        return (
-          <Button
-            onClick={handleBuy}
-            fullWidth
-            disabled={
-              bondValue < 0.01 ||
-              bondValue > Number(purchaseLimit) ||
-              Number(balance) < Number(value) ||
-              pendingApprove ||
-              pendingTrx ||
-              !!errorMessage ||
-              zapRouteState === V3TradeState.LOADING ||
-              (!widoQuote && isWidoSupported)
-            }
-          >
-            {errorMessage && !pendingTrx ? errorMessage : t('Buy')}
-          </Button>
-        );
+        return <></>;
     }
   };
 

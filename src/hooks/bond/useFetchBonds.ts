@@ -177,6 +177,11 @@ export const useFetchBonds = () => {
     bondInterface,
     'maxTotalPayout',
   );
+  const bondMaxPayoutCalls = useMultipleContractSingleData(
+    bondAddresses,
+    bondInterface,
+    'maxPayout',
+  );
 
   const bondTrueBillPrices = bondAddresses.map((address, ind) => {
     const call = bondTrueBillPriceCalls[ind];
@@ -218,6 +223,14 @@ export const useFetchBonds = () => {
         return { address, maxTotalPayout, loading: call && call.loading };
       }),
     );
+  const bondMaxPayouts = bondAddresses.map((address, ind) => {
+    const call = bondMaxPayoutCalls[ind];
+    const data =
+      call && !call.loading && call.result && call.result.length > 0
+        ? call.result[0].toString()
+        : undefined;
+    return { loading: call && call.loading, data, address };
+  });
 
   const updatedBonds: Bond[] = useMemo(() => {
     if (!bonds) return [];
@@ -257,6 +270,12 @@ export const useFetchBonds = () => {
           address &&
           item.address.toLowerCase() === address.toLowerCase(),
       );
+      const bondMaxPayOut = bondMaxPayouts.find(
+        (item) =>
+          item.address &&
+          address &&
+          item.address.toLowerCase() === address.toLowerCase(),
+      );
       const lpPrice = lpPrices.find(
         (item) =>
           item.address &&
@@ -290,7 +309,8 @@ export const useFetchBonds = () => {
         term?.loading ||
         lpPrice?.loading ||
         earnTokenPrice?.loading ||
-        bondMaxTotalPayOut?.loading;
+        bondMaxTotalPayOut?.loading ||
+        bondMaxPayOut?.loading;
 
       return {
         ...bond,
@@ -308,9 +328,11 @@ export const useFetchBonds = () => {
         earnTokenPrice: earnTokenPriceNumber,
         discount,
         priceUsd,
+        maxPayoutTokens: bondMaxPayOut?.data,
       };
     });
   }, [
+    bondMaxPayouts,
     bondMaxTotalPayouts,
     bondTerms,
     bondTotalPayoutGivens,

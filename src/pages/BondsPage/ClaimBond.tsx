@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useClaimBond from 'hooks/bond/useClaimBond';
-import { useWeb3React } from '@web3-react/core';
 import { Button } from '@material-ui/core';
+import { useActiveWeb3React } from 'hooks';
 
 export interface ClaimProps {
   billAddress: string;
@@ -22,7 +22,7 @@ const Claim: React.FC<ClaimProps> = ({
   hasDarkBg,
 }) => {
   const { onClaimBill } = useClaimBond(billAddress, billIds, earnToken);
-  const { chainId, account } = useWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const [pendingTrx, setPendingTrx] = useState(false);
   const { t } = useTranslation();
 

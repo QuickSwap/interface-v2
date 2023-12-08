@@ -23,8 +23,12 @@
   background-color: $grey12;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 8px;
   border-radius: 10px;
+  & svg path {
+    fill: $textPrimary;
+  }
 }
 
 .dualCurrencyMaxButton {
@@ -37,4 +41,25 @@
   color: $textSecondary;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.dualCurrencySearchModalWrapper {
+  max-width: 420px;
+}
+
+.searcherDisplayItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  cursor: pointer;
+  &:hover {
+    background-color: $grey36;
+  }
+  & svg {
+    path {
+      fill: $textSecondary;
+    }
+  }
 }

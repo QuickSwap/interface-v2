@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { CustomSwitch, HypeLabAds, SearchInput } from 'components';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import BillNFTImage from 'assets/images/bonds/quickBond.jpg';
-import ApeSwapLogo from 'assets/images/bonds/apeSwapLogo.svg';
+import ApeSwapLogo from 'assets/images/bonds/apeBond.png';
 import { ReactComponent as BillSvg1 } from 'assets/images/bonds/billSvg1.svg';
 import { ReactComponent as BillSvg2 } from 'assets/images/bonds/billSvg2.svg';
 import { ReactComponent as BillSvg3 } from 'assets/images/bonds/billSvg3.svg';
@@ -208,11 +208,9 @@ const BondsPage: React.FC = () => {
               </Box>
             </Grid>
           </Grid>
-          <Box my={3} className='flex justify-center items-center'>
+          <Box my={3} className='flex justify-center items-center' gridGap={6}>
             <p>{t('poweredBy')}</p>
-            <Box className='flex' ml='5px'>
-              <img src={ApeSwapLogo} />
-            </Box>
+            <img src={ApeSwapLogo} height='16px' />
           </Box>
         </Box>
         <BondsList search={search} />
