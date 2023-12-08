@@ -36,6 +36,14 @@
 .bondModalWrapper {
   padding: 16px;
   max-width: 1136px;
+  overflow: visible;
+}
+
+.bondModalClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
 }
 
 .bondModalButtonsWrapper {
@@ -129,4 +137,63 @@
     margin-left: 8px;
     font-weight: 500;
   }
+}
+
+.soulZapAddLiquidityModal {
+  max-width: 560px;
+  & button {
+    height: 48px;
+    border-radius: 12px;
+    &.Mui-disabled {
+      background-color: $grey29;
+    }
+  }
+}
+
+.soulZapAddLiquidityArrowWrapper {
+  background-color: $grey29;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  margin: 12px auto -12px;
+  & svg {
+    width: 16px;
+    height: 20px;
+    transform: rotate(90deg);
+  }
+}
+
+.soulZapAddLiquidityInput {
+  width: 100%;
+  border-radius: 12px;
+  background-color: $grey29;
+  padding: 16px;
+}
+
+.soulZapAddLiquidityCurrency {
+  display: flex;
+  background-color: $grey12;
+  align-items: center;
+  padding: 8px;
+  border-radius: 12px;
+  & p {
+    white-space: nowrap;
+  }
+}
+
+.soulZapAddLiquidityLink {
+  text-align: center;
+  a {
+    color: $textSecondary;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 500;
+  }
+}
+
+.zapSlippageWrapper {
+  max-width: 420px;
 }

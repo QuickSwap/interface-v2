@@ -23,8 +23,12 @@
   background-color: $grey12;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 8px;
   border-radius: 10px;
+  & svg path {
+    fill: $textPrimary;
+  }
 }
 
 .dualCurrencyMaxButton {

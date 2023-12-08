@@ -125,7 +125,6 @@ const DualCurrencyDropdown: React.FC<{
         <DropdownItem
           key={index}
           onClick={() => handleCurrencyDynamic(currenciesList[index])}
-          sx={{ width: '100%' }}
         >
           <DropdownDisplay
             principalToken={principalToken}
@@ -165,11 +164,10 @@ const DualCurrencyDropdown: React.FC<{
               {currenciesList.slice(0, 4).map((item: any, index: number) => {
                 return Item([item.currencyA, item.currencyB], index);
               })}
-              <DropdownItem
-                sx={{ textAlign: 'center' }}
-                onClick={() => setOpenCurrencyModal(true)}
-              >
-                <Box>{t('seeAll')}</Box>
+              <DropdownItem onClick={() => setOpenCurrencyModal(true)}>
+                <Box className='text-center'>
+                  <small>{t('seeAll')}</small>
+                </Box>
               </DropdownItem>
             </Dropdown>
           ) : (

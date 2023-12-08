@@ -5,14 +5,11 @@ import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { ReactComponent as ZapIcon } from 'assets/images/bonds/ZapIcon.svg';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
+import { formatNumber } from 'utils';
 
 export function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
-  const bal = parseFloat(balance.toExact());
-  return (
-    <p title={balance?.toExact()}>
-      {bal > 0.0001 ? balance?.toSignificant(4) : '0'}
-    </p>
-  );
+  const bal = Number(balance.toExact());
+  return <small>{formatNumber(bal)}</small>;
 }
 
 const DropdownDisplay: React.FC<{
@@ -29,34 +26,36 @@ const DropdownDisplay: React.FC<{
   );
 
   return (
-    <Box className='flex items-center' width={active ? '100%' : '170px'}>
-      <Box className='dualCurrencyDropdownWrapper'>
-        <Box className='flex' mr='5px'>
-          {inputCurrencies[1] ? (
-            <DoubleCurrencyLogo
-              currency0={inputCurrencies[0]}
-              currency1={inputCurrencies[1]}
-              size={24}
-            />
-          ) : (
-            <CurrencyLogo currency={inputCurrencies[0]} size='24px' />
-          )}
-        </Box>
+    <Box
+      className='dualCurrencyDropdownWrapper'
+      width={active ? '100%' : '180px'}
+    >
+      <Box className='flex items-center' gridGap='5px'>
+        {!inputCurrencies[1] && !active && <ZapIcon />}
+        {inputCurrencies[1] ? (
+          <DoubleCurrencyLogo
+            currency0={inputCurrencies[0]}
+            currency1={inputCurrencies[1]}
+            size={24}
+          />
+        ) : (
+          <CurrencyLogo currency={inputCurrencies[0]} size='24px' />
+        )}
         <p className='weight-600'>
           {inputCurrencies[1]
             ? `${inputCurrencies[0]?.wrapped.symbol}-${inputCurrencies[1]?.wrapped.symbol}`
             : inputCurrencies[0]?.symbol}
         </p>
-        {!active && (
-          <Box>
-            {balance ? (
-              <Balance balance={balance} />
-            ) : account ? (
-              <CircularProgress size={20} />
-            ) : null}
-          </Box>
-        )}
       </Box>
+      {!active && (
+        <Box>
+          {balance ? (
+            <Balance balance={balance} />
+          ) : account ? (
+            <CircularProgress size={20} />
+          ) : null}
+        </Box>
+      )}
     </Box>
   );
 };

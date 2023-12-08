@@ -12,8 +12,16 @@
 .dropdownItemsWrapper {
   position: absolute;
   overflow: hidden;
-  margin-top: 5px;
-  border-radius: 0 10px 10px 0;
+  border-radius: 10px;
   width: fit-content;
-  top: 85%;
+  top: calc(100% + 10px);
+  right: 0;
+  background: $grey12;
+  padding: 8px;
+  z-index: 12;
+}
+
+.dropdownItem {
+  width: 100%;
+  cursor: pointer;
 }
