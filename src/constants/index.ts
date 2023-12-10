@@ -186,6 +186,7 @@ export const GlobalConst = {
       unipilot: '1',
       gamma: '2',
       steer: '3',
+      ichi: '4',
     },
   },
   analyticChart: {

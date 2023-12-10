@@ -11,6 +11,7 @@ import {
   useV3PositionsCount,
   useUnipilotPositions,
   useV3SteerPositionsCount,
+  useICHIPositionsCount,
 } from 'hooks/v3/useV3Positions';
 import Loader from 'components/Loader';
 import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
@@ -18,6 +19,7 @@ import MyGammaPoolsV3 from '../MyGammaPoolsV3';
 import FilterPanelItem from '../FilterPanelItem';
 import MyUnipilotPoolsV3 from '../MyUnipilotPoolsV3';
 import MySteerPoolsV3 from '../MySteerPoolsV3';
+import MyICHIPools from '../MyICHIPools';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
@@ -75,11 +77,14 @@ export default function MyLiquidityPoolsV3() {
     count: steerPoolsCount,
   } = useV3SteerPositionsCount();
 
+  const { loading: ichiLoading, count: ichiCount } = useICHIPositionsCount();
+
   const loading =
     quickPoolsLoading ||
     gammaPoolsLoading ||
     uniPilotPositionsLoading ||
-    steerPoolsLoading;
+    steerPoolsLoading ||
+    ichiLoading;
 
   const [poolFilter, setPoolFilter] = useState(
     GlobalConst.utils.poolsFilter.quickswap,
@@ -165,6 +170,26 @@ export default function MyLiquidityPoolsV3() {
         ),
       });
     }
+    if (ichiCount > 0) {
+      filters.push({
+        id: GlobalConst.utils.poolsFilter.ichi,
+        text: (
+          <Box className='flex items-center'>
+            <small>ICHI</small>
+            <Box
+              ml='6px'
+              className={`myV3PoolCountWrapper ${
+                poolFilter === GlobalConst.utils.poolsFilter.ichi
+                  ? 'activeMyV3PoolCountWrapper'
+                  : ''
+              }`}
+            >
+              {ichiCount}
+            </Box>
+          </Box>
+        ),
+      });
+    }
     return filters;
   }, [
     poolFilter,
@@ -172,6 +197,7 @@ export default function MyLiquidityPoolsV3() {
     unipilotPositions,
     gammaPoolsCount,
     steerPoolsCount,
+    ichiCount,
   ]);
 
   return (
@@ -229,6 +255,9 @@ export default function MyLiquidityPoolsV3() {
             )}
             {poolFilter === GlobalConst.utils.poolsFilter.steer && (
               <MySteerPoolsV3 />
+            )}
+            {poolFilter === GlobalConst.utils.poolsFilter.ichi && (
+              <MyICHIPools />
             )}
           </Box>
         </>

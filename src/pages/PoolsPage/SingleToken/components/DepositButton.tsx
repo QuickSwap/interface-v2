@@ -90,11 +90,11 @@ const SingleTokenDepositButton: React.FC = () => {
     if (!currency) return t('selectToken');
     if (!selectedVault) return t('selectPool');
     if (!typedValue) return t('enterAmount');
-    if (isMorethanAvailable) return t('morethanAvailable');
     if (!isApproved)
       return `${approveOrDepositing ? t('approving') : t('approve')} ${
         currency.symbol
       }`;
+    if (isMorethanAvailable) return t('morethanAvailable');
     if (wrapAmount) return t('wrapMATIC', { symbol: ETHER[chainId].symbol });
     if (wrappingETH)
       return t('wrappingMATIC', { symbol: ETHER[chainId].symbol });
@@ -120,7 +120,7 @@ const SingleTokenDepositButton: React.FC = () => {
     loadingApproved ||
     approveOrDepositing ||
     wrappingETH ||
-    isMorethanAvailable;
+    (!!isApproved && isMorethanAvailable);
 
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();

@@ -34,6 +34,11 @@ import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { useSteerStakedPools, useSteerVaults } from './useSteerData';
 import { Token } from '@uniswap/sdk-core';
 import { useTokenBalances } from 'state/wallet/v3/hooks';
+import {
+  useICHIVaultUserBalance,
+  useICHIVaultUserBalances,
+  useICHIVaults,
+} from 'hooks/useICHIData';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -727,4 +732,33 @@ export const useV3SteerPositions = () => {
       Number(vaultBalance?.toExact() ?? 0) + (steerFarm?.stakedAmount ?? 0) > 0
     );
   });
+};
+
+export const useICHIPositionsCount = () => {
+  const { loading: loadingVaults, data: vaults } = useICHIVaults();
+  const {
+    isLoading: loadingBalances,
+    data: vaultBalances,
+  } = useICHIVaultUserBalances(vaults);
+  const count = vaultBalances
+    ? vaultBalances.filter(({ balance }) => balance > 0).length
+    : 0;
+  return { loading: loadingVaults || loadingBalances, count };
+};
+
+export const useICHIPositions = () => {
+  const { loading: loadingVaults, data: vaults } = useICHIVaults();
+  const {
+    isLoading: loadingBalances,
+    data: vaultBalances,
+  } = useICHIVaultUserBalances(vaults);
+  const positions = vaults
+    .map((vault) => {
+      const balance = vaultBalances?.find(
+        (item) => item.address.toLowerCase() === vault.address.toLowerCase(),
+      )?.balance;
+      return { ...vault, balance };
+    }, [])
+    .filter((item) => item.balance && item.balance > 0);
+  return { loading: loadingVaults || loadingBalances, positions };
 };
