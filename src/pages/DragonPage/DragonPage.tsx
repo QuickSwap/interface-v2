@@ -9,7 +9,7 @@ import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
 import { HypeLabAds } from 'components';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useHistory } from 'react-router-dom';

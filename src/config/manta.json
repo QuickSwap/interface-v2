@@ -72,6 +72,9 @@
   "unipilot": {
     "available": false
   },
+  "bonds": {
+    "available": false
+  },
   "steer": {
     "available": true
   },

@@ -1,5 +1,5 @@
 import { getAddress } from '@ethersproject/address';
-import { Contract } from '@ethersproject/contracts';
+import { Contract, ContractReceipt } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
@@ -18,9 +18,10 @@ import {
 import {
   CurrencyAmount as CurrencyAmountV3,
   Currency as CurrencyV3,
+  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
-import { formatUnits } from 'ethers/lib/utils';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import {
   GammaPair,
@@ -37,23 +38,41 @@ import {
   StakingInfo,
   SyrupBasic,
   SyrupInfo,
-} from 'types';
+  DualStakingBasic,
+  StakingBasic,
+} from 'types/index';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
-import { DualStakingBasic, StakingBasic } from 'types';
 import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
-import { DLQUICK, EMPTY, OLD_QUICK } from 'constants/v3/addresses';
-import { getConfig } from 'config';
+import {
+  DLQUICK,
+  EMPTY,
+  NATIVE_TOKEN_ADDRESS,
+  OLD_QUICK,
+} from 'constants/v3/addresses';
+import { getConfig } from 'config/index';
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
 import { Connector } from '@web3-react/types';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
 import { SteerVault } from 'hooks/v3/useSteerData';
+import { LiquidityDex } from '@ape.swap/apeswap-lists';
+import { DEX } from '@soulsolidity/soulzap-v1';
+import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
+
+export function toNativeCurrency(chainId: ChainId | undefined) {
+  if (!chainId) return;
+  return {
+    ...ETHER[chainId],
+    isNative: true,
+    isToken: false,
+  } as NativeCurrency;
+}
 
 export function formatCompact(
   unformatted: number | string | BigNumber | BigNumberish | undefined | null,
@@ -1174,6 +1193,38 @@ export const getGammaPairsForTokens = (
   return;
 };
 
+export enum LiquidityProtocol {
+  Both = 1,
+  V2 = 2,
+  V3 = 3,
+  Algebra = 4,
+  Gamma = 5,
+}
+
+export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
+  if (dex === 'Algebra') {
+    if (isLP) {
+      return LiquidityProtocol.Gamma;
+    }
+    return LiquidityProtocol.Algebra;
+  }
+  return LiquidityProtocol.V2;
+};
+
+export const convertToTokenValue = (
+  numberString: string,
+  decimals: number,
+): BigNumber => {
+  const num = Number(numberString);
+  if (isNaN(num)) {
+    console.error('Error: numberString to parse is not a number');
+    return parseUnits('0', decimals);
+  }
+
+  const tokenValue = parseUnits(num.toFixed(decimals), decimals);
+  return tokenValue;
+};
+
 export const calculatePositionWidth = (
   currentTick: number,
   upperTick: number,
@@ -1247,4 +1298,67 @@ export const getSteerRatio = (tokenType: number, steerVault: SteerVault) => {
 export const getSteerDexName = (chainId?: ChainId) => {
   if (chainId === ChainId.MANTA) return 'quickswapv3';
   return 'quickswap';
+};
+
+export const searchForBillId = (
+  resp: ContractReceipt,
+  billNftAddress: string,
+  setBondId?: (id: string) => void,
+) => {
+  const { logs } = resp;
+  const findBillNftLog = logs.find(
+    (log: any) => log.address.toLowerCase() === billNftAddress.toLowerCase(),
+  );
+  if (findBillNftLog) {
+    const getBillNftIndex =
+      findBillNftLog.topics[findBillNftLog.topics.length - 1];
+    const convertHexId = parseInt(getBillNftIndex, 16);
+    if (setBondId) {
+      setBondId(convertHexId.toString());
+    }
+  }
+};
+
+export const getLiquidityDEX = (liquidityDEX?: LiquidityDex) => {
+  if (liquidityDEX === LiquidityDex.QuickswapV2) return DEX.QUICKSWAP;
+  if (liquidityDEX === LiquidityDex.ApeSwapV2) return DEX.APEBOND;
+};
+
+export const getCurrencyInfo = ({
+  currencyA,
+  currencyB,
+  pair,
+}: {
+  currencyA: WrappedTokenInfo | null;
+  currencyB?: WrappedTokenInfo | null;
+  pair?: Pair | null;
+}): { address: string; decimals: number; chainId: ChainId } => {
+  if (currencyB) {
+    const {
+      liquidityToken: { address, decimals, chainId } = {
+        address: '',
+        decimals: 18,
+        chainId: ChainId.MATIC,
+      },
+    } = pair || {};
+    return { address, decimals, chainId };
+  } else if (currencyA?.isNative) {
+    return {
+      address: NATIVE_TOKEN_ADDRESS,
+      decimals: currencyA.decimals,
+      chainId: currencyA.chainId,
+    };
+  }
+  const {
+    tokenInfo: { address, decimals, chainId } = {
+      address: '',
+      decimals: 18,
+      chainId: 0,
+    },
+  } = currencyA || {};
+  return {
+    address: address ? address : (currencyA?.address as string),
+    decimals,
+    chainId: !!chainId ? chainId : (currencyA?.chainId as ChainId),
+  };
 };

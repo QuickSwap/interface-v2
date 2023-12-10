@@ -48,6 +48,9 @@ import {
   NINJAZ,
 } from './v3/addresses';
 
+export const bondAPIV2BaseURL = 'https://api-v2.apeswap.finance';
+export const CEX_BILL_ADDRESS = '0x6D7637683eaD28F775F56506602191fdE417fF60';
+
 export const AVERAGE_L1_BLOCK_TIME = 12000;
 
 export const CHAIN_IDS_TO_NAMES = {
@@ -61,6 +64,15 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.MANTA]: 'manta',
   [ChainId.ZKATANA]: 'zKatana',
 };
+
+export enum ZapType {
+  ZAP = 0,
+  ZAP_LP_MIGRATOR = 1,
+  ZAP_LP_POOL = 2,
+  ZAP_SINGLE_ASSET_POOL = 3,
+  ZAP_T_BILL = 4,
+  ZAP_MINI_APE = 5,
+}
 
 export enum SteerVaultState {
   PendingApproval,
@@ -226,6 +238,7 @@ export const GlobalConst = {
     OKXWALLET: 'OKX Wallet',
     CRYPTOCOM: 'Crypto.com DeFi Wallet',
     UNSTOPPABLEDOMAINS: 'Unstoppable Domains',
+    BINANCEWALLET: 'Binance Web3 Wallet',
   },
 };
 
@@ -1196,7 +1209,6 @@ export const GammaPairs: {
         address: '0x1298b1da33c1d091a2e1340ae1c7983ebe91da8d',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0x10acbe3b9e6a2ff7f341e5cbf4b6617741ff44aa',
-        ableToFarm: true,
         pid: 93,
       },
     ],
@@ -1211,13 +1223,13 @@ export const GammaPairs: {
         pid: 94,
       },
     ],
-    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x3c499c542cef5e3811e1192ce70d8cC03d5c3359': [
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x3c499c542cef5e3811e1192ce70d8cc03d5c3359': [
       {
         type: Presets.GAMMA_STABLE,
         title: 'Stable',
         address: '0x472de51a83e052d5d7aca104d4cf4c1f45394130',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-        token1Address: '0x3c499c542cef5e3811e1192ce70d8cC03d5c3359',
+        token1Address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
         ableToFarm: true,
         pid: 95,
       },
@@ -1643,7 +1655,7 @@ export const GlobalValue = {
       [ChainId.DOEGCHAIN_TESTNET]: [],
       [ChainId.ZKTESTNET]: [],
       [ChainId.KAVA]: [],
-      [ChainId.MANTA]: [],
+      [ChainId.MANTA]: [EMPTY[ChainId.MANTA], MATICX[ChainId.MANTA]],
       [ChainId.ZKATANA]: [],
     },
   },
@@ -1741,6 +1753,7 @@ export const GlobalData = {
       USDC[ChainId.MANTA],
       USDT[ChainId.MANTA],
       DAI[ChainId.MANTA],
+      MATIC[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   },
@@ -1765,7 +1778,10 @@ export const GlobalData = {
     ],
     [ChainId.ZKTESTNET]: [],
     [ChainId.KAVA]: [],
-    [ChainId.MANTA]: [],
+    [ChainId.MANTA]: [
+      [MATICX[ChainId.MANTA], MATIC[ChainId.MANTA]],
+      [WETH[ChainId.MANTA], WSTETH[ChainId.MANTA]],
+    ],
     [ChainId.ZKATANA]: [],
   },
 };
@@ -1847,3 +1863,21 @@ export const LeaderBoardAnalytics = {
 };
 
 export const unipilotVaultTypes = ['Wide', 'Balanced', 'Narrow'];
+
+export const BOND_QUERY_KEYS = {
+  INDUSTRY_STATS: 'industryStats',
+  HISTORICAL_INDUSTRY_STATS: 'historicalIndustryStats',
+  LHD_PROFILES: 'lhdProfiles',
+  LHD_PROFILE: 'lhdProfile',
+  LHD_PASSWORD_VERIFIED: 'lhdPasswordVerified',
+  HOMEPAGE_STATS: 'homepageStats',
+  LIVE_AND_UPCOMING: 'liveAndUpcoming',
+  TVL_STATS: 'tvlStats',
+  WIDO_QUOTE: 'widoQuote',
+  WIDO_ALLOWANCE: 'widoAllowance',
+  WIDO_APPROVAL: 'widoApproval',
+  WIDO_SIGN_APPROVAL: 'widoSignApproval',
+  TOKEN_HISTORIC: 'tokenHistoric',
+  BONDS_LANDING: 'bondsLanding',
+  BOND_POST_REFERENCE: 'bondPostReference',
+};

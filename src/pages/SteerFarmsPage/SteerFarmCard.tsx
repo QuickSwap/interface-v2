@@ -8,6 +8,7 @@ import { ChevronDown, ChevronUp } from 'react-feather';
 import SteerFarmCardDetails from './SteerFarmCardDetails';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
+import Loader from 'components/Loader';
 
 const SteerFarmCard: React.FC<{
   data: any;
@@ -15,7 +16,7 @@ const SteerFarmCard: React.FC<{
   const { t } = useTranslation();
   const [showDetails, setShowDetails] = useState(false);
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const rewardA = data.dailyEmissionRewardA
     ? Number(data.dailyEmissionRewardA)
@@ -44,10 +45,22 @@ const SteerFarmCard: React.FC<{
                   size={30}
                 />
                 <Box ml='6px'>
-                  <small className='weight-600'>{`${data.token0.symbol}/${data.token1.symbol}`}</small>
+                  <Box className='flex items-center flex-wrap' gridGap={2}>
+                    <small className='weight-600'>
+                      {`${data.token0.symbol}/${data.token1.symbol}`}
+                    </small>
+                    <Box
+                      paddingY='1px'
+                      paddingX='5px'
+                      borderRadius={6}
+                      className='text-primaryText bg-gray30'
+                    >
+                      {formatNumber(Number(data.feeTier) / 10000)}% (F)
+                    </Box>
+                  </Box>
                   <Box className='cursor-pointer'>
                     <Link
-                      to={`/pools?currency0=${data.token0.address}&currency1=${data.token1.address}`}
+                      to={`/pools?currency0=${data.token0.address}&currency1=${data.token1.address}&feeTier=${data.feeTier}`}
                       target='_blank'
                       className='no-decoration'
                     >
@@ -61,7 +74,13 @@ const SteerFarmCard: React.FC<{
           {!isMobile && (
             <>
               <Box width='20%' className='flex justify-between'>
-                <small className='weight-600'>${formatNumber(data.tvl)}</small>
+                {data.loading ? (
+                  <Loader />
+                ) : (
+                  <small className='weight-600'>
+                    ${formatNumber(data.tvl)}
+                  </small>
+                )}
               </Box>
               <Box width='30%'>
                 {rewardA > 0 && data.rewardTokenADetail && (
@@ -86,18 +105,24 @@ const SteerFarmCard: React.FC<{
 
           {(!isMobile || !showDetails) && (
             <Box width={isMobile ? '30%' : '20%'} className='flex items-center'>
-              <small className='text-success'>
-                {formatNumber(data.farmAPR + data.feeAPR)}%
-              </small>
-              <Box ml={0.5} height={16}>
-                <TotalAPRTooltip
-                  farmAPR={data.farmAPR}
-                  poolAPR={data.feeAPR}
-                  poolAPRText={t('vaultAPR')}
-                >
-                  <img src={CircleInfoIcon} alt={'arrow up'} />
-                </TotalAPRTooltip>
-              </Box>
+              {data.loading ? (
+                <Loader />
+              ) : (
+                <>
+                  <small className='text-success'>
+                    {formatNumber(data.farmAPR + data.feeAPR)}%
+                  </small>
+                  <Box ml={0.5} height={16}>
+                    <TotalAPRTooltip
+                      farmAPR={data.farmAPR}
+                      poolAPR={data.feeAPR}
+                      poolAPRText={t('vaultAPR')}
+                    >
+                      <img src={CircleInfoIcon} alt={'arrow up'} />
+                    </TotalAPRTooltip>
+                  </Box>
+                </>
+              )}
             </Box>
           )}
         </Box>

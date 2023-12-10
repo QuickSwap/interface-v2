@@ -29,7 +29,7 @@ import { Interface, formatUnits } from 'ethers/lib/utils';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import { useLastTransactionHash } from 'state/transactions/hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { useSteerStakedPools, useSteerVaults } from './useSteerData';
 import { Token } from '@uniswap/sdk-core';

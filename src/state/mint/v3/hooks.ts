@@ -56,7 +56,7 @@ import { getGammaPairsForTokens, getSteerRatio, maxAmountSpend } from 'utils';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
 
@@ -289,7 +289,8 @@ export function useV3DerivedMintInfo(
 
   const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
     [Field.CURRENCY_A]:
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+        liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) &&
       currencyA &&
       chainId &&
       currencyA.wrapped.address.toLowerCase() ===
@@ -305,7 +306,8 @@ export function useV3DerivedMintInfo(
         ? balances[0]
         : undefined,
     [Field.CURRENCY_B]:
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+        liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) &&
       currencyB &&
       chainId &&
       currencyB.wrapped.address.toLowerCase() ===

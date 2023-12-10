@@ -18,7 +18,7 @@ import UnipilotFarmsPage from 'pages/UnipilotFarmsPage';
 import { getAllGammaPairs } from 'utils';
 import SteerFarmsPage from 'pages/SteerFarmsPage';
 import { useSteerStakingPools } from 'hooks/v3/useSteerData';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 
 interface FarmCategory {
   id: number;
@@ -83,6 +83,8 @@ export default function Farms() {
       ? 'gamma-farms'
       : unipilotFarms.length > 0
       ? 'unipilot-farms'
+      : steerFarms.length > 0
+      ? 'steer-farms'
       : 'eternal-farms';
 
   const v3FarmCategories = useMemo(() => {

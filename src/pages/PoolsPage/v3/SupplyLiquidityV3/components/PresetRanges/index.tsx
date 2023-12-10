@@ -443,7 +443,13 @@ export function PresetRanges({
       onChangePresetRange(ranges[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [steerLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
+  }, [
+    steerLoaded,
+    liquidityRangeType,
+    mintInfo.feeAmount,
+    baseCurrency,
+    quoteCurrency,
+  ]);
 
   return (
     <Box>

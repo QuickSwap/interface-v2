@@ -11,6 +11,7 @@ import { useCallback, useMemo } from 'react';
 import {
   SWAP_ROUTER_ADDRESSES,
   UNI_SWAP_ROUTER,
+  ZAP_ADDRESS,
 } from '../constants/v3/addresses';
 import {
   useHasPendingApproval,
@@ -20,6 +21,7 @@ import { useTokenContract } from './useContract';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenAllowance } from './useTokenAllowance';
 import { calculateGasMargin } from 'utils';
+import { MergedZap } from 'state/zap/actions';
 
 export enum ApprovalState {
   UNKNOWN = 'UNKNOWN',
@@ -163,4 +165,21 @@ export function useApproveCallbackFromTrade(
         : undefined
       : undefined,
   );
+}
+
+export function useApproveCallbackFromZap(
+  zap?: MergedZap,
+): [ApprovalState, () => Promise<void>] {
+  const { chainId } = useActiveWeb3React();
+
+  const inAmount = zap?.currencyIn?.currency
+    ? CurrencyAmount.fromRawAmount(
+        zap?.currencyIn?.currency,
+        zap.currencyIn?.inputAmount,
+      )
+    : undefined;
+
+  const spender = chainId ? ZAP_ADDRESS[chainId] : undefined;
+
+  return useApproveCallback(inAmount, spender);
 }

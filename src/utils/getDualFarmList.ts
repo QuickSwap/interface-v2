@@ -1,4 +1,4 @@
-import { DualFarmListInfo } from 'types';
+import { DualFarmListInfo } from 'types/index';
 import contenthashToUri from './contenthashToUri';
 import { parseENSAddress } from './parseENSAddress';
 import uriToHttp from './uriToHttp';

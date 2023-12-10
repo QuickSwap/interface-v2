@@ -1,7 +1,7 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://rpc.zkatana.gelato.digital",
+  "rpc": "https://rpc.startale.com/zkatana",
   "blockExplorer": "https://zkatana.blockscout.com",
   "networkName": "zKatana",
   "aprAPINetwork": "zkatana",
@@ -70,6 +70,9 @@
     "available": false
   },
   "unipilot": {
+    "available": false
+  },
+  "bonds": {
     "available": false
   },
   "steer": {
