@@ -26,17 +26,17 @@ import { WrappedCurrency } from 'models/types';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { ICHIVault } from 'hooks/useICHIData';
 
-interface IncreaseSteerLiquidityModalProps {
+interface IncreaseICHILiquidityModalProps {
   open: boolean;
   onClose: () => void;
   position: ICHIVault;
 }
 
-export default function IncreaseSteerLiquidityModal({
+export default function IncreaseICHILiquidityModal({
   position,
   open,
   onClose,
-}: IncreaseSteerLiquidityModalProps) {
+}: IncreaseICHILiquidityModalProps) {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);

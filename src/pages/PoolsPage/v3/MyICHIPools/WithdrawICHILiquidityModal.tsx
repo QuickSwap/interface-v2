@@ -26,17 +26,17 @@ import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { Token } from '@uniswap/sdk-core';
 import { ICHIVault } from 'hooks/useICHIData';
 
-interface WithdrawSteerLiquidityModalProps {
+interface WithdrawICHILiquidityModalProps {
   open: boolean;
   onClose: () => void;
   position: ICHIVault;
 }
 
-export default function WithdrawSteerLiquidityModal({
+export default function WithdrawICHILiquidityModal({
   position,
   open,
   onClose,
-}: WithdrawSteerLiquidityModalProps) {
+}: WithdrawICHILiquidityModalProps) {
   const { t } = useTranslation();
   const [percent, setPercent] = useState(0);
   const { chainId, account } = useActiveWeb3React();
