@@ -40,7 +40,7 @@ import {
 } from 'connectors';
 import { MobileMenuDrawer } from './MobileMenuDrawer';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { HeaderMenuItem } from './HeaderListItem';
+import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -411,30 +411,14 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
                   <Box className='subMenu'>
                     {menuItems
                       .slice(menuItemCountToShow, menuItems.length)
-                      .map((val) => (
-                        <Box
-                          className={`subMenuItem ${
-                            pathname !== '/' && val.link.includes(pathname)
-                              ? 'active'
-                              : ''
-                          }`}
-                          key={val.id}
-                          id={val.id}
+                      .map((val, i) => (
+                        <HeaderListItem
+                          key={'sub-menu' + i}
+                          item={val}
                           onClick={() => {
-                            setOpenDetailMenu(false);
-                            if (val.onClick) {
-                              val.onClick();
-                            } else {
-                              if (val.isExternal) {
-                                window.open(val.externalLink, val.target);
-                              } else {
-                                history.push(val.link);
-                              }
-                            }
+                            console.log('happy');
                           }}
-                        >
-                          <small>{val.text}</small>
-                        </Box>
+                        />
                       ))}
                   </Box>
                 </Box>

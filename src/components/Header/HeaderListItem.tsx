@@ -49,14 +49,14 @@ export const HeaderListItem: React.FC<{
 
   return (
     <>
-      <ListItem disablePadding>
-        <ListItemButton onClick={handleClick}>
+      <ListItem disablePadding className='menu-list-item'>
+        <ListItemButton onClick={handleClick} className='menu-list-item'>
           <ListItemText
-            className={`mobile-btn-text ${
+            className={`mobile-btn-text menu-list-item ${
               pathname !== '/' && item.link.includes(pathname) ? 'active' : ''
             }`}
           >
-            <div className='flex'>
+            <div className='flex menu-list-item'>
               <div className='my-auto'>{item.text}</div>
               <div className='mobile-new-tag'>
                 {item.isNew ? (
