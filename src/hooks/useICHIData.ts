@@ -15,6 +15,7 @@ import {
   getTotalSupply,
   getUserBalance,
   isDepositTokenApproved,
+  getUserAmounts,
 } from '@ichidao/ichi-vaults-sdk';
 import { useQuery } from '@tanstack/react-query';
 import { Web3Provider } from '@ethersproject/providers';
@@ -263,6 +264,40 @@ export const useICHIVaultUserBalances = (vaults: ICHIVault[]) => {
         }),
       );
       return vaultBalances;
+    },
+    enabled: !!account && !!provider,
+  });
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTx]);
+  return { isLoading, data };
+};
+
+export const useICHIVaultsUserAmounts = (vaults: ICHIVault[]) => {
+  const { account, provider } = useActiveWeb3React();
+  const lastTx = useLastTransactionHash();
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: [
+      'ichi-vaults-user-amounts',
+      vaults.map(({ address }) => address).join('_'),
+      lastTx,
+    ],
+    queryFn: async () => {
+      if (!account || !provider) return;
+      const userAmounts = await Promise.all(
+        vaults.map(async (vault) => {
+          const amounts = await getUserAmounts(
+            account,
+            vault.address,
+            provider,
+            SupportedDex.Quickswap,
+          );
+          return { address: vault.address, amounts };
+        }),
+      );
+      return userAmounts;
     },
     enabled: !!account && !!provider,
   });

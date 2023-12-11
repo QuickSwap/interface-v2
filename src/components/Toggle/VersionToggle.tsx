@@ -6,7 +6,7 @@ import './index.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();

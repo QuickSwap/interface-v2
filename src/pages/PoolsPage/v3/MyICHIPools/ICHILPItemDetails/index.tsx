@@ -61,15 +61,15 @@ const ICHILPItemDetails: React.FC<{ position: ICHIVault }> = ({ position }) => {
           <small>{formatNumber(token1Balance)}</small>
         </Box>
       </Box>
-      <Box mt={2} className='steer-liquidity-item-buttons'>
+      <Box mt={2} className='ichi-liquidity-item-buttons'>
         <Button
-          className='steer-liquidity-item-button'
+          className='ichi-liquidity-item-button'
           onClick={() => setShowAddLPModal(true)}
         >
           <small>{t('addLiquidity')}</small>
         </Button>
         <Button
-          className='steer-liquidity-item-button'
+          className='ichi-liquidity-item-button'
           disabled={!position.balance}
           onClick={() => setShowWithdrawModal(true)}
         >

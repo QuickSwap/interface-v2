@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.steer-liquidity-item-buttons {
+.ichi-liquidity-item-buttons {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -16,7 +16,7 @@
   }
 }
 
-.steer-liquidity-item-button {
+.ichi-liquidity-item-button {
   height: 38px;
   border-radius: 10px;
 }

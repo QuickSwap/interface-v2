@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ConfirmationModalContent,
   CurrencyLogo,
@@ -17,14 +17,13 @@ import {
 } from 'state/transactions/hooks';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import './ICHILPItemDetails/index.scss';
-import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useSteerPeripheryContract, useWETHContract } from 'hooks/useContract';
+import { useWETHContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { WrappedCurrency } from 'models/types';
-import { useCurrencyBalance } from 'state/wallet/hooks';
-import { ICHIVault } from 'hooks/useICHIData';
+import { SupportedDex, deposit } from '@ichidao/ichi-vaults-sdk';
+import { ICHIVault, useICHIVaultDepositData } from 'hooks/useICHIData';
 
 interface IncreaseICHILiquidityModalProps {
   open: boolean;
@@ -38,53 +37,19 @@ export default function IncreaseICHILiquidityModal({
   onClose,
 }: IncreaseICHILiquidityModalProps) {
   const { t } = useTranslation();
-  const { chainId, account } = useActiveWeb3React();
-  const [isBaseInput, setIsBaseInput] = useState(true);
-  const [deposit0, setDeposit0] = useState('');
-  const [deposit1, setDeposit1] = useState('');
+  const { chainId, account, provider } = useActiveWeb3React();
+  const [typedValue, setTypedValue] = useState('');
   const [wrappingETH, setWrappingETH] = useState(false);
 
-  const steerPeripheryContract = useSteerPeripheryContract();
+  const currency = position.allowToken0 ? position.token0 : position.token1;
+  const {
+    data: { isNativeToken, availableAmount, tokenIdx },
+  } = useICHIVaultDepositData(Number(typedValue), currency, position);
 
-  const dependentToken = isBaseInput ? position.token1 : position.token0;
-
-  const token0Balance = useTokenBalance(account ?? undefined, position.token0);
-  const token1Balance = useTokenBalance(account ?? undefined, position.token1);
-
-  const token0isWETH =
-    chainId &&
-    position.token0 &&
-    position.token0.address.toLowerCase() ===
-      WETH[chainId].address.toLowerCase();
-  const token1isWETH =
-    chainId &&
-    position.token1 &&
-    position.token1.address.toLowerCase() ===
-      WETH[chainId].address.toLowerCase();
-
-  const ethBalance = useCurrencyBalance(
-    account ?? undefined,
-    chainId ? ETHER[chainId] : undefined,
-  );
-  const token0BalanceJSBI = JSBI.add(
-    token0isWETH && ethBalance ? ethBalance.numerator : JSBI.BigInt('0'),
-    token0Balance ? token0Balance.numerator : JSBI.BigInt('0'),
-  );
-  const token1BalanceJSBI = JSBI.add(
-    token1isWETH && ethBalance ? ethBalance.numerator : JSBI.BigInt('0'),
-    token1Balance ? token1Balance.numerator : JSBI.BigInt('0'),
-  );
-
-  const deposit0JSBI = JSBI.BigInt(
+  const typedValueJSBI = JSBI.BigInt(
     parseUnits(
-      !deposit0 ? '0' : Number(deposit0).toFixed(position.token0?.decimals),
+      !typedValue ? '0' : Number(typedValue).toFixed(position.token0?.decimals),
       position.token0?.decimals,
-    ),
-  );
-  const deposit1JSBI = JSBI.BigInt(
-    parseUnits(
-      !deposit1 ? '0' : Number(deposit1).toFixed(position.token1?.decimals),
-      position.token1?.decimals,
     ),
   );
 
@@ -97,52 +62,26 @@ export default function IncreaseICHILiquidityModal({
   const finalizedTransaction = useTransactionFinalizer();
 
   const buttonDisabled =
-    !Number(deposit0) ||
-    !Number(deposit1) ||
+    !Number(typedValue) ||
     !account ||
-    JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI) ||
-    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI) ||
+    JSBI.greaterThan(typedValueJSBI, availableAmount) ||
     wrappingETH;
 
   const wrapAmount = useMemo(() => {
-    if (token0isWETH) {
-      const token0BalanceJSBI = token0Balance
-        ? token0Balance.numerator
-        : JSBI.BigInt('0');
-      if (JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI))
-        return JSBI.subtract(deposit0JSBI, token0BalanceJSBI);
-      return;
-    } else if (token1isWETH) {
-      const token1BalanceJSBI = token1Balance
-        ? token1Balance.numerator
-        : JSBI.BigInt('0');
-      if (JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI))
-        return JSBI.subtract(deposit1JSBI, token1BalanceJSBI);
-      return;
-    }
+    if (isNativeToken && JSBI.greaterThan(typedValueJSBI, availableAmount))
+      return JSBI.subtract(typedValueJSBI, availableAmount);
     return;
-  }, [
-    deposit0JSBI,
-    deposit1JSBI,
-    token0Balance,
-    token0isWETH,
-    token1Balance,
-    token1isWETH,
-  ]);
+  }, [availableAmount, isNativeToken, typedValueJSBI]);
 
   const buttonText = useMemo(() => {
     if (wrappingETH)
       return t('wrappingMATIC', { symbol: ETHER[chainId].symbol });
     if (!account) return t('connectWallet');
-    if (JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI))
+    if (JSBI.greaterThan(typedValueJSBI, availableAmount))
       return t('insufficientBalance', {
         symbol: position.token0?.symbol,
       });
-    if (JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI))
-      return t('insufficientBalance', {
-        symbol: position.token1?.symbol,
-      });
-    if (!Number(deposit0) || !Number(deposit1)) return t('enterAmount');
+    if (!Number(typedValue)) return t('enterAmount');
     if (wrapAmount) return t('wrapMATIC', { symbol: ETHER[chainId].symbol });
     return t('addLiquidity');
   }, [
@@ -150,22 +89,17 @@ export default function IncreaseICHILiquidityModal({
     t,
     chainId,
     account,
-    deposit0JSBI,
-    token0BalanceJSBI,
+    typedValueJSBI,
+    availableAmount,
     position.token0?.symbol,
-    position.token1?.symbol,
-    deposit1JSBI,
-    token1BalanceJSBI,
-    deposit0,
-    deposit1,
+    typedValue,
     wrapAmount,
   ]);
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false);
     if (txnHash) {
-      setDeposit0('');
-      setDeposit1('');
+      setTypedValue('');
     }
     setAttemptingTxn(false);
     setTxnHash('');
@@ -206,32 +140,20 @@ export default function IncreaseICHILiquidityModal({
     }
   };
 
-  const addSteerLiquidity = async () => {
-    if (!steerPeripheryContract || !account) return;
+  const addICHILiquidity = async () => {
+    if (!account || !provider) return;
     setAttemptingTxn(true);
     try {
-      const estimatedGas = await steerPeripheryContract.estimateGas.deposit(
-        position.address,
-        deposit0JSBI.toString(),
-        deposit1JSBI.toString(),
-        0,
-        0,
+      const response = await deposit(
         account,
-      );
-      const response: TransactionResponse = await steerPeripheryContract.deposit(
+        tokenIdx === 0 ? Number(typedValue) : 0,
+        tokenIdx === 1 ? Number(typedValue) : 0,
         position.address,
-        deposit0JSBI.toString(),
-        deposit1JSBI.toString(),
-        0,
-        0,
-        account,
-        {
-          gasLimit: calculateGasMargin(estimatedGas),
-        },
+        provider,
+        SupportedDex.Quickswap,
       );
-      const summary = t('addLiquidityWithTokens', {
-        symbolA: position.token0?.symbol,
-        symbolB: position.token1?.symbol,
+      const summary = t('addICHILiquidityWithToken', {
+        symbol: currency?.symbol,
       });
       setAttemptingTxn(false);
       setTxPending(true);
@@ -254,19 +176,9 @@ export default function IncreaseICHILiquidityModal({
     }
   };
 
-  const tokenType =
-    dependentToken &&
-    position.token0 &&
-    dependentToken.address.toLowerCase() ===
-      position.token0.address.toLowerCase()
-      ? 0
-      : 1;
-
-  const pendingText = t('addingLiquidityTokens', {
-    amountA: formatNumber(deposit0),
-    symbolA: position.token0?.symbol,
-    amountB: formatNumber(deposit1),
-    symbolB: position.token1?.symbol,
+  const pendingText = t('addingICHILiquidityToken', {
+    amount: formatNumber(typedValue),
+    symbol: currency?.symbol,
   });
 
   function modalHeader() {
@@ -275,18 +187,9 @@ export default function IncreaseICHILiquidityModal({
         <Box mt={3} className='flex justify-between'>
           <p>{position.token0?.symbol}</p>
           <Box className='flex items-center'>
-            <p>{formatNumber(deposit0)}</p>
+            <p>{formatNumber(typedValue)}</p>
             <Box className='flex' ml={1}>
               <CurrencyLogo size='24px' currency={position.token0} />
-            </Box>
-          </Box>
-        </Box>
-        <Box mt={2} className='flex justify-between'>
-          <p>{position.token1?.symbol}</p>
-          <Box className='flex items-center'>
-            <p>{formatNumber(deposit1)}</p>
-            <Box className='flex' ml={1}>
-              <CurrencyLogo size='24px' currency={position.token1} />
             </Box>
           </Box>
         </Box>
@@ -294,8 +197,8 @@ export default function IncreaseICHILiquidityModal({
         <Box mt={2}>
           <Button
             fullWidth
-            className='steer-liquidity-item-button'
-            onClick={addSteerLiquidity}
+            className='ichi-liquidity-item-button'
+            onClick={addICHILiquidity}
           >
             {t('confirm')}
           </Button>
@@ -364,62 +267,25 @@ export default function IncreaseICHILiquidityModal({
         </Box>
         <Box mt={2}>
           <CurrencyInputPanel
-            value={deposit0}
+            value={typedValue}
             onUserInput={(val) => {
-              setDeposit0(val);
-              setIsBaseInput(true);
+              setTypedValue(val);
             }}
             onMax={() => {
-              setIsBaseInput(true);
-              setDeposit0(
+              setTypedValue(
                 formatUnits(
-                  token0BalanceJSBI.toString(),
+                  availableAmount.toString(),
                   position.token0?.decimals,
                 ),
               );
             }}
-            showMaxButton={!JSBI.equal(token0BalanceJSBI, deposit0JSBI)}
+            showMaxButton={!JSBI.equal(availableAmount, typedValueJSBI)}
             currency={position.token0 as WrappedCurrency}
             id='add-steer-liquidity-input-tokena'
             shallow={true}
             disabled={false}
             swap={false}
-            showETH={
-              chainId &&
-              position.token0 &&
-              position.token0.address.toLowerCase() ===
-                WETH[chainId].address.toLowerCase()
-            }
-          />
-        </Box>
-        <Box mt={2} className='v3-increase-liquidity-input'>
-          <CurrencyInputPanel
-            value={deposit1}
-            onUserInput={(val) => {
-              setDeposit1(val);
-              setIsBaseInput(false);
-            }}
-            onMax={() => {
-              setIsBaseInput(false);
-              setDeposit1(
-                formatUnits(
-                  token1BalanceJSBI.toString(),
-                  position.token1?.decimals,
-                ),
-              );
-            }}
-            showMaxButton={!JSBI.equal(token1BalanceJSBI, deposit1JSBI)}
-            currency={position.token1 as WrappedCurrency}
-            id='add-steer-liquidity-input-tokenb'
-            shallow={true}
-            disabled={false}
-            swap={false}
-            showETH={
-              chainId &&
-              position.token1 &&
-              position.token1.address.toLowerCase() ===
-                WETH[chainId].address.toLowerCase()
-            }
+            showETH={isNativeToken}
           />
         </Box>
         <Box mt={2}>

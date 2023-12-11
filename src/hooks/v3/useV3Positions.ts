@@ -38,6 +38,7 @@ import {
   useICHIVaultUserBalance,
   useICHIVaultUserBalances,
   useICHIVaults,
+  useICHIVaultsUserAmounts,
 } from 'hooks/useICHIData';
 
 interface UseV3PositionsResults {
@@ -752,13 +753,42 @@ export const useICHIPositions = () => {
     isLoading: loadingBalances,
     data: vaultBalances,
   } = useICHIVaultUserBalances(vaults);
+  const {
+    isLoading: loadingUserAmounts,
+    data: userAmounts,
+  } = useICHIVaultsUserAmounts(vaults);
   const positions = vaults
     .map((vault) => {
       const balance = vaultBalances?.find(
         (item) => item.address.toLowerCase() === vault.address.toLowerCase(),
       )?.balance;
-      return { ...vault, balance };
+      const userAmount = userAmounts?.find(
+        (item) => item.address.toLowerCase() === vault.address.toLowerCase(),
+      )?.amounts;
+      console.log('aaa', userAmount);
+      return {
+        ...vault,
+        balance,
+        token0Balance: userAmount
+          ? userAmount[0]
+            ? Number(userAmount[0])
+            : userAmount.amount0
+            ? Number(userAmount.amount0)
+            : 0
+          : 0,
+        token1Balance: userAmount
+          ? userAmount[1]
+            ? Number(userAmount[1])
+            : userAmount.amount1
+            ? Number(userAmount.amount1)
+            : 0
+          : 0,
+      };
     }, [])
     .filter((item) => item.balance && item.balance > 0);
-  return { loading: loadingVaults || loadingBalances, positions };
+
+  return {
+    loading: loadingVaults || loadingBalances || loadingUserAmounts,
+    positions,
+  };
 };
