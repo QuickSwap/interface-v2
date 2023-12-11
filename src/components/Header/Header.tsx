@@ -40,6 +40,7 @@ import {
 } from 'connectors';
 import { MobileMenuDrawer } from './MobileMenuDrawer';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import { HeaderMenuItem } from './HeaderListItem';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -128,7 +129,8 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const showBOS = config['bos']['available'];
   const showBonds = config['bonds']['available'];
   const showDappOS = config['dappos']['available'];
-  const menuItems = [];
+  const showEarn = showFarm && showBonds;
+  const menuItems: Array<HeaderMenuItem> = [];
 
   const swapCurrencyStr = useMemo(() => {
     if (!chainId) return '';
@@ -184,19 +186,14 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'pools-page-link',
     });
   }
-  if (showFarm) {
-    menuItems.push({
-      link: `/farm`,
-      text: t('farm'),
-      id: 'farm-page-link',
-    });
-  }
-  if (showBonds) {
-    menuItems.push({
-      link: `/bonds`,
-      text: t('bonds'),
-      id: 'bonds-page-link',
-    });
+  const earnTab: HeaderMenuItem = {
+    text: t('Earn'),
+    id: 'earn-tab',
+    link: '/',
+    items: [],
+  };
+  if (showEarn) {
+    menuItems.push(earnTab);
   }
   if (showSafe) {
     menuItems.push({
@@ -276,6 +273,21 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       link: `/analytics`,
       text: t('analytics'),
       id: 'analytics-page-link',
+    });
+  }
+
+  if (showFarm) {
+    earnTab.items?.push({
+      link: `/farm`,
+      text: t('farm') as string,
+      id: 'farm-page-link',
+    });
+  }
+  if (showBonds) {
+    earnTab.items?.push({
+      link: `/bonds`,
+      text: t('bonds'),
+      id: 'bonds-page-link',
     });
   }
 
