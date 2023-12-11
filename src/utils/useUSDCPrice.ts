@@ -7,7 +7,7 @@ import {
   Token,
   Trade,
 } from '@uniswap/sdk';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { PairState, usePairs, usePair } from 'data/Reserves';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
@@ -132,25 +132,11 @@ export function useUSDCPricesFromAddresses(
     return prices;
   };
 
-  const { isLoading, data: prices, refetch } = useQuery({
+  const { isLoading, data: prices } = useQuery({
     queryKey: ['fetchTokenPrices', chainId, addressStr, v2],
     queryFn: fetchTokenPrices,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return { loading: isLoading, prices };
 }

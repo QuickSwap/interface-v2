@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { Frown } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -9,17 +9,10 @@ import {
   GlobalConst,
   GlobalData,
 } from 'constants/index';
-import { useQuery } from '@tanstack/react-query';
 import GammaFarmCard from './GammaFarmCard';
-import {
-  getAllGammaPairs,
-  getGammaData,
-  getGammaRewards,
-  getTokenFromAddress,
-} from 'utils';
+import { getAllGammaPairs, getTokenFromAddress } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { Token } from '@uniswap/sdk';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -30,6 +23,7 @@ import {
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
+import { useGammaData, useGammaRewards } from 'hooks/v3/useGammaData';
 
 const GammaFarmsPage: React.FC<{
   farmFilter: string;
@@ -52,49 +46,11 @@ const GammaFarmsPage: React.FC<{
   const sortMultiplier = sortDesc ? -1 : 1;
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
 
-  const fetchGammaRewards = async () => {
-    const gammaRewards = await getGammaRewards(chainId);
-    return gammaRewards;
-  };
-
-  const fetchGammaData = async () => {
-    const gammaData = await getGammaData(chainId);
-    return gammaData;
-  };
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const {
-    isLoading: gammaFarmsLoading,
-    data: gammaData,
-    refetch: refetchGammaData,
-  } = useQuery({
-    queryKey: ['fetchGammaDataFarms', chainId],
-    queryFn: fetchGammaData,
-  });
-
+  const { isLoading: gammaFarmsLoading, data: gammaData } = useGammaData();
   const {
     isLoading: gammaRewardsLoading,
     data: gammaRewards,
-    refetch: refetchGammaRewards,
-  } = useQuery({
-    queryKey: ['fetchGammaRewardsFarms', chainId],
-    queryFn: fetchGammaRewards,
-  });
-
-  useEffect(() => {
-    refetchGammaData();
-    refetchGammaRewards();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  } = useGammaRewards();
 
   const qiTokenAddress = '0x580a84c73811e1839f75d86d75d88cca0c241ff4';
   const qiGammaFarm = '0x25B186eEd64ca5FDD1bc33fc4CFfd6d34069BAec';

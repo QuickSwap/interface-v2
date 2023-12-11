@@ -641,29 +641,11 @@ export function useUnipilotPositions(
     );
   };
 
-  const {
-    isLoading: positionsLoading,
-    data: unipilotPositions,
-    refetch: refetchUnipilotPositions,
-  } = useQuery({
+  const { isLoading: positionsLoading, data: unipilotPositions } = useQuery({
     queryKey: ['fetchUnipilotPositions', account, chainId],
     queryFn: fetchUnipilotPositions,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchUnipilotPositions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, lastTxHash]);
 
   return {
     loading: positionsLoading,

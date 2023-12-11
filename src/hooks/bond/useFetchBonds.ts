@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useActiveWeb3React } from 'hooks';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import BondABI from 'constants/abis/bond.json';
 import {
   useMultipleContractSingleData,
@@ -8,7 +8,6 @@ import {
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import {
-  PRICE_GETTER_ADDRESS,
   V2_FACTORY_ADDRESSES,
   V3_CORE_FACTORY_ADDRESSES,
 } from 'constants/v3/addresses';
@@ -39,25 +38,11 @@ export const useFetchBonds = () => {
     }
   };
 
-  const { isLoading, data: bonds, refetch } = useQuery({
+  const { isLoading, data: bonds } = useQuery({
     queryKey: ['fetchQuickswapBonds', chainId],
     queryFn: fetchBonds,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const bondAddresses = useMemo(() => {
     if (!bonds) return [];

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useTheme } from '@material-ui/core/styles';
@@ -91,39 +91,17 @@ const SwapTokenDetailsHorizontal: React.FC<{
     return null;
   };
 
-  const {
-    isLoading: loadingPriceData,
-    data: priceData,
-    refetch: refetchPriceData,
-  } = useQuery({
+  const { isLoading: loadingPriceData, data: priceData } = useQuery({
     queryKey: ['fetchTokenIntervalData', tokenAddress, chainId],
     queryFn: fetchTokenInterval,
+    refetchInterval: 300000,
   });
 
-  const {
-    isLoading: loadingTokenData,
-    data: tokenData,
-    refetch: refetchTokenData,
-  } = useQuery({
+  const { isLoading: loadingTokenData, data: tokenData } = useQuery({
     queryKey: ['fetchTokenDataSwap', tokenAddress, chainId],
     queryFn: fetchTokenData,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchPriceData();
-    refetchTokenData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const priceUp = Number(tokenData?.priceChangeUSD) > 0;
   const priceUpPercent = Number(tokenData?.priceChangeUSD).toFixed(2);
