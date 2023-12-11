@@ -23,8 +23,13 @@ export interface HeaderMenuItem {
 
 export const HeaderListItem: React.FC<{
   item: HeaderMenuItem;
-  onClick: () => void;
-}> = ({ item, onClick }) => {
+  onClick?: () => void;
+}> = ({
+  item,
+  onClick = () => {
+    return false;
+  },
+}) => {
   const { pathname } = useLocation();
   const history = useHistory();
   const hasSubMenu = Array.isArray(item.items);
@@ -49,7 +54,12 @@ export const HeaderListItem: React.FC<{
 
   return (
     <>
-      <ListItem disablePadding className='menu-list-item'>
+      <ListItem
+        disablePadding
+        className={`menu-list-item ${
+          pathname !== '/' && item.link.includes(pathname) ? 'active' : ''
+        }`}
+      >
         <ListItemButton onClick={handleClick} className='menu-list-item'>
           <ListItemText
             className={`mobile-btn-text menu-list-item ${

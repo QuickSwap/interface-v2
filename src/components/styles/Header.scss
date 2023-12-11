@@ -326,6 +326,8 @@
   }
 }
 
+
+
 .mobileMenu {
   display: flex;
   align-items: center;
@@ -430,4 +432,9 @@
 .menu-list-item {
   max-height: 48px;
   height: 48px;
+
+  &.active {
+    color: #448aff; 
+    // background-color: #252833;
+  }
 }

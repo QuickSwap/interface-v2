@@ -22,11 +22,6 @@ import QuickLogo from 'assets/images/quickLogo.png';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 // import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import WalletIcon from 'assets/images/WalletIcon.png';
-import NewTag from 'assets/images/NewTag.png';
-import SparkleLeft from 'assets/images/SparkleLeft.svg';
-import SparkleRight from 'assets/images/SparkleRight.svg';
-import SparkleTop from 'assets/images/SparkleTop.svg';
-import SparkleBottom from 'assets/images/SparkleBottom.svg';
 import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 import { getConfig } from 'config/index';
@@ -41,6 +36,7 @@ import {
 import { MobileMenuDrawer } from './MobileMenuDrawer';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
+import { HeaderDesktopItem } from './HeaderDesktopItem';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -354,54 +350,8 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         </Link>
         {!tabletWindowSize && (
           <Box className='mainMenu'>
-            {menuItems.slice(0, menuItemCountToShow).map((val) => (
-              <Box
-                key={val.id}
-                id={val.id}
-                className={`menuItem ${
-                  pathname !== '/' && val.link.includes(pathname)
-                    ? 'active'
-                    : ''
-                }`}
-                onClick={() => {
-                  if (val.onClick) {
-                    val.onClick();
-                  } else {
-                    if (val.isExternal) {
-                      window.open(val.externalLink, val.target);
-                    } else {
-                      history.push(val.link);
-                    }
-                  }
-                }}
-              >
-                <small>{val.text}</small>
-                {val.isNew && (
-                  <>
-                    <img src={NewTag} alt='new menu' width={46} />
-                    <img
-                      className='menuItemSparkle menuItemSparkleLeft'
-                      src={SparkleLeft}
-                      alt='menuItem sparkle left'
-                    />
-                    <img
-                      className='menuItemSparkle menuItemSparkleRight'
-                      src={SparkleRight}
-                      alt='menuItem sparkle right'
-                    />
-                    <img
-                      className='menuItemSparkle menuItemSparkleBottom'
-                      src={SparkleBottom}
-                      alt='menuItem sparkle bottom'
-                    />
-                    <img
-                      className='menuItemSparkle menuItemSparkleTop'
-                      src={SparkleTop}
-                      alt='menuItem sparkle top'
-                    />
-                  </>
-                )}
-              </Box>
+            {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
+              <HeaderDesktopItem key={`header-desktop-item-${i}`} item={val} />
             ))}
             {menuItems.slice(menuItemCountToShow, menuItems.length).length >
               0 && (
@@ -412,13 +362,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
                     {menuItems
                       .slice(menuItemCountToShow, menuItems.length)
                       .map((val, i) => (
-                        <HeaderListItem
-                          key={'sub-menu' + i}
-                          item={val}
-                          onClick={() => {
-                            console.log('happy');
-                          }}
-                        />
+                        <HeaderListItem key={'sub-menu' + i} item={val} />
                       ))}
                   </Box>
                 </Box>

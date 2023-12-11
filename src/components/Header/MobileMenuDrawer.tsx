@@ -24,10 +24,13 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
           />
         ))}
       </Box>
-      <ThreeDashIcon
-        style={{ marginTop: '4px' }}
+      <Box
+        className='cursor-pointer'
+        style={{ marginTop: '4px', paddingLeft: '24px' }}
         onClick={() => setOpen(true)}
-      />
+      >
+        <ThreeDashIcon />
+      </Box>
 
       <Drawer anchor='bottom' open={open} onClose={() => setOpen(false)}>
         <Box role='presentation'>
@@ -49,7 +52,7 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
                   <ListItemText className='mobile-btn-text'>
                     <Box className='flex' mt={1}>
                       <Box className='my-auto ml-auto'>Close</Box>
-                      <Box ml={1}>
+                      <Box ml={1} pt={1}>
                         <CloseIcon />
                       </Box>
                     </Box>
