@@ -27,7 +27,6 @@ import { ChainId, JSBI } from '@uniswap/sdk';
 import {
   formatNumber,
   getEternalFarmFromTokens,
-  getGammaData,
   getGammaPairsForTokens,
 } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
@@ -36,9 +35,8 @@ import AutomaticImage from 'assets/images/automatic.svg';
 import AutomaticImageDark from 'assets/images/automaticDark.svg';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
-import { useQuery } from '@tanstack/react-query';
-import { useLastTransactionHash } from 'state/transactions/hooks';
 import { useUnipilotFarmData } from 'hooks/v3/useUnipilotFarms';
+import { useGammaData } from 'hooks/v3/useGammaData';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -433,32 +431,7 @@ export function SelectRange({
     (gammaPairExists && steerVaultExists) ||
     (unipilotVaultExists && steerVaultExists);
 
-  const fetchGammaData = async () => {
-    const gammaData = await getGammaData(chainId);
-    return gammaData;
-  };
-
-  const lastTxHash = useLastTransactionHash();
-
-  const { data: gammaData, refetch: refetchGammaData } = useQuery({
-    queryKey: ['fetchGammaDataPools', chainId],
-    queryFn: fetchGammaData,
-  });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchGammaData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, lastTxHash]);
+  const { data: gammaData } = useGammaData();
 
   const gammaAddress: any =
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
@@ -481,7 +454,9 @@ export function SelectRange({
   const steerVault =
     steerVaultsForPair.find(
       (item) =>
-        item.address.toLowerCase() === presetRange?.address?.toLowerCase(),
+        presetRange &&
+        presetRange.address &&
+        item.address.toLowerCase() === presetRange.address.toLowerCase(),
     ) ?? steerVaultsForPair
       ? steerVaultsForPair[0]
       : undefined;

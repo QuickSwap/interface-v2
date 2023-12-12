@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch, Link, useParams } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -72,25 +72,11 @@ const AnalyticsPairDetails: React.FC = () => {
     return null;
   };
 
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['fetchAnalyticsPairDetails', pairAddress, version, chainId],
     queryFn: fetchPairData,
+    refetchInterval: 60000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const pairData = data ? data.pairData : undefined;
   const pairTransactions = data ? data.pairTransactions : undefined;

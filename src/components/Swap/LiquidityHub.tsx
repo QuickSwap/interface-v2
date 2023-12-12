@@ -35,9 +35,10 @@ import { Currency as CoreCurrency, Percent } from '@uniswap/sdk-core';
 import { ZERO_ADDRESS } from 'constants/v3/misc';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { parseUnits } from 'ethers/lib/utils';
+const ANALYTICS_VERSION = 0.1;
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
-const BI_ENDPOINT = 'https://bi.orbs.network/putes/liquidity-hub-ui';
+const BI_ENDPOINT = `https://bi.orbs.network/putes/liquidity-hub-ui-${ANALYTICS_VERSION}`;
 const DEX_PRICE_BETTER_ERROR = 'Dex trade is better than Clob trade';
 const PARTNER = 'QuickSwap';
 
@@ -77,6 +78,7 @@ export const useLiquidityHubCallback = (
   const [userSlippageTolerance] = useUserSlippageTolerance();
 
   return async (srcAmount?: string, minDestAmount?: string) => {
+    liquidityHubAnalytics.clearState();
     const dstTokenUsdValue = new BN(minDestAmount || '0')
       .multipliedBy(outTokenUSD || 0)
       .dividedBy(new BN(10).pow(new BN(outTokenCurrency?.decimals || 0)))
@@ -396,9 +398,7 @@ const useQuote = () => {
       if (!quoteResponse) {
         throw new Error('Missing result from quote');
       }
-      if (!liquidityHubAnalytics.data.sessionId) {
-        liquidityHubAnalytics.setSessionId(quoteResponse.sessionId);
-      }
+      liquidityHubAnalytics.setSessionId(quoteResponse.sessionId);
       if (quoteResponse.error) {
         throw new Error(quoteResponse.error);
       }
@@ -509,11 +509,15 @@ const initialData: Partial<LiquidityHubAnalyticsData> = {
   signatureState: 'null',
   swapState: 'null',
   wrapState: 'null',
-  onChainSwapState: 'null',
-  dexSwapSuccess: false,
+  onChainClobSwapState: 'null',
+  onChainDexSwapState: 'null',
+  dexSwapState: 'null',
+  dexSwapError: 'null',
+  dexSwapTxHash: 'null',
   userWasApprovedBeforeTheTrade: 'null',
   isForceClob: false,
-  version: 0,
+  isDexTrade: false,
+  version: ANALYTICS_VERSION,
 };
 
 const counter = () => {
@@ -528,34 +532,21 @@ class LiquidityHubAnalytics {
   initialTimestamp = Date.now();
   data = initialData;
   firstFailureSessionId = '';
+  abortController = new AbortController();
 
   private updateAndSend(values = {} as Partial<LiquidityHubAnalyticsData>) {
-    this.data = { ...this.data, ...values };
-
     try {
+      this.abortController.abort();
+      this.abortController = new AbortController();
+      this.data = { ...this.data, ...values };
       fetch(BI_ENDPOINT, {
         method: 'POST',
+        signal: this.abortController.signal,
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(this.data),
-      });
-    } catch (error) {}
-  }
-
-  onLoad() {
-    try {
-      fetch(BI_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          partner: PARTNER,
-          chainId: 137,
-        }),
       });
     } catch (error) {}
   }
@@ -642,8 +633,28 @@ class LiquidityHubAnalytics {
     this.updateAndSend({ approvalState: 'pending' });
   }
 
-  onDexSwapSuccess(dexSwapTxHash: string) {
-    this.updateAndSend({ dexSwapSuccess: true, dexSwapTxHash });
+  onDexSwapRequest() {
+    this.updateAndSend({ dexSwapState: 'pending', isDexTrade: true });
+  }
+
+  onDexSwapSuccess(response: any) {
+    this.updateAndSend({
+      dexSwapState: 'success',
+      dexSwapTxHash: response.hash,
+    });
+
+    this.pollTransaction({
+      response,
+      onSucess: () => {
+        this.updateAndSend({ onChainDexSwapState: 'success' });
+      },
+      onFailed: () => {
+        this.updateAndSend({ onChainDexSwapState: 'failed' });
+      },
+    });
+  }
+  onDexSwapFailed(dexSwapError: string) {
+    this.updateAndSend({ dexSwapState: 'failed', dexSwapError });
   }
 
   onApprovalSuccess(time: number) {
@@ -711,6 +722,7 @@ class LiquidityHubAnalytics {
       swapMillis: time,
       swapState: 'success',
       isClobTrade: true,
+      onChainClobSwapState: 'pending',
     });
   }
 
@@ -739,35 +751,50 @@ class LiquidityHubAnalytics {
     this.updateAndSend({ expertMode: true });
   }
 
-  onInitTrade(values: InitTradeArgs) {
-    this.updateAndSend(values);
-  }
-
-  clearState(values: Partial<LiquidityHubAnalyticsData> = {}) {
+  clearState() {
     this.data = {
       ...initialData,
       _id: crypto.randomUUID(),
-      ...values,
+      firstFailureSessionId: this.firstFailureSessionId,
     };
   }
 
-  async onClobSuccess(response: any) {
-    this.updateAndSend({ onChainSwapState: 'pending' });
+  async pollTransaction({
+    response,
+    onSucess,
+    onFailed,
+  }: {
+    response: any;
+    onSucess: () => void;
+    onFailed: () => void;
+  }) {
     try {
       const receipt = await response.wait();
       if (receipt.status === 1) {
-        this.updateAndSend({ onChainSwapState: 'success' });
+        onSucess();
       } else {
         throw new Error('Transaction failed');
       }
     } catch (error) {
-      this.updateAndSend({
-        onChainSwapState: 'failed',
-        isNotClobTradeReason: 'onchain swap error',
-      });
+      onFailed();
     }
+  }
 
-    this.clearState();
+  async onClobSuccess(response: any) {
+    this.pollTransaction({
+      response,
+      onSucess: () => {
+        this.updateAndSend({ onChainClobSwapState: 'success' });
+      },
+      onFailed: () => {
+        {
+          this.updateAndSend({
+            onChainClobSwapState: 'failed',
+            isNotClobTradeReason: 'onchain swap error',
+          });
+        }
+      },
+    });
   }
 
   onNotClobTrade(message: string) {
@@ -777,9 +804,6 @@ class LiquidityHubAnalytics {
   onClobFailure() {
     this.firstFailureSessionId =
       this.firstFailureSessionId || this.data.sessionId || '';
-    this.clearState({
-      firstFailureSessionId: this.firstFailureSessionId,
-    });
   }
 }
 
@@ -1005,7 +1029,8 @@ interface LiquidityHubAnalyticsData {
   wrapError: string;
   wrapTxHash: string;
 
-  dexSwapSuccess: boolean;
+  dexSwapState: actionState;
+  dexSwapError: string;
   dexSwapTxHash: string;
 
   userWasApprovedBeforeTheTrade?: boolean | string;
@@ -1014,8 +1039,10 @@ interface LiquidityHubAnalyticsData {
   expertMode: boolean;
   tradeType?: TradeType | null;
   isNotClobTradeReason: string;
-  onChainSwapState: actionState;
+  onChainClobSwapState: actionState;
   version: number;
+  isDexTrade: boolean;
+  onChainDexSwapState: actionState;
 }
 
 interface QuoteResponse {

@@ -24,11 +24,12 @@ import { useUniPilotVaultContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
+import { UnipilotPosition } from 'hooks/v3/useV3Positions';
 
 interface IncreaseUnipilotLiquidityModalProps {
   open: boolean;
   onClose: () => void;
-  position: any;
+  position: UnipilotPosition;
 }
 
 export default function IncreaseUnipilotLiquidityModal({
@@ -39,16 +40,16 @@ export default function IncreaseUnipilotLiquidityModal({
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
-  const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
+  const uniPilotVaultContract = useUniPilotVaultContract(position.id);
   const [deposit0, setDeposit0] = useState('');
   const [deposit1, setDeposit1] = useState('');
 
   const unipilotToken0VaultBalance = useTokenBalance(
-    position.vault.id,
+    position.id,
     position.token0,
   );
   const unipilotToken1VaultBalance = useTokenBalance(
-    position.vault.id,
+    position.id,
     position.token1,
   );
   const uniPilotVaultPositionResult = useSingleCallResult(

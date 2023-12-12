@@ -15,6 +15,7 @@ import { SwapRouter } from 'lib/src/swapRouter';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { useTransactionAdder } from 'state/transactions/hooks';
+import { liquidityHubAnalytics } from 'components/Swap/LiquidityHub';
 
 enum SwapCallbackState {
   INVALID,
@@ -264,6 +265,7 @@ export function useSwapCallback(
         response: TransactionResponse;
         summary: string;
       }> {
+        liquidityHubAnalytics.onDexSwapRequest();
         const estimatedCalls: SwapCallEstimate[] = await Promise.all(
           swapCalls.map((call) => {
             const { address, calldata, value } = call;
@@ -353,6 +355,7 @@ export function useSwapCallback(
             ...(value && !isZero(value) ? { value } : {}),
           })
           .then((response) => {
+            liquidityHubAnalytics.onDexSwapSuccess(response.hash);
             const inputSymbol = trade.inputAmount.currency.symbol;
             const outputSymbol = trade.outputAmount.currency.symbol;
             const inputAmount = trade.inputAmount.toSignificant(4);
@@ -382,6 +385,7 @@ export function useSwapCallback(
             return { response, summary: withVersion };
           })
           .catch((error) => {
+            liquidityHubAnalytics.onDexSwapFailed(error.message);
             // if the user rejected the tx, pass this along
             if (error?.code === 'ACTION_REJECTED') {
               throw new Error('Transaction rejected.');

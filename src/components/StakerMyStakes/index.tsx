@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
@@ -22,13 +22,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
 import SortColumns from 'components/SortColumns';
-import { useQuery } from '@tanstack/react-query';
-import {
-  getAllGammaPairs,
-  getGammaData,
-  getGammaRewards,
-  getTokenFromAddress,
-} from 'utils';
+import { getAllGammaPairs, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
@@ -62,6 +56,7 @@ import {
   useSteerStakingPools,
 } from 'hooks/v3/useSteerData';
 import SteerFarmCard from './SteerFarmCard';
+import { useGammaData, useGammaRewards } from 'hooks/v3/useGammaData';
 
 export const FarmingMyFarms: React.FC<{
   search: string;
@@ -525,49 +520,11 @@ export const FarmingMyFarms: React.FC<{
     };
   });
 
-  const fetchGammaRewards = async () => {
-    const gammaRewards = await getGammaRewards(chainId);
-    return gammaRewards;
-  };
-
-  const fetchGammaData = async () => {
-    const gammaData = await getGammaData(chainId);
-    return gammaData;
-  };
-
-  const {
-    isLoading: gammaFarmsLoading,
-    data: gammaData,
-    refetch: refetchGammaData,
-  } = useQuery({
-    queryKey: ['fetchGammaDataMyFarms', chainId],
-    queryFn: fetchGammaData,
-  });
-
+  const { isLoading: gammaFarmsLoading, data: gammaData } = useGammaData();
   const {
     isLoading: gammaRewardsLoading,
     data: gammaRewards,
-    refetch: refetchGammaRewards,
-  } = useQuery({
-    queryKey: ['fetchGammaRewardsMyFarms', chainId],
-    queryFn: fetchGammaRewards,
-  });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchGammaData();
-    refetchGammaRewards();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  } = useGammaRewards();
 
   const sortMultiplierGamma = sortDescGamma ? -1 : 1;
 

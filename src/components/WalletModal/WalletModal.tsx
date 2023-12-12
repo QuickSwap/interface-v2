@@ -443,7 +443,10 @@ const WalletModal: React.FC<WalletModalProps> = ({
             <Close className='cursor-pointer' onClick={toggleWalletModal} />
           </Box>
           <Box my={1} className='walletDescriptionContainer'>
-            {t('walletDescription')}
+            <p className='small text-secondary'>{t('walletDescription')}</p>
+            <p className='small text-secondary'>
+              {t('installedMetamaskNotDisplayedWarning')}
+            </p>
           </Box>
           <Box>
             {walletView === WALLET_VIEWS.PENDING ? (

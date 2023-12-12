@@ -5,7 +5,10 @@ import Loader from 'components/Loader';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import UnipilotLPItem from './UnipilotLPItem';
-import { useUnipilotPositions } from 'hooks/v3/useV3Positions';
+import {
+  UnipilotPosition,
+  useUnipilotPositions,
+} from 'hooks/v3/useV3Positions';
 
 export default function MyUnipilotPoolsV3() {
   const { t } = useTranslation();
@@ -28,9 +31,11 @@ export default function MyUnipilotPoolsV3() {
         </Box>
       ) : unipilotPositions && unipilotPositions.length > 0 ? (
         <Box>
-          {unipilotPositions.map((position: any, index: number) => (
-            <UnipilotLPItem key={index} position={position} />
-          ))}
+          {unipilotPositions.map(
+            (position: UnipilotPosition, index: number) => (
+              <UnipilotLPItem key={index} position={position} />
+            ),
+          )}
         </Box>
       ) : (
         <Box mt={2} textAlign='center'>
