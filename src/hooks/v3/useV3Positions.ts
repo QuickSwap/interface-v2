@@ -698,14 +698,16 @@ export function useDefiedgePositions(
     (callState) => !!callState.loading,
   );
 
-  const positions = allDefidegeStrategies.map((strategy, i) => {
-    const share = lpBalances[i];
+  const positions = allDefidegeStrategies
+    .map((strategy, i) => {
+      const share = lpBalances[i];
 
-    return {
-      ...strategy,
-      share,
-    };
-  });
+      return {
+        ...strategy,
+        share,
+      };
+    })
+    .filter((strategy) => strategy.share > 0);
 
   const count = useMemo(() => {
     return lpBalances.filter((balance) => balance > 0).length;

@@ -1,12 +1,10 @@
-import { DefiedgeStrategy } from 'constants/index';
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import { useContract, useDefiedgeStrategyContract } from 'hooks/useContract';
 import { useEffect, useState } from 'react';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import PoolABI from 'constants/abis/v3/pool.json';
-import { getAllDefiedgeStrategies } from 'utils';
-import { useActiveWeb3React } from 'hooks';
 import { tickToPrice } from 'v3lib/utils';
+import { BigNumber } from 'ethers';
 
 export function useDefiedgeStrategyData(strategy: string) {
   const strategyContract = useDefiedgeStrategyContract(strategy);
@@ -16,16 +14,20 @@ export function useDefiedgeStrategyData(strategy: string) {
   );
 
   const [amounts, setAmounts] = useState<{
-    amount0: number;
-    amount1: number;
+    amount0: BigNumber;
+    amount1: BigNumber;
   }>();
 
   strategyContract?.callStatic
     .getAUMWithFees(true)
     .then((data) => {
       setAmounts({
-        amount0: Number(formatUnits(data.amount0.add(data.totalFee0), 18)),
-        amount1: Number(formatUnits(data.amount1.add(data.totalFee1), 18)),
+        amount0: BigNumber.from(data.amount0).add(
+          BigNumber.from(data.totalFee0),
+        ),
+        amount1: BigNumber.from(data.amount1).add(
+          BigNumber.from(data.totalFee1),
+        ),
       });
     })
     .catch((e) => {

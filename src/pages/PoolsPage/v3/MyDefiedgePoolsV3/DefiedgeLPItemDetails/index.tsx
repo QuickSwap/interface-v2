@@ -8,6 +8,7 @@ import { Button } from '@material-ui/core';
 import IncreaseDefiedgeLiquidityModal from '../IncreaseDefiedgeLiquidityModal';
 import WithdrawDefiedgeLiquidityModal from '../WithdrawDefiedgeLiquidityModal';
 import { useDefiedgeStrategyData } from 'hooks/v3/useDefiedgeStrategyData';
+import { formatUnits } from 'ethers/lib/utils';
 
 const DefiedgeLPItemDetails: React.FC<{ defiedgePosition: any }> = ({
   defiedgePosition,
@@ -17,10 +18,20 @@ const DefiedgeLPItemDetails: React.FC<{ defiedgePosition: any }> = ({
     defiedgePosition.id,
   );
 
+  const amount0Number = amount0
+    ? Number(formatUnits(amount0, defiedgePosition?.token0?.decimals))
+    : 0;
+  const amount1Number = amount1
+    ? Number(formatUnits(amount1, defiedgePosition?.token1?.decimals))
+    : 0;
   const balance0 =
-    amount0 && totalSupply && amount0 * (defiedgePosition.share / totalSupply);
+    amount0 &&
+    totalSupply &&
+    amount0Number * (defiedgePosition.share / totalSupply);
   const balance1 =
-    amount1 && totalSupply && amount1 * (defiedgePosition.share / totalSupply);
+    amount1 &&
+    totalSupply &&
+    amount1Number * (defiedgePosition.share / totalSupply);
 
   const [showAddLPModal, setShowAddLPModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
@@ -44,10 +55,6 @@ const DefiedgeLPItemDetails: React.FC<{ defiedgePosition: any }> = ({
       <Box className='flex justify-between'>
         <small>{t('myLiquidity')}</small>
         <small>
-          {/* $
-          {defiedgePosition.balanceUSD
-            ? formatNumber(Number(defiedgePosition.balanceUSD))
-            : 0}{' '} */}
           {defiedgePosition.share ? formatNumber(defiedgePosition.share) : 0}{' '}
           DES
         </small>
@@ -65,9 +72,6 @@ const DefiedgeLPItemDetails: React.FC<{ defiedgePosition: any }> = ({
         )}
         <Box className='flex items-center'>
           <small>{balance0 ? formatNumber(balance0) : 0}</small>
-          <Box ml='6px'>
-            {/* <Badge text={`${formatNumber(token0PooledPercent)}%`} /> */}
-          </Box>
         </Box>
       </Box>
       <Box className='flex justify-between' mt={1}>
@@ -83,9 +87,6 @@ const DefiedgeLPItemDetails: React.FC<{ defiedgePosition: any }> = ({
         )}
         <Box className='flex items-center'>
           <small>{balance1 ? formatNumber(balance1) : 0}</small>
-          <Box ml='6px'>
-            {/* <Badge text={`${formatNumber(100 - token0PooledPercent)}%`} /> */}
-          </Box>
         </Box>
       </Box>
       <Box mt={2} className='gamma-liquidity-item-buttons'>
