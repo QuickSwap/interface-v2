@@ -37,6 +37,8 @@ import { OkxWallet } from './OkxWallet';
 import { Cryptocom } from './Cryptocom';
 import { UAuthConnector } from '@uauth/web3-react';
 import { getWeb3Connector } from '@binance/w3w-web3-connector';
+import { isInBinance } from '@binance/w3w-utils';
+import { BinanceWeb3Connector } from './BinanceWeb3Wallet';
 
 const POLLING_INTERVAL = 12000;
 
@@ -470,6 +472,7 @@ export const unstoppableDomainsConnection: Connection = {
   description: 'Connect to Unstoppable Domains',
 };
 
+const inBinance = isInBinance();
 const BinanceConnector = getWeb3Connector();
 const [web3BinanceWallet, web3BinanceWalletHooks] = initializeConnector<any>(
   () =>
@@ -479,11 +482,21 @@ const [web3BinanceWallet, web3BinanceWalletHooks] = initializeConnector<any>(
     }),
 );
 
+const [binanceWeb3Wallet, binanceWeb3WalletHooks] = initializeConnector<
+  BinanceWeb3Connector
+>(
+  (actions) =>
+    new BinanceWeb3Connector({
+      actions,
+      onError,
+    }),
+);
+
 export const binanceWalletConnection: Connection = {
   key: 'BinanceWeb3Wallet',
   name: GlobalConst.walletName.BINANCEWALLET,
-  connector: web3BinanceWallet,
-  hooks: web3BinanceWalletHooks,
+  connector: inBinance ? binanceWeb3Wallet : web3BinanceWallet,
+  hooks: inBinance ? binanceWeb3WalletHooks : web3BinanceWalletHooks,
   type: ConnectionType.BINANCEWALLET,
   iconName: BinanceIcon,
   color: '#E8831D',
