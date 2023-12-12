@@ -17,7 +17,7 @@ import {
 } from 'state/transactions/hooks';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import './ICHILPItemDetails/index.scss';
-import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { ETHER, JSBI } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useWETHContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
@@ -281,7 +281,7 @@ export default function IncreaseICHILiquidityModal({
             }}
             showMaxButton={!JSBI.equal(availableAmount, typedValueJSBI)}
             currency={position.token0 as WrappedCurrency}
-            id='add-steer-liquidity-input-tokena'
+            id='add-ichi-liquidity-input-tokena'
             shallow={true}
             disabled={false}
             swap={false}
@@ -290,7 +290,7 @@ export default function IncreaseICHILiquidityModal({
         </Box>
         <Box mt={2}>
           <Button
-            className='steer-liquidity-item-button'
+            className='ichi-liquidity-item-button'
             disabled={buttonDisabled}
             onClick={() => (wrapAmount ? wrapETH() : setShowConfirm(true))}
             fullWidth

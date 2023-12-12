@@ -13,7 +13,7 @@ import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import './ICHILPItemDetails/index.scss';
-import { calculateGasMargin, formatNumber } from 'utils';
+import { formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   useTransactionAdder,
@@ -21,10 +21,9 @@ import {
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JSBI } from '@uniswap/sdk';
-import { useSteerVaultContract } from 'hooks/useContract';
-import { useTokenBalance } from 'state/wallet/v3/hooks';
-import { Token } from '@uniswap/sdk-core';
 import { ICHIVault } from 'hooks/useICHIData';
+import { SupportedDex, withdraw } from '@ichidao/ichi-vaults-sdk';
+import { BigNumber } from 'ethers';
 
 interface WithdrawICHILiquidityModalProps {
   open: boolean;
@@ -39,7 +38,7 @@ export default function WithdrawICHILiquidityModal({
 }: WithdrawICHILiquidityModalProps) {
   const { t } = useTranslation();
   const [percent, setPercent] = useState(0);
-  const { chainId, account } = useActiveWeb3React();
+  const { provider, account } = useActiveWeb3React();
   const [
     percentForSlider,
     onPercentSelectForSlider,
@@ -52,7 +51,6 @@ export default function WithdrawICHILiquidityModal({
   const [txPending, setTxPending] = useState(false);
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-  const vaultContract = useSteerVaultContract(position.address);
 
   const buttonDisabled = !percent || !account;
   const buttonText = useMemo(() => {
@@ -72,38 +70,33 @@ export default function WithdrawICHILiquidityModal({
     setRemoveErrorMessage('');
   }, [onPercentSelectForSlider, txnHash]);
 
-  const lpToken = new Token(chainId, position.address, 18);
-  const lpBalance = useTokenBalance(account, lpToken);
-  const withdrawSteerLiquidity = async () => {
-    if (!account || !vaultContract || !lpBalance) return;
+  const withdrawICHILiquidity = async () => {
+    if (!account || !provider) return;
     setAttemptingTxn(true);
     const withdrawAmount = JSBI.divide(
-      JSBI.multiply(lpBalance.numerator, JSBI.BigInt(percent)),
+      JSBI.multiply(
+        JSBI.BigInt(position.balanceBN ?? '0'),
+        JSBI.BigInt(percent),
+      ),
       JSBI.BigInt(100),
     );
     try {
-      const estimatedGas = await vaultContract.estimateGas.withdraw(
-        withdrawAmount.toString(),
-        0,
-        0,
+      const response: TransactionResponse = await withdraw(
         account,
-      );
-      const response: TransactionResponse = await vaultContract.withdraw(
-        withdrawAmount.toString(),
-        0,
-        0,
-        account,
-        { gasLimit: calculateGasMargin(estimatedGas) },
+        BigNumber.from(withdrawAmount.toString()),
+        position.address,
+        provider,
+        SupportedDex.Quickswap,
       );
       setAttemptingTxn(false);
       setTxPending(true);
       setTxnHash(response.hash);
       addTransaction(response, {
-        summary: t('withdrawingSteerLiquidity'),
+        summary: t('withdrawingICHILiquidity'),
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('withdrewSteerLiquidity'),
+        summary: t('withdrewICHILiquidity'),
       });
       setTxPending(false);
     } catch (e) {
@@ -152,8 +145,8 @@ export default function WithdrawICHILiquidityModal({
         <Box mt={2}>
           <Button
             fullWidth
-            className='steer-liquidity-item-button'
-            onClick={withdrawSteerLiquidity}
+            className='ichi-liquidity-item-button'
+            onClick={withdrawICHILiquidity}
           >
             {t('confirm')}
           </Button>
@@ -261,7 +254,7 @@ export default function WithdrawICHILiquidityModal({
         </Box>
         <Box mt={2}>
           <Button
-            className='steer-liquidity-item-button'
+            className='ichi-liquidity-item-button'
             disabled={buttonDisabled}
             onClick={() => setShowConfirm(true)}
             fullWidth

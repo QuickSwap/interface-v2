@@ -23,6 +23,7 @@ import { Currency, Token } from '@uniswap/sdk-core';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 import { toV3Token } from 'constants/v3/addresses';
+import { BigNumber } from 'ethers';
 
 export interface ICHIVault {
   allowToken0?: boolean;
@@ -32,6 +33,7 @@ export interface ICHIVault {
   address: string;
   fee?: number;
   balance?: number;
+  balanceBN?: BigNumber;
   token0Balance?: number;
   token1Balance?: number;
 }
@@ -247,8 +249,8 @@ export const useICHIVaultUserBalances = (vaults: ICHIVault[]) => {
   const { isLoading, data, refetch } = useQuery({
     queryKey: [
       'ichi-vaults-user-balance',
+      account,
       vaults.map(({ address }) => address).join('_'),
-      lastTx,
     ],
     queryFn: async () => {
       if (!account || !provider) return;
@@ -259,8 +261,13 @@ export const useICHIVaultUserBalances = (vaults: ICHIVault[]) => {
             vault.address,
             provider,
             SupportedDex.Quickswap,
+            true,
           );
-          return { address: vault.address, balance: Number(balance) };
+          return {
+            address: vault.address,
+            balance: Number(formatUnits(balance)),
+            balanceBN: balance,
+          };
         }),
       );
       return vaultBalances;
@@ -281,8 +288,8 @@ export const useICHIVaultsUserAmounts = (vaults: ICHIVault[]) => {
   const { isLoading, data, refetch } = useQuery({
     queryKey: [
       'ichi-vaults-user-amounts',
+      account,
       vaults.map(({ address }) => address).join('_'),
-      lastTx,
     ],
     queryFn: async () => {
       if (!account || !provider) return;
@@ -313,7 +320,7 @@ export const useICHIVaultUserBalance = (vault?: ICHIVault) => {
   const { account, provider } = useActiveWeb3React();
   const lastTx = useLastTransactionHash();
   const { isLoading, data, refetch } = useQuery({
-    queryKey: ['ichi-vault-user-balance', vault?.address, lastTx],
+    queryKey: ['ichi-vault-user-balance', vault?.address, account],
     queryFn: async () => {
       if (!vault || !account || !provider) return null;
       const balance = await getUserBalance(

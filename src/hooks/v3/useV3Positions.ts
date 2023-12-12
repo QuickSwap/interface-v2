@@ -759,16 +759,16 @@ export const useICHIPositions = () => {
   } = useICHIVaultsUserAmounts(vaults);
   const positions = vaults
     .map((vault) => {
-      const balance = vaultBalances?.find(
+      const balanceItem = vaultBalances?.find(
         (item) => item.address.toLowerCase() === vault.address.toLowerCase(),
-      )?.balance;
+      );
       const userAmount = userAmounts?.find(
         (item) => item.address.toLowerCase() === vault.address.toLowerCase(),
       )?.amounts;
-      console.log('aaa', userAmount);
       return {
         ...vault,
-        balance,
+        balance: balanceItem?.balance,
+        balanceBN: balanceItem?.balanceBN,
         token0Balance: userAmount
           ? userAmount[0]
             ? Number(userAmount[0])
