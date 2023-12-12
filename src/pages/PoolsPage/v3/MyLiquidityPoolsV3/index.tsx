@@ -9,8 +9,8 @@ import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import {
   useGammaPositionsCount,
   useV3PositionsCount,
-  useUnipilotPositions,
   useV3SteerPositionsCount,
+  useUnipilotPositionsCount,
 } from 'hooks/v3/useV3Positions';
 import Loader from 'components/Loader';
 import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
@@ -67,8 +67,8 @@ export default function MyLiquidityPoolsV3() {
 
   const {
     loading: uniPilotPositionsLoading,
-    unipilotPositions,
-  } = useUnipilotPositions(account, chainId);
+    count: unipilotPositionsCount,
+  } = useUnipilotPositionsCount(account, chainId);
 
   const {
     loading: steerPoolsLoading,
@@ -105,7 +105,7 @@ export default function MyLiquidityPoolsV3() {
         </Box>
       ),
     });
-    if (unipilotPositions && unipilotPositions.length > 0) {
+    if (unipilotPositionsCount > 0) {
       filters.push({
         id: GlobalConst.utils.poolsFilter.unipilot,
         text: (
@@ -119,7 +119,7 @@ export default function MyLiquidityPoolsV3() {
                   : ''
               }`}
             >
-              {unipilotPositions.length}
+              {unipilotPositionsCount}
             </Box>
           </Box>
         ),
@@ -169,7 +169,7 @@ export default function MyLiquidityPoolsV3() {
   }, [
     poolFilter,
     quickPoolsCount,
-    unipilotPositions,
+    unipilotPositionsCount,
     gammaPoolsCount,
     steerPoolsCount,
   ]);

@@ -40,29 +40,11 @@ export function useUnipilotFarms(chainId?: ChainId) {
     return unipilotFarms;
   };
 
-  const {
-    isLoading: farmsLoading,
-    data,
-    refetch: refetchUnipilotFarms,
-  } = useQuery({
+  const { isLoading: farmsLoading, data } = useQuery({
     queryKey: ['fetchUnipilotFarms', chainId],
     queryFn: fetchUnipilotFarms,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchUnipilotFarms();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return { loading: farmsLoading, data };
 }
@@ -79,25 +61,11 @@ export function useUnipilotFarmData(
     return unipilotFarms;
   };
 
-  const { isLoading, data, refetch: refetchUnipilotFarmData } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['fetchUnipilotFarmData', farmAddresses, chainId],
     queryFn: fetchUnipilotFarmData,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchUnipilotFarmData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return { loading: isLoading, data };
 }
@@ -114,29 +82,11 @@ export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
   };
 
   const lastTxHash = useLastTransactionHash();
-  const {
-    isLoading: farmsLoading,
-    data,
-    refetch: refetchUnipilotUserFarms,
-  } = useQuery({
-    queryKey: ['fetchUnipilotUserFarms', chainId, account],
+  const { isLoading: farmsLoading, data } = useQuery({
+    queryKey: ['fetchUnipilotUserFarms', chainId, account, lastTxHash],
     queryFn: fetchUnipilotUserFarms,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchUnipilotUserFarms();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, lastTxHash]);
 
   return { loading: farmsLoading, data };
 }
