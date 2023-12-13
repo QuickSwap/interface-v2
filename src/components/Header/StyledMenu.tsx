@@ -20,8 +20,7 @@ export const StyledMenu = styled((props: MenuProps) => (
     borderRadius: 6,
     marginTop: theme.spacing(1),
     minWidth: 180,
-    background: '#12131a',
-    border: '1px solid rgba(255, 255, 255, 0.06)',
+    background: '#232734',
     boxShadow:
       'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
     '& .MuiMenu-list': {
@@ -30,7 +29,7 @@ export const StyledMenu = styled((props: MenuProps) => (
     '& .MuiMenuItem-root': {
       '& .MuiSvgIcon-root': {
         fontSize: 18,
-        color: theme.palette.text.secondary,
+        color: '#c7cad9',
         marginRight: theme.spacing(1.5),
       },
     },

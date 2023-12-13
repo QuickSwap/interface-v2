@@ -191,6 +191,36 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   if (showEarn) {
     menuItems.push(earnTab);
   }
+  if (showFarm) {
+    if (showEarn) {
+      earnTab.items?.push({
+        link: `/farm`,
+        text: t('farm') as string,
+        id: 'farm-page-link',
+      });
+    } else {
+      menuItems.push({
+        link: `/farm`,
+        text: t('farm') as string,
+        id: 'farm-page-link',
+      });
+    }
+  }
+  if (showBonds) {
+    if (showEarn) {
+      earnTab.items?.push({
+        link: `/bonds`,
+        text: t('bonds'),
+        id: 'bonds-page-link',
+      });
+    } else {
+      menuItems.push({
+        link: `/bonds`,
+        text: t('bonds'),
+        id: 'bonds-page-link',
+      });
+    }
+  }
   if (showSafe) {
     menuItems.push({
       link: '/safe',
@@ -269,21 +299,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       link: `/analytics`,
       text: t('analytics'),
       id: 'analytics-page-link',
-    });
-  }
-
-  if (showFarm) {
-    earnTab.items?.push({
-      link: `/farm`,
-      text: t('farm') as string,
-      id: 'farm-page-link',
-    });
-  }
-  if (showBonds) {
-    earnTab.items?.push({
-      link: `/bonds`,
-      text: t('bonds'),
-      id: 'bonds-page-link',
     });
   }
 
