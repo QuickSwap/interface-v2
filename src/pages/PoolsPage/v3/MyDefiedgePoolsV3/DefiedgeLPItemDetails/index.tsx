@@ -99,6 +99,7 @@ const DefiedgeLPItemDetails: React.FC<{ defiedgePosition: any }> = ({
         <Button
           className='gamma-liquidity-item-button'
           onClick={() => setShowWithdrawModal(true)}
+          disabled={defiedgePosition.lpAmount <= 0}
         >
           <small>{t('withdraw')}</small>
         </Button>

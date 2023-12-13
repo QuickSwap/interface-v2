@@ -399,6 +399,13 @@ export function useDefiedgeStrategyContract(
   return useContract(address, DEFIEDGE_STRATEGY_ABI, withSignerIfPossible);
 }
 
+export function useDefiEdgeMiniChefContracts(
+  addresses: string[],
+  withSignerIfPossible?: boolean,
+) {
+  return useContracts(addresses, DEFIEDGE_MINICHEF_ABI, withSignerIfPossible);
+}
+
 export function useUnipilotFarmingContract(
   address?: string,
   isDual?: boolean,

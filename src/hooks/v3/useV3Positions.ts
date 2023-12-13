@@ -13,6 +13,7 @@ import {
   useUNIV3NFTPositionManagerContract,
   useMasterChefContracts,
   useV3NFTPositionManagerContract,
+  useDefiEdgeMiniChefContracts,
 } from 'hooks/useContract';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
@@ -686,6 +687,53 @@ export function useDefiedgePositions(
     [account ?? undefined],
   );
 
+  const miniChefAddresses = allDefidegeStrategies
+    .filter((strategy) => !!strategy.miniChefAddress)
+    .map((strategy) => (strategy.miniChefAddress ?? '').toLowerCase())
+    .filter((address, ind, self) => self.indexOf(address) === ind);
+  const miniChefContracts = useDefiEdgeMiniChefContracts(miniChefAddresses);
+
+  const stakedAmountData = useMultipleContractMultipleData(
+    account ? miniChefContracts : [],
+    'userInfo',
+    account
+      ? miniChefAddresses.map((address) =>
+          allDefidegeStrategies
+            .filter(
+              (item) =>
+                (item.miniChefAddress ?? '').toLowerCase() ===
+                address.toLowerCase(),
+            )
+            .map((item) => [item.pid, account]),
+        )
+      : [],
+  );
+
+  const stakedAmounts = miniChefAddresses
+    .map((address, ind) => {
+      const filteredStrategies = allDefidegeStrategies.filter(
+        (pair) =>
+          pair.miniChefAddress &&
+          pair.miniChefAddress.toLowerCase() === address.toLowerCase(),
+      );
+      const callStates = stakedAmountData[ind];
+      return callStates.map((callData, index) => {
+        const amount =
+          !callData.loading && callData.result && callData.result.length > 0
+            ? Number(formatUnits(callData.result[0], 18))
+            : 0;
+        const strategy =
+          filteredStrategies.length > index
+            ? filteredStrategies[index]
+            : undefined;
+        return {
+          amount,
+          id: strategy?.id,
+        };
+      });
+    })
+    .flat();
+
   const lpBalances = lpBalancesData.map((callData) => {
     const amount =
       !callData.loading && callData.result && callData.result.length > 0
@@ -700,20 +748,21 @@ export function useDefiedgePositions(
 
   const positions = allDefidegeStrategies
     .map((strategy, i) => {
-      const share = lpBalances[i];
+      const lpAmount = lpBalances[i];
+      const stakedAmount = stakedAmounts.find(
+        (item) =>
+          item.id && item.id?.toLowerCase() === strategy.id.toLowerCase(),
+      )?.amount;
 
       return {
         ...strategy,
-        share,
+        share: (stakedAmount ?? 0) + lpAmount,
+        lpAmount,
       };
     })
     .filter((strategy) => strategy.share > 0);
 
-  const count = useMemo(() => {
-    return lpBalances.filter((balance) => balance > 0).length;
-  }, [lpBalances]);
-
-  return { loading: lpBalancesLoading, count, positions };
+  return { loading: lpBalancesLoading, count: positions.length, positions };
 }
 export const useV3SteerPositionsCount = () => {
   const { chainId, account } = useActiveWeb3React();
