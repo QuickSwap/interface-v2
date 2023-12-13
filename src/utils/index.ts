@@ -472,11 +472,11 @@ export function formatNumber(
 
 export function getTokenFromAddress(
   tokenAddress: string | undefined,
-  chainId: ChainId,
+  chainId: ChainId | undefined,
   tokenMap: TokenAddressMap,
   tokens: Token[],
 ) {
-  if (!tokenAddress) return;
+  if (!tokenAddress || !chainId) return;
   const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
