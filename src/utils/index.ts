@@ -471,11 +471,12 @@ export function formatNumber(
 }
 
 export function getTokenFromAddress(
-  tokenAddress: string,
-  chainId: ChainId,
+  tokenAddress: string | undefined,
+  chainId: ChainId | undefined,
   tokenMap: TokenAddressMap,
   tokens: Token[],
 ) {
+  if (!tokenAddress || !chainId) return;
   const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
@@ -499,10 +500,11 @@ export function getTokenFromAddress(
 }
 
 export function getV3TokenFromAddress(
-  tokenAddress: string,
+  tokenAddress: string | undefined,
   chainId: ChainId,
   tokenMap: TokenAddressMapV3,
 ) {
+  if (!tokenAddress) return;
   const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
