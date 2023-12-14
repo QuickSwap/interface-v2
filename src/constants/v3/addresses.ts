@@ -954,6 +954,16 @@ export const PKR: { [chainId: number]: Token } = {
   ),
 };
 
+export const RNDR: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x61299774020da444af134c82fa83e3810b309991',
+    18,
+    'RNDR',
+    'Render Token',
+  ),
+};
+
 export const SLING: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
