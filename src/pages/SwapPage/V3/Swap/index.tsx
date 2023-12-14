@@ -818,7 +818,10 @@ const SwapV3Page: React.FC = () => {
                     signatureState === UseERC20PermitState.SIGNED
                   }
                 >
-                  <Box className='flex justify-between items-center'>
+                  <Box
+                    className='flex justify-between items-center'
+                    gridGap={5}
+                  >
                     <CurrencyLogo
                       currency={currencies[Field.INPUT] as WrappedCurrency}
                       size={'24px'}
@@ -827,7 +830,6 @@ const SwapV3Page: React.FC = () => {
                       style={{
                         color: 'white',
                         flex: 1,
-                        marginLeft: 8,
                       }}
                     >
                       {/* we need to shorten this string on mobile */}
@@ -841,26 +843,18 @@ const SwapV3Page: React.FC = () => {
                           }`}
                     </span>
                     {approvalState === ApprovalState.PENDING ? (
-                      <Loader stroke='white' style={{ marginLeft: '5px' }} />
+                      <Loader stroke='white' />
                     ) : (approvalSubmitted &&
                         approvalState === ApprovalState.APPROVED) ||
                       signatureState === UseERC20PermitState.SIGNED ? (
-                      <CheckCircle
-                        size='20'
-                        style={{ marginLeft: '5px' }}
-                        className='text-success'
-                      />
+                      <CheckCircle size='20' className='text-success' />
                     ) : (
                       <CustomTooltip
                         title={t('mustgiveContractsPermission', {
                           symbol: currencies[Field.INPUT]?.symbol,
                         })}
                       >
-                        <HelpCircle
-                          size='20'
-                          color={'white'}
-                          style={{ marginLeft: '8px' }}
-                        />
+                        <HelpCircle size='20' color={'white'} />
                       </CustomTooltip>
                     )}
                   </Box>
