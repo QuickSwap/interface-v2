@@ -15,11 +15,12 @@ import LockLiquidity from './lpLock/LockLiquidity';
 
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
+const MyLiquidityLocks = lazy(() => import('./lpLock/MyLiquidityLocks'));
 
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
-  const { isLpLock, updateIsLpLock } = useIsLpLock();
+  const { isLpLock } = useIsLpLock();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
@@ -33,12 +34,6 @@ const PoolsPage: React.FC = () => {
       updateIsV2(false);
     }
   }, [updateIsV2, v2]);
-
-  useEffect(() => {
-    if (!isLpLock) {
-      updateIsLpLock(false);
-    }
-  }, [updateIsLpLock, isLpLock]);
 
   return (
     <Box width='100%' mb={3}>
@@ -73,7 +68,7 @@ const PoolsPage: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
           <Box className='wrapper'>
-            {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
+            {isLpLock ? <MyLiquidityLocks /> : !isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
           </Box>
         </Grid>
       </Grid>

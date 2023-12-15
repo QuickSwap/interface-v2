@@ -11,7 +11,7 @@ import { useAnalyticsVersion } from 'hooks';
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
-  const { updateIsLpLock } = useIsLpLock();
+  const { isLpLock, updateIsLpLock } = useIsLpLock();
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
@@ -59,7 +59,7 @@ const VersionToggle: React.FC = () => {
   return (
     <Box className='version-toggle-container'>
       <Box
-        className={isV2 && version !== 'total' && version !== 'lpLocker' ? 'version-toggle-active' : ''}
+        className={isV2 && version !== 'total' && !isLpLock ? 'version-toggle-active' : ''}
         onClick={() => {
           redirectWithVersion('v2');
         }}
@@ -68,7 +68,7 @@ const VersionToggle: React.FC = () => {
       </Box>
 
       <Box
-        className={!isV2 && (version !== 'total' && version !== 'lpLocker') ? 'version-toggle-active' : ''}
+        className={!isV2 && (version !== 'total' && !isLpLock) ? 'version-toggle-active' : ''}
         onClick={() => {
           redirectWithVersion('v3');
         }}
@@ -88,12 +88,12 @@ const VersionToggle: React.FC = () => {
       )}
       {isPoolsPage &&
         <Box
-          className={version === 'lpLocker' ? 'version-toggle-active' : ''}
+          className={isLpLock ? 'version-toggle-active' : ''}
           onClick={() => {
             redirectWithVersion('lpLocker');
           }}
         >
-          <small>{t('Liquidity Locker')}</small>
+          <small>{t('liquidityLocker')}</small>
           <img src={NewTag} alt='new feature' width={46} />
         </Box>
       }

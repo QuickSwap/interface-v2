@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Box, Button } from '@material-ui/core';
 import {
   CurrencyInput,
   TransactionErrorContent,
@@ -19,7 +18,7 @@ import {
   TokenAmount,
   ChainId,
 } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import { Field } from 'state/mint/actions';
 import { PairState } from 'data/Reserves';
@@ -27,7 +26,10 @@ import {
   useIsSupportedNetwork,
   formatTokenAmount,
 } from 'utils';
-import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import Input from 'components/NumericalInput';
+
+const defaultDate = '2024-12-24T10:30'
 
 const LockLiquidity: React.FC = () => {
   const { t } = useTranslation();
@@ -42,6 +44,24 @@ const LockLiquidity: React.FC = () => {
   const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
   const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
+  const [isV3, setIsV3] = useState(false);
+
+  const [unlockDate, setUnlockDate] = useState(new Date(defaultDate))
+  const [lpTokenAddress, setLpTokenAddress] = useState('');
+  const [amount, setAmount] = useState('')
+
+  const {
+    loading: v2IsLoading,
+    pairs: allV2PairsWithLiquidity,
+  } = useV2LiquidityPools(account ?? undefined);
+
+  const handleChange = (e: any) => {
+    setLpTokenAddress(e);
+  };
+
+  const handleChangeDate = (e: string) => {
+    setUnlockDate(new Date(e));
+ };
 
   const connectWallet = () => {
     if (!isSupportedNetwork) {
@@ -53,12 +73,55 @@ const LockLiquidity: React.FC = () => {
 
   return (
     <Box>
-      <Box className='swapButtonWrapper flex-wrap'>
+      <Box p={2} className='bg-secondary2 rounded-md'>
+        <Box>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>LP Token</InputLabel>
+            <Select
+              value={lpTokenAddress}
+              onChange={(e)=>handleChange(e.target.value)}
+              label="LP Token"
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {allV2PairsWithLiquidity.map((pair) => (
+                <MenuItem key={pair.liquidityToken.address} value={pair.liquidityToken.address}>{pair.liquidityToken.address}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+        <Box mt={2.5}>
+          <TextField value={amount} onChange={(e)=>setAmount(e.target.value)} type="number" fullWidth label="Amount to lock" variant="outlined" />
+        </Box>
+        <Box mt={2.5}>
+          <TextField
+            fullWidth
+            label="Lock until"
+            type="datetime-local"
+            defaultValue={defaultDate}
+            onChange={(e)=> handleChangeDate(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Box>
+      </Box>
+      <Box className='swapButtonWrapper'>
         <Button
           fullWidth
-          onClick={() => console.log('click')}
+          onClick={() => console.log('click approve')}
         >
-          test
+          Approve
+        </Button>
+      </Box>
+      <Box mt={2} className='swapButtonWrapper'>
+        <Button
+          fullWidth
+          disabled
+          onClick={() => console.log('click lock liquidity')}
+        >
+          Lock Liquidity
         </Button>
       </Box>
     </Box>
