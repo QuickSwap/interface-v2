@@ -17,17 +17,16 @@ import {
   ETHER,
   TokenAmount,
   ChainId,
+  Pair,
 } from '@uniswap/sdk';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
-import { Field } from 'state/mint/actions';
-import { PairState } from 'data/Reserves';
 import {
   useIsSupportedNetwork,
   formatTokenAmount,
 } from 'utils';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
-import Input from 'components/NumericalInput';
+import { useTokenBalance } from 'state/wallet/hooks';
 
 const defaultDate = '2024-12-24T10:30'
 
@@ -38,25 +37,41 @@ const LockLiquidity: React.FC = () => {
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = Token.ETHER[chainIdToUse];
 
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [txHash, setTxHash] = useState('');
+  // inputs
+  const [isV3, setIsV3] = useState(false);
+  const [unlockDate, setUnlockDate] = useState(new Date(defaultDate))
+  const [lpTokenAddress, setLpTokenAddress] = useState('');
+  const [amount, setAmount] = useState('')
 
   const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
   const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
-  const [isV3, setIsV3] = useState(false);
-
-  const [unlockDate, setUnlockDate] = useState(new Date(defaultDate))
-  const [lpTokenAddress, setLpTokenAddress] = useState('');
-  const [amount, setAmount] = useState('')
 
   const {
     loading: v2IsLoading,
     pairs: allV2PairsWithLiquidity,
   } = useV2LiquidityPools(account ?? undefined);
 
+  const lpToken = useMemo(() => {
+    return allV2PairsWithLiquidity.find((item) => item.liquidityToken.address === lpTokenAddress)
+  }, [allV2PairsWithLiquidity]);
+
+  const userPoolBalance = useTokenBalance(
+    account ?? undefined,
+    lpToken?.liquidityToken,
+  );
+
+  // TODO: Uncomment for approval
+  /* const [showConfirm, setShowConfirm] = useState(false);
+    const [txHash, setTxHash] = useState('');
+    const [approving, setApproving] = useState(false);
+    const [approval, approveCallback] = useApproveCallback(
+    parsedAmount,
+    contractAddress : undefined,
+  ); */
+
   const handleChange = (e: any) => {
-    setLpTokenAddress(e);
+      setLpTokenAddress(e.target.value);
   };
 
   const handleChangeDate = (e: string) => {
@@ -79,10 +94,11 @@ const LockLiquidity: React.FC = () => {
             <InputLabel>LP Token</InputLabel>
             <Select
               value={lpTokenAddress}
-              onChange={(e)=>handleChange(e.target.value)}
+              onChange={handleChange}
               label="LP Token"
+              renderValue={(value) => `Address: ${value}`}
             >
-              <MenuItem value="">
+              <MenuItem value=''>
                 <em>None</em>
               </MenuItem>
               {allV2PairsWithLiquidity.map((pair) => (
@@ -93,6 +109,7 @@ const LockLiquidity: React.FC = () => {
         </Box>
         <Box mt={2.5}>
           <TextField value={amount} onChange={(e)=>setAmount(e.target.value)} type="number" fullWidth label="Amount to lock" variant="outlined" />
+          <small>{formatTokenAmount(userPoolBalance)}</small>
         </Box>
         <Box mt={2.5}>
           <TextField
