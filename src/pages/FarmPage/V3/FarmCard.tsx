@@ -53,7 +53,7 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
     [],
   );
   return (
-    <Box width='100%' borderRadius={16} className='bg-secondary1' mb={2}>
+    <Box width='100%' borderRadius={16} className='bg-secondary1'>
       <Box padding={2} className='flex items-center'>
         <Box width='90%' className='flex items-center'>
           <Box width='30%' className='flex items-center' gridGap={12}>

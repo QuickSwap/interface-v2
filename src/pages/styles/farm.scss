@@ -85,3 +85,15 @@ a.button:hover {
     }
   }
 }
+
+.farmAPRTitleWrapper {
+  padding: 0 8px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  & span {
+    font-weight: 500;
+    color: $bgColor;
+  }
+}

@@ -19,7 +19,21 @@ export const FarmAPRTooltip: React.FC<{ farms: V3Farm[]; children: any }> = ({
           {farms.map((farm, ind) => (
             <Box key={ind}>
               <Box className='flex' gridGap={8}>
-                <Box className='farmTypeWrapper'>{farm.type}</Box>
+                {farm.title && (
+                  <Box
+                    className={`farmAPRTitleWrapper ${
+                      farm.title.toLowerCase() === 'narrow'
+                        ? 'bg-purple8'
+                        : farm.title.toLowerCase() === 'wide'
+                        ? 'bg-blue12'
+                        : farm.title.toLowerCase() === 'stable'
+                        ? 'bg-green4'
+                        : 'bg-gray32'
+                    }`}
+                  >
+                    <span>{farm.title}</span>
+                  </Box>
+                )}
               </Box>
               <small>{t('totalAPR')}</small>
             </Box>

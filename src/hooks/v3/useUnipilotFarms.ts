@@ -19,10 +19,11 @@ import {
   useUSDCPriceFromAddress,
   useUSDCPricesFromAddresses,
 } from 'utils/useUSDCPrice';
-import { GlobalConst, GlobalData } from 'constants/index';
+import { GlobalConst, GlobalData, unipilotVaultTypes } from 'constants/index';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 import { V3Farm } from 'pages/FarmPage/V3/Farms';
 import { getConfig } from 'config/index';
+import { useGetUnipilotVaults } from 'state/mint/v3/hooks';
 
 interface RewardRate {
   rewardA?: BigNumber;
@@ -107,6 +108,7 @@ export function useUnipilotFilteredFarms(
   const singleFarmAddresses = unipilotFarms
     .filter((farm: any) => !farm.isDualReward)
     .map((farm: any) => farm.id);
+  const unipilotVaults = useGetUnipilotVaults();
   const singleRewardRateResults = useMultipleContractSingleData(
     singleFarmAddresses,
     new Interface(UNIPILOT_SINGLE_REWARD_ABI),
@@ -293,6 +295,13 @@ export function useUnipilotFilteredFarms(
         (rate) =>
           rate.address && rate.address.toLowerCase() === farm.id.toLowerCase(),
       );
+      const farmStakingAddress = farm?.stakingAddress ?? '';
+      const vaultInfo = unipilotVaults.find(
+        (vault) => vault.id.toLowerCase() === farmStakingAddress.toLowerCase(),
+      );
+      const symbolData = (vaultInfo?.symbol ?? '').split('-');
+      const pairType = Number(symbolData[symbolData.length - 1]);
+      const title = unipilotVaultTypes[pairType - 1];
       const totalLockedTokenA = Number(
         formatUnits(farm.totalLockedToken0, farm.token0.decimals),
       );
@@ -396,6 +405,7 @@ export function useUnipilotFilteredFarms(
         poolAPR,
         farmAPR,
         type: 'unipilot',
+        title,
       };
     })
     .filter((item: any) => {

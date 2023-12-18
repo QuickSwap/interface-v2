@@ -283,13 +283,15 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
         </Box>
       )}
       {loading ? (
-        <Box py={5} className='flex justify-center'>
+        <Box minHeight={200} className='flex justify-center items-center'>
           <Loader stroke={'white'} size={'1.5rem'} />
         </Box>
       ) : (
-        <Box p={2}>
+        <Box px={2}>
           {v3Farms.map((farm, ind) => (
-            <V3FarmCard key={ind} farm={farm} />
+            <Box key={ind} pb={2}>
+              <V3FarmCard farm={farm} />
+            </Box>
           ))}
         </Box>
       )}
