@@ -7,7 +7,7 @@
   "aprAPINetwork": "x1",
   "chainId": 195,
   "isMainnet": true,
-  "nativeCurrencyImage": "/zkartana.png",
+  "nativeCurrencyImage": "/OKB.png",
   "nativeCurrency": {
     "name": "OKB",
     "symbol": "OKB",
@@ -76,6 +76,9 @@
     "available": false
   },
   "dappos": {
+    "available": false
+  },
+  "bonds": {
     "available": false
   }
 }
