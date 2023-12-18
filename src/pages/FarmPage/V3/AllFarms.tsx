@@ -172,8 +172,6 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
     searchValue,
   );
 
-  console.log('aaa', filteredUnipilotFarms);
-
   const {
     data: steerFarmsArray,
     loading: steerFarmsLoading,

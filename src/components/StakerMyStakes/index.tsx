@@ -821,14 +821,7 @@ export const FarmingMyFarms: React.FC<{
                 {filteredUnipilotFarms.map((farm: any) => {
                   return (
                     <Box mt={2} key={farm.address}>
-                      <UnipilotFarmCard
-                        data={farm}
-                        farmData={
-                          unipilotFarmData && farm.id
-                            ? unipilotFarmData[farm.id.toLowerCase()]
-                            : undefined
-                        }
-                      />
+                      <UnipilotFarmCard data={farm} />
                     </Box>
                   );
                 })}

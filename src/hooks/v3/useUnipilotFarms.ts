@@ -348,7 +348,7 @@ export function useUnipilotFilteredFarms(
           : undefined;
       const poolAPR = Number(farmData?.stats ?? 0);
 
-      const farmTVL = farm?.tvl ?? 1000;
+      const farmTVL = tvl > 0 ? tvl : 1000;
       const farmAPR =
         ((farmRewardA * 24 * 3600 * (farmRewardTokenAUSD?.price ?? 0) +
           farmRewardB * 24 * 3600 * (farmRewardTokenBUSD?.price ?? 0)) /
@@ -505,41 +505,4 @@ export function useUnipilotFilteredFarms(
     });
 
   return filteredFarms;
-}
-
-export function useUnipilotFarmAPR(data: any) {
-  const rewardA =
-    data.rewardRate && data.rewardRate.rewardA && data.rewardRate.tokenA
-      ? Number(
-          formatUnits(data.rewardRate.rewardA, data.rewardRate.tokenA.decimals),
-        ) *
-        24 *
-        3600
-      : 0;
-  const rewardB =
-    data.rewardRate && data.rewardRate.rateB && data.rewardRate.tokenB
-      ? Number(
-          formatUnits(data.rewardRate.rateB, data.rewardRate.tokenB.decimals),
-        ) *
-        24 *
-        3600
-      : 0;
-  const { price: rewardTokenAUsd } = useUSDCPriceFromAddress(
-    data && data.rewardRate && data.rewardRate.tokenA
-      ? data.rewardRate.tokenA.address
-      : '',
-  );
-  const { price: rewardTokenBUsd } = useUSDCPriceFromAddress(
-    data && data.rewardRate && data.rewardRate.tokenB
-      ? data.rewardRate.tokenB.address
-      : '',
-  );
-  const farmAPR = useMemo(() => {
-    const tvl = data.tvl ?? 1000;
-    const rewardAPRTokenA = ((rewardA * rewardTokenAUsd) / tvl) * 36500;
-    const rewardAPRTokenB = ((rewardB * rewardTokenBUsd) / tvl) * 36500;
-    return rewardAPRTokenA + rewardAPRTokenB;
-  }, [data.tvl, rewardA, rewardB, rewardTokenAUsd, rewardTokenBUsd]);
-
-  return farmAPR;
 }
