@@ -130,6 +130,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
 
   const swapCurrencyStr = useMemo(() => {
     if (!chainId) return '';
+    if (!USDC[chainId] && !USDT[chainId]) return '';
     if (chainId === ChainId.ZKTESTNET)
       return `&currency1=${USDT[chainId].address}`;
     return `&currency1=${USDC[chainId].address}`;

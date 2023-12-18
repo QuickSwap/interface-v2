@@ -92,6 +92,9 @@ const EMPTY_LIST: CNTFarmInfoAddressMap = {
   [ChainId.KAVA]: {},
   [ChainId.MANTA]: {},
   [ChainId.ZKATANA]: {},
+  [ChainId.BTTC]: {},
+  [ChainId.X1]: {},
+  [ChainId.TIMX]: {},
 };
 
 const farmCache: WeakMap<CNTFarmListInfo, CNTFarmInfoAddressMap> | null =
