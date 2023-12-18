@@ -24,7 +24,7 @@ const wallchainResponseIsValid = (
     dataResponse.summary &&
     dataResponse.summary.searchSummary &&
     dataResponse.summary.searchSummary.expectedUsdProfit &&
-    BONUS_CUTOFF_AMOUNT[chainId] >
+    (BONUS_CUTOFF_AMOUNT[chainId] ?? 0) >
       dataResponse.summary.searchSummary.expectedUsdProfit * 0.3
   ) {
     return false;
