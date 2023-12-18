@@ -15,6 +15,7 @@ const PoolsPage = lazy(() => import('./pages/PoolsPage'));
 const SwapPage = lazy(() => import('./pages/SwapPage'));
 const ContestPage = lazy(() => import('./pages/ContestPage'));
 const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
+const BondsPage = lazy(() => import('./pages/BondsPage'));
 const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
 const NewsletterMasaPage = lazy(() => import('./pages/NewsletterMasaPage'));
@@ -67,9 +68,6 @@ import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import { Environment, HypeLab, HypeLabContext } from 'hypelab-react';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
-import { liquidityHubAnalytics } from 'components/Swap/LiquidityHub';
-
-liquidityHubAnalytics.onLoad();
 
 const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {
   const theme = mainTheme;
@@ -196,6 +194,11 @@ const App: React.FC = () => {
                     <Route exact path='/convert'>
                       <PageLayout>
                         <ConvertQUICKPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/bonds'>
+                      <PageLayout>
+                        <BondsPage />
                       </PageLayout>
                     </Route>
                     <Route exact path='/newsletter'>

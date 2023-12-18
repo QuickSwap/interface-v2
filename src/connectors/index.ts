@@ -23,7 +23,7 @@ import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
 import ZengoIcon from 'assets/images/zengo.png';
 import BinanceIcon from 'assets/images/binance-wallet.webp';
-import { GlobalConst, SUPPORTED_CHAINIDS } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 import { SecretType } from '@venly/web3-provider';
 import { Phantom } from './Phantom';
@@ -37,6 +37,8 @@ import { OkxWallet } from './OkxWallet';
 import { Cryptocom } from './Cryptocom';
 import { UAuthConnector } from '@uauth/web3-react';
 import { getWeb3Connector } from '@binance/w3w-web3-connector';
+import { isInBinance } from '@binance/w3w-utils';
+import { BinanceWeb3Connector } from './BinanceWeb3Wallet';
 
 const POLLING_INTERVAL = 12000;
 
@@ -470,20 +472,31 @@ export const unstoppableDomainsConnection: Connection = {
   description: 'Connect to Unstoppable Domains',
 };
 
+const inBinance = isInBinance();
 const BinanceConnector = getWeb3Connector();
 const [web3BinanceWallet, web3BinanceWalletHooks] = initializeConnector<any>(
   () =>
     new BinanceConnector({
-      supportedChainIds: SUPPORTED_CHAINIDS,
-      rpc: rpcMap,
+      lng: 'zh-CN',
+      supportedChainIds: [ChainId.MATIC],
+    }),
+);
+
+const [binanceWeb3Wallet, binanceWeb3WalletHooks] = initializeConnector<
+  BinanceWeb3Connector
+>(
+  (actions) =>
+    new BinanceWeb3Connector({
+      actions,
+      onError,
     }),
 );
 
 export const binanceWalletConnection: Connection = {
   key: 'BinanceWeb3Wallet',
   name: GlobalConst.walletName.BINANCEWALLET,
-  connector: web3BinanceWallet,
-  hooks: web3BinanceWalletHooks,
+  connector: inBinance ? binanceWeb3Wallet : web3BinanceWallet,
+  hooks: inBinance ? binanceWeb3WalletHooks : web3BinanceWalletHooks,
   type: ConnectionType.BINANCEWALLET,
   iconName: BinanceIcon,
   color: '#E8831D',

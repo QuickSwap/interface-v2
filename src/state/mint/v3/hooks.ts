@@ -56,7 +56,7 @@ import { getGammaPairsForTokens, getSteerRatio, maxAmountSpend } from 'utils';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
 

@@ -3,14 +3,14 @@ import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { GlobalConst } from 'constants/index';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import {
   useGammaPositionsCount,
   useV3PositionsCount,
-  useUnipilotPositions,
   useV3SteerPositionsCount,
+  useUnipilotPositionsCount,
 } from 'hooks/v3/useV3Positions';
 import Loader from 'components/Loader';
 import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
@@ -67,8 +67,8 @@ export default function MyLiquidityPoolsV3() {
 
   const {
     loading: uniPilotPositionsLoading,
-    unipilotPositions,
-  } = useUnipilotPositions(account, chainId);
+    count: unipilotPositionsCount,
+  } = useUnipilotPositionsCount(account, chainId);
 
   const {
     loading: steerPoolsLoading,
@@ -105,7 +105,7 @@ export default function MyLiquidityPoolsV3() {
         </Box>
       ),
     });
-    if (unipilotPositions && unipilotPositions.length > 0) {
+    if (unipilotPositionsCount > 0) {
       filters.push({
         id: GlobalConst.utils.poolsFilter.unipilot,
         text: (
@@ -119,7 +119,7 @@ export default function MyLiquidityPoolsV3() {
                   : ''
               }`}
             >
-              {unipilotPositions.length}
+              {unipilotPositionsCount}
             </Box>
           </Box>
         ),
@@ -169,7 +169,7 @@ export default function MyLiquidityPoolsV3() {
   }, [
     poolFilter,
     quickPoolsCount,
-    unipilotPositions,
+    unipilotPositionsCount,
     gammaPoolsCount,
     steerPoolsCount,
   ]);

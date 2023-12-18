@@ -113,24 +113,11 @@ export const useSteerVaults = (chainId: ChainId) => {
     return;
   };
 
-  const { isLoading, data: vaults, refetch: refetchSteerPools } = useQuery({
+  const { isLoading, data: vaults } = useQuery({
     queryKey: ['fetchSteerPools', chainId],
     queryFn: fetchSteerPools,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchSteerPools();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const poolAddresses = useMemo(() => {
     if (!vaults) return [];
@@ -364,24 +351,11 @@ export const useSteerStakingPools = (chainId: ChainId, farmStatus?: string) => {
     return;
   };
 
-  const { isLoading, data, refetch: refetchSteerStakingPools } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['fetchSteerStakingPools', chainId, farmStatus],
     queryFn: fetchSteerStakingPools,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchSteerStakingPools();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return { loading: isLoading, data };
 };

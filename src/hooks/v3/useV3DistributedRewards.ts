@@ -1,5 +1,5 @@
 import { ChainId } from '@uniswap/sdk';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
 import { getTokenFromAddress } from 'utils';
@@ -41,25 +41,11 @@ export function useV3DistributedRewards(chainId?: ChainId) {
     return _eternalFarmings;
   };
 
-  const { data: eternalFarms, refetch } = useQuery({
+  const { data: eternalFarms } = useQuery({
     queryKey: ['fetchEternalFarmsV3Rewards', chainId, !!provider, farmEnabled],
     queryFn: fetchEternalFarmsForV3Rewards,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const allRewardTokenAddresses = eternalFarms
     ? eternalFarms

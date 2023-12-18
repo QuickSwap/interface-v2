@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
-import { ChainId } from '@uniswap/sdk';
 import { TokenList } from '@uniswap/token-lists';
 import { TokenDetail } from './reducer';
+import { SoulZap_UniV2_ApeBond } from '@soulsolidity/soulzap-v1';
 
 export type PopupContent =
   | {
@@ -95,4 +95,8 @@ export const updateIsV2 = createAction<boolean>('application/updateIsV2');
 
 export const updateUDDomain = createAction<string | undefined>(
   'application/updateUDDomain',
+);
+
+export const updateSoulZap = createAction<SoulZap_UniV2_ApeBond | undefined>(
+  'application/updateSoulZap',
 );

@@ -73,7 +73,7 @@ import callWallchainAPI from 'utils/wallchainService';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { ONE } from 'v3lib/utils';
 import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 
@@ -354,6 +354,7 @@ const SwapBestTrade: React.FC<{
       maxImpactAllowed,
     ],
     queryFn: fetchOptimalRate,
+    refetchInterval: 5000,
   });
 
   const optimalRate = useMemo(() => {
@@ -996,19 +997,6 @@ const SwapBestTrade: React.FC<{
   }, [!optimalRate]);
 
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    reFetchOptimalRate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return (
     <Box>

@@ -77,25 +77,11 @@ const FarmPage: React.FC = () => {
     return data ?? null;
   };
 
-  const { data: bulkPairs, refetch } = useQuery({
+  const { data: bulkPairs } = useQuery({
     queryKey: ['fetchBulkPairData', isV2, chainId, pairListStr],
     queryFn: fetchBulkPairData,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const redirectWithFarmTab = (tab: string) => {
     const currentPath = history.location.pathname + history.location.search;

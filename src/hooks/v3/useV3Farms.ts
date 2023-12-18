@@ -6,9 +6,9 @@ import {
   useGammaHypervisorContract,
   useMasterChefContract,
 } from 'hooks/useContract';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { getGammaData, getGammaRewards, getTokenFromAddress } from 'utils';
+import { getTokenFromAddress } from 'utils';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
@@ -19,6 +19,7 @@ import {
   useEternalFarmTvls,
 } from 'hooks/useIncentiveSubgraph';
 import { V3Farm } from 'pages/FarmPage/V3/Farms';
+import { useGammaData, useGammaRewards } from './useGammaData';
 
 export const useEternalFarmsFiltered = (
   farms: any[],
@@ -271,49 +272,12 @@ export const useGammaFarmsFiltered = (
   sortBy?: string,
   sortDesc?: boolean,
 ) => {
-  const fetchGammaRewards = async () => {
-    const gammaRewards = await getGammaRewards(chainId);
-    return gammaRewards;
-  };
-
-  const fetchGammaData = async () => {
-    const gammaData = await getGammaData(chainId);
-    return gammaData;
-  };
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const {
-    isLoading: gammaFarmsLoading,
-    data: gammaData,
-    refetch: refetchGammaData,
-  } = useQuery({
-    queryKey: ['fetchGammaDataFarms', chainId],
-    queryFn: fetchGammaData,
-  });
+  const { isLoading: gammaFarmsLoading, data: gammaData } = useGammaData();
 
   const {
     isLoading: gammaRewardsLoading,
     data: gammaRewards,
-    refetch: refetchGammaRewards,
-  } = useQuery({
-    queryKey: ['fetchGammaRewardsFarms', chainId],
-    queryFn: fetchGammaRewards,
-  });
-
-  useEffect(() => {
-    refetchGammaData();
-    refetchGammaRewards();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  } = useGammaRewards();
 
   const tokenMap = useSelectedTokenList();
   const sortMultiplier = sortDesc ? -1 : 1;

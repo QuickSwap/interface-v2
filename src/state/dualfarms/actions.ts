@@ -1,5 +1,5 @@
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
-import { DualFarmListInfo } from 'types';
+import { DualFarmListInfo } from 'types/index';
 
 export const fetchDualFarmList: Readonly<{
   pending: ActionCreatorWithPayload<{ url: string; requestId: string }>;

@@ -39,7 +39,7 @@ import {
   useUnipilotUserFarms,
 } from 'hooks/v3/useUnipilotFarms';
 import { FarmingType } from 'models/enums';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import {
   useSteerFilteredFarms,
   useSteerStakedPools,
@@ -91,15 +91,7 @@ export const FarmingMyFarms: React.FC<{
   const shallowPositions = useMemo(() => {
     if (!transferredPositions) return [];
     if (txConfirmed && selectedTokenId) {
-      if (txType === 'eternalCollectReward') {
-        return transferredPositions.map((el) => {
-          if (el.id === selectedTokenId) {
-            el.eternalEarned = 0;
-            el.eternalBonusEarned = 0;
-          }
-          return el;
-        });
-      } else if (txType === 'withdraw') {
+      if (txType === 'withdraw') {
         return transferredPositions.map((el) => {
           if (el.id === selectedTokenId) {
             el.onFarmingCenter = false;

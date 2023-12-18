@@ -1,0 +1,245 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.availableBondsSwitch {
+  background-color: white;
+  border-radius: 8px !important;
+  & p {
+    color: $bgPalette;
+  }
+}
+
+.bondItemWrapper {
+  background-color: $secondary1;
+  padding: 10px 16px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  & button {
+    border-radius: 12px;
+    height: 36px;
+    width: 100%;
+  }
+}
+
+.bondTypeTag {
+  background-color: $grey12;
+  padding: 2px 7px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  font-size: 10px;
+  color: $textPrimary;
+}
+
+.bondModalWrapper {
+  padding: 16px;
+  max-width: 1136px;
+  overflow: visible;
+}
+
+.bondModalClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+}
+
+.bondModalButtonsWrapper {
+  display: flex;
+  justify-content: space-between;
+  & button {
+    width: 100%;
+    height: 44px;
+    border-radius: 10px;
+  }
+}
+
+.userBondInfoWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  & > div {
+    border-radius: 16px;
+    width: 32.5%;
+    height: 80px;
+    background-color: $secondary3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.bondTranferInput {
+  input {
+    height: 64px;
+    border: none;
+    box-shadow: none;
+    width: 100%;
+    margin-top: 8px;
+    background-color: $secondary3;
+    font-size: 16px;
+    color: $textPrimary;
+    padding: 0 20px;
+    border-radius: 20px;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+  }
+}
+
+.bondTransferWarning {
+  background-color: $yellow4;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  & > div {
+    background-color: $secondary1;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px;
+    color: $yellow5;
+    margin-right: 8px;
+    & svg {
+      width: 20px;
+    }
+  }
+  & p {
+    flex: 1;
+    color: $yellow5;
+  }
+}
+
+.bondTransferConfirm {
+  display: flex;
+  cursor: pointer;
+  & > div {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    & svg {
+      width: 16px;
+      height: 16px;
+      color: white;
+    }
+  }
+  & > small {
+    flex: 1;
+    margin-left: 8px;
+    font-weight: 500;
+  }
+}
+
+.soulZapAddLiquidityModal {
+  max-width: 560px;
+  & button {
+    height: 48px;
+    border-radius: 12px;
+    &.Mui-disabled {
+      background-color: $grey29;
+    }
+  }
+}
+
+.soulZapAddLiquidityArrowWrapper {
+  background-color: $grey29;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  margin: 12px auto -12px;
+  & svg {
+    width: 16px;
+    height: 20px;
+    transform: rotate(90deg);
+  }
+}
+
+.soulZapAddLiquidityInput {
+  width: 100%;
+  border-radius: 12px;
+  background-color: $grey29;
+  padding: 16px;
+}
+
+.soulZapAddLiquidityCurrency {
+  display: flex;
+  background-color: $grey12;
+  align-items: center;
+  padding: 8px;
+  border-radius: 12px;
+  & p {
+    white-space: nowrap;
+  }
+}
+
+.soulZapAddLiquidityLink {
+  text-align: center;
+  a {
+    color: $textSecondary;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 500;
+  }
+}
+
+.zapSlippageWrapper {
+  max-width: 420px;
+}
+
+.zapSlippageInput {
+  flex: 1;
+  display: flex;
+  background-color: $grey12;
+  height: 35px;
+  border-radius: 12px;
+  padding: 0 8px;
+  align-items: center;
+}
+
+.zapSlippageButton {
+  width: 50px;
+  height: 35px;
+  border-radius: 12px;
+  background-color: $grey12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.activeZapSlippageButton {
+  background-color: $primary;
+}
+
+.zapSlippageDeadlineInput {
+  flex: 1;
+  background-color: $grey12;
+  padding: 8px;
+  border-radius: 12px;
+}
+
+.zapSlippageErrorInput {
+  border: 1px solid $errorMain;
+}
+
+.bondWarningModalWrapper {
+  & .MuiCheckbox-root {
+    color: $textPrimary;
+  }
+  button {
+    height: 48px;
+    border-radius: 12px;
+  }
+}
