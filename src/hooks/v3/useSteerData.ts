@@ -13,7 +13,12 @@ import {
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { getSteerDexName, getTokenFromAddress } from 'utils';
+import {
+  calculatePositionWidth,
+  getSteerDexName,
+  getTokenFromAddress,
+  percentageToMultiplier,
+} from 'utils';
 import { toV3Token } from 'constants/v3/addresses';
 import { Token } from '@uniswap/sdk-core';
 import { GlobalConst, GlobalData } from 'constants/index';
@@ -23,6 +28,7 @@ import PoolABI from 'constants/abis/v3/pool.json';
 import UniV3PoolABI from 'constants/abis/v3/univ3Pool.json';
 import { ERC20_ABI } from 'constants/abis/erc20';
 import SteerVaultABI from 'constants/abis/steer-vault.json';
+import { Presets } from 'state/mint/v3/reducer';
 
 export interface SteerVault {
   address: string;
@@ -551,25 +557,58 @@ export function useSteerFilteredFarms(
         getTokenFromAddress(token1Address, chainId, tokenMap, []) ??
         vaultInfo?.token1;
 
+      const rewards: any[] = [];
+      if (farm?.rewardTokenADetail) {
+        rewards.push({
+          amount: farm?.dailyEmissionRewardA ?? 0,
+          token: farm?.rewardTokenADetail,
+        });
+      }
+      if (farm?.rewardTokenBDetail) {
+        rewards.push({
+          amount: farm?.dailyEmissionRewardB ?? 0,
+          token: farm?.rewardTokenBDetail,
+        });
+      }
+
+      const minTick = Number(vaultInfo?.lowerTick ?? 0);
+      const maxTick = Number(vaultInfo?.upperTick ?? 0);
+      const currentTick = Number(vaultInfo?.tick ?? 0);
+      const positionWidthPercent = calculatePositionWidth(
+        currentTick,
+        minTick,
+        maxTick,
+      );
+      const pairType =
+        vaultInfo &&
+        vaultInfo.strategy &&
+        vaultInfo.strategy.strategyConfigData &&
+        vaultInfo.strategy.strategyConfigData.name &&
+        vaultInfo.strategy.strategyConfigData.name
+          .toLowerCase()
+          .includes('stable')
+          ? Presets.STEER_STABLE
+          : percentageToMultiplier(positionWidthPercent) > 1.2
+          ? Presets.STEER_WIDE
+          : Presets.STEER_NARROW;
+      const pairTypeTitle =
+        pairType === Presets.STEER_STABLE
+          ? 'Stable'
+          : pairType === Presets.STEER_WIDE
+          ? 'Wide'
+          : 'Narrow';
+
       return {
         ...farm,
         token0,
         token1,
         tvl,
         rewardUSD: farmRewardUSD,
-        rewards: [
-          {
-            amount: farm?.dailyEmissionRewardA ?? 0,
-            token: farm?.rewardTokenADetail,
-          },
-          {
-            amount: farm?.dailyEmissionRewardB ?? 0,
-            token: farm?.rewardTokenBDetail,
-          },
-        ],
+        rewards,
         farmAPR,
         poolAPR: vaultInfo?.apr ?? 0,
         type: 'steer',
+        title: pairTypeTitle,
         loading: loadingUSDPrice || loadingSteerVaults,
       };
     })

@@ -193,9 +193,9 @@ export function useUnipilotFilteredFarms(
         [],
       );
       return {
-        rateA: rewardRate,
+        rewardA: rewardRate,
         tokenA: rewardToken,
-        rateB: undefined,
+        rewardB: undefined,
         tokenB: undefined,
         address:
           singleFarmAddresses.length >= index
@@ -206,7 +206,7 @@ export function useUnipilotFilteredFarms(
   );
 
   const dualFarmAddresses = unipilotFarms
-    .filter((farm: any) => !farm.isDualReward)
+    .filter((farm: any) => farm.isDualReward)
     .map((farm: any) => farm.id);
   const dualRewardARateResults = useMultipleContractSingleData(
     dualFarmAddresses,
@@ -288,8 +288,8 @@ export function useUnipilotFilteredFarms(
       );
 
       return {
-        rateA: rewardRateA,
-        rateB: rewardRateB,
+        rewardA: rewardRateA,
+        rewardB: rewardRateB,
         tokenA: rewardTokenA,
         tokenB: rewardTokenB,
         address:
@@ -359,37 +359,31 @@ export function useUnipilotFilteredFarms(
         totalLockedTokenA * (farmTokenAUSD?.price ?? 0) +
         totalLockedTokenB * (farmTokenBUSD?.price ?? 0);
 
-      const farmRewardA =
-        farm.rewardRate && farm.rewardRate.rateA && farm.rewardRate.tokenA
-          ? Number(
-              formatUnits(
-                farm.rewardRate.rateA,
-                farm.rewardRate.tokenA.decimals,
-              ),
-            )
-          : 0;
-      const farmRewardB =
-        farm.rewardRate && farm.rewardRate.rateB && farm.rewardRate.tokenB
-          ? Number(
-              formatUnits(
-                farm.rewardRate.rateB,
-                farm.rewardRate.tokenB.decimals,
-              ),
-            )
-          : 0;
+      const farmRewardA = Number(
+        formatUnits(
+          rewardRate?.rewardA ?? '0',
+          rewardRate?.tokenA?.decimals ?? 18,
+        ),
+      );
+      const farmRewardB = Number(
+        formatUnits(
+          rewardRate?.rewardB ?? '0',
+          rewardRate?.tokenB?.decimals ?? 18,
+        ),
+      );
       const farmRewardTokenAUSD = rewardsWithUSDPrice?.find(
         (item) =>
-          farm.rewardRate &&
-          farm.rewardRate.tokenA &&
+          rewardRate &&
+          rewardRate.tokenA &&
           item.address.toLowerCase() ===
-            farm.rewardRate.tokenA.address.toLowerCase(),
+            rewardRate.tokenA.address.toLowerCase(),
       );
       const farmRewardTokenBUSD = rewardsWithUSDPrice?.find(
         (item) =>
-          farm.rewardRate &&
-          farm.rewardRate.tokenB &&
+          rewardRate &&
+          rewardRate.tokenB &&
           item.address.toLowerCase() ===
-            farm.rewardRate.tokenB.address.toLowerCase(),
+            rewardRate.tokenB.address.toLowerCase(),
       );
       const rewardUSD =
         farmRewardA * (farmRewardTokenAUSD?.price ?? 0) +
@@ -411,30 +405,42 @@ export function useUnipilotFilteredFarms(
           farmTVL) *
         36500;
 
-      return {
-        ...farm,
-        token0,
-        token1,
-        rewards: [
-          {
-            amount: Number(
+      const rewards: any[] = [];
+      if (rewardRate?.tokenA) {
+        rewards.push({
+          amount:
+            Number(
               formatUnits(
                 rewardRate?.rewardA ?? '0',
                 rewardRate?.tokenA?.decimals ?? 18,
               ),
-            ),
-            token: rewardRate?.tokenA,
-          },
-          {
-            amount: Number(
+            ) *
+            24 *
+            3600,
+          token: rewardRate?.tokenA,
+        });
+      }
+
+      if (rewardRate?.tokenB) {
+        rewards.push({
+          amount:
+            Number(
               formatUnits(
                 rewardRate?.rewardB ?? '0',
                 rewardRate?.tokenB?.decimals ?? 18,
               ),
-            ),
-            token: rewardRate?.tokenB,
-          },
-        ],
+            ) *
+            24 *
+            3600,
+          token: rewardRate?.tokenB,
+        });
+      }
+
+      return {
+        ...farm,
+        token0,
+        token1,
+        rewards,
         tvl,
         rewardUSD,
         poolAPR,
@@ -553,9 +559,9 @@ export function useUnipilotFilteredFarms(
 
 export function useUnipilotFarmAPR(data: any) {
   const rewardA =
-    data.rewardRate && data.rewardRate.rateA && data.rewardRate.tokenA
+    data.rewardRate && data.rewardRate.rewardA && data.rewardRate.tokenA
       ? Number(
-          formatUnits(data.rewardRate.rateA, data.rewardRate.tokenA.decimals),
+          formatUnits(data.rewardRate.rewardA, data.rewardRate.tokenA.decimals),
         ) *
         24 *
         3600

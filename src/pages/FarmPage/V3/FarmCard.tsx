@@ -1,10 +1,12 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box, Button } from '@material-ui/core';
 import { Token } from '@uniswap/sdk';
 import { V3Farm } from './Farms';
 import { DoubleCurrencyLogo } from 'components';
 import { formatNumber } from 'utils';
 import APRHover from 'assets/images/aprHover.png';
+import { useTranslation } from 'react-i18next';
+import { FarmAPRTooltip } from './FarmAPRTooltip';
 
 interface Props {
   farm: {
@@ -18,6 +20,7 @@ interface Props {
 }
 
 export const V3FarmCard: React.FC<Props> = ({ farm }) => {
+  const { t } = useTranslation();
   const rewards = farm.farms.reduce(
     (
       memo: {
@@ -67,22 +70,27 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
             <p>${formatNumber(farm.tvl)}</p>
           </Box>
           <Box width='20%'>
-            <p>Up to</p>
-            <Box className='flex items-center' gridGap={4}>
-              <p className='text-success'>{formatNumber(farm.apr)}%</p>
-              <img src={APRHover} width={16} />
+            <small>{t('upTo')}</small>
+            <Box className='flex'>
+              <FarmAPRTooltip farms={farm.farms}>
+                <Box className='farmCardAPR' gridGap={4}>
+                  <p>{formatNumber(farm.apr)}%</p>
+                  <img src={APRHover} width={16} />
+                </Box>
+              </FarmAPRTooltip>
             </Box>
           </Box>
           <Box width='30%'>
             {rewards.map((reward) => (
-              <p key={reward.token.address}>
-                {formatNumber(reward.amount)} {reward.token.symbol}
+              <p className='small' key={reward.token.address}>
+                {formatNumber(reward.amount)} {reward.token.symbol}{' '}
+                <small className='text-secondary'>{t('daily')}</small>
               </p>
             ))}
           </Box>
         </Box>
         <Box width='10%'>
-          <Button>View</Button>
+          <Button className='farmCardButton'>{t('view')}</Button>
         </Box>
       </Box>
     </Box>
