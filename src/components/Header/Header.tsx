@@ -132,7 +132,8 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     if (!chainId) return '';
     if (chainId === ChainId.ZKTESTNET)
       return `&currency1=${USDT[chainId].address}`;
-    return `&currency1=${USDC[chainId].address}`;
+    if (USDC[chainId]) return `&currency1=${USDC[chainId].address}`;
+    return '';
   }, [chainId]);
 
   if (showSwap) {
