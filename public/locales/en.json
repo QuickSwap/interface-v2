@@ -459,6 +459,7 @@
   "vaultAPR": "Vault APR",
   "poolAPR": "Pool APR",
   "farmAPR": "Farm APR",
+  "rewardsAPR": "Rewards APR",
   "v3PositionNoLiquidity": "Your position has 0 liquidity, and is not earning fees.",
   "v3PoolWithinSelectedRange": "The price of this pool is within your selected range. Your position is currently earning fees.",
   "v3PoolOutsideSelectedRange": "The price of this pool is outside of your selected range. Your position is not currently earning fees.",

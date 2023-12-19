@@ -7,6 +7,8 @@ import { formatNumber } from 'utils';
 import APRHover from 'assets/images/aprHover.png';
 import { useTranslation } from 'react-i18next';
 import { FarmAPRTooltip } from './FarmAPRTooltip';
+import { useHistory } from 'react-router-dom';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 interface Props {
   farm: {
@@ -21,6 +23,8 @@ interface Props {
 
 export const V3FarmCard: React.FC<Props> = ({ farm }) => {
   const { t } = useTranslation();
+  const history = useHistory();
+  const parsedQuery = useParsedQueryString();
   const rewards = farm.farms.reduce(
     (
       memo: {
@@ -52,6 +56,42 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
     },
     [],
   );
+
+  const redirectWithCurrencies = (address0: string, address1: string) => {
+    const currentPath = history.location.pathname + history.location.search;
+    let redirectPath;
+    if (parsedQuery && parsedQuery.currency0) {
+      if (parsedQuery.currency1) {
+        redirectPath = currentPath
+          .replace(
+            `currency0=${parsedQuery.currency0}`,
+            `currency0=${address0}`,
+          )
+          .replace(
+            `currency1=${parsedQuery.currency1}`,
+            `currency1=${address1}`,
+          );
+      } else {
+        redirectPath = `${currentPath.replace(
+          `currency0=${parsedQuery.currency0}`,
+          `currency0=${address0}`,
+        )}&currency1=${address1}`;
+      }
+    } else {
+      if (parsedQuery && parsedQuery.currency1) {
+        redirectPath = `${currentPath.replace(
+          `currency1=${parsedQuery.currency1}`,
+          `currency1=${address1}`,
+        )}&currency0=${address0}`;
+      } else {
+        redirectPath = `${currentPath}${
+          history.location.search === '' ? '?' : '&'
+        }currency0=${address0}&currency1=${address1}`;
+      }
+    }
+    history.push(redirectPath);
+  };
+
   return (
     <Box width='100%' borderRadius={16} className='bg-secondary1'>
       <Box padding={2} className='flex items-center'>
@@ -90,7 +130,20 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
           </Box>
         </Box>
         <Box width='10%'>
-          <Button className='farmCardButton'>{t('view')}</Button>
+          <Button
+            className='farmCardButton'
+            disabled={!farm.token0 || !farm.token1}
+            onClick={() => {
+              if (farm.token0 && farm.token1) {
+                redirectWithCurrencies(
+                  farm.token0.address,
+                  farm.token1.address,
+                );
+              }
+            }}
+          >
+            {t('view')}
+          </Button>
         </Box>
       </Box>
     </Box>

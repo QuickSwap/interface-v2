@@ -94,6 +94,12 @@ a.button:hover {
   border-radius: 6px;
   & span {
     font-weight: 500;
-    color: $bgColor;
   }
+}
+
+.farmAPRGetLPButton {
+  max-width: 90px;
+  width: 100%;
+  height: 36px;
+  border-radius: 12px;
 }

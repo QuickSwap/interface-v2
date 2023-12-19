@@ -84,6 +84,10 @@
   background-color: $black1;
 }
 
+.bg-textSecondary {
+  background-color: $textSecondary;
+}
+
 .border {
   border: 1px solid $divider;
 }
@@ -236,6 +240,6 @@
   background-color: $purple8;
 }
 
-.bg-grey32 {
+.bg-gray32 {
   background-color: $grey32;
 }
