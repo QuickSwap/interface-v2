@@ -6,6 +6,7 @@ import manta from './manta.json';
 import zkartana from './zkartana.json';
 import tIMX from './tIMX.json';
 import qlpmanager from './qlpmanager.json';
+import x1 from './x1.json';
 import { ChainId } from '@uniswap/sdk';
 
 const configs: any = {
@@ -16,6 +17,7 @@ const configs: any = {
   [ChainId.MANTA]: manta,
   [ChainId.ZKATANA]: zkartana,
   [ChainId.TIMX]: tIMX,
+  [ChainId.X1]: x1,
 };
 
 export const getConfig = (network: ChainId | undefined) => {

@@ -92,4 +92,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'tIMX',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.X1]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://www.oklink.com/x1-test',
+    infoLink: 'https://algebra.finance',
+    label: 'x1',
+    nativeCurrencySymbol: 'OKB',
+    nativeCurrencyName: 'OKB',
+    nativeCurrencyDecimals: 18,
+  },
 };

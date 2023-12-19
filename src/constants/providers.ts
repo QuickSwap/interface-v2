@@ -16,8 +16,8 @@ export const rpcMap = {
   [ChainId.MANTA]: 'https://pacific-rpc.manta.network/http',
   [ChainId.ZKATANA]: 'https://rpc.zkatana.gelato.digital',
   [ChainId.BTTC]: '',
-  [ChainId.X1]: '',
   [ChainId.TIMX]: 'https://rpc.testnet.immutable.com',
+  [ChainId.X1]: 'https://testrpc.x1.tech',
 };
 
 class AppJsonRpcProvider extends StaticJsonRpcProvider {

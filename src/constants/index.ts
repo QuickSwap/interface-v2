@@ -65,8 +65,8 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.MANTA]: 'manta',
   [ChainId.ZKATANA]: 'zKatana',
   [ChainId.BTTC]: 'bttc',
-  [ChainId.X1]: 'xl',
   [ChainId.TIMX]: 'tIMX',
+  [ChainId.X1]: 'x1',
 };
 
 export enum ZapType {
@@ -121,7 +121,7 @@ export const WALLCHAIN_PARAMS: {
   },
 };
 
-export const BONUS_CUTOFF_AMOUNT = {
+export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
   [ChainId.MUMBAI]: 0,
   [ChainId.MATIC]: 0,
   [ChainId.DOEGCHAIN_TESTNET]: 0,
@@ -258,6 +258,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.MANTA,
   ChainId.ZKATANA,
   ChainId.TIMX,
+  ChainId.X1,
 ];
 
 export interface GammaPair {

@@ -172,9 +172,9 @@ function RangePart({
     return priceFormat === PriceFormats.USD;
   }, [priceFormat]);
 
-  const USDC_TOKEN = toToken(
-    USDC[tokenA?.chainId ? tokenA.chainId : chainId ?? ChainId.MATIC],
-  );
+  const USDC_Chain =
+    USDC[tokenA?.chainId ? tokenA.chainId : chainId ?? ChainId.MATIC];
+  const USDC_TOKEN = USDC_Chain ? toToken(USDC_Chain) : undefined;
   const valueUSD = useUSDCValue(
     tryParseAmount(
       value === '∞' || value === '0' ? undefined : Number(value).toFixed(5),
@@ -194,7 +194,7 @@ function RangePart({
 
   const handleOnBlur = useCallback(() => {
     if (isUSD && usdPriceB) {
-      if (tokenB?.wrapped.address === USDC_TOKEN.address) {
+      if (USDC_TOKEN && tokenB?.wrapped.address === USDC_TOKEN.address) {
         onUserInput(localUSDValue);
       } else {
         if (tokenValue && tokenValue.trade) {
@@ -212,7 +212,7 @@ function RangePart({
         }
       }
     } else if (isUSD && initialUSDPrices.CURRENCY_B) {
-      if (tokenB?.wrapped.address === USDC_TOKEN.address) {
+      if (USDC_TOKEN && tokenB?.wrapped.address === USDC_TOKEN.address) {
         onUserInput(localUSDValue);
       } else {
         onUserInput(String(+localUSDValue / +initialUSDPrices.CURRENCY_B));
@@ -221,7 +221,7 @@ function RangePart({
         );
       }
     } else if (isUSD && initialTokenPrice && usdPriceA) {
-      if (tokenB?.wrapped.address === USDC_TOKEN.address) {
+      if (USDC_TOKEN && tokenB?.wrapped.address === USDC_TOKEN.address) {
         onUserInput(localUSDValue);
       } else {
         onUserInput(
@@ -254,7 +254,7 @@ function RangePart({
     initialTokenPrice,
     usdPriceA,
     tokenB?.wrapped.address,
-    USDC_TOKEN.address,
+    USDC_TOKEN,
     onUserInput,
     localUSDValue,
     tokenValue,
