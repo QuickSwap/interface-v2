@@ -7,7 +7,7 @@
   "aprAPINetwork": "timx",
   "chainId": 13473,
   "isMainnet": true,
-  "nativeCurrencyImage": "/zkevm.svg",
+  "nativeCurrencyImage": "/tIMX_zkevm.jpg",
   "nativeCurrency": {
     "name": "test IMX",
     "symbol": "tIMX",

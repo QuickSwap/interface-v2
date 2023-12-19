@@ -326,8 +326,6 @@
   }
 }
 
-
-
 .mobileMenu {
   display: flex;
   align-items: center;
@@ -392,6 +390,7 @@
   cursor: pointer;
   img {
     width: 18px;
+    border-radius: 18px;
   }
   svg {
     width: 18px;
@@ -434,7 +433,7 @@
   height: 48px;
 
   &.active {
-    color: #448aff; 
+    color: #448aff;
     // background-color: #252833;
   }
 }
