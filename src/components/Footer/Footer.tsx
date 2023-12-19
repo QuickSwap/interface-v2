@@ -9,12 +9,14 @@ import {
 import { useTheme } from '@material-ui/core/styles';
 import QUICKLogo from 'assets/images/quickLogo.png';
 import 'components/styles/Footer.scss';
-import { useHistory } from 'react-router-dom';
+
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
 const Footer: React.FC = () => {
   const history = useHistory();
+  const { pathname } = useLocation();
   const copyrightYear = new Date().getFullYear();
   const { t } = useTranslation();
   const theme = useTheme();
@@ -140,7 +142,7 @@ const Footer: React.FC = () => {
               {t('termsofuse')}
             </a>
           </small>
-          {!tabletWindowSize && (
+          {!tabletWindowSize && pathname === '/' && (
             <Box className='fake-community-container'>&nbsp;</Box>
           )}
         </Box>
