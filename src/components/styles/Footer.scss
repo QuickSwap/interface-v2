@@ -27,6 +27,22 @@
   align-items: center;
 }
 
+.copyright-mobile {
+  justify-content: space-between;
+  margin-bottom: 64px;
+  border-bottom: 1px solid $divider;
+}
+
+.fake-community-container {
+  min-width: 680px;
+  background-color: transparent;
+}
+
+a.footer-link {
+  color: $textSecondary;
+  text-decoration: none;
+}
+
 .newsletterInput {
   border: 1px solid $divider;
   border-radius: 8px;
