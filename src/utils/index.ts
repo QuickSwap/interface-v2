@@ -28,6 +28,7 @@ import {
   GammaPairs,
   GlobalConst,
   GlobalValue,
+  MIN_NATIVE_CURRENCY_FOR_GAS,
   SUPPORTED_CHAINIDS,
 } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
@@ -225,9 +226,11 @@ export function maxAmountSpend(
 ): CurrencyAmount | undefined {
   if (!currencyAmount) return undefined;
   if (currencyAmount.currency === ETHER[chainId]) {
-    if (JSBI.greaterThan(currencyAmount.raw, GlobalConst.utils.MIN_ETH)) {
+    if (
+      JSBI.greaterThan(currencyAmount.raw, MIN_NATIVE_CURRENCY_FOR_GAS[chainId])
+    ) {
       return CurrencyAmount.ether(
-        JSBI.subtract(currencyAmount.raw, GlobalConst.utils.MIN_ETH),
+        JSBI.subtract(currencyAmount.raw, MIN_NATIVE_CURRENCY_FOR_GAS[chainId]),
         chainId,
       );
     } else {
@@ -235,6 +238,23 @@ export function maxAmountSpend(
     }
   }
   return currencyAmount;
+}
+
+export function halfAmountSpend(
+  chainId: ChainId,
+  currencyAmount?: CurrencyAmount,
+): CurrencyAmount | undefined {
+  if (!currencyAmount) return undefined;
+  const halfAmount = JSBI.divide(currencyAmount.raw, JSBI.BigInt(2));
+
+  if (currencyAmount.currency === ETHER[chainId]) {
+    if (JSBI.greaterThan(halfAmount, MIN_NATIVE_CURRENCY_FOR_GAS[chainId])) {
+      return CurrencyAmount.ether(halfAmount, chainId);
+    } else {
+      return CurrencyAmount.ether(JSBI.BigInt(0), chainId);
+    }
+  }
+  return CurrencyAmount.ether(halfAmount, chainId);
 }
 
 export function isTokensOnList(
