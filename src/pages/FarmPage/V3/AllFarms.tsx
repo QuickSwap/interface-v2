@@ -12,7 +12,7 @@ import {
 import { Token } from '@uniswap/sdk';
 import { getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { SortColumns } from 'components';
+import { SortColumns, ToggleSwitch } from 'components';
 import {
   useEternalFarmsFiltered,
   useGammaFarmsFiltered,
@@ -25,6 +25,10 @@ import {
 import { V3Farm } from './Farms';
 import Loader from 'components/Loader';
 import V3FarmCard from './FarmCard';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useCurrency } from 'hooks/v3/Tokens';
+import CustomSelector from 'components/v3/CustomSelector';
+import V3FarmWithCurrency from './FarmWithCurrency';
 
 interface Props {
   searchValue: string;
@@ -261,38 +265,125 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       return 1;
     });
 
+  const parsedQuery = useParsedQueryString();
+  const currency0Id =
+    parsedQuery && parsedQuery.currency0
+      ? parsedQuery.currency0.toString()
+      : undefined;
+  const currency1Id =
+    parsedQuery && parsedQuery.currency1
+      ? parsedQuery.currency1.toString()
+      : undefined;
+  const currency0 = useCurrency(currency0Id);
+  const currency1 = useCurrency(currency1Id);
+
+  const currencySelected = !!currency0 && !!currency1;
+
+  const selectedFarms = useMemo(() => {
+    return (
+      v3Farms.find(
+        (item) =>
+          currency0 &&
+          currency1 &&
+          ((item.token0.address.toLowerCase() ===
+            currency0.wrapped.address.toLowerCase() &&
+            item.token1.address.toLowerCase() ===
+              currency1.wrapped.address.toLowerCase()) ||
+            (item.token1.address.toLowerCase() ===
+              currency0.wrapped.address.toLowerCase() &&
+              item.token0.address.toLowerCase() ===
+                currency1.wrapped.address.toLowerCase())),
+      )?.farms ?? []
+    );
+  }, [currency0, currency1, v3Farms]);
+
+  const farmTypes = useMemo(() => {
+    const mTypes = selectedFarms.reduce((memo: string[], item) => {
+      if (item.title && !memo.includes(item.title)) {
+        memo.push(item.title);
+      }
+      return memo;
+    }, []);
+
+    return [
+      {
+        text: t('all'),
+        id: 0,
+        link: 'all',
+      },
+    ].concat(
+      mTypes.map((item, ind) => {
+        return { text: item.toUpperCase(), id: ind + 1, link: item };
+      }),
+    );
+  }, [selectedFarms, t]);
+
+  const [farmType, setFarmType] = useState(farmTypes[0]);
+  const [staked, setStaked] = useState(false);
+
   return (
-    <Box>
-      <Box mt={2} pl='12px' className='bg-secondary1'>
-        <CustomTabSwitch
-          items={farmFilters}
-          value={farmFilter}
-          handleTabChange={setFarmFilter}
-          height={50}
-        />
-      </Box>
-      {!isMobile && (
-        <Box mt={2} px={5}>
-          <Box width='90%'>
-            <SortColumns
-              sortColumns={sortByDesktopItems}
-              selectedSort={sortBy}
-              sortDesc={sortDesc}
+    <Box pt={2}>
+      {currencySelected ? (
+        <Box className='flex justify-between items-center' px={2} mb={2}>
+          <Box className='flex'>
+            {selectedFarms.length > 1 && (
+              <CustomSelector
+                height={36}
+                items={farmTypes}
+                selectedItem={farmType}
+                handleChange={setFarmType}
+              />
+            )}
+          </Box>
+          <Box className='flex items-center' gridGap={6}>
+            <small className='text-secondary'>{t('staked')}</small>
+            <ToggleSwitch
+              toggled={staked}
+              onToggle={() => setStaked(!staked)}
             />
           </Box>
         </Box>
+      ) : (
+        <>
+          <Box pl='12px' className='bg-secondary1'>
+            <CustomTabSwitch
+              items={farmFilters}
+              value={farmFilter}
+              handleTabChange={setFarmFilter}
+              height={50}
+            />
+          </Box>
+          {!isMobile && (
+            <Box px={5} py={1}>
+              <Box width='90%'>
+                <SortColumns
+                  sortColumns={sortByDesktopItems}
+                  selectedSort={sortBy}
+                  sortDesc={sortDesc}
+                />
+              </Box>
+            </Box>
+          )}
+        </>
       )}
+
       {loading ? (
         <Box minHeight={200} className='flex justify-center items-center'>
           <Loader stroke={'white'} size={'1.5rem'} />
         </Box>
       ) : (
         <Box px={2}>
-          {v3Farms.map((farm, ind) => (
-            <Box key={ind} pb={2}>
-              <V3FarmCard farm={farm} />
-            </Box>
-          ))}
+          {currencySelected
+            ? selectedFarms.map((farm, ind) => (
+                <Box key={ind} pb={2}>
+                  <V3FarmWithCurrency farm={farm} />
+                </Box>
+              ))
+            : v3Farms.map((farm, ind) => (
+                <Box key={ind} pb={2}>
+                  <V3FarmCard farm={farm} />
+                </Box>
+              ))}
         </Box>
       )}
     </Box>
