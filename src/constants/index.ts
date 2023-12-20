@@ -46,6 +46,7 @@ import {
   PKR,
   SLING,
   NINJAZ,
+  RNDR,
 } from './v3/addresses';
 
 export const bondAPIV2BaseURL = 'https://api-v2.apeswap.finance';
@@ -63,6 +64,8 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.KAVA]: 'kava',
   [ChainId.MANTA]: 'manta',
   [ChainId.ZKATANA]: 'zKatana',
+  [ChainId.BTTC]: 'bttc',
+  [ChainId.X1]: 'x1',
 };
 
 export enum ZapType {
@@ -117,7 +120,7 @@ export const WALLCHAIN_PARAMS: {
   },
 };
 
-export const BONUS_CUTOFF_AMOUNT = {
+export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
   [ChainId.MUMBAI]: 0,
   [ChainId.MATIC]: 0,
   [ChainId.DOEGCHAIN_TESTNET]: 0,
@@ -198,7 +201,8 @@ export const GlobalConst = {
       unipilot: '1',
       gamma: '2',
       steer: '3',
-      ichi: '4',
+      defiedge: '4',
+      ichi: '5',
     },
   },
   analyticChart: {
@@ -218,7 +222,8 @@ export const GlobalConst = {
     MANUAL_RANGE: '0',
     GAMMA_RANGE: '1',
     UNIPILOT_RANGE: '2',
-    STEER_RANGE: '3',
+    DEFIEDGE_RANGE: '3',
+    STEER_RANGE: '4',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -251,6 +256,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.ZKEVM,
   ChainId.MANTA,
   ChainId.ZKATANA,
+  ChainId.X1,
 ];
 
 export interface GammaPair {
@@ -959,7 +965,6 @@ export const GammaPairs: {
         address: '0xfea715ab7e1de3640cd0662f6af0f9b25934e753',
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
-        ableToFarm: true,
         pid: 69,
       },
     ],
@@ -1165,7 +1170,6 @@ export const GammaPairs: {
         address: '0x80709a760Ff54112bD3e0CE31C104d912bA51774',
         token0Address: '0x18e73a5333984549484348a94f4d219f4fab7b81',
         token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-        ableToFarm: true,
         pid: 89,
       },
     ],
@@ -1243,6 +1247,50 @@ export const GammaPairs: {
         token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
         ableToFarm: true,
         pid: 96,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xc3c7d422809852031b44ab29eec9f1eff2a58756': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xb56ff8144e1d4ff94e8b2801bade11bee0d87397',
+        token0Address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+        token1Address: '0xC3C7d422809852031b44ab29EEC9F1EfF2A58756',
+        ableToFarm: true,
+        pid: 98,
+      },
+    ],
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x08f02173016278004c1951713091d9181b2dea81',
+        token0Address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+        token1Address: '0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39',
+        ableToFarm: true,
+        pid: 99,
+      },
+    ],
+    '0x61299774020da444af134c82fa83e3810b309991-0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x44899605e50d20d84f58b58c5958ed1c5ddc111d',
+        token0Address: '0x61299774020dA444Af134c82fa83E3810b309991',
+        token1Address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+        ableToFarm: true,
+        pid: 100,
+      },
+    ],
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xe238ecb42c424e877652ad82d8a939183a04c35f': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x407eb8531f381cf2285ce45ef8ea3f190f33d1ea',
+        token0Address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+        token1Address: '0xE238Ecb42C424E877652AD82d8A939183A04C35f',
+        ableToFarm: true,
+        pid: 102,
       },
     ],
   },
@@ -1562,6 +1610,41 @@ export const IchiVaults: {
   ],
 };
 
+export interface DefiedgeStrategy {
+  id: string;
+  token0: string;
+  token1: string;
+  pool: string;
+  ableToFarm?: boolean;
+  pid?: number;
+  miniChefAddress?: string;
+  rewardToken?: string;
+}
+
+export const DefiedgeStrategies: {
+  [chainId in ChainId]?: DefiedgeStrategy[];
+} = {
+  [ChainId.MATIC]: [
+    {
+      id: '0x8b207CA0B5602fEcF38Dbc748900B7f5C5903F12',
+      token0: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', // WBTC
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
+      pool: '0xac4494e30a85369e332bdb5230d6d694d4259dbc',
+      ableToFarm: true,
+      pid: 0,
+      miniChefAddress: '0xABeCD28Ef2b4aF6B3ea046a00C435A4f44f576AE',
+      rewardToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    },
+    {
+      id: '0x87a32726eeaf4b6f81f8555e0b9a3cd9c0ae081b',
+      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+      token1: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC
+      pool: '0xAE81FAc689A1b4b1e06e7ef4a2ab4CD8aC0A087D',
+      ableToFarm: false,
+    },
+  ],
+};
+
 export const GlobalValue = {
   percents: {
     ALLOWED_PRICE_IMPACT_LOW: new Percent( // used for warning states
@@ -1626,6 +1709,7 @@ export const GlobalValue = {
         PKR[ChainId.MATIC],
         SLING[ChainId.MATIC],
         NINJAZ[ChainId.MATIC],
+        RNDR[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],
@@ -1657,6 +1741,8 @@ export const GlobalValue = {
       [ChainId.KAVA]: [],
       [ChainId.MANTA]: [EMPTY[ChainId.MANTA], MATICX[ChainId.MANTA]],
       [ChainId.ZKATANA]: [],
+      [ChainId.BTTC]: [],
+      [ChainId.X1]: [],
     },
   },
   marketSDK: {
@@ -1718,6 +1804,8 @@ export const GlobalData = {
       DAI[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [USDC[ChainId.ZKATANA]],
+    [ChainId.BTTC]: [],
+    [ChainId.X1]: [],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -1756,6 +1844,8 @@ export const GlobalData = {
       MATIC[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
+    [ChainId.BTTC]: [],
+    [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -1783,6 +1873,8 @@ export const GlobalData = {
       [WETH[ChainId.MANTA], WSTETH[ChainId.MANTA]],
     ],
     [ChainId.ZKATANA]: [],
+    [ChainId.BTTC]: [],
+    [ChainId.X1]: [],
   },
 };
 

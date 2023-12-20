@@ -60,9 +60,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       window.location.host !== 'quickswap.exchange' &&
       window.location.host !== 'beta.quickswap.exchange' &&
       window.location.host !== 'dogechain.quickswap.exchange' &&
-      window.location.host !== 'localhost:3000' &&
-      window.location.host !==
-        'feature-bonds-integration.interface-v2-01.pages.dev'
+      window.location.host !== 'localhost:3000'
     ) {
       setOpenPassModal(true);
     }
@@ -95,12 +93,13 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   };
 
   const showBetaBanner = false;
+  const displayNewsletter = false;
 
   return (
     <Box className='page'>
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
-      <NewsletterSignupPanel />
+      {displayNewsletter && <NewsletterSignupPanel />}
       <Header
         onUpdateNewsletter={(val) => {
           setHeaderClass(val ? '' : 'pageWrapper-no-max-no-news');

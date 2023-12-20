@@ -6,7 +6,7 @@ import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
-import { CustomSwitch, HypeLabAds } from 'components';
+import { CustomSwitch, DoubleCurrencyLogo, HypeLabAds } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
@@ -19,6 +19,8 @@ import { getConfig } from '../../config/index';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useCurrency } from 'hooks/v3/Tokens';
+import { Home, KeyboardArrowRight } from '@material-ui/icons';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -79,25 +81,11 @@ const FarmPage: React.FC = () => {
     return data ?? null;
   };
 
-  const { data: bulkPairs, refetch } = useQuery({
+  const { data: bulkPairs } = useQuery({
     queryKey: ['fetchBulkPairData', isV2, chainId, pairListStr],
     queryFn: fetchBulkPairData,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const redirectWithFarmTab = (tab: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -140,27 +128,67 @@ const FarmPage: React.FC = () => {
   ];
   const helpURL = process.env.REACT_APP_HELP_URL;
 
+  const currency0Id =
+    parsedQuery && parsedQuery.currency0
+      ? parsedQuery.currency0.toString()
+      : undefined;
+  const currency1Id =
+    parsedQuery && parsedQuery.currency1
+      ? parsedQuery.currency1.toString()
+      : undefined;
+  const currency0 = useCurrency(currency0Id);
+  const currency1 = useCurrency(currency1Id);
+
   return (
     <Box width='100%' mb={3} id='farmPage'>
-      <Box className='pageHeading'>
-        <Box className='flex row items-center'>
-          <h1 className='h4'>{t('farm')}</h1>
-          {showVersion && (
-            <Box ml={2}>
-              <VersionToggle />
+      {currency0 && currency1 ? (
+        <>
+          <Box className='flex items-center'>
+            <Box
+              className='flex items-center cursor-pointer text-secondary'
+              gridGap={5}
+              onClick={() => history.push('/farm')}
+            >
+              <Home />
+              <small>{t('allFarms')}</small>
+            </Box>
+            <KeyboardArrowRight className='text-secondary' />
+            <small className='text-bold'>
+              {currency0.symbol}/{currency1.symbol}
+            </small>
+          </Box>
+          <Box className='flex items-center' gridGap={8} my={3}>
+            <DoubleCurrencyLogo
+              currency0={currency0}
+              currency1={currency1}
+              size={24}
+            />
+            <h4 className='weight-500'>
+              {currency0.symbol}/{currency1.symbol}
+            </h4>
+          </Box>
+        </>
+      ) : (
+        <Box className='pageHeading'>
+          <Box className='flex row items-center'>
+            <h1 className='h4'>{t('farm')}</h1>
+            {v2 && v3 && (
+              <Box ml={2}>
+                <VersionToggle />
+              </Box>
+            )}
+          </Box>
+          {helpURL && (
+            <Box
+              className='helpWrapper'
+              onClick={() => window.open(helpURL, '_blank')}
+            >
+              <small>{t('help')}</small>
+              <HelpIcon />
             </Box>
           )}
         </Box>
-        {helpURL && (
-          <Box
-            className='helpWrapper'
-            onClick={() => window.open(helpURL, '_blank')}
-          >
-            <small>{t('help')}</small>
-            <HelpIcon />
-          </Box>
-        )}
-      </Box>
+      )}
       <Box margin='0 auto 24px'>
         <HypeLabAds />
       </Box>

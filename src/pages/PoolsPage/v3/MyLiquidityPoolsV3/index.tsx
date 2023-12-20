@@ -9,15 +9,17 @@ import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import {
   useGammaPositionsCount,
   useV3PositionsCount,
-  useUnipilotPositions,
+  useDefiedgePositions,
   useV3SteerPositionsCount,
   useICHIPositionsCount,
+  useUnipilotPositionsCount,
 } from 'hooks/v3/useV3Positions';
 import Loader from 'components/Loader';
 import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
 import MyGammaPoolsV3 from '../MyGammaPoolsV3';
 import FilterPanelItem from '../FilterPanelItem';
 import MyUnipilotPoolsV3 from '../MyUnipilotPoolsV3';
+import MyDefiedgePoolsV3 from '../MyDefiedgePoolsV3';
 import MySteerPoolsV3 from '../MySteerPoolsV3';
 import MyICHIPools from '../MyICHIPools';
 
@@ -69,8 +71,13 @@ export default function MyLiquidityPoolsV3() {
 
   const {
     loading: uniPilotPositionsLoading,
-    unipilotPositions,
-  } = useUnipilotPositions(account, chainId);
+    count: unipilotPositionsCount,
+  } = useUnipilotPositionsCount(account, chainId);
+
+  const {
+    loading: defiedgeStrategiesLoading,
+    count: defiedgeStrategiesCount,
+  } = useDefiedgePositions(account, chainId);
 
   const {
     loading: steerPoolsLoading,
@@ -84,7 +91,8 @@ export default function MyLiquidityPoolsV3() {
     gammaPoolsLoading ||
     uniPilotPositionsLoading ||
     steerPoolsLoading ||
-    ichiLoading;
+    ichiLoading ||
+    defiedgeStrategiesLoading;
 
   const [poolFilter, setPoolFilter] = useState(
     GlobalConst.utils.poolsFilter.quickswap,
@@ -110,7 +118,7 @@ export default function MyLiquidityPoolsV3() {
         </Box>
       ),
     });
-    if (unipilotPositions && unipilotPositions.length > 0) {
+    if (unipilotPositionsCount > 0) {
       filters.push({
         id: GlobalConst.utils.poolsFilter.unipilot,
         text: (
@@ -124,7 +132,7 @@ export default function MyLiquidityPoolsV3() {
                   : ''
               }`}
             >
-              {unipilotPositions.length}
+              {unipilotPositionsCount}
             </Box>
           </Box>
         ),
@@ -145,6 +153,26 @@ export default function MyLiquidityPoolsV3() {
               }`}
             >
               {gammaPoolsCount}
+            </Box>
+          </Box>
+        ),
+      });
+    }
+    if (defiedgeStrategiesCount > 0) {
+      filters.push({
+        id: GlobalConst.utils.poolsFilter.defiedge,
+        text: (
+          <Box className='flex items-center'>
+            <small>Defiedge</small>
+            <Box
+              ml='6px'
+              className={`myV3PoolCountWrapper ${
+                poolFilter === GlobalConst.utils.poolsFilter.defiedge
+                  ? 'activeMyV3PoolCountWrapper'
+                  : ''
+              }`}
+            >
+              {defiedgeStrategiesCount}
             </Box>
           </Box>
         ),
@@ -194,8 +222,9 @@ export default function MyLiquidityPoolsV3() {
   }, [
     poolFilter,
     quickPoolsCount,
-    unipilotPositions,
+    unipilotPositionsCount,
     gammaPoolsCount,
+    defiedgeStrategiesCount,
     steerPoolsCount,
     ichiCount,
   ]);
@@ -252,6 +281,9 @@ export default function MyLiquidityPoolsV3() {
             )}
             {poolFilter === GlobalConst.utils.poolsFilter.gamma && (
               <MyGammaPoolsV3 />
+            )}
+            {poolFilter === GlobalConst.utils.poolsFilter.defiedge && (
+              <MyDefiedgePoolsV3 />
             )}
             {poolFilter === GlobalConst.utils.poolsFilter.steer && (
               <MySteerPoolsV3 />

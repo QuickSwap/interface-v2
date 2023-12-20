@@ -354,6 +354,7 @@ const SwapBestTrade: React.FC<{
       maxImpactAllowed,
     ],
     queryFn: fetchOptimalRate,
+    refetchInterval: 5000,
   });
 
   const optimalRate = useMemo(() => {
@@ -996,19 +997,6 @@ const SwapBestTrade: React.FC<{
   }, [!optimalRate]);
 
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    reFetchOptimalRate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return (
     <Box>

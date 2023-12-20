@@ -101,6 +101,7 @@ export function EnterAmounts({
       : undefined;
 
   const uniPilotVaultAddress = mintInfo.presetRange?.address;
+  const defiedgeStrategyAddress = mintInfo.presetRange?.address;
   const isWithNative =
     mintInfo.liquidityRangeType ===
       GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
@@ -123,6 +124,7 @@ export function EnterAmounts({
     }
     return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
   }, [chainId, mintInfo.feeTier]);
+
   const steerPeripheryContract = useSteerPeripheryContract();
   const [approvalA, approveACallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A] ||
@@ -134,6 +136,9 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+        ? defiedgeStrategyAddress
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.STEER_RANGE
         ? steerPeripheryContract?.address
@@ -150,6 +155,9 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+        ? defiedgeStrategyAddress
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.STEER_RANGE
         ? steerPeripheryContract?.address

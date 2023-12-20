@@ -29,6 +29,8 @@ import {
   GlobalConst,
   GlobalValue,
   SUPPORTED_CHAINIDS,
+  DefiedgeStrategies,
+  DefiedgeStrategy,
 } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
@@ -471,11 +473,12 @@ export function formatNumber(
 }
 
 export function getTokenFromAddress(
-  tokenAddress: string,
-  chainId: ChainId,
+  tokenAddress: string | undefined,
+  chainId: ChainId | undefined,
   tokenMap: TokenAddressMap,
   tokens: Token[],
 ) {
+  if (!tokenAddress || !chainId) return;
   const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
@@ -499,10 +502,11 @@ export function getTokenFromAddress(
 }
 
 export function getV3TokenFromAddress(
-  tokenAddress: string,
+  tokenAddress: string | undefined,
   chainId: ChainId,
   tokenMap: TokenAddressMapV3,
 ) {
+  if (!tokenAddress) return;
   const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
@@ -974,96 +978,6 @@ export const getEternalFarmFromTokens = async (
   }
 };
 
-const gammaChainName = (chainId?: ChainId) => {
-  switch (chainId) {
-    case ChainId.ZKEVM:
-      return 'polygon-zkevm';
-    default:
-      return 'polygon';
-  }
-};
-
-export const getGammaData = async (chainId?: ChainId) => {
-  if (!chainId) return null;
-  try {
-    const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
-        chainId,
-      )}/hypervisors/allData`,
-    );
-    const gammaData = await data.json();
-    return gammaData;
-  } catch {
-    try {
-      const data = await fetch(
-        `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
-        }/quickswap/${gammaChainName(chainId)}/hypervisors/allData`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-};
-
-export const getGammaPositions = async (
-  account?: string,
-  chainId?: ChainId,
-) => {
-  if (!account || !chainId) return null;
-  try {
-    const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
-        chainId,
-      )}/user/${account}`,
-    );
-    const positions = await data.json();
-    return positions[account.toLowerCase()];
-  } catch {
-    try {
-      const data = await fetch(
-        `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
-        }/quickswap/${gammaChainName(chainId)}/user/${account}`,
-      );
-      const positions = await data.json();
-      return positions[account.toLowerCase()];
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-};
-
-export const getGammaRewards = async (chainId?: ChainId) => {
-  if (!chainId) return null;
-  try {
-    const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
-        chainId,
-      )}/allRewards2`,
-    );
-    const gammaData = await data.json();
-    return gammaData;
-  } catch {
-    try {
-      const data = await fetch(
-        `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
-        }/quickswap/${gammaChainName(chainId)}/allRewards2`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-};
-
 export const getUnipilotPositions = async (
   account?: string,
   chainId?: ChainId,
@@ -1191,6 +1105,15 @@ export const getGammaPairsForTokens = (
     return;
   }
   return;
+};
+
+export const getAllDefiedgeStrategies = (chainId?: ChainId) => {
+  const config = getConfig(chainId);
+  const defiedgeAvailable = config['defiedge']['available'];
+  if (defiedgeAvailable && chainId) {
+    return DefiedgeStrategies[chainId] ?? [];
+  }
+  return [];
 };
 
 export enum LiquidityProtocol {

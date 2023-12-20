@@ -1,37 +1,35 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import CustomSelector from 'components/v3/CustomSelector';
-import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import EternalFarmsPage from 'pages/EternalFarmsPage';
-import GammaFarmsPage from 'pages/GammaFarmsPage';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
 import { useActiveWeb3React } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
-import { SearchInput, SortColumns, CustomSwitch } from 'components';
-import { GlobalConst } from 'constants/index';
-import { useUnipilotFarms } from 'hooks/v3/useUnipilotFarms';
-import UnipilotFarmsPage from 'pages/UnipilotFarmsPage';
-import { getAllGammaPairs } from 'utils';
-import SteerFarmsPage from 'pages/SteerFarmsPage';
-import { useSteerStakingPools } from 'hooks/v3/useSteerData';
-import { getConfig } from 'config/index';
+import { SearchInput, CustomSwitch } from 'components';
+import AllV3Farms from './AllFarms';
+import { useCurrency } from 'hooks/v3/Tokens';
 
-interface FarmCategory {
-  id: number;
-  text: string;
-  link: string;
-  hasSeparator?: boolean;
+export interface V3Farm {
+  token0?: Token;
+  token1?: Token;
+  title?: string;
+  tvl: number;
+  rewards: {
+    amount: number;
+    token: { address: string; symbol: string; decimals: number };
+  }[];
+  rewardUSD: number;
+  poolAPR: number;
+  farmAPR: number;
+  type: string;
 }
 
 export default function Farms() {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const config = getConfig(chainId);
-  const qsFarmAvailable = config['qsFarm']['available'];
   const chainIdToUse = chainId ?? ChainId.MATIC;
 
   const parsedQuery = useParsedQueryString();
@@ -44,21 +42,7 @@ export default function Farms() {
 
   const history = useHistory();
 
-  const allGammaFarms = getAllGammaPairs(chainId).filter(
-    (item) => item.ableToFarm,
-  );
-
-  const { data: unipilotFarmsArray } = useUnipilotFarms(chainId);
-  const unipilotFarms = useMemo(() => {
-    if (!unipilotFarmsArray) return [];
-    return unipilotFarmsArray;
-  }, [unipilotFarmsArray]);
-
-  const { data: steerFarmsArray } = useSteerStakingPools(chainId);
-  const steerFarms = useMemo(() => {
-    if (!steerFarmsArray) return [];
-    return steerFarmsArray;
-  }, [steerFarmsArray]);
+  const [searchValue, setSearchValue] = useState('');
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -77,63 +61,23 @@ export default function Farms() {
   };
 
   const currentTabQueried =
-    parsedQuery && parsedQuery.tab
-      ? (parsedQuery.tab as string)
-      : allGammaFarms.length > 0
-      ? 'gamma-farms'
-      : unipilotFarms.length > 0
-      ? 'unipilot-farms'
-      : steerFarms.length > 0
-      ? 'steer-farms'
-      : 'eternal-farms';
+    parsedQuery && parsedQuery.tab ? (parsedQuery.tab as string) : 'farms';
 
   const v3FarmCategories = useMemo(() => {
-    const farmCategories: FarmCategory[] = [
+    return [
+      {
+        text: t('farms'),
+        id: 1,
+        link: 'farms',
+      },
       {
         text: t('myFarms'),
         id: 0,
         link: 'my-farms',
       },
     ];
-    if (qsFarmAvailable) {
-      farmCategories.push({
-        text: t('quickswapFarms'),
-        id: 1,
-        link: 'eternal-farms',
-      });
-    }
-    if (allGammaFarms.length > 0) {
-      farmCategories.push({
-        text: t('gammaFarms'),
-        id: 2,
-        link: 'gamma-farms',
-        hasSeparator: true,
-      });
-    }
-    if (unipilotFarms.length > 0) {
-      farmCategories.push({
-        text: t('unipilotFarms'),
-        id: 3,
-        link: 'unipilot-farms',
-        hasSeparator: true,
-      });
-    }
-    if (steerFarms.length > 0) {
-      farmCategories.push({
-        text: t('steerFarms'),
-        id: 4,
-        link: 'steer-farms',
-        hasSeparator: true,
-      });
-    }
-    return farmCategories;
-  }, [
-    t,
-    qsFarmAvailable,
-    allGammaFarms.length,
-    unipilotFarms.length,
-    steerFarms.length,
-  ]);
+  }, [t]);
+
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
       history.push(`?tab=${selected?.link}`);
@@ -152,38 +96,6 @@ export default function Farms() {
     }
   }, [currentTabQueried, v3FarmCategories]);
 
-  const farmFilters = useMemo(
-    () => [
-      {
-        text: t('allFarms'),
-        id: GlobalConst.utils.v3FarmFilter.allFarms,
-      },
-      {
-        text: t('stablecoins'),
-        id: GlobalConst.utils.v3FarmFilter.stableCoin,
-      },
-      {
-        text: t('blueChips'),
-        id: GlobalConst.utils.v3FarmFilter.blueChip,
-      },
-      {
-        text: t('stableLPs'),
-        id: GlobalConst.utils.v3FarmFilter.stableLP,
-      },
-      {
-        text: t('otherLPs'),
-        id: GlobalConst.utils.v3FarmFilter.otherLP,
-      },
-    ],
-    [t],
-  );
-  const [farmFilter, setFarmFilter] = useState(farmFilters[0].id);
-
-  const [searchValue, setSearchValue] = useState('');
-
-  const [sortBy, setSortBy] = useState(GlobalConst.utils.v3FarmSortBy.pool);
-  const [sortDesc, setSortDesc] = useState(false);
-
   const farmStatusItems = [
     {
       text: t('active'),
@@ -201,140 +113,63 @@ export default function Farms() {
     },
   ];
 
-  const sortColumns = [
-    {
-      text: t('pool'),
-      index: GlobalConst.utils.v3FarmSortBy.pool,
-      width: 0.3,
-      justify: 'flex-start',
-    },
-    {
-      text: t('tvl'),
-      index: GlobalConst.utils.v3FarmSortBy.tvl,
-      width: 0.2,
-      justify: 'flex-start',
-    },
-    {
-      text: t('rewards'),
-      index: GlobalConst.utils.v3FarmSortBy.rewards,
-      width: 0.3,
-      justify: 'flex-start',
-    },
-    {
-      text: t('apr'),
-      index: GlobalConst.utils.v3FarmSortBy.apr,
-      width: 0.2,
-      justify: 'flex-start',
-    },
-  ];
+  const currency0Id =
+    parsedQuery && parsedQuery.currency0
+      ? parsedQuery.currency0.toString()
+      : undefined;
+  const currency1Id =
+    parsedQuery && parsedQuery.currency1
+      ? parsedQuery.currency1.toString()
+      : undefined;
+  const currency0 = useCurrency(currency0Id);
+  const currency1 = useCurrency(currency1Id);
 
-  const sortByDesktopItems = sortColumns.map((item) => {
-    return {
-      ...item,
-      onClick: () => {
-        if (sortBy === item.index) {
-          setSortDesc(!sortDesc);
-        } else {
-          setSortBy(item.index);
-          setSortDesc(false);
-        }
-      },
-    };
-  });
+  const currencySelected = !!currency0 && !!currency1;
 
   return (
-    <Box className='bg-palette' borderRadius={10}>
-      <Box pt={2} px={2} className='flex flex-wrap justify-between'>
-        <CustomSelector
-          height={36}
-          items={v3FarmCategories}
-          selectedItem={selectedFarmCategory}
-          handleChange={onChangeFarmCategory}
-        />
-        <Box
-          className='flex items-center flex-wrap'
-          width={isMobile ? '100%' : 'auto'}
-        >
-          {selectedFarmCategory.id !== 0 && (
-            <Box mt={isMobile ? 2 : 0} width={isMobile ? '100%' : 160}>
-              <CustomSwitch width='100%' height={40} items={farmStatusItems} />
-            </Box>
-          )}
-          <Box
-            mt={isMobile ? 2 : 0}
-            ml={isMobile ? 0 : 2}
-            width={isMobile ? '100%' : 200}
-          >
-            <SearchInput
-              placeholder='Search'
-              value={searchValue}
-              setValue={setSearchValue}
-              isIconAfter
+    <>
+      <Box className='bg-palette' borderRadius={10}>
+        {!currencySelected && (
+          <Box pt={2} px={2} className='flex flex-wrap justify-between'>
+            <CustomSelector
+              height={36}
+              items={v3FarmCategories}
+              selectedItem={selectedFarmCategory}
+              handleChange={onChangeFarmCategory}
             />
-          </Box>
-        </Box>
-      </Box>
-
-      {selectedFarmCategory.id !== 0 && (
-        <>
-          <Box mt={2} pl='12px' className='bg-secondary1'>
-            <CustomTabSwitch
-              items={farmFilters}
-              value={farmFilter}
-              handleTabChange={setFarmFilter}
-              height={50}
-            />
-          </Box>
-          {!isMobile && (
-            <Box mt={2} px={3.5}>
-              <Box width='90%'>
-                <SortColumns
-                  sortColumns={sortByDesktopItems}
-                  selectedSort={sortBy}
-                  sortDesc={sortDesc}
+            <Box
+              className='flex items-center flex-wrap'
+              width={isMobile ? '100%' : 'auto'}
+              gridGap='16px'
+            >
+              <Box width={isMobile ? '100%' : 200}>
+                <SearchInput
+                  placeholder='Search'
+                  value={searchValue}
+                  setValue={setSearchValue}
+                  isIconAfter
                 />
               </Box>
+              {selectedFarmCategory.id !== 0 && (
+                <Box width={isMobile ? '100%' : 160}>
+                  <CustomSwitch
+                    width='100%'
+                    height={40}
+                    items={farmStatusItems}
+                  />
+                </Box>
+              )}
             </Box>
-          )}
-        </>
-      )}
+          </Box>
+        )}
 
-      {selectedFarmCategory?.id === 0 && (
-        <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
-      )}
-      {selectedFarmCategory?.id === 1 && (
-        <EternalFarmsPage
-          farmFilter={farmFilter}
-          search={searchValue}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-          chainId={chainIdToUse}
-        />
-      )}
-      {selectedFarmCategory?.id === 2 && (
-        <GammaFarmsPage
-          farmFilter={farmFilter}
-          search={searchValue}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-        />
-      )}
-      {selectedFarmCategory?.id === 3 && (
-        <UnipilotFarmsPage
-          farmFilter={farmFilter}
-          search={searchValue}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-        />
-      )}
-      {selectedFarmCategory?.id === 4 && (
-        <SteerFarmsPage
-          farmFilter={farmFilter}
-          search={searchValue}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-        />
-      )}
-    </Box>
+        {selectedFarmCategory?.id === 0 && (
+          <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
+        )}
+        {selectedFarmCategory.id === 1 && (
+          <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
+        )}
+      </Box>
+    </>
   );
 }

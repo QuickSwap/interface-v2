@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Result,
   useMultipleContractMultipleData,
@@ -6,40 +6,45 @@ import {
   useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useActiveWeb3React } from 'hooks';
 import {
   useUNIV3NFTPositionManagerContract,
   useMasterChefContracts,
   useV3NFTPositionManagerContract,
+  useDefiEdgeMiniChefContracts,
 } from 'hooks/useContract';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import {
+  getAllDefiedgeStrategies,
   getAllGammaPairs,
   getContract,
-  getUnipilotPositions,
-  getUnipilotUserFarms,
+  getTokenFromAddress,
 } from 'utils';
 import { useQuery } from '@tanstack/react-query';
 import { Interface, formatUnits } from 'ethers/lib/utils';
+import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
-import { useLastTransactionHash } from 'state/transactions/hooks';
 import { getConfig } from 'config/index';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 import { useSteerStakedPools, useSteerVaults } from './useSteerData';
 import { Token } from '@uniswap/sdk-core';
+import { UnipilotVaults } from 'constants/index';
+import { useUnipilotFarms } from './useUnipilotFarms';
 import { useTokenBalances } from 'state/wallet/v3/hooks';
 import {
-  useICHIVaultUserBalance,
   useICHIVaultUserBalances,
   useICHIVaults,
   useICHIVaultsUserAmounts,
 } from 'hooks/useICHIData';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { toV3Token } from 'constants/v3/addresses';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -592,30 +597,123 @@ export function useGammaPositionsCount(
   return { loading: lpBalancesLoading || stakedLoading, count };
 }
 
-export function useUnipilotPositions(
+export function useUnipilotPositionsCount(
   account: string | null | undefined,
   chainId: ChainId | undefined,
 ) {
   const { library } = useActiveWeb3React();
-  const lastTxHash = useLastTransactionHash();
+  const vaultIds = chainId ? UnipilotVaults[chainId] ?? [] : [];
   const config = getConfig(chainId);
   const unipilotAvailable = config['unipilot']['available'];
-
-  const fetchUnipilotPositions = async () => {
-    if (!account || !chainId || !unipilotAvailable) return null;
-    const userPositions = await getUnipilotPositions(account, chainId);
-    const positionsOnFarm = await getUnipilotUserFarms(chainId, account);
-    const unipilotPositions = await Promise.all(
-      (userPositions ?? []).map(async (item: any) => {
-        const farmPosition = (positionsOnFarm ?? []).find(
-          (position: any) =>
-            position.stakingAddress.toLowerCase() ===
-            item.vault.id.toLowerCase(),
+  const vaultBalanceCalls = useMultipleContractSingleData(
+    vaultIds,
+    new Interface(UNIPILOT_VAULT_ABI),
+    'balanceOf',
+    [account ?? undefined],
+  );
+  const vaultBalanceLoading = vaultBalanceCalls.find((call) => call.loading);
+  const { loading: loadingFarms, data: uniPilotFarmsData } = useUnipilotFarms(
+    chainId,
+  );
+  const uniPilotFarms = uniPilotFarmsData ?? [];
+  const fetchUnipilotPositionCounts = async () => {
+    if (!account || !chainId || !unipilotAvailable) return 0;
+    const vaultCounts = await Promise.all(
+      vaultIds.map(async (vault, ind) => {
+        const unipilotFarm = uniPilotFarms.find(
+          (farm: any) =>
+            farm.stakingAddress.toLowerCase() === vault.toLowerCase(),
         );
-        if (farmPosition && library) {
+        const vaultBalanceCallData = vaultBalanceCalls[ind];
+        const lpBalance =
+          !vaultBalanceCallData.loading && vaultBalanceCallData.result
+            ? JSBI.BigInt(vaultBalanceCallData.result)
+            : JSBI.BigInt(0);
+        if (unipilotFarm && library) {
           const farmContract = getContract(
-            farmPosition.id,
-            farmPosition.isDualReward
+            unipilotFarm.id,
+            unipilotFarm.isDualReward
+              ? UNIPILOT_DUAL_REWARD_ABI
+              : UNIPILOT_SINGLE_REWARD_ABI,
+            library,
+          );
+          const stakedAmount = await farmContract.balanceOf(account ?? '');
+          return JSBI.add(JSBI.BigInt(stakedAmount), lpBalance);
+        }
+        return lpBalance;
+      }),
+    );
+
+    return vaultCounts.filter((count) =>
+      JSBI.greaterThan(count, JSBI.BigInt(0)),
+    ).length;
+  };
+
+  const { isLoading: positionCountLoading, data } = useQuery({
+    queryKey: [
+      'fetchUnipilotPositionsCount',
+      account,
+      chainId,
+      uniPilotFarms.map((farm: any) => farm.id).join('_'),
+    ],
+    queryFn: fetchUnipilotPositionCounts,
+    refetchInterval: 300000,
+  });
+
+  return {
+    loading: vaultBalanceLoading || loadingFarms || positionCountLoading,
+    count: data ?? 0,
+  };
+}
+
+export interface UnipilotPosition {
+  id: string;
+  balance: JSBI;
+  lpBalance: JSBI;
+  strategyId: number;
+  token0: Token | undefined;
+  token1: Token | undefined;
+  farming: boolean;
+  token0Balance?: JSBI;
+  token1Balance?: JSBI;
+}
+
+export function useUnipilotPositions(
+  account: string | null | undefined,
+  chainId: ChainId | undefined,
+): { loading: boolean; unipilotPositions: UnipilotPosition[] } {
+  const { library } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const unipilotAvailable = config['unipilot']['available'];
+  const vaultIds = chainId ? UnipilotVaults[chainId] ?? [] : [];
+  const { loading: loadingFarms, data: uniPilotFarmsData } = useUnipilotFarms(
+    chainId,
+  );
+  const uniPilotFarms = uniPilotFarmsData ?? [];
+  const vaultBalanceCalls = useMultipleContractSingleData(
+    vaultIds,
+    new Interface(UNIPILOT_VAULT_ABI),
+    'balanceOf',
+    [account ?? undefined],
+  );
+
+  const fetchUnipilotVaultsWithBalance = async () => {
+    if (!account || !chainId || !unipilotAvailable) return null;
+    const unipilotVaultsWithBalance = await Promise.all(
+      vaultIds.map(async (vault, ind) => {
+        const unipilotFarm = uniPilotFarms.find(
+          (farm: any) =>
+            farm.stakingAddress.toLowerCase() === vault.toLowerCase(),
+        );
+        const vaultBalanceCallData = vaultBalanceCalls[ind];
+        const lpBalance =
+          !vaultBalanceCallData.loading && vaultBalanceCallData.result
+            ? JSBI.BigInt(vaultBalanceCallData.result)
+            : JSBI.BigInt(0);
+        if (unipilotFarm && library) {
+          const farmContract = getContract(
+            unipilotFarm.id,
+            unipilotFarm.isDualReward
               ? UNIPILOT_DUAL_REWARD_ABI
               : UNIPILOT_SINGLE_REWARD_ABI,
             library,
@@ -623,60 +721,200 @@ export function useUnipilotPositions(
           const stakedAmount = await farmContract.balanceOf(account ?? '');
           if (Number(stakedAmount) > 0) {
             return {
-              ...item,
-              balance: JSBI.add(
-                JSBI.BigInt(stakedAmount),
-                JSBI.BigInt(item.balance),
-              ).toString(),
-              lpBalance: JSBI.BigInt(item.balance),
+              id: vault,
+              balance: JSBI.add(JSBI.BigInt(stakedAmount), lpBalance),
+              lpBalance,
               farming: true,
             };
           }
           return {
-            ...item,
-            lpBalance: JSBI.BigInt(item.balance),
+            id: vault,
+            balance: lpBalance,
+            lpBalance,
             farming: false,
           };
         }
-        return { ...item, farming: false };
+        return { id: vault, balance: lpBalance, lpBalance, farming: false };
       }),
     );
 
-    return unipilotPositions.filter(
-      (position: any) => Number(position.balance) > 0,
+    return unipilotVaultsWithBalance.filter((position) =>
+      JSBI.greaterThan(position.balance, JSBI.BigInt(0)),
     );
   };
 
-  const {
-    isLoading: positionsLoading,
-    data: unipilotPositions,
-    refetch: refetchUnipilotPositions,
-  } = useQuery({
-    queryKey: ['fetchUnipilotPositions', account, chainId],
-    queryFn: fetchUnipilotPositions,
+  const { isLoading, data: unipilotVaultsWithBalance } = useQuery({
+    queryKey: [
+      'fetchUnipilotVaultsWithBalance',
+      account,
+      chainId,
+      uniPilotFarms.map((farm: any) => farm.id).join('_'),
+    ],
+    queryFn: fetchUnipilotVaultsWithBalance,
+    refetchInterval: 300000,
   });
 
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+  const vaultIdsWithBalance =
+    unipilotVaultsWithBalance?.map((vault) => vault.id) ?? [];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
+  const vaultSymbolCalls = useMultipleContractSingleData(
+    vaultIdsWithBalance,
+    new Interface(UNIPILOT_VAULT_ABI),
+    'symbol',
+  );
 
-  useEffect(() => {
-    refetchUnipilotPositions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, lastTxHash]);
+  const vaultInfoCalls = useMultipleContractSingleData(
+    vaultIdsWithBalance,
+    new Interface(UNIPILOT_VAULT_ABI),
+    'getVaultInfo',
+  );
+
+  const loading =
+    loadingFarms ||
+    isLoading ||
+    !!vaultSymbolCalls.find((call) => call.loading) ||
+    !!vaultInfoCalls.find((call) => call.loading);
+
+  const tokenMap = useSelectedTokenList();
+
+  const unipilotPositions = useMemo(() => {
+    if (!unipilotVaultsWithBalance) return [];
+    return unipilotVaultsWithBalance.map((vault, ind) => {
+      const vaultSymbolCall = vaultSymbolCalls[ind];
+      const vaultInfoCall = vaultInfoCalls[ind];
+      const vaultSymbol =
+        !vaultSymbolCall.loading && vaultSymbolCall.result
+          ? vaultSymbolCall.result[0]
+          : undefined;
+      const vaultInfoResult =
+        !vaultInfoCall.loading &&
+        vaultInfoCall.result &&
+        vaultInfoCall.result.length > 0
+          ? vaultInfoCall.result
+          : undefined;
+      const token0Id = vaultInfoResult ? vaultInfoResult[0] : undefined;
+      const token1Id = vaultInfoResult ? vaultInfoResult[1] : undefined;
+      const token0 =
+        token0Id && chainId
+          ? getTokenFromAddress(token0Id, chainId, tokenMap, [])
+          : undefined;
+      const token1 =
+        token1Id && chainId
+          ? getTokenFromAddress(token1Id, chainId, tokenMap, [])
+          : undefined;
+      const vaultSymbolData = vaultSymbol ? vaultSymbol.split('-') : [];
+      const strategyId = Number(vaultSymbolData[vaultSymbolData.length - 1]);
+      return {
+        ...vault,
+        strategyId,
+        token0: token0 ? toV3Token(token0) : undefined,
+        token1: token1 ? toV3Token(token1) : undefined,
+      };
+    });
+  }, [
+    chainId,
+    tokenMap,
+    unipilotVaultsWithBalance,
+    vaultInfoCalls,
+    vaultSymbolCalls,
+  ]);
 
   return {
-    loading: positionsLoading,
+    loading,
     unipilotPositions,
   };
 }
 
+export function useDefiedgePositions(
+  account: string | null | undefined,
+  chainId: ChainId | undefined,
+) {
+  const allDefidegeStrategies = getAllDefiedgeStrategies(chainId);
+
+  const lpBalancesData = useMultipleContractSingleData(
+    allDefidegeStrategies.map((strategy) => strategy.id),
+    new Interface(DEFIEDGE_STRATEGY_ABI),
+    'balanceOf',
+    [account ?? undefined],
+  );
+
+  const miniChefAddresses = allDefidegeStrategies
+    .filter((strategy) => !!strategy.miniChefAddress)
+    .map((strategy) => (strategy.miniChefAddress ?? '').toLowerCase())
+    .filter((address, ind, self) => self.indexOf(address) === ind);
+  const miniChefContracts = useDefiEdgeMiniChefContracts(miniChefAddresses);
+
+  const stakedAmountData = useMultipleContractMultipleData(
+    account ? miniChefContracts : [],
+    'userInfo',
+    account
+      ? miniChefAddresses.map((address) =>
+          allDefidegeStrategies
+            .filter(
+              (item) =>
+                (item.miniChefAddress ?? '').toLowerCase() ===
+                address.toLowerCase(),
+            )
+            .map((item) => [item.pid, account]),
+        )
+      : [],
+  );
+
+  const stakedAmounts = miniChefAddresses
+    .map((address, ind) => {
+      const filteredStrategies = allDefidegeStrategies.filter(
+        (pair) =>
+          pair.miniChefAddress &&
+          pair.miniChefAddress.toLowerCase() === address.toLowerCase(),
+      );
+      const callStates = stakedAmountData[ind];
+      return callStates.map((callData, index) => {
+        const amount =
+          !callData.loading && callData.result && callData.result.length > 0
+            ? Number(formatUnits(callData.result[0], 18))
+            : 0;
+        const strategy =
+          filteredStrategies.length > index
+            ? filteredStrategies[index]
+            : undefined;
+        return {
+          amount,
+          id: strategy?.id,
+        };
+      });
+    })
+    .flat();
+
+  const lpBalances = lpBalancesData.map((callData) => {
+    const amount =
+      !callData.loading && callData.result && callData.result.length > 0
+        ? Number(formatUnits(callData.result[0], 18))
+        : 0;
+    return amount;
+  });
+
+  const lpBalancesLoading = !!lpBalancesData.find(
+    (callState) => !!callState.loading,
+  );
+
+  const positions = allDefidegeStrategies
+    .map((strategy, i) => {
+      const lpAmount = lpBalances[i];
+      const stakedAmount = stakedAmounts.find(
+        (item) =>
+          item.id && item.id?.toLowerCase() === strategy.id.toLowerCase(),
+      )?.amount;
+
+      return {
+        ...strategy,
+        share: (stakedAmount ?? 0) + lpAmount,
+        lpAmount,
+      };
+    })
+    .filter((strategy) => strategy.share > 0);
+
+  return { loading: lpBalancesLoading, count: positions.length, positions };
+}
 export const useV3SteerPositionsCount = () => {
   const { chainId, account } = useActiveWeb3React();
   const { loading, data: vaults } = useSteerVaults(chainId);
