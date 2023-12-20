@@ -80,5 +80,8 @@
   },
   "dappos": {
     "available": true
+  },
+  "ichi": {
+    "available": false
   }
 }

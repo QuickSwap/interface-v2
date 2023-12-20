@@ -35,6 +35,8 @@ const FarmPage: React.FC = () => {
   const farmAvailable = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
+  const ichiEnabled = config['ichi']['available'];
+  const showVersion = (v2 && v3) || (v2 && ichiEnabled) || (v3 && ichiEnabled);
   const { isV2, updateIsV2 } = useIsV2();
 
   const lpFarms = useDefaultFarmList();

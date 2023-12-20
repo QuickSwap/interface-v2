@@ -38,6 +38,11 @@ import { Token } from '@uniswap/sdk-core';
 import { UnipilotVaults } from 'constants/index';
 import { useUnipilotFarms } from './useUnipilotFarms';
 import { useTokenBalances } from 'state/wallet/v3/hooks';
+import {
+  useICHIVaultUserBalances,
+  useICHIVaults,
+  useICHIVaultsUserAmounts,
+} from 'hooks/useICHIData';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { toV3Token } from 'constants/v3/addresses';
 
@@ -966,4 +971,62 @@ export const useV3SteerPositions = () => {
       Number(vaultBalance?.toExact() ?? 0) + (steerFarm?.stakedAmount ?? 0) > 0
     );
   });
+};
+
+export const useICHIPositionsCount = () => {
+  const { loading: loadingVaults, data: vaults } = useICHIVaults();
+  const {
+    isLoading: loadingBalances,
+    data: vaultBalances,
+  } = useICHIVaultUserBalances(vaults);
+  const count = vaultBalances
+    ? vaultBalances.filter(({ balance }) => balance > 0).length
+    : 0;
+  return { loading: loadingVaults || loadingBalances, count };
+};
+
+export const useICHIPositions = () => {
+  const { loading: loadingVaults, data: vaults } = useICHIVaults();
+  const {
+    isLoading: loadingBalances,
+    data: vaultBalances,
+  } = useICHIVaultUserBalances(vaults);
+  const {
+    isLoading: loadingUserAmounts,
+    data: userAmounts,
+  } = useICHIVaultsUserAmounts(vaults);
+  const positions = vaults
+    .map((vault) => {
+      const balanceItem = vaultBalances?.find(
+        (item) => item.address.toLowerCase() === vault.address.toLowerCase(),
+      );
+      const userAmount = userAmounts?.find(
+        (item) => item.address.toLowerCase() === vault.address.toLowerCase(),
+      )?.amounts;
+      return {
+        ...vault,
+        balance: balanceItem?.balance,
+        balanceBN: balanceItem?.balanceBN,
+        token0Balance: userAmount
+          ? userAmount[0]
+            ? Number(userAmount[0])
+            : userAmount.amount0
+            ? Number(userAmount.amount0)
+            : 0
+          : 0,
+        token1Balance: userAmount
+          ? userAmount[1]
+            ? Number(userAmount[1])
+            : userAmount.amount1
+            ? Number(userAmount.amount1)
+            : 0
+          : 0,
+      };
+    }, [])
+    .filter((item) => item.balance && item.balance > 0);
+
+  return {
+    loading: loadingVaults || loadingBalances || loadingUserAmounts,
+    positions,
+  };
 };

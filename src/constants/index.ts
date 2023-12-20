@@ -202,6 +202,7 @@ export const GlobalConst = {
       gamma: '2',
       steer: '3',
       defiedge: '4',
+      ichi: '5',
     },
   },
   analyticChart: {
@@ -1588,6 +1589,24 @@ export const UnipilotVaults: {
     '0xd139300ff6bdd6ae778b1835af5dbf242194cc2f',
     '0xf346f3eaa3e319f53413fc2a0008f0710c2ea448',
     '0xf9edf35c75f624207bf81242024d9ea6a4f4d245',
+  ],
+};
+
+export const IchiVaults: {
+  [chainId in ChainId]?: string[];
+} = {
+  [ChainId.MATIC]: [
+    '0x74b706767f18a360c0083854ab42c1b96e076229',
+    '0xCBD1f4Bc3E6d05b10fEb5dc454d27364767e76B5',
+    '0x5D73D117Ffb8AD26e6CC9f2621d52f479AAA8C5B',
+    '0xc46FAb3Af8aA7A56feDa351a22B56749dA313473',
+    '0x5403e11D5Edf6564C27b47757d62A515a81D9781',
+    '0x5D1b077212b624fe580a84384Ffea44da752ccb3',
+    '0xe8Aa60c966eE8BE1340aBf1d871D0163d5739B95',
+    '0x425D80e10A8103bedb57F5C08FF8d59253D6a259',
+    '0x318047C9584cFD77C6dfc28d3df8BD0d8a29E095',
+    '0xb2B34446D9cFb6719543ef5246481F218367b43a',
+    '0x891F0c3159aCf7306c0c252757310db8F47B59B2',
   ],
 };
 
