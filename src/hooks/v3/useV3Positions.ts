@@ -13,12 +13,18 @@ import {
   useUNIV3NFTPositionManagerContract,
   useMasterChefContracts,
   useV3NFTPositionManagerContract,
+  useDefiEdgeMiniChefContracts,
 } from 'hooks/useContract';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
 import { ChainId, JSBI } from '@uniswap/sdk';
-import { getAllGammaPairs, getContract, getTokenFromAddress } from 'utils';
+import {
+  getAllDefiedgeStrategies,
+  getAllGammaPairs,
+  getContract,
+  getTokenFromAddress,
+} from 'utils';
 import { useQuery } from '@tanstack/react-query';
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
@@ -26,6 +32,7 @@ import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.js
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import { getConfig } from 'config/index';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 import { useSteerStakedPools, useSteerVaults } from './useSteerData';
 import { Token } from '@uniswap/sdk-core';
 import { UnipilotVaults } from 'constants/index';
@@ -813,6 +820,96 @@ export function useUnipilotPositions(
   };
 }
 
+export function useDefiedgePositions(
+  account: string | null | undefined,
+  chainId: ChainId | undefined,
+) {
+  const allDefidegeStrategies = getAllDefiedgeStrategies(chainId);
+
+  const lpBalancesData = useMultipleContractSingleData(
+    allDefidegeStrategies.map((strategy) => strategy.id),
+    new Interface(DEFIEDGE_STRATEGY_ABI),
+    'balanceOf',
+    [account ?? undefined],
+  );
+
+  const miniChefAddresses = allDefidegeStrategies
+    .filter((strategy) => !!strategy.miniChefAddress)
+    .map((strategy) => (strategy.miniChefAddress ?? '').toLowerCase())
+    .filter((address, ind, self) => self.indexOf(address) === ind);
+  const miniChefContracts = useDefiEdgeMiniChefContracts(miniChefAddresses);
+
+  const stakedAmountData = useMultipleContractMultipleData(
+    account ? miniChefContracts : [],
+    'userInfo',
+    account
+      ? miniChefAddresses.map((address) =>
+          allDefidegeStrategies
+            .filter(
+              (item) =>
+                (item.miniChefAddress ?? '').toLowerCase() ===
+                address.toLowerCase(),
+            )
+            .map((item) => [item.pid, account]),
+        )
+      : [],
+  );
+
+  const stakedAmounts = miniChefAddresses
+    .map((address, ind) => {
+      const filteredStrategies = allDefidegeStrategies.filter(
+        (pair) =>
+          pair.miniChefAddress &&
+          pair.miniChefAddress.toLowerCase() === address.toLowerCase(),
+      );
+      const callStates = stakedAmountData[ind];
+      return callStates.map((callData, index) => {
+        const amount =
+          !callData.loading && callData.result && callData.result.length > 0
+            ? Number(formatUnits(callData.result[0], 18))
+            : 0;
+        const strategy =
+          filteredStrategies.length > index
+            ? filteredStrategies[index]
+            : undefined;
+        return {
+          amount,
+          id: strategy?.id,
+        };
+      });
+    })
+    .flat();
+
+  const lpBalances = lpBalancesData.map((callData) => {
+    const amount =
+      !callData.loading && callData.result && callData.result.length > 0
+        ? Number(formatUnits(callData.result[0], 18))
+        : 0;
+    return amount;
+  });
+
+  const lpBalancesLoading = !!lpBalancesData.find(
+    (callState) => !!callState.loading,
+  );
+
+  const positions = allDefidegeStrategies
+    .map((strategy, i) => {
+      const lpAmount = lpBalances[i];
+      const stakedAmount = stakedAmounts.find(
+        (item) =>
+          item.id && item.id?.toLowerCase() === strategy.id.toLowerCase(),
+      )?.amount;
+
+      return {
+        ...strategy,
+        share: (stakedAmount ?? 0) + lpAmount,
+        lpAmount,
+      };
+    })
+    .filter((strategy) => strategy.share > 0);
+
+  return { loading: lpBalancesLoading, count: positions.length, positions };
+}
 export const useV3SteerPositionsCount = () => {
   const { chainId, account } = useActiveWeb3React();
   const { loading, data: vaults } = useSteerVaults(chainId);
