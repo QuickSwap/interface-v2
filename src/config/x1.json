@@ -80,5 +80,11 @@
   },
   "bonds": {
     "available": false
+  },
+  "defiedge": {
+    "available": false
+  },
+  "ichi": {
+    "available": false
   }
 }

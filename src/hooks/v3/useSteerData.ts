@@ -110,7 +110,7 @@ export const useSteerVaults = (chainId: ChainId) => {
       }
       return vaults;
     }
-    return;
+    return [];
   };
 
   const { isLoading, data: vaults } = useQuery({

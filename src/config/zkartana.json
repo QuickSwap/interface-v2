@@ -83,5 +83,8 @@
   },
   "ichi": {
     "available": false
+  },
+  "defiedge": {
+    "available": false
   }
 }

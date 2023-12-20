@@ -72,6 +72,9 @@
   "unipilot": {
     "available": false
   },
+  "defiedge": {
+    "available": false
+  },
   "bonds": {
     "available": false
   },

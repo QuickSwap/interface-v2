@@ -13,10 +13,7 @@ import { Token } from '@uniswap/sdk';
 import { getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { SortColumns, ToggleSwitch } from 'components';
-import {
-  useEternalFarmsFiltered,
-  useGammaFarmsFiltered,
-} from 'hooks/v3/useV3Farms';
+import { useMerklFarms } from 'hooks/v3/useV3Farms';
 import {
   useUnipilotFarmData,
   useUnipilotFarms,
@@ -113,217 +110,102 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
     };
   });
 
-  const {
-    data: allEternalFarms,
-    isLoading: eternalFarmsLoading,
-  } = useEternalFarms();
-  const eternalFarmsByStatus = useMemo(() => {
-    if (!allEternalFarms) return [];
-    return allEternalFarms
-      .filter((farm) => {
-        if (farmStatus === 'active') {
-          return (
-            (Number(farm.reward) > 0 || Number(farm.bonusReward) > 0) &&
-            ((farm.rewardRate && Number(farm.rewardRate) > 0) ||
-              (farm.bonusRewardRate && Number(farm.bonusRewardRate) > 0))
-          );
-        }
-        return Number(farm.reward) === 0 && Number(farm.bonusReward) === 0;
-      })
-      .map((farm) => {
-        return {
-          ...farm,
-          rewardRate: farmStatus === 'ended' ? '0' : farm.rewardRate,
-          bonusRewardRate: farmStatus === 'ended' ? '0' : farm.bonusRewardRate,
-        };
-      });
-  }, [allEternalFarms, farmStatus]);
-  const {
-    loading: loadingQSFarms,
-    data: filteredEternalFarms,
-  } = useEternalFarmsFiltered(
-    eternalFarmsByStatus,
-    chainId,
-    searchValue,
-    farmFilter,
-  );
+  const { isLoading: loading, data: farmData } = useMerklFarms();
+  const farms = farmData ?? [];
 
-  const allGammaPairs = getAllGammaPairs(chainId).filter(
-    (item) => item.ableToFarm === (farmStatus === 'active'),
-  );
-  const {
-    loading: loadingGamma,
-    data: filteredGammaFarms,
-  } = useGammaFarmsFiltered(allGammaPairs, chainId, searchValue, farmFilter);
+  console.log('aaa', farms);
 
-  const {
-    data: unipilotFarmsArray,
-    loading: unipilotFarmsLoading,
-  } = useUnipilotFarms(chainId);
-  const unipilotFarms = useMemo(() => {
-    if (!unipilotFarmsArray) return [];
-    return unipilotFarmsArray;
-  }, [unipilotFarmsArray]);
-  const farmAddresses = unipilotFarms.map((farm: any) => farm.id);
-  const {
-    loading: unipilotFarmDataLoading,
-    data: unipilotFarmData,
-  } = useUnipilotFarmData(farmAddresses, chainId);
-  const filteredUnipilotFarms = useUnipilotFilteredFarms(
-    unipilotFarms,
-    unipilotFarmData,
-    farmFilter,
-    searchValue,
-  );
+  // const v3Farms = farms
+  //   .map((item: any) => {
+  //     const tvl = item.farms.reduce((total, farm) => total + farm.tvl, 0);
+  //     const rewardsUSD = item.farms.reduce(
+  //       (total, farm) => total + farm.rewardUSD,
+  //       0,
+  //     );
+  //     const apr = item.farms.reduce(
+  //       (value, farm) => Math.max(value, farm.farmAPR + farm.poolAPR),
+  //       0,
+  //     );
+  //     const title = (item.token0.symbol ?? '') + (item.token1.symbol ?? '');
+  //     return { ...item, tvl, rewardsUSD, apr, title };
+  //   })
+  //   .sort((farm1, farm2) => {
+  //     if (sortBy === GlobalConst.utils.v3FarmSortBy.pool) {
+  //       return farm1.title > farm2.title ? sortMultiplier : -1 * sortMultiplier;
+  //     }
+  //     if (sortBy === GlobalConst.utils.v3FarmSortBy.tvl) {
+  //       return farm1.tvl > farm2.tvl ? sortMultiplier : -1 * sortMultiplier;
+  //     }
+  //     if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
+  //       return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
+  //     }
+  //     if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
+  //       return farm1.rewardsUSD > farm2.rewardsUSD
+  //         ? sortMultiplier
+  //         : -1 * sortMultiplier;
+  //     }
+  //     return 1;
+  //   });
 
-  const {
-    data: steerFarmsArray,
-    loading: steerFarmsLoading,
-  } = useSteerStakingPools(chainId, farmStatus);
-  const steerFarms = useMemo(() => {
-    if (!steerFarmsArray) return [];
-    return steerFarmsArray;
-  }, [steerFarmsArray]);
-  const filteredSteerFarms = useSteerFilteredFarms(
-    steerFarms ?? [],
-    chainId,
-    searchValue,
-    farmFilter,
-  );
+  // const parsedQuery = useParsedQueryString();
+  // const currency0Id =
+  //   parsedQuery && parsedQuery.currency0
+  //     ? parsedQuery.currency0.toString()
+  //     : undefined;
+  // const currency1Id =
+  //   parsedQuery && parsedQuery.currency1
+  //     ? parsedQuery.currency1.toString()
+  //     : undefined;
+  // const currency0 = useCurrency(currency0Id);
+  // const currency1 = useCurrency(currency1Id);
 
-  const loading =
-    eternalFarmsLoading ||
-    loadingQSFarms ||
-    loadingGamma ||
-    unipilotFarmsLoading ||
-    unipilotFarmDataLoading ||
-    steerFarmsLoading;
+  // const currencySelected = !!currency0 && !!currency1;
 
-  const v3Farms = filteredEternalFarms
-    .concat(filteredGammaFarms)
-    .concat(filteredUnipilotFarms)
-    .concat(filteredSteerFarms)
-    .reduce(
-      (memo: { token0: Token; token1: Token; farms: V3Farm[] }[], farm) => {
-        if (farm.token0 && farm.token1) {
-          const token0Address = farm.token0?.address ?? '';
-          const token1Address = farm.token1?.address ?? '';
-          const farmIndex = memo.findIndex(
-            (item) =>
-              ((item.token0?.address ?? '').toLowerCase() ===
-                token0Address.toLowerCase() &&
-                (item.token1?.address ?? '').toLowerCase() ===
-                  token1Address.toLowerCase()) ||
-              ((item.token0?.address ?? '').toLowerCase() ===
-                token1Address.toLowerCase() &&
-                (item.token1?.address ?? '').toLowerCase() ===
-                  token0Address.toLowerCase()),
-          );
-          if (farmIndex > -1) {
-            memo[farmIndex].farms.push(farm);
-          } else {
-            memo.push({
-              token0: farm.token0,
-              token1: farm.token1,
-              farms: [farm],
-            });
-          }
-        }
+  // const selectedFarms = useMemo(() => {
+  //   return (
+  //     v3Farms.find(
+  //       (item) =>
+  //         currency0 &&
+  //         currency1 &&
+  //         ((item.token0.address.toLowerCase() ===
+  //           currency0.wrapped.address.toLowerCase() &&
+  //           item.token1.address.toLowerCase() ===
+  //             currency1.wrapped.address.toLowerCase()) ||
+  //           (item.token1.address.toLowerCase() ===
+  //             currency0.wrapped.address.toLowerCase() &&
+  //             item.token0.address.toLowerCase() ===
+  //               currency1.wrapped.address.toLowerCase())),
+  //     )?.farms ?? []
+  //   );
+  // }, [currency0, currency1, v3Farms]);
 
-        return memo;
-      },
-      [],
-    )
-    .map((item) => {
-      const tvl = item.farms.reduce((total, farm) => total + farm.tvl, 0);
-      const rewardsUSD = item.farms.reduce(
-        (total, farm) => total + farm.rewardUSD,
-        0,
-      );
-      const apr = item.farms.reduce(
-        (value, farm) => Math.max(value, farm.farmAPR + farm.poolAPR),
-        0,
-      );
-      const title = (item.token0.symbol ?? '') + (item.token1.symbol ?? '');
-      return { ...item, tvl, rewardsUSD, apr, title };
-    })
-    .sort((farm1, farm2) => {
-      if (sortBy === GlobalConst.utils.v3FarmSortBy.pool) {
-        return farm1.title > farm2.title ? sortMultiplier : -1 * sortMultiplier;
-      }
-      if (sortBy === GlobalConst.utils.v3FarmSortBy.tvl) {
-        return farm1.tvl > farm2.tvl ? sortMultiplier : -1 * sortMultiplier;
-      }
-      if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
-        return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
-      }
-      if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
-        return farm1.rewardsUSD > farm2.rewardsUSD
-          ? sortMultiplier
-          : -1 * sortMultiplier;
-      }
-      return 1;
-    });
+  // const farmTypes = useMemo(() => {
+  //   const mTypes = selectedFarms.reduce((memo: string[], item) => {
+  //     if (item.title && !memo.includes(item.title)) {
+  //       memo.push(item.title);
+  //     }
+  //     return memo;
+  //   }, []);
 
-  const parsedQuery = useParsedQueryString();
-  const currency0Id =
-    parsedQuery && parsedQuery.currency0
-      ? parsedQuery.currency0.toString()
-      : undefined;
-  const currency1Id =
-    parsedQuery && parsedQuery.currency1
-      ? parsedQuery.currency1.toString()
-      : undefined;
-  const currency0 = useCurrency(currency0Id);
-  const currency1 = useCurrency(currency1Id);
+  //   return [
+  //     {
+  //       text: t('all'),
+  //       id: 0,
+  //       link: 'all',
+  //     },
+  //   ].concat(
+  //     mTypes.map((item, ind) => {
+  //       return { text: item.toUpperCase(), id: ind + 1, link: item };
+  //     }),
+  //   );
+  // }, [selectedFarms, t]);
 
-  const currencySelected = !!currency0 && !!currency1;
-
-  const selectedFarms = useMemo(() => {
-    return (
-      v3Farms.find(
-        (item) =>
-          currency0 &&
-          currency1 &&
-          ((item.token0.address.toLowerCase() ===
-            currency0.wrapped.address.toLowerCase() &&
-            item.token1.address.toLowerCase() ===
-              currency1.wrapped.address.toLowerCase()) ||
-            (item.token1.address.toLowerCase() ===
-              currency0.wrapped.address.toLowerCase() &&
-              item.token0.address.toLowerCase() ===
-                currency1.wrapped.address.toLowerCase())),
-      )?.farms ?? []
-    );
-  }, [currency0, currency1, v3Farms]);
-
-  const farmTypes = useMemo(() => {
-    const mTypes = selectedFarms.reduce((memo: string[], item) => {
-      if (item.title && !memo.includes(item.title)) {
-        memo.push(item.title);
-      }
-      return memo;
-    }, []);
-
-    return [
-      {
-        text: t('all'),
-        id: 0,
-        link: 'all',
-      },
-    ].concat(
-      mTypes.map((item, ind) => {
-        return { text: item.toUpperCase(), id: ind + 1, link: item };
-      }),
-    );
-  }, [selectedFarms, t]);
-
-  const [farmType, setFarmType] = useState(farmTypes[0]);
+  const [farmType, setFarmType] = useState();
   const [staked, setStaked] = useState(false);
 
   return (
     <Box pt={2}>
-      {currencySelected ? (
+      {/* {currencySelected ? (
         <Box className='flex justify-between items-center' px={2} mb={2}>
           <Box className='flex'>
             {selectedFarms.length > 1 && (
@@ -385,7 +267,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
                 </Box>
               ))}
         </Box>
-      )}
+      )} */}
     </Box>
   );
 };

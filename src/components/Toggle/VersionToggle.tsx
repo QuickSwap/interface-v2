@@ -17,6 +17,7 @@ const VersionToggle: React.FC = () => {
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
+  const isPoolPage = history.location.pathname.includes('/pools');
   const analyticsVersion = useAnalyticsVersion();
   const version =
     params && params.version
@@ -70,7 +71,7 @@ const VersionToggle: React.FC = () => {
         <small>{t('V3')}</small>
       </Box>
 
-      {!isAnalyticsPage && singleTokenEnabled && (
+      {isPoolPage && singleTokenEnabled && (
         <Box
           className={version === 'singleToken' ? 'version-toggle-active' : ''}
           onClick={() => {
