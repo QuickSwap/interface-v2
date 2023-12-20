@@ -114,6 +114,8 @@ const EMPTY_LIST: DualFarmInfoAddressMap = {
   [ChainId.MANTA]: {},
   [ChainId.KAVA]: {},
   [ChainId.ZKATANA]: {},
+  [ChainId.BTTC]: {},
+  [ChainId.X1]: {},
 };
 
 const dualFarmCache: WeakMap<DualFarmListInfo, DualFarmInfoAddressMap> | null =

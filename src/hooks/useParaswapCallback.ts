@@ -178,7 +178,7 @@ export function useParaswapCallback(
         } catch (e) {
           console.log(e);
           throw new Error(
-            'For rebase or taxed tokens, try market V2 instead of best trade.',
+            'For rebase or taxed tokens, try market V2 instead of best trade. Ensure that you are using the correct slippage.',
           );
         }
 

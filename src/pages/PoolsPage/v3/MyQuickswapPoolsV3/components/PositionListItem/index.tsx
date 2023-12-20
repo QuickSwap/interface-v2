@@ -51,7 +51,9 @@ export function getPriceOrderingFromPositionForUI(
   const token0 = position.amount0.currency;
   const token1 = position.amount1.currency;
 
-  const USDC_TOKEN = toToken(USDC[chainIdToUse]);
+  const USDC_TOKEN = USDC[chainIdToUse]
+    ? toToken(USDC[chainIdToUse])
+    : undefined;
   const USDT_TOKEN = USDT[chainIdToUse]
     ? toToken(USDT[chainIdToUse])
     : undefined;

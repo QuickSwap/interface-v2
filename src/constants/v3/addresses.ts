@@ -27,6 +27,8 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.MANTA]: [WETH[ChainId.MANTA]],
   [ChainId.KAVA]: [WETH[ChainId.KAVA]],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA]],
+  [ChainId.BTTC]: [WETH[ChainId.BTTC]],
+  [ChainId.X1]: [WETH[ChainId.X1]],
 };
 
 export const toV2Token = (t: {
@@ -74,6 +76,7 @@ export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
   [ChainId.ZKEVM]: '0x6a1d2eca13222E7ffDDfdf1Df701D41D3E4cC0BE',
   [ChainId.MANTA]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.ZKATANA]: '0xF6Ad3CcF71Abb3E12beCf6b3D2a74C963859ADCd',
+  [ChainId.X1]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
 };
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
@@ -101,6 +104,7 @@ export const UNIV3_QUOTER_ADDRESSES: AddressMap = {
   [ChainId.ZKEVM]: '0xB18FB423Fb241CE0DE345d74904f97D60792FFd8',
   [ChainId.MANTA]: '0x3005827fB92A0cb7D0f65738D6D645d98A4Ad96b',
   [ChainId.ZKATANA]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
+  [ChainId.X1]: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
 };
 
 export const SWAP_ROUTER_ADDRESSES: AddressMap = {
@@ -125,12 +129,14 @@ export const UNI_V3_FACTORY_ADDRESS: AddressMap = {
   [ChainId.ZKEVM]: '0xD9a2AD9E927Bd7014116CC5c7328f028D4318178',
   [ChainId.MANTA]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
   [ChainId.ZKATANA]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
+  [ChainId.X1]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
 };
 
 export const UNI_NFT_POSITION_MANAGER_ADDRESS: AddressMap = {
   [ChainId.ZKEVM]: '0x331F3a300b7115A45ba31E3428AC002267BB6D77',
   [ChainId.MANTA]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
   [ChainId.ZKATANA]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
+  [ChainId.X1]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
 };
 
 export const UNI_SWAP_ROUTER: AddressMap = {
@@ -138,6 +144,7 @@ export const UNI_SWAP_ROUTER: AddressMap = {
   [ChainId.ZKEVM]: '0x1E7E4c855520b2106320952A570a3e5E3E618101',
   [ChainId.MANTA]: '0xfdE3eaC61C5Ad5Ed617eB1451cc7C3a0AC197564',
   [ChainId.ZKATANA]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+  [ChainId.X1]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
 };
 
 export const GAMMA_UNIPROXY_ADDRESSES: AddressMap = {
@@ -165,6 +172,7 @@ export const MULTICALL_ADDRESS: AddressMap = {
   [ChainId.ZKEVM]: '0x61530d6E1c7A47BBB3e48e8b8EdF7569DcFeE121',
   [ChainId.MANTA]: '0x1FD671daC06DF1431E79d772037E93bdB2dfeb48',
   [ChainId.ZKATANA]: '0x61211321E272584d6686F79bb205082C4cDa5d5F',
+  [ChainId.X1]: '0x4857Dfd11c712e862eC362cEee29F7974B70EfcD',
 };
 
 export const V3_MIGRATOR_ADDRESSES: AddressMap = {
@@ -355,6 +363,7 @@ export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
     'WETH',
     'Wrapped ETHER',
   ),
+  [ChainId.X1]: toV3Token(WETH[ChainId.X1]),
 };
 
 export const USDC: { [chainId: number]: Token } = {
@@ -396,6 +405,13 @@ export const USDC: { [chainId: number]: Token } = {
   [ChainId.ZKATANA]: new Token(
     ChainId.ZKATANA,
     '0xE5a02c2Be08406c3fB36F9Aa29bF7C7A09CAe50B',
+    6,
+    'USDC',
+    'USD Coin',
+  ),
+  [ChainId.X1]: new Token(
+    ChainId.X1,
+    '0xcd65196488b2e2fbcbc3e5d675b3108f4935e64a',
     6,
     'USDC',
     'USD Coin',
@@ -1102,6 +1118,11 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(WBTC[ChainId.MANTA]),
     toV3Token(MATIC[ChainId.MANTA]),
   ],
+  [ChainId.ZKATANA]: [
+    WMATIC_EXTENDED[ChainId.ZKATANA],
+    toV3Token(USDC[ChainId.ZKATANA]),
+  ],
+  [ChainId.X1]: [WMATIC_EXTENDED[ChainId.X1], toV3Token(USDC[ChainId.X1])],
 };
 
 export const SUGGESTED_BASES: {
@@ -1144,6 +1165,7 @@ export const SUGGESTED_BASES: {
     MATIC[ChainId.MANTA],
   ],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
+  [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
 };
 
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
@@ -1215,6 +1237,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     WMATIC_EXTENDED[ChainId.ZKATANA],
     toV3Token(USDC[ChainId.ZKATANA]),
   ],
+  [ChainId.X1]: [WMATIC_EXTENDED[ChainId.X1], toV3Token(USDC[ChainId.X1])],
 };
 
 export const V2_PINNED_PAIRS: {
