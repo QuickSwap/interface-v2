@@ -95,12 +95,13 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   };
 
   const showBetaBanner = false;
+  const displayNewsletter = false;
 
   return (
     <Box className='page'>
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
-      <NewsletterSignupPanel />
+      {displayNewsletter && <NewsletterSignupPanel />}
       <Header
         onUpdateNewsletter={(val) => {
           setHeaderClass(val ? '' : 'pageWrapper-no-max-no-news');

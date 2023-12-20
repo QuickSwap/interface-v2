@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
-import { Box, Button, CircularProgress, Grid } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  useMediaQuery,
+} from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import QUICKLogo from 'assets/images/quickLogo.png';
 import 'components/styles/Footer.scss';
-import { useHistory } from 'react-router-dom';
+
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
 const Footer: React.FC = () => {
   const history = useHistory();
+  const { pathname } = useLocation();
   const copyrightYear = new Date().getFullYear();
   const { t } = useTranslation();
+  const theme = useTheme();
+  const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
 
   const socialMenuItems = [
     {
@@ -115,9 +126,25 @@ const Footer: React.FC = () => {
             ))}
           </Grid>
         </Grid>
-        <Box className='copyrightWrapper'>
-          <small className='text-secondary'>© {copyrightYear} QuickSwap.</small>
-          <small className='text-secondary'>{t('termsofuse')}</small>
+        <Box
+          className={`copyrightWrapper ${
+            tabletWindowSize ? 'copyright-mobile' : ''
+          }`}
+        >
+          <small className='text-secondary'>© {copyrightYear} QuickSwap</small>
+          <small className='text-secondary'>
+            <a
+              className='footer-link'
+              href='https://docs.google.com/document/d/1Gglh43oxUZHdgrS2L9lZfsI4f6HYNF6MbBDsDPJVFkM/edit'
+              target='_blank'
+              rel='noreferrer'
+            >
+              {t('termsofuse')}
+            </a>
+          </small>
+          {!tabletWindowSize && pathname === '/' && (
+            <Box className='fake-community-container'>&nbsp;</Box>
+          )}
         </Box>
       </Box>
     </Box>

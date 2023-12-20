@@ -1797,7 +1797,7 @@ export const GlobalData = {
     [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
     [ChainId.TIMX]: [],
     [ChainId.BTTC]: [],
-    [ChainId.X1]: [],
+    [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
   },
   stablePairs: {
     [ChainId.MATIC]: [

@@ -423,6 +423,13 @@ export const USDC: { [chainId: number]: Token } = {
     'USDC',
     'USD Coin',
   ),
+  [ChainId.X1]: new Token(
+    ChainId.X1,
+    '0xcd65196488b2e2fbcbc3e5d675b3108f4935e64a',
+    6,
+    'USDC',
+    'USD Coin',
+  ),
 };
 
 export const USDCE: { [chainId: number]: Token } = {
@@ -1125,6 +1132,11 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(WBTC[ChainId.MANTA]),
     toV3Token(MATIC[ChainId.MANTA]),
   ],
+  [ChainId.ZKATANA]: [
+    WMATIC_EXTENDED[ChainId.ZKATANA],
+    toV3Token(USDC[ChainId.ZKATANA]),
+  ],
+  [ChainId.X1]: [WMATIC_EXTENDED[ChainId.X1], toV3Token(USDC[ChainId.X1])],
 };
 
 export const SUGGESTED_BASES: {
@@ -1167,6 +1179,7 @@ export const SUGGESTED_BASES: {
     MATIC[ChainId.MANTA],
   ],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
+  [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
 };
 
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
@@ -1238,6 +1251,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     WMATIC_EXTENDED[ChainId.ZKATANA],
     toV3Token(USDC[ChainId.ZKATANA]),
   ],
+  [ChainId.X1]: [WMATIC_EXTENDED[ChainId.X1], toV3Token(USDC[ChainId.X1])],
 };
 
 export const V2_PINNED_PAIRS: {
