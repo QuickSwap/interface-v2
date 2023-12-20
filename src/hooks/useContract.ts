@@ -39,10 +39,12 @@ import {
   NEW_LAIR_ADDRESS,
   QUICK_CONVERSION,
   DL_QUICK_ADDRESS,
+  ZAP_ADDRESS,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
   UNIV3_QUOTER_ADDRESSES,
   STEER_PERIPHERY,
   STEER_VAULT_REGISTRY,
+  PRICE_GETTER_ADDRESS,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
@@ -59,6 +61,10 @@ import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.js
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 import DEFIEDGE_MINICHEF_ABI from 'constants/abis/defiedge-minichef.json';
+import PRICE_GETTER_ABI from 'constants/abis/price-getter.json';
+import BOND_ABI from 'constants/abis/bond.json';
+import BOND_NFT_ABI from 'constants/abis/bondNFT.json';
+import ZAP_ABI from 'constants/abis/zap.json';
 import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
 import STEER_DUAL_STAKING_ABI from 'constants/abis/steer-staking-dual.json';
 import SteerPeripheryABI from 'constants/abis/steer-periphery.json';
@@ -422,6 +428,35 @@ export function useUnipilotFarmingContract(
     withSignerIfPossible,
   );
   return isDual ? dualContract : singleContract;
+}
+
+export function usePriceGetterContract(withSignerIfPossible?: boolean) {
+  return useContract(
+    PRICE_GETTER_ADDRESS,
+    PRICE_GETTER_ABI,
+    withSignerIfPossible,
+  );
+}
+
+export const useBondContract = (address: string) => {
+  return useContract(address, BOND_ABI);
+};
+
+export const useBondContracts = (addresses: string[]) => {
+  return useContracts(addresses, BOND_ABI);
+};
+
+export const useBondNFTContract = (address: string) => {
+  return useContract(address, BOND_NFT_ABI);
+};
+
+export function useZapContract(withSignerIfPossible?: boolean) {
+  const { chainId } = useActiveWeb3React();
+  return useContract(
+    chainId ? ZAP_ADDRESS[chainId] : undefined,
+    ZAP_ABI,
+    withSignerIfPossible,
+  );
 }
 
 export function useSteerPeripheryContract(withSignerIfPossible?: boolean) {

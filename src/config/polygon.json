@@ -75,6 +75,9 @@
   "defiedge": {
     "available": true
   },
+  "bonds": {
+    "available": true
+  },
   "steer": {
     "available": true
   },

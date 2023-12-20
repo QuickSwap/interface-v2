@@ -10,7 +10,7 @@ import {
 } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 
 // To compute dragon's lair
 import { useNewLairInfo } from 'state/stake/hooks';

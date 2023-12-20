@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useTheme } from '@material-ui/core/styles';
@@ -8,8 +8,9 @@ import { LineChart } from 'components';
 import { Token } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 const SwapTokenDetailsHorizontal: React.FC<{
   token: Token;
@@ -21,6 +22,8 @@ const SwapTokenDetailsHorizontal: React.FC<{
   const { palette } = useTheme();
   const config = getConfig(chainId);
   const v2 = config['v2'];
+
+  const { t } = useTranslation();
 
   const fetchTokenInterval = async () => {
     let tokenPriceDataV3;
@@ -88,39 +91,17 @@ const SwapTokenDetailsHorizontal: React.FC<{
     return null;
   };
 
-  const {
-    isLoading: loadingPriceData,
-    data: priceData,
-    refetch: refetchPriceData,
-  } = useQuery({
+  const { isLoading: loadingPriceData, data: priceData } = useQuery({
     queryKey: ['fetchTokenIntervalData', tokenAddress, chainId],
     queryFn: fetchTokenInterval,
+    refetchInterval: 300000,
   });
 
-  const {
-    isLoading: loadingTokenData,
-    data: tokenData,
-    refetch: refetchTokenData,
-  } = useQuery({
+  const { isLoading: loadingTokenData, data: tokenData } = useQuery({
     queryKey: ['fetchTokenDataSwap', tokenAddress, chainId],
     queryFn: fetchTokenData,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchPriceData();
-    refetchTokenData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const priceUp = Number(tokenData?.priceChangeUSD) > 0;
   const priceUpPercent = Number(tokenData?.priceChangeUSD).toFixed(2);
@@ -169,6 +150,26 @@ const SwapTokenDetailsHorizontal: React.FC<{
               ) : (
                 <></>
               )}
+            </Box>
+          </Grid>
+
+          {/* Token Address */}
+          <Grid item xs={12}>
+            <Box className='flex items-center' py={1}>
+              <Box pr={1}>{t('address')}:</Box>
+              <a
+                href={`${config.blockExplorer}/token/${tokenAddress}`}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='no-decoration'
+              >
+                <Box className='text-primary'>
+                  {shortenAddress(tokenAddress)}
+                </Box>
+              </a>
+              <Box className='flex' ml='5px'>
+                <CopyHelper toCopy={tokenAddress} />
+              </Box>
             </Box>
           </Grid>
         </>

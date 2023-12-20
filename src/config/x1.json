@@ -1,0 +1,84 @@
+{
+  "v3": true,
+  "v2": false,
+  "rpc": "https://testrpc.x1.tech",
+  "blockExplorer": "https://www.oklink.com/x1-test",
+  "networkName": "X1 Testnet",
+  "aprAPINetwork": "x1",
+  "chainId": 195,
+  "isMainnet": true,
+  "nativeCurrencyImage": "/OKB.png",
+  "nativeCurrency": {
+    "name": "OKB",
+    "symbol": "OKB",
+    "decimals": 18
+  },
+  "swap": {
+    "available": true,
+    "bestTrade": false,
+    "proMode": false,
+    "limitOrder": false,
+    "liquidityHub": false,
+    "crossChain": false
+  },
+  "pools": {
+    "available": true
+  },
+  "farm": {
+    "available": false
+  },
+  "qsFarm": {
+    "available": false
+  },
+  "lair": {
+    "available": false,
+    "oldLair": false,
+    "newLair": false,
+    "syrup": false
+  },
+  "convert": {
+    "available": false
+  },
+  "predictions": {
+    "available": false
+  },
+  "analytics": {
+    "available": false
+  },
+  "lending": {
+    "available": false
+  },
+  "migrate": {
+    "available": false
+  },
+  "gamingHub": {
+    "available": false
+  },
+  "leaderboard": {
+    "available": false
+  },
+  "safe": {
+    "available": false
+  },
+  "perps": {
+    "available": false
+  },
+  "bos": {
+    "available": false
+  },
+  "gamma": {
+    "available": false
+  },
+  "unipilot": {
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  }
+}

@@ -1,5 +1,5 @@
 import { getAddress } from '@ethersproject/address';
-import { Contract } from '@ethersproject/contracts';
+import { Contract, ContractReceipt } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
@@ -18,9 +18,10 @@ import {
 import {
   CurrencyAmount as CurrencyAmountV3,
   Currency as CurrencyV3,
+  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
-import { formatUnits } from 'ethers/lib/utils';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import {
   GammaPair,
@@ -39,23 +40,41 @@ import {
   StakingInfo,
   SyrupBasic,
   SyrupInfo,
-} from 'types';
+  DualStakingBasic,
+  StakingBasic,
+} from 'types/index';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
-import { DualStakingBasic, StakingBasic } from 'types';
 import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
-import { DLQUICK, EMPTY, OLD_QUICK } from 'constants/v3/addresses';
-import { getConfig } from 'config';
+import {
+  DLQUICK,
+  EMPTY,
+  NATIVE_TOKEN_ADDRESS,
+  OLD_QUICK,
+} from 'constants/v3/addresses';
+import { getConfig } from 'config/index';
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
 import { Connector } from '@web3-react/types';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
 import { SteerVault } from 'hooks/v3/useSteerData';
+import { LiquidityDex } from '@ape.swap/apeswap-lists';
+import { DEX } from '@soulsolidity/soulzap-v1';
+import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
+
+export function toNativeCurrency(chainId: ChainId | undefined) {
+  if (!chainId) return;
+  return {
+    ...ETHER[chainId],
+    isNative: true,
+    isToken: false,
+  } as NativeCurrency;
+}
 
 export function formatCompact(
   unformatted: number | string | BigNumber | BigNumberish | undefined | null,
@@ -454,11 +473,12 @@ export function formatNumber(
 }
 
 export function getTokenFromAddress(
-  tokenAddress: string,
-  chainId: ChainId,
+  tokenAddress: string | undefined,
+  chainId: ChainId | undefined,
   tokenMap: TokenAddressMap,
   tokens: Token[],
 ) {
+  if (!tokenAddress || !chainId) return;
   const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
@@ -482,10 +502,11 @@ export function getTokenFromAddress(
 }
 
 export function getV3TokenFromAddress(
-  tokenAddress: string,
+  tokenAddress: string | undefined,
   chainId: ChainId,
   tokenMap: TokenAddressMapV3,
 ) {
+  if (!tokenAddress) return;
   const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
@@ -957,96 +978,6 @@ export const getEternalFarmFromTokens = async (
   }
 };
 
-const gammaChainName = (chainId?: ChainId) => {
-  switch (chainId) {
-    case ChainId.ZKEVM:
-      return 'polygon-zkevm';
-    default:
-      return 'polygon';
-  }
-};
-
-export const getGammaData = async (chainId?: ChainId) => {
-  if (!chainId) return null;
-  try {
-    const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
-        chainId,
-      )}/hypervisors/allData`,
-    );
-    const gammaData = await data.json();
-    return gammaData;
-  } catch {
-    try {
-      const data = await fetch(
-        `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
-        }/quickswap/${gammaChainName(chainId)}/hypervisors/allData`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-};
-
-export const getGammaPositions = async (
-  account?: string,
-  chainId?: ChainId,
-) => {
-  if (!account || !chainId) return null;
-  try {
-    const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
-        chainId,
-      )}/user/${account}`,
-    );
-    const positions = await data.json();
-    return positions[account.toLowerCase()];
-  } catch {
-    try {
-      const data = await fetch(
-        `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
-        }/quickswap/${gammaChainName(chainId)}/user/${account}`,
-      );
-      const positions = await data.json();
-      return positions[account.toLowerCase()];
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-};
-
-export const getGammaRewards = async (chainId?: ChainId) => {
-  if (!chainId) return null;
-  try {
-    const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
-        chainId,
-      )}/allRewards2`,
-    );
-    const gammaData = await data.json();
-    return gammaData;
-  } catch {
-    try {
-      const data = await fetch(
-        `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
-        }/quickswap/${gammaChainName(chainId)}/allRewards2`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-};
-
 export const getUnipilotPositions = async (
   account?: string,
   chainId?: ChainId,
@@ -1185,6 +1116,38 @@ export const getAllDefiedgeStrategies = (chainId?: ChainId) => {
   return [];
 };
 
+export enum LiquidityProtocol {
+  Both = 1,
+  V2 = 2,
+  V3 = 3,
+  Algebra = 4,
+  Gamma = 5,
+}
+
+export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
+  if (dex === 'Algebra') {
+    if (isLP) {
+      return LiquidityProtocol.Gamma;
+    }
+    return LiquidityProtocol.Algebra;
+  }
+  return LiquidityProtocol.V2;
+};
+
+export const convertToTokenValue = (
+  numberString: string,
+  decimals: number,
+): BigNumber => {
+  const num = Number(numberString);
+  if (isNaN(num)) {
+    console.error('Error: numberString to parse is not a number');
+    return parseUnits('0', decimals);
+  }
+
+  const tokenValue = parseUnits(num.toFixed(decimals), decimals);
+  return tokenValue;
+};
+
 export const calculatePositionWidth = (
   currentTick: number,
   upperTick: number,
@@ -1258,4 +1221,67 @@ export const getSteerRatio = (tokenType: number, steerVault: SteerVault) => {
 export const getSteerDexName = (chainId?: ChainId) => {
   if (chainId === ChainId.MANTA) return 'quickswapv3';
   return 'quickswap';
+};
+
+export const searchForBillId = (
+  resp: ContractReceipt,
+  billNftAddress: string,
+  setBondId?: (id: string) => void,
+) => {
+  const { logs } = resp;
+  const findBillNftLog = logs.find(
+    (log: any) => log.address.toLowerCase() === billNftAddress.toLowerCase(),
+  );
+  if (findBillNftLog) {
+    const getBillNftIndex =
+      findBillNftLog.topics[findBillNftLog.topics.length - 1];
+    const convertHexId = parseInt(getBillNftIndex, 16);
+    if (setBondId) {
+      setBondId(convertHexId.toString());
+    }
+  }
+};
+
+export const getLiquidityDEX = (liquidityDEX?: LiquidityDex) => {
+  if (liquidityDEX === LiquidityDex.QuickswapV2) return DEX.QUICKSWAP;
+  if (liquidityDEX === LiquidityDex.ApeSwapV2) return DEX.APEBOND;
+};
+
+export const getCurrencyInfo = ({
+  currencyA,
+  currencyB,
+  pair,
+}: {
+  currencyA: WrappedTokenInfo | null;
+  currencyB?: WrappedTokenInfo | null;
+  pair?: Pair | null;
+}): { address: string; decimals: number; chainId: ChainId } => {
+  if (currencyB) {
+    const {
+      liquidityToken: { address, decimals, chainId } = {
+        address: '',
+        decimals: 18,
+        chainId: ChainId.MATIC,
+      },
+    } = pair || {};
+    return { address, decimals, chainId };
+  } else if (currencyA?.isNative) {
+    return {
+      address: NATIVE_TOKEN_ADDRESS,
+      decimals: currencyA.decimals,
+      chainId: currencyA.chainId,
+    };
+  }
+  const {
+    tokenInfo: { address, decimals, chainId } = {
+      address: '',
+      decimals: 18,
+      chainId: 0,
+    },
+  } = currencyA || {};
+  return {
+    address: address ? address : (currencyA?.address as string),
+    decimals,
+    chainId: !!chainId ? chainId : (currencyA?.chainId as ChainId),
+  };
 };

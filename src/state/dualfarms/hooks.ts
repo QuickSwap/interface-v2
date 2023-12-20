@@ -2,7 +2,11 @@ import { ChainId } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-import { DualFarmListInfo, DualStakingRaw, DualStakingBasic } from 'types';
+import {
+  DualFarmListInfo,
+  DualStakingRaw,
+  DualStakingBasic,
+} from 'types/index';
 import { Token } from '@uniswap/sdk';
 import { getTokenFromAddress } from 'utils';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
@@ -110,6 +114,8 @@ const EMPTY_LIST: DualFarmInfoAddressMap = {
   [ChainId.MANTA]: {},
   [ChainId.KAVA]: {},
   [ChainId.ZKATANA]: {},
+  [ChainId.BTTC]: {},
+  [ChainId.X1]: {},
 };
 
 const dualFarmCache: WeakMap<DualFarmListInfo, DualFarmInfoAddressMap> | null =

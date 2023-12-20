@@ -2,7 +2,7 @@ import { ChainId } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'state';
-import { FarmListInfo, StakingRaw, StakingBasic } from 'types';
+import { FarmListInfo, StakingRaw, StakingBasic } from 'types/index';
 import { Token } from '@uniswap/sdk';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
 import { getTokenFromAddress } from 'utils';
@@ -94,6 +94,8 @@ const EMPTY_LIST: StakingInfoAddressMap = {
   [ChainId.MANTA]: {},
   [ChainId.KAVA]: {},
   [ChainId.ZKATANA]: {},
+  [ChainId.BTTC]: {},
+  [ChainId.X1]: {},
 };
 
 const farmCache: WeakMap<FarmListInfo, StakingInfoAddressMap> | null =

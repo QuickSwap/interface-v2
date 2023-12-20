@@ -6,7 +6,7 @@ import resolveENSContentHash from 'utils/resolveENSContentHash';
 import { useActiveWeb3React } from 'hooks';
 import { fetchDualFarmList } from 'state/dualfarms/actions';
 import getDualFarmList from 'utils/getDualFarmList';
-import { DualFarmListInfo } from 'types';
+import { DualFarmListInfo } from 'types/index';
 
 export function useFetchDualFarmListCallback(): (
   listUrl: string,
