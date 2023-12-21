@@ -254,7 +254,7 @@ export function halfAmountSpend(
       return CurrencyAmount.ether(JSBI.BigInt(0), chainId);
     }
   }
-  return CurrencyAmount.ether(halfAmount, chainId);
+  return new TokenAmount(currencyAmount.currency as Token, halfAmount);
 }
 
 export function isTokensOnList(
