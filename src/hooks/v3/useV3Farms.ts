@@ -1,6 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChainId } from '@uniswap/sdk';
-import { GammaPair, GlobalConst, GlobalData } from 'constants/index';
+import {
+  DefiedgeStrategies,
+  GammaPair,
+  GlobalConst,
+  GlobalData,
+  IchiVaults,
+} from 'constants/index';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import {
   useGammaHypervisorContract,
@@ -8,7 +14,7 @@ import {
 } from 'hooks/useContract';
 import { useMemo } from 'react';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { getTokenFromAddress } from 'utils';
+import { getAllGammaPairs, getTokenFromAddress } from 'utils';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
@@ -16,28 +22,129 @@ import { formatUnits } from 'ethers/lib/utils';
 import { V3Farm } from 'pages/FarmPage/V3/Farms';
 import { useGammaData, useGammaRewards } from './useGammaData';
 import { useActiveWeb3React } from 'hooks';
+import { useSteerVaults } from './useSteerData';
+import { useICHIVaultAPRs, useICHIVaults } from 'hooks/useICHIData';
 
 export const useMerklFarms = () => {
   const { chainId } = useActiveWeb3React();
   const fetchMerklFarms = async () => {
     const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
-    if (!merklAPIURL || !chainId) return null;
+    if (!merklAPIURL || !chainId) return [];
     const res = await fetch(
       `${merklAPIURL}?chainIds[]=${chainId}&AMMs[]=quickswapalgebra`,
     );
     const data = await res.json();
-    const farms =
+    const farmData =
       data && data[chainId.toString()]
-        ? data[chainId.toString()]?.pools ?? undefined
+        ? data[chainId.toString()]?.pools
         : undefined;
-    if (!farms) return [];
-    return Object.values(farms);
+    if (!farmData) return [];
+    return Object.values(farmData) as any[];
   };
-  return useQuery({
+  const { isLoading: loadingMerkl, data: merklFarms } = useQuery({
     queryKey: ['fetchMerklFarms', chainId],
     queryFn: fetchMerklFarms,
     refetchInterval: 300000,
   });
+  const { loading: loadingSteer, data: steerVaults } = useSteerVaults(chainId);
+  const { isLoading: loadingGamma, data: gammaData } = useGammaData();
+  const { loading: loadingICHI, data: ichiVaults } = useICHIVaults();
+  const ichiVaultsFiltered = useMemo(() => {
+    if (!merklFarms) return [];
+    return ichiVaults.filter(
+      (vault) =>
+        !!merklFarms.find(
+          (item) =>
+            !!Object.values(item.alm).find(
+              (alm: any) =>
+                alm.label.includes('Ichi') &&
+                vault.address.toLowerCase() === alm.almAddress.toLowerCase(),
+            ),
+        ),
+    );
+  }, [ichiVaults, merklFarms]);
+  const ichiTokenAddresses = ichiVaultsFiltered.reduce(
+    (memo: string[], vault) => {
+      if (vault.token0 && !memo.includes(vault.token0.address.toLowerCase())) {
+        memo.push(vault.token0.address.toLowerCase());
+      }
+      if (vault.token1 && !memo.includes(vault.token1.address.toLowerCase())) {
+        memo.push(vault.token1.address.toLowerCase());
+      }
+      return memo;
+    },
+    [],
+  );
+  const {
+    loading: loadingUSDPrices,
+    prices: usdPrices,
+  } = useUSDCPricesFromAddresses(ichiTokenAddresses);
+  const { isLoading: loadingICHIAPRs, aprs: ichiAPRs } = useICHIVaultAPRs(
+    ichiVaultsFiltered,
+    usdPrices,
+  );
+  const farms = useMemo(() => {
+    if (!merklFarms) return [];
+    return merklFarms.map((item: any) => {
+      const alms = Object.values(item.alm)
+        .filter((alm: any) => {
+          if (alm.label.includes('Gamma')) {
+            return getAllGammaPairs(chainId).find(
+              (item) =>
+                item.address.toLowerCase() === alm.almAddress.toLowerCase(),
+            );
+          } else if (alm.label.includes('Steer')) {
+            return steerVaults.find(
+              (vault) =>
+                vault.address.toLowerCase() === alm.almAddress.toLowerCase(),
+            );
+          } else if (alm.label.includes('Ichi')) {
+            return IchiVaults[chainId]?.find(
+              (address) =>
+                address.toLowerCase() === alm.almAddress.toLowerCase(),
+            );
+          } else if (alm.label.includes('DefiEdge')) {
+            return DefiedgeStrategies[chainId]?.find(
+              (item) => item.id.toLowerCase() === alm.almAddress.toLowerCase(),
+            );
+          }
+          return false;
+        })
+        .map((alm: any) => {
+          let poolAPR = 0;
+          if (alm.label.includes('Gamma')) {
+            const gammaItemData = gammaData
+              ? gammaData[alm.almAddress.toLowerCase()]
+              : undefined;
+            poolAPR = (gammaItemData?.returns?.allTime?.feeApr ?? 0) * 100;
+          } else if (alm.label.includes('Steer')) {
+            const steerVault = steerVaults.find(
+              (vault) =>
+                vault.address.toLowerCase() === alm.almAddress.toLowerCase(),
+            );
+            poolAPR = steerVault?.apr ?? 0;
+          } else if (alm.label.includes('Ichi')) {
+            poolAPR =
+              ichiAPRs?.find(
+                (item) =>
+                  item.address.toLowerCase() === alm.almAddress.toLowerCase(),
+              )?.apr ?? 0;
+          }
+          return { ...alm, poolAPR };
+        });
+      return { ...item, alm: alms };
+    });
+  }, [chainId, gammaData, ichiAPRs, merklFarms, steerVaults]);
+  return {
+    loading:
+      loadingMerkl ||
+      loadingGamma ||
+      loadingSteer ||
+      loadingICHI ||
+      loadingICHIAPRs ||
+      loadingUSDPrices,
+    farms,
+  };
 };
 
 export const useGammaFarmsFiltered = (

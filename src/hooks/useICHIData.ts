@@ -97,14 +97,14 @@ const fetchVaultAPR = async (
           const apr = tvlUSD > 0 ? (avgFee24hUSD * 365) / tvlUSD : 0;
           return apr;
         } catch (e) {
-          console.log('Err in fetching ICHI Vault total amount', e);
+          console.log('Err in fetching ICHI Vault APR', e);
           return 0;
         }
       }
     }
     return 0;
   } catch (e) {
-    console.log('Err in fetching ICHI fees', e);
+    console.log('Err in fetching ICHI APR', e);
     return 0;
   }
 };
@@ -132,6 +132,36 @@ export const useICHIVaultAPR = (
     enabled: !!provider && !!usdPrices,
   });
   return { isLoading, apr };
+};
+
+export const useICHIVaultAPRs = (
+  vaults: ICHIVault[],
+  usdPrices?: {
+    address: string;
+    price: any;
+  }[],
+) => {
+  const { provider, chainId } = useActiveWeb3React();
+  const { isLoading, data: aprs } = useQuery({
+    queryKey: [
+      'ichi-vault-aprs',
+      vaults.map((vault) => vault.address),
+      usdPrices?.map((item) => item.price).join('_'),
+      chainId,
+    ],
+    queryFn: async () => {
+      if (!provider || !usdPrices) return null;
+      const aprs = await Promise.all(
+        vaults.map(async (vault) => {
+          const apr = await fetchVaultAPR(vault, provider, chainId, usdPrices);
+          return { address: vault.address, apr };
+        }),
+      );
+      return aprs;
+    },
+    enabled: !!provider && !!usdPrices,
+  });
+  return { isLoading, aprs };
 };
 
 export const useICHIVaults = () => {
