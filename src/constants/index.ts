@@ -132,6 +132,31 @@ export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
   [ChainId.ZKATANA]: 0,
 };
 
+export const MIN_NATIVE_CURRENCY_FOR_GAS: {
+  [chainId in ChainId]: JSBI;
+} = {
+  [ChainId.MATIC]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)), // .01 ETH
+  [ChainId.MUMBAI]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
+  [ChainId.DOEGCHAIN_TESTNET]: JSBI.exponentiate(
+    JSBI.BigInt(10),
+    JSBI.BigInt(16),
+  ),
+  [ChainId.DOGECHAIN]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
+  [ChainId.ZKEVM]: JSBI.multiply(
+    JSBI.BigInt(3),
+    JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
+  ),
+  [ChainId.ZKTESTNET]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.MANTA]: JSBI.multiply(
+    JSBI.BigInt(5),
+    JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  ),
+  [ChainId.KAVA]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
+  [ChainId.BTTC]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
+  [ChainId.X1]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
+  [ChainId.ZKATANA]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+};
+
 export const GlobalConst = {
   blacklists: {
     TOKEN_BLACKLIST: [
@@ -164,8 +189,6 @@ export const GlobalConst = {
     BIG_INT_ZERO: JSBI.BigInt(0),
     ONE_BIPS: new Percent(JSBI.BigInt(1), JSBI.BigInt(10000)), // one basis point
     BIPS_BASE: JSBI.BigInt(10000),
-    // used to ensure the user doesn't send so much ETH so they end up with <.01
-    MIN_ETH: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)), // .01 ETH
     BETTER_TRADE_LINK_THRESHOLD: new Percent(
       JSBI.BigInt(75),
       JSBI.BigInt(10000),
@@ -1027,7 +1050,6 @@ export const GammaPairs: {
         address: '0x8Bb9247c8eFf487F7A13AB7E704F50904e91430D',
         token0Address: '0x0c9c7712c83b3c70e7c5e11100d33d9401bdf9dd',
         token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-        ableToFarm: true,
         pid: 75,
       },
     ],
@@ -1156,7 +1178,6 @@ export const GammaPairs: {
         address: '0x5cdc18b774c6cd6f1398faf19d4bd4f31bc53c57',
         token0Address: '0x27842334c55c01ddfe81bf687425f906816c5141',
         token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-        ableToFarm: true,
         pid: 88,
       },
     ],

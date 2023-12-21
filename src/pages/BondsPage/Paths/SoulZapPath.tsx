@@ -20,7 +20,7 @@ import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import WarningModal from '../WarningModal';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useSoulZap } from 'state/application/hooks';
-import { getLiquidityDEX } from 'utils';
+import { getFixedValue, getLiquidityDEX } from 'utils';
 import DisplayValues from '../DisplayValues';
 import GetLPButton from '../GetLPButton';
 import { useTranslation } from 'react-i18next';
@@ -86,7 +86,7 @@ const SoulZapPath = ({
         inputCurrency,
         JSBI.BigInt(
           parseUnits(
-            Number(typedValue).toFixed(inputCurrency?.decimals),
+            getFixedValue(typedValue, inputCurrency?.decimals),
             inputCurrency?.decimals,
           ),
         ),

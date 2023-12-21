@@ -45,6 +45,7 @@ import {
   calculateGasMargin,
   useIsSupportedNetwork,
   formatTokenAmount,
+  halfAmountSpend,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
@@ -141,6 +142,16 @@ const AddLiquidity: React.FC<{
     };
   }, {});
 
+  const halfAmounts: { [field in Field]?: TokenAmount } = [
+    Field.CURRENCY_A,
+    Field.CURRENCY_B,
+  ].reduce((accumulator, field) => {
+    return {
+      ...accumulator,
+      [field]: halfAmountSpend(chainIdToUse, currencyBalances[field]),
+    };
+  }, {});
+
   const formattedAmounts = {
     [independentField]: typedValue,
     [dependentField]: noLiquidity
@@ -148,7 +159,6 @@ const AddLiquidity: React.FC<{
       : parsedAmounts[dependentField]?.toExact() ?? '',
   };
 
-  const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
   const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const [approvingA, setApprovingA] = useState(false);
@@ -463,11 +473,9 @@ const AddLiquidity: React.FC<{
           onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
         }
         onHalf={() => {
-          const maxAmount = maxAmounts[Field.CURRENCY_A];
-          if (maxAmount) {
-            onFieldAInput(
-              maxAmount.divide('2').toFixed(maxAmount.currency.decimals),
-            );
+          const halfAmount = halfAmounts[Field.CURRENCY_A];
+          if (halfAmount) {
+            onFieldAInput(halfAmount.toExact());
           }
         }}
         handleCurrencySelect={handleCurrencyASelect}
