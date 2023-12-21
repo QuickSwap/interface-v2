@@ -1143,6 +1143,16 @@ export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
   return LiquidityProtocol.V2;
 };
 
+export function getFixedValue(value: string, decimals?: number) {
+  const splitedValueArray = value.split('.');
+  let valueStr = value;
+  if (splitedValueArray.length > 1) {
+    const decimalStr = splitedValueArray[1].substring(0, decimals ?? 18);
+    valueStr = `${splitedValueArray[0]}.${decimalStr}`;
+  }
+  return valueStr;
+}
+
 export const convertToTokenValue = (
   numberString: string,
   decimals: number,
@@ -1153,7 +1163,10 @@ export const convertToTokenValue = (
     return parseUnits('0', decimals);
   }
 
-  const tokenValue = parseUnits(num.toFixed(decimals), decimals);
+  const tokenValue = parseUnits(
+    getFixedValue(numberString, decimals),
+    decimals,
+  );
   return tokenValue;
 };
 

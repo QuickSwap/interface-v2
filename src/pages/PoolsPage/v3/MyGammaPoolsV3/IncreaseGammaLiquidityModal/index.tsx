@@ -9,7 +9,12 @@ import {
 import { Box, Button } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
-import { calculateGasMargin, formatNumber, maxAmountSpend } from 'utils';
+import {
+  calculateGasMargin,
+  formatNumber,
+  getFixedValue,
+  maxAmountSpend,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   useTransactionAdder,
@@ -45,16 +50,17 @@ export default function IncreaseGammaLiquidityModal({
 
   const independentToken = isBaseInput ? position.token0 : position.token1;
   const dependentToken = isBaseInput ? position.token1 : position.token0;
-  const independentDeposit = isBaseInput
-    ? Number(deposit0).toFixed(position.token0.decimals)
-    : Number(deposit1).toFixed(position.token1.decimals);
+  const independentDeposit = isBaseInput ? deposit0 : deposit1;
   const depositAmountsData = useSingleCallResult(
     gammaUNIPROXYContract,
     'getDepositAmount',
     [
       position.pairAddress,
       independentToken.address,
-      parseUnits(independentDeposit, independentToken.decimals),
+      parseUnits(
+        getFixedValue(independentDeposit, independentToken.decimals),
+        independentToken.decimals,
+      ),
     ],
   );
 
@@ -108,10 +114,16 @@ export default function IncreaseGammaLiquidityModal({
     token1Balance ? token1Balance.numerator : JSBI.BigInt('0'),
   );
   const deposit0JSBI = JSBI.BigInt(
-    parseUnits(!deposit0 ? '0' : deposit0, position.token0.decimals),
+    parseUnits(
+      !deposit0 ? '0' : getFixedValue(deposit0, position.token0.decimals),
+      position.token0.decimals,
+    ),
   );
   const deposit1JSBI = JSBI.BigInt(
-    parseUnits(!deposit1 ? '0' : deposit1, position.token1.decimals),
+    parseUnits(
+      !deposit1 ? '0' : getFixedValue(deposit1, position.token1.decimals),
+      position.token1.decimals,
+    ),
   );
 
   const [wrappingETH, setWrappingETH] = useState(false);
