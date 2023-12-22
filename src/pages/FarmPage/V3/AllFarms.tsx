@@ -11,7 +11,7 @@ import V3FarmCard from './FarmCard';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import CustomSelector from 'components/v3/CustomSelector';
 import V3PairFarmCard from './PairFarmCard';
-import { getAllGammaPairs } from 'utils';
+import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import { useCurrency } from 'hooks/v3/Tokens';
@@ -133,6 +133,10 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       const rewardItems: any[] = (item?.distributionData ?? []).filter(
         (reward: any) => reward.isLive,
       );
+      const totalTVL = item.alm.reduce(
+        (total: number, alm: any) => total + alm.almTVL,
+        0,
+      );
       const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
         const usdPrice =
           rewardUSDPrices?.find(
@@ -150,14 +154,16 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
             : 0)
         );
       }, 0);
-      return { ...item, apr, title, dailyRewardUSD };
+      return { ...item, apr, title, totalTVL, dailyRewardUSD };
     })
     .sort((farm1, farm2) => {
       if (sortBy === GlobalConst.utils.v3FarmSortBy.pool) {
         return farm1.title > farm2.title ? sortMultiplier : -1 * sortMultiplier;
       }
       if (sortBy === GlobalConst.utils.v3FarmSortBy.tvl) {
-        return farm1.tvl > farm2.tvl ? sortMultiplier : -1 * sortMultiplier;
+        return farm1.totalTVL > farm2.totalTVL
+          ? sortMultiplier
+          : -1 * sortMultiplier;
       }
       if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
@@ -179,7 +185,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const currency0 = useCurrency(selectedPool?.token0);
   const currency1 = useCurrency(selectedPool?.token1);
 
-  const selectedDefiEdgeIds = (DefiedgeStrategies[chainId] ?? [])
+  const selectedDefiEdgeIds = getAllDefiedgeStrategies(chainId)
     .filter(
       (item) =>
         !!(selectedPool?.alm ?? []).find(

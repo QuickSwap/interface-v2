@@ -89,7 +89,7 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
             </p>
           </Box>
           <Box width='20%' className='flex'>
-            <p>${formatNumber(farm.tvl)}</p>
+            <p>${formatNumber(farm.totalTVL)}</p>
           </Box>
           <Box width='20%'>
             <small>{t('upTo')}</small>

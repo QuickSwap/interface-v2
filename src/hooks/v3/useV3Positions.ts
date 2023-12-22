@@ -915,6 +915,7 @@ export function useDefiedgePositions(
 
   return { loading: lpBalancesLoading, count: positions.length, positions };
 }
+
 export const useV3SteerPositionsCount = () => {
   const { chainId, account } = useActiveWeb3React();
   const { loading, data: vaults } = useSteerVaults(chainId);

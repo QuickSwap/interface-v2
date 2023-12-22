@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChainId } from '@uniswap/sdk';
 import {
-  DefiedgeStrategies,
   GammaPair,
   GlobalConst,
   GlobalData,
@@ -14,7 +13,11 @@ import {
 } from 'hooks/useContract';
 import { useMemo } from 'react';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { getAllGammaPairs, getTokenFromAddress } from 'utils';
+import {
+  getAllDefiedgeStrategies,
+  getAllGammaPairs,
+  getTokenFromAddress,
+} from 'utils';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
@@ -25,6 +28,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useSteerVaults } from './useSteerData';
 import { useICHIVaultAPRs, useICHIVaults } from 'hooks/useICHIData';
 import { useDefiEdgeStrategiesAPR } from 'state/mint/v3/hooks';
+import { useEternalFarmPoolAPRs } from 'hooks/useIncentiveSubgraph';
 
 export const useMerklFarms = () => {
   const { chainId } = useActiveWeb3React();
@@ -87,7 +91,7 @@ export const useMerklFarms = () => {
 
   const defiEdgeIdsFiltered = useMemo(() => {
     if (!merklFarms) return [];
-    return (DefiedgeStrategies[chainId] ?? [])
+    return getAllDefiedgeStrategies(chainId)
       .filter(
         (vault) =>
           !!merklFarms.find(
@@ -105,6 +109,10 @@ export const useMerklFarms = () => {
     isLoading: loadingDefiEdgeAPRs,
     data: defiedgeAprs,
   } = useDefiEdgeStrategiesAPR(defiEdgeIdsFiltered);
+  const {
+    data: eternalFarmPoolAprs,
+    isLoading: eternalFarmPoolAprsLoading,
+  } = useEternalFarmPoolAPRs();
 
   const farms = useMemo(() => {
     if (!merklFarms) return [];
@@ -127,12 +135,20 @@ export const useMerklFarms = () => {
                 address.toLowerCase() === alm.almAddress.toLowerCase(),
             );
           } else if (alm.label.includes('DefiEdge')) {
-            return DefiedgeStrategies[chainId]?.find(
+            return getAllDefiedgeStrategies(chainId).find(
               (item) => item.id.toLowerCase() === alm.almAddress.toLowerCase(),
             );
           }
           return false;
         })
+        .concat([
+          {
+            almAddress: item.pool,
+            almTVL: item.tvl,
+            almAPR: item.meanAPR,
+            label: 'QuickSwap',
+          },
+        ])
         .map((alm: any) => {
           let poolAPR = 0;
           if (alm.label.includes('Gamma')) {
@@ -158,12 +174,22 @@ export const useMerklFarms = () => {
                 e.strategy.address.toLowerCase() ===
                 alm.almAddress.toLowerCase(),
             )?.strategy?.fees_apr;
+          } else if (alm.label.includes('QuickSwap') && eternalFarmPoolAprs) {
+            poolAPR = eternalFarmPoolAprs[alm.almAddress.toLowerCase()];
           }
           return { ...alm, poolAPR };
         });
       return { ...item, alm: alms };
     });
-  }, [chainId, defiedgeAprs, gammaData, ichiAPRs, merklFarms, steerVaults]);
+  }, [
+    chainId,
+    defiedgeAprs,
+    eternalFarmPoolAprs,
+    gammaData,
+    ichiAPRs,
+    merklFarms,
+    steerVaults,
+  ]);
   return {
     loading:
       loadingMerkl ||
@@ -172,7 +198,8 @@ export const useMerklFarms = () => {
       loadingICHI ||
       loadingICHIAPRs ||
       loadingUSDPrices ||
-      loadingDefiEdgeAPRs,
+      loadingDefiEdgeAPRs ||
+      eternalFarmPoolAprsLoading,
     farms,
   };
 };

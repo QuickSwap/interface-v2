@@ -2,7 +2,10 @@ import { Box, Button, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { CurrencyLogo } from 'components';
 import { useICHIPosition } from 'hooks/useICHIData';
+import { useDefiEdgePosition } from 'hooks/v3/useDefiedgeStrategyData';
 import { useGammaPosition } from 'hooks/v3/useGammaData';
+import IncreaseDefiedgeLiquidityModal from 'pages/PoolsPage/v3/MyDefiedgePoolsV3/IncreaseDefiedgeLiquidityModal';
+import WithdrawDefiedgeLiquidityModal from 'pages/PoolsPage/v3/MyDefiedgePoolsV3/WithdrawDefiedgeLiquidityModal';
 import IncreaseGammaLiquidityModal from 'pages/PoolsPage/v3/MyGammaPoolsV3/IncreaseGammaLiquidityModal';
 import WithdrawGammaLiquidityModal from 'pages/PoolsPage/v3/MyGammaPoolsV3/WithdrawGammaLiquidityModal';
 import IncreaseICHILiquidityModal from 'pages/PoolsPage/v3/MyICHIPools/IncreaseICHILiquidityModal';
@@ -21,6 +24,7 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
 
   const isICHI = !!farm.label.includes('Ichi');
   const isGamma = !!farm.label.includes('Gamma');
+  const isDefiEdge = !!farm.label.includes('DefiEdge');
   const { loading: loadingICHI, vault: ichiPosition } = useICHIPosition(
     isICHI ? farm.almAddress : undefined,
     isICHI ? farm?.token0?.address : undefined,
@@ -31,8 +35,22 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     farm?.token0,
     farm?.token1,
   );
+  const {
+    loading: loadingDefiEdge,
+    data: defiEdgePosition,
+  } = useDefiEdgePosition(
+    isDefiEdge ? farm.almAddress : undefined,
+    farm?.token0,
+    farm?.token1,
+  );
 
-  const loading = isICHI ? loadingICHI : isGamma ? loadingGamma : false;
+  const loading = isICHI
+    ? loadingICHI
+    : isGamma
+    ? loadingGamma
+    : isDefiEdge
+    ? loadingDefiEdge
+    : false;
   const token0Amount = useMemo(() => {
     if (isICHI) {
       return ichiPosition?.token0Balance ?? 0;
@@ -40,8 +58,18 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     if (isGamma) {
       return gammaPosition?.balance0 ?? 0;
     }
+    if (isDefiEdge) {
+      return defiEdgePosition?.balance0 ?? 0;
+    }
     return 0;
-  }, [ichiPosition, isGamma, gammaPosition, isICHI]);
+  }, [
+    ichiPosition,
+    isGamma,
+    gammaPosition,
+    isICHI,
+    isDefiEdge,
+    defiEdgePosition,
+  ]);
 
   const token1Amount = useMemo(() => {
     if (isICHI) {
@@ -50,8 +78,18 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     if (isGamma) {
       return gammaPosition?.balance1 ?? 0;
     }
+    if (isDefiEdge) {
+      return defiEdgePosition?.balance1 ?? 0;
+    }
     return 0;
-  }, [ichiPosition, isGamma, gammaPosition, isICHI]);
+  }, [
+    ichiPosition,
+    isGamma,
+    gammaPosition,
+    isICHI,
+    isDefiEdge,
+    defiEdgePosition,
+  ]);
 
   const {
     loading: loadingToken0Price,
@@ -103,6 +141,20 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
           open={openWithdraw}
           onClose={() => setOpenWithdraw(false)}
           position={gammaPosition}
+        />
+      )}
+      {defiEdgePosition && openAdd && (
+        <IncreaseDefiedgeLiquidityModal
+          open={openAdd}
+          onClose={() => setOpenAdd(false)}
+          position={defiEdgePosition}
+        />
+      )}
+      {defiEdgePosition && openWithdraw && (
+        <WithdrawDefiedgeLiquidityModal
+          open={openWithdraw}
+          onClose={() => setOpenWithdraw(false)}
+          position={defiEdgePosition}
         />
       )}
       <Grid container spacing={2}>

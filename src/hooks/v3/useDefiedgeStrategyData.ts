@@ -9,41 +9,41 @@ import PoolABI from 'constants/abis/v3/pool.json';
 import { TickMath, tickToPrice } from 'v3lib/utils';
 import { BigNumber } from 'ethers';
 import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
+import { useActiveWeb3React } from 'hooks';
+import { getAllDefiedgeStrategies } from 'utils';
+import { Token } from '@uniswap/sdk';
+import { useQuery } from '@tanstack/react-query';
 
-export function useDefiedgeStrategyData(strategy: string) {
+export function useDefiedgeStrategyData(strategy?: string) {
   const strategyContract = useDefiedgeStrategyContract(strategy);
   const totalSupplyResult = useSingleCallResult(
     strategyContract,
     'totalSupply',
   );
 
-  const [amounts, setAmounts] = useState<{
-    amount0: BigNumber;
-    amount1: BigNumber;
-  }>();
-
-  strategyContract?.callStatic
-    .getAUMWithFees(true)
-    .then((data) => {
-      setAmounts({
+  const { isLoading, data } = useQuery({
+    queryKey: ['defiEdge-strategy-amounts', strategy],
+    queryFn: async () => {
+      if (!strategyContract) return null;
+      const data = await strategyContract?.callStatic.getAUMWithFees(true);
+      return {
         amount0: BigNumber.from(data.amount0).add(
           BigNumber.from(data.totalFee0),
         ),
         amount1: BigNumber.from(data.amount1).add(
           BigNumber.from(data.totalFee1),
         ),
-      });
-    })
-    .catch((e) => {
-      console.warn(e);
-    });
+      };
+    },
+  });
 
   return {
+    loading: isLoading || totalSupplyResult.loading,
     totalSupply:
       totalSupplyResult.result &&
       Number(formatUnits(totalSupplyResult.result[0] ?? 0, 18)),
-    amount0: amounts?.amount0,
-    amount1: amounts?.amount1,
+    amount0: data?.amount0,
+    amount1: data?.amount1,
   };
 }
 
@@ -137,4 +137,53 @@ export function useDefiEdgeRangeTitles(addresses: string[]) {
       title: callData.loading ? '' : isTicksAtLimit ? 'Full' : 'Safe',
     };
   });
+}
+
+export function useDefiEdgePosition(
+  address?: string,
+  token0?: Token,
+  token1?: Token,
+) {
+  const { chainId, account } = useActiveWeb3React();
+  const strategy = getAllDefiedgeStrategies(chainId).find(
+    (item) => address && item.id.toLowerCase() === address.toLowerCase(),
+  );
+  const defiEdgeContract = useContract(address, DEFIEDGE_STRATEGY_ABI);
+  const lpBalancesData = useSingleCallResult(defiEdgeContract, 'balanceOf', [
+    account ?? undefined,
+  ]);
+  const { loading, totalSupply, amount0, amount1 } = useDefiedgeStrategyData(
+    address,
+  );
+  const amount =
+    !lpBalancesData.loading &&
+    lpBalancesData.result &&
+    lpBalancesData.result.length > 0
+      ? Number(formatUnits(lpBalancesData.result[0], 18))
+      : 0;
+  if (strategy) {
+    const amount0Number = amount0
+      ? Number(formatUnits(amount0, token0?.decimals))
+      : 0;
+    const amount1Number = amount1
+      ? Number(formatUnits(amount1, token1?.decimals))
+      : 0;
+    const balance0 =
+      amount0 && totalSupply && amount0Number * (amount / totalSupply);
+    const balance1 =
+      amount1 && totalSupply && amount1Number * (amount / totalSupply);
+    return {
+      loading: lpBalancesData.loading || loading,
+      data: {
+        ...strategy,
+        share: amount,
+        lpAmount: amount,
+        token0,
+        token1,
+        balance0,
+        balance1,
+      },
+    };
+  }
+  return { loading: false };
 }

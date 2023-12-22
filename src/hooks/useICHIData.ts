@@ -375,7 +375,7 @@ export const useICHIVaultUserAmounts = (vault?: string) => {
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['ichi-vault-user-amounts', account, vault],
     queryFn: async () => {
-      if (!account || !provider || !vault) return;
+      if (!account || !provider || !vault) return null;
 
       const amounts = await getUserAmounts(
         account,

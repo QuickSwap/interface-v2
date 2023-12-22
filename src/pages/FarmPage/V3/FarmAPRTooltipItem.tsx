@@ -13,7 +13,12 @@ export const FarmAPRTooltipItem: React.FC<{
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const farmType = farm.label.split(' ')[0];
-  const defiEdgeFarmTitle = useDefiEdgeRangeTitles([farm.almAddress])[0].title;
+  const defiEdgeFarmTitleData = useDefiEdgeRangeTitles(
+    farmType === 'DefiEdge' ? [farm.almAddress] : [],
+  );
+  const defiEdgeFarmTitle = defiEdgeFarmTitleData[0]
+    ? defiEdgeFarmTitleData[0].title
+    : undefined;
 
   const farmTitle = useMemo(() => {
     if (farm.label.includes('Gamma')) {
@@ -24,7 +29,7 @@ export const FarmAPRTooltipItem: React.FC<{
         )?.title ?? ''
       );
     } else if (farm.label.includes('DefiEdge')) {
-      return defiEdgeFarmTitle;
+      return defiEdgeFarmTitle ?? '';
     }
     return '';
   }, [chainId, defiEdgeFarmTitle, farm]);

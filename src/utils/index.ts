@@ -30,7 +30,6 @@ import {
   GlobalValue,
   SUPPORTED_CHAINIDS,
   DefiedgeStrategies,
-  DefiedgeStrategy,
 } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
