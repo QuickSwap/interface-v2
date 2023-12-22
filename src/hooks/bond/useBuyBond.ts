@@ -9,6 +9,7 @@ import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useActiveWeb3React } from 'hooks';
+import { getFixedValue } from 'utils';
 
 const DEFAULT_SLIPPAGE = 102; // Maximum of 2% slippage when buying Bill
 // Buy a Bill
@@ -28,7 +29,7 @@ const useBuyBond = (
         .div(100)
     : '0';
   const parsedAmount = parseUnits(
-    Number(amount).toFixed(principalTokenDecimals ?? 18),
+    getFixedValue(amount, principalTokenDecimals ?? 18),
     principalTokenDecimals ?? 18,
   );
   const addTransaction = useTransactionAdder();

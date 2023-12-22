@@ -29,7 +29,7 @@ import {
 import useENS from 'hooks/useENS';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { AppState } from 'state';
-import { isAddress } from 'utils';
+import { isAddress, getFixedValue } from 'utils';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import {
@@ -111,14 +111,8 @@ export function tryParseAmount<T extends Currency>(
     return undefined;
   }
   try {
-    const splitedValueArray = value.split('.');
-    let valueStr = value;
-    if (splitedValueArray.length > 1) {
-      const decimalStr = splitedValueArray[1].substring(0, currency.decimals);
-      valueStr = `${splitedValueArray[0]}.${decimalStr}`;
-    }
     const typedValueParsed = parseUnits(
-      value !== 'NaN' ? valueStr : '0',
+      value !== 'NaN' ? getFixedValue(value, currency.decimals) : '0',
       currency.decimals,
     ).toString();
     if (typedValueParsed !== '0') {

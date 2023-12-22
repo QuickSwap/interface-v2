@@ -35,6 +35,7 @@ import { Currency as CoreCurrency, Percent } from '@uniswap/sdk-core';
 import { ZERO_ADDRESS } from 'constants/v3/misc';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { parseUnits } from 'ethers/lib/utils';
+import { getFixedValue } from 'utils';
 const ANALYTICS_VERSION = 0.1;
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
@@ -1078,7 +1079,10 @@ const handleV3Token = (currency: CoreCurrency | undefined, value?: string) => {
     symbol: currency.isNative ? 'MATIC' : currency.wrapped.symbol,
     address: currency.isNative ? ZERO_ADDRESS : currency.wrapped.address,
     decimals: currency.decimals,
-    value: parseUnits(value || '0', currency.decimals).toString(),
+    value: parseUnits(
+      getFixedValue(value || '0', currency.decimals),
+      currency.decimals,
+    ).toString(),
   };
 };
 

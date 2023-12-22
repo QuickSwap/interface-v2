@@ -50,7 +50,7 @@ import {
 import { useExpertModeManager, useSelectedWallet } from 'state/user/hooks';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
+import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { warningSeverity } from 'utils/v3/prices';
 
 import { Box, Button } from '@material-ui/core';
@@ -296,6 +296,9 @@ const SwapV3Page: React.FC = () => {
   }, [approvalState, approvalSubmitted]);
 
   const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(
+    currencyBalances[Field.INPUT],
+  );
+  const halfInputAmount: CurrencyAmount<Currency> | undefined = halfAmountSpend(
     currencyBalances[Field.INPUT],
   );
   const showMaxButton = Boolean(
@@ -552,7 +555,7 @@ const SwapV3Page: React.FC = () => {
   }, [maxInputAmount, onUserInput]);
 
   const handleHalfInput = useCallback(() => {
-    if (!maxInputAmount) {
+    if (!halfInputAmount) {
       return;
     }
 
@@ -561,13 +564,8 @@ const SwapV3Page: React.FC = () => {
       action: 'Half',
     });
 
-    const halvedAmount = maxInputAmount.divide('2');
-
-    onUserInput(
-      Field.INPUT,
-      halvedAmount.toFixed(maxInputAmount.currency.decimals),
-    );
-  }, [maxInputAmount, onUserInput]);
+    onUserInput(Field.INPUT, halfInputAmount.toExact());
+  }, [halfInputAmount, onUserInput]);
 
   const handleOutputSelect = useCallback(
     (outputCurrency: any) => {

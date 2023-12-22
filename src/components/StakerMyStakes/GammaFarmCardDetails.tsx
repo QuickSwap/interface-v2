@@ -12,7 +12,12 @@ import { CurrencyLogo, NumericalInput } from 'components';
 import { Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { calculateGasMargin, formatNumber, getTokenFromAddress } from 'utils';
+import {
+  calculateGasMargin,
+  formatNumber,
+  getFixedValue,
+  getTokenFromAddress,
+} from 'utils';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useGammaHypervisorContract,
@@ -204,13 +209,13 @@ const GammaFarmCardDetails: React.FC<{
         pairData.pid,
         stakeAmount === availableStakeAmount
           ? lpBalanceBN
-          : parseUnits(Number(stakeAmount).toFixed(18), 18),
+          : parseUnits(getFixedValue(stakeAmount), 18),
       );
       response = await masterChefContract.deposit(
         pairData.pid,
         stakeAmount === availableStakeAmount
           ? lpBalanceBN
-          : parseUnits(Number(stakeAmount).toFixed(18), 18),
+          : parseUnits(getFixedValue(stakeAmount), 18),
         {
           gasLimit: calculateGasMargin(estimatedGas),
         },
@@ -220,14 +225,14 @@ const GammaFarmCardDetails: React.FC<{
         pairData.pid,
         stakeAmount === availableStakeAmount
           ? lpBalanceBN
-          : parseUnits(Number(stakeAmount).toFixed(18), 18),
+          : parseUnits(getFixedValue(stakeAmount), 18),
         account,
       );
       response = await masterChefContract.deposit(
         pairData.pid,
         stakeAmount === availableStakeAmount
           ? lpBalanceBN
-          : parseUnits(Number(stakeAmount).toFixed(18), 18),
+          : parseUnits(getFixedValue(stakeAmount), 18),
         account,
         {
           gasLimit: calculateGasMargin(estimatedGas),
@@ -253,13 +258,13 @@ const GammaFarmCardDetails: React.FC<{
           pairData.pid,
           unStakeAmount === stakedAmount
             ? stakedAmountBN
-            : parseUnits(Number(unStakeAmount).toFixed(18), 18),
+            : parseUnits(getFixedValue(unStakeAmount), 18),
         );
         response = await masterChefContract.withdraw(
           pairData.pid,
           unStakeAmount === stakedAmount
             ? stakedAmountBN
-            : parseUnits(Number(unStakeAmount).toFixed(18), 18),
+            : parseUnits(getFixedValue(unStakeAmount), 18),
           {
             gasLimit: calculateGasMargin(estimatedGas),
           },
@@ -269,14 +274,14 @@ const GammaFarmCardDetails: React.FC<{
           pairData.pid,
           unStakeAmount === stakedAmount
             ? stakedAmountBN
-            : parseUnits(Number(unStakeAmount).toFixed(18), 18),
+            : parseUnits(getFixedValue(unStakeAmount), 18),
           account,
         );
         response = await masterChefContract.withdraw(
           pairData.pid,
           unStakeAmount === stakedAmount
             ? stakedAmountBN
-            : parseUnits(Number(unStakeAmount).toFixed(18), 18),
+            : parseUnits(getFixedValue(unStakeAmount), 18),
           account,
           {
             gasLimit: calculateGasMargin(estimatedGas),

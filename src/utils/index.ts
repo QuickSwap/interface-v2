@@ -28,6 +28,7 @@ import {
   GammaPairs,
   GlobalConst,
   GlobalValue,
+  MIN_NATIVE_CURRENCY_FOR_GAS,
   SUPPORTED_CHAINIDS,
 } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
@@ -225,9 +226,11 @@ export function maxAmountSpend(
 ): CurrencyAmount | undefined {
   if (!currencyAmount) return undefined;
   if (currencyAmount.currency === ETHER[chainId]) {
-    if (JSBI.greaterThan(currencyAmount.raw, GlobalConst.utils.MIN_ETH)) {
+    if (
+      JSBI.greaterThan(currencyAmount.raw, MIN_NATIVE_CURRENCY_FOR_GAS[chainId])
+    ) {
       return CurrencyAmount.ether(
-        JSBI.subtract(currencyAmount.raw, GlobalConst.utils.MIN_ETH),
+        JSBI.subtract(currencyAmount.raw, MIN_NATIVE_CURRENCY_FOR_GAS[chainId]),
         chainId,
       );
     } else {
@@ -235,6 +238,23 @@ export function maxAmountSpend(
     }
   }
   return currencyAmount;
+}
+
+export function halfAmountSpend(
+  chainId: ChainId,
+  currencyAmount?: CurrencyAmount,
+): CurrencyAmount | undefined {
+  if (!currencyAmount) return undefined;
+  const halfAmount = JSBI.divide(currencyAmount.raw, JSBI.BigInt(2));
+
+  if (currencyAmount.currency === ETHER[chainId]) {
+    if (JSBI.greaterThan(halfAmount, MIN_NATIVE_CURRENCY_FOR_GAS[chainId])) {
+      return CurrencyAmount.ether(halfAmount, chainId);
+    } else {
+      return CurrencyAmount.ether(JSBI.BigInt(0), chainId);
+    }
+  }
+  return new TokenAmount(currencyAmount.currency as Token, halfAmount);
 }
 
 export function isTokensOnList(
@@ -1123,6 +1143,16 @@ export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
   return LiquidityProtocol.V2;
 };
 
+export function getFixedValue(value: string, decimals?: number) {
+  const splitedValueArray = value.split('.');
+  let valueStr = value;
+  if (splitedValueArray.length > 1) {
+    const decimalStr = splitedValueArray[1].substring(0, decimals ?? 18);
+    valueStr = `${splitedValueArray[0]}.${decimalStr}`;
+  }
+  return valueStr;
+}
+
 export const convertToTokenValue = (
   numberString: string,
   decimals: number,
@@ -1133,7 +1163,10 @@ export const convertToTokenValue = (
     return parseUnits('0', decimals);
   }
 
-  const tokenValue = parseUnits(num.toFixed(decimals), decimals);
+  const tokenValue = parseUnits(
+    getFixedValue(numberString, decimals),
+    decimals,
+  );
   return tokenValue;
 };
 

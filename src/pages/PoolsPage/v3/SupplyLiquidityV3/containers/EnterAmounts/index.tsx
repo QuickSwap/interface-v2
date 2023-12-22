@@ -15,7 +15,7 @@ import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
 } from 'constants/v3/addresses';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
+import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
@@ -76,6 +76,16 @@ export function EnterAmounts({
     return {
       ...accumulator,
       [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
+    };
+  }, {});
+
+  const halfAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [
+    Field.CURRENCY_A,
+    Field.CURRENCY_B,
+  ].reduce((accumulator, field) => {
+    return {
+      ...accumulator,
+      [field]: halfAmountSpend(mintInfo.currencyBalances[field]),
     };
   }, {});
 
@@ -184,9 +194,7 @@ export function EnterAmounts({
           fiatValue={usdcValues[Field.CURRENCY_A]}
           handleInput={onFieldAInput}
           handleHalf={() =>
-            onFieldAInput(
-              maxAmounts[Field.CURRENCY_A]?.divide('2')?.toExact() ?? '',
-            )
+            onFieldAInput(halfAmounts[Field.CURRENCY_A]?.toExact() ?? '')
           }
           handleMax={() =>
             onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
@@ -206,9 +214,7 @@ export function EnterAmounts({
         fiatValue={usdcValues[Field.CURRENCY_B]}
         handleInput={onFieldBInput}
         handleHalf={() =>
-          onFieldBInput(
-            maxAmounts[Field.CURRENCY_B]?.divide('2')?.toExact() ?? '',
-          )
+          onFieldBInput(halfAmounts[Field.CURRENCY_B]?.toExact() ?? '')
         }
         handleMax={() =>
           onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')

@@ -25,7 +25,7 @@ import { JSBI } from '@uniswap/sdk';
 import { CustomModal, NumericalInput } from 'components';
 import { Box, Button } from '@material-ui/core';
 import Loader from 'components/Loader';
-import { getLiquidityDEX } from 'utils';
+import { getFixedValue, getLiquidityDEX } from 'utils';
 import ZapSlippage from './DualAddLiquidity/ZapSlippage';
 import { ReactComponent as BondArrow } from 'assets/images/bondArrow.svg';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -166,7 +166,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
         currency,
         JSBI.BigInt(
           parseUnits(
-            Number(typedValue).toFixed(currency?.decimals),
+            getFixedValue(typedValue, currency?.decimals),
             currency?.decimals,
           ),
         ),
