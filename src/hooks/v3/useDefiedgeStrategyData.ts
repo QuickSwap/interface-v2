@@ -1,10 +1,14 @@
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import { useContract, useDefiedgeStrategyContract } from 'hooks/useContract';
 import { useEffect, useState } from 'react';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import {
+  useMultipleContractSingleData,
+  useSingleCallResult,
+} from 'state/multicall/v3/hooks';
 import PoolABI from 'constants/abis/v3/pool.json';
-import { tickToPrice } from 'v3lib/utils';
+import { TickMath, tickToPrice } from 'v3lib/utils';
 import { BigNumber } from 'ethers';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 
 export function useDefiedgeStrategyData(strategy: string) {
   const strategyContract = useDefiedgeStrategyContract(strategy);
@@ -106,4 +110,31 @@ export function useDefiedgeLiquidityRatio(
     loading,
     ratio,
   };
+}
+
+export function useDefiEdgeRangeTitles(addresses: string[]) {
+  const ticksResult = useMultipleContractSingleData(
+    addresses,
+    new Interface(DEFIEDGE_STRATEGY_ABI),
+    'ticks',
+    [0],
+  );
+
+  return addresses.map((address, ind) => {
+    const callData = ticksResult[ind];
+    const strategyTicksResult =
+      !callData.loading && callData.result && callData.result.length > 0
+        ? callData.result
+        : undefined;
+
+    const tickLower = strategyTicksResult ? strategyTicksResult[0] : undefined;
+    const tickUpper = strategyTicksResult ? strategyTicksResult[1] : undefined;
+
+    const isTicksAtLimit =
+      tickLower === TickMath.MIN_TICK && tickUpper === TickMath.MAX_TICK;
+    return {
+      address,
+      title: callData.loading ? '' : isTicksAtLimit ? 'Full' : 'Safe',
+    };
+  });
 }

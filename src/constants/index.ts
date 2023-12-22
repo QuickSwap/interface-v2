@@ -1630,17 +1630,18 @@ export const DefiedgeStrategies: {
       token0: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', // WBTC
       token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
       pool: '0xac4494e30a85369e332bdb5230d6d694d4259dbc',
-      ableToFarm: true,
-      pid: 0,
-      miniChefAddress: '0xABeCD28Ef2b4aF6B3ea046a00C435A4f44f576AE',
-      rewardToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
     },
     {
       id: '0x87a32726eeaf4b6f81f8555e0b9a3cd9c0ae081b',
       token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
       token1: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC
       pool: '0xAE81FAc689A1b4b1e06e7ef4a2ab4CD8aC0A087D',
-      ableToFarm: false,
+    },
+    {
+      id: '0xd778C83E7cA19c2217d98daDACf7fD03B79B18cB',
+      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      pool: '0x479e1B71A702a595e19b6d5932CD5c863ab57ee0',
     },
   ],
 };

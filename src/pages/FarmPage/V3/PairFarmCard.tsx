@@ -39,7 +39,7 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
         width='100%'
         onClick={() => setExpanded(!expanded)}
       >
-        <Box className='flex items-center' width='35%' gridGap={8}>
+        <Box className='flex items-center' width='38%' gridGap={8}>
           <DoubleCurrencyLogo size={24} currency0={token0} currency1={token1} />
           <Box>
             <Box className='flex items-center' gridGap={5}>
@@ -67,11 +67,11 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
             </Box>
           </Box>
         </Box>
-        <Box width='15%'>
+        <Box width='20%'>
           <p className='small text-secondary'>{t('tvl')}</p>
           <p className='small'>${formatNumber(farm.almTVL)}</p>
         </Box>
-        <Box width='15%'>
+        <Box width='20%'>
           <p className='small text-secondary'>{t('totalAPR')}</p>
           <Box className='flex items-center' gridGap={4}>
             <p className='small text-success'>
@@ -84,15 +84,6 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
               <img src={APRHover} alt='farm APR' height={16} />
             </TotalAPRTooltip>
           </Box>
-        </Box>
-        <Box width='15%'>
-          <p className='small text-secondary'>{t('rewards')}</p>
-          {/* {farm.rewards.map((reward) => (
-          <p key={reward.token.address}>
-            {formatNumber(reward.amount)} {reward.token.symbol}{' '}
-            <small className='text-secondary'>{t('daily')}</small>
-          </p>
-        ))} */}
         </Box>
       </Box>
       {expanded && (

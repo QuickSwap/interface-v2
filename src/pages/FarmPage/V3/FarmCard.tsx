@@ -19,37 +19,40 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
   const history = useHistory();
   const { chainId } = useActiveWeb3React();
   const parsedQuery = useParsedQueryString();
-  // const rewards = farm.farms.reduce(
-  //   (
-  //     memo: {
-  //       amount: number;
-  //       token: { address: string; symbol: string; decimals: number };
-  //     }[],
-  //     farmItem,
-  //   ) => {
-  //     for (const reward of farmItem.rewards) {
-  //       const existingIndex = memo.findIndex(
-  //         (item) =>
-  //           item.token.address.toLowerCase() ===
-  //           reward.token.address.toLowerCase(),
-  //       );
-  //       if (existingIndex === -1) {
-  //         memo.push(reward);
-  //       } else {
-  //         memo = [
-  //           ...memo.slice(0, existingIndex),
-  //           {
-  //             ...memo[existingIndex],
-  //             amount: memo[existingIndex].amount + reward.amount,
-  //           },
-  //           ...memo.slice(existingIndex + 1),
-  //         ];
-  //       }
-  //     }
-  //     return memo;
-  //   },
-  //   [],
-  // );
+
+  const rewards = (farm.distributionData ?? [])
+    .filter((item: any) => item.isLive)
+    .map((item: any) => {
+      const rewardDuration =
+        (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
+      const dailyAmount =
+        rewardDuration > 0
+          ? ((item?.amount ?? 0) / rewardDuration) * 3600 * 24
+          : 0;
+      return { ...item, dailyAmount };
+    })
+    .reduce((memo: any[], item: any) => {
+      const existingItemIndex = memo.findIndex(
+        (rewardItem) =>
+          rewardItem.rewardToken.toLowerCase() ===
+          item.rewardToken.toLowerCase(),
+      );
+      if (existingItemIndex > -1) {
+        const existingItem = memo[existingItemIndex];
+        memo = [
+          ...memo.slice(0, existingItemIndex - 1),
+          {
+            ...existingItem,
+            dailyAmount:
+              (existingItem?.dailyAmount ?? 0) + (item?.dailyAmount ?? 0),
+          },
+          ...memo.slice(0, existingItemIndex),
+        ];
+      } else {
+        memo.push(item);
+      }
+      return memo;
+    }, []);
 
   const redirectWithPool = (pool: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -91,7 +94,11 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
           <Box width='20%'>
             <small>{t('upTo')}</small>
             <Box className='flex'>
-              <FarmAPRTooltip farms={farm.alm}>
+              <FarmAPRTooltip
+                farms={farm.alm}
+                token0={farm.token0}
+                token1={farm.token1}
+              >
                 <Box className='farmCardAPR' gridGap={4}>
                   <p>{formatNumber(farm.apr)}%</p>
                   <img src={APRHover} width={16} />
@@ -100,12 +107,12 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
             </Box>
           </Box>
           <Box width='30%'>
-            {/* {rewards.map((reward) => (
-              <p className='small' key={reward.token.address}>
-                {formatNumber(reward.amount)} {reward.token.symbol}{' '}
+            {rewards.map((reward: any) => (
+              <p className='small' key={reward.rewardToken}>
+                {formatNumber(reward.dailyAmount)} {reward.symbolRewardToken}{' '}
                 <small className='text-secondary'>{t('daily')}</small>
               </p>
-            ))} */}
+            ))}
           </Box>
         </Box>
         <Box width='10%'>

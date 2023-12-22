@@ -24,6 +24,7 @@ import { useGammaData, useGammaRewards } from './useGammaData';
 import { useActiveWeb3React } from 'hooks';
 import { useSteerVaults } from './useSteerData';
 import { useICHIVaultAPRs, useICHIVaults } from 'hooks/useICHIData';
+import { useDefiEdgeStrategiesAPR } from 'state/mint/v3/hooks';
 
 export const useMerklFarms = () => {
   const { chainId } = useActiveWeb3React();
@@ -83,6 +84,28 @@ export const useMerklFarms = () => {
     ichiVaultsFiltered,
     usdPrices,
   );
+
+  const defiEdgeIdsFiltered = useMemo(() => {
+    if (!merklFarms) return [];
+    return (DefiedgeStrategies[chainId] ?? [])
+      .filter(
+        (vault) =>
+          !!merklFarms.find(
+            (item) =>
+              !!Object.values(item.alm).find(
+                (alm: any) =>
+                  alm.label.includes('DefiEdge') &&
+                  vault.id.toLowerCase() === alm.almAddress.toLowerCase(),
+              ),
+          ),
+      )
+      .map((e) => e.id);
+  }, [chainId, merklFarms]);
+  const {
+    isLoading: loadingDefiEdgeAPRs,
+    data: defiedgeAprs,
+  } = useDefiEdgeStrategiesAPR(defiEdgeIdsFiltered);
+
   const farms = useMemo(() => {
     if (!merklFarms) return [];
     return merklFarms.map((item: any) => {
@@ -129,12 +152,18 @@ export const useMerklFarms = () => {
                 (item) =>
                   item.address.toLowerCase() === alm.almAddress.toLowerCase(),
               )?.apr ?? 0;
+          } else if (alm.label.includes('DefiEdge')) {
+            poolAPR = defiedgeAprs?.find(
+              (e: any) =>
+                e.strategy.address.toLowerCase() ===
+                alm.almAddress.toLowerCase(),
+            )?.strategy?.fees_apr;
           }
           return { ...alm, poolAPR };
         });
       return { ...item, alm: alms };
     });
-  }, [chainId, gammaData, ichiAPRs, merklFarms, steerVaults]);
+  }, [chainId, defiedgeAprs, gammaData, ichiAPRs, merklFarms, steerVaults]);
   return {
     loading:
       loadingMerkl ||
@@ -142,7 +171,8 @@ export const useMerklFarms = () => {
       loadingSteer ||
       loadingICHI ||
       loadingICHIAPRs ||
-      loadingUSDPrices,
+      loadingUSDPrices ||
+      loadingDefiEdgeAPRs,
     farms,
   };
 };

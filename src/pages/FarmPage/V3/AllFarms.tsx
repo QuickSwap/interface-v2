@@ -3,7 +3,7 @@ import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/convertQUICK.scss';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { GlobalConst } from 'constants/index';
+import { DefiedgeStrategies, GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
 import { useMerklFarms } from 'hooks/v3/useV3Farms';
 import Loader from 'components/Loader';
@@ -16,6 +16,8 @@ import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { Home, KeyboardArrowRight } from '@material-ui/icons';
+import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 
 interface Props {
   searchValue: string;
@@ -102,6 +104,23 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   });
 
   const { loading, farms } = useMerklFarms();
+  const rewardAddresses = farms.reduce((memo: string[], item: any) => {
+    const distributionData: any[] = (item?.distributionData ?? []).filter(
+      (reward: any) => reward.isLive,
+    );
+    for (const rewardItem of distributionData) {
+      if (
+        rewardItem.rewardToken &&
+        !memo.includes(rewardItem.rewardToken.toLowerCase())
+      ) {
+        memo.push(rewardItem.rewardToken.toLowerCase());
+      }
+    }
+    return memo;
+  }, []);
+  const { prices: rewardUSDPrices } = useUSDCPricesFromAddresses(
+    rewardAddresses,
+  );
 
   const v3Farms = farms
     .map((item: any) => {
@@ -111,7 +130,27 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
         0,
       );
       const title = (item.symbolToken0 ?? '') + (item.symbolToken0 ?? '');
-      return { ...item, apr, title };
+      const rewardItems: any[] = (item?.distributionData ?? []).filter(
+        (reward: any) => reward.isLive,
+      );
+      const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
+        const usdPrice =
+          rewardUSDPrices?.find(
+            (priceItem) =>
+              item.rewardToken &&
+              priceItem.address.toLowerCase() ===
+                item.rewardToken.toLowerCase(),
+          )?.price ?? 0;
+        const rewardDuration =
+          (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
+        return (
+          total +
+          (rewardDuration > 0
+            ? ((usdPrice * (item?.amount ?? 0)) / rewardDuration) * 3600 * 24
+            : 0)
+        );
+      }, 0);
+      return { ...item, apr, title, dailyRewardUSD };
     })
     .sort((farm1, farm2) => {
       if (sortBy === GlobalConst.utils.v3FarmSortBy.pool) {
@@ -122,6 +161,11 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       }
       if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
+      }
+      if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
+        return farm1.dailyRewardUSD > farm2.dailyRewardUSD
+          ? sortMultiplier
+          : -1 * sortMultiplier;
       }
       return 1;
     });
@@ -135,6 +179,15 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const currency0 = useCurrency(selectedPool?.token0);
   const currency1 = useCurrency(selectedPool?.token1);
 
+  const selectedDefiEdgeIds = (DefiedgeStrategies[chainId] ?? [])
+    .filter(
+      (item) =>
+        !!(selectedPool?.alm ?? []).find(
+          (alm: any) => alm.almAddress.toLowerCase() === item.id.toLowerCase(),
+        ),
+    )
+    .map((item) => item.id);
+  const defiEdgeTitles = useDefiEdgeRangeTitles(selectedDefiEdgeIds);
   const selectedFarms: any[] = useMemo(() => {
     const almFarms: any[] = selectedPool?.alm ?? [];
     return almFarms.map((alm) => {
@@ -142,6 +195,12 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       if (alm.label.includes('Gamma')) {
         title =
           getAllGammaPairs(chainId).find(
+            (item) =>
+              item.address.toLowerCase() === alm.almAddress.toLowerCase(),
+          )?.title ?? '';
+      } else if (alm.label.includes('DefiEdge')) {
+        title =
+          defiEdgeTitles.find(
             (item) =>
               item.address.toLowerCase() === alm.almAddress.toLowerCase(),
           )?.title ?? '';
@@ -153,7 +212,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
         title,
       };
     });
-  }, [chainId, selectedPool]);
+  }, [chainId, defiEdgeTitles, selectedPool]);
 
   const farmTypes = useMemo(() => {
     const mTypes = selectedFarms.reduce((memo: string[], item) => {

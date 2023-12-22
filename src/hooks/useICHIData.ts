@@ -169,7 +169,7 @@ export const useICHIVaultInfo = (vaultAddress?: string) => {
   return useQuery({
     queryKey: ['ichi-vault-info', vaultAddress],
     queryFn: async () => {
-      if (!vaultAddress) return;
+      if (!vaultAddress) return null;
       try {
         const vaultInfo = await getIchiVaultInfo(
           Number(chainId),

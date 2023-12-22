@@ -1,30 +1,50 @@
 import { Box, Button } from '@material-ui/core';
-import React from 'react';
+import { useActiveWeb3React } from 'hooks';
+import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
-import { formatNumber } from 'utils';
+import { formatNumber, getAllGammaPairs } from 'utils';
 
-export const FarmAPRTooltipItem: React.FC<{ farm: any }> = ({ farm }) => {
+export const FarmAPRTooltipItem: React.FC<{
+  farm: any;
+  token0?: string;
+  token1?: string;
+}> = ({ farm, token0, token1 }) => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
   const farmType = farm.label.split(' ')[0];
-  const history = useHistory();
+  const defiEdgeFarmTitle = useDefiEdgeRangeTitles([farm.almAddress])[0].title;
+
+  const farmTitle = useMemo(() => {
+    if (farm.label.includes('Gamma')) {
+      return (
+        getAllGammaPairs(chainId).find(
+          (item) =>
+            item.address.toLowerCase() === farm.almAddress.toLowerCase(),
+        )?.title ?? ''
+      );
+    } else if (farm.label.includes('DefiEdge')) {
+      return defiEdgeFarmTitle;
+    }
+    return '';
+  }, [chainId, defiEdgeFarmTitle, farm]);
 
   return (
     <Box>
       <Box className='flex items-center' gridGap={6}>
-        {farm.title && (
+        {farmTitle && (
           <Box
             className={`farmAPRTitleWrapper ${
-              farm.title.toLowerCase() === 'narrow'
+              farmTitle.toLowerCase() === 'narrow'
                 ? 'bg-purple8'
-                : farm.title.toLowerCase() === 'wide'
+                : farmTitle.toLowerCase() === 'wide'
                 ? 'bg-blue12'
-                : farm.title.toLowerCase() === 'stable'
+                : farmTitle.toLowerCase() === 'stable'
                 ? 'bg-green4'
                 : 'bg-gray32'
             }`}
           >
-            <span className='text-bgColor'>{farm.title}</span>
+            <span className='text-bgColor'>{farmTitle}</span>
           </Box>
         )}
         <Box className='farmAPRTitleWrapper bg-textSecondary'>
@@ -49,16 +69,16 @@ export const FarmAPRTooltipItem: React.FC<{ farm: any }> = ({ farm }) => {
           className='farmAPRGetLPButton'
           onClick={() => {
             let currencyStr = '';
-            if (farm.token0) {
-              currencyStr += `currency0=${farm.token0.address}`;
+            if (token0) {
+              currencyStr += `currency0=${token0}`;
             }
-            if (farm.token1) {
-              if (farm.token0) {
+            if (token1) {
+              if (token0) {
                 currencyStr += '&';
               }
-              currencyStr += `currency1=${farm.token1.address}`;
+              currencyStr += `currency1=${token1}`;
             }
-            history.push(`/pools?${currencyStr}`);
+            window.open(`#/pools?${currencyStr}`, '_blank');
           }}
         >
           {t('getLP')}

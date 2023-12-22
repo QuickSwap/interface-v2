@@ -1458,6 +1458,31 @@ export function useGetUnipilotVaults() {
   });
 }
 
+export const useDefiEdgeStrategiesAPR = (strategies: string[]) => {
+  const defiedgeAPIURL = process.env.REACT_APP_DEFIEDGE_API_URL;
+  const fetchDefiedgeStrategiesWithApr = async () => {
+    if (!defiedgeAPIURL) return [];
+
+    try {
+      const res = await fetch(
+        `${defiedgeAPIURL}/polygon/details?strategies=${strategies.join()}`,
+      );
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return data;
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  };
+
+  return useQuery({
+    queryKey: ['fetchDefiedgeStrategiesWithApr', strategies.join()],
+    queryFn: fetchDefiedgeStrategiesWithApr,
+  });
+};
+
 export function useGetDefiedgeStrategies() {
   const { chainId } = useActiveWeb3React();
   const strategies = getAllDefiedgeStrategies(chainId);
@@ -1496,29 +1521,10 @@ export function useGetDefiedgeStrategies() {
     }
   }, [fetchLiquidityRatio, strategies]);
 
-  const fetchDefiedgeStrategiesWithApr = async () => {
-    if (!defiedgeAPIURL) return [];
-
-    try {
-      const res = await fetch(
-        `${defiedgeAPIURL}/polygon/details?strategies=${strategies
-          .map((e) => e.id)
-          .join()}`,
-      );
-      const data = await res.json();
-      if (data && data.length > 0) {
-        return data;
-      }
-      return [];
-    } catch {
-      return [];
-    }
-  };
-
-  const { isLoading, data: defiedgeStrategiesWithApr } = useQuery({
-    queryKey: ['fetchDefiedgeStrategiesWithApr', strategies],
-    queryFn: fetchDefiedgeStrategiesWithApr,
-  });
+  const {
+    isLoading,
+    data: defiedgeStrategiesWithApr,
+  } = useDefiEdgeStrategiesAPR(strategyIds);
 
   const { data: liquidityRatios } = useQuery({
     queryKey: ['fetchStrategiesLiquidityRatio', strategies],
