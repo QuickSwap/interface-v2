@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Box, useMediaQuery, useTheme, Button } from '@material-ui/core';
+import React, { useEffect, useMemo } from 'react';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useActiveWeb3React } from 'hooks';
 import { GlobalConst } from 'constants/index';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
-import { CustomSwitch, DoubleCurrencyLogo, HypeLabAds } from 'components';
+import { CustomSwitch, HypeLabAds } from 'components';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/farm.scss';
 import { useDefaultFarmList } from 'state/farms/hooks';
@@ -19,8 +19,6 @@ import { getConfig } from '../../config/index';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useCurrency } from 'hooks/v3/Tokens';
-import { Home, KeyboardArrowRight } from '@material-ui/icons';
 
 const FarmPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
@@ -126,47 +124,12 @@ const FarmPage: React.FC = () => {
   ];
   const helpURL = process.env.REACT_APP_HELP_URL;
 
-  const currency0Id =
-    parsedQuery && parsedQuery.currency0
-      ? parsedQuery.currency0.toString()
-      : undefined;
-  const currency1Id =
-    parsedQuery && parsedQuery.currency1
-      ? parsedQuery.currency1.toString()
-      : undefined;
-  const currency0 = useCurrency(currency0Id);
-  const currency1 = useCurrency(currency1Id);
+  const poolId =
+    parsedQuery && parsedQuery.pool ? parsedQuery.pool.toString() : undefined;
 
   return (
     <Box width='100%' mb={3} id='farmPage'>
-      {currency0 && currency1 ? (
-        <>
-          <Box className='flex items-center'>
-            <Box
-              className='flex items-center cursor-pointer text-secondary'
-              gridGap={5}
-              onClick={() => history.push('/farm')}
-            >
-              <Home />
-              <small>{t('allFarms')}</small>
-            </Box>
-            <KeyboardArrowRight className='text-secondary' />
-            <small className='text-bold'>
-              {currency0.symbol}/{currency1.symbol}
-            </small>
-          </Box>
-          <Box className='flex items-center' gridGap={8} my={3}>
-            <DoubleCurrencyLogo
-              currency0={currency0}
-              currency1={currency1}
-              size={24}
-            />
-            <h4 className='weight-500'>
-              {currency0.symbol}/{currency1.symbol}
-            </h4>
-          </Box>
-        </>
-      ) : (
+      {!poolId && (
         <Box className='pageHeading'>
           <Box className='flex row items-center'>
             <h1 className='h4'>{t('farm')}</h1>

@@ -349,9 +349,11 @@ export const useGammaFarmsFiltered = (
 
       const rewardsObj = gammaReward?.rewarders;
       const rewards = rewardsObj
-        ? Object.values(rewardsObj).filter(
-            (reward: any) => Number(reward?.rewardPerSecond ?? 0) > 0,
-          )
+        ? Object.values(rewardsObj)
+            .map((reward: any, ind: number) => {
+              return { ...reward, address: Object.keys(rewardsObj)[ind] };
+            })
+            .filter((reward: any) => Number(reward?.rewardPerSecond ?? 0) > 0)
         : [];
       const rewardUSD = rewards.reduce((total: number, rewarder: any) => {
         const rewardUSD = gammaRewardsWithUSDPrice?.find(
@@ -377,6 +379,7 @@ export const useGammaFarmsFiltered = (
         rewardUSD,
         rewards: rewards.map((item: any) => {
           return {
+            address: item.address,
             amount: Number(item?.rewardPerSecond ?? 0) * 3600 * 24,
             token: {
               address: item?.rewardToken ?? '',

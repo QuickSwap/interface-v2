@@ -13,6 +13,7 @@ import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import './ICHILPItemDetails/index.scss';
+import 'components/v3/RemoveLiquidityV3/index.scss';
 import { formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {

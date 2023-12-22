@@ -111,7 +111,7 @@ const GammaFarmCardDetails: React.FC<{
         const reward = rewards.length > 0 ? rewards[index] : undefined;
         if (chainId && reward && tokenMap) {
           const rewardToken = getTokenFromAddress(
-            reward.rewardToken,
+            reward?.token?.address,
             chainId,
             tokenMap,
             [],

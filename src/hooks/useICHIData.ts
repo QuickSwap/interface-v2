@@ -164,6 +164,29 @@ export const useICHIVaultAPRs = (
   return { isLoading, aprs };
 };
 
+export const useICHIVaultInfo = (vaultAddress?: string) => {
+  const { chainId, provider } = useActiveWeb3React();
+  return useQuery({
+    queryKey: ['ichi-vault-info', vaultAddress],
+    queryFn: async () => {
+      if (!vaultAddress) return;
+      try {
+        const vaultInfo = await getIchiVaultInfo(
+          Number(chainId),
+          SupportedDex.Quickswap,
+          vaultAddress,
+          provider,
+        );
+        return vaultInfo;
+      } catch (e) {
+        console.log('Err fetching ichi vault info', e);
+        return null;
+      }
+    },
+    enabled: !!provider || !!vaultAddress,
+  });
+};
+
 export const useICHIVaults = () => {
   const { chainId, provider } = useActiveWeb3React();
   const vaultAddresses = useMemo(() => {
@@ -346,20 +369,47 @@ export const useICHIVaultsUserAmounts = (vaults: ICHIVault[]) => {
   return { isLoading, data };
 };
 
-export const useICHIVaultUserBalance = (vault?: ICHIVault) => {
+export const useICHIVaultUserAmounts = (vault?: string) => {
   const { account, provider } = useActiveWeb3React();
   const lastTx = useLastTransactionHash();
   const { isLoading, data, refetch } = useQuery({
-    queryKey: ['ichi-vault-user-balance', vault?.address, account],
+    queryKey: ['ichi-vault-user-amounts', account, vault],
     queryFn: async () => {
-      if (!vault || !account || !provider) return null;
-      const balance = await getUserBalance(
+      if (!account || !provider || !vault) return;
+
+      const amounts = await getUserAmounts(
         account,
-        vault.address,
+        vault,
         provider,
         SupportedDex.Quickswap,
       );
-      return Number(balance);
+      return amounts;
+    },
+    enabled: !!account && !!provider,
+  });
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTx]);
+  return { isLoading, data };
+};
+
+export const useICHIVaultUserBalance = (vault?: string) => {
+  const { account, provider } = useActiveWeb3React();
+  const lastTx = useLastTransactionHash();
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['ichi-vault-user-balance', vault, account],
+    queryFn: async () => {
+      if (!vault || !account || !provider) return null;
+      const balanceBN = await getUserBalance(
+        account,
+        vault,
+        provider,
+        SupportedDex.Quickswap,
+        true,
+      );
+      return { balanceBN, balance: Number(formatUnits(balanceBN)) };
     },
     enabled: !!vault && !!account && !!provider,
   });
@@ -379,10 +429,10 @@ export const useICHIVaultShare = (vault?: ICHIVault) => {
   const {
     isLoading: loadingUserBalance,
     data: userBalance,
-  } = useICHIVaultUserBalance(vault);
+  } = useICHIVaultUserBalance(vault?.address);
   const vaultShare = useMemo(() => {
     if (!totalSupply) return 0;
-    return ((userBalance ?? 0) / totalSupply) * 100;
+    return ((userBalance?.balance ?? 0) / totalSupply) * 100;
   }, [totalSupply, userBalance]);
 
   return {
@@ -515,5 +565,57 @@ export const useICHIVaultDepositData = (
       isMorethanAvailable,
       isNativeToken,
     },
+  };
+};
+
+export const useICHIPosition = (
+  vaultAddress?: string,
+  token0Address?: string,
+  token1Address?: string,
+) => {
+  const {
+    isLoading: loadingBalance,
+    data: vaultBalance,
+  } = useICHIVaultUserBalance(vaultAddress);
+  const {
+    isLoading: loadingUserAmount,
+    data: userAmount,
+  } = useICHIVaultUserAmounts(vaultAddress);
+  const { isLoading: loadingVaultInfo, data: vaultInfo } = useICHIVaultInfo(
+    vaultAddress,
+  );
+
+  if (!vaultAddress) {
+    return {
+      loading: loadingBalance || loadingUserAmount || loadingVaultInfo,
+      vault: undefined,
+    };
+  }
+
+  const tokenReversed =
+    token0Address &&
+    token1Address &&
+    vaultInfo &&
+    token0Address.toLowerCase() !== vaultInfo.tokenA.toLowerCase();
+  const userAmount0 = userAmount
+    ? Number(userAmount[0] ?? userAmount.amount0 ?? 0)
+    : 0;
+  const userAmount1 = userAmount
+    ? Number(userAmount[1] ?? userAmount.amount1 ?? 0)
+    : 0;
+
+  const vault: ICHIVault = {
+    address: vaultAddress,
+    allowToken0: tokenReversed ? vaultInfo.allowTokenB : vaultInfo?.allowTokenA,
+    allowToken1: tokenReversed ? vaultInfo.allowTokenA : vaultInfo?.allowTokenB,
+    balance: vaultBalance?.balance,
+    balanceBN: vaultBalance?.balanceBN,
+    token0Balance: tokenReversed ? userAmount1 : userAmount0,
+    token1Balance: tokenReversed ? userAmount0 : userAmount1,
+  };
+
+  return {
+    loading: loadingBalance || loadingUserAmount || loadingVaultInfo,
+    vault,
   };
 };

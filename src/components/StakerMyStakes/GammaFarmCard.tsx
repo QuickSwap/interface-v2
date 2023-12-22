@@ -66,8 +66,8 @@ const GammaFarmCard: React.FC<{
                   <div key={ind}>
                     {reward.amount > 0 && (
                       <small className='small weight-600'>
-                        {formatNumber(reward.amount * 3600 * 24)}{' '}
-                        {reward.token.symbol} / {t('day')}
+                        {formatNumber(reward.amount)} {reward.token.symbol} /{' '}
+                        {t('day')}
                       </small>
                     )}
                   </div>

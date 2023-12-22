@@ -103,3 +103,14 @@ a.button:hover {
   height: 36px;
   border-radius: 12px;
 }
+
+.v3PairFarmCardDetailsWrapper {
+  & button {
+    border-radius: 10px;
+    height: 36px;
+    padding: 0 16px;
+    & span {
+      font-size: 14px;
+    }
+  }
+}

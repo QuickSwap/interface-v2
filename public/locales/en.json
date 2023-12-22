@@ -845,5 +845,6 @@
   "bondTypeWarningUnderstand": "I understand that I am purchasing an ABOND CEX Fund Bond early and will receive ACF tokens until December 14th, when the actual ABOND Bonds will become redeemable",
   "addICHILiquidityWithToken": "Add Liquidity with {{ symbol }}",
   "addingICHILiquidityToken": "Adding {{ amount }} {{ symbol }} to ICHI vault",
-  "installedMetamaskNotDisplayedWarning": "Installed MetaMask but can’t connect? Go to the extension manager in your browser and on non-primary wallets, such as Phantom or Brave, click set the site access to 'on click'"
+  "installedMetamaskNotDisplayedWarning": "Installed MetaMask but can’t connect? Go to the extension manager in your browser and on non-primary wallets, such as Phantom or Brave, click set the site access to 'on click'",
+  "myrewards": "My Rewards"
 }

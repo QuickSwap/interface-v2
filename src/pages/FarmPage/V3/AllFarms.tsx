@@ -4,13 +4,18 @@ import { useTranslation } from 'react-i18next';
 import 'pages/styles/convertQUICK.scss';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { GlobalConst } from 'constants/index';
-import { SortColumns, ToggleSwitch } from 'components';
+import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
 import { useMerklFarms } from 'hooks/v3/useV3Farms';
 import Loader from 'components/Loader';
 import V3FarmCard from './FarmCard';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import CustomSelector from 'components/v3/CustomSelector';
-import V3FarmWithCurrency from './FarmWithCurrency';
+import V3PairFarmCard from './PairFarmCard';
+import { getAllGammaPairs } from 'utils';
+import { useActiveWeb3React } from 'hooks';
+import { useHistory } from 'react-router-dom';
+import { useCurrency } from 'hooks/v3/Tokens';
+import { Home, KeyboardArrowRight } from '@material-ui/icons';
 
 interface Props {
   searchValue: string;
@@ -20,7 +25,9 @@ interface Props {
 const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
+  const { chainId } = useActiveWeb3React();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const history = useHistory();
 
   const farmFilters = useMemo(
     () => [
@@ -122,14 +129,31 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const parsedQuery = useParsedQueryString();
   const poolId =
     parsedQuery && parsedQuery.pool ? parsedQuery.pool.toString() : undefined;
+  const selectedPool = v3Farms.find(
+    (item) => poolId && item.pool.toLowerCase() === poolId.toLowerCase(),
+  );
+  const currency0 = useCurrency(selectedPool?.token0);
+  const currency1 = useCurrency(selectedPool?.token1);
 
   const selectedFarms: any[] = useMemo(() => {
-    return (
-      v3Farms.find(
-        (item) => poolId && item.pool.toLowerCase() === poolId.toLowerCase(),
-      )?.alm ?? []
-    );
-  }, [poolId, v3Farms]);
+    const almFarms: any[] = selectedPool?.alm ?? [];
+    return almFarms.map((alm) => {
+      let title = '';
+      if (alm.label.includes('Gamma')) {
+        title =
+          getAllGammaPairs(chainId).find(
+            (item) =>
+              item.address.toLowerCase() === alm.almAddress.toLowerCase(),
+          )?.title ?? '';
+      }
+      return {
+        ...alm,
+        token0: selectedPool?.token0,
+        token1: selectedPool?.token1,
+        title,
+      };
+    });
+  }, [chainId, selectedPool]);
 
   const farmTypes = useMemo(() => {
     const mTypes = selectedFarms.reduce((memo: string[], item) => {
@@ -147,7 +171,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       },
     ].concat(
       mTypes.map((item, ind) => {
-        return { text: item.toUpperCase(), id: ind + 1, link: item };
+        return { text: item, id: ind + 1, link: item };
       }),
     );
   }, [selectedFarms, t]);
@@ -155,72 +179,112 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const [farmType, setFarmType] = useState(farmTypes[0]);
   const [staked, setStaked] = useState(false);
 
+  const filteredSelectedFarms = useMemo(() => {
+    if (farmType.link === 'all') {
+      return selectedFarms;
+    }
+    return selectedFarms.filter(
+      (item) => item.title && item.title === farmType.link,
+    );
+  }, [farmType.link, selectedFarms]);
+
   return (
-    <Box pt={2}>
-      {poolId ? (
-        <Box className='flex justify-between items-center' px={2} mb={2}>
-          <Box className='flex'>
-            {selectedFarms.length > 1 && (
-              <CustomSelector
-                height={36}
-                items={farmTypes}
-                selectedItem={farmType}
-                handleChange={setFarmType}
-              />
-            )}
-          </Box>
-          <Box className='flex items-center' gridGap={6}>
-            <small className='text-secondary'>{t('staked')}</small>
-            <ToggleSwitch
-              toggled={staked}
-              onToggle={() => setStaked(!staked)}
-            />
-          </Box>
-        </Box>
-      ) : (
+    <>
+      {poolId && (
         <>
-          <Box pl='12px' className='bg-secondary1'>
-            <CustomTabSwitch
-              items={farmFilters}
-              value={farmFilter}
-              handleTabChange={setFarmFilter}
-              height={50}
-            />
-          </Box>
-          {!isMobile && (
-            <Box px={5} py={1}>
-              <Box width='90%'>
-                <SortColumns
-                  sortColumns={sortByDesktopItems}
-                  selectedSort={sortBy}
-                  sortDesc={sortDesc}
-                />
-              </Box>
+          <Box className='flex items-center'>
+            <Box
+              className='flex items-center cursor-pointer text-secondary'
+              gridGap={5}
+              onClick={() => history.push('/farm')}
+            >
+              <Home />
+              <small>{t('allFarms')}</small>
             </Box>
-          )}
+            <KeyboardArrowRight className='text-secondary' />
+            <small className='text-bold'>
+              {currency0?.symbol}/{currency1?.symbol}
+            </small>
+          </Box>
+          <Box className='flex items-center' gridGap={8} my={3}>
+            <DoubleCurrencyLogo
+              currency0={currency0 ?? undefined}
+              currency1={currency1 ?? undefined}
+              size={24}
+            />
+            <h4 className='weight-500'>
+              {currency0?.symbol}/{currency1?.symbol}
+            </h4>
+          </Box>
         </>
       )}
 
-      {loading ? (
-        <Box minHeight={200} className='flex justify-center items-center'>
-          <Loader stroke={'white'} size={'1.5rem'} />
-        </Box>
-      ) : (
-        <Box px={2}>
-          {poolId
-            ? selectedFarms.map((farm, ind) => (
-                <Box key={ind} pb={2}>
-                  <V3FarmWithCurrency farm={farm} />
+      <Box className={poolId ? 'bg-palette' : ''} borderRadius={10} pt={2}>
+        {poolId ? (
+          <Box className='flex justify-between items-center' px={2} mb={2}>
+            <Box className='flex'>
+              {selectedFarms.length > 1 && (
+                <CustomSelector
+                  height={36}
+                  items={farmTypes}
+                  selectedItem={farmType}
+                  handleChange={setFarmType}
+                />
+              )}
+            </Box>
+            <Box className='flex items-center' gridGap={6}>
+              <small className='text-secondary'>{t('staked')}</small>
+              <ToggleSwitch
+                toggled={staked}
+                onToggle={() => setStaked(!staked)}
+              />
+            </Box>
+          </Box>
+        ) : (
+          <>
+            <Box pl='12px' className='bg-secondary1'>
+              <CustomTabSwitch
+                items={farmFilters}
+                value={farmFilter}
+                handleTabChange={setFarmFilter}
+                height={50}
+              />
+            </Box>
+            {!isMobile && (
+              <Box px={5} py={1}>
+                <Box width='90%'>
+                  <SortColumns
+                    sortColumns={sortByDesktopItems}
+                    selectedSort={sortBy}
+                    sortDesc={sortDesc}
+                  />
                 </Box>
-              ))
-            : v3Farms.map((farm, ind) => (
-                <Box key={ind} pb={2}>
-                  <V3FarmCard farm={farm} />
-                </Box>
-              ))}
-        </Box>
-      )}
-    </Box>
+              </Box>
+            )}
+          </>
+        )}
+
+        {loading ? (
+          <Box minHeight={200} className='flex justify-center items-center'>
+            <Loader stroke={'white'} size={'1.5rem'} />
+          </Box>
+        ) : (
+          <Box px={2}>
+            {poolId
+              ? filteredSelectedFarms.map((farm, ind) => (
+                  <Box key={ind} pb={2}>
+                    <V3PairFarmCard farm={farm} />
+                  </Box>
+                ))
+              : v3Farms.map((farm, ind) => (
+                  <Box key={ind} pb={2}>
+                    <V3FarmCard farm={farm} />
+                  </Box>
+                ))}
+          </Box>
+        )}
+      </Box>
+    </>
   );
 };
 

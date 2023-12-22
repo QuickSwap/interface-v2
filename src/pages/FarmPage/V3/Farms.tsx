@@ -113,63 +113,51 @@ export default function Farms() {
     },
   ];
 
-  const currency0Id =
-    parsedQuery && parsedQuery.currency0
-      ? parsedQuery.currency0.toString()
-      : undefined;
-  const currency1Id =
-    parsedQuery && parsedQuery.currency1
-      ? parsedQuery.currency1.toString()
-      : undefined;
-  const currency0 = useCurrency(currency0Id);
-  const currency1 = useCurrency(currency1Id);
-
-  const currencySelected = !!currency0 && !!currency1;
+  const poolId =
+    parsedQuery && parsedQuery.pool ? parsedQuery.pool.toString() : undefined;
 
   return (
-    <>
-      <Box className='bg-palette' borderRadius={10}>
-        {!currencySelected && (
-          <Box pt={2} px={2} className='flex flex-wrap justify-between'>
-            <CustomSelector
-              height={36}
-              items={v3FarmCategories}
-              selectedItem={selectedFarmCategory}
-              handleChange={onChangeFarmCategory}
-            />
-            <Box
-              className='flex items-center flex-wrap'
-              width={isMobile ? '100%' : 'auto'}
-              gridGap='16px'
-            >
-              <Box width={isMobile ? '100%' : 200}>
-                <SearchInput
-                  placeholder='Search'
-                  value={searchValue}
-                  setValue={setSearchValue}
-                  isIconAfter
+    <Box className={poolId ? '' : 'bg-palette'} borderRadius={10}>
+      {!poolId && (
+        <Box pt={2} px={2} className='flex flex-wrap justify-between'>
+          <CustomSelector
+            height={36}
+            items={v3FarmCategories}
+            selectedItem={selectedFarmCategory}
+            handleChange={onChangeFarmCategory}
+          />
+          <Box
+            className='flex items-center flex-wrap'
+            width={isMobile ? '100%' : 'auto'}
+            gridGap='16px'
+          >
+            <Box width={isMobile ? '100%' : 200}>
+              <SearchInput
+                placeholder='Search'
+                value={searchValue}
+                setValue={setSearchValue}
+                isIconAfter
+              />
+            </Box>
+            {selectedFarmCategory.id !== 0 && (
+              <Box width={isMobile ? '100%' : 160}>
+                <CustomSwitch
+                  width='100%'
+                  height={40}
+                  items={farmStatusItems}
                 />
               </Box>
-              {selectedFarmCategory.id !== 0 && (
-                <Box width={isMobile ? '100%' : 160}>
-                  <CustomSwitch
-                    width='100%'
-                    height={40}
-                    items={farmStatusItems}
-                  />
-                </Box>
-              )}
-            </Box>
+            )}
           </Box>
-        )}
+        </Box>
+      )}
 
-        {selectedFarmCategory?.id === 0 && (
-          <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
-        )}
-        {selectedFarmCategory.id === 1 && (
-          <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
-        )}
-      </Box>
-    </>
+      {selectedFarmCategory?.id === 0 && (
+        <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
+      )}
+      {selectedFarmCategory.id === 1 && (
+        <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
+      )}
+    </Box>
   );
 }
