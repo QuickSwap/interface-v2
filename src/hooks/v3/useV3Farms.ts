@@ -31,12 +31,14 @@ import { useDefiEdgeStrategiesAPR } from 'state/mint/v3/hooks';
 import { useEternalFarmPoolAPRs } from 'hooks/useIncentiveSubgraph';
 
 export const useMerklFarms = () => {
-  const { chainId } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const fetchMerklFarms = async () => {
     const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
     if (!merklAPIURL || !chainId) return [];
     const res = await fetch(
-      `${merklAPIURL}?chainIds[]=${chainId}&AMMs[]=quickswapalgebra`,
+      `${merklAPIURL}?chainIds[]=${chainId}&AMMs[]=quickswapalgebra${
+        account ? `&user=${account}` : ''
+      }`,
     );
     const data = await res.json();
     const farmData =

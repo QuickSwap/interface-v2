@@ -211,11 +211,27 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
               item.address.toLowerCase() === alm.almAddress.toLowerCase(),
           )?.title ?? '';
       }
+      const farmType = alm.label.split(' ')[0];
+      const poolRewards = selectedPool?.rewardsPerToken;
+      const rewardTokenAddresses = poolRewards ? Object.keys(poolRewards) : [];
+      const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
+      const rewards = rewardData
+        .map((item, ind) => {
+          return { ...item, address: rewardTokenAddresses[ind] };
+        })
+        .filter((item) => {
+          const accumulatedRewards = item.breakdownOfAccumulated;
+          return (
+            accumulatedRewards &&
+            Object.keys(accumulatedRewards).includes(farmType)
+          );
+        });
       return {
         ...alm,
         token0: selectedPool?.token0,
         token1: selectedPool?.token1,
         title,
+        rewards,
       };
     });
   }, [chainId, defiEdgeTitles, selectedPool]);

@@ -1,6 +1,8 @@
 import { Box, Button, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import { Token } from '@uniswap/sdk-core';
 import { CurrencyLogo } from 'components';
+import { useActiveWeb3React } from 'hooks';
 import { useICHIPosition } from 'hooks/useICHIData';
 import { useDefiEdgePosition } from 'hooks/v3/useDefiedgeStrategyData';
 import { useGammaPosition } from 'hooks/v3/useGammaData';
@@ -12,8 +14,12 @@ import IncreaseICHILiquidityModal from 'pages/PoolsPage/v3/MyICHIPools/IncreaseI
 import WithdrawICHILiquidityModal from 'pages/PoolsPage/v3/MyICHIPools/WithdrawICHILiquidityModal';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatNumber } from 'utils';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { useSelectedTokenList } from 'state/lists/hooks';
+import { formatNumber, getTokenFromAddress } from 'utils';
+import {
+  useUSDCPriceFromAddress,
+  useUSDCPricesFromAddresses,
+} from 'utils/useUSDCPrice';
 
 interface Props {
   farm: any;
@@ -21,7 +27,9 @@ interface Props {
 
 export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
 
+  const farmType = farm.label.split(' ')[0];
   const isICHI = !!farm.label.includes('Ichi');
   const isGamma = !!farm.label.includes('Gamma');
   const isDefiEdge = !!farm.label.includes('DefiEdge');
@@ -101,8 +109,6 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   } = useUSDCPriceFromAddress(farm?.token1?.address ?? '');
   const usdAmount = token0Price * token0Amount + token1Price * token1Amount;
 
-  const rewardAmount = 0;
-
   const [openAdd, setOpenAdd] = useState(false);
   const [openWithdraw, setOpenWithdraw] = useState(false);
   const ichiPositionToPass = ichiPosition
@@ -112,6 +118,29 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
         token1: farm?.token1,
       }
     : undefined;
+
+  const tokenMap = useSelectedTokenList();
+
+  const {
+    loading: loadingRewardTokenPrices,
+    prices: rewardTokenPrices,
+  } = useUSDCPricesFromAddresses(
+    farm.rewards.map((reward: any) => reward.address),
+  );
+
+  const isClaimable =
+    farm.rewards.filter(
+      (reward: any) => reward.breakdownOfUnclaimed[farmType] > 0,
+    ).length > 0;
+  const rewardUSD = farm.rewards.reduce(
+    (total: number, reward: any) =>
+      total +
+      (rewardTokenPrices?.find(
+        (item) => item.address.toLowerCase() === reward.address.toLowerCase(),
+      )?.price ?? 0) *
+        reward.breakdownOfUnclaimed[farmType],
+    0,
+  );
 
   return (
     <Box padding={2} className='v3PairFarmCardDetailsWrapper'>
@@ -241,16 +270,39 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
           >
             <Box className='flex justify-between'>
               <small>{t('myrewards')}</small>
-              <small className='text-secondary'>$</small>
+              {loadingRewardTokenPrices ? (
+                <Skeleton width={100} height={22} />
+              ) : (
+                <small className='text-secondary'>
+                  ${formatNumber(rewardUSD)}
+                </small>
+              )}
             </Box>
             <Box className='flex items-end justify-between'>
-              <Box className='flex items-center' gridGap={8}>
-                <CurrencyLogo currency={farm.token0} />
-                <small>
-                  {formatNumber(rewardAmount)} {farm.token0?.symbol}
-                </small>
+              <Box>
+                {farm.rewards.map((reward: any) => {
+                  const token = getTokenFromAddress(
+                    reward.address,
+                    chainId,
+                    tokenMap,
+                    [],
+                  );
+                  return (
+                    <Box
+                      className='flex items-center'
+                      gridGap={8}
+                      key={reward.address}
+                    >
+                      <CurrencyLogo currency={token} />
+                      <small>
+                        {formatNumber(reward.breakdownOfUnclaimed[farmType])}{' '}
+                        {token?.symbol}
+                      </small>
+                    </Box>
+                  );
+                })}
               </Box>
-              <Button disabled={!rewardAmount}>{t('claim')}</Button>
+              <Button disabled={!isClaimable}>{t('claim')}</Button>
             </Box>
           </Box>
         </Grid>
