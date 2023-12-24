@@ -1,9 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import 'pages/styles/convertQUICK.scss';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { DefiedgeStrategies, GlobalConst } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
 import { useMerklFarms } from 'hooks/v3/useV3Farms';
 import Loader from 'components/Loader';
@@ -197,7 +196,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const selectedFarms: any[] = useMemo(() => {
     const almFarms: any[] = selectedPool?.alm ?? [];
     return almFarms.map((alm) => {
-      let title = '';
+      let title = alm.title ?? '';
       if (alm.label.includes('Gamma')) {
         title =
           getAllGammaPairs(chainId).find(
@@ -212,6 +211,8 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           )?.title ?? '';
       }
       const farmType = alm.label.split(' ')[0];
+      const farmTypeReward =
+        farmType === 'QuickSwap' ? 'QuickswapAlgebra' : farmType;
       const poolRewards = selectedPool?.rewardsPerToken;
       const rewardTokenAddresses = poolRewards ? Object.keys(poolRewards) : [];
       const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
@@ -223,7 +224,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           const accumulatedRewards = item.breakdownOfAccumulated;
           return (
             accumulatedRewards &&
-            Object.keys(accumulatedRewards).includes(farmType)
+            Object.keys(accumulatedRewards).includes(farmTypeReward)
           );
         });
       return {

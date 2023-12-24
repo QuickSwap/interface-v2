@@ -1,25 +1,39 @@
 import { Box, Button, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { Token } from '@uniswap/sdk-core';
-import { CurrencyLogo } from 'components';
+import { CurrencyLogo, CustomMenu } from 'components';
+import RangeBadge from 'components/v3/Badge/RangeBadge';
 import { useActiveWeb3React } from 'hooks';
+import { useMerklContract } from 'hooks/useContract';
 import { useICHIPosition } from 'hooks/useICHIData';
 import { useDefiEdgePosition } from 'hooks/v3/useDefiedgeStrategyData';
 import { useGammaPosition } from 'hooks/v3/useGammaData';
+import { usePool } from 'hooks/v3/usePools';
+import { useSteerPosition } from 'hooks/v3/useSteerData';
+import { useV3PositionsFromPool } from 'hooks/v3/useV3Farms';
 import IncreaseDefiedgeLiquidityModal from 'pages/PoolsPage/v3/MyDefiedgePoolsV3/IncreaseDefiedgeLiquidityModal';
 import WithdrawDefiedgeLiquidityModal from 'pages/PoolsPage/v3/MyDefiedgePoolsV3/WithdrawDefiedgeLiquidityModal';
 import IncreaseGammaLiquidityModal from 'pages/PoolsPage/v3/MyGammaPoolsV3/IncreaseGammaLiquidityModal';
 import WithdrawGammaLiquidityModal from 'pages/PoolsPage/v3/MyGammaPoolsV3/WithdrawGammaLiquidityModal';
 import IncreaseICHILiquidityModal from 'pages/PoolsPage/v3/MyICHIPools/IncreaseICHILiquidityModal';
 import WithdrawICHILiquidityModal from 'pages/PoolsPage/v3/MyICHIPools/WithdrawICHILiquidityModal';
-import React, { useMemo, useState } from 'react';
+import V3IncreaseLiquidityModal from 'pages/PoolsPage/v3/MyQuickswapPoolsV3/components/V3IncreaseLiquidityModal';
+import V3RemoveLiquidityModal from 'pages/PoolsPage/v3/MyQuickswapPoolsV3/components/V3RemoveLiquidityModal';
+import IncreaseSteerLiquidityModal from 'pages/PoolsPage/v3/MySteerPoolsV3/IncreaseSteerLiquidityModal';
+import WithdrawSteerLiquidityModal from 'pages/PoolsPage/v3/MySteerPoolsV3/WithdrawSteerLiquidityModal';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { formatNumber, getTokenFromAddress } from 'utils';
+import { calculateGasMargin, formatNumber, getTokenFromAddress } from 'utils';
 import {
   useUSDCPriceFromAddress,
   useUSDCPricesFromAddresses,
 } from 'utils/useUSDCPrice';
+import { Position } from 'v3lib/entities';
+import { TransactionResponse } from '@ethersproject/providers';
+import {
+  useTransactionAdder,
+  useTransactionFinalizer,
+} from 'state/transactions/hooks';
 
 interface Props {
   farm: any;
@@ -27,12 +41,15 @@ interface Props {
 
 export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
 
   const farmType = farm.label.split(' ')[0];
   const isICHI = !!farm.label.includes('Ichi');
   const isGamma = !!farm.label.includes('Gamma');
   const isDefiEdge = !!farm.label.includes('DefiEdge');
+  const isQuickswap = farm.label === 'QuickSwap';
+  const isSteer = !!farm.label.includes('Steer');
+
   const { loading: loadingICHI, vault: ichiPosition } = useICHIPosition(
     isICHI ? farm.almAddress : undefined,
     isICHI ? farm?.token0?.address : undefined,
@@ -51,6 +68,56 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     farm?.token0,
     farm?.token1,
   );
+  const { loading: loadingSteer, data: steerPosition } = useSteerPosition(
+    isSteer ? farm.almAddress : undefined,
+  );
+
+  const { loading: loadingQS, positions: qsPositions } = useV3PositionsFromPool(
+    farm?.token0?.address,
+    farm?.token1?.address,
+  );
+
+  const [selectedQSNFTId, setSelectedQSNFTId] = useState('');
+  const selectedQSPosition = qsPositions.find(
+    (item) => item.tokenId.toString() === selectedQSNFTId,
+  );
+
+  useEffect(() => {
+    if (isQuickswap && qsPositions.length > 0) {
+      setSelectedQSNFTId(qsPositions[0].tokenId.toString());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isQuickswap, qsPositions.length]);
+
+  const [_, pool] = usePool(
+    isQuickswap ? farm?.token0 : undefined,
+    isQuickswap ? farm?.token1 : undefined,
+    selectedQSPosition?.fee,
+    selectedQSPosition?.isUni,
+  );
+
+  const qsPosition = useMemo(() => {
+    if (
+      pool &&
+      selectedQSPosition &&
+      selectedQSPosition.liquidity &&
+      typeof selectedQSPosition.tickLower === 'number' &&
+      typeof selectedQSPosition.tickUpper === 'number'
+    ) {
+      return new Position({
+        pool: pool,
+        liquidity: selectedQSPosition.liquidity.toString(),
+        tickLower: selectedQSPosition.tickLower,
+        tickUpper: selectedQSPosition.tickUpper,
+      });
+    }
+    return;
+  }, [pool, selectedQSPosition]);
+  const outOfRange: boolean =
+    pool && qsPosition
+      ? pool.tickCurrent < qsPosition.tickLower ||
+        pool.tickCurrent >= qsPosition.tickUpper
+      : false;
 
   const loading = isICHI
     ? loadingICHI
@@ -58,6 +125,10 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     ? loadingGamma
     : isDefiEdge
     ? loadingDefiEdge
+    : isQuickswap
+    ? loadingQS
+    : isSteer
+    ? loadingSteer
     : false;
   const token0Amount = useMemo(() => {
     if (isICHI) {
@@ -69,14 +140,24 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     if (isDefiEdge) {
       return defiEdgePosition?.balance0 ?? 0;
     }
+    if (isQuickswap) {
+      return Number(qsPosition?.amount0.toExact() ?? 0);
+    }
+    if (isSteer) {
+      return steerPosition?.token0BalanceWallet ?? 0;
+    }
     return 0;
   }, [
-    ichiPosition,
-    isGamma,
-    gammaPosition,
     isICHI,
+    isGamma,
     isDefiEdge,
-    defiEdgePosition,
+    isQuickswap,
+    isSteer,
+    ichiPosition?.token0Balance,
+    gammaPosition?.balance0,
+    defiEdgePosition?.balance0,
+    qsPosition?.amount0,
+    steerPosition?.token0BalanceWallet,
   ]);
 
   const token1Amount = useMemo(() => {
@@ -89,14 +170,24 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     if (isDefiEdge) {
       return defiEdgePosition?.balance1 ?? 0;
     }
+    if (isQuickswap) {
+      return Number(qsPosition?.amount1.toExact() ?? 0);
+    }
+    if (isSteer) {
+      return Number(steerPosition?.token1BalanceWallet ?? 0);
+    }
     return 0;
   }, [
-    ichiPosition,
-    isGamma,
-    gammaPosition,
     isICHI,
+    isGamma,
     isDefiEdge,
-    defiEdgePosition,
+    isQuickswap,
+    isSteer,
+    ichiPosition?.token1Balance,
+    gammaPosition?.balance1,
+    defiEdgePosition?.balance1,
+    qsPosition?.amount1,
+    steerPosition?.token1BalanceWallet,
   ]);
 
   const {
@@ -128,19 +219,80 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     farm.rewards.map((reward: any) => reward.address),
   );
 
-  const isClaimable =
-    farm.rewards.filter(
-      (reward: any) => reward.breakdownOfUnclaimed[farmType] > 0,
-    ).length > 0;
+  const farmTypeReward =
+    farmType === 'QuickSwap' ? 'QuickswapAlgebra' : farmType;
+
+  const [claiming, setClaiming] = useState(false);
   const rewardUSD = farm.rewards.reduce(
     (total: number, reward: any) =>
       total +
       (rewardTokenPrices?.find(
         (item) => item.address.toLowerCase() === reward.address.toLowerCase(),
       )?.price ?? 0) *
-        reward.breakdownOfUnclaimed[farmType],
+        reward.breakdownOfUnclaimed[farmTypeReward],
     0,
   );
+
+  const isClaimable =
+    farm.rewards.length > 0 &&
+    farm.rewards.filter(
+      (reward: any) => reward.breakdownOfUnclaimed[farmTypeReward] > 0,
+    ).length > 0 &&
+    !claiming;
+
+  const merklDistributorContract = useMerklContract();
+  const addTransaction = useTransactionAdder();
+  const finalizedTransaction = useTransactionFinalizer();
+  const claimReward = async () => {
+    if (!merklDistributorContract || !account) return;
+    setClaiming(true);
+    let data: any;
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_MERKL_API_URL}?chainIds[]=${chainId}&AMMs[]=quickswapalgebra&user=${account}`,
+      );
+      const merklData = await res.json();
+      data =
+        merklData && merklData[chainId]
+          ? merklData[chainId].transactionData
+          : undefined;
+    } catch {
+      setClaiming(false);
+      throw 'Angle API not responding';
+    }
+    // Distributor address is the same across different chains
+    const tokens = Object.keys(data).filter((k) => data[k].proof !== undefined);
+    const claims = tokens.map((t) => data[t].claim);
+    const proofs = tokens.map((t) => data[t].proof);
+
+    try {
+      const estimatedGas = await merklDistributorContract.estimateGas.claim(
+        tokens.map((t) => account),
+        tokens,
+        claims,
+        proofs as string[][],
+      );
+      const response: TransactionResponse = await merklDistributorContract.claim(
+        tokens.map((t) => account),
+        tokens,
+        claims,
+        proofs as string[][],
+        {
+          gasLimit: calculateGasMargin(estimatedGas),
+        },
+      );
+      addTransaction(response, {
+        summary: t('claimingReward'),
+      });
+      const receipt = await response.wait();
+      finalizedTransaction(receipt, {
+        summary: t('claimedReward'),
+      });
+      setClaiming(false);
+    } catch {
+      setClaiming(false);
+    }
+  };
 
   return (
     <Box padding={2} className='v3PairFarmCardDetailsWrapper'>
@@ -186,6 +338,34 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
           position={defiEdgePosition}
         />
       )}
+      {steerPosition && openAdd && (
+        <IncreaseSteerLiquidityModal
+          open={openAdd}
+          onClose={() => setOpenAdd(false)}
+          position={steerPosition}
+        />
+      )}
+      {steerPosition && openWithdraw && (
+        <WithdrawSteerLiquidityModal
+          open={openWithdraw}
+          onClose={() => setOpenWithdraw(false)}
+          position={steerPosition}
+        />
+      )}
+      {selectedQSPosition && openAdd && (
+        <V3IncreaseLiquidityModal
+          open={openAdd}
+          onClose={() => setOpenAdd(false)}
+          positionDetails={selectedQSPosition}
+        />
+      )}
+      {selectedQSPosition && openWithdraw && (
+        <V3RemoveLiquidityModal
+          open={openWithdraw}
+          onClose={() => setOpenWithdraw(false)}
+          position={selectedQSPosition}
+        />
+      )}
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={6}>
           <Box
@@ -196,6 +376,42 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
             className='bg-palette flex flex-col justify-between'
             gridGap={16}
           >
+            {isQuickswap && qsPositions.length > 0 && (
+              <Box className='flex border-bottom' pb='8px'>
+                <Box
+                  className='flex items-center border-right'
+                  gridGap={6}
+                  pr='8px'
+                >
+                  <small className='secondary'>{t('nftID')}:</small>
+                  <Box className='flex'>
+                    <CustomMenu
+                      menuItems={qsPositions.map((item) => ({
+                        text: item.tokenId.toString(),
+                        onClick: () =>
+                          setSelectedQSNFTId(item.tokenId.toString()),
+                      }))}
+                      title={''}
+                      selectedValue={selectedQSNFTId}
+                    />
+                  </Box>
+                </Box>
+                <Box px='8px' className='border-right'>
+                  <RangeBadge removed={false} inRange={!outOfRange} />
+                </Box>
+                <Box pl='8px' className='flex items-center'>
+                  <a
+                    href={`/#/pool/${selectedQSNFTId}`}
+                    target='_blank'
+                    rel='noreferrer'
+                    className='flex no-decoration text-primary'
+                    style={{ height: 20 }}
+                  >
+                    {t('viewPosition')}
+                  </a>
+                </Box>
+              </Box>
+            )}
             <Box className='flex justify-between items-center'>
               <small>{t('myLiquidity')}</small>
               {loading || loadingToken0Price || loadingToken1Price ? (
@@ -295,14 +511,18 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                     >
                       <CurrencyLogo currency={token} />
                       <small>
-                        {formatNumber(reward.breakdownOfUnclaimed[farmType])}{' '}
+                        {formatNumber(
+                          reward.breakdownOfUnclaimed[farmTypeReward],
+                        )}{' '}
                         {token?.symbol}
                       </small>
                     </Box>
                   );
                 })}
               </Box>
-              <Button disabled={!isClaimable}>{t('claim')}</Button>
+              <Button onClick={claimReward} disabled={!isClaimable}>
+                {claiming ? t('claiming') : t('claim')}
+              </Button>
             </Box>
           </Box>
         </Grid>

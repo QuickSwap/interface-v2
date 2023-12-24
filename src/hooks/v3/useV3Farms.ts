@@ -10,18 +10,24 @@ import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import {
   useGammaHypervisorContract,
   useMasterChefContract,
+  useV3NFTPositionManagerContract,
 } from 'hooks/useContract';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import {
+  calculatePositionWidth,
   getAllDefiedgeStrategies,
   getAllGammaPairs,
   getTokenFromAddress,
+  percentageToMultiplier,
 } from 'utils';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
-import { formatUnits } from 'ethers/lib/utils';
+import {
+  useSingleCallResult,
+  useSingleContractMultipleData,
+} from 'state/multicall/v3/hooks';
+import { Result, formatUnits } from 'ethers/lib/utils';
 import { V3Farm } from 'pages/FarmPage/V3/Farms';
 import { useGammaData, useGammaRewards } from './useGammaData';
 import { useActiveWeb3React } from 'hooks';
@@ -29,6 +35,9 @@ import { useSteerVaults } from './useSteerData';
 import { useICHIVaultAPRs, useICHIVaults } from 'hooks/useICHIData';
 import { useDefiEdgeStrategiesAPR } from 'state/mint/v3/hooks';
 import { useEternalFarmPoolAPRs } from 'hooks/useIncentiveSubgraph';
+import { useV3PositionsFromTokenIds } from './useV3Positions';
+import { BigNumber } from 'ethers';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 
 export const useMerklFarms = () => {
   const { chainId, account } = useActiveWeb3React();
@@ -48,11 +57,16 @@ export const useMerklFarms = () => {
     if (!farmData) return [];
     return Object.values(farmData) as any[];
   };
-  const { isLoading: loadingMerkl, data: merklFarms } = useQuery({
+  const lastTx = useLastTransactionHash();
+  const { isLoading: loadingMerkl, data: merklFarms, refetch } = useQuery({
     queryKey: ['fetchMerklFarms', chainId],
     queryFn: fetchMerklFarms,
     refetchInterval: 300000,
   });
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTx]);
   const { loading: loadingSteer, data: steerVaults } = useSteerVaults(chainId);
   const { isLoading: loadingGamma, data: gammaData } = useGammaData();
   const { loading: loadingICHI, data: ichiVaults } = useICHIVaults();
@@ -153,6 +167,7 @@ export const useMerklFarms = () => {
         ])
         .map((alm: any) => {
           let poolAPR = 0;
+          let title = '';
           if (alm.label.includes('Gamma')) {
             const gammaItemData = gammaData
               ? gammaData[alm.almAddress.toLowerCase()]
@@ -164,6 +179,21 @@ export const useMerklFarms = () => {
                 vault.address.toLowerCase() === alm.almAddress.toLowerCase(),
             );
             poolAPR = steerVault?.apr ?? 0;
+            const minTick = Number(steerVault?.lowerTick ?? 0);
+            const maxTick = Number(steerVault?.upperTick ?? 0);
+            const currentTick = Number(steerVault?.tick ?? 0);
+            const positionWidthPercent = calculatePositionWidth(
+              currentTick,
+              minTick,
+              maxTick,
+            );
+            title = (steerVault?.strategy?.strategyConfigData?.name ?? '')
+              .toLowerCase()
+              .includes('stable')
+              ? 'Stable'
+              : percentageToMultiplier(positionWidthPercent) > 1.2
+              ? 'Wide'
+              : 'Narrow';
           } else if (alm.label.includes('Ichi')) {
             poolAPR =
               ichiAPRs?.find(
@@ -179,7 +209,7 @@ export const useMerklFarms = () => {
           } else if (alm.label.includes('QuickSwap') && eternalFarmPoolAprs) {
             poolAPR = eternalFarmPoolAprs[alm.almAddress.toLowerCase()];
           }
-          return { ...alm, poolAPR };
+          return { ...alm, poolAPR, title };
         });
       return { ...item, alm: alms };
     });
@@ -559,3 +589,67 @@ export const useGammaFarmsFiltered = (
     data: filteredFarms,
   };
 };
+
+export function useV3PositionsFromPool(token0?: string, token1?: string) {
+  const { account } = useActiveWeb3React();
+  const positionManager = useV3NFTPositionManagerContract();
+
+  const {
+    loading: balanceLoading,
+    result: balanceResult,
+  } = useSingleCallResult(positionManager, 'balanceOf', [account ?? undefined]);
+
+  // we don't expect any account balance to ever exceed the bounds of max safe int
+  const accountBalance: number | undefined = balanceResult?.[0]?.toNumber();
+
+  const tokenIdsArgs = useMemo(() => {
+    if (accountBalance && account) {
+      const tokenRequests: any[] = [];
+      for (let i = 0; i < accountBalance; i++) {
+        tokenRequests.push([account, i]);
+      }
+      return tokenRequests;
+    }
+    return [];
+  }, [account, accountBalance]);
+
+  const tokenIdResults = useSingleContractMultipleData(
+    positionManager,
+    'tokenOfOwnerByIndex',
+    tokenIdsArgs,
+  );
+  const someTokenIdsLoading = useMemo(
+    () => tokenIdResults.some(({ loading }) => loading),
+    [tokenIdResults],
+  );
+
+  const tokenIds = useMemo(() => {
+    if (account) {
+      return tokenIdResults
+        .map(({ result }) => result)
+        .filter((result): result is Result => !!result)
+        .map((result) => BigNumber.from(result[0]));
+    }
+    return [];
+  }, [account, tokenIdResults]);
+
+  const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
+    tokenIds,
+  );
+
+  const filteredPositions = useMemo(() => {
+    if (!positions) return [];
+    if (!token0 || !token1) return positions;
+    return positions.filter(
+      (item) =>
+        item.token0.toLowerCase() === token0.toLowerCase() &&
+        item.token1.toLowerCase() === token1.toLowerCase() &&
+        item.liquidity.gt('0'),
+    );
+  }, [positions, token0, token1]);
+
+  return {
+    loading: someTokenIdsLoading || balanceLoading || positionsLoading,
+    positions: filteredPositions,
+  };
+}

@@ -3,11 +3,13 @@ import { ChainId, Token as TokenV2 } from '@uniswap/sdk';
 import { getConfig } from 'config/index';
 import {
   useSteerPeripheryContract,
+  useSteerVaultContract,
   useSteerVaultRegistryContract,
 } from 'hooks/useContract';
 import { useEffect, useMemo, useState } from 'react';
 import {
   useMultipleContractSingleData,
+  useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
@@ -29,6 +31,7 @@ import UniV3PoolABI from 'constants/abis/v3/univ3Pool.json';
 import { ERC20_ABI } from 'constants/abis/erc20';
 import SteerVaultABI from 'constants/abis/steer-vault.json';
 import { Presets } from 'state/mint/v3/reducer';
+import { useActiveWeb3React } from 'hooks';
 
 export interface SteerVault {
   address: string;
@@ -694,4 +697,53 @@ export function useSteerFilteredFarms(
     });
 
   return filteredFarms;
+}
+
+export function useSteerPosition(vaultAddress?: string) {
+  const { chainId, account } = useActiveWeb3React();
+  const { loading: loadingVaults, data: steerVaults } = useSteerVaults(chainId);
+  const steerVaultContract = useSteerVaultContract(vaultAddress);
+  const vaultTotalSupplyRes = useSingleCallResult(
+    steerVaultContract,
+    'totalSupply',
+  );
+  const vaultBalanceRes = useSingleCallResult(steerVaultContract, 'balanceOf', [
+    account,
+  ]);
+  const vaultTotalSupply =
+    !vaultTotalSupplyRes.loading && vaultTotalSupplyRes.result
+      ? vaultTotalSupplyRes.result[0]
+      : '0';
+  const vaultBalance =
+    !vaultBalanceRes.loading && vaultBalanceRes.result
+      ? vaultBalanceRes.result[0]
+      : '0';
+  if (!vaultAddress) return { loading: false };
+  const vault = steerVaults.find(
+    (item) => item.address.toLowerCase() === vaultAddress.toLowerCase(),
+  );
+  if (!vault) return { loading: false };
+  const vaultTotalSupplyNum = Number(formatUnits(vaultTotalSupply));
+  const vaultBalanceNum = Number(formatUnits(vaultBalance));
+  const steerToken0VaultBalance = vault?.token0Balance
+    ? Number(formatUnits(vault.token0Balance, vault.token0?.decimals))
+    : 0;
+  const steerToken1VaultBalance = vault?.token1Balance
+    ? Number(formatUnits(vault.token1Balance, vault.token1?.decimals))
+    : 0;
+  const token0Balance =
+    (vaultBalanceNum * steerToken0VaultBalance) / vaultTotalSupplyNum;
+  const token1Balance =
+    (vaultBalanceNum * steerToken1VaultBalance) / vaultTotalSupplyNum;
+
+  return {
+    loading:
+      loadingVaults || vaultTotalSupplyRes.loading || vaultBalanceRes.loading,
+    data: {
+      ...vault,
+      totalBalance: vaultBalanceNum,
+      token0BalanceWallet: token0Balance,
+      token1BalanceWallet: token1Balance,
+    },
+  };
 }

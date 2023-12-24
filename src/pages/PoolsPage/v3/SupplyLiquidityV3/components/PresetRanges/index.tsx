@@ -14,14 +14,13 @@ import {
 } from 'constants/v3/addresses';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import PoolABI from 'constants/abis/v3/pool.json';
-import UniPoolABI from 'constants/abis/v3/univ3Pool.json';
 import './index.scss';
 import { useActiveWeb3React } from 'hooks';
 import { Interface } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useMultipleContractSingleData } from 'state/multicall/hooks';
 import { GlobalConst, unipilotVaultTypes } from 'constants/index';
-import { TickMath, tickToPrice } from 'v3lib/utils';
+import { TickMath } from 'v3lib/utils';
 import { SteerVault } from 'hooks/v3/useSteerData';
 import { calculatePositionWidth, percentageToMultiplier } from 'utils';
 
@@ -288,18 +287,13 @@ export function PresetRanges({
               currentTick !== undefined
                 ? Math.pow(1.0001, maxTick - currentTick)
                 : 0;
-            const pairType =
-              pair &&
-              pair.strategy &&
-              pair.strategy.strategyConfigData &&
-              pair.strategy.strategyConfigData.name &&
-              pair.strategy.strategyConfigData.name
-                .toLowerCase()
-                .includes('stable')
-                ? Presets.STEER_STABLE
-                : percentageToMultiplier(positionWidthPercent) > 1.2
-                ? Presets.STEER_WIDE
-                : Presets.STEER_NARROW;
+            const pairType = (pair?.strategy?.strategyConfigData?.name ?? '')
+              .toLowerCase()
+              .includes('stable')
+              ? Presets.STEER_STABLE
+              : percentageToMultiplier(positionWidthPercent) > 1.2
+              ? Presets.STEER_WIDE
+              : Presets.STEER_NARROW;
             const pairTypeTitle =
               pairType === Presets.STEER_STABLE
                 ? 'Stable'

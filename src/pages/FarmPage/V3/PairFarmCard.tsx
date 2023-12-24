@@ -9,6 +9,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { V3PairFarmCardDetails } from './PairFarmCardDetails';
 import { toV3Token } from 'constants/v3/addresses';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
 interface Props {
   farm: any;
@@ -39,7 +40,7 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
         width='100%'
         onClick={() => setExpanded(!expanded)}
       >
-        <Box className='flex items-center' width='38%' gridGap={8}>
+        <Box className='flex items-center' width='50%' gridGap={8}>
           <DoubleCurrencyLogo size={24} currency0={token0} currency1={token1} />
           <Box>
             <Box className='flex items-center' gridGap={5}>
@@ -84,6 +85,13 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
               <img src={APRHover} alt='farm APR' height={16} />
             </TotalAPRTooltip>
           </Box>
+        </Box>
+        <Box width='10%' className='flex items-center justify-end'>
+          {expanded ? (
+            <KeyboardArrowUp className='text-primary' />
+          ) : (
+            <KeyboardArrowDown />
+          )}
         </Box>
       </Box>
       {expanded && (

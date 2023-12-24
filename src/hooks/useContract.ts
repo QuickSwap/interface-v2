@@ -45,6 +45,7 @@ import {
   STEER_PERIPHERY,
   STEER_VAULT_REGISTRY,
   PRICE_GETTER_ADDRESS,
+  MERKL_DISTRIBUTOR,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
@@ -501,4 +502,16 @@ export function useSteerFarmingContract(
     withSignerIfPossible,
   );
   return isDual ? dualContract : singleContract;
+}
+
+export function useMerklContract(withSignerIfPossible?: boolean) {
+  const distributorABI = [
+    'function claim(address[] calldata users, address[] calldata tokens, uint256[] calldata amounts, bytes32[][] calldata proofs) external',
+  ];
+  const contract = useContract(
+    MERKL_DISTRIBUTOR,
+    distributorABI,
+    withSignerIfPossible,
+  );
+  return contract;
 }

@@ -51,7 +51,7 @@ interface UseV3PositionsResults {
   positions: PositionPool[] | undefined;
 }
 
-function useV3PositionsFromTokenIds(
+export function useV3PositionsFromTokenIds(
   tokenIds: BigNumber[] | undefined,
   isUni?: boolean,
 ): UseV3PositionsResults {
