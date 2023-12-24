@@ -1144,7 +1144,7 @@ export const useV2TradeTypeAnalyticsCallback = (
   const dstTokenCurrency = currencies[Field.OUTPUT];
   const inToken = wrappedCurrency(srcTokenCurrency, chainId);
   const outToken = wrappedCurrency(dstTokenCurrency, chainId);
-  const outTokenUSD = useUSDCPriceFromAddress(outToken?.address || '').price;
+  const outTokenUSD = useUSDCPriceFromAddress(outToken?.address).price;
 
   return useCallback(
     (trade?: Trade) => {

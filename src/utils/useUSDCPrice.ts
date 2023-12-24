@@ -60,6 +60,42 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   }, [currency, allowedPairs, amountOut, chainId]);
 }
 
+const getUSDPriceFromAddress = async (
+  chainId: ChainId,
+  address?: string,
+  onlyV3?: boolean,
+) => {
+  if (!address) return 0;
+  let priceV3, priceV2;
+  const config = getConfig(chainId);
+  const v2 = config['v2'] && !onlyV3;
+  const res = await fetch(
+    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v3?chainId=${chainId}&addresses=${address}`,
+  );
+  if (res.ok) {
+    const data = await res.json();
+    priceV3 =
+      data && data.data && data.data.length > 0
+        ? data.data[0]?.price
+        : undefined;
+  }
+
+  if (v2) {
+    const v2Res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v2?chainId=${chainId}&addresses=${address}`,
+    );
+    if (v2Res.ok) {
+      const data = await v2Res.json();
+      priceV2 =
+        data && data.data && data.data.length > 0
+          ? data.data[0]?.price
+          : undefined;
+    }
+  }
+
+  return Number(priceV3 ?? priceV2 ?? 0);
+};
+
 export function useUSDCPricesFromAddresses(
   addressArray: string[],
   onlyV3?: boolean,
@@ -69,86 +105,36 @@ export function useUSDCPricesFromAddresses(
   const v2 = config['v2'] && !onlyV3;
   const addressStr = addressArray.join('_');
 
-  const fetchTokenPrices = async () => {
-    if (!addressStr) return [];
-    const addresses = addressStr.split('_');
-
-    let pricesV2: any[] = [];
-    let pricesV3: any[] = [];
-
-    const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v3?chainId=${chainId}&addresses=${addressStr}`,
-    );
-    if (res.ok) {
-      const data = await res.json();
-      pricesV3 = data && data.data && data.data.length > 0 ? data.data : [];
-    }
-
-    if (v2) {
-      const addressesNotInV3 = addresses.filter((address) => {
-        const priceV3 = pricesV3.find(
-          (item: any) =>
-            item && item.id.toLowerCase() === address.toLowerCase(),
-        );
-        return !priceV3 || !priceV3.price;
-      });
-
-      const res = await fetch(
-        `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
-        }/utils/token-prices/v2?chainId=${chainId}&addresses=${addressesNotInV3.join(
-          '_',
-        )}`,
-      );
-      if (res.ok) {
-        const data = await res.json();
-        pricesV2 = data && data.data && data.data.length > 0 ? data.data : [];
-      }
-    }
-
-    const prices = addresses.map((address) => {
-      const priceV3 = pricesV3.find(
-        (item: any) => item && item.id.toLowerCase() === address.toLowerCase(),
-      );
-      if (priceV3 && priceV3.price) {
-        return {
-          address,
-          price: priceV3.price,
-        };
-      } else {
-        const priceV2 = pricesV2.find(
-          (item: any) =>
-            item && item.id.toLowerCase() === address.toLowerCase(),
-        );
-        if (priceV2 && priceV2.price) {
-          return {
-            address,
-            price: priceV2.price,
-          };
-        }
-        return { address, price: 0 };
-      }
-    });
-    return prices;
-  };
-
   const { isLoading, data: prices } = useQuery({
-    queryKey: ['fetchTokenPrices', chainId, addressStr, v2],
-    queryFn: fetchTokenPrices,
+    queryKey: ['usd-price-tokens', chainId, addressStr, v2],
+    queryFn: async () => {
+      const prices = await Promise.all(
+        addressArray.map(async (address) => {
+          const price = await getUSDPriceFromAddress(chainId, address, onlyV3);
+          return { address, price };
+        }),
+      );
+      return prices;
+    },
     refetchInterval: 300000,
   });
 
   return { loading: isLoading, prices };
 }
 
-export function useUSDCPriceFromAddress(address: string, onlyV3?: boolean) {
-  const { loading, prices: usdPrices } = useUSDCPricesFromAddresses(
-    [address],
-    onlyV3,
-  );
+export function useUSDCPriceFromAddress(address?: string, onlyV3?: boolean) {
+  const { chainId } = useActiveWeb3React();
+  const { isLoading, data: price } = useQuery({
+    queryKey: ['usd-price-token', address, onlyV3, chainId],
+    queryFn: async () => {
+      const price = await getUSDPriceFromAddress(chainId, address, onlyV3);
+      return price ?? 0;
+    },
+    refetchInterval: 300000,
+  });
   return {
-    loading,
-    price: usdPrices && usdPrices[0] ? usdPrices[0].price : 0,
+    loading: isLoading,
+    price: price ?? 0,
   };
 }
 
