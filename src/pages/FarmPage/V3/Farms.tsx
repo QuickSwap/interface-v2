@@ -119,7 +119,12 @@ export default function Farms() {
   return (
     <Box className={poolId ? '' : 'bg-palette'} borderRadius={10}>
       {!poolId && (
-        <Box pt={2} px={2} className='flex flex-wrap justify-between'>
+        <Box
+          pt={2}
+          px={2}
+          className='flex flex-wrap justify-between'
+          gridGap={16}
+        >
           <CustomSelector
             height={36}
             items={v3FarmCategories}

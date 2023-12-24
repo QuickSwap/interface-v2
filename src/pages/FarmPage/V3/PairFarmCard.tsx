@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { DoubleCurrencyLogo } from 'components';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import APRHover from 'assets/images/aprHover.png';
@@ -25,6 +25,8 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
   const token1 = getTokenFromAddress(farm.token1, chainId, tokenMap, []);
 
   const [expanded, setExpanded] = useState(false);
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   return (
     <Box
@@ -40,7 +42,11 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
         width='100%'
         onClick={() => setExpanded(!expanded)}
       >
-        <Box className='flex items-center' width='50%' gridGap={8}>
+        <Box
+          className='flex items-center'
+          width={isMobile ? '90%' : '50%'}
+          gridGap={8}
+        >
           <DoubleCurrencyLogo size={24} currency0={token0} currency1={token1} />
           <Box>
             <Box className='flex items-center' gridGap={5}>
@@ -68,24 +74,28 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
             </Box>
           </Box>
         </Box>
-        <Box width='20%'>
-          <p className='small text-secondary'>{t('tvl')}</p>
-          <p className='small'>${formatNumber(farm.almTVL)}</p>
-        </Box>
-        <Box width='20%'>
-          <p className='small text-secondary'>{t('totalAPR')}</p>
-          <Box className='flex items-center' gridGap={4}>
-            <p className='small text-success'>
-              {formatNumber(farm.poolAPR + farm.almAPR)}%
-            </p>
-            <TotalAPRTooltip
-              farmAPR={farm.almAPR ?? 0}
-              poolAPR={farm.poolAPR ?? 0}
-            >
-              <img src={APRHover} alt='farm APR' height={16} />
-            </TotalAPRTooltip>
-          </Box>
-        </Box>
+        {!isMobile && (
+          <>
+            <Box width='20%'>
+              <p className='small text-secondary'>{t('tvl')}</p>
+              <p className='small'>${formatNumber(farm.almTVL)}</p>
+            </Box>
+            <Box width='20%'>
+              <p className='small text-secondary'>{t('totalAPR')}</p>
+              <Box className='flex items-center' gridGap={4}>
+                <p className='small text-success'>
+                  {formatNumber(farm.poolAPR + farm.almAPR)}%
+                </p>
+                <TotalAPRTooltip
+                  farmAPR={farm.almAPR ?? 0}
+                  poolAPR={farm.poolAPR ?? 0}
+                >
+                  <img src={APRHover} alt='farm APR' height={16} />
+                </TotalAPRTooltip>
+              </Box>
+            </Box>
+          </>
+        )}
         <Box width='10%' className='flex items-center justify-end'>
           {expanded ? (
             <KeyboardArrowUp className='text-primary' />

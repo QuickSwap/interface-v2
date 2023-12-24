@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from '@material-ui/core';
+import { Box, Button, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { CurrencyLogo, CustomMenu } from 'components';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
@@ -34,6 +34,8 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
+import TotalAPRTooltip from 'components/TotalAPRToolTip';
+import APRHover from 'assets/images/aprHover.png';
 
 interface Props {
   farm: any;
@@ -42,6 +44,8 @@ interface Props {
 export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const farmType = farm.label.split(' ')[0];
   const isICHI = !!farm.label.includes('Ichi');
@@ -366,6 +370,29 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
           position={selectedQSPosition}
         />
       )}
+      {isMobile && (
+        <>
+          <Box className='flex items-center justify-between'>
+            <p className='small text-secondary'>{t('tvl')}</p>
+            <p className='small'>${formatNumber(farm.almTVL)}</p>
+          </Box>
+          <Box className='flex items-center justify-between' my={2}>
+            <p className='small text-secondary'>{t('totalAPR')}</p>
+            <Box className='flex items-center' gridGap={4}>
+              <p className='small text-success'>
+                {formatNumber(farm.poolAPR + farm.almAPR)}%
+              </p>
+              <TotalAPRTooltip
+                farmAPR={farm.almAPR ?? 0}
+                poolAPR={farm.poolAPR ?? 0}
+              >
+                <img src={APRHover} alt='farm APR' height={16} />
+              </TotalAPRTooltip>
+            </Box>
+          </Box>
+        </>
+      )}
+
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={6}>
           <Box
@@ -428,7 +455,10 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
             {loading ? (
               <Skeleton height='56px' />
             ) : (
-              <Box className='flex items-end justify-between'>
+              <Box
+                className='flex items-end justify-between flex-wrap'
+                gridGap={8}
+              >
                 <Box>
                   <Box className='flex items-center' gridGap={8}>
                     <CurrencyLogo currency={farm.token0} />

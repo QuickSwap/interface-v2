@@ -27,7 +27,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const history = useHistory();
 
   const farmFilters = useMemo(
@@ -128,7 +128,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           Math.max(value, farm.almAPR + farm.poolAPR),
         0,
       );
-      const title = (item.symbolToken0 ?? '') + (item.symbolToken0 ?? '');
+      const title = (item.symbolToken0 ?? '') + (item.symbolToken1 ?? '');
       const rewardItems: any[] = (item?.distributionData ?? []).filter(
         (reward: any) => reward.isLive,
       );
@@ -155,6 +155,9 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       }, 0);
       return { ...item, apr, title, totalTVL, dailyRewardUSD };
     })
+    .filter((farm) =>
+      (farm?.title ?? '').toLowerCase().includes(searchValue.toLowerCase()),
+    )
     .sort((farm1, farm2) => {
       if (sortBy === GlobalConst.utils.v3FarmSortBy.pool) {
         return farm1.title > farm2.title ? sortMultiplier : -1 * sortMultiplier;
@@ -262,13 +265,16 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const [staked, setStaked] = useState(false);
 
   const filteredSelectedFarms = useMemo(() => {
+    const farmsFilteredWithRewards = selectedFarms.filter((item) =>
+      staked ? item.rewards.length > 0 : true,
+    );
     if (farmType.link === 'all') {
-      return selectedFarms;
+      return farmsFilteredWithRewards;
     }
-    return selectedFarms.filter(
+    return farmsFilteredWithRewards.filter(
       (item) => item.title && item.title === farmType.link,
     );
-  }, [farmType.link, selectedFarms]);
+  }, [farmType.link, selectedFarms, staked]);
 
   return (
     <>
@@ -324,7 +330,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           </Box>
         ) : (
           <>
-            <Box pl='12px' className='bg-secondary1'>
+            <Box pl='12px' className='bg-secondary1' mb={isMobile ? '16px' : 0}>
               <CustomTabSwitch
                 items={farmFilters}
                 value={farmFilter}
@@ -352,17 +358,37 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           </Box>
         ) : (
           <Box px={2}>
-            {poolId
-              ? filteredSelectedFarms.map((farm, ind) => (
+            {poolId ? (
+              filteredSelectedFarms.length > 0 ? (
+                filteredSelectedFarms.map((farm, ind) => (
                   <Box key={ind} pb={2}>
                     <V3PairFarmCard farm={farm} />
                   </Box>
                 ))
-              : v3Farms.map((farm, ind) => (
-                  <Box key={ind} pb={2}>
-                    <V3FarmCard farm={farm} />
-                  </Box>
-                ))}
+              ) : (
+                <Box
+                  width='100%'
+                  minHeight={200}
+                  className='flex items-center justify-center'
+                >
+                  <p>{t('nofarms')}</p>
+                </Box>
+              )
+            ) : v3Farms.length > 0 ? (
+              v3Farms.map((farm, ind) => (
+                <Box key={ind} pb={2}>
+                  <V3FarmCard farm={farm} />
+                </Box>
+              ))
+            ) : (
+              <Box
+                width='100%'
+                minHeight={200}
+                className='flex items-center justify-center'
+              >
+                <p>{t('nofarms')}</p>
+              </Box>
+            )}
           </Box>
         )}
       </Box>

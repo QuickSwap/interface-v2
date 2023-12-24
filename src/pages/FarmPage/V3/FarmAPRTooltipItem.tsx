@@ -30,6 +30,8 @@ export const FarmAPRTooltipItem: React.FC<{
       );
     } else if (farm.label.includes('DefiEdge')) {
       return defiEdgeFarmTitle ?? '';
+    } else if (farm.label.includes('Steer')) {
+      return farm.title;
     }
     return '';
   }, [chainId, defiEdgeFarmTitle, farm]);

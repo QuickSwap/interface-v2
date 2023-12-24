@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { DoubleCurrencyLogo } from 'components';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import APRHover from 'assets/images/aprHover.png';
@@ -19,6 +19,8 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
   const history = useHistory();
   const { chainId } = useActiveWeb3React();
   const parsedQuery = useParsedQueryString();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const rewards = (farm.distributionData ?? [])
     .filter((item: any) => item.isLive)
@@ -76,9 +78,16 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
 
   return (
     <Box width='100%' borderRadius={16} className='bg-secondary1'>
-      <Box padding={2} className='flex items-center'>
-        <Box width='90%' className='flex items-center'>
-          <Box width='30%' className='flex items-center' gridGap={12}>
+      <Box padding={2} className='flex items-center flex-wrap'>
+        <Box
+          width={isMobile ? '100%' : '90%'}
+          className='flex items-center flex-wrap'
+        >
+          <Box
+            width={isMobile ? '80%' : '30%'}
+            className='flex items-center'
+            gridGap={12}
+          >
             <DoubleCurrencyLogo
               currency0={token0}
               currency1={token1}
@@ -88,34 +97,50 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
               {farm.symbolToken0}/{farm.symbolToken1}
             </p>
           </Box>
-          <Box width='20%' className='flex'>
+          <Box
+            my={2}
+            width={isMobile ? '100%' : '20%'}
+            className='flex items-center justify-between'
+          >
+            {isMobile && <p>{t('tvl')}</p>}
             <p>${formatNumber(farm.totalTVL)}</p>
           </Box>
-          <Box width='20%'>
-            <small>{t('upTo')}</small>
-            <Box className='flex'>
-              <FarmAPRTooltip
-                farms={farm.alm}
-                token0={farm.token0}
-                token1={farm.token1}
-              >
-                <Box className='farmCardAPR' gridGap={4}>
-                  <p>{formatNumber(farm.apr)}%</p>
-                  <img src={APRHover} width={16} />
-                </Box>
-              </FarmAPRTooltip>
+          <Box
+            width={isMobile ? '100%' : '20%'}
+            className='flex items-center justify-between'
+          >
+            {isMobile && <p>{t('apr')}</p>}
+            <Box>
+              <small>{t('upTo')}</small>
+              <Box className='flex'>
+                <FarmAPRTooltip
+                  farms={farm.alm}
+                  token0={farm.token0}
+                  token1={farm.token1}
+                >
+                  <Box className='farmCardAPR' gridGap={4}>
+                    <p>{formatNumber(farm.apr)}%</p>
+                    <img src={APRHover} width={16} />
+                  </Box>
+                </FarmAPRTooltip>
+              </Box>
             </Box>
           </Box>
-          <Box width='30%'>
+          <Box
+            width={isMobile ? '100%' : '30%'}
+            my={rewards.length > 0 ? 2 : 0}
+            className='flex items-center justify-between'
+          >
+            {isMobile && rewards.length > 0 && <p>{t('rewards')}</p>}
             {rewards.map((reward: any) => (
-              <p className='small' key={reward.rewardToken}>
+              <p key={reward.rewardToken}>
                 {formatNumber(reward.dailyAmount)} {reward.symbolRewardToken}{' '}
                 <small className='text-secondary'>{t('daily')}</small>
               </p>
             ))}
           </Box>
         </Box>
-        <Box width='10%'>
+        <Box width={isMobile ? '100%' : '10%'} mt={rewards.length > 0 ? 0 : 2}>
           <Button
             className='farmCardButton'
             disabled={!farm.pool}
