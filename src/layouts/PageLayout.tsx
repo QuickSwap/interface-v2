@@ -62,7 +62,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       window.location.host !== 'dogechain.quickswap.exchange' &&
       window.location.host !== 'localhost:3000' &&
       window.location.host !==
-        'feature-merkl-integration.interface-v2-01.pages.dev/#/'
+        'feature-merkl-integration.interface-v2-01.pages.dev'
     ) {
       setOpenPassModal(true);
     }
