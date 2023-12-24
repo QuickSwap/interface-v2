@@ -59,7 +59,7 @@ export const useMerklFarms = () => {
   };
   const lastTx = useLastTransactionHash();
   const { isLoading: loadingMerkl, data: merklFarms, refetch } = useQuery({
-    queryKey: ['fetchMerklFarms', chainId],
+    queryKey: ['fetchMerklFarms', chainId, account],
     queryFn: fetchMerklFarms,
     refetchInterval: 300000,
   });
