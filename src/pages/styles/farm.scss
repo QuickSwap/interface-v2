@@ -79,6 +79,8 @@ a.button:hover {
   border-radius: 12px;
   background-color: $bgPalette;
   width: 360px;
+  max-height: 90vh;
+  overflow-y: auto;
   & > div {
     padding: 16px;
     &:not(:last-child) {
