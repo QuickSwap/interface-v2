@@ -133,34 +133,38 @@ export const useMerklFarms = () => {
   const farms = useMemo(() => {
     if (!merklFarms) return [];
     return merklFarms.map((item: any) => {
-      const alms = Object.values(item.alm)
-        .filter((alm: any) => {
-          if (alm.label.includes('Gamma')) {
-            return getAllGammaPairs(chainId).find(
-              (item) =>
-                item.address.toLowerCase() === alm.almAddress.toLowerCase(),
-            );
-          } else if (alm.label.includes('Steer')) {
-            return steerVaults.find(
-              (vault) =>
-                vault.address.toLowerCase() === alm.almAddress.toLowerCase(),
-            );
-          } else if (alm.label.includes('Ichi')) {
-            return IchiVaults[chainId]?.find(
-              (address) =>
-                address.toLowerCase() === alm.almAddress.toLowerCase(),
-            );
-          } else if (alm.label.includes('DefiEdge')) {
-            return getAllDefiedgeStrategies(chainId).find(
-              (item) => item.id.toLowerCase() === alm.almAddress.toLowerCase(),
-            );
-          }
-          return false;
-        })
+      const filteredALMs = Object.values(item.alm).filter((alm: any) => {
+        if (alm.label.includes('Gamma')) {
+          return getAllGammaPairs(chainId).find(
+            (item) =>
+              item.address.toLowerCase() === alm.almAddress.toLowerCase(),
+          );
+        } else if (alm.label.includes('Steer')) {
+          return steerVaults.find(
+            (vault) =>
+              vault.address.toLowerCase() === alm.almAddress.toLowerCase(),
+          );
+        } else if (alm.label.includes('Ichi')) {
+          return IchiVaults[chainId]?.find(
+            (address) => address.toLowerCase() === alm.almAddress.toLowerCase(),
+          );
+        } else if (alm.label.includes('DefiEdge')) {
+          return getAllDefiedgeStrategies(chainId).find(
+            (item) => item.id.toLowerCase() === alm.almAddress.toLowerCase(),
+          );
+        }
+        return false;
+      });
+      const alms = filteredALMs
         .concat([
           {
             almAddress: item.pool,
-            almTVL: item.tvl,
+            almTVL:
+              item.tvl -
+              filteredALMs.reduce(
+                (total: number, alm: any) => total + alm.almTVL,
+                0,
+              ),
             almAPR: item.meanAPR,
             label: 'QuickSwap',
           },

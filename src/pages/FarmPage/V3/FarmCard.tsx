@@ -103,7 +103,7 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
             className='flex items-center justify-between'
           >
             {isMobile && <p>{t('tvl')}</p>}
-            <p>${formatNumber(farm.totalTVL)}</p>
+            <p>${formatNumber(farm.tvl)}</p>
           </Box>
           <Box
             width={isMobile ? '100%' : '20%'}

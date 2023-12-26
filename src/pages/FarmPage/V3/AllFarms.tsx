@@ -132,10 +132,6 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       const rewardItems: any[] = (item?.distributionData ?? []).filter(
         (reward: any) => reward.isLive,
       );
-      const totalTVL = item.alm.reduce(
-        (total: number, alm: any) => total + alm.almTVL,
-        0,
-      );
       const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
         const usdPrice =
           rewardUSDPrices?.find(
@@ -153,7 +149,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
             : 0)
         );
       }, 0);
-      return { ...item, apr, title, totalTVL, dailyRewardUSD };
+      return { ...item, apr, title, dailyRewardUSD };
     })
     .filter((farm) =>
       (farm?.title ?? '').toLowerCase().includes(searchValue.toLowerCase()),
@@ -163,9 +159,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
         return farm1.title > farm2.title ? sortMultiplier : -1 * sortMultiplier;
       }
       if (sortBy === GlobalConst.utils.v3FarmSortBy.tvl) {
-        return farm1.totalTVL > farm2.totalTVL
-          ? sortMultiplier
-          : -1 * sortMultiplier;
+        return farm1.tvl > farm2.tvl ? sortMultiplier : -1 * sortMultiplier;
       }
       if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
