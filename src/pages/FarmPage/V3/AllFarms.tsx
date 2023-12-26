@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, GlobalData } from 'constants/index';
 import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
 import { useMerklFarms } from 'hooks/v3/useV3Farms';
 import Loader from 'components/Loader';
@@ -151,9 +151,64 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       }, 0);
       return { ...item, apr, title, dailyRewardUSD };
     })
-    .filter((farm) =>
-      (farm?.title ?? '').toLowerCase().includes(searchValue.toLowerCase()),
-    )
+    .filter((farm) => {
+      const searchCondition = (farm?.title ?? '')
+        .toLowerCase()
+        .includes(searchValue.toLowerCase());
+      const farmToken0Id = farm?.token0 ?? '';
+      const farmToken1Id = farm?.token1 ?? '';
+      const blueChipCondition =
+        !!GlobalData.blueChips[chainId].find(
+          (token) => token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+        ) &&
+        !!GlobalData.blueChips[chainId].find(
+          (token) => token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+        );
+      const stableCoinCondition =
+        !!GlobalData.stableCoins[chainId].find(
+          (token) => token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+        ) &&
+        !!GlobalData.stableCoins[chainId].find(
+          (token) => token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+        );
+      const stablePair0 = GlobalData.stablePairs[chainId].find(
+        (tokens) =>
+          !!tokens.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+          ),
+      );
+      const stablePair1 = GlobalData.stablePairs[chainId].find(
+        (tokens) =>
+          !!tokens.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+          ),
+      );
+      const stableLPCondition =
+        (stablePair0 &&
+          stablePair0.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken1Id.toLowerCase(),
+          )) ||
+        (stablePair1 &&
+          stablePair1.find(
+            (token) =>
+              token.address.toLowerCase() === farmToken0Id.toLowerCase(),
+          ));
+      return (
+        searchCondition &&
+        (farmFilter === GlobalConst.utils.v3FarmFilter.blueChip
+          ? blueChipCondition
+          : farmFilter === GlobalConst.utils.v3FarmFilter.stableCoin
+          ? stableCoinCondition
+          : farmFilter === GlobalConst.utils.v3FarmFilter.stableLP
+          ? stableLPCondition
+          : farmFilter === GlobalConst.utils.v3FarmFilter.otherLP
+          ? !blueChipCondition && !stableCoinCondition && !stableLPCondition
+          : true)
+      );
+    })
     .sort((farm1, farm2) => {
       if (sortBy === GlobalConst.utils.v3FarmSortBy.pool) {
         return farm1.title > farm2.title ? sortMultiplier : -1 * sortMultiplier;
