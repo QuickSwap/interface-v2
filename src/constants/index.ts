@@ -1234,7 +1234,6 @@ export const GammaPairs: {
         address: '0x1298b1da33c1d091a2e1340ae1c7983ebe91da8d',
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0x10acbe3b9e6a2ff7f341e5cbf4b6617741ff44aa',
-        ableToFarm: true,
         pid: 93,
       },
     ],
