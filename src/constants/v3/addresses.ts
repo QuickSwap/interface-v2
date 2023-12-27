@@ -411,7 +411,7 @@ export const USDC: { [chainId: number]: Token } = {
   ),
   [ChainId.X1]: new Token(
     ChainId.X1,
-    '0xcd65196488b2e2fbcbc3e5d675b3108f4935e64a',
+    '0x04292af1cf8687235a83766d55b307880fc5e76d',
     6,
     'USDC',
     'USD Coin',
