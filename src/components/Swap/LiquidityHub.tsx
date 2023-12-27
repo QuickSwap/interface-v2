@@ -36,7 +36,7 @@ import { ZERO_ADDRESS } from 'constants/v3/misc';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { parseUnits } from 'ethers/lib/utils';
 import { getFixedValue } from 'utils';
-const ANALYTICS_VERSION = 0.1;
+const ANALYTICS_VERSION = 0.2;
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
 const BI_ENDPOINT = `https://bi.orbs.network/putes/liquidity-hub-ui-${ANALYTICS_VERSION}`;
@@ -617,11 +617,8 @@ class LiquidityHubAnalytics {
 
     this.updateAndSend({
       [`quote-${this.data.quoteIndex}-amount-out`]: quoteResponse?.outAmount,
-      [`quote-${this.data.quoteIndex}-permit-data`]: quoteResponse?.permitData,
       [`quote-${this.data.quoteIndex}-serialized-order`]: quoteResponse?.serializedOrder,
-      [`quote-${this.data.quoteIndex}-quote-call-data`]: quoteResponse?.callData,
       [`quote-${this.data.quoteIndex}-quote-millis`]: time,
-      [`quote-${this.data.quoteIndex}-quote-raw-data`]: quoteResponse?.rawData,
       clobDexPriceDiffPercent: getDiff(),
     });
   }
