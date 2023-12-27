@@ -17,6 +17,7 @@ import {
   maxUint256,
   permit2Address,
   hasWeb3Instance,
+  zeroAddress,
 } from '@defi.org/web3-candies';
 import { useTranslation } from 'react-i18next';
 import {
@@ -153,7 +154,7 @@ export const useLiquidityHubCallback = (
     const quoteArgs: QuoteArgs = {
       outToken: outTokenAddress,
       inAmount: srcAmount,
-      inToken: isNativeIn ? wethContract?.address || '' : inTokenAddress,
+      inToken: isNativeIn ? zeroAddress : inTokenAddress,
       minDestAmount,
     };
     let wrapped = false;
