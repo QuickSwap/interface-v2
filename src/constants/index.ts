@@ -1314,6 +1314,28 @@ export const GammaPairs: {
         pid: 102,
       },
     ],
+    '0x162539172b53e9a93b7d98fb6c41682de558a320-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x90Eb82495B4A5E578FDFcB9Fe3084cD1a83265D6',
+        token0Address: '0x162539172b53e9a93b7d98fb6c41682de558a320',
+        token1Address: '0xb5C064f955D8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 106,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x162539172b53e9a93b7d98fb6c41682de558a320': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x72E102438957Fe544C36852F4ba436de42EFF4Fa',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x162539172b53e9a93b7d98fb6c41682de558a320',
+        ableToFarm: true,
+        pid: 107,
+      },
+    ],
   },
   [ChainId.ZKEVM]: {
     '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
