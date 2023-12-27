@@ -1314,7 +1314,7 @@ export const GammaPairs: {
         pid: 102,
       },
     ],
-    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xe238ecb42c424e877652ad82d8a939183a04a35f': [
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xe238ecb42c424e877652ad82d8a939183a04c35f': [
       {
         type: Presets.GAMMA_WIDE,
         title: 'Wide',
