@@ -1144,6 +1144,7 @@ export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
 };
 
 export function getFixedValue(value: string, decimals?: number) {
+  if (!value) return '0';
   const splitedValueArray = value.split('.');
   let valueStr = value;
   if (splitedValueArray.length > 1) {

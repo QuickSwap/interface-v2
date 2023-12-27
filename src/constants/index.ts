@@ -986,6 +986,7 @@ export const GammaPairs: {
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
         pid: 69,
+        ableToFarm: true,
       },
     ],
     '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
@@ -1104,6 +1105,7 @@ export const GammaPairs: {
         token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
         pid: 1,
         masterChefIndex: 1,
+        ableToFarm: true,
       },
     ],
     '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
@@ -1115,6 +1117,7 @@ export const GammaPairs: {
         token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
         pid: 2,
         masterChefIndex: 1,
+        ableToFarm: true,
       },
     ],
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
