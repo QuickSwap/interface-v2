@@ -986,6 +986,7 @@ export const GammaPairs: {
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
         pid: 69,
+        ableToFarm: true,
       },
     ],
     '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
@@ -1104,6 +1105,7 @@ export const GammaPairs: {
         token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
         pid: 1,
         masterChefIndex: 1,
+        ableToFarm: true,
       },
     ],
     '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
@@ -1115,6 +1117,7 @@ export const GammaPairs: {
         token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
         pid: 2,
         masterChefIndex: 1,
+        ableToFarm: true,
       },
     ],
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
@@ -1309,6 +1312,39 @@ export const GammaPairs: {
         token1Address: '0xE238Ecb42C424E877652AD82d8A939183A04C35f',
         ableToFarm: true,
         pid: 102,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xe238ecb42c424e877652ad82d8a939183a04c35f': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x31c1ae8f080fd194d979e2aa8b3051259baf79f2',
+        token0Address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+        token1Address: '0xE238Ecb42C424E877652AD82d8A939183A04C35f',
+        ableToFarm: true,
+        pid: 105,
+      },
+    ],
+    '0x162539172b53e9a93b7d98fb6c41682de558a320-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x90Eb82495B4A5E578FDFcB9Fe3084cD1a83265D6',
+        token0Address: '0x162539172b53e9a93b7d98fb6c41682de558a320',
+        token1Address: '0xb5C064f955D8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 106,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x162539172b53e9a93b7d98fb6c41682de558a320': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x72E102438957Fe544C36852F4ba436de42EFF4Fa',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x162539172b53e9a93b7d98fb6c41682de558a320',
+        ableToFarm: true,
+        pid: 107,
       },
     ],
   },
