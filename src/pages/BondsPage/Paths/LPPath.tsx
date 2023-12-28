@@ -6,7 +6,7 @@ import { CEX_BILL_ADDRESS } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import useBuyBond from 'hooks/bond/useBuyBond';
 import { Box, Button } from '@material-ui/core';
-import { searchForBillId } from 'utils';
+import { getFixedValue, searchForBillId } from 'utils';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import {
   BillReferenceData,
@@ -55,7 +55,7 @@ const LpPath = ({
         currency,
         JSBI.BigInt(
           parseUnits(
-            Number(typedValue).toFixed(currency?.decimals),
+            getFixedValue(typedValue, currency?.decimals),
             currency?.decimals,
           ),
         ),

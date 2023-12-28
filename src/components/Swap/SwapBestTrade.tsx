@@ -49,6 +49,7 @@ import {
   maxAmountSpend,
   basisPointsToPercent,
   getContract,
+  halfAmountSpend,
 } from 'utils';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
@@ -417,6 +418,10 @@ const SwapBestTrade: React.FC<{
     chainIdToUse,
     currencyBalances[Field.INPUT],
   );
+  const halfAmountInputV2 = halfAmountSpend(
+    chainIdToUse,
+    currencyBalances[Field.INPUT],
+  );
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
@@ -431,24 +436,24 @@ const SwapBestTrade: React.FC<{
       ? CurrencyAmount.fromRawAmount(inputCurrencyV3, maxAmountInputV2.raw)
       : undefined;
 
+  const halfAmountInput =
+    halfAmountInputV2 && inputCurrencyV3
+      ? CurrencyAmount.fromRawAmount(inputCurrencyV3, halfAmountInputV2.raw)
+      : undefined;
+
   const handleMaxInput = useCallback(() => {
     maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact());
     setSwapType(SwapSide.SELL);
   }, [maxAmountInput, onUserInput]);
 
   const handleHalfInput = useCallback(() => {
-    if (!maxAmountInput) {
+    if (!halfAmountInput) {
       return;
     }
 
-    const halvedAmount = maxAmountInput.divide('2');
-
-    onUserInput(
-      Field.INPUT,
-      halvedAmount.toFixed(maxAmountInput.currency.decimals),
-    );
+    onUserInput(Field.INPUT, halfAmountInput.toExact());
     setSwapType(SwapSide.SELL);
-  }, [maxAmountInput, onUserInput]);
+  }, [halfAmountInput, onUserInput]);
 
   const atMaxAmountInput = Boolean(
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),

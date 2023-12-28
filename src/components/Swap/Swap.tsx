@@ -53,6 +53,7 @@ import {
   useIsSupportedNetwork,
   confirmPriceImpactWithoutFee,
   maxAmountSpend,
+  halfAmountSpend,
 } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
@@ -444,22 +445,22 @@ const Swap: React.FC<{
     currencyBalances[Field.INPUT],
   );
 
+  const halfAmountInput: CurrencyAmount | undefined = halfAmountSpend(
+    chainIdToUse,
+    currencyBalances[Field.INPUT],
+  );
+
   const handleMaxInput = useCallback(() => {
     maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact());
   }, [maxAmountInput, onUserInput]);
 
   const handleHalfInput = useCallback(() => {
-    if (!maxAmountInput) {
+    if (!halfAmountInput) {
       return;
     }
 
-    const halvedAmount = maxAmountInput.divide('2');
-
-    onUserInput(
-      Field.INPUT,
-      halvedAmount.toFixed(maxAmountInput.currency.decimals),
-    );
-  }, [maxAmountInput, onUserInput]);
+    onUserInput(Field.INPUT, halfAmountInput.toExact());
+  }, [halfAmountInput, onUserInput]);
 
   const atMaxAmountInput = Boolean(
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),

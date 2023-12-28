@@ -17,6 +17,7 @@ import {
   maxUint256,
   permit2Address,
   hasWeb3Instance,
+  zeroAddress,
 } from '@defi.org/web3-candies';
 import { useTranslation } from 'react-i18next';
 import {
@@ -35,7 +36,8 @@ import { Currency as CoreCurrency, Percent } from '@uniswap/sdk-core';
 import { ZERO_ADDRESS } from 'constants/v3/misc';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { parseUnits } from 'ethers/lib/utils';
-const ANALYTICS_VERSION = 0.1;
+import { getFixedValue } from 'utils';
+const ANALYTICS_VERSION = 0.2;
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
 const BI_ENDPOINT = `https://bi.orbs.network/putes/liquidity-hub-ui-${ANALYTICS_VERSION}`;
@@ -152,7 +154,7 @@ export const useLiquidityHubCallback = (
     const quoteArgs: QuoteArgs = {
       outToken: outTokenAddress,
       inAmount: srcAmount,
-      inToken: isNativeIn ? wethContract?.address || '' : inTokenAddress,
+      inToken: isNativeIn ? zeroAddress : inTokenAddress,
       minDestAmount,
     };
     let wrapped = false;
@@ -616,11 +618,8 @@ class LiquidityHubAnalytics {
 
     this.updateAndSend({
       [`quote-${this.data.quoteIndex}-amount-out`]: quoteResponse?.outAmount,
-      [`quote-${this.data.quoteIndex}-permit-data`]: quoteResponse?.permitData,
       [`quote-${this.data.quoteIndex}-serialized-order`]: quoteResponse?.serializedOrder,
-      [`quote-${this.data.quoteIndex}-quote-call-data`]: quoteResponse?.callData,
       [`quote-${this.data.quoteIndex}-quote-millis`]: time,
-      [`quote-${this.data.quoteIndex}-quote-raw-data`]: quoteResponse?.rawData,
       clobDexPriceDiffPercent: getDiff(),
     });
   }
@@ -1078,7 +1077,10 @@ const handleV3Token = (currency: CoreCurrency | undefined, value?: string) => {
     symbol: currency.isNative ? 'MATIC' : currency.wrapped.symbol,
     address: currency.isNative ? ZERO_ADDRESS : currency.wrapped.address,
     decimals: currency.decimals,
-    value: parseUnits(value || '0', currency.decimals).toString(),
+    value: parseUnits(
+      getFixedValue(value || '0', currency.decimals),
+      currency.decimals,
+    ).toString(),
   };
 };
 
@@ -1140,7 +1142,7 @@ export const useV2TradeTypeAnalyticsCallback = (
   const dstTokenCurrency = currencies[Field.OUTPUT];
   const inToken = wrappedCurrency(srcTokenCurrency, chainId);
   const outToken = wrappedCurrency(dstTokenCurrency, chainId);
-  const outTokenUSD = useUSDCPriceFromAddress(outToken?.address || '').price;
+  const outTokenUSD = useUSDCPriceFromAddress(outToken?.address).price;
 
   return useCallback(
     (trade?: Trade) => {

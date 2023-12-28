@@ -266,7 +266,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       link: '/leader-board',
       text: 'Leaderboard',
       id: 'contest-page-link',
-      isNew: true,
+      isNew: false,
     });
   }
   if (showConvert) {
