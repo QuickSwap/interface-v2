@@ -481,7 +481,7 @@ const SwapBestTrade: React.FC<{
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true);
     }
-  }, [approval, approvalSubmitted]);
+  }, [approval]);
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
@@ -986,13 +986,12 @@ const SwapBestTrade: React.FC<{
   //Reset approvalSubmitted when approval changes, it's needed when user hadn't nor paraswap neither wallchain approvals
   useEffect(() => {
     if (
-      bonusRouteFound &&
-      (approval === ApprovalState.NOT_APPROVED ||
-        approval === ApprovalState.UNKNOWN)
+      approval === ApprovalState.NOT_APPROVED ||
+      approval === ApprovalState.UNKNOWN
     ) {
       setApprovalSubmitted(false);
     }
-  }, [approval, bonusRouteFound]);
+  }, [approval]);
 
   useEffect(() => {
     if (!optimalRate) {
@@ -1128,6 +1127,7 @@ const SwapBestTrade: React.FC<{
               disabled={
                 approving ||
                 approval !== ApprovalState.NOT_APPROVED ||
+                bonusRouteLoading ||
                 approvalSubmitted
               }
               onClick={async () => {
