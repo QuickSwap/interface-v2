@@ -8,7 +8,7 @@ import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { Field } from 'state/mint/actions';
-import { useSteerVaults } from 'hooks/v3/useSteerData';
+import { useSteerStakingPools, useSteerVaults } from 'hooks/v3/useSteerData';
 import { SteerVaultState } from 'constants/index';
 
 export interface IFeeTier {
@@ -126,7 +126,6 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
     ? `uni-${Number(feeTierQuery) / 10000}`
     : undefined;
   const { onChangeFeeTier } = useV3MintActionHandlers(mintInfo.noLiquidity);
-  const [feeSelectionShow, setFeeSelectionShow] = useState(false);
 
   const fees = feeTiers[chainId];
   const currencyAAddress =
@@ -136,14 +135,9 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
   const { data: steerVaults } = useSteerVaults(chainId);
   const feeForSteer = Number(
     steerVaults.find((vault) => {
-      const lowerTick = Number(vault.lowerTick ?? 0);
-      const upperTick = Number(vault.upperTick ?? 0);
-      const currentTick = Number(vault.tick ?? 0);
       return (
         vault.state !== SteerVaultState.Paused &&
         vault.state !== SteerVaultState.Retired &&
-        lowerTick < currentTick &&
-        currentTick < upperTick &&
         vault.token0 &&
         vault.token1 &&
         currencyAAddress &&
@@ -159,6 +153,8 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
       );
     })?.feeTier ?? '0',
   );
+
+  const { data: steerFarms } = useSteerStakingPools(chainId);
 
   useEffect(() => {
     const feeTierFromQuery = fees?.find((item) => item.id === feeTierIdQuery);
@@ -199,20 +195,41 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
                   {mintInfo.feeTier?.text} {t('feeTier')}
                 </p>
               </Box>
-              <Box
-                className='editFeeTier'
-                onClick={() => setFeeSelectionShow(!feeSelectionShow)}
-              >
-                <small>{feeSelectionShow ? t('hide') : t('edit')}</small>
-              </Box>
             </Box>
-            {feeSelectionShow && (
-              <Box className='feeSelectionWrapper'>
-                {fees.map((tier) => (
+            <Box className='feeSelectionWrapper'>
+              {fees.map((tier) => {
+                const isFeeonFarm = steerVaults.find((vault) => {
+                  const isVaultOnFarm = !!steerFarms?.find(
+                    (farm: any) =>
+                      farm.stakingToken.toLowerCase() ===
+                      vault.address.toLowerCase(),
+                  );
+                  return (
+                    isVaultOnFarm &&
+                    vault.state !== SteerVaultState.Paused &&
+                    vault.state !== SteerVaultState.Retired &&
+                    vault.token0 &&
+                    vault.token1 &&
+                    currencyAAddress &&
+                    currencyBAddress &&
+                    ((vault.token0.address.toLowerCase() ===
+                      currencyAAddress.toLowerCase() &&
+                      vault.token1.address.toLowerCase() ===
+                        currencyBAddress.toLowerCase()) ||
+                      (vault.token0.address.toLowerCase() ===
+                        currencyBAddress.toLowerCase() &&
+                        vault.token1.address.toLowerCase() ===
+                          currencyAAddress.toLowerCase())) &&
+                    Number(vault.feeTier ?? '0') ===
+                      Number(tier.id.split('-')[1]) * 10000
+                  );
+                });
+                return (
                   <Box
                     key={tier.id}
                     className='feeSelectionItem'
                     onClick={() => onChangeFeeTier(tier)}
+                    gridGap={8}
                   >
                     <Box
                       className={`feeTierCheck ${
@@ -223,16 +240,19 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
                     >
                       {tier.id === mintInfo.feeTier?.id && <Check />}
                     </Box>
-                    <Box ml={1.5}>
+                    <Box>
                       <Box mb={0.5} className='flex items-center'>
                         <p>{tier.text}</p>
                       </Box>
                       <p className='span text-secondary'>{tier.description}</p>
                     </Box>
+                    {isFeeonFarm && (
+                      <Box className='feeTierFarm'>{t('farm')}</Box>
+                    )}
                   </Box>
-                ))}
-              </Box>
-            )}
+                );
+              })}
+            </Box>
           </Box>
         </>
       )}
