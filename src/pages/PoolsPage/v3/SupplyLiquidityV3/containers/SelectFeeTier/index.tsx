@@ -229,30 +229,26 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
                     key={tier.id}
                     className='feeSelectionItem'
                     onClick={() => onChangeFeeTier(tier)}
-                    gridGap={16}
+                    gridGap={12}
                   >
-                    <Box className='flex items-center' gridGap={12}>
-                      <Box
-                        className={`feeTierCheck ${
-                          tier.id === mintInfo.feeTier?.id
-                            ? 'feeTierCheckSelected'
-                            : ''
-                        }`}
-                      >
-                        {tier.id === mintInfo.feeTier?.id && <Check />}
-                      </Box>
-                      <Box>
-                        <Box mb={0.5} className='flex items-center'>
-                          <p>{tier.text}</p>
-                        </Box>
-                        <p className='span text-secondary'>
-                          {tier.description}
-                        </p>
-                      </Box>
+                    <Box
+                      className={`feeTierCheck ${
+                        tier.id === mintInfo.feeTier?.id
+                          ? 'feeTierCheckSelected'
+                          : ''
+                      }`}
+                    >
+                      {tier.id === mintInfo.feeTier?.id && <Check />}
                     </Box>
-                    {isFeeonFarm && (
-                      <Box className='feeTierFarm'>{t('farm')}</Box>
-                    )}
+                    <Box>
+                      <Box mb={0.5} className='flex items-center' gridGap={8}>
+                        <p>{tier.text}</p>
+                        {isFeeonFarm && (
+                          <Box className='feeTierFarm'>{t('farm')}</Box>
+                        )}
+                      </Box>
+                      <p className='span text-secondary'>{tier.description}</p>
+                    </Box>
                   </Box>
                 );
               })}
