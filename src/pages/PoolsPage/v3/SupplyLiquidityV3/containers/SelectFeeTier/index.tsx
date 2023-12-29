@@ -7,6 +7,9 @@ import './index.scss';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import { Field } from 'state/mint/actions';
+import { useSteerVaults } from 'hooks/v3/useSteerData';
+import { SteerVaultState } from 'constants/index';
 
 export interface IFeeTier {
   id: string;
@@ -126,10 +129,48 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
   const [feeSelectionShow, setFeeSelectionShow] = useState(false);
 
   const fees = feeTiers[chainId];
+  const currencyAAddress =
+    mintInfo.currencies[Field.CURRENCY_A]?.wrapped.address;
+  const currencyBAddress =
+    mintInfo.currencies[Field.CURRENCY_B]?.wrapped.address;
+  const { data: steerVaults } = useSteerVaults(chainId);
+  const feeForSteer = Number(
+    steerVaults.find((vault) => {
+      const lowerTick = Number(vault.lowerTick ?? 0);
+      const upperTick = Number(vault.upperTick ?? 0);
+      const currentTick = Number(vault.tick ?? 0);
+      return (
+        vault.state !== SteerVaultState.Paused &&
+        vault.state !== SteerVaultState.Retired &&
+        lowerTick < currentTick &&
+        currentTick < upperTick &&
+        vault.token0 &&
+        vault.token1 &&
+        currencyAAddress &&
+        currencyBAddress &&
+        ((vault.token0.address.toLowerCase() ===
+          currencyAAddress.toLowerCase() &&
+          vault.token1.address.toLowerCase() ===
+            currencyBAddress.toLowerCase()) ||
+          (vault.token0.address.toLowerCase() ===
+            currencyBAddress.toLowerCase() &&
+            vault.token1.address.toLowerCase() ===
+              currencyAAddress.toLowerCase()))
+      );
+    })?.feeTier ?? '0',
+  );
+
   useEffect(() => {
     const feeTierFromQuery = fees?.find((item) => item.id === feeTierIdQuery);
     if (feeTierFromQuery) {
       onChangeFeeTier(feeTierFromQuery);
+    } else if (feeForSteer) {
+      const feeTier = fees?.find(
+        (item) => Number(item.id.split('-')[1]) * 10000 === feeForSteer,
+      );
+      if (feeTier) {
+        onChangeFeeTier(feeTier);
+      }
     } else {
       if (!mintInfo.feeTier) {
         if (fees && fees.length > 0) {
@@ -144,7 +185,7 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!mintInfo.feeTier, feeTierIdQuery, chainId]);
+  }, [!!mintInfo.feeTier, feeTierIdQuery, feeForSteer, chainId]);
 
   return (
     <Box>
