@@ -525,7 +525,7 @@ export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
               )}
             </Box>
             <Box className='flex items-end justify-between'>
-              <Box>
+              <Box className='flex flex-col' gridGap={8}>
                 {farm.rewards.map((reward: any) => {
                   const token = getTokenFromAddress(
                     reward.address,
