@@ -229,22 +229,26 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
                     key={tier.id}
                     className='feeSelectionItem'
                     onClick={() => onChangeFeeTier(tier)}
-                    gridGap={8}
+                    gridGap={16}
                   >
-                    <Box
-                      className={`feeTierCheck ${
-                        tier.id === mintInfo.feeTier?.id
-                          ? 'feeTierCheckSelected'
-                          : ''
-                      }`}
-                    >
-                      {tier.id === mintInfo.feeTier?.id && <Check />}
-                    </Box>
-                    <Box>
-                      <Box mb={0.5} className='flex items-center'>
-                        <p>{tier.text}</p>
+                    <Box className='flex items-center' gridGap={12}>
+                      <Box
+                        className={`feeTierCheck ${
+                          tier.id === mintInfo.feeTier?.id
+                            ? 'feeTierCheckSelected'
+                            : ''
+                        }`}
+                      >
+                        {tier.id === mintInfo.feeTier?.id && <Check />}
                       </Box>
-                      <p className='span text-secondary'>{tier.description}</p>
+                      <Box>
+                        <Box mb={0.5} className='flex items-center'>
+                          <p>{tier.text}</p>
+                        </Box>
+                        <p className='span text-secondary'>
+                          {tier.description}
+                        </p>
+                      </Box>
                     </Box>
                     {isFeeonFarm && (
                       <Box className='feeTierFarm'>{t('farm')}</Box>
