@@ -229,24 +229,23 @@ export function PresetRanges({
               currentTick !== undefined
                 ? Math.pow(1.0001, maxTick - currentTick)
                 : 0;
-            const pairType =
-              pair &&
-              pair.strategy &&
-              pair.strategy.strategyConfigData &&
-              pair.strategy.strategyConfigData.name &&
-              pair.strategy.strategyConfigData.name
-                .toLowerCase()
-                .includes('stable')
+            const pairStrategyName =
+              pair?.strategy?.strategyConfigData?.name ?? '';
+            const isInRange = minTick < currentTick && currentTick < maxTick;
+            const pairType = isInRange
+              ? pairStrategyName.toLowerCase().includes('stable')
                 ? Presets.STEER_STABLE
                 : percentageToMultiplier(positionWidthPercent) > 1.2
                 ? Presets.STEER_WIDE
-                : Presets.STEER_NARROW;
-            const pairTypeTitle =
-              pairType === Presets.STEER_STABLE
+                : Presets.STEER_NARROW
+              : Presets.OUT_OF_RANGE;
+            const pairTypeTitle = isInRange
+              ? pairType === Presets.STEER_STABLE
                 ? 'Stable'
                 : pairType === Presets.STEER_WIDE
                 ? 'Wide'
-                : 'Narrow';
+                : 'Narrow'
+              : t('outrange');
             return {
               type: pairType,
               title: pairTypeTitle,

@@ -54,6 +54,7 @@ import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { formatUnits } from 'ethers/lib/utils';
+import { Presets } from 'state/mint/v3/reducer';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -220,24 +221,24 @@ export function AddLiquidityButton({
   );
 
   const isReady = useMemo(() => {
-    return Boolean(
-      (mintInfo.depositADisabled
-        ? true
-        : approvalA === ApprovalState.APPROVED) &&
-        (mintInfo.depositBDisabled
+    return (
+      mintInfo.presetRange?.type !== Presets.OUT_OF_RANGE &&
+      Boolean(
+        (mintInfo.depositADisabled
           ? true
-          : approvalB === ApprovalState.APPROVED) &&
-        !mintInfo.errorMessage &&
-        !mintInfo.invalidRange &&
-        !txHash &&
-        !isNetworkFailed &&
-        (amountToWrap ? !wrappingETH : true),
+          : approvalA === ApprovalState.APPROVED) &&
+          (mintInfo.depositBDisabled
+            ? true
+            : approvalB === ApprovalState.APPROVED) &&
+          !mintInfo.errorMessage &&
+          !mintInfo.invalidRange &&
+          !txHash &&
+          !isNetworkFailed &&
+          (amountToWrap ? !wrappingETH : true),
+      )
     );
   }, [
-    mintInfo.depositADisabled,
-    mintInfo.depositBDisabled,
-    mintInfo.errorMessage,
-    mintInfo.invalidRange,
+    mintInfo,
     approvalA,
     approvalB,
     txHash,
@@ -889,7 +890,9 @@ export function AddLiquidityButton({
         disabled={!isReady}
         onClick={amountToWrap ? onWrapMatic : onAddLiquidity}
       >
-        {amountToWrap
+        {mintInfo.presetRange?.type === Presets.OUT_OF_RANGE
+          ? t('outrangeText')
+          : amountToWrap
           ? wrappingETH
             ? t('wrappingMATIC', { symbol: ETHER[chainId].symbol })
             : t('wrapMATIC', { symbol: ETHER[chainId].symbol })
