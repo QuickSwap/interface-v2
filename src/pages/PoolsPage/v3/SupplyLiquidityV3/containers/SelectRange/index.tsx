@@ -389,16 +389,11 @@ export function SelectRange({
 
   const { data: steerVaults } = useSteerVaults(chainId);
   const steerVaultsForPair = steerVaults.filter((item) => {
-    const lowerTick = Number(item.lowerTick ?? 0);
-    const upperTick = Number(item.upperTick ?? 0);
-    const currentTick = Number(item.tick ?? 0);
     return (
       item.state !== SteerVaultState.Paused &&
       item.state !== SteerVaultState.Retired &&
       ((item.feeTier && Number(item.feeTier) === mintInfo.feeAmount) ||
         (!item.feeTier && !mintInfo.feeAmount)) &&
-      lowerTick < currentTick &&
-      currentTick < upperTick &&
       ((item.token0 &&
         item.token1 &&
         item.token0.address.toLowerCase() === currencyAAddress.toLowerCase() &&

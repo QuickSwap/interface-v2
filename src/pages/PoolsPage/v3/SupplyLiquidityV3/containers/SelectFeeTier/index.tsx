@@ -7,6 +7,9 @@ import './index.scss';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import { Field } from 'state/mint/actions';
+import { useSteerStakingPools, useSteerVaults } from 'hooks/v3/useSteerData';
+import { SteerVaultState } from 'constants/index';
 
 export interface IFeeTier {
   id: string;
@@ -123,13 +126,47 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
     ? `uni-${Number(feeTierQuery) / 10000}`
     : undefined;
   const { onChangeFeeTier } = useV3MintActionHandlers(mintInfo.noLiquidity);
-  const [feeSelectionShow, setFeeSelectionShow] = useState(false);
 
   const fees = feeTiers[chainId];
+  const currencyAAddress =
+    mintInfo.currencies[Field.CURRENCY_A]?.wrapped.address;
+  const currencyBAddress =
+    mintInfo.currencies[Field.CURRENCY_B]?.wrapped.address;
+  const { data: steerVaults } = useSteerVaults(chainId);
+  const feeForSteer = Number(
+    steerVaults.find((vault) => {
+      return (
+        vault.state !== SteerVaultState.Paused &&
+        vault.state !== SteerVaultState.Retired &&
+        vault.token0 &&
+        vault.token1 &&
+        currencyAAddress &&
+        currencyBAddress &&
+        ((vault.token0.address.toLowerCase() ===
+          currencyAAddress.toLowerCase() &&
+          vault.token1.address.toLowerCase() ===
+            currencyBAddress.toLowerCase()) ||
+          (vault.token0.address.toLowerCase() ===
+            currencyBAddress.toLowerCase() &&
+            vault.token1.address.toLowerCase() ===
+              currencyAAddress.toLowerCase()))
+      );
+    })?.feeTier ?? '0',
+  );
+
+  const { data: steerFarms } = useSteerStakingPools(chainId);
+
   useEffect(() => {
     const feeTierFromQuery = fees?.find((item) => item.id === feeTierIdQuery);
     if (feeTierFromQuery) {
       onChangeFeeTier(feeTierFromQuery);
+    } else if (feeForSteer) {
+      const feeTier = fees?.find(
+        (item) => Number(item.id.split('-')[1]) * 10000 === feeForSteer,
+      );
+      if (feeTier) {
+        onChangeFeeTier(feeTier);
+      }
     } else {
       if (!mintInfo.feeTier) {
         if (fees && fees.length > 0) {
@@ -144,7 +181,7 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!mintInfo.feeTier, feeTierIdQuery, chainId]);
+  }, [!!mintInfo.feeTier, feeTierIdQuery, feeForSteer, chainId]);
 
   return (
     <Box>
@@ -158,20 +195,41 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
                   {mintInfo.feeTier?.text} {t('feeTier')}
                 </p>
               </Box>
-              <Box
-                className='editFeeTier'
-                onClick={() => setFeeSelectionShow(!feeSelectionShow)}
-              >
-                <small>{feeSelectionShow ? t('hide') : t('edit')}</small>
-              </Box>
             </Box>
-            {feeSelectionShow && (
-              <Box className='feeSelectionWrapper'>
-                {fees.map((tier) => (
+            <Box className='feeSelectionWrapper'>
+              {fees.map((tier) => {
+                const isFeeonFarm = steerVaults.find((vault) => {
+                  const isVaultOnFarm = !!steerFarms?.find(
+                    (farm: any) =>
+                      farm.stakingToken.toLowerCase() ===
+                      vault.address.toLowerCase(),
+                  );
+                  return (
+                    isVaultOnFarm &&
+                    vault.state !== SteerVaultState.Paused &&
+                    vault.state !== SteerVaultState.Retired &&
+                    vault.token0 &&
+                    vault.token1 &&
+                    currencyAAddress &&
+                    currencyBAddress &&
+                    ((vault.token0.address.toLowerCase() ===
+                      currencyAAddress.toLowerCase() &&
+                      vault.token1.address.toLowerCase() ===
+                        currencyBAddress.toLowerCase()) ||
+                      (vault.token0.address.toLowerCase() ===
+                        currencyBAddress.toLowerCase() &&
+                        vault.token1.address.toLowerCase() ===
+                          currencyAAddress.toLowerCase())) &&
+                    Number(vault.feeTier ?? '0') ===
+                      Number(tier.id.split('-')[1]) * 10000
+                  );
+                });
+                return (
                   <Box
                     key={tier.id}
                     className='feeSelectionItem'
                     onClick={() => onChangeFeeTier(tier)}
+                    gridGap={12}
                   >
                     <Box
                       className={`feeTierCheck ${
@@ -182,16 +240,19 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
                     >
                       {tier.id === mintInfo.feeTier?.id && <Check />}
                     </Box>
-                    <Box ml={1.5}>
-                      <Box mb={0.5} className='flex items-center'>
+                    <Box>
+                      <Box mb={0.5} className='flex items-center' gridGap={8}>
                         <p>{tier.text}</p>
+                        {isFeeonFarm && (
+                          <Box className='feeTierFarm'>{t('farm')}</Box>
+                        )}
                       </Box>
                       <p className='span text-secondary'>{tier.description}</p>
                     </Box>
                   </Box>
-                ))}
-              </Box>
-            )}
+                );
+              })}
+            </Box>
           </Box>
         </>
       )}

@@ -37,6 +37,7 @@ export enum Presets {
   STEER_WIDE,
   STEER_NARROW,
   STEER_STABLE,
+  OUT_OF_RANGE,
 }
 
 interface MintState {

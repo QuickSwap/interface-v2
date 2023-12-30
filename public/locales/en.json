@@ -465,8 +465,8 @@
   "v3PoolWithinSelectedRange": "The price of this pool is within your selected range. Your position is currently earning fees.",
   "v3PoolOutsideSelectedRange": "The price of this pool is outside of your selected range. Your position is not currently earning fees.",
   "closed": "Closed",
-  "inrange": "In range",
-  "outrange": "Out of range",
+  "inrange": "In Range",
+  "outrange": "Out of Range",
   "createPoolandaddLiquidity": "Create pool and add {{ symbolA }}/{{ symbolB }} liquidity",
   "addLiquidityWithTokens": "Add {{ symbolA }}/{{ symbolB }} liquidity",
   "addingLiquidityTokens": "Adding {{ amountA }} {{ symbolA }} and {{ amountB }} {{ symbolB }} liquidity",
@@ -846,5 +846,6 @@
   "addICHILiquidityWithToken": "Add Liquidity with {{ symbol }}",
   "addingICHILiquidityToken": "Adding {{ amount }} {{ symbol }} to ICHI vault",
   "installedMetamaskNotDisplayedWarning": "Installed MetaMask but can’t connect? Go to the extension manager in your browser and on non-primary wallets, such as Phantom or Brave, click set the site access to 'on click'",
-  "myrewards": "My Rewards"
+  "myrewards": "My Rewards",
+  "outrangeText": "Out of range - please try again soon"
 }
