@@ -463,8 +463,8 @@
   "v3PoolWithinSelectedRange": "The price of this pool is within your selected range. Your position is currently earning fees.",
   "v3PoolOutsideSelectedRange": "The price of this pool is outside of your selected range. Your position is not currently earning fees.",
   "closed": "Closed",
-  "inrange": "In range",
-  "outrange": "Out of range",
+  "inrange": "In Range",
+  "outrange": "Out of Range",
   "createPoolandaddLiquidity": "Create pool and add {{ symbolA }}/{{ symbolB }} liquidity",
   "addLiquidityWithTokens": "Add {{ symbolA }}/{{ symbolB }} liquidity",
   "addingLiquidityTokens": "Adding {{ amountA }} {{ symbolA }} and {{ amountB }} {{ symbolB }} liquidity",
@@ -827,5 +827,6 @@
   "bondBuyWarningUnderstand": "I understand that I am purchasing {{billToken}} at a price above the current market rate, and would like to continue",
   "bondTypeWarningMessage": "This is a pre-sale of the ABOND CEX Fund Bond. By purchasing now, you'll receive temporary ACF tokens representing your purchase. You'll need to keep this new token, which you'll be able to exchange for your actual ABOND Bond starting on December 14th.",
   "bondTypeWarningUnderstand": "I understand that I am purchasing an ABOND CEX Fund Bond early and will receive ACF tokens until December 14th, when the actual ABOND Bonds will become redeemable",
-  "installedMetamaskNotDisplayedWarning": "Installed MetaMask but can’t connect? Go to the extension manager in your browser and on non-primary wallets, such as Phantom or Brave, click set the site access to 'on click'"
+  "installedMetamaskNotDisplayedWarning": "Installed MetaMask but can’t connect? Go to the extension manager in your browser and on non-primary wallets, such as Phantom or Brave, click set the site access to 'on click'",
+  "outrangeText": "Out of range - please try again soon"
 }
