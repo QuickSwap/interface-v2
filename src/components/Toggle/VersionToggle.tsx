@@ -5,10 +5,14 @@ import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
-import { useAnalyticsVersion } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { getConfig } from 'config/index';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const lHAnalyticsAvailable = config['analytics']['liquidityHub'];
   const { updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
@@ -68,16 +72,18 @@ const VersionToggle: React.FC = () => {
 
       {isAnalyticsPage && (
         <>
-          <Box
-            className={
-              version === 'liquidityhub' ? 'version-toggle-active' : ''
-            }
-            onClick={() => {
-              redirectWithVersion('liquidityhub');
-            }}
-          >
-            <small>{t('liquidityHub')}</small>
-          </Box>
+          {lHAnalyticsAvailable && (
+            <Box
+              className={
+                version === 'liquidityhub' ? 'version-toggle-active' : ''
+              }
+              onClick={() => {
+                redirectWithVersion('liquidityhub');
+              }}
+            >
+              <small>{t('liquidityHub')}</small>
+            </Box>
+          )}
           <Box
             className={version === 'total' ? 'version-toggle-active' : ''}
             onClick={() => {
