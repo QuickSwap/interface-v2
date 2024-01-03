@@ -19,10 +19,12 @@ import {
   updateSlippageManuallySet,
   updateSelectedWallet,
   updateUserLiquidityHub,
+  updateUserZapSlippage,
 } from './actions';
 import { ConnectionType } from 'connectors';
 
 const currentTimestamp = () => new Date().getTime();
+export const INITIAL_ZAP_SLIPPAGE = 100;
 
 export interface UserState {
   // the timestamp of the last updateVersion action
@@ -60,6 +62,7 @@ export interface UserState {
   // v3 user states
   userSingleHopOnly: boolean; // only allow swaps on direct pairs
   selectedWallet?: ConnectionType;
+  userZapSlippage: number;
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -81,6 +84,7 @@ export const initialState: UserState = {
   URLWarningVisible: true,
   userSingleHopOnly: false,
   selectedWallet: undefined,
+  userZapSlippage: INITIAL_ZAP_SLIPPAGE,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -178,5 +182,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUserLiquidityHub, (state, action) => {
       state.userLiquidityHubDisabled = action.payload.userLiquidityHubDisabled;
+    })
+    .addCase(updateUserZapSlippage, (state, action) => {
+      state.userZapSlippage = action.payload.userZapSlippage;
     }),
 );

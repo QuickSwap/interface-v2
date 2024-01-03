@@ -30,7 +30,7 @@ import InstagramIcon from 'assets/images/social/instagram.png';
 import XIcon from 'assets/images/social/X.png';
 import 'pages/styles/landing.scss';
 import { useIsV2 } from 'state/application/hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import { HypeLabAds } from 'components';
 import NewsletterSignupForm from './NewsletterSignupForm';

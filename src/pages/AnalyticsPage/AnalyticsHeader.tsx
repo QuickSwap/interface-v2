@@ -7,7 +7,7 @@ import { shortenAddress } from 'utils';
 import 'pages/styles/analytics.scss';
 import { useTranslation } from 'react-i18next';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useIsV2 } from 'state/application/hooks';

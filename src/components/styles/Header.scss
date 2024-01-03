@@ -313,6 +313,11 @@
   }
 }
 
+.mobile-new-tag {
+  margin-left: 4px;
+  margin-top: 8px;
+}
+
 .mobileMenuItem {
   color: #c7cad9;
   cursor: pointer;
@@ -320,6 +325,8 @@
     color: #448aff;
   }
 }
+
+
 
 .mobileMenu {
   display: flex;
@@ -419,5 +426,15 @@
 @media (max-width: 420px) {
   .network-name {
     display: none;
+  }
+}
+
+.menu-list-item {
+  max-height: 48px;
+  height: 48px;
+
+  &.active {
+    color: #448aff; 
+    // background-color: #252833;
   }
 }

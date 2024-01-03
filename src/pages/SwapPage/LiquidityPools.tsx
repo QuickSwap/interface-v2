@@ -6,7 +6,7 @@ import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
 import { useAllTokens } from 'hooks/Tokens';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@material-ui/lab';
 
@@ -64,25 +64,11 @@ const LiquidityPools: React.FC<{
     return pairData.concat(tokenPairsV3);
   };
 
-  const { isLoading, data: tokenPairs, refetch } = useQuery({
+  const { isLoading, data: tokenPairs } = useQuery({
     queryKey: ['fetchSwapTokenPairs', token1Address, token2Address],
     queryFn: fetchLiquidityPools,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const liquidityPairs = useMemo(() => {
     if (!tokenPairs) return;

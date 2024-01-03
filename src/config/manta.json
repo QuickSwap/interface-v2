@@ -25,6 +25,9 @@
     "available": true
   },
   "farm": {
+    "available": true
+  },
+  "qsFarm": {
     "available": false
   },
   "lair": {
@@ -68,6 +71,12 @@
   },
   "unipilot": {
     "available": false
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
+    "available": true
   },
   "dappos": {
     "available": true

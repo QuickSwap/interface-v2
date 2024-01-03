@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { DualStakingInfo, StakingInfo } from 'types';
+import { DualStakingInfo, StakingInfo } from 'types/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';

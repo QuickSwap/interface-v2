@@ -34,6 +34,10 @@ export enum Presets {
   GAMMA_WIDE,
   GAMMA_DYNAMIC,
   GAMMA_STABLE,
+  STEER_WIDE,
+  STEER_NARROW,
+  STEER_STABLE,
+  OUT_OF_RANGE,
 }
 
 interface MintState {

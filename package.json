@@ -21,7 +21,7 @@
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
     "@uniswap/liquidity-staker": "^1.0.2",
-    "@uniswap/sdk": "npm:quickswap-sdk@3.0.23",
+    "@uniswap/sdk": "npm:quickswap-sdk@3.0.25",
     "@uniswap/sdk-core": "^3.2.2",
     "@uniswap/token-lists": "npm:quickswap-token-lists@^1.0.1",
     "@uniswap/v2-core": "1.0.0",
@@ -123,7 +123,10 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@0xsquid/widget": "1.6.0",
+    "@ape.swap/apeswap-lists": "1.6.3",
+    "@soulsolidity/soulzap-v1": "0.1.0",
     "@arcxmoney/analytics": "^2.0.2",
+    "@binance/w3w-web3-connector": "^1.0.0",
     "@cryption/df-sdk-core": "0.0.26",
     "@deficonnect/web3-connector": "^2.0.3",
     "@intract/attribution": "^2.0.0",
@@ -132,8 +135,8 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/styles": "^4.11.5",
-    "@orbs-network/twap-ui": "^0.9.1",
-    "@orbs-network/twap-ui-quickswap": "^0.9.1",
+    "@orbs-network/twap-ui": "^0.9.2",
+    "@orbs-network/twap-ui-quickswap": "^0.9.2",
     "@paraswap/sdk": "^5.6.0-alpha.6",
     "@tanstack/react-query": "^4.32.0",
     "@uauth/web3-react": "^2.8.1",
@@ -153,6 +156,7 @@
     "react-virtuoso": "^4.1.0",
     "sass": "^1.51.0",
     "slick-carousel": "^1.8.1",
-    "tiny-warning": "^1.0.3"
+    "tiny-warning": "^1.0.3",
+    "wido": "^0.4.1"
   }
 }

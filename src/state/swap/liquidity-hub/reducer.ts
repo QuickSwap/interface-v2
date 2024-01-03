@@ -8,6 +8,7 @@ export interface LiquidityHubState {
   outAmount?: string;
   waitingForApproval?: boolean;
   waitingForSignature?: boolean;
+  waitingForWrap?: boolean;
 }
 
 const initialState = {

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+    <g data-name="Group 29058">
+        <g data-name="Ellipse 1247" style="stroke:#ebecf2;stroke-width:2px;fill:none">
+            <circle cx="20" cy="20" r="20" style="stroke:none"/>
+            <circle cx="20" cy="20" r="19" style="fill:none"/>
+        </g>
+        <path data-name="Union 39" d="M4.318 19.584v-7.41H.6a.6.6 0 0 1-.572-.788L7.4.415a.6.6 0 0 1 1.145 0v7.41h3.716a.6.6 0 0 1 .572.789l-7.371 10.97a.6.6 0 0 1-1.144 0z" transform="translate(13 9)" style="fill:#fff"/>
+    </g>
+</svg>

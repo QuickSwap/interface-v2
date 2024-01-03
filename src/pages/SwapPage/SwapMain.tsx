@@ -1,9 +1,10 @@
-import { Box, Button, Menu, MenuItem } from '@material-ui/core';
+import { Box, Button, Menu, MenuItem, Typography } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
+import { ReactComponent as CrossChainIcon } from 'assets/images/crossChainIcon.svg';
 import { SettingsModal, Swap, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
@@ -213,6 +214,33 @@ const SwapMain: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
+      {/* Header */}
+      <Box display={'flex'} mb={2}>
+        <Box my={'auto'}>
+          <Typography variant='h6'>{t('swap')}</Typography>
+        </Box>
+        <Box display={'flex'} ml={'auto'}>
+          {showProMode && (
+            <Box className='flex items-center' mr={1}>
+              <span
+                className='text-secondary text-uppercase'
+                style={{ marginRight: 8 }}
+              >
+                {t('proMode')}
+              </span>
+              <ToggleSwitch
+                toggled={isProMode}
+                onToggle={() => {
+                  redirectWithProMode(!isProMode);
+                }}
+              />
+            </Box>
+          )}
+          <Box>
+            <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+          </Box>
+        </Box>
+      </Box>
       <Box
         className={`flex flex-wrap items-center justify-between ${
           isProMode ? ' proModeWrapper' : ''
@@ -252,12 +280,20 @@ const SwapMain: React.FC = () => {
                   {SwapDropdownTabs.filter((d) => d.visible !== false).map(
                     (option, index) => (
                       <MenuItem
+                        className={`swap-menu-item ${
+                          option.key === selectedIndex
+                            ? 'swap-menu-item-selected'
+                            : ''
+                        }`}
                         key={option.key}
                         disabled={option.key === selectedIndex}
                         selected={option.key === selectedIndex}
                         onClick={(event) => handleMenuItemClick(event, index)}
                       >
                         {t(option.name)}
+                        {option.key === selectedIndex && (
+                          <Box ml={5} className='selectedMenuDot' />
+                        )}
                       </MenuItem>
                     ),
                   )}
@@ -274,7 +310,13 @@ const SwapMain: React.FC = () => {
                       redirectWithSwapType(SWAP_CROSS_CHAIN);
                     }}
                   >
-                    <p className='trade-btn'>{t('crossChain')}</p>
+                    <Box pr={1}>
+                      <CrossChainIcon
+                        className='cross-chain-icon'
+                        scale={1.5}
+                      />
+                    </Box>
+                    <Box className='trade-btn'>{t('crossChain')}</Box>
                   </Box>
                 )}
               </Box>
@@ -295,7 +337,7 @@ const SwapMain: React.FC = () => {
               ))}
             </>
           )}
-          {
+          {/* {
             <Box
               style={{
                 marginLeft: 'auto',
@@ -325,9 +367,10 @@ const SwapMain: React.FC = () => {
                 </Box>
               </Box>
             </Box>
-          }
+          } */}
         </Box>
       </Box>
+      {/* Tabs */}
       {swapTabs.length > 0 && (
         <Box
           margin={isProMode ? '28px 0' : '28px 0 0'}
@@ -354,6 +397,7 @@ const SwapMain: React.FC = () => {
           ))}
         </Box>
       )}
+      {/* Widget Body */}
       <Box
         style={{
           backgroundImage: isProMode

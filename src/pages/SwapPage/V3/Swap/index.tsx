@@ -10,7 +10,6 @@ import CurrencyLogo from 'components/CurrencyLogo';
 import Loader from 'components/Loader';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import { AdvancedSwapDetails } from 'components/v3/swap/AdvancedSwapDetails';
-import confirmPriceImpactWithoutFee from 'components/v3/swap/confirmPriceImpactWithoutFee';
 import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
 import SwapCallbackError from 'components/v3/swap/SwapCallbackError';
 import SwapHeader from 'components/v3/swap/SwapHeader';
@@ -51,7 +50,7 @@ import {
 import { useExpertModeManager, useSelectedWallet } from 'state/user/hooks';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
+import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { warningSeverity } from 'utils/v3/prices';
 
 import { Box, Button } from '@material-ui/core';
@@ -67,8 +66,9 @@ import useSwapRedirects from 'hooks/useSwapRedirect';
 import { CHAIN_INFO } from 'constants/v3/chains';
 import { useTranslation } from 'react-i18next';
 import { useTransactionFinalizer } from 'state/transactions/hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { useV3TradeTypeAnalyticsCallback } from 'components/Swap/LiquidityHub';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
@@ -164,10 +164,6 @@ const SwapV3Page: React.FC = () => {
 
   const fiatValueInput = useUSDCValue(parsedAmounts[Field.INPUT]);
   const fiatValueOutput = useUSDCValue(parsedAmounts[Field.OUTPUT]);
-  const priceImpact = computeFiatValuePriceImpact(
-    fiatValueInput,
-    fiatValueOutput,
-  );
 
   const {
     onCurrencySelection,
@@ -302,6 +298,9 @@ const SwapV3Page: React.FC = () => {
   const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(
     currencyBalances[Field.INPUT],
   );
+  const halfInputAmount: CurrencyAmount<Currency> | undefined = halfAmountSpend(
+    currencyBalances[Field.INPUT],
+  );
   const showMaxButton = Boolean(
     maxInputAmount?.greaterThan(0) &&
       !parsedAmounts[Field.INPUT]?.equalTo(maxInputAmount),
@@ -327,13 +326,16 @@ const SwapV3Page: React.FC = () => {
   const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     currencies[Field.INPUT]?.wrapped.address ?? '',
   );
+  const onV3TradeAnalytics = useV3TradeTypeAnalyticsCallback(
+    currencies,
+    allowedSlippage,
+  );
 
   const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
+
   const handleSwap = useCallback(() => {
+    onV3TradeAnalytics(formattedAmounts);
     if (!swapCallback) {
-      return;
-    }
-    if (priceImpact && !confirmPriceImpactWithoutFee(priceImpact, t)) {
       return;
     }
 
@@ -427,8 +429,6 @@ const SwapV3Page: React.FC = () => {
       });
   }, [
     swapCallback,
-    priceImpact,
-    t,
     account,
     currencies,
     selectedWallet,
@@ -445,6 +445,7 @@ const SwapV3Page: React.FC = () => {
     recipientAddress,
     trade,
     isUni,
+    onV3TradeAnalytics,
   ]);
 
   // errors
@@ -453,14 +454,8 @@ const SwapV3Page: React.FC = () => {
   // warnings on the greater of fiat value price impact and execution price impact
   const priceImpactSeverity = useMemo(() => {
     const executionPriceImpact = trade?.priceImpact;
-    return warningSeverity(
-      executionPriceImpact && priceImpact
-        ? executionPriceImpact.greaterThan(priceImpact)
-          ? executionPriceImpact
-          : priceImpact
-        : executionPriceImpact ?? priceImpact,
-    );
-  }, [priceImpact, trade]);
+    return warningSeverity(executionPriceImpact);
+  }, [trade]);
 
   // show approve flow when: no error on inputs, not approved or pending, or approved in current session
   // never show if price impact is above threshold in non expert mode
@@ -560,7 +555,7 @@ const SwapV3Page: React.FC = () => {
   }, [maxInputAmount, onUserInput]);
 
   const handleHalfInput = useCallback(() => {
-    if (!maxInputAmount) {
+    if (!halfInputAmount) {
       return;
     }
 
@@ -569,13 +564,8 @@ const SwapV3Page: React.FC = () => {
       action: 'Half',
     });
 
-    const halvedAmount = maxInputAmount.divide('2');
-
-    onUserInput(
-      Field.INPUT,
-      halvedAmount.toFixed(maxInputAmount.currency.decimals),
-    );
-  }, [maxInputAmount, onUserInput]);
+    onUserInput(Field.INPUT, halfInputAmount.toExact());
+  }, [halfInputAmount, onUserInput]);
 
   const handleOutputSelect = useCallback(
     (outputCurrency: any) => {
@@ -703,7 +693,7 @@ const SwapV3Page: React.FC = () => {
             showHalfButton={false}
             hideBalance={false}
             fiatValue={fiatValueOutput ?? undefined}
-            priceImpact={priceImpact}
+            priceImpact={trade?.priceImpact}
             currency={currencies[Field.OUTPUT] as WrappedCurrency}
             onCurrencySelect={handleOutputSelect}
             otherCurrency={currencies[Field.INPUT]}
@@ -826,7 +816,10 @@ const SwapV3Page: React.FC = () => {
                     signatureState === UseERC20PermitState.SIGNED
                   }
                 >
-                  <Box className='flex justify-between items-center'>
+                  <Box
+                    className='flex justify-between items-center'
+                    gridGap={5}
+                  >
                     <CurrencyLogo
                       currency={currencies[Field.INPUT] as WrappedCurrency}
                       size={'24px'}
@@ -835,7 +828,6 @@ const SwapV3Page: React.FC = () => {
                       style={{
                         color: 'white',
                         flex: 1,
-                        marginLeft: 8,
                       }}
                     >
                       {/* we need to shorten this string on mobile */}
@@ -849,26 +841,18 @@ const SwapV3Page: React.FC = () => {
                           }`}
                     </span>
                     {approvalState === ApprovalState.PENDING ? (
-                      <Loader stroke='white' style={{ marginLeft: '5px' }} />
+                      <Loader stroke='white' />
                     ) : (approvalSubmitted &&
                         approvalState === ApprovalState.APPROVED) ||
                       signatureState === UseERC20PermitState.SIGNED ? (
-                      <CheckCircle
-                        size='20'
-                        style={{ marginLeft: '5px' }}
-                        className='text-success'
-                      />
+                      <CheckCircle size='20' className='text-success' />
                     ) : (
                       <CustomTooltip
                         title={t('mustgiveContractsPermission', {
                           symbol: currencies[Field.INPUT]?.symbol,
                         })}
                       >
-                        <HelpCircle
-                          size='20'
-                          color={'white'}
-                          style={{ marginLeft: '8px' }}
-                        />
+                        <HelpCircle size='20' color={'white'} />
                       </CustomTooltip>
                     )}
                   </Box>

@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useMemo, useState } from 'react';
+import React, { lazy, useEffect, useMemo, useState, useRef } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
 import { useHistory } from 'react-router-dom';
@@ -16,6 +16,8 @@ export interface PageLayoutProps {
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
+  const headerRef = useRef(null);
+  const [headerClass, setHeaderClass] = useState('');
   const { chainId, account } = useActiveWeb3React();
   const isProMode = useIsProMode();
   const [openPassModal, setOpenPassModal] = useState(false);
@@ -59,7 +61,8 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       window.location.host !== 'beta.quickswap.exchange' &&
       window.location.host !== 'dogechain.quickswap.exchange' &&
       window.location.host !== 'localhost:3000' &&
-      window.location.host !== 'testing-wcv2.interface-v2-01.pages.dev'
+      window.location.host !==
+        'feature-bonds-integration.interface-v2-01.pages.dev'
     ) {
       setOpenPassModal(true);
     }
@@ -92,15 +95,20 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   };
 
   const showBetaBanner = false;
+  const displayNewsletter = false;
 
   return (
     <Box className='page'>
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
-      <NewsletterSignupPanel />
-      <Header />
+      {displayNewsletter && <NewsletterSignupPanel />}
+      <Header
+        onUpdateNewsletter={(val) => {
+          setHeaderClass(val ? '' : 'pageWrapper-no-max-no-news');
+        }}
+      />
       {!isProMode && <Background fallback={false} />}
-      <Box className={pageWrapperClassName}>{children}</Box>
+      <Box className={`${pageWrapperClassName} ${headerClass}`}>{children}</Box>
       <Footer />
     </Box>
   );

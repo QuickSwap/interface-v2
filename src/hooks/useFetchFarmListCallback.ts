@@ -6,7 +6,7 @@ import resolveENSContentHash from 'utils/resolveENSContentHash';
 import { useActiveWeb3React } from 'hooks';
 import { fetchFarmList } from 'state/farms/actions';
 import getFarmList from 'utils/getFarmList';
-import { FarmListInfo } from 'types';
+import { FarmListInfo } from 'types/index';
 
 export function useFetchFarmListCallback(): (
   listUrl: string,

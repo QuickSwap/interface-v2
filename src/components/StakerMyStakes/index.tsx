@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
 import Loader from '../Loader';
@@ -22,13 +22,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
 import SortColumns from 'components/SortColumns';
-import { useQuery } from '@tanstack/react-query';
-import {
-  getAllGammaPairs,
-  getGammaData,
-  getGammaRewards,
-  getTokenFromAddress,
-} from 'utils';
+import { getAllGammaPairs, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
@@ -55,6 +49,14 @@ import {
   useUnipilotUserFarms,
 } from 'hooks/v3/useUnipilotFarms';
 import { FarmingType } from 'models/enums';
+import { getConfig } from 'config/index';
+import {
+  useSteerFilteredFarms,
+  useSteerStakedPools,
+  useSteerStakingPools,
+} from 'hooks/v3/useSteerData';
+import SteerFarmCard from './SteerFarmCard';
+import { useGammaData, useGammaRewards } from 'hooks/v3/useGammaData';
 
 export const FarmingMyFarms: React.FC<{
   search: string;
@@ -65,6 +67,8 @@ export const FarmingMyFarms: React.FC<{
   const tokenMap = useSelectedTokenList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const config = getConfig(chainId);
+  const qsFarmAvailable = config['qsFarm']['available'];
 
   const { v3FarmSortBy } = GlobalConst.utils;
   const [sortByQuick, setSortByQuick] = useState(v3FarmSortBy.pool);
@@ -73,7 +77,7 @@ export const FarmingMyFarms: React.FC<{
 
   const allGammaPairsToFarm = getAllGammaPairs(chainId);
 
-  const allGammaFarms = allGammaPairsToFarm.filter((item) => item.ableToFarm);
+  const allGammaFarms = allGammaPairsToFarm;
   const { eternalOnlyCollectRewardHandler } = useFarmingHandlers();
 
   const { data: rewardsResult } = useFarmRewards();
@@ -98,15 +102,7 @@ export const FarmingMyFarms: React.FC<{
   const shallowPositions = useMemo(() => {
     if (!transferredPositions) return [];
     if (txConfirmed && selectedTokenId) {
-      if (txType === 'eternalCollectReward') {
-        return transferredPositions.map((el) => {
-          if (el.id === selectedTokenId) {
-            el.eternalEarned = 0;
-            el.eternalBonusEarned = 0;
-          }
-          return el;
-        });
-      } else if (txType === 'withdraw') {
+      if (txType === 'withdraw') {
         return transferredPositions.map((el) => {
           if (el.id === selectedTokenId) {
             el.onFarmingCenter = false;
@@ -362,6 +358,10 @@ export const FarmingMyFarms: React.FC<{
 
   const [sortDescUnipilot, setSortDescUnipilot] = useState(false);
 
+  const [sortBySteer, setSortBySteer] = useState(v3FarmSortBy.pool);
+
+  const [sortDescSteer, setSortDescSteer] = useState(false);
+
   const sortColumnsQuickSwap = [
     {
       text: t('pool'),
@@ -437,6 +437,33 @@ export const FarmingMyFarms: React.FC<{
     },
   ];
 
+  const sortColumnsSteer = [
+    {
+      text: t('pool'),
+      index: v3FarmSortBy.pool,
+      width: 0.3,
+      justify: 'flex-start',
+    },
+    {
+      text: t('tvl'),
+      index: v3FarmSortBy.tvl,
+      width: 0.2,
+      justify: 'flex-start',
+    },
+    {
+      text: t('rewards'),
+      index: v3FarmSortBy.rewards,
+      width: 0.3,
+      justify: 'flex-start',
+    },
+    {
+      text: t('apr'),
+      index: v3FarmSortBy.apr,
+      width: 0.2,
+      justify: 'flex-start',
+    },
+  ];
+
   const sortByDesktopItemsQuick = sortColumnsQuickSwap.map((item) => {
     return {
       ...item,
@@ -479,49 +506,25 @@ export const FarmingMyFarms: React.FC<{
     };
   });
 
-  const fetchGammaRewards = async () => {
-    const gammaRewards = await getGammaRewards(chainId);
-    return gammaRewards;
-  };
-
-  const fetchGammaData = async () => {
-    const gammaData = await getGammaData(chainId);
-    return gammaData;
-  };
-
-  const {
-    isLoading: gammaFarmsLoading,
-    data: gammaData,
-    refetch: refetchGammaData,
-  } = useQuery({
-    queryKey: ['fetchGammaDataMyFarms', chainId],
-    queryFn: fetchGammaData,
+  const sortByDesktopItemsSteer = sortColumnsSteer.map((item) => {
+    return {
+      ...item,
+      onClick: () => {
+        if (sortBySteer === item.index) {
+          setSortDescSteer(!sortBySteer);
+        } else {
+          setSortBySteer(item.index);
+          setSortDescSteer(false);
+        }
+      },
+    };
   });
 
+  const { isLoading: gammaFarmsLoading, data: gammaData } = useGammaData();
   const {
     isLoading: gammaRewardsLoading,
     data: gammaRewards,
-    refetch: refetchGammaRewards,
-  } = useQuery({
-    queryKey: ['fetchGammaRewardsMyFarms', chainId],
-    queryFn: fetchGammaRewards,
-  });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchGammaData();
-    refetchGammaRewards();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  } = useGammaRewards();
 
   const sortMultiplierGamma = sortDescGamma ? -1 : 1;
 
@@ -883,129 +886,160 @@ export const FarmingMyFarms: React.FC<{
   const filteredUnipilotFarms = useUnipilotFilteredFarms(
     myUnipilotFarms,
     unipilotFarmData,
+    'active',
+    search,
+    sortByUnipilot,
+    sortDescUnipilot,
+  );
+
+  const { data: steerFarmsArray } = useSteerStakingPools(chainId);
+  const steerFarms = useMemo(() => {
+    if (!steerFarmsArray) return [];
+    return steerFarmsArray;
+  }, [steerFarmsArray]);
+
+  const {
+    loading: mySteerFarmsLoading,
+    data: mySteerFarms,
+  } = useSteerStakedPools(chainId, account);
+
+  const filteredSteerFarms = useSteerFilteredFarms(
+    mySteerFarms ?? [],
+    chainId,
+    search,
+    sortBySteer,
+    sortDescSteer,
   );
 
   return (
     <Box mt={2}>
-      <Divider />
-      {shallowRewards.length ? (
-        <Box px={2} my={2}>
-          <h6>Unclaimed Rewards</h6>
-          <Box my={2} className='flex'>
-            {shallowRewards.map((reward, index) =>
-              reward.trueAmount ? (
-                <Box key={index} className='flex items-center' mr={2}>
-                  <CurrencyLogo
-                    size='28px'
-                    currency={
-                      new Token(
-                        chainId ?? ChainId.MATIC,
-                        reward.rewardAddress,
-                        18,
-                        reward.symbol,
-                      )
-                    }
-                  />
-                  <Box mx={2}>
-                    <Box>{reward.name}</Box>
-                    <Box>{formatReward(reward.amount)}</Box>
-                  </Box>
-                  <Button
-                    disabled={
-                      selectedTokenId === reward.id &&
-                      txType === 'eternalOnlyCollectReward' &&
-                      !txConfirmed &&
-                      !txError
-                    }
-                    onClick={() => {
-                      eternalOnlyCollectRewardHandler(reward);
-                    }}
-                  >
-                    {selectedTokenId === reward.id &&
-                    txType === 'eternalOnlyCollectReward' &&
-                    !txConfirmed &&
-                    !txError ? (
-                      <>
-                        <Loader size={'1rem'} stroke={'var(--white)'} />
-                        <Box ml='5px'>
-                          <small>{t('claiming')}</small>
-                        </Box>
-                      </>
-                    ) : (
-                      <>
-                        <small>{t('claim')}</small>
-                      </>
-                    )}
-                  </Button>
-                </Box>
-              ) : null,
-            )}
-          </Box>
+      {qsFarmAvailable && (
+        <>
           <Divider />
-        </Box>
-      ) : null}
-      <Box px={2} my={2}>
-        <h6>QuickSwap {t('farms')}</h6>
-      </Box>
-      {transferredPositionsLoading ||
-      eternalFarmPoolAprsLoading ||
-      eternalFarmAprsLoading ||
-      !shallowPositions ? (
-        <Box py={5} className='flex justify-center'>
-          <Loader stroke={'white'} size={'1.5rem'} />
-        </Box>
-      ) : shallowPositions && shallowPositions.length === 0 ? (
-        <Box py={5} className='flex flex-col items-center'>
-          <Frown size={35} stroke={'white'} />
-          <Box mb={3} mt={1}>
-            {t('nofarms')}
+          {shallowRewards.length ? (
+            <Box px={2} my={2}>
+              <h6>Unclaimed Rewards</h6>
+              <Box my={2} className='flex'>
+                {shallowRewards.map((reward, index) =>
+                  reward.trueAmount ? (
+                    <Box key={index} className='flex items-center' mr={2}>
+                      <CurrencyLogo
+                        size='28px'
+                        currency={
+                          new Token(
+                            chainId ?? ChainId.MATIC,
+                            reward.rewardAddress,
+                            18,
+                            reward.symbol,
+                          )
+                        }
+                      />
+                      <Box mx={2}>
+                        <Box>{reward.name}</Box>
+                        <Box>{formatReward(reward.amount)}</Box>
+                      </Box>
+                      <Button
+                        disabled={
+                          selectedTokenId === reward.id &&
+                          txType === 'eternalOnlyCollectReward' &&
+                          !txConfirmed &&
+                          !txError
+                        }
+                        onClick={() => {
+                          eternalOnlyCollectRewardHandler(reward);
+                        }}
+                      >
+                        {selectedTokenId === reward.id &&
+                        txType === 'eternalOnlyCollectReward' &&
+                        !txConfirmed &&
+                        !txError ? (
+                          <>
+                            <Loader size={'1rem'} stroke={'var(--white)'} />
+                            <Box ml='5px'>
+                              <small>{t('claiming')}</small>
+                            </Box>
+                          </>
+                        ) : (
+                          <>
+                            <small>{t('claim')}</small>
+                          </>
+                        )}
+                      </Button>
+                    </Box>
+                  ) : null,
+                )}
+              </Box>
+              <Divider />
+            </Box>
+          ) : null}
+        </>
+      )}
+      {qsFarmAvailable && (
+        <>
+          <Box px={2} my={2}>
+            <h6>QuickSwap {t('farms')}</h6>
           </Box>
-        </Box>
-      ) : shallowPositions && shallowPositions.length !== 0 ? (
-        <Box padding='24px'>
-          {farmedNFTs && farmedNFTs.length > 0 && chainId && (
-            <Box pb={2}>
-              {!isMobile && (
-                <Box px={3.5}>
-                  <Box width='85%'>
-                    <SortColumns
-                      sortColumns={sortByDesktopItemsQuick}
-                      selectedSort={sortByQuick}
-                      sortDesc={sortDescQuick}
-                    />
+          {transferredPositionsLoading ||
+          eternalFarmPoolAprsLoading ||
+          eternalFarmAprsLoading ||
+          !shallowPositions ? (
+            <Box py={5} className='flex justify-center'>
+              <Loader stroke={'white'} size={'1.5rem'} />
+            </Box>
+          ) : shallowPositions && shallowPositions.length === 0 ? (
+            <Box py={5} className='flex flex-col items-center'>
+              <Frown size={35} stroke={'white'} />
+              <Box mb={3} mt={1}>
+                {t('nofarms')}
+              </Box>
+            </Box>
+          ) : shallowPositions && shallowPositions.length !== 0 ? (
+            <Box padding='24px'>
+              {farmedNFTs && farmedNFTs.length > 0 && chainId && (
+                <Box pb={2}>
+                  {!isMobile && (
+                    <Box px={3.5}>
+                      <Box width='85%'>
+                        <SortColumns
+                          sortColumns={sortByDesktopItemsQuick}
+                          selectedSort={sortByQuick}
+                          sortDesc={sortDescQuick}
+                        />
+                      </Box>
+                    </Box>
+                  )}
+                  <Box mt={2}>
+                    {farmedNFTs.map((el, i) => {
+                      return (
+                        <div
+                          className={'v3-my-farms-position-card'}
+                          key={i}
+                          data-navigatedto={hash == `#${el.id}`}
+                        >
+                          <FarmCard
+                            chainId={chainId}
+                            el={el}
+                            poolApr={
+                              eternalFarmPoolAprs
+                                ? eternalFarmPoolAprs[el.pool.id]
+                                : undefined
+                            }
+                            farmApr={
+                              eternalFarmAprs
+                                ? eternalFarmAprs[el.farmId]
+                                : undefined
+                            }
+                          />
+                        </div>
+                      );
+                    })}
                   </Box>
                 </Box>
               )}
-              <Box mt={2}>
-                {farmedNFTs.map((el, i) => {
-                  return (
-                    <div
-                      className={'v3-my-farms-position-card'}
-                      key={i}
-                      data-navigatedto={hash == `#${el.id}`}
-                    >
-                      <FarmCard
-                        chainId={chainId}
-                        el={el}
-                        poolApr={
-                          eternalFarmPoolAprs
-                            ? eternalFarmPoolAprs[el.pool.id]
-                            : undefined
-                        }
-                        farmApr={
-                          eternalFarmAprs
-                            ? eternalFarmAprs[el.farmId]
-                            : undefined
-                        }
-                      />
-                    </div>
-                  );
-                })}
-              </Box>
             </Box>
-          )}
-        </Box>
-      ) : null}
+          ) : null}
+        </>
+      )}
 
       {allGammaFarms.length > 0 && (
         <Box my={2}>
@@ -1079,7 +1113,7 @@ export const FarmingMyFarms: React.FC<{
         </Box>
       )}
 
-      {filteredUnipilotFarms.length > 0 && (
+      {myUnipilotFarms && myUnipilotFarms.length > 0 && (
         <Box my={2}>
           <Divider />
           <Box px={2} mt={2}>
@@ -1121,6 +1155,50 @@ export const FarmingMyFarms: React.FC<{
             </Box>
           ) : (
             <></>
+          )}
+        </Box>
+      )}
+      {steerFarms.length > 0 && (
+        <Box my={2}>
+          <Divider />
+          <Box px={2} mt={2}>
+            <h6>Steer {t('farms')}</h6>
+          </Box>
+          {mySteerFarmsLoading ? (
+            <Box py={5} className='flex justify-center'>
+              <Loader stroke={'white'} size={'1.5rem'} />
+            </Box>
+          ) : chainId && filteredSteerFarms.length > 0 ? (
+            <Box padding='24px'>
+              {!isMobile && (
+                <Box px={1.5}>
+                  <Box width='90%'>
+                    <SortColumns
+                      sortColumns={sortByDesktopItemsSteer}
+                      selectedSort={sortBySteer}
+                      sortDesc={sortDescSteer}
+                    />
+                  </Box>
+                </Box>
+              )}
+              <Box pb={2}>
+                {filteredSteerFarms.map((farm: any) => {
+                  return (
+                    <Box mt={2} key={farm.address}>
+                      <SteerFarmCard data={farm} />
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+          ) : (
+            <Box
+              className='flex items-center justify-center'
+              width='100%'
+              height={100}
+            >
+              <p>{t('noSteerFarms')}</p>
+            </Box>
           )}
         </Box>
       )}

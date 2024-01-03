@@ -26,7 +26,7 @@ const SwapPage: React.FC = () => {
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
 
   const { breakpoints } = useTheme();
-  const tabletWindowSize = useMediaQuery(breakpoints.down('sm'));
+  const isTablet = useMediaQuery(breakpoints.down('sm'));
   const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainId);
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainId);
 
@@ -70,7 +70,7 @@ const SwapPage: React.FC = () => {
         />
       )}
 
-      <SwapPageHeader proMode={isProMode} />
+      <SwapPageHeader proMode={isProMode} isTablet={isTablet} />
       <Box margin='24px auto'>
         <HypeLabAds />
       </Box>

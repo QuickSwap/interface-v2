@@ -20,6 +20,8 @@ import { Interface } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useMultipleContractSingleData } from 'state/multicall/hooks';
 import { GlobalConst, unipilotVaultTypes } from 'constants/index';
+import { SteerVault } from 'hooks/v3/useSteerData';
+import { calculatePositionWidth, percentageToMultiplier } from 'utils';
 
 export interface IPresetArgs {
   type: Presets;
@@ -46,6 +48,8 @@ interface IPresetRanges {
   isGamma?: boolean;
   unipilotPairs?: any[];
   isUnipilot?: boolean;
+  isSteer?: boolean;
+  steerPairs?: SteerVault[];
 }
 
 enum PresetProfits {
@@ -69,6 +73,8 @@ export function PresetRanges({
   gammaPair,
   isUnipilot = false,
   unipilotPairs,
+  isSteer = false,
+  steerPairs,
 }: IPresetRanges) {
   const { chainId } = useActiveWeb3React();
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity);
@@ -204,6 +210,56 @@ export function PresetRanges({
         : [];
     }
 
+    if (isSteer) {
+      return steerPairs
+        ? steerPairs.map((pair) => {
+            const minTick = Number(pair.lowerTick ?? 0);
+            const maxTick = Number(pair.upperTick ?? 0);
+            const currentTick = Number(pair.tick ?? 0);
+            const positionWidthPercent = calculatePositionWidth(
+              currentTick,
+              minTick,
+              maxTick,
+            );
+            const minPrice =
+              currentTick !== undefined
+                ? Math.pow(1.0001, minTick - currentTick)
+                : 0;
+            const maxPrice =
+              currentTick !== undefined
+                ? Math.pow(1.0001, maxTick - currentTick)
+                : 0;
+            const pairStrategyName =
+              pair?.strategy?.strategyConfigData?.name ?? '';
+            const isInRange = minTick < currentTick && currentTick < maxTick;
+            const pairType = isInRange
+              ? pairStrategyName.toLowerCase().includes('stable')
+                ? Presets.STEER_STABLE
+                : percentageToMultiplier(positionWidthPercent) > 1.2
+                ? Presets.STEER_WIDE
+                : Presets.STEER_NARROW
+              : Presets.OUT_OF_RANGE;
+            const pairTypeTitle = isInRange
+              ? pairType === Presets.STEER_STABLE
+                ? 'Stable'
+                : pairType === Presets.STEER_WIDE
+                ? 'Wide'
+                : 'Narrow'
+              : t('outrange');
+            return {
+              type: pairType,
+              title: pairTypeTitle,
+              address: pair.address,
+              tokenStr: pair.token0?.address + '-' + pair.token1?.address,
+              min: minPrice,
+              max: maxPrice,
+              risk: PresetProfits.VERY_LOW,
+              profit: PresetProfits.HIGH,
+            };
+          })
+        : [];
+    }
+
     if (isStablecoinPair)
       return [
         {
@@ -261,12 +317,14 @@ export function PresetRanges({
   }, [
     isGamma,
     isUnipilot,
+    isSteer,
     isStablecoinPair,
     t,
     gammaPair,
     gammaValues,
     unipilotPairs,
     uniPilotCurrentTicks,
+    steerPairs,
   ]);
 
   const risk = useMemo(() => {
@@ -374,6 +432,24 @@ export function PresetRanges({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uniPilotValuesLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
 
+  const steerLoaded = steerPairs && steerPairs.length > 0;
+  useEffect(() => {
+    if (
+      steerLoaded &&
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE
+    ) {
+      handlePresetRangeSelection(ranges[0]);
+      onChangePresetRange(ranges[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    steerLoaded,
+    liquidityRangeType,
+    mintInfo.feeAmount,
+    baseCurrency,
+    quoteCurrency,
+  ]);
+
   return (
     <Box>
       <Box mb='10px' className='preset-buttons'>
@@ -404,7 +480,7 @@ export function PresetRanges({
           </>
         )}
       </Box>
-      {!isGamma && !isUnipilot && (
+      {!isGamma && !isUnipilot && !isSteer && (
         <>
           <Box className='flex justify-between'>
             {_risk && !mintInfo.invalidRange && !isStablecoinPair && (

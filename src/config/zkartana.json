@@ -1,7 +1,7 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://rpc.zkatana.gelato.digital",
+  "rpc": "https://rpc.startale.com/zkatana",
   "blockExplorer": "https://zkatana.blockscout.com",
   "networkName": "zKatana",
   "aprAPINetwork": "zkatana",
@@ -25,6 +25,9 @@
     "available": true
   },
   "farm": {
+    "available": false
+  },
+  "qsFarm": {
     "available": false
   },
   "lair": {
@@ -67,6 +70,12 @@
     "available": false
   },
   "unipilot": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
     "available": false
   },
   "dappos": {

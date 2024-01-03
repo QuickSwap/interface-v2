@@ -18,6 +18,7 @@ import {
   updateMaticPrice,
   updateIsV2,
   updateUDDomain,
+  updateSoulZap,
 } from './actions';
 import { ETHPrice, MaticPrice, TokenDetail } from './reducer';
 
@@ -284,4 +285,9 @@ export function useUDDomain(): {
     [dispatch],
   );
   return { udDomain, updateUDDomain: _updateUDDomain };
+}
+
+export function useSoulZap() {
+  const soulZap = useSelector((state: AppState) => state.application.soulZap);
+  return soulZap;
 }

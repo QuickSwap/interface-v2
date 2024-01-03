@@ -1,8 +1,10 @@
+import { OnTxSubmitValues } from '@orbs-network/twap-ui';
 import {
   TWAP as QuickSwapTWAP,
   Orders as QuickSwapOrders,
 } from '@orbs-network/twap-ui-quickswap';
 import { CurrencySearchModal } from 'components';
+import { liquidityHubAnalytics } from 'components/Swap/LiquidityHub';
 import { useIsProMode, useActiveWeb3React } from 'hooks';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import useSwapRedirects from 'hooks/useSwapRedirect';
@@ -50,6 +52,26 @@ function TWAPBase({ limit }: { limit?: boolean }) {
     [onCurrencySelection, redirectWithCurrency],
   );
 
+  const onTxSubmitted = useCallback(
+    (value: OnTxSubmitValues) => {
+      const args = {
+        srcAmount: value.srcAmount,
+        srcTokenAddress: value.srcToken.address,
+        srcTokenSymbol: value.srcToken.symbol,
+        dexAmountOut: value.dstAmount,
+        dstTokenAddress: value.dstToken.address,
+        dstTokenSymbol: value.dstToken.symbol,
+        dstTokenUsdValue: Number(value.dstUSD),
+      };
+      if (limit) {
+        liquidityHubAnalytics.onLimitTrade(args);
+      } else {
+        liquidityHubAnalytics.onTwapTrade(args);
+      }
+    },
+    [limit],
+  );
+
   return (
     <>
       <QuickSwapTWAP
@@ -66,6 +88,7 @@ function TWAPBase({ limit }: { limit?: boolean }) {
         onSrcTokenSelected={onSrcSelect}
         onDstTokenSelected={onDstSelect}
         getTokenLogoURL={getLogo}
+        onTxSubmitted={onTxSubmitted}
       />
       <QuickSwapOrders />
     </>

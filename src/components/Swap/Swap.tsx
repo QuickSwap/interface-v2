@@ -53,6 +53,7 @@ import {
   useIsSupportedNetwork,
   confirmPriceImpactWithoutFee,
   maxAmountSpend,
+  halfAmountSpend,
 } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
@@ -65,10 +66,11 @@ import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import { GlobalValue } from 'constants/index';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import { useV2TradeTypeAnalyticsCallback } from './LiquidityHub';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
@@ -443,22 +445,22 @@ const Swap: React.FC<{
     currencyBalances[Field.INPUT],
   );
 
+  const halfAmountInput: CurrencyAmount | undefined = halfAmountSpend(
+    chainIdToUse,
+    currencyBalances[Field.INPUT],
+  );
+
   const handleMaxInput = useCallback(() => {
     maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact());
   }, [maxAmountInput, onUserInput]);
 
   const handleHalfInput = useCallback(() => {
-    if (!maxAmountInput) {
+    if (!halfAmountInput) {
       return;
     }
 
-    const halvedAmount = maxAmountInput.divide('2');
-
-    onUserInput(
-      Field.INPUT,
-      halvedAmount.toFixed(maxAmountInput.currency.decimals),
-    );
-  }, [maxAmountInput, onUserInput]);
+    onUserInput(Field.INPUT, halfAmountInput.toExact());
+  }, [halfAmountInput, onUserInput]);
 
   const atMaxAmountInput = Boolean(
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),
@@ -513,7 +515,13 @@ const Swap: React.FC<{
     fromTokenWrapped?.address ?? '',
   );
 
+  const onV2TradeAnalytics = useV2TradeTypeAnalyticsCallback(
+    currencies,
+    allowedSlippage,
+  );
+
   const handleSwap = useCallback(() => {
+    onV2TradeAnalytics(trade);
     if (
       priceImpactWithoutFee &&
       !confirmPriceImpactWithoutFee(priceImpactWithoutFee, t)
@@ -618,8 +626,7 @@ const Swap: React.FC<{
     recipient,
     recipientAddress,
     account,
-    trade?.inputAmount?.currency?.symbol,
-    trade?.outputAmount?.currency?.symbol,
+    trade,
     fromTokenWrapped,
     selectedWallet,
     chainId,
@@ -628,6 +635,7 @@ const Swap: React.FC<{
     config,
     formattedAmounts,
     fromTokenUSDPrice,
+    onV2TradeAnalytics,
   ]);
 
   const fetchingBestRoute =

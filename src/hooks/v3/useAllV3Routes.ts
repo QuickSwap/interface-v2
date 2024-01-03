@@ -14,9 +14,7 @@ import { useUserSingleHopOnly } from 'state/user/hooks';
 function poolEquals(poolA: Pool, poolB: Pool): boolean {
   return (
     poolA === poolB ||
-    (poolA.token0.equals(poolB.token0) &&
-      poolA.token1.equals(poolB.token1) &&
-      poolA.fee === poolB.fee)
+    (poolA.token0.equals(poolB.token0) && poolA.token1.equals(poolB.token1))
   );
 }
 

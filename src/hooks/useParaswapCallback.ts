@@ -178,7 +178,7 @@ export function useParaswapCallback(
         } catch (e) {
           console.log(e);
           throw new Error(
-            'For rebase or taxed tokens, try market V2 instead of best trade.',
+            'For rebase or taxed tokens, try market V2 instead of best trade. Ensure that you are using the correct slippage.',
           );
         }
 
@@ -220,14 +220,16 @@ export function useParaswapCallback(
         );
 
         try {
+          liquidityHubAnalytics.onDexSwapRequest();
           const response = await signer.sendTransaction(ethersTxParams);
-          liquidityHubAnalytics.onDexSwapSuccess(response.hash);
+          liquidityHubAnalytics.onDexSwapSuccess(response);
           addTransaction(response, {
             summary,
           });
 
           return { response, summary };
         } catch (error) {
+          liquidityHubAnalytics.onDexSwapFailed(error.message);
           if (error?.code === 'ACTION_REJECTED') {
             throw new Error('Transaction rejected.');
           } else {
