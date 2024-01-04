@@ -1842,12 +1842,16 @@ export function useDQUICKtoQUICK(isNew?: boolean, noFetch?: boolean) {
   );
   if (dQuickToQuickState.loading || dQuickToQuickState.error) return 0;
 
-  return Number(
-    new TokenAmount(
-      isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse],
-      JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
-    ).toExact(),
-  );
+  const quickToken = isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
+
+  return !noFetch && quickToken
+    ? Number(
+        new TokenAmount(
+          quickToken,
+          JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
+        ).toExact(),
+      )
+    : 0;
 }
 
 export function useDerivedSyrupInfo(
