@@ -9,4 +9,3 @@ export { default as AnalyticsPairDetails } from './AnalyticsPairDetails';
 export { default as ConvertQUICKPage } from './ConvertQUICKPage';
 export { default as EternalFarmsPage } from './EternalFarmsPage';
 export { default as NewsletterPage } from './NewsletterPage';
-export { default as NewsletterMasaPage } from './NewsletterMasaPage';
