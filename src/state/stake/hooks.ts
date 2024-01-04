@@ -1827,18 +1827,16 @@ export function useOldStakingInfo(
   );
 }
 
-export function useDQUICKtoQUICK() {
+export function useDQUICKtoQUICK(isNew?: boolean, noFetch?: boolean) {
   const { chainId } = useActiveWeb3React();
-  let chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const config = getConfig(chainIdToUse);
-  const oldLair = config['lair']['oldLair'];
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
-  chainIdToUse = oldLair ? chainIdToUse : ChainId.MATIC;
   const lair = useLairContract(chainIdToUse);
+  const newLair = useNewLairContract();
 
   const inputs = ['1000000000000000000'];
   const dQuickToQuickState = useSingleCallResult(
-    lair,
+    noFetch ? null : isNew ? newLair : lair,
     'dQUICKForQUICK',
     inputs,
   );
@@ -1846,7 +1844,7 @@ export function useDQUICKtoQUICK() {
 
   return Number(
     new TokenAmount(
-      OLD_QUICK[chainIdToUse],
+      isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse],
       JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
     ).toExact(),
   );
