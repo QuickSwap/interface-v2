@@ -584,7 +584,7 @@ export function useSteerFilteredFarms(
         rewards,
         farmAPR,
         poolAPR: vaultInfo?.apr ?? 0,
-        type: 'steer',
+        type: 'Steer',
         title: pairTypeTitle,
         loading: loadingUSDPrice || loadingSteerVaults,
       };

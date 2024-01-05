@@ -41,7 +41,7 @@ interface Props {
   farm: any;
 }
 
-export const V3PairFarmCardDetails: React.FC<Props> = ({ farm }) => {
+export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const { breakpoints } = useTheme();

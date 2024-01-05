@@ -6,10 +6,10 @@ import { GlobalConst, GlobalData } from 'constants/index';
 import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
 import { useMerklFarms } from 'hooks/v3/useV3Farms';
 import Loader from 'components/Loader';
-import V3FarmCard from './FarmCard';
+import MerklFarmCard from './MerklFarmCard';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import CustomSelector from 'components/v3/CustomSelector';
-import V3PairFarmCard from './PairFarmCard';
+import MerklPairFarmCard from './MerklPairFarmCard';
 import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
@@ -411,7 +411,7 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
               filteredSelectedFarms.length > 0 ? (
                 filteredSelectedFarms.map((farm, ind) => (
                   <Box key={ind} pb={2}>
-                    <V3PairFarmCard farm={farm} />
+                    <MerklPairFarmCard farm={farm} />
                   </Box>
                 ))
               ) : (
@@ -426,7 +426,7 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
             ) : v3Farms.length > 0 ? (
               v3Farms.map((farm, ind) => (
                 <Box key={ind} pb={2}>
-                  <V3FarmCard farm={farm} />
+                  <MerklFarmCard farm={farm} />
                 </Box>
               ))
             ) : (

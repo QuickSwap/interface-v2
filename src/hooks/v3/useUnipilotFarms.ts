@@ -404,7 +404,7 @@ export function useUnipilotFilteredFarms(
         rewardUSD,
         poolAPR,
         farmAPR,
-        type: 'unipilot',
+        type: 'Unipilot',
         title,
       };
     })

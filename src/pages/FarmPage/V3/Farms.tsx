@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import CustomSelector from 'components/v3/CustomSelector';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -119,9 +119,26 @@ export default function Farms() {
   const poolId =
     parsedQuery && parsedQuery.pool ? parsedQuery.pool.toString() : undefined;
 
+  const token0 =
+    parsedQuery && parsedQuery.token0
+      ? parsedQuery.token0.toString()
+      : undefined;
+
+  const token1 =
+    parsedQuery && parsedQuery.token1
+      ? parsedQuery.token1.toString()
+      : undefined;
+
+  const isAllFarms = merklAvailable ? !!poolId : !!token0 && !!token1;
+
+  useEffect(() => {
+    history.push('/farm');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId]);
+
   return (
-    <Box className={poolId ? '' : 'bg-palette'} borderRadius={10}>
-      {!poolId && (
+    <Box className={isAllFarms ? '' : 'bg-palette'} borderRadius={10}>
+      {!isAllFarms && (
         <Box
           pt={2}
           px={2}

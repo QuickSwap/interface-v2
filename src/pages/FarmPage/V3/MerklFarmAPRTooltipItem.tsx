@@ -5,14 +5,14 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatNumber, getAllGammaPairs } from 'utils';
 
-export const FarmAPRTooltipItem: React.FC<{
+export const MerklFarmAPRTooltipItem: React.FC<{
   farm: any;
   token0?: string;
   token1?: string;
 }> = ({ farm, token0, token1 }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const farmType = farm.label.split(' ')[0];
+  const farmType = farm.label ? farm.label.split(' ')[0] : '';
   const defiEdgeFarmTitleData = useDefiEdgeRangeTitles(
     farmType === 'DefiEdge' ? [farm.almAddress] : [],
   );
@@ -21,17 +21,20 @@ export const FarmAPRTooltipItem: React.FC<{
     : undefined;
 
   const farmTitle = useMemo(() => {
-    if (farm.label.includes('Gamma')) {
-      return (
-        getAllGammaPairs(chainId).find(
-          (item) =>
-            item.address.toLowerCase() === farm.almAddress.toLowerCase(),
-        )?.title ?? ''
-      );
-    } else if (farm.label.includes('DefiEdge')) {
-      return defiEdgeFarmTitle ?? '';
-    } else if (farm.label.includes('Steer')) {
-      return farm.title;
+    if (farm.label) {
+      if (farm.label.includes('Gamma')) {
+        return (
+          getAllGammaPairs(chainId).find(
+            (item) =>
+              item.address.toLowerCase() === farm.almAddress.toLowerCase(),
+          )?.title ?? ''
+        );
+      } else if (farm.label.includes('DefiEdge')) {
+        return defiEdgeFarmTitle ?? '';
+      } else if (farm.label.includes('Steer')) {
+        return farm.title;
+      }
+      return '';
     }
     return '';
   }, [chainId, defiEdgeFarmTitle, farm]);

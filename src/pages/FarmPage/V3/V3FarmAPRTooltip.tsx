@@ -1,25 +1,24 @@
 import React from 'react';
 import { CustomTooltip } from 'components';
 import { Box } from '@material-ui/core';
-import { FarmAPRTooltipItem } from './FarmAPRTooltipItem';
+import { V3FarmAPRTooltipItem } from './V3FarmAPRTooltipItem';
+import { V3FarmPair } from './AllV3Farms';
 
-export const FarmAPRTooltip: React.FC<{
-  farms: any[];
-  token0?: string;
-  token1?: string;
+export const V3FarmAPRTooltip: React.FC<{
+  farm: V3FarmPair;
   children: any;
-}> = ({ farms, token0, token1, children }) => {
+}> = ({ farm, children }) => {
   return (
     <CustomTooltip
       padding='0'
       placement='right'
       title={
         <Box className='farmAPRTooltipWrapper'>
-          {farms.map((farm, ind) => (
-            <FarmAPRTooltipItem
-              farm={farm}
-              token0={token0}
-              token1={token1}
+          {farm.farms.map((item, ind) => (
+            <V3FarmAPRTooltipItem
+              farm={item}
+              token0={farm.token0.address}
+              token1={farm.token1.address}
               key={ind}
             />
           ))}

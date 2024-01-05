@@ -110,23 +110,28 @@ export const useEternalFarmsFiltered = (
       const farmRewardTokenPrice = rewardTokenPrices?.find(
         (item) =>
           farm &&
+          farm.rewardToken &&
           item.address.toLowerCase() === farm.rewardToken.address.toLowerCase(),
       );
       const farmBonusRewardTokenPrice = rewardTokenPrices?.find(
         (item) =>
           farm &&
+          farm.bonusRewardToken &&
           item.address.toLowerCase() ===
             farm.bonusRewardToken.address.toLowerCase(),
       );
       const farmReward =
-        farm && farm.rewardRate && farmRewardTokenPrice
+        farm && farm.rewardRate && farm.rewardToken && farmRewardTokenPrice
           ? Number(formatUnits(farm.rewardRate, farm.rewardToken.decimals)) *
             farmRewardTokenPrice.price *
             3600 *
             24
           : 0;
       const farmBonusReward =
-        farm && farm.bonusRewardRate && farmBonusRewardTokenPrice
+        farm &&
+        farm.bonusRewardRate &&
+        farm.bonusRewardToken &&
+        farmBonusRewardTokenPrice
           ? Number(
               formatUnits(farm.bonusRewardRate, farm.bonusRewardToken.decimals),
             ) *
@@ -142,28 +147,38 @@ export const useEternalFarmsFiltered = (
         poolAPR,
         farmAPR,
         rewardUSD: farmReward + farmBonusReward,
-        rewards: [
-          {
-            amount:
-              Number(formatUnits(farm.rewardRate, farm.rewardToken.decimals)) *
-              3600 *
-              24,
-            token: farm.rewardToken,
-          },
-          {
-            amount:
-              Number(
-                formatUnits(
-                  farm.bonusRewardRate,
-                  farm.bonusRewardToken.decimals,
-                ),
-              ) *
-              3600 *
-              24,
-            token: farm.bonusRewardToken,
-          },
-        ],
-        type: 'quickswap',
+        rewards: (farm.rewardToken
+          ? [
+              {
+                amount:
+                  Number(
+                    formatUnits(farm.rewardRate, farm.rewardToken.decimals),
+                  ) *
+                  3600 *
+                  24,
+                token: farm.rewardToken,
+              },
+            ]
+          : []
+        ).concat(
+          farm.bonusRewardToken
+            ? [
+                {
+                  amount:
+                    Number(
+                      formatUnits(
+                        farm.bonusRewardRate,
+                        farm.bonusRewardToken.decimals,
+                      ),
+                    ) *
+                    3600 *
+                    24,
+                  token: farm.bonusRewardToken,
+                },
+              ]
+            : [],
+        ),
+        type: 'QuickSwap',
       };
     })
     .filter((farm) => {
@@ -737,7 +752,7 @@ export const useGammaFarmsFiltered = (
         }),
         poolAPR,
         farmAPR,
-        type: 'gamma',
+        type: 'Gamma',
       };
     })
     .filter((item) => {

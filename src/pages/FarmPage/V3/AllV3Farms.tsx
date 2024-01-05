@@ -1,14 +1,14 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
 import Loader from 'components/Loader';
-import V3FarmCard from './FarmCard';
+import V3FarmCard from './V3FarmCard';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import CustomSelector from 'components/v3/CustomSelector';
-import V3PairFarmCard from './PairFarmCard';
+import V3PairFarmCard from './V3PairFarmCard';
 import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
@@ -35,6 +35,16 @@ import { V3Farm } from './Farms';
 interface Props {
   searchValue: string;
   farmStatus: string;
+}
+
+export interface V3FarmPair {
+  tvl: number;
+  rewardsUSD: number;
+  apr: number;
+  title: string;
+  token0: Token;
+  token1: Token;
+  farms: V3Farm[];
 }
 
 const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
@@ -267,23 +277,6 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       return 1;
     });
 
-  const rewardAddresses = v3Farms.reduce((memo: string[], item) => {
-    for (const farm of item.farms) {
-      for (const reward of farm.rewards) {
-        if (
-          reward?.token?.address &&
-          !memo.includes(reward?.token?.address.toLowerCase())
-        ) {
-          memo.push(reward?.token?.address.toLowerCase());
-        }
-      }
-    }
-    return memo;
-  }, []);
-  const { prices: rewardUSDPrices } = useUSDCPricesFromAddresses(
-    rewardAddresses,
-  );
-
   const parsedQuery = useParsedQueryString();
   const token0 =
     parsedQuery && parsedQuery.token0
@@ -302,13 +295,14 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   );
 
   const farmTypes = useMemo(() => {
-    if (!selectedFarm) return [];
-    const mTypes = selectedFarm.farms.reduce((memo: string[], item) => {
-      if (item.title && !memo.includes(item.title)) {
-        memo.push(item.title);
-      }
-      return memo;
-    }, []);
+    const mTypes = selectedFarm
+      ? selectedFarm.farms.reduce((memo: string[], item) => {
+          if (item.title && !memo.includes(item.title)) {
+            memo.push(item.title);
+          }
+          return memo;
+        }, [])
+      : [];
 
     return [
       {
@@ -337,7 +331,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
     return farmsFilteredWithRewards.filter(
       (item) => item.title && item.title === farmType.link,
     );
-  }, [farmType.link, selectedFarm, staked]);
+  }, [farmType, selectedFarm, staked]);
 
   return (
     <>
@@ -429,7 +423,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
               filteredSelectedFarms.length > 0 ? (
                 filteredSelectedFarms.map((farm, ind) => (
                   <Box key={ind} pb={2}>
-                    {/* <V3PairFarmCard farm={farm} /> */}
+                    <V3PairFarmCard farm={farm} />
                   </Box>
                 ))
               ) : (
@@ -444,7 +438,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
             ) : v3Farms.length > 0 ? (
               v3Farms.map((farm, ind) => (
                 <Box key={ind} pb={2}>
-                  {/* <V3FarmCard farm={farm} /> */}
+                  <V3FarmCard farm={farm} />
                 </Box>
               ))
             ) : (

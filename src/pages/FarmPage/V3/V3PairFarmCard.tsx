@@ -1,27 +1,19 @@
 import React, { useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { DoubleCurrencyLogo } from 'components';
-import { formatNumber, getTokenFromAddress } from 'utils';
+import { formatNumber } from 'utils';
 import APRHover from 'assets/images/aprHover.png';
 import { useTranslation } from 'react-i18next';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import { useActiveWeb3React } from 'hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { V3PairFarmCardDetails } from './PairFarmCardDetails';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { V3Farm } from './Farms';
 
 interface Props {
-  farm: any;
+  farm: V3Farm;
 }
 
 export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
-  const farmType = farm.label.split(' ')[0];
-
-  const tokenMap = useSelectedTokenList();
-  const token0 = getTokenFromAddress(farm.token0, chainId, tokenMap, []);
-  const token1 = getTokenFromAddress(farm.token1, chainId, tokenMap, []);
 
   const [expanded, setExpanded] = useState(false);
   const { breakpoints } = useTheme();
@@ -46,11 +38,15 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
           width={isMobile ? '90%' : '50%'}
           gridGap={8}
         >
-          <DoubleCurrencyLogo size={24} currency0={token0} currency1={token1} />
+          <DoubleCurrencyLogo
+            size={24}
+            currency0={farm.token0}
+            currency1={farm.token1}
+          />
           <Box>
             <Box className='flex items-center' gridGap={5}>
               <small>
-                {token0?.symbol}/{token1?.symbol}
+                {farm.token0?.symbol}/{farm.token1?.symbol}
               </small>
               {farm.title && (
                 <Box
@@ -68,7 +64,7 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
                 </Box>
               )}
               <Box className='farmAPRTitleWrapper bg-textSecondary'>
-                <span className='text-gray32'>{farmType.toUpperCase()}</span>
+                <span className='text-gray32'>{farm.type.toUpperCase()}</span>
               </Box>
             </Box>
           </Box>
@@ -77,15 +73,15 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
           <>
             <Box width='20%'>
               <p className='small text-secondary'>{t('tvl')}</p>
-              <p className='small'>${formatNumber(farm.almTVL)}</p>
+              <p className='small'>${formatNumber(farm.tvl)}</p>
             </Box>
             <Box width='20%'>
               <p className='small text-secondary'>{t('totalAPR')}</p>
               <Box className='flex items-center' gridGap={4}>
                 <p className='small text-success'>
-                  {formatNumber(farm.poolAPR + farm.almAPR)}%
+                  {formatNumber(farm.poolAPR + farm.farmAPR)}%
                 </p>
-                <TotalAPRTooltip farmAPR={farm.almAPR} poolAPR={farm.poolAPR}>
+                <TotalAPRTooltip farmAPR={farm.farmAPR} poolAPR={farm.poolAPR}>
                   <img src={APRHover} alt='farm APR' height={16} />
                 </TotalAPRTooltip>
               </Box>
@@ -100,15 +96,7 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
           )}
         </Box>
       </Box>
-      {expanded && (
-        <V3PairFarmCardDetails
-          farm={{
-            ...farm,
-            token0,
-            token1,
-          }}
-        />
-      )}
+      {/* {expanded && <MerklPairFarmCardDetails farm={farm} />} */}
     </Box>
   );
 };
