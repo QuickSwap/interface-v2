@@ -8,7 +8,6 @@ import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { V3PairFarmCardDetails } from './PairFarmCardDetails';
-import { toV3Token } from 'constants/v3/addresses';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
 interface Props {
@@ -105,8 +104,8 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
         <V3PairFarmCardDetails
           farm={{
             ...farm,
-            token0: token0 ? toV3Token(token0) : undefined,
-            token1: token1 ? toV3Token(token1) : undefined,
+            token0,
+            token1,
           }}
         />
       )}

@@ -14,8 +14,23 @@ import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { Home, KeyboardArrowRight } from '@material-ui/icons';
-import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import {
+  useEternalFarmsFiltered,
+  useGammaFarmsFiltered,
+} from 'hooks/v3/useV3Farms';
+import { useEternalFarms } from 'hooks/useIncentiveSubgraph';
+import {
+  useUnipilotFarmData,
+  useUnipilotFarms,
+  useUnipilotFilteredFarms,
+} from 'hooks/v3/useUnipilotFarms';
+import {
+  useSteerFilteredFarms,
+  useSteerStakingPools,
+} from 'hooks/v3/useSteerData';
+import { Token } from '@uniswap/sdk';
+import { V3Farm } from './Farms';
 
 interface Props {
   searchValue: string;
@@ -101,113 +116,138 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
     };
   });
 
-  const loading = false;
-  const farms: any[] = [];
-  const rewardAddresses = farms.reduce((memo: string[], item: any) => {
-    const distributionData: any[] = (item?.distributionData ?? []).filter(
-      (reward: any) => reward.isLive,
-    );
-    for (const rewardItem of distributionData) {
-      if (
-        rewardItem.rewardToken &&
-        !memo.includes(rewardItem.rewardToken.toLowerCase())
-      ) {
-        memo.push(rewardItem.rewardToken.toLowerCase());
-      }
-    }
-    return memo;
-  }, []);
-  const { prices: rewardUSDPrices } = useUSDCPricesFromAddresses(
-    rewardAddresses,
+  const {
+    data: allEternalFarms,
+    isLoading: eternalFarmsLoading,
+  } = useEternalFarms();
+  const eternalFarmsByStatus = useMemo(() => {
+    if (!allEternalFarms) return [];
+    return allEternalFarms
+      .filter((farm) => {
+        if (farmStatus === 'active') {
+          return (
+            (Number(farm.reward) > 0 || Number(farm.bonusReward) > 0) &&
+            ((farm.rewardRate && Number(farm.rewardRate) > 0) ||
+              (farm.bonusRewardRate && Number(farm.bonusRewardRate) > 0))
+          );
+        }
+        return Number(farm.reward) === 0 && Number(farm.bonusReward) === 0;
+      })
+      .map((farm) => {
+        return {
+          ...farm,
+          rewardRate: farmStatus === 'ended' ? '0' : farm.rewardRate,
+          bonusRewardRate: farmStatus === 'ended' ? '0' : farm.bonusRewardRate,
+        };
+      });
+  }, [allEternalFarms, farmStatus]);
+  const {
+    loading: loadingQSFarms,
+    data: filteredEternalFarms,
+  } = useEternalFarmsFiltered(
+    eternalFarmsByStatus,
+    chainId,
+    searchValue,
+    farmFilter,
   );
 
-  const v3Farms = farms
-    .map((item: any) => {
-      const apr = item.alm.reduce(
-        (value: number, farm: any) =>
-          Math.max(value, farm.almAPR + farm.poolAPR),
+  const allGammaPairs = getAllGammaPairs(chainId).filter(
+    (item) => item.ableToFarm === (farmStatus === 'active'),
+  );
+  const {
+    loading: loadingGamma,
+    data: filteredGammaFarms,
+  } = useGammaFarmsFiltered(allGammaPairs, chainId, searchValue, farmFilter);
+
+  const {
+    data: unipilotFarmsArray,
+    loading: unipilotFarmsLoading,
+  } = useUnipilotFarms(chainId);
+  const unipilotFarms = useMemo(() => {
+    if (!unipilotFarmsArray) return [];
+    return unipilotFarmsArray;
+  }, [unipilotFarmsArray]);
+  const farmAddresses = unipilotFarms.map((farm: any) => farm.id);
+  const {
+    loading: unipilotFarmDataLoading,
+    data: unipilotFarmData,
+  } = useUnipilotFarmData(farmAddresses, chainId);
+  const filteredUnipilotFarms = useUnipilotFilteredFarms(
+    unipilotFarms,
+    unipilotFarmData,
+    farmFilter,
+    searchValue,
+  );
+
+  const {
+    data: steerFarmsArray,
+    loading: steerFarmsLoading,
+  } = useSteerStakingPools(chainId, farmStatus);
+  const steerFarms = useMemo(() => {
+    if (!steerFarmsArray) return [];
+    return steerFarmsArray;
+  }, [steerFarmsArray]);
+  const filteredSteerFarms = useSteerFilteredFarms(
+    steerFarms ?? [],
+    chainId,
+    searchValue,
+    farmFilter,
+  );
+
+  const loading =
+    eternalFarmsLoading ||
+    loadingQSFarms ||
+    loadingGamma ||
+    unipilotFarmsLoading ||
+    unipilotFarmDataLoading ||
+    steerFarmsLoading;
+
+  const v3Farms = filteredEternalFarms
+    .concat(filteredGammaFarms)
+    .concat(filteredUnipilotFarms)
+    .concat(filteredSteerFarms)
+    .reduce(
+      (memo: { token0: Token; token1: Token; farms: V3Farm[] }[], farm) => {
+        if (farm.token0 && farm.token1) {
+          const token0Address = farm.token0?.address ?? '';
+          const token1Address = farm.token1?.address ?? '';
+          const farmIndex = memo.findIndex(
+            (item) =>
+              ((item.token0?.address ?? '').toLowerCase() ===
+                token0Address.toLowerCase() &&
+                (item.token1?.address ?? '').toLowerCase() ===
+                  token1Address.toLowerCase()) ||
+              ((item.token0?.address ?? '').toLowerCase() ===
+                token1Address.toLowerCase() &&
+                (item.token1?.address ?? '').toLowerCase() ===
+                  token0Address.toLowerCase()),
+          );
+          if (farmIndex > -1) {
+            memo[farmIndex].farms.push(farm);
+          } else {
+            memo.push({
+              token0: farm.token0,
+              token1: farm.token1,
+              farms: [farm],
+            });
+          }
+        }
+        return memo;
+      },
+      [],
+    )
+    .map((item) => {
+      const tvl = item.farms.reduce((total, farm) => total + farm.tvl, 0);
+      const rewardsUSD = item.farms.reduce(
+        (total, farm) => total + farm.rewardUSD,
         0,
       );
-      const title = (item.symbolToken0 ?? '') + (item.symbolToken1 ?? '');
-      const rewardItems: any[] = (item?.distributionData ?? []).filter(
-        (reward: any) => reward.isLive,
+      const apr = item.farms.reduce(
+        (value, farm) => Math.max(value, farm.farmAPR + farm.poolAPR),
+        0,
       );
-      const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
-        const usdPrice =
-          rewardUSDPrices?.find(
-            (priceItem) =>
-              item.rewardToken &&
-              priceItem.address.toLowerCase() ===
-                item.rewardToken.toLowerCase(),
-          )?.price ?? 0;
-        const rewardDuration =
-          (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
-        return (
-          total +
-          (rewardDuration > 0
-            ? ((usdPrice * (item?.amount ?? 0)) / rewardDuration) * 3600 * 24
-            : 0)
-        );
-      }, 0);
-      return { ...item, apr, title, dailyRewardUSD };
-    })
-    .filter((farm) => {
-      const searchCondition = (farm?.title ?? '')
-        .toLowerCase()
-        .includes(searchValue.toLowerCase());
-      const farmToken0Id = farm?.token0 ?? '';
-      const farmToken1Id = farm?.token1 ?? '';
-      const blueChipCondition =
-        !!GlobalData.blueChips[chainId].find(
-          (token) => token.address.toLowerCase() === farmToken0Id.toLowerCase(),
-        ) &&
-        !!GlobalData.blueChips[chainId].find(
-          (token) => token.address.toLowerCase() === farmToken1Id.toLowerCase(),
-        );
-      const stableCoinCondition =
-        !!GlobalData.stableCoins[chainId].find(
-          (token) => token.address.toLowerCase() === farmToken0Id.toLowerCase(),
-        ) &&
-        !!GlobalData.stableCoins[chainId].find(
-          (token) => token.address.toLowerCase() === farmToken1Id.toLowerCase(),
-        );
-      const stablePair0 = GlobalData.stablePairs[chainId].find(
-        (tokens) =>
-          !!tokens.find(
-            (token) =>
-              token.address.toLowerCase() === farmToken0Id.toLowerCase(),
-          ),
-      );
-      const stablePair1 = GlobalData.stablePairs[chainId].find(
-        (tokens) =>
-          !!tokens.find(
-            (token) =>
-              token.address.toLowerCase() === farmToken1Id.toLowerCase(),
-          ),
-      );
-      const stableLPCondition =
-        (stablePair0 &&
-          stablePair0.find(
-            (token) =>
-              token.address.toLowerCase() === farmToken1Id.toLowerCase(),
-          )) ||
-        (stablePair1 &&
-          stablePair1.find(
-            (token) =>
-              token.address.toLowerCase() === farmToken0Id.toLowerCase(),
-          ));
-      return (
-        searchCondition &&
-        (farmFilter === GlobalConst.utils.v3FarmFilter.blueChip
-          ? blueChipCondition
-          : farmFilter === GlobalConst.utils.v3FarmFilter.stableCoin
-          ? stableCoinCondition
-          : farmFilter === GlobalConst.utils.v3FarmFilter.stableLP
-          ? stableLPCondition
-          : farmFilter === GlobalConst.utils.v3FarmFilter.otherLP
-          ? !blueChipCondition && !stableCoinCondition && !stableLPCondition
-          : true)
-      );
+      const title = (item.token0.symbol ?? '') + (item.token1.symbol ?? '');
+      return { ...item, tvl, rewardsUSD, apr, title };
     })
     .sort((farm1, farm2) => {
       if (sortBy === GlobalConst.utils.v3FarmSortBy.pool) {
@@ -220,77 +260,50 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
       }
       if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
-        return farm1.dailyRewardUSD > farm2.dailyRewardUSD
+        return farm1.rewardsUSD > farm2.rewardsUSD
           ? sortMultiplier
           : -1 * sortMultiplier;
       }
       return 1;
     });
 
-  const parsedQuery = useParsedQueryString();
-  const poolId =
-    parsedQuery && parsedQuery.pool ? parsedQuery.pool.toString() : undefined;
-  const selectedPool = v3Farms.find(
-    (item) => poolId && item.pool.toLowerCase() === poolId.toLowerCase(),
-  );
-  const currency0 = useCurrency(selectedPool?.token0);
-  const currency1 = useCurrency(selectedPool?.token1);
-
-  const selectedDefiEdgeIds = getAllDefiedgeStrategies(chainId)
-    .filter(
-      (item) =>
-        !!(selectedPool?.alm ?? []).find(
-          (alm: any) => alm.almAddress.toLowerCase() === item.id.toLowerCase(),
-        ),
-    )
-    .map((item) => item.id);
-  const defiEdgeTitles = useDefiEdgeRangeTitles(selectedDefiEdgeIds);
-  const selectedFarms: any[] = useMemo(() => {
-    const almFarms: any[] = selectedPool?.alm ?? [];
-    return almFarms.map((alm) => {
-      let title = alm.title ?? '';
-      if (alm.label.includes('Gamma')) {
-        title =
-          getAllGammaPairs(chainId).find(
-            (item) =>
-              item.address.toLowerCase() === alm.almAddress.toLowerCase(),
-          )?.title ?? '';
-      } else if (alm.label.includes('DefiEdge')) {
-        title =
-          defiEdgeTitles.find(
-            (item) =>
-              item.address.toLowerCase() === alm.almAddress.toLowerCase(),
-          )?.title ?? '';
+  const rewardAddresses = v3Farms.reduce((memo: string[], item) => {
+    for (const farm of item.farms) {
+      for (const reward of farm.rewards) {
+        if (
+          reward?.token?.address &&
+          !memo.includes(reward?.token?.address.toLowerCase())
+        ) {
+          memo.push(reward?.token?.address.toLowerCase());
+        }
       }
-      const farmType = alm.label.split(' ')[0];
-      const farmTypeReward =
-        farmType === 'QuickSwap' ? 'QuickswapAlgebra' : farmType;
-      const poolRewards = selectedPool?.rewardsPerToken;
-      const rewardTokenAddresses = poolRewards ? Object.keys(poolRewards) : [];
-      const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
-      const rewards = rewardData
-        .map((item, ind) => {
-          return { ...item, address: rewardTokenAddresses[ind] };
-        })
-        .filter((item) => {
-          const accumulatedRewards = item.breakdownOfAccumulated;
-          return (
-            accumulatedRewards &&
-            Object.keys(accumulatedRewards).includes(farmTypeReward)
-          );
-        });
-      return {
-        ...alm,
-        token0: selectedPool?.token0,
-        token1: selectedPool?.token1,
-        title,
-        rewards,
-      };
-    });
-  }, [chainId, defiEdgeTitles, selectedPool]);
+    }
+    return memo;
+  }, []);
+  const { prices: rewardUSDPrices } = useUSDCPricesFromAddresses(
+    rewardAddresses,
+  );
+
+  const parsedQuery = useParsedQueryString();
+  const token0 =
+    parsedQuery && parsedQuery.token0
+      ? parsedQuery.token0.toString()
+      : undefined;
+  const token1 =
+    parsedQuery && parsedQuery.token1
+      ? parsedQuery.token1.toString()
+      : undefined;
+  const selectedFarm = v3Farms.find(
+    (item) =>
+      token0 &&
+      token1 &&
+      item.token0.address.toLowerCase() === token0.toLowerCase() &&
+      item.token1.address.toLowerCase() === token1.toLowerCase(),
+  );
 
   const farmTypes = useMemo(() => {
-    const mTypes = selectedFarms.reduce((memo: string[], item) => {
+    if (!selectedFarm) return [];
+    const mTypes = selectedFarm.farms.reduce((memo: string[], item) => {
       if (item.title && !memo.includes(item.title)) {
         memo.push(item.title);
       }
@@ -308,13 +321,14 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
         return { text: item, id: ind + 1, link: item };
       }),
     );
-  }, [selectedFarms, t]);
+  }, [selectedFarm, t]);
 
   const [farmType, setFarmType] = useState(farmTypes[0]);
   const [staked, setStaked] = useState(false);
 
   const filteredSelectedFarms = useMemo(() => {
-    const farmsFilteredWithRewards = selectedFarms.filter((item) =>
+    if (!selectedFarm) return [];
+    const farmsFilteredWithRewards = selectedFarm.farms.filter((item) =>
       staked ? item.rewards.length > 0 : true,
     );
     if (farmType.link === 'all') {
@@ -323,11 +337,11 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
     return farmsFilteredWithRewards.filter(
       (item) => item.title && item.title === farmType.link,
     );
-  }, [farmType.link, selectedFarms, staked]);
+  }, [farmType.link, selectedFarm, staked]);
 
   return (
     <>
-      {poolId && (
+      {selectedFarm && (
         <>
           <Box className='flex items-center'>
             <Box
@@ -340,27 +354,31 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
             </Box>
             <KeyboardArrowRight className='text-secondary' />
             <small className='text-bold'>
-              {currency0?.symbol}/{currency1?.symbol}
+              {selectedFarm.token0?.symbol}/{selectedFarm.token1?.symbol}
             </small>
           </Box>
           <Box className='flex items-center' gridGap={8} my={3}>
             <DoubleCurrencyLogo
-              currency0={currency0 ?? undefined}
-              currency1={currency1 ?? undefined}
+              currency0={selectedFarm.token0 ?? undefined}
+              currency1={selectedFarm.token1 ?? undefined}
               size={24}
             />
             <h4 className='weight-500'>
-              {currency0?.symbol}/{currency1?.symbol}
+              {selectedFarm.token0?.symbol}/{selectedFarm.token1?.symbol}
             </h4>
           </Box>
         </>
       )}
 
-      <Box className={poolId ? 'bg-palette' : ''} borderRadius={10} pt={2}>
-        {poolId ? (
+      <Box
+        className={selectedFarm ? 'bg-palette' : ''}
+        borderRadius={10}
+        pt={2}
+      >
+        {selectedFarm ? (
           <Box className='flex justify-between items-center' px={2} mb={2}>
             <Box className='flex'>
-              {selectedFarms.length > 1 && (
+              {selectedFarm.farms.length > 1 && (
                 <CustomSelector
                   height={36}
                   items={farmTypes}
@@ -407,11 +425,11 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           </Box>
         ) : (
           <Box px={2}>
-            {poolId ? (
+            {selectedFarm ? (
               filteredSelectedFarms.length > 0 ? (
                 filteredSelectedFarms.map((farm, ind) => (
                   <Box key={ind} pb={2}>
-                    <V3PairFarmCard farm={farm} />
+                    {/* <V3PairFarmCard farm={farm} /> */}
                   </Box>
                 ))
               ) : (
@@ -426,7 +444,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
             ) : v3Farms.length > 0 ? (
               v3Farms.map((farm, ind) => (
                 <Box key={ind} pb={2}>
-                  <V3FarmCard farm={farm} />
+                  {/* <V3FarmCard farm={farm} /> */}
                 </Box>
               ))
             ) : (
