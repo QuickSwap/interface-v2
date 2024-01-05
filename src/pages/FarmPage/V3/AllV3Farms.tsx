@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
-import { useMerklFarms } from 'hooks/v3/useV3Farms';
 import Loader from 'components/Loader';
 import V3FarmCard from './FarmCard';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -102,7 +101,8 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
     };
   });
 
-  const { loading, farms } = useMerklFarms();
+  const loading = false;
+  const farms: any[] = [];
   const rewardAddresses = farms.reduce((memo: string[], item: any) => {
     const distributionData: any[] = (item?.distributionData ?? []).filter(
       (reward: any) => reward.isLive,

@@ -69,5 +69,8 @@
   },
   "defiedge": {
     "available": false
+  },
+  "merkl": {
+    "available": false
   }
 }

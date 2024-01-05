@@ -25,9 +25,8 @@
     "available": true
   },
   "farm": {
-    "available": true
-  },
-  "qsFarm": {
+    "quickswap": true,
+    "merkl": true,
     "available": true
   },
   "lair": {

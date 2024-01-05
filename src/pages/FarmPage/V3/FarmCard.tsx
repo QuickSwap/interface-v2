@@ -94,7 +94,7 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
               size={24}
             />
             <p>
-              {farm.symbolToken0}/{farm.symbolToken1}
+              {token0?.symbol}/{token1?.symbol}
             </p>
           </Box>
           <Box

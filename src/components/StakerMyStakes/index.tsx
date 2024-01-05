@@ -57,7 +57,7 @@ export const FarmingMyFarms: React.FC<{
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const config = getConfig(chainId);
-  const qsFarmAvailable = config['qsFarm']['available'];
+  const qsFarmAvailable = config['farm']['quickswap'];
 
   const { v3FarmSortBy } = GlobalConst.utils;
   const [sortByQuick, setSortByQuick] = useState(v3FarmSortBy.pool);

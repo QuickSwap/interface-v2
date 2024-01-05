@@ -9,8 +9,9 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
 import { SearchInput, CustomSwitch } from 'components';
-import AllV3Farms from './AllFarms';
-import { useCurrency } from 'hooks/v3/Tokens';
+import AllMerklFarms from './AllMerklFarms';
+import { getConfig } from 'config/index';
+import AllV3Farms from './AllV3Farms';
 
 export interface V3Farm {
   token0?: Token;
@@ -31,6 +32,8 @@ export default function Farms() {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainId);
+  const merklAvailable = config['farm']['merkl'];
 
   const parsedQuery = useParsedQueryString();
   const farmStatus =
@@ -160,9 +163,12 @@ export default function Farms() {
       {selectedFarmCategory?.id === 0 && (
         <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
       )}
-      {selectedFarmCategory.id === 1 && (
-        <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
-      )}
+      {selectedFarmCategory.id === 1 &&
+        (merklAvailable ? (
+          <AllMerklFarms searchValue={searchValue} farmStatus={farmStatus} />
+        ) : (
+          <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
+        ))}
     </Box>
   );
 }
