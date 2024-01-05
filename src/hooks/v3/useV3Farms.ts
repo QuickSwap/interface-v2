@@ -160,12 +160,12 @@ export const useMerklFarms = () => {
           {
             almAddress: item.pool,
             almTVL:
-              item.tvl -
+              (item.tvl ?? 0) -
               filteredALMs.reduce(
                 (total: number, alm: any) => total + alm.almTVL,
                 0,
               ),
-            almAPR: item.meanAPR,
+            almAPR: item?.meanAPR ?? 0,
             label: 'QuickSwap',
           },
         ])
@@ -205,15 +205,22 @@ export const useMerklFarms = () => {
                   item.address.toLowerCase() === alm.almAddress.toLowerCase(),
               )?.apr ?? 0;
           } else if (alm.label.includes('DefiEdge')) {
-            poolAPR = defiedgeAprs?.find(
-              (e: any) =>
-                e.strategy.address.toLowerCase() ===
-                alm.almAddress.toLowerCase(),
-            )?.strategy?.fees_apr;
+            poolAPR =
+              defiedgeAprs?.find(
+                (e: any) =>
+                  e.strategy.address.toLowerCase() ===
+                  alm.almAddress.toLowerCase(),
+              )?.strategy?.fees_apr ?? 0;
           } else if (alm.label.includes('QuickSwap') && eternalFarmPoolAprs) {
-            poolAPR = eternalFarmPoolAprs[alm.almAddress.toLowerCase()];
+            poolAPR = eternalFarmPoolAprs[alm.almAddress.toLowerCase()] ?? 0;
           }
-          return { ...alm, poolAPR, title };
+          return {
+            ...alm,
+            poolAPR,
+            title,
+            almAPR: alm?.almAPR ?? 0,
+            almTVL: alm?.almTVL ?? 0,
+          };
         });
       return { ...item, alm: alms };
     });

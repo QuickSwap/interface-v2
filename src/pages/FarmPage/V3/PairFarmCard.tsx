@@ -86,10 +86,7 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
                 <p className='small text-success'>
                   {formatNumber(farm.poolAPR + farm.almAPR)}%
                 </p>
-                <TotalAPRTooltip
-                  farmAPR={farm.almAPR ?? 0}
-                  poolAPR={farm.poolAPR ?? 0}
-                >
+                <TotalAPRTooltip farmAPR={farm.almAPR} poolAPR={farm.poolAPR}>
                   <img src={APRHover} alt='farm APR' height={16} />
                 </TotalAPRTooltip>
               </Box>
