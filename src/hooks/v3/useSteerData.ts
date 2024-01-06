@@ -6,7 +6,7 @@ import {
   useSteerVaultContract,
   useSteerVaultRegistryContract,
 } from 'hooks/useContract';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
   useMultipleContractSingleData,
   useSingleCallResult,

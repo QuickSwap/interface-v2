@@ -129,7 +129,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
           <Box
             width={isMobile ? '100%' : '30%'}
             my={rewards.length > 0 ? 2 : 0}
-            className='flex items-center justify-between'
+            className={isMobile ? 'flex items-center justify-between' : ''}
           >
             {isMobile && rewards.length > 0 && <p>{t('rewards')}</p>}
             {rewards.map((reward: any) => (

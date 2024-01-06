@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { V3FarmAPRTooltip } from './V3FarmAPRTooltip';
 import { useHistory } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { useActiveWeb3React } from 'hooks';
 import { V3FarmPair } from './AllV3Farms';
 
 interface Props {
@@ -17,44 +16,42 @@ interface Props {
 export const V3FarmCard: React.FC<Props> = ({ farm }) => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { chainId } = useActiveWeb3React();
   const parsedQuery = useParsedQueryString();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
-  // const rewards = (farm.distributionData ?? [])
-  //   .filter((item: any) => item.isLive)
-  //   .map((item: any) => {
-  //     const rewardDuration =
-  //       (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
-  //     const dailyAmount =
-  //       rewardDuration > 0
-  //         ? ((item?.amount ?? 0) / rewardDuration) * 3600 * 24
-  //         : 0;
-  //     return { ...item, dailyAmount };
-  //   })
-  //   .reduce((memo: any[], item: any) => {
-  //     const existingItemIndex = memo.findIndex(
-  //       (rewardItem) =>
-  //         rewardItem.rewardToken.toLowerCase() ===
-  //         item.rewardToken.toLowerCase(),
-  //     );
-  //     if (existingItemIndex > -1) {
-  //       const existingItem = memo[existingItemIndex];
-  //       memo = [
-  //         ...memo.slice(0, existingItemIndex - 1),
-  //         {
-  //           ...existingItem,
-  //           dailyAmount:
-  //             (existingItem?.dailyAmount ?? 0) + (item?.dailyAmount ?? 0),
-  //         },
-  //         ...memo.slice(0, existingItemIndex),
-  //       ];
-  //     } else {
-  //       memo.push(item);
-  //     }
-  //     return memo;
-  //   }, []);
+  const rewards = farm.farms.reduce(
+    (
+      memo: {
+        token: { address: string; decimals: number; symbol: string };
+        amount: number;
+      }[],
+      item,
+    ) => {
+      for (const reward of item.rewards) {
+        const existingItemIndex = memo.findIndex(
+          (item) =>
+            item.token.address.toLowerCase() ===
+            reward.token.address.toLowerCase(),
+        );
+        if (existingItemIndex > -1) {
+          const existingItem = memo[existingItemIndex];
+          memo = [
+            ...memo.slice(0, existingItemIndex - 1),
+            {
+              ...existingItem,
+              amount: (existingItem?.amount ?? 0) + (reward?.amount ?? 0),
+            },
+            ...memo.slice(0, existingItemIndex),
+          ];
+        } else {
+          memo.push(reward);
+        }
+      }
+      return memo;
+    },
+    [],
+  );
 
   const redirectWithCurrencies = (farm: V3FarmPair) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -137,21 +134,21 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
               </Box>
             </Box>
           </Box>
-          {/* <Box
+          <Box
             width={isMobile ? '100%' : '30%'}
             my={rewards.length > 0 ? 2 : 0}
-            className='flex items-center justify-between'
+            className={isMobile ? 'flex items-center justify-between' : ''}
           >
             {isMobile && rewards.length > 0 && <p>{t('rewards')}</p>}
-            {rewards.map((reward: any) => (
-              <p key={reward.rewardToken}>
-                {formatNumber(reward.dailyAmount)} {reward.symbolRewardToken}{' '}
+            {rewards.map((reward) => (
+              <p key={reward.token.address}>
+                {formatNumber(reward.amount)} {reward.token.symbol}{' '}
                 <small className='text-secondary'>{t('daily')}</small>
               </p>
             ))}
-          </Box> */}
+          </Box>
         </Box>
-        <Box width={isMobile ? '100%' : '10%'}>
+        <Box width={isMobile ? '100%' : '10%'} mt={rewards.length > 0 ? 0 : 2}>
           <Button
             className='farmCardButton'
             disabled={!farm?.token0?.address || !farm?.token1?.address}
