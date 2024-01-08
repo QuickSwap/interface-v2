@@ -1,23 +1,23 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import {
-  CurrencyInput,
   TransactionErrorContent,
   TransactionConfirmationModal,
   ConfirmationModalContent,
-  DoubleCurrencyLogo,
 } from 'components';
+import { Contract } from '@ethersproject/contracts';
+/* import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import dayjs, { Dayjs } from 'dayjs';
+import duration from 'dayjs/plugin/duration'; */
 import {
   useNetworkSelectionModalToggle,
   useWalletModalToggle,
 } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import {
-  currencyEquals,
   Token,
-  ETHER,
-  TokenAmount,
   ChainId,
-  Pair,
 } from '@uniswap/sdk';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
@@ -27,8 +27,13 @@ import {
 } from 'utils';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import { useTokenBalance } from 'state/wallet/hooks';
+import { usePairContract, useTokenLockerContract } from 'hooks/useContract';
+import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
+import { tryParseAmount } from 'state/swap/hooks';
+import useTransactionDeadline from 'hooks/useTransactionDeadline';
 
 const defaultDate = '2024-12-24T10:30'
+/* dayjs.extend(duration) */
 
 const LockLiquidity: React.FC = () => {
   const { t } = useTranslation();
@@ -40,8 +45,11 @@ const LockLiquidity: React.FC = () => {
   // inputs
   const [isV3, setIsV3] = useState(false);
   const [unlockDate, setUnlockDate] = useState(new Date(defaultDate))
+  /* const [value, setValue] = useState<Dayjs | null>(dayjs().add(dayjs.duration({'years' : 1}))); */
   const [lpTokenAddress, setLpTokenAddress] = useState('');
   const [amount, setAmount] = useState('')
+  const [removeErrorMessage, setRemoveErrorMessage] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
@@ -60,15 +68,25 @@ const LockLiquidity: React.FC = () => {
     account ?? undefined,
     lpToken?.liquidityToken,
   );
+  const parsedAmount = tryParseAmount(chainIdToUse, amount, lpToken?.liquidityToken);
+    
+  // @Hassaan: this is the locker contract
+  const tokenLockerContract = useTokenLockerContract(chainId);
 
-  // TODO: Uncomment for approval
-  /* const [showConfirm, setShowConfirm] = useState(false);
-    const [txHash, setTxHash] = useState('');
-    const [approving, setApproving] = useState(false);
-    const [approval, approveCallback] = useApproveCallback(
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [txHash, setTxHash] = useState('');
+  const [txPending, setTxPending] = useState(false);
+  const [approving, setApproving] = useState(false);
+  const [attemptingTxn, setAttemptingTxn] = useState(false);
+  const pairContract: Contract | null = usePairContract(
+    lpToken?.liquidityToken?.address,
+  );
+  const [approval, approveCallback] = useApproveCallback(
     parsedAmount,
-    contractAddress : undefined,
-  ); */
+    chainId ? V2_FACTORY_ADDRESSES[chainId] : undefined,
+  );
+
+  const deadline = useTransactionDeadline();
 
   const handleChange = (e: any) => {
       setLpTokenAddress(e.target.value);
@@ -76,7 +94,7 @@ const LockLiquidity: React.FC = () => {
 
   const handleChangeDate = (e: string) => {
     setUnlockDate(new Date(e));
- };
+  };
 
   const connectWallet = () => {
     if (!isSupportedNetwork) {
@@ -86,13 +104,114 @@ const LockLiquidity: React.FC = () => {
     }
   };
 
+  // @Hassaan: Approval already works
+  const onAttemptToApprove = async () => {
+    if (!pairContract || !lpToken || !library || !deadline) {
+      setErrorMsg(t('missingdependencies'));
+      return;
+    }
+    const liquidityAmount = parsedAmount;
+    if (!liquidityAmount) {
+      setErrorMsg(t('missingliquidity'));
+      return;
+    }
+    setApproving(true);
+    try {
+      await approveCallback();
+      setApproving(false);
+    } catch (e) {
+      setApproving(false);
+    }
+  };
+
+  // @Hassaan: Implement locking logic here
+  const onLock = async () => {
+    console.log('On attempt to lock')
+    if (!pairContract || !lpToken || !library || !deadline) {
+      setErrorMsg(t('missingdependencies'));
+      throw new Error(t('missingdependencies'));
+    }
+    const liquidityAmount = parsedAmount;
+    
+    if (!liquidityAmount) {
+      setErrorMsg(t('missingliquidity'));
+      throw new Error(t('missingliquidity'));
+    }
+
+    setAttemptingTxn(true);
+    // @Hassaan: Gas estimation etc. here
+    
+    
+    setAttemptingTxn(false);
+    setTxPending(true);
+    
+    try {
+      // @Hassaan: await tx here
+      /* const receipt = await response.wait(); */
+      setTxPending(false);
+    } catch (error) {
+      setTxPending(false);
+      setRemoveErrorMessage(t('errorInTx'));
+    }
+  };
+
+  const handleDismissConfirmation = useCallback(() => {
+    setShowConfirm(false);
+    setTxHash('');
+  }, []);
+
+  const modalHeader = () => {
+    return (
+      <Box>
+        <Box className='flex justify-center' mt={10} mb={3}>
+          Locking V2 Liquidity
+        </Box>
+        <Box mt={2}>
+          <Button fullWidth className='lockButton' onClick={onLock}>
+            {t('confirm')}
+          </Button>
+        </Box>
+      </Box>
+    );
+  };
+
   return (
     <Box>
+      {showConfirm && (
+        <TransactionConfirmationModal
+          isOpen={showConfirm}
+          onDismiss={handleDismissConfirmation}
+          attemptingTxn={attemptingTxn}
+          txPending={txPending}
+          hash={txHash}
+          content={() =>
+            removeErrorMessage ? (
+              <TransactionErrorContent
+                onDismiss={handleDismissConfirmation}
+                message={removeErrorMessage}
+              />
+            ) : (
+              <ConfirmationModalContent
+                title={t('lockingLiquidity')}
+                onDismiss={handleDismissConfirmation}
+                content={modalHeader}
+              />
+            )
+          }
+          pendingText=''
+          modalContent={
+            txPending
+              ? 'Submitting'
+              : 'Success'
+          }
+        />
+      )}
       <Box p={2} className='bg-secondary2 rounded-md'>
         <Box>
           <FormControl fullWidth variant="outlined">
             <InputLabel>LP Token</InputLabel>
             <Select
+              disabled={v2IsLoading}
               value={lpTokenAddress}
               onChange={handleChange}
               label="LP Token"
@@ -123,20 +242,29 @@ const LockLiquidity: React.FC = () => {
             }}
           />
         </Box>
+        {/* <Box mt={2.5}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker value={value} onChange={(e)=> setValue(e)} />
+          </LocalizationProvider>
+        </Box> */}
       </Box>
       <Box className='swapButtonWrapper'>
         <Button
           fullWidth
-          onClick={() => console.log('click approve')}
+          disabled={approving || approval !== ApprovalState.NOT_APPROVED}
+          onClick={onAttemptToApprove}
         >
-          Approve
+          {approving ? 'Approving...' : 'Approve'}
         </Button>
       </Box>
       <Box mt={2} className='swapButtonWrapper'>
         <Button
           fullWidth
-          disabled
-          onClick={() => console.log('click lock liquidity')}
+          disabled={approval !== ApprovalState.APPROVED}
+          onClick={() => {
+            setRemoveErrorMessage('');
+            setShowConfirm(true);
+          }}
         >
           Lock Liquidity
         </Button>

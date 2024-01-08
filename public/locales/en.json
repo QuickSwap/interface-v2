@@ -312,6 +312,7 @@
   "showMore": "Show More",
   "pair": "Pair",
   "removingLiquidity": "Removing Liquidity",
+  "lockingLiquidity": "Locking Liquidity",
   "submittedTxRemoveLiquidity": "Submitted transaction to remove liquidity",
   "successRemovedLiquidity": "Successfully removed liquidity",
   "balance": "Balance",
