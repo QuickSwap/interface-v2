@@ -164,7 +164,7 @@ export default function Farms() {
                 isIconAfter
               />
             </Box>
-            {selectedFarmCategory.id !== 0 && (
+            {selectedFarmCategory.id !== 0 && !merklAvailable && (
               <Box width={isMobile ? '100%' : 160}>
                 <CustomSwitch
                   width='100%'

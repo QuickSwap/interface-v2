@@ -36,6 +36,7 @@ import {
 } from 'state/transactions/hooks';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import APRHover from 'assets/images/aprHover.png';
+import { toV3Token } from 'constants/v3/addresses';
 
 interface Props {
   farm: any;
@@ -93,9 +94,11 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isQuickswap, qsPositions.length]);
 
+  const v3FarmToken0 = farm?.token0 ? toV3Token(farm?.token0) : undefined;
+  const v3FarmToken1 = farm?.token1 ? toV3Token(farm?.token1) : undefined;
   const [_, pool] = usePool(
-    isQuickswap ? farm?.token0 : undefined,
-    isQuickswap ? farm?.token1 : undefined,
+    isQuickswap ? v3FarmToken0 : undefined,
+    isQuickswap ? v3FarmToken1 : undefined,
     selectedQSPosition?.fee,
     selectedQSPosition?.isUni,
   );
