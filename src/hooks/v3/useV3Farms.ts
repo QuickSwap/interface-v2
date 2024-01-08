@@ -730,8 +730,9 @@ export const useGammaFarmsFiltered = (
       const gammaFarmData = gammaData
         ? gammaData[pair.address.toLowerCase()]
         : undefined;
-      const poolAPR = Number(gammaFarmData?.returns?.allTime?.feeApr ?? 0);
-      const farmAPR = Number(gammaReward?.apr ?? 0);
+      const poolAPR =
+        Number(gammaFarmData?.returns?.allTime?.feeApr ?? 0) * 100;
+      const farmAPR = Number(gammaReward?.apr ?? 0) * 100;
 
       return {
         ...pair,

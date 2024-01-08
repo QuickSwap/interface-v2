@@ -162,7 +162,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   );
 
   const allGammaPairs = getAllGammaPairs(chainId).filter(
-    (item) => item.ableToFarm === (farmStatus === 'active'),
+    (item) => !!item.ableToFarm === (farmStatus === 'active'),
   );
   const {
     loading: loadingGamma,

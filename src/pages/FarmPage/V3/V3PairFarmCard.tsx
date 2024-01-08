@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
-import { DoubleCurrencyLogo } from 'components';
+import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
+import { CustomModal, DoubleCurrencyLogo } from 'components';
 import { formatNumber } from 'utils';
 import APRHover from 'assets/images/aprHover.png';
 import { useTranslation } from 'react-i18next';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { V3Farm } from './Farms';
+import V3GammaFarmCardDetails from './V3GammaFarmCardDetails';
+import V3SteerFarmCardDetails from './V3SteerFarmCardDetails';
+import { FarmModal } from 'components/StakeModal';
+import { FarmingType } from 'models/enums';
 
 interface Props {
   farm: V3Farm;
@@ -19,6 +23,9 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
+  const [modalForPool, setModalForPool] = useState(null);
+  const farmAsAny = farm as any;
+
   return (
     <Box
       width='100%'
@@ -27,6 +34,22 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
         expanded ? 'border-primary' : 'border-secondary1'
       }`}
     >
+      {farm.type === 'QuickSwap' && (
+        <CustomModal
+          modalWrapper='farmModalWrapper'
+          open={!!modalForPool}
+          onClose={() => setModalForPool(null)}
+        >
+          {modalForPool && (
+            <FarmModal
+              event={modalForPool}
+              closeHandler={() => setModalForPool(null)}
+              farmingType={FarmingType.ETERNAL}
+            />
+          )}
+        </CustomModal>
+      )}
+
       <Box
         padding={2}
         className='flex cursor-pointer'
@@ -89,14 +112,30 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
           </>
         )}
         <Box width='10%' className='flex items-center justify-end'>
-          {expanded ? (
+          {farm.type === 'QuickSwap' ? (
+            <Button
+              className='farmCardButton'
+              disabled={
+                Number(farmAsAny.reward) === 0 &&
+                Number(farmAsAny.bonusReward) === 0
+              }
+              onClick={() => setModalForPool(farmAsAny)}
+            >
+              {t('farm')}
+            </Button>
+          ) : expanded ? (
             <KeyboardArrowUp className='text-primary' />
           ) : (
             <KeyboardArrowDown />
           )}
         </Box>
       </Box>
-      {/* {expanded && <MerklPairFarmCardDetails farm={farm} />} */}
+      {expanded && farm.type === 'Gamma' && (
+        <V3GammaFarmCardDetails data={farm} />
+      )}
+      {expanded && farm.type === 'Steer' && (
+        <V3SteerFarmCardDetails data={farm} />
+      )}
     </Box>
   );
 };

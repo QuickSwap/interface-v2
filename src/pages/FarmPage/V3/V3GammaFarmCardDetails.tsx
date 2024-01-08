@@ -38,7 +38,7 @@ import GammaRewarder from 'constants/abis/gamma-rewarder.json';
 import { Interface } from '@ethersproject/abi';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 
-const GammaFarmCardDetails: React.FC<{
+const V3GammaFarmCardDetails: React.FC<{
   data: any;
 }> = ({ data }) => {
   const { t } = useTranslation();
@@ -371,49 +371,51 @@ const GammaFarmCardDetails: React.FC<{
       )}
       <Box padding={1.5} className='flex justify-between'>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
-            <Box className='flex justify-between'>
-              <small className='text-secondary'>{t('available')}:</small>
-              <small>
-                {formatNumber(availableStakeAmount)} LP ($
-                {formatNumber(availableStakeUSD)})
-              </small>
-            </Box>
-            <Box
-              className='flex items-center bg-palette'
-              p='12px 16px'
-              borderRadius='10px'
-              mt={2}
-            >
-              <NumericalInput
-                value={stakeAmount}
-                onUserInput={setStakeAmount}
-              />
-              <span
-                className='cursor-pointer weight-600 text-primary'
-                onClick={() => setStakeAmount(availableStakeAmount)}
+          {data.ableToFarm && (
+            <Grid item xs={12} sm={4}>
+              <Box className='flex justify-between'>
+                <small className='text-secondary'>{t('available')}:</small>
+                <small>
+                  {formatNumber(availableStakeAmount)} LP ($
+                  {formatNumber(availableStakeUSD)})
+                </small>
+              </Box>
+              <Box
+                className='flex items-center bg-palette'
+                p='12px 16px'
+                borderRadius='10px'
+                mt={2}
               >
-                {t('max')}
-              </span>
-            </Box>
-            <Box mt={2}>
-              <Button
-                style={{ height: 40, borderRadius: 10 }}
-                disabled={stakeButtonDisabled}
-                fullWidth
-                onClick={approveOrStakeLP}
-              >
-                {approval === ApprovalState.APPROVED
-                  ? approveOrStaking
-                    ? t('stakingLPTokens')
-                    : t('stakeLPTokens')
-                  : approveOrStaking
-                  ? t('approving')
-                  : t('approve')}
-              </Button>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
+                <NumericalInput
+                  value={stakeAmount}
+                  onUserInput={setStakeAmount}
+                />
+                <span
+                  className='cursor-pointer weight-600 text-primary'
+                  onClick={() => setStakeAmount(availableStakeAmount)}
+                >
+                  {t('max')}
+                </span>
+              </Box>
+              <Box mt={2}>
+                <Button
+                  style={{ height: 40, borderRadius: 10 }}
+                  disabled={stakeButtonDisabled}
+                  fullWidth
+                  onClick={approveOrStakeLP}
+                >
+                  {approval === ApprovalState.APPROVED
+                    ? approveOrStaking
+                      ? t('stakingLPTokens')
+                      : t('stakeLPTokens')
+                    : approveOrStaking
+                    ? t('approving')
+                    : t('approve')}
+                </Button>
+              </Box>
+            </Grid>
+          )}
+          <Grid item xs={12} sm={data.ableToFarm ? 4 : 6}>
             <Box className='flex justify-between'>
               <small className='text-secondary'>{t('deposited')}: </small>
               <small>
@@ -450,7 +452,7 @@ const GammaFarmCardDetails: React.FC<{
               </Button>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={data.ableToFarm ? 4 : 6}>
             <Box height='100%' className='flex flex-col justify-between'>
               <small className='text-secondary'>{t('earnedRewards')}</small>
               <Box my={2}>
@@ -488,4 +490,4 @@ const GammaFarmCardDetails: React.FC<{
   );
 };
 
-export default GammaFarmCardDetails;
+export default V3GammaFarmCardDetails;
