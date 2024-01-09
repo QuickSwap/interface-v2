@@ -13,6 +13,7 @@ import { useBondContracts } from 'hooks/useContract';
 import { getBondNftBatchData } from './getBondNftData';
 import { useQuery } from '@tanstack/react-query';
 import { ChainId } from '@uniswap/sdk';
+import { BigNumber } from 'ethers';
 
 export const useUserOwnedBonds = (bonds: Bond[]) => {
   const { chainId, account } = useActiveWeb3React();
@@ -53,11 +54,7 @@ export const useUserOwnedBonds = (bonds: Bond[]) => {
 
   const bondPendingRewardCalls = useMultipleContractsMultipleData(
     bondContracts,
-    bonds.map((bond) =>
-      bond.billVersion === BillVersion.V2
-        ? 'claimablePayout'
-        : 'pendingPayoutFor',
-    ),
+    bonds.map((_) => 'pendingPayout'),
     bonds.map((_, ind) =>
       bondIds[ind] && bondIds[ind].length > 0
         ? bondIds[ind].map((id) => [id])
@@ -65,7 +62,27 @@ export const useUserOwnedBonds = (bonds: Bond[]) => {
     ),
   );
 
-  const bondsPendingRewards = bondPendingRewardCalls.map((callStates, ind) => {
+  const bondClaimableCalls = useMultipleContractsMultipleData(
+    bondContracts,
+    bonds.map((_) => 'claimablePayout'),
+    bonds.map((_, ind) =>
+      bondIds[ind] && bondIds[ind].length > 0
+        ? bondIds[ind].map((id) => [id])
+        : [],
+    ),
+  );
+
+  const bondsPendingRewards = bondPendingRewardCalls.map((callStates) => {
+    return callStates.map((call) => {
+      const data =
+        !call.loading && call.result && call.result.length > 0
+          ? call.result[0]
+          : undefined;
+      return { loading: call.loading, data };
+    });
+  });
+
+  const bondsClaimables = bondClaimableCalls.map((callStates) => {
     return callStates.map((call) => {
       const data =
         !call.loading && call.result && call.result.length > 0
@@ -79,17 +96,22 @@ export const useUserOwnedBonds = (bonds: Bond[]) => {
     const idArray = bondIds[ind];
     const bondData = bondsData[ind];
     const bondPendingRewards = bondsPendingRewards[ind];
+    const bondClaimables = bondsClaimables[ind];
     const bondAddress = bond.contractAddress[chainId] ?? '';
     if (idArray && idArray.length > 0) {
       idArray.forEach((id, index) => {
         const userBondData = bondData[index];
         const userBondPendingReward = bondPendingRewards[index];
+        const userBondClaimable = bondClaimables[index];
         const userbond = memo.find(
           (item) =>
             item.address.toLowerCase() === bondAddress.toLowerCase() &&
             item.id === id,
         );
-        const loading = userBondData.loading || userBondPendingReward.loading;
+        const loading =
+          userBondData.loading ||
+          userBondPendingReward.loading ||
+          userBondClaimable.loading;
         if (!userbond) {
           if (bond.billVersion === BillVersion.V2) {
             const userBondDetail =
@@ -100,10 +122,12 @@ export const useUserOwnedBonds = (bonds: Bond[]) => {
               loading,
               address: bondAddress,
               id,
-              payout:
-                userBondDetail && userBondDetail.payout > 0
-                  ? userBondDetail.payout.toString()
-                  : undefined,
+              payout: BigNumber.from(userBondDetail?.payout ?? '0')
+                .sub(BigNumber.from(userBondDetail?.payoutClaimed ?? '0'))
+                .toString(),
+              totalPayout: userBondPendingReward.data
+                ? userBondPendingReward.data.toString()
+                : undefined,
               vesting:
                 userBondDetail && userBondDetail.vesting
                   ? userBondDetail.vesting.toString()
@@ -116,8 +140,8 @@ export const useUserOwnedBonds = (bonds: Bond[]) => {
                 userBondDetail && userBondDetail.truePricePaid
                   ? userBondDetail.truePricePaid.toString()
                   : undefined,
-              pendingRewards: userBondPendingReward.data
-                ? userBondPendingReward.data.toString()
+              pendingRewards: userBondClaimable.data
+                ? userBondClaimable.data.toString()
                 : undefined,
               bond,
             });

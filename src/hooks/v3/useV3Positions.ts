@@ -85,11 +85,12 @@ function useV3PositionsFromTokenIds(
           token1: result.token1,
           tokensOwed0: result.tokensOwed0,
           tokensOwed1: result.tokensOwed1,
+          isUni,
         };
       });
     }
     return undefined;
-  }, [loading, error, results, tokenIds]);
+  }, [loading, error, tokenIds, results, isUni]);
 
   const prevPositions = usePreviousNonEmptyArray(positions || []);
 

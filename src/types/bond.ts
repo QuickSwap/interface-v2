@@ -63,6 +63,7 @@ export interface UserBond {
   id: string;
   vesting?: string;
   payout?: string;
+  totalPayout?: string;
   truePricePaid?: string;
   lastBlockTimestamp?: string;
   pendingRewards?: string;
