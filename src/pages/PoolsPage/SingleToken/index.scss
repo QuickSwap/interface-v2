@@ -79,8 +79,8 @@
   padding: 16px;
   background: $secondary1;
   border-radius: 16px;
-  & p {
-    margin-left: 8px;
+  & input {
+    flex: 1;
   }
 }
 

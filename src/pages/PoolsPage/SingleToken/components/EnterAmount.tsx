@@ -43,10 +43,10 @@ const SingleTokenEnterAmount: React.FC = () => {
         )}
       </Box>
       <Box className='singleTokenInputWrapper' mt={2}>
-        <Box className='flex items-center'>
+        <Box className='flex items-center' gridGap={8}>
           <NumericalInput onUserInput={typeInput} value={typedValue} />
           {currency ? (
-            <Box className='flex items-center'>
+            <Box className='flex items-center' gridGap={6}>
               {isNativeToken ? (
                 <DoubleCurrencyLogo
                   currency0={ETHER[chainId]}

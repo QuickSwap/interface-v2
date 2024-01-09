@@ -93,6 +93,7 @@ export function SingleTokenSupplyLiquidity() {
           </Box>
         ) : (
           <Button
+            className='singleTokenDepositButton'
             onClick={() => {
               if (account) {
                 toggletNetworkSelectionModal();
