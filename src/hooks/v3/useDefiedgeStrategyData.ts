@@ -134,7 +134,7 @@ export function useDefiEdgeRangeTitles(addresses: string[]) {
       tickLower === TickMath.MIN_TICK && tickUpper === TickMath.MAX_TICK;
     return {
       address,
-      title: callData.loading ? '' : isTicksAtLimit ? 'Full' : 'Safe',
+      title: callData.loading ? '' : isTicksAtLimit ? 'Full' : 'Narrow',
     };
   });
 }

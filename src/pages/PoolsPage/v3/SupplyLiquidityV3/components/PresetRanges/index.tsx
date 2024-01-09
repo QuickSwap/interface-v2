@@ -255,7 +255,7 @@ export function PresetRanges({
                 : 0;
 
             return {
-              title: isTicksAtLimit ? 'Full' : 'Safe',
+              title: isTicksAtLimit ? 'Full' : 'Narrow',
               type: isTicksAtLimit ? Presets.FULL : Presets.SAFE,
               address: strategy.id,
               min: isTicksAtLimit ? 0 : minPrice,
