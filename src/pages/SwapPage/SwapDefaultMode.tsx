@@ -70,9 +70,9 @@ const SwapDefaultMode: React.FC<{
               <LiquidityPools token1={token1} token2={token2} />
             </Box>
           )}
-          <Box mt={2}>
+          {/* <Box mt={2}>
             <SwapNewsletterSignup />
-          </Box>
+          </Box> */}
           <Box className='wrapper' mt={2}>
             <SwapBuySellMiniWidget />
           </Box>
@@ -137,9 +137,9 @@ const SwapDefaultMode: React.FC<{
                           </Box>
                         )}
                       </Grid>
-                      <Grid item xs={12}>
+                      {/* <Grid item xs={12}>
                         <SwapNewsletterSignup />
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </Grid>
                 )}

@@ -828,5 +828,6 @@
   "bondTypeWarningMessage": "This is a pre-sale of the ABOND CEX Fund Bond. By purchasing now, you'll receive temporary ACF tokens representing your purchase. You'll need to keep this new token, which you'll be able to exchange for your actual ABOND Bond starting on December 14th.",
   "bondTypeWarningUnderstand": "I understand that I am purchasing an ABOND CEX Fund Bond early and will receive ACF tokens until December 14th, when the actual ABOND Bonds will become redeemable",
   "installedMetamaskNotDisplayedWarning": "Installed MetaMask but can’t connect? Go to the extension manager in your browser and on non-primary wallets, such as Phantom or Brave, click set the site access to 'on click'",
-  "outrangeText": "Out of range - please try again soon"
+  "outrangeText": "Out of range - please try again soon",
+  "dragonDipatchAd": "Dragon Dispatch: QuickSwap Official Newsletter"
 }
