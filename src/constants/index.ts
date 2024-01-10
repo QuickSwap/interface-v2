@@ -224,6 +224,8 @@ export const GlobalConst = {
       unipilot: '1',
       gamma: '2',
       steer: '3',
+      defiedge: '4',
+      ichi: '5',
     },
   },
   analyticChart: {
@@ -243,7 +245,8 @@ export const GlobalConst = {
     MANUAL_RANGE: '0',
     GAMMA_RANGE: '1',
     UNIPILOT_RANGE: '2',
-    STEER_RANGE: '3',
+    DEFIEDGE_RANGE: '3',
+    STEER_RANGE: '4',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -1643,6 +1646,60 @@ export const UnipilotVaults: {
     '0xd139300ff6bdd6ae778b1835af5dbf242194cc2f',
     '0xf346f3eaa3e319f53413fc2a0008f0710c2ea448',
     '0xf9edf35c75f624207bf81242024d9ea6a4f4d245',
+  ],
+};
+
+export const IchiVaults: {
+  [chainId in ChainId]?: string[];
+} = {
+  [ChainId.MATIC]: [
+    '0x74b706767f18a360c0083854ab42c1b96e076229',
+    '0xCBD1f4Bc3E6d05b10fEb5dc454d27364767e76B5',
+    '0x5D73D117Ffb8AD26e6CC9f2621d52f479AAA8C5B',
+    '0xc46FAb3Af8aA7A56feDa351a22B56749dA313473',
+    '0x5403e11D5Edf6564C27b47757d62A515a81D9781',
+    '0x5D1b077212b624fe580a84384Ffea44da752ccb3',
+    '0xe8Aa60c966eE8BE1340aBf1d871D0163d5739B95',
+    '0x425D80e10A8103bedb57F5C08FF8d59253D6a259',
+    '0x318047C9584cFD77C6dfc28d3df8BD0d8a29E095',
+    '0xb2B34446D9cFb6719543ef5246481F218367b43a',
+    '0x891F0c3159aCf7306c0c252757310db8F47B59B2',
+  ],
+};
+
+export interface DefiedgeStrategy {
+  id: string;
+  token0: string;
+  token1: string;
+  pool: string;
+  ableToFarm?: boolean;
+  pid?: number;
+  miniChefAddress?: string;
+  rewardToken?: string;
+}
+
+export const DefiedgeStrategies: {
+  [chainId in ChainId]?: DefiedgeStrategy[];
+} = {
+  [ChainId.MATIC]: [
+    {
+      id: '0x8b207CA0B5602fEcF38Dbc748900B7f5C5903F12',
+      token0: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', // WBTC
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
+      pool: '0xac4494e30a85369e332bdb5230d6d694d4259dbc',
+    },
+    {
+      id: '0x87a32726eeaf4b6f81f8555e0b9a3cd9c0ae081b',
+      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+      token1: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC
+      pool: '0xAE81FAc689A1b4b1e06e7ef4a2ab4CD8aC0A087D',
+    },
+    {
+      id: '0xd778C83E7cA19c2217d98daDACf7fD03B79B18cB',
+      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      pool: '0x479e1B71A702a595e19b6d5932CD5c863ab57ee0',
+    },
   ],
 };
 

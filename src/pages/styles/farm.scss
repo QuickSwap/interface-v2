@@ -44,5 +44,80 @@ a.button {
 }
 
 a.button:hover {
-  opacity: 0.9
+  opacity: 0.9;
+}
+
+.farmCardButton {
+  background-color: $primaryLight;
+  height: 36px;
+  width: 100%;
+  color: $primary;
+  border-radius: 12px;
+  &:hover {
+    background-color: $primaryLight;
+  }
+}
+
+.farmCardAPR {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  & p {
+    color: $successMain;
+  }
+  &:hover {
+    & p {
+      text-shadow: 0 0 16px $successMain;
+    }
+  }
+}
+
+.farmAPRTooltipWrapper {
+  backdrop-filter: blur(30px);
+  box-shadow: 0 0 48px 0 rgba(18, 19, 26, 0.9);
+  border: solid 1px rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background-color: $bgPalette;
+  width: 360px;
+  max-height: 90vh;
+  overflow-y: auto;
+  & > div {
+    padding: 16px;
+    &:not(:last-child) {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.farmAPRTitleWrapper {
+  padding: 0 8px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  & span {
+    font-weight: 500;
+  }
+}
+
+.farmAPRGetLPButton {
+  max-width: 90px;
+  width: 100%;
+  height: 36px;
+  border-radius: 12px;
+}
+
+.v3PairFarmCardDetailsWrapper {
+  & button {
+    border-radius: 10px;
+    height: 36px;
+    padding: 0 16px;
+    & span {
+      font-size: 14px;
+    }
+  }
+}
+
+.farmModalWrapper {
+  max-width: 400px;
 }
