@@ -2,7 +2,7 @@ import { Box, Divider } from '@material-ui/core';
 import React from 'react';
 import { SpritzAdvertisement } from './SpritzAdvertisement';
 import { MeldAdvertisement } from './MeldAdvertisement';
-import { DragonDispatchAdvertisement } from './DraginDipatchAdvertisement';
+import { DragonDispatchAdvertisement } from './DragonDipatchAdvertisement';
 
 const SwapBuySellMiniWidget: React.FC = () => {
   return (
