@@ -135,6 +135,7 @@ export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
   [ChainId.BTTC]: 0,
   [ChainId.X1]: 0,
   [ChainId.TIMX]: 0,
+  [ChainId.IMX]: 0,
 };
 
 export const MIN_NATIVE_CURRENCY_FOR_GAS: {
@@ -279,16 +280,16 @@ export const GlobalConst = {
 
 export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
-  ChainId.MUMBAI,
   ChainId.DOGECHAIN,
-  ChainId.DOEGCHAIN_TESTNET,
-  ChainId.ZKTESTNET,
   ChainId.ZKEVM,
   ChainId.MANTA,
-  ChainId.ZKATANA,
+  ChainId.IMX,
   ChainId.TIMX,
   ChainId.X1,
-  ChainId.IMX,
+  ChainId.ZKATANA,
+  ChainId.ZKTESTNET,
+  ChainId.MUMBAI,
+  ChainId.DOEGCHAIN_TESTNET,
 ];
 
 export interface GammaPair {
@@ -1894,7 +1895,7 @@ export const GlobalData = {
     [ChainId.TIMX]: [USDC[ChainId.TIMX]],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [USDC[ChainId.X1]],
-    [ChainId.IMX]: [],
+    [ChainId.IMX]: [USDC[ChainId.IMX], USDT[ChainId.IMX]],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -1936,7 +1937,13 @@ export const GlobalData = {
     [ChainId.TIMX]: [WETH[ChainId.TIMX], USDC[ChainId.TIMX]],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
-    [ChainId.IMX]: [],
+    [ChainId.IMX]: [
+      WETH[ChainId.IMX],
+      USDC[ChainId.IMX],
+      ETHER[ChainId.IMX],
+      WBTC[ChainId.IMX],
+      USDT[ChainId.IMX],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [

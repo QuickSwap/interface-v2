@@ -502,6 +502,13 @@ export const USDT: { [chainId: number]: Token } = {
     'USDT',
     'Tether USD',
   ),
+  [ChainId.IMX]: new Token(
+    ChainId.IMX,
+    '0x68bcc7F1190AF20e7b572BCfb431c3Ac10A936Ab',
+    6,
+    'USDT',
+    'Tether USD',
+  ),
 };
 
 export const OLD_QUICK: { [chainId: number]: Token } = {
@@ -587,6 +594,13 @@ export const WBTC: { [chainId: number]: Token } = {
     'WBTC',
     'Wrapped BTC',
   ),
+  [ChainId.IMX]: new Token(
+    ChainId.IMX,
+    '0x235F9A2Dc29E51cE7D103bcC5Dfb4F5c9c3371De',
+    8,
+    'WBTC',
+    'Wrapped BTC',
+  ),
 };
 
 export const DAI: { [chainId: number]: Token } = {
@@ -634,6 +648,13 @@ export const ETHER: { [chainId: number]: Token } = {
     18,
     //TODO: this should really have a difference symbol but we use 'ETH' hardcoded to represent native
     //Due to Uniswap SDK implmentation
+    'ETH',
+    'Ether',
+  ),
+  [ChainId.IMX]: new Token(
+    ChainId.IMX,
+    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    18,
     'ETH',
     'Ether',
   ),
@@ -1173,6 +1194,13 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     WMATIC_EXTENDED[ChainId.TIMX],
     toV3Token(USDC[ChainId.TIMX]),
   ],
+  [ChainId.IMX]: [
+    WMATIC_EXTENDED[ChainId.IMX],
+    toV3Token(USDC[ChainId.IMX]),
+    toV3Token(USDT[ChainId.IMX]),
+    toV3Token(ETHER[ChainId.IMX]),
+    toV3Token(WBTC[ChainId.IMX]),
+  ],
 };
 
 export const SUGGESTED_BASES: {
@@ -1218,6 +1246,13 @@ export const SUGGESTED_BASES: {
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
   [ChainId.TIMX]: [WETH[ChainId.TIMX], USDC[ChainId.TIMX]],
+  [ChainId.IMX]: [
+    WETH[ChainId.IMX],
+    USDC[ChainId.IMX],
+    USDT[ChainId.IMX],
+    ETHER[ChainId.IMX],
+    WBTC[ChainId.IMX],
+  ],
 };
 
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
@@ -1293,6 +1328,13 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
   [ChainId.TIMX]: [
     WMATIC_EXTENDED[ChainId.TIMX],
     toV3Token(USDC[ChainId.TIMX]),
+  ],
+  [ChainId.IMX]: [
+    WMATIC_EXTENDED[ChainId.IMX],
+    toV3Token(USDC[ChainId.IMX]),
+    toV3Token(USDT[ChainId.IMX]),
+    toV3Token(ETHER[ChainId.IMX]),
+    toV3Token(WBTC[ChainId.IMX]),
   ],
 };
 
