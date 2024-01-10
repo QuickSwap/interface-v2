@@ -30,6 +30,7 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.BTTC]: [WETH[ChainId.BTTC]],
   [ChainId.X1]: [WETH[ChainId.X1]],
   [ChainId.TIMX]: [WETH[ChainId.TIMX]],
+  [ChainId.IMX]: [WETH[ChainId.IMX]],
 };
 
 export const toV2Token = (t: {
@@ -79,6 +80,7 @@ export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
   [ChainId.ZKATANA]: '0xF6Ad3CcF71Abb3E12beCf6b3D2a74C963859ADCd',
   [ChainId.TIMX]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.X1]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
+  [ChainId.IMX]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
 };
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
@@ -108,6 +110,7 @@ export const UNIV3_QUOTER_ADDRESSES: AddressMap = {
   [ChainId.ZKATANA]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
   [ChainId.TIMX]: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
   [ChainId.X1]: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+  [ChainId.IMX]: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
 };
 
 export const SWAP_ROUTER_ADDRESSES: AddressMap = {
@@ -134,6 +137,7 @@ export const UNI_V3_FACTORY_ADDRESS: AddressMap = {
   [ChainId.ZKATANA]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
   [ChainId.TIMX]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
   [ChainId.X1]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
+  [ChainId.IMX]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
 };
 
 export const UNI_NFT_POSITION_MANAGER_ADDRESS: AddressMap = {
@@ -142,6 +146,7 @@ export const UNI_NFT_POSITION_MANAGER_ADDRESS: AddressMap = {
   [ChainId.ZKATANA]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.TIMX]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
   [ChainId.X1]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
+  [ChainId.IMX]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
 };
 
 export const UNI_SWAP_ROUTER: AddressMap = {
@@ -151,6 +156,7 @@ export const UNI_SWAP_ROUTER: AddressMap = {
   [ChainId.ZKATANA]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
   [ChainId.TIMX]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
   [ChainId.X1]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
+  [ChainId.IMX]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
 };
 
 export const GAMMA_UNIPROXY_ADDRESSES: AddressMap = {
@@ -180,6 +186,7 @@ export const MULTICALL_ADDRESS: AddressMap = {
   [ChainId.ZKATANA]: '0x61211321E272584d6686F79bb205082C4cDa5d5F',
   [ChainId.TIMX]: '0x4857Dfd11c712e862eC362cEee29F7974B70EfcD',
   [ChainId.X1]: '0x4857Dfd11c712e862eC362cEee29F7974B70EfcD',
+  [ChainId.IMX]: '0xc7efb32470dEE601959B15f1f923e017C6A918cA',
 };
 
 export const V3_MIGRATOR_ADDRESSES: AddressMap = {
@@ -380,6 +387,7 @@ export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
     'WIMX',
   ),
   [ChainId.X1]: toV3Token(WETH[ChainId.X1]),
+  [ChainId.IMX]: toV3Token(WETH[ChainId.IMX]),
 };
 
 export const USDC: { [chainId: number]: Token } = {
@@ -435,6 +443,13 @@ export const USDC: { [chainId: number]: Token } = {
   [ChainId.TIMX]: new Token(
     ChainId.TIMX,
     '0xB9aFAa5c407DdebA5098193F31CE23D21cFD9657',
+    6,
+    'USDC',
+    'USD Coin',
+  ),
+  [ChainId.IMX]: new Token(
+    ChainId.IMX,
+    '0x6de8aCC0D406837030CE4dd28e7c08C5a96a30d2',
     6,
     'USDC',
     'USD Coin',

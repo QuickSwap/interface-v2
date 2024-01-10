@@ -67,6 +67,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.BTTC]: 'bttc',
   [ChainId.TIMX]: 'tIMX',
   [ChainId.X1]: 'x1',
+  [ChainId.IMX]: 'IMX',
 };
 
 export enum ZapType {
@@ -160,6 +161,7 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.X1]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
   [ChainId.ZKATANA]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.TIMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.IMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
 };
 
 export const GlobalConst = {
@@ -286,6 +288,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.ZKATANA,
   ChainId.TIMX,
   ChainId.X1,
+  ChainId.IMX,
 ];
 
 export interface GammaPair {
@@ -1826,6 +1829,7 @@ export const GlobalValue = {
       [ChainId.BTTC]: [],
       [ChainId.X1]: [],
       [ChainId.TIMX]: [],
+      [ChainId.IMX]: [],
     },
   },
   marketSDK: {
@@ -1890,6 +1894,7 @@ export const GlobalData = {
     [ChainId.TIMX]: [USDC[ChainId.TIMX]],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [USDC[ChainId.X1]],
+    [ChainId.IMX]: [],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -1931,6 +1936,7 @@ export const GlobalData = {
     [ChainId.TIMX]: [WETH[ChainId.TIMX], USDC[ChainId.TIMX]],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
+    [ChainId.IMX]: [],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -1961,6 +1967,7 @@ export const GlobalData = {
     [ChainId.TIMX]: [],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [],
+    [ChainId.IMX]: [],
   },
 };
 

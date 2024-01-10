@@ -25,9 +25,8 @@
     "available": true
   },
   "farm": {
-    "available": false
-  },
-  "qsFarm": {
+    "quickswap": false,
+    "merkl": false,
     "available": false
   },
   "lair": {
@@ -79,6 +78,12 @@
     "available": false
   },
   "dappos": {
+    "available": false
+  },
+  "defiedge": {
+    "available": false
+  },
+  "ichi": {
     "available": false
   }
 }
