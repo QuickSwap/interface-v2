@@ -25,9 +25,8 @@
     "available": true
   },
   "farm": {
-    "available": false
-  },
-  "qsFarm": {
+    "quickswap": false,
+    "merkl": false,
     "available": false
   },
   "lair": {
@@ -80,6 +79,12 @@
     "available": false
   },
   "bonds": {
+    "available": false
+  },
+  "defiedge": {
+    "available": false
+  },
+  "ichi": {
     "available": false
   }
 }

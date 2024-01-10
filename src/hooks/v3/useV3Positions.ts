@@ -13,12 +13,18 @@ import {
   useUNIV3NFTPositionManagerContract,
   useMasterChefContracts,
   useV3NFTPositionManagerContract,
+  useDefiEdgeMiniChefContracts,
 } from 'hooks/useContract';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
 import { ChainId, JSBI } from '@uniswap/sdk';
-import { getAllGammaPairs, getContract, getTokenFromAddress } from 'utils';
+import {
+  getAllDefiedgeStrategies,
+  getAllGammaPairs,
+  getContract,
+  getTokenFromAddress,
+} from 'utils';
 import { useQuery } from '@tanstack/react-query';
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
@@ -26,11 +32,17 @@ import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.js
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
 import { getConfig } from 'config/index';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 import { useSteerStakedPools, useSteerVaults } from './useSteerData';
 import { Token } from '@uniswap/sdk-core';
 import { UnipilotVaults } from 'constants/index';
 import { useUnipilotFarms } from './useUnipilotFarms';
 import { useTokenBalances } from 'state/wallet/v3/hooks';
+import {
+  useICHIVaultUserBalances,
+  useICHIVaults,
+  useICHIVaultsUserAmounts,
+} from 'hooks/useICHIData';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { toV3Token } from 'constants/v3/addresses';
 
@@ -39,7 +51,7 @@ interface UseV3PositionsResults {
   positions: PositionPool[] | undefined;
 }
 
-function useV3PositionsFromTokenIds(
+export function useV3PositionsFromTokenIds(
   tokenIds: BigNumber[] | undefined,
   isUni?: boolean,
 ): UseV3PositionsResults {
@@ -85,11 +97,12 @@ function useV3PositionsFromTokenIds(
           token1: result.token1,
           tokensOwed0: result.tokensOwed0,
           tokensOwed1: result.tokensOwed1,
+          isUni,
         };
       });
     }
     return undefined;
-  }, [loading, error, results, tokenIds]);
+  }, [loading, error, tokenIds, results, isUni]);
 
   const prevPositions = usePreviousNonEmptyArray(positions || []);
 
@@ -813,6 +826,97 @@ export function useUnipilotPositions(
   };
 }
 
+export function useDefiedgePositions(
+  account: string | null | undefined,
+  chainId: ChainId | undefined,
+) {
+  const allDefidegeStrategies = getAllDefiedgeStrategies(chainId);
+
+  const lpBalancesData = useMultipleContractSingleData(
+    allDefidegeStrategies.map((strategy) => strategy.id),
+    new Interface(DEFIEDGE_STRATEGY_ABI),
+    'balanceOf',
+    [account ?? undefined],
+  );
+
+  const miniChefAddresses = allDefidegeStrategies
+    .filter((strategy) => !!strategy.miniChefAddress)
+    .map((strategy) => (strategy.miniChefAddress ?? '').toLowerCase())
+    .filter((address, ind, self) => self.indexOf(address) === ind);
+  const miniChefContracts = useDefiEdgeMiniChefContracts(miniChefAddresses);
+
+  const stakedAmountData = useMultipleContractMultipleData(
+    account ? miniChefContracts : [],
+    'userInfo',
+    account
+      ? miniChefAddresses.map((address) =>
+          allDefidegeStrategies
+            .filter(
+              (item) =>
+                (item.miniChefAddress ?? '').toLowerCase() ===
+                address.toLowerCase(),
+            )
+            .map((item) => [item.pid, account]),
+        )
+      : [],
+  );
+
+  const stakedAmounts = miniChefAddresses
+    .map((address, ind) => {
+      const filteredStrategies = allDefidegeStrategies.filter(
+        (pair) =>
+          pair.miniChefAddress &&
+          pair.miniChefAddress.toLowerCase() === address.toLowerCase(),
+      );
+      const callStates = stakedAmountData[ind];
+      return callStates.map((callData, index) => {
+        const amount =
+          !callData.loading && callData.result && callData.result.length > 0
+            ? Number(formatUnits(callData.result[0], 18))
+            : 0;
+        const strategy =
+          filteredStrategies.length > index
+            ? filteredStrategies[index]
+            : undefined;
+        return {
+          amount,
+          id: strategy?.id,
+        };
+      });
+    })
+    .flat();
+
+  const lpBalances = lpBalancesData.map((callData) => {
+    const amount =
+      !callData.loading && callData.result && callData.result.length > 0
+        ? Number(formatUnits(callData.result[0], 18))
+        : 0;
+    return amount;
+  });
+
+  const lpBalancesLoading = !!lpBalancesData.find(
+    (callState) => !!callState.loading,
+  );
+
+  const positions = allDefidegeStrategies
+    .map((strategy, i) => {
+      const lpAmount = lpBalances[i];
+      const stakedAmount = stakedAmounts.find(
+        (item) =>
+          item.id && item.id?.toLowerCase() === strategy.id.toLowerCase(),
+      )?.amount;
+
+      return {
+        ...strategy,
+        share: (stakedAmount ?? 0) + lpAmount,
+        lpAmount,
+      };
+    })
+    .filter((strategy) => strategy.share > 0);
+
+  return { loading: lpBalancesLoading, count: positions.length, positions };
+}
+
 export const useV3SteerPositionsCount = () => {
   const { chainId, account } = useActiveWeb3React();
   const { loading, data: vaults } = useSteerVaults(chainId);
@@ -869,4 +973,62 @@ export const useV3SteerPositions = () => {
       Number(vaultBalance?.toExact() ?? 0) + (steerFarm?.stakedAmount ?? 0) > 0
     );
   });
+};
+
+export const useICHIPositionsCount = () => {
+  const { loading: loadingVaults, data: vaults } = useICHIVaults();
+  const {
+    isLoading: loadingBalances,
+    data: vaultBalances,
+  } = useICHIVaultUserBalances(vaults);
+  const count = vaultBalances
+    ? vaultBalances.filter(({ balance }) => balance > 0).length
+    : 0;
+  return { loading: loadingVaults || loadingBalances, count };
+};
+
+export const useICHIPositions = () => {
+  const { loading: loadingVaults, data: vaults } = useICHIVaults();
+  const {
+    isLoading: loadingBalances,
+    data: vaultBalances,
+  } = useICHIVaultUserBalances(vaults);
+  const {
+    isLoading: loadingUserAmounts,
+    data: userAmounts,
+  } = useICHIVaultsUserAmounts(vaults);
+  const positions = vaults
+    .map((vault) => {
+      const balanceItem = vaultBalances?.find(
+        (item) => item.address.toLowerCase() === vault.address.toLowerCase(),
+      );
+      const userAmount = userAmounts?.find(
+        (item) => item.address.toLowerCase() === vault.address.toLowerCase(),
+      )?.amounts;
+      return {
+        ...vault,
+        balance: balanceItem?.balance,
+        balanceBN: balanceItem?.balanceBN,
+        token0Balance: userAmount
+          ? userAmount[0]
+            ? Number(userAmount[0])
+            : userAmount.amount0
+            ? Number(userAmount.amount0)
+            : 0
+          : 0,
+        token1Balance: userAmount
+          ? userAmount[1]
+            ? Number(userAmount[1])
+            : userAmount.amount1
+            ? Number(userAmount.amount1)
+            : 0
+          : 0,
+      };
+    }, [])
+    .filter((item) => item.balance && item.balance > 0);
+
+  return {
+    loading: loadingVaults || loadingBalances || loadingUserAmounts,
+    positions,
+  };
 };

@@ -51,11 +51,9 @@ const Footer: React.FC = () => {
   ];
 
   const [email, setEmail] = useState('');
-  const { mutate, isLoading, data } = useSubscribeNewsletter(
-    process.env.REACT_APP_CONVERTKIT_FORM_ID,
-  );
+  const { mutate, isLoading, data } = useSubscribeNewsletter();
   const handleSignup = async () => {
-    await mutate({ email });
+    await mutate(email);
   };
 
   return (
@@ -86,7 +84,7 @@ const Footer: React.FC = () => {
               </Box>
               {data && (
                 <Box mt={1} textAlign='center'>
-                  {data.subscription && (
+                  {data.data && (
                     <span className='text-success'>
                       {t('subscribeSuccess')}
                     </span>

@@ -8,38 +8,16 @@ import { ChevronDown, ChevronUp } from 'react-feather';
 import UnipilotFarmCardDetails from './UnipilotFarmCardDetails';
 import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import { formatUnits } from 'ethers/lib/utils';
-import { useUnipilotFarmAPR } from 'hooks/v3/useUnipilotFarms';
 
 const UnipilotFarmCard: React.FC<{
   data: any;
-  farmData: any;
-}> = ({ data, farmData }) => {
+}> = ({ data }) => {
   const { t } = useTranslation();
   const [showDetails, setShowDetails] = useState(false);
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
-  const rewardA =
-    data.rewardRate && data.rewardRate.rateA && data.rewardRate.tokenA
-      ? Number(
-          formatUnits(data.rewardRate.rateA, data.rewardRate.tokenA.decimals),
-        ) *
-        24 *
-        3600
-      : 0;
-  const rewardB =
-    data.rewardRate && data.rewardRate.rateB && data.rewardRate.tokenB
-      ? Number(
-          formatUnits(data.rewardRate.rateB, data.rewardRate.tokenB.decimals),
-        ) *
-        24 *
-        3600
-      : 0;
-
-  const vaultAPR = farmData ? Number(farmData['stats'] ?? 0) : 0;
-  const farmAPR = useUnipilotFarmAPR(data);
-  const totalAPR = vaultAPR + farmAPR;
+  const totalAPR = data.poolAPR + data.farmAPR;
 
   return (
     <Box
@@ -81,22 +59,14 @@ const UnipilotFarmCard: React.FC<{
                 <small className='weight-600'>${formatNumber(data.tvl)}</small>
               </Box>
               <Box width='30%'>
-                {rewardA > 0 && (
-                  <div>
+                {data.rewards.map((reward: any, ind: number) => (
+                  <div key={ind}>
                     <small className='small weight-600'>
-                      {formatNumber(rewardA)} {data.rewardRate.tokenA.symbol} /{' '}
+                      {formatNumber(reward.amount)} {reward.token.symbol} /{' '}
                       {t('day')}
                     </small>
                   </div>
-                )}
-                {rewardB > 0 && (
-                  <div>
-                    <small className='small weight-600'>
-                      {formatNumber(rewardB)} {data.rewardRate.tokenB.symbol} /{' '}
-                      {t('day')}
-                    </small>
-                  </div>
-                )}
+                ))}
               </Box>
             </>
           )}
@@ -106,8 +76,8 @@ const UnipilotFarmCard: React.FC<{
               <small className='text-success'>{formatNumber(totalAPR)}%</small>
               <Box ml={0.5} height={16}>
                 <TotalAPRTooltip
-                  farmAPR={farmAPR}
-                  poolAPR={vaultAPR}
+                  farmAPR={data.farmAPR}
+                  poolAPR={data.poolAPR}
                   poolAPRText={t('vaultAPR')}
                 >
                   <img src={CircleInfoIcon} alt={'arrow up'} />
@@ -128,9 +98,7 @@ const UnipilotFarmCard: React.FC<{
           </Box>
         </Box>
       </Box>
-      {showDetails && (
-        <UnipilotFarmCardDetails data={data} farmData={farmData} />
-      )}
+      {showDetails && <UnipilotFarmCardDetails data={data} />}
     </Box>
   );
 };

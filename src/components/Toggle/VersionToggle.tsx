@@ -13,10 +13,12 @@ const VersionToggle: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
   const lHAnalyticsAvailable = config['analytics']['liquidityHub'];
+  const singleTokenEnabled = config['ichi']['available'];
   const { updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
+  const isPoolPage = history.location.pathname.includes('/pools');
   const analyticsVersion = useAnalyticsVersion();
   const version =
     params && params.version
@@ -69,6 +71,17 @@ const VersionToggle: React.FC = () => {
       >
         <small>{t('V3')}</small>
       </Box>
+
+      {isPoolPage && singleTokenEnabled && (
+        <Box
+          className={version === 'singleToken' ? 'version-toggle-active' : ''}
+          onClick={() => {
+            redirectWithVersion('singleToken');
+          }}
+        >
+          <small>{t('singleToken')}</small>
+        </Box>
+      )}
 
       {isAnalyticsPage && (
         <>
