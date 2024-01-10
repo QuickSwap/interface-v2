@@ -432,6 +432,13 @@ export const USDC: { [chainId: number]: Token } = {
     'USDC',
     'USD Coin',
   ),
+  [ChainId.TIMX]: new Token(
+    ChainId.TIMX,
+    '0xB9aFAa5c407DdebA5098193F31CE23D21cFD9657',
+    6,
+    'USDC',
+    'USD Coin',
+  ),
 };
 
 export const USDCE: { [chainId: number]: Token } = {
@@ -1147,6 +1154,10 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(USDC[ChainId.ZKATANA]),
   ],
   [ChainId.X1]: [WMATIC_EXTENDED[ChainId.X1], toV3Token(USDC[ChainId.X1])],
+  [ChainId.TIMX]: [
+    WMATIC_EXTENDED[ChainId.TIMX],
+    toV3Token(USDC[ChainId.TIMX]),
+  ],
 };
 
 export const SUGGESTED_BASES: {
@@ -1191,6 +1202,7 @@ export const SUGGESTED_BASES: {
   ],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
+  [ChainId.TIMX]: [WETH[ChainId.TIMX], USDC[ChainId.TIMX]],
 };
 
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
@@ -1263,6 +1275,10 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(USDC[ChainId.ZKATANA]),
   ],
   [ChainId.X1]: [WMATIC_EXTENDED[ChainId.X1], toV3Token(USDC[ChainId.X1])],
+  [ChainId.TIMX]: [
+    WMATIC_EXTENDED[ChainId.TIMX],
+    toV3Token(USDC[ChainId.TIMX]),
+  ],
 };
 
 export const V2_PINNED_PAIRS: {
