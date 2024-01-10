@@ -31,12 +31,10 @@ import {
   useUniPilotVaultContract,
   useUnipilotFarmingContract,
 } from 'hooks/useContract';
-import { useUnipilotFarmAPR } from 'hooks/v3/useUnipilotFarms';
 
 const UnipilotFarmCardDetails: React.FC<{
   data: any;
-  farmData: any;
-}> = ({ data, farmData }) => {
+}> = ({ data }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -298,9 +296,6 @@ const UnipilotFarmCardDetails: React.FC<{
     return Number(reward) === 0 || attemptClaiming;
   }, [attemptClaiming, data.isDualReward, reward, rewardA, rewardB]);
 
-  const vaultAPR = farmData ? Number(farmData['stats'] ?? 0) : 0;
-  const farmAPR = useUnipilotFarmAPR(data);
-
   const rewardRateA =
     data.rewardRate && data.rewardRate.rateA && data.rewardRate.tokenA
       ? Number(
@@ -351,13 +346,13 @@ const UnipilotFarmCardDetails: React.FC<{
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('vaultAPR')}</small>
             <small className='text-success weight-600'>
-              {formatNumber(vaultAPR)}%
+              {formatNumber(data.poolAPR)}%
             </small>
           </Box>
           <Box className='flex justify-between'>
             <small className='text-secondary'>{t('farmAPR')}</small>
             <small className='text-success weight-600'>
-              {formatNumber(farmAPR)}%
+              {formatNumber(data.farmAPR)}%
             </small>
           </Box>
         </Box>

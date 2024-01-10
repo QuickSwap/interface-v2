@@ -6,11 +6,9 @@ import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 const SwapNewsletterSignup: React.FC = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
-  const { mutate, isLoading, data } = useSubscribeNewsletter(
-    process.env.REACT_APP_CONVERTKIT_FORM_ID,
-  );
+  const { mutate, isLoading, data } = useSubscribeNewsletter();
   const handleSignup = async () => {
-    await mutate({ email });
+    await mutate(email);
   };
 
   return (
@@ -38,7 +36,7 @@ const SwapNewsletterSignup: React.FC = () => {
       </Box>
       {data && (
         <Box mt={1} textAlign='center'>
-          {data.subscription && (
+          {data.data && (
             <span className='text-success'>{t('subscribeSuccess')}</span>
           )}
           {data.error && (

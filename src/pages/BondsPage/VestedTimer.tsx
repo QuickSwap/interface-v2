@@ -24,8 +24,10 @@ const VestedTimer: React.FC<{
   const HOUR = MINUTE * 60;
   const DAY = HOUR * 24;
 
-  let timeRemaining =
-    Number(lastBlockTimestamp) + Number(vesting) - currentTime;
+  let timeRemaining = Math.max(
+    Number(lastBlockTimestamp) + Number(vesting) - currentTime,
+    0,
+  );
 
   const days = (timeRemaining - (timeRemaining % DAY)) / DAY;
   timeRemaining -= days * DAY;
@@ -40,7 +42,7 @@ const VestedTimer: React.FC<{
     const timeInterval = setInterval(() => {
       const _currentTime = Math.floor(Date.now() / 1000);
       setCurrentTime(_currentTime);
-    }, 1000);
+    }, 1000 * 60);
     return () => clearInterval(timeInterval);
   }, []);
 

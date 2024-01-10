@@ -22,27 +22,17 @@ import {
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
 import SortColumns from 'components/SortColumns';
-import { getAllGammaPairs, getTokenFromAddress } from 'utils';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { getAllGammaPairs } from 'utils';
 import { ChainId, Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import UnipilotFarmCard from './UnipilotFarmCard';
-import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { formatReward } from 'utils/formatReward';
-import {
-  useMultipleContractMultipleData,
-  useSingleCallResult,
-} from 'state/multicall/v3/hooks';
-import {
-  useGammaHypervisorContract,
-  useMasterChefContract,
-  useMasterChefContracts,
-} from 'hooks/useContract';
+import { useMultipleContractMultipleData } from 'state/multicall/v3/hooks';
+import { useMasterChefContracts } from 'hooks/useContract';
 import { formatUnits } from 'ethers/lib/utils';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import CurrencyLogo from 'components/CurrencyLogo';
-import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 import {
   useUnipilotFarmData,
   useUnipilotFilteredFarms,
@@ -56,7 +46,7 @@ import {
   useSteerStakingPools,
 } from 'hooks/v3/useSteerData';
 import SteerFarmCard from './SteerFarmCard';
-import { useGammaData, useGammaRewards } from 'hooks/v3/useGammaData';
+import { useGammaFarmsFiltered } from 'hooks/v3/useV3Farms';
 
 export const FarmingMyFarms: React.FC<{
   search: string;
@@ -64,11 +54,10 @@ export const FarmingMyFarms: React.FC<{
 }> = ({ search }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
-  const tokenMap = useSelectedTokenList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const config = getConfig(chainId);
-  const qsFarmAvailable = config['qsFarm']['available'];
+  const qsFarmAvailable = config['farm']['quickswap'];
 
   const { v3FarmSortBy } = GlobalConst.utils;
   const [sortByQuick, setSortByQuick] = useState(v3FarmSortBy.pool);
@@ -520,164 +509,6 @@ export const FarmingMyFarms: React.FC<{
     };
   });
 
-  const { isLoading: gammaFarmsLoading, data: gammaData } = useGammaData();
-  const {
-    isLoading: gammaRewardsLoading,
-    data: gammaRewards,
-  } = useGammaRewards();
-
-  const sortMultiplierGamma = sortDescGamma ? -1 : 1;
-
-  const qiTokenAddress = '0x580a84c73811e1839f75d86d75d88cca0c241ff4';
-  const qiGammaFarm = '0x25B186eEd64ca5FDD1bc33fc4CFfd6d34069BAec';
-  const qimasterChefContract = useMasterChefContract(
-    2,
-    undefined,
-    QIGammaMasterChef,
-  );
-  const qiHypeContract = useGammaHypervisorContract(qiGammaFarm);
-
-  const qiPoolData = useSingleCallResult(qimasterChefContract, 'poolInfo', [2]);
-  const qiGammaStakedAmountData = useSingleCallResult(
-    qiHypeContract,
-    'balanceOf',
-    [qimasterChefContract?.address],
-  );
-  const qiGammaStakedAmount =
-    !qiGammaStakedAmountData.loading &&
-    qiGammaStakedAmountData.result &&
-    qiGammaStakedAmountData.result.length > 0
-      ? Number(formatUnits(qiGammaStakedAmountData.result[0], 18))
-      : 0;
-  const qiGammaData =
-    gammaData && gammaData[qiGammaFarm.toLowerCase()]
-      ? gammaData[qiGammaFarm.toLowerCase()]
-      : undefined;
-  const qiLPTokenUSD =
-    qiGammaData &&
-    qiGammaData.totalSupply &&
-    Number(qiGammaData.totalSupply) > 0
-      ? (Number(qiGammaData.tvlUSD) / Number(qiGammaData.totalSupply)) *
-        10 ** 18
-      : 0;
-  const qiGammaStakedAmountUSD = qiGammaStakedAmount * qiLPTokenUSD;
-
-  const qiAllocPointBN =
-    !qiPoolData.loading && qiPoolData.result && qiPoolData.result.length > 0
-      ? qiPoolData.result.allocPoint
-      : undefined;
-
-  const qiRewardPerSecondData = useSingleCallResult(
-    qimasterChefContract,
-    'rewardPerSecond',
-    [],
-  );
-
-  const qiRewardPerSecondBN =
-    !qiRewardPerSecondData.loading &&
-    qiRewardPerSecondData.result &&
-    qiRewardPerSecondData.result.length > 0
-      ? qiRewardPerSecondData.result[0]
-      : undefined;
-
-  const qiTotalAllocPointData = useSingleCallResult(
-    qimasterChefContract,
-    'totalAllocPoint',
-    [],
-  );
-
-  const qiTotalAllocPointBN =
-    !qiTotalAllocPointData.loading &&
-    qiTotalAllocPointData.result &&
-    qiTotalAllocPointData.result.length > 0
-      ? qiTotalAllocPointData.result[0]
-      : undefined;
-
-  const qiRewardPerSecond =
-    qiAllocPointBN && qiRewardPerSecondBN && qiTotalAllocPointBN
-      ? ((Number(qiAllocPointBN) / Number(qiTotalAllocPointBN)) *
-          Number(qiRewardPerSecondBN)) /
-        10 ** 18
-      : undefined;
-
-  const gammaRewardTokenAddresses = GAMMA_MASTERCHEF_ADDRESSES.reduce<string[]>(
-    (memo, masterChef) => {
-      const gammaReward =
-        gammaRewards &&
-        chainId &&
-        masterChef[chainId] &&
-        gammaRewards[masterChef[chainId].toLowerCase()]
-          ? gammaRewards[masterChef[chainId].toLowerCase()]['pools']
-          : undefined;
-      if (gammaReward) {
-        const gammaRewardArr: any[] = Object.values(gammaReward);
-        for (const item of gammaRewardArr) {
-          if (item && item['rewarders']) {
-            const rewarders: any[] = Object.values(item['rewarders']);
-            for (const rewarder of rewarders) {
-              if (
-                rewarder &&
-                rewarder['rewardPerSecond'] &&
-                Number(rewarder['rewardPerSecond']) > 0 &&
-                rewarder.rewardToken &&
-                !memo.includes(rewarder.rewardToken)
-              ) {
-                memo.push(rewarder.rewardToken);
-              }
-            }
-          }
-        }
-      }
-      return memo;
-    },
-    [],
-  );
-
-  const gammaRewardTokenAddressesWithQI = useMemo(() => {
-    const containsQI = !!gammaRewardTokenAddresses.find(
-      (address) => address.toLowerCase() === qiTokenAddress.toLowerCase(),
-    );
-    if (containsQI) {
-      return gammaRewardTokenAddresses;
-    }
-    return gammaRewardTokenAddresses.concat([qiTokenAddress]);
-  }, [gammaRewardTokenAddresses]);
-
-  const { prices: gammaRewardsWithUSDPrice } = useUSDCPricesFromAddresses(
-    gammaRewardTokenAddressesWithQI,
-  );
-
-  const qiPrice = gammaRewardsWithUSDPrice?.find(
-    (item) => item.address.toLowerCase() === qiTokenAddress.toLowerCase(),
-  )?.price;
-
-  const qiAPR =
-    qiRewardPerSecond && qiPrice && qiGammaStakedAmountUSD
-      ? (qiRewardPerSecond * qiPrice * 3600 * 24 * 365) / qiGammaStakedAmountUSD
-      : undefined;
-
-  if (gammaRewards && GAMMA_MASTERCHEF_ADDRESSES[2][chainId] && qiAPR) {
-    const qiRewardsData = {
-      apr: qiAPR,
-      stakedAmount: qiGammaStakedAmount,
-      stakedAmountUSD: qiGammaStakedAmountUSD,
-      rewarders: {
-        rewarder: {
-          rewardToken: qiTokenAddress,
-          rewardTokenDecimals: 18,
-          rewardTokenSymbol: 'QI',
-          rewardPerSecond: qiRewardPerSecond,
-          apr: qiAPR,
-          allocPoint: qiAllocPointBN.toString(),
-        },
-      },
-    };
-    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[2][chainId]] = { pools: {} };
-    gammaRewards[GAMMA_MASTERCHEF_ADDRESSES[2][chainId]]['pools'][
-      qiGammaFarm.toLowerCase()
-    ] = qiRewardsData;
-  }
-
   const masterChefContracts = useMasterChefContracts();
 
   const stakedAmountData = useMultipleContractMultipleData(
@@ -713,7 +544,7 @@ export const FarmingMyFarms: React.FC<{
     });
   });
 
-  const myGammaFarms = allGammaPairsToFarm
+  const stakedGammaFarms = allGammaPairsToFarm
     .map((item) => {
       const masterChefIndex = item.masterChefIndex ?? 0;
       const sItem =
@@ -726,148 +557,19 @@ export const FarmingMyFarms: React.FC<{
     })
     .filter((item) => {
       return Number(item.stakedAmount) > 0;
-    })
-    .map((item) => {
-      if (chainId) {
-        const token0 = getTokenFromAddress(
-          item.token0Address,
-          chainId,
-          tokenMap,
-          [],
-        );
-        const token1 = getTokenFromAddress(
-          item.token1Address,
-          chainId,
-          tokenMap,
-          [],
-        );
-        return { ...item, token0: token0 ?? null, token1: token1 ?? null };
-      }
-      return { ...item, token0: null, token1: null };
-    })
-    .sort((farm0, farm1) => {
-      const gammaData0 = gammaData
-        ? gammaData[farm0.address.toLowerCase()]
-        : undefined;
-      const gammaData1 = gammaData
-        ? gammaData[farm1.address.toLowerCase()]
-        : undefined;
-      const farm0MasterChefAddress =
-        chainId &&
-        GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][chainId]
-          ? GAMMA_MASTERCHEF_ADDRESSES[farm0.masterChefIndex ?? 0][
-              chainId
-            ].toLowerCase()
-          : undefined;
-      const farm1MasterChefAddress =
-        chainId &&
-        GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][chainId]
-          ? GAMMA_MASTERCHEF_ADDRESSES[farm1.masterChefIndex ?? 0][
-              chainId
-            ].toLowerCase()
-          : undefined;
-      const gammaReward0 =
-        gammaRewards &&
-        farm0MasterChefAddress &&
-        gammaRewards[farm0MasterChefAddress] &&
-        gammaRewards[farm0MasterChefAddress]['pools']
-          ? gammaRewards[farm0MasterChefAddress]['pools'][
-              farm0.address.toLowerCase()
-            ]
-          : undefined;
-      const gammaReward1 =
-        gammaRewards &&
-        farm1MasterChefAddress &&
-        gammaRewards[farm1MasterChefAddress] &&
-        gammaRewards[farm1MasterChefAddress]['pools']
-          ? gammaRewards[farm1MasterChefAddress]['pools'][
-              farm1.address.toLowerCase()
-            ]
-          : undefined;
-
-      if (sortByGamma === v3FarmSortBy.pool) {
-        const farm0Title =
-          (farm0.token0?.symbol ?? '') +
-          (farm0.token1?.symbol ?? '') +
-          farm0.title;
-        const farm1Title =
-          (farm1.token0?.symbol ?? '') +
-          (farm1.token1?.symbol ?? '') +
-          farm1.title;
-        return farm0Title > farm1Title
-          ? sortMultiplierGamma
-          : -1 * sortMultiplierGamma;
-      } else if (sortByGamma === v3FarmSortBy.tvl) {
-        const tvl0 =
-          gammaReward0 && gammaReward0['stakedAmountUSD']
-            ? Number(gammaReward0['stakedAmountUSD'])
-            : 0;
-        const tvl1 =
-          gammaReward1 && gammaReward1['stakedAmountUSD']
-            ? Number(gammaReward1['stakedAmountUSD'])
-            : 0;
-        return tvl0 > tvl1 ? sortMultiplierGamma : -1 * sortMultiplierGamma;
-      } else if (sortByGamma === v3FarmSortBy.rewards) {
-        const farm0RewardUSD =
-          gammaReward0 && gammaReward0['rewarders']
-            ? Object.values(gammaReward0['rewarders']).reduce(
-                (total: number, rewarder: any) => {
-                  const rewardUSD = gammaRewardsWithUSDPrice?.find(
-                    (item) =>
-                      item.address.toLowerCase() ===
-                      rewarder.rewardToken.toLowerCase(),
-                  );
-                  return (
-                    total + (rewardUSD?.price ?? 0) * rewarder.rewardPerSecond
-                  );
-                },
-                0,
-              )
-            : 0;
-        const farm1RewardUSD =
-          gammaReward1 && gammaReward1['rewarders']
-            ? Object.values(gammaReward1['rewarders']).reduce(
-                (total: number, rewarder: any) => {
-                  const rewardUSD = gammaRewardsWithUSDPrice?.find(
-                    (item) =>
-                      item.address.toLowerCase() ===
-                      rewarder.rewardToken.toLowerCase(),
-                  );
-                  return (
-                    total + (rewardUSD?.price ?? 0) * rewarder.rewardPerSecond
-                  );
-                },
-                0,
-              )
-            : 0;
-        return farm0RewardUSD > farm1RewardUSD
-          ? sortMultiplierGamma
-          : -1 * sortMultiplierGamma;
-      } else if (sortByGamma === v3FarmSortBy.apr) {
-        const poolAPR0 =
-          gammaData0 &&
-          gammaData0['returns'] &&
-          gammaData0['returns']['allTime'] &&
-          gammaData0['returns']['allTime']['feeApr']
-            ? Number(gammaData0['returns']['allTime']['feeApr'])
-            : 0;
-        const poolAPR1 =
-          gammaData1 &&
-          gammaData1['returns'] &&
-          gammaData1['returns']['allTime'] &&
-          gammaData1['returns']['allTime']['feeApr']
-            ? Number(gammaData1['returns']['allTime']['feeApr'])
-            : 0;
-        const farmAPR0 =
-          gammaReward0 && gammaReward0['apr'] ? Number(gammaReward0['apr']) : 0;
-        const farmAPR1 =
-          gammaReward1 && gammaReward1['apr'] ? Number(gammaReward1['apr']) : 0;
-        return poolAPR0 + farmAPR0 > poolAPR1 + farmAPR1
-          ? sortMultiplierGamma
-          : -1 * sortMultiplierGamma;
-      }
-      return 1;
     });
+
+  const {
+    loading: loadingGammaFarms,
+    data: myGammaFarms,
+  } = useGammaFarmsFiltered(
+    stakedGammaFarms,
+    chainId,
+    search,
+    undefined,
+    sortByGamma,
+    sortDescGamma,
+  );
 
   const {
     data: myUnipilotFarmsData,
@@ -886,7 +588,7 @@ export const FarmingMyFarms: React.FC<{
   const filteredUnipilotFarms = useUnipilotFilteredFarms(
     myUnipilotFarms,
     unipilotFarmData,
-    'active',
+    undefined,
     search,
     sortByUnipilot,
     sortDescUnipilot,
@@ -907,6 +609,7 @@ export const FarmingMyFarms: React.FC<{
     mySteerFarms ?? [],
     chainId,
     search,
+    undefined,
     sortBySteer,
     sortDescSteer,
   );
@@ -1009,7 +712,7 @@ export const FarmingMyFarms: React.FC<{
                     </Box>
                   )}
                   <Box mt={2}>
-                    {farmedNFTs.map((el, i) => {
+                    {farmedNFTs.map((el: any, i) => {
                       return (
                         <div
                           className={'v3-my-farms-position-card'}
@@ -1047,7 +750,7 @@ export const FarmingMyFarms: React.FC<{
           <Box px={2} mt={2}>
             <h6>Gamma {t('farms')}</h6>
           </Box>
-          {gammaFarmsLoading || gammaRewardsLoading ? (
+          {loadingGammaFarms ? (
             <Box py={5} className='flex justify-center'>
               <Loader stroke={'white'} size={'1.5rem'} />
             </Box>
@@ -1072,35 +775,13 @@ export const FarmingMyFarms: React.FC<{
                 </Box>
               )}
               <Box pb={2}>
-                {myGammaFarms.map((farm) => {
-                  const gmMasterChef = GAMMA_MASTERCHEF_ADDRESSES[
-                    farm.masterChefIndex ?? 0
-                  ][chainId]
-                    ? GAMMA_MASTERCHEF_ADDRESSES[farm.masterChefIndex ?? 0][
-                        chainId
-                      ].toLowerCase()
-                    : undefined;
+                {myGammaFarms.map((farm: any) => {
                   return (
                     <Box mt={2} key={farm.address}>
                       <GammaFarmCard
                         token0={farm.token0}
                         token1={farm.token1}
-                        pairData={farm}
-                        data={
-                          gammaData
-                            ? gammaData[farm.address.toLowerCase()]
-                            : undefined
-                        }
-                        rewardData={
-                          gammaRewards &&
-                          gmMasterChef &&
-                          gammaRewards[gmMasterChef] &&
-                          gammaRewards[gmMasterChef]['pools']
-                            ? gammaRewards[gmMasterChef]['pools'][
-                                farm.address.toLowerCase()
-                              ]
-                            : undefined
-                        }
+                        data={farm}
                       />
                     </Box>
                   );
@@ -1140,14 +821,7 @@ export const FarmingMyFarms: React.FC<{
                 {filteredUnipilotFarms.map((farm: any) => {
                   return (
                     <Box mt={2} key={farm.address}>
-                      <UnipilotFarmCard
-                        data={farm}
-                        farmData={
-                          unipilotFarmData && farm.id
-                            ? unipilotFarmData[farm.id.toLowerCase()]
-                            : undefined
-                        }
-                      />
+                      <UnipilotFarmCard data={farm} />
                     </Box>
                   );
                 })}
