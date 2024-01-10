@@ -280,10 +280,10 @@ export const GlobalConst = {
 
 export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
-  ChainId.DOGECHAIN,
   ChainId.ZKEVM,
   ChainId.MANTA,
   ChainId.IMX,
+  ChainId.DOGECHAIN,
   ChainId.ZKATANA,
   ChainId.X1,
   ChainId.TIMX,
