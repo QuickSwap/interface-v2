@@ -3,17 +3,24 @@ import { ChainId, Token as TokenV2 } from '@uniswap/sdk';
 import { getConfig } from 'config/index';
 import {
   useSteerPeripheryContract,
+  useSteerVaultContract,
   useSteerVaultRegistryContract,
 } from 'hooks/useContract';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
   useMultipleContractSingleData,
+  useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { getSteerDexName, getTokenFromAddress } from 'utils';
+import {
+  calculatePositionWidth,
+  getSteerDexName,
+  getTokenFromAddress,
+  percentageToMultiplier,
+} from 'utils';
 import { toV3Token } from 'constants/v3/addresses';
 import { Token } from '@uniswap/sdk-core';
 import { GlobalConst, GlobalData } from 'constants/index';
@@ -23,6 +30,8 @@ import PoolABI from 'constants/abis/v3/pool.json';
 import UniV3PoolABI from 'constants/abis/v3/univ3Pool.json';
 import { ERC20_ABI } from 'constants/abis/erc20';
 import SteerVaultABI from 'constants/abis/steer-vault.json';
+import { Presets } from 'state/mint/v3/reducer';
+import { useActiveWeb3React } from 'hooks';
 
 export interface SteerVault {
   address: string;
@@ -104,7 +113,7 @@ export const useSteerVaults = (chainId: ChainId) => {
       }
       return vaults;
     }
-    return;
+    return [];
   };
 
   const { isLoading, data: vaults } = useQuery({
@@ -383,9 +392,9 @@ export function useSteerFilteredFarms(
   steerFarms: any[],
   chainId: ChainId,
   searchVal?: string,
+  farmFilter?: string,
   sortBy?: string,
   sortDesc?: boolean,
-  farmFilter?: string,
 ) {
   const { v3FarmSortBy, v3FarmFilter } = GlobalConst.utils;
   const sortMultiplier = sortDesc ? -1 : 1;
@@ -451,30 +460,29 @@ export function useSteerFilteredFarms(
 
   const filteredFarms = steerFarms
     .map((farm, ind) => {
-      const farmTotalSupply = farmTotalSupplys[ind];
-      const farmTotalSupplyNum = farmTotalSupply
-        ? Number(formatUnits(farmTotalSupply))
-        : 0;
-      const vaultTotalSupply = vaultTotalSupplys[ind];
-      const vaultTotalSupplyNum = vaultTotalSupply
-        ? Number(formatUnits(vaultTotalSupply))
-        : 0;
+      const farmTotalSupplyNum = Number(
+        formatUnits(farmTotalSupplys[ind] ?? '0'),
+      );
+      const vaultTotalSupplyNum = Number(
+        formatUnits(vaultTotalSupplys[ind] ?? '0'),
+      );
+      const farmStakingAddress = farm?.staking?.address ?? '';
       const vaultInfo = steerVaults.find(
         (vault) =>
-          vault.address.toLowerCase() === farm.staking.address.toLowerCase(),
+          vault.address.toLowerCase() === farmStakingAddress.toLowerCase(),
       );
-      const steerToken0VaultBalance =
-        vaultInfo && vaultInfo.token0Balance
-          ? Number(
-              formatUnits(vaultInfo.token0Balance, vaultInfo.token0?.decimals),
-            )
-          : 0;
-      const steerToken1VaultBalance =
-        vaultInfo && vaultInfo.token1Balance
-          ? Number(
-              formatUnits(vaultInfo.token1Balance, vaultInfo.token1?.decimals),
-            )
-          : 0;
+      const steerToken0VaultBalance = Number(
+        formatUnits(
+          vaultInfo?.token0Balance ?? '0',
+          vaultInfo?.token0?.decimals,
+        ),
+      );
+      const steerToken1VaultBalance = Number(
+        formatUnits(
+          vaultInfo?.token1Balance ?? '0',
+          vaultInfo?.token1?.decimals,
+        ),
+      );
       const farmToken0Amount =
         vaultTotalSupplyNum > 0
           ? (farmTotalSupplyNum * steerToken0VaultBalance) / vaultTotalSupplyNum
@@ -483,34 +491,30 @@ export function useSteerFilteredFarms(
         vaultTotalSupplyNum > 0
           ? (farmTotalSupplyNum * steerToken1VaultBalance) / vaultTotalSupplyNum
           : 0;
+      const vaultToken0Address = vaultInfo?.token0?.address ?? '';
       const token0PriceObj = tokenUSDPrices?.find(
         ({ address }) =>
-          vaultInfo &&
-          vaultInfo.token0 &&
-          vaultInfo.token0.address &&
-          address.toLowerCase() === vaultInfo.token0.address.toLowerCase(),
+          address.toLowerCase() === vaultToken0Address.toLowerCase(),
       );
-      const token0Price = token0PriceObj ? Number(token0PriceObj.price) : 0;
+      const token0Price = Number(token0PriceObj?.price ?? 0);
+      const vaultToken1Address = vaultInfo?.token1?.address ?? '';
       const token1PriceObj = tokenUSDPrices?.find(
         ({ address }) =>
-          vaultInfo &&
-          vaultInfo.token1 &&
-          vaultInfo.token1.address &&
-          address.toLowerCase() === vaultInfo.token1.address.toLowerCase(),
+          address.toLowerCase() === vaultToken1Address.toLowerCase(),
       );
-      const token1Price = token1PriceObj ? Number(token1PriceObj.price) : 0;
+      const token1Price = Number(token1PriceObj?.price ?? 0);
       const tvl =
         farmToken0Amount * token0Price + farmToken1Amount * token1Price;
 
       const farmRewardTokenAUSD = tokenUSDPrices?.find(
         (item) =>
-          farm.rewardTokenA &&
-          item.address.toLowerCase() === farm.rewardTokenA.toLowerCase(),
+          item.address.toLowerCase() ===
+          (farm?.rewardTokenA ?? '').toLowerCase(),
       );
       const farmRewardTokenBUSD = tokenUSDPrices?.find(
         (item) =>
-          farm.rewardTokenB &&
-          item.address.toLowerCase() === farm.rewardTokenB.toLowerCase(),
+          item.address.toLowerCase() ===
+          (farm?.rewardTokenB ?? '').toLowerCase(),
       );
       const farmRewardUSD =
         (farm.dailyEmissionRewardA ?? 0) * (farmRewardTokenAUSD?.price ?? 0) +
@@ -521,42 +525,67 @@ export function useSteerFilteredFarms(
       const farmAPR =
         tvl > 0 ? (farmRewardUSD * 365 * 100) / tvl : totalRewardsUSD;
 
+      const token0Address = farm?.vaultTokens?.token0?.address;
+      const token1Address = farm?.vaultTokens?.token1?.address;
       const token0 =
-        farm &&
-        farm.vaultTokens &&
-        farm.vaultTokens.token0 &&
-        farm.vaultTokens.token0.address
-          ? getTokenFromAddress(
-              farm.vaultTokens.token0.address,
-              chainId,
-              tokenMap,
-              [],
-            )
-          : vaultInfo
-          ? vaultInfo.token0
-          : undefined;
+        getTokenFromAddress(token0Address, chainId, tokenMap, []) ??
+        vaultInfo?.token0;
       const token1 =
-        farm &&
-        farm.vaultTokens &&
-        farm.vaultTokens.token1 &&
-        farm.vaultTokens.token1.address
-          ? getTokenFromAddress(
-              farm.vaultTokens.token1.address,
-              chainId,
-              tokenMap,
-              [],
-            )
-          : vaultInfo
-          ? vaultInfo.token1
-          : undefined;
+        getTokenFromAddress(token1Address, chainId, tokenMap, []) ??
+        vaultInfo?.token1;
+
+      const rewards: any[] = [];
+      if (farm?.rewardTokenADetail) {
+        rewards.push({
+          amount: farm?.dailyEmissionRewardA ?? 0,
+          token: farm?.rewardTokenADetail,
+        });
+      }
+      if (farm?.rewardTokenBDetail) {
+        rewards.push({
+          amount: farm?.dailyEmissionRewardB ?? 0,
+          token: farm?.rewardTokenBDetail,
+        });
+      }
+
+      const minTick = Number(vaultInfo?.lowerTick ?? 0);
+      const maxTick = Number(vaultInfo?.upperTick ?? 0);
+      const currentTick = Number(vaultInfo?.tick ?? 0);
+      const positionWidthPercent = calculatePositionWidth(
+        currentTick,
+        minTick,
+        maxTick,
+      );
+      const pairType =
+        vaultInfo &&
+        vaultInfo.strategy &&
+        vaultInfo.strategy.strategyConfigData &&
+        vaultInfo.strategy.strategyConfigData.name &&
+        vaultInfo.strategy.strategyConfigData.name
+          .toLowerCase()
+          .includes('stable')
+          ? Presets.STEER_STABLE
+          : percentageToMultiplier(positionWidthPercent) > 1.2
+          ? Presets.STEER_WIDE
+          : Presets.STEER_NARROW;
+      const pairTypeTitle =
+        pairType === Presets.STEER_STABLE
+          ? 'Stable'
+          : pairType === Presets.STEER_WIDE
+          ? 'Wide'
+          : 'Narrow';
+
       return {
         ...farm,
         token0,
         token1,
         tvl,
-        farmRewardUSD,
+        rewardUSD: farmRewardUSD,
+        rewards,
         farmAPR,
-        feeAPR: vaultInfo?.apr ?? 0,
+        poolAPR: vaultInfo?.apr ?? 0,
+        type: 'Steer',
+        title: pairTypeTitle,
         loading: loadingUSDPrice || loadingSteerVaults,
       };
     })
@@ -656,11 +685,11 @@ export function useSteerFilteredFarms(
       } else if (sortBy === v3FarmSortBy.tvl) {
         return farm0.tvl > farm1.tvl ? sortMultiplier : -1 * sortMultiplier;
       } else if (sortBy === v3FarmSortBy.rewards) {
-        return farm0.farmRewardUSD > farm1.farmRewardUSD
+        return farm0.rewardUSD > farm1.rewardUSD
           ? sortMultiplier
           : -1 * sortMultiplier;
       } else if (sortBy === v3FarmSortBy.apr) {
-        return farm0.farmAPR + farm0.feeAPR > farm1.farmAPR + farm1.feeAPR
+        return farm0.farmAPR + farm0.poolAPR > farm1.farmAPR + farm1.poolAPR
           ? sortMultiplier
           : -1 * sortMultiplier;
       }
@@ -668,4 +697,53 @@ export function useSteerFilteredFarms(
     });
 
   return filteredFarms;
+}
+
+export function useSteerPosition(vaultAddress?: string) {
+  const { chainId, account } = useActiveWeb3React();
+  const { loading: loadingVaults, data: steerVaults } = useSteerVaults(chainId);
+  const steerVaultContract = useSteerVaultContract(vaultAddress);
+  const vaultTotalSupplyRes = useSingleCallResult(
+    steerVaultContract,
+    'totalSupply',
+  );
+  const vaultBalanceRes = useSingleCallResult(steerVaultContract, 'balanceOf', [
+    account,
+  ]);
+  const vaultTotalSupply =
+    !vaultTotalSupplyRes.loading && vaultTotalSupplyRes.result
+      ? vaultTotalSupplyRes.result[0]
+      : '0';
+  const vaultBalance =
+    !vaultBalanceRes.loading && vaultBalanceRes.result
+      ? vaultBalanceRes.result[0]
+      : '0';
+  if (!vaultAddress) return { loading: false };
+  const vault = steerVaults.find(
+    (item) => item.address.toLowerCase() === vaultAddress.toLowerCase(),
+  );
+  if (!vault) return { loading: false };
+  const vaultTotalSupplyNum = Number(formatUnits(vaultTotalSupply));
+  const vaultBalanceNum = Number(formatUnits(vaultBalance));
+  const steerToken0VaultBalance = vault?.token0Balance
+    ? Number(formatUnits(vault.token0Balance, vault.token0?.decimals))
+    : 0;
+  const steerToken1VaultBalance = vault?.token1Balance
+    ? Number(formatUnits(vault.token1Balance, vault.token1?.decimals))
+    : 0;
+  const token0Balance =
+    (vaultBalanceNum * steerToken0VaultBalance) / vaultTotalSupplyNum;
+  const token1Balance =
+    (vaultBalanceNum * steerToken1VaultBalance) / vaultTotalSupplyNum;
+
+  return {
+    loading:
+      loadingVaults || vaultTotalSupplyRes.loading || vaultBalanceRes.loading,
+    data: {
+      ...vault,
+      totalBalance: vaultBalanceNum,
+      token0BalanceWallet: token0Balance,
+      token1BalanceWallet: token1Balance,
+    },
+  };
 }

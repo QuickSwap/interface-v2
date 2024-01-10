@@ -24,6 +24,7 @@ import WarningModal from '../WarningModal';
 import DisplayValues from '../DisplayValues';
 import GetLPButton from '../GetLPButton';
 import { useTranslation } from 'react-i18next';
+import { getFixedValue } from 'utils';
 
 const ApeZapPath = ({
   purchasePath,
@@ -73,7 +74,7 @@ const ApeZapPath = ({
         inputCurrency,
         JSBI.BigInt(
           parseUnits(
-            Number(typedValue).toFixed(inputCurrency?.decimals),
+            getFixedValue(typedValue, inputCurrency?.decimals),
             inputCurrency?.decimals,
           ),
         ),

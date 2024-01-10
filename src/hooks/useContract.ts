@@ -45,6 +45,7 @@ import {
   STEER_PERIPHERY,
   STEER_VAULT_REGISTRY,
   PRICE_GETTER_ADDRESS,
+  MERKL_DISTRIBUTOR,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
@@ -59,6 +60,8 @@ import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
+import DEFIEDGE_MINICHEF_ABI from 'constants/abis/defiedge-minichef.json';
 import PRICE_GETTER_ABI from 'constants/abis/price-getter.json';
 import BOND_ABI from 'constants/abis/bond.json';
 import BOND_NFT_ABI from 'constants/abis/bondNFT.json';
@@ -367,6 +370,13 @@ export function useMasterChefContract(
   );
 }
 
+export function useMiniChefContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, DEFIEDGE_MINICHEF_ABI, withSignerIfPossible);
+}
+
 export function useMasterChefContracts(withSignerIfPossible?: boolean) {
   return useContracts(
     GAMMA_MASTERCHEF_ADDRESSES,
@@ -387,6 +397,20 @@ export function useUniPilotVaultContract(
   withSignerIfPossible?: boolean,
 ) {
   return useContract(address, UNIPILOT_VAULT_ABI, withSignerIfPossible);
+}
+
+export function useDefiedgeStrategyContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, DEFIEDGE_STRATEGY_ABI, withSignerIfPossible);
+}
+
+export function useDefiEdgeMiniChefContracts(
+  addresses: string[],
+  withSignerIfPossible?: boolean,
+) {
+  return useContracts(addresses, DEFIEDGE_MINICHEF_ABI, withSignerIfPossible);
 }
 
 export function useUnipilotFarmingContract(
@@ -478,4 +502,16 @@ export function useSteerFarmingContract(
     withSignerIfPossible,
   );
   return isDual ? dualContract : singleContract;
+}
+
+export function useMerklContract(withSignerIfPossible?: boolean) {
+  const distributorABI = [
+    'function claim(address[] calldata users, address[] calldata tokens, uint256[] calldata amounts, bytes32[][] calldata proofs) external',
+  ];
+  const contract = useContract(
+    MERKL_DISTRIBUTOR,
+    distributorABI,
+    withSignerIfPossible,
+  );
+  return contract;
 }

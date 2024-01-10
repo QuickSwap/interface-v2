@@ -327,6 +327,8 @@ export const STEER_VAULT_REGISTRY: AddressMap = {
   [ChainId.MANTA]: '0x38a07152ee64C7067fEeBA904D72ABc9a9DA0C77',
 };
 
+export const MERKL_DISTRIBUTOR = '0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae';
+
 export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
   [ChainId.MATIC]: new TokenV3(
     ChainId.MATIC,
@@ -425,7 +427,7 @@ export const USDC: { [chainId: number]: Token } = {
   ),
   [ChainId.X1]: new Token(
     ChainId.X1,
-    '0xcd65196488b2e2fbcbc3e5d675b3108f4935e64a',
+    '0x04292af1cf8687235a83766d55b307880fc5e76d',
     6,
     'USDC',
     'USD Coin',
@@ -503,7 +505,14 @@ export const NEW_QUICK: { [chainId: number]: Token } = {
     NEW_QUICK_ADDRESS[ChainId.ZKEVM],
     18,
     'QUICK',
-    'QuickSwap(NEW)',
+    'QuickSwap',
+  ),
+  [ChainId.MANTA]: new Token(
+    ChainId.MANTA,
+    '0xE22E3D44Ea9Fb0A87Ea3F7a8f41D869C677f0020',
+    18,
+    'QUICK',
+    'QuickSwap',
   ),
 };
 
@@ -1131,6 +1140,7 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(USDC[ChainId.MANTA]),
     toV3Token(WBTC[ChainId.MANTA]),
     toV3Token(MATIC[ChainId.MANTA]),
+    toV3Token(NEW_QUICK[ChainId.MANTA]),
   ],
   [ChainId.ZKATANA]: [
     WMATIC_EXTENDED[ChainId.ZKATANA],
@@ -1177,6 +1187,7 @@ export const SUGGESTED_BASES: {
     USDC[ChainId.MANTA],
     WBTC[ChainId.MANTA],
     MATIC[ChainId.MANTA],
+    NEW_QUICK[ChainId.MANTA],
   ],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],

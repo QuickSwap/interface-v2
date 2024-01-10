@@ -13,7 +13,12 @@ import { Token } from '@uniswap/sdk-core';
 import { Token as TokenV2 } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { calculateGasMargin, formatNumber, getTokenFromAddress } from 'utils';
+import {
+  calculateGasMargin,
+  formatNumber,
+  getFixedValue,
+  getTokenFromAddress,
+} from 'utils';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useTransactionAdder,
@@ -154,12 +159,12 @@ const SteerFarmCardDetails: React.FC<{
     const estimatedGas = await farmingContract.estimateGas.stake(
       Number(stakeAmount) === Number(lpBalance.toExact())
         ? lpBalance.numerator
-        : parseUnits(Number(stakeAmount).toFixed(18), 18),
+        : parseUnits(getFixedValue(stakeAmount), 18),
     );
     const response = await farmingContract.stake(
       Number(stakeAmount) === Number(lpBalance.toExact())
         ? lpBalance.numerator
-        : parseUnits(Number(stakeAmount).toFixed(18), 18),
+        : parseUnits(getFixedValue(stakeAmount), 18),
       {
         gasLimit: calculateGasMargin(estimatedGas),
       },
@@ -186,10 +191,10 @@ const SteerFarmCardDetails: React.FC<{
         });
       } else {
         const estimatedGas = await farmingContract.estimateGas.withdraw(
-          parseUnits(Number(unStakeAmount).toFixed(18), 18),
+          parseUnits(getFixedValue(unStakeAmount), 18),
         );
         response = await farmingContract.withdraw(
-          parseUnits(Number(unStakeAmount).toFixed(18), 18),
+          parseUnits(getFixedValue(unStakeAmount), 18),
           {
             gasLimit: calculateGasMargin(estimatedGas),
           },

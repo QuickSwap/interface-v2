@@ -34,7 +34,7 @@ const UserBondItem: React.FC<BondItemProps> = ({ userBond }) => {
 
   const pending = Number(
     formatUnits(
-      userBond.payout ?? '0',
+      userBond.totalPayout ?? '0',
       userBond.bond?.earnToken?.decimals?.[chainId] ?? 18,
     ),
   );

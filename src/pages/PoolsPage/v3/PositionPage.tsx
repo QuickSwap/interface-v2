@@ -15,18 +15,22 @@ import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useV3NFTPositionManagerContract } from 'hooks/useContract';
 import { FARMING_CENTER } from 'constants/v3/addresses';
 import { useTranslation } from 'react-i18next';
+import useParsedQueryString from 'hooks/useParsedQueryString';
 
 export default function PositionPage() {
   const { t } = useTranslation();
+  const parsedQuery = useParsedQueryString();
   const params: any = useParams();
-  const tokenIdFromUrl = params.tokenId;
+  const tokenIdFromUrl = params?.tokenId;
   const { account, chainId } = useActiveWeb3React();
 
   const parsedTokenId = tokenIdFromUrl
     ? BigNumber.from(tokenIdFromUrl)
     : undefined;
+  const isUni = parsedQuery?.isUni === 'true';
   const { loading, position: _positionDetails } = useV3PositionFromTokenId(
     parsedTokenId,
+    isUni,
   );
 
   const { loading: positionLoading, positions } = useV3Positions(account);

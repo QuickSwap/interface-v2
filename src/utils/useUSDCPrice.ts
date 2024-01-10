@@ -60,95 +60,236 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   }, [currency, allowedPairs, amountOut, chainId]);
 }
 
+const getUSDPricesFromAddresses = async (
+  chainId: ChainId,
+  addressStr?: string,
+  onlyV3?: boolean,
+) => {
+  if (!addressStr) return [];
+  let pricesV3: any[] = [],
+    pricesV2: any[] = [];
+  const config = getConfig(chainId);
+  const v2 = config['v2'] && !onlyV3;
+  const addresses = addressStr.split('_');
+
+  for (const ind of Array.from(
+    { length: Math.ceil(addresses.length / 150) },
+    (_, i) => i,
+  )) {
+    const res = await fetch(
+      `${
+        process.env.REACT_APP_LEADERBOARD_APP_URL
+      }/utils/token-prices/v3?chainId=${chainId}&addresses=${addresses
+        .slice(ind * 150, (ind + 1) * 150)
+        .join('_')}`,
+    );
+    if (res.ok) {
+      const data = await res.json();
+      pricesV3 = pricesV3.concat(data?.data ?? []);
+    }
+  }
+
+  if (v2) {
+    const addressesNotInV3 = addresses.filter((address) => {
+      const priceV3 = pricesV3.find(
+        (item: any) => item && item.id.toLowerCase() === address.toLowerCase(),
+      );
+      return !priceV3 || !priceV3.price;
+    });
+    for (const ind of Array.from(
+      { length: Math.ceil(addressesNotInV3.length / 150) },
+      (_, i) => i,
+    )) {
+      const v2Res = await fetch(
+        `${
+          process.env.REACT_APP_LEADERBOARD_APP_URL
+        }/utils/token-prices/v2?chainId=${chainId}&addresses=${addressesNotInV3
+          .slice(ind * 150, (ind + 1) * 150)
+          .join('_')}`,
+      );
+      if (v2Res.ok) {
+        const data = await v2Res.json();
+        pricesV2 = pricesV2.concat(data?.data ?? []);
+      }
+    }
+  }
+
+  const prices = addresses.map((address) => {
+    const priceV3 = pricesV3.find(
+      (item: any) => item && item.id.toLowerCase() === address.toLowerCase(),
+    );
+    if (priceV3 && priceV3.price) {
+      return {
+        address,
+        price: priceV3.price,
+      };
+    } else {
+      const priceV2 = pricesV2.find(
+        (item: any) => item && item.id.toLowerCase() === address.toLowerCase(),
+      );
+      if (priceV2 && priceV2.price) {
+        return {
+          address,
+          price: priceV2.price,
+        };
+      }
+      return { address, price: 0 };
+    }
+  });
+  return prices;
+};
+
 export function useUSDCPricesFromAddresses(
   addressArray: string[],
   onlyV3?: boolean,
 ) {
   const { chainId } = useActiveWeb3React();
-  const config = getConfig(chainId);
-  const v2 = config['v2'] && !onlyV3;
-  const addressStr = addressArray.join('_');
 
-  const fetchTokenPrices = async () => {
-    if (!addressStr) return [];
-    const addresses = addressStr.split('_');
+  const oldDQUICK = OLD_DQUICK[chainId];
+  const newDQUICK = NEW_DQUICK[chainId];
+  const oldQUICK = OLD_QUICK[chainId];
+  const newQUICK = NEW_QUICK[chainId];
+  const hasOlddQuick = !!addressArray.find(
+    (address) =>
+      oldDQUICK && address.toLowerCase() === oldDQUICK.address.toLowerCase(),
+  );
+  const hasNewdQuick = !!addressArray.find(
+    (address) =>
+      newDQUICK && address.toLowerCase() === newDQUICK.address.toLowerCase(),
+  );
 
-    let pricesV2: any[] = [];
-    let pricesV3: any[] = [];
+  const dQuickToQuick = useDQUICKtoQUICK(
+    false,
+    hasOlddQuick ? undefined : true,
+  );
 
-    const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-prices/v3?chainId=${chainId}&addresses=${addressStr}`,
+  const newdQuickTonewQuick = useDQUICKtoQUICK(
+    true,
+    hasNewdQuick ? undefined : true,
+  );
+
+  const addressesWithoutDQuick = addressArray.filter(
+    (address) =>
+      (!oldDQUICK ||
+        address.toLowerCase() !== oldDQUICK.address.toLowerCase()) &&
+      (!newDQUICK || address.toLowerCase() !== newDQUICK.address.toLowerCase()),
+  );
+  const containsOldQUICK = !!addressArray.find(
+    (address) =>
+      oldQUICK && address.toLowerCase() === oldQUICK.address.toLowerCase(),
+  );
+  const containsNewQUICK = !!addressArray.find(
+    (address) =>
+      newQUICK && address.toLowerCase() === newQUICK.address.toLowerCase(),
+  );
+  const addresses = addressesWithoutDQuick
+    .concat(
+      hasOlddQuick && !containsOldQUICK && oldQUICK ? [oldQUICK.address] : [],
+    )
+    .concat(
+      hasNewdQuick && !containsNewQUICK && newQUICK ? [newQUICK.address] : [],
     );
-    if (res.ok) {
-      const data = await res.json();
-      pricesV3 = data && data.data && data.data.length > 0 ? data.data : [];
-    }
 
-    if (v2) {
-      const addressesNotInV3 = addresses.filter((address) => {
-        const priceV3 = pricesV3.find(
-          (item: any) =>
-            item && item.id.toLowerCase() === address.toLowerCase(),
-        );
-        return !priceV3 || !priceV3.price;
-      });
+  const addressStr = addresses.join('_');
 
-      const res = await fetch(
-        `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
-        }/utils/token-prices/v2?chainId=${chainId}&addresses=${addressesNotInV3.join(
-          '_',
-        )}`,
+  const { isLoading, data: pricesWithoutDUICK } = useQuery({
+    queryKey: ['usd-price-tokens', chainId, addressStr, onlyV3],
+    queryFn: async () => {
+      const prices = await getUSDPricesFromAddresses(
+        chainId,
+        addressStr,
+        onlyV3,
       );
-      if (res.ok) {
-        const data = await res.json();
-        pricesV2 = data && data.data && data.data.length > 0 ? data.data : [];
-      }
-    }
-
-    const prices = addresses.map((address) => {
-      const priceV3 = pricesV3.find(
-        (item: any) => item && item.id.toLowerCase() === address.toLowerCase(),
-      );
-      if (priceV3 && priceV3.price) {
-        return {
-          address,
-          price: priceV3.price,
-        };
-      } else {
-        const priceV2 = pricesV2.find(
-          (item: any) =>
-            item && item.id.toLowerCase() === address.toLowerCase(),
-        );
-        if (priceV2 && priceV2.price) {
-          return {
-            address,
-            price: priceV2.price,
-          };
-        }
-        return { address, price: 0 };
-      }
-    });
-    return prices;
-  };
-
-  const { isLoading, data: prices } = useQuery({
-    queryKey: ['fetchTokenPrices', chainId, addressStr, v2],
-    queryFn: fetchTokenPrices,
+      return prices;
+    },
     refetchInterval: 300000,
   });
 
-  return { loading: isLoading, prices };
+  const oldDQUICKPrice = oldDQUICK
+    ? {
+        address: oldDQUICK.address,
+        price:
+          (pricesWithoutDUICK?.find(
+            (item) =>
+              oldQUICK &&
+              item.address.toLowerCase() === oldQUICK.address.toLowerCase(),
+          )?.price ?? 0) * dQuickToQuick,
+      }
+    : undefined;
+
+  const newDQUICKPrice = newDQUICK
+    ? {
+        address: newDQUICK.address,
+        price:
+          (pricesWithoutDUICK?.find(
+            (item) =>
+              newQUICK &&
+              item.address.toLowerCase() === newQUICK.address.toLowerCase(),
+          )?.price ?? 0) * newdQuickTonewQuick,
+      }
+    : undefined;
+
+  return {
+    loading: isLoading,
+    prices: (pricesWithoutDUICK ?? [])
+      .concat(oldDQUICKPrice ? [oldDQUICKPrice] : [])
+      .concat(newDQUICKPrice ? [newDQUICKPrice] : []),
+  };
 }
 
-export function useUSDCPriceFromAddress(address: string, onlyV3?: boolean) {
-  const { loading, prices: usdPrices } = useUSDCPricesFromAddresses(
-    [address],
-    onlyV3,
+export function useUSDCPriceFromAddress(address?: string, onlyV3?: boolean) {
+  const { chainId } = useActiveWeb3React();
+  const oldDQUICK = OLD_DQUICK[chainId];
+  const newDQUICK = NEW_DQUICK[chainId];
+  const oldQUICK = OLD_QUICK[chainId];
+  const newQUICK = NEW_QUICK[chainId];
+  const isOldDQUICK =
+    address &&
+    oldDQUICK &&
+    address.toLowerCase() === oldDQUICK.address.toLowerCase();
+  const isNewdQuick =
+    address &&
+    newDQUICK &&
+    address.toLowerCase() === newDQUICK.address.toLowerCase();
+
+  const dQuickToQuick = useDQUICKtoQUICK(false, isOldDQUICK ? undefined : true);
+
+  const newdQuickTonewQuick = useDQUICKtoQUICK(
+    true,
+    isNewdQuick ? undefined : true,
   );
+
+  const tokenAddress = isOldDQUICK
+    ? oldQUICK?.address
+    : isNewdQuick
+    ? newQUICK?.address
+    : address;
+
+  const { isLoading, data: tokenPrice } = useQuery({
+    queryKey: ['usd-price-token', tokenAddress, onlyV3, chainId],
+    queryFn: async () => {
+      const prices = await getUSDPricesFromAddresses(
+        chainId,
+        tokenAddress,
+        onlyV3,
+      );
+      if (prices.length > 0) {
+        return Number(prices[0]?.price ?? 0);
+      }
+      return 0;
+    },
+    refetchInterval: 300000,
+  });
+
+  const price = isOldDQUICK
+    ? dQuickToQuick * (tokenPrice ?? 0)
+    : isNewdQuick
+    ? newdQuickTonewQuick * (tokenPrice ?? 0)
+    : tokenPrice;
+
   return {
-    loading,
-    price: usdPrices && usdPrices[0] ? usdPrices[0].price : 0,
+    loading: isLoading,
+    price: price ?? 0,
   };
 }
 
@@ -297,6 +438,7 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
 
 export function useUSDCPricesToken(tokens: Token[], chainId?: ChainId) {
   const dQUICKtoQUICK = useDQUICKtoQUICK();
+  const newdQuickTonewQuick = useDQUICKtoQUICK(true);
   const oldQuickToken = chainId ? OLD_QUICK[chainId] : undefined;
   const oldDQuickToken = chainId ? OLD_DQUICK[chainId] : undefined;
   const newQuickToken = chainId ? NEW_QUICK[chainId] : undefined;
@@ -338,7 +480,7 @@ export function useUSDCPricesToken(tokens: Token[], chainId?: ChainId) {
     } else if (token && oldQuickToken && token.equals(oldQuickToken)) {
       return quickPrice;
     } else if (token && newDQuickToken && token.equals(newDQuickToken)) {
-      return dQUICKtoQUICK * newQuickPrice * 1000;
+      return newdQuickTonewQuick * newQuickPrice * 1000;
     } else if (token && newQuickToken && token.equals(newQuickToken)) {
       return newQuickPrice;
     } else {

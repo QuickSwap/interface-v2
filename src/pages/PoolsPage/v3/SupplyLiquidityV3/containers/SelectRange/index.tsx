@@ -11,6 +11,7 @@ import {
   useV3MintState,
   useInitialUSDPrices,
   useGetUnipilotVaults,
+  useGetDefiedgeStrategies,
 } from 'state/mint/v3/hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { useAppDispatch } from 'state/hooks';
@@ -31,6 +32,7 @@ import {
 } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
 import UnipilotLogo from 'assets/images/unipilot.png';
+import DefiedgeLogo from 'assets/images/defiedge.png';
 import AutomaticImage from 'assets/images/automatic.svg';
 import AutomaticImageDark from 'assets/images/automaticDark.svg';
 import { Trans, useTranslation } from 'react-i18next';
@@ -371,18 +373,27 @@ export function SelectRange({
     );
   });
 
+  const { defiedgeStrategies } = useGetDefiedgeStrategies();
+  const defiedgeStrategiesForPair = defiedgeStrategies.filter((item) => {
+    return (
+      (item.token0 &&
+        item.token1 &&
+        item.token0.toLowerCase() === currencyAAddress.toLowerCase() &&
+        item.token1.toLowerCase() === currencyBAddress.toLowerCase()) ||
+      (item.token0 &&
+        item.token1 &&
+        item.token0.toLowerCase() === currencyBAddress.toLowerCase() &&
+        item.token1.toLowerCase() === currencyAAddress.toLowerCase())
+    );
+  });
+
   const { data: steerVaults } = useSteerVaults(chainId);
   const steerVaultsForPair = steerVaults.filter((item) => {
-    const lowerTick = Number(item.lowerTick ?? 0);
-    const upperTick = Number(item.upperTick ?? 0);
-    const currentTick = Number(item.tick ?? 0);
     return (
       item.state !== SteerVaultState.Paused &&
       item.state !== SteerVaultState.Retired &&
-      item.feeTier &&
-      Number(item.feeTier) === mintInfo.feeAmount &&
-      lowerTick < currentTick &&
-      currentTick < upperTick &&
+      ((item.feeTier && Number(item.feeTier) === mintInfo.feeAmount) ||
+        (!item.feeTier && !mintInfo.feeAmount)) &&
       ((item.token0 &&
         item.token1 &&
         item.token0.address.toLowerCase() === currencyAAddress.toLowerCase() &&
@@ -397,13 +408,19 @@ export function SelectRange({
 
   const gammaPairExists = !!gammaPair;
   const unipilotVaultExists = unipilotVaultsForPair.length > 0;
+  const defiedgeStrategyExists = defiedgeStrategiesForPair.length > 0;
   const steerVaultExists = steerVaultsForPair.length > 0;
+
   useEffect(() => {
     if (gammaPairExists) {
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.GAMMA_RANGE);
     } else if (unipilotVaultExists) {
       onChangeLiquidityRangeType(
         GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+      );
+    } else if (defiedgeStrategyExists) {
+      onChangeLiquidityRangeType(
+        GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
       );
     } else if (steerVaultExists) {
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.STEER_RANGE);
@@ -419,17 +436,22 @@ export function SelectRange({
     unipilotVaultExists,
     steerVaultExists,
     gammaPairExists,
+    defiedgeStrategyExists,
   ]);
 
   const isAutomatic =
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ||
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ||
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE;
 
   const selectVaultEnabled =
     (gammaPairExists && unipilotVaultExists) ||
+    (gammaPairExists && defiedgeStrategyExists) ||
     (gammaPairExists && steerVaultExists) ||
-    (unipilotVaultExists && steerVaultExists);
+    (unipilotVaultExists && steerVaultExists) ||
+    (unipilotVaultExists && defiedgeStrategyExists) ||
+    (defiedgeStrategyExists && steerVaultExists);
 
   const { data: gammaData } = useGammaData();
 
@@ -483,7 +505,10 @@ export function SelectRange({
   return (
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
-      {(gammaPairExists || unipilotVaultExists || steerVaultExists) && (
+      {(gammaPairExists ||
+        unipilotVaultExists ||
+        defiedgeStrategyExists ||
+        steerVaultExists) && (
         <Box className='buttonGroup poolRangeButtonGroup'>
           <ButtonGroup>
             <Button
@@ -496,6 +521,10 @@ export function SelectRange({
                 } else if (unipilotVaultExists) {
                   onChangeLiquidityRangeType(
                     GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+                  );
+                } else if (defiedgeStrategyExists) {
+                  onChangeLiquidityRangeType(
+                    GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
                   );
                 } else {
                   onChangeLiquidityRangeType(
@@ -527,6 +556,29 @@ export function SelectRange({
           </ButtonGroup>
         </Box>
       )}
+
+      {isAutomatic && (
+        <Box my={1.5} className='poolRangePowerGamma'>
+          <span className='text-secondary'>{t('poweredBy')}</span>
+          {liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
+            <img src={GammaLogo} alt='Gamma Logo' />
+          ) : liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ? (
+            <img src={UnipilotLogo} alt='Unipilot Logo' />
+          ) : liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ? (
+            <img
+              src={DefiedgeLogo}
+              alt='Defiedge Logo'
+              style={{ height: '28px' }}
+            />
+          ) : (
+            <small className='text-bold'>&nbsp;Steer</small>
+          )}
+        </Box>
+      )}
+
       <Box my={1}>
         <PresetRanges
           mintInfo={mintInfo}
@@ -545,8 +597,13 @@ export function SelectRange({
             liquidityRangeType ===
             GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
           }
+          isDefiedge={
+            liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+          }
           gammaPair={gammaPair}
           unipilotPairs={unipilotVaultsForPair}
+          defiedgeStrategies={defiedgeStrategiesForPair}
           isSteer={
             liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE
           }
@@ -749,6 +806,29 @@ export function SelectRange({
                   <img src={UnipilotLogo} alt='Gamma Logo' />
                   <small className='text-success'>
                     {formatNumber(unipilotAPR)}%
+                  </small>
+                  <span>{t('apr')}</span>
+                </Box>
+              </Grid>
+            )}
+            {defiedgeStrategyExists && (
+              <Grid item xs={4}>
+                <Box
+                  className={`pool-select-vault-panel${
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+                      ? ' pool-select-vault-selected'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    onChangeLiquidityRangeType(
+                      GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
+                    );
+                  }}
+                >
+                  <p>Defiedge</p>
+                  <small className='text-success'>
+                    {formatNumber(defiedgeStrategiesForPair[0]?.apr)}%
                   </small>
                   <span>{t('apr')}</span>
                 </Box>

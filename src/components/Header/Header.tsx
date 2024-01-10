@@ -53,7 +53,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
-  const [showNewsletter, setShowNewsletter] = useState(true);
+  const [showNewsletter, setShowNewsletter] = useState(false);
 
   const theme = useTheme();
   const allTransactions = useAllTransactions();
@@ -266,7 +266,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       link: '/leader-board',
       text: 'Leaderboard',
       id: 'contest-page-link',
-      isNew: true,
+      isNew: false,
     });
   }
   if (showConvert) {

@@ -136,6 +136,31 @@ export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
   [ChainId.TIMX]: 0,
 };
 
+export const MIN_NATIVE_CURRENCY_FOR_GAS: {
+  [chainId in ChainId]: JSBI;
+} = {
+  [ChainId.MATIC]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)), // .01 ETH
+  [ChainId.MUMBAI]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
+  [ChainId.DOEGCHAIN_TESTNET]: JSBI.exponentiate(
+    JSBI.BigInt(10),
+    JSBI.BigInt(16),
+  ),
+  [ChainId.DOGECHAIN]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
+  [ChainId.ZKEVM]: JSBI.multiply(
+    JSBI.BigInt(3),
+    JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
+  ),
+  [ChainId.ZKTESTNET]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.MANTA]: JSBI.multiply(
+    JSBI.BigInt(5),
+    JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  ),
+  [ChainId.KAVA]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
+  [ChainId.BTTC]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
+  [ChainId.X1]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
+  [ChainId.ZKATANA]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+};
+
 export const GlobalConst = {
   blacklists: {
     TOKEN_BLACKLIST: [
@@ -168,8 +193,6 @@ export const GlobalConst = {
     BIG_INT_ZERO: JSBI.BigInt(0),
     ONE_BIPS: new Percent(JSBI.BigInt(1), JSBI.BigInt(10000)), // one basis point
     BIPS_BASE: JSBI.BigInt(10000),
-    // used to ensure the user doesn't send so much ETH so they end up with <.01
-    MIN_ETH: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)), // .01 ETH
     BETTER_TRADE_LINK_THRESHOLD: new Percent(
       JSBI.BigInt(75),
       JSBI.BigInt(10000),
@@ -205,6 +228,8 @@ export const GlobalConst = {
       unipilot: '1',
       gamma: '2',
       steer: '3',
+      defiedge: '4',
+      ichi: '5',
     },
   },
   analyticChart: {
@@ -224,7 +249,8 @@ export const GlobalConst = {
     MANUAL_RANGE: '0',
     GAMMA_RANGE: '1',
     UNIPILOT_RANGE: '2',
-    STEER_RANGE: '3',
+    DEFIEDGE_RANGE: '3',
+    STEER_RANGE: '4',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -968,6 +994,7 @@ export const GammaPairs: {
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4',
         pid: 69,
+        ableToFarm: true,
       },
     ],
     '0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd-0x2791bca1f2de4661ed88a30c99a7a9449aa84174': [
@@ -1032,7 +1059,6 @@ export const GammaPairs: {
         address: '0x8Bb9247c8eFf487F7A13AB7E704F50904e91430D',
         token0Address: '0x0c9c7712c83b3c70e7c5e11100d33d9401bdf9dd',
         token1Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-        ableToFarm: true,
         pid: 75,
       },
     ],
@@ -1087,6 +1113,7 @@ export const GammaPairs: {
         token1Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
         pid: 1,
         masterChefIndex: 1,
+        ableToFarm: true,
       },
     ],
     '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6-0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6': [
@@ -1098,6 +1125,7 @@ export const GammaPairs: {
         token1Address: '0x67eb41a14c0fe5cd701fc9d5a3d6597a72f641a6',
         pid: 2,
         masterChefIndex: 1,
+        ableToFarm: true,
       },
     ],
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
@@ -1161,7 +1189,6 @@ export const GammaPairs: {
         address: '0x5cdc18b774c6cd6f1398faf19d4bd4f31bc53c57',
         token0Address: '0x27842334c55c01ddfe81bf687425f906816c5141',
         token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-        ableToFarm: true,
         pid: 88,
       },
     ],
@@ -1293,6 +1320,39 @@ export const GammaPairs: {
         token1Address: '0xE238Ecb42C424E877652AD82d8A939183A04C35f',
         ableToFarm: true,
         pid: 102,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xe238ecb42c424e877652ad82d8a939183a04c35f': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x31c1ae8f080fd194d979e2aa8b3051259baf79f2',
+        token0Address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+        token1Address: '0xE238Ecb42C424E877652AD82d8A939183A04C35f',
+        ableToFarm: true,
+        pid: 105,
+      },
+    ],
+    '0x162539172b53e9a93b7d98fb6c41682de558a320-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x90Eb82495B4A5E578FDFcB9Fe3084cD1a83265D6',
+        token0Address: '0x162539172b53e9a93b7d98fb6c41682de558a320',
+        token1Address: '0xb5C064f955D8e7f38fe0460c556a72987494ee17',
+        ableToFarm: true,
+        pid: 106,
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x162539172b53e9a93b7d98fb6c41682de558a320': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x72E102438957Fe544C36852F4ba436de42EFF4Fa',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x162539172b53e9a93b7d98fb6c41682de558a320',
+        ableToFarm: true,
+        pid: 107,
       },
     ],
   },
@@ -1591,6 +1651,78 @@ export const UnipilotVaults: {
     '0xd139300ff6bdd6ae778b1835af5dbf242194cc2f',
     '0xf346f3eaa3e319f53413fc2a0008f0710c2ea448',
     '0xf9edf35c75f624207bf81242024d9ea6a4f4d245',
+  ],
+};
+
+export const IchiVaults: {
+  [chainId in ChainId]?: string[];
+} = {
+  [ChainId.MATIC]: [
+    '0x74b706767f18a360c0083854ab42c1b96e076229',
+    '0xCBD1f4Bc3E6d05b10fEb5dc454d27364767e76B5',
+    '0x5D73D117Ffb8AD26e6CC9f2621d52f479AAA8C5B',
+    '0xc46FAb3Af8aA7A56feDa351a22B56749dA313473',
+    '0x5403e11D5Edf6564C27b47757d62A515a81D9781',
+    '0x5D1b077212b624fe580a84384Ffea44da752ccb3',
+    '0xe8Aa60c966eE8BE1340aBf1d871D0163d5739B95',
+    '0x425D80e10A8103bedb57F5C08FF8d59253D6a259',
+    '0x318047C9584cFD77C6dfc28d3df8BD0d8a29E095',
+    '0xb2B34446D9cFb6719543ef5246481F218367b43a',
+    '0x891F0c3159aCf7306c0c252757310db8F47B59B2',
+  ],
+};
+
+export interface DefiedgeStrategy {
+  id: string;
+  token0: string;
+  token1: string;
+  pool: string;
+  ableToFarm?: boolean;
+  pid?: number;
+  miniChefAddress?: string;
+  rewardToken?: string;
+}
+
+export const DefiedgeStrategies: {
+  [chainId in ChainId]?: DefiedgeStrategy[];
+} = {
+  [ChainId.MATIC]: [
+    {
+      id: '0x8b207CA0B5602fEcF38Dbc748900B7f5C5903F12',
+      token0: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', // WBTC
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
+      pool: '0xac4494e30a85369e332bdb5230d6d694d4259dbc',
+    },
+    {
+      id: '0x07d82761c3527caf190b946e13d5c11291194ae6',
+      token0: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      pool: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
+    },
+    {
+      id: '0x8e7b68e3ce0219e73bc8f237916875f6be8d79f9',
+      token0: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      pool: '0x55caabb0d2b704fd0ef8192a7e35d8837e678207',
+    },
+    {
+      id: '0x4f53F458F4F00ad2Dd7e7177cebE1a2AFc38AB9E',
+      token0: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1: '0x172370d5cd63279efa6d502dab29171933a610af',
+      pool: '0x00a6177c6455a29b8daa7144b2befc9f2147bb7e',
+    },
+    {
+      id: '0x5b770a2d5d70cb6d71d4fdc8c02776f05a8c3742',
+      token0: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1: '0xd6df932a45c0f255f85145f286ea0b292b21c90b',
+      pool: '0x44720a6f572649526ac9073cae9200755cc78e0a',
+    },
+    {
+      id: '0x392fea7d91713630ded6d71befe388da9fa85e8d',
+      token0: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+      token1: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      pool: '0xa5cd8351cbf30b531c7b11b0d9d3ff38ea2e280f',
+    },
   ],
 };
 

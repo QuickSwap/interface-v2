@@ -88,8 +88,6 @@ const ZapSlippage: React.FC<{ open: boolean; onClose: () => void }> = ({
     }
   }
 
-  console.log('aaa', deadlineError);
-
   return (
     <CustomModal
       open={open}

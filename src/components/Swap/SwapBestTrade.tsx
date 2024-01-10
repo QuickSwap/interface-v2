@@ -49,6 +49,7 @@ import {
   maxAmountSpend,
   basisPointsToPercent,
   getContract,
+  halfAmountSpend,
 } from 'utils';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
@@ -417,6 +418,10 @@ const SwapBestTrade: React.FC<{
     chainIdToUse,
     currencyBalances[Field.INPUT],
   );
+  const halfAmountInputV2 = halfAmountSpend(
+    chainIdToUse,
+    currencyBalances[Field.INPUT],
+  );
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
@@ -431,24 +436,24 @@ const SwapBestTrade: React.FC<{
       ? CurrencyAmount.fromRawAmount(inputCurrencyV3, maxAmountInputV2.raw)
       : undefined;
 
+  const halfAmountInput =
+    halfAmountInputV2 && inputCurrencyV3
+      ? CurrencyAmount.fromRawAmount(inputCurrencyV3, halfAmountInputV2.raw)
+      : undefined;
+
   const handleMaxInput = useCallback(() => {
     maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact());
     setSwapType(SwapSide.SELL);
   }, [maxAmountInput, onUserInput]);
 
   const handleHalfInput = useCallback(() => {
-    if (!maxAmountInput) {
+    if (!halfAmountInput) {
       return;
     }
 
-    const halvedAmount = maxAmountInput.divide('2');
-
-    onUserInput(
-      Field.INPUT,
-      halvedAmount.toFixed(maxAmountInput.currency.decimals),
-    );
+    onUserInput(Field.INPUT, halfAmountInput.toExact());
     setSwapType(SwapSide.SELL);
-  }, [maxAmountInput, onUserInput]);
+  }, [halfAmountInput, onUserInput]);
 
   const atMaxAmountInput = Boolean(
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),
@@ -476,7 +481,7 @@ const SwapBestTrade: React.FC<{
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true);
     }
-  }, [approval, approvalSubmitted]);
+  }, [approval]);
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
@@ -981,13 +986,12 @@ const SwapBestTrade: React.FC<{
   //Reset approvalSubmitted when approval changes, it's needed when user hadn't nor paraswap neither wallchain approvals
   useEffect(() => {
     if (
-      bonusRouteFound &&
-      (approval === ApprovalState.NOT_APPROVED ||
-        approval === ApprovalState.UNKNOWN)
+      approval === ApprovalState.NOT_APPROVED ||
+      approval === ApprovalState.UNKNOWN
     ) {
       setApprovalSubmitted(false);
     }
-  }, [approval, bonusRouteFound]);
+  }, [approval]);
 
   useEffect(() => {
     if (!optimalRate) {
@@ -1123,6 +1127,7 @@ const SwapBestTrade: React.FC<{
               disabled={
                 approving ||
                 approval !== ApprovalState.NOT_APPROVED ||
+                bonusRouteLoading ||
                 approvalSubmitted
               }
               onClick={async () => {
