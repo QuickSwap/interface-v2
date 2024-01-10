@@ -1689,16 +1689,34 @@ export const DefiedgeStrategies: {
       pool: '0xac4494e30a85369e332bdb5230d6d694d4259dbc',
     },
     {
-      id: '0x87a32726eeaf4b6f81f8555e0b9a3cd9c0ae081b',
-      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
-      token1: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC
-      pool: '0xAE81FAc689A1b4b1e06e7ef4a2ab4CD8aC0A087D',
+      id: '0x07d82761c3527caf190b946e13d5c11291194ae6',
+      token0: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      pool: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
     },
     {
-      id: '0xd778C83E7cA19c2217d98daDACf7fD03B79B18cB',
-      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      id: '0x8e7b68e3ce0219e73bc8f237916875f6be8d79f9',
+      token0: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
       token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-      pool: '0x479e1B71A702a595e19b6d5932CD5c863ab57ee0',
+      pool: '0x55caabb0d2b704fd0ef8192a7e35d8837e678207',
+    },
+    {
+      id: '0x4f53F458F4F00ad2Dd7e7177cebE1a2AFc38AB9E',
+      token0: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1: '0x172370d5cd63279efa6d502dab29171933a610af',
+      pool: '0x00a6177c6455a29b8daa7144b2befc9f2147bb7e',
+    },
+    {
+      id: '0x5b770a2d5d70cb6d71d4fdc8c02776f05a8c3742',
+      token0: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1: '0xd6df932a45c0f255f85145f286ea0b292b21c90b',
+      pool: '0x44720a6f572649526ac9073cae9200755cc78e0a',
+    },
+    {
+      id: '0x392fea7d91713630ded6d71befe388da9fa85e8d',
+      token0: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+      token1: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      pool: '0xa5cd8351cbf30b531c7b11b0d9d3ff38ea2e280f',
     },
   ],
 };
