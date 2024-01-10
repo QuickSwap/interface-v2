@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import {
   TransactionErrorContent,
   TransactionConfirmationModal,
@@ -22,6 +22,7 @@ import {
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import {
+  calculateGasMargin,
   useIsSupportedNetwork,
   formatTokenAmount,
 } from 'utils';
@@ -31,6 +32,8 @@ import { usePairContract, useTokenLockerContract } from 'hooks/useContract';
 import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
 import { tryParseAmount } from 'state/swap/hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
+import { ethers } from 'ethers';
+import { fetchUserV2LiquidityLocks } from 'state/data/liquidityLocker';
 
 const defaultDate = '2024-12-24T10:30'
 /* dayjs.extend(duration) */
@@ -50,6 +53,7 @@ const LockLiquidity: React.FC = () => {
   const [amount, setAmount] = useState('')
   const [removeErrorMessage, setRemoveErrorMessage] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [feesInEth, setFeesInEth] = useState(ethers.BigNumber.from(0));
 
   const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
@@ -96,6 +100,15 @@ const LockLiquidity: React.FC = () => {
     setUnlockDate(new Date(e));
   };
 
+  useEffect(()=> {
+    async function getFeesInEth (address: string) {
+      setFeesInEth(await tokenLockerContract?.getFeesInETH(address))
+    }
+    if (lpTokenAddress) {
+      getFeesInEth(lpTokenAddress)
+    }
+  }, [lpTokenAddress])
+
   const connectWallet = () => {
     if (!isSupportedNetwork) {
       toggleNetworkSelectionModal();
@@ -127,7 +140,7 @@ const LockLiquidity: React.FC = () => {
   // @Hassaan: Implement locking logic here
   const onLock = async () => {
     console.log('On attempt to lock')
-    if (!pairContract || !lpToken || !library || !deadline) {
+    if (!pairContract || !lpToken || !library || !deadline || v2IsLoading || !tokenLockerContract) {
       setErrorMsg(t('missingdependencies'));
       throw new Error(t('missingdependencies'));
     }
@@ -138,16 +151,41 @@ const LockLiquidity: React.FC = () => {
       throw new Error(t('missingliquidity'));
     }
 
-    setAttemptingTxn(true);
-    // @Hassaan: Gas estimation etc. here
-    
-    
-    setAttemptingTxn(false);
-    setTxPending(true);
-    
     try {
+      setAttemptingTxn(true);
+      console.log(
+        lpTokenAddress,
+        account,
+        parsedAmount.raw.toString(),
+        unlockDate.getTime() / 1000,
+        false,
+        ethers.constants.AddressZero
+      )
+      // @Hassaan: Gas estimation etc. here
+      const gasEstimate = await tokenLockerContract?.estimateGas.lockToken(
+        lpTokenAddress,
+        account,
+        parsedAmount.raw.toString(),
+        unlockDate.getTime() / 1000,
+        false,
+        ethers.constants.AddressZero
+      )
+      const gasEstimateWithMargin = calculateGasMargin(gasEstimate);
+      const response = await tokenLockerContract?.lockToken(
+        lpTokenAddress,
+        account,
+        parsedAmount.raw.toString(),
+        unlockDate.getTime() / 1000,
+        false,
+        ethers.constants.AddressZero, {
+          value: feesInEth
+        }
+      )
+      setAttemptingTxn(false);
+      setTxPending(true);
       // @Hassaan: await tx here
-      /* const receipt = await response.wait(); */
+      const receipt = await response.wait(); 
+      console.log(receipt);
       setTxPending(false);
     } catch (error) {
       setTxPending(false);
