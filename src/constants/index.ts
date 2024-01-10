@@ -1699,7 +1699,7 @@ export const DefiedgeStrategies: {
       pool: '0xac4494e30a85369e332bdb5230d6d694d4259dbc',
     },
     {
-      id: '0x07d82761c3527caf190b946e13d5c11291194ae6',
+      id: '0xd778c83e7ca19c2217d98dadacf7fd03b79b18cb',
       token0: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
       token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
       pool: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
