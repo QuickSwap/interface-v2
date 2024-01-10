@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import CustomTable from 'components/CustomTable';
 import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
 import { useActiveWeb3React } from 'hooks';
+import { formatUnits } from 'ethers/lib/utils';
 
 const LiquidityHubAnalyticsSwap: React.FC<{
   data: any[] | undefined;
@@ -14,43 +15,45 @@ const LiquidityHubAnalyticsSwap: React.FC<{
       id: 'txHash',
       numeric: false,
       label: t('txHash'),
-      sortKey: (item: any) => item.evt_tx_hash,
+      sortKey: (item: any) => item.txHash,
     },
     {
       id: 'inAmount',
       numeric: false,
       label: t('inAmount'),
-      sortKey: (item: any) => item.amount_raw,
+      sortKey: (item: any) =>
+        Number(formatUnits(item.srcAmount, item.srcToken.decimals)),
     },
     {
       id: 'tokenSymbol',
       numeric: false,
-      label: t('24hPer'),
-      sortKey: (item: any) => item.token_symbol,
+      label: t('tokenSymbol'),
+      sortKey: (item: any) => item.srcTokenSymbol,
     },
     {
       id: 'inValueUSD',
       numeric: false,
       label: t('inValueUSD'),
-      sortKey: (item: any) => item.calculated_value,
+      sortKey: (item: any) => item.dexAmountUSD,
     },
     {
       id: 'outAmount',
       numeric: false,
       label: t('outAmount'),
-      sortKey: (item: any) => item.amount_raw,
+      sortKey: (item: any) =>
+        Number(formatUnits(item.dexAmountOut, item.dstToken.decimals)),
     },
     {
       id: 'outSymbol',
       numeric: false,
       label: t('outSymbol'),
-      sortKey: (item: any) => item.token_symbol,
+      sortKey: (item: any) => item.dstTokenSymbol,
     },
     {
       id: 'outValueUSD',
       numeric: false,
       label: t('outValueUSD'),
-      sortKey: (item: any) => item.calculated_value,
+      sortKey: (item: any) => -1 * item.dexAmountUSD,
     },
   ];
 
@@ -62,40 +65,48 @@ const LiquidityHubAnalyticsSwap: React.FC<{
           <p>{t('txHash')}</p>
           {chainId ? (
             <a
-              href={getEtherscanLink(chainId, item.evt_tx_hash, 'transaction')}
+              href={getEtherscanLink(chainId, item.txHash, 'transaction')}
               target='_blank'
               rel='noopener noreferrer'
               className='no-decoration'
             >
-              <p className='text-primary'>{shortenTx(item.evt_tx_hash)}</p>
+              <p className='text-primary'>{shortenTx(item.txHash)}</p>
             </a>
           ) : (
-            <p className='text-primary'>{shortenTx(item.evt_tx_hash)}</p>
+            <p className='text-primary'>{shortenTx(item.txHash)}</p>
           )}
         </Box>
         <Box className='mobileRow'>
           <p>{t('inAmount')}</p>
-          <p>{formatNumber(item.amount_raw)}</p>
+          <p>
+            {formatNumber(
+              Number(formatUnits(item.srcAmount, item.srcToken.decimals)),
+            )}
+          </p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('tokenSymbol')}</p>
-          <p>{item.token_symbol}</p>
+          <p>{item.srcTokenSymbol}</p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('inValueUSD')}</p>
-          <p>{formatNumber(item.calculated_value)}</p>
+          <p>{formatNumber(item.dexAmountUSD)}</p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('outAmount')}</p>
-          <p>{formatNumber(item.amount_raw)}</p>
+          <p>
+            {formatNumber(
+              Number(formatUnits(item.dexAmountOut, item.dstToken.decimals)),
+            )}
+          </p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('outSymbol')}</p>
-          <p>{item.token_symbol}</p>
+          <p>{item.dstTokenSymbol}</p>
         </Box>
         <Box className='mobileRow'>
           <p>{t('outValueUSD')}</p>
-          <p>{formatNumber(item.calculated_value)}</p>
+          <p>-{formatNumber(item.dexAmountUSD)}</p>
         </Box>
       </Box>
     );
@@ -106,34 +117,46 @@ const LiquidityHubAnalyticsSwap: React.FC<{
       {
         html: chainId ? (
           <a
-            href={getEtherscanLink(chainId, item.evt_tx_hash, 'transaction')}
+            href={getEtherscanLink(chainId, item.txHash, 'transaction')}
             target='_blank'
             rel='noopener noreferrer'
             className='no-decoration'
           >
-            <p className='text-primary'>{shortenTx(item.evt_tx_hash)}</p>
+            <p className='text-primary'>{shortenTx(item.txHash)}</p>
           </a>
         ) : (
-          <p className='text-primary'>{shortenTx(item.evt_tx_hash)}</p>
+          <p className='text-primary'>{shortenTx(item.txHash)}</p>
         ),
       },
       {
-        html: <p>{formatNumber(item.amount_raw)}</p>,
+        html: (
+          <p>
+            {formatNumber(
+              Number(formatUnits(item.srcAmount, item.srcToken?.decimals)),
+            )}
+          </p>
+        ),
       },
       {
-        html: <p>{item.token_symbol}</p>,
+        html: <p>{item.srcTokenSymbol}</p>,
       },
       {
-        html: <p>{formatNumber(item.calculated_value)}</p>,
+        html: <p>{formatNumber(item.dexAmountUSD)}</p>,
       },
       {
-        html: <p>{formatNumber(item.amount_raw)}</p>,
+        html: (
+          <p>
+            {formatNumber(
+              Number(formatUnits(item.dexAmountOut, item.dstToken?.decimals)),
+            )}
+          </p>
+        ),
       },
       {
-        html: <p>{item.token_symbol}</p>,
+        html: <p>{item.dstTokenSymbol}</p>,
       },
       {
-        html: <p>{formatNumber(item.calculated_value)}</p>,
+        html: <p>-{formatNumber(item.dexAmountUSD)}</p>,
       },
     ];
   };

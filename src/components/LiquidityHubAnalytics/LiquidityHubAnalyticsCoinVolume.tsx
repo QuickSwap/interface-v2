@@ -17,8 +17,8 @@ const LiquidityHubAnalyticsCoinVolume: React.FC<{
     if (!data) return [];
     return data
       .reduce<string[]>((memo, item) => {
-        if (item && item.evt_block_time) {
-          const date = dayjs.utc(item.evt_block_time).format('YYYY-MM-DD');
+        if (item && item.timestamp) {
+          const date = dayjs.utc(item.timestamp).format('YYYY-MM-DD');
           if (!memo.includes(date)) {
             memo.push(date);
           }
@@ -34,9 +34,9 @@ const LiquidityHubAnalyticsCoinVolume: React.FC<{
     if (!data) return [];
 
     const tokens = data.reduce<string[]>((memo, item) => {
-      if (item && item.token_symbol) {
-        if (!memo.includes(item.token_symbol)) {
-          memo.push(item.token_symbol);
+      if (item && item.srcTokenSymbol) {
+        if (!memo.includes(item.srcTokenSymbol)) {
+          memo.push(item.srcTokenSymbol);
         }
       }
       return memo;
@@ -49,12 +49,12 @@ const LiquidityHubAnalyticsCoinVolume: React.FC<{
             .filter(
               (item) =>
                 item &&
-                item.token_symbol &&
-                item.evt_block_time &&
-                item.token_symbol === token &&
-                item.evt_block_time.includes(date),
+                item.srcTokenSymbol &&
+                item.timestamp &&
+                item.srcTokenSymbol === token &&
+                item.timestamp.includes(date),
             )
-            .reduce((total, item) => total + item.calculated_value, 0),
+            .reduce((total, item) => total + item.dexAmountUSD, 0),
         ),
       };
     });
