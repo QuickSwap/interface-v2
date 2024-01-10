@@ -62,7 +62,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       window.location.host !== 'dogechain.quickswap.exchange' &&
       window.location.host !== 'localhost:3000' &&
       window.location.host !==
-        'feature-immutable-testnet.interface-v2-01.pages.dev'
+        'feature-immutable-mainnet.interface-v2-01.pages.dev'
     ) {
       setOpenPassModal(true);
     }
