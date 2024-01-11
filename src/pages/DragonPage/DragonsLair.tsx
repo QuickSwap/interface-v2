@@ -53,7 +53,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           isNew={isNew}
         />
       )}
-      <Box display='flex'>
+      <Box display='flex' mb={3}>
         <CurrencyLogo currency={quickToken} size='32px' />
         <Box ml={1.5}>
           <p className='small line-height-1'>{quickToken?.symbol}</p>

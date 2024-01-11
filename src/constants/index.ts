@@ -65,6 +65,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.MANTA]: 'manta',
   [ChainId.ZKATANA]: 'zKatana',
   [ChainId.BTTC]: 'bttc',
+  [ChainId.TIMX]: 'tIMX',
   [ChainId.X1]: 'x1',
 };
 
@@ -130,6 +131,9 @@ export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
   [ChainId.MANTA]: 0,
   [ChainId.KAVA]: 0,
   [ChainId.ZKATANA]: 0,
+  [ChainId.BTTC]: 0,
+  [ChainId.X1]: 0,
+  [ChainId.TIMX]: 0,
 };
 
 export const MIN_NATIVE_CURRENCY_FOR_GAS: {
@@ -155,6 +159,7 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.BTTC]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
   [ChainId.X1]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
   [ChainId.ZKATANA]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.TIMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
 };
 
 export const GlobalConst = {
@@ -279,6 +284,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.ZKEVM,
   ChainId.MANTA,
   ChainId.ZKATANA,
+  ChainId.TIMX,
   ChainId.X1,
 ];
 
@@ -1819,6 +1825,7 @@ export const GlobalValue = {
       [ChainId.ZKATANA]: [],
       [ChainId.BTTC]: [],
       [ChainId.X1]: [],
+      [ChainId.TIMX]: [],
     },
   },
   marketSDK: {
@@ -1880,8 +1887,9 @@ export const GlobalData = {
       DAI[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [USDC[ChainId.ZKATANA]],
+    [ChainId.TIMX]: [USDC[ChainId.TIMX]],
     [ChainId.BTTC]: [],
-    [ChainId.X1]: [],
+    [ChainId.X1]: [USDC[ChainId.X1]],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -1920,6 +1928,7 @@ export const GlobalData = {
       MATIC[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
+    [ChainId.TIMX]: [WETH[ChainId.TIMX], USDC[ChainId.TIMX]],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
   },
@@ -1949,6 +1958,7 @@ export const GlobalData = {
       [WETH[ChainId.MANTA], WSTETH[ChainId.MANTA]],
     ],
     [ChainId.ZKATANA]: [],
+    [ChainId.TIMX]: [],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [],
   },
