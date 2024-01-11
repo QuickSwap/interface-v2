@@ -12,6 +12,22 @@
   }
 }
 
+.dragonWrapper-container {
+  background: $bgPalette;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dragonWrapper-heading {
+  padding: 24px 32px 16px 32px;
+
+}
+
+.dragonWrapper-tab-container {
+  padding: 0px;
+}
+
 .dragonBg {
   width: 100%;
   position: absolute;
@@ -31,10 +47,16 @@
   top: 207px;
 }
 
+.dragonMask-small {
+  width: 80%;
+  position: absolute;
+  top: 207px;
+}
+
 .dragonTitle {
   margin-bottom: 64px;
   & h5 {
-    margin-bottom: 16px;
+    // margin-bottom: 16px;
     color: $textPrimary;
   }
 }
