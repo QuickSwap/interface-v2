@@ -97,6 +97,7 @@ const EMPTY_LIST: StakingInfoAddressMap = {
   [ChainId.BTTC]: {},
   [ChainId.X1]: {},
   [ChainId.TIMX]: {},
+  [ChainId.IMX]: {},
 };
 
 const farmCache: WeakMap<FarmListInfo, StakingInfoAddressMap> | null =

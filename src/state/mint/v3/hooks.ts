@@ -565,11 +565,14 @@ export function useV3DerivedMintInfo(
       : independentCurrency,
   );
 
-  const gammaPairData = getGammaPairsForTokens(
-    chainId,
-    currencyA?.wrapped.address,
-    currencyB?.wrapped.address,
-  );
+  const gammaPairData =
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+      ? getGammaPairsForTokens(
+          chainId,
+          currencyA?.wrapped.address,
+          currencyB?.wrapped.address,
+        )
+      : undefined;
   const gammaPairReverted = gammaPairData?.reversed;
   const gammaPairAddress =
     gammaPairData && gammaPairData.pairs.length > 0
@@ -586,12 +589,13 @@ export function useV3DerivedMintInfo(
     ],
   );
 
+  const blacklistedGammaAddress = '0xa42d55074869491d60ac05490376b74cf19b00e6';
   const depositCapData1 = useSingleCallResult(
     presetRange &&
       presetRange.address &&
       gammaUNIPROXYContract &&
       gammaUNIPROXYContract.address.toLowerCase() !==
-        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+        blacklistedGammaAddress.toLowerCase()
       ? gammaUNIPROXYContract
       : undefined,
     'positions',
@@ -603,7 +607,7 @@ export function useV3DerivedMintInfo(
       presetRange.address &&
       gammaUNIPROXYContract &&
       gammaUNIPROXYContract.address.toLowerCase() ===
-        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+        blacklistedGammaAddress.toLowerCase()
       ? gammaUNIPROXYContract
       : undefined,
     'clearance',

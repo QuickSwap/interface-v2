@@ -101,4 +101,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'OKB',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.IMX]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://explorer.immutable.com',
+    infoLink: 'https://algebra.finance',
+    label: 'IMX',
+    nativeCurrencySymbol: 'IMX',
+    nativeCurrencyName: 'IMX',
+    nativeCurrencyDecimals: 18,
+  },
 };

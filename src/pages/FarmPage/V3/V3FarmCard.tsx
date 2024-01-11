@@ -37,12 +37,12 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
         if (existingItemIndex > -1) {
           const existingItem = memo[existingItemIndex];
           memo = [
-            ...memo.slice(0, existingItemIndex - 1),
+            ...memo.slice(0, existingItemIndex),
             {
               ...existingItem,
               amount: (existingItem?.amount ?? 0) + (reward?.amount ?? 0),
             },
-            ...memo.slice(0, existingItemIndex),
+            ...memo.slice(existingItemIndex + 1),
           ];
         } else {
           memo.push(reward);
@@ -86,6 +86,8 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
       }
     }
     history.push(redirectPath);
+
+    window.scrollTo(0, 0);
   };
 
   return (
