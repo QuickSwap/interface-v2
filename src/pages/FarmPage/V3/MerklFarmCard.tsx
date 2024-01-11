@@ -77,6 +77,8 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
       }pool=${pool}`;
     }
     history.push(redirectPath);
+
+    window.scrollTo(0, 0);
   };
 
   const tokenMap = useSelectedTokenList();

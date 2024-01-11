@@ -86,6 +86,8 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
       }
     }
     history.push(redirectPath);
+
+    window.scrollTo(0, 0);
   };
 
   return (
