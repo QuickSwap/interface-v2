@@ -1,14 +1,16 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://rpc.public.zkevm-test.net",
-  "blockExplorer": "https://testnet-zkevm.polygonscan.com",
-  "networkName": "Polygon zkEVM Testnet",
-  "chainId": 1442,
-  "nativeCurrencyImage": "/zkevm.svg",
+  "rpc": "https://rpc.immutable.com",
+  "blockExplorer": "https://explorer.immutable.com",
+  "networkName": "Immutable zkEVM Mainnet",
+  "aprAPINetwork": "imx",
+  "chainId": 13371,
+  "isMainnet": true,
+  "nativeCurrencyImage": "/tIMX_zkevm.jpg",
   "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
+    "name": "IMX",
+    "symbol": "IMX",
     "decimals": 18
   },
   "swap": {
@@ -40,7 +42,7 @@
     "available": false
   },
   "analytics": {
-    "available": false
+    "available": true
   },
   "lending": {
     "available": false
@@ -60,16 +62,28 @@
   "perps": {
     "available": false
   },
+  "bos": {
+    "available": false
+  },
+  "gamma": {
+    "available": false
+  },
+  "unipilot": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  },
   "steer": {
     "available": false
   },
   "dappos": {
     "available": false
   },
-  "ichi": {
+  "defiedge": {
     "available": false
   },
-  "defiedge": {
+  "ichi": {
     "available": false
   }
 }
