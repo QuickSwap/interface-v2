@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React } from 'hooks';
+import dayjs from 'dayjs';
 
 interface Props {
   farm: any;
@@ -21,9 +22,15 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
   const parsedQuery = useParsedQueryString();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
+  const currentTime = dayjs().unix();
 
   const rewards = (farm.distributionData ?? [])
-    .filter((item: any) => item.isLive)
+    .filter(
+      (item: any) =>
+        item.isLive &&
+        (item?.endTimestamp ?? 0) >= currentTime &&
+        (item?.startTimestamp ?? 0) <= currentTime,
+    )
     .map((item: any) => {
       const rewardDuration =
         (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
@@ -42,13 +49,13 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
       if (existingItemIndex > -1) {
         const existingItem = memo[existingItemIndex];
         memo = [
-          ...memo.slice(0, existingItemIndex - 1),
+          ...memo.slice(0, existingItemIndex),
           {
             ...existingItem,
             dailyAmount:
               (existingItem?.dailyAmount ?? 0) + (item?.dailyAmount ?? 0),
           },
-          ...memo.slice(0, existingItemIndex),
+          ...memo.slice(existingItemIndex + 1),
         ];
       } else {
         memo.push(item);
@@ -133,7 +140,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
           >
             {isMobile && rewards.length > 0 && <p>{t('rewards')}</p>}
             {rewards.map((reward: any) => (
-              <p key={reward.rewardToken}>
+              <p key={(farm?.pool ?? '') + (reward?.rewardToken ?? '')}>
                 {formatNumber(reward.dailyAmount)} {reward.symbolRewardToken}{' '}
                 <small className='text-secondary'>{t('daily')}</small>
               </p>

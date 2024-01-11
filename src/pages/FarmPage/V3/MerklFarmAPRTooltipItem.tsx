@@ -79,16 +79,29 @@ export const MerklFarmAPRTooltipItem: React.FC<{
           className='farmAPRGetLPButton'
           onClick={() => {
             let currencyStr = '';
-            if (token0) {
-              currencyStr += `currency0=${token0}`;
-            }
-            if (token1) {
+            if (farmType && farmType.toUpperCase() === 'ICHI') {
               if (token0) {
-                currencyStr += '&';
+                currencyStr += `currency=${token0}`;
               }
-              currencyStr += `currency1=${token1}`;
+            } else {
+              if (token0) {
+                currencyStr += `currency0=${token0}`;
+              }
+              if (token1) {
+                if (token0) {
+                  currencyStr += '&';
+                }
+                currencyStr += `currency1=${token1}`;
+              }
             }
-            window.open(`#/pools?${currencyStr}`, '_blank');
+            window.open(
+              `#/pools${
+                farmType && farmType.toUpperCase() === 'ICHI'
+                  ? '/singleToken'
+                  : ''
+              }?${currencyStr}`,
+              '_blank',
+            );
           }}
         >
           {t('getLP')}
