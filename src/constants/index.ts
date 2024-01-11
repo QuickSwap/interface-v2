@@ -282,7 +282,6 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
   ChainId.ZKEVM,
   ChainId.MANTA,
-  ChainId.IMX,
   ChainId.DOGECHAIN,
   ChainId.ZKATANA,
   ChainId.X1,
