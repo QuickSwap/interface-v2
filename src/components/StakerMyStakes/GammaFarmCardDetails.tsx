@@ -40,9 +40,7 @@ import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
 
 const GammaFarmCardDetails: React.FC<{
   data: any;
-  pairData: any;
-  rewardData: any;
-}> = ({ pairData, rewardData, data }) => {
+}> = ({ data }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -55,16 +53,14 @@ const GammaFarmCardDetails: React.FC<{
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const masterChefContract = useMasterChefContract(
-    pairData.masterChefIndex ?? 0,
+    data.masterChefIndex ?? 0,
     undefined,
-    pairData.masterChefIndex === 2 ? QIGammaMasterChef : undefined,
+    data.masterChefIndex === 2 ? QIGammaMasterChef : undefined,
   );
-  const hypervisorContract = useGammaHypervisorContract(pairData.address);
+  const hypervisorContract = useGammaHypervisorContract(data.address);
   const tokenMap = useSelectedTokenList();
 
-  const lpToken = chainId
-    ? new Token(chainId, pairData.address, 18)
-    : undefined;
+  const lpToken = chainId ? new Token(chainId, data.address, 18) : undefined;
   const lpBalanceData = useSingleCallResult(hypervisorContract, 'balanceOf', [
     account ?? undefined,
   ]);
@@ -77,7 +73,7 @@ const GammaFarmCardDetails: React.FC<{
   const availableStakeAmount = lpBalanceBN ? formatUnits(lpBalanceBN, 18) : '0';
 
   const stakedData = useSingleCallResult(masterChefContract, 'userInfo', [
-    pairData.pid,
+    data.pid,
     account ?? undefined,
   ]);
   const stakedAmountBN =
@@ -92,28 +88,25 @@ const GammaFarmCardDetails: React.FC<{
   const stakedUSD = Number(stakedAmount) * lpTokenUSD;
   const availableStakeUSD = Number(availableStakeAmount) * lpTokenUSD;
 
-  const rewards: any[] =
-    rewardData && rewardData['rewarders']
-      ? Object.values(rewardData['rewarders'])
-      : [];
+  const rewards: any[] = data.rewards;
   const rewarderAddresses =
-    pairData.masterChefIndex !== 2 && rewardData && rewardData['rewarders']
-      ? Object.keys(rewardData['rewarders'])
+    data.masterChefIndex !== 2 && data && data.rewards
+      ? data.rewards.map((reward: any) => reward.address)
       : [];
   const gammaPendingRewardsData = useMultipleContractSingleData(
     rewarderAddresses,
     new Interface(GammaRewarder),
     'pendingToken',
-    [pairData.pid, account ?? undefined],
+    [data.pid, account ?? undefined],
   );
   const qipendingRewardData = useSingleCallResult(
-    pairData.masterChefIndex === 2 ? masterChefContract : undefined,
+    data.masterChefIndex === 2 ? masterChefContract : undefined,
     'pending',
-    [pairData.pid, account ?? undefined],
+    [data.pid, account ?? undefined],
   );
 
   const pendingRewardsData =
-    pairData.masterChefIndex === 2
+    data.masterChefIndex === 2
       ? [qipendingRewardData]
       : gammaPendingRewardsData;
 
@@ -123,7 +116,7 @@ const GammaFarmCardDetails: React.FC<{
         const reward = rewards.length > 0 ? rewards[index] : undefined;
         if (chainId && reward && tokenMap) {
           const rewardToken = getTokenFromAddress(
-            reward.rewardToken,
+            reward?.token?.address,
             chainId,
             tokenMap,
             [],
@@ -204,15 +197,15 @@ const GammaFarmCardDetails: React.FC<{
   const stakeLP = async () => {
     if (!masterChefContract || !account || !lpBalanceBN) return;
     let response: TransactionResponse;
-    if (pairData.masterChefIndex === 2) {
+    if (data.masterChefIndex === 2) {
       const estimatedGas = await masterChefContract.estimateGas.deposit(
-        pairData.pid,
+        data.pid,
         stakeAmount === availableStakeAmount
           ? lpBalanceBN
           : parseUnits(getFixedValue(stakeAmount), 18),
       );
       response = await masterChefContract.deposit(
-        pairData.pid,
+        data.pid,
         stakeAmount === availableStakeAmount
           ? lpBalanceBN
           : parseUnits(getFixedValue(stakeAmount), 18),
@@ -222,14 +215,14 @@ const GammaFarmCardDetails: React.FC<{
       );
     } else {
       const estimatedGas = await masterChefContract.estimateGas.deposit(
-        pairData.pid,
+        data.pid,
         stakeAmount === availableStakeAmount
           ? lpBalanceBN
           : parseUnits(getFixedValue(stakeAmount), 18),
         account,
       );
       response = await masterChefContract.deposit(
-        pairData.pid,
+        data.pid,
         stakeAmount === availableStakeAmount
           ? lpBalanceBN
           : parseUnits(getFixedValue(stakeAmount), 18),
@@ -253,15 +246,15 @@ const GammaFarmCardDetails: React.FC<{
     setAttemptUnstaking(true);
     try {
       let response: TransactionResponse;
-      if (pairData.masterChefIndex === 2) {
+      if (data.masterChefIndex === 2) {
         const estimatedGas = await masterChefContract.estimateGas.withdraw(
-          pairData.pid,
+          data.pid,
           unStakeAmount === stakedAmount
             ? stakedAmountBN
             : parseUnits(getFixedValue(unStakeAmount), 18),
         );
         response = await masterChefContract.withdraw(
-          pairData.pid,
+          data.pid,
           unStakeAmount === stakedAmount
             ? stakedAmountBN
             : parseUnits(getFixedValue(unStakeAmount), 18),
@@ -271,14 +264,14 @@ const GammaFarmCardDetails: React.FC<{
         );
       } else {
         const estimatedGas = await masterChefContract.estimateGas.withdraw(
-          pairData.pid,
+          data.pid,
           unStakeAmount === stakedAmount
             ? stakedAmountBN
             : parseUnits(getFixedValue(unStakeAmount), 18),
           account,
         );
         response = await masterChefContract.withdraw(
-          pairData.pid,
+          data.pid,
           unStakeAmount === stakedAmount
             ? stakedAmountBN
             : parseUnits(getFixedValue(unStakeAmount), 18),
@@ -307,20 +300,20 @@ const GammaFarmCardDetails: React.FC<{
     setAttemptClaiming(true);
     try {
       let response: TransactionResponse;
-      if (pairData.masterChefIndex === 2) {
+      if (data.masterChefIndex === 2) {
         const estimatedGas = await masterChefContract.estimateGas.deposit(
-          pairData.pid,
+          data.pid,
           '0',
         );
-        response = await masterChefContract.deposit(pairData.pid, '0', {
+        response = await masterChefContract.deposit(data.pid, '0', {
           gasLimit: calculateGasMargin(estimatedGas),
         });
       } else {
         const estimatedGas = await masterChefContract.estimateGas.harvest(
-          pairData.pid,
+          data.pid,
           account,
         );
-        response = await masterChefContract.harvest(pairData.pid, account, {
+        response = await masterChefContract.harvest(data.pid, account, {
           gasLimit: calculateGasMargin(estimatedGas),
         });
       }
@@ -345,14 +338,7 @@ const GammaFarmCardDetails: React.FC<{
         <Box padding={1.5}>
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('tvl')}</small>
-            <small className='weight-600'>
-              $
-              {formatNumber(
-                rewardData && rewardData['stakedAmountUSD']
-                  ? rewardData['stakedAmountUSD']
-                  : 0,
-              )}
-            </small>
+            <small className='weight-600'>${formatNumber(data.tvl)}</small>
           </Box>
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('rewards')}</small>
@@ -372,28 +358,13 @@ const GammaFarmCardDetails: React.FC<{
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('poolAPR')}</small>
             <small className='text-success weight-600'>
-              {formatNumber(
-                Number(
-                  data &&
-                    data['returns'] &&
-                    data['returns']['allTime'] &&
-                    data['returns']['allTime']['feeApr']
-                    ? data['returns']['allTime']['feeApr']
-                    : 0,
-                ) * 100,
-              )}
-              %
+              {formatNumber(data.poolAPR)}%
             </small>
           </Box>
           <Box className='flex justify-between'>
             <small className='text-secondary'>{t('farmAPR')}</small>
             <small className='text-success weight-600'>
-              {formatNumber(
-                Number(
-                  rewardData && rewardData['apr'] ? rewardData['apr'] : 0,
-                ) * 100,
-              )}
-              %
+              {formatNumber(data.farmAPR)}%
             </small>
           </Box>
         </Box>
@@ -479,40 +450,38 @@ const GammaFarmCardDetails: React.FC<{
               </Button>
             </Box>
           </Grid>
-          {rewards.length > 0 && chainId && (
-            <Grid item xs={12} sm={4}>
-              <Box height='100%' className='flex flex-col justify-between'>
-                <small className='text-secondary'>{t('earnedRewards')}</small>
-                <Box my={2}>
-                  {pendingRewards.map((reward) => {
-                    return (
-                      <Box
-                        key={reward.token.address}
-                        className='flex items-center justify-center'
-                      >
-                        <CurrencyLogo currency={reward.token} size='16px' />
-                        <Box ml='6px'>
-                          <small>
-                            {formatNumber(reward.amount)} {reward.token.symbol}
-                          </small>
-                        </Box>
+          <Grid item xs={12} sm={4}>
+            <Box height='100%' className='flex flex-col justify-between'>
+              <small className='text-secondary'>{t('earnedRewards')}</small>
+              <Box my={2}>
+                {pendingRewards.map((reward) => {
+                  return (
+                    <Box
+                      key={reward.token.address}
+                      className='flex items-center justify-center'
+                    >
+                      <CurrencyLogo currency={reward.token} size='16px' />
+                      <Box ml='6px'>
+                        <small>
+                          {formatNumber(reward.amount)} {reward.token.symbol}
+                        </small>
                       </Box>
-                    );
-                  })}
-                </Box>
-                <Box width='100%'>
-                  <Button
-                    fullWidth
-                    style={{ height: 40, borderRadius: 10 }}
-                    disabled={claimButtonDisabled}
-                    onClick={claimReward}
-                  >
-                    {attemptClaiming ? t('claiming') : t('claim')}
-                  </Button>
-                </Box>
+                    </Box>
+                  );
+                })}
               </Box>
-            </Grid>
-          )}
+              <Box width='100%'>
+                <Button
+                  fullWidth
+                  style={{ height: 40, borderRadius: 10 }}
+                  disabled={claimButtonDisabled}
+                  onClick={claimReward}
+                >
+                  {attemptClaiming ? t('claiming') : t('claim')}
+                </Button>
+              </Box>
+            </Box>
+          </Grid>
         </Grid>
       </Box>
     </Box>

@@ -84,6 +84,10 @@
   background-color: $black1;
 }
 
+.bg-textSecondary {
+  background-color: $textSecondary;
+}
+
 .border {
   border: 1px solid $divider;
 }
@@ -222,4 +226,20 @@
 
 .text-white {
   color: white;
+}
+
+.bg-blue12 {
+  background-color: $blue12;
+}
+
+.bg-green4 {
+  background-color: $green4;
+}
+
+.bg-purple8 {
+  background-color: $purple8;
+}
+
+.bg-gray32 {
+  background-color: $grey32;
 }

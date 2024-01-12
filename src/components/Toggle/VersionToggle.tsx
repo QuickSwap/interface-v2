@@ -5,14 +5,19 @@ import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
-import { useAnalyticsVersion } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { getConfig } from 'config/index';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
-  const { isV2, updateIsV2 } = useIsV2();
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const singleTokenEnabled = config['ichi']['available'];
+  const { updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
+  const isPoolPage = history.location.pathname.includes('/pools');
   const analyticsVersion = useAnalyticsVersion();
   const version =
     params && params.version
@@ -49,7 +54,7 @@ const VersionToggle: React.FC = () => {
   return (
     <Box className='version-toggle-container'>
       <Box
-        className={isV2 && version !== 'total' ? 'version-toggle-active' : ''}
+        className={version === 'v2' ? 'version-toggle-active' : ''}
         onClick={() => {
           redirectWithVersion('v2');
         }}
@@ -58,13 +63,24 @@ const VersionToggle: React.FC = () => {
       </Box>
 
       <Box
-        className={!isV2 && version !== 'total' ? 'version-toggle-active' : ''}
+        className={version === 'v3' ? 'version-toggle-active' : ''}
         onClick={() => {
           redirectWithVersion('v3');
         }}
       >
         <small>{t('V3')}</small>
       </Box>
+
+      {isPoolPage && singleTokenEnabled && (
+        <Box
+          className={version === 'singleToken' ? 'version-toggle-active' : ''}
+          onClick={() => {
+            redirectWithVersion('singleToken');
+          }}
+        >
+          <small>{t('singleToken')}</small>
+        </Box>
+      )}
 
       {isAnalyticsPage && (
         <Box

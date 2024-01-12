@@ -30,6 +30,7 @@ import {
   GlobalValue,
   MIN_NATIVE_CURRENCY_FOR_GAS,
   SUPPORTED_CHAINIDS,
+  DefiedgeStrategies,
 } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
@@ -1123,6 +1124,15 @@ export const getGammaPairsForTokens = (
     return;
   }
   return;
+};
+
+export const getAllDefiedgeStrategies = (chainId?: ChainId) => {
+  const config = getConfig(chainId);
+  const defiedgeAvailable = config['defiedge']['available'];
+  if (defiedgeAvailable && chainId) {
+    return DefiedgeStrategies[chainId] ?? [];
+  }
+  return [];
 };
 
 export enum LiquidityProtocol {

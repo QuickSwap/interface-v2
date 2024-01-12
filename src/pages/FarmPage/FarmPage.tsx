@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Box, useMediaQuery, useTheme, Button } from '@material-ui/core';
+import React, { useEffect, useMemo } from 'react';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { getBulkPairData } from 'state/stake/hooks';
 import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
 import { useActiveWeb3React } from 'hooks';
@@ -124,27 +124,32 @@ const FarmPage: React.FC = () => {
   ];
   const helpURL = process.env.REACT_APP_HELP_URL;
 
+  const poolId =
+    parsedQuery && parsedQuery.pool ? parsedQuery.pool.toString() : undefined;
+
   return (
     <Box width='100%' mb={3} id='farmPage'>
-      <Box className='pageHeading'>
-        <Box className='flex row items-center'>
-          <h1 className='h4'>{t('farm')}</h1>
-          {v2 && v3 && (
-            <Box ml={2}>
-              <VersionToggle />
+      {!poolId && (
+        <Box className='pageHeading'>
+          <Box className='flex row items-center'>
+            <h1 className='h4'>{t('farm')}</h1>
+            {v2 && v3 && (
+              <Box ml={2}>
+                <VersionToggle />
+              </Box>
+            )}
+          </Box>
+          {helpURL && (
+            <Box
+              className='helpWrapper'
+              onClick={() => window.open(helpURL, '_blank')}
+            >
+              <small>{t('help')}</small>
+              <HelpIcon />
             </Box>
           )}
         </Box>
-        {helpURL && (
-          <Box
-            className='helpWrapper'
-            onClick={() => window.open(helpURL, '_blank')}
-          >
-            <small>{t('help')}</small>
-            <HelpIcon />
-          </Box>
-        )}
-      </Box>
+      )}
       <Box margin='0 auto 24px'>
         <HypeLabAds />
       </Box>

@@ -27,6 +27,7 @@ import { ChainId } from '@uniswap/sdk';
 import { formatTokenSymbol } from 'utils/v3-graph';
 import { useQuery } from '@tanstack/react-query';
 import { useLastTransactionHash } from 'state/transactions/hooks';
+import { getConfig } from 'config/index';
 
 async function fetchToken(tokenId: string, farming = false, chainId: ChainId) {
   try {
@@ -675,9 +676,11 @@ export function useEternalFarmTvls() {
 export function useEternalFarms() {
   const { chainId, provider } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
+  const config = getConfig(chainId);
+  const qsFarmAvailable = config['farm']['quickswap'];
 
   async function fetchEternalFarms() {
-    if (!provider) return null;
+    if (!provider || !qsFarmAvailable) return null;
     try {
       const res = await fetch(
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
@@ -753,7 +756,7 @@ export function useEternalFarms() {
   }
 
   const { isLoading, data } = useQuery({
-    queryKey: ['v3EternalFarms', !!provider, chainId],
+    queryKey: ['v3EternalFarms', !!provider, chainId, qsFarmAvailable],
     queryFn: fetchEternalFarms,
     refetchInterval: 300000,
   });

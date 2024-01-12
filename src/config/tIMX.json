@@ -1,0 +1,89 @@
+{
+  "v3": true,
+  "v2": false,
+  "rpc": "https://rpc.testnet.immutable.com",
+  "blockExplorer": "https://explorer.testnet.immutable.com",
+  "networkName": "Immutable zkEVM Testnet",
+  "aprAPINetwork": "timx",
+  "chainId": 13473,
+  "isMainnet": true,
+  "nativeCurrencyImage": "/tIMX_zkevm.jpg",
+  "nativeCurrency": {
+    "name": "test IMX",
+    "symbol": "tIMX",
+    "decimals": 18
+  },
+  "swap": {
+    "available": true,
+    "bestTrade": false,
+    "proMode": false,
+    "limitOrder": false,
+    "liquidityHub": false,
+    "crossChain": false
+  },
+  "pools": {
+    "available": true
+  },
+  "farm": {
+    "quickswap": false,
+    "merkl": false,
+    "available": false
+  },
+  "lair": {
+    "available": false,
+    "oldLair": false,
+    "newLair": false,
+    "syrup": false
+  },
+  "convert": {
+    "available": false
+  },
+  "predictions": {
+    "available": false
+  },
+  "analytics": {
+    "available": true
+  },
+  "lending": {
+    "available": false
+  },
+  "migrate": {
+    "available": false
+  },
+  "gamingHub": {
+    "available": false
+  },
+  "leaderboard": {
+    "available": false
+  },
+  "safe": {
+    "available": false
+  },
+  "perps": {
+    "available": false
+  },
+  "bos": {
+    "available": false
+  },
+  "gamma": {
+    "available": false
+  },
+  "unipilot": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
+  },
+  "defiedge": {
+    "available": false
+  },
+  "ichi": {
+    "available": false
+  }
+}

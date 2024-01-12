@@ -83,6 +83,15 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'Ether',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.TIMX]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://explorer.testnet.immutable.com',
+    infoLink: 'https://algebra.finance',
+    label: 'tIMX',
+    nativeCurrencySymbol: 'tIMX',
+    nativeCurrencyName: 'tIMX',
+    nativeCurrencyDecimals: 18,
+  },
   [ChainId.X1]: {
     docs: 'https://algebra.finance/',
     explorer: 'https://www.oklink.com/x1-test',
@@ -90,6 +99,15 @@ export const CHAIN_INFO: ChainInfo = {
     label: 'x1',
     nativeCurrencySymbol: 'OKB',
     nativeCurrencyName: 'OKB',
+    nativeCurrencyDecimals: 18,
+  },
+  [ChainId.IMX]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://explorer.immutable.com',
+    infoLink: 'https://algebra.finance',
+    label: 'IMX',
+    nativeCurrencySymbol: 'IMX',
+    nativeCurrencyName: 'IMX',
     nativeCurrencyDecimals: 18,
   },
 };
