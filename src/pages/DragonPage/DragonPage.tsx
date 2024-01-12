@@ -46,7 +46,7 @@ const DragonPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showLair]);
 
-  return (
+  return showLair ? (
     <Box width='100%' mb={3}>
       <Box margin='0 auto 24px'>
         <HypeLabAds />
@@ -71,20 +71,26 @@ const DragonPage: React.FC = () => {
                 })}
               </small>
             </Box>
-            <Box className='dragonWrapper-tab-container'>
-              <TabContext value={tabValue}>
-                <TabList onChange={handleTabChange} variant='fullWidth'>
-                  {showNew && <Tab label='QUICK (NEW)' value='1'></Tab>}
-                  {showOld && <Tab label='QUICK (OLD)' value='2'></Tab>}
-                </TabList>
+            {showNew && showOld && (
+              <Box className='dragonWrapper-tab-container'>
+                <TabContext value={tabValue}>
+                  <TabList onChange={handleTabChange} variant='fullWidth'>
+                    {showNew && <Tab label='QUICK (NEW)' value='1'></Tab>}
+                    {showOld && <Tab label='QUICK (OLD)' value='2'></Tab>}
+                  </TabList>
 
-                <TabPanel value='1'>
-                  <DragonsLair isNew={true} />
-                </TabPanel>
-                <TabPanel value='2'>
-                  <DragonsLair isNew={false} />
-                </TabPanel>
-              </TabContext>
+                  <TabPanel value='1'>
+                    <DragonsLair isNew={true} />
+                  </TabPanel>
+                  <TabPanel value='2'>
+                    <DragonsLair isNew={false} />
+                  </TabPanel>
+                </TabContext>
+              </Box>
+            )}
+            <Box mt='48px' p='24px'>
+              {showNew && !showOld && <DragonsLair isNew={true} />}
+              {!showNew && showOld && <DragonsLair isNew={false} />}
             </Box>
           </Box>
           <Box className='dragonWrapper-container' mt={2}>
@@ -105,6 +111,8 @@ const DragonPage: React.FC = () => {
         </Grid>
       </Grid>
     </Box>
+  ) : (
+    <></>
   );
 };
 

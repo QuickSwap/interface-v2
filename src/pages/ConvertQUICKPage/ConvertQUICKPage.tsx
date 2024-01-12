@@ -142,11 +142,11 @@ const ConvertQUICKPage: React.FC<ConvertQUICKPageProps> = ({ isWidget }) => {
   const history = useHistory();
 
   useEffect(() => {
-    if (!showConvert) {
+    if (!showConvert && !isWidget) {
       history.push('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showConvert]);
+  }, [showConvert, isWidget]);
 
   return (
     <Box
