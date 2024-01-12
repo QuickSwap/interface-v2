@@ -43,7 +43,11 @@ import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
-import { GlobalConst, UnipilotVaults } from 'constants/index';
+import {
+  DefiedgeStrategies,
+  GlobalConst,
+  UnipilotVaults,
+} from 'constants/index';
 import { Interface, formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useContract,
@@ -51,14 +55,21 @@ import {
   useUniPilotVaultContract,
 } from 'hooks/useContract';
 import { useSingleCallResult } from 'state/multicall/hooks';
+import {
+  getAllDefiedgeStrategies,
+  getGammaPairsForTokens,
+  maxAmountSpend,
+  getSteerRatio,
+} from 'utils';
 import { ChainId, ETHER, WETH } from '@uniswap/sdk';
-import { getGammaPairsForTokens, getSteerRatio, maxAmountSpend } from 'utils';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 import { getConfig } from 'config/index';
 import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
+import { useQuery } from '@tanstack/react-query';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -554,11 +565,14 @@ export function useV3DerivedMintInfo(
       : independentCurrency,
   );
 
-  const gammaPairData = getGammaPairsForTokens(
-    chainId,
-    currencyA?.wrapped.address,
-    currencyB?.wrapped.address,
-  );
+  const gammaPairData =
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+      ? getGammaPairsForTokens(
+          chainId,
+          currencyA?.wrapped.address,
+          currencyB?.wrapped.address,
+        )
+      : undefined;
   const gammaPairReverted = gammaPairData?.reversed;
   const gammaPairAddress =
     gammaPairData && gammaPairData.pairs.length > 0
@@ -575,12 +589,13 @@ export function useV3DerivedMintInfo(
     ],
   );
 
+  const blacklistedGammaAddress = '0xa42d55074869491d60ac05490376b74cf19b00e6';
   const depositCapData1 = useSingleCallResult(
     presetRange &&
       presetRange.address &&
       gammaUNIPROXYContract &&
       gammaUNIPROXYContract.address.toLowerCase() !==
-        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+        blacklistedGammaAddress.toLowerCase()
       ? gammaUNIPROXYContract
       : undefined,
     'positions',
@@ -592,7 +607,7 @@ export function useV3DerivedMintInfo(
       presetRange.address &&
       gammaUNIPROXYContract &&
       gammaUNIPROXYContract.address.toLowerCase() ===
-        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+        blacklistedGammaAddress.toLowerCase()
       ? gammaUNIPROXYContract
       : undefined,
     'clearance',
@@ -746,6 +761,14 @@ export function useV3DerivedMintInfo(
     unipilotToken1VaultBalance,
   ]);
 
+  const { defiedgeStrategies } = useGetDefiedgeStrategies();
+  const defiedgeStrategy = defiedgeStrategies.find(
+    (item) =>
+      presetRange &&
+      presetRange.address &&
+      item.id.toLowerCase() === presetRange.address.toLowerCase(),
+  );
+
   const { data: steerVaults } = useSteerVaults(chainId);
   const steerVault = steerVaults.find(
     (item) =>
@@ -833,6 +856,41 @@ export function useV3DerivedMintInfo(
       return CurrencyAmount.fromRawAmount(dependentCurrency, dependentDeposit);
     }
 
+    if (
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+    ) {
+      if (!independentAmount || !dependentCurrency || !defiedgeStrategy) return;
+
+      const tokenType =
+        defiedgeStrategy.token0 &&
+        dependentCurrency.wrapped.address.toLowerCase() ===
+          defiedgeStrategy.token0.toLowerCase()
+          ? 0
+          : 1;
+
+      let dependentDeposit;
+
+      if (tokenType === 0) {
+        dependentDeposit =
+          (1 / defiedgeStrategy.ratio) * Number(independentAmount.toExact());
+      } else {
+        dependentDeposit =
+          defiedgeStrategy.ratio * Number(independentAmount.toExact());
+      }
+
+      return CurrencyAmount.fromRawAmount(
+        dependentCurrency.isNative
+          ? dependentCurrency.wrapped
+          : dependentCurrency,
+        JSBI.BigInt(
+          parseUnits(
+            dependentDeposit.toFixed(dependentCurrency.decimals),
+            dependentCurrency.decimals,
+          ),
+        ),
+      );
+    }
+
     if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) {
       if (!independentAmount || !dependentCurrency || !steerVault) return;
       const tokenType =
@@ -858,6 +916,7 @@ export function useV3DerivedMintInfo(
 
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
+
     if (
       independentAmount &&
       wrappedIndependentAmount &&
@@ -918,6 +977,7 @@ export function useV3DerivedMintInfo(
     vaultToken0,
     uniPilotVaultReserve?.token1,
     uniPilotVaultReserve?.token0,
+    defiedgeStrategy,
     steerVault,
     outOfRange,
     invalidRange,
@@ -952,7 +1012,8 @@ export function useV3DerivedMintInfo(
 
   // sorted for token order
   const depositADisabled =
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) &&
     (invalidRange ||
       Boolean(
         (deposit0Disabled &&
@@ -965,7 +1026,8 @@ export function useV3DerivedMintInfo(
             poolForPosition.token1.equals(tokenA)),
       ));
   const depositBDisabled =
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) &&
     (invalidRange ||
       Boolean(
         (deposit0Disabled &&
@@ -1398,4 +1460,111 @@ export function useGetUnipilotVaults() {
       rangeTickUpper: vaultTicksResult ? vaultTicksResult[3] : undefined,
     };
   });
+}
+
+export const useDefiEdgeStrategiesAPR = (strategies: string[]) => {
+  const defiedgeAPIURL = process.env.REACT_APP_DEFIEDGE_API_URL;
+  const fetchDefiedgeStrategiesWithApr = async () => {
+    if (!defiedgeAPIURL) return [];
+
+    try {
+      const res = await fetch(
+        `${defiedgeAPIURL}/polygon/details?strategies=${strategies.join()}`,
+      );
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return data;
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  };
+
+  return useQuery({
+    queryKey: ['fetchDefiedgeStrategiesWithApr', strategies.join()],
+    queryFn: fetchDefiedgeStrategiesWithApr,
+  });
+};
+
+export function useGetDefiedgeStrategies() {
+  const { chainId } = useActiveWeb3React();
+  const strategies = getAllDefiedgeStrategies(chainId);
+  const strategyIds = strategies.map((s) => s.id);
+  const defiedgeAPIURL = process.env.REACT_APP_DEFIEDGE_API_URL;
+
+  const strategyTickResult = useMultipleContractSingleData(
+    strategyIds,
+    new Interface(DEFIEDGE_STRATEGY_ABI),
+    'ticks',
+    [0],
+  );
+
+  const fetchLiquidityRatio = useCallback(
+    async (strategy: string) => {
+      if (!defiedgeAPIURL) return 0;
+
+      const res = await fetch(
+        `${defiedgeAPIURL}/polygon/${strategy.toLowerCase()}/deposit/ratio`,
+      );
+      const data = await res.json();
+      return data?.ratio ?? 0;
+    },
+    [defiedgeAPIURL],
+  );
+
+  const fetchStrategiesLiquidityRatio = useCallback(async () => {
+    try {
+      const responses = await Promise.all(
+        strategies.map((s) => fetchLiquidityRatio(s.id)),
+      );
+      return responses;
+    } catch (error) {
+      console.error('Error fetching liquidity ratios:', error);
+      return null;
+    }
+  }, [fetchLiquidityRatio, strategies]);
+
+  const {
+    isLoading,
+    data: defiedgeStrategiesWithApr,
+  } = useDefiEdgeStrategiesAPR(strategyIds);
+
+  const { data: liquidityRatios } = useQuery({
+    queryKey: ['fetchStrategiesLiquidityRatio', strategies],
+    queryFn: fetchStrategiesLiquidityRatio,
+  });
+
+  const defiedgeStrategies = strategies.map((strategy, index) => {
+    const strategyTickCallData = strategyTickResult[index];
+
+    const strategyTicksResult =
+      !strategyTickCallData.loading &&
+      strategyTickCallData.result &&
+      strategyTickCallData.result.length > 0
+        ? strategyTickCallData.result
+        : undefined;
+
+    const tickLower = strategyTicksResult ? strategyTicksResult[0] : undefined;
+    const tickUpper = strategyTicksResult ? strategyTicksResult[1] : undefined;
+
+    const strategyItem = defiedgeStrategiesWithApr?.find(
+      (e: any) =>
+        e.strategy.address.toLowerCase() === strategy.id.toLowerCase(),
+    );
+
+    return {
+      id: strategy.id,
+      token0: strategy.token0,
+      token1: strategy.token1,
+      pool: strategy.pool,
+      tickLower,
+      tickUpper,
+      onHold: !tickLower && !tickUpper,
+      apr: strategyItem?.strategy?.fees_apr,
+      ratio: liquidityRatios && liquidityRatios[index],
+    };
+  });
+
+  return { isLoading, defiedgeStrategies };
 }

@@ -25,9 +25,8 @@
     "available": true
   },
   "farm": {
-    "available": true
-  },
-  "qsFarm": {
+    "quickswap": true,
+    "merkl": true,
     "available": true
   },
   "lair": {
@@ -72,6 +71,9 @@
   "unipilot": {
     "available": false
   },
+  "defiedge": {
+    "available": true
+  },
   "bonds": {
     "available": true
   },
@@ -79,6 +81,9 @@
     "available": true
   },
   "dappos": {
+    "available": true
+  },
+  "ichi": {
     "available": true
   }
 }

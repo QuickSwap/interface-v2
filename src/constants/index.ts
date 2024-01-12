@@ -65,7 +65,9 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.MANTA]: 'manta',
   [ChainId.ZKATANA]: 'zKatana',
   [ChainId.BTTC]: 'bttc',
+  [ChainId.TIMX]: 'tIMX',
   [ChainId.X1]: 'x1',
+  [ChainId.IMX]: 'IMX',
 };
 
 export enum ZapType {
@@ -130,6 +132,10 @@ export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
   [ChainId.MANTA]: 0,
   [ChainId.KAVA]: 0,
   [ChainId.ZKATANA]: 0,
+  [ChainId.BTTC]: 0,
+  [ChainId.X1]: 0,
+  [ChainId.TIMX]: 0,
+  [ChainId.IMX]: 0,
 };
 
 export const MIN_NATIVE_CURRENCY_FOR_GAS: {
@@ -155,6 +161,8 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.BTTC]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
   [ChainId.X1]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
   [ChainId.ZKATANA]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.TIMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.IMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
 };
 
 export const GlobalConst = {
@@ -224,6 +232,8 @@ export const GlobalConst = {
       unipilot: '1',
       gamma: '2',
       steer: '3',
+      defiedge: '4',
+      ichi: '5',
     },
   },
   analyticChart: {
@@ -243,7 +253,8 @@ export const GlobalConst = {
     MANUAL_RANGE: '0',
     GAMMA_RANGE: '1',
     UNIPILOT_RANGE: '2',
-    STEER_RANGE: '3',
+    DEFIEDGE_RANGE: '3',
+    STEER_RANGE: '4',
   },
   walletName: {
     METAMASK: 'Metamask',
@@ -269,14 +280,15 @@ export const GlobalConst = {
 
 export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
-  ChainId.MUMBAI,
-  ChainId.DOGECHAIN,
-  ChainId.DOEGCHAIN_TESTNET,
-  ChainId.ZKTESTNET,
   ChainId.ZKEVM,
   ChainId.MANTA,
+  ChainId.DOGECHAIN,
   ChainId.ZKATANA,
   ChainId.X1,
+  ChainId.TIMX,
+  ChainId.ZKTESTNET,
+  ChainId.MUMBAI,
+  ChainId.DOEGCHAIN_TESTNET,
 ];
 
 export interface GammaPair {
@@ -1646,6 +1658,80 @@ export const UnipilotVaults: {
   ],
 };
 
+export const IchiVaults: {
+  [chainId in ChainId]?: string[];
+} = {
+  [ChainId.MATIC]: [
+    '0x74b706767f18a360c0083854ab42c1b96e076229',
+    '0xCBD1f4Bc3E6d05b10fEb5dc454d27364767e76B5',
+    '0x5D73D117Ffb8AD26e6CC9f2621d52f479AAA8C5B',
+    '0xc46FAb3Af8aA7A56feDa351a22B56749dA313473',
+    '0x5403e11D5Edf6564C27b47757d62A515a81D9781',
+    '0x5D1b077212b624fe580a84384Ffea44da752ccb3',
+    '0xe8Aa60c966eE8BE1340aBf1d871D0163d5739B95',
+    '0x425D80e10A8103bedb57F5C08FF8d59253D6a259',
+    '0x318047C9584cFD77C6dfc28d3df8BD0d8a29E095',
+    '0xb2B34446D9cFb6719543ef5246481F218367b43a',
+    '0x891F0c3159aCf7306c0c252757310db8F47B59B2',
+    '0x7a384EA3Bb74a53798565fd6c2d0aE9BF1cA81D8',
+    '0x29a5e9fa30a88EAf3Ac800FA71649Ae660254aef',
+  ],
+};
+
+export interface DefiedgeStrategy {
+  id: string;
+  token0: string;
+  token1: string;
+  pool: string;
+  ableToFarm?: boolean;
+  pid?: number;
+  miniChefAddress?: string;
+  rewardToken?: string;
+}
+
+export const DefiedgeStrategies: {
+  [chainId in ChainId]?: DefiedgeStrategy[];
+} = {
+  [ChainId.MATIC]: [
+    {
+      id: '0x8b207CA0B5602fEcF38Dbc748900B7f5C5903F12',
+      token0: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', // WBTC
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
+      pool: '0xac4494e30a85369e332bdb5230d6d694d4259dbc',
+    },
+    {
+      id: '0xd778c83e7ca19c2217d98dadacf7fd03b79b18cb',
+      token0: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      pool: '0x479e1b71a702a595e19b6d5932cd5c863ab57ee0',
+    },
+    {
+      id: '0x8e7b68e3ce0219e73bc8f237916875f6be8d79f9',
+      token0: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      pool: '0x55caabb0d2b704fd0ef8192a7e35d8837e678207',
+    },
+    {
+      id: '0x4f53F458F4F00ad2Dd7e7177cebE1a2AFc38AB9E',
+      token0: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      token1: '0x172370d5cd63279efa6d502dab29171933a610af',
+      pool: '0x00a6177c6455a29b8daa7144b2befc9f2147bb7e',
+    },
+    {
+      id: '0x5b770a2d5d70cb6d71d4fdc8c02776f05a8c3742',
+      token0: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+      token1: '0xd6df932a45c0f255f85145f286ea0b292b21c90b',
+      pool: '0x44720a6f572649526ac9073cae9200755cc78e0a',
+    },
+    {
+      id: '0x392fea7d91713630ded6d71befe388da9fa85e8d',
+      token0: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+      token1: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      pool: '0xa5cd8351cbf30b531c7b11b0d9d3ff38ea2e280f',
+    },
+  ],
+};
+
 export const GlobalValue = {
   percents: {
     ALLOWED_PRICE_IMPACT_LOW: new Percent( // used for warning states
@@ -1744,6 +1830,8 @@ export const GlobalValue = {
       [ChainId.ZKATANA]: [],
       [ChainId.BTTC]: [],
       [ChainId.X1]: [],
+      [ChainId.TIMX]: [],
+      [ChainId.IMX]: [],
     },
   },
   marketSDK: {
@@ -1805,8 +1893,10 @@ export const GlobalData = {
       DAI[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [USDC[ChainId.ZKATANA]],
+    [ChainId.TIMX]: [USDC[ChainId.TIMX]],
     [ChainId.BTTC]: [],
-    [ChainId.X1]: [],
+    [ChainId.X1]: [USDC[ChainId.X1]],
+    [ChainId.IMX]: [USDC[ChainId.IMX], USDT[ChainId.IMX]],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -1845,8 +1935,16 @@ export const GlobalData = {
       MATIC[ChainId.MANTA],
     ],
     [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
+    [ChainId.TIMX]: [WETH[ChainId.TIMX], USDC[ChainId.TIMX]],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
+    [ChainId.IMX]: [
+      WETH[ChainId.IMX],
+      USDC[ChainId.IMX],
+      ETHER[ChainId.IMX],
+      WBTC[ChainId.IMX],
+      USDT[ChainId.IMX],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -1874,8 +1972,10 @@ export const GlobalData = {
       [WETH[ChainId.MANTA], WSTETH[ChainId.MANTA]],
     ],
     [ChainId.ZKATANA]: [],
+    [ChainId.TIMX]: [],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [],
+    [ChainId.IMX]: [],
   },
 };
 
