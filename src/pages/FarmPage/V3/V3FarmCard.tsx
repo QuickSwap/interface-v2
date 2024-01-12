@@ -124,7 +124,7 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
             className='flex items-center justify-between'
           >
             {isMobile && <p>{t('apr')}</p>}
-            <Box>
+            <Box className={isMobile ? 'flex flex-col items-end' : ''}>
               <small>{t('upTo')}</small>
               <Box className='flex'>
                 <V3FarmAPRTooltip farm={farm}>
@@ -142,12 +142,14 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
             className={isMobile ? 'flex items-center justify-between' : ''}
           >
             {isMobile && rewards.length > 0 && <p>{t('rewards')}</p>}
-            {rewards.map((reward) => (
-              <p key={reward.token.address}>
-                {formatNumber(reward.amount)} {reward.token.symbol}{' '}
-                <small className='text-secondary'>{t('daily')}</small>
-              </p>
-            ))}
+            <Box className={isMobile ? 'flex flex-col items-end' : ''}>
+              {rewards.map((reward) => (
+                <p key={reward.token.address}>
+                  {formatNumber(reward.amount)} {reward.token.symbol}{' '}
+                  <small className='text-secondary'>{t('daily')}</small>
+                </p>
+              ))}
+            </Box>
           </Box>
         </Box>
         <Box width={isMobile ? '100%' : '10%'} mt={rewards.length > 0 ? 0 : 2}>

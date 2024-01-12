@@ -212,8 +212,8 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const ichiPositionToPass = ichiPosition
     ? {
         ...ichiPosition,
-        token0: farm?.token0,
-        token1: farm?.token1,
+        token0: farm?.token0 ? toV3Token(farm?.token0) : undefined,
+        token1: farm?.token1 ? toV3Token(farm?.token1) : undefined,
       }
     : undefined;
 
@@ -486,16 +486,25 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                   <Button
                     onClick={() => {
                       let currencyStr = '';
-                      if (farm?.token0) {
-                        currencyStr += `currency0=${farm.token0.address}`;
-                      }
-                      if (farm?.token1) {
+                      if (isICHI) {
                         if (farm?.token0) {
-                          currencyStr += '&';
+                          currencyStr += `currency=${farm.token0.address}`;
                         }
-                        currencyStr += `currency1=${farm.token1.address}`;
+                      } else {
+                        if (farm?.token0) {
+                          currencyStr += `currency0=${farm.token0.address}`;
+                        }
+                        if (farm?.token1) {
+                          if (farm?.token0) {
+                            currencyStr += '&';
+                          }
+                          currencyStr += `currency1=${farm.token1.address}`;
+                        }
                       }
-                      window.open(`#/pools?${currencyStr}`, '_blank');
+                      window.open(
+                        `#/pools${isICHI ? '/singleToken' : ''}?${currencyStr}`,
+                        '_blank',
+                      );
                     }}
                   >
                     {t('getLP')}
