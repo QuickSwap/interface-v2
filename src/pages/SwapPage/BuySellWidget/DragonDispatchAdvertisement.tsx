@@ -13,12 +13,18 @@ export const DragonDispatchAdvertisement: React.FC = () => {
   };
 
   return (
-    <Box className='flex'>
-      <Box>
-        <img className='wallet' src={DragonDipatchIcon} alt='buy with fiat' />
+    <Box>
+      <Box className='flex'>
+        <Box>
+          <img className='wallet' src={DragonDipatchIcon} alt='buy with fiat' />
+        </Box>
+        <Box pl={1} className='flex'>
+          <Box className='text-white text-lg my-auto'>
+            {t('dragonDipatchAd')}
+          </Box>
+        </Box>
       </Box>
-      <Box pl={1}>
-        <Box className='text-white text-lg'>{t('dragonDipatchAd')}</Box>
+      <Box>
         <Box className='flex items-center'>
           <Box className='newsletterSignupFormSwap'>
             <input
