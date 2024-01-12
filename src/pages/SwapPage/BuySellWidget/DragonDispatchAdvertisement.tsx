@@ -1,5 +1,5 @@
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import DragonDipatchIcon from 'assets/images/featured/DragonDipatchIcon.png';
+import DragonDispatchIcon from 'assets/images/featured/DragonDispatchIcon.png';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,11 @@ export const DragonDispatchAdvertisement: React.FC = () => {
     <Box>
       <Box className='flex'>
         <Box>
-          <img className='wallet' src={DragonDipatchIcon} alt='buy with fiat' />
+          <img
+            className='wallet'
+            src={DragonDispatchIcon}
+            alt='buy with fiat'
+          />
         </Box>
         <Box pl={1} className='flex'>
           <Box className='text-white text-lg my-auto'>
