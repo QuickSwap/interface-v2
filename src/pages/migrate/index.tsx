@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
 import { ArrowBack } from '@mui/icons-material';
-import { QuestionHelper, PoolFinderModal } from 'components';
+import { PoolFinderModal } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import V2PositionCard from 'components/pages/migrate/V2PositionCard';
 import { useTranslation } from 'next-i18next';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
@@ -40,8 +40,8 @@ const MigrateV2LiquidityPage = (
           onClose={() => setOpenPoolFinder(false)}
         />
       )}
-      <Box className='wrapper' maxWidth='464px' width='100%' mb={8}>
-        <Box className='flex items-center justify-between'>
+      <Box className='wrapper' maxWidth='464px' width='100%' mb={6}>
+        <Box className='flex justify-between items-center'>
           <Box
             className='flex cursor-pointer'
             onClick={() => router.push('pools/v3')}
@@ -54,7 +54,7 @@ const MigrateV2LiquidityPage = (
             height={28}
             className='flex items-center justify-center'
           >
-            <QuestionHelper size={24} className='text-secondary' text='' />
+            {/* <QuestionHelper size={24} className='text-secondary' text='' /> */}
           </Box>
         </Box>
         <Box mt={3}>

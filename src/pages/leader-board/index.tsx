@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { ContestPairs, LeaderBoardAnalytics } from 'constants/index';
 import HelpIcon from 'svgs/HelpIcon1.svg';
@@ -16,7 +16,7 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { formatNumber } from 'utils';
 import { getFormattedLeaderBoardData } from 'lib/leaderboard';
 import { useActiveWeb3React } from 'hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useRouter } from 'next/router';
 import { ChainId } from '@uniswap/sdk';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
@@ -228,7 +228,7 @@ const LeaderBoardPage = (
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchVal, contestLeaderBoard, durationIndex]);
+  }, [searchVal, contestLeaderBoard.length, durationIndex]);
 
   const searchCardColumns = [
     {
@@ -370,7 +370,7 @@ const LeaderBoardPage = (
           </>
         )}
 
-        <Box className='panel'>
+        <Box className={styles.panel}>
           {contestFilter.address !== 'past-winners' && (
             <Box className='flex justify-end' mb={2}>
               <ChartType

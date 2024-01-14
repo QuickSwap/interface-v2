@@ -76,6 +76,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
             className={styles.ethereumLogo}
             src={nativeCurrencyImage}
             alt='Ethereum Logo'
+            width='100%'
           />
         </picture>
       </Box>

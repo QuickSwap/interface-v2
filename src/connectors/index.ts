@@ -20,6 +20,9 @@ import { isMobile } from 'react-device-detect';
 import { OkxWallet } from './OkxWallet';
 import { Cryptocom } from './Cryptocom';
 import { UAuthConnector } from '@uauth/web3-react';
+import { getWeb3Connector } from '@binance/w3w-web3-connector';
+import { isInBinance } from '@binance/w3w-utils';
+import { BinanceWeb3Connector } from './BinanceWeb3Wallet';
 
 const MetamaskIcon = '/assets/images/metamask.png';
 const BlockWalletIcon = '/assets/images/blockwalletIcon.svg';
@@ -36,6 +39,7 @@ const GnosisIcon = '/assets/images/gnosis_safe.png';
 const TrustIcon = '/assets/images/trust.png';
 const ZengoIcon = '/assets/images/zengo.png';
 const CryptocomIcon = '/assets/images/cryptocomWallet.png';
+const BinanceIcon = '/assets/images/binance-wallet.webp';
 
 function onError(error: Error) {
   console.debug(`web3-react error: ${error}`);
@@ -57,6 +61,7 @@ export enum ConnectionType {
   OKXWALLET = 'OKXWALLET',
   CRYPTOCOM = 'CRYPTO_COM',
   UNSTOPPABLEDOMAINS = 'UNSTOPPABLE_DOMAINS',
+  BINANCEWALLET = 'BINANCE_WEB3_WALLET',
 }
 
 export interface Connection {
@@ -82,7 +87,7 @@ export interface NetworkInfo {
 
 export type NetworkInfoChainMap = Readonly<
   {
-    [chainId in ChainId]: NetworkInfo;
+    [chainId in ChainId]?: NetworkInfo;
   }
 >;
 
@@ -92,7 +97,7 @@ export const networkInfoMap: NetworkInfoChainMap = {
     scanUrl: 'https://polygonscan.com/',
   },
   [ChainId.DOGECHAIN]: {
-    rpcUrl: 'https://rpc-sg.dogechain.dog/',
+    rpcUrl: 'https://rpc.dogechain.dog/',
     scanUrl: 'https://explorer.dogechain.dog/',
   },
   [ChainId.MUMBAI]: {
@@ -110,6 +115,14 @@ export const networkInfoMap: NetworkInfoChainMap = {
   [ChainId.ZKEVM]: {
     rpcUrl: 'https://zkevm-rpc.com',
     scanUrl: 'https://zkevm.polygonscan.com/',
+  },
+  [ChainId.MANTA]: {
+    rpcUrl: 'https://pacific-rpc.manta.network/http',
+    scanUrl: 'https://pacific-explorer.manta.network/',
+  },
+  [ChainId.ZKATANA]: {
+    rpcUrl: 'https://rpc.zkatana.gelato.digital',
+    scanUrl: 'https://zkatana.blockscout.com/',
   },
 };
 
@@ -456,6 +469,38 @@ export const unstoppableDomainsConnection: Connection = {
   description: 'Connect to Unstoppable Domains',
 };
 
+const inBinance = isInBinance();
+const BinanceConnector = getWeb3Connector();
+const [web3BinanceWallet, web3BinanceWalletHooks] = initializeConnector<any>(
+  () =>
+    new BinanceConnector({
+      lng: 'zh-CN',
+      supportedChainIds: [ChainId.MATIC],
+    }),
+);
+
+const [binanceWeb3Wallet, binanceWeb3WalletHooks] = initializeConnector<
+  BinanceWeb3Connector
+>(
+  (actions) =>
+    new BinanceWeb3Connector({
+      actions,
+      onError,
+    }),
+);
+
+export const binanceWalletConnection: Connection = {
+  key: 'BinanceWeb3Wallet',
+  name: GlobalConst.walletName.BINANCEWALLET,
+  connector: inBinance ? binanceWeb3Wallet : web3BinanceWallet,
+  hooks: inBinance ? binanceWeb3WalletHooks : web3BinanceWalletHooks,
+  type: ConnectionType.BINANCEWALLET,
+  iconName: BinanceIcon,
+  color: '#E8831D',
+  description: 'Connect to Binance Web3 Wallet.',
+  mobile: true,
+};
+
 export function getConnections() {
   return isMobile
     ? [
@@ -463,6 +508,7 @@ export function getConnections() {
         cypherDConnection,
         metamaskConnection,
         trustWalletConnection,
+        binanceWalletConnection,
         okxWalletConnection,
         phantomConnection,
         braveWalletConnection,
@@ -479,6 +525,7 @@ export function getConnections() {
         cypherDConnection,
         metamaskConnection,
         trustWalletConnection,
+        binanceWalletConnection,
         okxWalletConnection,
         phantomConnection,
         braveWalletConnection,

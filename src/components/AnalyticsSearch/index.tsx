@@ -14,7 +14,7 @@ import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
 dayjs.extend(utc);
 
@@ -327,7 +327,7 @@ const AnalyticsSearch: React.FC = () => {
                       router.push(
                         `/analytics/${
                           version === 'total' ? val.version : version
-                        }/pair/${val.id}`,
+                        }/pair?id=${val.id}`,
                       );
                       setMenuOpen(false);
                     }}
@@ -362,7 +362,7 @@ const AnalyticsSearch: React.FC = () => {
                     key={ind}
                     className={styles.searchWidgetRow}
                     onClick={() => {
-                      router.push(`/analytics/${version}/token/${val.id}`);
+                      router.push(`/analytics/${version}/token?id=${val.id}`);
                       setMenuOpen(false);
                     }}
                   >

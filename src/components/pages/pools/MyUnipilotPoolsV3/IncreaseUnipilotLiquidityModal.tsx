@@ -8,15 +8,20 @@ import {
 } from 'components';
 import { Box, Button } from '@mui/material';
 import { Close } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
-import { calculateGasMargin, formatNumber } from 'utils';
+import { useTranslation } from 'next-i18next';
+import {
+  calculateGasMargin,
+  formatNumber,
+  getFixedValue,
+  maxAmountSpend,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
-import styles from 'styles/pages/pools/UnipilotLPItemDetails.module.scss';
+import styles from 'styles/pages/pools/AutomaticLPItemDetails.module.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
@@ -24,11 +29,12 @@ import { useUniPilotVaultContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
+import { UnipilotPosition } from 'hooks/v3/useV3Positions';
 
 interface IncreaseUnipilotLiquidityModalProps {
   open: boolean;
   onClose: () => void;
-  position: any;
+  position: UnipilotPosition;
 }
 
 export default function IncreaseUnipilotLiquidityModal({
@@ -39,16 +45,16 @@ export default function IncreaseUnipilotLiquidityModal({
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
-  const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
+  const uniPilotVaultContract = useUniPilotVaultContract(position.id);
   const [deposit0, setDeposit0] = useState('');
   const [deposit1, setDeposit1] = useState('');
 
   const unipilotToken0VaultBalance = useTokenBalance(
-    position.vault.id,
+    position.id,
     position.token0,
   );
   const unipilotToken1VaultBalance = useTokenBalance(
-    position.vault.id,
+    position.id,
     position.token1,
   );
   const uniPilotVaultPositionResult = useSingleCallResult(
@@ -83,13 +89,13 @@ export default function IncreaseUnipilotLiquidityModal({
   const independentDeposit = isBaseInput
     ? JSBI.BigInt(
         parseUnits(
-          Number(deposit0).toFixed(position.token0?.decimals),
+          getFixedValue(deposit0, position.token0?.decimals),
           position.token0?.decimals,
         ),
       )
     : JSBI.BigInt(
         parseUnits(
-          Number(deposit1).toFixed(position.token1?.decimals),
+          getFixedValue(deposit1, position.token1?.decimals),
           position.token1?.decimals,
         ),
       );
@@ -118,8 +124,9 @@ export default function IncreaseUnipilotLiquidityModal({
     position.token1 &&
     position.token1.address.toLowerCase() ===
       WETH[chainId].address.toLowerCase();
+  const maxSpendETH = chainId ? maxAmountSpend(chainId, ethBalance) : undefined;
   const token0BalanceJSBI = JSBI.add(
-    token0isWETH && ethBalance ? ethBalance.numerator : JSBI.BigInt('0'),
+    token0isWETH && maxSpendETH ? maxSpendETH.numerator : JSBI.BigInt('0'),
     token0Balance ? token0Balance.numerator : JSBI.BigInt('0'),
   );
   const token1BalanceJSBI = JSBI.add(
@@ -128,16 +135,22 @@ export default function IncreaseUnipilotLiquidityModal({
       position.token1 &&
       position.token1.address.toLowerCase() ===
         WETH[chainId].address.toLowerCase() &&
-      ethBalance
-      ? ethBalance.numerator
+      maxSpendETH
+      ? maxSpendETH.numerator
       : JSBI.BigInt('0'),
     token1Balance ? token1Balance.numerator : JSBI.BigInt('0'),
   );
   const deposit0JSBI = JSBI.BigInt(
-    parseUnits(!deposit0 ? '0' : deposit0, position.token0?.decimals),
+    parseUnits(
+      !deposit0 ? '0' : getFixedValue(deposit0, position.token0?.decimals),
+      position.token0?.decimals,
+    ),
   );
   const deposit1JSBI = JSBI.BigInt(
-    parseUnits(!deposit1 ? '0' : deposit1, position.token1?.decimals),
+    parseUnits(
+      !deposit1 ? '0' : getFixedValue(deposit1, position.token1?.decimals),
+      position.token1?.decimals,
+    ),
   );
 
   const [showConfirm, setShowConfirm] = useState(false);
@@ -475,7 +488,7 @@ export default function IncreaseUnipilotLiquidityModal({
         </Box>
         <Box mt={2}>
           <Button
-            className={styles.unipilotLiquidityItemButton}
+            className={styles.liquidityItemButton}
             disabled={buttonDisabled}
             onClick={() => setShowConfirm(true)}
             fullWidth

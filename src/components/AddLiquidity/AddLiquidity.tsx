@@ -14,7 +14,7 @@ import {
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import { event } from 'nextjs-google-analytics';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import {
   currencyEquals,
   Token,
@@ -45,6 +45,7 @@ import {
   calculateGasMargin,
   useIsSupportedNetwork,
   formatTokenAmount,
+  halfAmountSpend,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import AddLiquidityIcon from 'svgs/AddLiquidityIcon.svg';
@@ -140,6 +141,16 @@ const AddLiquidity: React.FC<{
     return {
       ...accumulator,
       [field]: maxAmountSpend(chainIdToUse, currencyBalances[field]),
+    };
+  }, {});
+
+  const halfAmounts: { [field in Field]?: TokenAmount } = [
+    Field.CURRENCY_A,
+    Field.CURRENCY_B,
+  ].reduce((accumulator, field) => {
+    return {
+      ...accumulator,
+      [field]: halfAmountSpend(chainIdToUse, currencyBalances[field]),
     };
   }, {});
 
@@ -463,11 +474,9 @@ const AddLiquidity: React.FC<{
           onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
         }
         onHalf={() => {
-          const maxAmount = maxAmounts[Field.CURRENCY_A];
-          if (maxAmount) {
-            onFieldAInput(
-              maxAmount.divide('2').toFixed(maxAmount.currency.decimals),
-            );
+          const halfAmount = halfAmounts[Field.CURRENCY_A];
+          if (halfAmount) {
+            onFieldAInput(halfAmount.toExact());
           }
         }}
         handleCurrencySelect={handleCurrencyASelect}

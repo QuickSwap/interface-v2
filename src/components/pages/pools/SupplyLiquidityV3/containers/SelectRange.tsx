@@ -11,6 +11,7 @@ import {
   useV3MintState,
   useInitialUSDPrices,
   useGetUnipilotVaults,
+  useGetDefiedgeStrategies,
 } from 'state/mint/v3/hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { useAppDispatch } from 'state/hooks';
@@ -19,14 +20,20 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { Presets } from 'state/mint/v3/reducer';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
 import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { Box, ButtonGroup, Button } from '@mui/material';
+import { GlobalConst, GlobalData, SteerVaultState } from 'constants/index';
+import { Box, ButtonGroup, Button, Grid } from '@mui/material';
 import { ReportProblemOutlined } from '@mui/icons-material';
-import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId, JSBI } from '@uniswap/sdk';
-import { StableCoins } from 'constants/v3/addresses';
-import { getEternalFarmFromTokens, getGammaPairsForTokens } from 'utils';
+import {
+  formatNumber,
+  getEternalFarmFromTokens,
+  getGammaPairsForTokens,
+} from 'utils';
 import { Trans, useTranslation } from 'next-i18next';
+import { useSteerVaults } from 'hooks/v3/useSteerData';
+import { useUnipilotFarmData } from 'hooks/v3/useUnipilotFarms';
+import { useGammaData } from 'hooks/v3/useGammaData';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -84,8 +91,8 @@ export function SelectRange({
   const isStablecoinPair = useMemo(() => {
     if (!currencyA || !currencyB) return false;
 
-    const stablecoins = StableCoins[chainIdToUse]
-      ? StableCoins[chainIdToUse].map((token) => token.address)
+    const stablecoins = GlobalData.stableCoins[chainIdToUse]
+      ? GlobalData.stableCoins[chainIdToUse].map((token) => token.address)
       : [];
 
     return (
@@ -115,7 +122,7 @@ export function SelectRange({
   } = useRangeHopCallbacks(
     currencyA ?? undefined,
     currencyB ?? undefined,
-    mintInfo.dynamicFee,
+    mintInfo.feeAmount,
     tickLower,
     tickUpper,
     mintInfo.pool,
@@ -361,13 +368,57 @@ export function SelectRange({
     );
   });
 
+  const { defiedgeStrategies } = useGetDefiedgeStrategies();
+  const defiedgeStrategiesForPair = defiedgeStrategies.filter((item) => {
+    return (
+      (item.token0 &&
+        item.token1 &&
+        item.token0.toLowerCase() === currencyAAddress.toLowerCase() &&
+        item.token1.toLowerCase() === currencyBAddress.toLowerCase()) ||
+      (item.token0 &&
+        item.token1 &&
+        item.token0.toLowerCase() === currencyBAddress.toLowerCase() &&
+        item.token1.toLowerCase() === currencyAAddress.toLowerCase())
+    );
+  });
+
+  const { data: steerVaults } = useSteerVaults(chainId);
+  const steerVaultsForPair = steerVaults.filter((item) => {
+    return (
+      item.state !== SteerVaultState.Paused &&
+      item.state !== SteerVaultState.Retired &&
+      ((item.feeTier && Number(item.feeTier) === mintInfo.feeAmount) ||
+        (!item.feeTier && !mintInfo.feeAmount)) &&
+      ((item.token0 &&
+        item.token1 &&
+        item.token0.address.toLowerCase() === currencyAAddress.toLowerCase() &&
+        item.token1.address.toLowerCase() === currencyBAddress.toLowerCase()) ||
+        (item.token0 &&
+          item.token1 &&
+          item.token0.address.toLowerCase() ===
+            currencyBAddress.toLowerCase() &&
+          item.token1.address.toLowerCase() === currencyAAddress.toLowerCase()))
+    );
+  });
+
+  const gammaPairExists = !!gammaPair;
+  const unipilotVaultExists = unipilotVaultsForPair.length > 0;
+  const defiedgeStrategyExists = defiedgeStrategiesForPair.length > 0;
+  const steerVaultExists = steerVaultsForPair.length > 0;
+
   useEffect(() => {
-    if (gammaPair) {
+    if (gammaPairExists) {
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.GAMMA_RANGE);
-    } else if (unipilotVaultsForPair.length > 0) {
+    } else if (unipilotVaultExists) {
       onChangeLiquidityRangeType(
         GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
       );
+    } else if (defiedgeStrategyExists) {
+      onChangeLiquidityRangeType(
+        GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
+      );
+    } else if (steerVaultExists) {
+      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.STEER_RANGE);
     } else {
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
     }
@@ -377,69 +428,118 @@ export function SelectRange({
     currencyA?.wrapped.address,
     currencyB?.isNative,
     currencyB?.wrapped.address,
-    unipilotVaultsForPair.length,
+    unipilotVaultExists,
+    steerVaultExists,
+    gammaPairExists,
+    defiedgeStrategyExists,
   ]);
+
+  const isAutomatic =
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ||
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ||
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE;
+
+  const selectVaultEnabled =
+    (gammaPairExists && unipilotVaultExists) ||
+    (gammaPairExists && defiedgeStrategyExists) ||
+    (gammaPairExists && steerVaultExists) ||
+    (unipilotVaultExists && steerVaultExists) ||
+    (unipilotVaultExists && defiedgeStrategyExists) ||
+    (defiedgeStrategyExists && steerVaultExists);
+
+  const { data: gammaData } = useGammaData();
+
+  const gammaAddress: any =
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+      ? presetRange?.address
+      : gammaPair && gammaPair[0]
+      ? gammaPair[0].address
+      : undefined;
+  const gammaPoolAPR =
+    gammaData &&
+    gammaAddress &&
+    gammaData[gammaAddress.toLowerCase()] &&
+    gammaData[gammaAddress.toLowerCase()]['returns'] &&
+    gammaData[gammaAddress.toLowerCase()]['returns']['allTime'] &&
+    gammaData[gammaAddress.toLowerCase()]['returns']['allTime']['feeApr']
+      ? Number(
+          gammaData[gammaAddress.toLowerCase()]['returns']['allTime']['feeApr'],
+        )
+      : 0;
+
+  const steerVault =
+    steerVaultsForPair.find(
+      (item) =>
+        presetRange &&
+        presetRange.address &&
+        item.address.toLowerCase() === presetRange.address.toLowerCase(),
+    ) ?? steerVaultsForPair
+      ? steerVaultsForPair[0]
+      : undefined;
+
+  const { data: unipilotFarmData } = useUnipilotFarmData(
+    unipilotVaultsForPair.map((pair) => pair.id),
+    chainId,
+  );
+
+  const unipilotVaultAddress =
+    unipilotVaultsForPair && unipilotVaultsForPair[0]
+      ? unipilotVaultsForPair[0].id
+      : undefined;
+  const unipilotAPR =
+    unipilotFarmData &&
+    unipilotVaultAddress &&
+    unipilotFarmData[unipilotVaultAddress.toLocaleLowerCase()]
+      ? Number(
+          unipilotFarmData[unipilotVaultAddress.toLocaleLowerCase()]['stats'] ??
+            0,
+        )
+      : 0;
 
   return (
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
-      {(gammaPair || unipilotVaultsForPair.length > 0) && (
+      {(gammaPairExists ||
+        unipilotVaultExists ||
+        defiedgeStrategyExists ||
+        steerVaultExists) && (
         <Box className={`buttonGroup ${styles.poolRangeButtonGroup}`}>
           <ButtonGroup>
-            {gammaPair && (
-              <Button
-                className={
-                  liquidityRangeType ===
-                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-                    ? 'active'
-                    : ''
-                }
-                onClick={() =>
+            <Button
+              className={isAutomatic ? 'active' : ''}
+              onClick={() => {
+                if (gammaPairExists) {
                   onChangeLiquidityRangeType(
                     GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
-                  )
-                }
-              >
-                <picture>
-                  <img
-                    src={
-                      liquidityRangeType ===
-                      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-                        ? '/assets/images/automaticDark.svg'
-                        : '/assets/images/automatic.svg'
-                    }
-                    alt='gamma range'
-                  />
-                </picture>
-              </Button>
-            )}
-            {unipilotVaultsForPair.length > 0 && (
-              <Button
-                className={
-                  liquidityRangeType ===
-                  GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
-                    ? 'active'
-                    : ''
-                }
-                onClick={() =>
+                  );
+                } else if (unipilotVaultExists) {
                   onChangeLiquidityRangeType(
                     GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
-                  )
+                  );
+                } else if (defiedgeStrategyExists) {
+                  onChangeLiquidityRangeType(
+                    GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
+                  );
+                } else {
+                  onChangeLiquidityRangeType(
+                    GlobalConst.v3LiquidityRangeType.STEER_RANGE,
+                  );
                 }
-              >
-                <picture>
-                  <img
-                    src={
-                      liquidityRangeType ===
-                      GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
-                        ? '/assets/images/automaticDark.svg'
-                        : '/assets/images/automatic.svg'
-                    }
-                    alt='unipilot range'
-                  />
-                </picture>
-              </Button>
-            )}
+              }}
+            >
+              <picture>
+                <img
+                  src={
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+                      ? '/assets/images/automaticDark.svg'
+                      : '/assets/images/automatic.svg'
+                  }
+                  alt='automatic range'
+                />
+              </picture>
+            </Button>
             <Button
               className={
                 liquidityRangeType ===
@@ -458,33 +558,31 @@ export function SelectRange({
           </ButtonGroup>
         </Box>
       )}
-      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE && (
-        <>
-          <Box my={1.5} className={styles.poolRangePowerGamma}>
-            <span className='text-secondary'>{t('poweredBy')}</span>
+
+      {isAutomatic && (
+        <Box my={1.5} className='poolRangePowerGamma'>
+          <span className='text-secondary'>{t('poweredBy')}</span>
+          {liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
             <picture>
               <img src='/assets/images/gammaLogo.png' alt='Gamma Logo' />
             </picture>
-          </Box>
-          <Box mb={1.5}>
-            <small className='weight-600'>{t('selectStrategy')}</small>
-          </Box>
-        </>
-      )}
-      {liquidityRangeType ===
-        GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE && (
-        <>
-          <Box my={1.5} className={styles.poolRangePowerGamma}>
-            <span className='text-secondary'>{t('poweredBy')}</span>
+          ) : liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ? (
             <picture>
               <img src='/assets/images/unipilot.png' alt='Unipilot Logo' />
             </picture>
-          </Box>
-          <Box mb={1.5}>
-            <small className='weight-600'>{t('selectStrategy')}</small>
-          </Box>
-        </>
+          ) : liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ? (
+            <picture>
+              <img src='/assets/images/defiedge.png' alt='DefiEdge Logo' />
+            </picture>
+          ) : (
+            <small className='text-bold'>&nbsp;Steer</small>
+          )}
+        </Box>
       )}
+
       <Box my={1}>
         <PresetRanges
           mintInfo={mintInfo}
@@ -503,8 +601,17 @@ export function SelectRange({
             liquidityRangeType ===
             GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
           }
+          isDefiedge={
+            liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+          }
           gammaPair={gammaPair}
           unipilotPairs={unipilotVaultsForPair}
+          defiedgeStrategies={defiedgeStrategiesForPair}
+          isSteer={
+            liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE
+          }
+          steerPairs={steerVaultsForPair}
         />
       </Box>
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
@@ -638,7 +745,6 @@ export function SelectRange({
         <LiquidityChartRangeInput
           currencyA={currencyA ?? undefined}
           currencyB={currencyB ?? undefined}
-          feeAmount={mintInfo.dynamicFee}
           ticksAtLimit={mintInfo.ticksAtLimit}
           price={
             priceFormat === PriceFormats.USD
@@ -655,8 +761,107 @@ export function SelectRange({
           onRightRangeInput={onRightRangeInput}
           interactive={false}
           priceFormat={priceFormat}
+          feeAmount={mintInfo.feeAmount}
         />
       </Box>
+
+      {selectVaultEnabled && (
+        <Box mt={2}>
+          <small className='weight-600'>{t('selectVault')}</small>
+          <Grid container spacing={2} className='pool-select-vault-wrapper'>
+            {gammaPairExists && (
+              <Grid item xs={4}>
+                <Box
+                  className={`pool-select-vault-panel${
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+                      ? ' pool-select-vault-selected'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    onChangeLiquidityRangeType(
+                      GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
+                    );
+                  }}
+                >
+                  <img src='/assets/images/gammaLogo.png' alt='Gamma Logo' />
+                  <small className='text-success'>
+                    {formatNumber(gammaPoolAPR * 100)}%
+                  </small>
+                  <span>{t('apr')}</span>
+                </Box>
+              </Grid>
+            )}
+            {unipilotVaultExists && (
+              <Grid item xs={4}>
+                <Box
+                  className={`pool-select-vault-panel${
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+                      ? ' pool-select-vault-selected'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    onChangeLiquidityRangeType(
+                      GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+                    );
+                  }}
+                >
+                  <img src='/assets/images/unipilot.png' alt='Unipilot Logo' />
+                  <small className='text-success'>
+                    {formatNumber(unipilotAPR)}%
+                  </small>
+                  <span>{t('apr')}</span>
+                </Box>
+              </Grid>
+            )}
+            {defiedgeStrategyExists && (
+              <Grid item xs={4}>
+                <Box
+                  className={`pool-select-vault-panel${
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+                      ? ' pool-select-vault-selected'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    onChangeLiquidityRangeType(
+                      GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
+                    );
+                  }}
+                >
+                  <p>Defiedge</p>
+                  <small className='text-success'>
+                    {formatNumber(defiedgeStrategiesForPair[0]?.apr)}%
+                  </small>
+                  <span>{t('apr')}</span>
+                </Box>
+              </Grid>
+            )}
+            {steerVaultExists && (
+              <Grid item xs={4}>
+                <Box
+                  className={`pool-select-vault-panel${
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.STEER_RANGE
+                      ? ' pool-select-vault-selected'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    onChangeLiquidityRangeType(
+                      GlobalConst.v3LiquidityRangeType.STEER_RANGE,
+                    );
+                  }}
+                >
+                  <p>Steer</p>
+                  <small className='text-success'>{steerVault?.apr}%</small>
+                  <span>{t('apr')}</span>
+                </Box>
+              </Grid>
+            )}
+          </Grid>
+        </Box>
+      )}
     </Box>
   );
 }

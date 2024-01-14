@@ -195,7 +195,7 @@ export function EternalFarmCard({
             >
               <small className='text-secondary'>{t('poolAPR')}</small>
               <small className='text-success'>
-                {poolAprsLoading && <CircularProgress />}
+                {poolAprsLoading && <CircularProgress size='16px' />}
                 {!poolAprsLoading && <>{formatCompact(poolApr ?? 0)}%</>}
               </small>
             </Box>
@@ -206,7 +206,7 @@ export function EternalFarmCard({
             >
               <small className='text-secondary'>{t('farmAPR')}</small>
               <small className='text-success'>
-                {aprsLoading && <CircularProgress />}
+                {aprsLoading && <CircularProgress size='16px' />}
                 {!aprsLoading && <>{formatCompact(apr ?? 0)}%</>}
               </small>
             </Box>
@@ -214,7 +214,9 @@ export function EternalFarmCard({
         ) : (
           <Box width='20%' className='flex items-center'>
             <small className='text-success'>
-              {(poolAprsLoading || aprsLoading) && <CircularProgress />}
+              {(poolAprsLoading || aprsLoading) && (
+                <CircularProgress size='16px' />
+              )}
               {!poolAprsLoading && !aprsLoading && (
                 <>{formatCompact(totalAPR)}%</>
               )}

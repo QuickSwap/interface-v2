@@ -2,7 +2,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { getVersionUpgrade, VersionUpgrade } from '@uniswap/token-lists';
 import { GlobalConst } from 'constants/index';
 import { updateVersion } from 'state/global/actions';
-import { DualFarmListInfo } from 'types';
+import { DualFarmListInfo } from 'types/index';
 import { acceptDualFarmUpdate, fetchDualFarmList } from './actions';
 
 export interface DualFarmsListsState {

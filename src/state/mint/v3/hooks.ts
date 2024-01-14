@@ -19,13 +19,19 @@ import {
   typeStartPriceInput,
   updateLiquidityRangeType,
   updatePresetRange,
+  updateFeeTier,
 } from './actions';
 import { tryParseTick } from './utils';
 import { PoolState, usePool } from 'hooks/v3/usePools';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
 import { Pool } from 'v3lib/entities/pool';
 import { Position } from 'v3lib/entities';
-import { encodeSqrtRatioX96, TickMath, nearestUsableTick } from 'v3lib/utils';
+import {
+  encodeSqrtRatioX96,
+  TickMath,
+  nearestUsableTick,
+  TICK_SPACINGS,
+} from 'v3lib/utils';
 import {
   priceToClosestTick,
   tickToPrice,
@@ -45,12 +51,21 @@ import {
   useUniPilotVaultContract,
 } from 'hooks/useContract';
 import { useSingleCallResult } from 'state/multicall/hooks';
-import { ETHER, WETH } from '@uniswap/sdk';
-import { getGammaPairsForTokens, maxAmountSpend } from 'utils';
+import {
+  getAllDefiedgeStrategies,
+  getGammaPairsForTokens,
+  maxAmountSpend,
+  getSteerRatio,
+} from 'utils';
+import { ChainId, ETHER, WETH } from '@uniswap/sdk';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
-import { getConfig } from 'config';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
+import { getConfig } from 'config/index';
+import { IFeeTier } from 'components/pages/pools/SupplyLiquidityV3/containers/SelectFeeTier';
+import { useSteerVaults } from 'hooks/v3/useSteerData';
+import { useQuery } from '@tanstack/react-query';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -78,10 +93,12 @@ export interface IDerivedMintInfo {
   invertPrice: boolean;
   ticksAtLimit: { [bound in Bound]?: boolean | undefined };
   dynamicFee: number;
+  feeAmount: FeeAmount | undefined;
   lowerPrice: any;
   upperPrice: any;
   liquidityRangeType: string | undefined;
   presetRange: IPresetArgs | undefined;
+  feeTier: IFeeTier | undefined;
 }
 
 export function useV3MintState(): AppState['mintV3'] {
@@ -98,6 +115,7 @@ export function useV3MintActionHandlers(
   onStartPriceInput: (typedValue: string) => void;
   onChangeLiquidityRangeType: (value: string) => void;
   onChangePresetRange: (value: IPresetArgs) => void;
+  onChangeFeeTier: (value: IFeeTier) => void;
 } {
   const dispatch = useAppDispatch();
 
@@ -162,6 +180,13 @@ export function useV3MintActionHandlers(
     [dispatch],
   );
 
+  const onChangeFeeTier = useCallback(
+    (value: IFeeTier) => {
+      dispatch(updateFeeTier({ feeTier: value }));
+    },
+    [dispatch],
+  );
+
   return {
     onFieldAInput,
     onFieldBInput,
@@ -170,13 +195,13 @@ export function useV3MintActionHandlers(
     onStartPriceInput,
     onChangeLiquidityRangeType,
     onChangePresetRange,
+    onChangeFeeTier,
   };
 }
 
 export function useV3DerivedMintInfo(
   currencyA?: Currency,
   currencyB?: Currency,
-  feeAmount?: FeeAmount,
   baseCurrency?: Currency,
   // override for existing position
   existingPosition?: Position,
@@ -206,10 +231,12 @@ export function useV3DerivedMintInfo(
   invertPrice: boolean;
   ticksAtLimit: { [bound in Bound]?: boolean | undefined };
   dynamicFee: number;
+  feeAmount: FeeAmount | undefined;
   lowerPrice: any;
   upperPrice: any;
   liquidityRangeType: string | undefined;
   presetRange: IPresetArgs | undefined;
+  feeTier: IFeeTier | undefined;
 } {
   const { chainId, account } = useActiveWeb3React();
 
@@ -221,6 +248,7 @@ export function useV3DerivedMintInfo(
     startPriceTypedValue,
     liquidityRangeType,
     presetRange,
+    feeTier,
   } = useV3MintState();
 
   const dependentField =
@@ -268,7 +296,8 @@ export function useV3DerivedMintInfo(
 
   const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
     [Field.CURRENCY_A]:
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+        liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) &&
       currencyA &&
       chainId &&
       currencyA.wrapped.address.toLowerCase() ===
@@ -284,7 +313,8 @@ export function useV3DerivedMintInfo(
         ? balances[0]
         : undefined,
     [Field.CURRENCY_B]:
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+        liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) &&
       currencyB &&
       chainId &&
       currencyB.wrapped.address.toLowerCase() ===
@@ -301,15 +331,39 @@ export function useV3DerivedMintInfo(
         : undefined,
   };
 
+  const feeAmount = useMemo(() => {
+    const algebraChains = [ChainId.MATIC, ChainId.DOGECHAIN, ChainId.ZKEVM];
+    if (existingPosition && existingPosition.pool.isUni)
+      return existingPosition.pool.fee;
+    if (!feeTier) {
+      if (!algebraChains.includes(chainId)) return FeeAmount.LOWEST;
+      return;
+    }
+    switch (feeTier.id) {
+      case 'uni-0.01':
+        return FeeAmount.LOWEST;
+      case 'uni-0.05':
+        return FeeAmount.LOW;
+      case 'uni-0.3':
+        return FeeAmount.MEDIUM;
+      case 'uni-1':
+        return FeeAmount.HIGH;
+      default:
+        return;
+    }
+  }, [existingPosition, feeTier, chainId]);
+
   // pool
   //TODO
   const [poolState, pool] = usePool(
     currencies[Field.CURRENCY_A],
     currencies[Field.CURRENCY_B],
+    feeAmount,
+    !!feeAmount,
   );
   const noLiquidity = poolState === PoolState.NOT_EXISTS;
 
-  const dynamicFee = pool ? pool.fee : 100;
+  const dynamicFee = pool && pool.fee ? pool.fee : 100;
 
   // note to parse inputs in reverse
   const invertPrice = Boolean(baseToken && token0 && !baseToken.equals(token0));
@@ -322,6 +376,7 @@ export function useV3DerivedMintInfo(
         startPriceTypedValue,
         invertPrice ? token0 : token1,
       );
+
       if (parsedQuoteAmount && token0 && token1) {
         const baseAmount = tryParseAmount('1', invertPrice ? token1 : token0);
         const price =
@@ -359,7 +414,7 @@ export function useV3DerivedMintInfo(
 
   // used for ratio calculation when pool not initialized
   const mockPool = useMemo(() => {
-    if (tokenA && tokenB && feeAmount && price && !invalidPrice) {
+    if (tokenA && tokenB && price && !invalidPrice) {
       const currentTick = priceToClosestTick(price);
       const currentSqrt = TickMath.getSqrtRatioAtTick(currentTick);
       return new Pool(
@@ -370,6 +425,7 @@ export function useV3DerivedMintInfo(
         JSBI.BigInt(0),
         currentTick,
         [],
+        !!feeAmount,
       );
     } else {
       return undefined;
@@ -384,12 +440,14 @@ export function useV3DerivedMintInfo(
     [bound in Bound]: number | undefined;
   } = useMemo(
     () => ({
-      [Bound.LOWER]: feeAmount
-        ? nearestUsableTick(TickMath.MIN_TICK, 60)
-        : undefined,
-      [Bound.UPPER]: feeAmount
-        ? nearestUsableTick(TickMath.MAX_TICK, 60)
-        : undefined,
+      [Bound.LOWER]: nearestUsableTick(
+        TickMath.MIN_TICK,
+        feeAmount ? TICK_SPACINGS[feeAmount] : 60,
+      ),
+      [Bound.UPPER]: nearestUsableTick(
+        TickMath.MAX_TICK,
+        feeAmount ? TICK_SPACINGS[feeAmount] : 60,
+      ),
     }),
     [feeAmount],
   );
@@ -455,10 +513,10 @@ export function useV3DerivedMintInfo(
   // specifies whether the lower and upper ticks is at the exteme bounds
   const ticksAtLimit = useMemo(
     () => ({
-      [Bound.LOWER]: feeAmount && tickLower === tickSpaceLimits.LOWER,
-      [Bound.UPPER]: feeAmount && tickUpper === tickSpaceLimits.UPPER,
+      [Bound.LOWER]: tickLower === tickSpaceLimits.LOWER,
+      [Bound.UPPER]: tickUpper === tickSpaceLimits.UPPER,
     }),
-    [tickSpaceLimits, tickLower, tickUpper, feeAmount],
+    [tickSpaceLimits, tickLower, tickUpper],
   );
 
   // mark invalid range
@@ -495,18 +553,22 @@ export function useV3DerivedMintInfo(
     | CurrencyAmount<Currency>
     | undefined = tryParseAmount(
     typedValue,
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) &&
       independentCurrency &&
       independentCurrency.isNative
       ? independentCurrency.wrapped
       : independentCurrency,
   );
 
-  const gammaPairData = getGammaPairsForTokens(
-    chainId,
-    currencyA?.wrapped.address,
-    currencyB?.wrapped.address,
-  );
+  const gammaPairData =
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+      ? getGammaPairsForTokens(
+          chainId,
+          currencyA?.wrapped.address,
+          currencyB?.wrapped.address,
+        )
+      : undefined;
   const gammaPairReverted = gammaPairData?.reversed;
   const gammaPairAddress =
     gammaPairData && gammaPairData.pairs.length > 0
@@ -523,12 +585,13 @@ export function useV3DerivedMintInfo(
     ],
   );
 
+  const blacklistedGammaAddress = '0xa42d55074869491d60ac05490376b74cf19b00e6';
   const depositCapData1 = useSingleCallResult(
     presetRange &&
       presetRange.address &&
       gammaUNIPROXYContract &&
       gammaUNIPROXYContract.address.toLowerCase() !==
-        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+        blacklistedGammaAddress.toLowerCase()
       ? gammaUNIPROXYContract
       : undefined,
     'positions',
@@ -540,7 +603,7 @@ export function useV3DerivedMintInfo(
       presetRange.address &&
       gammaUNIPROXYContract &&
       gammaUNIPROXYContract.address.toLowerCase() ===
-        '0xa42d55074869491d60ac05490376b74cf19b00e6'
+        blacklistedGammaAddress.toLowerCase()
       ? gammaUNIPROXYContract
       : undefined,
     'clearance',
@@ -694,6 +757,22 @@ export function useV3DerivedMintInfo(
     unipilotToken1VaultBalance,
   ]);
 
+  const { defiedgeStrategies } = useGetDefiedgeStrategies();
+  const defiedgeStrategy = defiedgeStrategies.find(
+    (item) =>
+      presetRange &&
+      presetRange.address &&
+      item.id.toLowerCase() === presetRange.address.toLowerCase(),
+  );
+
+  const { data: steerVaults } = useSteerVaults(chainId);
+  const steerVault = steerVaults.find(
+    (item) =>
+      presetRange &&
+      presetRange.address &&
+      item.address.toLowerCase() === presetRange.address.toLowerCase(),
+  );
+
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
     const dependentCurrency =
       dependentField === Field.CURRENCY_B ? currencyB : currencyA;
@@ -772,8 +851,68 @@ export function useV3DerivedMintInfo(
 
       return CurrencyAmount.fromRawAmount(dependentCurrency, dependentDeposit);
     }
+
+    if (
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+    ) {
+      if (!independentAmount || !dependentCurrency || !defiedgeStrategy) return;
+
+      const tokenType =
+        defiedgeStrategy.token0 &&
+        dependentCurrency.wrapped.address.toLowerCase() ===
+          defiedgeStrategy.token0.toLowerCase()
+          ? 0
+          : 1;
+
+      let dependentDeposit;
+
+      if (tokenType === 0) {
+        dependentDeposit =
+          (1 / defiedgeStrategy.ratio) * Number(independentAmount.toExact());
+      } else {
+        dependentDeposit =
+          defiedgeStrategy.ratio * Number(independentAmount.toExact());
+      }
+
+      return CurrencyAmount.fromRawAmount(
+        dependentCurrency.isNative
+          ? dependentCurrency.wrapped
+          : dependentCurrency,
+        JSBI.BigInt(
+          parseUnits(
+            dependentDeposit.toFixed(dependentCurrency.decimals),
+            dependentCurrency.decimals,
+          ),
+        ),
+      );
+    }
+
+    if (liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE) {
+      if (!independentAmount || !dependentCurrency || !steerVault) return;
+      const tokenType =
+        steerVault.token0 &&
+        dependentCurrency.wrapped.address.toLowerCase() ===
+          steerVault.token0.address.toLowerCase()
+          ? 0
+          : 1;
+      const steerRatio = getSteerRatio(tokenType, steerVault);
+      const dependentDeposit = steerRatio * Number(independentAmount.toExact());
+      return CurrencyAmount.fromRawAmount(
+        dependentCurrency.isNative
+          ? dependentCurrency.wrapped
+          : dependentCurrency,
+        JSBI.BigInt(
+          parseUnits(
+            dependentDeposit.toFixed(dependentCurrency.decimals),
+            dependentCurrency.decimals,
+          ),
+        ),
+      );
+    }
+
     // we wrap the currencies just to get the price in terms of the other token
     const wrappedIndependentAmount = independentAmount?.wrapped;
+
     if (
       independentAmount &&
       wrappedIndependentAmount &&
@@ -832,7 +971,10 @@ export function useV3DerivedMintInfo(
     presetRange,
     depositAmount,
     vaultToken0,
-    uniPilotVaultReserve,
+    uniPilotVaultReserve?.token1,
+    uniPilotVaultReserve?.token0,
+    defiedgeStrategy,
+    steerVault,
     outOfRange,
     invalidRange,
   ]);
@@ -866,7 +1008,8 @@ export function useV3DerivedMintInfo(
 
   // sorted for token order
   const depositADisabled =
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) &&
     (invalidRange ||
       Boolean(
         (deposit0Disabled &&
@@ -879,7 +1022,8 @@ export function useV3DerivedMintInfo(
             poolForPosition.token1.equals(tokenA)),
       ));
   const depositBDisabled =
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) &&
     (invalidRange ||
       Boolean(
         (deposit0Disabled &&
@@ -982,9 +1126,7 @@ export function useV3DerivedMintInfo(
     currencyAAmount &&
     currencyBalances?.[Field.CURRENCY_A]?.lessThan(currencyAAmount)
   ) {
-    const msg = `Insufficient ${
-      currencies[Field.CURRENCY_A]?.wrapped.symbol
-    } balance`;
+    const msg = `Insufficient ${currencies[Field.CURRENCY_A]?.symbol} balance`;
     errorMessage = msg;
     token0ErrorMessage = msg;
     errorCode = errorCode ?? 4;
@@ -994,9 +1136,7 @@ export function useV3DerivedMintInfo(
     currencyBAmount &&
     currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount)
   ) {
-    const msg = `Insufficient ${
-      currencies[Field.CURRENCY_B]?.wrapped.symbol
-    } balance`;
+    const msg = `Insufficient ${currencies[Field.CURRENCY_B]?.symbol} balance`;
     errorMessage = msg;
     token1ErrorMessage = msg;
     errorCode = errorCode ?? 5;
@@ -1008,7 +1148,7 @@ export function useV3DerivedMintInfo(
       (gammaPairReverted ? depositCap.deposit1Max : depositCap.deposit0Max)
   ) {
     const msg = `${
-      currencies[Field.CURRENCY_A]?.wrapped.symbol
+      currencies[Field.CURRENCY_A]?.symbol
     } deposit cap of ${(gammaPairReverted
       ? depositCap.deposit1Max
       : depositCap.deposit0Max
@@ -1026,7 +1166,7 @@ export function useV3DerivedMintInfo(
       (gammaPairReverted ? depositCap.deposit0Max : depositCap.deposit1Max)
   ) {
     const msg = `${
-      currencies[Field.CURRENCY_B]?.wrapped.symbol
+      currencies[Field.CURRENCY_B]?.symbol
     } deposit cap of ${(gammaPairReverted
       ? depositCap.deposit0Max
       : depositCap.deposit1Max
@@ -1064,10 +1204,12 @@ export function useV3DerivedMintInfo(
     invertPrice,
     ticksAtLimit,
     dynamicFee,
+    feeAmount,
     lowerPrice,
     upperPrice,
     liquidityRangeType,
     presetRange,
+    feeTier,
   };
 }
 
@@ -1083,151 +1225,108 @@ export function useRangeHopCallbacks(
 
   const baseToken = useMemo(() => baseCurrency?.wrapped, [baseCurrency]);
   const quoteToken = useMemo(() => quoteCurrency?.wrapped, [quoteCurrency]);
+  const tickSpacing = feeAmount ? TICK_SPACINGS[feeAmount] : 60;
 
   const getDecrementLower = useCallback(
     (rate = 1) => {
-      if (
-        baseToken &&
-        quoteToken &&
-        typeof tickLower === 'number' &&
-        feeAmount
-      ) {
+      if (baseToken && quoteToken && typeof tickLower === 'number') {
         const newPrice = tickToPrice(
           baseToken,
           quoteToken,
-          tickLower - 60 * rate,
+          tickLower - tickSpacing * rate,
         );
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
       }
       // use pool current tick as starting tick if we have pool but no tick input
 
-      if (
-        !(typeof tickLower === 'number') &&
-        baseToken &&
-        quoteToken &&
-        feeAmount &&
-        pool
-      ) {
+      if (!(typeof tickLower === 'number') && baseToken && quoteToken && pool) {
         const newPrice = tickToPrice(
           baseToken,
           quoteToken,
-          pool.tickCurrent - 60 * rate,
+          pool.tickCurrent - tickSpacing * rate,
         );
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
       }
       return '';
     },
-    [baseToken, quoteToken, tickLower, feeAmount, pool],
+    [baseToken, quoteToken, tickLower, tickSpacing, pool],
   );
 
   const getIncrementLower = useCallback(
     (rate = 1) => {
-      if (
-        baseToken &&
-        quoteToken &&
-        typeof tickLower === 'number' &&
-        feeAmount
-      ) {
+      if (baseToken && quoteToken && typeof tickLower === 'number') {
         const newPrice = tickToPrice(
           baseToken,
           quoteToken,
-          tickLower + 60 * rate,
+          tickLower + tickSpacing * rate,
         );
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
       }
       // use pool current tick as starting tick if we have pool but no tick input
-      if (
-        !(typeof tickLower === 'number') &&
-        baseToken &&
-        quoteToken &&
-        feeAmount &&
-        pool
-      ) {
+      if (!(typeof tickLower === 'number') && baseToken && quoteToken && pool) {
         const newPrice = tickToPrice(
           baseToken,
           quoteToken,
-          pool.tickCurrent + 60 * rate,
+          pool.tickCurrent + tickSpacing * rate,
         );
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
       }
       return '';
     },
-    [baseToken, quoteToken, tickLower, feeAmount, pool],
+    [baseToken, quoteToken, tickLower, tickSpacing, pool],
   );
 
   const getDecrementUpper = useCallback(
     (rate = 1) => {
-      if (
-        baseToken &&
-        quoteToken &&
-        typeof tickUpper === 'number' &&
-        feeAmount
-      ) {
+      if (baseToken && quoteToken && typeof tickUpper === 'number') {
         const newPrice = tickToPrice(
           baseToken,
           quoteToken,
-          tickUpper - 60 * rate,
+          tickUpper - tickSpacing * rate,
         );
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
       }
       // use pool current tick as starting tick if we have pool but no tick input
-      if (
-        !(typeof tickUpper === 'number') &&
-        baseToken &&
-        quoteToken &&
-        feeAmount &&
-        pool
-      ) {
+      if (!(typeof tickUpper === 'number') && baseToken && quoteToken && pool) {
         const newPrice = tickToPrice(
           baseToken,
           quoteToken,
-          pool.tickCurrent - 60 * rate,
+          pool.tickCurrent - tickSpacing * rate,
         );
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
       }
       return '';
     },
-    [baseToken, quoteToken, tickUpper, feeAmount, pool],
+    [baseToken, quoteToken, tickUpper, tickSpacing, pool],
   );
 
   const getIncrementUpper = useCallback(
     (rate = 1) => {
-      if (
-        baseToken &&
-        quoteToken &&
-        typeof tickUpper === 'number' &&
-        feeAmount
-      ) {
+      if (baseToken && quoteToken && typeof tickUpper === 'number') {
         const newPrice = tickToPrice(
           baseToken,
           quoteToken,
-          tickUpper + 60 * rate,
+          tickUpper + tickSpacing * rate,
         );
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
       }
       // use pool current tick as starting tick if we have pool but no tick input
-      if (
-        !(typeof tickUpper === 'number') &&
-        baseToken &&
-        quoteToken &&
-        feeAmount &&
-        pool
-      ) {
+      if (!(typeof tickUpper === 'number') && baseToken && quoteToken && pool) {
         const newPrice = tickToPrice(
           baseToken,
           quoteToken,
-          pool.tickCurrent + 60 * rate,
+          pool.tickCurrent + tickSpacing * rate,
         );
         return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
       }
       return '';
     },
-    [baseToken, quoteToken, tickUpper, feeAmount, pool],
+    [baseToken, quoteToken, tickUpper, tickSpacing, pool],
   );
 
   const getSetRange = useCallback(
     (numTicks: number) => {
-      if (baseToken && quoteToken && feeAmount && pool) {
+      if (baseToken && quoteToken && pool) {
         // calculate range around current price given `numTicks`
         const newPriceLower = tickToPrice(
           baseToken,
@@ -1247,7 +1346,7 @@ export function useRangeHopCallbacks(
       }
       return ['', ''];
     },
-    [baseToken, quoteToken, feeAmount, pool],
+    [baseToken, quoteToken, pool],
   );
 
   const getSetFullRange = useCallback(() => {
@@ -1357,4 +1456,111 @@ export function useGetUnipilotVaults() {
       rangeTickUpper: vaultTicksResult ? vaultTicksResult[3] : undefined,
     };
   });
+}
+
+export const useDefiEdgeStrategiesAPR = (strategies: string[]) => {
+  const defiedgeAPIURL = process.env.NEXT_PUBLIC_DEFIEDGE_API_URL;
+  const fetchDefiedgeStrategiesWithApr = async () => {
+    if (!defiedgeAPIURL) return [];
+
+    try {
+      const res = await fetch(
+        `${defiedgeAPIURL}/polygon/details?strategies=${strategies.join()}`,
+      );
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return data;
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  };
+
+  return useQuery({
+    queryKey: ['fetchDefiedgeStrategiesWithApr', strategies.join()],
+    queryFn: fetchDefiedgeStrategiesWithApr,
+  });
+};
+
+export function useGetDefiedgeStrategies() {
+  const { chainId } = useActiveWeb3React();
+  const strategies = getAllDefiedgeStrategies(chainId);
+  const strategyIds = strategies.map((s) => s.id);
+  const defiedgeAPIURL = process.env.NEXT_PUBLIC_DEFIEDGE_API_URL;
+
+  const strategyTickResult = useMultipleContractSingleData(
+    strategyIds,
+    new Interface(DEFIEDGE_STRATEGY_ABI),
+    'ticks',
+    [0],
+  );
+
+  const fetchLiquidityRatio = useCallback(
+    async (strategy: string) => {
+      if (!defiedgeAPIURL) return 0;
+
+      const res = await fetch(
+        `${defiedgeAPIURL}/polygon/${strategy.toLowerCase()}/deposit/ratio`,
+      );
+      const data = await res.json();
+      return data?.ratio ?? 0;
+    },
+    [defiedgeAPIURL],
+  );
+
+  const fetchStrategiesLiquidityRatio = useCallback(async () => {
+    try {
+      const responses = await Promise.all(
+        strategies.map((s) => fetchLiquidityRatio(s.id)),
+      );
+      return responses;
+    } catch (error) {
+      console.error('Error fetching liquidity ratios:', error);
+      return null;
+    }
+  }, [fetchLiquidityRatio, strategies]);
+
+  const {
+    isLoading,
+    data: defiedgeStrategiesWithApr,
+  } = useDefiEdgeStrategiesAPR(strategyIds);
+
+  const { data: liquidityRatios } = useQuery({
+    queryKey: ['fetchStrategiesLiquidityRatio', strategies],
+    queryFn: fetchStrategiesLiquidityRatio,
+  });
+
+  const defiedgeStrategies = strategies.map((strategy, index) => {
+    const strategyTickCallData = strategyTickResult[index];
+
+    const strategyTicksResult =
+      !strategyTickCallData.loading &&
+      strategyTickCallData.result &&
+      strategyTickCallData.result.length > 0
+        ? strategyTickCallData.result
+        : undefined;
+
+    const tickLower = strategyTicksResult ? strategyTicksResult[0] : undefined;
+    const tickUpper = strategyTicksResult ? strategyTicksResult[1] : undefined;
+
+    const strategyItem = defiedgeStrategiesWithApr?.find(
+      (e: any) =>
+        e.strategy.address.toLowerCase() === strategy.id.toLowerCase(),
+    );
+
+    return {
+      id: strategy.id,
+      token0: strategy.token0,
+      token1: strategy.token1,
+      pool: strategy.pool,
+      tickLower,
+      tickUpper,
+      onHold: !tickLower && !tickUpper,
+      apr: strategyItem?.strategy?.fees_apr,
+      ratio: liquidityRatios && liquidityRatios[index],
+    };
+  });
+
+  return { isLoading, defiedgeStrategies };
 }

@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import styles from 'styles/components/NetworkSelectionModal.module.scss';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import {
   useModalOpen,
@@ -19,10 +19,12 @@ import {
   walletConnectConnection,
   zengoConnectConnection,
 } from 'connectors';
+import { useArcxAnalytics } from '@arcxmoney/analytics';
 
 const NetworkSelectionModal: React.FC = () => {
   const { t } = useTranslation();
-  const { chainId, connector } = useActiveWeb3React();
+  const arcxSdk = useArcxAnalytics();
+  const { chainId, connector, account } = useActiveWeb3React();
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
     const config = getConfig(chain);
     return config && config.isMainnet;
@@ -40,6 +42,8 @@ const NetworkSelectionModal: React.FC = () => {
       connector === networkConnection.connector
     ) {
       connector.activate(Number(localChainId));
+    } else {
+      connector.activate(chainId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -63,9 +67,12 @@ const NetworkSelectionModal: React.FC = () => {
       } else {
         await connector.activate(chainParam);
       }
+      if (arcxSdk && account) {
+        await arcxSdk.chain({ chainId, account });
+      }
       localStorage.setItem('localChainId', chainId.toString());
     },
-    [connector],
+    [account, arcxSdk, connector],
   );
 
   return (
@@ -108,6 +115,17 @@ const NetworkSelectionModal: React.FC = () => {
             </Box>
           );
         })}
+        <Box
+          className={styles.networkItemWrapper}
+          onClick={() => {
+            window.open('https://dex.kinetix.finance', '_blank');
+          }}
+        >
+          <Box className='flex items-center'>
+            <img src='/assets/images/KAVA.png' alt='network Image' />
+            <small className='weight-600'>Kava - Kinetix</small>
+          </Box>
+        </Box>
       </Box>
     </CustomModal>
   );

@@ -8,10 +8,17 @@ import { ChainId } from '@uniswap/sdk';
 export const rpcMap = {
   [ChainId.MATIC]: 'https://polygon-rpc.com/',
   [ChainId.MUMBAI]: 'https://rpc-mumbai.maticvigil.com/',
-  [ChainId.DOGECHAIN]: 'https://rpc-sg.dogechain.dog/',
+  [ChainId.DOGECHAIN]: 'https://rpc.dogechain.dog/',
   [ChainId.DOEGCHAIN_TESTNET]: 'https://rpc-testnet.dogechain.dog',
   [ChainId.ZKTESTNET]: 'https://rpc.public.zkevm-test.net',
   [ChainId.ZKEVM]: 'https://zkevm-rpc.com',
+  [ChainId.KAVA]: '',
+  [ChainId.MANTA]: 'https://pacific-rpc.manta.network/http',
+  [ChainId.ZKATANA]: 'https://rpc.zkatana.gelato.digital',
+  [ChainId.BTTC]: '',
+  [ChainId.TIMX]: 'https://rpc.testnet.immutable.com',
+  [ChainId.X1]: 'https://testrpc.x1.tech',
+  [ChainId.IMX]: 'https://rpc.immutable.com',
 };
 
 class AppJsonRpcProvider extends StaticJsonRpcProvider {
@@ -70,4 +77,11 @@ export const RPC_PROVIDERS: {
   ),
   [ChainId.ZKEVM]: new AppJsonRpcProvider(ChainId.ZKEVM),
   [ChainId.ZKTESTNET]: new AppJsonRpcProvider(ChainId.ZKTESTNET),
+  [ChainId.KAVA]: new AppJsonRpcProvider(ChainId.KAVA),
+  [ChainId.MANTA]: new AppJsonRpcProvider(ChainId.MANTA),
+  [ChainId.ZKATANA]: new AppJsonRpcProvider(ChainId.ZKATANA),
+  [ChainId.BTTC]: new AppJsonRpcProvider(ChainId.BTTC),
+  [ChainId.X1]: new AppJsonRpcProvider(ChainId.X1),
+  [ChainId.TIMX]: new AppJsonRpcProvider(ChainId.TIMX),
+  [ChainId.IMX]: new AppJsonRpcProvider(ChainId.IMX),
 };

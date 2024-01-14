@@ -56,18 +56,18 @@ const AnalyticsPage = (
       )}
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={6}>
-          <Box className='panel' width={1}>
+          <Box className={styles.panel} width={1}>
             <AnalyticsLiquidityChart globalData={globalData} />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
-          <Box className='analyticsVolumeChart panel'>
+          <Box className={`${styles.analyticsVolumeChart} ${styles.panel}`}>
             <AnalyticsVolumeChart globalData={globalData} />
           </Box>
         </Grid>
       </Grid>
       <Box mt={4}>
-        <Box className='flex flex-wrap panel'>
+        <Box className={`flex flex-wrap ${styles.panel}`}>
           {globalDataLoading ? (
             <Skeleton width='100%' height={20} />
           ) : globalData ? (
@@ -91,7 +91,7 @@ const AnalyticsPage = (
           </Box>
         </Box>
       </Box>
-      <Box mt={3} className='panel'>
+      <Box mt={3} className={styles.panel}>
         {topTokensLoading ? (
           <Skeleton variant='rectangular' width='100%' height={150} />
         ) : topTokens ? (
@@ -123,7 +123,7 @@ const AnalyticsPage = (
           </Box>
         </Box>
       </Box>
-      <Box mt={3} className='panel'>
+      <Box mt={3} className={styles.panel}>
         {topPairsLoading ? (
           <Skeleton variant='rectangular' width='100%' height={150} />
         ) : topPairs ? (

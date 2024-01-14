@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Box, Grid } from '@mui/material';
@@ -23,7 +23,7 @@ import AnalyticsPairChart from 'components/pages/analytics/AnalyticsPairChart';
 import { useTranslation } from 'next-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { CallMade } from '@mui/icons-material';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import styles from 'styles/pages/Analytics.module.scss';
@@ -41,6 +41,8 @@ const AnalyticsPairDetails = (
   const isV2 = version === 'v2';
   const { chainId } = useActiveWeb3React();
 
+  const isUni = router.query && router.query.isUni === 'true' ? true : false;
+
   const config = getConfig(chainId);
   const showAnalytics = config['analytics']['available'];
   useEffect(() => {
@@ -53,7 +55,11 @@ const AnalyticsPairDetails = (
   const fetchPairData = async () => {
     if (chainId && version) {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
+        `${
+          process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
+        }/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}${
+          isUni ? '&isUni=true' : ''
+        }`,
       );
       if (!res.ok) {
         return null;
@@ -64,25 +70,11 @@ const AnalyticsPairDetails = (
     return null;
   };
 
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['fetchAnalyticsPairDetails', pairAddress, version, chainId],
     queryFn: fetchPairData,
+    refetchInterval: 60000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const pairData = data ? data.pairData : undefined;
   const pairTransactions = data ? data.pairTransactions : undefined;
@@ -195,7 +187,7 @@ const AnalyticsPairDetails = (
     <Box width={1} my={4}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={3}>
-          <Box className={`panel ${styles.analyticsDetailsInfoV3}`}>
+          <Box className={`${styles.panel} ${styles.analyticsDetailsInfoV3}`}>
             <Box>
               <span className='text-disabled'>{t('totalTokensLocked')}</span>
               <Box
@@ -281,11 +273,12 @@ const AnalyticsPairDetails = (
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={9}>
-          <Box className='panel' mt={2} mb={2} height={'100%'}>
+          <Box className={styles.panel} mt={2} mb={2} height={'100%'}>
             <AnalyticsPairChart
               pairData={pairData}
               token0Rate={token0Rate}
               token1Rate={token1Rate}
+              isUni={isUni}
             />
           </Box>
         </Grid>
@@ -331,7 +324,9 @@ const AnalyticsPairDetails = (
                     borderRadius='6px'
                     className='text-primaryText bg-gray30'
                   >
-                    <small>{pairData.fee / 10000}% Fee</small>
+                    <small>
+                      {pairData.fee / 10000}% {isUni ? '(F)' : 'Fee'}
+                    </small>
                   </Box>
                 )}
               </Box>
@@ -401,7 +396,7 @@ const AnalyticsPairDetails = (
               <Box width={1}>
                 <p>{t('transactions')}</p>
               </Box>
-              <Box width={1} className='panel' my={4}>
+              <Box width={1} className={styles.panel} my={4}>
                 {pairTransactionsList ? (
                   <TransactionsTable data={pairTransactionsList} />
                 ) : (

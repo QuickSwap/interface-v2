@@ -5,13 +5,18 @@ import { useRouter } from 'next/router';
 import styles from 'styles/components/Toggle.module.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
-import { useAnalyticsVersion } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { getConfig } from 'config/index';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
-  const { isV2, updateIsV2 } = useIsV2();
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const singleTokenEnabled = config['ichi']['available'];
+  const { updateIsV2 } = useIsV2();
   const router = useRouter();
   const isAnalyticsPage = router.pathname.includes('/analytics');
+  const isPoolPage = router.pathname.includes('/pools');
   const analyticsVersion = useAnalyticsVersion();
   const version = router.query.version
     ? (router.query.version as string)
@@ -55,9 +60,7 @@ const VersionToggle: React.FC = () => {
   return (
     <Box className={styles.versionToggleContainer}>
       <Box
-        className={
-          isV2 && version !== 'total' ? styles.versionToggleActive : ''
-        }
+        className={version === 'v2' ? styles.versionToggleActive : ''}
         onClick={() => {
           redirectWithVersion('v2');
         }}
@@ -66,15 +69,26 @@ const VersionToggle: React.FC = () => {
       </Box>
 
       <Box
-        className={
-          !isV2 && version !== 'total' ? styles.versionToggleActive : ''
-        }
+        className={version === 'v3' ? styles.versionToggleActive : ''}
         onClick={() => {
           redirectWithVersion('v3');
         }}
       >
         <small>{t('V3')}</small>
       </Box>
+
+      {isPoolPage && singleTokenEnabled && (
+        <Box
+          className={
+            version === 'singleToken' ? styles.versionToggleActive : ''
+          }
+          onClick={() => {
+            redirectWithVersion('singleToken');
+          }}
+        >
+          <small>{t('singleToken')}</small>
+        </Box>
+      )}
 
       {isAnalyticsPage && (
         <Box

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
-import { DualStakingInfo, StakingInfo } from 'types';
+import { DualStakingInfo, StakingInfo } from 'types/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import FarmCardDetails from './FarmCardDetails';

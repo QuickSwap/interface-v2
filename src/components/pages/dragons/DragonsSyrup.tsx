@@ -6,7 +6,7 @@ import {
   useOldSyrupInfo,
   useOldLairInfo,
 } from 'state/stake/hooks';
-import { SyrupInfo } from 'types';
+import { SyrupInfo } from 'types/index';
 import {
   SyrupCard,
   ToggleSwitch,

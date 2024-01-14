@@ -16,12 +16,15 @@
     "bestTrade": false,
     "proMode": false,
     "limitOrder": false,
+    "liquidityHub": false,
     "crossChain": false
   },
   "pools": {
     "available": true
   },
   "farm": {
+    "quickswap": false,
+    "merkl": false,
     "available": false
   },
   "lair": {
@@ -55,6 +58,18 @@
     "available": false
   },
   "perps": {
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
+  },
+  "ichi": {
+    "available": false
+  },
+  "defiedge": {
     "available": false
   }
 }

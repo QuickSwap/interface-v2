@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'next-i18next';
-import styles from 'styles/pages/pools/UnipilotLPItemDetails.module.scss';
+import styles from 'styles/pages/pools/AutomaticLPItemDetails.module.scss';
 import { formatNumber } from 'utils';
 import { CurrencyLogo } from 'components';
 import IncreaseUnipilotLiquidityModal from './IncreaseUnipilotLiquidityModal';
@@ -11,17 +11,20 @@ import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useUniPilotVaultContract } from 'hooks/useContract';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
+import { UnipilotPosition } from 'hooks/v3/useV3Positions';
 
-const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
+const UnipilotLPItemDetails: React.FC<{ position: UnipilotPosition }> = ({
+  position,
+}) => {
   const { t } = useTranslation();
 
-  const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
+  const uniPilotVaultContract = useUniPilotVaultContract(position.id);
   const unipilotToken0VaultBalance = useTokenBalance(
-    position.vault.id,
+    position.id,
     position.token0,
   );
   const unipilotToken1VaultBalance = useTokenBalance(
-    position.vault.id,
+    position.id,
     position.token1,
   );
 
@@ -104,6 +107,8 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
     token1Balance,
   };
 
+  const lpBalance = position?.lpBalance ?? JSBI.BigInt(0);
+
   return (
     <Box>
       {showAddLPModal && (
@@ -177,16 +182,16 @@ const UnipilotLPItemDetails: React.FC<{ position: any }> = ({ position }) => {
           </small>
         </Box>
       </Box>
-      <Box mt={2} className={styles.unipilotLiquidityItemButtons}>
+      <Box mt={2} className={styles.liquidityItemButtons}>
         <Button
-          className={styles.unipilotLiquidityItemButton}
+          className={styles.liquidityItemButton}
           onClick={() => setShowAddLPModal(true)}
         >
           <small>{t('addLiquidity')}</small>
         </Button>
         <Button
-          className={styles.unipilotLiquidityItemButton}
-          disabled={position.farming}
+          className={styles.liquidityItemButton}
+          disabled={JSBI.equal(lpBalance, JSBI.BigInt(0))}
           onClick={() => setShowWithdrawModal(true)}
         >
           <small>{t('withdraw')}</small>

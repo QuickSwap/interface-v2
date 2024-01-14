@@ -14,6 +14,8 @@ import Transaction from './Transaction';
 import { useTranslation } from 'next-i18next';
 import { useUDDomain } from 'state/application/hooks';
 import { useSelectedWallet } from 'state/user/hooks';
+import { useArcxAnalytics } from '@arcxmoney/analytics';
+import { networkConnection } from 'connectors';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -45,6 +47,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   const { updateSelectedWallet } = useSelectedWallet();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
+  const arcxSdk = useArcxAnalytics();
 
   function formatConnectorName() {
     const name = getWalletKeys(connector).map(
@@ -74,19 +77,19 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             <small
               style={{ cursor: 'pointer', marginRight: 8 }}
               onClick={async () => {
+                if (arcxSdk) {
+                  await arcxSdk.disconnection({ account, chainId });
+                }
                 if (connector && connector.deactivate) {
                   await connector.deactivate();
                 }
                 await connector.resetState();
                 updateSelectedWallet(undefined);
-                // if (
-                //   connector ===
-                //   ((unstopabbledomains as any) as AbstractConnector)
-                // ) {
-                //   (connector as any).handleDeactivate();
-                // } else {
-                //   (connector as any).close();
-                // }
+
+                const localChainId = localStorage.getItem('localChainId');
+                await networkConnection.connector.activate(
+                  Number(localChainId),
+                );
               }}
             >
               {t('disconnect')}

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'next-i18next';
 import GammaLPList from './GammaLPList';
-import { useQuery } from '@tanstack/react-query';
-import { getAllGammaPairs, getGammaData } from 'utils';
+import { getAllGammaPairs } from 'utils';
 import { useMasterChefContracts } from 'hooks/useContract';
 import {
   useMultipleContractMultipleData,
@@ -13,7 +12,7 @@ import {
 } from 'state/multicall/v3/hooks';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
-import { useLastTransactionHash } from 'state/transactions/hooks';
+import { useGammaData } from 'hooks/v3/useGammaData';
 
 export default function MyGammaPoolsV3() {
   const { t } = useTranslation();
@@ -23,36 +22,7 @@ export default function MyGammaPoolsV3() {
 
   const toggleWalletModal = useWalletModalToggle();
 
-  const fetchGammaData = async () => {
-    const gammaData = await getGammaData(chainId);
-    return gammaData;
-  };
-
-  const lastTxHash = useLastTransactionHash();
-
-  const {
-    isLoading: dataLoading,
-    data: gammaData,
-    refetch: refetchGammaData,
-  } = useQuery({
-    queryKey: ['fetchGammaDataPools', lastTxHash, chainId],
-    queryFn: fetchGammaData,
-  });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchGammaData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  const { isLoading: dataLoading, data: gammaData } = useGammaData();
 
   const allGammaPairsToFarm = getAllGammaPairs(chainId);
 

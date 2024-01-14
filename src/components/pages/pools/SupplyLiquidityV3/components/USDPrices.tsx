@@ -111,7 +111,7 @@ export function USDPrices({
           </div>
         )
       ) : !loadingTimedout ? (
-        <CircularProgress />
+        <CircularProgress size='16px' />
       ) : (
         <div>{t('cantFetchPrices')}</div>
       )}

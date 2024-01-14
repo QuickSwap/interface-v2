@@ -16,8 +16,6 @@ import { LockOutlined } from '@mui/icons-material';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'next-i18next';
 import { ChainId, ETHER, WETH } from '@uniswap/sdk';
-import { useV3MintState } from 'state/mint/v3/hooks';
-import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo } from 'components';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 
@@ -34,6 +32,7 @@ interface ITokenAmountCard {
   error: string | undefined;
   priceFormat: PriceFormats;
   isBase: boolean;
+  isDual?: boolean;
 }
 
 export function TokenAmountCard({
@@ -45,6 +44,7 @@ export function TokenAmountCard({
   locked,
   isMax,
   error,
+  isDual,
 }: ITokenAmountCard) {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
@@ -55,7 +55,6 @@ export function TokenAmountCard({
     wrapped: WMATIC_EXTENDED[chainIdToUse],
   } as NativeCurrency;
   const { t } = useTranslation();
-  const { liquidityRangeType } = useV3MintState();
 
   const balance = useCurrencyBalanceV3(
     account ?? undefined,
@@ -126,7 +125,7 @@ export function TokenAmountCard({
     if (!balance || !currency) return t('loading');
 
     if (
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      isDual &&
       chainId &&
       currency.wrapped.address.toLowerCase() ===
         WETH[chainId].address.toLowerCase()
@@ -138,15 +137,7 @@ export function TokenAmountCard({
     } else {
       return balance.toSignificant();
     }
-  }, [
-    balance,
-    currency,
-    t,
-    liquidityRangeType,
-    chainId,
-    wETHBalance,
-    ethBalance,
-  ]);
+  }, [balance, currency, t, isDual, chainId, wETHBalance, ethBalance]);
 
   return (
     <>
@@ -164,8 +155,7 @@ export function TokenAmountCard({
         {currency ? (
           <Box className='flex flex-col items-start'>
             <div className={styles.cardLogo}>
-              {liquidityRangeType ===
-                GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+              {isDual &&
               chainId &&
               currency.wrapped.address.toLowerCase() ===
                 WETH[chainId].address.toLowerCase() ? (
@@ -178,8 +168,7 @@ export function TokenAmountCard({
                 <CurrencyLogo size='24px' currency={currency} />
               )}
               <p className='weight-600'>
-                {liquidityRangeType ===
-                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+                {isDual &&
                 chainId &&
                 currency.wrapped.address.toLowerCase() ===
                   WETH[chainId].address.toLowerCase()
@@ -192,7 +181,7 @@ export function TokenAmountCard({
                 <Box className='flex items-center'>
                   <small className='text-secondary'>{t('balance')}: </small>
                   <Box className='flex' ml='5px'>
-                    <CircularProgress />
+                    <CircularProgress size='16px' />
                   </Box>
                 </Box>
               ) : (

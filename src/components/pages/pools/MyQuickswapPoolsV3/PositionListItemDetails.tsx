@@ -8,7 +8,10 @@ import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { useV3PositionFees } from 'hooks/v3/useV3PositionFees';
 import { Currency, CurrencyAmount, Fraction, Token } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import {
+  useUNIV3NFTPositionManagerContract,
+  useV3NFTPositionManagerContract,
+} from 'hooks/useContract';
 import {
   useIsTransactionPending,
   useTransactionAdder,
@@ -24,6 +27,7 @@ import { event } from 'nextjs-google-analytics';
 import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+  UNI_NFT_POSITION_MANAGER_ADDRESS,
 } from 'constants/v3/addresses';
 import { NonfungiblePositionManager } from 'v3lib/nonfungiblePositionManager';
 import { Position } from 'v3lib/entities';
@@ -45,6 +49,7 @@ import {
 } from 'components';
 import { useTranslation } from 'next-i18next';
 import { WETH } from '@uniswap/sdk';
+import { UniV3NonfungiblePositionManager } from 'v3lib/uniV3NonfungiblePositionManager';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -75,6 +80,8 @@ export default function PositionListItemDetails({
     tickLower: _tickLower,
     tickUpper: _tickUpper,
     onFarming: _onFarming,
+    fee: _fee,
+    isUni: _isUni,
   } = useMemo(() => {
     if (
       !positionDetails &&
@@ -98,7 +105,12 @@ export default function PositionListItemDetails({
   const [receiveWETH, setReceiveWETH] = useState(false);
 
   // construct Position from details returned
-  const [poolState, pool] = usePool(token0 ?? undefined, token1 ?? undefined);
+  const [poolState, pool] = usePool(
+    token0 ?? undefined,
+    token1 ?? undefined,
+    _fee,
+    _isUni,
+  );
   const [prevPoolState, prevPool] = usePrevious([poolState, pool]) || [];
   const [_poolState, _pool] = useMemo(() => {
     if (!pool && prevPool && prevPoolState) {
@@ -203,7 +215,11 @@ export default function PositionListItemDetails({
   }, [price0, price1, position]);
 
   const addTransaction = useTransactionAdder();
-  const positionManager = useV3NFTPositionManagerContract();
+  const algebrapositionManager = useV3NFTPositionManagerContract();
+  const uniPositionManager = useUNIV3NFTPositionManagerContract();
+  const positionManager = pool?.isUni
+    ? uniPositionManager
+    : algebrapositionManager;
   const collect = useCallback(() => {
     if (
       !chainId ||
@@ -220,22 +236,31 @@ export default function PositionListItemDetails({
 
     const collectAddress = _onFarming
       ? FARMING_CENTER[chainId]
+      : pool?.isUni
+      ? UNI_NFT_POSITION_MANAGER_ADDRESS[chainId]
       : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
 
-    const {
-      calldata,
-      value,
-    } = NonfungiblePositionManager.collectCallParameters({
-      tokenId: tokenId.toString(),
-      expectedCurrencyOwed0: feeValue0,
-      expectedCurrencyOwed1: feeValue1,
-      recipient: account,
-    });
+    let collectData;
+    if (pool?.isUni) {
+      collectData = UniV3NonfungiblePositionManager.collectCallParameters({
+        tokenId: tokenId.toString(),
+        expectedCurrencyOwed0: feeValue0,
+        expectedCurrencyOwed1: feeValue1,
+        recipient: account,
+      });
+    } else {
+      collectData = NonfungiblePositionManager.collectCallParameters({
+        tokenId: tokenId.toString(),
+        expectedCurrencyOwed0: feeValue0,
+        expectedCurrencyOwed1: feeValue1,
+        recipient: account,
+      });
+    }
 
     const txn = {
       to: collectAddress,
-      data: calldata,
-      value: value,
+      data: collectData.calldata,
+      value: collectData.value,
     };
 
     library
@@ -285,6 +310,7 @@ export default function PositionListItemDetails({
     tokenId,
     library,
     _onFarming,
+    pool?.isUni,
     addTransaction,
     t,
   ]);

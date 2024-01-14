@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { getBulkPairData } from 'state/stake/hooks';
 import { HelpOutline } from '@mui/icons-material';
@@ -76,25 +76,11 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
     return data ?? null;
   };
 
-  const { data: bulkPairs, refetch } = useQuery({
+  const { data: bulkPairs } = useQuery({
     queryKey: ['fetchBulkPairData', isV2, chainId, pairListStr],
     queryFn: fetchBulkPairData,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const redirectWithFarmTab = (tab: string) => {
     const currentPath = router.asPath;
@@ -140,27 +126,34 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   ];
   const helpURL = process.env.NEXT_PUBLIC_HELP_URL;
 
+  const poolId =
+    router.query && router.query.pool
+      ? router.query.pool.toString()
+      : undefined;
+
   return (
     <Box width='100%' mb={3} id='farmPage'>
-      <Box className='pageHeading'>
-        <Box className='flex items-center row'>
-          <h1 className='h4'>{t('farm')}</h1>
-          {v2 && v3 && (
-            <Box ml={2}>
-              <VersionToggle />
+      {!poolId && (
+        <Box className='pageHeading'>
+          <Box className='flex items-center row'>
+            <h1 className='h4'>{t('farm')}</h1>
+            {v2 && v3 && (
+              <Box ml={2}>
+                <VersionToggle />
+              </Box>
+            )}
+          </Box>
+          {helpURL && (
+            <Box
+              className='helpWrapper'
+              onClick={() => window.open(helpURL, '_blank')}
+            >
+              <small>{t('help')}</small>
+              <HelpOutline />
             </Box>
           )}
         </Box>
-        {helpURL && (
-          <Box
-            className='helpWrapper'
-            onClick={() => window.open(helpURL, '_blank')}
-          >
-            <small>{t('help')}</small>
-            <HelpOutline />
-          </Box>
-        )}
-      </Box>
+      )}
       <Box margin='0 auto 24px'>
         <HypeLabAds />
       </Box>

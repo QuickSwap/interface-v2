@@ -7,6 +7,10 @@ import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import styles from 'styles/components/TransactionConfirmationModal.module.scss';
 import { useTranslation } from 'next-i18next';
+import {
+  LiquidityHubConfirmationModalContent,
+  useConfirmationPendingContent,
+} from 'components/Swap/LiquidityHub';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -17,7 +21,8 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
   onDismiss,
   pendingText,
 }) => {
-  const { t } = useTranslation();
+  const confirmationPendingContent = useConfirmationPendingContent(pendingText);
+
   return (
     <Box padding={4} overflow='hidden'>
       <Box className={styles.txModalHeader}>
@@ -29,9 +34,11 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
             <img src='/assets/images/spinner.svg' alt='Spinner' />
           </picture>
         </Box>
-        <h5>{t('waitingConfirm')}</h5>
-        {pendingText && <p>{pendingText}</p>}
-        <p>{t('confirmTxinWallet')}</p>
+        <h5>{confirmationPendingContent.title}</h5>
+        {confirmationPendingContent.pending && (
+          <p>{confirmationPendingContent.pending}</p>
+        )}
+        <p>{confirmationPendingContent.confirm || ''}</p>
       </Box>
     </Box>
   );
@@ -73,6 +80,7 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
         <p>
           {!txPending && <CheckCircleOutline />}
           {modalContent}
+          <LiquidityHubConfirmationModalContent txPending={txPending} />
         </p>
       </Box>
       <Box className='flex justify-between' mt={2}>

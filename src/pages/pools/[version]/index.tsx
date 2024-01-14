@@ -14,6 +14,8 @@ import { ChainId } from '@uniswap/sdk';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { HypeLabAds } from 'components';
+import { SingleTokenSupplyLiquidity } from 'components/pages/pools/SingleToken/SupplyLiquidity';
+import { useRouter } from 'next/router';
 
 const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation();
@@ -23,6 +25,13 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const config = getConfig(chainIdToUse);
   const v3 = config['v3'];
   const v2 = config['v2'];
+  const ichiEnabled = config['ichi']['available'];
+  const showVersion = (v2 && v3) || (v2 && ichiEnabled) || (v3 && ichiEnabled);
+  const router = useRouter();
+  const version =
+    router.query && router.query.version
+      ? (router.query?.version as string)
+      : 'v3';
 
   const helpURL = process.env.NEXT_PUBLIC_HELP_URL;
 
@@ -37,7 +46,7 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
       <Box className='pageHeading'>
         <Box className='flex items-center row'>
           <h1 className='h4'>{t('pool')}</h1>
-          {v2 && v3 && (
+          {showVersion && (
             <Box ml={2}>
               <VersionToggle />
             </Box>
@@ -60,7 +69,13 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>
           <Box className='wrapper'>
-            {!isV2 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
+            {version === 'singleToken' ? (
+              <SingleTokenSupplyLiquidity />
+            ) : !isV2 ? (
+              <SupplyLiquidityV3 />
+            ) : (
+              <SupplyLiquidity />
+            )}
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={7}>

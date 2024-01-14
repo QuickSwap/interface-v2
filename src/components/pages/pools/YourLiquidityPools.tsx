@@ -5,7 +5,7 @@ import { PoolFinderModal, PoolPositionCard } from 'components';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { Trans, useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import styles from 'styles/pages/Pools.module.scss';
 
 const YourLiquidityPools: React.FC = () => {

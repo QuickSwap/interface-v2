@@ -179,7 +179,9 @@ const PairTable: React.FC<PairsTableProps> = ({
             </Box>
             <Link
               className='no-decoration'
-              href={`/analytics/${version}/pair?id=${pair.id}`}
+              href={`/analytics/${version}/pair?id=${pair.id}${
+                pair.isUni ? '&isUni=true' : ''
+              }`}
             >
               <Box className='flex items-center'>
                 <DoubleCurrencyLogo
@@ -203,7 +205,7 @@ const PairTable: React.FC<PairsTableProps> = ({
                 borderRadius={6}
                 className='text-primaryText bg-gray30'
               >
-                {formatNumber(pair.fee / 10000)}% Fee
+                {formatNumber(pair.fee / 10000)}% {pair.isUni ? '(F)' : 'Fee'}
               </Box>
             )}
             {version === 'total' && (
@@ -391,7 +393,7 @@ const PairTable: React.FC<PairsTableProps> = ({
                 className='no-decoration'
                 href={`/analytics/${pair.isV3 ? 'v3' : 'v2'}/pair?id=${
                   pair.id
-                }`}
+                }${pair.isUni ? '&isUni=true' : ''}`}
               >
                 <Box className='flex items-center'>
                   <DoubleCurrencyLogo
@@ -414,7 +416,7 @@ const PairTable: React.FC<PairsTableProps> = ({
                   borderRadius={6}
                   className='text-primaryText bg-gray30'
                 >
-                  {formatNumber(pair.fee / 10000)}% Fee
+                  {formatNumber(pair.fee / 10000)}% {pair.isUni ? '(F)' : 'Fee'}
                 </Box>
               )}
             </Box>

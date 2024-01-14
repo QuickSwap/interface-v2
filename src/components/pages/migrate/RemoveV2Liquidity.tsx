@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import { BigNumber } from '@ethersproject/bignumber';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { useRouterContract } from 'hooks/useContract';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { Pair } from 'utils/v3/computePairAddress';
 import { useTokenBalance } from 'state/wallet/v3/hooks';

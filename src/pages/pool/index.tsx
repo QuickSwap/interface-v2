@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { BigNumber } from '@ethersproject/bignumber';
 import usePrevious from 'hooks/usePrevious';
 import { Box, CircularProgress } from '@mui/material';
-import PositionListItem from 'components/pages/pools/MyLiquidityPoolsV3/components/PositionListItem';
+import PositionListItem from 'components/pages/pools/MyQuickswapPoolsV3/PositionListItem';
 import { useActiveWeb3React } from 'hooks';
 import { PositionPool } from 'models/interfaces';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
@@ -31,8 +31,10 @@ const PositionPage = (
   const parsedTokenId = tokenIdFromUrl
     ? BigNumber.from(tokenIdFromUrl)
     : undefined;
+  const isUni = router.query?.isUni === 'true';
   const { loading, position: _positionDetails } = useV3PositionFromTokenId(
     parsedTokenId,
+    isUni,
   );
 
   const { loading: positionLoading, positions } = useV3Positions(account);

@@ -9,6 +9,8 @@ interface SearchInputProps {
   setValue: (val: string) => void;
   isIconAfter?: boolean;
   [index: string]: any;
+  height?: number | string;
+  width?: number | string;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
@@ -16,10 +18,14 @@ const SearchInput: React.FC<SearchInputProps> = ({
   value,
   setValue,
   isIconAfter,
+  height = 40,
+  width = '100%',
 }) => {
   const [searchFocused, setSearchFocused] = useState(false);
   return (
     <Box
+      height={height}
+      width={width}
       className={`${styles.searchInput} ${
         searchFocused ? styles.focusedSearchInput : ''
       }`}

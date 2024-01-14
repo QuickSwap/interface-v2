@@ -7,9 +7,24 @@
   padding: 32px;
   position: relative;
   overflow: hidden;
-  @include media("screen", "<phone") {
-    padding: 24px 16px
+  @include media('screen', '<phone') {
+    padding: 24px 16px;
   }
+}
+
+.dragonWrapperContainer {
+  background: $bgPalette;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dragonWrapperHeading {
+  padding: 24px 32px 16px 32px;
+}
+
+.dragonWrapperTabContainer {
+  padding: 0px;
 }
 
 .dragonBg {
@@ -31,10 +46,16 @@
   top: 207px;
 }
 
+.dragonMask-small {
+  width: 80%;
+  position: absolute;
+  top: 207px;
+}
+
 .dragonTitle {
   margin-bottom: 64px;
   & h5 {
-    margin-bottom: 16px;
+    // margin-bottom: 16px;
     color: $textPrimary;
   }
 }

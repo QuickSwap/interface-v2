@@ -4,8 +4,9 @@ import { Trade as V3Trade } from 'lib/trade';
 import { ChevronRight } from 'react-feather';
 import { Box } from '@mui/material';
 import { unwrappedToken } from 'utils/unwrappedToken';
+import { FeeAmount } from 'v3lib/utils/v3constants';
 
-function LabeledArrow() {
+function LabeledArrow({}: { fee?: FeeAmount }) {
   // todo: render the fee in the label
   return <ChevronRight size={14} className='text-secondary' />;
 }

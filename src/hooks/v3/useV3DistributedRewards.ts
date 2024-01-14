@@ -1,10 +1,9 @@
 import { ChainId } from '@uniswap/sdk';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
-import { getContract, getTokenFromAddress } from 'utils';
+import { getTokenFromAddress } from 'utils';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import VIRTUAL_POOL_ABI from 'abis/virtual-pool.json';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useQuery } from '@tanstack/react-query';
@@ -30,15 +29,7 @@ export function useV3DistributedRewards(chainId?: ChainId) {
 
     for (const farming of eternalFarmings) {
       try {
-        const virtualPoolContract = getContract(
-          farming.virtualPool,
-          VIRTUAL_POOL_ABI,
-          provider,
-        );
-        const reward = await virtualPoolContract.rewardReserve0();
-        const bonusReward = await virtualPoolContract.rewardReserve1();
-
-        if (Number(reward) > 0 && Number(bonusReward) > 0) {
+        if (Number(farming.reward) > 0 && Number(farming.bonusReward) > 0) {
           _eternalFarmings.push(farming);
         }
 
@@ -50,25 +41,11 @@ export function useV3DistributedRewards(chainId?: ChainId) {
     return _eternalFarmings;
   };
 
-  const { data: eternalFarms, refetch } = useQuery({
+  const { data: eternalFarms } = useQuery({
     queryKey: ['fetchEternalFarmsV3Rewards', chainId, !!provider, farmEnabled],
     queryFn: fetchEternalFarmsForV3Rewards,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const allRewardTokenAddresses = eternalFarms
     ? eternalFarms
@@ -83,7 +60,9 @@ export function useV3DistributedRewards(chainId?: ChainId) {
         )
     : [];
 
-  const rewardTokenPrices = useUSDCPricesFromAddresses(allRewardTokenAddresses);
+  const { prices: rewardTokenPrices } = useUSDCPricesFromAddresses(
+    allRewardTokenAddresses,
+  );
 
   const totalRewardsUSD =
     eternalFarms && rewardTokenPrices

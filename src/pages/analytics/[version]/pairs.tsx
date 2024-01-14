@@ -8,6 +8,7 @@ import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
 import { useAnalyticsTopPairs } from 'hooks/useFetchAnalyticsData';
+import styles from 'styles/pages/Analytics.module.scss';
 
 const AnalyticsPairs = (
   _props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -26,7 +27,7 @@ const AnalyticsPairs = (
     <Box width='100%'>
       <AnalyticsHeader />
       <p>{t('allPairs')}</p>
-      <Box mt={4} className='panel'>
+      <Box mt={4} className={styles.panel}>
         {topPairsLoading ? (
           <Skeleton variant='rectangular' width='100%' height={150} />
         ) : topPairs ? (

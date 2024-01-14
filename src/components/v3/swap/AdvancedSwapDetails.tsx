@@ -42,9 +42,9 @@ export function AdvancedSwapDetails({
 
       <Box className='flex justify-between' mb={0.5}>
         <p className='caption'>{t('route')}</p>
-        <p className='caption weight-600 ml-1'>
+        <div className='caption weight-600 ml-1'>
           <SwapRoute trade={trade} />
-        </p>
+        </div>
       </Box>
 
       <Box className='flex justify-between' mb={0.5}>

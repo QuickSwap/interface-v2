@@ -83,7 +83,9 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
     if (bonusRewardToken) addresses.push(bonusRewardToken.address);
     return addresses;
   }, [bonusRewardToken, rewardToken]);
-  const rewardTokenUSDPrices = useUSDCPricesFromAddresses(rewardTokenAddresses);
+  const { prices: rewardTokenUSDPrices } = useUSDCPricesFromAddresses(
+    rewardTokenAddresses,
+  );
   const rewardTokenPrice = rewardTokenUSDPrices?.find(
     (item) =>
       rewardToken &&

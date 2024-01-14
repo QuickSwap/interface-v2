@@ -20,6 +20,7 @@ import {
 import { Close } from '@mui/icons-material';
 import styles from 'styles/components/SettingsModal.module.scss';
 import { useTranslation } from 'next-i18next';
+import { LiquidityHubTxSettings } from 'components/Swap/LiquidityHub';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -317,6 +318,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           />
         </Box>
         <Divider />
+        <LiquidityHubTxSettings />
         <Box mt={2.5} className='flex items-center justify-between'>
           <p>{t('language')}</p>
           <Box className='flex items-center'>

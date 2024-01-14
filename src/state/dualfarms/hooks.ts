@@ -2,7 +2,11 @@ import { ChainId } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-import { DualFarmListInfo, DualStakingRaw, DualStakingBasic } from 'types';
+import {
+  DualFarmListInfo,
+  DualStakingRaw,
+  DualStakingBasic,
+} from 'types/index';
 import { Token } from '@uniswap/sdk';
 import { getTokenFromAddress } from 'utils';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
@@ -107,6 +111,13 @@ const EMPTY_LIST: DualFarmInfoAddressMap = {
   [ChainId.DOEGCHAIN_TESTNET]: {},
   [ChainId.ZKTESTNET]: {},
   [ChainId.ZKEVM]: {},
+  [ChainId.MANTA]: {},
+  [ChainId.KAVA]: {},
+  [ChainId.ZKATANA]: {},
+  [ChainId.BTTC]: {},
+  [ChainId.X1]: {},
+  [ChainId.TIMX]: {},
+  [ChainId.IMX]: {},
 };
 
 const dualFarmCache: WeakMap<DualFarmListInfo, DualFarmInfoAddressMap> | null =

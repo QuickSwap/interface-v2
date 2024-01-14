@@ -6,9 +6,27 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 16px auto;
+  margin: -16px auto;
   z-index: 2;
   position: relative;
+}
+
+.box-success {
+  background-color: #0fc679;
+  border-radius: 8px;
+  font-weight: 600;
+  color: white;
+  padding: 6px 11px 7px;
+  text-align: right;
+}
+
+.box-error {
+  background-color: #ea5f5a;
+  border-radius: 8px;
+  font-weight: 600;
+  color: white;
+  padding: 6px 11px 7px;
+  text-align: right;
 }
 
 .swapPrice {

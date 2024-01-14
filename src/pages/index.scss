@@ -12,19 +12,6 @@ body {
   }
 }
 
-picture {
-  display: flex;
-}
-
-.panel {
-  background: $grey3;
-  border-radius: 20px;
-  padding: 24px;
-  @include media('screen', '<phone') {
-    padding: 12px;
-  }
-}
-
 wcm-modal {
   z-index: 10000;
   position: relative;
@@ -164,19 +151,19 @@ wcm-modal {
 .pageWrapper {
   max-width: 1312px;
   position: relative;
-  z-index: 2;
+  z-index: 11;
   display: flex;
   align-items: center;
   flex-direction: column;
-  margin: 0 auto 24px;
-  padding: 112px 32px 0;
+  margin: 0 auto;
+  padding: 152px 32px 0;
   @include media('screen', '<tablet') {
-    padding: 24px 12px 0;
+    padding: 190px 12px 0;
   }
 }
 
 .pageProModeWrapper {
-  padding-top: 88px;
+  padding-top: 128px;
   @include media('screen', '<tablet') {
     padding-top: 0;
   }
@@ -184,14 +171,27 @@ wcm-modal {
 
 .pageWrapper-no-max {
   position: relative;
-  z-index: 2;
+  z-index: 11;
   display: flex;
   align-items: center;
   flex-direction: column;
   margin: 24px auto;
-  padding: 0 32px;
-  @include media('screen', '<phone') {
-    padding: 0 12px;
+  padding: 128px 32px 0;
+  @include media('screen', '<tablet') {
+    padding: 172px 12px 0;
+  }
+}
+
+.pageWrapper-no-max-no-news {
+  @include media('screen', '<tablet') {
+    padding-top: 64px !important;
+  }
+}
+
+.pageWrapper-proMode {
+  padding: 128px 0 0;
+  @include media('screen', '<tablet') {
+    padding: 190px 0 0;
   }
 }
 
@@ -367,6 +367,16 @@ wcm-modal {
   margin-right: auto;
 }
 
+.mx-1 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.mx-2 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .text-center {
   text-align: center;
 }
@@ -426,6 +436,107 @@ wcm-modal {
   margin-left: 1rem;
 }
 
+.ml-2 {
+  margin-left: 1.5rem;
+}
+
+.ml-3 {
+  margin-left: 2rem;
+}
+
+.bl-1 {
+  border-left: 1px solid #242938;
+}
+
+.pl-1 {
+  padding-left: 1rem;
+}
+
 .p-1 {
   padding: 1rem;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.my-auto {
+  margin-bottom: auto;
+  margin-top: auto;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.staticNewsletterSignUpPanel {
+  position: fixed;
+  padding: 16px;
+  width: 300px;
+  border-radius: 21px;
+  border: 1px solid $divider;
+  right: 24px;
+  top: 140px;
+  z-index: 9;
+  text-align: center;
+  backdrop-filter: blur(3px);
+  background-color: $bgPalette1;
+  z-index: 12;
+  & p {
+    color: $textSecondary;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+  }
+  & h4 {
+    font-size: 23px;
+    line-height: 23px;
+    margin: 8px 0;
+  }
+  & small {
+    color: $grey35;
+    line-height: 14px;
+  }
+  & input {
+    width: 100%;
+    margin: 8px 0;
+    background-color: $bgColor;
+    border: 1px solid $grey34;
+    box-shadow: none;
+    height: 43px;
+    border-radius: 11px;
+    padding: 0 8px;
+    outline: none;
+    color: white;
+  }
+  & button {
+    width: 100%;
+    border-radius: 10px;
+    background: linear-gradient(0deg, $blue11 0.6%, $purple6 100.1%);
+    box-shadow: 0 0 7px 0 $purple7;
+    height: 33px;
+    & span {
+      font-size: 12.11px;
+      font-weight: 600;
+    }
+  }
+  & .newsletterSignupClose {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: $textSecondary;
+  }
+  & span {
+    font-size: 13px;
+    line-height: 14px;
+  }
+  @include media('screen', '<tablet') {
+    top: 180px;
+  }
 }

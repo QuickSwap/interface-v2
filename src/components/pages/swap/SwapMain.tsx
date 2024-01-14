@@ -4,7 +4,7 @@ import { SettingsModal, Swap, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -148,6 +148,7 @@ const SwapMain: React.FC = () => {
           ? showLimitOrder
           : showTwapOrder,
       );
+
       if (availableSwapTypes.length > 0) {
         const aSwapType = availableSwapTypes[0];
         if (aSwapType === SWAP_V3) {
@@ -155,6 +156,8 @@ const SwapMain: React.FC = () => {
         } else {
           updateIsV2(true);
         }
+        console.log(availableSwapTypes);
+
         redirectWithSwapType(availableSwapTypes[0]);
       } else {
         router.push('/');
@@ -208,6 +211,33 @@ const SwapMain: React.FC = () => {
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
+      {/* Header */}
+      <Box display={'flex'} mb={2}>
+        <Box my={'auto'}>
+          <h6>{t('swap')}</h6>
+        </Box>
+        <Box display={'flex'} ml={'auto'}>
+          {showProMode && (
+            <Box className='flex items-center' mr={1}>
+              <span
+                className='text-secondary text-uppercase'
+                style={{ marginRight: 8 }}
+              >
+                {t('proMode')}
+              </span>
+              <ToggleSwitch
+                toggled={isProMode}
+                onToggle={() => {
+                  redirectWithProMode(!isProMode);
+                }}
+              />
+            </Box>
+          )}
+          <Box>
+            <Settings onClick={() => setOpenSettingsModal(true)} />
+          </Box>
+        </Box>
+      </Box>
       <Box
         className={`flex flex-wrap items-center justify-between ${
           isProMode ? styles.proModeWrapper : ''
@@ -242,16 +272,25 @@ const SwapMain: React.FC = () => {
                   {SwapDropdownTabs.filter((d) => d.visible !== false).map(
                     (option, index) => (
                       <MenuItem
+                        className={`swap-menu-item ${
+                          option.key === selectedIndex
+                            ? 'swap-menu-item-selected'
+                            : ''
+                        }`}
                         key={option.key}
                         disabled={option.key === selectedIndex}
                         selected={option.key === selectedIndex}
                         onClick={(event) => handleMenuItemClick(event, index)}
                       >
                         {t(option.name)}
+                        {option.key === selectedIndex && (
+                          <Box ml={5} className='selectedMenuDot' />
+                        )}
                       </MenuItem>
                     ),
                   )}
                 </Menu>
+
                 {showCrossChain && (
                   <Box
                     className={`${styles.tab} ${
@@ -263,7 +302,14 @@ const SwapMain: React.FC = () => {
                       redirectWithSwapType(SWAP_CROSS_CHAIN);
                     }}
                   >
-                    <p className={styles.tradeBtn}>{t('crossChain')}</p>
+                    <Box pr={1}>
+                      <img
+                        src='/assets/images/crossChainIcon.svg'
+                        className='cross-chain-icon'
+                        style={{ scale: 1.5 }}
+                      />
+                    </Box>
+                    <Box className='trade-btn'>{t('crossChain')}</Box>
                   </Box>
                 )}
               </Box>
@@ -284,7 +330,7 @@ const SwapMain: React.FC = () => {
               ))}
             </>
           )}
-          {
+          {/* {
             <Box
               style={{
                 marginLeft: 'auto',
@@ -314,9 +360,10 @@ const SwapMain: React.FC = () => {
                 </Box>
               </Box>
             </Box>
-          }
+          } */}
         </Box>
       </Box>
+      {/* Tabs */}
       {swapTabs.length > 0 && (
         <Box
           margin={isProMode ? '28px 0' : '28px 0 0'}
@@ -343,6 +390,7 @@ const SwapMain: React.FC = () => {
           ))}
         </Box>
       )}
+      {/* Widget Body */}
       <Box
         style={{
           backgroundImage: isProMode

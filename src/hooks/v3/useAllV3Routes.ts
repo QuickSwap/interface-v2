@@ -1,7 +1,7 @@
 import { Currency } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
-import { Pool } from 'lib/pool';
-import { Route } from 'lib/route';
+import { Pool } from 'v3lib/entities/pool';
+import { Route } from 'v3lib/entities/route';
 import { useMemo } from 'react';
 import { useV3SwapPools } from './useV3SwapPools';
 import { useUserSingleHopOnly } from 'state/user/hooks';
@@ -14,9 +14,7 @@ import { useUserSingleHopOnly } from 'state/user/hooks';
 function poolEquals(poolA: Pool, poolB: Pool): boolean {
   return (
     poolA === poolB ||
-    (poolA.token0.equals(poolB.token0) &&
-      poolA.token1.equals(poolB.token1) &&
-      poolA.fee === poolB.fee)
+    (poolA.token0.equals(poolB.token0) && poolA.token1.equals(poolB.token1))
   );
 }
 
@@ -72,11 +70,13 @@ function computeAllRoutes(
 export function useAllV3Routes(
   currencyIn?: Currency,
   currencyOut?: Currency,
+  isUni?: boolean,
 ): { loading: boolean; routes: Route<Currency, Currency>[] } {
   const { chainId } = useActiveWeb3React();
   const { pools, loading: poolsLoading } = useV3SwapPools(
     currencyIn,
     currencyOut,
+    isUni,
   );
 
   const [singleHopOnly] = useUserSingleHopOnly();

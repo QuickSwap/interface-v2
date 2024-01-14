@@ -4,7 +4,7 @@ import { CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
 import { formatNumber } from 'utils';
 import styles from 'styles/components/AnalyticsTable.module.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import AddressCell from './AddressCell';
 
 interface ContestTableProps {

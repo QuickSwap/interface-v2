@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import { useRouter } from 'next/router';
-import { DualStakingInfo, StakingInfo } from 'types';
+import { DualStakingInfo, StakingInfo } from 'types/index';
 import { DoubleCurrencyLogo } from 'components';
 import HelpIcon from 'svgs/HelpIcon.svg';
 import {

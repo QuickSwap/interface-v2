@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { Box } from '@mui/material';
 import { Skeleton } from '@mui/lab';
@@ -53,7 +53,7 @@ const AnalyticsTokenChart: React.FC<{
     return null;
   };
 
-  const { isLoading, data: tokenChartData, refetch } = useQuery({
+  const { isLoading, data: tokenChartData } = useQuery({
     queryKey: [
       'analyticsTopTokenChartData',
       tokenAddress,
@@ -62,22 +62,8 @@ const AnalyticsTokenChart: React.FC<{
       chainId,
     ],
     queryFn: fetchTokenChartData,
+    refetchInterval: 60000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const chartData = useMemo(() => {
     if (!tokenChartData) return;

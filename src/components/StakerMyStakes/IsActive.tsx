@@ -1,7 +1,7 @@
 import React from 'react';
 import { useToken } from 'hooks/TokensV3';
 import { unwrappedToken } from 'utils/unwrappedToken';
-import { usePool } from 'hooks/usePools';
+import { usePool } from 'hooks/v3/usePools';
 import { Box } from '@mui/material';
 import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
 import { useTranslation } from 'next-i18next';

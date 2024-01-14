@@ -49,6 +49,7 @@ import {
   maxAmountSpend,
   basisPointsToPercent,
   getContract,
+  halfAmountSpend,
 } from 'utils';
 import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
 import ExchangeIcon from 'svgs/ExchangeIcon.svg';
@@ -72,7 +73,7 @@ import callWallchainAPI from 'utils/wallchainService';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { ONE } from 'v3lib/utils';
 import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 
@@ -185,10 +186,8 @@ const SwapBestTrade: React.FC<{
     return { ...outputCurrency, isNative: false, isToken: true } as Currency;
   }, [chainId, outputCurrency]);
 
-  const [optimalRateError, setOptimalRateError] = useState('');
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
   const [mainPrice, setMainPrice] = useState(true);
-  const isValid = !swapInputError && !optimalRateError;
 
   //TODO: move to utils
   const connectWallet = () => {
@@ -323,7 +322,7 @@ const SwapBestTrade: React.FC<{
         amount: srcAmount,
         side: swapType,
         options: {
-          includeDEXS: 'quickswap,quickswapv3,quickswapv3.1',
+          includeDEXS: 'quickswap,quickswapv3,quickswapv3.1,quickperps',
           maxImpact: maxImpactAllowed,
           partner: 'quickswapv3',
           //@ts-ignore
@@ -332,16 +331,18 @@ const SwapBestTrade: React.FC<{
         },
       });
 
-      setOptimalRateError('');
-      return rate;
+      return { error: undefined, rate };
     } catch (error) {
       const err = error as any;
-      setOptimalRateError(err?.message);
-      return null;
+      return { error: err.message, rate: undefined };
     }
   };
 
-  const { data: optimalRate, refetch: reFetchOptimalRate } = useQuery({
+  const {
+    isLoading: loadingOptimalRate,
+    data: optimalRateData,
+    refetch: reFetchOptimalRate,
+  } = useQuery({
     queryKey: [
       'fetchOptimalRate',
       srcToken,
@@ -353,7 +354,20 @@ const SwapBestTrade: React.FC<{
       maxImpactAllowed,
     ],
     queryFn: fetchOptimalRate,
+    refetchInterval: 5000,
   });
+
+  const optimalRate = useMemo(() => {
+    if (!optimalRateData) return;
+    return optimalRateData.rate;
+  }, [optimalRateData]);
+
+  const optimalRateError = useMemo(() => {
+    if (!optimalRateData) return;
+    return optimalRateData.error;
+  }, [optimalRateData]);
+
+  const isValid = !swapInputError && !optimalRateError && !!optimalRate;
 
   const parsedAmounts = useMemo(() => {
     const parsedAmountInput =
@@ -403,6 +417,10 @@ const SwapBestTrade: React.FC<{
     chainIdToUse,
     currencyBalances[Field.INPUT],
   );
+  const halfAmountInputV2 = halfAmountSpend(
+    chainIdToUse,
+    currencyBalances[Field.INPUT],
+  );
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
@@ -417,24 +435,24 @@ const SwapBestTrade: React.FC<{
       ? CurrencyAmount.fromRawAmount(inputCurrencyV3, maxAmountInputV2.raw)
       : undefined;
 
+  const halfAmountInput =
+    halfAmountInputV2 && inputCurrencyV3
+      ? CurrencyAmount.fromRawAmount(inputCurrencyV3, halfAmountInputV2.raw)
+      : undefined;
+
   const handleMaxInput = useCallback(() => {
     maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact());
     setSwapType(SwapSide.SELL);
   }, [maxAmountInput, onUserInput]);
 
   const handleHalfInput = useCallback(() => {
-    if (!maxAmountInput) {
+    if (!halfAmountInput) {
       return;
     }
 
-    const halvedAmount = maxAmountInput.divide('2');
-
-    onUserInput(
-      Field.INPUT,
-      halvedAmount.toFixed(maxAmountInput.currency.decimals),
-    );
+    onUserInput(Field.INPUT, halfAmountInput.toExact());
     setSwapType(SwapSide.SELL);
-  }, [maxAmountInput, onUserInput]);
+  }, [halfAmountInput, onUserInput]);
 
   const atMaxAmountInput = Boolean(
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),
@@ -462,7 +480,7 @@ const SwapBestTrade: React.FC<{
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true);
     }
-  }, [approval, approvalSubmitted]);
+  }, [approval]);
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
@@ -523,6 +541,8 @@ const SwapBestTrade: React.FC<{
           : wrapType === WrapType.UNWRAPPING
           ? t('unwrappingMATIC', { symbol: WETH[chainId].symbol })
           : '';
+      } else if (loadingOptimalRate) {
+        return t('loading');
       } else if (
         optimalRateError === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT'
       ) {
@@ -558,6 +578,7 @@ const SwapBestTrade: React.FC<{
     currencies,
     formattedAmounts,
     showWrap,
+    loadingOptimalRate,
     optimalRateError,
     swapInputError,
     noRoute,
@@ -719,7 +740,7 @@ const SwapBestTrade: React.FC<{
   const { selectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
   const fromTokenWrapped = wrappedCurrency(currencies[Field.INPUT], chainId);
-  const fromTokenUSDPrice = useUSDCPriceFromAddress(
+  const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     fromTokenWrapped?.address ?? '',
   );
 
@@ -966,40 +987,19 @@ const SwapBestTrade: React.FC<{
   //Reset approvalSubmitted when approval changes, it's needed when user hadn't nor paraswap neither wallchain approvals
   useEffect(() => {
     if (
-      bonusRouteFound &&
-      (approval === ApprovalState.NOT_APPROVED ||
-        approval === ApprovalState.UNKNOWN)
+      approval === ApprovalState.NOT_APPROVED ||
+      approval === ApprovalState.UNKNOWN
     ) {
       setApprovalSubmitted(false);
     }
-  }, [approval, bonusRouteFound]);
-
-  useEffect(() => {
-    fetchOptimalRate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typedValue, independentField, inputCurrency, outputCurrency]);
+  }, [approval]);
 
   useEffect(() => {
     if (!optimalRate) {
       reFetchOptimalRate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [optimalRate]);
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    reFetchOptimalRate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
+  }, [!optimalRate]);
 
   return (
     <Box>
@@ -1126,6 +1126,7 @@ const SwapBestTrade: React.FC<{
               disabled={
                 approving ||
                 approval !== ApprovalState.NOT_APPROVED ||
+                bonusRouteLoading ||
                 approvalSubmitted
               }
               onClick={async () => {

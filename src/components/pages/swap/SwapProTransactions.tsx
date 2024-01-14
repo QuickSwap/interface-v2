@@ -3,7 +3,7 @@ import { Skeleton } from '@mui/lab';
 import { CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'next-i18next';
 import { formatNumber, getEtherscanLink } from 'utils';
 import dayjs from 'dayjs';
@@ -17,17 +17,27 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({ data }) => {
   const theme = useTheme();
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const { chainId } = useActiveWeb3React();
-  const [symbol1, setSymbol1] = useState('');
-  const [symbol2, setSymbol2] = useState('');
-  const [filteredData, setFilteredData] = useState<any[]>([]);
 
-  useEffect(() => {
+  const symbol1 = useMemo(() => {
     if (Array.isArray(data) && data.length > 0) {
       const sample = data[0];
-      const token0 = sample.pair.token0;
+      return sample.pair.token0.symbol;
+    }
+    return '';
+  }, [data]);
+
+  const symbol2 = useMemo(() => {
+    if (Array.isArray(data) && data.length > 0) {
+      const sample = data[0];
+      return sample.pair.token1.symbol;
+    }
+    return '';
+  }, [data]);
+
+  const filteredData = useMemo(() => {
+    if (Array.isArray(data) && data.length > 0) {
+      const sample = data[0];
       const token1 = sample.pair.token1;
-      setSymbol1(token0.symbol);
-      setSymbol2(token1.symbol);
 
       data.forEach((tx) => {
         const txType = Number(tx.amount0In) > 0 ? 'sell' : 'buy';
@@ -60,9 +70,10 @@ const SwapProTransactions: React.FC<SwapProTransactionsProps> = ({ data }) => {
       });
 
       const result: any[] = mobileWindowSize ? data.slice(0, 20) : data;
-      setFilteredData(result);
+      return result;
     }
-  }, [data, chainId, mobileWindowSize]);
+    return [];
+  }, [chainId, data, mobileWindowSize]);
 
   const tokenHeadCells = [
     {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Slider from 'react-slick';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { ChevronRight, ChevronLeft } from '@mui/icons-material';
@@ -37,25 +37,11 @@ const RewardSlider: React.FC = () => {
     return data ?? null;
   };
 
-  const { data: bulkPairs, refetch } = useQuery({
+  const { data: bulkPairs } = useQuery({
     queryKey: ['fetchBulkPairData', chainId, stakingPairListStr],
     queryFn: fetchBulkPairData,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && stakingPairLists.length > 0) {

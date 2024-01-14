@@ -22,7 +22,7 @@ import { useTranslation } from 'next-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import { useRouter } from 'next/router';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import styles from 'styles/pages/Analytics.module.scss';
@@ -136,7 +136,7 @@ const AnalyticsTokenDetails = (
   const V2TokenInfo = ({ token, tokenPairs }: any) => {
     return (
       <>
-        <Box width={1} className='panel' mt={4}>
+        <Box width={1} className={styles.panel} mt={4}>
           <Grid container>
             <Grid item xs={12} sm={12} md={6}>
               <AnalyticsTokenChart token={token} />
@@ -198,7 +198,7 @@ const AnalyticsTokenDetails = (
             {token.symbol} {t('pools')}
           </p>
         </Box>
-        <Box width={1} className='panel' mt={4}>
+        <Box width={1} className={styles.panel} mt={4}>
           {tokenPairs ? (
             <PairTable data={tokenPairs} />
           ) : (
@@ -214,7 +214,7 @@ const AnalyticsTokenDetails = (
       <Box width={1}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={12} md={3}>
-            <Box className={`panel ${styles.analyticsDetailsInfoV3}`}>
+            <Box className={`${styles.panel} ${styles.analyticsDetailsInfoV3}`}>
               <Box>
                 <span className='text-disabled'>{t('tvl')}</span>
                 <Box className='flex flex-wrap items-center'>
@@ -256,7 +256,7 @@ const AnalyticsTokenDetails = (
             </Box>
           </Grid>
           <Grid item xs={12} sm={12} md={9}>
-            <Box className='panel' mt={2} mb={2} height={'100%'}>
+            <Box className={styles.panel} mt={2} mb={2} height={'100%'}>
               <AnalyticsTokenChart token={token} />
             </Box>
           </Grid>
@@ -267,7 +267,7 @@ const AnalyticsTokenDetails = (
           {token.symbol} {t('pools')}
         </p>
       </Box>
-      <Box width={1} className='panel' mt={4}>
+      <Box width={1} className={styles.panel} mt={4}>
         {data && data.tokenPairs ? (
           <PairTable data={data.tokenPairs} />
         ) : (
@@ -279,7 +279,7 @@ const AnalyticsTokenDetails = (
           {token.symbol} {t('transactions')}
         </p>
       </Box>
-      <Box width={1} className='panel' mt={4}>
+      <Box width={1} className={styles.panel} mt={4}>
         {tokenTransactions ? (
           <TransactionsTable data={tokenTransactions} />
         ) : (
@@ -295,7 +295,7 @@ const AnalyticsTokenDetails = (
       {isLoading ? (
         <Skeleton width='100%' height={100} />
       ) : data && data.token ? (
-        <>
+        <Box mb={4} width={1}>
           <Box width={1} className='flex flex-wrap justify-between'>
             <Box display='flex'>
               <CurrencyLogo currency={currency} size='32px' />
@@ -364,7 +364,7 @@ const AnalyticsTokenDetails = (
               tokenTransactions={tokenTransactionsList}
             />
           )}
-        </>
+        </Box>
       ) : (
         <Box py={4}>
           <h5>{t('tokenNotExist')}</h5>

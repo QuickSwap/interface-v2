@@ -18,7 +18,9 @@ import {
   updateSelectedPreset,
   updateLiquidityRangeType,
   updatePresetRange,
+  updateFeeTier,
 } from './actions';
+import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
 
 export type FullRange = true;
 
@@ -32,6 +34,10 @@ export enum Presets {
   GAMMA_WIDE,
   GAMMA_DYNAMIC,
   GAMMA_STABLE,
+  STEER_WIDE,
+  STEER_NARROW,
+  STEER_STABLE,
+  OUT_OF_RANGE,
 }
 
 interface MintState {
@@ -58,6 +64,7 @@ interface MintState {
   };
   readonly liquidityRangeType: string | undefined;
   readonly presetRange: IPresetArgs | undefined;
+  readonly feeTier: IFeeTier | undefined;
 }
 
 const initialState: MintState = {
@@ -81,6 +88,7 @@ const initialState: MintState = {
   },
   liquidityRangeType: undefined,
   presetRange: undefined,
+  feeTier: undefined,
 };
 
 export default createReducer<MintState>(initialState, (builder) =>
@@ -226,6 +234,12 @@ export default createReducer<MintState>(initialState, (builder) =>
       return {
         ...state,
         presetRange,
+      };
+    })
+    .addCase(updateFeeTier, (state, { payload: { feeTier } }) => {
+      return {
+        ...state,
+        feeTier,
       };
     }),
 );

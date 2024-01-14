@@ -13,7 +13,12 @@ export function useDerivedPositionInfo(
   const currency1 = useCurrency(positionDetails?.token1);
 
   // construct pool data
-  const [, pool] = usePool(currency0 ?? undefined, currency1 ?? undefined);
+  const [, pool] = usePool(
+    currency0 ?? undefined,
+    currency1 ?? undefined,
+    positionDetails?.fee,
+    positionDetails?.isUni,
+  );
 
   let _position: Position | undefined = undefined;
   if (pool && positionDetails) {

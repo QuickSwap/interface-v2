@@ -1,41 +1,26 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { DoubleCurrencyLogo } from 'components';
 import { unipilotVaultTypes } from 'constants/index';
-import styles from 'styles/pages/pools/UnipilotLPItem.module.scss';
+import styles from 'styles/pages/pools/AutomaticLPItem.module.scss';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import UnipilotLPItemDetails from './UnipilotLPItemDetails';
-import { useActiveWeb3React } from 'hooks';
 import { ArrowRight } from 'react-feather';
 import { useRouter } from 'next/router';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { getTokenFromAddress } from 'utils';
+import { UnipilotPosition } from 'hooks/v3/useV3Positions';
 
-const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
+const UnipilotLPItem: React.FC<{ position: UnipilotPosition }> = ({
+  position,
+}) => {
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
   const farmingLink = `/farm/v3?tab=my-farms`;
-
-  const tokenMap = useSelectedTokenList();
-  const token0 = getTokenFromAddress(
-    position.vault.quickswapPool.token0.id,
-    chainId,
-    tokenMap,
-    [],
-  );
-  const token1 = getTokenFromAddress(
-    position.vault.quickswapPool.token1.id,
-    chainId,
-    tokenMap,
-    [],
-  );
-  const positionDetail = { ...position, token0, token1 };
+  const { token0, token1 } = position;
 
   return (
-    <Box className={styles.unipilotLiquidityItem}>
+    <Box className={styles.liquidityItem}>
       <Box className='flex items-center justify-between'>
         <Box className='flex items-center'>
           {token0 && token1 && (
@@ -52,10 +37,8 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
               </p>
             </>
           )}
-          <Box ml={1.5} className={styles.unipilotLiquidityRange}>
-            <small>
-              {unipilotVaultTypes[Number(position.vault.strategyId) - 1]}
-            </small>
+          <Box ml={1.5} className={styles.liquidityRange}>
+            <small>{unipilotVaultTypes[position.strategyId - 1]}</small>
           </Box>
           {position && position.farming && (
             <Box
@@ -77,7 +60,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
         </Box>
 
         <Box
-          className={`${styles.unipilotLiquidityItemExpand} ${
+          className={`${styles.liquidityItemExpand} ${
             expanded ? 'text-primary' : ''
           }`}
           onClick={() => setExpanded(!expanded)}
@@ -87,7 +70,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
       </Box>
       {expanded && position && (
         <Box mt={2}>
-          <UnipilotLPItemDetails position={positionDetail} />
+          <UnipilotLPItemDetails position={position} />
         </Box>
       )}
     </Box>

@@ -11,7 +11,7 @@ import {
 import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Home.module.scss';
 import { ChainId } from '@uniswap/sdk';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 
 // To compute dragon's lair
 import { useNewLairInfo } from 'state/stake/hooks';
@@ -33,10 +33,19 @@ const HeroSection: React.FC = () => {
 
   const lairInfo = useNewLairInfo();
   const quickToken = DLQUICK[chainIdToUse];
-  const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
+  const {
+    loading: loadingQuickPrice,
+    price: quickPrice,
+  } = useUSDCPriceFromAddress(quickToken?.address ?? '');
 
-  const { data: globalData } = useAnalyticsGlobalData('v2', chainId);
-  const { data: v3GlobalData } = useAnalyticsGlobalData('v3', chainId);
+  const {
+    isLoading: loadingV2GlobalData,
+    data: globalData,
+  } = useAnalyticsGlobalData('v2', chainId);
+  const {
+    isLoading: loadingV3GlobalData,
+    data: v3GlobalData,
+  } = useAnalyticsGlobalData('v3', chainId);
   const dragonReward = useMemo(() => {
     if (lairInfo && quickPrice) {
       const newReward =
@@ -47,25 +56,35 @@ const HeroSection: React.FC = () => {
     return 0;
   }, [lairInfo, quickPrice]);
 
+  const loading =
+    (v2 ? loadingV2GlobalData : false) ||
+    (v3 ? loadingV3GlobalData : false) ||
+    loadingQuickPrice ||
+    lairInfo?.loading;
+
   return (
     <Box className={styles.heroSection}>
       <small className='text-bold'>{t('totalValueLocked')}</small>
-      {(v2 ? globalData : true) && (v3 ? v3GlobalData : true) ? (
+      {loading ? (
+        <Box my={1}>
+          <Skeleton variant='rectangular' width={400} height={72} />
+        </Box>
+      ) : (
         <Box display='flex' pt='5px'>
           <h3>$</h3>
           <h1>
             {(
-              (v2 ? Number(globalData.totalLiquidityUSD) : 0) +
-              (v3 ? Number(v3GlobalData.totalLiquidityUSD) : 0) +
+              (v2 && globalData && globalData.totalLiquidityUSD
+                ? Number(globalData.totalLiquidityUSD)
+                : 0) +
+              (v3 && v3GlobalData && v3GlobalData.totalLiquidityUSD
+                ? Number(v3GlobalData.totalLiquidityUSD)
+                : 0) +
               dragonReward
-            ).toLocaleString(undefined, {
+            ).toLocaleString('us', {
               maximumFractionDigits: 0,
             })}
           </h1>
-        </Box>
-      ) : (
-        <Box my={1}>
-          <Skeleton variant='rectangular' width={400} height={72} />
         </Box>
       )}
       <h5>{t('topAssetExchange')}</h5>

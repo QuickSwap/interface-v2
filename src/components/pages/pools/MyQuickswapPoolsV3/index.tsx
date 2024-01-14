@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { Box, Button, CircularProgress } from '@mui/material';
-import { useV3Positions } from 'hooks/v3/useV3Positions';
+import { useV3Positions, useUniV3Positions } from 'hooks/v3/useV3Positions';
 import { useActiveWeb3React } from 'hooks';
 import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import PositionList from './PositionList';
 import { PositionPool } from 'models/interfaces';
 import { useWalletModalToggle } from 'state/application/hooks';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const MyQuickswapPoolsV3: React.FC<{
   hideFarmingPositions: boolean;
@@ -14,7 +14,17 @@ const MyQuickswapPoolsV3: React.FC<{
 }> = ({ hideFarmingPositions, userHideClosedPositions }) => {
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
-  const { positions, loading: positionsLoading } = useV3Positions(account);
+  const {
+    positions: algebraPositions,
+    loading: algebraPositionsLoading,
+  } = useV3Positions(account);
+  const {
+    positions: uniV3Positions,
+    loading: uniV3PositionsLoading,
+  } = useUniV3Positions(account);
+  const positionsLoading = algebraPositionsLoading || uniV3PositionsLoading;
+  const positions = (algebraPositions ?? []).concat(uniV3Positions ?? []);
+
   const prevAccount = usePrevious(account);
 
   const [openPositions, closedPositions] = positions?.reduce<

@@ -487,7 +487,7 @@ export function FarmModal({
                   >
                     {approval === ApprovalState.PENDING ? (
                       <Box className='flex items-center'>
-                        <CircularProgress />
+                        <CircularProgress size='16px' />
                         <div>{t('approving')}</div>
                       </Box>
                     ) : !showApproval ? (

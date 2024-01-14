@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import { SyrupInfo } from 'types';
+import { SyrupInfo } from 'types/index';
 import { CurrencyLogo } from 'components';
 import { getTokenAPRSyrup } from 'utils';
 import { useTranslation } from 'next-i18next';

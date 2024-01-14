@@ -19,17 +19,24 @@ import {
   trustWalletConnection,
   walletConnectConnection,
   unstoppableDomainsConnection,
+  binanceWalletConnection,
 } from 'connectors';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
-import { useArgentWalletDetectorContract } from './useContract';
+import {
+  useArgentWalletDetectorContract,
+  usePriceGetterContract,
+} from './useContract';
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { usePairs } from 'data/Reserves';
 import { useRouter } from 'next/router';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { Connector } from '@web3-react/types';
 import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
+import { Currency } from '@uniswap/sdk-core';
+import { BigNumber } from 'ethers';
+import { formatUnits } from 'ethers/lib/utils';
 
 export function useActiveWeb3React() {
   const context = useWeb3React();
@@ -103,6 +110,8 @@ export function useGetConnection() {
           return cryptoComConnection;
         case ConnectionType.UNSTOPPABLEDOMAINS:
           return unstoppableDomainsConnection;
+        case ConnectionType.BINANCEWALLET:
+          return binanceWalletConnection;
         default:
           throw Error('unsupported connector');
       }
@@ -186,4 +195,25 @@ export const useMasaAnalytics = () => {
     clientName: 'Quickswap',
   });
   return masaAnalytics;
+};
+
+export const useTokenPriceUsd = (
+  token: Currency | undefined | null,
+  lpFlag?: boolean,
+): [number, boolean] => {
+  const priceGetterContract = usePriceGetterContract();
+  const address = token && token.isToken ? token.address : undefined;
+  const isNative = token ? token.isNative : undefined;
+
+  const { result, loading } = useSingleCallResult(
+    priceGetterContract,
+    // TODO: Typecheck these calls to ensure they are correct
+    // NOTE: Having to use 'getETHPrice()' due to function overloading
+    lpFlag ? 'getLPPrice' : isNative ? 'getETHPrice()' : 'getPrice',
+    lpFlag ? [address, 18] : isNative ? [] : [address, 0],
+  );
+
+  const bigNumberResponse = BigNumber.from(result?.toString() || 0);
+  const value = Number(formatUnits(bigNumberResponse, 18));
+  return [value, loading];
 };

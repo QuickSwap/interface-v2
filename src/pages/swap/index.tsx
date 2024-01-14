@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, useTheme, useMediaQuery } from '@mui/material';
 import { HypeLabAds, SettingsModal } from 'components';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import React, { useState } from 'react';
@@ -13,6 +13,7 @@ import { wrappedCurrency, wrappedCurrencyV3 } from 'utils/wrappedCurrency';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useQuery } from '@tanstack/react-query';
+import { LiquidityHubAd } from 'components/pages/swap/LiquidityHubAd';
 
 const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -25,6 +26,8 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const token1 = wrappedCurrency(currencies[Field.INPUT], chainId);
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
 
+  const { breakpoints } = useTheme();
+  const isTablet = useMediaQuery(breakpoints.down('sm'));
   const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainId);
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainId);
 
@@ -60,17 +63,19 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   });
 
   return (
-    <Box width='100%' mb={3} pt='88px'>
+    <Box width='100%' mb={3} id='swap-page'>
       {openSettingsModal && (
         <SettingsModal
           open={openSettingsModal}
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      <SwapPageHeader proMode={isProMode} />
+
+      <SwapPageHeader proMode={isProMode} isTablet={isTablet} />
       <Box margin='24px auto'>
         <HypeLabAds />
       </Box>
+
       {isProMode ? (
         <SwapProMain
           pairId={data?.pairId}
@@ -79,10 +84,16 @@ const SwapPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           token2={isV2 ? token2 : token2V3}
         />
       ) : (
-        <SwapDefaultMode
-          token1={isV2 ? token1 : token1V3}
-          token2={isV2 ? token2 : token2V3}
-        />
+        <>
+          <Box mb={1} sx={{ display: { xs: 'block', md: 'none' } }}>
+            <LiquidityHubAd />
+          </Box>
+
+          <SwapDefaultMode
+            token1={isV2 ? token1 : token1V3}
+            token2={isV2 ? token2 : token2V3}
+          />
+        </>
       )}
     </Box>
   );

@@ -50,7 +50,9 @@ export function getPriceOrderingFromPositionForUI(
   const token0 = position.amount0.currency;
   const token1 = position.amount1.currency;
 
-  const USDC_TOKEN = toToken(USDC[chainIdToUse]);
+  const USDC_TOKEN = USDC[chainIdToUse]
+    ? toToken(USDC[chainIdToUse])
+    : undefined;
   const USDT_TOKEN = USDT[chainIdToUse]
     ? toToken(USDT[chainIdToUse])
     : undefined;
@@ -119,6 +121,8 @@ export default function PositionListItem({
     tickLower: _tickLower,
     tickUpper: _tickUpper,
     onFarming: _onFarming,
+    fee: _fee,
+    isUni: _isUni,
   } = useMemo(() => {
     if (
       !positionDetails &&
@@ -140,7 +144,10 @@ export default function PositionListItem({
   const [poolState, pool] = usePool(
     currency0 ?? undefined,
     currency1 ?? undefined,
+    _fee,
+    _isUni,
   );
+
   const [prevPoolState, prevPool] = usePrevious([poolState, pool]) || [];
   const [_poolState, _pool] = useMemo(() => {
     if (!pool && prevPool && prevPoolState) {

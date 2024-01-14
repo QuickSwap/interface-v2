@@ -179,7 +179,7 @@ const DataTable: React.FC<DataTableProps<any>> = ({
               <TableRow style={{ height: 53 * emptyRows }}>
                 <TableCell colSpan={headCells.length}>
                   <Box className='flex items-center justify-center'>
-                    <CircularProgress />
+                    <CircularProgress size='16px' />
                   </Box>
                 </TableCell>
               </TableRow>

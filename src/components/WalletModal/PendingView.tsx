@@ -39,7 +39,7 @@ const PendingView: React.FC<PendingViewProps> = ({
           </Box>
         ) : (
           <>
-            <CircularProgress />
+            <CircularProgress size='16px' />
             <p style={{ marginLeft: 12 }}>{t('initializing')}...</p>
           </>
         )}

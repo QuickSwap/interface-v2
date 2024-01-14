@@ -3,7 +3,7 @@ import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import { Pool } from 'v3lib/entities/pool';
 import { TickMath } from 'v3lib/utils/tickMath';
 import { BigNumber } from 'ethers';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { isAddress } from 'utils';
 import dynamic from 'next/dynamic';
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -17,14 +17,19 @@ import { useQuery } from '@tanstack/react-query';
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;
   pairAddress: string;
-}> = ({ pairData, pairAddress }) => {
+  isUni?: boolean;
+}> = ({ pairData, pairAddress, isUni }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
 
   const fetchLiquidityChartData = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}`,
+        `${
+          process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
+        }/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}${
+          isUni ? '&isUni=true' : ''
+        }`,
       );
       if (!res.ok) {
         return null;
@@ -66,6 +71,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
                       t.liquidityActive,
                       t.tickIdx,
                       mockTicks,
+                      isUni,
                     )
                   : undefined;
               const nextSqrtX96 = liquidityChartData.ticksProcessed[i - 1]
@@ -122,29 +128,11 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     }
   };
 
-  const {
-    isLoading: loadingChartData,
-    data: processedData,
-    refetch,
-  } = useQuery({
+  const { isLoading: loadingChartData, data: processedData } = useQuery({
     queryKey: ['analyticsV3PairLiquidityChartData', pairAddress, chainId],
     queryFn: fetchLiquidityChartData,
+    refetchInterval: 60000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const [zoom, setZoom] = useState(5);
 

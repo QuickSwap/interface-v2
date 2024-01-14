@@ -10,9 +10,9 @@ import {
 } from 'components';
 import { Box, Button } from '@mui/material';
 import { Close } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import styles from 'styles/pages/pools/UnipilotLPItemDetails.module.scss';
+import styles from 'styles/pages/pools/AutomaticLPItemDetails.module.scss';
 import { calculateGasMargin, formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -23,11 +23,12 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JSBI } from '@uniswap/sdk';
 import { formatUnits } from 'ethers/lib/utils';
 import { useUniPilotVaultContract } from 'hooks/useContract';
+import { UnipilotPosition } from 'hooks/v3/useV3Positions';
 
 interface WithdrawUnipilotLiquidityModalProps {
   open: boolean;
   onClose: () => void;
-  position: any;
+  position: UnipilotPosition;
 }
 
 export default function WithdrawUnipilotLiquidityModal({
@@ -69,8 +70,10 @@ export default function WithdrawUnipilotLiquidityModal({
     setRemoveErrorMessage('');
   }, [onPercentSelectForSlider, txnHash]);
 
-  const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
-  const lpBalance = JSBI.BigInt(position.balance);
+  const uniPilotVaultContract = useUniPilotVaultContract(position.id);
+  const lpBalance = JSBI.BigInt(position?.lpBalance ?? '0');
+  const totalBalance = JSBI.BigInt(position?.balance ?? '0');
+
   const withdrawGammaLiquidity = async () => {
     if (!account || !uniPilotVaultContract) return;
     setAttemptingTxn(true);
@@ -107,33 +110,47 @@ export default function WithdrawUnipilotLiquidityModal({
     }
   };
 
-  const token0Amount = useMemo(() => {
-    if (!position.token0Balance) return 0;
+  const totalBalanceNum = Number(formatUnits(totalBalance.toString()));
+  const lpBalanceNum = Number(formatUnits(lpBalance.toString()));
+  const token0Balance = useMemo(() => {
+    if (!position?.token0Balance || !totalBalanceNum) return 0;
     return (
       (Number(
         formatUnits(
           position.token0Balance.toString(),
           position.token0?.decimals,
         ),
-      ) *
-        percent) /
-      100
+      ) /
+        totalBalanceNum) *
+      lpBalanceNum
     );
-  }, [percent, position.token0?.decimals, position.token0Balance]);
+  }, [lpBalanceNum, position, totalBalanceNum]);
 
-  const token1Amount = useMemo(() => {
-    if (!position.token1Balance) return 0;
+  const token1Balance = useMemo(() => {
+    if (!position.token1Balance || !totalBalanceNum) return 0;
     return (
       (Number(
         formatUnits(
           position.token1Balance.toString(),
           position.token1?.decimals,
         ),
-      ) *
-        percent) /
-      100
+      ) /
+        totalBalanceNum) *
+      lpBalanceNum
     );
-  }, [percent, position.token1?.decimals, position.token1Balance]);
+  }, [lpBalanceNum, position, totalBalanceNum]);
+
+  const token0Amount = useMemo(() => {
+    if (!token0Balance) return 0;
+
+    return (token0Balance * percent) / 100;
+  }, [percent, token0Balance]);
+
+  const token1Amount = useMemo(() => {
+    if (!token1Balance) return 0;
+
+    return (token1Balance * percent) / 100;
+  }, [percent, token1Balance]);
 
   const pendingText = t('removingLiquidityMsg', {
     amount1: formatNumber(token0Amount),
@@ -260,16 +277,7 @@ export default function WithdrawUnipilotLiquidityModal({
               {t('pooled')} {position.token0?.symbol}
             </p>
             <Box className='flex items-center'>
-              <p>
-                {formatNumber(
-                  position.token0Balance
-                    ? formatUnits(
-                        position.token0Balance.toString(),
-                        position.token0?.decimals,
-                      )
-                    : 0,
-                )}
-              </p>
+              <p>{formatNumber(token0Balance)}</p>
               <Box className='flex' ml={1}>
                 <CurrencyLogo size='24px' currency={position.token0} />
               </Box>
@@ -280,16 +288,7 @@ export default function WithdrawUnipilotLiquidityModal({
               {t('pooled')} {position.token1?.symbol}
             </p>
             <Box className='flex items-center'>
-              <p>
-                {formatNumber(
-                  position.token1Balance
-                    ? formatUnits(
-                        position.token1Balance.toString(),
-                        position.token1?.decimals,
-                      )
-                    : 0,
-                )}
-              </p>
+              <p>{formatNumber(token1Balance)}</p>
               <Box className='flex' ml={1}>
                 <CurrencyLogo size='24px' currency={position.token1} />
               </Box>

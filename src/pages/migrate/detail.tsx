@@ -51,7 +51,7 @@ import { unwrappedToken } from 'utils/unwrappedToken';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { Trans, useTranslation } from 'next-i18next';
 import { calculateGasMargin } from 'utils';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { GlobalConst } from 'constants/index';
 import RemoveV2Liquidity from 'components/pages/migrate/RemoveV2Liquidity';
 import AddGammaLiquidity from 'components/pages/migrate/AddGammaLiquidity';
@@ -66,7 +66,6 @@ const MigrateV2DetailsPage = (
   const { t } = useTranslation();
   const v2Exchange = V2Exchanges.Quickswap;
   const percentageToMigrate = 100;
-  const feeAmount = FeeAmount.MEDIUM;
   const [largePriceDiffDismissed, setLargePriceDiffDismissed] = useState(false);
   const [attemptApproving, setAttemptApproving] = useState(false);
 
@@ -160,7 +159,6 @@ const MigrateV2DetailsPage = (
   const derivedMintInfo = useV3DerivedMintInfo(
     currency0 ?? undefined,
     quoteCurrency ?? undefined,
-    feeAmount,
     currency0 ?? undefined,
     undefined,
   );
@@ -333,7 +331,17 @@ const MigrateV2DetailsPage = (
     ) {
       return Position.fromAmounts({
         pool:
-          pool ?? new Pool(token0, token1, feeAmount, sqrtPrice, 0, tick, []),
+          pool ??
+          new Pool(
+            token0,
+            token1,
+            undefined,
+            sqrtPrice,
+            0,
+            tick,
+            [],
+            undefined,
+          ),
         tickLower,
         tickUpper,
         amount0: token0Value.quotient,
@@ -353,7 +361,6 @@ const MigrateV2DetailsPage = (
     token1Value,
     mintInfo.invalidRange,
     pool,
-    feeAmount,
   ]);
 
   const { amount0: v3Amount0Min, amount1: v3Amount1Min } = useMemo(
@@ -572,8 +579,13 @@ const MigrateV2DetailsPage = (
 
   return (
     <>
+<<<<<<< HEAD:src/pages/migrate/detail.tsx
       <Box className='wrapper' maxWidth='464px' width='100%'>
         <Box className='flex items-center justify-between'>
+=======
+      <Box className='wrapper' maxWidth='464px' width='100%' mb={4}>
+        <Box className='flex justify-between items-center'>
+>>>>>>> dev2:src/pages/PoolsPage/v3/MigrateV2DetailsPage/index.tsx
           <Box
             className='flex cursor-pointer'
             onClick={() => router.push('/migrate')}
@@ -586,11 +598,8 @@ const MigrateV2DetailsPage = (
             height={28}
             className='flex items-center justify-center'
           >
-            <QuestionHelper size={24} className='text-secondary' text='' />
+            {/* <QuestionHelper size={24} className='text-secondary' text='' /> */}
           </Box>
-        </Box>
-        <Box mt={3}>
-          <BetaWarningBanner />
         </Box>
         {liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (

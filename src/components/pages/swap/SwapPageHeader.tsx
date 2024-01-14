@@ -3,11 +3,14 @@ import { HelpOutline } from '@mui/icons-material';
 import React from 'react';
 import { useTranslation } from 'next-i18next';
 
-const SwapPageHeader: React.FC<{ proMode: boolean }> = ({ proMode }) => {
+const SwapPageHeader: React.FC<{ proMode: boolean; isTablet: boolean }> = ({
+  proMode,
+  isTablet,
+}) => {
   const helpURL = process.env.NEXT_PUBLIC_HELP_URL;
   const { t } = useTranslation();
 
-  return proMode ? (
+  return proMode || isTablet ? (
     <></>
   ) : (
     <Box className='pageHeading'>

@@ -52,7 +52,7 @@ import {
   DualStakingInfo,
   StakingBasic,
   DualStakingBasic,
-} from 'types';
+} from 'types/index';
 import { useDefaultFarmList } from 'state/farms/hooks';
 import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
 import { useDefaultSyrupList } from 'state/syrups/hooks';
@@ -108,7 +108,7 @@ export function useTotalRewardsDistributed(
             item && address && item.toLowerCase() === address.toLowerCase(),
         ) === index,
     );
-  const usdTokenPrices = useUSDCPricesFromAddresses(tokenAddresses);
+  const { prices: usdTokenPrices } = useUSDCPricesFromAddresses(tokenAddresses);
   const syrupRewardsUSD = usdTokenPrices
     ? syrupRewardsInfo.reduce((total, item) => {
         const usdPriceToken = usdTokenPrices.find(
@@ -299,11 +299,11 @@ export function useFilteredSyrupInfo(
     'totalSupply',
   );
 
-  const usdTokenPrices = useUSDCPricesFromAddresses(
+  const { prices: usdTokenPrices } = useUSDCPricesFromAddresses(
     info.map((item) => item.token.address),
   );
 
-  const stakingTokenPrices = useUSDCPricesFromAddresses(
+  const { prices: stakingTokenPrices } = useUSDCPricesFromAddresses(
     info.map((item) => item.stakingToken.address),
   );
 
@@ -1380,25 +1380,11 @@ function useLairInfo(
     return v2OneDayVol + v3OneDayVol;
   };
 
-  const { data: oneDayVolume, refetch } = useQuery({
+  const { data: oneDayVolume } = useQuery({
     queryKey: ['getOneDayVolume', chainId],
     queryFn: getOneDayVol,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return useMemo(() => {
     if (!quickToken || !dQuickToQuick) {
@@ -1838,29 +1824,31 @@ export function useOldStakingInfo(
   );
 }
 
-export function useDQUICKtoQUICK() {
+export function useDQUICKtoQUICK(isNew?: boolean, noFetch?: boolean) {
   const { chainId } = useActiveWeb3React();
-  let chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const config = getConfig(chainIdToUse);
-  const oldLair = config['lair']['oldLair'];
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
-  chainIdToUse = oldLair ? chainIdToUse : ChainId.MATIC;
   const lair = useLairContract(chainIdToUse);
+  const newLair = useNewLairContract();
 
   const inputs = ['1000000000000000000'];
   const dQuickToQuickState = useSingleCallResult(
-    lair,
+    noFetch ? null : isNew ? newLair : lair,
     'dQUICKForQUICK',
     inputs,
   );
   if (dQuickToQuickState.loading || dQuickToQuickState.error) return 0;
 
-  return Number(
-    new TokenAmount(
-      OLD_QUICK[chainIdToUse],
-      JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
-    ).toExact(),
-  );
+  const quickToken = isNew ? NEW_QUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
+
+  return !noFetch && quickToken
+    ? Number(
+        new TokenAmount(
+          quickToken,
+          JSBI.BigInt(dQuickToQuickState?.result?.[0] ?? 0),
+        ).toExact(),
+      )
+    : 0;
 }
 
 export function useDerivedSyrupInfo(

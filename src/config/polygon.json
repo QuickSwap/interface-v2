@@ -17,6 +17,7 @@
     "bestTrade": true,
     "proMode": true,
     "limitOrder": true,
+    "liquidityHub": true,
     "twapOrder": true,
     "crossChain": true
   },
@@ -24,6 +25,8 @@
     "available": true
   },
   "farm": {
+    "quickswap": true,
+    "merkl": true,
     "available": true
   },
   "lair": {
@@ -67,5 +70,20 @@
   },
   "unipilot": {
     "available": false
+  },
+  "defiedge": {
+    "available": true
+  },
+  "bonds": {
+    "available": true
+  },
+  "steer": {
+    "available": true
+  },
+  "dappos": {
+    "available": true
+  },
+  "ichi": {
+    "available": true
   }
 }

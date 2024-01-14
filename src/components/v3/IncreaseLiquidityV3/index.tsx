@@ -1,7 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
+import {
+  useUNIV3NFTPositionManagerContract,
+  useV3NFTPositionManagerContract,
+} from 'hooks/useContract';
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
   TransactionErrorContent,
@@ -24,9 +27,13 @@ import { useDerivedPositionInfo } from 'hooks/v3/useDerivedPositionInfo';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
 import styles from 'styles/components/v3/IncreaseLiquidityV3.module.scss';
 import { event } from 'nextjs-google-analytics';
+import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
 import { WrappedCurrency } from 'models/types';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
+import {
+  NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+  UNI_NFT_POSITION_MANAGER_ADDRESS,
+} from 'constants/v3/addresses';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
@@ -58,7 +65,6 @@ export default function IncreaseLiquidityV3({
   const { position: existingPosition } = useDerivedPositionInfo(
     positionDetails,
   );
-  const feeAmount = 100;
 
   const token0Id = positionDetails.token0;
   const token1Id = positionDetails.token1;
@@ -73,7 +79,11 @@ export default function IncreaseLiquidityV3({
       ? undefined
       : currencyB;
 
-  const positionManager = useV3NFTPositionManagerContract();
+  const algebrapositionManager = useV3NFTPositionManagerContract();
+  const uniPositionManager = useUNIV3NFTPositionManagerContract();
+  const positionManager = positionDetails.isUni
+    ? uniPositionManager
+    : algebrapositionManager;
   const tokenId = positionDetails.tokenId.toString();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
@@ -97,10 +107,16 @@ export default function IncreaseLiquidityV3({
   } = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,
-    feeAmount,
     baseCurrency ?? undefined,
     existingPosition,
   );
+
+  const positionManagerAddress = useMemo(() => {
+    if (positionDetails.isUni) {
+      return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
+    }
+    return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
+  }, [chainId, positionDetails]);
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(noLiquidity);
 
@@ -152,11 +168,11 @@ export default function IncreaseLiquidityV3({
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_A],
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId ? positionManagerAddress : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     parsedAmounts[Field.CURRENCY_B],
-    chainId ? NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId] : undefined,
+    chainId ? positionManagerAddress : undefined,
   );
 
   const [allowedSlippage] = useUserSlippageTolerance();
@@ -191,14 +207,17 @@ export default function IncreaseLiquidityV3({
         ? quoteCurrency
         : undefined;
 
+      const PositionManager = positionDetails.isUni
+        ? UniV3NonFunPosMan
+        : NonFunPosMan;
       const { calldata, value } = tokenId
-        ? NonFunPosMan.addCallParameters(position, {
+        ? PositionManager.addCallParameters(position, {
             tokenId,
             slippageTolerance: allowedSlippagePercent,
             deadline: deadline.toString(),
             useNative,
           })
-        : NonFunPosMan.addCallParameters(position, {
+        : PositionManager.addCallParameters(position, {
             slippageTolerance: allowedSlippagePercent,
             recipient: account,
             deadline: deadline.toString(),
@@ -207,7 +226,7 @@ export default function IncreaseLiquidityV3({
           });
 
       const txn: { to: string; data: string; value: string } = {
-        to: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId],
+        to: positionManagerAddress,
         data: calldata,
         value,
       };

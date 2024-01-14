@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box } from '@mui/material';
 import { ChevronDown, ChevronUp } from 'react-feather';
-import { ChainId, Pair } from '@uniswap/sdk';
+import { Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import {
   useStakingInfo,
@@ -41,25 +41,11 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
     return data ?? null;
   };
 
-  const { data: bulkPairData, refetch } = useQuery({
+  const { data: bulkPairData } = useQuery({
     queryKey: ['fetchBulkPairData', chainId, pairId],
     queryFn: fetchBulkPairData,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const [showMore, setShowMore] = useState(false);
 

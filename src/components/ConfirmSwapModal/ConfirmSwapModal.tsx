@@ -9,6 +9,7 @@ import SwapModalHeader from './SwapModalHeader';
 import { formatTokenAmount } from 'utils';
 import { useTranslation } from 'next-i18next';
 import { OptimalRate } from '@paraswap/sdk';
+import { useLiquidityHubState } from 'state/swap/liquidity-hub/hooks';
 
 /**
  * Returns true if the trade requires a confirmation of details before we can submit it
@@ -98,6 +99,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
     outputCurrency,
   ]);
 
+  const liquidityHubState = useLiquidityHubState();
   // text to show while loading
   const pendingText = t('swappingFor', {
     amount1: optimalRate
@@ -107,7 +109,8 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
       ? trade?.inputAmount?.currency?.symbol
       : inputCurrency?.symbol,
     amount2: optimalRate
-      ? Number(optimalRate.destAmount) / 10 ** optimalRate.destDecimals
+      ? Number(liquidityHubState.outAmount || optimalRate.destAmount) /
+        10 ** optimalRate.destDecimals
       : formatTokenAmount(trade?.outputAmount),
     symbol2: trade
       ? trade?.outputAmount?.currency?.symbol

@@ -35,6 +35,7 @@ import { WalletConnect } from 'connectors/WalletConnect';
 import { useGetConnection, useMasaAnalytics } from 'hooks';
 import { UAuthConnector } from '@uauth/web3-react';
 import UAuth from '@uauth/js';
+import { useArcxAnalytics } from '@arcxmoney/analytics';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -95,6 +96,14 @@ const WalletModal: React.FC<WalletModalProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, selectedWallet]);
+
+  const arcxSdk = useArcxAnalytics();
+  useEffect(() => {
+    if (arcxSdk && account && chainId) {
+      arcxSdk.wallet({ chainId, account });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, arcxSdk]);
 
   const tryActivation = async (connection: Connection) => {
     // log selected wallet
@@ -183,6 +192,24 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={t('installPhantom')}
             subheader={null}
             link={'https://phantom.app/download'}
+            icon={option.iconName}
+            iconify={iconify}
+          />
+        );
+      } else if (
+        option.name === GlobalConst.walletName.BLOCKWALLET &&
+        !isBlockWallet
+      ) {
+        return (
+          <WalletOption
+            id={`connect-${option.name}`}
+            key={option.name}
+            color={option.color}
+            header={t('installBlock')}
+            subheader={null}
+            link={
+              'https://chrome.google.com/webstore/detail/blockwallet/bopcbmipnjdcdfflfgjdgdjejmgpoaab'
+            }
             icon={option.iconName}
             iconify={iconify}
           />
@@ -415,7 +442,10 @@ const WalletModal: React.FC<WalletModalProps> = ({
             <Close className='cursor-pointer' onClick={toggleWalletModal} />
           </Box>
           <Box my={1} className={styles.walletDescriptionContainer}>
-            {t('walletDescription')}
+            <p className='small text-secondary'>{t('walletDescription')}</p>
+            <p className='small text-secondary'>
+              {t('installedMetamaskNotDisplayedWarning')}
+            </p>
           </Box>
           <Box>
             {walletView === WALLET_VIEWS.PENDING ? (

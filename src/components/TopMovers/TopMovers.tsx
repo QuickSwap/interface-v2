@@ -10,7 +10,7 @@ import styles from 'styles/components/TopMovers.module.scss';
 import { useTranslation } from 'next-i18next';
 import { useIsV2 } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
 
@@ -52,59 +52,52 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
 
   const loading = loadingV2Tokens || loadingV3Tokens;
 
-  return (
+  return loading ? (
+    <Skeleton variant='rectangular' width='100%' height={100} />
+  ) : topMoverTokens && chainId ? (
     <Box className={`bg-palette ${styles.topMoversWrapper}`}>
       <p className='weight-600 text-secondary'>{t('24hMostVolume')}</p>
       <Box className={styles.topMoversContent}>
-        {loading ? (
-          <Skeleton variant='rectangular' width='100%' height={100} />
-        ) : topMoverTokens && chainId ? (
-          <Box>
-            {topMoverTokens.map((token: any) => {
-              const currency = getTokenFromAddress(
-                token.id,
+        <Box>
+          {topMoverTokens.map((token: any) => {
+            const currency = getTokenFromAddress(token.id, chainId, tokenMap, [
+              new Token(
                 chainId,
-                tokenMap,
-                [
-                  new Token(
-                    chainId,
-                    getAddress(token.id),
-                    Number(token.decimals),
-                    token.symbol,
-                    token.name,
-                  ),
-                ],
-              );
-              const priceClass = getPriceClass(Number(token.priceChangeUSD));
-              const priceUp = Number(token.priceChangeUSD) > 0;
-              const priceDown = Number(token.priceChangeUSD) < 0;
-              const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
-              return (
-                <Box className={styles.topMoverItem} key={token.id}>
-                  <CurrencyLogo currency={currency} size='28px' />
-                  <Box ml={1}>
-                    <small className='text-bold'>{token.symbol}</small>
-                    <Box className='flex items-center justify-center'>
-                      <small>${formatNumber(token.priceUSD)}</small>
-                      <Box className={`${styles.topMoverText} ${priceClass}`}>
-                        {!hideArrow && priceUp && <ArrowDropUp />}
-                        {!hideArrow && priceDown && <ArrowDropDown />}
-                        <span>
-                          {hideArrow && priceUp ? '+' : ''}
-                          {priceUpPercent}%
-                        </span>
-                      </Box>
+                getAddress(token.id),
+                Number(token.decimals),
+                token.symbol,
+                token.name,
+              ),
+            ]);
+            const priceClass = getPriceClass(Number(token.priceChangeUSD));
+            const priceUp = Number(token.priceChangeUSD) > 0;
+            const priceDown = Number(token.priceChangeUSD) < 0;
+            const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
+            return (
+              <Box className={styles.topMoverItem} key={token.id}>
+                <CurrencyLogo currency={currency} size='28px' />
+                <Box ml={1}>
+                  <small className='text-bold'>{token.symbol}</small>
+                  <Box className='flex justify-center items-center'>
+                    <small>${formatNumber(token.priceUSD)}</small>
+                    <Box className={`${styles.topMoverText} ${priceClass}`}>
+                      {!hideArrow && priceUp && <ArrowDropUp />}
+                      {!hideArrow && priceDown && <ArrowDropDown />}
+                      <span>
+                        {hideArrow && priceUp ? '+' : ''}
+                        {priceUpPercent}%
+                      </span>
                     </Box>
                   </Box>
                 </Box>
-              );
-            })}
-          </Box>
-        ) : (
-          <></>
-        )}
+              </Box>
+            );
+          })}
+        </Box>
       </Box>
     </Box>
+  ) : (
+    <></>
   );
 };
 

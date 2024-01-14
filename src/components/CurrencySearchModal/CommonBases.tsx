@@ -54,7 +54,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
           <CurrencyLogo currency={nativeCurrency} size='24px' />
           <small>{nativeCurrency.name}</small>
         </Box>
-        {(chainId ? SUGGESTED_BASES[chainId] : []).map((token: Token) => {
+        {(chainId ? SUGGESTED_BASES[chainId] ?? [] : []).map((token: Token) => {
           const selected = Boolean(
             selectedCurrency && currencyEquals(selectedCurrency, token),
           );

@@ -1,15 +1,25 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useDebounce from 'hooks/useDebounce';
 import useIsWindowVisible from 'hooks/useIsWindowVisible';
-import { updateBlockNumber } from './actions';
+import { updateBlockNumber, updateSoulZap } from './actions';
 import { useEthPrice, useMaticPrice } from './hooks';
 import { getEthPrice } from 'utils';
 import { getMaticPrice } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
+import { SoulZap_UniV2_ApeBond } from '@soulsolidity/soulzap-v1';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { rpcMap } from 'constants/providers';
+import { ChainId } from '@uniswap/sdk';
 
 export default function Updater(): null {
-  const { library, chainId, connector } = useActiveWeb3React();
+  const {
+    library,
+    chainId,
+    connector,
+    provider,
+    account,
+  } = useActiveWeb3React();
 
   const dispatch = useDispatch();
   const { updateEthPrice } = useEthPrice();
@@ -150,6 +160,31 @@ export default function Updater(): null {
     debouncedState.blockNumber,
     debouncedState.chainId,
   ]);
+
+  const ethersProvider = useMemo(() => {
+    if (chainId) return new JsonRpcProvider(rpcMap?.[chainId]?.[0]);
+  }, [chainId]);
+
+  const soulZapSupportChainId = [ChainId.MATIC];
+  useEffect(() => {
+    // Ensuring instance is only created on the client-side
+    if (
+      typeof window !== 'undefined' &&
+      chainId &&
+      provider &&
+      ethersProvider &&
+      soulZapSupportChainId.includes(chainId)
+    ) {
+      console.log('Initiating soul zap instance');
+      // web3 provider is works funny if user is not connected, so in those cases we use ethers instead
+      const soulZapInstance = new SoulZap_UniV2_ApeBond(
+        chainId as number,
+        account ? provider.getSigner() : ethersProvider,
+      );
+      dispatch(updateSoulZap(soulZapInstance));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId, provider, ethersProvider, account]);
 
   return null;
 }

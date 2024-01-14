@@ -9,10 +9,11 @@ interface SwitchItems {
 }
 
 interface CustomSwitchProps {
-  width: number | string;
+  width?: number | string;
   height: number;
   items: SwitchItems[];
   isLarge?: boolean;
+  activeItemClass?: string;
 }
 
 const CustomSwitch: React.FC<CustomSwitchProps> = ({
@@ -20,6 +21,7 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
   height,
   items,
   isLarge,
+  activeItemClass,
 }) => {
   return (
     <Box display='flex' width={width} height={height}>
@@ -31,9 +33,11 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
           <Box
             key={index}
             className={`${styles.switchItem} ${
-              item.condition ? styles.activeSwitchItem : ''
+              item.condition ? activeItemClass ?? styles.activeSwitchItem : ''
             }
             `}
+            flex={width ? 1 : undefined}
+            px={width ? 0 : 2}
             style={{
               // makes left border radius for the first switch item and right border radius for the last switch item
               borderTopLeftRadius: returnBorderRadius(0),

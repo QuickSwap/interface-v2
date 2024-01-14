@@ -11,7 +11,7 @@ import {
 import invariant from 'tiny-invariant';
 import { MethodParameters, toHex } from './calldata';
 import abi from 'constants/abis/v3/swap-router.json';
-import { encodeRouteToPath } from 'lib/utils/encodeRouteToPath';
+import { encodeRouteToPath } from 'v3lib/utils/encodeRouteToPath';
 import { Trade } from 'lib/trade';
 import { ADDRESS_ZERO } from 'v3lib/utils';
 

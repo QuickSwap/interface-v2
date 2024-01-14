@@ -5,6 +5,7 @@
   position: relative;
   display: flex;
   justify-content: center;
+  z-index: 10;
 }
 
 .footerContainer {
@@ -24,4 +25,42 @@
   padding: 16px 0;
   justify-content: space-between;
   align-items: center;
+}
+
+.copyrightMobile {
+  justify-content: space-between;
+  margin-bottom: 64px;
+  border-bottom: 1px solid $divider;
+}
+
+.fakeCommunityContainer {
+  min-width: 680px;
+  background-color: transparent;
+}
+
+.footerLink {
+  color: $textSecondary;
+  text-decoration: none;
+}
+
+.newsletterInput {
+  border: 1px solid $divider;
+  border-radius: 8px;
+  max-width: 300px;
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 2px 2px 6px;
+  & input {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    color: $textPrimary;
+    flex: 1;
+  }
+  & button {
+    background: linear-gradient(90deg, $blue9 0%, $purple3 100%);
+    font-size: 11px;
+  }
 }

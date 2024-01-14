@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'next-i18next';
-import styles from 'styles/pages/pools/GammaLPItemDetails.module.scss';
+import styles from 'styles/pages/pools/AutomaticLPItemDetails.module.scss';
 import { formatNumber } from 'utils';
 import { CurrencyLogo } from 'components';
 import Badge from 'components/v3/Badge';
@@ -21,7 +21,9 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
     ? new Token(chainId, gammaPosition.pairAddress, 18)
     : undefined;
   const lpTokenBalance = useTokenBalance(account ?? undefined, lpToken);
-  const token0USDPrice = useUSDCPriceFromAddress(gammaPosition?.token0.address);
+  const { price: token0USDPrice } = useUSDCPriceFromAddress(
+    gammaPosition?.token0.address,
+  );
   const token0PooledPercent =
     token0USDPrice &&
     gammaPosition &&
@@ -105,15 +107,15 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
           </Box>
         </Box>
       </Box>
-      <Box mt={2} className={styles.gammaLiquidityItemButtons}>
+      <Box mt={2} className={styles.liquidityItemButtons}>
         <Button
-          className={styles.gammaLiquidityItemButton}
+          className={styles.liquidityItemButton}
           onClick={() => setShowAddLPModal(true)}
         >
           <small>{t('addLiquidity')}</small>
         </Button>
         <Button
-          className={styles.gammaLiquidityItemButton}
+          className={styles.liquidityItemButton}
           disabled={
             gammaPosition.farming &&
             (!lpTokenBalance ||

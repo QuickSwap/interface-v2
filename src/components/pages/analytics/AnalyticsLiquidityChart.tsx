@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Box } from '@mui/material';
 import { Skeleton } from '@mui/lab';
 import dayjs from 'dayjs';
@@ -45,7 +45,7 @@ const AnalyticsLiquidityChart: React.FC<{
     return chartData;
   };
 
-  const { isLoading, data: globalChartData, refetch } = useQuery({
+  const { isLoading, data: globalChartData } = useQuery({
     queryKey: [
       'fetchAnalyticsLiquidityChartData',
       durationIndex,
@@ -53,22 +53,8 @@ const AnalyticsLiquidityChart: React.FC<{
       chainId,
     ],
     queryFn: fetchChartData,
+    refetchInterval: 60000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const liquidityPercentClass = getPriceClass(
     globalData ? Number(globalData.liquidityChangeUSD) : 0,

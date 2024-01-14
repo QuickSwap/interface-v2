@@ -6,8 +6,9 @@ import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { formatCompact, useLairDQUICKAPY } from 'utils';
 import { Skeleton } from '@mui/lab';
 import { StakeQuickModal } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Home.module.scss';
+import { useActiveWeb3React } from 'hooks';
 
 interface DragonLayerInfoCardProps {
   chainId: any;
@@ -18,6 +19,7 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
   chainId,
   config = {},
 }) => {
+  const { account } = useActiveWeb3React();
   const { t } = useTranslation();
   const lairInfo = useNewLairInfo();
   const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
@@ -29,22 +31,25 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
   const oldLair = config['lair']?.oldLair;
   const newLair = config['lair']?.newLair;
 
-  const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
-  const rewards: string = useMemo(() => {
+  const {
+    loading: loadingQuickPrice,
+    price: quickPrice,
+  } = useUSDCPriceFromAddress(quickToken?.address ?? '');
+
+  const rewards = useMemo(() => {
     if (lairInfo && quickPrice) {
       const balance = Number(lairInfo.totalQuickBalance.toExact());
       if (balance > 0) {
         const newReward = balance * quickPrice;
         const formattedReward = formatCompact(newReward, 18, 3, 3);
-        if (formattedReward !== rewards) {
-          return formattedReward;
-        }
-        return '0';
+        return formattedReward;
       }
       return '0';
     }
     return '0';
   }, [lairInfo, quickPrice]);
+
+  const loading = lairInfo?.loading || loadingQuickPrice;
 
   return (
     <>
@@ -57,7 +62,9 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
       )}
       {(oldLair || newLair) && (
         <Box className={styles.tradingSection} pt='20px'>
-          {dQUICKAPY ? (
+          {loading ? (
+            <Skeleton variant='rectangular' width={100} height={45} />
+          ) : (
             <Box>
               <Box display='flex'>
                 <h6>$</h6>
@@ -67,13 +74,13 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
                 <small>{dQUICKAPY}%</small>
               </Box>
             </Box>
-          ) : (
-            <Skeleton variant='rectangular' width={100} height={45} />
           )}
           <p>{t('dragonslair')}</p>
-          <h4 onClick={() => setOpenStakeModal(true)}>
-            {t('stake')} {'>'}
-          </h4>
+          {account && (
+            <h4 onClick={() => setOpenStakeModal(true)}>
+              {t('stake')} {'>'}
+            </h4>
+          )}
         </Box>
       )}
     </>

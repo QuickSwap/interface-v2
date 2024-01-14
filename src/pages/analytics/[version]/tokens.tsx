@@ -66,7 +66,7 @@ const AnalyticsTokens = (
           <p className='weight-600'>{t('newListing')}</p>
         </Box>
       </Box>
-      <Box className='panel'>
+      <Box className={styles.panel}>
         {topTokensLoading ? (
           <Skeleton variant='rectangular' width='100%' height={150} />
         ) : topTokens ? (

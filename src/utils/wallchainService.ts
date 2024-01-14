@@ -24,7 +24,7 @@ const wallchainResponseIsValid = (
     dataResponse.summary &&
     dataResponse.summary.searchSummary &&
     dataResponse.summary.searchSummary.expectedUsdProfit &&
-    BONUS_CUTOFF_AMOUNT[chainId] >
+    (BONUS_CUTOFF_AMOUNT[chainId] ?? 0) >
       dataResponse.summary.searchSummary.expectedUsdProfit * 0.3
   ) {
     return false;
@@ -70,7 +70,7 @@ export default function callWallchainAPI(
   onBestRoute: (bestRoute: RouterTypeParams) => void,
   onSetSwapDelay: (swapDelay: SwapDelay) => void,
   priority?: number,
-): Promise<DataResponse | null> {
+): Promise<DataResponse | null> | null {
   onSetSwapDelay(SwapDelay.FETCHING_BONUS);
   const encodedData =
     typeof args === 'string'
@@ -82,10 +82,12 @@ export default function callWallchainAPI(
   // Allowing transactions to be checked even if no user is connected
   const activeAccount = account || '0x0000000000000000000000000000000000000000';
 
+  const wallChainParam = WALLCHAIN_PARAMS[chainId];
+  if (!wallChainParam) return null;
   // If the intiial call fails APE router will be the default router
   return fetch(
-    `${WALLCHAIN_PARAMS[chainId][smartRouter].apiURL}?key=${
-      WALLCHAIN_PARAMS[chainId][smartRouter].apiKey
+    `${wallChainParam[smartRouter].apiURL}?key=${
+      wallChainParam[smartRouter].apiKey
     }${priority ? `&priority=${priority}` : ''}`,
     {
       method: 'POST',

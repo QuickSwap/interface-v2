@@ -12,7 +12,7 @@ import {
   DualStakingInfo,
   CommonStakingInfo,
   OtherStackingInfo,
-} from 'types';
+} from 'types/index';
 import {
   FarmCard,
   ToggleSwitch,

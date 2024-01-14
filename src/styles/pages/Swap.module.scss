@@ -38,8 +38,46 @@
   }
 }
 
-.tradeBtn:hover {
-  color: #c7cad9;
+.tradeBtn {
+  font-size: 16px;
+  &:hover {
+    color: #c7cad9;
+  }
+}
+
+#swap-menu {
+  > div:nth-child(3) {
+    background-color: #2b2f3e;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 16px;
+    color: #c7cad9;
+  }
+}
+
+.selectedMenuDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #00ff00;
+  margin-right: 6px;
+}
+
+.swapMenuItem {
+  background-color: #2b2f3e;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.swapMenuItemSelected {
+  background-color: #404557 !important;
+  color: #fff !important;
+  border-radius: 10px;
+}
+
+.crossChainIcon {
+  margin-top: 5px;
 }
 
 .activeSwap {
@@ -53,8 +91,8 @@
 
 .tabContainer {
   border-radius: 2rem;
-  border: 1px solid rgba(130, 177, 255, 0.08);
-  background: rgba(130, 177, 255, 0.03);
+  // border: 1px solid rgba(130, 177, 255, 0.08);
+  // background: rgba(130, 177, 255, 0.03);
   color: #696c80;
 }
 
@@ -65,7 +103,6 @@
 
 .tab {
   background-color: transparent;
-  border-radius: 2rem;
   padding: 0 16px;
   height: 46px;
   display: flex;
@@ -81,19 +118,16 @@
   cursor: pointer;
   background: rgba(68, 138, 255, 0.3) !important;
   color: white !important;
-  & p {
+  border-radius: 0.5rem;
+  & div {
     color: white;
   }
 }
 
 .activeTab {
-  border-radius: 2rem;
-  border: 1px solid #448aff;
-  background: rgba(68, 138, 255, 0.3) !important;
-  color: $textPrimary !important;
-  & p {
-    color: $textPrimary !important;
-  }
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #282d3d;
 }
 
 .headingItem {
@@ -375,12 +409,66 @@ div.buy {
   align-items: center;
   & small {
     color: $textSecondary;
+    height: 100%;
+    padding-top: 9px;
+    padding-left: 6px;
+    padding-right: 6px;
   }
 }
 
 .activeSwapLimitTab {
-  background-color: $grey32;
   & small {
-    color: $bgPalette;
+    color: #fff;
+    border-bottom: 2px solid #448aff;
+  }
+}
+
+.newsletterSignupSwap {
+  box-shadow: 0 0 17px 0 $purple5;
+  border: 1px solid $blue10;
+  text-align: center;
+  & p {
+    color: $textSecondary;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+  }
+  & h4 {
+    margin-bottom: 12px;
+  }
+  & small {
+    line-height: 14px;
+    color: $grey35;
+  }
+  & span {
+    font-size: 13px;
+    line-height: 14px;
+  }
+}
+
+.newsletterSignupFormSwap {
+  margin-top: 16px;
+  width: 100%;
+  background-color: $bgColor;
+  border: 0.65px solid $grey34;
+  border-radius: 10px;
+  display: flex;
+  & input {
+    flex: 1;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0 6px;
+    outline: none;
+    color: white;
+  }
+  & button {
+    background: linear-gradient(270deg, $blue11 0%, $purple6 100.1%);
+    box-shadow: 0 0 20px 0 $purple7;
+    height: 33px;
+    width: 113px;
+    font-size: 12.11px;
   }
 }

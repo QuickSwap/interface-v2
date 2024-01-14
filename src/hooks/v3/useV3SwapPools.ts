@@ -1,8 +1,10 @@
 import { Currency } from '@uniswap/sdk-core';
-import { PoolState, usePools } from 'hooks/usePools';
-import { Pool } from 'lib/pool';
+import { PoolState, usePools } from 'hooks/v3/usePools';
+import { Pool } from 'v3lib/entities/pool';
 import { useMemo } from 'react';
 import { useAllCurrencyCombinations } from './useAllCurrencyCombinations';
+import { FeeAmount } from 'v3lib/utils';
+import { Token } from '@uniswap/sdk-core';
 
 /**
  * Returns all the existing pools that should be considered for swapping between an input currency and an output currency
@@ -12,6 +14,7 @@ import { useAllCurrencyCombinations } from './useAllCurrencyCombinations';
 export function useV3SwapPools(
   currencyIn?: Currency,
   currencyOut?: Currency,
+  isUni?: boolean,
 ): {
   pools: Pool[];
   loading: boolean;
@@ -21,13 +24,47 @@ export function useV3SwapPools(
     currencyOut,
   );
 
-  // const allCurrencyCombinationsWithAllFees: [Token, Token, FeeAmount][] = useMemo(
-  //   () =>
-  //     allCurrencyCombinations
-  //   [allCurrencyCombinations]
-  // )
+  const allCurrencyCombinationsWithAllFees: [
+    Token,
+    Token,
+    FeeAmount,
+  ][] = useMemo(
+    () =>
+      allCurrencyCombinations.reduce<[Token, Token, FeeAmount][]>(
+        (list, [tokenA, tokenB]) => {
+          return list.concat([
+            [tokenA, tokenB, FeeAmount.LOWEST],
+            [tokenA, tokenB, FeeAmount.LOW],
+            [tokenA, tokenB, FeeAmount.MEDIUM],
+            [tokenA, tokenB, FeeAmount.HIGH],
+          ]);
+        },
+        [],
+      ),
+    [allCurrencyCombinations],
+  );
 
-  const pools = usePools(allCurrencyCombinations);
+  const allCurrencyCombinationsWithoutFees: [
+    Token,
+    Token,
+    undefined,
+  ][] = useMemo(
+    () =>
+      allCurrencyCombinations.reduce<[Token, Token, undefined][]>(
+        (list, [tokenA, tokenB]) => {
+          return list.concat([[tokenA, tokenB, undefined]]);
+        },
+        [],
+      ),
+    [allCurrencyCombinations],
+  );
+
+  const pools = usePools(
+    isUni
+      ? allCurrencyCombinationsWithAllFees
+      : allCurrencyCombinationsWithoutFees,
+    isUni,
+  );
 
   return useMemo(() => {
     return {

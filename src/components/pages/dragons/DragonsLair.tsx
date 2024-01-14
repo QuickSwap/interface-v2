@@ -22,7 +22,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
 
   const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
   const dQuickToken = isNew ? DLDQUICK[chainIdToUse] : OLD_DQUICK[chainIdToUse];
-  const quickPrice = useUSDCPriceFromAddress(quickToken.address);
+  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken.address);
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
@@ -54,7 +54,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
           isNew={isNew}
         />
       )}
-      <Box display='flex'>
+      <Box display='flex' mb={3}>
         <CurrencyLogo currency={quickToken} size='32px' />
         <Box ml={1.5}>
           <p className='small line-height-1'>{quickToken?.symbol}</p>

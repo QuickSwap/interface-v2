@@ -10,7 +10,7 @@ import {
 import { Swap, AddLiquidity } from 'components';
 import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Home.module.scss';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import SwapV3Page from 'components/pages/swap/SwapV3';
 

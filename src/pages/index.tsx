@@ -8,19 +8,19 @@ import {
   Typography,
 } from '@mui/material';
 import { ExpandMoreOutlined } from '@mui/icons-material';
-import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { useTranslation, Trans } from 'next-i18next';
 import styles from 'styles/pages/Home.module.scss';
+import { useActiveWeb3React } from 'hooks';
+import { getConfig } from 'config/index';
+import { HypeLabAds, TopMovers, RewardSlider } from 'components';
+import NewsletterSignupForm from 'components/pages/home/NewsletterSignupForm';
 import GlobalSection from 'components/pages/home/GlobalSection';
 import SwapSection from 'components/pages/home/SwapSection';
 import BuyFiatSection from 'components/pages/home/BuyFiatSection';
 import BuySpritzSection from 'components/pages/home/BuySpritzSection';
-import { TopMovers, RewardSlider } from 'components';
 import { useRouter } from 'next/router';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useActiveWeb3React } from 'hooks';
-import { getConfig } from 'config';
-import { HypeLabAds } from 'components';
 
 const LandingPage = (
   _props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -109,11 +109,6 @@ const LandingPage = (
       link: 'https://www.instagram.com/quickswapofficial',
       icon: '/assets/images/social/instagram.png',
       title: 'Instagram',
-    },
-    {
-      link: 'https://quickswap-layer2.medium.com/',
-      icon: '/assets/images/social/Medium.svg',
-      title: 'Medium',
     },
     {
       link: 'https://www.coingecko.com/en/exchanges/quickswap',
@@ -275,7 +270,7 @@ const LandingPage = (
           <Box
             className={styles.allRewardPairs}
             onClick={() => {
-              router.push('/farm');
+              router.push('/farm/v3');
             }}
           >
             <p>{t('seeAllPairs')}</p>
@@ -317,6 +312,9 @@ const LandingPage = (
             </Grid>
           ))}
         </Grid>
+      </Box>
+      <Box my={4}>
+        <NewsletterSignupForm />
       </Box>
       <Box className={styles.communityContainer}>
         <Box className={styles.featureHeading}>

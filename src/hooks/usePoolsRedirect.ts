@@ -20,6 +20,25 @@ export default function usePoolsRedirect() {
     .map((key, index) => [key, Object.values(router.query)[index]])
     .filter((item) => item[0] !== 'version');
 
+  const redirectWithCurrencySingleToken = useCallback(
+    (currency: any) => {
+      let redirectPath = '';
+      const currencyId = currency.isNative ? 'ETH' : currency.address;
+      if (router.query.currency) {
+        redirectPath = currentPath.replace(
+          `currency=${router.query.currency}`,
+          `currency=${currencyId}`,
+        );
+      } else {
+        redirectPath = `${currentPath}${
+          currencyParamsArray.length === 0 ? '?' : '&'
+        }currency=${currencyId}`;
+      }
+      router.push(redirectPath);
+    },
+    [history, currentPath],
+  );
+
   const redirectWithCurrency = useCallback(
     (currency: any, isInput: boolean, isV2 = true) => {
       let redirectPath = '';
@@ -127,5 +146,9 @@ export default function usePoolsRedirect() {
     [chainIdToUse, currencyIdAParam, currencyIdBParam, router],
   );
 
-  return { redirectWithCurrency, redirectWithSwitch };
+  return {
+    redirectWithCurrency,
+    redirectWithSwitch,
+    redirectWithCurrencySingleToken,
+  };
 }

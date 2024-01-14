@@ -8,32 +8,18 @@ import { formatNumber } from 'utils';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import GammaFarmCardDetails from './GammaFarmCardDetails';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
+import { V3Farm } from 'components/pages/farms/V3/Farms';
 
 const GammaFarmCard: React.FC<{
-  data: any;
-  rewardData: any;
+  data: V3Farm;
   token0: Token | null;
   token1: Token | null;
-  pairData: any;
-}> = ({ data, rewardData, pairData, token0, token1 }) => {
+}> = ({ data, token0, token1 }) => {
   const { t } = useTranslation();
-  const rewards: any[] =
-    rewardData && rewardData['rewarders']
-      ? Object.values(rewardData['rewarders'])
-      : [];
   const [showDetails, setShowDetails] = useState(false);
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
-
-  const farmAPR =
-    rewardData && rewardData['apr'] ? Number(rewardData['apr']) : 0;
-  const poolAPR =
-    data &&
-    data['returns'] &&
-    data['returns']['allTime'] &&
-    data['returns']['allTime']['feeApr']
-      ? Number(data['returns']['allTime']['feeApr'])
-      : 0;
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const { rewards, farmAPR, poolAPR } = data;
 
   return (
     <Box
@@ -55,7 +41,7 @@ const GammaFarmCard: React.FC<{
                   size={30}
                 />
                 <Box ml='6px'>
-                  <small className='weight-600'>{`${token0.symbol}/${token1.symbol} (${pairData.title})`}</small>
+                  <small className='weight-600'>{`${token0.symbol}/${token1.symbol} (${data.title})`}</small>
                   <Box className='cursor-pointer'>
                     <Link
                       href={`/pools?currency0=${token0.address}&currency1=${token1.address}`}
@@ -72,19 +58,15 @@ const GammaFarmCard: React.FC<{
           {!isMobile && (
             <>
               <Box width='20%' className='flex justify-between'>
-                {rewardData && (
-                  <small className='weight-600'>
-                    ${formatNumber(rewardData['stakedAmountUSD'])}
-                  </small>
-                )}
+                <small className='weight-600'>${formatNumber(data.tvl)}</small>
               </Box>
               <Box width='30%'>
                 {rewards.map((reward, ind) => (
                   <div key={ind}>
-                    {reward && Number(reward['rewardPerSecond']) > 0 && (
+                    {reward.amount > 0 && (
                       <small className='small weight-600'>
-                        {formatNumber(reward.rewardPerSecond * 3600 * 24)}{' '}
-                        {reward.rewardTokenSymbol} / {t('day')}
+                        {formatNumber(reward.amount)} {reward.token.symbol} /{' '}
+                        {t('day')}
                       </small>
                     )}
                   </div>
@@ -123,13 +105,7 @@ const GammaFarmCard: React.FC<{
           </Box>
         </Box>
       </Box>
-      {showDetails && (
-        <GammaFarmCardDetails
-          data={data}
-          pairData={pairData}
-          rewardData={rewardData}
-        />
-      )}
+      {showDetails && <GammaFarmCardDetails data={data} />}
     </Box>
   );
 };

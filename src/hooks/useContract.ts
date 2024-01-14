@@ -39,18 +39,38 @@ import {
   NEW_LAIR_ADDRESS,
   QUICK_CONVERSION,
   DL_QUICK_ADDRESS,
+  ZAP_ADDRESS,
+  UNI_NFT_POSITION_MANAGER_ADDRESS,
+  UNIV3_QUOTER_ADDRESSES,
+  STEER_PERIPHERY,
+  STEER_VAULT_REGISTRY,
+  PRICE_GETTER_ADDRESS,
+  MERKL_DISTRIBUTOR,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
+import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
 import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
 import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import UNINFTPosMan from 'constants/abis/uni-v3/nft-position-manager.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
 import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
+import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
+import DEFIEDGE_MINICHEF_ABI from 'constants/abis/defiedge-minichef.json';
+import PRICE_GETTER_ABI from 'constants/abis/price-getter.json';
+import BOND_ABI from 'constants/abis/bond.json';
+import BOND_NFT_ABI from 'constants/abis/bondNFT.json';
+import ZAP_ABI from 'constants/abis/zap.json';
+import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
+import STEER_DUAL_STAKING_ABI from 'constants/abis/steer-staking-dual.json';
+import SteerPeripheryABI from 'constants/abis/steer-periphery.json';
+import SteerVaultABI from 'constants/abis/steer-vault.json';
+import SteerVaultRegistryABI from 'constants/abis/steer-vault-registry.json';
 
 const STAKING_REWARDS_ABI = StakingRewards.abi;
 const IUniswapV2PairABI = IUniswapV2Pair.abi;
@@ -293,6 +313,9 @@ export function useRouterContract(): Contract | null {
 export function useV3Quoter() {
   return useContract(QUOTER_ADDRESSES, NewQuoterABI);
 }
+export function useUniV3Quoter() {
+  return useContract(UNIV3_QUOTER_ADDRESSES, UniV3QuoterABI);
+}
 
 export function useV3NFTPositionManagerContract(
   withSignerIfPossible?: boolean,
@@ -300,6 +323,16 @@ export function useV3NFTPositionManagerContract(
   return useContract(
     NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
     NFTPosMan,
+    withSignerIfPossible,
+  );
+}
+
+export function useUNIV3NFTPositionManagerContract(
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(
+    UNI_NFT_POSITION_MANAGER_ADDRESS,
+    UNINFTPosMan,
     withSignerIfPossible,
   );
 }
@@ -342,6 +375,13 @@ export function useMasterChefContract(
   );
 }
 
+export function useMiniChefContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, DEFIEDGE_MINICHEF_ABI, withSignerIfPossible);
+}
+
 export function useMasterChefContracts(withSignerIfPossible?: boolean) {
   return useContracts(
     GAMMA_MASTERCHEF_ADDRESSES,
@@ -364,6 +404,20 @@ export function useUniPilotVaultContract(
   return useContract(address, UNIPILOT_VAULT_ABI, withSignerIfPossible);
 }
 
+export function useDefiedgeStrategyContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  return useContract(address, DEFIEDGE_STRATEGY_ABI, withSignerIfPossible);
+}
+
+export function useDefiEdgeMiniChefContracts(
+  addresses: string[],
+  withSignerIfPossible?: boolean,
+) {
+  return useContracts(addresses, DEFIEDGE_MINICHEF_ABI, withSignerIfPossible);
+}
+
 export function useUnipilotFarmingContract(
   address?: string,
   isDual?: boolean,
@@ -380,4 +434,89 @@ export function useUnipilotFarmingContract(
     withSignerIfPossible,
   );
   return isDual ? dualContract : singleContract;
+}
+
+export function usePriceGetterContract(withSignerIfPossible?: boolean) {
+  return useContract(
+    PRICE_GETTER_ADDRESS,
+    PRICE_GETTER_ABI,
+    withSignerIfPossible,
+  );
+}
+
+export const useBondContract = (address: string) => {
+  return useContract(address, BOND_ABI);
+};
+
+export const useBondContracts = (addresses: string[]) => {
+  return useContracts(addresses, BOND_ABI);
+};
+
+export const useBondNFTContract = (address: string) => {
+  return useContract(address, BOND_NFT_ABI);
+};
+
+export function useZapContract(withSignerIfPossible?: boolean) {
+  const { chainId } = useActiveWeb3React();
+  return useContract(
+    chainId ? ZAP_ADDRESS[chainId] : undefined,
+    ZAP_ABI,
+    withSignerIfPossible,
+  );
+}
+
+export function useSteerPeripheryContract(withSignerIfPossible?: boolean) {
+  const contract = useContract(
+    STEER_PERIPHERY,
+    SteerPeripheryABI,
+    withSignerIfPossible,
+  );
+  return contract;
+}
+
+export function useSteerVaultRegistryContract(withSignerIfPossible?: boolean) {
+  const contract = useContract(
+    STEER_VAULT_REGISTRY,
+    SteerVaultRegistryABI,
+    withSignerIfPossible,
+  );
+  return contract;
+}
+
+export function useSteerVaultContract(
+  address?: string,
+  withSignerIfPossible?: boolean,
+) {
+  const contract = useContract(address, SteerVaultABI, withSignerIfPossible);
+  return contract;
+}
+
+export function useSteerFarmingContract(
+  address?: string,
+  isDual?: boolean,
+  withSignerIfPossible?: boolean,
+) {
+  const singleContract = useContract(
+    address,
+    STEER_STAKING_ABI,
+    withSignerIfPossible,
+  );
+  const dualContract = useContract(
+    address,
+    STEER_DUAL_STAKING_ABI,
+    withSignerIfPossible,
+  );
+  return isDual ? dualContract : singleContract;
+}
+
+export function useMerklContract(withSignerIfPossible?: boolean) {
+  const distributorABI = [
+    'function claim(address[] calldata users, address[] calldata tokens, uint256[] calldata amounts, bytes32[][] calldata proofs) external',
+  ];
+  const contract = useContract(
+    MERKL_DISTRIBUTOR,
+    distributorABI,
+    withSignerIfPossible,
+  );
+  return contract;
 }

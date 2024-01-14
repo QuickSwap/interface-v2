@@ -100,3 +100,33 @@
     margin-left: 5px;
   }
 }
+
+.pool-select-vault-wrapper {
+  margin-top: 16px;
+}
+
+.pool-select-vault-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: $secondary1;
+  border-radius: 16px;
+  padding: 12px 0;
+  cursor: pointer;
+  & img {
+    height: 10px;
+  }
+  & small {
+    margin: 8px 0 4px;
+  }
+  & p {
+    line-height: 10px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+}
+
+.pool-select-vault-selected {
+  border: 1px solid $primary;
+}
