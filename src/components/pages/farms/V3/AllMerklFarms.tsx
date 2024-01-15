@@ -21,7 +21,7 @@ interface Props {
   farmStatus: string;
 }
 
-const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
+const AllMerklFarms: React.FC<Props> = ({ searchValue }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();

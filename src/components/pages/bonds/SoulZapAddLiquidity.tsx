@@ -220,7 +220,9 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
           />
         </Box>
         <Box className={styles.soulZapAddLiquidityArrowWrapper}>
-          <img src='/assets/images/bondArrow.svg' />
+          <picture>
+            <img src='/assets/images/bondArrow.svg' alt='Bond Arrow' />
+          </picture>
         </Box>
         <p>{t('to')}:</p>
         <Box className={styles.soulZapAddLiquidityInput} my={1.5}>

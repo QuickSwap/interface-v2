@@ -17,11 +17,8 @@ const Claim: React.FC<ClaimProps> = ({
   billAddress,
   billIds,
   pendingRewards,
-  mt,
-  earnToken,
-  hasDarkBg,
 }) => {
-  const { onClaimBill } = useClaimBond(billAddress, billIds, earnToken);
+  const { onClaimBill } = useClaimBond(billAddress, billIds);
   const { chainId, account } = useActiveWeb3React();
   const [pendingTrx, setPendingTrx] = useState(false);
   const { t } = useTranslation();

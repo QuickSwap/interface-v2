@@ -303,11 +303,14 @@ const SwapMain: React.FC = () => {
                     }}
                   >
                     <Box pr={1}>
-                      <img
-                        src='/assets/images/crossChainIcon.svg'
-                        className='cross-chain-icon'
-                        style={{ scale: 1.5 }}
-                      />
+                      <picture>
+                        <img
+                          src='/assets/images/crossChainIcon.svg'
+                          className='cross-chain-icon'
+                          style={{ scale: 1.5 }}
+                          alt='CrossChain Icon'
+                        />
+                      </picture>
                     </Box>
                     <Box className='trade-btn'>{t('crossChain')}</Box>
                   </Box>

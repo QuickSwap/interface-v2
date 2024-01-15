@@ -25,7 +25,9 @@ const ZapSwitch: React.FC<ZapSwitchProps> = ({ handleZapSwitch, goZap }) => {
       )}
       <Box>
         <Box>
-          <img src='/assets/images/bonds/ZapIcon.svg' />
+          <picture>
+            <img src='/assets/images/bonds/ZapIcon.svg' alt='Zap Icon' />
+          </picture>
         </Box>
         <p>{t('ZAP')}</p>
         <Box sx={{ width: '50px' }}>

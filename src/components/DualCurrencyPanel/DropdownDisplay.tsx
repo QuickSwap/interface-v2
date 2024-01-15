@@ -32,7 +32,9 @@ const DropdownDisplay: React.FC<{
     >
       <Box className='flex items-center' gap='5px'>
         {!inputCurrencies[1] && !active && (
-          <img src='/assets/images/bonds/ZapIcon.svg' />
+          <picture>
+            <img src='/assets/images/bonds/ZapIcon.svg' alt='Zap Icon' />
+          </picture>
         )}
         {inputCurrencies[1] ? (
           <DoubleCurrencyLogo

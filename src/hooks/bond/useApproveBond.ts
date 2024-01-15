@@ -22,7 +22,7 @@ const useApproveBond = (tokenAddress: string, bondAddress: string) => {
       ethers.constants.MaxUint256,
     );
     addTransaction(trx, {
-      summary: t('approveBond'),
+      summary: t('approveBond') ?? '',
       approval: {
         tokenAddress: tokenAddress,
         spender: bondAddress,
@@ -30,7 +30,7 @@ const useApproveBond = (tokenAddress: string, bondAddress: string) => {
     });
     const resp = await trx.wait();
     finalizeTransaction(resp, {
-      summary: t('approveBond'),
+      summary: t('approveBond') ?? '',
       approval: {
         tokenAddress: tokenAddress,
         spender: bondAddress,

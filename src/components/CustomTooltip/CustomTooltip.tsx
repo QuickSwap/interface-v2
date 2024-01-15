@@ -10,13 +10,6 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
   padding = '14px',
   title,
   ...props
-}) => (
-  <Tooltip
-    {...props}
-    arrow
-    interactive
-    title={<Box padding={padding}>{title}</Box>}
-  />
-);
+}) => <Tooltip {...props} arrow title={<Box padding={padding}>{title}</Box>} />;
 
 export default CustomTooltip;

@@ -268,16 +268,9 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  & > div {
-    flex: 1;
-    & > div {
-      overflow: hidden;
-
-      iframe {
-        max-height: 100vh;
-        min-height: 500px;
-      }
-    }
+  & iframe {
+    max-height: 100vh;
+    min-height: 500px;
   }
   @include media('screen', '<phone') {
     flex: none;

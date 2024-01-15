@@ -95,13 +95,17 @@ export const useSteerVaults = (chainId: ChainId) => {
                 `${process.env.NEXT_PUBLIC_STEER_VAULT_APR_URL}?address=${vault.vaultAddress}&chain=${chainId}&interval=604800`,
               );
               aprData = await aprRes.json();
-            } catch {}
+            } catch (e) {
+              console.log('Error getting steer vault APR ', e);
+            }
             try {
               const strategyRes = await fetch(
                 `https://ipfs.io/ipfs/${vault.strategyIpfsHash}`,
               );
               strategyData = await strategyRes.json();
-            } catch {}
+            } catch (e) {
+              console.log('Error getting steer vault strategy data ', e);
+            }
             vaults.push({
               address: vault.vaultAddress,
               poolAddress,

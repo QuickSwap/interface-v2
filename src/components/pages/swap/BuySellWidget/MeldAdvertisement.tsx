@@ -8,22 +8,26 @@ export const MeldAdvertisement: React.FC = () => {
   return (
     <Box className='flex'>
       <Box>
-        <img
-          className='wallet'
-          src='/assets/images/featured/BuywithFiatNoPad.svg'
-          alt='buy with fiat'
-        />
+        <picture>
+          <img
+            className='wallet'
+            src='/assets/images/featured/BuywithFiatNoPad.svg'
+            alt='buy with fiat'
+          />
+        </picture>
       </Box>
       <Box pl={1}>
         <Box className='text-white text-lg'>{t('buyOrSellCryptoFiat')}</Box>
         <Box className='flex items-center'>
           <small>{t('poweredBy')}</small>
-          <img
-            className='meldLogo'
-            src='/assets/images/meldIcon.png'
-            alt='MELD'
-            style={{ height: 15, marginLeft: 6 }}
-          />
+          <picture>
+            <img
+              className='meldLogo'
+              src='/assets/images/meldIcon.png'
+              alt='MELD'
+              style={{ height: 15, marginLeft: 6 }}
+            />
+          </picture>
         </Box>
         <Box>
           <BuyFiatButton textOnly={true} />

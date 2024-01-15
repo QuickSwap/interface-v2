@@ -6,7 +6,6 @@ import { formatCompact } from 'utils';
 const POLYGON_ZKEVM = 1101;
 const USD_DECIMALS = 30;
 
-const DEFAULT_CHAIN_ID = POLYGON_ZKEVM;
 interface ContractMap {
   [chainId: number]: {
     [contractName: string]: string;
@@ -60,7 +59,7 @@ export const getAumForZkevm = (): Promise<string | undefined> => {
     methodName,
     methodName,
   );
-  return new Promise<string | undefined>(async (resolve, reject) => {
+  return new Promise<string | undefined>((resolve, reject) => {
     contractCall
       .then((result) => {
         if (result && result.length > 0) {

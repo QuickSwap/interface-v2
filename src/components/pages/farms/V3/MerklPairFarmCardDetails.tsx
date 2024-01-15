@@ -386,11 +386,13 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                 {formatNumber(farm.poolAPR + farm.almAPR)}%
               </p>
               <TotalAPRTooltip farmAPR={farm.almAPR} poolAPR={farm.poolAPR}>
-                <img
-                  src='/assets/images/aprHover.png'
-                  alt='farm APR'
-                  height={16}
-                />
+                <picture>
+                  <img
+                    src='/assets/images/aprHover.png'
+                    alt='farm APR'
+                    height={16}
+                  />
+                </picture>
               </TotalAPRTooltip>
             </Box>
           </Box>

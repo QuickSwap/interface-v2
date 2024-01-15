@@ -132,7 +132,13 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
                 <V3FarmAPRTooltip farm={farm}>
                   <Box className={styles.farmCardAPR} gap='4px'>
                     <p>{formatNumber(farm.apr)}%</p>
-                    <img src='/assets/images/aprHover.png' width={16} />
+                    <picture>
+                      <img
+                        src='/assets/images/aprHover.png'
+                        width={16}
+                        alt='APR Icon'
+                      />
+                    </picture>
                   </Box>
                 </V3FarmAPRTooltip>
               </Box>

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import SwapNewsletterSignup from 'components/pages/swap/SwapNewsletterSignUp';
-import 'pages/styles/swap.scss';
 
 const NewsletterPage: React.FC = () => {
   return (

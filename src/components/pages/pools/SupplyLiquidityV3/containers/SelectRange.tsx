@@ -784,7 +784,9 @@ export function SelectRange({
                     );
                   }}
                 >
-                  <img src='/assets/images/gammaLogo.png' alt='Gamma Logo' />
+                  <picture>
+                    <img src='/assets/images/gammaLogo.png' alt='Gamma Logo' />
+                  </picture>
                   <small className='text-success'>
                     {formatNumber(gammaPoolAPR * 100)}%
                   </small>
@@ -807,7 +809,12 @@ export function SelectRange({
                     );
                   }}
                 >
-                  <img src='/assets/images/unipilot.png' alt='Unipilot Logo' />
+                  <picture>
+                    <img
+                      src='/assets/images/unipilot.png'
+                      alt='Unipilot Logo'
+                    />
+                  </picture>
                   <small className='text-success'>
                     {formatNumber(unipilotAPR)}%
                   </small>

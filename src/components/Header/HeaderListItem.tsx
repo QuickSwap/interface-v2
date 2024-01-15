@@ -72,11 +72,13 @@ export const HeaderListItem: React.FC<{
               <div className='my-auto'>{item.text}</div>
               <div className={styles.mobileNewTag}>
                 {item.isNew ? (
-                  <img
-                    src='/assets/images/NewTag.png'
-                    alt='new menu'
-                    width={46}
-                  />
+                  <picture>
+                    <img
+                      src='/assets/images/NewTag.png'
+                      alt='new menu'
+                      width={46}
+                    />
+                  </picture>
                 ) : (
                   <></>
                 )}

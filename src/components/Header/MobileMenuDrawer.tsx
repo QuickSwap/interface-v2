@@ -31,7 +31,9 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
         style={{ marginTop: '4px', paddingLeft: '24px' }}
         onClick={() => setOpen(true)}
       >
-        <img src='/assets/images/ThreeDashIcon.svg' />
+        <picture>
+          <img src='/assets/images/ThreeDashIcon.svg' alt='Three Dash Icon' />
+        </picture>
       </Box>
 
       <Drawer anchor='bottom' open={open} onClose={() => setOpen(false)}>

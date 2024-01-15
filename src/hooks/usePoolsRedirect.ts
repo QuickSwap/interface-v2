@@ -36,7 +36,7 @@ export default function usePoolsRedirect() {
       }
       router.push(redirectPath);
     },
-    [history, currentPath],
+    [currentPath, currencyParamsArray, router],
   );
 
   const redirectWithCurrency = useCallback(

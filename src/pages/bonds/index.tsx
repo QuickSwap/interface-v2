@@ -181,25 +181,46 @@ const BondsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
         <Box p={3}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={12} md={6}>
-              <img src='/assets/images/bonds/quickBond.jpg' width='100%' />
+              <picture>
+                <img
+                  src='/assets/images/bonds/quickBond.jpg'
+                  width='100%'
+                  alt='bond image'
+                />
+              </picture>
             </Grid>
             <Grid item xs={12} sm={12} md={6}>
               <h5>{t('tipsBuyBonds')}</h5>
               <Box className='flex items-center' mt={2}>
                 <Box className='flex' mr={1}>
-                  <img src='/assets/images/bonds/billSvg1.svg' />
+                  <picture>
+                    <img
+                      src='/assets/images/bonds/billSvg1.svg'
+                      alt='bond icon1'
+                    />
+                  </picture>
                 </Box>
                 <p>{t('tipBuyBond1Desc')}</p>
               </Box>
               <Box className='flex items-center' mt={2}>
                 <Box className='flex' mr={1}>
-                  <img src='/assets/images/bonds/billSvg2.svg' />
+                  <picture>
+                    <img
+                      src='/assets/images/bonds/billSvg2.svg'
+                      alt='bond icon2'
+                    />
+                  </picture>
                 </Box>
                 <p>{t('tipBuyBond2Desc')}</p>
               </Box>
               <Box className='flex items-center' mt={2}>
                 <Box className='flex' mr={1}>
-                  <img src='/assets/images/bonds/billSvg3.svg' />
+                  <picture>
+                    <img
+                      src='/assets/images/bonds/billSvg3.svg'
+                      alt='bond icon3'
+                    />
+                  </picture>
                 </Box>
                 <p>{t('tipBuyBond3Desc')}</p>
               </Box>
@@ -210,7 +231,13 @@ const BondsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
           </Grid>
           <Box my={3} className='flex justify-center items-center' gap='6px'>
             <p>{t('poweredBy')}</p>
-            <img src='assets/images/bonds/apeBond.png' height='16px' />
+            <picture>
+              <img
+                src='assets/images/bonds/apeBond.png'
+                height='16px'
+                alt='bond icon'
+              />
+            </picture>
           </Box>
         </Box>
         <BondsList search={search} />

@@ -105,11 +105,13 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
                   {formatNumber(farm.poolAPR + farm.farmAPR)}%
                 </p>
                 <TotalAPRTooltip farmAPR={farm.farmAPR} poolAPR={farm.poolAPR}>
-                  <img
-                    src='/assets/images/aprHover.png'
-                    alt='farm APR'
-                    height={16}
-                  />
+                  <picture>
+                    <img
+                      src='/assets/images/aprHover.png'
+                      alt='farm APR'
+                      height={16}
+                    />
+                  </picture>
                 </TotalAPRTooltip>
               </Box>
             </Box>

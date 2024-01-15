@@ -4,7 +4,7 @@ import {
   TradeType,
   CurrencyAmount,
 } from '@uniswap/sdk-core';
-import { Trade } from 'lib/src/trade';
+import { Trade } from 'lib/trade';
 import { Pair, ChainId, TokenAmount } from '@uniswap/sdk';
 import { PairState } from 'data/Reserves';
 import { MergedZap } from './actions';

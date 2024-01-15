@@ -46,7 +46,9 @@ export const Calculator: React.FC<{ factor: number }> = ({ factor }) => {
         const newEthValue = newUsdValue / factor;
         setEthValue(newEthValue.toFixed(4));
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log('Error in convert to USD ', error);
+    }
   };
 
   useEffect(() => {
@@ -67,10 +69,13 @@ export const Calculator: React.FC<{ factor: number }> = ({ factor }) => {
         <Box className={styles.calculatorContainer}>
           <Box className={`flex ${styles.currencyContainer}`}>
             <Box>
-              <img
-                src='/assets/images/Currency/ethereum-eth.svg'
-                className={styles.currencyIcon}
-              />
+              <picture>
+                <img
+                  src='/assets/images/Currency/ethereum-eth.svg'
+                  className={styles.currencyIcon}
+                  alt='Ethereum Icon'
+                />
+              </picture>
             </Box>
             <Box className={styles.mx2}>ETH</Box>
 
@@ -86,33 +91,45 @@ export const Calculator: React.FC<{ factor: number }> = ({ factor }) => {
               }}
             />
             <Box className={styles.upDownContainer}>
-              <img
-                src='/assets/images/up-arrow.svg'
-                className={styles.iconUp}
-                onClick={incrementEth}
-              />
-              <img
-                src='/assets/images/up-arrow.svg'
-                className={styles.iconDown}
-                onClick={decrementEth}
-              />
+              <picture>
+                <img
+                  src='/assets/images/up-arrow.svg'
+                  className={styles.iconUp}
+                  onClick={incrementEth}
+                  alt='Up Arrow'
+                />
+              </picture>
+              <picture>
+                <img
+                  src='/assets/images/up-arrow.svg'
+                  className={styles.iconDown}
+                  onClick={decrementEth}
+                  alt='Up Arrow'
+                />
+              </picture>
             </Box>
           </Box>
           <Box>
-            <img
-              src='/assets/images/swap-icon.svg'
-              className={styles.swapIcon}
-            />
+            <picture>
+              <img
+                src='/assets/images/swap-icon.svg'
+                className={styles.swapIcon}
+                alt='Swap Icon'
+              />
+            </picture>
           </Box>
           <Box
             className={`flex ${styles.currencyContainer}`}
             style={{ height: '100%' }}
           >
             <Box>
-              <img
-                src='/assets/images/Currency/us-flag.svg'
-                className='currency-icon'
-              />
+              <picture>
+                <img
+                  src='/assets/images/Currency/us-flag.svg'
+                  className='currency-icon'
+                  alt='US flag'
+                />
+              </picture>
             </Box>
             <Box className={styles.mx2}>USD</Box>
 
@@ -128,16 +145,22 @@ export const Calculator: React.FC<{ factor: number }> = ({ factor }) => {
               }}
             />
             <Box className={styles.upDownContainer}>
-              <img
-                src='/assets/images/up-arrow.svg'
-                className={styles.iconUp}
-                onClick={incrementUsd}
-              />
-              <img
-                src='/assets/images/up-arrow.svg'
-                className={styles.iconDown}
-                onClick={decrementUsd}
-              />
+              <picture>
+                <img
+                  src='/assets/images/up-arrow.svg'
+                  className={styles.iconUp}
+                  onClick={incrementUsd}
+                  alt='Up Arrow'
+                />
+              </picture>
+              <picture>
+                <img
+                  src='/assets/images/up-arrow.svg'
+                  className={styles.iconDown}
+                  onClick={decrementUsd}
+                  alt='Up Arrow'
+                />
+              </picture>
             </Box>
           </Box>
           <Box>

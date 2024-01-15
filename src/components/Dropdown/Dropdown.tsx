@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { DropdownProps, sizes } from './types';
+import { DropdownProps } from './types';
 import styles from 'styles/components/Dropdown.module.scss';
 
 const Dropdown: React.FC<DropdownProps> = ({
   component,
   children,
-  size = sizes.MEDIUM,
   ...props
 }) => {
   const [open, setOpen] = useState(false);

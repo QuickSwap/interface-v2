@@ -45,7 +45,7 @@ export const useUserOwnedBonds = (bonds: Bond[]) => {
     ),
   );
 
-  const bondsData = bondDataCalls.map((callStates, ind) => {
+  const bondsData = bondDataCalls.map((callStates) => {
     return callStates.map((call) => {
       const data = !call.loading ? call.result : undefined;
       return { loading: call.loading, data };

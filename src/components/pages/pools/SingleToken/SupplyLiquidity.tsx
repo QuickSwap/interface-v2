@@ -57,14 +57,11 @@ export function SingleTokenSupplyLiquidity() {
       <Box className='flex justify-between items-center'>
         <p className='weight-600'>{t('supplyLiquidity')}</p>
         <Box className='flex items-center' gap='8px'>
-          <Box className='flex items-center'>
+          <Box className='flex items-center' gap='5px'>
             <small className='text-secondary'>{t('poweredBy')}</small>
-            <img
-              src='/assets/images/ichi_logo.png'
-              alt='ICHI'
-              height={16}
-              style={{ marginLeft: 5 }}
-            />
+            <picture>
+              <img src='/assets/images/ichi_logo.png' alt='ICHI' height={16} />
+            </picture>
           </Box>
           <small
             className='cursor-pointer text-primary'

@@ -1,4 +1,3 @@
-import { ChainId } from '@uniswap/sdk';
 import { BigintIsh, CurrencyAmount, Price, Token } from '@uniswap/sdk-core';
 import {
   POOL_DEPLOYER_ADDRESS,

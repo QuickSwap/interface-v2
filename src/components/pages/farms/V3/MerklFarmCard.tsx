@@ -131,7 +131,13 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
                 >
                   <Box className={styles.farmCardAPR} gap='4px'>
                     <p>{formatNumber(farm.apr)}%</p>
-                    <img src='/assets/images/aprHover.png' width={16} />
+                    <picture>
+                      <img
+                        src='/assets/images/aprHover.png'
+                        width={16}
+                        alt='APR icon'
+                      />
+                    </picture>
                   </Box>
                 </MerklFarmAPRTooltip>
               </Box>

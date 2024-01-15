@@ -7,7 +7,7 @@ import {
   ChainId,
 } from '@uniswap/sdk';
 import dayjs from 'dayjs';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { usePairs } from 'data/Reserves';
 import { GlobalConst } from 'constants/index';
 import {

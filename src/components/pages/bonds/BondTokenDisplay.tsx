@@ -137,7 +137,9 @@ const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
   const StakeTokenEarnToken = (
     <Box className='flex items-center' gap='8px'>
       <CurrencyLogo currency={token1} size={`${size}px`} />
-      <img src='/assets/images/bondArrow.svg' />
+      <picture>
+        <img src='/assets/images/bondArrow.svg' alt='bond arrow' />
+      </picture>
       <CurrencyLogo currency={token2} size={`${size}px`} />
     </Box>
   );
@@ -145,7 +147,9 @@ const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
   const StakeLpEarnToken = (
     <Box className='flex items-center' gap='8px'>
       <DoubleCurrencyLogo currency0={token1} currency1={token2} size={size} />
-      <img src='/assets/images/bondArrow.svg' />
+      <picture>
+        <img src='/assets/images/bondArrow.svg' alt='bond arrow' />
+      </picture>
       <CurrencyLogo currency={token3} size={`${size}px`} />
     </Box>
   );
@@ -153,7 +157,9 @@ const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
   const StakeLpEarnLp = (
     <Box className='flex items-center' gap='8px'>
       <DoubleCurrencyLogo currency0={token1} currency1={token2} size={size} />
-      <img src='/assets/images/bondArrow.svg' />
+      <picture>
+        <img src='/assets/images/bondArrow.svg' alt='bond arrow' />
+      </picture>
       {token4 ? (
         <DoubleCurrencyLogo currency0={token3} currency1={token4} size={size} />
       ) : (
@@ -165,7 +171,9 @@ const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
   const DualEarn = (
     <Box className='flex items-center' gap='8px'>
       <DoubleCurrencyLogo currency0={token1} currency1={token2} size={size} />
-      <img src='/assets/images/bondArrow.svg' />
+      <picture>
+        <img src='/assets/images/bondArrow.svg' alt='bond arrow' />
+      </picture>
       <DoubleCurrencyLogo currency0={token3} currency1={token4} size={size} />
     </Box>
   );
@@ -173,7 +181,9 @@ const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
   const StakeTokenEarnLp = (
     <Box className='flex items-center' gap='8px'>
       <CurrencyLogo currency={token1} size={`${size}px`} />
-      <img src='/assets/images/bondArrow.svg' />
+      <picture>
+        <img src='/assets/images/bondArrow.svg' alt='bond arrow' />
+      </picture>
       <DoubleCurrencyLogo currency0={token2} currency1={token2} size={size} />
     </Box>
   );

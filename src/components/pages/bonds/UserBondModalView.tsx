@@ -31,16 +31,12 @@ const BILL_ATTRIBUTES = [
   'The Innovation',
 ];
 
-const UserBondModalView: React.FC<BondModalProps> = ({
-  onDismiss,
-  bond,
-  billId,
-}) => {
+const UserBondModalView: React.FC<BondModalProps> = ({ bond, billId }) => {
   const userOwnedBonds = useUserOwnedBonds([bond]);
 
   const { chainId } = useActiveWeb3React();
   const { t } = useTranslation();
-  const { token, quoteToken, earnToken, lpToken, index, billType } = bond;
+  const { token, quoteToken, earnToken, lpToken, billType } = bond;
   const userBond = userOwnedBonds?.find(
     (b) => billId && parseInt(b.id) === parseInt(billId),
   );
@@ -78,16 +74,18 @@ const UserBondModalView: React.FC<BondModalProps> = ({
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='flex'>
-            <img
-              width='100%'
-              height='auto'
-              alt={userOwnedBondNftData?.image ? 'user bill' : 'loading bill'}
-              src={`${
-                userOwnedBondNftData?.image
-                  ? `${userOwnedBondNftData?.image}?img-width=720`
-                  : '/assets/images/bonds/quickBond.jpg'
-              }`}
-            />
+            <picture>
+              <img
+                width='100%'
+                height='auto'
+                alt={userOwnedBondNftData?.image ? 'user bill' : 'loading bill'}
+                src={`${
+                  userOwnedBondNftData?.image
+                    ? `${userOwnedBondNftData?.image}?img-width=720`
+                    : '/assets/images/bonds/quickBond.jpg'
+                }`}
+              />
+            </picture>
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>

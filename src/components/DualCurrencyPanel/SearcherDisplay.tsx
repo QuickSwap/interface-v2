@@ -26,7 +26,11 @@ const SearcherDisplay: React.FC<{
 
   return (
     <Box className={styles.searcherDisplayItem} gap='12px'>
-      {!currencyB && <img src='/assets/images/bonds/ZapIcon.svg' />}
+      {!currencyB && (
+        <picture>
+          <img src='/assets/images/bonds/ZapIcon.svg' alt='Zap Icon' />
+        </picture>
+      )}
       <Box width='100%' className='flex items-center justify-between'>
         <Box className='flex items-center' gap='12px'>
           {currencyB ? (

@@ -50,7 +50,12 @@ const NewsletterSignupForm: React.FC = () => {
           </Box>
         )}
       </Box>
-      <img src='/assets/images/newsletterBg.svg' />
+      <picture>
+        <img
+          src='/assets/images/newsletterBg.svg'
+          alt='Newsletter Background'
+        />
+      </picture>
     </Box>
   );
 };

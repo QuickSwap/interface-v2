@@ -16,11 +16,13 @@ export const DragonDispatchAdvertisement: React.FC = () => {
     <Box>
       <Box className='flex'>
         <Box>
-          <img
-            className='wallet'
-            src='/assets/images/featured/DragonDispatchIcon.png'
-            alt='buy with fiat'
-          />
+          <picture>
+            <img
+              className='wallet'
+              src='/assets/images/featured/DragonDispatchIcon.png'
+              alt='buy with fiat'
+            />
+          </picture>
         </Box>
         <Box pl={1} className='flex'>
           <Box className='text-white text-lg my-auto'>

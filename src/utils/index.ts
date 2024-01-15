@@ -1310,6 +1310,6 @@ export const getCurrencyInfo = ({
   return {
     address: address ? address : (currencyA?.address as string),
     decimals,
-    chainId: !!chainId ? chainId : (currencyA?.chainId as ChainId),
+    chainId: chainId ? chainId : (currencyA?.chainId as ChainId),
   };
 };

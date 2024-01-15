@@ -20,7 +20,7 @@ import {
   updatePresetRange,
   updateFeeTier,
 } from './actions';
-import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
+import { IFeeTier } from 'components/pages/pools/SupplyLiquidityV3/containers/SelectFeeTier';
 
 export type FullRange = true;
 

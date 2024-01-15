@@ -9,7 +9,6 @@ import SoulZapAddLiquidity from './SoulZapAddLiquidity';
 import { useActiveWeb3React } from 'hooks';
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'next-i18next';
-import useAddLiquidityModal from './DualAddLiquidity/hooks/useAddLiquidityModal';
 
 const GetLpButton = ({ bond }: { bond: any }) => {
   // Hooks
@@ -19,8 +18,6 @@ const GetLpButton = ({ bond }: { bond: any }) => {
   // Bond Data
   const billType = bond?.billType;
   const lpToken = bond?.lpToken;
-  const quoteToken = bond?.quoteToken;
-  const token = bond?.token;
   const bondContractAddress = bond?.contractAddress[chainId] || '';
 
   // checking wido supported contracts using their API
@@ -44,7 +41,6 @@ const GetLpButton = ({ bond }: { bond: any }) => {
 
   // Modals
   const [openSoulZapAddLiquidity, setOpenSoulZapAddLiquidity] = useState(false);
-  const onAddLiquidityModal = useAddLiquidityModal(undefined, true);
   const dexDisplayAttributesAny = dexDisplayAttributes as any;
 
   return (
@@ -70,25 +66,31 @@ const GetLpButton = ({ bond }: { bond: any }) => {
               if (shouldSendToExternalLpUrl) {
                 return sendToExternalLpUrl();
               }
-              return zapIntoLPVersion === ZapVersion.SoulZap
-                ? setOpenSoulZapAddLiquidity(true)
-                : onAddLiquidityModal(token, quoteToken, '', '', false);
+              if (zapIntoLPVersion === ZapVersion.SoulZap) {
+                return setOpenSoulZapAddLiquidity(true);
+              }
             }}
           >
             <Box className='flex items-center' gap='8px'>
               <p>{t('Get LP')}</p>
               {bondContractAddress ===
               '0xdE766645C9b24e87165107714c88400FedA269A3' ? null : !shouldSendToExternalLpUrl ? (
-                <img src='/assets/images/bonds/ZapIcon.svg' />
+                <picture>
+                  <img src='/assets/images/bonds/ZapIcon.svg' alt='Zap Icon' />
+                </picture>
               ) : (
-                <img
-                  src={
-                    dexDisplayAttributesAny[
-                      lpToken?.liquidityDex?.[chainId] ?? LiquidityDex.ApeSwapV2
-                    ].icon ?? ''
-                  }
-                  width={20}
-                />
+                <picture>
+                  <img
+                    src={
+                      dexDisplayAttributesAny[
+                        lpToken?.liquidityDex?.[chainId] ??
+                          LiquidityDex.ApeSwapV2
+                      ].icon ?? ''
+                    }
+                    width={20}
+                    alt='Dex Icon'
+                  />
+                </picture>
               )}
             </Box>
           </Button>

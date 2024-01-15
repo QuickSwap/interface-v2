@@ -122,7 +122,9 @@ const NetworkSelectionModal: React.FC = () => {
           }}
         >
           <Box className='flex items-center'>
-            <img src='/assets/images/KAVA.png' alt='network Image' />
+            <picture>
+              <img src='/assets/images/KAVA.png' alt='network Image' />
+            </picture>
             <small className='weight-600'>Kava - Kinetix</small>
           </Box>
         </Box>

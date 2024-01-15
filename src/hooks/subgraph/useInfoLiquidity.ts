@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import { useEffect, useState } from 'react';
-=======
-import React from 'react';
->>>>>>> dev2
 import { useActiveWeb3React } from 'hooks';
 import { useQuery } from '@tanstack/react-query';
 

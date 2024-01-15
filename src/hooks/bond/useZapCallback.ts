@@ -255,7 +255,7 @@ export function useZapCallback(
                       ? recipientAddressOrName
                       : recipientAddressOrName
                   }`;
-            addTransaction(response, { summary: 'Zap' });
+            addTransaction(response, { summary: withRecipient });
             return response.hash;
           })
           .catch((error: any) => {

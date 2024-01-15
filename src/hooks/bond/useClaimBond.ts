@@ -8,11 +8,7 @@ import {
 import { useTranslation } from 'next-i18next';
 
 // Claim a Bond
-const useClaimBond = (
-  billAddress: string,
-  billIds: string[],
-  earnToken?: string,
-) => {
+const useClaimBond = (billAddress: string, billIds: string[]) => {
   const { t } = useTranslation();
   const bondContract = useBondContract(billAddress);
   const billType = useBondType(billAddress);

@@ -112,7 +112,9 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
     >
       <Box className={styles.currencyRow}>
         {(otherSelected || isSelected) && (
-          <img src='/assets/images/TokenSelected.svg' />
+          <picture>
+            <img src='/assets/images/TokenSelected.svg' alt='Token Selected' />
+          </picture>
         )}
         <CurrencyLogo currency={currency} size='32px' />
         <Box ml={1} height={32}>

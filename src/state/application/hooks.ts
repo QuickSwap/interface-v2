@@ -18,7 +18,6 @@ import {
   updateMaticPrice,
   updateIsV2,
   updateUDDomain,
-  updateSoulZap,
 } from './actions';
 import { ETHPrice, MaticPrice, TokenDetail } from './reducer';
 

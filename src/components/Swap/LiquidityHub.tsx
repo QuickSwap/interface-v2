@@ -460,7 +460,9 @@ async function waitForTx(txHash: string, library: any) {
       if (tx && tx instanceof Object && tx.blockNumber) {
         return tx;
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log('Error in getting liquidity hub transaction ', error);
+    }
   }
 }
 
@@ -554,7 +556,9 @@ class LiquidityHubAnalytics {
         },
         body: JSON.stringify(this.data),
       });
-    } catch (error) {}
+    } catch (error) {
+      console.log('Error in LiquidityHub analytics ', error);
+    }
   }
 
   incrementQuoteIndex() {
@@ -876,7 +880,9 @@ export const LiquidityHubTxSettings = () => {
         <StyledLiquidityHubTxSettings>
           <p>{t('disableLiquidityHub')}</p>
           <p className='bottom-text'>
-            <img src='/assets/images/orbs-logo.svg' />
+            <picture>
+              <img src='/assets/images/orbs-logo.svg' alt='orbs logo' />
+            </picture>
             <a
               target='_blank'
               rel='noreferrer'
@@ -929,7 +935,9 @@ export const LiquidityHubConfirmationModalContent = ({
       {t('by')}{' '}
       <a href={WEBSITE} target='_blank' rel='noreferrer'>
         Orbs
-        <img src='/assets/images/orbs-logo.svg' />
+        <picture>
+          <img src='/assets/images/orbs-logo.svg' alt='orbs logo' />
+        </picture>
       </a>
     </StyledLiquidityHubTrade>
   );
@@ -1127,7 +1135,9 @@ export const useV3TradeTypeAnalyticsCallback = (
           walletAddress: account || '',
           slippage: Number(allowedSlippage.toFixed()),
         });
-      } catch (error) {}
+      } catch (error) {
+        console.log('Error in liquidity hub trade ', error);
+      }
     },
     [srcTokenCurrency, dstTokenCurrency, outTokenUSD, account, allowedSlippage],
   );
@@ -1162,7 +1172,9 @@ export const useV2TradeTypeAnalyticsCallback = (
           walletAddress: account || '',
           slippage: allowedSlippage / 100,
         });
-      } catch (error) {}
+      } catch (error) {
+        console.log('Error in liquidity hub v2 trade ', error);
+      }
     },
     [account, inToken, outToken, outTokenUSD, allowedSlippage],
   );

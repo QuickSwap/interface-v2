@@ -393,7 +393,7 @@ export function useDefaultsFromURLSearch():
       inputCurrencyId: parsed[Field.INPUT].currencyId,
       outputCurrencyId: parsed[Field.OUTPUT].currencyId,
     });
-  }, [dispatch, chainId, parsedQs]);
+  }, [dispatch, chainId, query]);
 
   return result;
 }

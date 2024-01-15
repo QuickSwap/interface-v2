@@ -355,11 +355,13 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           confirmedTransactions={confirmed}
         />
         <Link href='/'>
-          <img
-            src={mobileWindowSize ? QuickIcon : QuickLogo}
-            alt='QuickLogo'
-            height={mobileWindowSize ? 40 : 60}
-          />
+          <picture>
+            <img
+              src={mobileWindowSize ? QuickIcon : QuickLogo}
+              alt='QuickLogo'
+              height={mobileWindowSize ? 40 : 60}
+            />
+          </picture>
         </Link>
         {!tabletWindowSize && (
           <Box className='mainMenu'>
@@ -396,10 +398,12 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
               {isSupportedNetwork && (
                 <Box className={styles.networkSelectionImage}>
                   {chainId && <Box className={styles.styledPollingDot} />}
-                  <img
-                    src={config['nativeCurrencyImage']}
-                    alt='network Image'
-                  />
+                  <picture>
+                    <img
+                      src={config['nativeCurrencyImage']}
+                      alt='network Image'
+                    />
+                  </picture>
                 </Box>
               )}
               <small className={styles.networkName}>
@@ -416,7 +420,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
               onClick={toggleWalletModal}
             >
               <p>{udDomain ?? shortenAddress(account)}</p>
-              <img src={WalletIcon} alt='Wallet' />
+              <picture>
+                <img src={WalletIcon} alt='Wallet' />
+              </picture>
             </Box>
           ) : (
             <Box

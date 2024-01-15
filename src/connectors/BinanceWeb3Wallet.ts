@@ -43,19 +43,17 @@ export class BinanceWeb3Connector extends Connector {
   /** {@inheritdoc Connector.provider} */
   public provider?: BinanceWeb3Provider;
 
-  private readonly options?: Parameters<typeof detectEthereumProvider>[0];
   private eagerConnection?: Promise<void>;
 
-  constructor({ actions, options, onError }: BinanceWeb3ConstructorArgs) {
+  constructor({ actions, onError }: BinanceWeb3ConstructorArgs) {
     super(actions, onError);
-    this.options = options;
   }
 
   private async isomorphicInitialize(): Promise<void> {
     if (this.eagerConnection) return;
 
     return (this.eagerConnection = import('@metamask/detect-provider').then(
-      async (m) => {
+      async () => {
         const provider = window.ethereum;
         if (provider) {
           this.provider = provider as BinanceWeb3Provider;

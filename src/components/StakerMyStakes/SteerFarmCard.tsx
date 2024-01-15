@@ -114,10 +114,12 @@ const SteerFarmCard: React.FC<{
                       poolAPR={data.feeAPR}
                       poolAPRText={t('vaultAPR') ?? ''}
                     >
-                      <img
-                        src='/assets/images/circleinfo.svg'
-                        alt={'arrow up'}
-                      />
+                      <picture>
+                        <img
+                          src='/assets/images/circleinfo.svg'
+                          alt={'arrow up'}
+                        />
+                      </picture>
                     </TotalAPRTooltip>
                   </Box>
                 </>

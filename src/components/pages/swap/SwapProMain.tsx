@@ -6,11 +6,12 @@ import { useIsV2 } from 'state/application/hooks';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
 import SwapMain from './SwapMain';
 import SwapProAssets from './SwapProAssets';
-import SwapProChartTrade from './SwapProChartTrade';
 import SwapProInfo from './SwapProInfo';
 import SwapProTransactions from './SwapProTransactions';
 import TickerWidget from './TickerWidget';
 import styles from 'styles/pages/Swap.module.scss';
+import { V2_MATIC_USDT_PAIR } from 'constants/v3/addresses';
+import SwapProChart from './SwapProChart';
 
 const Item = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
@@ -163,14 +164,16 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
               className={`bg-palette ${styles.swapProWrapper}`}
               style={{ maxHeight: '100vh', minHeight: '500px', padding: '0' }}
             >
-              <SwapProChartTrade
-                showChart={true}
-                showTrades={false}
-                token1={token1}
-                token2={token2}
-                pairAddress={isV2 ? pairId?.v2 : pairId?.v3}
+              <SwapProChart
+                pairName={`${token1?.symbol ?? 'MATIC'}/${token2?.symbol ??
+                  'USDT'}`}
+                pairAddress={
+                  isV2
+                    ? pairId?.v2
+                    : pairId?.v3 ??
+                      V2_MATIC_USDT_PAIR[chainId ? chainId : ChainId.MATIC]
+                }
                 pairTokenReversed={pairTokenReversed}
-                transactions={transactions}
               />
             </Item>
             <Item className='mt-1 bg-palette' style={{ padding: 0 }}>

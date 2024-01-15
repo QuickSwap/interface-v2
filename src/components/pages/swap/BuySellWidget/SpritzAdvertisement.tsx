@@ -8,22 +8,26 @@ export const SpritzAdvertisement: React.FC = () => {
   return (
     <Box className='flex'>
       <Box>
-        <img
-          className='bill'
-          src='/assets/images/featured/BillPay.svg'
-          alt='bill pay'
-        />
+        <picture>
+          <img
+            className='bill'
+            src='/assets/images/featured/BillPay.svg'
+            alt='bill pay'
+          />
+        </picture>
       </Box>
       <Box pl={1}>
         <Box className='text-white text-lg'>{t('payBills')}</Box>
         <Box className='flex items-center'>
           <small>{t('poweredBy')}</small>
-          <img
-            className='spritz'
-            style={{ height: 20, marginLeft: 2 }}
-            src='/assets/images/SpritzIcon.png'
-            alt='spritz finance'
-          />
+          <picture>
+            <img
+              className='spritz'
+              style={{ height: 20, marginLeft: 2 }}
+              src='/assets/images/SpritzIcon.png'
+              alt='spritz finance'
+            />
+          </picture>
         </Box>
         <Box>
           <a

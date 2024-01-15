@@ -6,12 +6,7 @@ import {
   ArrowDownward,
   ReportProblemOutlined,
 } from '@mui/icons-material';
-import {
-  BetaWarningBanner,
-  CurrencyLogo,
-  DoubleCurrencyLogo,
-  QuestionHelper,
-} from 'components';
+import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency, useToken } from 'hooks/v3/Tokens';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
@@ -41,7 +36,7 @@ import { PoolState, usePool } from 'hooks/v3/usePools';
 import { useTotalSupply } from 'hooks/v3/useTotalSupply';
 import { useV2Pair } from 'hooks/v3/useV2Pairs';
 import { JSBI } from '@uniswap/sdk';
-import { FeeAmount, priceToClosestTick, TickMath, ZERO } from 'v3lib/utils';
+import { priceToClosestTick, TickMath, ZERO } from 'v3lib/utils';
 import { Bound } from 'state/mint/v3/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import { Pool, Position } from 'v3lib/entities';
@@ -579,13 +574,8 @@ const MigrateV2DetailsPage = (
 
   return (
     <>
-<<<<<<< HEAD:src/pages/migrate/detail.tsx
-      <Box className='wrapper' maxWidth='464px' width='100%'>
-        <Box className='flex items-center justify-between'>
-=======
       <Box className='wrapper' maxWidth='464px' width='100%' mb={4}>
-        <Box className='flex justify-between items-center'>
->>>>>>> dev2:src/pages/PoolsPage/v3/MigrateV2DetailsPage/index.tsx
+        <Box className='flex items-center justify-between'>
           <Box
             className='flex cursor-pointer'
             onClick={() => router.push('/migrate')}

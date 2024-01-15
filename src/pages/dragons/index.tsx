@@ -51,13 +51,17 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
         <Grid item xs={12} sm={12} md={4}>
           <Box className={styles.dragonWrapperContainer}>
             <Box className={styles.dragonBg}>
-              <img src='/assets/images/DragonBg2.svg' alt='Dragon Lair' />
+              <picture>
+                <img src='/assets/images/DragonBg2.svg' alt='Dragon Lair' />
+              </picture>
             </Box>
-            <img
-              src='/assets/images/DragonLairMask.svg'
-              alt='Dragon Mask'
-              className={styles.dragonMask}
-            />
+            <picture>
+              <img
+                src='/assets/images/DragonLairMask.svg'
+                alt='Dragon Mask'
+                className={styles.dragonMask}
+              />
+            </picture>
             <Box className={styles.dragonWrapperHeading}>
               <h5>{t('newDragonLair')}</h5>
               <small>
@@ -97,12 +101,14 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
         <Grid item xs={12} sm={12} md={8}>
           <Box className={styles.dragonWrapper}>
             <Box className={styles.dragonBg}>
-              <img
-                src={`/assets/images/${
-                  isMobile ? 'DragonBg2' : 'DragonBg1'
-                }.svg`}
-                alt='Dragon Syrup'
-              />
+              <picture>
+                <img
+                  src={`/assets/images/${
+                    isMobile ? 'DragonBg2' : 'DragonBg1'
+                  }.svg`}
+                  alt='Dragon Syrup'
+                />
+              </picture>
             </Box>
             <Box className={styles.dragonTitle}>
               <h5>{t('dragonSyrup')}</h5>

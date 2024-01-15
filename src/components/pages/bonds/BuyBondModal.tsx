@@ -41,7 +41,7 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
   const { typedValue } = useZapState();
   const { onCurrencySelection, onUserInput } = useZapActionHandlers();
   const [bondId, setBondId] = useState('');
-  const [txSubmitted, setTxSubmitted] = useState(false);
+  const [_, setTxSubmitted] = useState(false);
 
   const billCurrencyA = useCurrency(bond?.token.address[chainId]);
   const billCurrencyB = useCurrency(bond?.quoteToken.address[chainId]);
@@ -196,7 +196,13 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
       ) : (
         <Grid container spacing={2}>
           <Grid item xs={12} sm={12} md={6}>
-            <img src='/assets/images/bonds/quickBond.jpg' width='100%' />
+            <picture>
+              <img
+                src='/assets/images/bonds/quickBond.jpg'
+                width='100%'
+                alt='Quick bond'
+              />
+            </picture>
           </Grid>
           <Grid item xs={12} sm={12} md={6}>
             <Box className='flex' mb={2}>
