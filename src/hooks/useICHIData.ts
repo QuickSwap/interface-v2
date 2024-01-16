@@ -94,7 +94,7 @@ const fetchVaultAPR = async (
           const tvlUSD =
             Number(totalAmounts?.total0 ?? 0) * usdPriceToken0 +
             Number(totalAmounts?.total1 ?? 0) * usdPriceToken1;
-          const apr = tvlUSD > 0 ? (avgFee24hUSD * 365) / tvlUSD : 0;
+          const apr = tvlUSD > 0 ? ((avgFee24hUSD * 365) / tvlUSD) * 100 : 0;
           return apr;
         } catch (e) {
           console.log('Err in fetching ICHI Vault APR', e);
