@@ -46,7 +46,7 @@ const SingleTokenDepositButton: React.FC = () => {
   const {
     isLoading: loadingDepositData,
     data: { tokenIdx, wrapAmount, isMorethanAvailable },
-  } = useICHIVaultDepositData(Number(typedValue), currency, selectedVault);
+  } = useICHIVaultDepositData(typedValue, currency, selectedVault);
 
   const { isLoading: loadingApproved, data: isApproved } = useICHIVaultApproval(
     selectedVault,
