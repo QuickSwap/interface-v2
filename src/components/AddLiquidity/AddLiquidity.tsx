@@ -426,7 +426,7 @@ const AddLiquidity: React.FC<{
             {t('outputEstimated', { slippage: allowedSlippage / 100 })}
           </small>
         </Box>
-        <Box className='swapButtonWrapper'>
+        <Box className={styles.swapButtonWrapper}>
           <Button fullWidth onClick={onAddLiquidity}>
             {t('confirmSupply')}
           </Button>

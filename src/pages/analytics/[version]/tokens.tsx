@@ -5,14 +5,14 @@ import { useBookmarkTokens } from 'state/application/hooks';
 import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'next-i18next';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import AnalyticsHeader from 'components/pages/analytics/AnalyticsHeader';
 import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
 import styles from 'styles/pages/Analytics.module.scss';
 
 const AnalyticsTokens = (
-  _props: InferGetStaticPropsType<typeof getStaticProps>,
+  _props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) => {
   const { t } = useTranslation();
   const [tokensFilter, setTokensFilter] = useState(0);
@@ -79,24 +79,11 @@ const AnalyticsTokens = (
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   return {
     props: {
       ...(await serverSideTranslations(locale ?? 'en', ['common'])),
     },
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const versions = ['v2', 'v3', 'total'];
-  const paths =
-    versions?.map((version) => ({
-      params: { version },
-    })) || [];
-
-  return {
-    paths,
-    fallback: 'blocking',
   };
 };
 

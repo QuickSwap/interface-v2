@@ -39,22 +39,29 @@ const VersionToggle: React.FC = () => {
     const currencyIdBParam = router.query.currencyIdB
       ? (router.query.currencyIdB as string)
       : undefined;
-    const redirectPathName = versionParam
-      ? router.pathname.replace('/[version]', `/${version}`)
-      : router.pathname +
-        (router.pathname.includes('/add')
-          ? (currencyIdAParam ? '' : `/ETH`) +
-            (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
-          : '') +
-        `/${version}`;
-    router.push(
-      redirectPathName +
-        (router.pathname.includes('/pools')
-          ? router.asPath.indexOf('?') === -1
-            ? ''
-            : router.asPath.substring(router.asPath.indexOf('?'))
-          : ''),
-    );
+    if (versionParam !== version) {
+      let redirectPathName = '';
+      if (versionParam === 'singleToken') {
+        redirectPathName = router.pathname.replace('/[version]', `/${version}`);
+      } else {
+        if (version === 'singleToken') {
+          redirectPathName = router.pathname.replace(
+            '/[version]',
+            '/singleToken',
+          );
+        } else {
+          redirectPathName = versionParam
+            ? router.asPath.replace(`/${versionParam}`, `/${version}`)
+            : router.pathname +
+              (router.pathname.includes('/add')
+                ? (currencyIdAParam ? '' : `/ETH`) +
+                  (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
+                : '') +
+              `/${version}`;
+        }
+      }
+      router.push(redirectPathName);
+    }
   };
 
   return (

@@ -23,13 +23,13 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import { useRouter } from 'next/router';
 import { getConfig } from 'config/index';
-import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import styles from 'styles/pages/Analytics.module.scss';
 import { useAnalyticsTokenDetails } from 'hooks/useFetchAnalyticsData';
 
 const AnalyticsTokenDetails = (
-  _props: InferGetStaticPropsType<typeof getStaticProps>,
+  _props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -374,7 +374,7 @@ const AnalyticsTokenDetails = (
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   return {
     props: {
       ...(await serverSideTranslations(locale ?? 'en', ['common'])),
@@ -382,17 +382,4 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   };
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const versions = ['v2', 'v3', 'total'];
-  const paths =
-    versions?.map((version) => ({
-      params: { version },
-    })) || [];
-
-  return {
-    paths,
-    fallback: 'blocking',
-  };
-};
-
-export default React.memo(AnalyticsTokenDetails);
+export default AnalyticsTokenDetails;

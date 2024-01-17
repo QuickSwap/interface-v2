@@ -560,7 +560,7 @@ export function SelectRange({
       )}
 
       {isAutomatic && (
-        <Box my={1.5} className='poolRangePowerGamma'>
+        <Box my={1.5} className={styles.poolRangePowerGamma}>
           <span className='text-secondary'>{t('poweredBy')}</span>
           {liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (

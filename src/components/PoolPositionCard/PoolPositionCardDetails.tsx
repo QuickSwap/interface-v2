@@ -97,9 +97,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
             variant='outlined'
             className={styles.viewAnalyticsButton}
             onClick={() =>
-              router.push(
-                `/analytics/v2/pair?id=${pair.liquidityToken.address}`,
-              )
+              router.push(`/analytics/v2/pair/${pair.liquidityToken.address}`)
             }
           >
             <small>{t('viewAnalytics')}</small>

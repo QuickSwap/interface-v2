@@ -179,8 +179,8 @@ const PairTable: React.FC<PairsTableProps> = ({
             </Box>
             <Link
               className='no-decoration'
-              href={`/analytics/${version}/pair?id=${pair.id}${
-                pair.isUni ? '&isUni=true' : ''
+              href={`/analytics/${version}/pair/${pair.id}${
+                pair.isUni ? '?isUni=true' : ''
               }`}
             >
               <Box className='flex items-center'>
@@ -391,9 +391,9 @@ const PairTable: React.FC<PairsTableProps> = ({
               </Box>
               <Link
                 className='no-decoration'
-                href={`/analytics/${pair.isV3 ? 'v3' : 'v2'}/pair?id=${
-                  pair.id
-                }${pair.isUni ? '&isUni=true' : ''}`}
+                href={`/analytics/${pair.isV3 ? 'v3' : 'v2'}/pair/${pair.id}${
+                  pair.isUni ? '?isUni=true' : ''
+                }`}
               >
                 <Box className='flex items-center'>
                   <DoubleCurrencyLogo

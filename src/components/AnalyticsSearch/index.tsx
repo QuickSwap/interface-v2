@@ -327,7 +327,7 @@ const AnalyticsSearch: React.FC = () => {
                       router.push(
                         `/analytics/${
                           version === 'total' ? val.version : version
-                        }/pair?id=${val.id}`,
+                        }/pair/${val.id}`,
                       );
                       setMenuOpen(false);
                     }}
@@ -362,7 +362,7 @@ const AnalyticsSearch: React.FC = () => {
                     key={ind}
                     className={styles.searchWidgetRow}
                     onClick={() => {
-                      router.push(`/analytics/${version}/token?id=${val.id}`);
+                      router.push(`/analytics/${version}/token/${val.id}`);
                       setMenuOpen(false);
                     }}
                   >

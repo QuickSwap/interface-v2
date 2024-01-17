@@ -24,13 +24,13 @@ import { useTranslation } from 'next-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { CallMade } from '@mui/icons-material';
 import { getConfig } from 'config/index';
-import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import styles from 'styles/pages/Analytics.module.scss';
 import { useQuery } from '@tanstack/react-query';
 
 const AnalyticsPairDetails = (
-  _props: InferGetStaticPropsType<typeof getStaticProps>,
+  _props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -200,7 +200,7 @@ const AnalyticsPairDetails = (
                   className='flex items-center justify-between cursor-pointer'
                   onClick={() => {
                     router.push(
-                      `/analytics/${version}/token?id=${pairData.token0.id}`,
+                      `/analytics/${version}/token/${pairData.token0.id}`,
                     );
                   }}
                 >
@@ -217,7 +217,7 @@ const AnalyticsPairDetails = (
                   className='flex items-center justify-between cursor-pointer'
                   onClick={() => {
                     router.push(
-                      `/analytics/${version}/token?id=${pairData.token1.id}`,
+                      `/analytics/${version}/token/${pairData.token1.id}`,
                     );
                   }}
                 >
@@ -304,13 +304,13 @@ const AnalyticsPairDetails = (
                 <Box ml={1}>
                   <p className={styles.heading1}>
                     <Link
-                      href={`/analytics/${version}/token?id=${pairData.token0.id}`}
+                      href={`/analytics/${version}/token/${pairData.token0.id}`}
                     >
                       {pairData.token0.symbol}
                     </Link>{' '}
                     /{' '}
                     <Link
-                      href={`/analytics/${version}/token?id=${pairData.token1.id}`}
+                      href={`/analytics/${version}/token/${pairData.token1.id}`}
                     >
                       {pairData.token1.symbol}
                     </Link>
@@ -335,7 +335,7 @@ const AnalyticsPairDetails = (
                   className={styles.analyticsPairRate}
                   onClick={() => {
                     router.push(
-                      `/analytics/${version}/token?id=${pairData.token0.id}`,
+                      `/analytics/${version}/token/${pairData.token0.id}`,
                     );
                   }}
                 >
@@ -350,7 +350,7 @@ const AnalyticsPairDetails = (
                   className={styles.analyticsPairRate}
                   onClick={() => {
                     router.push(
-                      `/analytics/${version}/token?id=${pairData.token1.id}`,
+                      `/analytics/${version}/token/${pairData.token1.id}`,
                     );
                   }}
                 >
@@ -415,24 +415,11 @@ const AnalyticsPairDetails = (
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   return {
     props: {
       ...(await serverSideTranslations(locale ?? 'en', ['common'])),
     },
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const versions = ['v2', 'v3', 'total'];
-  const paths =
-    versions?.map((version) => ({
-      params: { version },
-    })) || [];
-
-  return {
-    paths,
-    fallback: 'blocking',
   };
 };
 

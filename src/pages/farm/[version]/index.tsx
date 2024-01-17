@@ -16,12 +16,14 @@ import V3Farms from 'components/pages/farms/V3/Farms';
 import { useIsV2 } from 'state/application/hooks';
 import { useRouter } from 'next/router';
 import { getConfig } from 'config/index';
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import styles from 'styles/pages/Farm.module.scss';
 import { useQuery } from '@tanstack/react-query';
 
-const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
+const FarmPage = (
+  _props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) => {
   const { chainId } = useActiveWeb3React();
   const router = useRouter();
   const currentTab = router.query.tab
@@ -202,24 +204,11 @@ const FarmPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   return {
     props: {
       ...(await serverSideTranslations(locale ?? 'en', ['common'])),
     },
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const versions = ['v2', 'v3'];
-  const paths =
-    versions?.map((version) => ({
-      params: { version },
-    })) || [];
-
-  return {
-    paths,
-    fallback: 'blocking',
   };
 };
 

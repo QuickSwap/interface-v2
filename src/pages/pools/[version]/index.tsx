@@ -11,13 +11,15 @@ import MyLiquidityPoolsV3 from 'components/pages/pools/MyLiquidityPoolsV3';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { HypeLabAds } from 'components';
 import { SingleTokenSupplyLiquidity } from 'components/pages/pools/SingleToken/SupplyLiquidity';
 import { useRouter } from 'next/router';
 
-const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
+const PoolsPage = (
+  _props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
   const { chainId } = useActiveWeb3React();
@@ -88,24 +90,11 @@ const PoolsPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   return {
     props: {
       ...(await serverSideTranslations(locale ?? 'en', ['common'])),
     },
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const versions = ['v2', 'v3'];
-  const paths =
-    versions?.map((version) => ({
-      params: { version },
-    })) || [];
-
-  return {
-    paths,
-    fallback: 'blocking',
   };
 };
 
