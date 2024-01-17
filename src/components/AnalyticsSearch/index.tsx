@@ -49,7 +49,7 @@ const AnalyticsSearch: React.FC = () => {
     try {
       let v2Data: any = null;
       let v3Data: any = null;
-      if (v2) {
+      if (v2 && version !== 'v3') {
         const res = await fetch(
           `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/search-token-pair/v2?chainId=${chainIdToUse}&search=${searchVal}`,
         );
@@ -62,7 +62,7 @@ const AnalyticsSearch: React.FC = () => {
         }
       }
 
-      if (v3) {
+      if (v3 && version !== 'v2') {
         const res = await fetch(
           `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/search-token-pair/v3?chainId=${chainIdToUse}&search=${searchVal}`,
         );
@@ -102,8 +102,48 @@ const AnalyticsSearch: React.FC = () => {
             })
           : [];
       return {
-        tokens: v3Tokens.concat(v2Tokens),
-        pairs: v3Pairs.concat(v2Pairs),
+        tokens: v3Tokens.concat(v2Tokens).reduce((memo: any[], token: any) => {
+          const existingItemIndex = memo.findIndex(
+            (item) => token.id.toLowerCase() === item.id.toLowerCase(),
+          );
+          if (existingItemIndex > -1) {
+            const existingItem = memo[existingItemIndex];
+            memo = [
+              ...memo.slice(0, existingItemIndex),
+              {
+                ...existingItem,
+                volumeUSD:
+                  Number(existingItem?.volumeUSD ?? 0) +
+                  Number(token?.volumeUSD ?? 0),
+              },
+              ...memo.slice(existingItemIndex + 1),
+            ];
+          } else {
+            memo.push(token);
+          }
+          return memo;
+        }, []),
+        pairs: v3Pairs.concat(v2Pairs).reduce((memo: any[], pair: any) => {
+          const existingItemIndex = memo.findIndex(
+            (item) => pair.id.toLowerCase() === item.id.toLowerCase(),
+          );
+          if (existingItemIndex > -1) {
+            const existingItem = memo[existingItemIndex];
+            memo = [
+              ...memo.slice(0, existingItemIndex),
+              {
+                ...existingItem,
+                volumeUSD:
+                  Number(existingItem?.volumeUSD ?? 0) +
+                  Number(pair?.volumeUSD ?? 0),
+              },
+              ...memo.slice(existingItemIndex + 1),
+            ];
+          } else {
+            memo.push(pair);
+          }
+          return memo;
+        }, []),
       };
     } catch (e) {
       return null;
@@ -120,120 +160,80 @@ const AnalyticsSearch: React.FC = () => {
   });
 
   const filteredTokens = useMemo(() => {
-    const uniqueTokens: any[] = [];
-    const found: any = {};
-    if (searchData && searchData.tokens && searchData.tokens.length > 0) {
-      searchData.tokens.map((token: any) => {
-        if (!found[token.id]) {
-          found[token.id] = true;
-          uniqueTokens.push(token);
+    const searchedTokens: any[] = searchData?.tokens ?? [];
+
+    const filtered = searchedTokens.filter((token) => {
+      if (GlobalConst.blacklists.TOKEN_BLACKLIST.includes(token.id)) {
+        return false;
+      }
+      const regexMatches = Object.keys(token).map((tokenEntryKey) => {
+        const isAddress = searchVal.slice(0, 2) === '0x';
+        if (tokenEntryKey === 'id' && isAddress) {
+          return token[tokenEntryKey].match(
+            new RegExp(escapeRegExp(searchVal), 'i'),
+          );
         }
-        return true;
+        if (tokenEntryKey === 'symbol' && !isAddress) {
+          return token[tokenEntryKey].match(
+            new RegExp(escapeRegExp(searchVal), 'i'),
+          );
+        }
+        if (tokenEntryKey === 'name' && !isAddress) {
+          return token[tokenEntryKey].match(
+            new RegExp(escapeRegExp(searchVal), 'i'),
+          );
+        }
+        return false;
       });
-    }
-    const filtered =
-      uniqueTokens && uniqueTokens.length > 0
-        ? uniqueTokens
-            .sort((tokenA, tokenB) => {
-              return Number(tokenA.tradeVolumeUSD) >
-                Number(tokenB.tradeVolumeUSD)
-                ? -1
-                : 1;
-            })
-            .filter((token) => {
-              if (GlobalConst.blacklists.TOKEN_BLACKLIST.includes(token.id)) {
-                return false;
-              }
-              const regexMatches = Object.keys(token).map((tokenEntryKey) => {
-                const isAddress = searchVal.slice(0, 2) === '0x';
-                if (tokenEntryKey === 'id' && isAddress) {
-                  return token[tokenEntryKey].match(
-                    new RegExp(escapeRegExp(searchVal), 'i'),
-                  );
-                }
-                if (tokenEntryKey === 'symbol' && !isAddress) {
-                  return token[tokenEntryKey].match(
-                    new RegExp(escapeRegExp(searchVal), 'i'),
-                  );
-                }
-                if (tokenEntryKey === 'name' && !isAddress) {
-                  return token[tokenEntryKey].match(
-                    new RegExp(escapeRegExp(searchVal), 'i'),
-                  );
-                }
-                return false;
-              });
-              return regexMatches.some((m) => m);
-            })
-        : [];
+      return regexMatches.some((m) => m);
+    });
     return filtered;
   }, [searchData, searchVal]);
 
   const filteredPairs = useMemo(() => {
-    const uniquePairs: any[] = [];
-    const pairsFound: any = {};
-    if (searchData && searchData.pairs && searchData.pairs.length > 0)
-      searchData.pairs.map((pair: any) => {
-        if (!pairsFound[pair.id]) {
-          pairsFound[pair.id] = true;
-          uniquePairs.push(pair);
-        }
-        return true;
-      });
+    const searchedPairs: any[] = searchData?.pairs ?? [];
 
-    const filtered = uniquePairs
-      ? uniquePairs
-          .sort((pairA, pairB) => {
-            const pairAReserveETH = Number(pairA?.trackedReserveETH ?? 0);
-            const pairBReserveETH = Number(pairB?.trackedReserveETH ?? 0);
-            return pairAReserveETH > pairBReserveETH ? -1 : 1;
-          })
-          .filter((pair) => {
-            if (GlobalConst.blacklists.PAIR_BLACKLIST.includes(pair.id)) {
-              return false;
-            }
-            if (searchVal && searchVal.includes(' ')) {
-              const pairA = searchVal.split(' ')[0]?.toUpperCase();
-              const pairB = searchVal.split(' ')[1]?.toUpperCase();
-              return (
-                (pair.token0.symbol.includes(pairA) ||
-                  pair.token0.symbol.includes(pairB)) &&
-                (pair.token1.symbol.includes(pairA) ||
-                  pair.token1.symbol.includes(pairB))
-              );
-            }
-            if (searchVal && searchVal.includes('-')) {
-              const pairA = searchVal.split('-')[0]?.toUpperCase();
-              const pairB = searchVal.split('-')[1]?.toUpperCase();
-              return (
-                (pair.token0.symbol.includes(pairA) ||
-                  pair.token0.symbol.includes(pairB)) &&
-                (pair.token1.symbol.includes(pairA) ||
-                  pair.token1.symbol.includes(pairB))
-              );
-            }
-            const regexMatches = Object.keys(pair).map((field) => {
-              const isAddress = searchVal.slice(0, 2) === '0x';
-              if (field === 'id' && isAddress) {
-                return pair[field].match(
-                  new RegExp(escapeRegExp(searchVal), 'i'),
-                );
-              }
-              if (field === 'token0' || field === 'token1') {
-                return (
-                  pair[field].symbol.match(
-                    new RegExp(escapeRegExp(searchVal), 'i'),
-                  ) ||
-                  pair[field].name.match(
-                    new RegExp(escapeRegExp(searchVal), 'i'),
-                  )
-                );
-              }
-              return false;
-            });
-            return regexMatches.some((m) => m);
-          })
-      : [];
+    const filtered = searchedPairs.filter((pair) => {
+      if (GlobalConst.blacklists.PAIR_BLACKLIST.includes(pair.id)) {
+        return false;
+      }
+      if (searchVal && searchVal.includes(' ')) {
+        const pairA = searchVal.split(' ')[0]?.toUpperCase();
+        const pairB = searchVal.split(' ')[1]?.toUpperCase();
+        return (
+          (pair.token0.symbol.includes(pairA) ||
+            pair.token0.symbol.includes(pairB)) &&
+          (pair.token1.symbol.includes(pairA) ||
+            pair.token1.symbol.includes(pairB))
+        );
+      }
+      if (searchVal && searchVal.includes('-')) {
+        const pairA = searchVal.split('-')[0]?.toUpperCase();
+        const pairB = searchVal.split('-')[1]?.toUpperCase();
+        return (
+          (pair.token0.symbol.includes(pairA) ||
+            pair.token0.symbol.includes(pairB)) &&
+          (pair.token1.symbol.includes(pairA) ||
+            pair.token1.symbol.includes(pairB))
+        );
+      }
+      const regexMatches = Object.keys(pair).map((field) => {
+        const isAddress = searchVal.slice(0, 2) === '0x';
+        if (field === 'id' && isAddress) {
+          return pair[field].match(new RegExp(escapeRegExp(searchVal), 'i'));
+        }
+        if (field === 'token0' || field === 'token1') {
+          return (
+            pair[field].symbol.match(
+              new RegExp(escapeRegExp(searchVal), 'i'),
+            ) ||
+            pair[field].name.match(new RegExp(escapeRegExp(searchVal), 'i'))
+          );
+        }
+        return false;
+      });
+      return regexMatches.some((m) => m);
+    });
     return filtered;
   }, [searchData, searchVal]);
 
