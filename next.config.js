@@ -27,16 +27,20 @@ const nextConfig = {
       'encrypted-tbn0.gstatic.com',
     ],
   },
-  webpack(config, { isServer }) {
-    if (!isServer) {
-      config.resolve = {
-        ...config.resolve,
-        fallback: {
-          fs: false,
-          module: false,
-        },
-      };
-    }
+  webpack(config) {
+    config.resolve = {
+      ...config.resolve,
+      fallback: {
+        fs: false,
+        module: false,
+        https: false,
+        http: false,
+        crypto: false,
+        stream: false,
+        zlib: false,
+        os: false,
+      },
+    };
 
     config.module.rules.push({
       test: /\.svg$/,

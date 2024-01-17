@@ -9,6 +9,8 @@ import { StepsSection } from 'components/pages/calculator/StepsSection';
 import styles from 'styles/pages/Calculator.module.scss';
 import { useQuery } from '@tanstack/react-query';
 import { ChainId } from '@uniswap/sdk';
+import { GetStaticProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const CalculatorPage: React.FC = () => {
   const pairAddress = '0x55caabb0d2b704fd0ef8192a7e35d8837e678207';
@@ -80,6 +82,14 @@ const CalculatorPage: React.FC = () => {
       <HistoricalTable prices={prices} dates={dates} />
     </Box>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
 };
 
 export default CalculatorPage;

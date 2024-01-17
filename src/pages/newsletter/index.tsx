@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import SwapNewsletterSignup from 'components/pages/swap/SwapNewsletterSignUp';
+import { GetStaticProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const NewsletterPage: React.FC = () => {
   return (
@@ -14,6 +16,14 @@ const NewsletterPage: React.FC = () => {
       <SwapNewsletterSignup />
     </Box>
   );
+};
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', ['common'])),
+    },
+  };
 };
 
 export default NewsletterPage;
