@@ -1,11 +1,12 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { DropdownItemProps, sizes } from './types';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+import styles from 'styles/components/Dropdown.module.scss';
 
 const Element: React.FC<DropdownItemProps> = ({ onClick, url, children }) => {
   return url ? (
-    <Link to={url} onClick={onClick}>
+    <Link href={url} onClick={onClick}>
       {children}
     </Link>
   ) : (
@@ -22,7 +23,7 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
   ...props
 }) => {
   return (
-    <Box className='dropdownItem' {...props}>
+    <Box className={styles.dropdownItem} {...props}>
       <Element url={url} onClick={onClick} active={active} size={size}>
         {children}
       </Element>

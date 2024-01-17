@@ -1,27 +1,26 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Box, Button } from '@material-ui/core';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import { useRouter } from 'next/router';
+import { Box, Button, CircularProgress } from '@mui/material';
+import { Search } from '@mui/icons-material';
 import { getTokenFromAddress } from 'utils';
 import { GlobalConst } from 'constants/index';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
-import 'components/styles/SearchWidget.scss';
-import { useTranslation } from 'react-i18next';
+import styles from 'styles/components/AnalyticsSearch.module.scss';
+import { useTranslation } from 'next-i18next';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { getConfig } from '../../config/index';
-import Loader from 'components/Loader';
+import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
 dayjs.extend(utc);
 
 const AnalyticsSearch: React.FC = () => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const router = useRouter();
   const [searchVal, setSearchVal] = useState('');
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
@@ -51,7 +50,7 @@ const AnalyticsSearch: React.FC = () => {
       let v3Data: any = null;
       if (v2) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/search-token-pair/v2?chainId=${chainIdToUse}&search=${searchVal}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/search-token-pair/v2?chainId=${chainIdToUse}&search=${searchVal}`,
         );
         if (!res.ok) {
           return null;
@@ -64,7 +63,7 @@ const AnalyticsSearch: React.FC = () => {
 
       if (v3) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/search-token-pair/v3?chainId=${chainIdToUse}&search=${searchVal}`,
+          `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/search-token-pair/v3?chainId=${chainIdToUse}&search=${searchVal}`,
         );
         if (!res.ok) {
           return null;
@@ -256,28 +255,28 @@ const AnalyticsSearch: React.FC = () => {
   }, []);
 
   return (
-    <Box className='searchWidgetWrapper'>
-      <Box className='searchWidgetInput'>
+    <Box className={styles.searchWidgetWrapper}>
+      <Box className={styles.searchWidgetInput}>
         <input
-          placeholder={t('searchTokenPair')}
+          placeholder={t('searchTokenPair') ?? undefined}
           value={searchValInput}
           ref={menuRef}
           onFocus={() => setMenuOpen(true)}
           onChange={(evt) => setSearchValInput(evt.target.value)}
         />
         <Box display='flex'>
-          <SearchIcon />
+          <Search />
         </Box>
       </Box>
       {menuOpen && (
-        <div ref={wrapperRef} className='searchWidgetContent'>
+        <div ref={wrapperRef} className={styles.searchWidgetContent}>
           {searchDataLoading ? (
             <Box
               width='100%'
               height='100%'
               className='flex items-center justify-center'
             >
-              <Loader size='30px' />
+              <CircularProgress size='30px' />
             </Box>
           ) : !searchData ? (
             <Box
@@ -323,12 +322,12 @@ const AnalyticsSearch: React.FC = () => {
                 return (
                   <Box
                     key={ind}
-                    className='searchWidgetRow'
+                    className={styles.searchWidgetRow}
                     onClick={() => {
-                      history.push(
+                      router.push(
                         `/analytics/${
                           version === 'total' ? val.version : version
-                        }/pair/${val.id}`,
+                        }/pair?id=${val.id}`,
                       );
                       setMenuOpen(false);
                     }}
@@ -345,7 +344,7 @@ const AnalyticsSearch: React.FC = () => {
                 );
               })}
               <Box
-                className='searchWidgetShowMore'
+                className={styles.searchWidgetShowMore}
                 onClick={() => setPairsShown(pairsShown + 5)}
               >
                 <small>{t('showMore')}</small>
@@ -361,9 +360,9 @@ const AnalyticsSearch: React.FC = () => {
                 return (
                   <Box
                     key={ind}
-                    className='searchWidgetRow'
+                    className={styles.searchWidgetRow}
                     onClick={() => {
-                      history.push(`/analytics/${version}/token/${val.id}`);
+                      router.push(`/analytics/${version}/token?id=${val.id}`);
                       setMenuOpen(false);
                     }}
                   >
@@ -375,7 +374,7 @@ const AnalyticsSearch: React.FC = () => {
                 );
               })}
               <Box
-                className='searchWidgetShowMore'
+                className={styles.searchWidgetShowMore}
                 onClick={() => setTokensShown(tokensShown + 5)}
               >
                 <small>{t('showMore')}</small>

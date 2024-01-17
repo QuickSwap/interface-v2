@@ -1,16 +1,15 @@
 import React, { useMemo } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import FarmStakeButtons from './FarmStakeButtons';
 import { formatReward } from 'utils/formatReward';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 
@@ -25,7 +24,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const tokenMap = useSelectedTokenList();
   const poolToken0 = el.pool.token0 as any;
@@ -106,8 +105,8 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
   return (
     <Box>
       <Box
-        className='flex justify-between items-center flex-wrap'
-        borderRadius={10}
+        className='flex flex-wrap items-center justify-between'
+        borderRadius='10px'
       >
         {isMobile && (
           <Box mb={1}>
@@ -116,7 +115,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
         )}
 
         <Box
-          className='flex items-center flex-wrap'
+          className='flex flex-wrap items-center'
           width={isMobile ? '100%' : '85%'}
         >
           <Box
@@ -182,9 +181,11 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
               <small className='text-success'>
                 {formatNumber((poolApr ?? 0) + (farmApr ?? 0))}%
               </small>
-              <Box ml={0.5} height={16}>
+              <Box ml={0.5} className='flex'>
                 <TotalAPRTooltip farmAPR={farmApr ?? 0} poolAPR={poolApr ?? 0}>
-                  <img src={CircleInfoIcon} alt='info' />
+                  <picture>
+                    <img src='/assets/images/circleinfo.svg' alt='info' />
+                  </picture>
                 </TotalAPRTooltip>
               </Box>
             </Box>

@@ -5,9 +5,9 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { PositionPool } from 'models/interfaces';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import {
   useBurnV3ActionHandlers,
   useBurnV3State,
@@ -26,8 +26,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { Percent } from '@uniswap/sdk-core';
-
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { useActiveWeb3React } from 'hooks';
 import { calculateGasMarginV3 } from 'utils';
 import usePrevious from 'hooks/usePrevious';
@@ -41,7 +40,7 @@ import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import ColoredSlider from 'components/ColoredSlider';
 import { JSBI, WETH } from '@uniswap/sdk';
 import { useUserSlippageTolerance } from 'state/user/hooks';
-import './index.scss';
+import styles from 'styles/components/v3/RemoveLiquidityV3.module.scss';
 
 interface RemoveLiquidityV3Props {
   position: PositionPool;
@@ -72,7 +71,6 @@ export default function RemoveLiquidityV3({
     feeValue0,
     feeValue1,
     outOfRange,
-    error,
   } = useMemo(() => {
     if (
       (!derivedInfo.feeValue0 ||
@@ -170,7 +168,7 @@ export default function RemoveLiquidityV3({
       .then((estimate) => {
         const newTxn = {
           ...txn,
-          gasLimit: calculateGasMarginV3(chainId, estimate),
+          gasLimit: calculateGasMarginV3(estimate),
         };
 
         return library
@@ -179,9 +177,8 @@ export default function RemoveLiquidityV3({
           .then(async (response: TransactionResponse) => {
             setAttemptingTxn(false);
             setTxPending(true);
-            ReactGA.event({
+            event('RemoveV3', {
               category: 'Liquidity',
-              action: 'RemoveV3',
               label: [
                 liquidityValue0.currency.symbol,
                 liquidityValue1.currency.symbol,
@@ -204,14 +201,14 @@ export default function RemoveLiquidityV3({
               setTxPending(false);
             } catch (error) {
               setTxPending(false);
-              setRemoveErrorMessage(t('errorInTx'));
+              setRemoveErrorMessage(t('errorInTx') ?? '');
             }
           });
       })
       .catch((error) => {
         setTxPending(false);
         setAttemptingTxn(false);
-        setRemoveErrorMessage(t('errorInTx'));
+        setRemoveErrorMessage(t('errorInTx') ?? '');
         console.error(error);
       });
   }, [
@@ -286,7 +283,7 @@ export default function RemoveLiquidityV3({
         </Box>
         {(feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) && (
           <Box mt={2}>
-            <p>{t('collectFeeFromThisPosition')}.</p>
+            <p className='text-center'>{t('collectFeeFromThisPosition')}.</p>
             <Box mt={2} className='flex justify-between'>
               <p>
                 {feeValue0?.currency?.symbol} {t('feeEarned')}:
@@ -318,7 +315,7 @@ export default function RemoveLiquidityV3({
           </Box>
         )}
         <Box mt={2}>
-          <Button className='v3-remove-liquidity-button' onClick={burn}>
+          <Button className={styles.v3RemoveLiquidityButton} onClick={burn}>
             {t('confirm')}
           </Button>
         </Box>
@@ -387,13 +384,13 @@ export default function RemoveLiquidityV3({
         </Box>
         <RangeBadge removed={removed} inRange={!outOfRange} />
       </Box>
-      <Box mt={2} className='v3-remove-liquidity-input-wrapper'>
+      <Box mt={2} className={styles.v3RemoveLiquidityInputWrapper}>
         <Box mb={2} className='flex justify-between'>
           <small className='text-secondary'>{t('amount')}</small>
         </Box>
         <Box mb={2} className='flex items-center justify-between'>
           <h3>{percentForSlider}%</h3>
-          <Box ml={1} className='v3-remove-liquidity-percent-buttons'>
+          <Box ml={1} className={styles.v3RemoveLiquidityPercentButtons}>
             <Button onClick={() => onPercentSelectForSlider(25)}>25%</Button>
             <Button onClick={() => onPercentSelectForSlider(50)}>50%</Button>
             <Button onClick={() => onPercentSelectForSlider(75)}>75%</Button>
@@ -405,12 +402,12 @@ export default function RemoveLiquidityV3({
           max={100}
           step={1}
           value={percentForSlider}
-          handleChange={(event, value) => {
+          handleChange={(_, value) => {
             onPercentSelectForSlider(value as number);
           }}
         />
       </Box>
-      <Box my={2} className='v3-remove-liquidity-info-wrapper'>
+      <Box my={2} className={styles.v3RemoveLiquidityInfoWrapper}>
         <Box>
           <p>
             {t('pooled')} {liquidityValue0?.currency?.symbol}
@@ -469,7 +466,7 @@ export default function RemoveLiquidityV3({
         </Box>
       )}
       <Button
-        className='v3-remove-liquidity-button'
+        className={styles.v3RemoveLiquidityButton}
         disabled={removed || percent === 0 || !liquidityValue0}
         onClick={() => setShowConfirm(true)}
       >

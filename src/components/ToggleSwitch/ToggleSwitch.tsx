@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import 'components/styles/ToggleSwitch.scss';
+import { Box } from '@mui/material';
+import styles from 'styles/components/ToggleSwitch.module.scss';
 
 const ToggleSwitch: React.FC<{ toggled: boolean; onToggle: () => void }> = ({
   toggled,
@@ -8,10 +8,10 @@ const ToggleSwitch: React.FC<{ toggled: boolean; onToggle: () => void }> = ({
 }) => {
   return (
     <Box
-      className={`toggleWrapper${toggled ? ' toggled' : ''}`}
+      className={`${styles.toggleWrapper} ${toggled ? styles.toggled : ''}`}
       onClick={onToggle}
     >
-      <Box className='innerCircle' />
+      <Box className={styles.innerCircle} />
     </Box>
   );
 };

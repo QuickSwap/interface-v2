@@ -6,6 +6,7 @@ import {
   ScaleLinear,
   select,
 } from 'd3';
+import styles from 'styles/components/v3/LiquidityChartRangeInput.module.scss';
 
 const Axis = ({ axisGenerator }: { axisGenerator: d3Axis<NumberValue> }) => {
   const axisRef = (axis: SVGGElement) => {
@@ -27,7 +28,7 @@ export const AxisBottom = ({
   return useMemo(
     () => (
       <g
-        className='liquidityStyledGroup'
+        className={styles.group}
         transform={`translate(0, ${innerHeight + offset})`}
       >
         <Axis

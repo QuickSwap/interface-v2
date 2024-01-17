@@ -28,7 +28,7 @@ import {
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { Result, formatUnits } from 'ethers/lib/utils';
-import { V3Farm } from 'pages/FarmPage/V3/Farms';
+import { V3Farm } from 'components/pages/farms/V3/Farms';
 import { useGammaData, useGammaRewards } from './useGammaData';
 import { useActiveWeb3React } from 'hooks';
 import { useSteerVaults } from './useSteerData';
@@ -304,7 +304,7 @@ export const useEternalFarmsFiltered = (
 export const useMerklFarms = () => {
   const { chainId, account } = useActiveWeb3React();
   const fetchMerklFarms = async () => {
-    const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
+    const merklAPIURL = process.env.NEXT_PUBLIC_MERKL_API_URL;
     if (!merklAPIURL || !chainId) return [];
     const res = await fetch(
       `${merklAPIURL}?chainIds[]=${chainId}&AMMs[]=quickswapalgebra${

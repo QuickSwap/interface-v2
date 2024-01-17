@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Divider } from '@material-ui/core';
-import { KeyboardArrowDown } from '@material-ui/icons';
+import { Box, Divider } from '@mui/material';
+import { KeyboardArrowDown } from '@mui/icons-material';
 import { AlertTriangle } from 'react-feather';
 import {
   CustomModal,
@@ -16,11 +16,10 @@ import {
   useBonusRouterManager,
   useSlippageManuallySet,
   useUserSingleHopOnly,
-  useLiquidityHubManager,
 } from 'state/user/hooks';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import 'components/styles/SettingsModal.scss';
-import { useTranslation } from 'react-i18next';
+import { Close } from '@mui/icons-material';
+import styles from 'styles/components/SettingsModal.module.scss';
+import { useTranslation } from 'next-i18next';
 import { LiquidityHubTxSettings } from 'components/Swap/LiquidityHub';
 
 enum SlippageError {
@@ -44,10 +43,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
     userSlippageTolerance,
     setUserslippageTolerance,
   ] = useUserSlippageTolerance();
-  const [
-    slippageManuallySet,
-    setSlippageManuallySet,
-  ] = useSlippageManuallySet();
+  const [_, setSlippageManuallySet] = useSlippageManuallySet();
   const [ttl, setTtl] = useUserTransactionTTL();
   const { onChangeRecipient } = useSwapActionHandlers();
   const [expertMode, toggleExpertMode] = useExpertModeManager();
@@ -57,10 +53,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const [deadlineInput, setDeadlineInput] = useState('');
   const [expertConfirm, setExpertConfirm] = useState(false);
   const [expertConfirmText, setExpertConfirmText] = useState('');
-  const [
-    liquidityHubDisabled,
-    toggleLiquidityHubDisabled,
-  ] = useLiquidityHubManager();
 
   const slippageInputIsValid =
     slippageInput === '' ||
@@ -110,7 +102,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           setSlippageManuallySet(true);
         }
       }
-    } catch {}
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const parseCustomDeadline = (value: string) => {
@@ -121,7 +115,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
       if (!Number.isNaN(valueAsInt) && valueAsInt > 0) {
         setTtl(valueAsInt);
       }
-    } catch {}
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -130,7 +126,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         <Box paddingX={3} paddingY={4}>
           <Box mb={3} className='flex items-center justify-between'>
             <h5>{t('areyousure')}</h5>
-            <CloseIcon
+            <Close
               className='cursor-pointer'
               onClick={() => setExpertConfirm(false)}
             />
@@ -145,15 +141,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <p className='text-bold'>{t('typeConfirmExpertMode')}</p>
             </Box>
           </Box>
-          <Box className='expertConfirmInput'>
+          <Box className={styles.expertConfirmInput}>
             <input
               value={expertConfirmText}
               onChange={(e: any) => setExpertConfirmText(e.target.value)}
             />
           </Box>
           <Box
-            className={`expertButtonWrapper${
-              expertConfirmText === 'confirm' ? '' : ' opacity-disabled'
+            className={`${styles.expertButtonWrapper} ${
+              expertConfirmText === 'confirm' ? '' : 'opacity-disabled'
             }`}
             onClick={() => {
               if (expertConfirmText === 'confirm') {
@@ -169,7 +165,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
       <Box paddingX={3} paddingY={4}>
         <Box mb={3} className='flex items-center justify-between'>
           <h5>{t('settings')}</h5>
-          <CloseIcon onClick={onClose} />
+          <Close onClick={onClose} />
         </Box>
         <Divider />
         <Box my={2.5} className='flex items-center'>
@@ -181,8 +177,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         <Box mb={2.5}>
           <Box className='flex items-center'>
             <Box
-              className={`slippageButton${
-                userSlippageTolerance === 10 ? ' activeSlippageButton' : ''
+              className={`${styles.slippageButton} ${
+                userSlippageTolerance === 10 ? styles.activeSlippageButton : ''
               }`}
               onClick={() => {
                 setSlippageInput('');
@@ -195,8 +191,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <small>0.1%</small>
             </Box>
             <Box
-              className={`slippageButton${
-                userSlippageTolerance === 50 ? ' activeSlippageButton' : ''
+              className={`${styles.slippageButton} ${
+                userSlippageTolerance === 50 ? styles.activeSlippageButton : ''
               }`}
               onClick={() => {
                 setSlippageInput('');
@@ -209,8 +205,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <small>0.5%</small>
             </Box>
             <Box
-              className={`slippageButton${
-                userSlippageTolerance === 100 ? ' activeSlippageButton' : ''
+              className={`${styles.slippageButton} ${
+                userSlippageTolerance === 100 ? styles.activeSlippageButton : ''
               }`}
               onClick={() => {
                 setSlippageInput('');
@@ -223,7 +219,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
               <small>1%</small>
             </Box>
             <Box
-              className={`settingsInputWrapper ${
+              className={`${styles.settingsInputWrapper} ${
                 slippageAlert ? 'border-primary' : 'border-secondary1'
               }`}
             >
@@ -262,7 +258,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
           <QuestionHelper size={20} text={t('txDeadlineHelper')} />
         </Box>
         <Box mb={2.5} className='flex items-center'>
-          <Box className='settingsInputWrapper' maxWidth={168}>
+          <Box className={styles.settingsInputWrapper} maxWidth={168}>
             <NumericalInput
               placeholder={(ttl / 60).toString()}
               value={deadlineInput}

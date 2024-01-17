@@ -1,9 +1,14 @@
-import React, { ReactChild } from 'react';
-import { Box, useMediaQuery, TableRow, TableCell } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import { ArrowUpward, ArrowDownward } from '@material-ui/icons';
+import React from 'react';
+import {
+  Box,
+  useMediaQuery,
+  TableRow,
+  TableCell,
+  useTheme,
+} from '@mui/material';
+import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { DataTable } from 'components';
-import 'components/styles/CustomTable.scss';
+import styles from 'styles/components/CustomTable.module.scss';
 
 export interface CustomTableProps<T> {
   emptyMessage?: string;
@@ -13,7 +18,7 @@ export interface CustomTableProps<T> {
   data: any;
   defaultOrderBy?: T;
   defaultOrder?: 'asc' | 'desc';
-  mobileHTML: (item: any, index: number) => ReactChild;
+  mobileHTML: (item: any, index: number) => React.ReactNode;
   desktopHTML: (
     item: any,
     index: number,
@@ -34,10 +39,10 @@ const CustomTable: React.FC<CustomTableProps<any>> = ({
   desktopHTML,
 }) => {
   const theme = useTheme();
-  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
+  const mobileWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
-    <Box className='tableContainer'>
+    <Box className={styles.tableContainer}>
       {mobileWindowSize ? (
         <>
           {data.map((item: any, index: number) => (
@@ -61,12 +66,7 @@ const CustomTable: React.FC<CustomTableProps<any>> = ({
               <TableRow key={index}>
                 {desktopHTML(item, index, page, rowsPerPage).map(
                   (cellItem: any, ind: number) => (
-                    <TableCell
-                      key={ind}
-                      className={cellItem.button ? 'buttonCell' : ''}
-                    >
-                      {cellItem.html}
-                    </TableCell>
+                    <TableCell key={ind}>{cellItem.html}</TableCell>
                   ),
                 )}
               </TableRow>

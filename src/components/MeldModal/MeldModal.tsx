@@ -1,9 +1,9 @@
 import React from 'react';
 import { CustomModal } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
-import 'components/styles/MeldModal.scss';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import styles from 'styles/components/MeldModal.module.scss';
+import { Close } from '@mui/icons-material';
 
 interface MeldModalProps {
   open: boolean;
@@ -14,17 +14,21 @@ const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
   return (
-    <CustomModal open={open} onClose={onClose} modalWrapper='meldModalWrapper'>
-      <div className='meldModalClose'>
-        <CloseIcon className='cursor-pointer' onClick={onClose} />
+    <CustomModal
+      open={open}
+      onClose={onClose}
+      modalWrapper={styles.meldModalWrapper}
+    >
+      <div className={styles.meldModalClose}>
+        <Close className='cursor-pointer' onClick={onClose} />
       </div>
-      <div className='buyFiatContent'>
+      <div className={styles.buyFiatContent}>
         <iframe
           title='meld widget'
           allow='accelerometer; autoplay; camera; gyroscope; payment'
           height='692px'
-          src={`${process.env.REACT_APP_MELD_URL}/?publicKey=${
-            process.env.REACT_APP_MELD_KEY
+          src={`${process.env.NEXT_PUBLIC_MELD_URL}/?publicKey=${
+            process.env.NEXT_PUBLIC_MELD_KEY
           }&destinationCurrencyCode=MATIC${
             account ? `&walletAddress=${account}` : ''
           }`}

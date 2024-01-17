@@ -1,6 +1,6 @@
 import React from 'react';
-import './index.scss';
-import { Box } from '@material-ui/core';
+import styles from 'styles/components/v3/Badge.module.scss';
+import { Box } from '@mui/material';
 import { CustomTooltip } from 'components';
 
 export enum BadgeVariant {
@@ -22,13 +22,13 @@ interface BadgeProps {
 export default function Badge({ variant, icon, text, tooltip }: BadgeProps) {
   const BadgeComponent = () => (
     <Box
-      className={`v3-badge ${
+      className={`${styles.v3Badge} ${
         variant === BadgeVariant.WARNING
-          ? 'v3-badge-warning'
+          ? styles.v3BadgeWarning
           : variant === BadgeVariant.POSITIVE
-          ? 'v3-badge-success'
+          ? styles.v3BadgeSuccess
           : variant === BadgeVariant.PRIMARY
-          ? 'v3-badge-primary'
+          ? styles.v3BadgePrimary
           : ''
       }`}
     >

@@ -1,20 +1,24 @@
 import React from 'react';
 import { DoubleCurrencyLogo } from 'components';
-import Loader from '../Loader';
-import { ChainId, Token } from '@uniswap/sdk';
-import { Link } from 'react-router-dom';
-import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
+import { Token, ChainId } from '@uniswap/sdk';
+import Link from 'next/link';
+import {
+  Box,
+  Button,
+  useMediaQuery,
+  useTheme,
+  CircularProgress,
+} from '@mui/material';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatReward } from 'utils/formatReward';
 import { formatCompact, formatNumber, getTokenFromAddress } from 'utils';
 import { Aprs } from 'models/interfaces';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import { useTranslation } from 'react-i18next';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
+import { useTranslation } from 'next-i18next';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { useMaticPrice } from 'state/application/hooks';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useRouter } from 'next/router';
 
 interface EternalFarmCardProps {
   active?: boolean;
@@ -44,9 +48,7 @@ interface EternalFarmCardProps {
 }
 
 export function EternalFarmCard({
-  active,
   farmHandler,
-  now,
   event: {
     id,
     pool,
@@ -54,24 +56,20 @@ export function EternalFarmCard({
     bonusRewardToken,
     rewardRate,
     bonusRewardRate,
-    isDetached,
   } = {},
   aprs,
   aprsLoading,
   poolAprs,
   poolAprsLoading,
   tvls,
-  tvlsLoading,
-  eternal,
   chainId,
 }: EternalFarmCardProps) {
   const { t } = useTranslation();
-  const parsedQuery = useParsedQueryString();
-  const farmStatus =
-    parsedQuery && parsedQuery.farmStatus
-      ? (parsedQuery.farmStatus as string)
-      : 'active';
   const apr = aprs ? aprs[id] : undefined;
+  const router = useRouter();
+  const farmStatus = router.query
+    ? router.query.farmStatus ?? 'active'
+    : 'active';
   const poolApr = poolAprs ? poolAprs[pool.id] : undefined;
   const totalAPR =
     (poolApr && poolApr > 0 ? poolApr : 0) + (apr && apr > 0 ? apr : 0);
@@ -104,13 +102,13 @@ export function EternalFarmCard({
       : undefined;
 
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   return (
     <Box
       padding={1.5}
       width='100%'
-      borderRadius={16}
+      borderRadius='16px'
       className='flex flex-wrap items-center bg-secondary1'
     >
       <Box
@@ -134,7 +132,7 @@ export function EternalFarmCard({
             <small className='weight-600'>{`${pool.token0.symbol}/${pool.token1.symbol}`}</small>
             <Box className='cursor-pointer'>
               <Link
-                to={`/pools?currency0=${token0Address}&currency1=${token1Address}`}
+                href={`/pools?currency0=${token0Address}&currency1=${token1Address}`}
                 target='_blank'
                 className='no-decoration'
               >
@@ -161,7 +159,7 @@ export function EternalFarmCard({
           className='flex justify-between'
         >
           {isMobile && <small className='text-secondary'>{t('rewards')}</small>}
-          <Box textAlign={isMobile ? 'right' : ''}>
+          <Box textAlign={isMobile ? 'right' : undefined}>
             {rewardToken && rewardRate && (
               <small className='weight-600'>
                 {formatReward(
@@ -197,7 +195,7 @@ export function EternalFarmCard({
             >
               <small className='text-secondary'>{t('poolAPR')}</small>
               <small className='text-success'>
-                {poolAprsLoading && <Loader stroke='#0fc679' />}
+                {poolAprsLoading && <CircularProgress size='16px' />}
                 {!poolAprsLoading && <>{formatCompact(poolApr ?? 0)}%</>}
               </small>
             </Box>
@@ -208,7 +206,7 @@ export function EternalFarmCard({
             >
               <small className='text-secondary'>{t('farmAPR')}</small>
               <small className='text-success'>
-                {aprsLoading && <Loader stroke='#0fc679' />}
+                {aprsLoading && <CircularProgress size='16px' />}
                 {!aprsLoading && <>{formatCompact(apr ?? 0)}%</>}
               </small>
             </Box>
@@ -216,14 +214,18 @@ export function EternalFarmCard({
         ) : (
           <Box width='20%' className='flex items-center'>
             <small className='text-success'>
-              {(poolAprsLoading || aprsLoading) && <Loader stroke='#0fc679' />}
+              {(poolAprsLoading || aprsLoading) && (
+                <CircularProgress size='16px' />
+              )}
               {!poolAprsLoading && !aprsLoading && (
                 <>{formatCompact(totalAPR)}%</>
               )}
             </small>
-            <Box ml={0.5} height={16}>
+            <Box ml={0.5} className='flex'>
               <TotalAPRTooltip farmAPR={apr ?? 0} poolAPR={poolApr ?? 0}>
-                <img src={CircleInfoIcon} alt={'arrow up'} />
+                <picture>
+                  <img src='/assets/images/circleinfo.svg' alt='info' />
+                </picture>
               </TotalAPRTooltip>
             </Box>
           </Box>

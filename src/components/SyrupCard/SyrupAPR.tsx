@@ -1,9 +1,9 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { SyrupInfo } from 'types/index';
 import { CurrencyLogo } from 'components';
 import { getTokenAPRSyrup } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { OLD_DQUICK, OLD_QUICK } from 'constants/v3/addresses';

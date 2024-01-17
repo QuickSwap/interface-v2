@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react';
 import Slider from 'react-slick';
-import { useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { useMediaQuery, useTheme } from '@mui/material';
+import { ChevronRight, ChevronLeft } from '@mui/icons-material';
 import {
   useStakingInfo,
   getBulkPairData,
@@ -12,7 +10,7 @@ import {
 import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
 import { getOneYearFee } from 'utils';
-import 'components/styles/RewardSlider.scss';
+import styles from 'styles/components/RewardSlider.module.scss';
 import { useQuery } from '@tanstack/react-query';
 
 const RewardSlider: React.FC = () => {
@@ -39,7 +37,7 @@ const RewardSlider: React.FC = () => {
     return data ?? null;
   };
 
-  const { data: bulkPairs, refetch } = useQuery({
+  const { data: bulkPairs } = useQuery({
     queryKey: ['fetchBulkPairData', chainId, stakingPairListStr],
     queryFn: fetchBulkPairData,
     refetchInterval: 300000,
@@ -70,12 +68,12 @@ const RewardSlider: React.FC = () => {
     speed: 500,
     slidesToShow,
     slidesToScroll: 1,
-    nextArrow: <ChevronRightIcon />,
-    prevArrow: <ChevronLeftIcon />,
+    nextArrow: <ChevronRight />,
+    prevArrow: <ChevronLeft />,
   };
 
   return (
-    <Slider {...rewardSliderSettings} className='rewardsSlider'>
+    <Slider {...rewardSliderSettings} className={styles.rewardsSlider}>
       {lprewardItems.map((item, index) => (
         <RewardSliderItem
           key={index}

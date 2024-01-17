@@ -1,16 +1,15 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { CustomModal } from 'components';
-import { Trans, useTranslation } from 'react-i18next';
-import 'components/styles/TermsWrapper.scss';
-import { Box, Button, Checkbox } from '@material-ui/core';
-import PerpsBanner from 'assets/images/perpsBanner.png';
+import { Trans, useTranslation } from 'next-i18next';
+import styles from 'styles/components/TermsWrapper.module.scss';
+import { Box, Button, Checkbox } from '@mui/material';
 
 export default function TermsWrapper({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [readTerms, setReadTerms] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
-  const currentTOSVersion = process.env.REACT_APP_TOS_VERSION;
+  const currentTOSVersion = process.env.NEXT_PUBLIC_TOS_VERSION;
 
   useEffect(() => {
     const savedTermsVersion = localStorage.getItem('tosVersion');
@@ -31,7 +30,7 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
   if (showTerms)
     return (
       <CustomModal open={showTerms}>
-        <div className='termsConditionsWrapper'>
+        <div className={styles.termsConditionsWrapper}>
           <h5>{t('disclaimer')}</h5>
           <Box my={2}>
             <p>
@@ -64,7 +63,13 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
             />
             <p>{t('disclaimerText3')}</p>
           </Box>
-          <img src={PerpsBanner} alt='perps banner' width='100%' />
+          <picture>
+            <img
+              src='/assets/images/perpsBanner.png'
+              alt='perps banner'
+              width='100%'
+            />
+          </picture>
           <Box my={2}>
             <p className='caption text-secondary'>
               <Trans
@@ -73,7 +78,7 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
                   alink: (
                     <a
                       className='text-primary'
-                      href={process.env.REACT_APP_PERPS_URL}
+                      href={process.env.NEXT_PUBLIC_PERPS_URL}
                       rel='noreferrer'
                       target='_blank'
                     />
@@ -87,7 +92,7 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
             disabled={!readTerms || !agreeTerms}
             onClick={confirmTOS}
           >
-            {t('confirm')}
+            <p>{t('confirm')}</p>
           </Button>
         </div>
       </CustomModal>

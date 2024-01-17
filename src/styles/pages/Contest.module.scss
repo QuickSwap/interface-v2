@@ -1,0 +1,101 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.tokensFilter {
+  cursor: pointer;
+  display: flex;
+  margin: 8px 16px 8px 0;
+}
+
+.topTab {
+  height: 46px;
+  padding: 0 24px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  & p {
+    color: $textDisabled;
+  }
+}
+
+.selectedTab {
+  background: $secondary2;
+  & p {
+    color: $textPrimary;
+  }
+}
+.panel {
+  background: $grey3;
+  border-radius: 20px;
+  padding: 24px;
+  @include media('screen', '<phone') {
+    padding: 12px;
+  }
+}
+
+.filterOptionsWrapper {
+  @include media('screen', '<tablet') {
+    flex-direction: column;
+    margin-bottom: 12px;
+  }
+}
+
+.pairOptions {
+  @include media('screen', '<phone') {
+    justify-content: center;
+  }
+}
+
+.searchWidgetWrapper {
+  width: 320px;
+  position: relative;
+}
+
+.searchWidgetInput {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: #1b1d26;
+  height: 46px;
+  border-radius: 10px;
+  margin: 12px 0;
+  color: $textSecondary;
+  & input {
+    flex: 1 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    color: $textPrimary;
+  }
+}
+
+.topMoversWrapper {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  border-radius: 10px;
+  padding: 20px 20px 4px;
+  @include media('screen', '<phone') {
+    align-items: center;
+  }
+}
+
+.topMoversContent {
+  width: 100%;
+  margin-top: 12px;
+  padding-bottom: 16px;
+  overflow-x: auto;
+  & > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+}

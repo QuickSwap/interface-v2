@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import {
   errorFetchingV3MulticallResults,
@@ -58,7 +58,8 @@ async function fetchChunk(
     }
 
     return returnData;
-  } catch (error) {
+  } catch (err) {
+    const error = err as any;
     if (
       error.code === -32000 ||
       error.message?.indexOf('header not found') !== -1

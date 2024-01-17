@@ -4,7 +4,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
 
 const useTransferBond = (
@@ -24,10 +24,10 @@ const useTransferBond = (
       const tx = await bondNftContract[
         'safeTransferFrom(address,address,uint256)'
       ](account ?? '', toAddress, billId);
-      addTransaction(tx, { summary: t('transferBond') });
+      addTransaction(tx, { summary: t('transferBond') ?? '' });
       const resp = await tx.wait();
       finalizeTransaction(resp, {
-        summary: t('transferBond'),
+        summary: t('transferBond') ?? '',
       });
       return tx;
     } catch (e) {

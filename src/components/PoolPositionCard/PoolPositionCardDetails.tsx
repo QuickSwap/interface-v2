@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Box, Button } from '@material-ui/core';
+import { useRouter } from 'next/router';
+import { Box, Button } from '@mui/material';
 import { Pair, JSBI, Percent, ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -8,11 +8,12 @@ import { useTokenBalance } from 'state/wallet/hooks';
 import { useTotalSupply } from 'data/TotalSupply';
 import { CurrencyLogo, RemoveLiquidityModal } from 'components';
 import { currencyId, formatTokenAmount } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
+import styles from 'styles/components/PoolPositionCard.module.scss';
 
 const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const router = useRouter();
 
   const { account, chainId } = useActiveWeb3React();
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
@@ -57,7 +58,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
 
   return (
     <>
-      <Box className='poolPositionCardDetails'>
+      <Box className={styles.poolPositionCardDetails}>
         <Box className='cardRow'>
           <small>{t('yourPoolTokens')}:</small>
           <small>{formatTokenAmount(userPoolBalance)}</small>
@@ -91,19 +92,22 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           </small>
         </Box>
 
-        <Box className='poolButtonRow'>
+        <Box className={styles.poolButtonRow}>
           <Button
             variant='outlined'
+            className={styles.viewAnalyticsButton}
             onClick={() =>
-              history.push(`/analytics/v2/pair/${pair.liquidityToken.address}`)
+              router.push(
+                `/analytics/v2/pair?id=${pair.liquidityToken.address}`,
+              )
             }
           >
             <small>{t('viewAnalytics')}</small>
           </Button>
           <Button
-            variant='contained'
+            className={styles.poolPositionButton}
             onClick={() => {
-              history.push(
+              router.push(
                 `/pools/v2?currency0=${currencyId(
                   currency0,
                   chainId ? chainId : ChainId.MATIC,
@@ -117,7 +121,7 @@ const PoolPositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
             <small>{t('add')}</small>
           </Button>
           <Button
-            variant='contained'
+            className={styles.poolPositionButton}
             onClick={() => {
               setOpenRemoveModal(true);
             }}

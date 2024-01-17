@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import './index.scss';
+import styles from 'styles/components/v3/Toggle.module.scss';
 
 interface ToggleProps {
   id?: string;
@@ -17,7 +17,7 @@ export default function Toggle({
   unchecked = 'Off',
 }: ToggleProps) {
   return (
-    <div className='toggle-button' id={id} onClick={toggle}>
+    <div className={styles.toggleButton} id={id} onClick={toggle}>
       <div data-isactive={isActive}>
         <span>{checked}</span>
       </div>

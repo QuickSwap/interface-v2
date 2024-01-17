@@ -194,7 +194,7 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
 }
 
 export function useDefaultFarmList(): StakingInfoAddressMap {
-  return useFarmList(process.env.REACT_APP_STAKING_LIST_DEFAULT_URL);
+  return useFarmList(process.env.NEXT_PUBLIC_STAKING_LIST_DEFAULT_URL);
 }
 
 // returns all downloaded current lists

@@ -1,10 +1,8 @@
 import { ChainId, Currency, ETHER } from '@uniswap/sdk';
-import React, { useCallback, useEffect, useState } from 'react';
-import ReactGA from 'react-ga';
+import React, { useCallback } from 'react';
+import { event } from 'nextjs-google-analytics';
 import { CustomModal } from 'components';
-import useLast from 'hooks/useLast';
 import CurrencySearch from './CurrencySearch';
-import 'components/styles/CurrencySearchModal.scss';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
 import { NativeCurrency, Currency as CurrencyV3 } from '@uniswap/sdk-core';
@@ -30,16 +28,9 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   showCommonBases = false,
 }) => {
   const { isV2 } = useIsV2();
-  const [listView, setListView] = useState<boolean>(false);
-  const lastOpen = useLast(isOpen);
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
-  useEffect(() => {
-    if (isOpen && !lastOpen) {
-      setListView(false);
-    }
-  }, [isOpen, lastOpen]);
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
@@ -62,20 +53,13 @@ const CurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   );
 
   const handleClickChangeList = useCallback(() => {
-    ReactGA.event({
+    event('Change Lists', {
       category: 'Lists',
-      action: 'Change Lists',
     });
-    setListView(true);
   }, []);
 
   return (
-    <CustomModal
-      open={isOpen}
-      onClose={onDismiss}
-      modalWrapper={'searchModalWrapper'}
-      hideBackdrop={true}
-    >
+    <CustomModal open={isOpen} onClose={onDismiss} hideBackdrop={true}>
       <CurrencySearch
         isOpen={isOpen}
         onDismiss={onDismiss}

@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { Box, Divider, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
+import { Box, Divider, useMediaQuery, useTheme } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { CustomTable } from 'components';
 import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { TxnType } from 'constants/index';
-import 'components/styles/TransactionsTable.scss';
+import styles from 'styles/components/TransactionsTable.module.scss';
 dayjs.extend(relativeTime);
 
 interface TransactionsTableProps {
@@ -88,7 +87,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   ];
   const { chainId } = useActiveWeb3React();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const getTxString = (txn: any) => {
     const messageData = {
       token0Symbol: txn.pair.token1.symbol,
@@ -125,7 +124,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
           )}
         </Box>
         <Divider />
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('totalValue')}</p>
           <p>${Number(txn.amountUSD).toLocaleString('us')}</p>
         </Box>

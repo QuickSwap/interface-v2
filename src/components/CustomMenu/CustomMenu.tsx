@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { Box } from '@material-ui/core';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import 'components/styles/CustomMenu.scss';
+import { Box } from '@mui/material';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import styles from 'styles/components/CustomMenu.module.scss';
 
 interface CustomMenuItem {
   text: string;
@@ -30,15 +30,18 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedValue]);
   return (
-    <Box className='customMenuWrapper'>
-      <Box className='customMenuHeader' onClick={() => setOpenMenu(!openMenu)}>
+    <Box className={styles.customMenuWrapper}>
+      <Box
+        className={styles.customMenuHeader}
+        onClick={() => setOpenMenu(!openMenu)}
+      >
         <small>
           {title} {menuItem?.text}
         </small>
         {openMenu ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       </Box>
       {openMenu && (
-        <Box className='customMenuContent'>
+        <Box className={styles.customMenuContent}>
           {menuItems.map((item, index) => (
             <Box
               key={index}

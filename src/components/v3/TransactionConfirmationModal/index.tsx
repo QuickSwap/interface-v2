@@ -1,15 +1,12 @@
 import React, { ReactNode } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { X } from 'react-feather';
-import SpinnerImage from 'assets/images/spinner.svg';
 import { useActiveWeb3React } from 'hooks';
 import { CustomModal } from 'components';
 import { getEtherscanLink } from 'utils';
-import { useTranslation } from 'react-i18next';
-import TransactionFailed from 'assets/images/TransactionFailed.png';
-import TransactionSubmitted from 'assets/images/TransactionSubmitted.png';
-import 'components/styles/TransactionConfirmationModal.scss';
-import { CheckCircleOutline } from '@material-ui/icons';
+import { useTranslation } from 'next-i18next';
+import { CheckCircleOutline } from '@mui/icons-material';
+import styles from 'styles/components/TransactionConfirmationModal.module.scss';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -32,7 +29,9 @@ function ConfirmationPendingContent({
         </Box>
       )}
       <Box className='flex justify-center spinner'>
-        <img src={SpinnerImage} alt='Spinner' />
+        <picture>
+          <img src='assets/images/spinner.svg' alt='Spinner' />
+        </picture>
       </Box>
       <Box mt='20px' textAlign='center'>
         <p>{t('waitingConfirm')}</p>
@@ -65,15 +64,22 @@ function TransactionSubmittedContent({
   return (
     <div>
       {!inline && (
-        <Box className='txModalHeader'>
+        <Box className={styles.txModalHeader}>
           <h5>{txPending ? t('txSubmitted') : t('txCompleted')}</h5>
           <X className='cursor-pointer' onClick={onDismiss} />
         </Box>
       )}
       <Box mt={8} className='flex justify-center'>
-        <img src={TransactionSubmitted} alt='Transaction Submitted' />
+        <picture>
+          <img
+            src='/assets/images/TransactionSubmitted.png'
+            alt='Transaction Submitted'
+          />
+        </picture>
       </Box>
-      <Box className='txModalContent txModalContentSuccess'>
+      <Box
+        className={`${styles.txModalContent} ${styles.txModalContentSuccess}`}
+      >
         <p>
           {!txPending && <CheckCircleOutline />}
           {txPending ? t('submittedTxSwap') : t('swapSuccess')}
@@ -92,7 +98,7 @@ function TransactionSubmittedContent({
         )}
         <Button
           onClick={onDismiss}
-          className='txSubmitButton'
+          className={styles.txSubmitButton}
           style={{ width: '48%' }}
         >
           {t('close')}
@@ -139,16 +145,21 @@ export function TransactionErrorContent({
   const { t } = useTranslation();
   return (
     <Box>
-      <Box className='txModalHeader'>
+      <Box className={styles.txModalHeader}>
         <h5 className='text-error'>{t('error')}</h5>
         <X className='cursor-pointer' onClick={onDismiss} />
       </Box>
-      <Box mt={2} className='txModalContent'>
-        <img src={TransactionFailed} alt='Transaction Failed' />
+      <Box mt={2} className={styles.txModalContent}>
+        <picture>
+          <img
+            src='/assets/images/TransactionFailed.png'
+            alt='Transaction Failed'
+          />
+        </picture>
         <p>{message}</p>
       </Box>
       <Box mt={2}>
-        <Button fullWidth onClick={onDismiss} className='txSubmitButton'>
+        <Button fullWidth onClick={onDismiss} className={styles.txSubmitButton}>
           {t('close')}
         </Button>
       </Box>
@@ -184,7 +195,7 @@ export default function TransactionConfirmationModal({
   // need this to skip submitted view during state update ^^
   return (
     <CustomModal
-      modalWrapper='txModalWrapper'
+      modalWrapper={styles.txModalWrapper}
       open={isOpen}
       onClose={onDismiss}
     >

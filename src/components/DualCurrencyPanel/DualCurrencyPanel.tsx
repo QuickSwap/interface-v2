@@ -1,14 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import DualCurrencyDropdown from './DualCurrencyDropdown';
 import { Currency } from '@uniswap/sdk-core';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { DualCurrencySelector } from 'types/bond';
 import { useActiveWeb3React, useTokenPriceUsd } from 'hooks';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box, CircularProgress } from '@mui/material';
 import { NumericalInput } from 'components';
 import { toNativeCurrency } from 'utils';
-import 'components/styles/DualCurrencyPanel.scss';
+import styles from 'styles/components/DualCurrencyPanel.module.scss';
 
 /**
  * Dropdown component that supports both single currencies and currency pairs. An array of pairs is passed as lpList,
@@ -91,7 +91,7 @@ const DualCurrencyPanel: React.FC<DualCurrencyPanelProps> = ({
   ) as Currency[];
 
   return (
-    <Box className='dualCurrencyPanelWrapper'>
+    <Box className={styles.dualCurrencyPanelWrapper}>
       <Box className='flex' mb='10px'>
         <NumericalInput value={value} onUserInput={onUserInput} />
         {principalToken && (
@@ -126,7 +126,7 @@ const DualCurrencyPanel: React.FC<DualCurrencyPanelProps> = ({
             {Number(currencyBalance ?? '0') > 0 && (
               <Box
                 ml={0.5}
-                className='dualCurrencyMaxButton'
+                className={styles.dualCurrencyMaxButton}
                 onClick={handleMaxInput}
               >
                 <small>{t('max')}</small>

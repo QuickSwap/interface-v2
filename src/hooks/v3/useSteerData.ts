@@ -64,7 +64,7 @@ export const useSteerVaults = (chainId: ChainId) => {
   const steerAvailable = config['steer']['available'];
   const tokenMap = useSelectedTokenList();
   const fetchSteerPools = async () => {
-    const steerAPIURL = process.env.REACT_APP_STEER_API_URL;
+    const steerAPIURL = process.env.NEXT_PUBLIC_STEER_API_URL;
     if (!steerAvailable || !chainId || !steerAPIURL) return [];
     const res = await fetch(
       `${steerAPIURL}/getSmartPools?chainId=${chainId}&dexName=${getSteerDexName(
@@ -92,16 +92,20 @@ export const useSteerVaults = (chainId: ChainId) => {
             let aprData, strategyData;
             try {
               const aprRes = await fetch(
-                `${process.env.REACT_APP_STEER_VAULT_APR_URL}?address=${vault.vaultAddress}&chain=${chainId}&interval=604800`,
+                `${process.env.NEXT_PUBLIC_STEER_VAULT_APR_URL}?address=${vault.vaultAddress}&chain=${chainId}&interval=604800`,
               );
               aprData = await aprRes.json();
-            } catch {}
+            } catch (e) {
+              console.log('Error getting steer vault APR ', e);
+            }
             try {
               const strategyRes = await fetch(
                 `https://ipfs.io/ipfs/${vault.strategyIpfsHash}`,
               );
               strategyData = await strategyRes.json();
-            } catch {}
+            } catch (e) {
+              console.log('Error getting steer vault strategy data ', e);
+            }
             vaults.push({
               address: vault.vaultAddress,
               poolAddress,
@@ -337,7 +341,7 @@ export const useSteerStakingPools = (chainId: ChainId, farmStatus?: string) => {
   const config = getConfig(chainId);
   const steerAvailable = config['steer']['available'];
   const fetchSteerStakingPools = async () => {
-    const apiURL = process.env.REACT_APP_STEER_STAKING_POOLS_URL;
+    const apiURL = process.env.NEXT_PUBLIC_STEER_STAKING_POOLS_URL;
     if (!steerAvailable || !chainId || !apiURL) return [];
     const res = await fetch(apiURL);
     const data = await res.json();

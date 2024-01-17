@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { useCallback } from 'react';
 import { selectVault, typeInput } from './actions';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useRouter } from 'next/router';
 import { CHAIN_INFO } from 'constants/v3/chains';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency } from 'hooks/v3/Tokens';
@@ -49,15 +49,15 @@ export function useSingleTokenVault() {
 }
 
 export function useSingleTokenCurrency() {
-  const parsedQuery = useParsedQueryString();
+  const router = useRouter();
   const { chainId } = useActiveWeb3React();
   const chainInfo = CHAIN_INFO[chainId];
   const currencyId =
-    parsedQuery && parsedQuery.currency
-      ? (parsedQuery.currency as string).toLowerCase() === 'eth' ||
-        (parsedQuery.currency as string).toLowerCase() === 'matic'
+    router.query && router.query.currency
+      ? (router.query.currency as string).toLowerCase() === 'eth' ||
+        (router.query.currency as string).toLowerCase() === 'matic'
         ? chainInfo.nativeCurrencySymbol.toLowerCase()
-        : (parsedQuery.currency as string)
+        : (router.query.currency as string)
       : undefined;
   const currency = useCurrency(currencyId);
   return currency ?? undefined;

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import {
   CurrencyInput,
   TransactionErrorContent,
@@ -13,8 +13,8 @@ import {
 } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
-import ReactGA from 'react-ga';
-import { useTranslation } from 'react-i18next';
+import { event } from 'nextjs-google-analytics';
+import { useTranslation } from 'next-i18next';
 import {
   currencyEquals,
   Token,
@@ -48,12 +48,12 @@ import {
   halfAmountSpend,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import AddLiquidityIcon from 'svgs/AddLiquidityIcon.svg';
 import { useCurrency } from 'hooks/Tokens';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
+import styles from 'styles/components/Swap.module.scss';
 
 const AddLiquidity: React.FC<{
   currencyBgClass?: string;
@@ -77,27 +77,29 @@ const AddLiquidity: React.FC<{
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
 
-  // queried currency
-  const params: any = useParams();
-  const parsedQuery = useParsedQueryString();
-  const currency0Id =
-    params && params.currencyIdA
-      ? params.currencyIdA.toLowerCase() === 'matic' ||
-        params.currencyIdA.toLowerCase() === 'eth'
-        ? 'ETH'
-        : params.currencyIdA
-      : parsedQuery && parsedQuery.currency0
-      ? (parsedQuery.currency0 as string)
+  const nextRouter = useRouter();
+  const currency0IdStr =
+    nextRouter.query &&
+    (nextRouter.query.currencyIdA ?? nextRouter.query.currency0)
+      ? ((nextRouter.query.currencyIdA ?? nextRouter.query.currency0) as string)
       : undefined;
-  const currency1Id =
-    params && params.currencyIdB
-      ? params.currencyIdB.toLowerCase() === 'matic' ||
-        params.currencyIdB.toLowerCase() === 'eth'
-        ? 'ETH'
-        : params.currencyIdB
-      : parsedQuery && parsedQuery.currency1
-      ? (parsedQuery.currency1 as string)
+  const currency1IdStr =
+    nextRouter.query &&
+    (nextRouter.query.currencyIdB ?? nextRouter.query.currency1)
+      ? ((nextRouter.query.currencyIdB ?? nextRouter.query.currency1) as string)
       : undefined;
+  const currency0Id = currency0IdStr
+    ? currency0IdStr.toLowerCase() === 'matic' ||
+      currency0IdStr.toLowerCase() === 'eth'
+      ? 'ETH'
+      : currency0IdStr
+    : undefined;
+  const currency1Id = currency1IdStr
+    ? currency1IdStr.toLowerCase() === 'matic' ||
+      currency1IdStr.toLowerCase() === 'eth'
+      ? 'ETH'
+      : currency1IdStr
+    : undefined;
   const currency0 = useCurrency(currency0Id);
   const currency1 = useCurrency(currency1Id);
 
@@ -352,9 +354,8 @@ const AddLiquidity: React.FC<{
             setAddLiquidityErrorMessage(t('errorInTx'));
           }
 
-          ReactGA.event({
+          event('Add', {
             category: 'Liquidity',
-            action: 'Add',
             label: [
               currencies[Field.CURRENCY_A]?.symbol,
               currencies[Field.CURRENCY_B]?.symbol,
@@ -483,7 +484,7 @@ const AddLiquidity: React.FC<{
         setAmount={onFieldAInput}
         bgClass={currencyBgClass}
       />
-      <Box className='exchangeSwap'>
+      <Box className={styles.exchangeSwap}>
         <AddLiquidityIcon />
       </Box>
       <CurrencyInput
@@ -513,7 +514,7 @@ const AddLiquidity: React.FC<{
         pairState !== PairState.INVALID &&
         price && (
           <Box my={2}>
-            <Box className='swapPrice'>
+            <Box className={styles.swapPrice}>
               <small>
                 1 {currencies[Field.CURRENCY_A]?.symbol} ={' '}
                 {price.toSignificant(3)} {currencies[Field.CURRENCY_B]?.symbol}{' '}
@@ -524,7 +525,7 @@ const AddLiquidity: React.FC<{
                 {currencies[Field.CURRENCY_A]?.symbol}{' '}
               </small>
             </Box>
-            <Box className='swapPrice'>
+            <Box className={styles.swapPrice}>
               <small>{t('yourPoolShare')}:</small>
               <small>
                 {poolTokenPercentage
@@ -532,7 +533,7 @@ const AddLiquidity: React.FC<{
                   : '-'}
               </small>
             </Box>
-            <Box className='swapPrice'>
+            <Box className={styles.swapPrice}>
               <small>{t('lpTokenReceived')}:</small>
               <small>
                 {formatTokenAmount(userPoolBalance)} {t('lpTokens')}
@@ -540,7 +541,7 @@ const AddLiquidity: React.FC<{
             </Box>
           </Box>
         )}
-      <Box className='swapButtonWrapper flex-wrap'>
+      <Box className={`${styles.swapButtonWrapper} flex-wrap`}>
         {(approvalA === ApprovalState.NOT_APPROVED ||
           approvalA === ApprovalState.PENDING ||
           approvalB === ApprovalState.NOT_APPROVED ||

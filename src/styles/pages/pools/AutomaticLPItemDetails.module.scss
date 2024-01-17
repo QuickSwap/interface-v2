@@ -1,0 +1,22 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.liquidityItemButtons {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  & button {
+    width: 49%;
+    @include media('screen', '<phone') {
+      width: 100%;
+      &:not(:first-child) {
+        margin-top: 12px;
+      }
+    }
+  }
+}
+
+.liquidityItemButton {
+  height: 40px;
+  border-radius: 10px !important;
+}

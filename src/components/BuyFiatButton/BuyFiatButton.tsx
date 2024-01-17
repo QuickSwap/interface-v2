@@ -1,7 +1,7 @@
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { MeldModal } from 'components';
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface BuyFiatButtonProps {
   fullWidth?: boolean;
@@ -25,7 +25,7 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({
       )}
       {textOnly ? (
         <Box
-          className='text-link text-primary cursor-pointer'
+          className='cursor-pointer text-link text-primary'
           onClick={() => {
             setShowMeldWidgetWidget(true);
           }}

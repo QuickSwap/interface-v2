@@ -1,5 +1,9 @@
 import { Connector } from '@web3-react/types';
-import { Connection, networkConnection } from 'connectors/index';
+import {
+  Connection,
+  ConnectionType,
+  networkConnection,
+} from 'connectors/index';
 import { useGetConnection } from 'hooks';
 import { useEffect, useState } from 'react';
 import { useSelectedWallet } from 'state/user/hooks';
@@ -17,20 +21,22 @@ async function connect(connector: Connector) {
 }
 
 export default function useEagerlyConnect() {
-  const { selectedWallet, updateSelectedWallet } = useSelectedWallet();
+  const { updateSelectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
   const [tried, setTried] = useState(false);
 
-  let selectedConnection: Connection | undefined;
-  if (selectedWallet) {
-    try {
-      selectedConnection = getConnection(selectedWallet);
-    } catch {
+  useEffect(() => {
+    const selectedWallet = localStorage.getItem('selectedWallet');
+    let selectedConnection: Connection | undefined;
+    if (selectedWallet) {
+      try {
+        selectedConnection = getConnection(selectedWallet as ConnectionType);
+      } catch {
+        updateSelectedWallet(undefined);
+      }
+    } else {
       updateSelectedWallet(undefined);
     }
-  }
-
-  useEffect(() => {
     if (selectedConnection) {
       connect(selectedConnection.connector).then(() => setTried(true));
     } else {

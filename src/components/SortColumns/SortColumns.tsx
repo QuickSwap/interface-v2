@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import 'components/styles/SortColumns.scss';
+import { Box } from '@mui/material';
+import { ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
+import styles from 'styles/components/SortColumns.module.scss';
 
 export interface SortColumn {
   text: string;
@@ -37,11 +37,11 @@ const SortColumns: React.FC<SortColumnsProps> = ({
           >
             {item.text}
           </small>
-          <Box className='sortArrows'>
+          <Box className={styles.sortArrows}>
             <Box
               className={
                 selectedSort === item.index && !sortDesc
-                  ? 'selectedSortArrow'
+                  ? styles.selectedSortArrow
                   : ''
               }
             >
@@ -51,7 +51,7 @@ const SortColumns: React.FC<SortColumnsProps> = ({
               mt='-15px'
               className={
                 selectedSort === item.index && sortDesc
-                  ? 'selectedSortArrow'
+                  ? styles.selectedSortArrow
                   : ''
               }
             >

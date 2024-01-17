@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, Button, CircularProgress } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
-import { Close } from '@material-ui/icons';
+import { Box, Button, CircularProgress } from '@mui/material';
+import { useTranslation } from 'next-i18next';
+import { Close } from '@mui/icons-material';
 import { useOnClickOutside } from 'hooks/v3/useOnClickOutside';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
@@ -34,7 +34,7 @@ const NewsletterSignupPanel: React.FC = () => {
         <b>{t('earn300QUICK')}</b>
       </small>
       <input
-        placeholder={t('enterEmail')}
+        placeholder={t('enterEmail') ?? ''}
         onChange={(e) => setEmail(e.target.value)}
       />
       <Button disabled={isLoading} onClick={handleSignup}>

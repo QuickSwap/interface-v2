@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Divider, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { TransactionResponse } from '@ethersproject/providers';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { SyrupInfo } from 'types/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useTokenBalance } from 'state/wallet/hooks';
@@ -21,12 +20,9 @@ import {
   getEarnedUSDSyrup,
 } from 'utils';
 import SyrupTimerLabel from './SyrupTimerLabel';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
-import { GlobalConst } from 'constants/index';
 import { ChainId } from '@uniswap/sdk';
-import { formatUnits } from 'ethers/lib/utils';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -35,7 +31,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   const syrupCurrency = unwrappedToken(syrup.token);
   const { breakpoints } = useTheme();
   const { t } = useTranslation();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const [attemptingClaim, setAttemptingClaim] = useState(false);
   const [attemptingUnstake, setAttemptingUnstake] = useState(false);
   const [openStakeModal, setOpenStakeModal] = useState(false);
@@ -72,11 +68,13 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
           gasLimit: calculateGasMargin(estimatedGas),
         });
         addTransaction(response, {
-          summary: t('claimrewards1', { symbol: syrup.token.symbol }),
+          summary:
+            t('claimrewards1', { symbol: syrup.token.symbol }) ?? undefined,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: t('claimrewards1', { symbol: syrup.token.symbol }),
+          summary:
+            t('claimrewards1', { symbol: syrup.token.symbol }) ?? undefined,
         });
         setAttemptingClaim(false);
       } catch (error) {
@@ -95,11 +93,11 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
           gasLimit: calculateGasMargin(estimatedGas),
         });
         addTransaction(response, {
-          summary: t('withdrawliquidity'),
+          summary: t('withdrawliquidity') ?? undefined,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: t('withdrawliquidity'),
+          summary: t('withdrawliquidity') ?? undefined,
         });
         setAttemptingUnstake(false);
       } catch (error) {
@@ -182,8 +180,10 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <Box className='flex justify-between' mb={2}>
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apr')}:</small>
-                    <Box ml={0.5} height={16}>
-                      <img src={CircleInfoIcon} alt={'arrow up'} />
+                    <Box ml={0.5} className='flex'>
+                      <picture>
+                        <img src='/assets/images/circleinfo.svg' alt='info' />
+                      </picture>
                     </Box>
                   </Box>
                   <Box textAlign='right'>

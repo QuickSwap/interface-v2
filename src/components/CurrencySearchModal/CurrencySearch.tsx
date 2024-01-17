@@ -8,17 +8,16 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import ReactGA from 'react-ga';
-import { Box, Divider } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+import { event } from 'nextjs-google-analytics';
+import { Box, Divider } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTokens, useToken } from 'hooks/Tokens';
 import { useSelectedListInfo } from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
 import { GlobalConst } from 'constants/index';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import { Close, Search } from '@mui/icons-material';
 import CommonBases from './CommonBases';
 import CurrencyList from './CurrencyList';
 import { AppDispatch } from 'state';
@@ -29,6 +28,7 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useCurrencyBalances } from 'state/wallet/hooks';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
+import styles from 'styles/components/CurrencySearchModal.module.scss';
 
 interface CurrencySearchProps {
   isOpen: boolean;
@@ -72,9 +72,8 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
   useEffect(() => {
     if (isAddressSearch) {
-      ReactGA.event({
+      event('Search by address', {
         category: 'Currency Select',
-        action: 'Search by address',
         label: isAddressSearch,
       });
     }
@@ -175,16 +174,16 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   selectedListInfo = useSelectedListInfo();
 
   return (
-    <Box className='currencySearchWrapper'>
-      <Box className='currencySearchHeader'>
+    <Box className={styles.currencySearchWrapper}>
+      <Box className={styles.currencySearchHeader}>
         <h6>{t('selectToken')}</h6>
-        <CloseIcon onClick={onDismiss} />
+        <Close onClick={onDismiss} />
       </Box>
-      <Box className='searchInputWrapper'>
-        <SearchIcon />
+      <Box className={styles.searchInputWrapper}>
+        <Search />
         <input
           type='text'
-          placeholder={t('tokenSearchPlaceholder')}
+          placeholder={t('tokenSearchPlaceholder') ?? undefined}
           value={searchQueryInput}
           ref={inputRef as RefObject<HTMLInputElement>}
           onChange={(e) => setSearchQueryInput(e.target.value)}

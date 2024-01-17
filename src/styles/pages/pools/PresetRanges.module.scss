@@ -1,0 +1,56 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.presetButtons {
+  display: flex;
+  button {
+    width: calc(25% - 3px);
+    margin-left: 4px;
+    height: 28px;
+    background-color: $secondary1;
+    border-radius: 6px;
+    box-shadow: none;
+    border: none;
+    cursor: pointer;
+    & p {
+      color: $textSecondary;
+    }
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}
+
+.activePresetButton {
+  border: 1px solid $primary !important;
+  & p {
+    color: $textPrimary !important;
+  }
+}
+
+.presetRangeInfo {
+  border-radius: 6px;
+  border: 1px solid $secondary1;
+  background: $grey31;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: calc(50% - 4px);
+  & > div {
+    width: 100%;
+  }
+}
+
+.presetRangeCircle {
+  width: 10px;
+  height: 10px;
+  margin-left: 5px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: $textSecondary;
+}
+
+.presetRangeCircleActive {
+  position: relative;
+  height: 10px;
+}

@@ -1,16 +1,16 @@
 import React, { useMemo } from 'react';
-import { Box } from '@material-ui/core';
-import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Box } from '@mui/material';
+import { ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
+import { Skeleton } from '@mui/lab';
 import { Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { CurrencyLogo } from 'components';
 import { getPriceClass, formatNumber, getTokenFromAddress } from 'utils';
-import 'components/styles/TopMovers.scss';
-import { useTranslation } from 'react-i18next';
+import styles from 'styles/components/TopMovers.module.scss';
+import { useTranslation } from 'next-i18next';
 import { useIsV2 } from 'state/application/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { getConfig } from '../../config/index';
+import { getConfig } from 'config/index';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
 
@@ -53,11 +53,11 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
   const loading = loadingV2Tokens || loadingV3Tokens;
 
   return loading ? (
-    <Skeleton variant='rect' width='100%' height={100} />
+    <Skeleton variant='rectangular' width='100%' height={100} />
   ) : topMoverTokens && chainId ? (
-    <Box className='bg-palette topMoversWrapper'>
+    <Box className={`bg-palette ${styles.topMoversWrapper}`}>
       <p className='weight-600 text-secondary'>{t('24hMostVolume')}</p>
-      <Box className='topMoversContent'>
+      <Box className={styles.topMoversContent}>
         <Box>
           {topMoverTokens.map((token: any) => {
             const currency = getTokenFromAddress(token.id, chainId, tokenMap, [
@@ -74,13 +74,13 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
             const priceDown = Number(token.priceChangeUSD) < 0;
             const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
             return (
-              <Box className='topMoverItem' key={token.id}>
+              <Box className={styles.topMoverItem} key={token.id}>
                 <CurrencyLogo currency={currency} size='28px' />
                 <Box ml={1}>
                   <small className='text-bold'>{token.symbol}</small>
                   <Box className='flex justify-center items-center'>
                     <small>${formatNumber(token.priceUSD)}</small>
-                    <Box className={`topMoverText ${priceClass}`}>
+                    <Box className={`${styles.topMoverText} ${priceClass}`}>
                       {!hideArrow && priceUp && <ArrowDropUp />}
                       {!hideArrow && priceDown && <ArrowDropDown />}
                       <span>

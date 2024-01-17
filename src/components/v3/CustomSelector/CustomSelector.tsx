@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import './CustomSelector.scss';
+import { Box } from '@mui/material';
+import styles from 'styles/components/v3/CustomSelector.module.scss';
 
 export interface SelectorItem {
   text: string;
@@ -23,13 +23,13 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
   handleChange,
 }) => {
   return (
-    <Box className='customSelectorWrapper'>
+    <Box className={styles.customSelectorWrapper}>
       {items.map((item) => (
         <Box key={item.id} className='flex items-center'>
           <Box
             height={height}
-            className={`customSelector ${
-              item.id === selectedItem.id ? 'selectedCustomSelector' : ''
+            className={`${styles.customSelector} ${
+              item.id === selectedItem.id ? styles.selectedCustomSelector : ''
             }`}
             onClick={() => {
               handleChange(item);

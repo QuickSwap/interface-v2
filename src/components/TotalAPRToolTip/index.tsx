@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import React from 'react';
+import { Box } from '@mui/material';
 import { formatNumber } from 'utils';
-import { useTranslation } from 'react-i18next';
-import 'components/styles/TotalAPRToolTip.scss';
+import { useTranslation } from 'next-i18next';
+import styles from 'styles/components/TotalAPRToolTip.module.scss';
 import { CustomTooltip } from 'components';
 
 interface TotalAPRToolTipProps {
@@ -27,7 +27,7 @@ const TotalAPRTooltip: React.FC<TotalAPRToolTipProps> = ({
       placement='top'
       color='#1b1e29'
       title={
-        <Box className='totalAPRTooltipWrapper'>
+        <Box className={styles.totalAPRTooltipWrapper}>
           <Box>
             <small>{poolAPRText ?? t('poolAPR')}</small>
             <small>{formatNumber(poolAPR)}%</small>

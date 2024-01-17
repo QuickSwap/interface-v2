@@ -20,7 +20,7 @@ const getGammaData = async (chainId?: ChainId) => {
   if (!chainId) return null;
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
+      `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
         chainId,
       )}/hypervisors/allData`,
     );
@@ -30,7 +30,7 @@ const getGammaData = async (chainId?: ChainId) => {
     try {
       const data = await fetch(
         `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
+          process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT_BACKUP
         }/quickswap/${gammaChainName(chainId)}/hypervisors/allData`,
       );
       const gammaData = await data.json();
@@ -46,7 +46,7 @@ const getGammaPositions = async (account?: string, chainId?: ChainId) => {
   if (!account || !chainId) return null;
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
+      `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
         chainId,
       )}/user/${account}`,
     );
@@ -56,7 +56,7 @@ const getGammaPositions = async (account?: string, chainId?: ChainId) => {
     try {
       const data = await fetch(
         `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
+          process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT_BACKUP
         }/quickswap/${gammaChainName(chainId)}/user/${account}`,
       );
       const positions = await data.json();
@@ -72,7 +72,7 @@ const getGammaRewards = async (chainId?: ChainId) => {
   if (!chainId) return null;
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
+      `${process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
         chainId,
       )}/allRewards2`,
     );
@@ -82,7 +82,7 @@ const getGammaRewards = async (chainId?: ChainId) => {
     try {
       const data = await fetch(
         `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
+          process.env.NEXT_PUBLIC_GAMMA_API_ENDPOINT_BACKUP
         }/quickswap/${gammaChainName(chainId)}/allRewards2`,
       );
       const gammaData = await data.json();

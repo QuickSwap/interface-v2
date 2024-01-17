@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
 import { useActiveWeb3React } from 'hooks';
-import Loader from '../Loader';
-import { useLocation } from 'react-router-dom';
-import './index.scss';
+import { FarmingType } from 'models/enums';
+import { useRouter } from 'next/router';
+import styles from 'styles/components/StakerMyStakes.module.scss';
 import FarmCard from './FarmCard';
 import {
   Box,
@@ -11,7 +11,8 @@ import {
   Divider,
   useMediaQuery,
   useTheme,
-} from '@material-ui/core';
+  CircularProgress,
+} from '@mui/material';
 import { useV3StakeData } from 'state/farms/hooks';
 import {
   useEternalFarmAprs,
@@ -19,7 +20,7 @@ import {
   useFarmRewards,
   useTransferredPositions,
 } from 'hooks/useIncentiveSubgraph';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { GlobalConst } from 'constants/index';
 import SortColumns from 'components/SortColumns';
 import { getAllGammaPairs } from 'utils';
@@ -38,7 +39,6 @@ import {
   useUnipilotFilteredFarms,
   useUnipilotUserFarms,
 } from 'hooks/v3/useUnipilotFarms';
-import { FarmingType } from 'models/enums';
 import { getConfig } from 'config/index';
 import {
   useSteerFilteredFarms,
@@ -137,7 +137,8 @@ export const FarmingMyFarms: React.FC<{
     return rewards;
   }, [rewardsResult]);
 
-  const { hash } = useLocation();
+  const { asPath } = useRouter();
+  const hash = asPath.split('#')[1];
 
   const rewardTokenAddresses = useMemo(() => {
     if (!shallowPositions || !shallowPositions.length) return [];
@@ -251,7 +252,7 @@ export const FarmingMyFarms: React.FC<{
             : -1 * sortMultiplierQuick;
         } else if (sortByQuick === v3FarmSortBy.rewards) {
           const farm1RewardTokenPrice = rewardTokenPrices?.find(
-            (item) =>
+            (item: any) =>
               farm1 &&
               farm1.eternalRewardToken &&
               farm1.eternalRewardToken.address &&
@@ -259,7 +260,7 @@ export const FarmingMyFarms: React.FC<{
                 farm1.eternalRewardToken.address.toLowerCase(),
           );
           const farm1BonusRewardTokenPrice = rewardTokenPrices?.find(
-            (item) =>
+            (item: any) =>
               farm1 &&
               farm1.eternalBonusRewardToken &&
               farm1.eternalBonusRewardToken.address &&
@@ -267,7 +268,7 @@ export const FarmingMyFarms: React.FC<{
                 farm1.eternalBonusRewardToken.address.toLowerCase(),
           );
           const farm2RewardTokenPrice = rewardTokenPrices?.find(
-            (item) =>
+            (item: any) =>
               farm2 &&
               farm2.eternalRewardToken &&
               farm2.eternalRewardToken.address &&
@@ -275,7 +276,7 @@ export const FarmingMyFarms: React.FC<{
                 farm2.eternalRewardToken.address.toLowerCase(),
           );
           const farm2BonusRewardTokenPrice = rewardTokenPrices?.find(
-            (item) =>
+            (item: any) =>
               farm2 &&
               farm2.eternalBonusRewardToken &&
               farm2.eternalBonusRewardToken.address &&
@@ -657,7 +658,7 @@ export const FarmingMyFarms: React.FC<{
                         !txConfirmed &&
                         !txError ? (
                           <>
-                            <Loader size={'1rem'} stroke={'var(--white)'} />
+                            <CircularProgress size={'1rem'} />
                             <Box ml='5px'>
                               <small>{t('claiming')}</small>
                             </Box>
@@ -687,7 +688,7 @@ export const FarmingMyFarms: React.FC<{
           eternalFarmAprsLoading ||
           !shallowPositions ? (
             <Box py={5} className='flex justify-center'>
-              <Loader stroke={'white'} size={'1.5rem'} />
+              <CircularProgress size={'1.5rem'} />
             </Box>
           ) : shallowPositions && shallowPositions.length === 0 ? (
             <Box py={5} className='flex flex-col items-center'>
@@ -715,7 +716,7 @@ export const FarmingMyFarms: React.FC<{
                     {farmedNFTs.map((el: any, i) => {
                       return (
                         <div
-                          className={'v3-my-farms-position-card'}
+                          className={styles.v3MyFarmsPositionCard}
                           key={i}
                           data-navigatedto={hash == `#${el.id}`}
                         >
@@ -752,7 +753,7 @@ export const FarmingMyFarms: React.FC<{
           </Box>
           {loadingGammaFarms ? (
             <Box py={5} className='flex justify-center'>
-              <Loader stroke={'white'} size={'1.5rem'} />
+              <CircularProgress size={'1.5rem'} />
             </Box>
           ) : myGammaFarms.length === 0 ? (
             <Box py={5} className='flex flex-col items-center'>
@@ -802,7 +803,7 @@ export const FarmingMyFarms: React.FC<{
           </Box>
           {myUnipilotFarmsLoading || unipilotFarmDataLoading ? (
             <Box py={5} className='flex justify-center'>
-              <Loader stroke={'white'} size={'1.5rem'} />
+              <CircularProgress size={'1.5rem'} />
             </Box>
           ) : chainId ? (
             <Box padding='24px'>
@@ -840,7 +841,7 @@ export const FarmingMyFarms: React.FC<{
           </Box>
           {mySteerFarmsLoading ? (
             <Box py={5} className='flex justify-center'>
-              <Loader stroke={'white'} size={'1.5rem'} />
+              <CircularProgress size={'1.5rem'} />
             </Box>
           ) : chainId && filteredSteerFarms.length > 0 ? (
             <Box padding='24px'>

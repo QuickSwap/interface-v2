@@ -1,9 +1,12 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import Chart from 'react-apexcharts';
+import { Box } from '@mui/material';
+import dynamic from 'next/dynamic';
+const Chart = dynamic(() => import('react-apexcharts'), {
+  ssr: false,
+});
 import { useIsDarkMode } from 'state/user/hooks';
 import { formatCompact, formatDateFromTimeStamp, formatNumber } from 'utils';
-import 'components/styles/AreaChart.scss';
+import styles from 'styles/components/AreaChart.module.scss';
 
 export interface AreaChartProps {
   strokeColor?: string;
@@ -142,7 +145,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
 
   return (
     <Box display='flex' mt={2.5} width={width}>
-      <Box className='chartContainer'>
+      <Box className={styles.chartContainer}>
         <Chart
           options={options}
           series={series}
@@ -150,14 +153,14 @@ const AreaChart: React.FC<AreaChartProps> = ({
           width='100%'
           height={height}
         />
-        <Box className='categoryValues' mt={-5}>
+        <Box className={styles.categoryValues} mt={-5}>
           {categories.map((val, ind) => (
             <p key={ind}>{val}</p>
           ))}
         </Box>
       </Box>
       {yAxisValues && (
-        <Box className='yAxis'>
+        <Box className={styles.yAxis}>
           {yAxisValues.map((value, index) => (
             <p key={index}>
               {// this is to show small numbers less than 0.0001

@@ -197,7 +197,7 @@ export function useCNTFarmList(
 
 export function useDefaultCNTFarmList(chainId: ChainId): CNTFarmInfoAddressMap {
   return useCNTFarmList(
-    process.env.REACT_APP_CNT_STAKING_LIST_DEFAULT_URL,
+    process.env.NEXT_PUBLIC_CNT_STAKING_LIST_DEFAULT_URL,
     chainId,
   );
 }

@@ -7,9 +7,9 @@ import {
   ChainId,
 } from '@uniswap/sdk';
 import dayjs from 'dayjs';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { usePairs } from 'data/Reserves';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
   STAKING_DUAL_REWARDS_INTERFACE,
@@ -79,8 +79,6 @@ export const REWARDS_DURATION_DAYS = 7;
 
 let pairs: any = undefined;
 
-let oneDayVol: any = undefined;
-
 export function useTotalRewardsDistributed(
   chainId: ChainId,
 ): number | undefined {
@@ -112,7 +110,7 @@ export function useTotalRewardsDistributed(
     );
   const { prices: usdTokenPrices } = useUSDCPricesFromAddresses(tokenAddresses);
   const syrupRewardsUSD = usdTokenPrices
-    ? syrupRewardsInfo.reduce((total, item, index) => {
+    ? syrupRewardsInfo.reduce((total, item) => {
         const usdPriceToken = usdTokenPrices.find(
           (price) =>
             price.address.toLowerCase() === item.token.address.toLowerCase(),
@@ -142,7 +140,7 @@ export function useTotalRewardsDistributed(
     : undefined;
 
   const stakingRewardsUSD = usdTokenPrices
-    ? stakingRewardsInfo.reduce((total, item, index) => {
+    ? stakingRewardsInfo.reduce((total, item) => {
         const rewardTokenPrice = usdTokenPrices.find(
           (price) =>
             price.address.toLowerCase() ===
@@ -628,7 +626,7 @@ export const getBulkPairData = async (
   pairListStr: string,
 ) => {
   const res = await fetch(
-    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/bulk-pair-data?chainId=${chainId}&addresses=${pairListStr}`,
+    `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/bulk-pair-data?chainId=${chainId}&addresses=${pairListStr}`,
   );
   if (!res.ok) {
     return;
@@ -648,7 +646,7 @@ export const getBulkPairData = async (
 
 const getOneDayVolume = async (version: string, chainId: ChainId) => {
   const res = await fetch(
-    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/oneDayVolume?chainId=${chainId}`,
+    `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/oneDayVolume?chainId=${chainId}`,
   );
   if (!res.ok) {
     return;
@@ -658,7 +656,6 @@ const getOneDayVolume = async (version: string, chainId: ChainId) => {
   if (!data || !data.data) return;
 
   const oneDayVolume = version === 'v2' ? data.data.v2 : data.data.v3;
-  oneDayVol = oneDayVolume;
 
   return oneDayVolume;
 };

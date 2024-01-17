@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import { DropdownProps, sizes } from './types';
-import 'components/styles/Dropdown.scss';
+import { Box } from '@mui/material';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import { DropdownProps } from './types';
+import styles from 'styles/components/Dropdown.module.scss';
 
 const Dropdown: React.FC<DropdownProps> = ({
   component,
   children,
-  size = sizes.MEDIUM,
   ...props
 }) => {
   const [open, setOpen] = useState(false);
@@ -16,7 +15,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   return (
     <Box
-      className='dropdownWrapper'
+      className={styles.dropdownWrapper}
       borderRadius='10px'
       width='100%'
       onClick={handleClick}
@@ -27,7 +26,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       </Box>
       {open && (
-        <Box className='dropdownItemsWrapper' width='fit-content'>
+        <Box className={styles.dropdownItemsWrapper} width='fit-content'>
           {children}
         </Box>
       )}

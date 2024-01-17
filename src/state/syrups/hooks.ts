@@ -177,7 +177,7 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
 }
 
 export function useDefaultSyrupList(): SyrupInfoAddressMap {
-  return useSyrupList(process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL);
+  return useSyrupList(process.env.NEXT_PUBLIC_SYRUP_LIST_DEFAULT_URL);
 }
 
 // returns all downloaded current lists

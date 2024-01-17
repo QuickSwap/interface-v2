@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { DualStakingInfo, StakingInfo } from 'types/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import FarmCardDetails from './FarmCardDetails';
 import {
   getAPYWithFee,
@@ -16,9 +14,9 @@ import {
   formatTokenAmount,
   formatAPY,
 } from 'utils';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import 'components/styles/FarmCard.scss';
-import { Trans, useTranslation } from 'react-i18next';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import styles from 'styles/components/FarmCard.module.scss';
+import { Trans, useTranslation } from 'next-i18next';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -27,7 +25,7 @@ const FarmCard: React.FC<{
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const [isExpandCard, setExpandCard] = useState(false);
 
   const lpStakingInfo = stakingInfo as StakingInfo;
@@ -94,15 +92,15 @@ const FarmCard: React.FC<{
 
   return (
     <Box
-      className={`farmLPCard ${
-        stakingInfo.sponsored ? 'farmSponsoredCard' : ''
-      } ${isExpandCard ? 'highlightedCard' : ''}`}
+      className={`${styles.farmLPCard} ${
+        stakingInfo.sponsored ? styles.farmSponsoredCard : ''
+      } ${isExpandCard ? styles.highlightedCard : ''}`}
     >
       {stakingInfo.sponsored && (
-        <Box className='farmSponsorTag'>{t('sponsored')}</Box>
+        <Box className={styles.farmSponsorTag}>{t('sponsored')}</Box>
       )}
       <Box
-        className='farmLPCardUp'
+        className={styles.farmLPCardUp}
         onClick={() => setExpandCard(!isExpandCard)}
       >
         {isMobile ? (
@@ -112,9 +110,15 @@ const FarmCard: React.FC<{
               <Box width={0.25}>
                 <Box className='flex items-center'>
                   <span className='text-secondary'>{t('apy')}</span>
-                  {/* <Box ml={0.5} height={16}>
-                    <img src={CircleInfoIcon} alt={'arrow up'} />
-                  </Box> */}
+                  <Box ml={0.5} className='flex'>
+                    <picture>
+                      <img
+                        src='/assets/images/circleinfo.svg'
+                        alt='info'
+                        height={16}
+                      />
+                    </picture>
+                  </Box>
                 </Box>
                 <Box mt={0.5}>
                   <small className='text-success'>{apyWithFee}%</small>
@@ -145,11 +149,8 @@ const FarmCard: React.FC<{
                 </>
               )}
             </Box>
-            <Box width={0.15} className='flex justify-center items-center'>
+            <Box width={0.15} className='flex items-center justify-center'>
               <small className='text-success'>{apyWithFee}%</small>
-              {/* <Box ml={0.5} height={16}>
-                <img src={CircleInfoIcon} alt={'arrow up'} />
-              </Box> */}
             </Box>
             <Box width={0.2} textAlign='right'>
               <small>{earnedUSDStr}</small>
@@ -201,7 +202,7 @@ const FarmCard: React.FC<{
         />
       )}
       {stakingInfo.sponsored && stakingInfo.sponsorLink && (
-        <Box className='farmSponsoredLink'>
+        <Box className={styles.farmSponsoredLink}>
           <Trans
             i18nKey='learnmoreproject'
             components={{

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import SearcherDisplay from './SearcherDisplay';
 import { DualCurrencySelector } from 'types/bond';
 import { Virtuoso } from 'react-virtuoso';

@@ -1,12 +1,11 @@
 import { Currency, CurrencyAmount, Ether, Token } from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
 import { useMemo } from 'react';
-import { useAllTokens } from 'hooks/Tokens';
 import { useMulticall2Contract } from 'hooks/useContract';
 import { Interface } from '@ethersproject/abi';
 import ERC20ABI from '../../../constants/abis/erc20.json';
 import { Erc20Interface } from 'abis/types/Erc20';
-import usePrevious, { usePreviousNonEmptyObject } from 'hooks/usePrevious';
+import { usePreviousNonEmptyObject } from 'hooks/usePrevious';
 import { useActiveWeb3React } from 'hooks';
 import { isAddress } from 'utils';
 import {
@@ -200,10 +199,6 @@ export function useAllTokenBalances(): {
   [tokenAddress: string]: CurrencyAmount<Token> | undefined;
 } {
   const { account } = useActiveWeb3React();
-  const allTokens = useAllTokens();
-  const allTokensArray = useMemo(() => Object.values(allTokens ?? {}), [
-    allTokens,
-  ]);
   const balances = useTokenBalances(account ?? undefined, []);
   //Todo: fix
   //   const balances = useTokenBalances(account ?? undefined, allTokensrray);

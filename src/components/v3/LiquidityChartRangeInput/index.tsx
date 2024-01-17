@@ -7,12 +7,11 @@ import { useDensityChartData } from './hooks';
 import { useInitialTokenPrice, useInitialUSDPrices } from 'state/mint/v3/hooks';
 import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { ZoomLevels } from './types';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { format } from 'd3';
 import { Chart } from './Chart';
-import { useTranslation } from 'react-i18next';
-import './index.scss';
+import { useTranslation } from 'next-i18next';
 
 const ZOOM_LEVEL: ZoomLevels = {
   initialMin: 0.5,
@@ -43,8 +42,6 @@ export default function LiquidityChartRangeInput({
   price,
   priceLower,
   priceUpper,
-  onLeftRangeInput,
-  onRightRangeInput,
   interactive,
   priceFormat,
 }: LiquidityChartRangeInputProps) {
@@ -53,7 +50,6 @@ export default function LiquidityChartRangeInput({
     isLoading,
     isUninitialized,
     isError,
-    error,
     formattedData,
   } = useDensityChartData({
     currencyA,
@@ -136,17 +132,13 @@ export default function LiquidityChartRangeInput({
     currencyB &&
     currencyA?.wrapped.sortsBefore(currencyB?.wrapped);
 
-  const onBrushDomainChangeEnded = useCallback(
-    (domain: any[], mode: string) => {
-      let leftRangeValue = Number(domain[0]);
-      const rightRangeValue = Number(domain[1]);
+  const onBrushDomainChangeEnded = useCallback((domain: any[]) => {
+    let leftRangeValue = Number(domain[0]);
 
-      if (leftRangeValue <= 0) {
-        leftRangeValue = 1 / 10 ** 6;
-      }
-    },
-    [],
-  );
+    if (leftRangeValue <= 0) {
+      leftRangeValue = 1 / 10 ** 6;
+    }
+  }, []);
 
   interactive = interactive && Boolean(formattedData?.length);
 
@@ -243,7 +235,7 @@ export default function LiquidityChartRangeInput({
     <Box
       width={1}
       minHeight='260px'
-      className='flex justify-center items-center'
+      className='flex items-center justify-center'
     >
       {isUninitialized ? (
         <p>{t('yourPositionAppearHere')}.</p>

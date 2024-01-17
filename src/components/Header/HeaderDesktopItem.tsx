@@ -1,18 +1,16 @@
 import React from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import { Box } from '@material-ui/core';
-
-import 'components/styles/Header.scss';
+import { Box } from '@mui/material';
+import styles from 'styles/components/Header.module.scss';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 import { NewSparkleTag } from './NewSparkleTag';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { StyledMenu } from './StyledMenu';
+import { useRouter } from 'next/router';
 
 export const HeaderDesktopItem: React.FC<{ item: HeaderMenuItem }> = ({
   item,
 }) => {
-  const { pathname } = useLocation();
-  const history = useHistory();
+  const router = useRouter();
   const hasSubMenu = Array.isArray(item.items);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -30,7 +28,7 @@ export const HeaderDesktopItem: React.FC<{ item: HeaderMenuItem }> = ({
       if (item.isExternal) {
         window.open(item.externalLink, item.target);
       } else {
-        history.push(item.link);
+        router.push(item.link);
       }
     }
   };
@@ -44,8 +42,10 @@ export const HeaderDesktopItem: React.FC<{ item: HeaderMenuItem }> = ({
       <Box
         key={item.id}
         id={item.id}
-        className={`menuItem ${
-          pathname !== '/' && item.link.includes(pathname) ? 'active' : ''
+        className={`${styles.menuItem} ${
+          router.pathname !== '/' && item.link.includes(router.pathname)
+            ? styles.activeMenuItem
+            : ''
         }`}
         onClick={handleClick}
       >

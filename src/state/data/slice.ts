@@ -1,17 +1,13 @@
-import {
-  BaseQueryApi,
-  BaseQueryFn,
-} from '@reduxjs/toolkit/dist/query/baseQueryTypes';
+import { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { ChainId } from '@uniswap/sdk';
 import { DocumentNode } from 'graphql';
 import { ClientError, gql, GraphQLClient } from 'graphql-request';
-import { AppState } from 'state';
 
 // List of supported subgraphs. Note that the app currently only support one active subgraph at a time
 const CHAIN_SUBGRAPH_URL: Record<number, string> = {
-  [ChainId.MATIC]: `${process.env.REACT_APP_GRAPH_V3_137_API_URL}`,
-  [ChainId.DOGECHAIN]: `${process.env.REACT_APP_GRAPH_V3_2000_API_URL}`,
+  [ChainId.MATIC]: `${process.env.NEXT_PUBLIC_GRAPH_V3_137_API_URL}`,
+  [ChainId.DOGECHAIN]: `${process.env.NEXT_PUBLIC_GRAPH_V3_2000_API_URL}`,
 };
 
 export const api = createApi({
@@ -86,7 +82,7 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
   Pick<ClientError, 'name' | 'message' | 'stack'>,
   Partial<Pick<ClientError, 'request' | 'response'>>
 > {
-  return async ({ document, variables }, { getState }: BaseQueryApi) => {
+  return async ({ document, variables }) => {
     try {
       //TODO: Fix chainId to be grabbed from application state after ChainId is added To application
       // const chainId = (getState() as AppState).application?.chainId ?? ChainId.MATIC;

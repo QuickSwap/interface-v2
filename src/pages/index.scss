@@ -1,0 +1,546 @@
+@use 'styles/variables' as *;
+@use 'styles/fonts' as *;
+@use 'styles/colors' as *;
+@use 'styles/breakpoints' as *;
+@use 'styles/mui-overrides' as *;
+
+body {
+  margin: 0;
+
+  iframe[style*='z-index: 2147483647'] {
+    display: none !important;
+  }
+}
+
+wcm-modal {
+  z-index: 10000;
+  position: relative;
+}
+
+.loadingDots {
+  &::after {
+    display: inline-block;
+    animation: ellipsis 1.25s infinite;
+    content: '.';
+    width: 1em;
+    text-align: left;
+  }
+
+  @keyframes ellipsis {
+    0% {
+      content: '.';
+    }
+    33% {
+      content: '..';
+    }
+    66% {
+      content: '...';
+    }
+  }
+}
+
+@keyframes spinnerAnimation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: flex;
+  animation: spinnerAnimation 1s infinite linear;
+}
+
+[data-reach-dialog-overlay] {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10 !important;
+}
+
+[data-reach-dialog-content] {
+  @include media('screen', '<tablet') {
+    transform: translateY(-90px) !important;
+    max-height: calc(100vh - 120px) !important;
+    min-height: calc(100vh - 120px) !important;
+    border-radius: 20px !important;
+  }
+}
+
+.wrapper {
+  padding: 24px;
+  background: $bgPalette;
+  border-radius: 20px;
+  @include media('screen', '<phone') {
+    padding: 16px 12px;
+  }
+}
+
+.cardRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  & > div {
+    display: flex;
+    align-items: center;
+    & > small {
+      margin-right: 10px;
+    }
+  }
+}
+
+.buttonGroup {
+  text-align: center;
+  padding: 20px 0;
+  max-width: 1048px;
+  margin: auto;
+  width: 100%;
+  & > div {
+    width: 100%;
+  }
+  & .MuiButtonGroup-root {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 50px;
+    & button {
+      max-width: 180px;
+      width: 50%;
+      height: 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: transparent;
+      border: 1px solid $primaryDark;
+      color: $textSecondary;
+      &.active {
+        background: $grey7;
+        border: 1px solid transparent;
+        color: $bgColor;
+      }
+      &:first-child {
+        border-top-left-radius: 24px;
+        border-bottom-left-radius: 24px;
+      }
+      &:last-child {
+        border-top-right-radius: 24px;
+        border-bottom-right-radius: 24px;
+      }
+    }
+  }
+  @include media('screen', '<phone') {
+    & .MuiGrid-item {
+      width: 100%;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+  }
+}
+
+.page {
+  background-color: $bgColor;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.pageWrapper {
+  max-width: 1312px;
+  position: relative;
+  z-index: 11;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 152px 32px 0;
+  @include media('screen', '<tablet') {
+    padding: 190px 12px 0;
+  }
+}
+
+.pageProModeWrapper {
+  padding-top: 128px;
+  @include media('screen', '<tablet') {
+    padding-top: 0;
+  }
+}
+
+.pageWrapper-no-max {
+  position: relative;
+  z-index: 11;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 24px auto;
+  padding: 128px 32px 0;
+  @include media('screen', '<tablet') {
+    padding: 172px 12px 0;
+  }
+}
+
+.pageWrapper-no-max-no-news {
+  @include media('screen', '<tablet') {
+    padding-top: 64px !important;
+  }
+}
+
+.pageWrapper-proMode {
+  padding: 128px 0 0;
+  @include media('screen', '<tablet') {
+    padding: 190px 0 0;
+  }
+}
+
+.pageHeading {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.heroBkg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  overflow: hidden;
+  & img {
+    width: 100%;
+    min-width: 1200px;
+    height: auto;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.helpWrapper {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid $secondary2;
+  border-radius: 10px;
+  cursor: pointer;
+  & p {
+    color: $textHint;
+  }
+
+  & svg {
+    margin-left: 8px;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.no-outline {
+  outline: none;
+}
+
+.no-decoration {
+  text-decoration: none;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-evenly {
+  justify-content: space-evenly;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.opacity-disabled {
+  opacity: 0.6;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.devPassModal {
+  padding: 12px;
+  & input {
+    width: 100%;
+    margin: 8px 0;
+    outline: none;
+    padding: 6px 4px;
+  }
+}
+
+.token-select-background {
+  display: flex;
+  justify-content: space-around;
+  width: 176px;
+  height: 44px;
+  margin: 0 16px 0 0;
+  padding: 10px 12px 10px 10px;
+  border-radius: 22px;
+  background-color: #282d3d;
+  & p {
+    margin-left: 4px;
+  }
+}
+
+.rounded {
+  border-radius: 4rem !important;
+}
+
+.btn-xl {
+  height: 48px !important;
+  border-radius: 10px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  cursor: pointer;
+}
+
+.mr-1 {
+  margin-right: 1rem !important;
+}
+
+.btn-exit {
+  background-color: #1e2f50 !important;
+  color: #448aff !important;
+  fill: #448aff !important;
+}
+
+.btn-exit:hover {
+  opacity: 85%;
+}
+
+.m-auto {
+  margin: auto;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mx-1 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.mx-2 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.rounded-md {
+  border-radius: 10px !important;
+}
+
+.v3-tokenId-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  background-image: linear-gradient(134deg, #cbb96e -2%, #b9d3ff);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  & p {
+    font-size: 8px;
+  }
+  & p,
+  & span {
+    color: $secondary1;
+    font-weight: 600;
+  }
+}
+.fullHeight {
+  height: 100%;
+}
+
+.text-link {
+  text-decoration: none;
+}
+
+.text-link:hover {
+  opacity: 0.9;
+}
+
+.text-lg {
+  font-size: 1rem;
+}
+
+.m-2 {
+  margin: 0.5rem;
+}
+
+.m-3 {
+  margin: 1rem;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+
+.ml-1 {
+  margin-left: 1rem;
+}
+
+.ml-2 {
+  margin-left: 1.5rem;
+}
+
+.ml-3 {
+  margin-left: 2rem;
+}
+
+.bl-1 {
+  border-left: 1px solid #242938;
+}
+
+.pl-1 {
+  padding-left: 1rem;
+}
+
+.p-1 {
+  padding: 1rem;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.my-auto {
+  margin-bottom: auto;
+  margin-top: auto;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.staticNewsletterSignUpPanel {
+  position: fixed;
+  padding: 16px;
+  width: 300px;
+  border-radius: 21px;
+  border: 1px solid $divider;
+  right: 24px;
+  top: 140px;
+  z-index: 9;
+  text-align: center;
+  backdrop-filter: blur(3px);
+  background-color: $bgPalette1;
+  z-index: 12;
+  & p {
+    color: $textSecondary;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+  }
+  & h4 {
+    font-size: 23px;
+    line-height: 23px;
+    margin: 8px 0;
+  }
+  & small {
+    color: $grey35;
+    line-height: 14px;
+  }
+  & input {
+    width: 100%;
+    margin: 8px 0;
+    background-color: $bgColor;
+    border: 1px solid $grey34;
+    box-shadow: none;
+    height: 43px;
+    border-radius: 11px;
+    padding: 0 8px;
+    outline: none;
+    color: white;
+  }
+  & button {
+    width: 100%;
+    border-radius: 10px;
+    background: linear-gradient(0deg, $blue11 0.6%, $purple6 100.1%);
+    box-shadow: 0 0 7px 0 $purple7;
+    height: 33px;
+    & span {
+      font-size: 12.11px;
+      font-weight: 600;
+    }
+  }
+  & .newsletterSignupClose {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: $textSecondary;
+  }
+  & span {
+    font-size: 13px;
+    line-height: 14px;
+  }
+  @include media('screen', '<tablet') {
+    top: 180px;
+  }
+}
+
+picture {
+  display: flex;
+}

@@ -56,7 +56,7 @@ import {
 } from 'constants/v3/addresses';
 import { getConfig } from 'config/index';
 import { useMemo } from 'react';
-import { TFunction } from 'react-i18next';
+import { TFunction } from 'next-i18next';
 import { Connector } from '@web3-react/types';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
 import { SteerVault } from 'hooks/v3/useSteerData';
@@ -108,7 +108,7 @@ export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (
   let priceChangeETH = 0;
 
   const res = await fetch(
-    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/eth-price?chainId=${chainId}`,
+    `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/eth-price?chainId=${chainId}`,
   );
   if (res.ok) {
     const data = await res.json();
@@ -154,7 +154,7 @@ export function confirmPriceImpactWithoutFee(
           priceImpact: GlobalValue.percents.PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN.toFixed(
             0,
           ),
-        }),
+        }) ?? undefined,
       ) === 'confirm'
     );
   } else if (
@@ -165,7 +165,7 @@ export function confirmPriceImpactWithoutFee(
     return window.confirm(
       translation('confirmSwapPriceImpact', {
         priceImpact: GlobalValue.percents.ALLOWED_PRICE_IMPACT_HIGH.toFixed(0),
-      }),
+      }) ?? undefined,
     );
   }
   return true;
@@ -384,7 +384,6 @@ export function calculateGasMarginBonus(value: BigNumber): BigNumber {
 }
 
 export function calculateGasMarginV3(
-  chainId: number,
   value: BigNumber,
   swap?: boolean,
 ): BigNumber {
@@ -694,7 +693,6 @@ export function escapeRegExp(string: string): string {
 }
 
 export function getWalletKeys(connector: Connector): Connection[] {
-  const { ethereum } = window as any;
   const connections = getConnections();
 
   return connections.filter((option) => option.connector === connector);
@@ -977,7 +975,7 @@ export const getEternalFarmFromTokens = async (
 ) => {
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farm-tokens?chainId=${chainId}&token0=${token0}&token1=${token1}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/eternal-farm-tokens?chainId=${chainId}&token0=${token0}&token1=${token1}`,
     );
     if (!res.ok) {
       const errorText = await res.text();
@@ -1004,7 +1002,7 @@ export const getUnipilotPositions = async (
   if (!account || !chainId) return null;
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/unipilot/user-positions/${account}?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/unipilot/user-positions/${account}?chainId=${chainId}`,
     );
     if (!res.ok) {
       const errorText = await res.text();
@@ -1025,13 +1023,10 @@ export const getUnipilotFarms = async (chainId?: ChainId) => {
   if (!chainId) return [];
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/unipilot/farming-vaults?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/unipilot/farming-vaults?chainId=${chainId}`,
     );
     if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(
-        errorText || res.statusText || `Failed to get unipilot farms`,
-      );
+      return [];
     }
     const data = await res.json();
     return data && data.data && data.data.farms ? data.data.farms : [];
@@ -1048,7 +1043,7 @@ export const getUnipilotFarmData = async (
   try {
     const res = await fetch(
       `${
-        process.env.REACT_APP_UNIPILOT_API_URL
+        process.env.NEXT_PUBLIC_UNIPILOT_API_URL
       }/api/unipilot/aprs?vaultAddresses=${vaultAddresses?.join(
         ',',
       )}&chainId=${chainId}`,
@@ -1074,7 +1069,7 @@ export const getUnipilotUserFarms = async (
   try {
     const res = await fetch(
       `${
-        process.env.REACT_APP_LEADERBOARD_APP_URL
+        process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
       }/unipilot/farming-user-vaults/${account.toLowerCase()}?chainId=${chainId}`,
     );
     if (!res.ok) {
@@ -1315,6 +1310,6 @@ export const getCurrencyInfo = ({
   return {
     address: address ? address : (currencyA?.address as string),
     decimals,
-    chainId: !!chainId ? chainId : (currencyA?.chainId as ChainId),
+    chainId: chainId ? chainId : (currencyA?.chainId as ChainId),
   };
 };

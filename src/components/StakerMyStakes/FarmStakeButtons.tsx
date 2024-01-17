@@ -1,9 +1,8 @@
 import React from 'react';
-import { Box, Button, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import { useFarmingHandlers } from 'hooks/useStakerHandlers';
 import { FarmingType } from 'models/enums';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useV3StakeData } from 'state/farms/hooks';
 
 interface FarmCardDetailProps {
@@ -13,7 +12,7 @@ interface FarmCardDetailProps {
 export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isSmallDesktop = useMediaQuery(breakpoints.down('md'));
 
   const { v3Stake } = useV3StakeData();

@@ -1,0 +1,132 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.poolRangeChartWrapper {
+  background-color: $grey31;
+  border: 1px solid $secondary1;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.poolRangeChartWarning {
+  background-color: $yellow4;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+  & span,
+  & small {
+    flex: 1;
+    color: $yellow5;
+    & a {
+      color: $yellow5;
+    }
+  }
+  & button {
+    background-color: $yellow5;
+    border: none;
+    color: $bgColor;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.poolRangeChartWarningIcon {
+  background-color: $secondary1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  color: $yellow5;
+  margin-right: 8px;
+  & svg {
+    width: 20px;
+  }
+}
+
+.poolRangeButtonGroup {
+  padding: 0;
+  margin: 12px 0 16px;
+  & > div {
+    margin-bottom: 0 !important;
+    & button {
+      max-width: unset !important;
+      height: 36px !important;
+      background-color: $secondary1;
+      &:first-child {
+        border-top-left-radius: 6px !important;
+        border-bottom-left-radius: 6px !important;
+      }
+      &:last-child {
+        border-top-right-radius: 6px !important;
+        border-bottom-right-radius: 6px !important;
+      }
+      &.active span {
+        color: $bgPalette !important;
+      }
+      & span {
+        font-size: 14px !important;
+        color: $textPrimary !important;
+      }
+    }
+  }
+}
+
+.poolRangeBetaBox {
+  background-color: $yellow5;
+  font-size: 8px;
+  padding: 0 4px;
+  border-radius: 3px;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  color: $bgPalette;
+}
+
+.poolRangePowerGamma {
+  display: flex;
+  align-items: center;
+  & img {
+    height: 9px;
+    margin-left: 5px;
+  }
+}
+
+.pool-select-vault-wrapper {
+  margin-top: 16px;
+}
+
+.pool-select-vault-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: $secondary1;
+  border-radius: 16px;
+  padding: 12px 0;
+  cursor: pointer;
+  & img {
+    height: 10px;
+  }
+  & small {
+    margin: 8px 0 4px;
+  }
+  & p {
+    line-height: 10px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+}
+
+.pool-select-vault-selected {
+  border: 1px solid $primary;
+}

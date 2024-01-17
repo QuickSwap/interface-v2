@@ -1,3 +1,5 @@
+import React from 'react';
+
 /*
  * Generates an SVG path for the east brush handle.
  * Apply `scale(-1, 1)` to generate west brush handle.
@@ -41,15 +43,11 @@ export const brushHandleAccentPath = () =>
     'z',
   ].join(' ');
 
-export const OffScreenHandle = ({
-  color,
-  size = 10,
-  margin = 10,
-}: {
+export const OffScreenHandle: React.FC<{
   color: string;
   size?: number;
   margin?: number;
-}) => (
+}> = ({ color, size = 10, margin = 10 }) => (
   <polygon
     points={`0 0, ${size} ${size}, 0 ${size}`}
     transform={` translate(${size + margin}, ${margin}) rotate(45) `}

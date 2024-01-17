@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { formatNumber, shortenAddress } from 'utils';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import { useTranslation } from 'react-i18next';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import { useTranslation } from 'next-i18next';
 import 'components/styles/ContestCard.scss';
 import { ContestLeaderBoard } from 'models/interfaces/contest';
 

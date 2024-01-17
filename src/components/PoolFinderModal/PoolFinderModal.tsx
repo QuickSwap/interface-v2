@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Currency, TokenAmount, ETHER, JSBI, ChainId } from '@uniswap/sdk';
 import { ArrowLeft, Plus } from 'react-feather';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import {
   CustomModal,
   CurrencyLogo,
@@ -13,10 +13,10 @@ import { usePair, PairState } from 'data/Reserves';
 import { usePairAdder } from 'state/user/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { currencyId } from 'utils';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import { Link } from 'react-router-dom';
-import 'components/styles/PoolFinderModal.scss';
-import { useTranslation } from 'react-i18next';
+import { Close } from '@mui/icons-material';
+import Link from 'next/link';
+import styles from 'styles/components/PoolFinderModal.module.scss';
+import { useTranslation } from 'next-i18next';
 
 enum Fields {
   TOKEN0 = 0,
@@ -88,15 +88,15 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
       <Box paddingX={3} paddingY={4}>
         <Box className='flex items-center justify-between'>
           <ArrowLeft
-            className='text-secondary cursor-pointer'
+            className='cursor-pointer text-secondary'
             onClick={onClose}
           />
           <h6>{t('importPool')}</h6>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={2}
-          className='borderedCard'
+          className={styles.borderedCard}
           onClick={() => {
             setShowSearch(true);
             setActiveField(Fields.TOKEN0);
@@ -117,7 +117,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           <Plus size='20' className='text-secondary' />
         </Box>
         <Box
-          className='borderedCard'
+          className={styles.borderedCard}
           onClick={() => {
             setShowSearch(true);
             setActiveField(Fields.TOKEN1);
@@ -142,7 +142,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
             </p>
           </Box>
         )}
-        <Box className='poolFinderInfo border'>
+        <Box className={`border ${styles.poolFinderInfo}`}>
           {currency0 && currency1 ? (
             pairState === PairState.EXISTS ? (
               hasPosition && pair ? (
@@ -151,7 +151,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
                 <Box textAlign='center'>
                   <p>{t('noLiquidityinPool')}.</p>
                   <Link
-                    to={`/pools?currency0=${currencyId(
+                    href={`/pools?currency0=${currencyId(
                       currency0,
                       chainId ? chainId : ChainId.MATIC,
                     )}&currency1=${currencyId(
@@ -169,7 +169,7 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
               <Box textAlign='center'>
                 <p>{t('nopoolFound')}.</p>
                 <Link
-                  to={`/pools?currency0=${currencyId(
+                  href={`/pools?currency0=${currencyId(
                     currency0,
                     chainId ? chainId : ChainId.MATIC,
                   )}&currency1=${currencyId(

@@ -7,10 +7,7 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
-import { useLocation } from 'react-router-dom';
-import { styled } from '@material-ui/styles';
-import { Box, Divider } from '@material-ui/core';
-import OrbsLogo from 'assets/images/orbs-logo.svg';
+import { Box, Divider, styled } from '@mui/material';
 import {
   setWeb3Instance,
   signEIP712,
@@ -19,7 +16,7 @@ import {
   hasWeb3Instance,
   zeroAddress,
 } from '@defi.org/web3-candies';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import {
   useLiquidityHubActionHandlers,
   useLiquidityHubState,
@@ -37,6 +34,8 @@ import { ZERO_ADDRESS } from 'constants/v3/misc';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { parseUnits } from 'ethers/lib/utils';
 import { getFixedValue } from 'utils';
+import { useRouter } from 'next/router';
+
 const ANALYTICS_VERSION = 0.2;
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
@@ -142,7 +141,8 @@ export const useLiquidityHubCallback = (
       if (!srcAmount) {
         throw new Error('srcAmount is not defined');
       }
-    } catch (error) {
+    } catch (err) {
+      const error = err as any;
       liquidityHubAnalytics.onNotClobTrade(error.message);
       return;
     }
@@ -246,7 +246,8 @@ const useWrap = () => {
       const res = await txReceipt.wait();
       liquidityHubAnalytics.onWrapSuccess(res.transactionHash, count());
       return true;
-    } catch (error) {
+    } catch (err) {
+      const error = err as any;
       liquidityHubAnalytics.onWrapFailed(error.message, count());
       throw new Error(error.message);
     } finally {
@@ -287,7 +288,8 @@ const useApprove = () => {
       const res = await response.wait();
       liquidityHubAnalytics.onApprovalSuccess(count());
       return res;
-    } catch (error) {
+    } catch (err) {
+      const error = err as any;
       liquidityHubAnalytics.onApprovalFailed(error.message, count());
       throw new Error(error.message);
     } finally {
@@ -315,7 +317,8 @@ const useSign = () => {
       const signature = await signEIP712(account, permitData);
       liquidityHubAnalytics.onSignatureSuccess(signature, count());
       return signature;
-    } catch (error) {
+    } catch (err) {
+      const error = err as any;
       liquidityHubAnalytics.onSignatureFailed(error.message, count());
       throw new Error(error.message);
     } finally {
@@ -419,7 +422,8 @@ const useQuote = () => {
       }
       liquidityHubAnalytics.onQuoteSuccess(quoteResponse, count());
       return quoteResponse as QuoteResponse;
-    } catch (error) {
+    } catch (err) {
+      const error = err as any;
       liquidityHubAnalytics.onQuoteFailed(
         error.message,
         count(),
@@ -456,7 +460,9 @@ async function waitForTx(txHash: string, library: any) {
       if (tx && tx instanceof Object && tx.blockNumber) {
         return tx;
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log('Error in getting liquidity hub transaction ', error);
+    }
   }
 }
 
@@ -465,14 +471,14 @@ function delay(ms: number) {
 }
 
 export const useQueryParam = () => {
-  const location = useLocation();
+  const router = useRouter();
 
-  const query = useMemo(() => new URLSearchParams(location.search), [
-    location.search,
+  const query = useMemo(() => new URLSearchParams(router.asPath), [
+    router.asPath,
   ]);
 
   return {
-    lhControl: query.get('liquidity-hub')?.toLowerCase(),
+    lhControl: query?.get('liquidity-hub')?.toLowerCase(),
   };
 };
 
@@ -550,7 +556,9 @@ class LiquidityHubAnalytics {
         },
         body: JSON.stringify(this.data),
       });
-    } catch (error) {}
+    } catch (error) {
+      console.log('Error in LiquidityHub analytics ', error);
+    }
   }
 
   incrementQuoteIndex() {
@@ -872,7 +880,9 @@ export const LiquidityHubTxSettings = () => {
         <StyledLiquidityHubTxSettings>
           <p>{t('disableLiquidityHub')}</p>
           <p className='bottom-text'>
-            <img src={OrbsLogo} />
+            <picture>
+              <img src='/assets/images/orbs-logo.svg' alt='orbs logo' />
+            </picture>
             <a
               target='_blank'
               rel='noreferrer'
@@ -925,7 +935,9 @@ export const LiquidityHubConfirmationModalContent = ({
       {t('by')}{' '}
       <a href={WEBSITE} target='_blank' rel='noreferrer'>
         Orbs
-        <img src={OrbsLogo} />
+        <picture>
+          <img src='/assets/images/orbs-logo.svg' alt='orbs logo' />
+        </picture>
       </a>
     </StyledLiquidityHubTrade>
   );
@@ -1123,7 +1135,9 @@ export const useV3TradeTypeAnalyticsCallback = (
           walletAddress: account || '',
           slippage: Number(allowedSlippage.toFixed()),
         });
-      } catch (error) {}
+      } catch (error) {
+        console.log('Error in liquidity hub trade ', error);
+      }
     },
     [srcTokenCurrency, dstTokenCurrency, outTokenUSD, account, allowedSlippage],
   );
@@ -1158,7 +1172,9 @@ export const useV2TradeTypeAnalyticsCallback = (
           walletAddress: account || '',
           slippage: allowedSlippage / 100,
         });
-      } catch (error) {}
+      } catch (error) {
+        console.log('Error in liquidity hub v2 trade ', error);
+      }
     },
     [account, inToken, outToken, outTokenUSD, allowedSlippage],
   );

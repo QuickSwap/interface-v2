@@ -1,11 +1,12 @@
 import React from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { CurrencyLogo, QuestionHelper } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { SUGGESTED_BASES, WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { useIsV2 } from 'state/application/hooks';
 import { NativeCurrency } from '@uniswap/sdk-core';
+import styles from 'styles/components/CurrencySearchModal.module.scss';
 
 interface CommonBasesProps {
   chainId?: ChainId;
@@ -40,7 +41,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
       </Box>
       <Box className='flex flex-wrap'>
         <Box
-          className='baseWrapper'
+          className={styles.baseWrapper}
           onClick={() => {
             if (
               !selectedCurrency ||
@@ -59,7 +60,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
           );
           return (
             <Box
-              className='baseWrapper'
+              className={styles.baseWrapper}
               key={token.address}
               onClick={() => {
                 if (!selected) {

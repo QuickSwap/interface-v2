@@ -17,7 +17,7 @@ export class WalletConnectPopup extends WalletConnect {
       options: {
         showQrModal: qrcode,
         chains: SUPPORTED_CHAINIDS,
-        projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '',
+        projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? '',
         qrModalOptions,
       },
       onError,

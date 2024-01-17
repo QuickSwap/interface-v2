@@ -1,4 +1,3 @@
-import React from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Currency, CurrencyAmount, Token } from '@uniswap/sdk-core';
 import { useTokenContract } from 'hooks/useContract';

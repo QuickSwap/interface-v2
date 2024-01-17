@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedLairInfo } from 'state/stake/hooks';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Close } from '@mui/icons-material';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
@@ -13,8 +13,8 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { calculateGasMargin, formatTokenAmount } from 'utils';
-import 'components/styles/StakeModal.scss';
-import { useTranslation } from 'react-i18next';
+import styles from 'styles/components/StakeQuickModal.module.scss';
+import { useTranslation } from 'next-i18next';
 import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 
@@ -60,9 +60,10 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
   );
 
   const onAttemptToApprove = async () => {
-    if (!lairContractToUse) throw new Error(t('missingdependencies'));
+    if (!lairContractToUse)
+      throw new Error(t('missingdependencies') ?? undefined);
     const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error(t('missingliquidity'));
+    if (!liquidityAmount) throw new Error(t('missingliquidity') ?? undefined);
     return approveCallback();
   };
 
@@ -95,7 +96,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
         }
       } else {
         setAttempting(false);
-        throw new Error(t('stakewithoutapproval'));
+        throw new Error(t('stakewithoutapproval') ?? undefined);
       }
     }
   };
@@ -107,7 +108,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
           <h5>
             {t('stake')} {quickToken?.symbol}
           </h5>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={3}
@@ -137,7 +138,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
               }}
             />
             <span
-              className='text-primary text-bold cursor-pointer'
+              className='cursor-pointer text-primary text-bold'
               onClick={() => {
                 setTypedValue(quickBalance ? quickBalance.toExact() : '0');
                 setStakePercent(100);
@@ -153,7 +154,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
                 max={100}
                 step={1}
                 value={stakePercent}
-                handleChange={(evt: any, value) => {
+                handleChange={(_, value) => {
                   setStakePercent(value as number);
                   setTypedValue(
                     quickBalance
@@ -174,7 +175,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
         <Box mt={3} className='flex items-center justify-between'>
           <Box width='48%'>
             <Button
-              className='stakeButton'
+              className={styles.stakeButton}
               disabled={approving || approval !== ApprovalState.NOT_APPROVED}
               onClick={async () => {
                 setApproving(true);
@@ -191,7 +192,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
           </Box>
           <Box width='48%'>
             <Button
-              className='stakeButton'
+              className={styles.stakeButton}
               disabled={
                 !!error || attempting || approval !== ApprovalState.APPROVED
               }

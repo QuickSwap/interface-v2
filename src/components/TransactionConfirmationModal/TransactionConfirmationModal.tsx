@@ -1,22 +1,16 @@
 import { ChainId } from '@uniswap/sdk';
-import React, { useMemo } from 'react';
-import { Box, Button } from '@material-ui/core';
+import React from 'react';
+import { Box, Button } from '@mui/material';
 import { CustomModal } from 'components';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import TransactionFailed from 'assets/images/TransactionFailed.png';
-import TransactionSubmitted from 'assets/images/TransactionSubmitted.png';
+import { Close, CheckCircleOutline } from '@mui/icons-material';
 import { getEtherscanLink } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import ModalBg from 'assets/images/ModalBG.svg';
-import SpinnerImage from '../../assets/images/spinner.svg';
-import 'components/styles/TransactionConfirmationModal.scss';
-import { useTranslation } from 'react-i18next';
-import { CheckCircleOutline } from '@material-ui/icons';
+import styles from 'styles/components/TransactionConfirmationModal.module.scss';
+import { useTranslation } from 'next-i18next';
 import {
   LiquidityHubConfirmationModalContent,
   useConfirmationPendingContent,
 } from 'components/Swap/LiquidityHub';
-import { useLiquidityHubState } from 'state/swap/liquidity-hub/hooks';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -31,12 +25,14 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
 
   return (
     <Box padding={4} overflow='hidden'>
-      <Box className='txModalHeader'>
-        <CloseIcon onClick={onDismiss} />
+      <Box className={styles.txModalHeader}>
+        <Close onClick={onDismiss} />
       </Box>
-      <Box className='txModalContent'>
+      <Box className={styles.txModalContent}>
         <Box my={4} className='flex justify-center spinner'>
-          <img src={SpinnerImage} alt='Spinner' />
+          <picture>
+            <img src='/assets/images/spinner.svg' alt='Spinner' />
+          </picture>
         </Box>
         <h5>{confirmationPendingContent.title}</h5>
         {confirmationPendingContent.pending && (
@@ -66,14 +62,21 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
   const { t } = useTranslation();
   return (
     <Box padding={4}>
-      <Box className='txModalHeader'>
+      <Box className={styles.txModalHeader}>
         <h5>{txPending ? t('txSubmitted') : t('txCompleted')}</h5>
-        <CloseIcon onClick={onDismiss} />
+        <Close onClick={onDismiss} />
       </Box>
       <Box mt={8} className='flex justify-center'>
-        <img src={TransactionSubmitted} alt='Transaction Submitted' />
+        <picture>
+          <img
+            src='/assets/images/TransactionSubmitted.png'
+            alt='Transaction Submitted'
+          />
+        </picture>
       </Box>
-      <Box className='txModalContent txModalContentSuccess'>
+      <Box
+        className={`${styles.txModalContent} ${styles.txModalContentSuccess}`}
+      >
         <p>
           {!txPending && <CheckCircleOutline />}
           {modalContent}
@@ -88,11 +91,11 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
             rel='noopener noreferrer'
             style={{ width: '48%', textDecoration: 'none' }}
           >
-            <Button className='txSubmitButton'>{t('viewTx')}</Button>
+            <Button className={styles.txSubmitButton}>{t('viewTx')}</Button>
           </a>
         )}
         <Button
-          className='txSubmitButton'
+          className={styles.txSubmitButton}
           style={{ width: '48%' }}
           onClick={onDismiss}
         >
@@ -116,9 +119,9 @@ export const ConfirmationModalContent: React.FC<ConfirmationModalContentProps> =
 }) => {
   return (
     <Box padding={4}>
-      <Box className='txModalHeader'>
+      <Box className={styles.txModalHeader}>
         <h5>{title}</h5>
-        <CloseIcon onClick={onDismiss} />
+        <Close onClick={onDismiss} />
       </Box>
       {content()}
     </Box>
@@ -138,16 +141,21 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
   return (
     <Box padding={4}>
       <Box>
-        <Box className='txModalHeader'>
+        <Box className={styles.txModalHeader}>
           <h5 className='text-error'>Error!</h5>
-          <CloseIcon onClick={onDismiss} />
+          <Close onClick={onDismiss} />
         </Box>
-        <Box className='txModalContent'>
-          <img src={TransactionFailed} alt='Transaction Failed' />
+        <Box className={styles.txModalContent}>
+          <picture>
+            <img
+              src='/assets/images/TransactionFailed.png'
+              alt='Transaction Failed'
+            />
+          </picture>
           <p>{message}</p>
         </Box>
       </Box>
-      <Button className='txSubmitButton' onClick={onDismiss}>
+      <Button className={styles.txSubmitButton} onClick={onDismiss}>
         {t('close')}
       </Button>
     </Box>
@@ -188,9 +196,17 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
     <CustomModal
       open={isOpen}
       onClose={onDismiss}
-      modalWrapper={`${modalWrapper}${isTxWrapper ? ' txModalWrapper' : ''}`}
+      modalWrapper={`${modalWrapper} ${
+        isTxWrapper ? styles.txModalWrapper : ''
+      }`}
     >
-      <img src={ModalBg} alt='Modal Back' className='txModalBG' />
+      <picture>
+        <img
+          src='/assets/images/ModalBG.svg'
+          alt='Modal Back'
+          className={styles.txModalBG}
+        />
+      </picture>
       <Box position='relative' zIndex={2}>
         {attemptingTxn ? (
           <ConfirmationPendingContent

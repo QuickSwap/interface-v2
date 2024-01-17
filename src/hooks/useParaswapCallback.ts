@@ -228,7 +228,8 @@ export function useParaswapCallback(
           });
 
           return { response, summary };
-        } catch (error) {
+        } catch (err) {
+          const error = err as any;
           liquidityHubAnalytics.onDexSwapFailed(error.message);
           if (error?.code === 'ACTION_REJECTED') {
             throw new Error('Transaction rejected.');

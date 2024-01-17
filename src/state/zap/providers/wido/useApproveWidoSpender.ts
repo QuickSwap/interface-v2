@@ -5,7 +5,7 @@ import { BOND_QUERY_KEYS } from 'constants/index';
 import { NATIVE_TOKEN_ADDRESS } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const useApproveWidoSpender = ({
   inputTokenAddress,

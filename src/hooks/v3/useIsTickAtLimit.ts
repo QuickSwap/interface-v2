@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Bound } from 'state/mint/v3/actions';
 import { nearestUsableTick, TickMath } from 'v3lib/utils';
 

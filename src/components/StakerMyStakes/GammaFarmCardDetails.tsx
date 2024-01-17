@@ -6,8 +6,8 @@ import {
   Button,
   useTheme,
   useMediaQuery,
-} from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+} from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { CurrencyLogo, NumericalInput } from 'components';
 import { Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
@@ -51,7 +51,7 @@ const GammaFarmCardDetails: React.FC<{
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
   const [attemptClaiming, setAttemptClaiming] = useState(false);
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const masterChefContract = useMasterChefContract(
     data.masterChefIndex ?? 0,
     undefined,
@@ -233,11 +233,11 @@ const GammaFarmCardDetails: React.FC<{
       );
     }
     addTransaction(response, {
-      summary: t('depositliquidity'),
+      summary: t('depositliquidity') ?? undefined,
     });
     const receipt = await response.wait();
     finalizedTransaction(receipt, {
-      summary: t('depositliquidity'),
+      summary: t('depositliquidity') ?? undefined,
     });
   };
 
@@ -282,11 +282,11 @@ const GammaFarmCardDetails: React.FC<{
         );
       }
       addTransaction(response, {
-        summary: t('withdrawliquidity'),
+        summary: t('withdrawliquidity') ?? undefined,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('withdrawliquidity'),
+        summary: t('withdrawliquidity') ?? undefined,
       });
       setAttemptUnstaking(false);
     } catch (e) {
@@ -318,11 +318,11 @@ const GammaFarmCardDetails: React.FC<{
         });
       }
       addTransaction(response, {
-        summary: t('claimrewards'),
+        summary: t('claimrewards') ?? undefined,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('claimrewards'),
+        summary: t('claimrewards') ?? undefined,
       });
       setAttemptClaiming(false);
     } catch (e) {

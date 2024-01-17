@@ -9,16 +9,15 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import ReactGA from 'react-ga';
-import { Box } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+import { event } from 'nextjs-google-analytics';
+import { Box } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedListInfo } from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
 import { GlobalConst } from 'constants/index';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
+import { Close, Search } from '@mui/icons-material';
 import ZapCurrencyList from './ZapCurrencyList';
 import { AppDispatch } from 'state';
 import { isAddress, toNativeCurrency } from 'utils';
@@ -29,6 +28,7 @@ import { wrappedCurrencyV3 } from 'utils/wrappedCurrency';
 import { useSetZapInputList, useZapInputList } from 'state/zap/hooks';
 import { createFilterToken } from 'components/DualCurrencyPanel/filtering';
 import { useAllTokens } from 'hooks/v3/Tokens';
+import styles from 'styles/components/ZapCurrencySearchModal.module.scss';
 
 interface CurrencySearchProps {
   isOpen: boolean;
@@ -85,7 +85,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
   useEffect(() => {
     if (isAddressSearch) {
-      ReactGA.event({
+      event('Currency Select', {
         category: 'Currency Select',
         action: 'Search by address',
         label: isAddressSearch,
@@ -159,16 +159,16 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   selectedListInfo = useSelectedListInfo();
 
   return (
-    <Box className='zapCurrencySearchWrapper'>
-      <Box className='zapCurrencySearchHeader'>
+    <Box className={styles.zapCurrencySearchWrapper}>
+      <Box className={styles.zapCurrencySearchHeader}>
         <h6>{t('tokens')}</h6>
-        <CloseIcon onClick={onDismiss} />
+        <Close onClick={onDismiss} />
       </Box>
-      <Box className='zapSearchInputWrapper'>
-        <SearchIcon />
+      <Box className={styles.zapSearchInputWrapper}>
+        <Search />
         <input
           type='text'
-          placeholder={t('tokenSearchPlaceholder')}
+          placeholder={t('tokenSearchPlaceholder') ?? ''}
           value={searchQueryInput}
           ref={inputRef as RefObject<HTMLInputElement>}
           onChange={(e) => setSearchQueryInput(e.target.value)}

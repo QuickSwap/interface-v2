@@ -2,15 +2,15 @@ import React from 'react';
 import { ETHER, Pair } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
-import { LockOutlined } from '@material-ui/icons';
+import { LockOutlined } from '@mui/icons-material';
 import { useActiveWeb3React } from 'hooks';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import NumericalInput from 'components/NumericalInput';
-import { useTranslation } from 'react-i18next';
-import './index.scss';
+import { useTranslation } from 'next-i18next';
+import styles from 'styles/components/CurrencyInput.module.scss';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
@@ -60,25 +60,10 @@ export default function CurrencyInputPanel({
   otherCurrency,
   id,
   showCommonBases,
-  showCurrencyAmount,
-  disableNonToken,
-  fiatValue,
-  priceImpact,
-  hideBalance = false,
-  pair = null, // used for double token logo
-  hideInput = false,
   locked = false,
-  showBalance,
-  hideCurrency = false,
-  centered = false,
-  disabled,
-  shallow = false,
-  swap = false,
-  page,
   bgClass,
   color,
   showETH,
-  ...rest
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const { chainId, account } = useActiveWeb3React();
@@ -108,9 +93,9 @@ export default function CurrencyInputPanel({
   }, [setModalOpen]);
 
   return (
-    <Box className='v3-currency-input-panel'>
+    <Box className={styles.v3CurrencyInputPanel}>
       {locked && (
-        <Box className='v3-currency-input-lock-wrapper'>
+        <Box className={styles.v3CurrencyInputLockWrapper}>
           <LockOutlined />
           <small>
             Price is outside specified price range. Single-asset deposit only.
@@ -118,12 +103,12 @@ export default function CurrencyInputPanel({
         </Box>
       )}
 
-      <Box id={id} className={`swapBox ${bgClass}`}>
+      <Box id={id} className={`${styles.swapBox} ${bgClass}`}>
         <Box mb={2}>
           <Box>
             <Box
-              className={`currencyButton  ${'token-select-background-v3'}  ${
-                currency ? 'currencySelected' : 'noCurrency'
+              className={`${styles.currencyButton} ${
+                currency ? styles.currencySelected : styles.noCurrency
               }`}
               onClick={() => {
                 if (onCurrencySelect) {
@@ -132,7 +117,7 @@ export default function CurrencyInputPanel({
               }}
             >
               {currency ? (
-                <Box className='flex w-100 justify-between items-center'>
+                <Box className='flex items-center justify-between w-100'>
                   <Box className='flex'>
                     {showETH ? (
                       <DoubleCurrencyLogo
@@ -157,7 +142,7 @@ export default function CurrencyInputPanel({
             </Box>
           </Box>
 
-          <Box className='inputWrapper'>
+          <Box className={styles.inputWrapper}>
             <NumericalInput
               value={value}
               align='right'
@@ -171,7 +156,7 @@ export default function CurrencyInputPanel({
           </Box>
         </Box>
         <Box className='flex justify-between'>
-          <Box display='flex'>
+          <Box display='flex items-center'>
             <small className='text-secondary'>
               {t('balance')}:{' '}
               {(showETH && ethBalance
@@ -180,18 +165,18 @@ export default function CurrencyInputPanel({
             </small>
 
             {account && currency && showHalfButton && (
-              <Box className='maxWrapper' onClick={onHalf}>
+              <Box className={styles.maxWrapper} onClick={onHalf}>
                 <small>50%</small>
               </Box>
             )}
             {account && currency && showMaxButton && (
-              <Box className='maxWrapper' onClick={onMax}>
+              <Box className={styles.maxWrapper} onClick={onMax}>
                 <small>{t('max')}</small>
               </Box>
             )}
           </Box>
 
-          <Box className='v3-currency-input-usd-value'>
+          <Box className={styles.inputUsdValue}>
             <small className='text-secondary'>
               ${valueAsUsd.toLocaleString('us')}
             </small>

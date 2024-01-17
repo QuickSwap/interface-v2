@@ -3,7 +3,7 @@ import { Currency } from '@uniswap/sdk-core';
 import React, { useCallback } from 'react';
 import { CustomModal } from 'components';
 import ZapCurrencySearch from './ZapCurrencySearch';
-import 'components/styles/ZapCurrencySearchModal.scss';
+import styles from 'styles/components/ZapCurrencySearchModal.module.scss';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
 import { NativeCurrency, Currency as CurrencyV3 } from '@uniswap/sdk-core';
@@ -55,7 +55,7 @@ const ZapCurrencySearchModal: React.FC<ZapCurrencySearchModalProps> = ({
     <CustomModal
       open={isOpen}
       onClose={onDismiss}
-      modalWrapper={'zapSearchModalWrapper'}
+      modalWrapper={styles.zapSearchModalWrapper}
       hideBackdrop={true}
     >
       <ZapCurrencySearch

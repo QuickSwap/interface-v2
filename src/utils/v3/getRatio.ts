@@ -1,4 +1,3 @@
-import React from 'react';
 import { Currency, Price } from '@uniswap/sdk-core';
 
 export function getRatio(

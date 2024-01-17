@@ -6,8 +6,9 @@ import {
   Grid,
   useTheme,
   useMediaQuery,
-} from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+  CircularProgress,
+} from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { CurrencyLogo, NumericalInput } from 'components';
 import { Token } from '@uniswap/sdk-core';
 import { Token as TokenV2 } from '@uniswap/sdk';
@@ -30,7 +31,6 @@ import { tryParseAmount } from 'state/swap/v3/hooks';
 import { useSingleCallResult } from 'state/multicall/hooks';
 import { useSteerFarmingContract } from 'hooks/useContract';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
-import Loader from 'components/Loader';
 
 const SteerFarmCardDetails: React.FC<{
   data: any;
@@ -171,11 +171,11 @@ const SteerFarmCardDetails: React.FC<{
     );
 
     addTransaction(response, {
-      summary: t('depositliquidity'),
+      summary: t('depositliquidity') ?? '',
     });
     const receipt = await response.wait();
     finalizedTransaction(receipt, {
-      summary: t('depositliquidity'),
+      summary: t('depositliquidity') ?? '',
     });
   };
 
@@ -201,11 +201,11 @@ const SteerFarmCardDetails: React.FC<{
         );
       }
       addTransaction(response, {
-        summary: t('withdrawliquidity'),
+        summary: t('withdrawliquidity') ?? '',
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('withdrawliquidity'),
+        summary: t('withdrawliquidity') ?? '',
       });
       setAttemptUnstaking(false);
     } catch (e) {
@@ -224,11 +224,11 @@ const SteerFarmCardDetails: React.FC<{
       });
 
       addTransaction(response, {
-        summary: t('claimrewards'),
+        summary: t('claimrewards') ?? '',
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('claimrewards'),
+        summary: t('claimrewards') ?? '',
       });
       setAttemptClaiming(false);
     } catch (e) {
@@ -265,7 +265,7 @@ const SteerFarmCardDetails: React.FC<{
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('tvl')}</small>
             {data.loading ? (
-              <Loader />
+              <CircularProgress size='16px' />
             ) : (
               <small className='weight-600'>${formatNumber(data.tvl)}</small>
             )}
@@ -294,7 +294,7 @@ const SteerFarmCardDetails: React.FC<{
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('vaultAPR')}</small>
             {data.loading ? (
-              <Loader />
+              <CircularProgress size='16px' />
             ) : (
               <small className='text-success weight-600'>
                 {formatNumber(data.feeAPR)}%
@@ -304,7 +304,7 @@ const SteerFarmCardDetails: React.FC<{
           <Box className='flex justify-between'>
             <small className='text-secondary'>{t('farmAPR')}</small>
             {data.loading ? (
-              <Loader />
+              <CircularProgress size='16px' />
             ) : (
               <small className='text-success weight-600'>
                 {formatNumber(data.farmAPR)}%

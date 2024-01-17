@@ -25,9 +25,9 @@ import {
 } from 'state/mint/v3/hooks';
 import { useDerivedPositionInfo } from 'hooks/v3/useDerivedPositionInfo';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
+import styles from 'styles/components/v3/IncreaseLiquidityV3.module.scss';
+import { event } from 'nextjs-google-analytics';
 import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
-import './index.scss';
-import ReactGA from 'react-ga';
 import { WrappedCurrency } from 'models/types';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import {
@@ -41,9 +41,9 @@ import { calculateGasMarginV3 } from 'utils';
 import { useToken } from 'hooks/v3/Tokens';
 import { JSBI } from '@uniswap/sdk';
 import { PositionPool } from 'models/interfaces';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
@@ -92,22 +92,18 @@ export default function IncreaseLiquidityV3({
   const { independentField, typedValue } = useV3MintState();
 
   const {
-    ticks,
     dependentField,
-    pricesAtTicks,
     parsedAmounts,
     currencyBalances,
     position,
     noLiquidity,
     currencies,
     errorMessage,
-    invalidPool,
     invalidRange,
     outOfRange,
     depositADisabled,
     depositBDisabled,
     ticksAtLimit,
-    feeTier,
   } = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,
@@ -243,7 +239,7 @@ export default function IncreaseLiquidityV3({
         .then((estimate) => {
           const newTxn = {
             ...txn,
-            gasLimit: calculateGasMarginV3(chainId, estimate),
+            gasLimit: calculateGasMarginV3(estimate),
           };
 
           return library
@@ -266,9 +262,8 @@ export default function IncreaseLiquidityV3({
                 summary,
               });
               setTxHash(response.hash);
-              ReactGA.event({
+              event('Add', {
                 category: 'Liquidity',
-                action: 'Add',
                 label: [
                   currencies[Field.CURRENCY_A]?.symbol,
                   currencies[Field.CURRENCY_B]?.symbol,
@@ -282,7 +277,7 @@ export default function IncreaseLiquidityV3({
                 setTxPending(false);
               } catch (error) {
                 setTxPending(false);
-                setIncreaseErrorMessage(t('errorInTx'));
+                setIncreaseErrorMessage(t('errorInTx') ?? '');
               }
             });
         })
@@ -292,8 +287,8 @@ export default function IncreaseLiquidityV3({
           setTxPending(false);
           setIncreaseErrorMessage(
             error?.code === 'ACTION_REJECTED'
-              ? t('txRejected')
-              : t('errorInTx'),
+              ? t('txRejected') ?? ''
+              : t('errorInTx') ?? '',
           );
           // we only care if the error is something _other_ than the user rejected the tx
           if (error?.code !== 'ACTION_REJECTED') {
@@ -408,7 +403,7 @@ export default function IncreaseLiquidityV3({
         </Box>
         <RangeBadge removed={removed} inRange={!outOfRange} />
       </Box>
-      <Box my={2} className='v3-increase-liquidity-info-wrapper'>
+      <Box my={2} className={styles.v3IncreaseLiquidityInfoWrapper}>
         <Box>
           <Box className='flex items-center'>
             <CurrencyLogo currency={baseCurrency ?? undefined} size='20px' />
@@ -443,7 +438,7 @@ export default function IncreaseLiquidityV3({
       <Box width={1} mt={2} className='flex justify-between'>
         {priceLower && (
           <Box
-            className='v3-increase-liquidity-price-wrapper'
+            className={styles.v3IncreaseLiquidityPriceWrapper}
             width={priceUpper ? '49%' : '100%'}
           >
             <p>{t('minPrice')}</p>
@@ -460,7 +455,7 @@ export default function IncreaseLiquidityV3({
         )}
         {priceUpper && (
           <Box
-            className='v3-increase-liquidity-price-wrapper'
+            className={styles.v3IncreaseLiquidityPriceWrapper}
             width={priceLower ? '49%' : '100%'}
           >
             <p>{t('minPrice')}</p>
@@ -477,7 +472,7 @@ export default function IncreaseLiquidityV3({
         )}
       </Box>
       {currentPrice && (
-        <Box mt={2} className='v3-increase-liquidity-price-wrapper'>
+        <Box mt={2} className={styles.v3IncreaseLiquidityPriceWrapper}>
           <p>{t('currentPrice')}</p>
           <h6>{currentPrice.toSignificant()}</h6>
           <p>
@@ -543,7 +538,7 @@ export default function IncreaseLiquidityV3({
                   onClick={() => {
                     approveACallback();
                   }}
-                  className='v3-increase-liquidity-button'
+                  className={styles.v3IncreaseLiquidityButton}
                   disabled={approvalA === ApprovalState.PENDING}
                 >
                   {approvalA === ApprovalState.PENDING ? (
@@ -559,7 +554,7 @@ export default function IncreaseLiquidityV3({
             {showApprovalB && (
               <Box width={showApprovalA ? '48%' : '100%'}>
                 <Button
-                  className='v3-increase-liquidity-button'
+                  className={styles.v3IncreaseLiquidityButton}
                   onClick={() => {
                     approveBCallback();
                   }}
@@ -579,7 +574,7 @@ export default function IncreaseLiquidityV3({
         )}
       <Box mt={2}>
         <Button
-          className='v3-increase-liquidity-button'
+          className={styles.v3IncreaseLiquidityButton}
           disabled={
             attemptingTxn ||
             txPending ||

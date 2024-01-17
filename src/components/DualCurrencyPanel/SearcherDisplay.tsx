@@ -1,13 +1,13 @@
 import React from 'react';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box, CircularProgress } from '@mui/material';
 import { useV2Pair } from 'hooks/v3/useV2Pairs';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
-import { ReactComponent as ZapIcon } from 'assets/images/bonds/ZapIcon.svg';
 import { DualCurrencySelector } from 'types/bond';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import CurrencyLogo from 'components/CurrencyLogo';
+import styles from 'styles/components/DualCurrencyPanel.module.scss';
 
 export function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
   return <small className='text-bold'>{balance?.toSignificant(5)}</small>;
@@ -25,10 +25,14 @@ const SearcherDisplay: React.FC<{
   );
 
   return (
-    <Box className='searcherDisplayItem' gridGap={12}>
-      {!currencyB && <ZapIcon />}
+    <Box className={styles.searcherDisplayItem} gap='12px'>
+      {!currencyB && (
+        <picture>
+          <img src='/assets/images/bonds/ZapIcon.svg' alt='Zap Icon' />
+        </picture>
+      )}
       <Box width='100%' className='flex items-center justify-between'>
-        <Box className='flex items-center' gridGap={12}>
+        <Box className='flex items-center' gap='12px'>
           {currencyB ? (
             <DoubleCurrencyLogo
               currency0={currencyA}

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -11,8 +11,8 @@ import {
 import { DoubleCurrencyLogo } from 'components';
 import { formatAPY, getAPYWithFee, getOneYearFee } from 'utils';
 import PoolPositionCardDetails from './PoolPositionCardDetails';
-import 'components/styles/PoolPositionCard.scss';
-import { Trans, useTranslation } from 'react-i18next';
+import styles from 'styles/components/PoolPositionCard.module.scss';
+import { Trans, useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { useQuery } from '@tanstack/react-query';
 
@@ -63,11 +63,11 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
 
   return (
     <Box
-      className={`poolPositionCard ${
+      className={`${styles.poolPositionCard} ${
         showMore ? 'bg-secondary2' : 'bg-transparent'
       }`}
     >
-      <Box className='poolPositionCardTop'>
+      <Box className={styles.poolPositionCardTop}>
         <Box className='flex items-center'>
           <DoubleCurrencyLogo
             currency0={currency0}
@@ -82,7 +82,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
         </Box>
 
         <Box
-          className='flex items-center text-primary cursor-pointer'
+          className='flex items-center cursor-pointer text-primary'
           onClick={() => setShowMore(!showMore)}
         >
           <p style={{ marginRight: 8 }}>{t('manage')}</p>
@@ -92,7 +92,7 @@ const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {
 
       {showMore && <PoolPositionCardDetails pair={pair} />}
       {stakingInfo && !stakingInfo.ended && apyWithFee && (
-        <Box className='poolPositionAPYWrapper'>
+        <Box className={styles.poolPositionAPYWrapper}>
           <small>
             <Trans
               i18nKey='poolAPYDesc'

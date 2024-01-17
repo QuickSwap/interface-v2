@@ -20,7 +20,7 @@ export const useFetchBonds = () => {
   const { chainId } = useActiveWeb3React();
   const fetchBonds = async () => {
     try {
-      const bondsURL = process.env.REACT_APP_BONDS_URL;
+      const bondsURL = process.env.NEXT_PUBLIC_BONDS_URL;
       if (!bondsURL) return;
       const bondsRes = await fetch(bondsURL);
       const bonds = await bondsRes.json();

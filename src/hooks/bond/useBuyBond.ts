@@ -4,7 +4,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import { TransactionResponse } from '@ethersproject/providers';
@@ -42,11 +42,11 @@ const useBuyBond = (
       account ?? '',
     );
     addTransaction(tx, {
-      summary: t('buyBond'),
+      summary: t('buyBond') ?? '',
     });
     const resp = await tx.wait();
     finalizeTransaction(resp, {
-      summary: t('buyBond'),
+      summary: t('buyBond') ?? '',
     });
     return resp;
   }, [

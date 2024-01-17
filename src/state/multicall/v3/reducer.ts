@@ -1,4 +1,3 @@
-import React from 'react';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   addV3MulticallListeners,

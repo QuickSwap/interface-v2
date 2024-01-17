@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import JSBI from 'jsbi';
 import {
   Currency,
@@ -42,12 +42,8 @@ import { FeeAmount } from 'v3lib/utils';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
-import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
-import {
-  DefiedgeStrategies,
-  GlobalConst,
-  UnipilotVaults,
-} from 'constants/index';
+import { IPresetArgs } from 'components/pages/pools/SupplyLiquidityV3/components/PresetRanges';
+import { GlobalConst, UnipilotVaults } from 'constants/index';
 import { Interface, formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useContract,
@@ -67,7 +63,7 @@ import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
 import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 import { getConfig } from 'config/index';
-import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
+import { IFeeTier } from 'components/pages/pools/SupplyLiquidityV3/containers/SelectFeeTier';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
 import { useQuery } from '@tanstack/react-query';
 
@@ -1463,7 +1459,7 @@ export function useGetUnipilotVaults() {
 }
 
 export const useDefiEdgeStrategiesAPR = (strategies: string[]) => {
-  const defiedgeAPIURL = process.env.REACT_APP_DEFIEDGE_API_URL;
+  const defiedgeAPIURL = process.env.NEXT_PUBLIC_DEFIEDGE_API_URL;
   const fetchDefiedgeStrategiesWithApr = async () => {
     if (!defiedgeAPIURL) return [];
 
@@ -1491,7 +1487,7 @@ export function useGetDefiedgeStrategies() {
   const { chainId } = useActiveWeb3React();
   const strategies = getAllDefiedgeStrategies(chainId);
   const strategyIds = strategies.map((s) => s.id);
-  const defiedgeAPIURL = process.env.REACT_APP_DEFIEDGE_API_URL;
+  const defiedgeAPIURL = process.env.NEXT_PUBLIC_DEFIEDGE_API_URL;
 
   const strategyTickResult = useMultipleContractSingleData(
     strategyIds,

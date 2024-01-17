@@ -216,7 +216,7 @@ export function useDualFarmList(
 }
 
 export function useDefaultDualFarmList(): DualFarmInfoAddressMap {
-  return useDualFarmList(process.env.REACT_APP_DUAL_STAKING_LIST_DEFAULT_URL);
+  return useDualFarmList(process.env.NEXT_PUBLIC_DUAL_STAKING_LIST_DEFAULT_URL);
 }
 
 // returns all downloaded current lists

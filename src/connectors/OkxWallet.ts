@@ -34,19 +34,17 @@ export class OkxWallet extends Connector {
   /** {@inheritdoc Connector.provider} */
   public provider: any;
 
-  private readonly options?: Parameters<typeof detectEthereumProvider>[0];
   private eagerConnection?: Promise<void>;
 
-  constructor({ actions, options, onError }: OkxWalletConstructorArgs) {
+  constructor({ actions, onError }: OkxWalletConstructorArgs) {
     super(actions, onError);
-    this.options = options;
   }
 
   private async isomorphicInitialize(): Promise<void> {
     if (this.eagerConnection) return;
 
     return (this.eagerConnection = import('@metamask/detect-provider').then(
-      async (m) => {
+      async () => {
         const windowAsAny = window as any;
         const provider = windowAsAny.okxwallet;
         if (provider) {

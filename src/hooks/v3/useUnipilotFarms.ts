@@ -17,7 +17,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { GlobalConst, GlobalData, unipilotVaultTypes } from 'constants/index';
 import { useLastTransactionHash } from 'state/transactions/hooks';
-import { V3Farm } from 'pages/FarmPage/V3/Farms';
+import { V3Farm } from 'components/pages/farms/V3/Farms';
 import { getConfig } from 'config/index';
 import { useGetUnipilotVaults } from 'state/mint/v3/hooks';
 
@@ -35,7 +35,7 @@ export function useUnipilotFarms(chainId?: ChainId) {
   const fetchUnipilotFarms = async () => {
     if (!unipilotAvailable || !chainId) return [];
     const unipilotFarms = await getUnipilotFarms(chainId);
-    return unipilotFarms;
+    return unipilotFarms ?? [];
   };
 
   const { isLoading: farmsLoading, data } = useQuery({
@@ -305,10 +305,12 @@ export function useUnipilotFilteredFarms(
         formatUnits(farm.totalLockedToken1, farm.token1.decimals),
       );
       const farmTokenAUSD = rewardsWithUSDPrice?.find(
-        (item) => item.address.toLowerCase() === farm.token0.id.toLowerCase(),
+        (item: any) =>
+          item.address.toLowerCase() === farm.token0.id.toLowerCase(),
       );
       const farmTokenBUSD = rewardsWithUSDPrice?.find(
-        (item) => item.address.toLowerCase() === farm.token1.id.toLowerCase(),
+        (item: any) =>
+          item.address.toLowerCase() === farm.token1.id.toLowerCase(),
       );
       const tvl =
         totalLockedTokenA * (farmTokenAUSD?.price ?? 0) +
@@ -327,14 +329,14 @@ export function useUnipilotFilteredFarms(
         ),
       );
       const farmRewardTokenAUSD = rewardsWithUSDPrice?.find(
-        (item) =>
+        (item: any) =>
           rewardRate &&
           rewardRate.tokenA &&
           item.address.toLowerCase() ===
             rewardRate.tokenA.address.toLowerCase(),
       );
       const farmRewardTokenBUSD = rewardsWithUSDPrice?.find(
-        (item) =>
+        (item: any) =>
           rewardRate &&
           rewardRate.tokenB &&
           item.address.toLowerCase() ===

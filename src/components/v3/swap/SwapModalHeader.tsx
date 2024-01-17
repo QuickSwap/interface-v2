@@ -1,10 +1,9 @@
 import React from 'react';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import { useState } from 'react';
 import { AlertTriangle, ArrowDown } from 'react-feather';
 import { FiatValue } from '../CurrencyInputPanel/FiatValue';
-
 import { AdvancedSwapDetails } from './AdvancedSwapDetails';
 import TradePrice from '../swap/TradePrice';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
@@ -13,9 +12,9 @@ import { shortenAddress } from 'utils';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { WrappedCurrency } from 'models/types';
-import { Box, Button } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
-import 'components/styles/v3/swap.scss';
+import { Box, Button } from '@mui/material';
+import { useTranslation } from 'next-i18next';
+import styles from 'styles/components/V3Swap.module.scss';
 
 interface SwapModalHeaderProps {
   trade: V3Trade<Currency, Currency, TradeType>;
@@ -63,7 +62,7 @@ export default function SwapModalHeader({
             <p className='weight-600'>{trade.inputAmount.currency.symbol}</p>
           </Box>
           <p
-            className={`truncatedText weight-600 ${
+            className={`${styles.truncatedText} weight-600 ${
               showAcceptChanges && trade.tradeType === TradeType.EXACT_OUTPUT
                 ? 'text-primary'
                 : ''
@@ -73,7 +72,7 @@ export default function SwapModalHeader({
           </p>
         </Box>
       </Box>
-      <Box className='swapModalHeaderArrowWrapper'>
+      <Box className={styles.swapModalHeaderArrowWrapper}>
         <ArrowDown size='1rem' />
       </Box>
       <Box className='bg-secondary1' borderRadius='6px' marginTop={1}>
@@ -124,7 +123,7 @@ export default function SwapModalHeader({
           mb={2}
           p={1}
           borderRadius='6px'
-          className='flex items-center bg-primaryLight justify-between'
+          className='flex items-center justify-between bg-primaryLight'
         >
           <Box className='flex text-primary'>
             <AlertTriangle

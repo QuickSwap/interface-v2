@@ -36,12 +36,10 @@ export class Cryptocom extends Connector {
   /** {@inheritdoc Connector.provider} */
   public provider: any;
 
-  private readonly options?: Parameters<typeof detectEthereumProvider>[0];
   private eagerConnection?: Promise<void>;
 
-  constructor({ actions, options, onError }: CryptocomConstructorArgs) {
+  constructor({ actions, onError }: CryptocomConstructorArgs) {
     super(actions, onError);
-    this.options = options;
   }
 
   private async isomorphicInitialize(): Promise<void> {

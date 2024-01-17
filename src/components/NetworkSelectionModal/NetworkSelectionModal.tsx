@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect } from 'react';
 import { CustomModal } from 'components';
-import { Box } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import 'components/styles/NetworkSelectionModal.scss';
+import { Box } from '@mui/material';
+import { Close } from '@mui/icons-material';
+import styles from 'styles/components/NetworkSelectionModal.module.scss';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
@@ -10,16 +10,15 @@ import {
   useModalOpen,
   useNetworkSelectionModalToggle,
 } from 'state/application/hooks';
-import { useTranslation } from 'react-i18next';
-import { ChainId } from '@uniswap/sdk';
 import { ApplicationModal } from 'state/application/actions';
 import { useIsSupportedNetwork } from 'utils';
+import { ChainId } from '@uniswap/sdk';
+import { useTranslation } from 'next-i18next';
 import {
   networkConnection,
   walletConnectConnection,
   zengoConnectConnection,
 } from 'connectors';
-import KavaImage from 'assets/images/KAVA.png';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
 
 const NetworkSelectionModal: React.FC = () => {
@@ -80,18 +79,18 @@ const NetworkSelectionModal: React.FC = () => {
     <CustomModal
       open={modalOpen}
       onClose={toggleModal}
-      modalWrapper='modalWrapperV3 networkSelectionModalWrapper'
+      modalWrapper={styles.networkSelectionModalWrapper}
     >
       <Box className='flex items-center justify-between'>
         <p>{t('selectNetwork')}</p>
-        <CloseIcon className='cursor-pointer' onClick={toggleModal} />
+        <Close className='cursor-pointer' onClick={toggleModal} />
       </Box>
       <Box mt='20px'>
         {supportedChains.map((chain) => {
           const config = getConfig(chain);
           return (
             <Box
-              className='networkItemWrapper'
+              className={styles.networkItemWrapper}
               key={chain}
               onClick={() => {
                 switchNetwork(chain);
@@ -99,12 +98,17 @@ const NetworkSelectionModal: React.FC = () => {
               }}
             >
               <Box className='flex items-center'>
-                <img src={config['nativeCurrencyImage']} alt='network Image' />
+                <picture>
+                  <img
+                    src={config['nativeCurrencyImage']}
+                    alt='network Image'
+                  />
+                </picture>
                 <small className='weight-600'>{config['networkName']}</small>
               </Box>
               {isSupportedNetwork && chainId && chainId === chain && (
                 <Box className='flex items-center'>
-                  <Box className='networkConnectedDot' />
+                  <Box className={styles.networkConnectedDot} />
                   <span>{t('connected')}</span>
                 </Box>
               )}
@@ -112,13 +116,15 @@ const NetworkSelectionModal: React.FC = () => {
           );
         })}
         <Box
-          className='networkItemWrapper'
+          className={styles.networkItemWrapper}
           onClick={() => {
             window.open('https://dex.kinetix.finance', '_blank');
           }}
         >
           <Box className='flex items-center'>
-            <img src={KavaImage} alt='network Image' />
+            <picture>
+              <img src='/assets/images/KAVA.png' alt='network Image' />
+            </picture>
             <small className='weight-600'>Kava - Kinetix</small>
           </Box>
         </Box>

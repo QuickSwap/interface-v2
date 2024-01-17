@@ -1,21 +1,23 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import { List } from '@material-ui/core';
-import { ReactComponent as ThreeDashIcon } from 'assets/images/ThreeDashIcon.svg';
-import { ReactComponent as CloseIcon } from 'assets/images/close_v3.svg';
+import {
+  Box,
+  Drawer,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+} from '@mui/material';
+import { List } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
+import styles from 'styles/components/Header.module.scss';
 
 export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
   menuItems = [],
 }) => {
   const [open, setOpen] = React.useState(false);
   return (
-    <Box className='mobileMenuContainer'>
-      <Box className='mobileMenuClosedContainer'>
+    <Box className={styles.mobileMenuContainer}>
+      <Box className={styles.mobileMenuClosedContainer}>
         {menuItems.slice(0, 3).map((item, i) => (
           <HeaderListItem
             key={'item' + i}
@@ -29,12 +31,14 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
         style={{ marginTop: '4px', paddingLeft: '24px' }}
         onClick={() => setOpen(true)}
       >
-        <ThreeDashIcon />
+        <picture>
+          <img src='/assets/images/ThreeDashIcon.svg' alt='Three Dash Icon' />
+        </picture>
       </Box>
 
       <Drawer anchor='bottom' open={open} onClose={() => setOpen(false)}>
         <Box role='presentation'>
-          <Box className='mobileMenuDrawerContainer'>
+          <Box className={styles.mobileMenuDrawerContainer}>
             <List>
               {menuItems.map((item, index) => (
                 <HeaderListItem
@@ -43,17 +47,17 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
                   onClick={() => setOpen(false)}
                 />
               ))}
-              <ListItem disablePadding className='close-item'>
+              <ListItem disablePadding className={styles.closeItem}>
                 <ListItemButton
                   onClick={() => {
                     setOpen(false);
                   }}
                 >
-                  <ListItemText className='mobile-btn-text'>
+                  <ListItemText className={styles.mobileBtnText}>
                     <Box className='flex' mt={1}>
                       <Box className='my-auto ml-auto'>Close</Box>
                       <Box ml={1} pt={1}>
-                        <CloseIcon />
+                        <Close />
                       </Box>
                     </Box>
                   </ListItemText>

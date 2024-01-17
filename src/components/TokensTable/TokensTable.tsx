@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { Box, Divider } from '@material-ui/core';
+import Link from 'next/link';
+import { Box, Divider } from '@mui/material';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
 import { CurrencyLogo, CustomTable } from 'components';
@@ -12,10 +12,10 @@ import {
   getTokenFromAddress,
 } from 'utils';
 import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
-import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
-import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
-import 'components/styles/AnalyticsTable.scss';
-import { useTranslation } from 'react-i18next';
+import StarChecked from 'svgs/StarChecked.svg';
+import StarUnchecked from 'svgs/StarUnchecked.svg';
+import styles from 'styles/components/AnalyticsTable.module.scss';
+import { useTranslation } from 'next-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React } from 'hooks';
 
@@ -114,7 +114,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
           </Box>
           <Link
             className='no-decoration'
-            to={`/analytics/${version}/token/${tokenCurrency?.address}`}
+            href={`/analytics/${version}/token?id=${tokenCurrency?.address}`}
           >
             <Box className='flex items-center'>
               <CurrencyLogo currency={tokenCurrency} size='28px' />
@@ -128,21 +128,21 @@ const TokensTable: React.FC<TokensTableProps> = ({
           </Link>
         </Box>
         <Divider />
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('price')}</p>
           <p>${formatNumber(token.priceUSD)}</p>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('24hPer')}</p>
-          <Box className={`priceChangeWrapper ${priceClass}`}>
+          <Box className={`${styles.priceChangeWrapper} ${priceClass}`}>
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('24hVol')}</p>
           <p>${formatNumber(token.oneDayVolumeUSD)}</p>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('liquidity')}</p>
           <p>${formatNumber(token.totalLiquidityUSD)}</p>
         </Box>
@@ -191,7 +191,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
             </Box>
             <Link
               className='no-decoration'
-              to={`/analytics/${version}/token/${tokenCurrency?.address}`}
+              href={`/analytics/${version}/token?id=${tokenCurrency?.address}`}
             >
               <Box className='flex items-center'>
                 <CurrencyLogo currency={tokenCurrency} size='28px' />
@@ -215,7 +215,7 @@ const TokensTable: React.FC<TokensTableProps> = ({
       },
       {
         html: (
-          <Box className={`priceChangeWrapper ${priceClass}`} mr={2}>
+          <Box className={`${styles.priceChangeWrapper} ${priceClass}`} mr={2}>
             <small>{getFormattedPrice(Number(token.priceChangeUSD))}%</small>
           </Box>
         ),

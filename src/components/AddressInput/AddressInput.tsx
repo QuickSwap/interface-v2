@@ -1,10 +1,10 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import useENS from 'hooks/useENS';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils';
-import 'components/styles/AddressInput.scss';
-import { useTranslation } from 'react-i18next';
+import styles from 'styles/components/AddressInput.module.scss';
+import { useTranslation } from 'next-i18next';
 
 interface AddressInputProps {
   value: string;
@@ -26,11 +26,11 @@ const AddressInput: React.FC<AddressInputProps> = ({
 
   return (
     <Box
-      className={`addressInput ${
+      className={`${styles.addressInput} ${
         error ? 'border-error' : 'border-primaryDark'
       }`}
     >
-      <Box className='flex justify-between items-center'>
+      <Box className='flex items-center justify-between'>
         <p>{label}</p>
         {address && chainId && (
           <a

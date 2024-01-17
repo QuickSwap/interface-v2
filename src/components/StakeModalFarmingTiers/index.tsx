@@ -4,20 +4,15 @@ import { useActiveWeb3React } from 'hooks';
 import { WrappedCurrency } from 'models/types';
 import { useCallback, useMemo, useState } from 'react';
 import { useCurrencyBalance } from 'state/wallet/hooks';
-import './index.scss';
+// import styles from './StakeModalFarmingTiers.module.scss';
 
 import { formatAmountTokens } from 'utils/numbers';
 import { HelpCircle } from 'react-feather';
-import { Link } from 'react-router-dom';
-
+import Link from 'next/link';
 import { Token } from '@uniswap/sdk-core';
 
-import NoTierIcon from '../../assets/images/no-tier-icon.png';
-import BachelorTierIcon from '../../assets/images/bachelor-tier-icon.png';
-import MasterTierIcon from '../../assets/images/master-tier-icon.png';
-import ProfessorTierIcon from '../../assets/images/professor-tier-icon.png';
 import { ChainId } from '@uniswap/sdk';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface StakeModalFarmingTiersProps {
   tiersLimits: {
@@ -77,21 +72,21 @@ export default function StakeModalFarmingTiers({
     if (!tiersLimits || !tiersMultipliers) return [];
 
     return [
-      { img: NoTierIcon, title: `No tier`, lock: 0, earn: 0 },
+      { img: '/images/no-tier-icon.png', title: `No tier`, lock: 0, earn: 0 },
       {
-        img: BachelorTierIcon,
+        img: '/images/bachelor-tier-icon.png',
         title: `Bachelor`,
         lock: +tiersLimits.low,
         earn: +tiersMultipliers.low,
       },
       {
-        img: MasterTierIcon,
+        img: '/images/master-tier-icon.png',
         title: `Master`,
         lock: +tiersLimits.medium,
         earn: +tiersMultipliers.medium,
       },
       {
-        img: ProfessorTierIcon,
+        img: '/images/professor-tier-icon.png',
         title: `Professor`,
         lock: +tiersLimits.high,
         earn: +tiersMultipliers.high,
@@ -101,8 +96,8 @@ export default function StakeModalFarmingTiers({
 
   return (
     <div className='f c'>
-      <div className='f-ac f farming-tier__balance br-8 mb-1'>
-        <div className='farming-tier__balance-title mr-1'>{t('balance')}</div>
+      <div className='mb-1 f-ac f farming-tier__balance br-8'>
+        <div className='mr-1 farming-tier__balance-title'>{t('balance')}</div>
         <div>
           <div className='f'>
             <CurrencyLogo
@@ -123,7 +118,7 @@ export default function StakeModalFarmingTiers({
           </div>
         </div>
         <div className='ml-a mxs_display-none ms_display-none'>
-          <Link to={'/swap'} className='farming-tier__balance-buy b'>{`${t(
+          <Link href={'/swap'} className='farming-tier__balance-buy b'>{`${t(
             'buy',
           )} ${multiplierToken.symbol} →`}</Link>
         </div>
@@ -135,7 +130,7 @@ export default function StakeModalFarmingTiers({
         <div className='ml-a f f-ac farming-tier__hint'>
           <HelpCircle color='#347CC9' size={'14px'} />
           <a
-            href={`${process.env.REACT_APP_V3_FARMS_HELP_BASE_URL}/en/farm/multi-level-farming-on-algebra`}
+            href={`${process.env.NEXT_PUBLIC_V3_FARMS_HELP_BASE_URL}/en/farm/multi-level-farming-on-algebra`}
             target={'_blank'}
             rel={'noreferrer noopener'}
             className='ml-05'
@@ -144,7 +139,7 @@ export default function StakeModalFarmingTiers({
           </a>
         </div>
       </div>
-      <div className='f w-100 farming-tier-wrapper pl-1 pb-1 pr-1 mxs_pb-0'>
+      <div className='pb-1 pl-1 pr-1 f w-100 farming-tier-wrapper mxs_pb-0'>
         {tiersList.map((tier, i) => (
           <button
             className='p-1 f c w-100 farming-tier'
@@ -153,15 +148,17 @@ export default function StakeModalFarmingTiers({
             onClick={() => handleTier(i)}
           >
             <div className='p-1 farming-tier__header w-100 ta-l pos-r'>
-              <div className='farming-tier__img mb-1'>
-                <img width={'48px'} height={'48px'} src={tier.img} />
+              <div className='mb-1 farming-tier__img'>
+                <picture>
+                  <img width={48} height={48} src={tier.img} alt='Tier Image' />
+                </picture>
               </div>
               <div className='farming-tier__title b f f-jb'>
                 <span>{tier.title}</span>
               </div>
             </div>
             <div className='p-1 farming-tier__body w-100'>
-              <div className='farming-tier__locked w-100 f ac mb-1'>
+              <div className='mb-1 farming-tier__locked w-100 f ac'>
                 <span className='b'>{t('lock')}:</span>
                 <span className='ml-a farming-tier__locked-value'>
                   {tier.lock

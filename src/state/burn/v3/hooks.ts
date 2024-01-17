@@ -1,4 +1,4 @@
-import React, { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
+import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
 import { usePool } from 'hooks/v3/usePools';
 import { useActiveWeb3React } from 'hooks';
 import { useToken } from 'hooks/v3/Tokens';

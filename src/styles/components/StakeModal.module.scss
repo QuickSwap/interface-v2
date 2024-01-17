@@ -1,0 +1,65 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.v3FarmStakeModalWrapper {
+  width: 100%;
+  button {
+    width: 100%;
+    height: 50px;
+    border-radius: 10px;
+  }
+}
+
+.v3FarmStakeModalPosition {
+  background-color: $secondary3;
+  height: 84px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 8px;
+  margin: 0 0 16px;
+  position: relative;
+  cursor: pointer;
+  & a {
+    text-decoration: underline;
+    color: $textPrimary;
+  }
+}
+
+.v3FarmStakeModalPositionSelected {
+  border: 1px solid $primary;
+  box-shadow: 0 0 5px 5px $blue6;
+}
+
+.v3FarmStakePositionCheck {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+}
+
+.v3FarmStakePositionUnchecked {
+  border: 1px solid $secondary;
+}
+
+.v3FarmStakePositionChecked {
+  background-color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & svg {
+    width: 14px;
+  }
+}
+
+.v3StakeLiquidityLink {
+  background-color: $primary;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: $textPrimary;
+  display: flex;
+  align-items: center;
+}

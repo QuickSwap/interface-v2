@@ -1,13 +1,13 @@
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Currency as V3Currency, Token as V3Token } from '@uniswap/sdk-core';
 import React, { useMemo } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import useHttpLocations from 'hooks/useHttpLocations';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { WrappedTokenInfo as V3WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { Logo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
-import 'components/styles/CurrencyLogo.scss';
+import styles from 'styles/components/CurrencyLogo.module.scss';
 import { useActiveWeb3React } from 'hooks';
 
 interface CurrencyLogoProps {
@@ -26,7 +26,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
-  const nativeCurrencyImage = '/' + currency?.symbol + '.png';
+  const nativeCurrencyImage = `/${currency?.symbol}.png`;
   const uriLocations = useHttpLocations(
     currency instanceof WrappedTokenInfo ||
       currency instanceof V3WrappedTokenInfo
@@ -69,13 +69,16 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
         width={size}
         height={size}
         borderRadius={size}
-        className='currencyLogo'
+        className={styles.currencyLogo}
       >
-        <img
-          className='ethereumLogo'
-          src={nativeCurrencyImage}
-          alt='Native Currency Logo'
-        />
+        <picture>
+          <img
+            className={styles.ethereumLogo}
+            src={nativeCurrencyImage}
+            alt='Ethereum Logo'
+            width='100%'
+          />
+        </picture>
       </Box>
     );
   }
@@ -85,7 +88,7 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
       width={size}
       height={size}
       borderRadius={withoutBg ? 0 : size}
-      className={`currencyLogo${withoutBg ? '' : ' bg-white'}`}
+      className={`${styles.currencyLogo} ${withoutBg ? '' : 'bg-white'}`}
     >
       <Logo
         srcs={srcs}

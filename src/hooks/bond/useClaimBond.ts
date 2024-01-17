@@ -5,14 +5,10 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 // Claim a Bond
-const useClaimBond = (
-  billAddress: string,
-  billIds: string[],
-  earnToken?: string,
-) => {
+const useClaimBond = (billAddress: string, billIds: string[]) => {
   const { t } = useTranslation();
   const bondContract = useBondContract(billAddress);
   const billType = useBondType(billAddress);
@@ -21,10 +17,10 @@ const useClaimBond = (
   const handleClaimBill = useCallback(async () => {
     if (!bondContract) return;
     const tx = await bondContract.batchRedeem(billIds);
-    addTransaction(tx, { summary: t('claimBond') });
+    addTransaction(tx, { summary: t('claimBond') ?? '' });
     const resp = await tx.wait();
     finalizeTransaction(resp, {
-      summary: t('claimBond'),
+      summary: t('claimBond') ?? '',
     });
     return tx;
   }, [bondContract, billIds, addTransaction, finalizeTransaction, t]);

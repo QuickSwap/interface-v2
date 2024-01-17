@@ -1,13 +1,13 @@
 import React from 'react';
 import { Currency } from '@uniswap/sdk-core';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
-import 'components/styles/ZapCurrencyInput.scss';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import ZapCurrencySelect from './ZapCurrencySelect';
 import { default as useUSDCPrice } from 'hooks/v3/useUSDCPrice';
+import styles from 'styles/components/ZapCurrencyInput.module.scss';
 
 interface ZapCurrencyInputProps {
   title?: string;
@@ -43,7 +43,7 @@ const ZapCurrencyInput: React.FC<ZapCurrencyInputProps> = ({
   const usdPrice = Number(usdPriceObj?.toSignificant() ?? 0);
 
   return (
-    <Box id={id} className='zapCurrencyInputBox'>
+    <Box id={id} className={styles.zapCurrencyInputBox}>
       <Box mb={2} className='flex items-center'>
         <NumericalInput
           fontSize={22}
@@ -64,7 +64,7 @@ const ZapCurrencyInput: React.FC<ZapCurrencyInputProps> = ({
         <small className='text-secondary'>
           ${(usdPrice * Number(amount)).toLocaleString('us')}
         </small>
-        <Box className='flex items-center' gridGap={8}>
+        <Box className='flex items-center' gap='8px'>
           <small>
             {t('balance')}:{' '}
             {Number(selectedCurrencyBalance?.toExact() ?? 0).toLocaleString(
@@ -72,7 +72,7 @@ const ZapCurrencyInput: React.FC<ZapCurrencyInputProps> = ({
             )}
           </small>
           {account && currency && showMaxButton && (
-            <Box className='zapCurrencyInputMaxWrapper' onClick={onMax}>
+            <Box className={styles.zapCurrencyInputMaxWrapper} onClick={onMax}>
               <small>{t('max')}</small>
             </Box>
           )}

@@ -179,6 +179,7 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateSelectedWallet, (state, action) => {
       state.selectedWallet = action.payload.wallet;
+      localStorage.setItem('selectedWallet', action.payload.wallet ?? '');
     })
     .addCase(updateUserLiquidityHub, (state, action) => {
       state.userLiquidityHubDisabled = action.payload.userLiquidityHubDisabled;

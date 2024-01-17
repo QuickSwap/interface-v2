@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
@@ -11,7 +11,7 @@ import { calculateGasMargin, isAddress, isZero, shortenAddress } from 'utils';
 import useENS from 'hooks/useENS';
 import { SWAP_ROUTER_ADDRESSES, UNI_SWAP_ROUTER } from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
-import { SwapRouter } from 'lib/src/swapRouter';
+import { SwapRouter } from 'lib/swapRouter';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -166,7 +166,7 @@ function useSwapCallArguments(
  */
 function swapErrorToUserReadableMessage(error: any): string {
   let reason: string | undefined;
-  while (Boolean(error)) {
+  while (error) {
     reason = error.reason ?? error.message ?? reason;
     error = error.error ?? error.data?.originalError;
   }

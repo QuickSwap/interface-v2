@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { Token } from '@uniswap/sdk';
 import { DoubleCurrencyLogo } from 'components';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { formatNumber } from 'utils';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import GammaFarmCardDetails from './GammaFarmCardDetails';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
-import { V3Farm } from 'pages/FarmPage/V3/Farms';
+import { V3Farm } from 'components/pages/farms/V3/Farms';
 
 const GammaFarmCard: React.FC<{
   data: V3Farm;
@@ -25,7 +24,7 @@ const GammaFarmCard: React.FC<{
   return (
     <Box
       width='100%'
-      borderRadius={16}
+      borderRadius='16px'
       className={`bg-secondary1${showDetails ? ' border-primary' : ''}`}
     >
       <Box padding={1.5} className='flex items-center'>
@@ -45,7 +44,7 @@ const GammaFarmCard: React.FC<{
                   <small className='weight-600'>{`${token0.symbol}/${token1.symbol} (${data.title})`}</small>
                   <Box className='cursor-pointer'>
                     <Link
-                      to={`/pools?currency0=${token0.address}&currency1=${token1.address}`}
+                      href={`/pools?currency0=${token0.address}&currency1=${token1.address}`}
                       target='_blank'
                       className='no-decoration'
                     >
@@ -86,7 +85,9 @@ const GammaFarmCard: React.FC<{
                   farmAPR={farmAPR * 100}
                   poolAPR={poolAPR * 100}
                 >
-                  <img src={CircleInfoIcon} alt={'arrow up'} />
+                  <picture>
+                    <img src='/assets/images/circleinfo.svg' alt='info' />
+                  </picture>
                 </TotalAPRTooltip>
               </Box>
             </Box>

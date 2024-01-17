@@ -1,10 +1,10 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
-import { formatNumber, shortenAddress } from 'utils';
-import 'components/styles/AnalyticsTable.scss';
-import { useTranslation } from 'react-i18next';
+import { formatNumber } from 'utils';
+import styles from 'styles/components/AnalyticsTable.module.scss';
+import { useTranslation } from 'next-i18next';
 import AddressCell from './AddressCell';
 
 interface ContestTableProps {
@@ -49,13 +49,13 @@ const ContestTable: React.FC<ContestTableProps> = ({
   const mobileHTML = (token: any, index: number) => {
     return (
       <Box mt={index === 0 ? 0 : 3}>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('rank')}</p>
           <p>{token.rank}</p>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('address')}</p>
-          <Box className={``}>
+          <Box>
             <AddressCell
               address={token.origin}
               displayShortened={true}
@@ -63,21 +63,19 @@ const ContestTable: React.FC<ContestTableProps> = ({
             />
           </Box>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('tradesTitleCase')}</p>
           <p>{token.txCount}</p>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('volumeUSDC')}</p>
-          <p className={`priceChangeWrapper text-success`}>
-            {formatNumber(token.amountUSD)}
-          </p>
+          <p className={`text-success`}>{formatNumber(token.amountUSD)}</p>
         </Box>
       </Box>
     );
   };
 
-  const desktopHTML = (token: any, index: number, page: number) => {
+  const desktopHTML = (token: any) => {
     return [
       {
         html: (
@@ -88,7 +86,7 @@ const ContestTable: React.FC<ContestTableProps> = ({
       },
       {
         html: (
-          <Box className={`priceChangeWrapper`} mr={2}>
+          <Box mr={2}>
             <AddressCell
               address={token.origin}
               displayShortened={false}
@@ -99,14 +97,14 @@ const ContestTable: React.FC<ContestTableProps> = ({
       },
       {
         html: (
-          <Box className={``} mr={2}>
+          <Box mr={2}>
             <small>{token.txCount}</small>
           </Box>
         ),
       },
       {
         html: (
-          <Box className={`priceChangeWrapper text-success`} mr={2}>
+          <Box className={`text-success`} mr={2}>
             <small>{formatNumber(token.amountUSD)}</small>
           </Box>
         ),

@@ -1,10 +1,10 @@
 import React from 'react';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box, CircularProgress } from '@mui/material';
 import { CheckCircle, Triangle } from 'react-feather';
-
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils';
 import { useAllTransactions } from 'state/transactions/hooks';
+import styles from 'styles/components/AccountDetails.module.scss';
 
 interface TransactionProps {
   hash: string;
@@ -26,16 +26,16 @@ const Transaction: React.FC<TransactionProps> = ({ hash }) => {
   if (!chainId) return null;
 
   return (
-    <Box className='transactionState'>
+    <Box className={styles.transactionState}>
       <a
-        className='transactionStatusText'
+        className={styles.transactionStatusText}
         href={getEtherscanLink(chainId, hash, 'transaction')}
         target='_blank'
         rel='noopener noreferrer'
       >
         {summary ?? hash} ↗
       </a>
-      <Box className='iconWrapper'>
+      <Box className={styles.iconWrapper}>
         {pending ? (
           <CircularProgress size={16} />
         ) : success ? (

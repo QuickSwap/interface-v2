@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import JSBI from 'jsbi';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import { parseUnits } from '@ethersproject/units';
 import {
   Currency,
@@ -27,7 +27,7 @@ import {
   V3TradeState,
 } from 'hooks/v3/useBestV3Trade';
 import useENS from 'hooks/useENS';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useRouter } from 'next/router';
 import { AppState } from 'state';
 import { isAddress, getFixedValue } from 'utils';
 import { useCurrency } from 'hooks/v3/Tokens';
@@ -287,7 +287,7 @@ export function useDerivedSwapInfo(): {
   };
 }
 
-function parseCurrencyFromURLParameter(urlParam: any, chainId: number): string {
+function parseCurrencyFromURLParameter(urlParam: any, _: number): string {
   if (typeof urlParam === 'string') {
     const valid = isAddress(urlParam);
     if (valid) return valid;
@@ -366,7 +366,7 @@ export function useDefaultsFromURLSearch():
   | undefined {
   const { chainId } = useActiveWeb3React();
   const dispatch = useAppDispatch();
-  const parsedQs = useParsedQueryString();
+  const { query } = useRouter();
   const [result, setResult] = useState<
     | {
         inputCurrencyId: string | undefined;
@@ -377,7 +377,7 @@ export function useDefaultsFromURLSearch():
 
   useEffect(() => {
     if (!chainId) return;
-    const parsed = queryParametersToSwapState(parsedQs, chainId);
+    const parsed = queryParametersToSwapState(query, chainId);
 
     dispatch(
       replaceSwapState({
@@ -393,7 +393,7 @@ export function useDefaultsFromURLSearch():
       inputCurrencyId: parsed[Field.INPUT].currencyId,
       outputCurrencyId: parsed[Field.OUTPUT].currencyId,
     });
-  }, [dispatch, chainId, parsedQs]);
+  }, [dispatch, chainId, query]);
 
   return result;
 }

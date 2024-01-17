@@ -1,16 +1,16 @@
 import { ChainId, ETHER, Token } from '@uniswap/sdk';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import React from 'react';
-import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
+import { Box, Tooltip, CircularProgress, ListItem } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { CurrencyLogo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { PlusHelper } from 'components/QuestionHelper';
-import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
 import { formatNumber } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { getIsMetaMaskWallet } from 'connectors/utils';
+import styles from 'styles/components/CurrencySearchModal.module.scss';
 
 //TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {
@@ -104,20 +104,22 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
   // only show add or remove buttons if not on selected list
   return (
     <ListItem
-      button
       style={style}
       key={key}
-      selected={otherSelected || isSelected}
       onClick={() => {
         if (!isSelected && !otherSelected) onSelect();
       }}
     >
-      <Box className='currencyRow'>
-        {(otherSelected || isSelected) && <TokenSelectedIcon />}
+      <Box className={styles.currencyRow}>
+        {(otherSelected || isSelected) && (
+          <picture>
+            <img src='/assets/images/TokenSelected.svg' alt='Token Selected' />
+          </picture>
+        )}
         <CurrencyLogo currency={currency} size='32px' />
         <Box ml={1} height={32}>
           <Box className='flex items-center'>
-            <small className='currencySymbol'>{currency.symbol}</small>
+            <small className={styles.currencySymbol}>{currency.symbol}</small>
             {isMetamask &&
               currency !== nativeCurrency &&
               !(currency as Currency).isNative && (
@@ -138,7 +140,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                 </Box>
               )}
           </Box>
-          <span className='currencyName'>{currency.name}</span>
+          <span className={styles.currencyName}>{currency.name}</span>
         </Box>
 
         <Box flex={1}></Box>

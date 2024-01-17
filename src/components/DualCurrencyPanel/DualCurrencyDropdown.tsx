@@ -3,13 +3,13 @@ import DualCurrencySearchModal from './DualCurrencySearchModal';
 import { useAllTokens } from 'hooks/v3/Tokens';
 import { useSetZapInputList, useZapInputList } from 'state/zap/hooks';
 import DropdownDisplay from './DropdownDisplay';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { Currency } from '@uniswap/sdk-core';
 import { createFilterToken } from './filtering';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { DualCurrencySelector } from 'types/bond';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box, CircularProgress } from '@mui/material';
 import { toNativeCurrency } from 'utils';
 import { DropdownItem, Dropdown } from 'components/Dropdown';
 

@@ -162,8 +162,7 @@ export function useTokens(
   const { chainId } = useActiveWeb3React();
   const tokens = useAllTokens();
 
-  const tokenSet = [...new Set(tokenAddresses)];
-  const validatedUnknownTokenAddresses = tokenSet
+  const validatedUnknownTokenAddresses = tokenAddresses
     .filter((x) => isAddress(x))
     .filter((x) => !tokens[x]);
 
@@ -218,7 +217,7 @@ export function useTokens(
   );
 
   return useMemo(() => {
-    const existingTokens = [...new Set(tokenAddresses)]
+    const existingTokens = tokenAddresses
       .filter((x) => isAddress(x))
       .map((x) => tokens[x])
       .filter((x) => !!x);

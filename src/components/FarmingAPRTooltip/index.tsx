@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { formatNumber } from 'utils';
-import 'components/styles/FarmingAPRToolTip.scss';
+import styles from 'styles/components/FarmingAPRToolTip.module.scss';
 import { CustomTooltip } from 'components';
 
 interface FarmingAPRTooltipProps {
@@ -18,10 +18,9 @@ const FarmingAPRTooltip: React.FC<FarmingAPRTooltipProps> = ({
   return (
     <CustomTooltip
       padding='0'
-      placement='top'
       color='#12131a'
       title={
-        <Box className='farmingAPRTooltipWrapper'>
+        <Box className={styles.farmingAPRTooltipWrapper}>
           <Box
             className='flex justify-between'
             margin={gammaAPRs.length > 0 ? '10px 0 0' : '10px 0'}

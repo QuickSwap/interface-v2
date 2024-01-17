@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
+import { IPresetArgs } from 'components/pages/pools/SupplyLiquidityV3/components/PresetRanges';
 import {
   selectCurrency,
   Field,
@@ -20,7 +20,7 @@ import {
   updatePresetRange,
   updateFeeTier,
 } from './actions';
-import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
+import { IFeeTier } from 'components/pages/pools/SupplyLiquidityV3/containers/SelectFeeTier';
 
 export type FullRange = true;
 

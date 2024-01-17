@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk-core';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { CurrencyLogo } from 'components';
 import ZapCurrencySearchModal from './ZapCurrencySearchModal';
-import 'components/styles/ZapCurrencyInput.scss';
-import { useTranslation } from 'react-i18next';
-import { KeyboardArrowDown } from '@material-ui/icons';
+import styles from 'styles/components/ZapCurrencyInput.module.scss';
+import { useTranslation } from 'next-i18next';
+import { KeyboardArrowDown } from '@mui/icons-material';
 
 interface ZapCurrencySelectProps {
   title?: string;
@@ -35,8 +35,8 @@ const ZapCurrencySelect: React.FC<ZapCurrencySelectProps> = ({
       <Box
         className={
           !bgClass
-            ? `zapCurrencyButton ${
-                currency ? 'zapCurrencySelected' : 'zapNoCurrency'
+            ? `${styles.zapCurrencyButton} ${
+                currency ? styles.zapCurrencySelected : styles.zapNoCurrency
               }`
             : bgClass
         }
@@ -45,7 +45,7 @@ const ZapCurrencySelect: React.FC<ZapCurrencySelectProps> = ({
         {currency ? (
           <Box className='flex items-center'>
             <CurrencyLogo currency={currency} size={'28px'} />
-            <p className='token-symbol-container'>{currency?.symbol}</p>
+            <p>{currency?.symbol}</p>
             <KeyboardArrowDown />
           </Box>
         ) : (

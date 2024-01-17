@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import {
   Box,
+  Grid,
+  useTheme,
+  useMediaQuery,
   Button,
   CircularProgress,
-  Grid,
-  useMediaQuery,
-} from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import QUICKLogo from 'assets/images/quickLogo.png';
-import 'components/styles/Footer.scss';
-
-import { useHistory, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+} from '@mui/material';
+import { useRouter } from 'next/router';
+import styles from 'styles/components/Footer.module.scss';
+import { useTranslation } from 'next-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
 const Footer: React.FC = () => {
-  const history = useHistory();
-  const { pathname } = useLocation();
+  const router = useRouter();
   const copyrightYear = new Date().getFullYear();
   const { t } = useTranslation();
   const theme = useTheme();
@@ -27,8 +24,8 @@ const Footer: React.FC = () => {
       title: t('services'),
       items: [
         { title: t('swap'), link: '/swap' },
-        { title: t('pool'), link: '/pools' },
-        { title: t('farm'), link: '/farm' },
+        { title: t('pool'), link: '/pools/v3' },
+        { title: t('farm'), link: '/farm/v3' },
         { title: t('dragonslair'), link: '/dragons' },
         { title: t('convert'), link: '/convert' },
         { title: t('calculator'), link: '/calculator/0.01-eth-to-usd' },
@@ -57,19 +54,21 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <Box className='footer'>
-      <Box className='footerContainer'>
-        <Grid container spacing={4} className='socialMenuWrapper'>
+    <Box className={styles.footer}>
+      <Box className={styles.footerContainer}>
+        <Grid container spacing={4} className={styles.socialMenuWrapper}>
           <Grid item xs={12} sm={12} md={4}>
-            <img src={QUICKLogo} alt='QUICK' height={40} />
+            <picture>
+              <img src='/assets/images/quickLogo.png' alt='QUICK' height={40} />
+            </picture>
             <Box mt={2} maxWidth='240px'>
               <small className='text-secondary'>{t('socialDescription')}</small>
             </Box>
             <Box mt={2} id='footerNewsletterSignup'>
               <small className='text-secondary'>{t('signupnewsletter')}</small>
-              <Box className='newsletterInput'>
+              <Box className={styles.newsletterInput}>
                 <input
-                  placeholder={t('enterEmail')}
+                  placeholder={t('enterEmail') ?? ''}
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <Button disabled={isLoading} onClick={handleSignup}>
@@ -110,7 +109,7 @@ const Footer: React.FC = () => {
                         if (socialItem.link.includes('http')) {
                           window.open(socialItem.link, '_blank');
                         } else {
-                          history.push(socialItem.link);
+                          router.push(socialItem.link);
                         }
                       }}
                     >
@@ -125,14 +124,14 @@ const Footer: React.FC = () => {
           </Grid>
         </Grid>
         <Box
-          className={`copyrightWrapper ${
-            tabletWindowSize ? 'copyright-mobile' : ''
+          className={`${styles.copyrightWrapper} ${
+            tabletWindowSize ? styles.copyrightMobile : ''
           }`}
         >
           <small className='text-secondary'>© {copyrightYear} QuickSwap</small>
           <small className='text-secondary'>
             <a
-              className='footer-link'
+              className={styles.footerLink}
               href='https://docs.google.com/document/d/1Gglh43oxUZHdgrS2L9lZfsI4f6HYNF6MbBDsDPJVFkM/edit'
               target='_blank'
               rel='noreferrer'
@@ -140,8 +139,8 @@ const Footer: React.FC = () => {
               {t('termsofuse')}
             </a>
           </small>
-          {!tabletWindowSize && pathname === '/' && (
-            <Box className='fake-community-container'>&nbsp;</Box>
+          {!tabletWindowSize && router.pathname === '/' && (
+            <Box className={styles.fakeCommunityContainer}>&nbsp;</Box>
           )}
         </Box>
       </Box>

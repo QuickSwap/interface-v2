@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { area, curveStepAfter, ScaleLinear } from 'd3';
+import styles from 'styles/components/v3/LiquidityChartRangeInput.module.scss';
 import { ChartEntry } from './types';
 import inRange from 'lodash/inRange';
 import { PriceFormats } from '../PriceFomatToggler';
@@ -11,7 +12,6 @@ export const Area = ({
   xValue,
   yValue,
   fill,
-  priceFormat,
 }: {
   series: ChartEntry[];
   xScale: ScaleLinear<number, number>;
@@ -24,7 +24,7 @@ export const Area = ({
   useMemo(
     () => (
       <path
-        className={`liquidityPath${fill ? ' liquidityPathFilled' : ''}`}
+        className={`${styles.path} ${fill ? styles.filledPath : ''}`}
         d={
           area()
             .curve(curveStepAfter)

@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { Box, LinearProgress } from '@material-ui/core';
+import { Box, LinearProgress } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink } from 'utils/index';
-import { ReactComponent as ArrowTopRight } from 'assets/images/ArrowTopRight.svg';
+import { CallMade } from '@mui/icons-material';
+import styles from 'styles/components/Popups.module.scss';
 
 interface TransactionPopupProps {
   hash: string;
@@ -34,7 +35,7 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
 
   return (
     <>
-      <Box mb={1.5} className='flex justify-between items-center'>
+      <Box mb={1.5} className='flex items-center justify-between'>
         <small
           className={`weight-600 ${
             pending ? 'text-yellow3' : success ? 'text-success' : 'text-error'
@@ -47,8 +48,9 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
             href={getEtherscanLink(chainId, hash, 'transaction')}
             target='_blank'
             rel='noopener noreferrer'
+            className='text-textPrimary'
           >
-            <ArrowTopRight />
+            <CallMade />
           </a>
         )}
       </Box>
@@ -56,7 +58,7 @@ const TransactionPopup: React.FC<TransactionPopupProps> = ({
         {summary ?? 'Hash: ' + hash.slice(0, 8) + '...' + hash.slice(58, 65)}
       </small>
       {pending && (
-        <Box className='pendingBar'>
+        <Box className={styles.pendingBar}>
           <LinearProgress variant='determinate' value={progress} />
         </Box>
       )}

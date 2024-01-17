@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { StakingInfo, DualStakingInfo } from 'types/index';
 import { TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
@@ -14,7 +13,7 @@ import {
 } from 'state/transactions/hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { CurrencyLogo, NumericalInput } from 'components';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { GlobalConst } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -35,7 +34,7 @@ import {
   formatNumber,
   calculateGasMargin,
 } from 'utils';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
+import styles from 'styles/components/FarmCard.module.scss';
 
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -44,7 +43,7 @@ const FarmCardDetails: React.FC<{
 }> = ({ stakingInfo, stakingAPY, isLPFarm }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const [stakeAmount, setStakeAmount] = useState('');
   const [attemptStaking, setAttemptStaking] = useState(false);
   const [attemptUnstaking, setAttemptUnstaking] = useState(false);
@@ -119,11 +118,11 @@ const FarmCardDetails: React.FC<{
           );
         }
         addTransaction(response, {
-          summary: t('withdrawliquidity'),
+          summary: t('withdrawliquidity') ?? undefined,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: t('withdrawliquidity'),
+          summary: t('withdrawliquidity') ?? undefined,
         });
         setAttemptUnstaking(false);
       } catch (error) {
@@ -142,11 +141,11 @@ const FarmCardDetails: React.FC<{
           gasLimit: calculateGasMargin(estimatedGas),
         });
         addTransaction(response, {
-          summary: t('claimrewards'),
+          summary: t('claimrewards') ?? undefined,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: t('claimrewards'),
+          summary: t('claimrewards') ?? undefined,
         });
         setAttemptClaiming(false);
       } catch (error) {
@@ -193,11 +192,11 @@ const FarmCardDetails: React.FC<{
           },
         );
         addTransaction(response, {
-          summary: t('depositliquidity'),
+          summary: t('depositliquidity') ?? undefined,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
-          summary: t('depositliquidity'),
+          summary: t('depositliquidity') ?? undefined,
         });
         setAttemptStaking(false);
       } catch (error) {
@@ -205,15 +204,15 @@ const FarmCardDetails: React.FC<{
         console.log(error);
       }
     } else {
-      throw new Error(t('stakewithoutapproval'));
+      throw new Error(t('stakewithoutapproval') ?? undefined);
     }
   };
 
   const onAttemptToApprove = async () => {
     if (!pairContract || !library || !deadline)
-      throw new Error(t('missingdependencies'));
+      throw new Error(t('missingdependencies') ?? undefined);
     const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error(t('missingliquidity'));
+    if (!liquidityAmount) throw new Error(t('missingliquidity') ?? undefined);
     setApproving(true);
     try {
       await approveCallback();
@@ -278,7 +277,7 @@ const FarmCardDetails: React.FC<{
   return (
     <>
       <Box
-        className={`farmCardDetails ${
+        className={`${styles.farmCardDetails} ${
           stakingInfo?.ended ? 'justify-end' : 'justify-between'
         }`}
       >
@@ -286,11 +285,11 @@ const FarmCardDetails: React.FC<{
           <>
             {isMobile && (
               <>
-                <Box className='farmCardMobileRow'>
+                <Box className={styles.farmCardMobileRow}>
                   <small className='text-secondary'>{t('tvl')}</small>
                   <small>{tvl}</small>
                 </Box>
-                <Box className='farmCardMobileRow'>
+                <Box className={styles.farmCardMobileRow}>
                   <small className='text-secondary'>{t('rewards')}</small>
                   <Box textAlign='right'>
                     <small>
@@ -312,19 +311,16 @@ const FarmCardDetails: React.FC<{
                     )}
                   </Box>
                 </Box>
-                <Box className='farmCardMobileRow'>
+                <Box className={styles.farmCardMobileRow}>
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apy')}</small>
-                    {/* <Box ml={0.5} height={16}>
-                      <img src={CircleInfoIcon} alt={'arrow up'} />
-                    </Box> */}
                   </Box>
                   <small className='text-success'>{apyWithFee}%</small>
                 </Box>
               </>
             )}
             {!stakingInfo.ended && (
-              <Box className='buttonWrapper'>
+              <Box className={styles.buttonWrapper}>
                 <Box className='flex justify-between'>
                   <small>{t('inwallet')}:</small>
                   <Box className='flex flex-col items-end'>
@@ -333,7 +329,7 @@ const FarmCardDetails: React.FC<{
                       {getUSDString(stakedAmounts?.unStakedUSD)})
                     </small>
                     <Link
-                      to={`/pools/v2?currency0=${getTokenAddress(
+                      href={`/pools/v2?currency0=${getTokenAddress(
                         token0,
                       )}&currency1=${getTokenAddress(token1)}`}
                       target='_blank'
@@ -344,7 +340,7 @@ const FarmCardDetails: React.FC<{
                     </Link>
                   </Box>
                 </Box>
-                <Box className='inputVal' mb={2} mt={2} p={2}>
+                <Box className={styles.inputVal} mb={2} mt={2} p={2}>
                   <NumericalInput
                     placeholder='0.00'
                     value={stakeAmount}
@@ -375,7 +371,9 @@ const FarmCardDetails: React.FC<{
                   </small>
                 </Box>
                 <Box
-                  className={stakeEnabled ? 'buttonClaim' : 'buttonToken'}
+                  className={
+                    stakeEnabled ? styles.buttonClaim : styles.buttonToken
+                  }
                   mt={2}
                   p={2}
                   onClick={async () => {
@@ -400,7 +398,7 @@ const FarmCardDetails: React.FC<{
                 </Box>
               </Box>
             )}
-            <Box className='buttonWrapper' mx={isMobile ? 0 : 2} my={2}>
+            <Box className={styles.buttonWrapper} mx={isMobile ? 0 : 2} my={2}>
               <Box className='flex justify-between'>
                 <small>{t('mydeposits')}:</small>
                 <small>
@@ -408,7 +406,7 @@ const FarmCardDetails: React.FC<{
                   {getUSDString(stakedAmounts?.myStakedUSD)})
                 </small>
               </Box>
-              <Box className='inputVal' mb={2} mt={4.5} p={2}>
+              <Box className={styles.inputVal} mb={2} mt={4.5} p={2}>
                 <NumericalInput
                   placeholder='0.00'
                   value={unstakeAmount}
@@ -439,7 +437,9 @@ const FarmCardDetails: React.FC<{
                 </small>
               </Box>
               <Box
-                className={unstakeEnabled ? 'buttonClaim' : 'buttonToken'}
+                className={
+                  unstakeEnabled ? styles.buttonClaim : styles.buttonToken
+                }
                 mt={2}
                 p={2}
                 onClick={() => {
@@ -455,7 +455,7 @@ const FarmCardDetails: React.FC<{
                 </p>
               </Box>
             </Box>
-            <Box className='buttonWrapper'>
+            <Box className={styles.buttonWrapper}>
               <Box className='flex flex-col items-center justify-between'>
                 <Box mb={1}>
                   <small>{t('unclaimedRewards')}:</small>
@@ -498,7 +498,9 @@ const FarmCardDetails: React.FC<{
                 )}
               </Box>
               <Box
-                className={claimEnabled ? 'buttonClaim' : 'buttonToken'}
+                className={
+                  claimEnabled ? styles.buttonClaim : styles.buttonToken
+                }
                 p={2}
                 onClick={() => {
                   if (claimEnabled) {
@@ -513,7 +515,7 @@ const FarmCardDetails: React.FC<{
         )}
       </Box>
       {mainRewardRate?.greaterThan('0') && (
-        <Box className='dailyRateWrapper'>
+        <Box className={styles.dailyRateWrapper}>
           <Box>
             <Box>
               <small className='text-secondary'>

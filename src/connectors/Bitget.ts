@@ -34,19 +34,17 @@ export class Bitget extends Connector {
   /** {@inheritdoc Connector.provider} */
   public provider: any;
 
-  private readonly options?: Parameters<typeof detectEthereumProvider>[0];
   private eagerConnection?: Promise<void>;
 
-  constructor({ actions, options, onError }: BitgetConstructorArgs) {
+  constructor({ actions, onError }: BitgetConstructorArgs) {
     super(actions, onError);
-    this.options = options;
   }
 
   private async isomorphicInitialize(): Promise<void> {
     if (this.eagerConnection) return;
 
     return (this.eagerConnection = import('@metamask/detect-provider').then(
-      async (m) => {
+      async (_) => {
         const windowAsAny = window as any;
         const provider = windowAsAny.bitkeep?.ethereum;
         if (provider) {

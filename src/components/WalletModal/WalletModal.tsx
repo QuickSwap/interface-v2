@@ -1,9 +1,9 @@
 import { useWeb3React } from '@web3-react/core';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
-import ReactGA from 'react-ga';
-import { Box } from '@material-ui/core';
-import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
+import { event } from 'nextjs-google-analytics';
+import { Box } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import { GlobalConst } from 'constants/index';
 import { ApplicationModal } from 'state/application/actions';
 import {
@@ -12,10 +12,10 @@ import {
   useWalletModalToggle,
 } from 'state/application/hooks';
 import { AccountDetails, CustomModal } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import WalletOption from './options';
 import PendingView from './PendingView';
-import 'components/styles/WalletModal.scss';
+import styles from 'styles/components/WalletModal.module.scss';
 import {
   Connection,
   coinbaseWalletConnection,
@@ -107,9 +107,8 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   const tryActivation = async (connection: Connection) => {
     // log selected wallet
-    ReactGA.event({
+    event('Change Wallet', {
       category: 'Wallet',
-      action: 'Change Wallet',
       label: connection.name,
     });
     setPendingWallet(connection); // set wallet for pending view
@@ -133,12 +132,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
       if (
         connection.connector instanceof UAuthConnector &&
-        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
-        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
+        process.env.NEXT_PUBLIC_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+        process.env.NEXT_PUBLIC_UNSTOPPABLE_DOMAIN_REDIRECT_URI
       ) {
         const uauth = new UAuth({
-          clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-          redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+          clientID: process.env.NEXT_PUBLIC_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+          redirectUri: process.env.NEXT_PUBLIC_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
           scope: 'openid wallet',
         });
 
@@ -442,7 +441,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
             <h6>{t('connectWallet')}</h6>
             <Close className='cursor-pointer' onClick={toggleWalletModal} />
           </Box>
-          <Box my={1} className='walletDescriptionContainer'>
+          <Box my={1} className={styles.walletDescriptionContainer}>
             <p className='small text-secondary'>{t('walletDescription')}</p>
             <p className='small text-secondary'>
               {t('installedMetamaskNotDisplayedWarning')}
@@ -459,7 +458,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
             ) : (
               <Box
                 className={
-                  iconify ? 'option-container-iconify' : 'option-container'
+                  iconify
+                    ? styles.optionContainerIconify
+                    : styles.optionContainer
                 }
               >
                 {getOptions()}
@@ -468,7 +469,10 @@ const WalletModal: React.FC<WalletModalProps> = ({
           </Box>
         </Box>
         {walletView !== WALLET_VIEWS.PENDING && (
-          <Box paddingY={2.5} className={iconify ? 'blurb-iconify' : 'blurb'}>
+          <Box
+            paddingY={2.5}
+            className={iconify ? styles.blurbIconify : styles.blurb}
+          >
             <small>{t('newToMatic')}</small>
             <a
               href='https://wiki.polygon.technology/docs/tools/wallets/getting-started'
@@ -485,7 +489,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
   return (
     <CustomModal
-      modalWrapper='walletModalWrapper'
+      modalWrapper={styles.walletModalWrapper}
       open={walletModalOpen}
       onClose={toggleWalletModal}
     >

@@ -65,3 +65,4 @@ export { default as NetworkSelectionModal } from './NetworkSelectionModal';
 export { default as SortColumns } from './SortColumns';
 export { default as TermsWrapper } from './TermsWrapper';
 export { default as DualCurrencyPanel } from './DualCurrencyPanel';
+export { default as ConvertQuick } from './ConvertQuick';

@@ -1,0 +1,22 @@
+@use 'styles/variables' as *;
+
+.v3StakeActiveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.v3MyFarmsPositionCard {
+  background-color: $secondary1;
+  margin-top: 16px;
+  border-radius: 16px;
+  padding: 12px;
+  a {
+    color: $primary;
+    text-decoration: none;
+  }
+  button {
+    height: 40px;
+    border-radius: 12px;
+  }
+}

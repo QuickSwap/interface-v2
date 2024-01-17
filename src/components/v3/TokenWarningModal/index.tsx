@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { Token as V2Token } from '@uniswap/sdk';
 import { Token } from '@uniswap/sdk-core';
 import { CustomModal, CurrencyLogo } from 'components';
-import { ReportProblemOutlined } from '@material-ui/icons';
+import { ReportProblemOutlined } from '@mui/icons-material';
 import { useActiveWeb3React } from 'hooks';
 import { getEtherscanLink, shortenAddress } from 'utils';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 
 function TokenWarningCard({ token }: { token?: Token | V2Token }) {
   const { chainId } = useActiveWeb3React();
@@ -94,7 +94,7 @@ export default function TokenWarningModal({
         {tokens.map((token) => {
           return <TokenWarningCard key={token.address} token={token} />;
         })}
-        <Box className='flex justify-between items-center'>
+        <Box className='flex items-center justify-between'>
           <p style={{ cursor: 'pointer', userSelect: 'none' }}>
             <input
               type='checkbox'

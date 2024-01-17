@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 
 const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
   exactEnd,
@@ -10,7 +9,7 @@ const SyrupTimerLabel: React.FC<{ exactEnd: number; isEnded: boolean }> = ({
   const { t } = useTranslation();
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const MINUTE = 60;
   const HOUR = MINUTE * 60;

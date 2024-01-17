@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { DEX } from '@soulsolidity/soulzap-v1';
 import BigNumber from 'bignumber.js';
 import { ZapDataBond, ZapData } from '@soulsolidity/soulzap-v1/dist/src/types';

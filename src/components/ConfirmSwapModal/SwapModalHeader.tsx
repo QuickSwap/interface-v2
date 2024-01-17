@@ -1,16 +1,17 @@
 import { Currency, Fraction, Trade, TradeType } from '@uniswap/sdk';
 import React, { useMemo } from 'react';
 import { AlertTriangle } from 'react-feather';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { Field } from 'state/swap/actions';
 import { DoubleCurrencyLogo } from 'components';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg';
+import ArrowDownIcon from 'svgs/ArrowDownIcon.svg';
 import { basisPointsToPercent, formatTokenAmount } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
+import styles from 'styles/components/ConfirmSwapModal.module.scss';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
 
@@ -69,7 +70,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
           size={48}
         />
       </Box>
-      <Box className='swapContent'>
+      <Box className={styles.swapContent}>
         <p>
           {t('swap')}{' '}
           {optimalRate
@@ -105,7 +106,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
         </p>
       </Box>
       {showAcceptChanges && (
-        <Box className='priceUpdate'>
+        <Box className={styles.priceUpdate}>
           <Box>
             <AlertTriangle size={20} />
             <p>{t('priceUpdated')}</p>
@@ -113,7 +114,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
           <Button onClick={onAcceptChanges}>{t('accept')}</Button>
         </Box>
       )}
-      <Box className='transactionText'>
+      <Box className={styles.transactionText}>
         {trade?.tradeType === TradeType.EXACT_INPUT ||
         optimalRate?.side === SwapSide.SELL ? (
           <p className='small'>
@@ -151,7 +152,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
         ) : (
           <></>
         )}
-        <Button onClick={onConfirm} className='swapButton'>
+        <Button onClick={onConfirm} className={styles.swapButton}>
           {t('confirmSwap')}
         </Button>
       </Box>

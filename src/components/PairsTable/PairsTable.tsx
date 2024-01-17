@@ -1,18 +1,18 @@
 import React from 'react';
-import { Box, Divider } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+import { Box, Divider } from '@mui/material';
+import Link from 'next/link';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
 import { useBookmarkPairs } from 'state/application/hooks';
-import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
-import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
-import { useTranslation } from 'react-i18next';
+import StarChecked from 'svgs/StarChecked.svg';
+import StarUnchecked from 'svgs/StarUnchecked.svg';
+import { useTranslation } from 'next-i18next';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import { useSelectedTokenList } from 'state/lists/hooks';
+import styles from 'styles/components/AnalyticsTable.module.scss';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import 'components/styles/AnalyticsTable.scss';
 import FarmingAPRTooltip from 'components/FarmingAPRTooltip';
 
 interface PairsTableProps {
@@ -179,8 +179,8 @@ const PairTable: React.FC<PairsTableProps> = ({
             </Box>
             <Link
               className='no-decoration'
-              to={`/analytics/${version}/pair/${pair.id}${
-                pair.isUni ? '?isUni=true' : ''
+              href={`/analytics/${version}/pair?id=${pair.id}${
+                pair.isUni ? '&isUni=true' : ''
               }`}
             >
               <Box className='flex items-center'>
@@ -209,7 +209,7 @@ const PairTable: React.FC<PairsTableProps> = ({
               </Box>
             )}
             {version === 'total' && (
-              <Box ml={0.5} className='analyticsPairVersion'>
+              <Box ml={0.5} className={styles.analyticsPairVersion}>
                 {pair.isV3 ? 'V3' : 'V2'}
               </Box>
             )}
@@ -359,7 +359,9 @@ const PairTable: React.FC<PairsTableProps> = ({
     const totalSpecificRows = [
       {
         html: (
-          <Box className='analyticsPairVersion'>{pair.isV3 ? 'V3' : 'V2'}</Box>
+          <Box className={styles.analyticsPairVersion}>
+            {pair.isV3 ? 'V3' : 'V2'}
+          </Box>
         ),
       },
     ];
@@ -389,9 +391,9 @@ const PairTable: React.FC<PairsTableProps> = ({
               </Box>
               <Link
                 className='no-decoration'
-                to={`/analytics/${pair.isV3 ? 'v3' : 'v2'}/pair/${pair.id}${
-                  pair.isUni ? '?isUni=true' : ''
-                }`}
+                href={`/analytics/${pair.isV3 ? 'v3' : 'v2'}/pair?id=${
+                  pair.id
+                }${pair.isUni ? '&isUni=true' : ''}`}
               >
                 <Box className='flex items-center'>
                   <DoubleCurrencyLogo

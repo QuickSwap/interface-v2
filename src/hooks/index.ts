@@ -29,11 +29,10 @@ import {
 import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
 import { usePairs } from 'data/Reserves';
-import useParsedQueryString from './useParsedQueryString';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { getConfig } from 'config/index';
-import { Connector } from '@web3-react/types';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { Connector } from '@web3-react/types';
 import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
 import { Currency } from '@uniswap/sdk-core';
 import { BigNumber } from 'ethers';
@@ -167,9 +166,9 @@ export const useIsProMode = () => {
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
   const proModeEnabled = config['swap']['proMode'];
-  const parsedQs = useParsedQueryString();
+  const router = useRouter();
   const isProMode = Boolean(
-    parsedQs.isProMode && parsedQs.isProMode === 'true',
+    router.query.isProMode && router.query.isProMode === 'true',
   );
   return proModeEnabled && isProMode;
 };
@@ -181,14 +180,17 @@ export const useAnalyticsVersion = () => {
   const v2 = config['v2'];
   const v3 = config['v3'];
   const defaultVersion = v2 && v3 ? 'total' : v2 ? 'v2' : 'v3';
-  const params: any = useParams();
-  const version = params && params.version ? params.version : defaultVersion;
+  const router = useRouter();
+  const version =
+    router && router.query.version
+      ? (router.query.version as string)
+      : defaultVersion;
   return version;
 };
 
 export const useMasaAnalytics = () => {
   const masaAnalytics = useMasaAnalyticsReact({
-    clientId: process.env.REACT_APP_MASA_CLIENT_ID ?? '',
+    clientId: process.env.NEXT_PUBLIC_MASA_CLIENT_ID ?? '',
     clientApp: 'Quickswap',
     clientName: 'Quickswap',
   });

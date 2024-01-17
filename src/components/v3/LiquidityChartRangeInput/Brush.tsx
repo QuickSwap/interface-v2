@@ -7,12 +7,10 @@ import React, {
 } from 'react';
 import { BrushBehavior, brushX, D3BrushEvent, ScaleLinear, select } from 'd3';
 import usePrevious from 'hooks/usePrevious';
+import styles from 'styles/components/v3/LiquidityChartRangeInput.module.scss';
 
 // flips the handles draggers when close to the container edges
 const FLIP_HANDLE_THRESHOLD_PX = 20;
-
-// margin to prevent tick snapping from putting the brush off screen
-const BRUSH_EXTENT_MARGIN_PX = 2;
 
 const compare = (
   a: [number, number],
@@ -51,8 +49,6 @@ export const Brush = ({
   const [localBrushExtent, setLocalBrushExtent] = useState<
     [number, number] | null
   >(brushExtent);
-  const [showLabels, setShowLabels] = useState(false);
-  const [hovering, setHovering] = useState(false);
 
   const previousBrushExtent = usePrevious(brushExtent);
 
@@ -142,27 +138,12 @@ export const Brush = ({
     );
   }, [brushExtent, xScale]);
 
-  // show labels when local brush changes
-  useEffect(() => {
-    setShowLabels(true);
-    const timeout = setTimeout(() => setShowLabels(false), 1500);
-    return () => clearTimeout(timeout);
-  }, [localBrushExtent]);
-
   // variables to help render the SVGs
   const flipWestHandle =
     localBrushExtent && xScale(localBrushExtent[0]) > FLIP_HANDLE_THRESHOLD_PX;
   const flipEastHandle =
     localBrushExtent &&
     xScale(localBrushExtent[1]) > innerWidth - FLIP_HANDLE_THRESHOLD_PX;
-
-  const showWestArrow =
-    localBrushExtent &&
-    (xScale(localBrushExtent[0]) < 0 || xScale(localBrushExtent[1]) < 0);
-  const showEastArrow =
-    localBrushExtent &&
-    (xScale(localBrushExtent[0]) > innerWidth ||
-      xScale(localBrushExtent[1]) > innerWidth);
 
   const westHandleInView =
     localBrushExtent &&
@@ -257,13 +238,13 @@ export const Brush = ({
                 </g>
 
                 <g
-                  className='liquidityLabelGroup'
+                  className={`${styles.labelGroup} ${styles.visibleLabelGroup}`}
                   transform={`translate(0,${-innerHeight + 30}), scale(${
                     flipWestHandle ? '1' : '-1'
                   }, 1)`}
                 >
                   <rect
-                    className='liquidityTooltipBackground'
+                    className={styles.tooltipBackground}
                     y='0'
                     x='12'
                     height='15'
@@ -271,7 +252,7 @@ export const Brush = ({
                     rx='4'
                   />
                   <text
-                    className='liquidityTooltip'
+                    className={styles.tooltip}
                     y='8'
                     x='-27'
                     transform={`scale(-1, 1)`}
@@ -304,13 +285,13 @@ export const Brush = ({
                 </g>
 
                 <g
-                  className='liquidityLabelGroup'
+                  className={`${styles.labelGroup} ${styles.visibleLabelGroup}`}
                   transform={`translate(0,${-innerHeight + 30}), scale(${
                     flipEastHandle ? '-1' : '1'
                   }, 1)`}
                 >
                   <rect
-                    className='liquidityTooltipBackground'
+                    className={styles.tooltipBackground}
                     y='0'
                     x='12'
                     height='15'
@@ -318,7 +299,7 @@ export const Brush = ({
                     rx='4'
                   />
                   <text
-                    className='liquidityTooltip'
+                    className={styles.tooltip}
                     y='8'
                     x='27'
                     dominantBaseline='middle'
@@ -333,8 +314,6 @@ export const Brush = ({
               cursor={'default'}
               ref={brushRef}
               clipPath={`url(#${id}-brush-clip)`}
-              onMouseEnter={() => setHovering(true)}
-              onMouseLeave={() => setHovering(false)}
             />
           </>
         )}

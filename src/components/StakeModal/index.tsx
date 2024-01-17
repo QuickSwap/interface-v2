@@ -1,12 +1,11 @@
 import React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { X } from 'react-feather';
-import { useFarmPositionsForPool } from '../../hooks/useIncentiveSubgraph';
-import { useFarmingHandlers } from '../../hooks/useStakerHandlers';
-import { useChunkedRows } from '../../utils/chunkForRows';
-import Loader from '../Loader';
-import { FarmingType } from '../../models/enums';
-import './index.scss';
+import { useFarmPositionsForPool } from 'hooks/useIncentiveSubgraph';
+import { useFarmingHandlers } from 'hooks/useStakerHandlers';
+import { useChunkedRows } from 'utils/chunkForRows';
+import { FarmingType } from 'models/enums';
+import styles from 'styles/components/StakeModal.module.scss';
 import FarmModalFarmingTiers from 'components/StakeModalFarmingTiers';
 import { IsActive } from 'components/StakerMyStakes/IsActive';
 import { useCurrencyBalance } from 'state/wallet/hooks';
@@ -14,17 +13,15 @@ import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import { FARMING_CENTER } from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
-import TransactionSubmitted from 'assets/images/TransactionSubmitted.png';
-import TransactionFailed from 'assets/images/TransactionFailed.png';
 import { formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { ChainId } from '@uniswap/sdk';
-import { Box, Button } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
-import { Check } from '@material-ui/icons';
+import { Box, Button, CircularProgress } from '@mui/material';
+import { Skeleton } from '@mui/lab';
+import { Check } from '@mui/icons-material';
 import { useV3StakeData } from 'state/farms/hooks';
-import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'next-i18next';
+import { useRouter } from 'next/router';
 
 interface FarmModalProps {
   event: {
@@ -69,7 +66,7 @@ export function FarmModal({
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const { t } = useTranslation();
-  const history = useHistory();
+  const router = useRouter();
 
   const isTierFarming = useMemo(
     () =>
@@ -319,7 +316,12 @@ export function FarmModal({
             </Box>
           </Box>
           <Box className='flex flex-col items-center'>
-            <img src={TransactionSubmitted} alt='Deposited Successfully' />
+            <picture>
+              <img
+                src='/assets/images/TransactionSubmitted.png'
+                alt='Deposited Successfully'
+              />
+            </picture>
             <Box mt={3}>
               <p>
                 {t('positionDepositedSuccessfully', { nftID: selectedNFT })}!
@@ -333,10 +335,10 @@ export function FarmModal({
           width='100%'
           height='400px'
         >
-          <Loader size={'25px'} />
+          <CircularProgress size={'25px'} />
         </Box>
       ) : (
-        <div className='v3-farm-stake-modal-wrapper'>
+        <div className={styles.v3FarmStakeModalWrapper}>
           <Box mb={1} className='flex justify-between'>
             <h6 className='weight-600'>{t('selectPosition')}</h6>
             <Box className='cursor-pointer' onClick={closeHandler}>
@@ -367,7 +369,12 @@ export function FarmModal({
           <Box mt={3}>
             {chunkedPositions && chunkedPositions.length === 0 ? (
               <Box textAlign='center'>
-                <img src={TransactionFailed} alt='No NFT' />
+                <picture>
+                  <img
+                    src='/assets/images/TransactionFailed.png'
+                    alt='No NFT'
+                  />
+                </picture>
                 <Box mt={3} mb={1.5}>
                   <p>
                     {t('noNFTFound', {
@@ -377,13 +384,13 @@ export function FarmModal({
                 </Box>
                 <p className='text-secondary'>{t('takePartinFarmNeedTo')}</p>
                 <Box mt={4} className='flex items-center justify-center'>
-                  <Button onClick={() => history.push(linkToProviding)}>
+                  <Button onClick={() => router.push(linkToProviding)}>
                     {t('addLiquidity')}
                   </Button>
                 </Box>
               </Box>
             ) : chunkedPositions && chunkedPositions.length !== 0 ? (
-              chunkedPositions.map((row, i, arr) => (
+              chunkedPositions.map((row, i) => (
                 <Box
                   style={{
                     opacity:
@@ -394,9 +401,9 @@ export function FarmModal({
                 >
                   {row.map((el, j) => (
                     <Box
-                      className={`v3-farm-stake-modal-position${
+                      className={`${styles.v3FarmStakeModalPosition} ${
                         selectedNFT === el.id
-                          ? ' v3-farm-stake-modal-position-selected'
+                          ? styles.v3FarmStakeModalPositionSelected
                           : ''
                       }`}
                       key={j}
@@ -426,10 +433,10 @@ export function FarmModal({
                         </Box>
                       </Box>
                       <Box
-                        className={`v3-farm-stake-position-check ${
+                        className={`${styles.v3FarmStakePositionCheck} ${
                           selectedNFT === el.id
-                            ? 'v3-farm-stake-position-checked'
-                            : 'v3-farm-stake-position-unchecked'
+                            ? styles.v3FarmStakePositionChecked
+                            : styles.v3FarmStakePositionUnchecked
                         }`}
                       >
                         {selectedNFT === el.id && <Check />}
@@ -440,16 +447,16 @@ export function FarmModal({
               ))
             ) : (
               <Box className='flex'>
-                {[0, 1, 2].map((el, i) => (
+                {[0, 1, 2].map((i) => (
                   <Box
                     padding='8px'
-                    borderRadius={12}
+                    borderRadius='12px'
                     mr={1}
                     position='relative'
                     className='flex items-center border'
                     key={i}
                   >
-                    <Skeleton variant='circle' width='40px' height='40px' />
+                    <Skeleton variant='circular' width='40px' height='40px' />
                     <Box ml={1}>
                       <Skeleton width={50} height={16} />
                       <Skeleton width={60} height={20} />
@@ -480,7 +487,7 @@ export function FarmModal({
                   >
                     {approval === ApprovalState.PENDING ? (
                       <Box className='flex items-center'>
-                        <Loader stroke={'white'} />
+                        <CircularProgress size='16px' />
                         <div>{t('approving')}</div>
                       </Box>
                     ) : !showApproval ? (
@@ -498,7 +505,7 @@ export function FarmModal({
                 >
                   {submitLoader && submitState === 0 ? (
                     <Box className='flex items-center'>
-                      <Loader stroke={'white'} />
+                      <CircularProgress size={24} />
                       <Box ml='4px'>{t('approving')}</Box>
                     </Box>
                   ) : nftApproved ? (
@@ -515,7 +522,7 @@ export function FarmModal({
                 >
                   {submitLoader && submitState === 2 ? (
                     <Box className='flex items-center'>
-                      <Loader stroke={'white'} />
+                      <CircularProgress size={24} />
                       <Box ml='4px'>{t('depositing')}</Box>
                     </Box>
                   ) : (

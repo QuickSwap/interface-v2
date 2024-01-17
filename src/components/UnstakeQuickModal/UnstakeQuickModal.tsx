@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Close } from '@mui/icons-material';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
   useTransactionAdder,
@@ -11,7 +11,7 @@ import {
 import { useLairContract, useNewLairContract } from 'hooks/useContract';
 import Web3 from 'web3';
 import { calculateGasMargin, formatTokenAmount } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { DLDQUICK, OLD_DQUICK } from 'constants/v3/addresses';
@@ -84,7 +84,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
           <h5>
             {t('unstake')} {dQuickToken?.symbol}
           </h5>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={3}
@@ -114,7 +114,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
               }}
             />
             <span
-              className='text-primary text-bold cursor-pointer'
+              className='cursor-pointer text-primary text-bold'
               onClick={() => {
                 setTypedValue(dQuickBalance ? dQuickBalance.toExact() : '0');
                 setStakePercent(100);
@@ -130,7 +130,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
                 max={100}
                 step={1}
                 value={stakePercent}
-                handleChange={(evt, value) => {
+                handleChange={(_, value) => {
                   setStakePercent(value as number);
                   setTypedValue(
                     dQuickBalance

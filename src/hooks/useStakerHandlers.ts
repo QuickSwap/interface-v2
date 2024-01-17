@@ -15,8 +15,8 @@ import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';
 import { TransactionResponse } from '@ethersproject/providers';
 import { FarmingType } from '../models/enums';
-import { useTranslation } from 'react-i18next';
-import { toHex } from 'lib/src/utils/calldata';
+import { useTranslation } from 'next-i18next';
+import { toHex } from 'lib/utils/calldata';
 import { useV3StakeData } from 'state/farms/hooks';
 import { calculateGasMargin } from 'utils';
 
@@ -49,7 +49,7 @@ export function useFarmingHandlers() {
         limitEarned,
         isDetached,
       }: any,
-      farmingType: any,
+      farmingType: FarmingType,
     ) => {
       if (!account || !provider || !chainId) return;
 
@@ -95,7 +95,7 @@ export function useFarmingHandlers() {
             ]),
           ];
 
-          if (Boolean(+eternalEarned)) {
+          if (+eternalEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 eternalRewardToken.address,
@@ -106,7 +106,7 @@ export function useFarmingHandlers() {
             );
           }
 
-          if (Boolean(+eternalBonusEarned)) {
+          if (+eternalBonusEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 eternalBonusRewardToken.address,
@@ -169,7 +169,7 @@ export function useFarmingHandlers() {
             ]),
           ];
 
-          if (Boolean(+limitEarned)) {
+          if (+limitEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 limitRewardToken.address,
@@ -180,7 +180,7 @@ export function useFarmingHandlers() {
             );
           }
 
-          if (Boolean(+limitBonusEarned)) {
+          if (+limitBonusEarned) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 limitBonusRewardToken.address,
@@ -201,7 +201,7 @@ export function useFarmingHandlers() {
         }
 
         addTransaction(result, {
-          summary: t('undepositNFT', { nftID: token }),
+          summary: t('undepositNFT', { nftID: token }) ?? undefined,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -209,11 +209,12 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: t('undepositedNFT', { nftID: token }),
+          summary: t('undepositedNFT', { nftID: token }) ?? undefined,
         });
 
         updateV3Stake({ txConfirmed: true });
-      } catch (err) {
+      } catch (error) {
+        const err = error as any;
         updateV3Stake({ txError: 'failed' });
         if (err.code !== 4001) {
           throw new Error(t('undeposit') + ' ' + err.message);
@@ -316,7 +317,7 @@ export function useFarmingHandlers() {
         }
 
         addTransaction(result, {
-          summary: t('claimingReward'),
+          summary: t('claimingReward') ?? undefined,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -324,7 +325,7 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: t('claimedReward'),
+          summary: t('claimedReward') ?? undefined,
         });
 
         updateV3Stake({ txConfirmed: true });
@@ -390,7 +391,7 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: t('withdrawnNFT', { nftID: token }),
+          summary: t('withdrawnNFT', { nftID: token }) ?? undefined,
         });
 
         updateV3Stake({ txConfirmed: true });
@@ -596,7 +597,7 @@ export function useFarmingHandlers() {
         );
 
         addTransaction(result, {
-          summary: t('claimingReward'),
+          summary: t('claimingReward') ?? undefined,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -604,7 +605,7 @@ export function useFarmingHandlers() {
         const receipt = await result.wait();
 
         finalizeTransaction(receipt, {
-          summary: t('claimedReward'),
+          summary: t('claimedReward') ?? undefined,
         });
 
         updateV3Stake({ txConfirmed: true });

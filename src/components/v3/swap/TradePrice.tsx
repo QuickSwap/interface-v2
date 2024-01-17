@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCallback } from 'react';
 import { Currency, Price } from '@uniswap/sdk-core';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 interface TradePriceProps {
   price: Price<Currency, Currency>;

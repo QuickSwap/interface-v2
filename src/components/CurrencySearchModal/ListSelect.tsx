@@ -1,11 +1,10 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
-import ReactGA from 'react-ga';
-import { Box, Button, Popover, Divider } from '@material-ui/core';
+import { event } from 'nextjs-google-analytics';
+import { Box, Button, Popover, Divider } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { ReactComponent as DropDown } from 'assets/images/dropdown.svg';
+import { ExpandMore, Close } from '@mui/icons-material';
 import { useFetchListCallback } from 'hooks/useFetchListCallback';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 
 import { AppDispatch, AppState } from 'state';
 import { acceptListUpdate, removeList, selectList } from 'state/lists/actions';
@@ -14,7 +13,7 @@ import listVersionLabel from 'utils/listVersionLabel';
 import { parseENSAddress } from 'utils/parseENSAddress';
 import uriToHttp from 'utils/uriToHttp';
 import { QuestionHelper, ListLogo } from 'components';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 function ListOrigin({ listUrl }: { listUrl: string }) {
   const ensName = useMemo(() => parseENSAddress(listUrl)?.ensName, [listUrl]);
@@ -61,9 +60,8 @@ const ListRow = memo(function ListRow({
 
   const selectThisList = useCallback(() => {
     if (isSelected) return;
-    ReactGA.event({
+    event('Select List', {
       category: 'Lists',
-      action: 'Select List',
       label: listUrl,
     });
 
@@ -73,24 +71,24 @@ const ListRow = memo(function ListRow({
 
   const handleAcceptListUpdate = useCallback(() => {
     if (!pending) return;
-    ReactGA.event({
+    event('Update List from List Select', {
       category: 'Lists',
-      action: 'Update List from List Select',
       label: listUrl,
     });
     dispatch(acceptListUpdate(listUrl));
   }, [dispatch, listUrl, pending]);
 
   const handleRemoveList = useCallback(() => {
-    ReactGA.event({
+    event('Start Remove List', {
       category: 'Lists',
-      action: 'Start Remove List',
       label: listUrl,
     });
-    if (window.prompt(t('confirmRemoveList')) === t('REMOVE').toUpperCase()) {
-      ReactGA.event({
+    if (
+      window.prompt(t('confirmRemoveList') ?? undefined) ===
+      t('REMOVE').toUpperCase()
+    ) {
+      event('Confirm Remove List', {
         category: 'Lists',
-        action: 'Confirm Remove List',
         label: listUrl,
       });
       dispatch(removeList(listUrl));
@@ -118,7 +116,7 @@ const ListRow = memo(function ListRow({
             setAnchorEl(evt.currentTarget);
           }}
         >
-          <DropDown />
+          <ExpandMore />
         </Box>
 
         <Popover
@@ -203,16 +201,14 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
     fetchList(listUrlInput)
       .then(() => {
         setListUrlInput('');
-        ReactGA.event({
+        event('Add List', {
           category: 'Lists',
-          action: 'Add List',
           label: listUrlInput,
         });
       })
       .catch((error) => {
-        ReactGA.event({
+        event('Add List Failed', {
           category: 'Lists',
-          action: 'Add List Failed',
           label: listUrlInput,
         });
         setAddError(error.message);
@@ -263,7 +259,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
       <Box className='header'>
         <ArrowLeft onClick={onBack} />
         <p>{t('manageLists')}</p>
-        <CloseIcon onClick={onDismiss} />
+        <Close onClick={onDismiss} />
       </Box>
 
       <Divider />
@@ -277,7 +273,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
           <input
             type='text'
             id='list-add-input'
-            placeholder={t('listPlaceholder')}
+            placeholder={t('listPlaceholder') ?? undefined}
             value={listUrlInput}
             onChange={handleInput}
             onKeyDown={handleEnterKey}

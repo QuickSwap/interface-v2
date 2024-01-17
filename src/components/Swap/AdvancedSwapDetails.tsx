@@ -1,7 +1,7 @@
 import { Trade, TradeType } from '@uniswap/sdk';
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+import { Box } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { Field } from 'state/swap/actions';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import {
@@ -14,8 +14,9 @@ import {
   CurrencyLogo,
   SettingsModal,
 } from 'components';
-import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
+import EditIcon from 'svgs/EditIcon.svg';
 import { formatTokenAmount } from 'utils';
+import styles from 'styles/components/Swap.module.scss';
 
 interface TradeSummaryProps {
   trade: Trade;
@@ -47,20 +48,20 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           onClose={() => setOpenSettingsModal(false)}
         />
       )}
-      <Box className='summaryRow'>
+      <Box className={styles.summaryRow}>
         <Box>
           <small>{t('slippage')}:</small>
           <QuestionHelper text={t('slippageHelper')} />
         </Box>
         <Box
           onClick={() => setOpenSettingsModal(true)}
-          className='swapSlippage'
+          className={styles.swapSlippage}
         >
           <small>{allowedSlippage / 100}%</small>
           <EditIcon />
         </Box>
       </Box>
-      <Box className='summaryRow'>
+      <Box className={styles.summaryRow}>
         <Box>
           <small>{isExactIn ? t('minReceived') : t('maxSold')}:</small>
           <QuestionHelper text={t('txLimitHelper')} />
@@ -75,14 +76,14 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           <CurrencyLogo currency={tradeAmount.currency} size='16px' />
         </Box>
       </Box>
-      <Box className='summaryRow'>
+      <Box className={styles.summaryRow}>
         <Box>
           <small>{t('priceimpact')}:</small>
           <QuestionHelper text={t('priceImpactHelper')} />
         </Box>
         <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
       </Box>
-      <Box className='summaryRow'>
+      <Box className={styles.summaryRow}>
         <Box>
           <small>{t('liquidityProviderFee')}:</small>
           <QuestionHelper text={t('liquidityProviderFeeHelper')} />
@@ -91,7 +92,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           {formatTokenAmount(realizedLPFee)} {trade.inputAmount.currency.symbol}
         </small>
       </Box>
-      <Box className='summaryRow'>
+      <Box className={styles.summaryRow}>
         <Box>
           <small>{t('route')}:</small>
           <QuestionHelper text={t('swapRouteHelper')} />

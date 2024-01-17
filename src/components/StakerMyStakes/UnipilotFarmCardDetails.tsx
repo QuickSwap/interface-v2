@@ -6,8 +6,8 @@ import {
   Grid,
   useTheme,
   useMediaQuery,
-} from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+} from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { CurrencyLogo, NumericalInput } from 'components';
 import { Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
@@ -209,11 +209,11 @@ const UnipilotFarmCardDetails: React.FC<{
     );
 
     addTransaction(response, {
-      summary: t('depositliquidity'),
+      summary: t('depositliquidity') ?? '',
     });
     const receipt = await response.wait();
     finalizedTransaction(receipt, {
-      summary: t('depositliquidity'),
+      summary: t('depositliquidity') ?? '',
     });
   };
 
@@ -239,11 +239,11 @@ const UnipilotFarmCardDetails: React.FC<{
         );
       }
       addTransaction(response, {
-        summary: t('withdrawliquidity'),
+        summary: t('withdrawliquidity') ?? '',
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('withdrawliquidity'),
+        summary: t('withdrawliquidity') ?? '',
       });
       setAttemptUnstaking(false);
     } catch (e) {
@@ -262,11 +262,11 @@ const UnipilotFarmCardDetails: React.FC<{
       });
 
       addTransaction(response, {
-        summary: t('claimrewards'),
+        summary: t('claimrewards') ?? '',
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
-        summary: t('claimrewards'),
+        summary: t('claimrewards') ?? '',
       });
       setAttemptClaiming(false);
     } catch (e) {

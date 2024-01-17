@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
-import { Trade } from 'lib/src/trade';
-import { useMemo } from 'react';
+import { Trade } from 'lib/trade';
 import { computeRealizedLPFeePercent } from 'utils/v3/prices';
 import FormattedPriceImpact from './FormattedPriceImpact';
 import SwapRoute from './SwapRoute';
-import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
+import { useTranslation } from 'next-i18next';
+import { Box } from '@mui/material';
 
 interface AdvancedSwapDetailsProps {
   trade?: Trade<Currency, Currency, TradeType>;

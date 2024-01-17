@@ -78,7 +78,7 @@ const getUSDPricesFromAddresses = async (
   )) {
     const res = await fetch(
       `${
-        process.env.REACT_APP_LEADERBOARD_APP_URL
+        process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
       }/utils/token-prices/v3?chainId=${chainId}&addresses=${addresses
         .slice(ind * 150, (ind + 1) * 150)
         .join('_')}`,
@@ -102,7 +102,7 @@ const getUSDPricesFromAddresses = async (
     )) {
       const v2Res = await fetch(
         `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
+          process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL
         }/utils/token-prices/v2?chainId=${chainId}&addresses=${addressesNotInV3
           .slice(ind * 150, (ind + 1) * 150)
           .join('_')}`,
@@ -354,7 +354,6 @@ export function useUSDCPrices(currencies: Currency[]): (Price | undefined)[] {
       [usdcQuickPairState, usdcQuickPair],
     ] = remainPairs[index];
     const wrapped = wrappedCurrencies[index];
-    const internalWrapped = wrappedCurrency(currency, chainId);
     if (!wrapped || !chainId) {
       return undefined;
     }

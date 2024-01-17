@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import 'components/styles/CustomSwitch.scss';
+import { Box } from '@mui/material';
+import styles from 'styles/components/CustomSwitch.module.scss';
 
 interface SwitchItems {
   text: string;
@@ -32,8 +32,8 @@ const CustomSwitch: React.FC<CustomSwitchProps> = ({
         return (
           <Box
             key={index}
-            className={`switchItem ${
-              item.condition ? activeItemClass ?? 'activeSwitchItem' : ''
+            className={`${styles.switchItem} ${
+              item.condition ? activeItemClass ?? styles.activeSwitchItem : ''
             }
             `}
             flex={width ? 1 : undefined}

@@ -2,12 +2,11 @@ import React from 'react';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { List } from '@material-ui/core';
-import { useLocation, useHistory } from 'react-router-dom';
+import { List } from '@mui/icons-material';
+import { useRouter } from 'next/router';
 import Collapse from '@mui/material/Collapse';
-import NewTag from 'assets/images/NewTag.png';
-
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import styles from 'styles/components/Header.module.scss';
 
 export interface HeaderMenuItem {
   text: string;
@@ -30,8 +29,7 @@ export const HeaderListItem: React.FC<{
     return false;
   },
 }) => {
-  const { pathname } = useLocation();
-  const history = useHistory();
+  const router = useRouter();
   const hasSubMenu = Array.isArray(item.items);
 
   const [open, setOpen] = React.useState(false);
@@ -47,7 +45,7 @@ export const HeaderListItem: React.FC<{
       if (item.isExternal) {
         window.open(item.externalLink, item.target);
       } else {
-        history.push(item.link);
+        router.push(item.link);
       }
     }
   };
@@ -56,21 +54,31 @@ export const HeaderListItem: React.FC<{
     <>
       <ListItem
         disablePadding
-        className={`menu-list-item ${
-          pathname !== '/' && item.link.includes(pathname) ? 'active' : ''
+        className={`${styles.menuListItem} ${
+          router.pathname !== '/' && item.link.includes(router.pathname)
+            ? 'active'
+            : ''
         }`}
       >
-        <ListItemButton onClick={handleClick} className='menu-list-item'>
+        <ListItemButton onClick={handleClick} className={styles.menuListItem}>
           <ListItemText
-            className={`mobile-btn-text menu-list-item ${
-              pathname !== '/' && item.link.includes(pathname) ? 'active' : ''
+            className={`${styles.mobileBtnText} ${styles.menuListItem} ${
+              router.pathname !== '/' && item.link.includes(router.pathname)
+                ? 'active'
+                : ''
             }`}
           >
-            <div className='flex menu-list-item'>
+            <div className={`flex ${styles.menuListItem}`}>
               <div className='my-auto'>{item.text}</div>
-              <div className='mobile-new-tag'>
+              <div className={styles.mobileNewTag}>
                 {item.isNew ? (
-                  <img src={NewTag} alt='new menu' width={46} />
+                  <picture>
+                    <img
+                      src='/assets/images/NewTag.png'
+                      alt='new menu'
+                      width={46}
+                    />
+                  </picture>
                 ) : (
                   <></>
                 )}

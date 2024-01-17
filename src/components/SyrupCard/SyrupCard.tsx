@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { Box, useMediaQuery } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { SyrupInfo } from 'types/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
 import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from 'utils';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
-import 'components/styles/SyrupCard.scss';
-import { Trans, useTranslation } from 'react-i18next';
+import styles from 'styles/components/SyrupCard.module.scss';
+import { Trans, useTranslation } from 'next-i18next';
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -17,7 +16,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
 }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down('xs'));
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
   const [expanded, setExpanded] = useState(false);
 
   const currency = unwrappedToken(syrup.token);
@@ -29,11 +28,18 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
       }`;
 
   return (
-    <Box className={`syrupCard ${syrup.sponsored ? 'syrupSponsoredCard' : ''}`}>
+    <Box
+      className={`${styles.syrupCard} ${
+        syrup.sponsored ? styles.syrupSponsoredCard : ''
+      }`}
+    >
       {syrup.sponsored && (
-        <Box className='syrupSponsorTag'>{t('sponsored')}</Box>
+        <Box className={styles.syrupSponsorTag}>{t('sponsored')}</Box>
       )}
-      <Box className='syrupCardContent' onClick={() => setExpanded(!expanded)}>
+      <Box
+        className={styles.syrupCardContent}
+        onClick={() => setExpanded(!expanded)}
+      >
         {isMobile ? (
           <>
             <Box className='flex items-center' width={expanded ? 0.95 : 0.5}>
@@ -47,7 +53,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                 <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
               </Box>
             )}
-            <Box width={0.05} className='text-primary flex justify-end'>
+            <Box width={0.05} className='flex justify-end text-primary'>
               {expanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
             </Box>
           </>

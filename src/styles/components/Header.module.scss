@@ -1,0 +1,449 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.header {
+  top: 0px;
+  position: fixed;
+  width: 100%;
+  z-index: 12;
+}
+
+.networkName {
+  font-weight: 600;
+}
+
+.newsletterBar {
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    $black2 -11.2%,
+    $purple4 41.95%,
+    $primary 100%
+  );
+  z-index: 5;
+  display: flex;
+  min-height: 40px;
+  justify-content: center;
+  align-items: center;
+  & button {
+    margin-left: 19px;
+    height: 26px;
+    background-color: $black3;
+    &:hover {
+      background-color: $black3;
+    }
+    & span {
+      font-size: 11px;
+    }
+  }
+  & div {
+    position: absolute;
+    color: white;
+    right: 12px;
+    display: flex;
+  }
+  @include media('screen', '<tablet') {
+    padding: 6px 28px;
+    flex-direction: column;
+    & button {
+      margin: 6px 0 0;
+    }
+    & small {
+      text-align: center;
+    }
+  }
+}
+
+.menuBar {
+  padding: 0 24px;
+  min-height: 88px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  & a {
+    display: flex;
+  }
+  & > div {
+    display: flex;
+    align-items: center;
+    z-index: 2;
+    &:last-child {
+      & button {
+        height: 40px;
+        border-radius: 20px;
+        &:first-child {
+          padding: 0 16px;
+          margin-right: 16px;
+          & svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+          }
+        }
+        &:last-child {
+          padding: 0 32px;
+        }
+        & p {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+  @include media('screen', '<tablet') {
+    align-items: center;
+    position: relative;
+    min-height: 64px;
+  }
+  @include media('screen', '<phone') {
+    padding: 0 16px;
+    position: relative;
+    min-height: 64px;
+  }
+}
+.mainMenu {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.activeMenuItem {
+  color: $textPrimary !important;
+  background: $secondary1;
+  .menuItemSparkleTop {
+    top: 0px !important;
+  }
+  .menuItemSparkleBottom {
+    bottom: 0px !important;
+  }
+  .menuItemSparkleLeft {
+    left: 4px !important;
+  }
+  .menuItemSparkleRight {
+    right: 4px !important;
+  }
+}
+.menuItem {
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 24px;
+  margin-right: 6px;
+  overflow: hidden;
+  border-radius: 10px;
+  color: $textSecondary;
+  & small {
+    white-space: nowrap;
+  }
+  .menuItemSparkle {
+    position: absolute;
+    transition: all 0.5s;
+  }
+  .menuItemSparkleTop {
+    top: -20px;
+    margin-left: -10px;
+  }
+  .menuItemSparkleBottom {
+    bottom: -20px;
+    margin-left: -12px;
+  }
+  .menuItemSparkleLeft {
+    left: -20px;
+  }
+  .menuItemSparkleRight {
+    right: -20px;
+  }
+  & .subMenu {
+    display: none;
+    background-color: $secondary2;
+    border-radius: 10px;
+    margin-top: 12px;
+    & .subMenuItem {
+      color: $textSecondary;
+      padding: 10px 24px;
+      white-space: unset;
+      &:hover {
+        color: $textPrimary;
+      }
+      &.activeSubMenuItem {
+        color: $textPrimary;
+      }
+    }
+  }
+  &:hover {
+    color: $textPrimary;
+    background: $secondary1;
+    .menuItemSparkleTop {
+      top: 0px;
+    }
+    .menuItemSparkleBottom {
+      bottom: 0px;
+    }
+    .menuItemSparkleLeft {
+      left: 4px;
+    }
+    .menuItemSparkleRight {
+      right: 4px;
+    }
+    & .subMenu {
+      display: block;
+    }
+  }
+}
+.subMenuItem {
+  padding: 0;
+  overflow: visible;
+}
+.subMenuWrapper {
+  position: absolute;
+  width: 209px;
+  left: 0;
+  border-radius: 10px;
+  top: 32px;
+  @include media('screen', '<tablet') {
+    width: 100%;
+    left: unset;
+    top: unset;
+    background-color: #121319;
+    padding: 8px 0;
+    bottom: 0px;
+    left: 0px;
+    border: 1px solid $divider;
+  }
+}
+.accountDetails {
+  border: solid 1px $grey2;
+  padding: 0 16px;
+  height: 36px;
+  cursor: pointer;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & p {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  & img {
+    width: 20px;
+    margin-left: 8px;
+  }
+}
+.connectButton {
+  width: 152px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  position: relative;
+  &:hover .wrongNetworkContent {
+    display: block;
+  }
+}
+.wrongNetworkWrapper {
+  position: absolute;
+  top: 36px;
+  width: 272px;
+  right: 0;
+}
+.wrongNetworkContent {
+  background: $bgColor;
+  margin-top: 18px;
+  border-radius: 10px;
+  padding: 24px;
+  display: none;
+  & small {
+    color: $grey19;
+    font-size: 14px;
+    line-height: 1.57;
+  }
+  & div {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    border: solid 1px $primary;
+    color: $primary;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+.mobileMenuContainer {
+  background: #121319;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 64px;
+  width: 100%;
+  padding: 0 16px;
+  justify-content: center;
+  z-index: 3;
+}
+
+.mobileMenuClosedContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.mobileMenuDrawerContainer {
+  background: #121319;
+  color: #c7cad9;
+  cursor: pointer;
+  &.active {
+    color: #448aff;
+  }
+}
+
+.mobileBtnText {
+  color: #c7cad9;
+  &.active {
+    color: #448aff;
+  }
+}
+
+.mobileNewTag {
+  margin-left: 4px;
+  margin-top: 8px;
+}
+
+.mobileMenuItem {
+  color: #c7cad9;
+  cursor: pointer;
+  &.active {
+    color: #448aff;
+  }
+}
+
+.mobileMenu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 375px;
+  width: 100%;
+  & .menuItem,
+  & .subMenuItem {
+    margin-left: 0px;
+    padding: 16px 24px;
+    min-height: 48px;
+    color: #c7cad9;
+    font-weight: bold;
+    cursor: pointer;
+    &.active {
+      color: #448aff;
+    }
+    &.activeMenuItem {
+      color: $textPrimary;
+    }
+  }
+  & .menuItem {
+    overflow: visible;
+    & .subMenu {
+      display: block;
+      margin-top: 0;
+    }
+  }
+  & .closeBtn {
+    margin: 0;
+    border-top: 1px solid #242938;
+    text-align: right;
+  }
+}
+
+.closeItem {
+  border-top: 1px solid #242938;
+}
+
+.headerIconWrapper {
+  width: 45px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.styledPollingDot {
+  width: 6px;
+  height: 6px;
+  min-height: 8px;
+  min-width: 8px;
+  margin-left: 0rem;
+  margin-top: 0px;
+  border-radius: 50%;
+  position: relative;
+  background-color: $successMain;
+  position: absolute;
+  right: -2px;
+  top: -2px;
+}
+
+.networkSelection {
+  background-color: $secondary1;
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+  height: 36px;
+  border-radius: 10px;
+  padding: 0 8px 0 12px;
+  cursor: pointer;
+  img {
+    width: 18px;
+    border-radius: 18px;
+  }
+  svg {
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+  }
+}
+
+.networkSelectionImage {
+  position: relative;
+  display: flex;
+  margin-right: 8px;
+}
+
+@media (max-width: 959px) {
+  .header {
+    background-color: #121319;
+  }
+
+  .networkSelection {
+    background-color: #1b1e29;
+    border-radius: 12px;
+  }
+
+  .accountDetails {
+    border: none;
+    border-radius: 12px;
+    background-color: #1b1e29;
+  }
+}
+
+@media (max-width: 420px) {
+  .networkName {
+    display: none;
+  }
+}
+
+.menuListItem {
+  max-height: 48px;
+  height: 48px;
+
+  &.active {
+    color: #448aff;
+    // background-color: #252833;
+  }
+}

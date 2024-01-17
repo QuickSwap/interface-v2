@@ -1,12 +1,13 @@
 import React, { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { isAddress } from 'utils';
 import CurrencyList from './CurrencyList';
 import { Currency } from '@uniswap/sdk-core';
 import { DualCurrencySelector } from 'types/bond';
 import { CustomModal, SearchInput } from 'components';
-import { Box } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Box } from '@mui/material';
+import { Close } from '@mui/icons-material';
+import styles from 'styles/components/DualCurrencyPanel.module.scss';
 
 interface CurrencySearchModalProps {
   open: boolean;
@@ -50,7 +51,7 @@ const DualCurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
     <CustomModal
       onClose={onClose}
       open={open}
-      modalWrapper='dualCurrencySearchModalWrapper'
+      modalWrapper={styles.dualCurrencySearchModalWrapper}
     >
       <Box p={2}>
         <Box
@@ -59,7 +60,7 @@ const DualCurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
           mb={2}
         >
           <p className='text-bold'>{t('tokens')}</p>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box margin='10px 0px 15px'>
           <SearchInput

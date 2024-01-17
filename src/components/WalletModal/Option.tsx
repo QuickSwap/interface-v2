@@ -1,9 +1,23 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
-import { WalletOptionProps } from './options/WalletOptionProps';
+import { Box } from '@mui/material';
+import { useTranslation } from 'next-i18next';
+import styles from 'styles/components/WalletModal.module.scss';
 
-const Option: React.FC<WalletOptionProps> = ({
+interface OptionProps {
+  link?: string | null;
+  clickable?: boolean;
+  size?: number | null;
+  onClick?: () => void;
+  color: string;
+  header: React.ReactNode;
+  subheader: React.ReactNode | null;
+  icon: string;
+  active?: boolean;
+  id: string;
+  installLink?: string | null;
+}
+
+const Option: React.FC<OptionProps> = ({
   link = null,
   onClick,
   header,
@@ -15,20 +29,22 @@ const Option: React.FC<WalletOptionProps> = ({
 }) => {
   const { t } = useTranslation();
   const content = (
-    <Box className='optionCardClickable' id={id} onClick={onClick}>
+    <Box className={styles.optionCardClickable} id={id} onClick={onClick}>
       <Box className='flex items-center' my={0.5}>
-        <img src={icon} alt={'Icon'} width={24} />
+        <picture>
+          <img src={icon} alt={'Icon'} width={24} />
+        </picture>
         <p style={{ marginLeft: 8 }}>{header}</p>
       </Box>
       {active && (
         <Box className='flex items-center'>
-          <Box className='optionConnectedDot' />
+          <Box className={styles.optionConnectedDot} />
           <small>{t('connected')}</small>
         </Box>
       )}
       {!active && installLink && (
         <Box className='flex items-center'>
-          <small className='installBtn'>{t('install')}</small>
+          <small className={styles.installBtn}>{t('install')}</small>
         </Box>
       )}
       {subheader && (
@@ -44,7 +60,7 @@ const Option: React.FC<WalletOptionProps> = ({
         href={link}
         target='_blank'
         rel='noopener noreferrer'
-        className='optionLink'
+        className={styles.optionLink}
       >
         {content}
       </a>
@@ -57,7 +73,7 @@ const Option: React.FC<WalletOptionProps> = ({
         href={installLink}
         target='_blank'
         rel='noopener noreferrer'
-        className='installLink'
+        className={styles.installLink}
       >
         {content}
       </a>

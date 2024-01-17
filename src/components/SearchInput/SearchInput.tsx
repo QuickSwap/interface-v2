@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import 'components/styles/SearchInput.scss';
+import { Box } from '@mui/material';
+import { Search } from '@mui/icons-material';
+import styles from 'styles/components/SearchInput.module.scss';
 
 interface SearchInputProps {
   placeholder: string;
@@ -26,9 +26,11 @@ const SearchInput: React.FC<SearchInputProps> = ({
     <Box
       height={height}
       width={width}
-      className={`searchInput${searchFocused ? ' focusedSearchInput' : ''}`}
+      className={`${styles.searchInput} ${
+        searchFocused ? styles.focusedSearchInput : ''
+      }`}
     >
-      {!isIconAfter && <SearchIcon />}
+      {!isIconAfter && <Search />}
       <Box flex={1} margin={isIconAfter ? '0 8px 0 0' : '0 0 0 8px'}>
         <input
           placeholder={placeholder}
@@ -38,7 +40,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
           onChange={(evt: any) => setValue(evt.target.value)}
         />
       </Box>
-      {isIconAfter && <SearchIcon />}
+      {isIconAfter && <Search />}
     </Box>
   );
 };

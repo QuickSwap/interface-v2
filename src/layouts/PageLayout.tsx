@@ -1,14 +1,17 @@
-import React, { lazy, useEffect, useMemo, useState, useRef } from 'react';
-import { Box, Button } from '@material-ui/core';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Box, Button } from '@mui/material';
 import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
-import { useHistory } from 'react-router-dom';
-import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
 import NewsletterSignupPanel from './NewsletterSignupPanel';
-const Header = lazy(() => import('components/Header'));
-const Footer = lazy(() => import('components/Footer'));
-const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
-const CustomModal = lazy(() => import('components/CustomModal'));
-const Background = lazy(() => import('./Background'));
+import Header from 'components/Header';
+import Footer from 'components/Footer';
+import BetaWarningBanner from 'components/BetaWarningBanner';
+import CustomModal from 'components/CustomModal';
+import Background from './Background';
+import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+const IntractTracking = dynamic(() => import('./IntractTracking'), {
+  ssr: false,
+});
 
 export interface PageLayoutProps {
   children: any;
@@ -16,20 +19,19 @@ export interface PageLayoutProps {
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
-  const headerRef = useRef(null);
   const [headerClass, setHeaderClass] = useState('');
-  const { chainId, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const isProMode = useIsProMode();
+  const router = useRouter();
   const [openPassModal, setOpenPassModal] = useState(false);
-  const { location } = useHistory();
   const pageWrapperClassName = useMemo(() => {
     if (isProMode) {
       return 'pageWrapper-proMode';
-    } else if (location.pathname.includes('/swap')) {
+    } else if (router.asPath.includes('/swap')) {
       return 'pageWrapper-no-max';
     }
     return name == 'prdt' ? 'pageWrapper-no-max' : 'pageWrapper';
-  }, [isProMode, location, name]);
+  }, [isProMode, name, router.asPath]);
 
   const { firePageViewEvent } = useMasaAnalytics();
 
@@ -39,21 +41,6 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     firePageViewEvent({ page, user_address: account });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
-
-  const intractKey = process.env.REACT_APP_INTRACT_KEY;
-  useEffect(() => {
-    if (intractKey) {
-      IntractAttribution(intractKey, {
-        configAllowCookie: true,
-      });
-    }
-  }, [intractKey]);
-
-  useEffect(() => {
-    if (account) {
-      trackCustomWallet(account);
-    }
-  }, [account]);
 
   useEffect(() => {
     if (
@@ -97,6 +84,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
 
   return (
     <Box className='page'>
+      <IntractTracking />
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
       {displayNewsletter && <NewsletterSignupPanel />}

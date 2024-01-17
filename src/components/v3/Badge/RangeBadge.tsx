@@ -1,7 +1,7 @@
 import React from 'react';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
-import { Error } from '@material-ui/icons';
-import { useTranslation } from 'react-i18next';
+import { Error } from '@mui/icons-material';
+import { useTranslation } from 'next-i18next';
 
 interface RangeBadgeProps {
   removed: boolean | undefined;
@@ -19,14 +19,14 @@ export default function RangeBadge({
     <>
       {removed ? (
         <Badge
-          tooltip={withTooltip ? t('v3PositionNoLiquidity') : ''}
+          tooltip={withTooltip ? t('v3PositionNoLiquidity') ?? '' : ''}
           variant={BadgeVariant.WARNING}
           icon={<Error width={14} height={14} />}
-          text={t('closed')}
+          text={t('closed') ?? ''}
         />
       ) : inRange ? (
         <Badge
-          tooltip={withTooltip ? t('v3PoolWithinSelectedRange') : ''}
+          tooltip={withTooltip ? t('v3PoolWithinSelectedRange') ?? '' : ''}
           variant={BadgeVariant.POSITIVE}
           icon={
             <div
@@ -34,14 +34,14 @@ export default function RangeBadge({
               style={{ width: 8, height: 8, borderRadius: 4 }}
             />
           }
-          text={t('inrange')}
+          text={t('inrange') ?? ''}
         />
       ) : (
         <Badge
-          tooltip={withTooltip ? t('v3PoolOutsideSelectedRange') : ''}
+          tooltip={withTooltip ? t('v3PoolOutsideSelectedRange') ?? '' : ''}
           variant={BadgeVariant.WARNING}
           icon={<Error width={14} height={14} />}
-          text={t('outrange')}
+          text={t('outrange') ?? ''}
         />
       )}
     </>

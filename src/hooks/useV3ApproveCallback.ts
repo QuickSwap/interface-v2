@@ -6,7 +6,7 @@ import {
   Percent,
   TradeType,
 } from '@uniswap/sdk-core';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import { useCallback, useMemo } from 'react';
 import {
   SWAP_ROUTER_ADDRESSES,

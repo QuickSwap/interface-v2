@@ -1,8 +1,9 @@
 import React from 'react';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box, CircularProgress } from '@mui/material';
 import Option from './Option';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { Connection, getConnections } from 'connectors';
+import styles from 'styles/components/WalletModal.module.scss';
 
 interface PendingViewProps {
   connection?: Connection;
@@ -21,13 +22,13 @@ const PendingView: React.FC<PendingViewProps> = ({
   const connections = getConnections();
 
   return (
-    <Box className='pendingSection'>
+    <Box className={styles.pendingSection}>
       <Box className='flex items-center justify-center' mb={4}>
         {error ? (
-          <Box className='errorGroup'>
+          <Box className={styles.errorGroup}>
             <p>{t('errorConnect')}</p>
             <Box
-              className='errorButton'
+              className={styles.errorButton}
               onClick={() => {
                 setPendingError(false);
                 connection && tryActivation(connection);
@@ -38,7 +39,7 @@ const PendingView: React.FC<PendingViewProps> = ({
           </Box>
         ) : (
           <>
-            <CircularProgress />
+            <CircularProgress size='16px' />
             <p style={{ marginLeft: 12 }}>{t('initializing')}...</p>
           </>
         )}

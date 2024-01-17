@@ -1,4 +1,3 @@
-import React from 'react';
 import { usePool } from 'hooks/v3/usePools';
 import { useCurrency } from './Tokens';
 import { PositionPool } from 'models/interfaces';

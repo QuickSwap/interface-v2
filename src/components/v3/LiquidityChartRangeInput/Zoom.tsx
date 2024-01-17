@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { ScaleLinear, select, zoom, ZoomBehavior, ZoomTransform } from 'd3';
 import { ZoomLevels } from './types';
 
@@ -8,7 +8,6 @@ export default function Zoom({
   setZoom,
   width,
   height,
-  showClear,
   zoomLevels,
 }: {
   svg: SVGElement | null;
@@ -21,34 +20,14 @@ export default function Zoom({
 }) {
   const zoomBehavior = useRef<ZoomBehavior<Element, unknown>>();
 
-  const [zoomIn, zoomOut, reset, initial] = useMemo(
-    () => [
-      () =>
-        svg &&
-        zoomBehavior.current &&
-        select(svg as Element)
-          .transition()
-          .call(zoomBehavior.current.scaleBy, 2),
-      () =>
-        svg &&
-        zoomBehavior.current &&
-        select(svg as Element)
-          .transition()
-          .call(zoomBehavior.current.scaleBy, 0.5),
-      () =>
-        svg &&
-        zoomBehavior.current &&
-        select(svg as Element)
-          .transition()
-          .call(zoomBehavior.current.scaleTo, 1),
-      () =>
-        svg &&
-        zoomBehavior.current &&
-        select(svg as Element)
-          .transition()
-          .call(zoomBehavior.current.scaleTo, 0.5),
-    ],
-    [svg, zoomBehavior],
+  const initial = useCallback(
+    () =>
+      svg &&
+      zoomBehavior.current &&
+      select(svg as Element)
+        .transition()
+        .call(zoomBehavior.current.scaleTo, 0.5),
+    [svg],
   );
 
   useEffect(() => {

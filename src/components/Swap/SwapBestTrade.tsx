@@ -10,9 +10,9 @@ import {
   WETH,
 } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, NativeCurrency } from '@uniswap/sdk-core';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { ArrowDown } from 'react-feather';
-import { Box, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button, CircularProgress } from '@mui/material';
 import {
   useNetworkSelectionModalToggle,
   useWalletModalToggle,
@@ -29,7 +29,7 @@ import {
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
 import {
   useActiveWeb3React,
@@ -51,10 +51,10 @@ import {
   getContract,
   halfAmountSpend,
 } from 'utils';
-import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
-import 'components/styles/Swap.scss';
-import { useTranslation } from 'react-i18next';
+import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
+import ExchangeIcon from 'svgs/ExchangeIcon.svg';
+import styles from 'styles/components/Swap.module.scss';
+import { useTranslation } from 'next-i18next';
 import { useParaswapCallback } from 'hooks/useParaswapCallback';
 import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
 import { SwapSide } from '@paraswap/sdk';
@@ -68,7 +68,6 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
-import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import callWallchainAPI from 'utils/wallchainService';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
@@ -81,7 +80,7 @@ import { wrappedCurrency } from 'utils/wrappedCurrency';
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
 }> = ({ currencyBgClass }) => {
-  const history = useHistory();
+  const router = useRouter();
   const loadedUrlParams = useDefaultsFromURLSearch();
   const isProMode = useIsProMode();
   const isSupportedNetwork = useIsSupportedNetwork();
@@ -111,15 +110,15 @@ const SwapBestTrade: React.FC<{
   // reset if they close warning without tokens in params
   const handleDismissTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
-    history.push('/swap');
-  }, [history]);
+    router.push('/swap');
+  }, [router]);
 
   // dismiss warning if all imported tokens are in active lists
   const defaultTokens = useAllTokens();
   const importTokensNotInDefault =
     urlLoadedTokens &&
     urlLoadedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
+      return !(token.address in defaultTokens);
     });
 
   const { t } = useTranslation();
@@ -199,12 +198,11 @@ const SwapBestTrade: React.FC<{
     }
   };
 
-  const parsedQs = useParsedQueryString();
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
-  const parsedCurrency0Id = (parsedQs.currency0 ??
-    parsedQs.inputCurrency) as string;
-  const parsedCurrency1Id = (parsedQs.currency1 ??
-    parsedQs.outputCurrency) as string;
+  const parsedCurrency0Id = (router.query.currency0 ??
+    router.query.inputCurrency) as string;
+  const parsedCurrency1Id = (router.query.currency1 ??
+    router.query.outputCurrency) as string;
 
   const handleCurrencySelect = useCallback(
     (inputCurrency: any) => {
@@ -334,7 +332,8 @@ const SwapBestTrade: React.FC<{
       });
 
       return { error: undefined, rate };
-    } catch (err) {
+    } catch (error) {
+      const err = error as any;
       return { error: err.message, rate: undefined };
     }
   };
@@ -781,16 +780,17 @@ const SwapBestTrade: React.FC<{
             swapErrorMessage: undefined,
             txHash: response.hash,
           });
-          ReactGA.event({
-            category: 'Swap',
-            action:
-              recipient === null
-                ? 'Swap w/o Send'
-                : (recipientAddress ?? recipient) === account
-                ? 'Swap w/o Send + recipient'
-                : 'Swap w/ Send',
-            label: [inputCurrency?.symbol, outputCurrency?.symbol].join('/'),
-          });
+          event(
+            recipient === null
+              ? 'Swap w/o Send'
+              : (recipientAddress ?? recipient) === account
+              ? 'Swap w/o Send + recipient'
+              : 'Swap w/ Send',
+            {
+              category: 'Swap',
+              label: [inputCurrency?.symbol, outputCurrency?.symbol].join('/'),
+            },
+          );
           if (
             account &&
             optimalRate &&
@@ -813,7 +813,8 @@ const SwapBestTrade: React.FC<{
               },
             });
           }
-        } catch (error) {
+        } catch (err) {
+          const error = err as any;
           setSwapState({
             attemptingTxn: false,
             tradeToConfirm,
@@ -1000,8 +1001,6 @@ const SwapBestTrade: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!optimalRate]);
 
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
   return (
     <Box>
       <TokenWarningModal
@@ -1041,9 +1040,9 @@ const SwapBestTrade: React.FC<{
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
         color={isProMode ? 'white' : 'secondary'}
-        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
+        bgClass={isProMode ? styles.swapBgHighlight : currencyBgClass}
       />
-      <Box className='exchangeSwap'>
+      <Box className={styles.exchangeSwap}>
         <ExchangeIcon
           onClick={() => {
             setSwapType(
@@ -1064,10 +1063,10 @@ const SwapBestTrade: React.FC<{
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
         color={isProMode ? 'white' : 'secondary'}
-        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
+        bgClass={isProMode ? styles.swapBgHighlight : currencyBgClass}
       />
       {paraRate && (
-        <Box className='swapPrice'>
+        <Box className={styles.swapPrice}>
           <small>{t('price')}:</small>
           <small>
             1{' '}
@@ -1089,8 +1088,8 @@ const SwapBestTrade: React.FC<{
         </Box>
       )}
       {!showWrap && isExpertMode && (
-        <Box className='recipientInput'>
-          <Box className='recipientInputHeader'>
+        <Box className={styles.recipientInput}>
+          <Box className={styles.recipientInputHeader}>
             {recipient !== null ? (
               <ArrowDown size='16' color='white' />
             ) : (
@@ -1119,7 +1118,7 @@ const SwapBestTrade: React.FC<{
         inputCurrency={inputCurrency}
         outputCurrency={outputCurrency}
       />
-      <Box className='swapButtonWrapper'>
+      <Box className={styles.swapButtonWrapper}>
         {showApproveFlow && (
           <Box width='48%'>
             <Button

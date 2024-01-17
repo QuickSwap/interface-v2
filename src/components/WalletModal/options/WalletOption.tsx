@@ -1,8 +1,8 @@
 import React from 'react';
 import { WalletOptionProps } from './WalletOptionProps';
-
 import IconifyOption from './IconifyOption';
 import BarOptionContent from './BarOptionContent';
+import styles from 'styles/components/WalletModal.module.scss';
 
 const WalletOption: React.FC<WalletOptionProps> = (
   props: WalletOptionProps,
@@ -15,7 +15,7 @@ const WalletOption: React.FC<WalletOptionProps> = (
         href={link}
         target='_blank'
         rel='noopener noreferrer'
-        className='optionLink'
+        className={styles.optionLink}
       >
         {iconify ? (
           <IconifyOption {...props} />
@@ -32,7 +32,7 @@ const WalletOption: React.FC<WalletOptionProps> = (
         href={installLink}
         target='_blank'
         rel='noopener noreferrer'
-        className='installLink'
+        className={styles.installLink}
       >
         {iconify ? (
           <IconifyOption {...props} />

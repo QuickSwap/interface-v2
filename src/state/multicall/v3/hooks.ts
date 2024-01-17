@@ -1,4 +1,3 @@
-import React from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
@@ -61,7 +60,7 @@ export const NEVER_RELOAD: V3ListenerOptions = {
 function useCallsData(
   calls: (Call | undefined)[],
   { blocksPerFetch }: V3ListenerOptions = { blocksPerFetch: 1 },
-  methodName?: string,
+  _?: string,
 ): CallResult[] {
   const { chainId } = useActiveWeb3React();
   const callResults = useAppSelector((state) => state.multicallV3.callResults);

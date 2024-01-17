@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { ChainId, TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedSyrupInfo } from 'state/stake/hooks';
 import { SyrupInfo } from 'types/index';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { Close } from '@mui/icons-material';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
@@ -20,13 +20,12 @@ import {
   formatTokenAmount,
   maxAmountSpend,
   formatNumber,
-  getSecondsOneDay,
   getExactTokenAmount,
   getValueTokenDecimals,
   getPartialTokenAmount,
   calculateGasMargin,
 } from 'utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface StakeSyrupModalProps {
   open: boolean;
@@ -92,9 +91,10 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   const stakingContract = useStakingContract(syrup.stakingRewardAddress);
 
   const onAttemptToApprove = async () => {
-    if (!library || !deadline) throw new Error(t('missingdependencies'));
+    if (!library || !deadline)
+      throw new Error(t('missingdependencies') ?? undefined);
     const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) throw new Error(t('missingliquidity'));
+    if (!liquidityAmount) throw new Error(t('missingliquidity') ?? undefined);
     return approveCallback();
   };
 
@@ -146,11 +146,11 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             { gasLimit: calculateGasMargin(estimatedGas) },
           );
           addTransaction(response, {
-            summary: t('depositliquidity'),
+            summary: t('depositliquidity') ?? undefined,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
-            summary: t('depositliquidity'),
+            summary: t('depositliquidity') ?? undefined,
           });
           setAttempting(false);
         } catch (error) {
@@ -159,7 +159,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
         }
       } else {
         setAttempting(false);
-        throw new Error(t('stakewithoutapproval'));
+        throw new Error(t('stakewithoutapproval') ?? undefined);
       }
     }
   };
@@ -171,11 +171,11 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
   return (
     <CustomModal open={open} onClose={onClose}>
       <Box paddingX={3} paddingY={4}>
-        <Box className='flex justify-between items-center'>
+        <Box className='flex items-center justify-between'>
           <h5>
             {t('stake')} {syrup.stakingToken.symbol}
           </h5>
-          <CloseIcon className='cursor-pointer' onClick={onClose} />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box
           mt={3}
@@ -213,7 +213,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
               }}
             />
             <span
-              className='text-primary text-bold cursor-pointer'
+              className='cursor-pointer text-primary text-bold'
               onClick={() => {
                 setTypedValue(maxAmountInput ? maxAmountInput.toExact() : '0');
                 setStakePercent(100);
@@ -251,7 +251,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
             {syrup.token.symbol} / {t('day')}
           </p>
         </Box>
-        <Box mt={3} className='flex justify-between items-center'>
+        <Box mt={3} className='flex items-center justify-between'>
           <Box width='48%'>
             <Button
               className='stakeButton'

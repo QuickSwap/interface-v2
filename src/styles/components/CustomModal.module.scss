@@ -1,0 +1,36 @@
+@use 'styles/variables' as *;
+
+.customModalBackdrop {
+  backdrop-filter: blur(9.9px);
+  background-color: $bgColor;
+}
+
+.modalWrapperV3 {
+  margin: 0px;
+  padding: 0px;
+  max-width: 750px;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 20px;
+  transform: translate(-50%, -50%);
+  outline: none;
+  background-color: $bgPalette;
+}
+
+.modalWrapperNftSelector {
+  margin: 0px;
+  padding: 0px;
+  max-width: 750px;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+  background-color: #1b1e29;
+
+}

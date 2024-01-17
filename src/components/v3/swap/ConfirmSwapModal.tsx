@@ -4,10 +4,10 @@ import TransactionConfirmationModal, {
   ConfirmationModalContent,
   TransactionErrorContent,
 } from 'components/v3/TransactionConfirmationModal';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from 'lib/trade';
 import SwapModalFooter from './SwapModalFooter';
 import SwapModalHeader from './SwapModalHeader';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 /**
  * Returns true if the trade requires a confirmation of details before we can submit it

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { Contract } from 'ethers';
 import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
@@ -32,7 +31,7 @@ import { getConfig } from 'config/index';
 async function fetchToken(tokenId: string, farming = false, chainId: ChainId) {
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/token-details/${tokenId}?chainId=${chainId}&farming=${farming}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/token-details/${tokenId}?chainId=${chainId}&farming=${farming}`,
     );
     if (!res.ok) {
       return;
@@ -47,7 +46,7 @@ async function fetchToken(tokenId: string, farming = false, chainId: ChainId) {
 async function fetchPool(poolId: string, chainId: ChainId) {
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/pool-details/${poolId}?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/pool-details/${poolId}?chainId=${chainId}`,
     );
     if (!res.ok) {
       return;
@@ -78,7 +77,7 @@ async function fetchPool(poolId: string, chainId: ChainId) {
 async function fetchLimit(limitFarmingId: string, chainId: ChainId) {
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/limit-farming/${limitFarmingId}?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/limit-farming/${limitFarmingId}?chainId=${chainId}`,
     );
     if (!res.ok) {
       return;
@@ -95,7 +94,7 @@ async function fetchLimit(limitFarmingId: string, chainId: ChainId) {
 async function fetchEternalFarming(farmId: string, chainId: ChainId) {
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farming/${farmId}?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/eternal-farming/${farmId}?chainId=${chainId}`,
     );
     if (!res.ok) {
       return;
@@ -113,11 +112,11 @@ export function useFarmRewards() {
   const { chainId, account } = useActiveWeb3React();
 
   async function fetchRewards() {
-    if (!account || !chainId) return;
+    if (!account || !chainId) return null;
 
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/farm-rewards/${account}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/farm-rewards/${account}?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;
@@ -172,7 +171,6 @@ export function useFarmRewards() {
 export function useTransferredPositions() {
   const { chainId, account, provider } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
-  const lastTxHash = useLastTransactionHash();
   async function fetchTransferredPositions() {
     if (!chainId || !account || !provider) {
       return [];
@@ -180,7 +178,7 @@ export function useTransferredPositions() {
 
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
       );
       if (!res.ok) {
         return [];
@@ -345,7 +343,7 @@ export function useTransferredPositions() {
           };
         } else {
           const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/limit-farms-pool/${position.pool}?chainId=${chainId}`,
+            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/limit-farms-pool/${position.pool}?chainId=${chainId}`,
           );
           if (res.ok) {
             const data = await res.json();
@@ -436,7 +434,9 @@ export function useTransferredPositions() {
               +position.id,
               { from: account },
             );
-          } catch (e) {}
+          } catch (e) {
+            console.log(e);
+          }
 
           _position = {
             ..._position,
@@ -467,7 +467,7 @@ export function useTransferredPositions() {
           };
         } else {
           const res = await fetch(
-            `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms-pool/${position.pool}?chainId=${chainId}`,
+            `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/eternal-farms-pool/${position.pool}?chainId=${chainId}`,
           );
           if (res.ok) {
             const data = await res.json();
@@ -517,7 +517,7 @@ export function useFarmPositionsForPool(
 
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/pool-positions/${account}?chainId=${chainId}&poolId=${pool.id}&minRangeLength=${minRangeLength}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/pool-positions/${account}?chainId=${chainId}&poolId=${pool.id}&minRangeLength=${minRangeLength}`,
       );
       if (!res.ok) {
         return null;
@@ -566,7 +566,7 @@ export function usePositionsOnFarmer(account: string | null | undefined) {
     if (!account) return null;
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/transferred-positions/${account}?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;
@@ -683,7 +683,7 @@ export function useEternalFarms() {
     if (!provider || !qsFarmAvailable) return null;
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;

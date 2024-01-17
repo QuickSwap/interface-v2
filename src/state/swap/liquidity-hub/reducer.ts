@@ -22,7 +22,7 @@ export default createReducer<LiquidityHubState>(initialState, (builder) =>
     .addCase(setLiquidityHubState, (state, { payload }) => {
       return { ...state, ...payload };
     })
-    .addCase(resetLiquidityHubState, (state) => {
+    .addCase(resetLiquidityHubState, () => {
       return initialState;
     }),
 );

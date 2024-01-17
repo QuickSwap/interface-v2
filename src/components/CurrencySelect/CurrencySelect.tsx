@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
-import 'components/styles/CurrencyInput.scss';
-import { useTranslation } from 'react-i18next';
+import styles from 'styles/components/CurrencyInput.module.scss';
+import { useTranslation } from 'next-i18next';
 
 interface CurrencySelectProps {
   title?: string;
@@ -33,7 +33,9 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
       <Box
         className={
           !bgClass
-            ? `currencyButton ${currency ? 'currencySelected' : 'noCurrency'}`
+            ? `${styles.currencyButton} ${
+                currency ? styles.currencySelected : styles.noCurrency
+              }`
             : bgClass
         }
         onClick={handleOpenModal}
@@ -41,7 +43,7 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
         {currency ? (
           <Box className='flex items-center'>
             <CurrencyLogo currency={currency} size={'28px'} />
-            <p className='token-symbol-container'>{currency?.symbol}</p>
+            <p>{currency?.symbol}</p>
           </Box>
         ) : (
           <p>{t('selectToken')}</p>

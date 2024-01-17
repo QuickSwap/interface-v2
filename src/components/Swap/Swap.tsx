@@ -9,9 +9,9 @@ import {
   currencyEquals,
   WETH,
 } from '@uniswap/sdk';
-import ReactGA from 'react-ga';
+import { event } from 'nextjs-google-analytics';
 import { ArrowDown } from 'react-feather';
-import { Box, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button, CircularProgress } from '@mui/material';
 import {
   useNetworkSelectionModalToggle,
   useWalletModalToggle,
@@ -56,14 +56,13 @@ import {
   halfAmountSpend,
 } from 'utils';
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
-import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
-import 'components/styles/Swap.scss';
-import { useTranslation } from 'react-i18next';
+import PriceExchangeIcon from 'svgs/PriceExchangeIcon.svg';
+import ExchangeIcon from 'svgs/ExchangeIcon.svg';
+import styles from 'styles/components/Swap.module.scss';
+import { useTranslation } from 'next-i18next';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
-import { useHistory } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
-import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import { GlobalValue } from 'constants/index';
 import { getConfig } from 'config/index';
@@ -76,7 +75,7 @@ const Swap: React.FC<{
   currencyBgClass?: string;
 }> = ({ currencyBgClass }) => {
   const loadedUrlParams = useDefaultsFromURLSearch();
-  const history = useHistory();
+  const router = useRouter();
   const isProMode = useIsProMode();
   const isSupportedNetwork = useIsSupportedNetwork();
 
@@ -102,15 +101,15 @@ const Swap: React.FC<{
   // reset if they close warning without tokens in params
   const handleDismissTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
-    history.push('/swap?swapIndex=1');
-  }, [history]);
+    router.push('/swap?swapIndex=1');
+  }, [router]);
 
   // dismiss warning if all imported tokens are in active lists
   const defaultTokens = useAllTokens();
   const importTokensNotInDefault =
     urlLoadedTokens &&
     urlLoadedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
+      return !(token.address in defaultTokens);
     });
 
   const { t } = useTranslation();
@@ -220,13 +219,11 @@ const Swap: React.FC<{
       toggleWalletModal();
     }
   };
-
-  const parsedQs = useParsedQueryString();
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
-  const parsedCurrency0Id = (parsedQs.currency0 ??
-    parsedQs.inputCurrency) as string;
-  const parsedCurrency1Id = (parsedQs.currency1 ??
-    parsedQs.outputCurrency) as string;
+  const parsedCurrency0Id = (router.query.currency0 ??
+    router.query.inputCurrency) as string;
+  const parsedCurrency1Id = (router.query.currency1 ??
+    router.query.outputCurrency) as string;
 
   const handleCurrencySelect = useCallback(
     (inputCurrency: any) => {
@@ -252,7 +249,7 @@ const Swap: React.FC<{
     if (parsedCurrency0) {
       onCurrencySelection(Field.INPUT, parsedCurrency0);
     } else if (
-      history.location.pathname !== '/' &&
+      router.pathname !== '/' &&
       parsedCurrency0 === undefined &&
       !parsedCurrency1Id
     ) {
@@ -563,19 +560,20 @@ const Swap: React.FC<{
             swapErrorMessage: undefined,
             txHash: response.hash,
           });
-          ReactGA.event({
-            category: 'Swap',
-            action:
-              recipient === null
-                ? 'Swap w/o Send'
-                : (recipientAddress ?? recipient) === account
-                ? 'Swap w/o Send + recipient'
-                : 'Swap w/ Send',
-            label: [
-              trade?.inputAmount?.currency?.symbol,
-              trade?.outputAmount?.currency?.symbol,
-            ].join('/'),
-          });
+          event(
+            recipient === null
+              ? 'Swap w/o Send'
+              : (recipientAddress ?? recipient) === account
+              ? 'Swap w/o Send + recipient'
+              : 'Swap w/ Send',
+            {
+              category: 'Swap',
+              label: [
+                trade?.inputAmount?.currency?.symbol,
+                trade?.outputAmount?.currency?.symbol,
+              ].join('/'),
+            },
+          );
           if (
             account &&
             fromTokenWrapped &&
@@ -597,7 +595,8 @@ const Swap: React.FC<{
               },
             });
           }
-        } catch (error) {
+        } catch (err) {
+          const error = err as any;
           setSwapState({
             attemptingTxn: false,
             tradeToConfirm,
@@ -680,9 +679,9 @@ const Swap: React.FC<{
         amount={formattedAmounts[Field.INPUT]}
         setAmount={handleTypeInput}
         color={isProMode ? 'white' : 'secondary'}
-        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
+        bgClass={isProMode ? styles.swapBgHighlight : currencyBgClass}
       />
-      <Box className='exchangeSwap'>
+      <Box className={styles.exchangeSwap}>
         <ExchangeIcon onClick={redirectWithSwitch} />
       </Box>
       <CurrencyInput
@@ -696,10 +695,10 @@ const Swap: React.FC<{
         amount={formattedAmounts[Field.OUTPUT]}
         setAmount={handleTypeOutput}
         color={isProMode ? 'white' : 'secondary'}
-        bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
+        bgClass={isProMode ? styles.swapBgHighlight : currencyBgClass}
       />
       {trade && trade.executionPrice && (
-        <Box className='swapPrice'>
+        <Box className={styles.swapPrice}>
           <small>{t('price')}:</small>
           <small>
             1{' '}
@@ -725,8 +724,8 @@ const Swap: React.FC<{
         </Box>
       )}
       {!showWrap && isExpertMode && (
-        <Box className='recipientInput'>
-          <Box className='recipientInputHeader'>
+        <Box className={styles.recipientInput}>
+          <Box className={styles.recipientInputHeader}>
             {recipient !== null ? (
               <ArrowDown size='16' color='white' />
             ) : (
@@ -757,7 +756,7 @@ const Swap: React.FC<{
       ) : (
         <AdvancedSwapDetails trade={trade} />
       )}
-      <Box className='swapButtonWrapper'>
+      <Box className={styles.swapButtonWrapper}>
         {showApproveFlow && (
           <Box width='48%'>
             <Button

@@ -49,7 +49,7 @@ const fetchVaultAPR = async (
 ) => {
   try {
     const vaultFeesRes = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/ichi-vault-fees?address=${vault.address}&chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/ichi-vault-fees?address=${vault.address}&chainId=${chainId}`,
     );
     if (vaultFeesRes.ok) {
       const vaultFeesData = await vaultFeesRes.json();

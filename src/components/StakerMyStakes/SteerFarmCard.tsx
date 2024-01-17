@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { Box, useTheme, useMediaQuery } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+import { Box, useTheme, useMediaQuery, CircularProgress } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { DoubleCurrencyLogo } from 'components';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { formatNumber } from 'utils';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import SteerFarmCardDetails from './SteerFarmCardDetails';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import Loader from 'components/Loader';
 
 const SteerFarmCard: React.FC<{
   data: any;
@@ -45,7 +43,7 @@ const SteerFarmCard: React.FC<{
                   size={30}
                 />
                 <Box ml='6px'>
-                  <Box className='flex items-center flex-wrap' gridGap={2}>
+                  <Box className='flex items-center flex-wrap' gap='2px'>
                     <small className='weight-600'>{`${data.token0.symbol}/${data.token1.symbol}`}</small>
                     <Box
                       paddingY='1px'
@@ -58,7 +56,7 @@ const SteerFarmCard: React.FC<{
                   </Box>
                   <Box className='cursor-pointer'>
                     <Link
-                      to={`/pools?currency0=${data.token0.address}&currency1=${data.token1.address}&feeTier=${data.feeTier}`}
+                      href={`/pools?currency0=${data.token0.address}&currency1=${data.token1.address}&feeTier=${data.feeTier}`}
                       target='_blank'
                       className='no-decoration'
                     >
@@ -73,7 +71,7 @@ const SteerFarmCard: React.FC<{
             <>
               <Box width='20%' className='flex justify-between'>
                 {data.loading ? (
-                  <Loader />
+                  <CircularProgress size='16px' />
                 ) : (
                   <small className='weight-600'>
                     ${formatNumber(data.tvl)}
@@ -104,7 +102,7 @@ const SteerFarmCard: React.FC<{
           {(!isMobile || !showDetails) && (
             <Box width={isMobile ? '30%' : '20%'} className='flex items-center'>
               {data.loading ? (
-                <Loader />
+                <CircularProgress size='16px' />
               ) : (
                 <>
                   <small className='text-success'>
@@ -114,9 +112,14 @@ const SteerFarmCard: React.FC<{
                     <TotalAPRTooltip
                       farmAPR={data.farmAPR}
                       poolAPR={data.feeAPR}
-                      poolAPRText={t('vaultAPR')}
+                      poolAPRText={t('vaultAPR') ?? ''}
                     >
-                      <img src={CircleInfoIcon} alt={'arrow up'} />
+                      <picture>
+                        <img
+                          src='/assets/images/circleinfo.svg'
+                          alt={'arrow up'}
+                        />
+                      </picture>
                     </TotalAPRTooltip>
                   </Box>
                 </>

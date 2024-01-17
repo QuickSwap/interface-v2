@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Grid } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { useTheme } from '@material-ui/core/styles';
+import { Box, Grid, useTheme } from '@mui/material';
+import { Skeleton } from '@mui/lab';
 import { CurrencyLogo, CopyHelper } from 'components';
 import { formatNumber, shortenAddress } from 'utils';
 import { LineChart } from 'components';
@@ -10,7 +9,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 const SwapTokenDetailsHorizontal: React.FC<{
   token: Token;
@@ -28,7 +27,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
   const fetchTokenInterval = async () => {
     let tokenPriceDataV3;
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v3?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v3?chainId=${chainId}`,
     );
     if (res.ok) {
       const data = await res.json();
@@ -45,7 +44,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       return tokenPriceDataV3;
     } else if (v2) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v2?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v2?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;
@@ -63,7 +62,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
   const fetchTokenData = async () => {
     let tokenV3;
     const tokenDetailsRes = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
+      `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
     );
     if (tokenDetailsRes.ok) {
       const tokenDetailsData = await tokenDetailsRes.json();
@@ -76,7 +75,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       return tokenV3;
     } else if (v2 && (!tokenV3 || !tokenV3.priceUSD)) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
+        `${process.env.NEXT_PUBLIC_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;
@@ -125,7 +124,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
           <Grid item xs={4}>
             <Box className='flex items-center'>
               {loadingTokenData ? (
-                <Skeleton variant='rect' width={140} height={30} />
+                <Skeleton variant='rectangular' width={140} height={30} />
               ) : tokenData ? (
                 <Box pt={0.6}>${formatNumber(tokenData.priceUSD)}</Box>
               ) : (
@@ -138,7 +137,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
           <Grid item xs={3}>
             <Box className='flex'>
               {loadingTokenData ? (
-                <Skeleton variant='rect' width={140} height={30} />
+                <Skeleton variant='rectangular' width={140} height={30} />
               ) : tokenData ? (
                 <Box
                   ml='auto'
@@ -187,7 +186,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
             <Box>
               <small className='swapTxInfoHeader'>Price</small>
               {loadingTokenData ? (
-                <Skeleton variant='rect' width={80} height={20} />
+                <Skeleton variant='rectangular' width={80} height={20} />
               ) : tokenData ? (
                 <Box>${formatNumber(tokenData.priceUSD)}</Box>
               ) : (
@@ -199,7 +198,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
             <Box>
               <small className='swapTxInfoHeader'>24h</small>
               {loadingTokenData ? (
-                <Skeleton variant='rect' width={60} height={20} />
+                <Skeleton variant='rectangular' width={60} height={20} />
               ) : tokenData ? (
                 <Box className={`${priceUp ? 'text-success' : 'text-error'}`}>
                   {priceUp ? '+' : ''}
@@ -212,7 +211,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
           </Grid>
           <Grid item xs={3}>
             {loadingTokenData || loadingPriceData ? (
-              <Skeleton variant='rect' width={88} height={47} />
+              <Skeleton variant='rectangular' width={88} height={47} />
             ) : tokenData && priceData ? (
               <Box width={88} height={47} position='relative'>
                 <Box position='absolute' top={-30} width={1}>

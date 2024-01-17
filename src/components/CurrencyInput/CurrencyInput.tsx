@@ -3,14 +3,14 @@ import { Currency, ETHER, currencyEquals } from '@uniswap/sdk';
 import { NativeCurrency } from '@uniswap/sdk-core';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { formatTokenAmount } from 'utils';
-import 'components/styles/CurrencyInput.scss';
-import { useTranslation } from 'react-i18next';
+import styles from 'styles/components/CurrencyInput.module.scss';
+import { useTranslation } from 'next-i18next';
 import CurrencySelect from 'components/CurrencySelect';
 import { default as useUSDCPriceV3 } from 'hooks/v3/useUSDCPrice';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
@@ -73,19 +73,24 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   return (
     <Box
       id={id}
-      className={`swapBox${showPrice ? ' priceShowBox' : ''} ${bgClass ??
-        'bg-secondary2'}`}
+      className={`${styles.swapBox} ${
+        showPrice ? styles.priceShowBox : ''
+      } ${bgClass ?? 'bg-secondary2'}`}
     >
       <Box className='flex justify-between' mb={2}>
         <p>{title || `${t('youPay')}:`}</p>
         <Box display='flex'>
           {account && currency && showHalfButton && (
-            <Box className='maxWrapper' onClick={onHalf}>
+            <Box className={styles.maxWrapper} onClick={onHalf}>
               <small>50%</small>
             </Box>
           )}
           {account && currency && showMaxButton && (
-            <Box className='maxWrapper' marginLeft='20px' onClick={onMax}>
+            <Box
+              className={styles.maxWrapper}
+              marginLeft='20px'
+              onClick={onMax}
+            >
               <small>{t('max')}</small>
             </Box>
           )}
@@ -98,7 +103,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           otherCurrency={otherCurrency}
           handleCurrencySelect={handleCurrencySelect}
         />
-        <Box className='inputWrapper'>
+        <Box className={styles.inputWrapper}>
           <NumericalInput
             value={amount}
             align='right'
@@ -111,10 +116,10 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         </Box>
       </Box>
       <Box className='flex justify-between'>
-        <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+        <small className={`${color ? `text-${color}` : 'text-secondary'}`}>
           {t('balance')}: {formatTokenAmount(selectedCurrencyBalance)}
         </small>
-        <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+        <small className={`${color ? `text-${color}` : 'text-secondary'}`}>
           ${(usdPrice * Number(amount)).toLocaleString('us')}
         </small>
       </Box>
