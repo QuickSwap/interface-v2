@@ -25,7 +25,7 @@ const SingleTokenEnterAmount: React.FC = () => {
   );
   const {
     data: { isNativeToken, availableAmount },
-  } = useICHIVaultDepositData(Number(typedValue), currency, selectedVault);
+  } = useICHIVaultDepositData(typedValue, currency, selectedVault);
 
   return (
     <>

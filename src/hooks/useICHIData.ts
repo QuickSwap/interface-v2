@@ -3,7 +3,7 @@ import { IchiVaults } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
-import { getTokenFromAddress } from 'utils';
+import { getFixedValue, getTokenFromAddress } from 'utils';
 import ICHIVaultABI from 'constants/abis/ichi-vault.json';
 import { Interface, formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useEffect, useMemo, useState } from 'react';
@@ -487,7 +487,7 @@ export const useICHIVaultApproval = (
 };
 
 export const useICHIVaultDepositData = (
-  amount: number,
+  amount: string,
   currency?: Currency,
   vault?: ICHIVault,
 ) => {
@@ -542,7 +542,7 @@ export const useICHIVaultDepositData = (
     : balanceBN;
 
   const amountBN = JSBI.BigInt(
-    parseUnits(amount.toFixed(currency?.decimals), currency?.decimals),
+    parseUnits(getFixedValue(amount), currency?.decimals),
   );
 
   const wrapAmount = useMemo(() => {
