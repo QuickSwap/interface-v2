@@ -1,7 +1,6 @@
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { ChainId } from '@uniswap/sdk';
-import { DocumentNode } from 'graphql';
 import { ClientError, gql, GraphQLClient } from 'graphql-request';
 
 // List of supported subgraphs. Note that the app currently only support one active subgraph at a time
@@ -77,7 +76,7 @@ export const api = createApi({
 
 // Graphql query client wrapper that builds a dynamic url based on chain id
 function graphqlRequestBaseQuery(): BaseQueryFn<
-  { document: string | DocumentNode; variables?: any },
+  { document: string; variables?: any },
   unknown,
   Pick<ClientError, 'name' | 'message' | 'stack'>,
   Partial<Pick<ClientError, 'request' | 'response'>>
