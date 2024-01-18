@@ -60,6 +60,7 @@ import {
   getGammaPairsForTokens,
   maxAmountSpend,
   getSteerRatio,
+  getFixedValue,
 } from 'utils';
 import { ChainId, ETHER, WETH } from '@uniswap/sdk';
 import GammaClearingABI from 'constants/abis/gamma-clearing.json';
@@ -884,7 +885,10 @@ export function useV3DerivedMintInfo(
           : dependentCurrency,
         JSBI.BigInt(
           parseUnits(
-            dependentDeposit.toFixed(dependentCurrency.decimals),
+            getFixedValue(
+              dependentDeposit.toString(),
+              dependentCurrency.decimals,
+            ),
             dependentCurrency.decimals,
           ),
         ),
@@ -907,7 +911,10 @@ export function useV3DerivedMintInfo(
           : dependentCurrency,
         JSBI.BigInt(
           parseUnits(
-            dependentDeposit.toFixed(dependentCurrency.decimals),
+            getFixedValue(
+              dependentDeposit.toString(),
+              dependentCurrency.decimals,
+            ),
             dependentCurrency.decimals,
           ),
         ),

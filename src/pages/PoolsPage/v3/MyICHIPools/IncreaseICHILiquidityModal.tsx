@@ -9,7 +9,7 @@ import {
 import { Box, Button } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
-import { calculateGasMargin, formatNumber } from 'utils';
+import { calculateGasMargin, formatNumber, getFixedValue } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   useTransactionAdder,
@@ -44,11 +44,11 @@ export default function IncreaseICHILiquidityModal({
   const currency = position.allowToken0 ? position.token0 : position.token1;
   const {
     data: { isNativeToken, availableAmount, tokenIdx },
-  } = useICHIVaultDepositData(Number(typedValue), currency, position);
+  } = useICHIVaultDepositData(typedValue, currency, position);
 
   const typedValueJSBI = JSBI.BigInt(
     parseUnits(
-      !typedValue ? '0' : Number(typedValue).toFixed(position.token0?.decimals),
+      !typedValue ? '0' : getFixedValue(typedValue, position.token0?.decimals),
       position.token0?.decimals,
     ),
   );
