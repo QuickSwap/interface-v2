@@ -434,6 +434,7 @@ export const useMerklFarms = () => {
         .map((alm: any) => {
           let poolAPR = 0;
           let title = '';
+          let allowToken0;
           if (alm.label.includes('Gamma')) {
             const gammaItemData = gammaData
               ? gammaData[alm.almAddress.toLowerCase()]
@@ -466,6 +467,11 @@ export const useMerklFarms = () => {
                 (item) =>
                   item.address.toLowerCase() === alm.almAddress.toLowerCase(),
               )?.apr ?? 0;
+            const ichiVault = ichiVaults.find(
+              (item) =>
+                item.address.toLowerCase() === alm.almAddress.toLowerCase(),
+            );
+            allowToken0 = ichiVault?.allowToken0;
           } else if (alm.label.includes('DefiEdge')) {
             poolAPR =
               defiedgeAprs?.find(
@@ -480,6 +486,7 @@ export const useMerklFarms = () => {
             ...alm,
             poolAPR,
             title,
+            allowToken0,
             almAPR: alm?.almAPR ?? 0,
             almTVL: alm?.almTVL ?? 0,
           };
@@ -492,6 +499,7 @@ export const useMerklFarms = () => {
     eternalFarmPoolAprs,
     gammaData,
     ichiAPRs,
+    ichiVaults,
     merklFarms,
     steerVaults,
   ]);

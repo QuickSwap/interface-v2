@@ -109,6 +109,9 @@ export default function IncreaseICHILiquidityModal({
     availableAmount,
     position.token0?.symbol,
     typedValue,
+    isApproved,
+    approving,
+    currency?.symbol,
     wrapAmount,
   ]);
 

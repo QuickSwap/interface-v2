@@ -80,8 +80,9 @@ export const MerklFarmAPRTooltipItem: React.FC<{
           onClick={() => {
             let currencyStr = '';
             if (farmType && farmType.toUpperCase() === 'ICHI') {
-              if (token0) {
-                currencyStr += `currency=${token0}`;
+              const farmToken = farm?.allowToken0 ? token0 : token1;
+              if (farmToken) {
+                currencyStr += `currency=${farmToken}`;
               }
             } else {
               if (token0) {
