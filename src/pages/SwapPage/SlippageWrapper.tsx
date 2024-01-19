@@ -18,6 +18,7 @@ export const SlippageWrapper: React.FC = () => {
     if (swapSlippage) {
       setUserSlippageTolerance(Number(swapSlippage));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swapSlippage]);
 
   return (

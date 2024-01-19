@@ -133,6 +133,7 @@ export const useGammaPositions = () => {
 
   useEffect(() => {
     refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTx]);
 
   return { isLoading, data };

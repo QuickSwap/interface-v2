@@ -89,6 +89,7 @@ export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
 
   useEffect(() => {
     refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTxHash]);
 
   return { loading: farmsLoading, data };
