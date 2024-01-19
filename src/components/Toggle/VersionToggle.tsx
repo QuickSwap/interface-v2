@@ -35,20 +35,24 @@ const VersionToggle: React.FC = () => {
     const versionParam = params ? params.version : undefined;
     const currencyIdAParam = params ? params.currencyIdA : undefined;
     const currencyIdBParam = params ? params.currencyIdB : undefined;
-    const redirectPathName = versionParam
-      ? history.location.pathname.replace('/' + versionParam, `/${version}`)
-      : history.location.pathname +
-        (history.location.pathname.includes('/add')
-          ? (currencyIdAParam ? '' : `/ETH`) +
-            (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
-          : '') +
-        `${history.location.pathname.endsWith('/') ? '' : '/'}${version}`;
-    history.push(
-      redirectPathName +
-        (history.location.pathname.includes('/pools')
-          ? history.location.search
-          : ''),
-    );
+    if (versionParam !== version) {
+      const redirectPathName = versionParam
+        ? history.location.pathname.replace('/' + versionParam, `/${version}`)
+        : history.location.pathname +
+          (history.location.pathname.includes('/add')
+            ? (currencyIdAParam ? '' : `/ETH`) +
+              (currencyIdBParam ? '' : `/${NEW_QUICK_ADDRESS}`)
+            : '') +
+          `${history.location.pathname.endsWith('/') ? '' : '/'}${version}`;
+      history.push(
+        redirectPathName +
+          (version !== 'singleToken' &&
+          versionParam !== 'singleToken' &&
+          history.location.pathname.includes('/pools')
+            ? history.location.search
+            : ''),
+      );
+    }
   };
 
   return (

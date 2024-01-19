@@ -52,7 +52,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
       )}
       <Box className='summaryRow'>
         <Box>
-          <small>{t('slippage')}:</small>
+          <small>{t('maxSlippage')}:</small>
           <QuestionHelper text={t('slippageHelper')} />
         </Box>
         <Box

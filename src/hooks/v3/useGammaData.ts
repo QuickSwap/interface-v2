@@ -6,6 +6,7 @@ import { useLastTransactionHash } from 'state/transactions/hooks';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
+import { useEffect } from 'react';
 
 const gammaChainName = (chainId?: ChainId) => {
   switch (chainId) {
@@ -121,14 +122,20 @@ export const useGammaRewards = () => {
 export const useGammaPositions = () => {
   const { account, chainId } = useActiveWeb3React();
   const lastTx = useLastTransactionHash();
-  return useQuery({
-    queryKey: ['fetchGammaPositions', account, chainId, lastTx],
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['fetchGammaPositions', account, chainId],
     queryFn: async () => {
       const gammaRewards = await getGammaPositions(account, chainId);
       return gammaRewards;
     },
     refetchInterval: 300000,
   });
+
+  useEffect(() => {
+    refetch();
+  }, [lastTx]);
+
+  return { isLoading, data };
 };
 
 export const useGammaPosition = (

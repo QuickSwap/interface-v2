@@ -277,22 +277,14 @@ export const useICHIVaultTotalSupply = (vault?: ICHIVault) => {
       );
       return Number(totalSupply);
     },
-    enabled: !!vault && !!provider,
+    refetchInterval: 300000,
   });
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, lastTx]);
+  }, [lastTx]);
+
   return { isLoading, data };
 };
 
@@ -325,7 +317,6 @@ export const useICHIVaultUserBalances = (vaults: ICHIVault[]) => {
       );
       return vaultBalances;
     },
-    enabled: !!account && !!provider,
   });
 
   useEffect(() => {
@@ -359,7 +350,6 @@ export const useICHIVaultsUserAmounts = (vaults: ICHIVault[]) => {
       );
       return userAmounts;
     },
-    enabled: !!account && !!provider,
   });
 
   useEffect(() => {
@@ -385,7 +375,6 @@ export const useICHIVaultUserAmounts = (vault?: string) => {
       );
       return amounts;
     },
-    enabled: !!account && !!provider,
   });
 
   useEffect(() => {
@@ -411,7 +400,6 @@ export const useICHIVaultUserBalance = (vault?: string) => {
       );
       return { balanceBN, balance: Number(formatUnits(balanceBN)) };
     },
-    enabled: !!vault && !!account && !!provider,
   });
 
   useEffect(() => {
@@ -448,14 +436,13 @@ export const useICHIVaultApproval = (
 ) => {
   const { account, provider } = useActiveWeb3React();
   const lastTx = useLastTransactionHash();
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: [
       'ichi-deposit-approval',
       account,
       vault?.address,
       amount,
       tokenIdx,
-      lastTx,
     ],
     queryFn: async () => {
       if (
@@ -482,6 +469,10 @@ export const useICHIVaultApproval = (
       }
     },
   });
+
+  useEffect(() => {
+    refetch();
+  }, [lastTx]);
 
   return { isLoading, data };
 };
