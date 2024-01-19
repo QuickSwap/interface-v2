@@ -15,6 +15,7 @@ import { useIsV2 } from 'state/application/hooks';
 import { Limit, TWAP } from './LimitAndTWAP/LimitAndTWAP';
 import SwapCrossChain from './SwapCrossChain';
 import SwapV3Page from './V3/Swap';
+import { SlippageWrapper } from './SlippageWrapper';
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
@@ -219,9 +220,9 @@ const SwapMain: React.FC = () => {
         <Box my={'auto'}>
           <Typography variant='h6'>{t('swap')}</Typography>
         </Box>
-        <Box display={'flex'} ml={'auto'}>
+        <Box className='flex items-center' ml={'auto'} gridGap='8px'>
           {showProMode && (
-            <Box className='flex items-center' mr={1}>
+            <Box className='flex items-center'>
               <span
                 className='text-secondary text-uppercase'
                 style={{ marginRight: 8 }}
@@ -236,8 +237,12 @@ const SwapMain: React.FC = () => {
               />
             </Box>
           )}
-          <Box>
-            <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
+          <Box className='flex items-center'>
+            <SlippageWrapper />
+            <SettingsIcon
+              className='cursor-pointer'
+              onClick={() => setOpenSettingsModal(true)}
+            />
           </Box>
         </Box>
       </Box>
@@ -337,37 +342,6 @@ const SwapMain: React.FC = () => {
               ))}
             </>
           )}
-          {/* {
-            <Box
-              style={{
-                marginLeft: 'auto',
-                marginTop: 'auto',
-                marginBottom: 'auto',
-              }}
-            >
-              <Box margin='0 16px' className='flex items-center'>
-                {showProMode && (
-                  <Box className='flex items-center' mr={1}>
-                    <span
-                      className='text-secondary text-uppercase'
-                      style={{ marginRight: 8 }}
-                    >
-                      {t('proMode')}
-                    </span>
-                    <ToggleSwitch
-                      toggled={isProMode}
-                      onToggle={() => {
-                        redirectWithProMode(!isProMode);
-                      }}
-                    />
-                  </Box>
-                )}
-                <Box className='headingItem'>
-                  <SettingsIcon onClick={() => setOpenSettingsModal(true)} />
-                </Box>
-              </Box>
-            </Box>
-          } */}
         </Box>
       </Box>
       {/* Tabs */}
