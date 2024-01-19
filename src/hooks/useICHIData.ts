@@ -6,7 +6,7 @@ import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import { getFixedValue, getTokenFromAddress } from 'utils';
 import ICHIVaultABI from 'constants/abis/ichi-vault.json';
 import { Interface, formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   SupportedDex,
   getIchiVaultInfo,
@@ -472,6 +472,7 @@ export const useICHIVaultApproval = (
 
   useEffect(() => {
     refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTx]);
 
   return { isLoading, data };

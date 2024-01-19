@@ -487,8 +487,11 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                     onClick={() => {
                       let currencyStr = '';
                       if (isICHI) {
-                        if (farm?.token0) {
-                          currencyStr += `currency=${farm.token0.address}`;
+                        const farmToken = farm?.allowToken0
+                          ? farm?.token0
+                          : farm?.token1;
+                        if (farmToken) {
+                          currencyStr += `currency=${farmToken.address}`;
                         }
                       } else {
                         if (farm?.token0) {
