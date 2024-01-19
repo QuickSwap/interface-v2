@@ -20,6 +20,7 @@ import { useLastTransactionHash } from 'state/transactions/hooks';
 import { V3Farm } from 'pages/FarmPage/V3/Farms';
 import { getConfig } from 'config/index';
 import { useGetUnipilotVaults } from 'state/mint/v3/hooks';
+import { useEffect } from 'react';
 
 interface RewardRate {
   rewardA?: BigNumber;
@@ -80,11 +81,15 @@ export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
   };
 
   const lastTxHash = useLastTransactionHash();
-  const { isLoading: farmsLoading, data } = useQuery({
-    queryKey: ['fetchUnipilotUserFarms', chainId, account, lastTxHash],
+  const { isLoading: farmsLoading, data, refetch } = useQuery({
+    queryKey: ['fetchUnipilotUserFarms', chainId, account],
     queryFn: fetchUnipilotUserFarms,
     refetchInterval: 300000,
   });
+
+  useEffect(() => {
+    refetch();
+  }, [lastTxHash]);
 
   return { loading: farmsLoading, data };
 }

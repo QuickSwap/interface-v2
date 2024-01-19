@@ -56,10 +56,7 @@ export default function MyLiquidityPoolsV3() {
     },
   ];
 
-  const {
-    loading: quickPoolsLoading,
-    count: quickPoolsCount,
-  } = useV3PositionsCount(
+  const { count: quickPoolsCount } = useV3PositionsCount(
     account,
     userHideQuickClosedPositions,
     hideQuickFarmingPositions,
@@ -87,7 +84,6 @@ export default function MyLiquidityPoolsV3() {
   const { loading: ichiLoading, count: ichiCount } = useICHIPositionsCount();
 
   const loading =
-    quickPoolsLoading ||
     gammaPoolsLoading ||
     uniPilotPositionsLoading ||
     steerPoolsLoading ||

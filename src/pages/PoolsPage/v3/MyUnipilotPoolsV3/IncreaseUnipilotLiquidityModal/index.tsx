@@ -30,6 +30,10 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { UnipilotPosition } from 'hooks/v3/useV3Positions';
+import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
+import { tryParseAmount } from 'state/swap/v3/hooks';
+import Loader from 'components/Loader';
+import { Check } from '@material-ui/icons';
 
 interface IncreaseUnipilotLiquidityModalProps {
   open: boolean;
@@ -153,6 +157,31 @@ export default function IncreaseUnipilotLiquidityModal({
     ),
   );
 
+  const [approvalA, approveACallback] = useApproveCallback(
+    tryParseAmount(deposit0, position.token0),
+    chainId ? uniPilotVaultContract?.address : undefined,
+  );
+  const [approvalB, approveBCallback] = useApproveCallback(
+    tryParseAmount(deposit1, position.token1),
+    chainId ? uniPilotVaultContract?.address : undefined,
+  );
+
+  const showApprovalA = useMemo(() => {
+    if (approvalA === ApprovalState.UNKNOWN) return undefined;
+
+    if (approvalA === ApprovalState.NOT_APPROVED) return true;
+
+    return approvalA !== ApprovalState.APPROVED;
+  }, [approvalA]);
+
+  const showApprovalB = useMemo(() => {
+    if (approvalB === ApprovalState.UNKNOWN) return undefined;
+
+    if (approvalB === ApprovalState.NOT_APPROVED) return true;
+
+    return approvalB !== ApprovalState.APPROVED;
+  }, [approvalB]);
+
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
   const [txnHash, setTxnHash] = useState<string | undefined>();
@@ -166,7 +195,9 @@ export default function IncreaseUnipilotLiquidityModal({
     !Number(deposit1) ||
     !account ||
     JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI) ||
-    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI);
+    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI) ||
+    approvalA !== ApprovalState.APPROVED ||
+    approvalB !== ApprovalState.APPROVED;
 
   const buttonText = useMemo(() => {
     if (!account) return t('connectWallet');
@@ -484,6 +515,68 @@ export default function IncreaseUnipilotLiquidityModal({
                 WETH[chainId].address.toLowerCase()
             }
           />
+        </Box>
+        <Box mt={2} className='flex justify-between'>
+          {showApprovalA !== undefined && (
+            <Box width={showApprovalB === undefined ? '100%' : '49%'}>
+              {showApprovalA ? (
+                approvalA === ApprovalState.PENDING ? (
+                  <Box className='token-approve-button-loading'>
+                    <Loader stroke='white' />
+                    <p>
+                      {t('approving')} {position.token0?.symbol}
+                    </p>
+                  </Box>
+                ) : (
+                  <Button
+                    className='token-approve-button'
+                    onClick={approveACallback}
+                  >
+                    <p>
+                      {t('approve')} {position.token0?.symbol}
+                    </p>
+                  </Button>
+                )
+              ) : (
+                <Box className='token-approve-button-loading'>
+                  <Check />
+                  <p>
+                    {t('approved')} {position.token0?.symbol}
+                  </p>
+                </Box>
+              )}
+            </Box>
+          )}
+          {showApprovalB !== undefined && (
+            <Box width={showApprovalA === undefined ? '100%' : '49%'}>
+              {showApprovalB ? (
+                approvalB === ApprovalState.PENDING ? (
+                  <Box className='token-approve-button-loading'>
+                    <Loader stroke='white' />
+                    <p>
+                      {t('approving')} {position.token1?.symbol}
+                    </p>
+                  </Box>
+                ) : (
+                  <Button
+                    className='token-approve-button'
+                    onClick={approveBCallback}
+                  >
+                    <p>
+                      {t('approve')} {position.token1?.symbol}
+                    </p>
+                  </Button>
+                )
+              ) : (
+                <Box className='token-approve-button-loading'>
+                  <Check />
+                  <p>
+                    {t('approved')} {position.token1?.symbol}
+                  </p>
+                </Box>
+              )}
+            </Box>
+          )}
         </Box>
         <Box mt={2}>
           <Button
