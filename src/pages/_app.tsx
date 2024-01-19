@@ -26,6 +26,7 @@ import './index.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Environment, HypeLab, HypeLabContext } from 'hypelab-react';
+import nextI18NextConfig from '../../next-i18next.config.js';
 
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -140,4 +141,4 @@ MyApp.getInitialProps = async (appContext: any) => {
   return { ...appProps };
 };
 
-export default appWithTranslation(MyApp);
+export default appWithTranslation(MyApp, nextI18NextConfig);

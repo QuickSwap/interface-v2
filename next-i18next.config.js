@@ -3,4 +3,9 @@ module.exports = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+  localePath:
+    typeof window === 'undefined'
+      ? require('path').resolve('./public/locales')
+      : '/public/locales',
+  ns: ['common'],
 };
