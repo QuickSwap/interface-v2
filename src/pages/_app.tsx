@@ -126,6 +126,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
                   <Popups />
                   <PageLayout>
                     <Component {...pageProps} />
+                    <SpeedInsights />
                   </PageLayout>
                 </Web3ReactManager>
               </TermsWrapper>
