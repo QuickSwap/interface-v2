@@ -5,7 +5,7 @@ import { Box, Button, Popover, Divider } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { ExpandMore, Close } from '@mui/icons-material';
 import { useFetchListCallback } from 'hooks/useFetchListCallback';
-
+import styles from 'styles/components/CurrencySearchModal.module.scss';
 import { AppDispatch, AppState } from 'state';
 import { acceptListUpdate, removeList, selectList } from 'state/lists/actions';
 import { useSelectedListUrl } from 'state/lists/hooks';
@@ -98,19 +98,23 @@ const ListRow = memo(function ListRow({
   if (!list) return null;
 
   return (
-    <Box className='listRow' key={listUrl} id={listUrlRowHTMLId(listUrl)}>
+    <Box
+      className={styles.listRow}
+      key={listUrl}
+      id={listUrlRowHTMLId(listUrl)}
+    >
       {list.logoURI ? (
         <ListLogo logoURI={list.logoURI} alt={`${list.name} list logo`} />
       ) : (
         <div style={{ width: '24px', height: '24px', marginRight: '1rem' }} />
       )}
-      <Box className='listname'>
+      <Box className={styles.listName}>
         <p>{list.name}</p>
-        <Box className='styledListUrlText' title={listUrl}>
+        <Box className={styles.styledListUrlText} title={listUrl}>
           <ListOrigin listUrl={listUrl} />
         </Box>
       </Box>
-      <div className='styledMenu'>
+      <div className={styles.styledMenu}>
         <Box
           onClick={(evt) => {
             setAnchorEl(evt.currentTarget);
@@ -126,7 +130,7 @@ const ListRow = memo(function ListRow({
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
           transformOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Box className='popoverWrapper'>
+          <Box className={styles.popoverWrapper}>
             <p>{list && listVersionLabel(list.version)}</p>
             <Divider />
             <Box>
@@ -155,7 +159,6 @@ const ListRow = memo(function ListRow({
       {isSelected ? (
         <Button
           disabled={true}
-          className='select-button'
           style={{
             width: '5rem',
             minWidth: '5rem',
@@ -255,8 +258,8 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
   }, [lists]);
 
   return (
-    <Box className='manageList'>
-      <Box className='header'>
+    <Box className={styles.manageList}>
+      <Box className={styles.manageListHeader}>
         <ArrowLeft onClick={onBack} />
         <p>{t('manageLists')}</p>
         <Close onClick={onDismiss} />
@@ -264,7 +267,7 @@ const ListSelect: React.FC<ListSelectProps> = ({ onDismiss, onBack }) => {
 
       <Divider />
 
-      <Box className='content'>
+      <Box className={styles.manageListContent}>
         <Box>
           <p>{t('addList')}</p>
           <QuestionHelper text={t('addListHelper')} />

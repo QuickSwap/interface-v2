@@ -768,14 +768,14 @@ export function SelectRange({
       {selectVaultEnabled && (
         <Box mt={2}>
           <small className='weight-600'>{t('selectVault')}</small>
-          <Grid container spacing={2} className='pool-select-vault-wrapper'>
+          <Grid container spacing={2} className={styles.poolSelectVaultWrapper}>
             {gammaPairExists && (
               <Grid item xs={4}>
                 <Box
-                  className={`pool-select-vault-panel${
+                  className={`${styles.poolSelectVaultPanel} ${
                     liquidityRangeType ===
                     GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-                      ? ' pool-select-vault-selected'
+                      ? styles.poolSelectVaultSelected
                       : ''
                   }`}
                   onClick={() => {
@@ -797,10 +797,10 @@ export function SelectRange({
             {unipilotVaultExists && (
               <Grid item xs={4}>
                 <Box
-                  className={`pool-select-vault-panel${
+                  className={`${styles.poolSelectVaultPanel} ${
                     liquidityRangeType ===
                     GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
-                      ? ' pool-select-vault-selected'
+                      ? styles.poolSelectVaultSelected
                       : ''
                   }`}
                   onClick={() => {
@@ -825,10 +825,10 @@ export function SelectRange({
             {defiedgeStrategyExists && (
               <Grid item xs={4}>
                 <Box
-                  className={`pool-select-vault-panel${
+                  className={`${styles.poolSelectVaultPanel} ${
                     liquidityRangeType ===
                     GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
-                      ? ' pool-select-vault-selected'
+                      ? styles.poolSelectVaultSelected
                       : ''
                   }`}
                   onClick={() => {
@@ -848,10 +848,10 @@ export function SelectRange({
             {steerVaultExists && (
               <Grid item xs={4}>
                 <Box
-                  className={`pool-select-vault-panel${
+                  className={`${styles.poolSelectVaultPanel} ${
                     liquidityRangeType ===
                     GlobalConst.v3LiquidityRangeType.STEER_RANGE
-                      ? ' pool-select-vault-selected'
+                      ? styles.poolSelectVaultSelected
                       : ''
                   }`}
                   onClick={() => {

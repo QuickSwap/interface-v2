@@ -101,11 +101,11 @@
   }
 }
 
-.pool-select-vault-wrapper {
+.poolSelectVaultWrapper {
   margin-top: 16px;
 }
 
-.pool-select-vault-panel {
+.poolSelectVaultPanel {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -127,6 +127,6 @@
   }
 }
 
-.pool-select-vault-selected {
+.poolSelectVaultSelected {
   border: 1px solid $primary;
 }

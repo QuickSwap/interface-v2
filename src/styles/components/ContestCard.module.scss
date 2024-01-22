@@ -19,6 +19,11 @@
   }
 }
 
+.highlightedCard {
+  border: 1px solid $primary;
+  box-shadow: 0 0 5px 5px $blue6;
+}
+
 .contestCardUp {
   background: $secondary1;
   width: 100%;

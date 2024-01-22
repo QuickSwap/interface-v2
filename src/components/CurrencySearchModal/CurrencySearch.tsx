@@ -214,7 +214,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         />
       </Box>
 
-      <Box className='currencySearchFooter' />
+      <Box className={styles.currencySearchFooter} />
     </Box>
   );
 };

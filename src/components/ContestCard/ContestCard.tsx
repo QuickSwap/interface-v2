@@ -3,7 +3,7 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { formatNumber, shortenAddress } from 'utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
-import 'components/styles/ContestCard.scss';
+import styles from 'styles/components/ContestCard.module.scss';
 import { ContestLeaderBoard } from 'models/interfaces/contest';
 
 const ContestCard: React.FC<{
@@ -16,9 +16,13 @@ const ContestCard: React.FC<{
   const [isExpandCard, setExpandCard] = useState(false);
 
   return (
-    <Box className={`contestCard ${isExpandCard ? 'highlightedCard' : ''}`}>
+    <Box
+      className={`${styles.contestCard} ${
+        isExpandCard ? styles.highlightedCard : ''
+      }`}
+    >
       <Box
-        className='contestCardUp'
+        className={styles.contestCardUp}
         onClick={() => setExpandCard(!isExpandCard)}
       >
         {isMobile ? (
@@ -57,8 +61,8 @@ const ContestCard: React.FC<{
       </Box>
 
       {isExpandCard && isMobile && (
-        <Box className={`contestCardDetails justify-end`}>
-          <Box className='contestCardMobileRow'>
+        <Box className={`${styles.contestCardDetails} justify-end`}>
+          <Box className={styles.contestCardMobileRow}>
             <small className='text-secondary'>{t('tradesTitleCase')}</small>
             <small>{contestantData['txCount']}</small>
           </Box>

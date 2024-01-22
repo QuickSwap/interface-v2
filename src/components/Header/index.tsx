@@ -364,7 +364,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           </picture>
         </Link>
         {!tabletWindowSize && (
-          <Box className='mainMenu'>
+          <Box className={styles.mainMenu}>
             {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
               <HeaderDesktopItem key={`header-desktop-item-${i}`} item={val} />
             ))}

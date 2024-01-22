@@ -36,6 +36,7 @@ import {
 } from 'state/transactions/hooks';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { toV3Token } from 'constants/v3/addresses';
+import styles from 'styles/pages/Farm.module.scss';
 
 interface Props {
   farm: any;
@@ -302,7 +303,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   };
 
   return (
-    <Box padding={2} className='v3PairFarmCardDetailsWrapper'>
+    <Box padding={2} className={styles.v3PairFarmCardDetailsWrapper}>
       {ichiPositionToPass && openAdd && (
         <IncreaseICHILiquidityModal
           open={openAdd}

@@ -37,7 +37,7 @@ function TokenTags({ currency }: { currency: Token }) {
   return (
     <Box>
       <Tooltip title={tag.description}>
-        <Box className='tag' key={tag.id}>
+        <Box className={styles.tag} key={tag.id}>
           {tag.name}
         </Box>
       </Tooltip>
@@ -48,7 +48,7 @@ function TokenTags({ currency }: { currency: Token }) {
             .map(({ name, description }) => `${name}: ${description}`)
             .join('; \n')}
         >
-          <Box className='tag'>...</Box>
+          <Box className={styles.tag}>...</Box>
         </Tooltip>
       ) : null}
     </Box>
