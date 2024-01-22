@@ -15,9 +15,10 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
   useEffect(() => {
     const savedTermsVersion = localStorage.getItem('tosVersion');
     if (
-      !savedTermsVersion ||
-      !currentTOSVersion ||
-      savedTermsVersion !== currentTOSVersion
+      (!savedTermsVersion ||
+        !currentTOSVersion ||
+        savedTermsVersion !== currentTOSVersion) &&
+      window.location.host !== 'interface-v2-seven.vercel.app'
     ) {
       setShowTerms(true);
     }
@@ -64,14 +65,12 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
             />
             <p>{t('disclaimerText3')}</p>
           </Box>
-          <picture>
           <Image
             priority={true}
             src='/assets/images/perpsBanner.png'
             alt='perps banner'
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
           />
-          </picture>
           <Box my={2}>
             <p className='caption text-secondary'>
               <Trans
