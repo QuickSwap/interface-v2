@@ -1,4 +1,5 @@
 import React from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import Document, {
   Html,
   Head,
@@ -40,6 +41,7 @@ class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
+          <SpeedInsights />
         </body>
       </Html>
     );
