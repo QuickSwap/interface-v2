@@ -92,7 +92,7 @@ export const useSteerVaults = (chainId: ChainId) => {
             let aprData, strategyData;
             try {
               const aprRes = await fetch(
-                `${process.env.NEXT_PUBLIC_STEER_VAULT_APR_URL}?address=${vault.vaultAddress}&chain=${chainId}&interval=604800`,
+                `${steerAPIURL}/pool/fee-apr?address=${vault.vaultAddress}&chain=${chainId}&interval=604800`,
               );
               aprData = await aprRes.json();
             } catch (e) {
