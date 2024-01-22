@@ -138,9 +138,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   );
 };
 
-MyApp.getInitialProps = async (appContext: any) => {
+/**MyApp.getInitialProps = async (appContext: any) => {
   const appProps = await App.getInitialProps(appContext);
   return { ...appProps };
-};
+};*/
 
 export default appWithTranslation(MyApp, nextI18NextConfig);
