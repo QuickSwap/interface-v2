@@ -13,6 +13,9 @@ import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ConvertQuick, HypeLabAds } from 'components';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import Image from 'next/image';
+import DragonBg1 from 'svgs/DragonBg1.svg';
+import DragonBg2 from 'svgs/DragonBg2.svg';
 
 const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { breakpoints } = useTheme();
@@ -51,17 +54,14 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
         <Grid item xs={12} sm={12} md={4}>
           <Box className={styles.dragonWrapperContainer}>
             <Box className={styles.dragonBg}>
-              <picture>
-                <img src='/assets/images/DragonBg2.svg' alt='Dragon Lair' />
-              </picture>
+              <DragonBg2 />
             </Box>
-            <picture>
-              <img
-                src='/assets/images/DragonLairMask.svg'
-                alt='Dragon Mask'
-                className={styles.dragonMask}
-              />
-            </picture>
+            <Image
+              src='/assets/images/DragonLairMask.svg'
+              alt='Dragon Mask'
+              layout='fill'
+              objectFit='contain'
+            />
             <Box className={styles.dragonWrapperHeading}>
               <h5>{t('newDragonLair')}</h5>
               <small>
@@ -101,14 +101,7 @@ const DragonPage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
         <Grid item xs={12} sm={12} md={8}>
           <Box className={styles.dragonWrapper}>
             <Box className={styles.dragonBg}>
-              <picture>
-                <img
-                  src={`/assets/images/${
-                    isMobile ? 'DragonBg2' : 'DragonBg1'
-                  }.svg`}
-                  alt='Dragon Syrup'
-                />
-              </picture>
+              {isMobile ? <DragonBg2 /> : <DragonBg1 />}
             </Box>
             <Box className={styles.dragonTitle}>
               <h5>{t('dragonSyrup')}</h5>

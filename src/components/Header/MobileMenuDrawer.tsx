@@ -10,6 +10,7 @@ import { List } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 import styles from 'styles/components/Header.module.scss';
+import ThreeDashIcon from 'svgs/ThreeDashIcon.svg';
 
 export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
   menuItems = [],
@@ -31,9 +32,7 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
         style={{ marginTop: '4px', paddingLeft: '24px' }}
         onClick={() => setOpen(true)}
       >
-        <picture>
-          <img src='/assets/images/ThreeDashIcon.svg' alt='Three Dash Icon' />
-        </picture>
+        <ThreeDashIcon />
       </Box>
 
       <Drawer anchor='bottom' open={open} onClose={() => setOpen(false)}>

@@ -69,30 +69,24 @@ const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
       </Box>
       <Box className='flex justify-between' mt={1}>
         {gammaPosition.token0 && (
-          <Box className='flex items-center'>
-            <Box className='flex' mr={1}>
-              <CurrencyLogo currency={gammaPosition.token0} size='24px' />
-            </Box>
+          <Box className='flex items-center' gap='8px'>
+            <CurrencyLogo currency={gammaPosition.token0} />
             <small>
               {t('pooled')} {gammaPosition.token0.symbol}
             </small>
           </Box>
         )}
-        <Box className='flex items-center'>
+        <Box className='flex items-center' gap='6px'>
           <small>
             {gammaPosition.balance0 ? formatNumber(gammaPosition.balance0) : 0}
           </small>
-          <Box ml='6px'>
-            <Badge text={`${formatNumber(token0PooledPercent)}%`} />
-          </Box>
+          <Badge text={`${formatNumber(token0PooledPercent)}%`} />
         </Box>
       </Box>
       <Box className='flex justify-between' mt={1}>
         {gammaPosition.token1 && (
-          <Box className='flex items-center'>
-            <Box className='flex' mr={1}>
-              <CurrencyLogo currency={gammaPosition.token1} size='24px' />
-            </Box>
+          <Box className='flex items-center' gap='8px'>
+            <CurrencyLogo currency={gammaPosition.token1} />
             <small>
               {t('pooled')} {gammaPosition.token1.symbol}
             </small>

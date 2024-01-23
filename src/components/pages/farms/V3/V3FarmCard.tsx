@@ -7,6 +7,7 @@ import { V3FarmAPRTooltip } from './V3FarmAPRTooltip';
 import { useRouter } from 'next/router';
 import { V3FarmPair } from './AllV3Farms';
 import styles from 'styles/pages/Farm.module.scss';
+import Image from 'next/image';
 
 interface Props {
   farm: V3FarmPair;
@@ -132,13 +133,12 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
                 <V3FarmAPRTooltip farm={farm}>
                   <Box className={styles.farmCardAPR} gap='4px'>
                     <p>{formatNumber(farm.apr)}%</p>
-                    <picture>
-                      <img
-                        src='/assets/images/aprHover.png'
-                        width={16}
-                        alt='APR Icon'
-                      />
-                    </picture>
+                    <Image
+                      src='/assets/images/aprHover.png'
+                      width={16}
+                      height={16}
+                      alt='APR Icon'
+                    />
                   </Box>
                 </V3FarmAPRTooltip>
               </Box>

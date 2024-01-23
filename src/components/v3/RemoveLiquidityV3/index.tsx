@@ -257,28 +257,22 @@ export default function RemoveLiquidityV3({
           <p>
             {t('pooled')} {liquidityValue0?.currency?.symbol}
           </p>
-          <Box className='flex items-center'>
+          <Box className='flex items-center' gap='8px'>
             <p>{liquidityValue0?.toSignificant()}</p>
-            <Box className='flex' ml={1}>
-              <CurrencyLogo
-                size='24px'
-                currency={liquidityValue0?.currency as WrappedCurrency}
-              />
-            </Box>
+            <CurrencyLogo
+              currency={liquidityValue0?.currency as WrappedCurrency}
+            />
           </Box>
         </Box>
         <Box mt={2} className='flex justify-between'>
           <p>
             {t('pooled')} {liquidityValue1?.currency?.symbol}
           </p>
-          <Box className='flex items-center'>
+          <Box className='flex items-center' gap='8px'>
             <p>{liquidityValue1?.toSignificant()}</p>
-            <Box className='flex' ml={1}>
-              <CurrencyLogo
-                size='24px'
-                currency={liquidityValue1?.currency as WrappedCurrency}
-              />
-            </Box>
+            <CurrencyLogo
+              currency={liquidityValue1?.currency as WrappedCurrency}
+            />
           </Box>
         </Box>
         {(feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) && (
@@ -288,28 +282,22 @@ export default function RemoveLiquidityV3({
               <p>
                 {feeValue0?.currency?.symbol} {t('feeEarned')}:
               </p>
-              <Box className='flex items-center'>
+              <Box className='flex items-center' gap='8px'>
                 <p>{feeValue0?.toSignificant()}</p>
-                <Box className='flex' ml={1}>
-                  <CurrencyLogo
-                    size='24px'
-                    currency={feeValue0?.currency as WrappedCurrency}
-                  />
-                </Box>
+                <CurrencyLogo
+                  currency={feeValue0?.currency as WrappedCurrency}
+                />
               </Box>
             </Box>
             <Box mt={2} className='flex justify-between'>
               <p>
                 {feeValue1?.currency?.symbol} {t('feeEarned')}:
               </p>
-              <Box className='flex items-center'>
+              <Box className='flex items-center' gap='8px'>
                 <p>{feeValue1?.toSignificant()}</p>
-                <Box className='flex' ml={1}>
-                  <CurrencyLogo
-                    size='24px'
-                    currency={feeValue1?.currency as WrappedCurrency}
-                  />
-                </Box>
+                <CurrencyLogo
+                  currency={feeValue1?.currency as WrappedCurrency}
+                />
               </Box>
             </Box>
           </Box>
@@ -414,7 +402,7 @@ export default function RemoveLiquidityV3({
           </p>
           <Box className='flex items-center'>
             <p>{liquidityValue0?.toSignificant()}</p>
-            <CurrencyLogo currency={liquidityValue0?.currency} size='20px' />
+            <CurrencyLogo currency={liquidityValue0?.currency} size={20} />
           </Box>
         </Box>
         <Box mt={2}>
@@ -423,7 +411,7 @@ export default function RemoveLiquidityV3({
           </p>
           <Box className='flex items-center'>
             <p>{liquidityValue1?.toSignificant()}</p>
-            <CurrencyLogo currency={liquidityValue1?.currency} size='20px' />
+            <CurrencyLogo currency={liquidityValue1?.currency} size={20} />
           </Box>
         </Box>
         {(feeValue0?.greaterThan(0) || feeValue1?.greaterThan(0)) && (
@@ -435,7 +423,7 @@ export default function RemoveLiquidityV3({
               </p>
               <Box className='flex items-center'>
                 <p>{feeValue0?.toSignificant()}</p>
-                <CurrencyLogo currency={feeValue0?.currency} size='20px' />
+                <CurrencyLogo currency={feeValue0?.currency} size={20} />
               </Box>
             </Box>
             <Box>
@@ -444,7 +432,7 @@ export default function RemoveLiquidityV3({
               </p>
               <Box className='flex items-center'>
                 <p>{feeValue1?.toSignificant()}</p>
-                <CurrencyLogo currency={feeValue1?.currency} size='20px' />
+                <CurrencyLogo currency={feeValue1?.currency} size={20} />
               </Box>
             </Box>
           </>

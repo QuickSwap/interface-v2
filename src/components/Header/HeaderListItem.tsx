@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import Collapse from '@mui/material/Collapse';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import styles from 'styles/components/Header.module.scss';
+import Image from 'next/image';
 
 export interface HeaderMenuItem {
   text: string;
@@ -72,13 +73,12 @@ export const HeaderListItem: React.FC<{
               <div className='my-auto'>{item.text}</div>
               <div className={styles.mobileNewTag}>
                 {item.isNew ? (
-                  <picture>
-                    <img
-                      src='/assets/images/NewTag.png'
-                      alt='new menu'
-                      width={46}
-                    />
-                  </picture>
+                  <Image
+                    src='/assets/images/NewTag.png'
+                    alt='new menu'
+                    width={46}
+                    height={30}
+                  />
                 ) : (
                   <></>
                 )}

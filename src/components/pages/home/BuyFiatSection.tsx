@@ -3,15 +3,19 @@ import { Box } from '@mui/material';
 import { BuyFiatButton } from 'components';
 import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Home.module.scss';
+import Image from 'next/image';
 
 const BuyFiatSection: React.FC = () => {
   const { t } = useTranslation();
 
   return (
     <Box className={styles.buyFiatContainer}>
-      <picture>
-        <img src='/assets/images/FiatMask.svg' alt='Fiat Mask' />
-      </picture>
+      <Image
+        src='/assets/images/FiatMask.svg'
+        alt='Fiat Mask'
+        width={1248}
+        height={338}
+      />
 
       <Box>
         <Box className={styles.buyFiatInfo}>
@@ -19,18 +23,21 @@ const BuyFiatSection: React.FC = () => {
           <p>{t('buyCryptoFiatDesc')}</p>
           <BuyFiatButton />
         </Box>
-        <picture>
-          <img
-            src='/assets/images/featured/BuyWithFiatNoPad.png'
-            alt='buy with fiat'
-          />
-        </picture>
+        <Image
+          src='/assets/images/featured/BuyWithFiatNoPad.png'
+          alt='buy with fiat'
+          width={129}
+          height={129}
+        />
       </Box>
-      <Box className={styles.poweredBySection}>
+      <Box className={styles.poweredBySection} gap='4px'>
         {t('poweredBy')}
-        <picture className={styles.meldLogo}>
-          <img src='/assets/images/meldIcon.png' alt='MELD' />
-        </picture>
+        <Image
+          src='/assets/images/meldIcon.png'
+          alt='MELD'
+          width={48.45}
+          height={15}
+        />
       </Box>
     </Box>
   );

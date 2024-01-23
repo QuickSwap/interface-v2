@@ -1,13 +1,16 @@
 import React from 'react';
+import { Box } from '@mui/material';
+import Image from 'next/image';
 
 export const LiquidityHubAd: React.FC = () => {
   return (
-    <picture>
-      <img
-        className='w-100'
+    <Box className='w-100' position='relative'>
+      <Image
+        layout='fill'
+        objectFit='contain'
         src='/assets/images/ads/ads-liquidity-hub.png'
         alt='advertisement liquidity hub'
       />
-    </picture>
+    </Box>
   );
 };

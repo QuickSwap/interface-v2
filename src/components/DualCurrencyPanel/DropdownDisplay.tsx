@@ -6,6 +6,7 @@ import { useActiveWeb3React } from 'hooks';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
 import { formatNumber } from 'utils';
 import styles from 'styles/components/DualCurrencyPanel.module.scss';
+import ZapIcon from 'svgs/ZapIcon.svg';
 
 export function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
   const bal = Number(balance.toExact());
@@ -31,11 +32,7 @@ const DropdownDisplay: React.FC<{
       width={active ? '100%' : '180px'}
     >
       <Box className='flex items-center' gap='5px'>
-        {!inputCurrencies[1] && !active && (
-          <picture>
-            <img src='/assets/images/bonds/ZapIcon.svg' alt='Zap Icon' />
-          </picture>
-        )}
+        {!inputCurrencies[1] && !active && <ZapIcon />}
         {inputCurrencies[1] ? (
           <DoubleCurrencyLogo
             currency0={inputCurrencies[0]}
@@ -43,7 +40,7 @@ const DropdownDisplay: React.FC<{
             size={24}
           />
         ) : (
-          <CurrencyLogo currency={inputCurrencies[0]} size='24px' />
+          <CurrencyLogo currency={inputCurrencies[0]} />
         )}
         <p className='weight-600'>
           {inputCurrencies[1]

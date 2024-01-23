@@ -9,17 +9,18 @@ import { Logo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import styles from 'styles/components/CurrencyLogo.module.scss';
 import { useActiveWeb3React } from 'hooks';
+import Image from 'next/image';
 
 interface CurrencyLogoProps {
   currency?: Currency;
-  size?: string;
+  size?: number;
   style?: React.CSSProperties;
   withoutBg?: boolean;
 }
 
 const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
   currency,
-  size = '24px',
+  size = 24,
   style,
   withoutBg,
 }) => {
@@ -71,14 +72,13 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
         borderRadius={size}
         className={styles.currencyLogo}
       >
-        <picture>
-          <img
-            className={styles.ethereumLogo}
-            src={nativeCurrencyImage}
-            alt='Ethereum Logo'
-            width='100%'
-          />
-        </picture>
+        <Image
+          className={styles.ethereumLogo}
+          src={nativeCurrencyImage}
+          alt='Ethereum Logo'
+          width={size}
+          height={size}
+        />
       </Box>
     );
   }

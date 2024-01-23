@@ -298,7 +298,7 @@ const AnalyticsTokenDetails = (
         <Box mb={4} width={1}>
           <Box width={1} className='flex flex-wrap justify-between'>
             <Box display='flex'>
-              <CurrencyLogo currency={currency} size='32px' />
+              <CurrencyLogo currency={currency} size={32} />
               <Box ml={1.5}>
                 <Box className='flex items-center'>
                   <Box className='flex items-end' mr={0.5}>

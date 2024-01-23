@@ -73,7 +73,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
             )}{' '}
             {tradeAmount.currency.symbol}
           </small>
-          <CurrencyLogo currency={tradeAmount.currency} size='16px' />
+          <CurrencyLogo currency={tradeAmount.currency} size={16} />
         </Box>
       </Box>
       <Box className={styles.summaryRow}>

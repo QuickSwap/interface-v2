@@ -75,7 +75,7 @@ const TopMovers: React.FC<TopMoversProps> = ({ hideArrow = false }) => {
             const priceUpPercent = Number(token.priceChangeUSD).toFixed(2);
             return (
               <Box className={styles.topMoverItem} key={token.id}>
-                <CurrencyLogo currency={currency} size='28px' />
+                <CurrencyLogo currency={currency} size={28} />
                 <Box ml={1}>
                   <small className='text-bold'>{token.symbol}</small>
                   <Box className='flex justify-center items-center'>

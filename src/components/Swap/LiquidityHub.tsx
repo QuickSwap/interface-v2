@@ -35,6 +35,7 @@ import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { parseUnits } from 'ethers/lib/utils';
 import { getFixedValue } from 'utils';
 import { useRouter } from 'next/router';
+import OrbsLogo from 'svgs/orbs-logo.svg';
 
 const ANALYTICS_VERSION = 0.2;
 const API_ENDPOINT = 'https://hub.orbs.network';
@@ -880,9 +881,7 @@ export const LiquidityHubTxSettings = () => {
         <StyledLiquidityHubTxSettings>
           <p>{t('disableLiquidityHub')}</p>
           <p className='bottom-text'>
-            <picture>
-              <img src='/assets/images/orbs-logo.svg' alt='orbs logo' />
-            </picture>
+            <OrbsLogo />
             <a
               target='_blank'
               rel='noreferrer'
@@ -935,9 +934,7 @@ export const LiquidityHubConfirmationModalContent = ({
       {t('by')}{' '}
       <a href={WEBSITE} target='_blank' rel='noreferrer'>
         Orbs
-        <picture>
-          <img src='/assets/images/orbs-logo.svg' alt='orbs logo' />
-        </picture>
+        <OrbsLogo />
       </a>
     </StyledLiquidityHubTrade>
   );

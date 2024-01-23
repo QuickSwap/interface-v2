@@ -158,22 +158,18 @@ export default function WithdrawSteerLiquidityModal({
           <p>
             {t('pooled')} {position.token0?.symbol}
           </p>
-          <Box className='flex items-center'>
+          <Box className='flex items-center' gap='8px'>
             <p>{formatNumber(token0Amount)}</p>
-            <Box className='flex' ml={1}>
-              <CurrencyLogo size='24px' currency={position.token0} />
-            </Box>
+            <CurrencyLogo currency={position.token0} />
           </Box>
         </Box>
         <Box mt={2} className='flex justify-between'>
           <p>
             {t('pooled')} {position.token1?.symbol}
           </p>
-          <Box className='flex items-center'>
+          <Box className='flex items-center' gap='8px'>
             <p>{formatNumber(token1Amount)}</p>
-            <Box className='flex' ml={1}>
-              <CurrencyLogo size='24px' currency={position.token1} />
-            </Box>
+            <CurrencyLogo currency={position.token1} />
           </Box>
         </Box>
 
@@ -268,22 +264,18 @@ export default function WithdrawSteerLiquidityModal({
             <p>
               {t('pooled')} {position.token0?.symbol}
             </p>
-            <Box className='flex items-center'>
+            <Box className='flex items-center' gap='8px'>
               <p>{formatNumber(token0BalanceWallet)}</p>
-              <Box className='flex' ml={1}>
-                <CurrencyLogo size='24px' currency={position.token0} />
-              </Box>
+              <CurrencyLogo currency={position.token0} />
             </Box>
           </Box>
           <Box mt={2} className='flex justify-between'>
             <p>
               {t('pooled')} {position.token1?.symbol}
             </p>
-            <Box className='flex items-center'>
+            <Box className='flex items-center' gap='8px'>
               <p>{formatNumber(token1BalanceWallet)}</p>
-              <Box className='flex' ml={1}>
-                <CurrencyLogo size='24px' currency={position.token1} />
-              </Box>
+              <CurrencyLogo currency={position.token1} />
             </Box>
           </Box>
         </Box>

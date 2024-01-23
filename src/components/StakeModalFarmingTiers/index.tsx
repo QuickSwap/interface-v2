@@ -13,6 +13,7 @@ import { Token } from '@uniswap/sdk-core';
 
 import { ChainId } from '@uniswap/sdk';
 import { useTranslation } from 'next-i18next';
+import Image from 'next/image';
 
 interface StakeModalFarmingTiersProps {
   tiersLimits: {
@@ -149,9 +150,7 @@ export default function StakeModalFarmingTiers({
           >
             <div className='p-1 farming-tier__header w-100 ta-l pos-r'>
               <div className='mb-1 farming-tier__img'>
-                <picture>
-                  <img width={48} height={48} src={tier.img} alt='Tier Image' />
-                </picture>
+                <Image width={48} height={48} src={tier.img} alt='Tier Image' />
               </div>
               <div className='farming-tier__title b f f-jb'>
                 <span>{tier.title}</span>

@@ -96,13 +96,12 @@
   display: flex;
   align-items: center;
   & img {
-    height: 9px;
     margin-left: 5px;
   }
 }
 
 .poolSelectVaultWrapper {
-  margin-top: 16px;
+  margin-top: -8px !important;
 }
 
 .poolSelectVaultPanel {

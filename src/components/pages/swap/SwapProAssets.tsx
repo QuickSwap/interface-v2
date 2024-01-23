@@ -162,13 +162,11 @@ const SwapProAssets: React.FC = () => {
     return (
       <Box mt={index === 0 ? 0 : 3} mx='0.5rem'>
         <Box className='flex items-center' mb={1}>
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={tokenCurrency} size='28px' />
-            <Box ml={1}>
-              <p className='text-gray25'>
-                {token.name} <span className='text-hint'>({token.symbol})</span>
-              </p>
-            </Box>
+          <Box className='flex items-center' gap='8px'>
+            <CurrencyLogo currency={tokenCurrency} size={28} />
+            <p className='text-gray25'>
+              {token.name} <span className='text-hint'>({token.symbol})</span>
+            </p>
           </Box>
         </Box>
         <Divider />
@@ -213,9 +211,9 @@ const SwapProAssets: React.FC = () => {
     return [
       {
         html: (
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={tokenCurrency} size='28px' />
-            <Box className='ml-1'>{token.symbol}</Box>
+          <Box className='flex items-center' gap='8px'>
+            <CurrencyLogo currency={tokenCurrency} size={28} />
+            <p>{token.symbol}</p>
           </Box>
         ),
       },

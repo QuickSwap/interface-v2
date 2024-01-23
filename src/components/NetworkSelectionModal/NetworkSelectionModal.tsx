@@ -20,6 +20,7 @@ import {
   zengoConnectConnection,
 } from 'connectors';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
+import Image from 'next/image';
 
 const NetworkSelectionModal: React.FC = () => {
   const { t } = useTranslation();
@@ -98,12 +99,12 @@ const NetworkSelectionModal: React.FC = () => {
               }}
             >
               <Box className='flex items-center'>
-                <picture>
-                  <img
-                    src={config['nativeCurrencyImage']}
-                    alt='network Image'
-                  />
-                </picture>
+                <Image
+                  src={config['nativeCurrencyImage']}
+                  alt='network Image'
+                  width={24}
+                  height={24}
+                />
                 <small className='weight-600'>{config['networkName']}</small>
               </Box>
               {isSupportedNetwork && chainId && chainId === chain && (
@@ -122,9 +123,12 @@ const NetworkSelectionModal: React.FC = () => {
           }}
         >
           <Box className='flex items-center'>
-            <picture>
-              <img src='/assets/images/KAVA.png' alt='network Image' />
-            </picture>
+            <Image
+              src='/assets/images/KAVA.png'
+              alt='network Image'
+              width={24}
+              height={24}
+            />
             <small className='weight-600'>Kava - Kinetix</small>
           </Box>
         </Box>

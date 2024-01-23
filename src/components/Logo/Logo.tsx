@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { stringToColour } from 'utils/stringToColour';
+import Image from 'next/image';
 
 const BAD_SRCS: { [tokenAddress: string]: true } = {};
 
@@ -7,15 +8,10 @@ export interface LogoProps {
   srcs: string[];
   alt?: string;
   symbol?: string;
-  size?: string;
+  size?: number;
 }
 
-const Logo: React.FC<LogoProps> = ({
-  srcs,
-  alt,
-  symbol = '??',
-  size = '24px',
-}) => {
+const Logo: React.FC<LogoProps> = ({ srcs, alt, symbol = '??', size = 24 }) => {
   const [, refresh] = useState<number>(0);
   const src: string | undefined = srcs.find((src) => !BAD_SRCS[src]);
 
@@ -23,18 +19,16 @@ const Logo: React.FC<LogoProps> = ({
   const displaySymbol = symbol.slice(0, 1) + symbol.slice(-1);
   if (src) {
     return (
-      <picture>
-        <img
-          alt={alt ?? 'Logo'}
-          src={src}
-          width={size}
-          height={size}
-          onError={() => {
-            if (src) BAD_SRCS[src] = true;
-            refresh((i) => i + 1);
-          }}
-        />
-      </picture>
+      <Image
+        alt={alt ?? 'Logo'}
+        src={src}
+        width={size}
+        height={size}
+        onError={() => {
+          if (src) BAD_SRCS[src] = true;
+          refresh((i) => i + 1);
+        }}
+      />
     );
   }
   return (

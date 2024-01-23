@@ -16,8 +16,8 @@ const DoubleCurrencyLogo: React.FC<DoubleCurrencyLogoProps> = ({
 }: DoubleCurrencyLogoProps) => {
   return (
     <Box className={styles.doubleCurrencyLogo}>
-      <CurrencyLogo currency={currency0} size={size.toString() + 'px'} />
-      <CurrencyLogo currency={currency1} size={size.toString() + 'px'} />
+      <CurrencyLogo currency={currency0} size={size} />
+      <CurrencyLogo currency={currency1} size={size} />
     </Box>
   );
 };

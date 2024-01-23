@@ -9,6 +9,8 @@ import SoulZapAddLiquidity from './SoulZapAddLiquidity';
 import { useActiveWeb3React } from 'hooks';
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'next-i18next';
+import ZapIcon from 'svgs/ZapIcon.svg';
+import Image from 'next/image';
 
 const GetLpButton = ({ bond }: { bond: any }) => {
   // Hooks
@@ -75,22 +77,18 @@ const GetLpButton = ({ bond }: { bond: any }) => {
               <p>{t('Get LP')}</p>
               {bondContractAddress ===
               '0xdE766645C9b24e87165107714c88400FedA269A3' ? null : !shouldSendToExternalLpUrl ? (
-                <picture>
-                  <img src='/assets/images/bonds/ZapIcon.svg' alt='Zap Icon' />
-                </picture>
+                <ZapIcon />
               ) : (
-                <picture>
-                  <img
-                    src={
-                      dexDisplayAttributesAny[
-                        lpToken?.liquidityDex?.[chainId] ??
-                          LiquidityDex.ApeSwapV2
-                      ].icon ?? ''
-                    }
-                    width={20}
-                    alt='Dex Icon'
-                  />
-                </picture>
+                <Image
+                  src={
+                    dexDisplayAttributesAny[
+                      lpToken?.liquidityDex?.[chainId] ?? LiquidityDex.ApeSwapV2
+                    ].icon ?? ''
+                  }
+                  width={20}
+                  height={20}
+                  alt='Dex Icon'
+                />
               )}
             </Box>
           </Button>

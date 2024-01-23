@@ -7,6 +7,7 @@ import { Trans, useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { getConfig } from 'config/index';
 import styles from 'styles/pages/Pools.module.scss';
+import Image from 'next/image';
 
 const YourLiquidityPools: React.FC = () => {
   const { t } = useTranslation();
@@ -68,12 +69,14 @@ const YourLiquidityPools: React.FC = () => {
           </Box>
         ) : (
           <Box className='flex flex-col items-center text-center'>
-            <picture className={styles.noLiquidityImage}>
-              <img
+            <Box className={styles.noLiquidityImage}>
+              <Image
+                layout='fill'
+                objectFit='contain'
                 src='/assets/images/NoLiquidityPool.png'
                 alt='No Liquidity'
               />
-            </picture>
+            </Box>
             <p className={`small ${styles.liquidityText}`}>
               <Trans
                 i18nKey='poolMissingComment'

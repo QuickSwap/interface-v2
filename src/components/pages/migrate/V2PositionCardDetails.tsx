@@ -68,7 +68,7 @@ const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           </small>
           <Box>
             <small>{formatTokenAmount(token0Deposited)}</small>
-            <CurrencyLogo size='20px' currency={currency0} />
+            <CurrencyLogo size={20} currency={currency0} />
           </Box>
         </Box>
 
@@ -78,7 +78,7 @@ const V2PositionCardDetails: React.FC<{ pair: Pair }> = ({ pair }) => {
           </small>
           <Box>
             <small>{formatTokenAmount(token1Deposited)}</small>
-            <CurrencyLogo size='20px' currency={currency1} />
+            <CurrencyLogo size={20} currency={currency1} />
           </Box>
         </Box>
 

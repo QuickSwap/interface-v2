@@ -103,11 +103,9 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           }}
         >
           {currency0 ? (
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={currency0} size='20px' />
-              <p className='weight-600' style={{ marginLeft: 6 }}>
-                {currency0.symbol}
-              </p>
+            <Box className='flex items-center' gap='6px'>
+              <CurrencyLogo currency={currency0} size={20} />
+              <p className='weight-600'>{currency0.symbol}</p>
             </Box>
           ) : (
             <p className='weight-600'>{t('selectToken')}</p>
@@ -124,11 +122,9 @@ const PoolFinderModal: React.FC<PoolFinderModalProps> = ({ open, onClose }) => {
           }}
         >
           {currency1 ? (
-            <Box display='flex'>
+            <Box display='flex items-center' gap='6px'>
               <CurrencyLogo currency={currency1} />
-              <p className='weight-600' style={{ marginLeft: 6 }}>
-                {currency1.symbol}
-              </p>
+              <p className='weight-600'>{currency1.symbol}</p>
             </Box>
           ) : (
             <p className='weight-600'>{t('selectToken')}</p>

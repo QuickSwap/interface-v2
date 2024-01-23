@@ -20,11 +20,12 @@ import { JSBI } from '@uniswap/sdk';
 import { CustomModal, NumericalInput } from 'components';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { getFixedValue, getLiquidityDEX } from 'utils';
-import ZapSlippage from './DualAddLiquidity/ZapSlippage';
+import ZapSlippage from './ZapSlippage';
 import { useTranslation } from 'next-i18next';
 import ZapCurrencyInput from 'components/ZapCurrencyInput';
 import { useActiveWeb3React } from 'hooks';
 import styles from 'styles/pages/Bonds.module.scss';
+import BondArrow from 'svgs/bondArrow.svg';
 
 interface SoulZapAddLiquidityProps {
   open: boolean;
@@ -220,9 +221,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
           />
         </Box>
         <Box className={styles.soulZapAddLiquidityArrowWrapper}>
-          <picture>
-            <img src='/assets/images/bondArrow.svg' alt='Bond Arrow' />
-          </picture>
+          <BondArrow />
         </Box>
         <p>{t('to')}:</p>
         <Box className={styles.soulZapAddLiquidityInput} my={1.5}>

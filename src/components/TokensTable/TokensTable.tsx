@@ -116,14 +116,11 @@ const TokensTable: React.FC<TokensTableProps> = ({
             className='no-decoration'
             href={`/analytics/${version}/token/${tokenCurrency?.address}`}
           >
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={tokenCurrency} size='28px' />
-              <Box ml={1}>
-                <p className='text-gray25'>
-                  {token.name}{' '}
-                  <span className='text-hint'>({token.symbol})</span>
-                </p>
-              </Box>
+            <Box className='flex items-center' gap='8px'>
+              <CurrencyLogo currency={tokenCurrency} size={28} />
+              <p className='text-gray25'>
+                {token.name} <span className='text-hint'>({token.symbol})</span>
+              </p>
             </Box>
           </Link>
         </Box>
@@ -193,14 +190,12 @@ const TokensTable: React.FC<TokensTableProps> = ({
               className='no-decoration'
               href={`/analytics/${version}/token/${tokenCurrency?.address}`}
             >
-              <Box className='flex items-center'>
-                <CurrencyLogo currency={tokenCurrency} size='28px' />
-                <Box ml={1}>
-                  <p className='text-gray25'>
-                    {token.name}{' '}
-                    <span className='text-hint'>({token.symbol})</span>
-                  </p>
-                </Box>
+              <Box className='flex items-center' gap='8px'>
+                <CurrencyLogo currency={tokenCurrency} size={28} />
+                <p className='text-gray25'>
+                  {token.name}{' '}
+                  <span className='text-hint'>({token.symbol})</span>
+                </p>
               </Box>
             </Link>
           </Box>

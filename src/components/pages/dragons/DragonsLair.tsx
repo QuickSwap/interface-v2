@@ -55,7 +55,7 @@ const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
         />
       )}
       <Box display='flex' mb={3}>
-        <CurrencyLogo currency={quickToken} size='32px' />
+        <CurrencyLogo currency={quickToken} size={32} />
         <Box ml={1.5}>
           <p className='small line-height-1'>{quickToken?.symbol}</p>
           <span className='text-hint'>{t('stakeQUICKTitle')}</span>

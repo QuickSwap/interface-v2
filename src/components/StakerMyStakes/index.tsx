@@ -628,7 +628,7 @@ export const FarmingMyFarms: React.FC<{
                   reward.trueAmount ? (
                     <Box key={index} className='flex items-center' mr={2}>
                       <CurrencyLogo
-                        size='28px'
+                        size={28}
                         currency={
                           new Token(
                             chainId ?? ChainId.MATIC,

@@ -37,6 +37,7 @@ import {
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { toV3Token } from 'constants/v3/addresses';
 import styles from 'styles/pages/Farm.module.scss';
+import Image from 'next/image';
 
 interface Props {
   farm: any;
@@ -387,13 +388,12 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                 {formatNumber(farm.poolAPR + farm.almAPR)}%
               </p>
               <TotalAPRTooltip farmAPR={farm.almAPR} poolAPR={farm.poolAPR}>
-                <picture>
-                  <img
-                    src='/assets/images/aprHover.png'
-                    alt='farm APR'
-                    height={16}
-                  />
-                </picture>
+                <Image
+                  src='/assets/images/aprHover.png'
+                  alt='farm APR'
+                  height={16}
+                  width={16}
+                />
               </TotalAPRTooltip>
             </Box>
           </Box>

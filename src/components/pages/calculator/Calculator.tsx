@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { Box } from '@mui/material';
 import styles from 'styles/pages/Calculator.module.scss';
+import UpArrow from 'svgs/up-arrow.svg';
+import EthereumETH from 'svgs/Currency/ethereum-eth.svg';
+import USFlag from 'svgs/Currency/us-flag.svg';
+import SwapIcon from 'svgs/swap-icon.svg';
 
 export const Calculator: React.FC<{ factor: number }> = ({ factor }) => {
   const { t } = useTranslation();
@@ -68,15 +72,7 @@ export const Calculator: React.FC<{ factor: number }> = ({ factor }) => {
       <Box className={styles.boxWrapper}>
         <Box className={styles.calculatorContainer}>
           <Box className={`flex ${styles.currencyContainer}`}>
-            <Box>
-              <picture>
-                <img
-                  src='/assets/images/Currency/ethereum-eth.svg'
-                  className={styles.currencyIcon}
-                  alt='Ethereum Icon'
-                />
-              </picture>
-            </Box>
+            <EthereumETH className={styles.currencyIcon} />
             <Box className={styles.mx2}>ETH</Box>
 
             <input
@@ -91,46 +87,18 @@ export const Calculator: React.FC<{ factor: number }> = ({ factor }) => {
               }}
             />
             <Box className={styles.upDownContainer}>
-              <picture>
-                <img
-                  src='/assets/images/up-arrow.svg'
-                  className={styles.iconUp}
-                  onClick={incrementEth}
-                  alt='Up Arrow'
-                />
-              </picture>
-              <picture>
-                <img
-                  src='/assets/images/up-arrow.svg'
-                  className={styles.iconDown}
-                  onClick={decrementEth}
-                  alt='Up Arrow'
-                />
-              </picture>
+              <UpArrow className={styles.iconUp} onClick={incrementEth} />
+              <UpArrow className={styles.iconDown} onClick={decrementEth} />
             </Box>
           </Box>
           <Box>
-            <picture>
-              <img
-                src='/assets/images/swap-icon.svg'
-                className={styles.swapIcon}
-                alt='Swap Icon'
-              />
-            </picture>
+            <SwapIcon className={styles.swapIcon} />
           </Box>
           <Box
             className={`flex ${styles.currencyContainer}`}
             style={{ height: '100%' }}
           >
-            <Box>
-              <picture>
-                <img
-                  src='/assets/images/Currency/us-flag.svg'
-                  className='currency-icon'
-                  alt='US flag'
-                />
-              </picture>
-            </Box>
+            <USFlag className={styles.currencyIcon} />
             <Box className={styles.mx2}>USD</Box>
 
             <input
@@ -145,27 +113,13 @@ export const Calculator: React.FC<{ factor: number }> = ({ factor }) => {
               }}
             />
             <Box className={styles.upDownContainer}>
-              <picture>
-                <img
-                  src='/assets/images/up-arrow.svg'
-                  className={styles.iconUp}
-                  onClick={incrementUsd}
-                  alt='Up Arrow'
-                />
-              </picture>
-              <picture>
-                <img
-                  src='/assets/images/up-arrow.svg'
-                  className={styles.iconDown}
-                  onClick={decrementUsd}
-                  alt='Up Arrow'
-                />
-              </picture>
+              <UpArrow className={styles.iconUp} onClick={incrementUsd} />
+              <UpArrow className={styles.iconDown} onClick={decrementUsd} />
             </Box>
           </Box>
           <Box>
             <Box
-              className={`button ${styles.filledButton}`}
+              className={`${styles.button} ${styles.filledButton}`}
               onClick={handleOnConvert}
             >
               <small>{t('convert')}</small>

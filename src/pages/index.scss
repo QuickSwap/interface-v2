@@ -203,17 +203,12 @@ wcm-modal {
 }
 
 .heroBkg {
+  width: 100%;
+  height: 700px;
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 1;
-  width: 100%;
   overflow: hidden;
-  & img {
-    width: 100%;
-    min-width: 1200px;
-    height: auto;
-  }
 }
 
 .hidden {
@@ -258,6 +253,10 @@ wcm-modal {
 
 .flex-col {
   flex-direction: column;
+}
+
+.flex-1 {
+  flex: 1;
 }
 
 .items-start {

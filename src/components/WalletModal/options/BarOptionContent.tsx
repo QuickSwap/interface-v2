@@ -3,6 +3,7 @@ import { Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { WalletOptionProps } from './WalletOptionProps';
 import styles from 'styles/components/WalletModal.module.scss';
+import Image from 'next/image';
 
 const BarOptionContent: React.FC<WalletOptionProps> = ({
   onClick,
@@ -17,9 +18,9 @@ const BarOptionContent: React.FC<WalletOptionProps> = ({
   return (
     <Box className={styles.optionCardClickable} id={id} onClick={onClick}>
       <Box className='flex items-center' my={0.5}>
-        <picture>
-          <img src={icon} alt={'Icon'} width={24} />
-        </picture>
+        <Box width={24} height={24} position='relative'>
+          <Image src={icon} alt={'Icon'} layout='fill' objectFit='contain' />
+        </Box>
         <p style={{ marginLeft: 8 }}>{header}</p>
       </Box>
       {active && (

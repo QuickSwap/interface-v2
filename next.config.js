@@ -25,6 +25,12 @@ const nextConfig = {
       'res.cloudinary.com',
       'augury.finance',
       'encrypted-tbn0.gstatic.com',
+      '1453456140-files.gitbook.io',
+      'www.borderless.money',
+      'polygonscan.com',
+      'apeswap.mypinata.cloud',
+      'usdv.money',
+      'www.anyinu.xyz',
     ],
   },
   webpack(config) {

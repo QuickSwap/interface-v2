@@ -3,6 +3,7 @@ import { Box, Button, CircularProgress } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 import styles from 'styles/pages/Home.module.scss';
+import Image from 'next/image';
 
 const NewsletterSignupForm: React.FC = () => {
   const { t } = useTranslation();
@@ -50,12 +51,12 @@ const NewsletterSignupForm: React.FC = () => {
           </Box>
         )}
       </Box>
-      <picture>
-        <img
-          src='/assets/images/newsletterBg.svg'
-          alt='Newsletter Background'
-        />
-      </picture>
+      <Image
+        src='/assets/images/newsletterBg.svg'
+        alt='Newsletter Background'
+        width={135}
+        height={181}
+      />
     </Box>
   );
 };

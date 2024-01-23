@@ -13,6 +13,7 @@ import { Limit, TWAP } from './LimitAndTWAP/LimitAndTWAP';
 import SwapCrossChain from './SwapCrossChain';
 import SwapV3Page from './SwapV3';
 import styles from 'styles/pages/Swap.module.scss';
+import CrossChainIcon from 'svgs/crossChainIcon.svg';
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
@@ -216,9 +217,9 @@ const SwapMain: React.FC = () => {
         <Box my={'auto'}>
           <h6>{t('swap')}</h6>
         </Box>
-        <Box display={'flex'} ml={'auto'}>
+        <Box className='flex items-center' ml='auto' gap='5px'>
           {showProMode && (
-            <Box className='flex items-center' mr={1}>
+            <Box className='flex items-center'>
               <span
                 className='text-secondary text-uppercase'
                 style={{ marginRight: 8 }}
@@ -233,9 +234,7 @@ const SwapMain: React.FC = () => {
               />
             </Box>
           )}
-          <Box>
-            <Settings onClick={() => setOpenSettingsModal(true)} />
-          </Box>
+          <Settings onClick={() => setOpenSettingsModal(true)} />
         </Box>
       </Box>
       <Box
@@ -246,7 +245,7 @@ const SwapMain: React.FC = () => {
         <Box display='flex' width={1}>
           {!isProMode ? (
             <>
-              <Box display='flex' className={styles.tabContainer}>
+              <Box className={styles.tabContainer}>
                 {dropDownMenuText && (
                   <Box
                     id='swap-button'
@@ -272,9 +271,9 @@ const SwapMain: React.FC = () => {
                   {SwapDropdownTabs.filter((d) => d.visible !== false).map(
                     (option, index) => (
                       <MenuItem
-                        className={`swap-menu-item ${
+                        className={`${styles.swapMenuItem} ${
                           option.key === selectedIndex
-                            ? 'swap-menu-item-selected'
+                            ? styles.swapMenuItemSelected
                             : ''
                         }`}
                         key={option.key}
@@ -301,18 +300,10 @@ const SwapMain: React.FC = () => {
                       setAnchorEl(null);
                       redirectWithSwapType(SWAP_CROSS_CHAIN);
                     }}
+                    gap={1}
                   >
-                    <Box pr={1}>
-                      <picture>
-                        <img
-                          src='/assets/images/crossChainIcon.svg'
-                          className='cross-chain-icon'
-                          style={{ scale: 1.5 }}
-                          alt='CrossChain Icon'
-                        />
-                      </picture>
-                    </Box>
-                    <Box className='trade-btn'>{t('crossChain')}</Box>
+                    <CrossChainIcon className={styles.crossChainIcon} />
+                    <Box className={styles.tradeBtn}>{t('crossChain')}</Box>
                   </Box>
                 )}
               </Box>

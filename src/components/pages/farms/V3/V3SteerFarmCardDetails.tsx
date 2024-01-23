@@ -399,7 +399,7 @@ const V3SteerFarmCardDetails: React.FC<{
               <small className='text-secondary'>{t('earnedRewards')}</small>
               <Box my={2}>
                 <Box className='flex items-center justify-center'>
-                  <CurrencyLogo currency={rewardTokenA} size='20px' />
+                  <CurrencyLogo currency={rewardTokenA} size={20} />
                   <Box ml='6px'>
                     <small>
                       {formatNumber(rewardA)} {rewardTokenA?.symbol}
@@ -408,7 +408,7 @@ const V3SteerFarmCardDetails: React.FC<{
                 </Box>
                 {data.isDualFactory && (
                   <Box className='flex items-center justify-center' mt='2px'>
-                    <CurrencyLogo currency={rewardTokenB} size='20px' />
+                    <CurrencyLogo currency={rewardTokenB} size={20} />
                     <Box ml='6px'>
                       <small>
                         {formatNumber(rewardB)} {rewardTokenB?.symbol}

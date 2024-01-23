@@ -51,7 +51,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
             }
           }}
         >
-          <CurrencyLogo currency={nativeCurrency} size='24px' />
+          <CurrencyLogo currency={nativeCurrency} />
           <small>{nativeCurrency.name}</small>
         </Box>
         {(chainId ? SUGGESTED_BASES[chainId] ?? [] : []).map((token: Token) => {
@@ -68,7 +68,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
                 }
               }}
             >
-              <CurrencyLogo currency={token} size='24px' />
+              <CurrencyLogo currency={token} />
               <small>{token.symbol}</small>
             </Box>
           );

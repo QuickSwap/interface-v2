@@ -857,19 +857,15 @@ export function AddLiquidityButton({
           className='bg-secondary1'
         >
           <Box className='flex justify-between'>
-            <Box className='flex items-center'>
-              <Box className='flex' mr='6px'>
-                <CurrencyLogo currency={baseCurrency} size='24px' />
-              </Box>
+            <Box className='flex items-center' gap='6px'>
+              <CurrencyLogo currency={baseCurrency} />
               <p>{baseCurrency?.symbol}</p>
             </Box>
             <p>{mintInfo.parsedAmounts[Field.CURRENCY_A]?.toSignificant()}</p>
           </Box>
           <Box mt={2} className='flex justify-between'>
-            <Box className='flex items-center'>
-              <Box className='flex' mr='6px'>
-                <CurrencyLogo currency={quoteCurrency} size='24px' />
-              </Box>
+            <Box className='flex items-center' gap='6px'>
+              <CurrencyLogo currency={quoteCurrency} />
               <p>{quoteCurrency?.symbol}</p>
             </Box>
             <p>{mintInfo.parsedAmounts[Field.CURRENCY_B]?.toSignificant()}</p>

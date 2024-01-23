@@ -41,8 +41,8 @@ const V3CurrencySelect: React.FC<CurrencySelectProps> = ({
         onClick={handleOpenModal}
       >
         {currency ? (
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={currency} size={'28px'} />
+          <Box className='flex items-center' gap='4px'>
+            <CurrencyLogo currency={currency} size={28} />
             <p>{currency?.symbol}</p>
           </Box>
         ) : (

@@ -17,6 +17,7 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import styles from 'styles/components/FarmCard.module.scss';
 import { Trans, useTranslation } from 'next-i18next';
+import CircleInfo from 'svgs/circleinfo.svg';
 
 const FarmCard: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -108,17 +109,9 @@ const FarmCard: React.FC<{
             {renderPool(isExpandCard ? 0.95 : 0.7)}
             {!isExpandCard && (
               <Box width={0.25}>
-                <Box className='flex items-center'>
+                <Box className='flex items-center' gap='4px'>
                   <span className='text-secondary'>{t('apy')}</span>
-                  <Box ml={0.5} className='flex'>
-                    <picture>
-                      <img
-                        src='/assets/images/circleinfo.svg'
-                        alt='info'
-                        height={16}
-                      />
-                    </picture>
-                  </Box>
+                  <CircleInfo />
                 </Box>
                 <Box mt={0.5}>
                   <small className='text-success'>{apyWithFee}%</small>
@@ -158,7 +151,7 @@ const FarmCard: React.FC<{
                 <Box className='flex items-center justify-end'>
                   <CurrencyLogo
                     currency={lpStakingInfo.rewardToken}
-                    size='16px'
+                    size={16}
                   />
                   <small style={{ marginLeft: 5 }}>
                     {formatTokenAmount(lpStakingInfo.earnedAmount)}
@@ -170,7 +163,7 @@ const FarmCard: React.FC<{
                   <Box className='flex items-center justify-end'>
                     <CurrencyLogo
                       currency={unwrappedToken(dualStakingInfo.rewardTokenA)}
-                      size='16px'
+                      size={16}
                     />
                     <small style={{ marginLeft: 5 }}>
                       {formatTokenAmount(dualStakingInfo.earnedAmountA)}
@@ -180,7 +173,7 @@ const FarmCard: React.FC<{
                   <Box className='flex items-center justify-end'>
                     <CurrencyLogo
                       currency={unwrappedToken(dualStakingInfo.rewardTokenB)}
-                      size='16px'
+                      size={16}
                     />
                     <small style={{ marginLeft: 5 }}>
                       {formatTokenAmount(dualStakingInfo.earnedAmountB)}

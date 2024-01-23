@@ -331,14 +331,14 @@ const AddGammaLiquidity: React.FC<{
       <Box mt={2} className={styles.v3MigrateDetailsBox}>
         <Box className={styles.v3MigrateDetailsRow}>
           <Box className='flex items-center'>
-            <CurrencyLogo currency={token0 ?? undefined} size='20px' />
+            <CurrencyLogo currency={token0 ?? undefined} size={20} />
             <p>{token0?.symbol}</p>
           </Box>
           {gammaAmounts && <p>{gammaAmounts.token0.toSignificant()}</p>}
         </Box>
         <Box mt={1.5} className={styles.v3MigrateDetailsRow}>
           <Box className='flex items-center'>
-            <CurrencyLogo currency={token1 ?? undefined} size='20px' />
+            <CurrencyLogo currency={token1 ?? undefined} size={20} />
             <p>{token1?.symbol}</p>
           </Box>
           {gammaAmounts && <p>{gammaAmounts.token1.toSignificant()}</p>}

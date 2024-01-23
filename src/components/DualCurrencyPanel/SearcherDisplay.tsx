@@ -8,6 +8,7 @@ import { DualCurrencySelector } from 'types/bond';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import CurrencyLogo from 'components/CurrencyLogo';
 import styles from 'styles/components/DualCurrencyPanel.module.scss';
+import ZapIcon from 'svgs/ZapIcon.svg';
 
 export function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
   return <small className='text-bold'>{balance?.toSignificant(5)}</small>;
@@ -26,11 +27,7 @@ const SearcherDisplay: React.FC<{
 
   return (
     <Box className={styles.searcherDisplayItem} gap='12px'>
-      {!currencyB && (
-        <picture>
-          <img src='/assets/images/bonds/ZapIcon.svg' alt='Zap Icon' />
-        </picture>
-      )}
+      {!currencyB && <ZapIcon />}
       <Box width='100%' className='flex items-center justify-between'>
         <Box className='flex items-center' gap='12px'>
           {currencyB ? (
@@ -40,7 +37,7 @@ const SearcherDisplay: React.FC<{
               size={32}
             />
           ) : (
-            <CurrencyLogo currency={currencyA} size='32px' />
+            <CurrencyLogo currency={currencyA} size={32} />
           )}
           <Box>
             <p>

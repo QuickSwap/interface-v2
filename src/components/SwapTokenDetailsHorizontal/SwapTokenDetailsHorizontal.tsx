@@ -112,11 +112,9 @@ const SwapTokenDetailsHorizontal: React.FC<{
         <>
           {/* Token Symbol */}
           <Grid item xs={5}>
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={currency} size='28px' />
-              <Box ml={1.5}>
-                <small>{currency.symbol}</small>
-              </Box>
+            <Box className='flex items-center' gap='12px'>
+              <CurrencyLogo currency={currency} size={28} />
+              <small>{currency.symbol}</small>
             </Box>
           </Grid>
 
@@ -175,11 +173,9 @@ const SwapTokenDetailsHorizontal: React.FC<{
       ) : (
         <>
           <Grid item xs={4}>
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={currency} size='28px' />
-              <Box ml={0.5}>
-                <small>{currency.symbol}</small>
-              </Box>
+            <Box className='flex items-center' gap='4px'>
+              <CurrencyLogo currency={currency} size={28} />
+              <small>{currency.symbol}</small>
             </Box>
           </Grid>
           <Grid item xs={3}>

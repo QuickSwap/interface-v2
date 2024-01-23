@@ -334,7 +334,7 @@ export default function IncreaseDefiedgeLiquidityModal({
           <Box className='flex items-center'>
             <p>{formatNumber(deposit0)}</p>
             <Box className='flex' ml={1}>
-              <CurrencyLogo size='24px' currency={position.token0} />
+              <CurrencyLogo currency={position.token0} />
             </Box>
           </Box>
         </Box>
@@ -343,7 +343,7 @@ export default function IncreaseDefiedgeLiquidityModal({
           <Box className='flex items-center'>
             <p>{formatNumber(deposit1)}</p>
             <Box className='flex' ml={1}>
-              <CurrencyLogo size='24px' currency={position.token1} />
+              <CurrencyLogo currency={position.token1} />
             </Box>
           </Box>
         </Box>
@@ -403,7 +403,7 @@ export default function IncreaseDefiedgeLiquidityModal({
             <Box className='flex items-center'>
               <p>{formatNumber(position.balance0)}</p>
               <Box className='flex' ml={1}>
-                <CurrencyLogo size='24px' currency={position.token0} />
+                <CurrencyLogo currency={position.token0} />
               </Box>
             </Box>
           </Box>
@@ -414,7 +414,7 @@ export default function IncreaseDefiedgeLiquidityModal({
             <Box className='flex items-center'>
               <p>{formatNumber(position.balance1)}</p>
               <Box className='flex' ml={1}>
-                <CurrencyLogo size='24px' currency={position.token1} />
+                <CurrencyLogo currency={position.token1} />
               </Box>
             </Box>
           </Box>

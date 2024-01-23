@@ -366,7 +366,7 @@ const AnalyticsSearch: React.FC = () => {
                       setMenuOpen(false);
                     }}
                   >
-                    <CurrencyLogo currency={currency} size='28px' />
+                    <CurrencyLogo currency={currency} size={28} />
                     <small>
                       {val.name} ({val.symbol})
                     </small>

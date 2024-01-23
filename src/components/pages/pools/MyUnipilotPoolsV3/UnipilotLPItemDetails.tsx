@@ -136,10 +136,8 @@ const UnipilotLPItemDetails: React.FC<{ position: UnipilotPosition }> = ({
       </Box>
       <Box className='flex justify-between' mt={1}>
         {position.token0 && (
-          <Box className='flex items-center'>
-            <Box className='flex' mr={1}>
-              <CurrencyLogo currency={position.token0} size='24px' />
-            </Box>
+          <Box className='flex items-center' gap='8px'>
+            <CurrencyLogo currency={position.token0} />
             <small>
               {t('pooled')} {position.token0?.symbol}
             </small>
@@ -160,10 +158,8 @@ const UnipilotLPItemDetails: React.FC<{ position: UnipilotPosition }> = ({
       </Box>
       <Box className='flex justify-between' mt={1}>
         {position.token1 && (
-          <Box className='flex items-center'>
-            <Box className='flex' mr={1}>
-              <CurrencyLogo currency={position.token1} size='24px' />
-            </Box>
+          <Box className='flex items-center' gap='8px'>
+            <CurrencyLogo currency={position.token1} />
             <small>
               {t('pooled')} {position.token1?.symbol}
             </small>

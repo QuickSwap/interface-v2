@@ -62,7 +62,7 @@ const DefiedgeLPItemDetails: React.FC<{ defiedgePosition: any }> = ({
         {defiedgePosition.token0 && (
           <Box className='flex items-center'>
             <Box className='flex' mr={1}>
-              <CurrencyLogo currency={defiedgePosition.token0} size='24px' />
+              <CurrencyLogo currency={defiedgePosition.token0} />
             </Box>
             <small>
               {t('pooled')} {defiedgePosition.token0.symbol}
@@ -77,7 +77,7 @@ const DefiedgeLPItemDetails: React.FC<{ defiedgePosition: any }> = ({
         {defiedgePosition.token1 && (
           <Box className='flex items-center'>
             <Box className='flex' mr={1}>
-              <CurrencyLogo currency={defiedgePosition.token1} size='24px' />
+              <CurrencyLogo currency={defiedgePosition.token1} />
             </Box>
             <small>
               {t('pooled')} {defiedgePosition.token1.symbol}

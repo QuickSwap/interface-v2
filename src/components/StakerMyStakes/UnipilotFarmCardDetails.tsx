@@ -438,26 +438,26 @@ const UnipilotFarmCardDetails: React.FC<{
             <Box height='100%' className='flex flex-col justify-between'>
               <small className='text-secondary'>{t('earnedRewards')}</small>
               <Box my={2}>
-                <Box className='flex items-center justify-center'>
+                <Box className='flex items-center justify-center' gap='6px'>
                   <CurrencyLogo
                     currency={data.isDualReward ? rewardTokenA : rewardToken}
-                    size='16px'
+                    size={16}
                   />
-                  <Box ml='6px'>
-                    <small>
-                      {formatNumber(data.isDualReward ? rewardA : reward)}{' '}
-                      {(data.isDualReward ? rewardTokenA : rewardToken)?.symbol}
-                    </small>
-                  </Box>
+                  <small>
+                    {formatNumber(data.isDualReward ? rewardA : reward)}{' '}
+                    {(data.isDualReward ? rewardTokenA : rewardToken)?.symbol}
+                  </small>
                 </Box>
                 {data.isDualReward && (
-                  <Box className='flex items-center justify-center' mt='5px'>
-                    <CurrencyLogo currency={rewardTokenB} size='16px' />
-                    <Box ml='6px'>
-                      <small>
-                        {formatNumber(rewardB)} {rewardTokenB?.symbol}
-                      </small>
-                    </Box>
+                  <Box
+                    className='flex items-center justify-center'
+                    mt='5px'
+                    gap='6px'
+                  >
+                    <CurrencyLogo currency={rewardTokenB} size={16} />
+                    <small>
+                      {formatNumber(rewardB)} {rewardTokenB?.symbol}
+                    </small>
                   </Box>
                 )}
               </Box>

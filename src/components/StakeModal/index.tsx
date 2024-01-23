@@ -22,6 +22,7 @@ import { Check } from '@mui/icons-material';
 import { useV3StakeData } from 'state/farms/hooks';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 interface FarmModalProps {
   event: {
@@ -316,12 +317,12 @@ export function FarmModal({
             </Box>
           </Box>
           <Box className='flex flex-col items-center'>
-            <picture>
-              <img
-                src='/assets/images/TransactionSubmitted.png'
-                alt='Deposited Successfully'
-              />
-            </picture>
+            <Image
+              src='/assets/images/TransactionSubmitted.png'
+              alt='Transaction Submitted'
+              width={179}
+              height={126}
+            />
             <Box mt={3}>
               <p>
                 {t('positionDepositedSuccessfully', { nftID: selectedNFT })}!
@@ -369,12 +370,12 @@ export function FarmModal({
           <Box mt={3}>
             {chunkedPositions && chunkedPositions.length === 0 ? (
               <Box textAlign='center'>
-                <picture>
-                  <img
-                    src='/assets/images/TransactionFailed.png'
-                    alt='No NFT'
-                  />
-                </picture>
+                <Image
+                  src='/assets/images/TransactionFailed.png'
+                  alt='no NFT'
+                  width={92}
+                  height={147}
+                />
                 <Box mt={3} mb={1.5}>
                   <p>
                     {t('noNFTFound', {

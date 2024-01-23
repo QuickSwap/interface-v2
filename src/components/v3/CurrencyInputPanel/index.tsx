@@ -126,10 +126,7 @@ export default function CurrencyInputPanel({
                         currency1={currency}
                       />
                     ) : (
-                      <CurrencyLogo
-                        size={'25px'}
-                        currency={currency}
-                      ></CurrencyLogo>
+                      <CurrencyLogo size={25} currency={currency} />
                     )}
                     <p className='text-primaryText'>{`${
                       showETH ? nativeCurrency?.symbol + '+' : ''

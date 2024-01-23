@@ -187,11 +187,9 @@ export default function IncreaseICHILiquidityModal({
       <Box>
         <Box mt={3} className='flex justify-between'>
           <p>{position.token0?.symbol}</p>
-          <Box className='flex items-center'>
+          <Box className='flex items-center' gap='8px'>
             <p>{formatNumber(typedValue)}</p>
-            <Box className='flex' ml={1}>
-              <CurrencyLogo size='24px' currency={position.token0} />
-            </Box>
+            <CurrencyLogo currency={position.token0} />
           </Box>
         </Box>
 
@@ -247,22 +245,18 @@ export default function IncreaseICHILiquidityModal({
             <p>
               {t('pooled')} {position.token0?.symbol}
             </p>
-            <Box className='flex items-center'>
+            <Box className='flex items-center' gap='8px'>
               <p>{formatNumber(position.token0Balance)}</p>
-              <Box className='flex' ml={1}>
-                <CurrencyLogo size='24px' currency={position.token0} />
-              </Box>
+              <CurrencyLogo currency={position.token0} />
             </Box>
           </Box>
           <Box mt={2} className='flex justify-between'>
             <p>
               {t('pooled')} {position.token1?.symbol}
             </p>
-            <Box className='flex items-center'>
+            <Box className='flex items-center' gap='8px'>
               <p>{formatNumber(position.token1Balance)}</p>
-              <Box className='flex' ml={1}>
-                <CurrencyLogo size='24px' currency={position.token1} />
-              </Box>
+              <CurrencyLogo currency={position.token1} />
             </Box>
           </Box>
         </Box>

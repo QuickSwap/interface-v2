@@ -459,13 +459,12 @@ const GammaFarmCardDetails: React.FC<{
                     <Box
                       key={reward.token.address}
                       className='flex items-center justify-center'
+                      gap='6px'
                     >
-                      <CurrencyLogo currency={reward.token} size='16px' />
-                      <Box ml='6px'>
-                        <small>
-                          {formatNumber(reward.amount)} {reward.token.symbol}
-                        </small>
-                      </Box>
+                      <CurrencyLogo currency={reward.token} size={16} />
+                      <small>
+                        {formatNumber(reward.amount)} {reward.token.symbol}
+                      </small>
                     </Box>
                   );
                 })}

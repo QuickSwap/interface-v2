@@ -23,6 +23,7 @@ import BondActions from './BondActions';
 import UserBondModalView from './UserBondModalView';
 import { Close } from '@mui/icons-material';
 import styles from 'styles/pages/Bonds.module.scss';
+import Image from 'next/image';
 
 interface BuyBondModalProps {
   open: boolean;
@@ -195,14 +196,13 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
         <UserBondModalView bond={bond} billId={bondId} onDismiss={onClose} />
       ) : (
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={6}>
-            <picture>
-              <img
-                src='/assets/images/bonds/quickBond.jpg'
-                width='100%'
-                alt='Quick bond'
-              />
-            </picture>
+          <Grid item xs={12} sm={12} md={6} position='relative'>
+            <Image
+              src='/assets/images/bonds/quickBond.jpg'
+              layout='fill'
+              objectFit='contain'
+              alt='Quick bond'
+            />
           </Grid>
           <Grid item xs={12} sm={12} md={6}>
             <Box className='flex' mb={2}>

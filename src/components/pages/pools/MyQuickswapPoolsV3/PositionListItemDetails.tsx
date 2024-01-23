@@ -350,22 +350,18 @@ export default function PositionListItemDetails({
       <>
         <Box mt={3} mb={2}>
           <Box className='flex justify-between'>
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={feeValueUpper?.currency} size={'24px'} />
-              <Box className='flex' ml='4px'>
-                <p>{feeValueUpper?.currency?.symbol}</p>
-              </Box>
+            <Box className='flex items-center' gap='4px'>
+              <CurrencyLogo currency={feeValueUpper?.currency} />
+              <p>{feeValueUpper?.currency?.symbol}</p>
             </Box>
             <p>
               {feeValueUpper ? formatCurrencyAmount(feeValueUpper, 4) : '-'}
             </p>
           </Box>
           <Box mt={2} className='flex justify-between'>
-            <Box className='flex items-center'>
-              <CurrencyLogo currency={feeValueLower?.currency} size={'24px'} />
-              <Box className='flex' ml='4px'>
-                <p>{feeValueLower?.currency?.symbol}</p>
-              </Box>
+            <Box className='flex items-center' gap='4px'>
+              <CurrencyLogo currency={feeValueLower?.currency} />
+              <p>{feeValueLower?.currency?.symbol}</p>
             </Box>
             <p>
               {feeValueLower ? formatCurrencyAmount(feeValueLower, 4) : '-'}
@@ -484,11 +480,9 @@ export default function PositionListItemDetails({
       </Box>
       <Box mt={2} className={styles.v3PoolItemDetailsPanel}>
         <Box pt='4px' className='flex items-center justify-between'>
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={currencyQuote} size='24px' />
-            <Box ml={1}>
-              <p>{currencyQuote?.symbol}</p>
-            </Box>
+          <Box className='flex items-center' gap='8px'>
+            <CurrencyLogo currency={currencyQuote} />
+            <p>{currencyQuote?.symbol}</p>
           </Box>
           <Box className='flex items-center'>
             <Box mr={1}>
@@ -504,20 +498,16 @@ export default function PositionListItemDetails({
           </Box>
         </Box>
         <Box mt='16px' pb='4px' className='flex items-center justify-between'>
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={currencyBase} size='24px' />
-            <Box ml={1}>
-              <p>{currencyBase?.symbol}</p>
-            </Box>
+          <Box className='flex items-center' gap='8px'>
+            <CurrencyLogo currency={currencyBase} />
+            <p>{currencyBase?.symbol}</p>
           </Box>
-          <Box className='flex items-center'>
-            <Box mr={1}>
-              <p>
-                {inverted
-                  ? formatCurrencyAmount(position?.amount1, 4)
-                  : formatCurrencyAmount(position?.amount0, 4)}
-              </p>
-            </Box>
+          <Box className='flex items-center' gap='8px'>
+            <p>
+              {inverted
+                ? formatCurrencyAmount(position?.amount1, 4)
+                : formatCurrencyAmount(position?.amount0, 4)}
+            </p>
             {typeof ratio === 'number' && !removed && (
               <Badge text={`${inverted ? 100 - ratio : ratio}%`}></Badge>
             )}
@@ -559,20 +549,16 @@ export default function PositionListItemDetails({
       </Box>
       <Box mt={2} className={styles.v3PoolItemDetailsPanel}>
         <Box pt='4px' className='flex items-center justify-between'>
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={feeValueUpper?.currency} size='24px' />
-            <Box ml={1}>
-              <p>{feeValueUpper?.currency?.symbol}</p>
-            </Box>
+          <Box className='flex items-center' gap='8px'>
+            <CurrencyLogo currency={feeValueUpper?.currency} />
+            <p>{feeValueUpper?.currency?.symbol}</p>
           </Box>
           <p>{feeValueUpper ? formatCurrencyAmount(feeValueUpper, 4) : '-'}</p>
         </Box>
         <Box mt='16px' pb='4px' className='flex items-center justify-between'>
-          <Box className='flex items-center'>
-            <CurrencyLogo currency={feeValueLower?.currency} size='24px' />
-            <Box ml={1}>
-              <p>{feeValueLower?.currency?.symbol}</p>
-            </Box>
+          <Box className='flex items-center' gap='8px'>
+            <CurrencyLogo currency={feeValueLower?.currency} />
+            <p>{feeValueLower?.currency?.symbol}</p>
           </Box>
           <p>{feeValueLower ? formatCurrencyAmount(feeValueLower, 4) : '-'}</p>
         </Box>

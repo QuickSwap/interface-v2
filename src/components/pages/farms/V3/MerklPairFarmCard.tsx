@@ -9,6 +9,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { MerklPairFarmCardDetails } from './MerklPairFarmCardDetails';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import styles from 'styles/pages/Farm.module.scss';
+import Image from 'next/image';
 
 interface Props {
   farm: any;
@@ -86,13 +87,12 @@ export const MerklPairFarmCard: React.FC<Props> = ({ farm }) => {
                   {formatNumber(farm.poolAPR + farm.almAPR)}%
                 </p>
                 <TotalAPRTooltip farmAPR={farm.almAPR} poolAPR={farm.poolAPR}>
-                  <picture>
-                    <img
-                      src='/assets/images/aprHover.png'
-                      alt='farm APR'
-                      height={16}
-                    />
-                  </picture>
+                  <Image
+                    src='/assets/images/aprHover.png'
+                    alt='farm APR'
+                    width={16}
+                    height={16}
+                  />
                 </TotalAPRTooltip>
               </Box>
             </Box>

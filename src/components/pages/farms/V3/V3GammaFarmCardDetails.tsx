@@ -462,7 +462,7 @@ const V3GammaFarmCardDetails: React.FC<{
                       key={reward.token.address}
                       className='flex items-center justify-center'
                     >
-                      <CurrencyLogo currency={reward.token} size='16px' />
+                      <CurrencyLogo currency={reward.token} size={16} />
                       <Box ml='6px'>
                         <small>
                           {formatNumber(reward.amount)} {reward.token.symbol}

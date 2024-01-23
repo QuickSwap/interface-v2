@@ -7,6 +7,8 @@ import { getEtherscanLink } from 'utils';
 import { useTranslation } from 'next-i18next';
 import { CheckCircleOutline } from '@mui/icons-material';
 import styles from 'styles/components/TransactionConfirmationModal.module.scss';
+import Spinner from 'svgs/spinner.svg';
+import Image from 'next/image';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -29,9 +31,7 @@ function ConfirmationPendingContent({
         </Box>
       )}
       <Box className='flex justify-center spinner'>
-        <picture>
-          <img src='assets/images/spinner.svg' alt='Spinner' />
-        </picture>
+        <Spinner />
       </Box>
       <Box mt='20px' textAlign='center'>
         <p>{t('waitingConfirm')}</p>
@@ -70,12 +70,12 @@ function TransactionSubmittedContent({
         </Box>
       )}
       <Box mt={8} className='flex justify-center'>
-        <picture>
-          <img
-            src='/assets/images/TransactionSubmitted.png'
-            alt='Transaction Submitted'
-          />
-        </picture>
+        <Image
+          src='/assets/images/TransactionSubmitted.png'
+          alt='Transaction Submitted'
+          width={179}
+          height={126}
+        />
       </Box>
       <Box
         className={`${styles.txModalContent} ${styles.txModalContentSuccess}`}
@@ -150,12 +150,12 @@ export function TransactionErrorContent({
         <X className='cursor-pointer' onClick={onDismiss} />
       </Box>
       <Box mt={2} className={styles.txModalContent}>
-        <picture>
-          <img
-            src='/assets/images/TransactionFailed.png'
-            alt='Transaction Failed'
-          />
-        </picture>
+        <Image
+          src='/assets/images/TransactionFailed.png'
+          alt='Transaction Failed'
+          width={92}
+          height={147}
+        />
         <p>{message}</p>
       </Box>
       <Box mt={2}>

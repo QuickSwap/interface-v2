@@ -806,7 +806,6 @@ const SwapV3Page: React.FC = () => {
                   <Box className='flex justify-between items-center' gap='5px'>
                     <CurrencyLogo
                       currency={currencies[Field.INPUT] as WrappedCurrency}
-                      size={'24px'}
                     />
                     <span
                       style={{

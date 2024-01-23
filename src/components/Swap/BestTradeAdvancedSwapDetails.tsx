@@ -77,7 +77,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
             ).toLocaleString('us')}{' '}
             {currency.symbol}
           </small>
-          <CurrencyLogo currency={currency} size='16px' />
+          <CurrencyLogo currency={currency} size={16} />
         </Box>
       </Box>
       <Box className={styles.summaryRow}>

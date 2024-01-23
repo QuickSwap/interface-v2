@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import styles from 'styles/components/Footer.module.scss';
 import { useTranslation } from 'next-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
+import Image from 'next/image';
 
 const Footer: React.FC = () => {
   const router = useRouter();
@@ -58,9 +59,12 @@ const Footer: React.FC = () => {
       <Box className={styles.footerContainer}>
         <Grid container spacing={4} className={styles.socialMenuWrapper}>
           <Grid item xs={12} sm={12} md={4}>
-            <picture>
-              <img src='/assets/images/quickLogo.png' alt='QUICK' height={40} />
-            </picture>
+            <Image
+              src='/assets/images/quickLogo.png'
+              alt='QUICK'
+              width={130}
+              height={40}
+            />
             <Box mt={2} maxWidth='240px'>
               <small className='text-secondary'>{t('socialDescription')}</small>
             </Box>

@@ -204,11 +204,9 @@ const AnalyticsPairDetails = (
                     );
                   }}
                 >
-                  <Box className='flex items-center'>
-                    <CurrencyLogo currency={currency0} size='16px' />
-                    <span style={{ marginLeft: 6 }}>
-                      {pairData.token0.symbol} :
-                    </span>
+                  <Box className='flex items-center' gap='6px'>
+                    <CurrencyLogo currency={currency0} size={16} />
+                    <span>{pairData.token0.symbol} :</span>
                   </Box>
                   <span>{formatNumber(pairData.reserve0)}</span>
                 </Box>
@@ -221,11 +219,9 @@ const AnalyticsPairDetails = (
                     );
                   }}
                 >
-                  <Box className='flex items-center'>
-                    <CurrencyLogo currency={currency1} size='16px' />
-                    <span style={{ marginLeft: 6 }}>
-                      {pairData.token1.symbol} :
-                    </span>
+                  <Box className='flex items-center' gap='6px'>
+                    <CurrencyLogo currency={currency1} size={16} />
+                    <span>{pairData.token1.symbol} :</span>
                   </Box>
                   <span>{formatNumber(pairData.reserve1)}</span>
                 </Box>
@@ -330,32 +326,33 @@ const AnalyticsPairDetails = (
                   </Box>
                 )}
               </Box>
-              <Box mt={2} display='flex'>
+              <Box mt={2} display='flex' gap='8px'>
                 <Box
                   className={styles.analyticsPairRate}
+                  gap='6px'
                   onClick={() => {
                     router.push(
                       `/analytics/${version}/token/${pairData.token0.id}`,
                     );
                   }}
                 >
-                  <CurrencyLogo currency={currency0} size='16px' />
-                  <small style={{ marginLeft: 6 }}>
+                  <CurrencyLogo currency={currency0} size={16} />
+                  <small>
                     1 {pairData.token0.symbol} = {token0Rate}{' '}
                     {pairData.token1.symbol}
                   </small>
                 </Box>
                 <Box
-                  ml={1}
                   className={styles.analyticsPairRate}
                   onClick={() => {
                     router.push(
                       `/analytics/${version}/token/${pairData.token1.id}`,
                     );
                   }}
+                  gap='6px'
                 >
-                  <CurrencyLogo currency={currency1} size='16px' />
-                  <small style={{ marginLeft: 6 }}>
+                  <CurrencyLogo currency={currency1} size={16} />
+                  <small>
                     1 {pairData.token1.symbol} = {token1Rate}{' '}
                     {pairData.token0.symbol}
                   </small>

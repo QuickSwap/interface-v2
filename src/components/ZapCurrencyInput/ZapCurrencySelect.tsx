@@ -44,7 +44,7 @@ const ZapCurrencySelect: React.FC<ZapCurrencySelectProps> = ({
       >
         {currency ? (
           <Box className='flex items-center'>
-            <CurrencyLogo currency={currency} size={'28px'} />
+            <CurrencyLogo currency={currency} size={28} />
             <p>{currency?.symbol}</p>
             <KeyboardArrowDown />
           </Box>

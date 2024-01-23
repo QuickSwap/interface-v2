@@ -77,7 +77,7 @@
 }
 
 .crossChainIcon {
-  margin-top: 5px;
+  scale: 1.2;
 }
 
 .activeSwap {
@@ -94,6 +94,7 @@
   // border: 1px solid rgba(130, 177, 255, 0.08);
   // background: rgba(130, 177, 255, 0.03);
   color: #696c80;
+  display: flex;
 }
 
 .tabMenu {
@@ -325,7 +326,6 @@
       & > img.spritz {
         margin-top: -6px;
         margin-left: 0.25rem;
-        height: 20px;
         position: absolute;
       }
       & > img.meldLogo {

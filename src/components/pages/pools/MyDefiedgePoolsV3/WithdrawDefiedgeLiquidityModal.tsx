@@ -137,30 +137,26 @@ export default function WithdrawDefiedgeLiquidityModal({
           <p>
             {t('pooled')} {position.token0.symbol}
           </p>
-          <Box className='flex items-center'>
+          <Box className='flex items-center' gap='8px'>
             <p>
               {formatNumber(
                 (position.balance0 * withdrawPercent * percent) / 100,
               )}
             </p>
-            <Box className='flex' ml={1}>
-              <CurrencyLogo size='24px' currency={position.token0} />
-            </Box>
+            <CurrencyLogo currency={position.token0} />
           </Box>
         </Box>
         <Box mt={2} className='flex justify-between'>
           <p>
             {t('pooled')} {position.token1.symbol}
           </p>
-          <Box className='flex items-center'>
+          <Box className='flex items-center' gap='8px'>
             <p>
               {formatNumber(
                 (position.balance1 * withdrawPercent * percent) / 100,
               )}
             </p>
-            <Box className='flex' ml={1}>
-              <CurrencyLogo size='24px' currency={position.token1} />
-            </Box>
+            <CurrencyLogo currency={position.token1} />
           </Box>
         </Box>
 
@@ -258,7 +254,7 @@ export default function WithdrawDefiedgeLiquidityModal({
             <Box className='flex items-center'>
               <p>{formatNumber(position.balance0 * withdrawPercent)}</p>
               <Box className='flex' ml={1}>
-                <CurrencyLogo size='24px' currency={position.token0} />
+                <CurrencyLogo currency={position.token0} />
               </Box>
             </Box>
           </Box>
@@ -269,7 +265,7 @@ export default function WithdrawDefiedgeLiquidityModal({
             <Box className='flex items-center'>
               <p>{formatNumber(position.balance1 * withdrawPercent)}</p>
               <Box className='flex' ml={1}>
-                <CurrencyLogo size='24px' currency={position.token1} />
+                <CurrencyLogo currency={position.token1} />
               </Box>
             </Box>
           </Box>

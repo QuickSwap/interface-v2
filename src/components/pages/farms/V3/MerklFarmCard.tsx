@@ -9,6 +9,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React } from 'hooks';
 import dayjs from 'dayjs';
 import styles from 'styles/pages/Farm.module.scss';
+import Image from 'next/image';
 
 interface Props {
   farm: any;
@@ -131,13 +132,12 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
                 >
                   <Box className={styles.farmCardAPR} gap='4px'>
                     <p>{formatNumber(farm.apr)}%</p>
-                    <picture>
-                      <img
-                        src='/assets/images/aprHover.png'
-                        width={16}
-                        alt='APR icon'
-                      />
-                    </picture>
+                    <Image
+                      src='/assets/images/aprHover.png'
+                      width={16}
+                      height={16}
+                      alt='APR icon'
+                    />
                   </Box>
                 </MerklFarmAPRTooltip>
               </Box>

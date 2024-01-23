@@ -11,6 +11,7 @@ import V3SteerFarmCardDetails from './V3SteerFarmCardDetails';
 import { FarmModal } from 'components/StakeModal';
 import { FarmingType } from 'models/enums';
 import styles from 'styles/pages/Farm.module.scss';
+import Image from 'next/image';
 
 interface Props {
   farm: V3Farm;
@@ -105,13 +106,12 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
                   {formatNumber(farm.poolAPR + farm.farmAPR)}%
                 </p>
                 <TotalAPRTooltip farmAPR={farm.farmAPR} poolAPR={farm.poolAPR}>
-                  <picture>
-                    <img
-                      src='/assets/images/aprHover.png'
-                      alt='farm APR'
-                      height={16}
-                    />
-                  </picture>
+                  <Image
+                    src='/assets/images/aprHover.png'
+                    alt='farm APR'
+                    height={16}
+                    width={16}
+                  />
                 </TotalAPRTooltip>
               </Box>
             </Box>

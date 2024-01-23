@@ -7,6 +7,7 @@ import { formatNumber } from 'utils';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import SteerFarmCardDetails from './SteerFarmCardDetails';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
+import CircleInfo from 'svgs/circleinfo.svg';
 
 const SteerFarmCard: React.FC<{
   data: any;
@@ -114,12 +115,7 @@ const SteerFarmCard: React.FC<{
                       poolAPR={data.feeAPR}
                       poolAPRText={t('vaultAPR') ?? ''}
                     >
-                      <picture>
-                        <img
-                          src='/assets/images/circleinfo.svg'
-                          alt={'arrow up'}
-                        />
-                      </picture>
+                      <CircleInfo />
                     </TotalAPRTooltip>
                   </Box>
                 </>

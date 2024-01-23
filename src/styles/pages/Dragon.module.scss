@@ -35,15 +35,8 @@
   background: $grey5;
   max-height: 138px;
   overflow: hidden;
-  & img {
-    width: 100%;
-  }
-}
-
-.dragonMask {
-  width: 100%;
-  position: absolute;
-  top: 207px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .dragonMask-small {

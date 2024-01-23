@@ -3,6 +3,7 @@ import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 import React, { useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import styles from 'styles/pages/Swap.module.scss';
+import Image from 'next/image';
 
 export const DragonDispatchAdvertisement: React.FC = () => {
   const { t } = useTranslation();
@@ -16,13 +17,12 @@ export const DragonDispatchAdvertisement: React.FC = () => {
     <Box>
       <Box className='flex'>
         <Box>
-          <picture>
-            <img
-              className='wallet'
-              src='/assets/images/featured/DragonDispatchIcon.png'
-              alt='buy with fiat'
-            />
-          </picture>
+          <Image
+            src='/assets/images/featured/DragonDispatchIcon.png'
+            alt='buy with fiat'
+            width={47}
+            height={47}
+          />
         </Box>
         <Box pl={1} className='flex'>
           <Box className='text-white text-lg my-auto'>

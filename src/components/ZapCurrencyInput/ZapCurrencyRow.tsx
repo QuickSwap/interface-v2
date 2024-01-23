@@ -11,6 +11,7 @@ import { formatNumber } from 'utils';
 import { useTranslation } from 'next-i18next';
 import { getIsMetaMaskWallet } from 'connectors/utils';
 import styles from 'styles/components/CurrencySearchModal.module.scss';
+import TokenSelected from 'svgs/TokenSelected.svg';
 
 //TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {
@@ -111,12 +112,8 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
       }}
     >
       <Box className={styles.currencyRow}>
-        {(otherSelected || isSelected) && (
-          <picture>
-            <img src='/assets/images/TokenSelected.svg' alt='Token Selected' />
-          </picture>
-        )}
-        <CurrencyLogo currency={currency} size='32px' />
+        {(otherSelected || isSelected) && <TokenSelected />}
+        <CurrencyLogo currency={currency} size={32} />
         <Box ml={1} height={32}>
           <Box className='flex items-center'>
             <small className={styles.currencySymbol}>{currency.symbol}</small>

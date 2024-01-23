@@ -11,6 +11,9 @@ import {
   LiquidityHubConfirmationModalContent,
   useConfirmationPendingContent,
 } from 'components/Swap/LiquidityHub';
+import Spinner from 'svgs/spinner.svg';
+import ModalBG from 'svgs/ModalBG.svg';
+import Image from 'next/image';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;
@@ -30,9 +33,7 @@ export const ConfirmationPendingContent: React.FC<ConfirmationPendingContentProp
       </Box>
       <Box className={styles.txModalContent}>
         <Box my={4} className='flex justify-center spinner'>
-          <picture>
-            <img src='/assets/images/spinner.svg' alt='Spinner' />
-          </picture>
+          <Spinner />
         </Box>
         <h5>{confirmationPendingContent.title}</h5>
         {confirmationPendingContent.pending && (
@@ -67,12 +68,12 @@ export const TransactionSubmittedContent: React.FC<TransactionSubmittedContentPr
         <Close onClick={onDismiss} />
       </Box>
       <Box mt={8} className='flex justify-center'>
-        <picture>
-          <img
-            src='/assets/images/TransactionSubmitted.png'
-            alt='Transaction Submitted'
-          />
-        </picture>
+        <Image
+          src='/assets/images/TransactionSubmitted.png'
+          alt='Transaction Submitted'
+          width={179}
+          height={126}
+        />
       </Box>
       <Box
         className={`${styles.txModalContent} ${styles.txModalContentSuccess}`}
@@ -146,12 +147,12 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
           <Close onClick={onDismiss} />
         </Box>
         <Box className={styles.txModalContent}>
-          <picture>
-            <img
-              src='/assets/images/TransactionFailed.png'
-              alt='Transaction Failed'
-            />
-          </picture>
+          <Image
+            src='/assets/images/TransactionFailed.png'
+            alt='Transaction Failed'
+            width={92}
+            height={147}
+          />
           <p>{message}</p>
         </Box>
       </Box>
@@ -200,13 +201,7 @@ const TransactionConfirmationModal: React.FC<ConfirmationModalProps> = ({
         isTxWrapper ? styles.txModalWrapper : ''
       }`}
     >
-      <picture>
-        <img
-          src='/assets/images/ModalBG.svg'
-          alt='Modal Back'
-          className={styles.txModalBG}
-        />
-      </picture>
+      <ModalBG className={styles.txModalBG} />
       <Box position='relative' zIndex={2}>
         {attemptingTxn ? (
           <ConfirmationPendingContent

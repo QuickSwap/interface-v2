@@ -52,13 +52,10 @@ export default function SwapModalHeader({
         </Box>
 
         <Box mt={1} className='flex justify-between'>
-          <Box className='flex'>
-            <Box mr='6px'>
-              <CurrencyLogo
-                currency={trade.inputAmount.currency as WrappedCurrency}
-                size={'24px'}
-              />
-            </Box>
+          <Box className='flex' gap='6px'>
+            <CurrencyLogo
+              currency={trade.inputAmount.currency as WrappedCurrency}
+            />
             <p className='weight-600'>{trade.inputAmount.currency.symbol}</p>
           </Box>
           <p
@@ -89,13 +86,10 @@ export default function SwapModalHeader({
           </Box>
 
           <Box mt={1} className='flex justify-between'>
-            <Box className='flex'>
-              <Box mr='6px'>
-                <CurrencyLogo
-                  currency={trade.outputAmount.currency as WrappedCurrency}
-                  size='24px'
-                />
-              </Box>
+            <Box className='flex' gap='6px'>
+              <CurrencyLogo
+                currency={trade.outputAmount.currency as WrappedCurrency}
+              />
               <p className='weight-600'>{trade.outputAmount.currency.symbol}</p>
             </Box>
             <p className='truncatedText weight-600'>

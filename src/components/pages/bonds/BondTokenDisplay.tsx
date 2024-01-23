@@ -5,6 +5,7 @@ import { Token } from '@uniswap/sdk';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { Box } from '@mui/material';
 import { useActiveWeb3React } from 'hooks';
+import BondArrow from 'svgs/bondArrow.svg';
 
 interface BondTokenDisplayProps {
   token1Obj?: any;
@@ -136,34 +137,28 @@ const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
 
   const StakeTokenEarnToken = (
     <Box className='flex items-center' gap='8px'>
-      <CurrencyLogo currency={token1} size={`${size}px`} />
-      <picture>
-        <img src='/assets/images/bondArrow.svg' alt='bond arrow' />
-      </picture>
-      <CurrencyLogo currency={token2} size={`${size}px`} />
+      <CurrencyLogo currency={token1} size={size} />
+      <BondArrow />
+      <CurrencyLogo currency={token2} size={size} />
     </Box>
   );
 
   const StakeLpEarnToken = (
     <Box className='flex items-center' gap='8px'>
       <DoubleCurrencyLogo currency0={token1} currency1={token2} size={size} />
-      <picture>
-        <img src='/assets/images/bondArrow.svg' alt='bond arrow' />
-      </picture>
-      <CurrencyLogo currency={token3} size={`${size}px`} />
+      <BondArrow />
+      <CurrencyLogo currency={token3} size={size} />
     </Box>
   );
 
   const StakeLpEarnLp = (
     <Box className='flex items-center' gap='8px'>
       <DoubleCurrencyLogo currency0={token1} currency1={token2} size={size} />
-      <picture>
-        <img src='/assets/images/bondArrow.svg' alt='bond arrow' />
-      </picture>
+      <BondArrow />
       {token4 ? (
         <DoubleCurrencyLogo currency0={token3} currency1={token4} size={size} />
       ) : (
-        <CurrencyLogo currency={token3} size={`${size}px`} />
+        <CurrencyLogo currency={token3} size={size} />
       )}
     </Box>
   );
@@ -171,19 +166,15 @@ const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
   const DualEarn = (
     <Box className='flex items-center' gap='8px'>
       <DoubleCurrencyLogo currency0={token1} currency1={token2} size={size} />
-      <picture>
-        <img src='/assets/images/bondArrow.svg' alt='bond arrow' />
-      </picture>
+      <BondArrow />
       <DoubleCurrencyLogo currency0={token3} currency1={token4} size={size} />
     </Box>
   );
 
   const StakeTokenEarnLp = (
     <Box className='flex items-center' gap='8px'>
-      <CurrencyLogo currency={token1} size={`${size}px`} />
-      <picture>
-        <img src='/assets/images/bondArrow.svg' alt='bond arrow' />
-      </picture>
+      <CurrencyLogo currency={token1} size={size} />
+      <BondArrow />
       <DoubleCurrencyLogo currency0={token2} currency1={token2} size={size} />
     </Box>
   );
@@ -191,7 +182,7 @@ const BondTokenDisplay: React.FC<BondTokenDisplayProps> = ({
   if (token1 && !token2 && !token3 && !token4) {
     return (
       <Box className='flex items-center'>
-        <CurrencyLogo currency={token1} size={`${size}px`} />
+        <CurrencyLogo currency={token1} size={size} />
       </Box>
     );
   }

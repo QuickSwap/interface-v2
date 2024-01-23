@@ -119,7 +119,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
     >
       <Box className={styles.currencyRow}>
         {(otherSelected || isSelected) && <TokenSelectedIcon />}
-        <CurrencyLogo currency={currency} size='32px' />
+        <CurrencyLogo currency={currency} size={32} />
         <Box ml={1} height={32}>
           <Box className='flex items-center'>
             <small className={styles.currencySymbol}>{currency.symbol}</small>

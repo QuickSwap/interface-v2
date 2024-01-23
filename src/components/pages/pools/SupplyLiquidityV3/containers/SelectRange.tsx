@@ -34,6 +34,9 @@ import { Trans, useTranslation } from 'next-i18next';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
 import { useUnipilotFarmData } from 'hooks/v3/useUnipilotFarms';
 import { useGammaData } from 'hooks/v3/useGammaData';
+import Automatic from 'svgs/automatic.svg';
+import AutomaticDark from 'svgs/automaticDark.svg';
+import Image from 'next/image';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -528,17 +531,12 @@ export function SelectRange({
                 }
               }}
             >
-              <picture>
-                <img
-                  src={
-                    liquidityRangeType ===
-                    GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
-                      ? '/assets/images/automaticDark.svg'
-                      : '/assets/images/automatic.svg'
-                  }
-                  alt='automatic range'
-                />
-              </picture>
+              {liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ? (
+                <AutomaticDark />
+              ) : (
+                <Automatic />
+              )}
             </Button>
             <Button
               className={
@@ -564,19 +562,28 @@ export function SelectRange({
           <span className='text-secondary'>{t('poweredBy')}</span>
           {liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
-            <picture>
-              <img src='/assets/images/gammaLogo.png' alt='Gamma Logo' />
-            </picture>
+            <Image
+              src='/assets/images/gammaLogo.png'
+              alt='Gamma Logo'
+              width={56}
+              height={9}
+            />
           ) : liquidityRangeType ===
             GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ? (
-            <picture>
-              <img src='/assets/images/unipilot.png' alt='Unipilot Logo' />
-            </picture>
+            <Image
+              src='/assets/images/unipilot.png'
+              alt='Unipilot Logo'
+              width={61}
+              height={9}
+            />
           ) : liquidityRangeType ===
             GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ? (
-            <picture>
-              <img src='/assets/images/defiedge.png' alt='DefiEdge Logo' />
-            </picture>
+            <Image
+              src='/assets/images/defiedge.png'
+              alt='DefiEdge Logo'
+              width={79}
+              height={28}
+            />
           ) : (
             <small className='text-bold'>&nbsp;Steer</small>
           )}
@@ -784,9 +791,12 @@ export function SelectRange({
                     );
                   }}
                 >
-                  <picture>
-                    <img src='/assets/images/gammaLogo.png' alt='Gamma Logo' />
-                  </picture>
+                  <Image
+                    src='/assets/images/gammaLogo.png'
+                    alt='Gamma Logo'
+                    width={62}
+                    height={10}
+                  />
                   <small className='text-success'>
                     {formatNumber(gammaPoolAPR * 100)}%
                   </small>
@@ -809,12 +819,12 @@ export function SelectRange({
                     );
                   }}
                 >
-                  <picture>
-                    <img
-                      src='/assets/images/unipilot.png'
-                      alt='Unipilot Logo'
-                    />
-                  </picture>
+                  <Image
+                    src='/assets/images/unipilot.png'
+                    alt='Unipilot Logo'
+                    width={67.5}
+                    height={10}
+                  />
                   <small className='text-success'>
                     {formatNumber(unipilotAPR)}%
                   </small>

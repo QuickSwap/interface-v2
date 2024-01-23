@@ -54,7 +54,7 @@ const SingleTokenEnterAmount: React.FC = () => {
                   currency1={WETH[chainId]}
                 />
               ) : (
-                <CurrencyLogo currency={currency} size='18px' />
+                <CurrencyLogo currency={currency} size={18} />
               )}
               <p className='font-bold'>
                 {isNativeToken

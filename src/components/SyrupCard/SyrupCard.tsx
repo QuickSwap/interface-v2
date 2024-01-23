@@ -42,11 +42,13 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
       >
         {isMobile ? (
           <>
-            <Box className='flex items-center' width={expanded ? 0.95 : 0.5}>
-              <CurrencyLogo currency={currency} size='32px' />
-              <Box ml={1.5}>
-                <small>{currency.symbol}</small>
-              </Box>
+            <Box
+              className='flex items-center'
+              width={expanded ? 0.95 : 0.5}
+              gap='12px'
+            >
+              <CurrencyLogo currency={currency} size={32} />
+              <small>{currency.symbol}</small>
             </Box>
             {!expanded && (
               <Box width={0.45}>
@@ -60,7 +62,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         ) : (
           <>
             <Box width={0.3} className='flex items-center'>
-              <CurrencyLogo currency={currency} size='32px' />
+              <CurrencyLogo currency={currency} size={32} />
               <Box ml={1.5}>
                 <small>{currency.symbol}</small>
                 <Box mt={0.25}>
@@ -91,11 +93,13 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               <SyrupAPR syrup={syrup} dQUICKAPY={dQUICKAPY} />
             </Box>
             <Box width={0.2} textAlign='right'>
-              <Box className='flex items-center justify-end' mb={0.25}>
-                <CurrencyLogo currency={currency} size='16px' />
-                <small style={{ marginLeft: 5 }}>
-                  {formatTokenAmount(syrup.earnedAmount)}
-                </small>
+              <Box
+                className='flex items-center justify-end'
+                mb={0.25}
+                gap='5px'
+              >
+                <CurrencyLogo currency={currency} size={16} />
+                <small>{formatTokenAmount(syrup.earnedAmount)}</small>
               </Box>
               <small className='text-secondary'>
                 {getEarnedUSDSyrup(syrup)}

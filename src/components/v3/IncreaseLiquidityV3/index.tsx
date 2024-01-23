@@ -406,14 +406,14 @@ export default function IncreaseLiquidityV3({
       <Box my={2} className={styles.v3IncreaseLiquidityInfoWrapper}>
         <Box>
           <Box className='flex items-center'>
-            <CurrencyLogo currency={baseCurrency ?? undefined} size='20px' />
+            <CurrencyLogo currency={baseCurrency ?? undefined} size={20} />
             <p>{baseCurrency?.symbol}</p>
           </Box>
           <p>{existingPosition?.amount0?.toSignificant()}</p>
         </Box>
         <Box mt={2}>
           <Box className='flex items-center'>
-            <CurrencyLogo currency={quoteCurrency ?? undefined} size='20px' />
+            <CurrencyLogo currency={quoteCurrency ?? undefined} size={20} />
             <p>{quoteCurrency?.symbol}</p>
           </Box>
           <p>{existingPosition?.amount1?.toSignificant()}</p>

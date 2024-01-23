@@ -9,6 +9,7 @@ import { ChevronDown, ChevronUp } from 'react-feather';
 import GammaFarmCardDetails from './GammaFarmCardDetails';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { V3Farm } from 'components/pages/farms/V3/Farms';
+import CircleInfo from 'svgs/circleinfo.svg';
 
 const GammaFarmCard: React.FC<{
   data: V3Farm;
@@ -85,9 +86,7 @@ const GammaFarmCard: React.FC<{
                   farmAPR={farmAPR * 100}
                   poolAPR={poolAPR * 100}
                 >
-                  <picture>
-                    <img src='/assets/images/circleinfo.svg' alt='info' />
-                  </picture>
+                  <CircleInfo />
                 </TotalAPRTooltip>
               </Box>
             </Box>

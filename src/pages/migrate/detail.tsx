@@ -626,7 +626,7 @@ const MigrateV2DetailsPage = (
           </Box>
           <Box mt={3} className={styles.v3MigrateDetailsRow}>
             <Box className='flex items-center'>
-              <CurrencyLogo currency={currency0 ?? undefined} size='20px' />
+              <CurrencyLogo currency={currency0 ?? undefined} size={20} />
               <p>{currency0?.symbol}</p>
             </Box>
             <p>{`${
@@ -635,7 +635,7 @@ const MigrateV2DetailsPage = (
           </Box>
           <Box mt={1.5} className={styles.v3MigrateDetailsRow}>
             <Box className='flex items-center'>
-              <CurrencyLogo currency={currency1 ?? undefined} size='20px' />
+              <CurrencyLogo currency={currency1 ?? undefined} size={20} />
               <p>{currency1?.symbol}</p>
             </Box>
             <p>{`${
@@ -678,7 +678,7 @@ const MigrateV2DetailsPage = (
             <Box mt={2} className={styles.v3MigrateDetailsBox}>
               <Box className={styles.v3MigrateDetailsRow}>
                 <Box className='flex items-center'>
-                  <CurrencyLogo currency={currency0 ?? undefined} size='20px' />
+                  <CurrencyLogo currency={currency0 ?? undefined} size={20} />
                   <p>{currency0?.symbol}</p>
                 </Box>
                 {v3Amount0MinCurrency ? (
@@ -691,7 +691,7 @@ const MigrateV2DetailsPage = (
               </Box>
               <Box mt={1.5} className={styles.v3MigrateDetailsRow}>
                 <Box className='flex items-center'>
-                  <CurrencyLogo currency={currency1 ?? undefined} size='20px' />
+                  <CurrencyLogo currency={currency1 ?? undefined} size={20} />
                   <p>{currency1?.symbol}</p>
                 </Box>
                 {v3Amount1MinCurrency ? (

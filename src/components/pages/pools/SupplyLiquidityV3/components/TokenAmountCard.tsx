@@ -165,7 +165,7 @@ export function TokenAmountCard({
                   currency1={WETH[chainId]}
                 />
               ) : (
-                <CurrencyLogo size='24px' currency={currency} />
+                <CurrencyLogo currency={currency} />
               )}
               <p className='weight-600'>
                 {isDual &&

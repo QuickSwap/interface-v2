@@ -23,6 +23,7 @@ import SyrupTimerLabel from './SyrupTimerLabel';
 import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { ChainId } from '@uniswap/sdk';
+import CircleInfo from 'svgs/circleinfo.svg';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -181,9 +182,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
                   <Box className='flex items-center'>
                     <small className='text-secondary'>{t('apr')}:</small>
                     <Box ml={0.5} className='flex'>
-                      <picture>
-                        <img src='/assets/images/circleinfo.svg' alt='info' />
-                      </picture>
+                      <CircleInfo />
                     </Box>
                   </Box>
                   <Box textAlign='right'>
@@ -229,9 +228,9 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               <small className='text-secondary'>
                 {t('earned')} {currency?.symbol}
               </small>
-              <Box className='flex items-center'>
-                <CurrencyLogo currency={currency} size='16px' />
-                <small style={{ marginLeft: 4 }}>
+              <Box className='flex items-center' gap='4px'>
+                <CurrencyLogo currency={currency} size={16} />
+                <small>
                   {formatTokenAmount(syrup.earnedAmount)}
                   <small className='text-secondary' style={{ marginLeft: 4 }}>
                     {getEarnedUSDSyrup(syrup)}

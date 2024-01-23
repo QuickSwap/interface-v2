@@ -21,6 +21,7 @@ import {
 } from 'state/singleToken/hooks';
 import SingleTokenDepositButton from './DepositButton';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 export function SingleTokenSupplyLiquidity() {
   const { t } = useTranslation();
@@ -59,9 +60,12 @@ export function SingleTokenSupplyLiquidity() {
         <Box className='flex items-center' gap='8px'>
           <Box className='flex items-center' gap='5px'>
             <small className='text-secondary'>{t('poweredBy')}</small>
-            <picture>
-              <img src='/assets/images/ichi_logo.png' alt='ICHI' height={16} />
-            </picture>
+            <Image
+              src='/assets/images/ichi_logo.png'
+              alt='ICHI'
+              height={16}
+              width={46}
+            />
           </Box>
           <small
             className='cursor-pointer text-primary'

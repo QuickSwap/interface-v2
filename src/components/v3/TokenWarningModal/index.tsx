@@ -15,10 +15,8 @@ function TokenWarningCard({ token }: { token?: Token | V2Token }) {
   if (!token) return null;
 
   return (
-    <Box mb={2} className='flex' key={token.address}>
-      <Box mr={1} className='flex'>
-        <CurrencyLogo currency={token} size={'32px'} />
-      </Box>
+    <Box mb={2} className='flex' key={token.address} gap='8px'>
+      <CurrencyLogo currency={token} size={32} />
       <Box>
         <p>
           {token && token.name && token.symbol && token.name !== token.symbol

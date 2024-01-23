@@ -31,6 +31,7 @@ import {
 import { MobileMenuDrawer } from './MobileMenuDrawer';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 import { HeaderDesktopItem } from './HeaderDesktopItem';
+import Image from 'next/image';
 
 const QuickIcon = '/assets/images/quickIcon.svg';
 const QuickLogo = '/assets/images/quickLogo.png';
@@ -356,9 +357,10 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         />
         <Link href='/'>
           <picture>
-            <img
+            <Image
               src={mobileWindowSize ? QuickIcon : QuickLogo}
               alt='QuickLogo'
+              width={mobileWindowSize ? 40 : 195}
               height={mobileWindowSize ? 40 : 60}
             />
           </picture>
@@ -398,12 +400,12 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
               {isSupportedNetwork && (
                 <Box className={styles.networkSelectionImage}>
                   {chainId && <Box className={styles.styledPollingDot} />}
-                  <picture>
-                    <img
-                      src={config['nativeCurrencyImage']}
-                      alt='network Image'
-                    />
-                  </picture>
+                  <Image
+                    src={config['nativeCurrencyImage']}
+                    alt='network Image'
+                    width={18}
+                    height={18}
+                  />
                 </Box>
               )}
               <small className={styles.networkName}>
@@ -420,9 +422,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
               onClick={toggleWalletModal}
             >
               <p>{udDomain ?? shortenAddress(account)}</p>
-              <picture>
-                <img src={WalletIcon} alt='Wallet' />
-              </picture>
+              <Image src={WalletIcon} alt='Wallet' width={20} height={20} />
             </Box>
           ) : (
             <Box

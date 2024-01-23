@@ -12,6 +12,7 @@ import FarmStakeButtons from './FarmStakeButtons';
 import { formatReward } from 'utils/formatReward';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import CircleInfo from 'svgs/circleinfo.svg';
 
 interface FarmCardProps {
   el: any;
@@ -183,9 +184,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
               </small>
               <Box ml={0.5} className='flex'>
                 <TotalAPRTooltip farmAPR={farmApr ?? 0} poolAPR={poolApr ?? 0}>
-                  <picture>
-                    <img src='/assets/images/circleinfo.svg' alt='info' />
-                  </picture>
+                  <CircleInfo />
                 </TotalAPRTooltip>
               </Box>
             </Box>
@@ -204,7 +203,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
                 className={`flex items-center ${isMobile ? 'justify-end' : ''}`}
               >
                 {rewardToken && (
-                  <CurrencyLogo size='16px' currency={rewardToken} />
+                  <CurrencyLogo size={16} currency={rewardToken} />
                 )}
 
                 {rewardToken && (
@@ -220,13 +219,12 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
                   className={`flex items-center ${
                     isMobile ? 'justify-end' : ''
                   }`}
+                  gap='6px'
                 >
-                  <CurrencyLogo size='16px' currency={bonusRewardToken} />
-                  <Box ml='6px'>
-                    <p className='caption'>{`${formatReward(
-                      Number(bonusEarned),
-                    )} ${bonusRewardToken.symbol}`}</p>
-                  </Box>
+                  <CurrencyLogo size={16} currency={bonusRewardToken} />
+                  <p className='caption'>{`${formatReward(
+                    Number(bonusEarned),
+                  )} ${bonusRewardToken.symbol}`}</p>
                 </Box>
               )}
             </Box>

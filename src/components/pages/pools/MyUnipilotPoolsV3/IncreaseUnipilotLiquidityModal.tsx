@@ -318,20 +318,16 @@ export default function IncreaseUnipilotLiquidityModal({
       <Box>
         <Box mt={3} className='flex justify-between'>
           <p>{position.token0?.symbol}</p>
-          <Box className='flex items-center'>
+          <Box className='flex items-center' gap='8px'>
             <p>{formatNumber(deposit0)}</p>
-            <Box className='flex' ml={1}>
-              <CurrencyLogo size='24px' currency={position.token0} />
-            </Box>
+            <CurrencyLogo currency={position.token0} />
           </Box>
         </Box>
         <Box mt={2} className='flex justify-between'>
           <p>{position.token1?.symbol}</p>
-          <Box className='flex items-center'>
+          <Box className='flex items-center' gap='8px'>
             <p>{formatNumber(deposit1)}</p>
-            <Box className='flex' ml={1}>
-              <CurrencyLogo size='24px' currency={position.token1} />
-            </Box>
+            <CurrencyLogo currency={position.token1} />
           </Box>
         </Box>
 
@@ -387,7 +383,7 @@ export default function IncreaseUnipilotLiquidityModal({
             <p>
               {t('pooled')} {position.token0?.symbol}
             </p>
-            <Box className='flex items-center'>
+            <Box className='flex items-center' gap='8px'>
               <p>
                 {position.token0Balance
                   ? formatNumber(
@@ -398,16 +394,14 @@ export default function IncreaseUnipilotLiquidityModal({
                     )
                   : 0}
               </p>
-              <Box className='flex' ml={1}>
-                <CurrencyLogo size='24px' currency={position.token0} />
-              </Box>
+              <CurrencyLogo currency={position.token0} />
             </Box>
           </Box>
           <Box mt={2} className='flex justify-between'>
             <p>
               {t('pooled')} {position.token1?.symbol}
             </p>
-            <Box className='flex items-center'>
+            <Box className='flex items-center' gap='8px'>
               <p>
                 {position.token1Balance
                   ? formatNumber(
@@ -418,9 +412,7 @@ export default function IncreaseUnipilotLiquidityModal({
                     )
                   : 0}
               </p>
-              <Box className='flex' ml={1}>
-                <CurrencyLogo size='24px' currency={position.token1} />
-              </Box>
+              <CurrencyLogo currency={position.token1} />
             </Box>
           </Box>
         </Box>

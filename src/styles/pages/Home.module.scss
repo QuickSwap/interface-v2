@@ -86,18 +86,20 @@
 }
 .featureContainerItem {
   display: flex;
-  & img {
-    width: 150px;
-    max-width: 240px;
-  }
   @include media('screen', '<phone') {
     flex-direction: column !important;
-    & img,
+    width: 100%;
     & > div {
       width: 100%;
       text-align: center;
     }
   }
+}
+.featureContainerImage {
+  width: 150px;
+  height: 150px;
+  max-width: 240px;
+  position: relative;
 }
 .featureText {
   margin-left: 8px;
@@ -186,8 +188,6 @@
   }
   & svg,
   & img {
-    width: 32px;
-    height: 32px;
     cursor: pointer;
   }
   @include media('screen', '<tablet') {
@@ -268,11 +268,10 @@
     padding: 24px;
     border-radius: 24px;
   }
-  & > picture {
+  & > img {
     position: absolute;
     top: 0;
     left: 0;
-    width: 1248px;
   }
   & > div {
     display: flex;
@@ -360,10 +359,6 @@
     & img {
       height: 20px;
       width: auto;
-      &.meldLogo {
-        height: 15px;
-        margin: 0 3px 0 6px;
-      }
     }
   }
 }

@@ -21,6 +21,8 @@ import BuySpritzSection from 'components/pages/home/BuySpritzSection';
 import { useRouter } from 'next/router';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import Motif from 'svgs/Motif.svg';
+import Image from 'next/image';
 
 const LandingPage = (
   _props: InferGetStaticPropsType<typeof getStaticProps>,
@@ -238,11 +240,9 @@ const LandingPage = (
       <GlobalSection />
       <Box className={styles.smallCommunityContainer}>
         {socialicons.map((val, ind) => (
-          <Box key={ind} mx={1.5}>
+          <Box key={ind} mx={1.5} position='relative' width={32} height={32}>
             <a href={val.link} target='_blank' rel='noopener noreferrer'>
-              <picture>
-                <img src={val.icon} alt='social icons' />
-              </picture>
+              <Image src={val.icon} alt='social icons' layout='fill' />
             </a>
           </Box>
         ))}
@@ -255,9 +255,7 @@ const LandingPage = (
       </Box>
       <Box className={styles.quickInfo}>
         <h4>{t('quickInfoTitle')}</h4>
-        <picture>
-          <img src='/assets/images/Motif.svg' alt='Motif' />
-        </picture>
+        <Motif />
       </Box>
       <SwapSection />
       {isFarmAvailable && (
@@ -302,9 +300,9 @@ const LandingPage = (
               key={index}
               className={styles.featureContainerItem}
             >
-              <picture>
-                <img src={val.img} alt={val.title} />
-              </picture>
+              <Box className={styles.featureContainerImage}>
+                <Image src={val.img} alt={val.title} layout='fill' />
+              </Box>
               <Box className={styles.featureText}>
                 <h5>{val.title}</h5>
                 <p>{val.desc}</p>
@@ -345,9 +343,12 @@ const LandingPage = (
           {socialicons.map((val, ind) => (
             <Box key={ind}>
               <a href={val.link} target='_blank' rel='noopener noreferrer'>
-                <picture>
-                  <img src={val.icon} alt='social icons' />
-                </picture>
+                <Image
+                  src={val.icon}
+                  alt='social icons'
+                  width={64}
+                  height={64}
+                />
                 <p>{val.title}</p>
               </a>
             </Box>

@@ -16,6 +16,7 @@ import {
 import { formatUnits } from 'ethers/lib/utils';
 import { formatNumber } from 'utils';
 import styles from 'styles/pages/Bonds.module.scss';
+import Image from 'next/image';
 
 interface BondModalProps {
   onDismiss?: () => void;
@@ -72,20 +73,18 @@ const UserBondModalView: React.FC<BondModalProps> = ({ bond, billId }) => {
         />
       )}
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={6}>
+        <Grid item xs={12} sm={12} md={6} position='relative'>
           <Box className='flex'>
-            <picture>
-              <img
-                width='100%'
-                height='auto'
-                alt={userOwnedBondNftData?.image ? 'user bill' : 'loading bill'}
-                src={`${
-                  userOwnedBondNftData?.image
-                    ? `${userOwnedBondNftData?.image}?img-width=720`
-                    : '/assets/images/bonds/quickBond.jpg'
-                }`}
-              />
-            </picture>
+            <Image
+              layout='fill'
+              objectFit='contain'
+              alt={userOwnedBondNftData?.image ? 'user bill' : 'loading bill'}
+              src={`${
+                userOwnedBondNftData?.image
+                  ? `${userOwnedBondNftData?.image}?img-width=720`
+                  : '/assets/images/bonds/quickBond.jpg'
+              }`}
+            />
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
