@@ -112,6 +112,5 @@ export enum PurchasePath {
   Loading,
   LpPurchase,
   ApeZap,
-  WidoZap,
   SoulZap,
 }

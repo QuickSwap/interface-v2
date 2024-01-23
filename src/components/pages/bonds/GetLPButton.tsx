@@ -22,14 +22,12 @@ const GetLpButton = ({ bond }: { bond: any }) => {
   const lpToken = bond?.lpToken;
   const bondContractAddress = bond?.contractAddress[chainId] || '';
 
-  // checking wido supported contracts using their API
   const liquidityDex =
     lpToken?.liquidityDex?.[chainId] || LiquidityDex.ApeSwapV2;
   const dexToZapMappingAny = dexToZapMapping as any;
   const zapIntoLPVersion = dexToZapMappingAny[liquidityDex]?.[
     chainId
   ] as ZapVersion;
-  // if the lp token is supported by Wido, we use wido zap. If not but lpTokenZapVersion is Wido, we use External instead.
 
   const shouldSendToExternalLpUrl = zapIntoLPVersion === ZapVersion.External;
 
