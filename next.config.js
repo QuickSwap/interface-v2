@@ -23,15 +23,9 @@ const nextConfig = {
       { protocol: 'https', hostname: 's2.coinmarketcap.com', pathname: '**' },
       { protocol: 'https', hostname: 'data.everrise.com', pathname: '**' },
       { protocol: 'https', hostname: 'res.cloudinary.com', pathname: '**' },
-      { protocol: 'https', hostname: 'augury.finance', pathname: '**' },
       {
         protocol: 'https',
         hostname: 'encrypted-tbn0.gstatic.com',
-        pathname: '**',
-      },
-      {
-        protocol: 'https',
-        hostname: '1453456140-files.gitbook.io',
         pathname: '**',
       },
       { protocol: 'https', hostname: 'www.borderless.money', pathname: '**' },
@@ -39,6 +33,29 @@ const nextConfig = {
       { protocol: 'https', hostname: 'apeswap.mypinata.cloud', pathname: '**' },
       { protocol: 'https', hostname: 'usdv.money', pathname: '**' },
       { protocol: 'https', hostname: 'www.anyinu.xyz', pathname: '**' },
+      { protocol: 'https', hostname: 'i.ibb.co', pathname: '**' },
+      { protocol: 'https', hostname: 'decats.io', pathname: '**' },
+      { protocol: 'https', hostname: 'static.dappradar.com', pathname: '**' },
+      {
+        protocol: 'https',
+        hostname: 'assets.slingshotdao.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'etherfi-membership-metadata.s3.ap-southeast-1.amazonaws.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        pathname: '**',
+      },
     ],
   },
   webpack(config) {

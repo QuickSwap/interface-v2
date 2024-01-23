@@ -15,14 +15,14 @@ const Background: React.FC<{ fallback: boolean | undefined }> = ({
         src='/assets/images/heroBkg.png'
         alt='Hero Background'
         layout='fill'
-        objectFit='contain'
+        objectFit='cover'
       />
       <Image
         className={showDefaultBG ? '' : 'hidden'}
         src='/assets/images/heroBkg.svg'
         alt='Hero Background'
         layout='fill'
-        objectFit='contain'
+        objectFit='cover'
       />
     </Box>
   );
