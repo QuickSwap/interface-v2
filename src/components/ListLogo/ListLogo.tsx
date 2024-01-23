@@ -5,7 +5,7 @@ import { Logo } from 'components';
 
 interface ListLogoProps {
   logoURI: string;
-  size?: string;
+  size?: number;
   alt?: string;
 }
 
