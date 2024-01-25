@@ -15,7 +15,7 @@ const DefiedgeLPItem: React.FC<{ defiedgePosition: any }> = ({
 
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
-  const farmingLink = `/farm/v3?tab=my-farms`;
+  const farmingLink = `/farm?tab=my-farms`;
 
   return (
     <Box className={styles.liquidityItem}>

@@ -31,7 +31,6 @@ const FarmPage = (
     : GlobalConst.v2FarmTab.OTHER_LP;
   const { t } = useTranslation();
   const config = getConfig(chainId);
-  const farmAvailable = config['farm']['available'];
   const v3 = config['v3'];
   const v2 = config['v2'];
   const { isV2, updateIsV2 } = useIsV2();
@@ -56,13 +55,6 @@ const FarmPage = (
 
     return stakingPairLists.concat(dualPairLists).concat(cntPairLists);
   }, [chainId, lpFarms, dualFarms, cntFarms]);
-
-  useEffect(() => {
-    if (!farmAvailable) {
-      router.push('/');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [farmAvailable]);
 
   useEffect(() => {
     if (!v2) {

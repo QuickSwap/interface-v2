@@ -96,7 +96,7 @@ export const MerklFarmAPRTooltipItem: React.FC<{
               }
             }
             window.open(
-              `#/pools${
+              `/pools${
                 farmType && farmType.toUpperCase() === 'ICHI'
                   ? '/singleToken'
                   : ''

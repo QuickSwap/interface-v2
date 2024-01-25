@@ -139,7 +139,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
                 <p className='small'>{`${token0.symbol} / ${token1.symbol}`}</p>
                 <a
                   className='small'
-                  href={`/#/pool/${+el.id}`}
+                  href={`/pool/${+el.id}`}
                   rel='noopener noreferrer'
                   target='_blank'
                 >

@@ -16,7 +16,7 @@ const UnipilotLPItem: React.FC<{ position: UnipilotPosition }> = ({
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
-  const farmingLink = `/farm/v3?tab=my-farms`;
+  const farmingLink = `/farm?tab=my-farms`;
   const { token0, token1 } = position;
 
   return (

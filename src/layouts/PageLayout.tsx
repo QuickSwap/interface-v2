@@ -35,7 +35,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
 
   const { firePageViewEvent } = useMasaAnalytics();
 
-  const { pathname } = location;
+  const { pathname } = router;
   useEffect(() => {
     const page = `https://quickswap.exchange/#${pathname}`;
     firePageViewEvent({ page, user_address: account });

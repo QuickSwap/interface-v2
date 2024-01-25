@@ -174,7 +174,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   }
   if (showPool) {
     menuItems.push({
-      link: `/pools/v3`,
+      link: `/pools`,
       text: t('pool'),
       id: 'pools-page-link',
     });
@@ -192,13 +192,13 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   if (showFarm) {
     if (showEarn) {
       earnTab.items?.push({
-        link: `/farm/v3`,
+        link: `/farm`,
         text: t('farm') as string,
         id: 'farm-page-link',
       });
     } else {
       menuItems.push({
-        link: `/farm/v3`,
+        link: `/farm`,
         text: t('farm') as string,
         id: 'farm-page-link',
       });
@@ -294,7 +294,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   }
   if (showAnalytics) {
     menuItems.push({
-      link: `/analytics/total`,
+      link: `/analytics`,
       text: t('analytics'),
       id: 'analytics-page-link',
     });

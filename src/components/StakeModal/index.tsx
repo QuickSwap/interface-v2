@@ -425,7 +425,7 @@ export function FarmModal({
                           </Box>
 
                           <a
-                            href={`/#/pool/${+el.id}?onFarming=true`}
+                            href={`/pool/${+el.id}?onFarming=true`}
                             rel='noopener noreferrer'
                             target='_blank'
                           >

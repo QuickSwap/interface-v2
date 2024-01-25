@@ -435,7 +435,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                 </Box>
                 <Box pl='8px' className='flex items-center'>
                   <a
-                    href={`/#/pool/${selectedQSNFTId}`}
+                    href={`/pool/${selectedQSNFTId}`}
                     target='_blank'
                     rel='noreferrer'
                     className='flex no-decoration text-primary'
@@ -509,7 +509,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                         }
                       }
                       window.open(
-                        `#/pools${isICHI ? '/singleToken' : ''}?${currencyStr}`,
+                        `/pools${isICHI ? '/singleToken' : ''}?${currencyStr}`,
                         '_blank',
                       );
                     }}

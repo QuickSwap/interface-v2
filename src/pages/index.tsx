@@ -268,7 +268,7 @@ const LandingPage = (
           <Box
             className={styles.allRewardPairs}
             onClick={() => {
-              router.push('/farm/v3');
+              router.push('/farm');
             }}
           >
             <p>{t('seeAllPairs')}</p>

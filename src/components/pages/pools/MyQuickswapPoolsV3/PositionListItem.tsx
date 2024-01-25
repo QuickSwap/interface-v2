@@ -185,14 +185,13 @@ export default function PositionListItem({
     ? _pool.tickCurrent < _tickLower || _pool.tickCurrent >= _tickUpper
     : false;
 
-  const farmingLink = `/farm/v3?tab=my-farms`;
+  const farmingLink = `/farm?tab=my-farms`;
 
   const removed = _liquidity?.eq(0);
 
   useEffect(() => {
     if (newestPosition && highlightNewest) {
       dispatch(setShowNewestPosition({ showNewestPosition: false }));
-      document.querySelector('#newest')?.scrollIntoView({ behavior: 'smooth' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

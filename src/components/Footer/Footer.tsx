@@ -25,8 +25,8 @@ const Footer: React.FC = () => {
       title: t('services'),
       items: [
         { title: t('swap'), link: '/swap' },
-        { title: t('pool'), link: '/pools/v3' },
-        { title: t('farm'), link: '/farm/v3' },
+        { title: t('pool'), link: '/pools' },
+        { title: t('farm'), link: '/farm' },
         { title: t('dragonslair'), link: '/dragons' },
         { title: t('convert'), link: '/convert' },
         { title: t('calculator'), link: '/calculator/0.01-eth-to-usd' },

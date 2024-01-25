@@ -16,7 +16,7 @@ const SteerLPItem: React.FC<{ position: SteerVault }> = ({ position }) => {
   const { chainId, account } = useActiveWeb3React();
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
-  const farmingLink = `/farm/v3?tab=my-farms`;
+  const farmingLink = `/farm?tab=my-farms`;
 
   const minTick = Number(position.lowerTick ?? 0);
   const maxTick = Number(position.upperTick ?? 0);

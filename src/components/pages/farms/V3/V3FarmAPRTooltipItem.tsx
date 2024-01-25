@@ -61,7 +61,7 @@ export const V3FarmAPRTooltipItem: React.FC<{
               }
               currencyStr += `currency1=${token1}`;
             }
-            window.open(`#/pools?${currencyStr}`, '_blank');
+            window.open(`/pools?${currencyStr}`, '_blank');
           }}
         >
           {t('getLP')}
