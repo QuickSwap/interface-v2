@@ -10,6 +10,7 @@ import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/pages/Swap.module.scss';
 
 const SwapTokenDetailsHorizontal: React.FC<{
   token: Token;
@@ -180,7 +181,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
           </Grid>
           <Grid item xs={3}>
             <Box>
-              <small className='swapTxInfoHeader'>Price</small>
+              <small className={styles.swapTxInfoHeader}>Price</small>
               {loadingTokenData ? (
                 <Skeleton variant='rectangular' width={80} height={20} />
               ) : tokenData ? (
@@ -192,7 +193,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
           </Grid>
           <Grid item xs={2}>
             <Box>
-              <small className='swapTxInfoHeader'>24h</small>
+              <small className={styles.swapTxInfoHeader}>24h</small>
               {loadingTokenData ? (
                 <Skeleton variant='rectangular' width={60} height={20} />
               ) : tokenData ? (

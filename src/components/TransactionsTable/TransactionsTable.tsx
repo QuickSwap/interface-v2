@@ -128,19 +128,19 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
           <p>{t('totalValue')}</p>
           <p>${Number(txn.amountUSD).toLocaleString('us')}</p>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('tokenAmount')}</p>
           <p>
             {formatNumber(txn.amount0)} {txn.pair.token0.symbol}
           </p>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('tokenAmount')}</p>
           <p>
             {formatNumber(txn.amount1)} {txn.pair.token1.symbol}
           </p>
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('txn')}</p>
           {chainId ? (
             <a
@@ -159,7 +159,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
             <p className='text-primary'>{shortenTx(txn.transaction.id)}</p>
           )}
         </Box>
-        <Box className='mobileRow'>
+        <Box className={styles.mobileRow}>
           <p>{t('time')}</p>
           <p>{dayjs(Number(txn.transaction.timestamp) * 1000).fromNow()}</p>
         </Box>
@@ -225,7 +225,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({ data }) => {
   return (
     <Box position='relative'>
       {isMobile && (
-        <Box className='txTableFilterMobile'>
+        <Box className={styles.txTableFilterMobile}>
           <Box onClick={() => setTxFilter(-1)}>
             <p className={txFilter === -1 ? '' : 'text-secondary'}>All</p>
           </Box>

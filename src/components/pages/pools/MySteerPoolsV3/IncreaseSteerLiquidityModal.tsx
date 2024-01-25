@@ -30,6 +30,7 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { SteerVault } from 'hooks/v3/useSteerData';
 import { WrappedCurrency } from 'models/types';
 import { useCurrencyBalance } from 'state/wallet/hooks';
+import styles from 'styles/pages/pools/AutomaticLPItemDetails.module.scss';
 
 interface IncreaseSteerLiquidityModalProps {
   open: boolean;
@@ -314,7 +315,7 @@ export default function IncreaseSteerLiquidityModal({
         <Box mt={2}>
           <Button
             fullWidth
-            className='steer-liquidity-item-button'
+            className={styles.liquidityItemButton}
             onClick={addSteerLiquidity}
           >
             {t('confirm')}
@@ -408,7 +409,7 @@ export default function IncreaseSteerLiquidityModal({
             }
           />
         </Box>
-        <Box mt={2} className='v3-increase-liquidity-input'>
+        <Box mt={2}>
           <CurrencyInputPanel
             value={deposit1}
             onUserInput={(val) => {
@@ -440,7 +441,7 @@ export default function IncreaseSteerLiquidityModal({
         </Box>
         <Box mt={2}>
           <Button
-            className='steer-liquidity-item-button'
+            className={styles.liquidityItemButton}
             disabled={buttonDisabled}
             onClick={() => (wrapAmount ? wrapETH() : setShowConfirm(true))}
             fullWidth

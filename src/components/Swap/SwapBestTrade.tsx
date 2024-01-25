@@ -1140,13 +1140,16 @@ const SwapBestTrade: React.FC<{
               }}
             >
               {approval === ApprovalState.PENDING ? (
-                <Box className='content'>
-                  {t('approving')} <CircularProgress size={16} />
+                <Box className='flex items-center' gap='4px'>
+                  <small>{t('approving')}</small>
+                  <CircularProgress size={16} />
                 </Box>
               ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
-                t('approved')
+                <small>{t('approved')}</small>
               ) : (
-                `${t('approve')} ${currencies[Field.INPUT]?.symbol}`
+                <small>{`${t('approve')} ${
+                  currencies[Field.INPUT]?.symbol
+                }`}</small>
               )}
             </Button>
           </Box>

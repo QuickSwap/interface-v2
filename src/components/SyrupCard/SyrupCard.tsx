@@ -112,7 +112,7 @@ const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         <SyrupCardDetails syrup={syrup} dQUICKAPY={dQUICKAPY} />
       )}
       {syrup.sponsored && syrup.sponsorLink && (
-        <Box className='syrupSponsoredLink'>
+        <Box className={styles.syrupSponsoredLink}>
           <Trans
             i18nKey='learnmoreproject'
             components={{

@@ -387,7 +387,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           </small>
         </Box>
         <Box mt={2}>
-          <Button fullWidth className='removeButton' onClick={onRemove}>
+          <Button fullWidth className={styles.removeButton} onClick={onRemove}>
             {t('confirm')}
           </Button>
         </Box>

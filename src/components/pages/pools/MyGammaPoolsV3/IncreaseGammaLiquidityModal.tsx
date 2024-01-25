@@ -359,7 +359,7 @@ export default function IncreaseGammaLiquidityModal({
         <Box mt={2}>
           <Button
             fullWidth
-            className={styles.gammaLiquidityItemButton}
+            className={styles.liquidityItemButton}
             onClick={addGammaLiquidity}
           >
             {t('confirm')}

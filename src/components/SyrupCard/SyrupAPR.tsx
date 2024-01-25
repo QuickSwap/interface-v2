@@ -7,6 +7,7 @@ import { useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { OLD_DQUICK, OLD_QUICK } from 'constants/v3/addresses';
+import styles from 'styles/components/SyrupCard.module.scss';
 
 const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -26,7 +27,7 @@ const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         {getTokenAPRSyrup(syrup).toLocaleString('us')}%
       </small>
       {isDQUICKStakingToken && (
-        <Box className='syrupAPR border-gray2' gap='4px'>
+        <Box className={`${styles.syrupAPR} border-gray2`} gap='4px'>
           <CurrencyLogo currency={OLD_QUICK[chainIdToUse]} size={12} />
           <span>
             {dQUICKAPY}% <span className='text-hint'>{t('apy')}</span>

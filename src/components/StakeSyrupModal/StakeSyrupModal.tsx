@@ -26,6 +26,7 @@ import {
   calculateGasMargin,
 } from 'utils';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/components/StakeQuickModal.module.scss';
 
 interface StakeSyrupModalProps {
   open: boolean;
@@ -254,7 +255,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
         <Box mt={3} className='flex items-center justify-between'>
           <Box width='48%'>
             <Button
-              className='stakeButton'
+              className={styles.stakeButton}
               disabled={approving || approval !== ApprovalState.NOT_APPROVED}
               onClick={async () => {
                 setApproving(true);
@@ -271,7 +272,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           </Box>
           <Box width='48%'>
             <Button
-              className='stakeButton'
+              className={styles.stakeButton}
               disabled={
                 !!error || attempting || approval !== ApprovalState.APPROVED
               }

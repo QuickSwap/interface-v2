@@ -15,6 +15,7 @@ import { useTranslation } from 'next-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { DLDQUICK, OLD_DQUICK } from 'constants/v3/addresses';
+import styles from 'styles/components/StakeQuickModal.module.scss';
 
 const web3 = new Web3();
 
@@ -150,7 +151,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
         </Box>
         <Box mt={3}>
           <Button
-            className='stakeButton'
+            className={styles.stakeButton}
             disabled={!!error || attempting}
             onClick={onWithdraw}
           >

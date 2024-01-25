@@ -4,6 +4,7 @@ import { Trade as V3Trade } from 'lib/trade';
 import SwapCallbackError from './SwapCallbackError';
 import { useTranslation } from 'next-i18next';
 import { Box, Button } from '@mui/material';
+import styles from 'styles/pages/Swap.module.scss';
 
 export default function SwapModalFooter({
   onConfirm,
@@ -17,7 +18,7 @@ export default function SwapModalFooter({
 }) {
   const { t } = useTranslation();
   return (
-    <Box mt={2} className='swapButtonWrapper'>
+    <Box mt={2} className={styles.swapButtonWrapper}>
       <Button onClick={onConfirm} disabled={disabledConfirm} fullWidth>
         {t('confirmSwap')}
       </Button>

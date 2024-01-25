@@ -24,6 +24,7 @@ import SyrupAPR from './SyrupAPR';
 import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { ChainId } from '@uniswap/sdk';
 import CircleInfo from 'svgs/circleinfo.svg';
+import styles from 'styles/components/SyrupCard.module.scss';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -109,14 +110,16 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   };
 
   const StakeButton = () => (
-    <Box className='syrupButton' onClick={() => setOpenStakeModal(true)}>
+    <Box className={styles.syrupButton} onClick={() => setOpenStakeModal(true)}>
       <small>{t('stake')}</small>
     </Box>
   );
 
   const UnstakeButton = () => (
     <Box
-      className={`syrupButton${attemptingUnstake ? ' opacity-disabled' : ''}`}
+      className={`${styles.syrupButton} ${
+        attemptingUnstake ? 'opacity-disabled' : ''
+      }`}
       onClick={() => {
         if (!attemptingUnstake) {
           onWithdraw();
@@ -129,7 +132,9 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
 
   const ClaimButton = () => (
     <Box
-      className={`syrupButton${attemptingClaim ? ' opacity-disabled' : ''}`}
+      className={`${styles.syrupButton} ${
+        attemptingClaim ? 'opacity-disabled' : ''
+      }`}
       onClick={() => {
         if (!attemptingClaim) {
           onClaimReward();
@@ -280,7 +285,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
               )}
             </Box>
             {syrup.rewardRate?.greaterThan('0') && (
-              <Box className='dailyRateWrapper'>
+              <Box className={styles.dailyRateWrapper}>
                 <Box>
                   <Box display='flex' mr={1}>
                     <small className='text-secondary'>{t('yourRate')}:</small>

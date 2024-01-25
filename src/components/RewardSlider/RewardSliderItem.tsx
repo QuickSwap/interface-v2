@@ -11,6 +11,7 @@ import {
   getTVLStaking,
 } from 'utils';
 import { useTranslation } from 'next-i18next';
+import styles from 'styles/components/RewardSlider.module.scss';
 
 interface RewardSliderItemProps {
   info: StakingInfo | DualStakingInfo;
@@ -45,9 +46,9 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
   }
 
   return (
-    <Box className='rewardsSliderItem bg-palette'>
+    <Box className={`${styles.rewardsSliderItem} bg-palette`}>
       <Box mb={4}>
-        <Box className='rewardIcon'>
+        <Box className={styles.rewardIcon}>
           <DoubleCurrencyLogo
             currency0={info.tokens[0]}
             currency1={info.tokens[1]}
@@ -79,7 +80,7 @@ const RewardSliderItem: React.FC<RewardSliderItemProps> = ({
           {t('apr')}
           <HelpIcon />
         </p>
-        <Box className='rewardApyWrapper'>
+        <Box className={styles.rewardApyWrapper}>
           <p className='text-success'>{apyWithFee}%</p>
         </Box>
       </Box>

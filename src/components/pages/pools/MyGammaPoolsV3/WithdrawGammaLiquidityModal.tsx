@@ -172,7 +172,7 @@ export default function WithdrawGammaLiquidityModal({
         <Box mt={2}>
           <Button
             fullWidth
-            className={styles.gammaLiquidityItemButton}
+            className={styles.removeLiquidityButton}
             onClick={withdrawGammaLiquidity}
           >
             {t('confirm')}

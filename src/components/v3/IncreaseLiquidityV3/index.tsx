@@ -343,7 +343,7 @@ export default function IncreaseLiquidityV3({
           })}
         </p>
       </Box>
-      <Button className='v3-increase-liquidity-button' onClick={onAdd}>
+      <Button className={styles.v3IncreaseLiquidityButton} onClick={onAdd}>
         {t('confirm')}
       </Button>
     </>
