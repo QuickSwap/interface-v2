@@ -26,6 +26,7 @@ export interface V3Farm {
   poolAPR: number;
   farmAPR: number;
   type: string;
+  loading?: boolean;
 }
 
 export default function Farms() {

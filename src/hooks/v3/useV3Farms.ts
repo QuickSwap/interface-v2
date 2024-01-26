@@ -504,15 +504,15 @@ export const useMerklFarms = () => {
     steerVaults,
   ]);
   return {
-    loading:
-      loadingMerkl ||
-      loadingGamma ||
-      loadingSteer ||
-      loadingICHI ||
+    loading: loadingMerkl,
+    loadingPoolAPRs:
+      loadingDefiEdgeAPRs ||
       loadingICHIAPRs ||
       loadingUSDPrices ||
-      loadingDefiEdgeAPRs ||
-      eternalFarmPoolAprsLoading,
+      eternalFarmPoolAprsLoading ||
+      loadingSteer ||
+      loadingGamma ||
+      loadingICHI,
     farms,
   };
 };
@@ -867,7 +867,8 @@ export const useGammaFarmsFiltered = (
       return 1;
     });
   return {
-    loading: gammaRewardsLoading || gammaFarmsLoading,
+    loading:
+      gammaPairs.length > 0 ? gammaRewardsLoading || gammaFarmsLoading : false,
     data: filteredFarms,
   };
 };

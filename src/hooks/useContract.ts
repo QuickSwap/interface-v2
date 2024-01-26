@@ -347,15 +347,7 @@ export function useGammaUNIProxyContract(
     uniProxyResult.result.length > 0
       ? uniProxyResult.result[0]
       : undefined;
-  return useContract(
-    uniProxyAddress,
-    uniProxyAddress &&
-      uniProxyAddress.toLowerCase() ===
-        '0xa42d55074869491d60ac05490376b74cf19b00e6'
-      ? GammaUniProxy1
-      : GammaUniProxy,
-    withSignerIfPossible,
-  );
+  return useContract(uniProxyAddress, GammaUniProxy1, withSignerIfPossible);
 }
 
 export function useMasterChefContract(

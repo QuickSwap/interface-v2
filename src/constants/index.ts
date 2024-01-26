@@ -300,6 +300,7 @@ export interface GammaPair {
   ableToFarm?: boolean;
   pid?: number;
   masterChefIndex?: number;
+  withdrawOnly?: boolean;
 }
 
 export const GammaPairs: {
@@ -651,6 +652,7 @@ export const GammaPairs: {
         token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
         token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
         pid: 34,
+        withdrawOnly: true,
       },
       {
         type: Presets.GAMMA_WIDE,
@@ -659,6 +661,7 @@ export const GammaPairs: {
         token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
         token1Address: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
         pid: 35,
+        withdrawOnly: true,
       },
     ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f': [
@@ -669,6 +672,7 @@ export const GammaPairs: {
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
         pid: 36,
+        withdrawOnly: true,
       },
       {
         type: Presets.GAMMA_WIDE,
@@ -677,6 +681,7 @@ export const GammaPairs: {
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
         pid: 37,
+        withdrawOnly: true,
       },
     ],
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
@@ -687,6 +692,7 @@ export const GammaPairs: {
         token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
         token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
         pid: 38,
+        withdrawOnly: true,
       },
       {
         type: Presets.GAMMA_WIDE,
@@ -695,6 +701,7 @@ export const GammaPairs: {
         token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
         token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
         pid: 39,
+        withdrawOnly: true,
       },
     ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b': [
@@ -705,6 +712,7 @@ export const GammaPairs: {
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
         pid: 40,
+        withdrawOnly: true,
       },
       {
         type: Presets.GAMMA_WIDE,
@@ -713,6 +721,7 @@ export const GammaPairs: {
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
         pid: 41,
+        withdrawOnly: true,
       },
     ],
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f': [
@@ -723,6 +732,7 @@ export const GammaPairs: {
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
         pid: 42,
+        withdrawOnly: true,
       },
       {
         type: Presets.GAMMA_WIDE,
@@ -731,6 +741,7 @@ export const GammaPairs: {
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f',
         pid: 43,
+        withdrawOnly: true,
       },
     ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xe5417af564e4bfda1c483642db72007871397896': [
@@ -742,6 +753,7 @@ export const GammaPairs: {
         token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
         ableToFarm: true,
         pid: 44,
+        withdrawOnly: true,
       },
       {
         type: Presets.GAMMA_WIDE,
@@ -750,6 +762,7 @@ export const GammaPairs: {
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xe5417af564e4bfda1c483642db72007871397896',
         pid: 45,
+        withdrawOnly: true,
       },
     ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xbbba073c31bf03b8acf7c28ef0738decf3695683': [
@@ -761,6 +774,7 @@ export const GammaPairs: {
         token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
         ableToFarm: true,
         pid: 46,
+        withdrawOnly: true,
       },
       {
         type: Presets.GAMMA_NARROW,
@@ -769,6 +783,7 @@ export const GammaPairs: {
         token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         token1Address: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
         pid: 47,
+        withdrawOnly: true,
       },
     ],
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619-0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc': [
@@ -779,6 +794,7 @@ export const GammaPairs: {
         token0Address: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
         token1Address: '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc',
         pid: 48,
+        withdrawOnly: true,
       },
     ],
     '0xa3fa99a148fa48d14ed51d610c367c61876997f1-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
@@ -827,6 +843,7 @@ export const GammaPairs: {
         token0Address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         token1Address: '0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b',
         pid: 53,
+        withdrawOnly: true,
       },
     ],
     '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4-0xfa68fb4628dff1028cfec22b4162fccd0d45efb6': [
@@ -848,6 +865,7 @@ export const GammaPairs: {
         token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
         ableToFarm: true,
         pid: 55,
+        withdrawOnly: true,
       },
     ],
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
@@ -859,6 +877,7 @@ export const GammaPairs: {
         token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
         ableToFarm: true,
         pid: 56,
+        withdrawOnly: true,
       },
     ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
@@ -870,6 +889,7 @@ export const GammaPairs: {
         token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
         ableToFarm: true,
         pid: 57,
+        withdrawOnly: true,
       },
     ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x0e9b89007eee9c958c0eda24ef70723c2c93dd58': [
@@ -1677,6 +1697,7 @@ export const IchiVaults: {
     '0x29a5e9fa30a88EAf3Ac800FA71649Ae660254aef',
     '0x4D469cA8f3F67ef276c8d660E60fAc73067e298d',
     '0x4218d9843fF95e22e87B7F2B5bd95EBdb6FC42cC',
+    '0x5eFe299401dD907b1b01950c9CdC6136f4205Ce7',
   ],
 };
 

@@ -8,6 +8,7 @@ import { V3FarmAPRTooltip } from './V3FarmAPRTooltip';
 import { useHistory } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { V3FarmPair } from './AllV3Farms';
+import Loader from 'components/Loader';
 
 interface Props {
   farm: V3FarmPair;
@@ -117,24 +118,32 @@ export const V3FarmCard: React.FC<Props> = ({ farm }) => {
             className='flex items-center justify-between'
           >
             {isMobile && <p>{t('tvl')}</p>}
-            <p>${formatNumber(farm.tvl)}</p>
+            {farm.farms.find((item) => item.loading) ? (
+              <Loader />
+            ) : (
+              <p>${formatNumber(farm.tvl)}</p>
+            )}
           </Box>
           <Box
             width={isMobile ? '100%' : '20%'}
             className='flex items-center justify-between'
           >
             {isMobile && <p>{t('apr')}</p>}
-            <Box className={isMobile ? 'flex flex-col items-end' : ''}>
-              <small>{t('upTo')}</small>
-              <Box className='flex'>
-                <V3FarmAPRTooltip farm={farm}>
-                  <Box className='farmCardAPR' gridGap={4}>
-                    <p>{formatNumber(farm.apr)}%</p>
-                    <img src={APRHover} width={16} />
-                  </Box>
-                </V3FarmAPRTooltip>
+            {farm.farms.find((item) => item.loading) ? (
+              <Loader />
+            ) : (
+              <Box className={isMobile ? 'flex flex-col items-end' : ''}>
+                <small>{t('upTo')}</small>
+                <Box className='flex'>
+                  <V3FarmAPRTooltip farm={farm}>
+                    <Box className='farmCardAPR' gridGap={4}>
+                      <p>{formatNumber(farm.apr)}%</p>
+                      <img src={APRHover} width={16} />
+                    </Box>
+                  </V3FarmAPRTooltip>
+                </Box>
               </Box>
-            </Box>
+            )}
           </Box>
           <Box
             width={isMobile ? '100%' : '30%'}
