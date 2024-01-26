@@ -89,7 +89,6 @@ export const mainTheme = responsiveFontSizes(
       },
     },
     typography: {
-      fontFamily: "'Inter', sans-serif",
       fontWeightRegular: 500,
     },
     components: {

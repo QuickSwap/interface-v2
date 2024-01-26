@@ -27,7 +27,9 @@ import './index.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Environment, HypeLab, HypeLabContext } from 'hypelab-react';
-import nextI18NextConfig from '../../next-i18next.config.js';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
 
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -113,6 +115,11 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           `,
         }}
       />
+      <style jsx global>{`
+        html body {
+          font-family: ${inter.style.fontFamily};
+        }
+      `}</style>
       {googleAnalyticsId && (
         <GoogleAnalytics trackPageViews gaMeasurementId={googleAnalyticsId} />
       )}
@@ -143,4 +150,4 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return { ...appProps };
 };*/
 
-export default appWithTranslation(MyApp, nextI18NextConfig);
+export default appWithTranslation(MyApp);
