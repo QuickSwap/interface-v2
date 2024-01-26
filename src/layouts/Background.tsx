@@ -16,6 +16,7 @@ const Background: React.FC<{ fallback: boolean | undefined }> = ({
         alt='Hero Background'
         layout='fill'
         objectFit='cover'
+        priority
       />
       <Image
         className={showDefaultBG ? '' : 'hidden'}
@@ -23,6 +24,7 @@ const Background: React.FC<{ fallback: boolean | undefined }> = ({
         alt='Hero Background'
         layout='fill'
         objectFit='cover'
+        priority
       />
     </Box>
   );
