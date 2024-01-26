@@ -43,11 +43,7 @@ import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
-import {
-  DefiedgeStrategies,
-  GlobalConst,
-  UnipilotVaults,
-} from 'constants/index';
+import { GlobalConst, UnipilotVaults } from 'constants/index';
 import { Interface, formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useContract,
@@ -575,13 +571,20 @@ export function useV3DerivedMintInfo(
         )
       : undefined;
   const gammaPairReverted = gammaPairData?.reversed;
-  const gammaPairAddress =
-    gammaPairData && gammaPairData.pairs.length > 0
-      ? gammaPairData.pairs[0].address
-      : undefined;
-  const gammaUNIPROXYContract = useGammaUNIProxyContract(gammaPairAddress);
+  const gammaPair = gammaPairData
+    ? gammaPairData.pairs.find(
+        (item) =>
+          presetRange &&
+          presetRange.address &&
+          item.address.toLowerCase() === presetRange.address.toLowerCase(),
+      )
+    : undefined;
+
+  const gammaUNIPROXYContract = useGammaUNIProxyContract(presetRange?.address);
   const depositAmountsData = useSingleCallResult(
-    presetRange && presetRange.address ? gammaUNIPROXYContract : undefined,
+    presetRange && presetRange.address && !gammaPair?.withdrawOnly
+      ? gammaUNIPROXYContract
+      : undefined,
     'getDepositAmount',
     [
       presetRange?.address,
@@ -590,25 +593,8 @@ export function useV3DerivedMintInfo(
     ],
   );
 
-  const blacklistedGammaAddress = '0xa42d55074869491d60ac05490376b74cf19b00e6';
-  const depositCapData1 = useSingleCallResult(
-    presetRange &&
-      presetRange.address &&
-      gammaUNIPROXYContract &&
-      gammaUNIPROXYContract.address.toLowerCase() !==
-        blacklistedGammaAddress.toLowerCase()
-      ? gammaUNIPROXYContract
-      : undefined,
-    'positions',
-    presetRange && presetRange.address ? [presetRange.address] : [],
-  );
-
   const clearanceResult = useSingleCallResult(
-    presetRange &&
-      presetRange.address &&
-      gammaUNIPROXYContract &&
-      gammaUNIPROXYContract.address.toLowerCase() ===
-        blacklistedGammaAddress.toLowerCase()
+    presetRange && presetRange.address && !gammaPair?.withdrawOnly
       ? gammaUNIPROXYContract
       : undefined,
     'clearance',
@@ -623,24 +609,11 @@ export function useV3DerivedMintInfo(
 
   const clearanceContract = useContract(clearanceAddress, GammaClearingABI);
 
-  const depositCapData2 = useSingleCallResult(
-    presetRange &&
-      presetRange.address &&
-      gammaUNIPROXYContract &&
-      gammaUNIPROXYContract.address.toLowerCase() ===
-        '0xa42d55074869491d60ac05490376b74cf19b00e6'
-      ? clearanceContract
-      : undefined,
+  const depositCapData = useSingleCallResult(
+    clearanceContract,
     'positions',
     presetRange && presetRange.address ? [presetRange.address] : [],
   );
-
-  const depositCapData = gammaUNIPROXYContract
-    ? gammaUNIPROXYContract.address.toLowerCase() ===
-      '0xa42d55074869491d60ac05490376b74cf19b00e6'
-      ? depositCapData2
-      : depositCapData1
-    : undefined;
 
   const depositCap = useMemo(() => {
     if (

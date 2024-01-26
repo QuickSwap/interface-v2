@@ -11,6 +11,7 @@ import V3GammaFarmCardDetails from './V3GammaFarmCardDetails';
 import V3SteerFarmCardDetails from './V3SteerFarmCardDetails';
 import { FarmModal } from 'components/StakeModal';
 import { FarmingType } from 'models/enums';
+import Loader from 'components/Loader';
 
 interface Props {
   farm: V3Farm;
@@ -96,18 +97,33 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
           <>
             <Box width='20%'>
               <p className='small text-secondary'>{t('tvl')}</p>
-              <p className='small'>${formatNumber(farm.tvl)}</p>
+              {farm.loading ? (
+                <Box mt='4px'>
+                  <Loader />
+                </Box>
+              ) : (
+                <p className='small'>${formatNumber(farm.tvl)}</p>
+              )}
             </Box>
             <Box width='20%'>
               <p className='small text-secondary'>{t('totalAPR')}</p>
-              <Box className='flex items-center' gridGap={4}>
-                <p className='small text-success'>
-                  {formatNumber(farm.poolAPR + farm.farmAPR)}%
-                </p>
-                <TotalAPRTooltip farmAPR={farm.farmAPR} poolAPR={farm.poolAPR}>
-                  <img src={APRHover} alt='farm APR' height={16} />
-                </TotalAPRTooltip>
-              </Box>
+              {farm.loading ? (
+                <Box mt='4px'>
+                  <Loader />
+                </Box>
+              ) : (
+                <Box className='flex items-center' gridGap={4}>
+                  <p className='small text-success'>
+                    {formatNumber(farm.poolAPR + farm.farmAPR)}%
+                  </p>
+                  <TotalAPRTooltip
+                    farmAPR={farm.farmAPR}
+                    poolAPR={farm.poolAPR}
+                  >
+                    <img src={APRHover} alt='farm APR' height={16} />
+                  </TotalAPRTooltip>
+                </Box>
+              )}
             </Box>
           </>
         )}

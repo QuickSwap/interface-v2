@@ -1,20 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { GlobalConst, GlobalData } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
 import Loader from 'components/Loader';
 import V3FarmCard from './V3FarmCard';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import CustomSelector from 'components/v3/CustomSelector';
 import V3PairFarmCard from './V3PairFarmCard';
-import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
+import { getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
-import { useCurrency } from 'hooks/v3/Tokens';
 import { Home, KeyboardArrowRight } from '@material-ui/icons';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import {
   useEternalFarmsFiltered,
   useGammaFarmsFiltered,
@@ -31,6 +29,7 @@ import {
 } from 'hooks/v3/useSteerData';
 import { Token } from '@uniswap/sdk';
 import { V3Farm } from './Farms';
+import { getConfig } from 'config/index';
 
 interface Props {
   searchValue: string;
@@ -53,6 +52,8 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const { chainId } = useActiveWeb3React();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const history = useHistory();
+  const config = getConfig(chainId);
+  const qsAvailable = config['farm']['quickswap'];
 
   const farmFilters = useMemo(
     () => [
@@ -205,8 +206,7 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   );
 
   const loading =
-    eternalFarmsLoading ||
-    loadingQSFarms ||
+    (qsAvailable ? eternalFarmsLoading || loadingQSFarms : false) ||
     loadingGamma ||
     unipilotFarmsLoading ||
     unipilotFarmDataLoading ||
