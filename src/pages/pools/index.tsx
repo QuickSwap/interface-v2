@@ -25,6 +25,7 @@ const PoolsPage = (
       const version = v2 && v3 ? 'v3' : v2 ? 'v2' : 'v3';
       router.push(asPath.replace('/pools', `/pools/${version}`));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [poolAvailable, v2, v3, asPath]);
 
   return (

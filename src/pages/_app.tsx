@@ -4,7 +4,6 @@ import React, { Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'react-redux';
 import Head from 'next/head';
-import Script from 'next/script';
 import { PageLayout } from 'layouts';
 import Background from 'layouts/Background';
 import { mainTheme } from 'styles/theme';
@@ -28,6 +27,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Environment, HypeLab, HypeLabContext } from 'hypelab-react';
 import { Inter } from 'next/font/google';
+import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -77,6 +77,8 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     environment: Environment.Production,
   });
 
+  const arcxAPIKey = process.env.NEXT_PUBLIC_ARCX_KEY ?? '';
+
   return (
     <>
       <Head>
@@ -93,28 +95,6 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <link rel='apple-touch-icon' href='/logo_circle.png' />
         <title>QuickSwap</title>
       </Head>
-      <Script
-        id='arcx-analytics'
-        strategy='afterInteractive'
-        dangerouslySetInnerHTML={{
-          __html: `
-            const script = document.createElement('script'); 
-            const apiKey = 'd29f17e774ac4e67247a2929a02a806f6787ac6cdbbb0fc41f721c6fc621156a'
-            const config = {
-              // We are tracking wallet connections manually
-              trackWalletConnections: false
-            } 
-            script.src = 'https://unpkg.com/@arcxmoney/analytics'
-            script.onload = function () {
-              ArcxAnalyticsSdk.init(apiKey, config)
-                .then(function (sdk) {
-                  window.arcx = sdk
-                })
-            }
-            document.head.appendChild(script)
-          `,
-        }}
-      />
       <style jsx global>{`
         html body {
           font-family: ${inter.style.fontFamily};
@@ -123,24 +103,26 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       {googleAnalyticsId && (
         <GoogleAnalytics trackPageViews gaMeasurementId={googleAnalyticsId} />
       )}
-      <HypeLabContext client={hypeLabClient}>
-        <QueryClientProvider client={queryClient}>
-          <Provider store={store}>
-            <Providers>
-              <TermsWrapper>
-                <Web3ReactManager>
-                  <Updaters />
-                  <Popups />
-                  <PageLayout>
-                    <Component {...pageProps} />
-                    <SpeedInsights />
-                  </PageLayout>
-                </Web3ReactManager>
-              </TermsWrapper>
-            </Providers>
-          </Provider>
-        </QueryClientProvider>
-      </HypeLabContext>
+      <ArcxAnalyticsProvider apiKey={arcxAPIKey}>
+        <HypeLabContext client={hypeLabClient}>
+          <QueryClientProvider client={queryClient}>
+            <Provider store={store}>
+              <Providers>
+                <TermsWrapper>
+                  <Web3ReactManager>
+                    <Updaters />
+                    <Popups />
+                    <PageLayout>
+                      <Component {...pageProps} />
+                      <SpeedInsights />
+                    </PageLayout>
+                  </Web3ReactManager>
+                </TermsWrapper>
+              </Providers>
+            </Provider>
+          </QueryClientProvider>
+        </HypeLabContext>
+      </ArcxAnalyticsProvider>
     </>
   );
 };

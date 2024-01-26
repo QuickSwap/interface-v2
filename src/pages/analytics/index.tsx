@@ -26,6 +26,7 @@ const AnalyticsPage = (
       const version = v2 && v3 ? 'total' : v2 ? 'v2' : 'v3';
       router.push(asPath.replace('/analytics', `/analytics/${version}`));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asPath, v2, v3, analyticsAvailable]);
 
   return (

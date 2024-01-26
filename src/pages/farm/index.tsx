@@ -25,6 +25,7 @@ const FarmPage = (
       const version = v2 && v3 ? 'v3' : v2 ? 'v2' : 'v3';
       router.push(asPath.replace('/farm', `/farm/${version}`));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [farmAvailable, v2, v3, asPath]);
 
   return (
