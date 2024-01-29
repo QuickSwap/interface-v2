@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -15,17 +15,19 @@ const LiquidityHubAnalyticsTotal: React.FC = () => {
     try {
       const res = await fetch(apiURL);
       const data = await res.json();
-      return data && data.result && data.result.rows ? data.result.rows : [];
+      return data?.result?.rows ?? [];
     } catch {
       return [];
     }
   };
 
-  const { isLoading, data } = useQuery({
+  const { isLoading, data: lhData } = useQuery({
     queryKey: ['fetchLHAnalyticsDaily'],
     queryFn: fetchAnalyticsDaily,
     refetchInterval: 600000,
   });
+
+  const data = lhData ?? [];
 
   return (
     <Box className='panel'>
@@ -37,9 +39,7 @@ const LiquidityHubAnalyticsTotal: React.FC = () => {
           series={[
             {
               name: 'Liquidity Hub',
-              data: data.map(
-                (item: any) => item.daily_received_calculated_value,
-              ),
+              data: data.map((item: any) => item.daily_total_calculated_value),
             },
           ]}
           type='bar'
@@ -59,7 +59,7 @@ const LiquidityHubAnalyticsTotal: React.FC = () => {
             },
             xaxis: {
               categories: data.map((item: any) =>
-                dayjs(item.day).format('MMM DD'),
+                dayjs(item.evt_date).format('MMM DD'),
               ),
               labels: {
                 style: {
