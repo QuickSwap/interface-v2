@@ -42,6 +42,7 @@
     "available": true
   },
   "analytics": {
+    "liquidityHub": true,
     "available": true
   },
   "lending": {
