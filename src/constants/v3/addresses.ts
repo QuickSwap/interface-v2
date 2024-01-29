@@ -66,7 +66,7 @@ export const NATIVE_TOKEN_ADDRESS =
   '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export const PRICE_GETTER_ADDRESS: AddressMap = {
-  [ChainId.MATIC]: '0x241ebA867Bee0Dd50a8Ca54732A6C05815C50Cc5',
+  [ChainId.MATIC]: '0x56CC45d405483e38d7f6533184b3435C5269eEf1',
 };
 
 export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
@@ -81,6 +81,14 @@ export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
   [ChainId.TIMX]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.X1]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.IMX]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
+};
+
+export const V2_FACTORY_BOND: AddressMap = {
+  [ChainId.MATIC]: '0xcf083be4164828f00cae704ec15a36d711491284',
+};
+
+export const V3_FACTORY_BOND: AddressMap = {
+  [ChainId.MATIC]: '0x1f98431c8ad98523631ae4a59f267346ea31f984',
 };
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {

@@ -123,7 +123,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@0xsquid/widget": "1.6.0",
-    "@ape.swap/apeswap-lists": "1.6.3",
+    "@ape.swap/apeswap-lists": "1.8.37",
     "@soulsolidity/soulzap-v1": "0.1.0",
     "@arcxmoney/analytics": "^2.0.2",
     "@binance/w3w-web3-connector": "^1.0.0",
