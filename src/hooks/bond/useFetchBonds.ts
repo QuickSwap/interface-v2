@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import BondABI from 'constants/abis/bond.json';
 import {
   useMultipleContractSingleData,
-  useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
@@ -18,7 +17,6 @@ import { usePriceGetterContract } from '../useContract';
 import { LiquidityProtocol, getLiquidityDexIndex } from 'utils';
 import { ZERO_ADDRESS } from 'constants/v3/misc';
 import { Bond, BondConfig } from 'types/bond';
-import { defaultDexFactories } from '@ape.swap/apeswap-lists';
 
 export const useFetchBonds = () => {
   const { chainId } = useActiveWeb3React();
