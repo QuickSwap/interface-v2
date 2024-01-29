@@ -24,9 +24,11 @@ import {
   trustWalletConnection,
   cypherDConnection,
   phantomConnection,
+  enkryptConnection,
 } from 'connectors';
 import {
   getIsBitgetWallet,
+  getIsEnkrypt,
   getIsMetaMaskWallet,
   getIsTrustWallet,
 } from 'connectors/utils';
@@ -177,6 +179,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     const isPhantomWallet =
       (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
     const isCoinbaseWallet = ethereum && ethereum.isCoinbaseWallet;
+    const isEnkrypt = getIsEnkrypt();
     const isOkxwallet = (window as any).okxwallet;
     const isDefiConnectProvider = (window as any).deficonnectProvider;
 
@@ -256,6 +259,19 @@ const WalletModal: React.FC<WalletModalProps> = ({
             header={t('installTrustWallet')}
             subheader={null}
             link={'https://trustwallet.com/'}
+            icon={option.iconName}
+            iconify={iconify}
+          />
+        );
+      } else if (option.name === GlobalConst.walletName.ENKRYPT && !isEnkrypt) {
+        return (
+          <WalletOption
+            id={`connect-${option.name}`}
+            key={option.name}
+            color={'#E8831D'}
+            header={t('install Enkrypt')}
+            subheader={null}
+            link={'https://enkrypt.com/'}
             icon={option.iconName}
             iconify={iconify}
           />
@@ -343,6 +359,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
               option.connector === phantomConnection.connector) ||
             (isTrustWallet &&
               option.connector === trustWalletConnection.connector) ||
+            (isEnkrypt && option.connector === enkryptConnection.connector) ||
             (isCoinbaseWallet &&
               option.connector === coinbaseWalletConnection.connector))
         ) {

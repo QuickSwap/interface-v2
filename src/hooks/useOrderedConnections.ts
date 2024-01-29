@@ -10,6 +10,7 @@ const SELECTABLE_WALLETS = [
   ConnectionType.ARKANE,
   ConnectionType.PHATOM,
   ConnectionType.TRUSTWALLET,
+  ConnectionType.ENKRYPT,
   ConnectionType.BITGET,
   ConnectionType.BLOCKWALLET,
   ConnectionType.BRAVEWALLET,

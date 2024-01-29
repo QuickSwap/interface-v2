@@ -21,6 +21,7 @@ import VenlyIcon from 'assets/images/venly.svg';
 import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
 import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
+import EnkryptIcon from 'assets/images/logo-enkrypt.svg';
 import ZengoIcon from 'assets/images/zengo.png';
 import BinanceIcon from 'assets/images/binance-wallet.webp';
 import { GlobalConst } from 'constants/index';
@@ -28,6 +29,7 @@ import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 import { SecretType } from '@venly/web3-provider';
 import { Phantom } from './Phantom';
 import { TrustWallet } from './TrustWallet';
+import { Enkrypt } from './Enkrypt';
 import { Bitget } from './Bitget';
 import { BlockWallet } from './BlockWallet';
 import { BraveWallet } from './BraveWallet';
@@ -55,6 +57,7 @@ export enum ConnectionType {
   GNOSIS_SAFE = 'GNOSIS_SAFE',
   PHATOM = 'PHANTOM',
   TRUSTWALLET = 'TRUSTWALLET',
+  ENKRYPT = 'ENKRYPT',
   BITGET = 'BITGET',
   BLOCKWALLET = 'BLOCKWALLET',
   BRAVEWALLET = 'BRAVEWALLET',
@@ -336,6 +339,25 @@ export const trustWalletConnection: Connection = {
   description: 'TrustWallet extension.',
 };
 
+const [web3Enkrypt, web3EnkryptHooks] = initializeConnector<Enkrypt>(
+  (actions) =>
+    new Enkrypt({
+      actions,
+      onError,
+    }),
+);
+
+export const enkryptConnection: Connection = {
+  key: 'ENKRYPT',
+  name: GlobalConst.walletName.ENKRYPT,
+  connector: web3Enkrypt,
+  hooks: web3EnkryptHooks,
+  type: ConnectionType.ENKRYPT,
+  iconName: EnkryptIcon,
+  color: '#E8831D',
+  description: 'Enkrypt extension.',
+};
+
 const [web3WalletConnect, web3WalletConnectHooks] = initializeConnector<
   WalletConnectPopup
 >((actions) => new WalletConnectPopup({ actions, onError }));
@@ -528,6 +550,7 @@ export function getConnections() {
         cypherDConnection,
         metamaskConnection,
         trustWalletConnection,
+        enkryptConnection,
         binanceWalletConnection,
         okxWalletConnection,
         phantomConnection,
