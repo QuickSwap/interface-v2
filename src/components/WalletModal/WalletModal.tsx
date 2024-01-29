@@ -269,9 +269,9 @@ const WalletModal: React.FC<WalletModalProps> = ({
             id={`connect-${option.name}`}
             key={option.name}
             color={'#E8831D'}
-            header={t('install Enkrypt')}
+            header={t('installEnkrypt')}
             subheader={null}
-            link={'https://enkrypt.com/'}
+            link={'https://www.enkrypt.com/'}
             icon={option.iconName}
             iconify={iconify}
           />
