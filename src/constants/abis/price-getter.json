@@ -1,5 +1,9 @@
 [
-  { "inputs": [], "name": "T", "type": "error" },
+  {
+    "inputs": [],
+    "name": "T",
+    "type": "error"
+  },
   {
     "anonymous": false,
     "inputs": [
@@ -35,21 +39,39 @@
   {
     "inputs": [],
     "name": "DECIMALS",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "pure",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "FACTORY",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "pure",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "INITCODEHASH",
-    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
     "stateMutability": "pure",
     "type": "function"
   },
@@ -68,9 +90,26 @@
   },
   {
     "inputs": [],
+    "name": "defaultFactorySolidly",
+    "outputs": [
+      {
+        "internalType": "contract ISolidlyFactory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "defaultFactoryV2",
     "outputs": [
-      { "internalType": "contract IApeFactory", "name": "", "type": "address" }
+      {
+        "internalType": "contract IApeFactory",
+        "name": "",
+        "type": "address"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -90,38 +129,80 @@
   },
   {
     "inputs": [
-      { "internalType": "uint32", "name": "secondsAgo", "type": "uint32" }
+      {
+        "internalType": "uint32",
+        "name": "secondsAgo",
+        "type": "uint32"
+      }
     ],
     "name": "getETHPrice",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "getETHPrice",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" },
-      { "internalType": "uint256", "name": "_decimals", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_decimals",
+        "type": "uint256"
+      }
     ],
     "name": "getLPPrice",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token0", "type": "address" },
-      { "internalType": "address", "name": "token1", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "token0",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token1",
+        "type": "address"
+      }
     ],
     "name": "getLPPriceAlgebra",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -133,19 +214,35 @@
         "name": "factoryAlgebra",
         "type": "address"
       },
-      { "internalType": "address", "name": "token0", "type": "address" },
-      { "internalType": "address", "name": "token1", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "token0",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token1",
+        "type": "address"
+      }
     ],
     "name": "getLPPriceAlgebraFromFactory",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
       {
         "internalType": "enum IPriceGetterV2.Protocol",
         "name": "protocol",
@@ -165,22 +262,39 @@
         "internalType": "contract IAlgebraFactory",
         "name": "factoryAlgebra",
         "type": "address"
+      },
+      {
+        "internalType": "contract ISolidlyFactory",
+        "name": "factorySolidly",
+        "type": "address"
       }
     ],
     "name": "getLPPriceFromFactory",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "contract Hypervisor", "name": "lp", "type": "address" }
+      {
+        "internalType": "contract Hypervisor",
+        "name": "lp",
+        "type": "address"
+      }
     ],
     "name": "getLPPriceGamma",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -192,20 +306,24 @@
         "name": "factory",
         "type": "address"
       },
-      { "internalType": "contract Hypervisor", "name": "lp", "type": "address" }
+      {
+        "internalType": "contract IApeFactory",
+        "name": "factoryV2",
+        "type": "address"
+      },
+      {
+        "internalType": "contract Hypervisor",
+        "name": "lp",
+        "type": "address"
+      }
     ],
     "name": "getLPPriceGammaFromFactory",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "lp", "type": "address" }],
-    "name": "getLPPriceV2",
-    "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -213,65 +331,18 @@
   {
     "inputs": [
       {
-        "internalType": "contract IApeFactory",
-        "name": "factoryV2",
+        "internalType": "address",
+        "name": "lp",
         "type": "address"
-      },
-      { "internalType": "address", "name": "lp", "type": "address" }
+      }
     ],
-    "name": "getLPPriceV2FromFactory",
+    "name": "getLPPriceSolidly",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "token0", "type": "address" },
-      { "internalType": "address", "name": "token1", "type": "address" },
-      { "internalType": "uint24", "name": "fee", "type": "uint24" }
-    ],
-    "name": "getLPPriceV3",
-    "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "factoryV3", "type": "address" },
-      { "internalType": "address", "name": "token0", "type": "address" },
-      { "internalType": "address", "name": "token1", "type": "address" },
-      { "internalType": "uint24", "name": "fee", "type": "uint24" }
-    ],
-    "name": "getLPPriceV3FromFactory",
-    "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address[]", "name": "tokens", "type": "address[]" },
-      { "internalType": "uint256", "name": "_decimals", "type": "uint256" }
-    ],
-    "name": "getLPPrices",
-    "outputs": [
-      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address[]", "name": "tokens", "type": "address[]" }
-    ],
-    "name": "getLPPricesV2",
-    "outputs": [
-      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -279,28 +350,23 @@
   {
     "inputs": [
       {
-        "internalType": "contract IApeFactory",
-        "name": "factoryV2",
+        "internalType": "contract ISolidlyFactory",
+        "name": "factorySolidly",
         "type": "address"
       },
-      { "internalType": "address[]", "name": "tokens", "type": "address[]" }
+      {
+        "internalType": "address",
+        "name": "lp",
+        "type": "address"
+      }
     ],
-    "name": "getLPPricesV2FromFactory",
+    "name": "getLPPriceSolidlyFromFactory",
     "outputs": [
-      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address[]", "name": "tokens0", "type": "address[]" },
-      { "internalType": "address[]", "name": "tokens1", "type": "address[]" },
-      { "internalType": "uint24[]", "name": "fees", "type": "uint24[]" }
-    ],
-    "name": "getLPPricesV3",
-    "outputs": [
-      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -312,13 +378,303 @@
         "name": "factoryV3",
         "type": "address"
       },
-      { "internalType": "address[]", "name": "tokens0", "type": "address[]" },
-      { "internalType": "address[]", "name": "tokens1", "type": "address[]" },
-      { "internalType": "uint24[]", "name": "fees", "type": "uint24[]" }
+      {
+        "internalType": "contract IApeFactory",
+        "name": "factoryV2",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ISteerVault",
+        "name": "lp",
+        "type": "address"
+      }
+    ],
+    "name": "getLPPriceSteerFromFactory",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "lp",
+        "type": "address"
+      }
+    ],
+    "name": "getLPPriceV2",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IApeFactory",
+        "name": "factoryV2",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "lp",
+        "type": "address"
+      }
+    ],
+    "name": "getLPPriceV2FromFactory",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token0",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token1",
+        "type": "address"
+      },
+      {
+        "internalType": "uint24",
+        "name": "fee",
+        "type": "uint24"
+      }
+    ],
+    "name": "getLPPriceV3",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "factoryV3",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token0",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token1",
+        "type": "address"
+      },
+      {
+        "internalType": "uint24",
+        "name": "fee",
+        "type": "uint24"
+      }
+    ],
+    "name": "getLPPriceV3FromFactory",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_decimals",
+        "type": "uint256"
+      }
+    ],
+    "name": "getLPPrices",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "getLPPricesSolidly",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ISolidlyFactory",
+        "name": "factorySolidly",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "getLPPricesSolidlyFromFactory",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "getLPPricesV2",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IApeFactory",
+        "name": "factoryV2",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "getLPPricesV2FromFactory",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "tokens0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "tokens1",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint24[]",
+        "name": "fees",
+        "type": "uint24[]"
+      }
+    ],
+    "name": "getLPPricesV3",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IUniswapV3Factory",
+        "name": "factoryV3",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "tokens0",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "tokens1",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint24[]",
+        "name": "fees",
+        "type": "uint24[]"
+      }
     ],
     "name": "getLPPricesV3FromFactory",
     "outputs": [
-      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -326,7 +682,13 @@
   {
     "inputs": [],
     "name": "getNativePrice",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -340,7 +702,11 @@
     ],
     "name": "getNativePrice",
     "outputs": [
-      { "internalType": "uint256", "name": "nativePrice", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "nativePrice",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -360,33 +726,64 @@
       {
         "internalType": "contract IUniswapV3Factory",
         "name": "factoryV3",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ISolidlyFactory",
+        "name": "factorySolidly",
         "type": "address"
       }
     ],
     "name": "getNativePriceFromFactory",
     "outputs": [
-      { "internalType": "uint256", "name": "nativePrice", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "nativePrice",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" },
-      { "internalType": "uint32", "name": "secondsAgo", "type": "uint32" }
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "secondsAgo",
+        "type": "uint32"
+      }
     ],
     "name": "getPrice",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
     ],
     "name": "getPriceAlgebra",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -398,18 +795,30 @@
         "name": "factoryAlgebra",
         "type": "address"
       },
-      { "internalType": "address", "name": "token", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
     ],
     "name": "getPriceAlgebraFromFactory",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
       {
         "internalType": "enum IPriceGetterV2.Protocol",
         "name": "protocol",
@@ -428,23 +837,40 @@
       {
         "internalType": "contract IAlgebraFactory",
         "name": "factoryAlgebra",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ISolidlyFactory",
+        "name": "factorySolidly",
         "type": "address"
       }
     ],
     "name": "getPriceFromFactory",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
     ],
     "name": "getPriceV2",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -456,22 +882,38 @@
         "name": "factoryV2",
         "type": "address"
       },
-      { "internalType": "address", "name": "token", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
     ],
     "name": "getPriceV2FromFactory",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
     ],
     "name": "getPriceV3",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -483,18 +925,30 @@
         "name": "factoryV3",
         "type": "address"
       },
-      { "internalType": "address", "name": "token", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
     ],
     "name": "getPriceV3FromFactory",
     "outputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address[]", "name": "tokens", "type": "address[]" },
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
       {
         "internalType": "enum IPriceGetterV2.Protocol",
         "name": "protocol",
@@ -503,38 +957,70 @@
     ],
     "name": "getPrices",
     "outputs": [
-      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address[]", "name": "tokens", "type": "address[]" },
-      { "internalType": "uint256", "name": "_decimals", "type": "uint256" }
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_decimals",
+        "type": "uint256"
+      }
     ],
     "name": "getPrices",
     "outputs": [
-      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address[]", "name": "tokens", "type": "address[]" },
-      { "internalType": "uint32", "name": "secondsAgo", "type": "uint32" }
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint32",
+        "name": "secondsAgo",
+        "type": "uint32"
+      }
     ],
     "name": "getPrices",
     "outputs": [
-      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address[]", "name": "tokens", "type": "address[]" },
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
       {
         "internalType": "enum IPriceGetterV2.Protocol",
         "name": "protocol",
@@ -554,38 +1040,69 @@
         "internalType": "contract IAlgebraFactory",
         "name": "factoryAlgebra",
         "type": "address"
+      },
+      {
+        "internalType": "contract ISolidlyFactory",
+        "name": "factorySolidly",
+        "type": "address"
       }
     ],
     "name": "getPricesFromFactory",
     "outputs": [
-      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
     ],
     "name": "getRawPrice",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address[]", "name": "tokens", "type": "address[]" }
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      }
     ],
     "name": "getRawPrices",
     "outputs": [
-      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+      {
+        "internalType": "uint256[]",
+        "name": "prices",
+        "type": "uint256[]"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_wNative", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "_wNative",
+        "type": "address"
+      },
       {
         "internalType": "contract IApeFactory",
         "name": "_defaultFactoryV2",
@@ -602,6 +1119,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract ISolidlyFactory",
+        "name": "_defaultFactorySolidly",
+        "type": "address"
+      },
+      {
         "internalType": "address[]",
         "name": "_stableUsdTokens",
         "type": "address[]"
@@ -611,7 +1133,11 @@
         "name": "_oracleTokens",
         "type": "address[]"
       },
-      { "internalType": "address[]", "name": "_oracles", "type": "address[]" }
+      {
+        "internalType": "address[]",
+        "name": "_oracles",
+        "type": "address[]"
+      }
     ],
     "name": "initialize",
     "outputs": [],
@@ -621,13 +1147,23 @@
   {
     "inputs": [],
     "name": "owner",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
     ],
     "name": "removeTokenOracle",
     "outputs": [],
@@ -644,14 +1180,28 @@
   {
     "inputs": [],
     "name": "secondsAgo",
-    "outputs": [{ "internalType": "uint24", "name": "", "type": "uint24" }],
+    "outputs": [
+      {
+        "internalType": "uint24",
+        "name": "",
+        "type": "uint24"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" },
-      { "internalType": "address", "name": "oracleAddress", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "oracleAddress",
+        "type": "address"
+      },
       {
         "internalType": "enum PriceGetterV2.OracleType",
         "name": "oracleType",
@@ -664,21 +1214,51 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "stableUsdTokenDecimals",
-    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "name": "stableUsdTokens",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "tokenOracles",
     "outputs": [
       {
@@ -686,15 +1266,27 @@
         "name": "oracleType",
         "type": "uint8"
       },
-      { "internalType": "address", "name": "oracleAddress", "type": "address" },
-      { "internalType": "uint8", "name": "oracleDecimals", "type": "uint8" }
+      {
+        "internalType": "address",
+        "name": "oracleAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "oracleDecimals",
+        "type": "uint8"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "newOwner", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
     ],
     "name": "transferOwnership",
     "outputs": [],
@@ -704,7 +1296,13 @@
   {
     "inputs": [],
     "name": "wNative",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   }

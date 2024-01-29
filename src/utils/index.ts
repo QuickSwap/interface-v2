@@ -1141,6 +1141,8 @@ export enum LiquidityProtocol {
   V3 = 3,
   Algebra = 4,
   Gamma = 5,
+  Steer = 6,
+  Solidly = 7,
 }
 
 export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
@@ -1149,6 +1151,12 @@ export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
       return LiquidityProtocol.Gamma;
     }
     return LiquidityProtocol.Algebra;
+  }
+  if (dex === 'UniswapV3') {
+    if (isLP) {
+      return LiquidityProtocol.Steer;
+    }
+    return LiquidityProtocol.V3;
   }
   return LiquidityProtocol.V2;
 };

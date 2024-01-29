@@ -69,10 +69,11 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
           bond && bond.earnTokenPrice && bond.earnTokenPrice > 0
             ? 100 / bond.earnTokenPrice
             : 0;
-        const disabled =
-          bond.maxTotalPayOut && bond.totalPayoutGiven && bond.earnTokenPrice
-            ? available <= thresholdToHide || Number(bond.discount) === 100
-            : true;
+        const disabled = bond.soldOut
+          ? true
+          : bond.maxTotalPayOut && bond.totalPayoutGiven && bond.earnTokenPrice
+          ? available <= thresholdToHide || Number(bond.discount) === 100
+          : true;
         const bondStatusCondition =
           bond.loading || !disabled === (bondsStatus === 'available');
 

@@ -14,7 +14,7 @@ import { useBlockNumber } from 'state/application/hooks';
 import { retry, RetryableError } from 'utils/retry';
 import { useMulticall2Contract } from 'hooks/useContract';
 
-const DEFAULT_GAS_REQUIRED = 1_000_000;
+const DEFAULT_GAS_REQUIRED = 10_000_000;
 
 /**
  * Fetches a chunk of calls, enforcing a minimum block number constraint
