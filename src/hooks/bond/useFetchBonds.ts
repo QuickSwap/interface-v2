@@ -9,7 +9,9 @@ import {
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import {
   V2_FACTORY_ADDRESSES,
+  V2_FACTORY_BOND,
   V3_CORE_FACTORY_ADDRESSES,
+  V3_FACTORY_BOND,
 } from 'constants/v3/addresses';
 import { usePriceGetterContract } from '../useContract';
 import { LiquidityProtocol, getLiquidityDexIndex } from 'utils';
@@ -73,16 +75,21 @@ export const useFetchBonds = () => {
         bond && bond.lpToken && bond.lpToken.liquidityDex
           ? getLiquidityDexIndex(bond.lpToken.liquidityDex[chainId], true)
           : LiquidityProtocol.V2;
-      const factoryV2 =
-        protocol === LiquidityProtocol.V2
-          ? V2_FACTORY_ADDRESSES[chainId]
-          : ZERO_ADDRESS;
-      const factoryV3 = ZERO_ADDRESS;
-      const factoryAlgebra =
-        protocol === LiquidityProtocol.Gamma
-          ? V3_CORE_FACTORY_ADDRESSES[chainId]
-          : ZERO_ADDRESS;
-      return [address, protocol, factoryV2, factoryV3, factoryAlgebra];
+      let factoryV2 = V2_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
+      if (bond && bond.lpToken && bond.lpToken.liquidityDex) {
+        factoryV2 = V2_FACTORY_ADDRESSES[chainId];
+      }
+      const factoryV3 = V3_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
+      const factoryAlgebra = V3_CORE_FACTORY_ADDRESSES[chainId] ?? ZERO_ADDRESS;
+      const factorySolidly = ZERO_ADDRESS;
+      return [
+        address,
+        protocol,
+        factoryV2,
+        factoryV3,
+        factoryAlgebra,
+        factorySolidly,
+      ];
     });
   }, [bonds, chainId]);
   const lpPriceCalls = useSingleContractMultipleData(
@@ -110,16 +117,21 @@ export const useFetchBonds = () => {
         bond && bond.earnToken && bond.earnToken.liquidityDex
           ? getLiquidityDexIndex(bond.earnToken.liquidityDex[chainId])
           : undefined;
-      const factoryV2 =
-        protocol === LiquidityProtocol.V2
-          ? V2_FACTORY_ADDRESSES[chainId]
-          : ZERO_ADDRESS;
-      const factoryV3 = ZERO_ADDRESS;
-      const factoryAlgebra =
-        protocol === LiquidityProtocol.Algebra
-          ? V3_CORE_FACTORY_ADDRESSES[chainId]
-          : ZERO_ADDRESS;
-      return [address, protocol, factoryV2, factoryV3, factoryAlgebra];
+      let factoryV2 = V2_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
+      if (bond && bond.earnToken && bond.earnToken.liquidityDex) {
+        factoryV2 = V2_FACTORY_ADDRESSES[chainId];
+      }
+      const factoryV3 = V3_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
+      const factoryAlgebra = V3_CORE_FACTORY_ADDRESSES[chainId] ?? ZERO_ADDRESS;
+      const factorySolidly = ZERO_ADDRESS;
+      return [
+        address,
+        protocol,
+        factoryV2,
+        factoryV3,
+        factoryAlgebra,
+        factorySolidly,
+      ];
     });
   }, [bonds, chainId]);
   const earnTokenPriceCalls = useSingleContractMultipleData(
