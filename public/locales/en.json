@@ -425,6 +425,7 @@
   "installBraveDesc": "You need to install brave browser to use brave wallet. If you are on brave browser, you need to disable metamask or set Default Ethereum Wallet to Brave Wallet in settings. (brave://settings/wallet)",
   "installBitget": "Install Bitget Wallet",
   "installTrustWallet": "Install TrustWallet",
+  "installEnkrypt": "Install Enkrypt",
   "installOkxWallet": "Install OKX Wallet",
   "installCryptocom": "Install Crypto.com Wallet",
   "wrongNetwork": "Wrong Network",
