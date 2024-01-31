@@ -228,9 +228,9 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
   }, [!!mintInfo.feeTier, feeTierIdQuery, feeForSteer, chainId]);
 
   return (
-    <Box>
+    <>
       {fees && fees.length > 0 && (
-        <>
+        <Box my={2}>
           <small className='weight-600'>{t('selectFeeTier')}</small>
           <Box mt={2} className='feeTierWrapper'>
             <Box padding={1.5} className='flex justify-between items-center'>
@@ -298,9 +298,9 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
               })}
             </Box>
           </Box>
-        </>
+        </Box>
       )}
-    </Box>
+    </>
   );
 };
 

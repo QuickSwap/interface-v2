@@ -167,11 +167,6 @@ export const UNI_SWAP_ROUTER: AddressMap = {
   [ChainId.IMX]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
 };
 
-export const GAMMA_UNIPROXY_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0xe0A61107E250f8B5B24bf272baBFCf638569830C',
-  [ChainId.ZKEVM]: '0x66CD859053c458688044d816117D5Bdf42A56813',
-};
-
 export const GAMMA_MASTERCHEF_ADDRESSES: AddressMap[] = [
   {
     [ChainId.MATIC]: '0x20ec0d06f447d550fc6edee42121bc8c1817b97d',

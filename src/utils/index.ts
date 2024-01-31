@@ -63,6 +63,7 @@ import { SteerVault } from 'hooks/v3/useSteerData';
 import { LiquidityDex } from '@ape.swap/apeswap-lists';
 import { DEX } from '@soulsolidity/soulzap-v1';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+import { FeeAmount } from 'v3lib/utils';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -1106,6 +1107,7 @@ export const getGammaPairsForTokens = (
   chainId?: ChainId,
   address0?: string,
   address1?: string,
+  feeAmount?: FeeAmount,
 ) => {
   const config = getConfig(chainId);
   const gammaAvailable = config['gamma']['available'];
@@ -1113,9 +1115,19 @@ export const getGammaPairsForTokens = (
     const gammaPairs = GammaPairs[chainId];
     if (!gammaPairs) return;
     const pairs =
-      gammaPairs[address0.toLowerCase() + '-' + address1.toLowerCase()];
+      gammaPairs[
+        address0.toLowerCase() +
+          '-' +
+          address1.toLowerCase() +
+          `${feeAmount ? `-${feeAmount}` : ''}`
+      ];
     const reversedPairs =
-      gammaPairs[address1.toLowerCase() + '-' + address0.toLowerCase()];
+      gammaPairs[
+        address1.toLowerCase() +
+          '-' +
+          address0.toLowerCase() +
+          `${feeAmount ? `-${feeAmount}` : ''}`
+      ];
     if (pairs) {
       return { reversed: false, pairs };
     } else if (reversedPairs) {

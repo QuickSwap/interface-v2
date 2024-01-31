@@ -48,6 +48,7 @@ import {
   NINJAZ,
   RNDR,
 } from './v3/addresses';
+import { FeeAmount } from 'v3lib/utils';
 
 export const bondAPIV2BaseURL = 'https://api-v2.apeswap.finance';
 export const CEX_BILL_ADDRESS = '0x6D7637683eaD28F775F56506602191fdE417fF60';
@@ -301,6 +302,7 @@ export interface GammaPair {
   pid?: number;
   masterChefIndex?: number;
   withdrawOnly?: boolean;
+  fee?: FeeAmount;
 }
 
 export const GammaPairs: {
@@ -1658,6 +1660,78 @@ export const GammaPairs: {
         token0Address: '0x819d1daa794c1c46b841981b61cc978d95a17b8e',
         token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
         pid: 26,
+      },
+    ],
+  },
+  [ChainId.MANTA]: {
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0xb73603c5d87fa094b7314c74ace2e64d165016fb-500': [
+      {
+        address: '0x0d8f8eb720f4e3c1bcaa50c78339f796cd4a380f',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
+        token1Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0xf417f5a458ec102b90352f697d6e2ac3a3d2851f-500': [
+      {
+        address: '0x2eab29331d62a8f9b42559d9fa844b02dc85ca37',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
+        token1Address: '0xf417F5A458eC102B90352F697D6e2Ac3A3d2851f',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x0f52a51287f9b3894d73df05164d0ee2533ccbb4-0xb73603c5d87fa094b7314c74ace2e64d165016fb-500': [
+      {
+        address: '0x67a79c80382979d61a3a9ed892f44d8046163a9d',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x0f52A51287f9b3894d73Df05164D0Ee2533ccBB4',
+        token1Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0x305e88d809c9dc03179554bfbf85ac05ce8f18d6-500': [
+      {
+        address: '0xc40f63879630dff5b69dd6d287f7735e65e90702',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
+        token1Address: '0x305E88d809c9DC03179554BFbf85Ac05Ce8F18d6',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0xb73603c5d87fa094b7314c74ace2e64d165016fb-0xe22e3d44ea9fb0a87ea3f7a8f41d869c677f0020-10000': [
+      {
+        address: '0x22c0e57f6347dba505e0052d45d4c610a55baf71',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
+        token1Address: '0xE22E3D44Ea9Fb0A87Ea3F7a8f41D869C677f0020',
+        fee: FeeAmount.HIGH,
+      },
+    ],
+    '0xb73603c5d87fa094b7314c74ace2e64d165016fb-0xf417f5a458ec102b90352f697d6e2ac3a3d2851f-100': [
+      {
+        address: '0x2ffaced56c4366115b65adbb8703a5541a27973d',
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        token0Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
+        token1Address: '0xf417F5A458eC102B90352F697D6e2Ac3A3d2851f',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0x2fe3ad97a60eb7c79a976fc18bb5ffd07dd94ba5-100': [
+      {
+        address: '0xa6e2673cd6dad4c9b4eb638ce35cf44e17d32319',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        token0Address: '0x0dc808adce2099a9f62aa87d9670745aba741746',
+        token1Address: '0x2FE3AD97a60EB7c79A976FC18Bb5fFD07Dd94BA5',
+        fee: FeeAmount.LOWEST,
       },
     ],
   },
