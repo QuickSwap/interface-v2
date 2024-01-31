@@ -64,4 +64,5 @@ export { default as BuyFiatButton } from './BuyFiatButton';
 export { default as NetworkSelectionModal } from './NetworkSelectionModal';
 export { default as SortColumns } from './SortColumns';
 export { default as TermsWrapper } from './TermsWrapper';
+export { default as LiquidityHubAnalytics } from './LiquidityHubAnalytics';
 export { default as DualCurrencyPanel } from './DualCurrencyPanel';
