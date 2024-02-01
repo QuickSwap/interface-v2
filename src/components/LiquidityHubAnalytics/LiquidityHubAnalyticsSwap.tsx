@@ -172,8 +172,8 @@ const LiquidityHubAnalyticsSwap: React.FC<{
       desktopHTML={desktopHTML}
     />
   ) : (
-    <Box width='100%' height={400}>
-      {t('lhNoData')}
+    <Box width='100%' height={400} className='flex items-center justify-center'>
+      <p>{t('lhNoData')}</p>
     </Box>
   );
 };
