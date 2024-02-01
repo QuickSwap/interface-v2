@@ -587,6 +587,7 @@ export function useSteerFilteredFarms(
         type: 'Steer',
         title: pairTypeTitle,
         loading: loadingUSDPrice || loadingSteerVaults,
+        fee: Number(vaultInfo?.feeTier ?? 0),
       };
     })
     .filter((item: any) => {
