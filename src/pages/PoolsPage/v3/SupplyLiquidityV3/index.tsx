@@ -271,6 +271,7 @@ export function SupplyLiquidityV3() {
     chainId,
     baseCurrency?.wrapped.address,
     currencyB?.wrapped.address,
+    mintInfo.feeAmount,
   );
   const gammaPairs = gammaPairData?.pairs;
   const gammaPair =

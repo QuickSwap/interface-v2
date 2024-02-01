@@ -159,6 +159,7 @@ export default function MyGammaPoolsV3() {
         token0Address: lp.token0Address,
         token1Address: lp.token1Address,
         farming: lp.stakedAmount > 0,
+        feeAmount: lp.fee,
       };
     })
     .filter((item) => item.lpAmount > 0);
