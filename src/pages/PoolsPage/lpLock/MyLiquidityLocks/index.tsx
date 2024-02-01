@@ -19,6 +19,7 @@ export default function MyLiquidityLocks() {
   } = useV2LiquidityPools(account ?? undefined);
   const pairs = useMemo(() => allV2PairsWithLiquidity, [allV2PairsWithLiquidity.length]);
   const { data: v2Locks, loading: v2LockIsLoading } = useUserV2LiquidityLocks(account, pairs)
+  const { data: v3Locks, loading: v3LockIsLoading } = useUserV3LiquidityLocks(account)
 
   const showConnectAWallet = Boolean(!account);
   const toggleWalletModal = useWalletModalToggle();  
@@ -38,7 +39,30 @@ export default function MyLiquidityLocks() {
               {t('connectWallet')}
             </Button>
           </Box>
-        ) : 
+        ) : isV3 ? (
+          <Box mt={3}>
+            {(v3LockIsLoading) ? (
+              <Box width={1}>
+                <Skeleton width='100%' height={50} />
+              </Box>
+            ) : v3Locks && v3Locks.length > 0 ? (
+              <Box>
+                {v3Locks.map((lock) => (
+                  <Box key={lock.pair.tokenAddress} mt={2}>
+                    <LockPositionCard
+                      key={lock.pair.tokenAddress}
+                      lock={lock}
+                    />
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Box textAlign='center'>
+                <p>{t('noV3LiquidityLocks')}.</p>
+              </Box>
+            )}
+          </Box>
+        ) : (
           <Box mt={3}>
             {(v2LockIsLoading || v2IsLoading) ? (
               <Box width={1}>
@@ -57,11 +81,11 @@ export default function MyLiquidityLocks() {
               </Box>
             ) : (
               <Box textAlign='center'>
-                <p>{t('noLiquidityLocks')}.</p>
+                <p>{t('noV2LiquidityLocks')}.</p>
               </Box>
             )}
           </Box>
-        }
+        )}
       </Box>
     </Box>
   );

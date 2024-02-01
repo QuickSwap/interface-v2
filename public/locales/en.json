@@ -568,6 +568,8 @@
   "myLiquidityPools": "My Liquidity Pools",
   "noLiquidityPositions": "You do not have any liquidity positions",
   "noLiquidityLocks": "You do not have any liquidity locks",
+  "noV2LiquidityLocks": "You do not have any V2 liquidity locks",
+  "noV3LiquidityLocks": "You do not have any V3 liquidity locks",
   "lockedLiquidity": "Locked Liquidity",
   "lockupPeriod": "Lockup Period",
   "seeMoreDetails": "See more details",

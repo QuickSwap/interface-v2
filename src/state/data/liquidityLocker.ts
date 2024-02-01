@@ -11,6 +11,11 @@ export interface Event {
   createdAt: string
   isNftMinted: boolean
   isWithdrawn: boolean
+  liquidityContractAddress: string
+  liquidityPairAddress: string
+  liquidityPairReserve: string
+  liquidityTokenReserve: string
+  liquidityTotalSupply: string
   lockAmount: string
   lockContractAddress: string
   lockDepositId: number
@@ -110,7 +115,7 @@ export const useUserV2LiquidityLocks = (account: string, liquidityTokenList: Uni
         const URL = `/app/allMylocks/${account}`;
         const response = await axios.get(URL);
         const v2LpLocks_ = response.data.data.filter((item: LockInterface) => {
-            return (item.event.chainId == '0x89' && addressArray.includes(item.liquidityContract.tokenAddress))
+            return (item.event.chainId == '0x89' && addressArray.includes(item.liquidityContract?.tokenAddress))
         });
         setData(v2LpLocks_);
       } catch (error) {
@@ -128,7 +133,7 @@ export const useUserV2LiquidityLocks = (account: string, liquidityTokenList: Uni
   return {data, loading, error}
 }
 
-export const useUserV3LiquidityLocks = (account?: string) => {
+export const useUserV3LiquidityLocks = (account: string) => {
   const [data, setData] = useState<LockInterface[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -139,8 +144,8 @@ export const useUserV3LiquidityLocks = (account?: string) => {
         setLoading(true);
         const URL = `/app/allMylocks/${account}`;
         const response = await axios.get(URL);
-        const v3LpLocks_ = response.data.data.filter((item: any) => {
-          return (item.event.chainId == '0x89' && item.event.liquidityContractAddress == NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chain_id])
+        const v3LpLocks_ = response.data.data.filter((item: LockInterface) => {
+          return (item.event.chainId == '0x89' && item.liquidityContract?.tokenAddress == NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chain_id])
         });
         setData(v3LpLocks_);
       } catch (error) {
