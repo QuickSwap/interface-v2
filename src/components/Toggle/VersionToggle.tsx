@@ -12,7 +12,7 @@ const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
-  const lHAnalyticsAvailable = config['analytics']['liquidityHub'];
+  // const lHAnalyticsAvailable = config['analytics']['liquidityHub'];
   const singleTokenEnabled = config['ichi']['available'];
   const { updateIsV2 } = useIsV2();
   const params: any = useParams();
@@ -89,7 +89,7 @@ const VersionToggle: React.FC = () => {
 
       {isAnalyticsPage && (
         <>
-          {lHAnalyticsAvailable && (
+          {/* {lHAnalyticsAvailable && (
             <Box
               className={
                 version === 'liquidityhub' ? 'version-toggle-active' : ''
@@ -100,7 +100,7 @@ const VersionToggle: React.FC = () => {
             >
               <small>{t('liquidityHub')}</small>
             </Box>
-          )}
+          )} */}
           <Box
             className={version === 'total' ? 'version-toggle-active' : ''}
             onClick={() => {
