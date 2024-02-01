@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';

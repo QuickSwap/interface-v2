@@ -18,42 +18,66 @@ const LiquidityHubAnalytics: React.FC = () => {
   const tokenMap = useSelectedTokenList();
 
   const fetchAnalyticsData = async () => {
-    const apiURL = `https://hub.orbs.network/analytics/v2?start=2023-01-18T00:00:00.000Z&end=${currentTime}.000Z`;
-    try {
-      const res = await fetch(apiURL);
-      const data = await res.json();
-      return (data?.hits?.hits ?? []).map((item: any) => {
-        const srcTokenAddress = item.fields.srcTokenAddress[0];
-        const srcToken = getTokenFromAddress(
-          srcTokenAddress,
-          chainId,
-          tokenMap,
-          [],
+    const items: any[] = [];
+    let allFetched = false;
+    let endTime = currentTime + '.000Z';
+    while (!allFetched) {
+      const apiURL = `https://hub.orbs.network/analytics/v2?start=2023-01-18T00:00:00.000Z&end=${endTime}`;
+      try {
+        const res = await fetch(apiURL);
+        const data = await res.json();
+        const hits = data?.hits?.hits ?? [];
+        if (hits.length < 500) {
+          allFetched = true;
+        }
+        const filteredHits = hits.filter(
+          (item: any) => item?.fields?.timestamp && item?.fields?.timestamp[0],
         );
-        const dstTokenAddress = item.fields.dstTokenAddress[0];
-        const dstToken = getTokenFromAddress(
-          dstTokenAddress,
-          chainId,
-          tokenMap,
-          [],
-        );
-        return {
-          srcTokenSymbol: item.fields.srcTokenSymbol[0],
-          srcTokenAddress,
-          srcToken,
-          dstTokenSymbol: item.fields.dstTokenSymbol[0],
-          dstTokenAddress,
-          dstToken,
-          srcAmount: item.fields.srcAmount[0],
-          dexAmountOut: item.fields.dexAmountOut[0],
-          dexAmountUSD: item.fields.dstTokenUsdValue[0],
-          txHash: item.fields.txHash[0],
-          timestamp: item.fields.timestamp[0],
-        };
-      });
-    } catch {
-      return [];
+        endTime = filteredHits[filteredHits.length - 1].fields.timestamp[0];
+        for (const item of data?.hits?.hits ?? []) {
+          if (
+            item?.fields?.srcTokenSymbol &&
+            item?.fields?.dstTokenSymbol &&
+            item?.fields?.srcAmount &&
+            item?.fields?.dexAmountOut &&
+            item?.fields?.dstTokenUsdValue &&
+            item?.fields?.txHash &&
+            item?.fields?.timestamp
+          ) {
+            const srcTokenAddress = item.fields.srcTokenAddress[0];
+            const srcToken = getTokenFromAddress(
+              srcTokenAddress,
+              chainId,
+              tokenMap,
+              [],
+            );
+            const dstTokenAddress = item.fields.dstTokenAddress[0];
+            const dstToken = getTokenFromAddress(
+              dstTokenAddress,
+              chainId,
+              tokenMap,
+              [],
+            );
+            items.push({
+              srcTokenSymbol: item.fields.srcTokenSymbol[0],
+              srcTokenAddress,
+              srcToken,
+              dstTokenSymbol: item.fields.dstTokenSymbol[0],
+              dstTokenAddress,
+              dstToken,
+              srcAmount: item.fields.srcAmount[0],
+              dexAmountOut: item.fields.dexAmountOut[0],
+              dexAmountUSD: item.fields.dstTokenUsdValue[0],
+              txHash: item.fields.txHash[0],
+              timestamp: item.fields.timestamp[0],
+            });
+          }
+        }
+      } catch (e) {
+        console.log('error fetching liquidity hub analytics data', e);
+      }
     }
+    return items;
   };
 
   const { isLoading, data } = useQuery({

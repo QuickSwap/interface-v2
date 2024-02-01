@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Skeleton } from '@material-ui/lab';
 import Chart from 'react-apexcharts';
 import { formatCompact } from 'utils';
 import dayjs from 'dayjs';
@@ -126,7 +125,11 @@ const LiquidityHubAnalyticsCoinVolume: React.FC<{
           }}
         />
       ) : (
-        <Box width='100%' height='400px'>
+        <Box
+          width='100%'
+          height='400px'
+          className='flex items-center justify-center'
+        >
           <p>{t('lhNoData')}</p>
         </Box>
       )}
