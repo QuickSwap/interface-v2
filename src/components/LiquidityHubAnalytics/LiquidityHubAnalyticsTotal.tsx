@@ -11,11 +11,15 @@ const LiquidityHubAnalyticsTotal: React.FC = () => {
   const { t } = useTranslation();
 
   const fetchAnalyticsDaily = async () => {
-    const apiURL = 'https://hub.orbs.network/analytics-daily/v1';
     try {
-      const res = await fetch(apiURL);
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/liquidityHubDaily`,
+      );
+      if (!res.ok) {
+        return [];
+      }
       const data = await res.json();
-      return data?.result?.rows ?? [];
+      return data?.data?.data ?? [];
     } catch {
       return [];
     }
@@ -24,7 +28,7 @@ const LiquidityHubAnalyticsTotal: React.FC = () => {
   const { isLoading, data: lhData } = useQuery({
     queryKey: ['fetchLHAnalyticsDaily'],
     queryFn: fetchAnalyticsDaily,
-    refetchInterval: 600000,
+    refetchInterval: 180 * 60 * 1000,
   });
 
   const data = lhData ?? [];
@@ -90,7 +94,11 @@ const LiquidityHubAnalyticsTotal: React.FC = () => {
           }}
         />
       ) : (
-        <Box width='100%' height='400px'>
+        <Box
+          width='100%'
+          height='400px'
+          className='flex items-center justify-center'
+        >
           <p>{t('lhNoData')}</p>
         </Box>
       )}
