@@ -38,7 +38,7 @@ import { fetchUserV2LiquidityLocks } from 'state/data/liquidityLocker';
 const defaultDate = '2024-12-24T10:30'
 /* dayjs.extend(duration) */
 
-const LockLiquidity: React.FC = () => {
+const LockV2Liquidity: React.FC = () => {
   const { t } = useTranslation();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { account, chainId, library } = useActiveWeb3React();
@@ -311,4 +311,4 @@ const LockLiquidity: React.FC = () => {
   );
 };
 
-export default LockLiquidity;
+export default LockV2Liquidity;

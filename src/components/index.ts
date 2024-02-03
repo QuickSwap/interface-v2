@@ -45,6 +45,8 @@ export { default as MeldModal } from './MeldModal';
 export { default as AccountDetails } from './AccountDetails';
 export { default as CopyHelper } from './AccountDetails/CopyHelper';
 export { default as Web3ReactManager } from './Web3ReactManager';
+export { default as LockV2Liquidity } from './LockV2Liquidity'
+export { default as LockV3Liquidity } from './LockV3Liquidity';
 export {
   default as ConfirmSwapModal,
   FormattedPriceImpact,

@@ -3,7 +3,8 @@ import { Box } from '@material-ui/core';
 import { QuestionHelper } from 'components';
 import { useTranslation } from 'react-i18next';
 import ToggleVersion from '../ToggleVersion';
-const LockLiquidityComponent = lazy(() => import('components/LockLiquidity'));
+const LockV2LiquidityComponent = lazy(() => import('components/LockV2Liquidity'));
+const LockV3LiquidityComponent = lazy(() => import('components/LockV3Liquidity'));
 
 const LockLiquidity: React.FC = () => {
   const { t } = useTranslation();
@@ -27,7 +28,7 @@ const LockLiquidity: React.FC = () => {
         <ToggleVersion method={setIsV3} checkValue={isV3} />
       </Box>
       <Box mt={2.5}>
-        <LockLiquidityComponent />
+        { isV3 ? <LockV3LiquidityComponent /> : <LockV2LiquidityComponent /> }
       </Box>
     </>
   );
