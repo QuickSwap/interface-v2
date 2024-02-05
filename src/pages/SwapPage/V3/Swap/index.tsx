@@ -19,6 +19,7 @@ import { useActiveWeb3React, useGetConnection, useMasaAnalytics } from 'hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import {
   ApprovalState,
+  useApproveCallback,
   useApproveCallbackFromTrade,
 } from 'hooks/useV3ApproveCallback';
 import useWrapCallback, { WrapType } from 'hooks/useV3WrapCallback';
@@ -57,6 +58,7 @@ import { Box, Button } from '@material-ui/core';
 import { ChainId, ETHER, WETH } from '@uniswap/sdk';
 import { AddressInput, CustomTooltip } from 'components';
 import {
+  NATIVE_CONVERTER,
   SWAP_ROUTER_ADDRESSES,
   UNI_SWAP_ROUTER,
   WMATIC_EXTENDED,
@@ -69,6 +71,9 @@ import { useTransactionFinalizer } from 'state/transactions/hooks';
 import { getConfig } from 'config/index';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { useV3TradeTypeAnalyticsCallback } from 'components/Swap/LiquidityHub';
+import useNativeConvertCallback, {
+  ConvertType,
+} from 'hooks/useNativeConvertCallback';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
@@ -139,12 +144,24 @@ const SwapV3Page: React.FC = () => {
     typedValue,
   );
 
+  const {
+    convertType,
+    execute: onConvert,
+    inputError: convertInputError,
+  } = useNativeConvertCallback(
+    currencies[Field.INPUT],
+    currencies[Field.OUTPUT],
+    typedValue,
+  );
+
+  const showNativeConvert = convertType !== ConvertType.NOT_APPLICABLE;
+
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const { address: recipientAddress } = useENSAddress(recipient);
 
   const parsedAmounts = useMemo(
     () =>
-      showWrap
+      showWrap || showNativeConvert
         ? {
             [Field.INPUT]: parsedAmount,
             [Field.OUTPUT]: parsedAmount,
@@ -159,7 +176,14 @@ const SwapV3Page: React.FC = () => {
                 ? parsedAmount
                 : trade?.outputAmount,
           },
-    [independentField, parsedAmount, showWrap, trade],
+    [
+      independentField,
+      parsedAmount,
+      showNativeConvert,
+      showWrap,
+      trade?.inputAmount,
+      trade?.outputAmount,
+    ],
   );
 
   const fiatValueInput = useUSDCValue(parsedAmounts[Field.INPUT]);
@@ -223,11 +247,19 @@ const SwapV3Page: React.FC = () => {
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
-      [dependentField]: showWrap
-        ? parsedAmounts[independentField]?.toExact() ?? ''
-        : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+      [dependentField]:
+        showWrap || showNativeConvert
+          ? parsedAmounts[independentField]?.toExact() ?? ''
+          : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
     };
-  }, [dependentField, independentField, parsedAmounts, showWrap, typedValue]);
+  }, [
+    dependentField,
+    independentField,
+    parsedAmounts,
+    showNativeConvert,
+    showWrap,
+    typedValue,
+  ]);
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
@@ -250,6 +282,11 @@ const SwapV3Page: React.FC = () => {
     trade,
     allowedSlippage,
   );
+  const [
+    nativeConvertApproval,
+    nativeConvertApproveCallback,
+  ] = useApproveCallback(parsedAmount, NATIVE_CONVERTER[chainId]);
+
   const {
     state: signatureState,
     signatureData,
@@ -287,6 +324,9 @@ const SwapV3Page: React.FC = () => {
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
+  const [nativeApprovalSubmitted, setNativeApprovalSubmitted] = useState<
+    boolean
+  >(false);
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
@@ -294,6 +334,12 @@ const SwapV3Page: React.FC = () => {
       setApprovalSubmitted(true);
     }
   }, [approvalState, approvalSubmitted]);
+
+  useEffect(() => {
+    if (nativeConvertApproval === ApprovalState.PENDING) {
+      setNativeApprovalSubmitted(true);
+    }
+  }, [nativeConvertApproval, nativeApprovalSubmitted]);
 
   const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(
     currencyBalances[Field.INPUT],
@@ -461,9 +507,15 @@ const SwapV3Page: React.FC = () => {
   // never show if price impact is above threshold in non expert mode
   const showApproveFlow =
     !swapInputError &&
-    (approvalState === ApprovalState.NOT_APPROVED ||
-      approvalState === ApprovalState.PENDING ||
-      (approvalSubmitted && approvalState === ApprovalState.APPROVED)) &&
+    !showWrap &&
+    (showNativeConvert
+      ? nativeConvertApproval === ApprovalState.NOT_APPROVED ||
+        nativeConvertApproval === ApprovalState.PENDING ||
+        (nativeApprovalSubmitted &&
+          nativeConvertApproval === ApprovalState.APPROVED)
+      : approvalState === ApprovalState.NOT_APPROVED ||
+        approvalState === ApprovalState.PENDING ||
+        (approvalSubmitted && approvalState === ApprovalState.APPROVED)) &&
     !(priceImpactSeverity > 3 && !isExpertMode);
 
   const handleConfirmDismiss = useCallback(() => {
@@ -497,6 +549,7 @@ const SwapV3Page: React.FC = () => {
   const handleInputSelect = useCallback(
     (inputCurrency: any) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
+      setNativeApprovalSubmitted(false);
       if (
         (inputCurrency &&
           inputCurrency.isNative &&
@@ -676,6 +729,7 @@ const SwapV3Page: React.FC = () => {
           <ExchangeIcon
             onClick={() => {
               setApprovalSubmitted(false); // reset 2 step UI for approvals
+              setNativeApprovalSubmitted(false);
               redirectWithSwitch();
             }}
           />
@@ -708,7 +762,7 @@ const SwapV3Page: React.FC = () => {
             swap
           />
         </Box>
-        {!showWrap && isExpertMode ? (
+        {!showWrap && !showNativeConvert && isExpertMode ? (
           <Box className='recipientInput' mb={1.5}>
             <Box className='recipientInputHeader'>
               {recipient !== null ? (
@@ -737,7 +791,7 @@ const SwapV3Page: React.FC = () => {
           </Box>
         ) : null}
 
-        {!showWrap && trade && (
+        {!showWrap && !showNativeConvert && trade && (
           <div className='flex items-center'>
             <TradePrice
               price={trade.executionPrice}
@@ -769,6 +823,22 @@ const SwapV3Page: React.FC = () => {
           {!account ? (
             <Button fullWidth onClick={toggleWalletModal}>
               {t('connectWallet')}
+            </Button>
+          ) : showNativeConvert ? (
+            <Button
+              fullWidth
+              disabled={
+                Boolean(convertInputError) ||
+                convertType === ConvertType.CONVERTING
+              }
+              onClick={onConvert}
+            >
+              {convertInputError ??
+                (convertType === ConvertType.CONVERT
+                  ? t('convert')
+                  : convertType === ConvertType.CONVERTING
+                  ? t('converting')
+                  : null)}
             </Button>
           ) : showWrap ? (
             <Button

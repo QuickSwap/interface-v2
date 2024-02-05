@@ -73,10 +73,19 @@ import useSwapRedirects from 'hooks/useSwapRedirect';
 import callWallchainAPI from 'utils/wallchainService';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { ONE } from 'v3lib/utils';
-import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import {
+  NATIVE_CONVERTER,
+  SWAP_ROUTER_ADDRESS,
+  toV3Currency,
+  toV3Token,
+} from 'constants/v3/addresses';
 import { getConfig } from 'config/index';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
+import useNativeConvertCallback, {
+  ConvertType,
+} from 'hooks/useNativeConvertCallback';
+import { useApproveCallback } from 'hooks/useApproveCallback';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -143,6 +152,7 @@ const SwapBestTrade: React.FC<{
     currencies[Field.OUTPUT],
     typedValue,
   );
+
   const [swapType, setSwapType] = useState<SwapSide>(SwapSide.SELL);
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
@@ -158,6 +168,7 @@ const SwapBestTrade: React.FC<{
   const [allowedSlippage] = useUserSlippageTolerance();
   const pct = basisPointsToPercent(allowedSlippage);
   const [approving, setApproving] = useState(false);
+  const [nativeConvertApproving, setNativeConvertApproving] = useState(false);
 
   const dependentField: Field =
     independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
@@ -187,7 +198,22 @@ const SwapBestTrade: React.FC<{
     return { ...outputCurrency, isNative: false, isToken: true } as Currency;
   }, [chainId, outputCurrency]);
 
+  const {
+    convertType,
+    execute: onConvert,
+    inputError: convertInputError,
+  } = useNativeConvertCallback(
+    inputCurrencyV3?.isToken ? inputCurrencyV3 : undefined,
+    outputCurrencyV3?.isToken ? outputCurrencyV3 : undefined,
+    typedValue,
+  );
+
+  const showNativeConvert = convertType !== ConvertType.NOT_APPLICABLE;
+
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
+  const [nativeApprovalSubmitted, setNativeApprovalSubmitted] = useState<
+    boolean
+  >(false);
   const [mainPrice, setMainPrice] = useState(true);
 
   //TODO: move to utils
@@ -209,6 +235,7 @@ const SwapBestTrade: React.FC<{
   const handleCurrencySelect = useCallback(
     (inputCurrency: any) => {
       setApprovalSubmitted(false); // reset 2 step UI for approvals
+      setNativeApprovalSubmitted(false);
       const isSwichRedirect = currencyEquals(inputCurrency, ETHER[chainIdToUse])
         ? parsedCurrency1Id === 'ETH'
         : parsedCurrency1Id &&
@@ -380,7 +407,7 @@ const SwapBestTrade: React.FC<{
         ? CurrencyAmount.fromRawAmount(outputCurrencyV3, parsedAmount.raw)
         : undefined;
 
-    return showWrap
+    return showWrap || showNativeConvert
       ? {
           [Field.INPUT]: parsedAmountInput,
           [Field.OUTPUT]: parsedAmountOutput,
@@ -406,12 +433,13 @@ const SwapBestTrade: React.FC<{
               : undefined,
         };
   }, [
-    parsedAmount,
-    independentField,
-    showWrap,
-    optimalRate,
     inputCurrencyV3,
+    parsedAmount,
     outputCurrencyV3,
+    showWrap,
+    showNativeConvert,
+    independentField,
+    optimalRate,
   ]);
 
   const maxAmountInputV2 = maxAmountSpend(
@@ -425,11 +453,19 @@ const SwapBestTrade: React.FC<{
   const formattedAmounts = useMemo(() => {
     return {
       [independentField]: typedValue,
-      [dependentField]: showWrap
-        ? parsedAmounts[independentField]?.toExact() ?? ''
-        : parsedAmounts[dependentField]?.toExact() ?? '',
+      [dependentField]:
+        showWrap || showNativeConvert
+          ? parsedAmounts[independentField]?.toExact() ?? ''
+          : parsedAmounts[dependentField]?.toExact() ?? '',
     };
-  }, [independentField, typedValue, dependentField, showWrap, parsedAmounts]);
+  }, [
+    independentField,
+    typedValue,
+    dependentField,
+    showWrap,
+    showNativeConvert,
+    parsedAmounts,
+  ]);
 
   const maxAmountInput =
     maxAmountInputV2 && inputCurrencyV3
@@ -467,12 +503,22 @@ const SwapBestTrade: React.FC<{
     atMaxAmountInput,
   );
 
+  const [
+    nativeConvertApproval,
+    nativeConvertApproveCallback,
+  ] = useApproveCallback(parsedAmount, NATIVE_CONVERTER[chainId]);
+
   const showApproveFlow =
     !swapInputError &&
     !showWrap &&
-    (approval === ApprovalState.NOT_APPROVED ||
-      approval === ApprovalState.PENDING ||
-      (approvalSubmitted && approval === ApprovalState.APPROVED));
+    (showNativeConvert
+      ? nativeConvertApproval === ApprovalState.NOT_APPROVED ||
+        nativeConvertApproval === ApprovalState.PENDING ||
+        (nativeApprovalSubmitted &&
+          nativeConvertApproval === ApprovalState.APPROVED)
+      : approval === ApprovalState.NOT_APPROVED ||
+        approval === ApprovalState.PENDING ||
+        (approvalSubmitted && approval === ApprovalState.APPROVED));
 
   const toggleWalletModal = useWalletModalToggle();
   const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
@@ -482,6 +528,12 @@ const SwapBestTrade: React.FC<{
       setApprovalSubmitted(true);
     }
   }, [approval]);
+
+  useEffect(() => {
+    if (nativeConvertApproval === ApprovalState.PENDING) {
+      setNativeApprovalSubmitted(true);
+    }
+  }, [nativeConvertApproval]);
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
@@ -531,6 +583,13 @@ const SwapBestTrade: React.FC<{
         formattedAmounts[Field.OUTPUT] === ''
       ) {
         return t('enterAmount');
+      } else if (showNativeConvert) {
+        if (convertInputError) return convertInputError;
+        return convertType === ConvertType.CONVERT
+          ? t('convert')
+          : convertType === ConvertType.CONVERTING
+          ? t('converting', { symbol: ETHER[chainId].symbol })
+          : '';
       } else if (showWrap) {
         if (wrapInputError) return wrapInputError;
         return wrapType === WrapType.WRAP
@@ -578,6 +637,7 @@ const SwapBestTrade: React.FC<{
     t,
     currencies,
     formattedAmounts,
+    showNativeConvert,
     showWrap,
     loadingOptimalRate,
     optimalRateError,
@@ -587,9 +647,11 @@ const SwapBestTrade: React.FC<{
     swapInputAmountWithSlippage,
     swapInputBalance,
     bonusRouteLoading,
+    convertInputError,
+    convertType,
+    chainId,
     wrapInputError,
     wrapType,
-    chainId,
     maxImpactAllowed,
   ]);
 
@@ -614,7 +676,11 @@ const SwapBestTrade: React.FC<{
         swapInputAmountWithSlippage.greaterThan(swapInputBalance));
     if (account) {
       if (!isSupportedNetwork) return false;
-      if (showWrap) {
+      else if (showNativeConvert) {
+        return (
+          Boolean(convertInputError) || convertType === ConvertType.CONVERTING
+        );
+      } else if (showWrap) {
         return (
           Boolean(wrapInputError) ||
           wrapType === WrapType.WRAPPING ||
@@ -647,10 +713,13 @@ const SwapBestTrade: React.FC<{
     swapInputBalance,
     account,
     isSupportedNetwork,
+    showNativeConvert,
     showWrap,
     noRoute,
     userHasSpecifiedInputOutput,
     showApproveFlow,
+    convertInputError,
+    convertType,
     wrapInputError,
     wrapType,
   ]);
@@ -697,7 +766,9 @@ const SwapBestTrade: React.FC<{
   );
 
   const onParaswap = () => {
-    if (showWrap && onWrap) {
+    if (showNativeConvert && onConvert) {
+      onConvert();
+    } else if (showWrap && onWrap) {
       onWrap();
     } else if (isExpertMode) {
       handleParaswap();
@@ -860,7 +931,9 @@ const SwapBestTrade: React.FC<{
 
   const swapDisabledForTx = useMemo(() => {
     if (account) {
-      if (showWrap) {
+      if (showNativeConvert) {
+        return Boolean(convertInputError);
+      } else if (showWrap) {
         return Boolean(wrapInputError);
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return true;
@@ -887,9 +960,11 @@ const SwapBestTrade: React.FC<{
     }
   }, [
     account,
+    showNativeConvert,
     showWrap,
     noRoute,
     userHasSpecifiedInputOutput,
+    convertInputError,
     wrapInputError,
     isValid,
     optimalRate,
@@ -994,6 +1069,15 @@ const SwapBestTrade: React.FC<{
   }, [approval]);
 
   useEffect(() => {
+    if (
+      nativeConvertApproval === ApprovalState.NOT_APPROVED ||
+      nativeConvertApproval === ApprovalState.UNKNOWN
+    ) {
+      setNativeApprovalSubmitted(false);
+    }
+  }, [nativeConvertApproval]);
+
+  useEffect(() => {
     if (!optimalRate) {
       reFetchOptimalRate();
     }
@@ -1088,7 +1172,7 @@ const SwapBestTrade: React.FC<{
           </small>
         </Box>
       )}
-      {!showWrap && isExpertMode && (
+      {!showNativeConvert && !showWrap && isExpertMode && (
         <Box className='recipientInput'>
           <Box className='recipientInputHeader'>
             {recipient !== null ? (
@@ -1125,18 +1209,32 @@ const SwapBestTrade: React.FC<{
             <Button
               fullWidth
               disabled={
-                approving ||
-                approval !== ApprovalState.NOT_APPROVED ||
-                bonusRouteLoading ||
-                approvalSubmitted
+                showNativeConvert
+                  ? nativeConvertApproving ||
+                    nativeConvertApproval !== ApprovalState.NOT_APPROVED ||
+                    nativeApprovalSubmitted
+                  : approving ||
+                    approval !== ApprovalState.NOT_APPROVED ||
+                    bonusRouteLoading ||
+                    approvalSubmitted
               }
               onClick={async () => {
-                setApproving(true);
-                try {
-                  await approveCallback();
-                  setApproving(false);
-                } catch (err) {
-                  setApproving(false);
+                if (showNativeConvert) {
+                  setNativeConvertApproving(true);
+                  try {
+                    await nativeConvertApproveCallback();
+                    setNativeConvertApproving(false);
+                  } catch (err) {
+                    setNativeConvertApproving(false);
+                  }
+                } else {
+                  setApproving(true);
+                  try {
+                    await approveCallback();
+                    setApproving(false);
+                  } catch (err) {
+                    setApproving(false);
+                  }
                 }
               }}
             >
@@ -1156,8 +1254,9 @@ const SwapBestTrade: React.FC<{
           <Button
             fullWidth
             disabled={
-              (bonusRouteLoading ||
-                optimalRateError ||
+              ((showNativeConvert
+                ? false
+                : bonusRouteLoading || optimalRateError) ||
                 swapButtonDisabled) as boolean
             }
             onClick={account && isSupportedNetwork ? onParaswap : connectWallet}

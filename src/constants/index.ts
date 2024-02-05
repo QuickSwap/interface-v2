@@ -283,6 +283,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
   ChainId.ZKEVM,
   ChainId.MANTA,
+  ChainId.IMX,
   ChainId.DOGECHAIN,
   ChainId.ZKATANA,
   ChainId.X1,
@@ -1772,6 +1773,8 @@ export const IchiVaults: {
     '0x4D469cA8f3F67ef276c8d660E60fAc73067e298d',
     '0x4218d9843fF95e22e87B7F2B5bd95EBdb6FC42cC',
     '0x5eFe299401dD907b1b01950c9CdC6136f4205Ce7',
+    '0x52Ae324BC3392fc1efc5fae6987363ee0c876f4f',
+    '0xcE1B4cCA267FE0F936E46d93d5E49C3Ef4eB11Ba',
   ],
 };
 

@@ -15,6 +15,7 @@ import V2ToV3MigratorABI from 'constants/abis/v3/migrator.json';
 import { STAKING_DUAL_REWARDS_INTERFACE } from 'constants/abis/staking-rewards';
 import UNISOCKS_ABI from 'constants/abis/unisocks.json';
 import WETH_ABI from 'constants/abis/weth.json';
+import NATIVE_CONVERTER_ABI from 'constants/abis/nativeConverter.json';
 import { MULTICALL_ABI } from 'constants/multicall';
 import {
   V1_EXCHANGE_ABI,
@@ -46,6 +47,7 @@ import {
   STEER_VAULT_REGISTRY,
   PRICE_GETTER_ADDRESS,
   MERKL_DISTRIBUTOR,
+  NATIVE_CONVERTER,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
@@ -201,6 +203,17 @@ export function useWETHContract(
   return useContract(
     chainId ? WETH[chainId].address : undefined,
     WETH_ABI,
+    withSignerIfPossible,
+  );
+}
+
+export function useNativeConverterContract(
+  withSignerIfPossible?: boolean,
+): Contract | null {
+  const { chainId } = useActiveWeb3React();
+  return useContract(
+    chainId ? NATIVE_CONVERTER[chainId] : undefined,
+    NATIVE_CONVERTER_ABI,
     withSignerIfPossible,
   );
 }

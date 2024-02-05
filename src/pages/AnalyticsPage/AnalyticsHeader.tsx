@@ -33,6 +33,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   const v3 = config['v3'];
   const v2 = config['v2'];
   const showAnalytics = config['analytics']['available'];
+  const lHAnalyticsAvailable = config['analytics']['liquidityHub'];
   useEffect(() => {
     if (!showAnalytics) {
       history.push('/');
@@ -49,6 +50,14 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
   }, [updateIsV2, v2, v3]);
   const version = useAnalyticsVersion();
   const isPairDetails = history.location.pathname.includes('pair/');
+  const isLiquidityHub = version === 'liquidityhub';
+
+  useEffect(() => {
+    if (!lHAnalyticsAvailable && isLiquidityHub) {
+      history.push('/analytics');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lHAnalyticsAvailable, isLiquidityHub]);
 
   return (
     <Box width='100%' mb={3}>
@@ -105,7 +114,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
               </span>
             </Box>
           )}
-          {!type && (
+          {!type && !isLiquidityHub && (
             <>
               <Box
                 className={`topTab ${pathname.indexOf('pair') === -1 &&
@@ -133,7 +142,7 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
           )}
         </Box>
 
-        <AnalyticsSearch />
+        {!isLiquidityHub && <AnalyticsSearch />}
       </Box>
     </Box>
   );
