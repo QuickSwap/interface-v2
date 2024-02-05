@@ -344,6 +344,10 @@ export const STEER_VAULT_REGISTRY: AddressMap = {
 
 export const MERKL_DISTRIBUTOR = '0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae';
 
+export const NATIVE_CONVERTER: AddressMap = {
+  [ChainId.ZKEVM]: '0xd4F3531Fc95572D9e7b9e9328D9FEaa8e8496054',
+};
+
 export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
   [ChainId.MATIC]: new TokenV3(
     ChainId.MATIC,
@@ -471,6 +475,13 @@ export const USDCE: { [chainId: number]: Token } = {
     6,
     'USDC.e',
     'Bridged USDC',
+  ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+    6,
+    'USDC.E',
+    'USD Coin',
   ),
 };
 
