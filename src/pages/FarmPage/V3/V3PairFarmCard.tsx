@@ -72,7 +72,7 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
               <small>
                 {farm.token0?.symbol}/{farm.token1?.symbol}
               </small>
-              {farm.fee && (
+              {!!farm.fee && (
                 <Box className='farmAPRTitleWrapper bg-textSecondary'>
                   <span className='text-gray32'>{farm.fee / 10000}%</span>
                 </Box>

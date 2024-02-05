@@ -1673,6 +1673,8 @@ export const GammaPairs: {
         token0Address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
         token1Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
         fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 0,
       },
     ],
     '0x0dc808adce2099a9f62aa87d9670745aba741746-0xf417f5a458ec102b90352f697d6e2ac3a3d2851f-500': [
@@ -1683,6 +1685,8 @@ export const GammaPairs: {
         token0Address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
         token1Address: '0xf417F5A458eC102B90352F697D6e2Ac3A3d2851f',
         fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 1,
       },
     ],
     '0x0f52a51287f9b3894d73df05164d0ee2533ccbb4-0xb73603c5d87fa094b7314c74ace2e64d165016fb-500': [
@@ -1693,6 +1697,8 @@ export const GammaPairs: {
         token0Address: '0x0f52A51287f9b3894d73Df05164D0Ee2533ccBB4',
         token1Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
         fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 2,
       },
     ],
     '0x0dc808adce2099a9f62aa87d9670745aba741746-0x305e88d809c9dc03179554bfbf85ac05ce8f18d6-500': [
@@ -1703,6 +1709,8 @@ export const GammaPairs: {
         token0Address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
         token1Address: '0x305E88d809c9DC03179554BFbf85Ac05Ce8F18d6',
         fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 3,
       },
     ],
     '0xb73603c5d87fa094b7314c74ace2e64d165016fb-0xe22e3d44ea9fb0a87ea3f7a8f41d869c677f0020-10000': [
@@ -1713,6 +1721,8 @@ export const GammaPairs: {
         token0Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
         token1Address: '0xE22E3D44Ea9Fb0A87Ea3F7a8f41D869C677f0020',
         fee: FeeAmount.HIGH,
+        ableToFarm: true,
+        pid: 4,
       },
     ],
     '0xb73603c5d87fa094b7314c74ace2e64d165016fb-0xf417f5a458ec102b90352f697d6e2ac3a3d2851f-100': [
@@ -1723,6 +1733,8 @@ export const GammaPairs: {
         token0Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
         token1Address: '0xf417F5A458eC102B90352F697D6e2Ac3A3d2851f',
         fee: FeeAmount.LOWEST,
+        ableToFarm: true,
+        pid: 5,
       },
     ],
     '0x0dc808adce2099a9f62aa87d9670745aba741746-0x2fe3ad97a60eb7c79a976fc18bb5ffd07dd94ba5-100': [
@@ -1733,6 +1745,32 @@ export const GammaPairs: {
         token0Address: '0x0dc808adce2099a9f62aa87d9670745aba741746',
         token1Address: '0x2FE3AD97a60EB7c79A976FC18Bb5fFD07Dd94BA5',
         fee: FeeAmount.LOWEST,
+        ableToFarm: true,
+        pid: 6,
+      },
+    ],
+    '0xbdad407f77f44f7da6684b416b1951eca461fb07-0xec901da9c68e90798bbbb74c11406a32a70652c3-3000': [
+      {
+        address: '0x099dD23Eaab20F5eC43f50055D6e3030C66CC182',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xbdAd407F77f44F7Da6684B416b1951ECa461FB07',
+        token1Address: '0xEc901DA9c68E90798BbBb74c11406A32A70652C3',
+        fee: FeeAmount.MEDIUM,
+        ableToFarm: true,
+        pid: 7,
+      },
+    ],
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0xec901da9c68e90798bbbb74c11406a32a70652c3-3000': [
+      {
+        address: '0xa6e2673cd6dad4c9b4eb638ce35cf44e17d32319',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        token0Address: '0x0dc808adce2099a9f62aa87d9670745aba741746',
+        token1Address: '0xEc901DA9c68E90798BbBb74c11406A32A70652C3',
+        fee: FeeAmount.MEDIUM,
+        ableToFarm: true,
+        pid: 8,
       },
     ],
   },
@@ -1944,6 +1982,7 @@ export const paraswapTax: { [key: string]: number } = {
   '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3': 0,
   '0xf16ec50ec49abc95fa793c7871682833b6bc47e7': 1300,
   '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
+  '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
 };
 
 export const GlobalData = {
