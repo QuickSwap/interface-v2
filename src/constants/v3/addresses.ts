@@ -1085,6 +1085,16 @@ export const NINJAZ: { [chainId: number]: Token } = {
   ),
 };
 
+export const STONE: { [chainId: number]: Token } = {
+  [ChainId.MANTA]: new Token(
+    ChainId.MANTA,
+    '0xEc901DA9c68E90798BbBb74c11406A32A70652C3',
+    18,
+    'STONE',
+    'StakeStone Ether',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
@@ -1203,6 +1213,7 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(WBTC[ChainId.MANTA]),
     toV3Token(MATIC[ChainId.MANTA]),
     toV3Token(NEW_QUICK[ChainId.MANTA]),
+    toV3Token(STONE[ChainId.MANTA]),
   ],
   [ChainId.ZKATANA]: [
     WMATIC_EXTENDED[ChainId.ZKATANA],
