@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { useTranslation } from 'react-i18next';
@@ -6,13 +6,13 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import ToggleVersion from '../ToggleVersion';
 import { useUserV2LiquidityLocks, useUserV3LiquidityLocks } from 'state/data/liquidityLocker';
 import { Skeleton } from '@material-ui/lab';
-import { LockPositionCard } from 'components';
+import LockPositionCard from './components';
 
 export default function MyLiquidityLocks() {
   const { t } = useTranslation();
   const [isV3, setIsV3] = useState(false);
-  // const { account } = useActiveWeb3React();
-  const account ="0x43affF626834561253C0fE4AC6B8B7dD44eEe68D"
+  const { account } = useActiveWeb3React();
+  //const account ="0x43affF626834561253C0fE4AC6B8B7dD44eEe68D"
   const {
     loading: v2IsLoading,
     pairs: allV2PairsWithLiquidity,

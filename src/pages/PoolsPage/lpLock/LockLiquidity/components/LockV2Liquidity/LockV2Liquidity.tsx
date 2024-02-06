@@ -33,7 +33,7 @@ import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
 import { tryParseAmount } from 'state/swap/hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { ethers } from 'ethers';
-import { fetchUserV2LiquidityLocks } from 'state/data/liquidityLocker';
+//import { fetchUserV2LiquidityLocks } from 'state/data/liquidityLocker';
 
 const defaultDate = '2024-12-24T10:30'
 /* dayjs.extend(duration) */
