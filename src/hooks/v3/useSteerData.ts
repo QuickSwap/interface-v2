@@ -71,7 +71,17 @@ export const useSteerVaults = (chainId: ChainId) => {
         chainId,
       )}`,
     );
+    let aprData;
+    try {
+      const aprRes = await fetch(
+        `${steerAPIURL}/getAprs?chainId=${chainId}&dexName=${getSteerDexName(
+          chainId,
+        )}`,
+      );
+      aprData = await aprRes.json();
+    } catch {}
     const data = await res.json();
+    const vaultAPRs = aprData?.vaults ?? [];
     if (data && data.pools) {
       const allVaults: any[][] = Object.values(data.pools);
       const poolAddresses = Object.keys(data.pools);
@@ -89,13 +99,7 @@ export const useSteerVaults = (chainId: ChainId) => {
                   (item: any) => item.vaultAddress === vault.vaultAddress,
                 ),
             );
-            let aprData, strategyData;
-            try {
-              const aprRes = await fetch(
-                `${process.env.REACT_APP_STEER_VAULT_APR_URL}?address=${vault.vaultAddress}&chain=${chainId}&interval=604800`,
-              );
-              aprData = await aprRes.json();
-            } catch {}
+            let strategyData;
             try {
               const strategyRes = await fetch(
                 `https://ipfs.io/ipfs/${vault.strategyIpfsHash}`,
@@ -106,7 +110,11 @@ export const useSteerVaults = (chainId: ChainId) => {
               address: vault.vaultAddress,
               poolAddress,
               strategy: strategyData,
-              apr: aprData ? aprData.apr : undefined,
+              apr: vaultAPRs.find(
+                (item: any) =>
+                  item.vaultAddress.toLowerCase() ===
+                  vault.vaultAddress.toLowerCase(),
+              )?.apr?.apr,
             });
           }
         }
