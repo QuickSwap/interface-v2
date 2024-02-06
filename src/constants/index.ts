@@ -1979,12 +1979,22 @@ export const GlobalValue = {
   },
 };
 
-export const paraswapTax: { [key: string]: number } = {
+export const paraswapTaxBuy: { [key: string]: number } = {
   '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
   '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3': 0,
   '0xf16ec50ec49abc95fa793c7871682833b6bc47e7': 1300,
   '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
   '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
+  '0x428360b02c1269bc1c79fbc399ad31d58c1e8fda': 200,
+};
+
+export const paraswapTaxSell: { [key: string]: number } = {
+  '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
+  '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3': 0,
+  '0xf16ec50ec49abc95fa793c7871682833b6bc47e7': 1300,
+  '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
+  '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
+  '0x428360b02c1269bc1c79fbc399ad31d58c1e8fda': 600,
 };
 
 export const GlobalData = {
