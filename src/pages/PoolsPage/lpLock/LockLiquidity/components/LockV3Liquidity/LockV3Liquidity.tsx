@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   TransactionErrorContent,
   TransactionConfirmationModal,
@@ -8,10 +8,15 @@ import { useTranslation } from 'react-i18next';
 import {
   ChainId,
 } from '@uniswap/sdk';
+import { ethers } from 'ethers';
+import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
 import { useActiveWeb3React } from 'hooks';
-import { ApprovalState } from 'hooks/useApproveCallback';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import { ApprovalState, useApproveCallbackTokenId} from 'hooks/useApproveCallback';
 import { useUniV3Positions, useV3Positions } from 'hooks/v3/useV3Positions';
+import { useTokenLockerContract } from 'hooks/useContract';
+import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
+import { calculateGasMargin } from 'utils';
 
 const defaultDate = '2024-12-24T10:30'
 /* dayjs.extend(duration) */
@@ -26,6 +31,8 @@ const LockV3Liquidity: React.FC = () => {
   const [tokenId, setTokenId] = useState('');
   const [amount, setAmount] = useState('')
   const [removeErrorMessage, setRemoveErrorMessage] = useState('');
+  const [feesInEth, setFeesInEth] = useState(ethers.BigNumber.from(0));
+  const [errorMsg, setErrorMsg] = useState('');
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [txHash, setTxHash] = useState('');
@@ -43,6 +50,13 @@ const LockV3Liquidity: React.FC = () => {
   } = useUniV3Positions(account);
   const positionsLoading = algebraPositionsLoading || uniV3PositionsLoading;
   const positions = (algebraPositions ?? []).concat(uniV3Positions ?? []);
+  const tokenLockerContract = useTokenLockerContract(chainId);
+  const nftPosManContractAddress = NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
+ 
+  const [approval, approveCallback] = useApproveCallbackTokenId(
+    tokenId != '' ? tokenId : undefined,
+    chainId ? V2_FACTORY_ADDRESSES[chainId] : undefined
+  );
 
   const handleChange = (e: any) => {
       setTokenId(e.target.value);
@@ -52,14 +66,59 @@ const LockV3Liquidity: React.FC = () => {
     setUnlockDate(new Date(e));
   };
 
+  useEffect(()=> {
+    async function getFeesInEth (address: string) {
+      setFeesInEth(await tokenLockerContract?.getFeesInETH(address))
+    }
+    if (nftPosManContractAddress) {
+      getFeesInEth(nftPosManContractAddress)
+    }
+  }, [nftPosManContractAddress])
+
   // @Hassaan: Implement approval logic here
   const onAttemptToApprove = async () => {
-    console.log('On attempt to approve')
+    console.log('On attempt to approves')
+    await approveCallback();
   };
 
   // @Hassaan: Implement lock logic here
   const onLock = async () => {
     console.log('On attempt to lock')
+    if (!nftPosManContractAddress || !library || !tokenLockerContract || !tokenId || tokenId == '') {
+      setErrorMsg(t('missingdependencies'));
+      throw new Error(t('missingdependencies'));
+    }
+    console.log('nftPosManContractAddress', nftPosManContractAddress)
+    console.log('account', account)
+    console.log('unlockDate.getTime() / 1000', unlockDate.getTime() / 1000)
+    console.log('', )
+    console.log('', )
+
+    const gasEstimate = await tokenLockerContract?.estimateGas.lockNFT(
+      nftPosManContractAddress,
+      account,
+      1,
+      unlockDate.getTime() / 1000,
+      tokenId,
+      false,
+      ethers.constants.AddressZero, {
+        value: feesInEth,
+      }
+    )
+    const gasEstimateWithMargin = calculateGasMargin(gasEstimate);
+    const response = await tokenLockerContract?.lockNFT(
+      nftPosManContractAddress,
+      account,
+      1,
+      unlockDate.getTime() / 1000,
+      tokenId,
+      false,
+      ethers.constants.AddressZero, {
+        value: feesInEth,
+        gasLimit: gasEstimateWithMargin
+      }
+    )
+    console.log(response, 'response after lock')
   };
 
   const handleDismissConfirmation = useCallback(() => {
@@ -154,7 +213,7 @@ const LockV3Liquidity: React.FC = () => {
       <Box className='swapButtonWrapper'>
         <Button
           fullWidth
-          disabled={approving /* @Hassaan: disable when already approved || approval !== ApprovalState.NOT_APPROVED */}
+          disabled={approving || approval !== ApprovalState.NOT_APPROVED }
           onClick={onAttemptToApprove}
         >
           {approving ? 'Approving...' : 'Approve'}
@@ -164,7 +223,7 @@ const LockV3Liquidity: React.FC = () => {
         <Button
           fullWidth
           // @Hassaan: disable button if not approved
-          /* disabled={approval !== ApprovalState.APPROVED} */
+           disabled={approval !== ApprovalState.APPROVED} 
           onClick={() => {
             setRemoveErrorMessage('');
             setShowConfirm(true);
