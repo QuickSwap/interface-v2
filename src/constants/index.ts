@@ -47,6 +47,8 @@ import {
   SLING,
   NINJAZ,
   RNDR,
+  USDV,
+  NFTE,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
 
@@ -1937,6 +1939,7 @@ export const GlobalValue = {
         SLING[ChainId.MATIC],
         NINJAZ[ChainId.MATIC],
         RNDR[ChainId.MATIC],
+        NFTE[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],
@@ -2021,6 +2024,7 @@ export const GlobalData = {
       UND[ChainId.MATIC],
       USDD[ChainId.MATIC],
       DAVOS[ChainId.MATIC],
+      USDV[ChainId.MATIC],
     ],
     [ChainId.MUMBAI]: [],
     [ChainId.DOGECHAIN]: [

@@ -1091,6 +1091,26 @@ export const STONE: { [chainId: number]: Token } = {
   ),
 };
 
+export const USDV: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x323665443CEf804A3b5206103304BD4872EA4253',
+    6,
+    'USDV',
+    'USDV',
+  ),
+};
+
+export const NFTE: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x492Fa53b88614923937B7197C87E0F7F8EEb7B20',
+    18,
+    'NFTE',
+    'NFTEarthOFT',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
