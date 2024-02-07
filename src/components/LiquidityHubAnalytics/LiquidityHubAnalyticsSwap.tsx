@@ -22,7 +22,7 @@ const LiquidityHubAnalyticsSwap: React.FC<{
       numeric: false,
       label: t('inAmount'),
       sortKey: (item: any) =>
-        Number(formatUnits(item.srcAmount, item.srcToken.decimals)),
+        Number(formatUnits(item.srcAmount, item.srcToken?.decimals)),
     },
     {
       id: 'tokenSymbol',
@@ -41,7 +41,7 @@ const LiquidityHubAnalyticsSwap: React.FC<{
       numeric: false,
       label: t('outAmount'),
       sortKey: (item: any) =>
-        Number(formatUnits(item.dexAmountOut, item.dstToken.decimals)),
+        Number(formatUnits(item.dexAmountOut, item.dstToken?.decimals)),
     },
     {
       id: 'outSymbol',
@@ -80,7 +80,7 @@ const LiquidityHubAnalyticsSwap: React.FC<{
           <p>{t('inAmount')}</p>
           <p>
             {formatNumber(
-              Number(formatUnits(item.srcAmount, item.srcToken.decimals)),
+              Number(formatUnits(item.srcAmount, item.srcToken?.decimals)),
             )}
           </p>
         </Box>
@@ -96,7 +96,7 @@ const LiquidityHubAnalyticsSwap: React.FC<{
           <p>{t('outAmount')}</p>
           <p>
             {formatNumber(
-              Number(formatUnits(item.dexAmountOut, item.dstToken.decimals)),
+              Number(formatUnits(item.dexAmountOut, item.dstToken?.decimals)),
             )}
           </p>
         </Box>

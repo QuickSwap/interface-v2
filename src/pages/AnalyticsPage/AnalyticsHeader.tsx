@@ -61,13 +61,9 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
 
   return (
     <Box width='100%' mb={3}>
-      <Box mb={4} className='flex items-center'>
+      <Box mb={4} className='flex items-center flex-wrap' gridGap={16}>
         <h1 className='h4'>{t('quickswapAnalytics')}</h1>
-        {v2 && v3 && !isPairDetails && (
-          <Box ml={2}>
-            <VersionToggle />
-          </Box>
-        )}
+        {v2 && v3 && !isPairDetails && <VersionToggle />}
       </Box>
       <Box margin='0 auto 24px'>
         <HypeLabAds />
