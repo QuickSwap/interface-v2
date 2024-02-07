@@ -12,13 +12,12 @@ export default function MyLiquidityLocks() {
   const { t } = useTranslation();
   const [isV3, setIsV3] = useState(false);
   const { account } = useActiveWeb3React();
-  //const account ="0x43affF626834561253C0fE4AC6B8B7dD44eEe68D"
   const {
     loading: v2IsLoading,
     pairs: allV2PairsWithLiquidity,
   } = useV2LiquidityPools(account ?? undefined);
   const pairs = useMemo(() => allV2PairsWithLiquidity, [allV2PairsWithLiquidity.length]);
-  const { data: v2Locks, loading: v2LockIsLoading } = useUserV2LiquidityLocks(account, pairs)
+  const { data: v2Locks, loading: v2LockIsLoading } = useUserV2LiquidityLocks(pairs, account)
   const { data: v3Locks, loading: v3LockIsLoading } = useUserV3LiquidityLocks(account)
 
   const showConnectAWallet = Boolean(!account);

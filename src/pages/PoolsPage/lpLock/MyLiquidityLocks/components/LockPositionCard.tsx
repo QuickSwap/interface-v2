@@ -5,7 +5,6 @@ import { DoubleCurrencyLogo } from 'components';
 import LockPositionCardDetails from './LockPositionCardDetails';
 import 'components/styles/LockPositionCard.scss';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
 import { LockInterface } from 'state/data/liquidityLocker';
 
 const LockPositionCard: React.FC<{ lock: LockInterface }> = ({ lock }) => {

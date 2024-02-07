@@ -102,7 +102,7 @@ axios.defaults.timeout = 120000
 axios.defaults.headers.common.Accept = 'application/json'
 axios.defaults.headers.common.Authorization = API_KEY
 
-export const useUserV2LiquidityLocks = (account: string, liquidityTokenList: UniswapSdkPair[]) => {
+export const useUserV2LiquidityLocks = (liquidityTokenList: UniswapSdkPair[], account?: string) => {
   const [data, setData] = useState<LockInterface[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -133,7 +133,7 @@ export const useUserV2LiquidityLocks = (account: string, liquidityTokenList: Uni
   return {data, loading, error}
 }
 
-export const useUserV3LiquidityLocks = (account: string) => {
+export const useUserV3LiquidityLocks = (account?: string) => {
   const [data, setData] = useState<LockInterface[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

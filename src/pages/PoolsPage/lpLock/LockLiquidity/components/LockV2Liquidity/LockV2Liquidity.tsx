@@ -137,9 +137,7 @@ const LockV2Liquidity: React.FC = () => {
     }
   };
 
-  // @Hassaan: Implement locking logic here
   const onLock = async () => {
-    console.log('On attempt to lock')
     if (!pairContract || !lpToken || !library || !deadline || v2IsLoading || !tokenLockerContract) {
       setErrorMsg(t('missingdependencies'));
       throw new Error(t('missingdependencies'));
@@ -161,7 +159,7 @@ const LockV2Liquidity: React.FC = () => {
         false,
         ethers.constants.AddressZero
       )
-      // @Hassaan: Gas estimation etc. here
+      
       const gasEstimate = await tokenLockerContract?.estimateGas.lockToken(
         lpTokenAddress,
         account,
@@ -183,7 +181,7 @@ const LockV2Liquidity: React.FC = () => {
       )
       setAttemptingTxn(false);
       setTxPending(true);
-      // @Hassaan: await tx here
+
       const receipt = await response.wait(); 
       console.log(receipt);
       setTxPending(false);

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import { useTranslation } from 'react-i18next';
@@ -6,12 +6,14 @@ import { LockInterface } from 'state/data/liquidityLocker';
 import { useIsTransactionPending } from 'state/transactions/hooks';
 import {
   ConfirmationModalContent,
+  NumericalInput,
   TransactionConfirmationModal,
   TransactionErrorContent,
 } from 'components';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { utils } from 'ethers';
+import { BigNumber, utils } from 'ethers';
+import './index.scss';
 dayjs.extend(utc);
 
 const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) => {
@@ -34,7 +36,10 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
   >(undefined);
   const isClaimPending = useIsTransactionPending(claimHash);
   const [claimErrorMessage, setClaimErrorMessage] = useState('');
+  const [amount, setAmount] = useState(liquidityLocked)
+  const [error, setError] = useState(false)
 
+  // @Hassaan: claim logic here
   const claim = useCallback(() => {
     if (!account) return
 
@@ -50,20 +55,87 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
     }
   }, [account]);
 
+  const onMax = () => {
+    setAmount(liquidityLocked)
+  }
+
+  const onPercentageClick = (percentage: string) => {
+    const formattedLiquidityLocked = BigNumber.from(lock.event.lockAmount)
+    setAmount(utils.formatUnits(formattedLiquidityLocked.mul(BigNumber.from(percentage)).div(100), lock.liquidityContract.tokenDecimals))
+  }
+
+  const onSetAmount = (inputAmount: string) => { 
+    setError(Number(inputAmount) > Number(liquidityLocked))
+    setAmount(inputAmount)
+  }
+
+  const amountInputDisabled = useMemo(() => 
+    Number(amount) === 0 || error
+  ,[amount])
+
+  const selectedAmountPercentage = useMemo(() => {
+    const formattedLiquidityLocked = BigNumber.from(lock.event.lockAmount)
+    const formatedAmount = utils.parseUnits(amount, lock.liquidityContract.tokenDecimals)
+
+    return formatedAmount.mul(100).div(formattedLiquidityLocked).toString()
+  } ,[amount])
+  
+
   function modalHeader() {
     return (
       <>
         <Box mb={2} textAlign='left'>
           <p>{t('claimLpTokensHeader')}</p>
         </Box>
-        <Box className='flex justify-center'>
+        <Box
+          className={`inputWrapper${
+            error ? ' errorInput' : ''
+          }`}
+        >
+          <NumericalInput
+            value={amount}
+            align='left'
+            placeholder='0.00'
+            onUserInput={(val) => {
+              onSetAmount(val);
+            }}
+          />
+        </Box>
+        {error && (
+          <small className='text-error'>
+            {t('insufficientBalance', { symbol: `${lock.pair.tokenSymbol}/${lock.token.tokenSymbol}` })}
+          </small>
+        )}
+        <Box className='flex justify-between items-center flex-wrap' mt={1}>
+          <Box mb={1} display='flex'>
+            <small>{`${t('available')}:`}</small>
+            <Box ml={0.5}>
+              <small>{liquidityLocked}</small>
+            </Box>
+          </Box>
+          <Box className='flex flex-wrap'>
+            <Box className={`percentageWrapper${selectedAmountPercentage === '25' ? ' selectedPercentageWrapper' : ''}`} onClick={() => onPercentageClick('25')}>
+              <small>25%</small>
+            </Box>
+            <Box className={`percentageWrapper${selectedAmountPercentage === '50' ? ' selectedPercentageWrapper' : ''}`} ml={1} onClick={() => onPercentageClick('50')}>
+              <small>50%</small>
+            </Box>
+            <Box className={`percentageWrapper${selectedAmountPercentage === '75' ? ' selectedPercentageWrapper' : ''}`} ml={1} onClick={() => onPercentageClick('75')}>
+              <small>75%</small>
+            </Box>
+            <Box className={`percentageWrapper${selectedAmountPercentage === '100' ? ' selectedPercentageWrapper' : ''}`} ml={1} onClick={onMax}>
+              <small>{t('max')}</small>
+            </Box>
+          </Box>
+        </Box>
+        <Box mt={2} className='flex justify-center'>
           <Button
+            className='claimButton'
+            disabled={amountInputDisabled || error}
             fullWidth
-            style={{ maxWidth: 300 }}
-            size='large'
             onClick={claim}
           >
-            {t('claim')}
+            {t('withdrawLpTokens')}
           </Button>
         </Box>
       </>
@@ -79,6 +151,8 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
     <>
       {claimConfirm && (
         <TransactionConfirmationModal
+          modalWrapper='modalWrapper'
+          isTxWrapper={false}
           isOpen={claimConfirm}
           onDismiss={dismissCollectConfirm}
           attemptingTxn={claiming}

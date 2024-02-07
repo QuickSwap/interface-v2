@@ -82,6 +82,7 @@
   "get": "Get",
   "claiming": "Claiming",
   "claim": "Claim",
+  "withdrawLpTokens": "Withdraw LP tokens",
   "convert": "Convert",
   "convertQUICK": "Convert your QUICK(OLD) to QUICK(NEW). Read more about QUICK token split <alink>here</alink>.",
   "conversionRate": "Conversion Rate",
