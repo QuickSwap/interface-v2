@@ -35,3 +35,11 @@
 .selectedPercentageWrapper {
   border: 1px solid $primary;
 }
+
+.linkButton {
+  display:flex;
+  align-items: center;
+  & small {
+    margin-right: 4px;
+  }
+}

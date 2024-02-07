@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
+import { ExternalLink as LinkIcon } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import { LockInterface } from 'state/data/liquidityLocker';
 import { useIsTransactionPending } from 'state/transactions/hooks';
@@ -195,11 +196,12 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
         <Box className='lockButtonRow'>
           <Button
             variant='outlined'
-            onClick={() =>
-              console.log('Click "See more details"')
-            }
+            onClick={() => window.open('https://app.team.finance/liquidity-locks', '_blank')}
           >
-            <small>{t('seeMoreDetails')}</small>
+            <Box className='linkButton'>
+              <small>{t('seeMoreDetails')}</small>
+              <LinkIcon size={20} />
+            </Box>
           </Button>
           <Button
             variant='contained'
