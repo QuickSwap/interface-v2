@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, TextField } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import { ExternalLink as LinkIcon } from 'react-feather';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
   const isLocked = dayjs.unix(lock.event.unlockTime) > dayjs()
   const withdrawn = lock?.event?.isWithdrawn
 
-  //modal states
+  // claim modal states
   const [claimConfirm, showClaimConfirm] = useState(false);
   const [claiming, setClaiming] = useState<boolean>(false);
   const [claimHash, setClaimHash] = useState<
@@ -38,7 +38,19 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
   const isClaimPending = useIsTransactionPending(claimHash);
   const [claimErrorMessage, setClaimErrorMessage] = useState('');
   const [amount, setAmount] = useState(liquidityLocked)
-  const [error, setError] = useState(false)
+  const [errorAmount, setErrorAmount] = useState(false)
+
+  // extend modal states
+  const [extendConfirm, showExtendConfirm] = useState(false);
+  const [extending, setExtending] = useState<boolean>(false);
+  const [extendHash, setExtendHash] = useState<
+    string | undefined
+  >(undefined);
+  const isExtendPending = useIsTransactionPending(extendHash);
+  const [extendErrorMessage, setExtendErrorMessage] = useState('');
+  const [extendDate, setExtendDate] = useState(dayjs.unix(lock.event.unlockTime).add(3, 'month'))
+  const [errorExtendDate, setErrorExtendDate] = useState(false)
+  const [selectedExtendDate, setSelectedExtendDate] = useState('3M')
 
   // @Hassaan: claim logic here
   const claim = useCallback(() => {
@@ -56,6 +68,24 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
     }
   }, [account]);
 
+  // @Hassaan: extend logic here
+  const extend = useCallback(() => {
+    if (!account) return
+
+    console.log('extendDate', extendDate) // dayjs object
+
+    setExtending(true);
+
+    try {
+      console.log('On click "EXTEND"')
+    } catch (error) {
+      setExtendErrorMessage(t('errorInTx'));
+      console.error(error);
+    } finally {
+      setExtending(false);
+    }
+  }, [account]);
+
   const onMax = () => {
     setAmount(liquidityLocked)
   }
@@ -66,12 +96,29 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
   }
 
   const onSetAmount = (inputAmount: string) => { 
-    setError(Number(inputAmount) > Number(liquidityLocked))
+    setErrorAmount(Number(inputAmount) > Number(liquidityLocked))
     setAmount(inputAmount)
   }
 
+  const onChangeDate = (e: string) => {
+    setExtendDate(dayjs(e));
+    setSelectedExtendDate('')
+  };
+
+  const addMonths = (months: number) => {
+    const newDate = dayjs.unix(lock.event.unlockTime).add(months, 'month')
+    setExtendDate(newDate);
+    setSelectedExtendDate(`${months}M`)
+  }
+
+  const addYears = (years: number) => {
+    const newDate = dayjs.unix(lock.event.unlockTime).add(years, 'year')
+    setExtendDate(newDate);
+    setSelectedExtendDate(`${years}Y`)
+  }
+
   const amountInputDisabled = useMemo(() => 
-    Number(amount) === 0 || error
+    Number(amount) === 0 || errorAmount
   ,[amount])
 
   const selectedAmountPercentage = useMemo(() => {
@@ -80,9 +127,8 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
 
     return formatedAmount.mul(100).div(formattedLiquidityLocked).toString()
   } ,[amount])
-  
 
-  function modalHeader() {
+  function modalHeaderClaim() {
     return (
       <>
         <Box mb={2} textAlign='left'>
@@ -90,7 +136,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
         </Box>
         <Box
           className={`inputWrapper${
-            error ? ' errorInput' : ''
+            errorAmount ? ' errorInput' : ''
           }`}
         >
           <NumericalInput
@@ -102,7 +148,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
             }}
           />
         </Box>
-        {error && (
+        {errorAmount && (
           <small className='text-error'>
             {t('insufficientBalance', { symbol: `${lock.pair.tokenSymbol}/${lock.token.tokenSymbol}` })}
           </small>
@@ -132,7 +178,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
         <Box mt={2} className='flex justify-center'>
           <Button
             className='claimButton'
-            disabled={amountInputDisabled || error}
+            disabled={amountInputDisabled || errorAmount}
             fullWidth
             onClick={claim}
           >
@@ -143,9 +189,78 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
     );
   }
 
-  const dismissCollectConfirm = () => {
+  function modalHeaderExtend() {
+    return (
+      <>
+        <Box mb={2} textAlign='left'>
+          <p>{t('extendLockHeader')}</p>
+        </Box>
+        <Box
+          className={`inputWrapper${
+            errorAmount ? ' errorInput' : ''
+          }`}
+        >
+          <TextField
+            fullWidth
+            label="Lock until"
+            type="datetime-local"
+            value={extendDate.format('YYYY-MM-DDTHH:mm')}
+            onChange={(e)=> onChangeDate(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              min: new Date((lock.event.unlockTime) * 1000).toISOString().slice(0, 16),
+            }}
+          />
+        </Box>
+        {errorExtendDate && (
+          <small className='text-error'>
+            {t('invalidDate')}
+          </small>
+        )}
+        <Box className='flex flex-wrap items-center flex-wrap' mt={1}>
+          <Box className={`percentageWrapper${selectedExtendDate === '3M' ? ' selectedPercentageWrapper' : ''}`} onClick={() => addMonths(3)}>
+            <small>3M</small>
+          </Box>
+          <Box className={`percentageWrapper${selectedExtendDate === '6M' ? ' selectedPercentageWrapper' : ''}`} onClick={() => addMonths(6)} ml={1}>
+            <small>6M</small>
+          </Box>
+          <Box className={`percentageWrapper${selectedExtendDate === '9M' ? ' selectedPercentageWrapper' : ''}`} onClick={() => addMonths(9)} ml={1}>
+            <small>9M</small>
+          </Box>
+          <Box className={`percentageWrapper${selectedExtendDate === '1Y' ? ' selectedPercentageWrapper' : ''}`} onClick={() => addYears(1)} ml={1}>
+            <small>1Y</small>
+          </Box>
+          <Box className={`percentageWrapper${selectedExtendDate === '2Y' ? ' selectedPercentageWrapper' : ''}`} onClick={() => addYears(2)} ml={1}>
+            <small>2Y</small>
+          </Box>
+          <Box className={`percentageWrapper${selectedExtendDate === '5Y' ? ' selectedPercentageWrapper' : ''}`} onClick={() => addYears(5)} ml={1}>
+            <small>5Y</small>
+          </Box>
+        </Box>
+        <Box mt={2} className='flex justify-center'>
+          <Button
+            className='claimButton'
+            disabled={errorExtendDate}
+            fullWidth
+            onClick={extend}
+          >
+            {t('extendLock')}
+          </Button>
+        </Box>
+      </>
+    );
+  }
+
+  const dismissClaimConfirm = () => {
     showClaimConfirm(false);
     setClaimErrorMessage('');
+  };
+
+  const dismissExtendConfirm = () => {
+    showExtendConfirm(false);
+    setExtendErrorMessage('');
   };
 
   return (
@@ -155,29 +270,60 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
           modalWrapper='modalWrapper'
           isTxWrapper={false}
           isOpen={claimConfirm}
-          onDismiss={dismissCollectConfirm}
+          onDismiss={dismissClaimConfirm}
           attemptingTxn={claiming}
           txPending={isClaimPending}
           hash={claimHash}
           content={() =>
             claimErrorMessage ? (
               <TransactionErrorContent
-                onDismiss={dismissCollectConfirm}
+                onDismiss={dismissClaimConfirm}
                 message={claimErrorMessage}
               />
             ) : (
               <ConfirmationModalContent
                 title={t('claimLpTokens')}
-                onDismiss={dismissCollectConfirm}
-                content={modalHeader}
+                onDismiss={dismissClaimConfirm}
+                content={modalHeaderClaim}
               />
             )
           }
           pendingText=''
           modalContent={
             isClaimPending
-              ? t('submittedTxCollectLpTokens')
+              ? t('submittedTxClaimLpTokens')
               : t('successClaimdLpTokens')
+          }
+        />
+      )}
+      {extendConfirm && (
+        <TransactionConfirmationModal
+          modalWrapper='modalWrapper'
+          isTxWrapper={false}
+          isOpen={extendConfirm}
+          onDismiss={dismissExtendConfirm}
+          attemptingTxn={extending}
+          txPending={isExtendPending}
+          hash={extendHash}
+          content={() =>
+            extendErrorMessage ? (
+              <TransactionErrorContent
+                onDismiss={dismissExtendConfirm}
+                message={extendErrorMessage}
+              />
+            ) : (
+              <ConfirmationModalContent
+                title={t('extendLock')}
+                onDismiss={dismissExtendConfirm}
+                content={modalHeaderExtend}
+              />
+            )
+          }
+          pendingText=''
+          modalContent={
+            isExtendPending
+              ? t('submittedTxExtendLock')
+              : t('successExtendLock')
           }
         />
       )}
@@ -190,7 +336,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
           <small>
             {t('lockupPeriod')}:
           </small>
-          <small>{`${dayjs.unix(lock.event.timeStamp).format('DD MMM YYYY')} - ${dayjs.unix(lock.event.unlockTime).format('DD MMM YYYY')}, ${dayjs.unix(lock.event.timeStamp).format('h:mm a')}`}</small>
+          <small>{`${dayjs.unix(lock.event.timeStamp).format('DD MMM YYYY')} - ${dayjs.unix(lock.event.unlockTime).format('DD MMM YYYY, h:mm a')}`}</small>
         </Box>
 
         <Box className='lockButtonRow'>
@@ -207,14 +353,14 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
             variant='contained'
             disabled={withdrawn}
             onClick={() => 
-              console.log('Click "Extend"')  
+              showExtendConfirm(true)
             }
           >
             <small>{t('extend')}</small>
           </Button>
           <Button
             variant='contained'
-            /* disabled={isLocked} */
+            disabled={isLocked}
             onClick={() => 
               showClaimConfirm(true)
             }
