@@ -1,0 +1,16 @@
+@use 'styles/variables' as *;
+
+.durationWrapper {
+  padding: 4px 10px 5px 10px;
+  border-radius: 10px;
+  background-color: $secondary3;
+  cursor: pointer;
+  & small {
+    color: $primary;
+    font-weight: 600
+  }
+}
+
+.selectedDurationWrapper {
+  border: 1px solid $primary;
+}

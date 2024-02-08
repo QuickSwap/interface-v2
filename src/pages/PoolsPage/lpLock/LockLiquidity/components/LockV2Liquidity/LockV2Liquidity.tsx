@@ -32,11 +32,12 @@ import { usePairContract, useTokenLockerContract } from 'hooks/useContract';
 import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
 import { tryParseAmount } from 'state/swap/hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { ethers } from 'ethers';
+import './index.scss';
+dayjs.extend(utc);
 //import { fetchUserV2LiquidityLocks } from 'state/data/liquidityLocker';
-
-const defaultDate = '2024-12-24T10:30'
-/* dayjs.extend(duration) */
 
 const LockV2Liquidity: React.FC = () => {
   const { t } = useTranslation();
@@ -47,7 +48,8 @@ const LockV2Liquidity: React.FC = () => {
 
   // inputs
   const [isV3, setIsV3] = useState(false);
-  const [unlockDate, setUnlockDate] = useState(new Date(defaultDate))
+  const [unlockDate, setUnlockDate] = useState(dayjs().add(90, 'days'))
+  const [selectedExtendDate, setSelectedExtendDate] = useState('3M')
   /* const [value, setValue] = useState<Dayjs | null>(dayjs().add(dayjs.duration({'years' : 1}))); */
   const [lpTokenAddress, setLpTokenAddress] = useState('');
   const [amount, setAmount] = useState('')
@@ -95,8 +97,20 @@ const LockV2Liquidity: React.FC = () => {
   };
 
   const handleChangeDate = (e: string) => {
-    setUnlockDate(new Date(e));
+    setUnlockDate(dayjs(e));
   };
+
+  const addMonths = (months: number) => {
+    const newDate = dayjs().add(months, 'month')
+    setUnlockDate(newDate);
+    setSelectedExtendDate(`${months}M`)
+  }
+
+  const addYears = (years: number) => {
+    const newDate = dayjs().add(years, 'year')
+    setUnlockDate(newDate);
+    setSelectedExtendDate(`${years}Y`)
+  }
 
   useEffect(()=> {
     async function getFeesInEth (address: string) {
@@ -153,7 +167,7 @@ const LockV2Liquidity: React.FC = () => {
         lpTokenAddress,
         account,
         parsedAmount.raw.toString(),
-        unlockDate.getTime() / 1000,
+        unlockDate.unix(),
         false,
         ethers.constants.AddressZero
       )
@@ -162,7 +176,7 @@ const LockV2Liquidity: React.FC = () => {
         lpTokenAddress,
         account,
         parsedAmount.raw.toString(),
-        unlockDate.getTime() / 1000,
+        unlockDate.unix(),
         false,
         ethers.constants.AddressZero
       )
@@ -171,7 +185,7 @@ const LockV2Liquidity: React.FC = () => {
         lpTokenAddress,
         account,
         parsedAmount.raw.toString(),
-        unlockDate.getTime() / 1000,
+        unlockDate.unix(),
         false,
         ethers.constants.AddressZero, {
           value: feesInEth
@@ -272,12 +286,32 @@ const LockV2Liquidity: React.FC = () => {
             fullWidth
             label="Lock until"
             type="datetime-local"
-            defaultValue={defaultDate}
+            value={unlockDate.format('YYYY-MM-DDTHH:mm')}
             onChange={(e)=> handleChangeDate(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
           />
+        </Box>
+        <Box className='flex flex-wrap items-center flex-wrap' mt={1}>
+          <Box className={`durationWrapper${selectedExtendDate === '3M' ? ' selectedDurationWrapper' : ''}`} onClick={() => addMonths(3)}>
+            <small>3M</small>
+          </Box>
+          <Box className={`durationWrapper${selectedExtendDate === '6M' ? ' selectedDurationWrapper' : ''}`} onClick={() => addMonths(6)} ml={1}>
+            <small>6M</small>
+          </Box>
+          <Box className={`durationWrapper${selectedExtendDate === '9M' ? ' selectedDurationWrapper' : ''}`} onClick={() => addMonths(9)} ml={1}>
+            <small>9M</small>
+          </Box>
+          <Box className={`durationWrapper${selectedExtendDate === '1Y' ? ' selectedDurationWrapper' : ''}`} onClick={() => addYears(1)} ml={1}>
+            <small>1Y</small>
+          </Box>
+          <Box className={`durationWrapper${selectedExtendDate === '2Y' ? ' selectedDurationWrapper' : ''}`} onClick={() => addYears(2)} ml={1}>
+            <small>2Y</small>
+          </Box>
+          <Box className={`durationWrapper${selectedExtendDate === '5Y' ? ' selectedDurationWrapper' : ''}`} onClick={() => addYears(5)} ml={1}>
+            <small>5Y</small>
+          </Box>
         </Box>
         {/* <Box mt={2.5}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
