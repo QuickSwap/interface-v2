@@ -93,23 +93,16 @@ const LockV2Liquidity: React.FC = () => {
   };
 
   const onSetAmount = (inputAmount: string) => {
-    console.log('inputAmount', inputAmount)
     setErrorAmount(Number(inputAmount) > getExactTokenAmount(userPoolBalance))
     setAmount(inputAmount)
     if (!userPoolBalance || !inputAmount || !lpToken) {
-      console.log('userPoolBalance', userPoolBalance)
-      console.log('lpToken', lpToken)
       setSelectedAmountPercentage('')
       return
     } 
 
     const formattedUserPoolBalance = BigNumber.from(userPoolBalance.raw.toString())
     const formatedAmount = utils.parseUnits(inputAmount, lpToken?.liquidityToken?.decimals)
-
     const percentage = formatedAmount.mul(100).div(formattedUserPoolBalance).toString()
-    console.log('percentage', percentage)
-    console.log(formatedAmount.mul(100).toString())
-    console.log(formattedUserPoolBalance.toString())
     setSelectedAmountPercentage(percentage)
   }
 
@@ -287,11 +280,12 @@ const LockV2Liquidity: React.FC = () => {
           <FormControl fullWidth variant="outlined">
             <InputLabel>LP Token</InputLabel>
             <Select
+            className='selectWrapper'
               disabled={v2IsLoading}
               value={lpTokenAddress}
               onChange={handleChange}
               label="LP Token"
-              renderValue={(value) => `Address: ${value}`}
+              renderValue={() => `${lpToken?.token0?.symbol}/${lpToken?.token1?.symbol}`}
             >
               <MenuItem value=''>
                 <em>None</em>

@@ -1,9 +1,16 @@
 @use 'styles/variables' as *;
 
+.selectWrapper {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid $secondary3;
+  overflow: hidden;
+}
+
 .inputWrapper {
   width: 100%;
   border-radius: 10px;
-  border: 1px solid $secondary2;
+  border: 1px solid $secondary3;
   overflow: hidden;
   padding: 12px 10px 12px 10px;
 }
