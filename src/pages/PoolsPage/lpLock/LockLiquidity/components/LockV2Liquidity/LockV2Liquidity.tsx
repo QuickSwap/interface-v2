@@ -3,13 +3,9 @@ import {
   TransactionErrorContent,
   TransactionConfirmationModal,
   ConfirmationModalContent,
+  NumericalInput,
 } from 'components';
 import { Contract } from '@ethersproject/contracts';
-/* import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import dayjs, { Dayjs } from 'dayjs';
-import duration from 'dayjs/plugin/duration'; */
 import {
   useNetworkSelectionModalToggle,
   useWalletModalToggle,
@@ -25,6 +21,7 @@ import {
   calculateGasMargin,
   useIsSupportedNetwork,
   formatTokenAmount,
+  getExactTokenAmount,
 } from 'utils';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import { useTokenBalance } from 'state/wallet/hooks';
@@ -34,25 +31,23 @@ import { tryParseAmount } from 'state/swap/hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { ethers } from 'ethers';
+import { BigNumber, ethers, utils } from 'ethers';
 import './index.scss';
 dayjs.extend(utc);
-//import { fetchUserV2LiquidityLocks } from 'state/data/liquidityLocker';
 
 const LockV2Liquidity: React.FC = () => {
   const { t } = useTranslation();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { account, chainId, library } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const nativeCurrency = Token.ETHER[chainIdToUse];
 
   // inputs
-  const [isV3, setIsV3] = useState(false);
   const [unlockDate, setUnlockDate] = useState(dayjs().add(90, 'days'))
   const [selectedExtendDate, setSelectedExtendDate] = useState('3M')
-  /* const [value, setValue] = useState<Dayjs | null>(dayjs().add(dayjs.duration({'years' : 1}))); */
   const [lpTokenAddress, setLpTokenAddress] = useState('');
   const [amount, setAmount] = useState('')
+  const [selectedAmountPercentage, setSelectedAmountPercentage] = useState('')
+  const [errorAmount, setErrorAmount] = useState(false)
   const [removeErrorMessage, setRemoveErrorMessage] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [feesInEth, setFeesInEth] = useState(ethers.BigNumber.from(0));
@@ -93,8 +88,38 @@ const LockV2Liquidity: React.FC = () => {
   const deadline = useTransactionDeadline();
 
   const handleChange = (e: any) => {
-      setLpTokenAddress(e.target.value);
+    setLpTokenAddress(e.target.value);
+    setAmount('')
   };
+
+  const onSetAmount = (inputAmount: string) => {
+    console.log('inputAmount', inputAmount)
+    setErrorAmount(Number(inputAmount) > getExactTokenAmount(userPoolBalance))
+    setAmount(inputAmount)
+    if (!userPoolBalance || !inputAmount || !lpToken) {
+      console.log('userPoolBalance', userPoolBalance)
+      console.log('lpToken', lpToken)
+      setSelectedAmountPercentage('')
+      return
+    } 
+
+    const formattedUserPoolBalance = BigNumber.from(userPoolBalance.raw.toString())
+    const formatedAmount = utils.parseUnits(inputAmount, lpToken?.liquidityToken?.decimals)
+
+    const percentage = formatedAmount.mul(100).div(formattedUserPoolBalance).toString()
+    console.log('percentage', percentage)
+    console.log(formatedAmount.mul(100).toString())
+    console.log(formattedUserPoolBalance.toString())
+    setSelectedAmountPercentage(percentage)
+  }
+
+  const onPercentageClick = (percentage: string) => {
+    if (!userPoolBalance) return
+
+    const formattedUserPoolBalance = BigNumber.from(userPoolBalance.raw.toString())
+    setAmount(utils.formatUnits(formattedUserPoolBalance.mul(BigNumber.from(percentage)).div(100), lpToken?.liquidityToken?.decimals))
+    setSelectedAmountPercentage(percentage.toString())
+  }
 
   const handleChangeDate = (e: string) => {
     setUnlockDate(dayjs(e));
@@ -258,7 +283,7 @@ const LockV2Liquidity: React.FC = () => {
         />
       )}
       <Box p={2} className='bg-secondary2 rounded-md'>
-        <Box>
+        <Box mb={2}>
           <FormControl fullWidth variant="outlined">
             <InputLabel>LP Token</InputLabel>
             <Select
@@ -277,10 +302,49 @@ const LockV2Liquidity: React.FC = () => {
             </Select>
           </FormControl>
         </Box>
-        <Box mt={2.5}>
-          <TextField value={amount} onChange={(e)=>setAmount(e.target.value)} type="number" fullWidth label="Amount to lock" variant="outlined" />
-          <small>{formatTokenAmount(userPoolBalance)}</small>
+        <Box
+          className={`inputWrapper${
+            errorAmount ? ' errorInput' : ''
+          }`}
+        >
+          <NumericalInput
+            value={amount}
+            align='left'
+            placeholder='0.00'
+            onUserInput={(val) => {
+              onSetAmount(val);
+            }}
+          />
         </Box>
+        {errorAmount && (
+          <small className='text-error'>
+            {t('insufficientBalance', { symbol: `${lpToken?.token0?.symbol}/${lpToken?.token1?.symbol}` })}
+          </small>
+        )}
+        {userPoolBalance &&
+          <Box className='flex justify-between items-center flex-wrap' mt={1}>
+            <Box display='flex'>
+              <small>{`${t('available')}:`}</small>
+              <Box ml={0.5}>
+                <small>{formatTokenAmount(userPoolBalance)}</small>
+              </Box>
+            </Box>
+            <Box className='flex flex-wrap'>
+              <Box className={`durationWrapper${selectedAmountPercentage === '25' ? ' selectedDurationWrapper' : ''}`} onClick={() => onPercentageClick('25')}>
+                <small>25%</small>
+              </Box>
+              <Box className={`durationWrapper${selectedAmountPercentage === '50' ? ' selectedDurationWrapper' : ''}`} ml={1} onClick={() => onPercentageClick('50')}>
+                <small>50%</small>
+              </Box>
+              <Box className={`durationWrapper${selectedAmountPercentage === '75' ? ' selectedDurationWrapper' : ''}`} ml={1} onClick={() => onPercentageClick('75')}>
+                <small>75%</small>
+              </Box>
+              <Box className={`durationWrapper${selectedAmountPercentage === '100' ? ' selectedDurationWrapper' : ''}`} ml={1} onClick={() => onPercentageClick('100')}>
+                <small>{t('max')}</small>
+              </Box>
+            </Box>
+          </Box>
+        }
         <Box mt={2.5}>
           <TextField
             fullWidth
