@@ -73,8 +73,6 @@ const LockV2Liquidity: React.FC = () => {
     lpToken?.liquidityToken,
   );
   const parsedAmount = tryParseAmount(chainIdToUse, amount, lpToken?.liquidityToken);
-    
-  // @Hassaan: this is the locker contract
   const tokenLockerContract = useTokenLockerContract(chainId);
 
   const [showConfirm, setShowConfirm] = useState(false);
@@ -179,6 +177,8 @@ const LockV2Liquidity: React.FC = () => {
           value: feesInEth
         }
       )
+
+      setTxHash(response.hash)
       setAttemptingTxn(false);
       setTxPending(true);
 
@@ -186,6 +186,7 @@ const LockV2Liquidity: React.FC = () => {
       console.log(receipt);
       setTxPending(false);
     } catch (error) {
+      setAttemptingTxn(false);
       setTxPending(false);
       setRemoveErrorMessage(t('errorInTx'));
     }
