@@ -89,18 +89,20 @@ const VersionToggle: React.FC = () => {
 
       {isAnalyticsPage && (
         <>
-          {lHAnalyticsAvailable && (
-            <Box
-              className={
-                version === 'liquidityhub' ? 'version-toggle-active' : ''
-              }
-              onClick={() => {
-                redirectWithVersion('liquidityhub');
-              }}
-            >
-              <small>{t('liquidityHub')}</small>
-            </Box>
-          )}
+          {lHAnalyticsAvailable &&
+            !history.location.pathname.includes('/token') &&
+            !history.location.pathname.includes('/pairs') && (
+              <Box
+                className={
+                  version === 'liquidityhub' ? 'version-toggle-active' : ''
+                }
+                onClick={() => {
+                  redirectWithVersion('liquidityhub');
+                }}
+              >
+                <small>{t('liquidityHub')}</small>
+              </Box>
+            )}
           <Box
             className={version === 'total' ? 'version-toggle-active' : ''}
             onClick={() => {

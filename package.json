@@ -128,6 +128,7 @@
     "@binance/w3w-web3-connector": "^1.0.0",
     "@cryption/df-sdk-core": "0.0.26",
     "@deficonnect/web3-connector": "^2.0.3",
+    "@hypelab/sdk-react": "^1.0.1",
     "@ichidao/ichi-vaults-sdk": "^0.0.13",
     "@intract/attribution": "^2.0.0",
     "@masa-finance/analytics-react": "^0.12.4",

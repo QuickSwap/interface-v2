@@ -34,19 +34,6 @@ window.addEventListener('error', (error) => {
 ReactDOM.render(
   <React.StrictMode>
     <HashRouter>
-      <script
-        suppressHydrationWarning={true}
-        dangerouslySetInnerHTML={{
-          __html: `!(function (h, y, p, e, l, a, b) {
-    ((l = document.createElement(h)).async = !0),
-      (l.src = y),
-      (l.onload = function () {
-        (a = { URL: p, propertySlug: e, environment: 'production' }), HypeLab.initialize(a);
-      }),
-      (b = document.getElementsByTagName(h)[0]).parentNode.insertBefore(l, b);
-  })('script', 'https://api.hypelab.com/v1/scripts/hp-sdk.js?v=0', 'https://api.hypelab.com', '81c00452a9');`,
-        }}
-      />
       <App />
     </HashRouter>
   </React.StrictMode>,
