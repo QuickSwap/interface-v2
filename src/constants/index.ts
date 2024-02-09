@@ -1755,6 +1755,30 @@ export const DefiedgeStrategies: {
       token1: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
       pool: '0xa5cd8351cbf30b531c7b11b0d9d3ff38ea2e280f',
     },
+    {
+      id: '0x4f5e0df21608cd454fd75d106bccee1d2ede341c',
+      token0: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+      token1: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
+      pool: '0xDE2D1fd2E8238aBA80a5B80c7262E4833D92f624',
+    },
+    {
+      id: '0x35e07a3ad7dbfd87114a5f0a11930e42339c5e63',
+      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      token1: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
+      pool: '0x9F1A8cAF3C8e94e43aa64922d67dFf4dc3e88A42',
+    },
+    {
+      id: '0xe32fDF1A5BD6C0723150DDeE23d2859A34BE7317',
+      token0: '0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39',
+      token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+      pool: '0xAb52931301078E2405c3a3EBB86e11ad0dFD2CfD',
+    },
+    {
+      id: '0x003a30218bbd59c55a34d795523b2efe34430884',
+      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      token1: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+      pool: '0x5b41EEDCfC8e0AE47493d4945Aa1AE4fe05430ff',
+    },
   ],
 };
 

@@ -12,6 +12,7 @@ import { SearchInput, CustomSwitch } from 'components';
 import AllMerklFarms from './AllMerklFarms';
 import { getConfig } from 'config/index';
 import AllV3Farms from './AllV3Farms';
+import { MerklClaimAll } from './MerklClaimAll';
 
 export interface V3Farm {
   token0?: Token;
@@ -138,55 +139,58 @@ export default function Farms() {
   }, [chainId]);
 
   return (
-    <Box className={isAllFarms ? '' : 'bg-palette'} borderRadius={10}>
-      {!isAllFarms && (
-        <Box
-          pt={2}
-          px={2}
-          className='flex flex-wrap justify-between'
-          gridGap={16}
-        >
-          <CustomSelector
-            height={36}
-            items={v3FarmCategories}
-            selectedItem={selectedFarmCategory}
-            handleChange={onChangeFarmCategory}
-          />
+    <>
+      {merklAvailable && <MerklClaimAll />}
+      <Box className={isAllFarms ? '' : 'bg-palette'} borderRadius={10}>
+        {!isAllFarms && (
           <Box
-            className='flex items-center flex-wrap'
-            width={isMobile ? '100%' : 'auto'}
-            gridGap='16px'
+            pt={2}
+            px={2}
+            className='flex flex-wrap justify-between'
+            gridGap={16}
           >
-            <Box width={isMobile ? '100%' : 200}>
-              <SearchInput
-                placeholder='Search'
-                value={searchValue}
-                setValue={setSearchValue}
-                isIconAfter
-              />
-            </Box>
-            {selectedFarmCategory.id !== 0 && !merklAvailable && (
-              <Box width={isMobile ? '100%' : 160}>
-                <CustomSwitch
-                  width='100%'
-                  height={40}
-                  items={farmStatusItems}
+            <CustomSelector
+              height={36}
+              items={v3FarmCategories}
+              selectedItem={selectedFarmCategory}
+              handleChange={onChangeFarmCategory}
+            />
+            <Box
+              className='flex items-center flex-wrap'
+              width={isMobile ? '100%' : 'auto'}
+              gridGap='16px'
+            >
+              <Box width={isMobile ? '100%' : 200}>
+                <SearchInput
+                  placeholder='Search'
+                  value={searchValue}
+                  setValue={setSearchValue}
+                  isIconAfter
                 />
               </Box>
-            )}
+              {selectedFarmCategory.id !== 0 && !merklAvailable && (
+                <Box width={isMobile ? '100%' : 160}>
+                  <CustomSwitch
+                    width='100%'
+                    height={40}
+                    items={farmStatusItems}
+                  />
+                </Box>
+              )}
+            </Box>
           </Box>
-        </Box>
-      )}
+        )}
 
-      {selectedFarmCategory?.id === 0 && (
-        <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
-      )}
-      {selectedFarmCategory.id === 1 &&
-        (merklAvailable ? (
-          <AllMerklFarms searchValue={searchValue} farmStatus={farmStatus} />
-        ) : (
-          <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
-        ))}
-    </Box>
+        {selectedFarmCategory?.id === 0 && (
+          <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
+        )}
+        {selectedFarmCategory.id === 1 &&
+          (merklAvailable ? (
+            <AllMerklFarms searchValue={searchValue} farmStatus={farmStatus} />
+          ) : (
+            <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
+          ))}
+      </Box>
+    </>
   );
 }
