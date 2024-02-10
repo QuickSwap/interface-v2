@@ -47,7 +47,10 @@ import {
   SLING,
   NINJAZ,
   RNDR,
+  USDV,
+  NFTE,
 } from './v3/addresses';
+import { FeeAmount } from 'v3lib/utils';
 
 export const bondAPIV2BaseURL = 'https://api-v2.apeswap.finance';
 export const CEX_BILL_ADDRESS = '0x6D7637683eaD28F775F56506602191fdE417fF60';
@@ -302,6 +305,7 @@ export interface GammaPair {
   pid?: number;
   masterChefIndex?: number;
   withdrawOnly?: boolean;
+  fee?: FeeAmount;
 }
 
 export const GammaPairs: {
@@ -1662,6 +1666,116 @@ export const GammaPairs: {
       },
     ],
   },
+  [ChainId.MANTA]: {
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0xb73603c5d87fa094b7314c74ace2e64d165016fb-500': [
+      {
+        address: '0x0d8f8eb720f4e3c1bcaa50c78339f796cd4a380f',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
+        token1Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
+        fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 0,
+      },
+    ],
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0xf417f5a458ec102b90352f697d6e2ac3a3d2851f-500': [
+      {
+        address: '0x2eab29331d62a8f9b42559d9fa844b02dc85ca37',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
+        token1Address: '0xf417F5A458eC102B90352F697D6e2Ac3A3d2851f',
+        fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 1,
+      },
+    ],
+    '0x0f52a51287f9b3894d73df05164d0ee2533ccbb4-0xb73603c5d87fa094b7314c74ace2e64d165016fb-500': [
+      {
+        address: '0x67a79c80382979d61a3a9ed892f44d8046163a9d',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x0f52A51287f9b3894d73Df05164D0Ee2533ccBB4',
+        token1Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
+        fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 2,
+      },
+    ],
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0x305e88d809c9dc03179554bfbf85ac05ce8f18d6-500': [
+      {
+        address: '0xc40f63879630dff5b69dd6d287f7735e65e90702',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
+        token1Address: '0x305E88d809c9DC03179554BFbf85Ac05Ce8F18d6',
+        fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 3,
+      },
+    ],
+    '0xb73603c5d87fa094b7314c74ace2e64d165016fb-0xe22e3d44ea9fb0a87ea3f7a8f41d869c677f0020-10000': [
+      {
+        address: '0x22c0e57f6347dba505e0052d45d4c610a55baf71',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
+        token1Address: '0xE22E3D44Ea9Fb0A87Ea3F7a8f41D869C677f0020',
+        fee: FeeAmount.HIGH,
+        ableToFarm: true,
+        pid: 4,
+      },
+    ],
+    '0xb73603c5d87fa094b7314c74ace2e64d165016fb-0xf417f5a458ec102b90352f697d6e2ac3a3d2851f-100': [
+      {
+        address: '0x2ffaced56c4366115b65adbb8703a5541a27973d',
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        token0Address: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
+        token1Address: '0xf417F5A458eC102B90352F697D6e2Ac3A3d2851f',
+        fee: FeeAmount.LOWEST,
+        ableToFarm: true,
+        pid: 5,
+      },
+    ],
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0x2fe3ad97a60eb7c79a976fc18bb5ffd07dd94ba5-100': [
+      {
+        address: '0xa6e2673cd6dad4c9b4eb638ce35cf44e17d32319',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        token0Address: '0x0dc808adce2099a9f62aa87d9670745aba741746',
+        token1Address: '0x2FE3AD97a60EB7c79A976FC18Bb5fFD07Dd94BA5',
+        fee: FeeAmount.LOWEST,
+        ableToFarm: true,
+        pid: 6,
+      },
+    ],
+    '0xbdad407f77f44f7da6684b416b1951eca461fb07-0xec901da9c68e90798bbbb74c11406a32a70652c3-3000': [
+      {
+        address: '0x099dD23Eaab20F5eC43f50055D6e3030C66CC182',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xbdAd407F77f44F7Da6684B416b1951ECa461FB07',
+        token1Address: '0xEc901DA9c68E90798BbBb74c11406A32A70652C3',
+        fee: FeeAmount.MEDIUM,
+        ableToFarm: true,
+        pid: 7,
+      },
+    ],
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0xec901da9c68e90798bbbb74c11406a32a70652c3-3000': [
+      {
+        address: '0xa6e2673cd6dad4c9b4eb638ce35cf44e17d32319',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        token0Address: '0x0dc808adce2099a9f62aa87d9670745aba741746',
+        token1Address: '0xEc901DA9c68E90798BbBb74c11406A32A70652C3',
+        fee: FeeAmount.MEDIUM,
+        ableToFarm: true,
+        pid: 8,
+      },
+    ],
+  },
 };
 
 export const UnipilotVaults: {
@@ -1699,8 +1813,10 @@ export const IchiVaults: {
     '0x4D469cA8f3F67ef276c8d660E60fAc73067e298d',
     '0x4218d9843fF95e22e87B7F2B5bd95EBdb6FC42cC',
     '0x5eFe299401dD907b1b01950c9CdC6136f4205Ce7',
-    '0x52Ae324BC3392fc1efc5fae6987363ee0c876f4f',
-    '0xcE1B4cCA267FE0F936E46d93d5E49C3Ef4eB11Ba',
+    '0xdA4C73f04c790802267b02e1dFe84eddE795124A',
+    '0xB03b613545109d5E4Ee23eD3fF2a745d634b7319',
+    '0x75A456b42DcEc70d644aebAE3bB2AEA768D9397A',
+    '0xaE2979B6328Fb75eBf311B30e1b985Ecb1A813D2',
   ],
 };
 
@@ -1823,6 +1939,7 @@ export const GlobalValue = {
         SLING[ChainId.MATIC],
         NINJAZ[ChainId.MATIC],
         RNDR[ChainId.MATIC],
+        NFTE[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],
@@ -1865,11 +1982,22 @@ export const GlobalValue = {
   },
 };
 
-export const paraswapTax: { [key: string]: number } = {
+export const paraswapTaxBuy: { [key: string]: number } = {
   '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
   '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3': 0,
   '0xf16ec50ec49abc95fa793c7871682833b6bc47e7': 1300,
   '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
+  '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
+  '0x428360b02c1269bc1c79fbc399ad31d58c1e8fda': 200,
+};
+
+export const paraswapTaxSell: { [key: string]: number } = {
+  '0xed88227296943857409a8e0f15ad7134e70d0f73': 100,
+  '0x37eb60f78e06c4bb2a5f836b0fc6bccbbaa995b3': 0,
+  '0xf16ec50ec49abc95fa793c7871682833b6bc47e7': 1300,
+  '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
+  '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
+  '0x428360b02c1269bc1c79fbc399ad31d58c1e8fda': 600,
 };
 
 export const GlobalData = {
@@ -1896,6 +2024,7 @@ export const GlobalData = {
       UND[ChainId.MATIC],
       USDD[ChainId.MATIC],
       DAVOS[ChainId.MATIC],
+      USDV[ChainId.MATIC],
     ],
     [ChainId.MUMBAI]: [],
     [ChainId.DOGECHAIN]: [

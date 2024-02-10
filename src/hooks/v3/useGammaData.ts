@@ -12,6 +12,8 @@ const gammaChainName = (chainId?: ChainId) => {
   switch (chainId) {
     case ChainId.ZKEVM:
       return 'polygon-zkevm';
+    case ChainId.MANTA:
+      return 'manta';
     default:
       return 'polygon';
   }

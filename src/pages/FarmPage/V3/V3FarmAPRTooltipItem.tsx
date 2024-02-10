@@ -14,6 +14,11 @@ export const V3FarmAPRTooltipItem: React.FC<{
   return (
     <Box>
       <Box className='flex items-center' gridGap={6}>
+        {!!farm.fee && (
+          <Box className='farmAPRTitleWrapper bg-textSecondary'>
+            <span className='text-gray32'>{farm.fee / 10000}%</span>
+          </Box>
+        )}
         {farm.title && (
           <Box
             className={`farmAPRTitleWrapper ${
@@ -59,6 +64,12 @@ export const V3FarmAPRTooltipItem: React.FC<{
                 currencyStr += '&';
               }
               currencyStr += `currency1=${token1}`;
+            }
+            if (farm.fee) {
+              if (token0 && token1) {
+                currencyStr += '&';
+                currencyStr += `feeTier=${farm.fee}`;
+              }
             }
             window.open(`#/pools?${currencyStr}`, '_blank');
           }}
