@@ -48,11 +48,10 @@ const LockV2Liquidity: React.FC = () => {
   const [amount, setAmount] = useState('')
   const [selectedAmountPercentage, setSelectedAmountPercentage] = useState('')
   const [errorAmount, setErrorAmount] = useState(false)
-  const [removeErrorMessage, setRemoveErrorMessage] = useState('');
+  const [lockErrorMessage, setLockErrorMessage] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [feesInEth, setFeesInEth] = useState(ethers.BigNumber.from(0));
-
-  const { ethereum } = window as any;
+  
   const toggleWalletModal = useWalletModalToggle();
   const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
 
@@ -220,7 +219,7 @@ const LockV2Liquidity: React.FC = () => {
     } catch (error) {
       setAttemptingTxn(false);
       setTxPending(false);
-      setRemoveErrorMessage(t('errorInTx'));
+      setLockErrorMessage(t('errorInTx'));
     }
   };
 
@@ -254,10 +253,10 @@ const LockV2Liquidity: React.FC = () => {
           txPending={txPending}
           hash={txHash}
           content={() =>
-            removeErrorMessage ? (
+            lockErrorMessage ? (
               <TransactionErrorContent
                 onDismiss={handleDismissConfirmation}
-                message={removeErrorMessage}
+                message={lockErrorMessage}
               />
             ) : (
               <ConfirmationModalContent
@@ -280,7 +279,7 @@ const LockV2Liquidity: React.FC = () => {
           <FormControl fullWidth variant="outlined">
             <InputLabel>LP Token</InputLabel>
             <Select
-            className='selectWrapper'
+              className='selectWrapper'
               disabled={v2IsLoading}
               value={lpTokenAddress}
               onChange={handleChange}
@@ -371,11 +370,6 @@ const LockV2Liquidity: React.FC = () => {
             <small>5Y</small>
           </Box>
         </Box>
-        {/* <Box mt={2.5}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker value={value} onChange={(e)=> setValue(e)} />
-          </LocalizationProvider>
-        </Box> */}
       </Box>
       <Box className='swapButtonWrapper'>
         <Button
@@ -391,7 +385,7 @@ const LockV2Liquidity: React.FC = () => {
           fullWidth
           disabled={approval !== ApprovalState.APPROVED}
           onClick={() => {
-            setRemoveErrorMessage('');
+            setLockErrorMessage('');
             setShowConfirm(true);
           }}
         >

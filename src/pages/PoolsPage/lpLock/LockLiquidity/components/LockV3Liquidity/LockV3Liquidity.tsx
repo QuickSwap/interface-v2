@@ -17,9 +17,10 @@ import { useUniV3Positions, useV3Positions } from 'hooks/v3/useV3Positions';
 import { useTokenLockerContract } from 'hooks/useContract';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { calculateGasMargin } from 'utils';
-
-const defaultDate = '2024-12-24T10:30'
-/* dayjs.extend(duration) */
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import './index.scss';
+dayjs.extend(utc);
 
 const LockV3Liquidity: React.FC = () => {
   const { t } = useTranslation();
@@ -27,10 +28,11 @@ const LockV3Liquidity: React.FC = () => {
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
   // inputs
-  const [unlockDate, setUnlockDate] = useState(new Date(defaultDate))
+  const [unlockDate, setUnlockDate] = useState(dayjs().add(90, 'days'))
+  const [selectedExtendDate, setSelectedExtendDate] = useState('3M')
   const [tokenId, setTokenId] = useState('');
   const [amount, setAmount] = useState('')
-  const [removeErrorMessage, setRemoveErrorMessage] = useState('');
+  const [lockErrorMessage, setLockErrorMessage] = useState('');
   const [feesInEth, setFeesInEth] = useState(ethers.BigNumber.from(0));
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -63,8 +65,20 @@ const LockV3Liquidity: React.FC = () => {
   };
 
   const handleChangeDate = (e: string) => {
-    setUnlockDate(new Date(e));
+    setUnlockDate(dayjs(e));
   };
+
+  const addMonths = (months: number) => {
+    const newDate = dayjs().add(months, 'month')
+    setUnlockDate(newDate);
+    setSelectedExtendDate(`${months}M`)
+  }
+
+  const addYears = (years: number) => {
+    const newDate = dayjs().add(years, 'year')
+    setUnlockDate(newDate);
+    setSelectedExtendDate(`${years}Y`)
+  }
 
   useEffect(()=> {
     async function getFeesInEth (address: string) {
@@ -75,10 +89,14 @@ const LockV3Liquidity: React.FC = () => {
     }
   }, [nftPosManContractAddress])
 
-  // @Hassaan: Implement approval logic here
   const onAttemptToApprove = async () => {
-    console.log('On attempt to approves')
-    await approveCallback();
+    setApproving(true);
+    try {
+      await approveCallback();
+      setApproving(false);
+    } catch (e) {
+      setApproving(false);
+    }
   };
 
   // @Hassaan: Implement lock logic here
@@ -90,35 +108,49 @@ const LockV3Liquidity: React.FC = () => {
     }
     console.log('nftPosManContractAddress', nftPosManContractAddress)
     console.log('account', account)
-    console.log('unlockDate.getTime() / 1000', unlockDate.getTime() / 1000)
+    console.log('unlockDate.unix()', unlockDate.unix())
     console.log('', )
     console.log('', )
 
-    const gasEstimate = await tokenLockerContract?.estimateGas.lockNFT(
-      nftPosManContractAddress,
-      account,
-      1,
-      unlockDate.getTime() / 1000,
-      tokenId,
-      false,
-      ethers.constants.AddressZero, {
-        value: feesInEth,
-      }
-    )
-    const gasEstimateWithMargin = calculateGasMargin(gasEstimate);
-    const response = await tokenLockerContract?.lockNFT(
-      nftPosManContractAddress,
-      account,
-      1,
-      unlockDate.getTime() / 1000,
-      tokenId,
-      false,
-      ethers.constants.AddressZero, {
-        value: feesInEth,
-        gasLimit: gasEstimateWithMargin
-      }
-    )
-    console.log(response, 'response after lock')
+    try {
+      setAttemptingTxn(true);
+      const gasEstimate = await tokenLockerContract?.estimateGas.lockNFT(
+        nftPosManContractAddress,
+        account,
+        1,
+        unlockDate.unix(),
+        tokenId,
+        false,
+        ethers.constants.AddressZero, {
+          value: feesInEth,
+        }
+      )
+      const gasEstimateWithMargin = calculateGasMargin(gasEstimate);
+      const response = await tokenLockerContract?.lockNFT(
+        nftPosManContractAddress,
+        account,
+        1,
+        unlockDate.unix(),
+        tokenId,
+        false,
+        ethers.constants.AddressZero, {
+          value: feesInEth,
+          gasLimit: gasEstimateWithMargin
+        }
+      )
+      console.log(response, 'response after lock')
+      setTxHash(response.hash)
+      setAttemptingTxn(false);
+      setTxPending(true);
+
+      const receipt = await response.wait(); 
+      console.log(receipt);
+      setTxPending(false);
+    } catch (error) {
+      setAttemptingTxn(false);
+      setTxPending(false);
+      setLockErrorMessage(t('errorInTx'));
+    }
   };
 
   const handleDismissConfirmation = useCallback(() => {
@@ -151,10 +183,10 @@ const LockV3Liquidity: React.FC = () => {
           txPending={txPending}
           hash={txHash}
           content={() =>
-            removeErrorMessage ? (
+            lockErrorMessage ? (
               <TransactionErrorContent
                 onDismiss={handleDismissConfirmation}
-                message={removeErrorMessage}
+                message={lockErrorMessage}
               />
             ) : (
               <ConfirmationModalContent
@@ -197,18 +229,33 @@ const LockV3Liquidity: React.FC = () => {
             fullWidth
             label="Lock until"
             type="datetime-local"
-            defaultValue={defaultDate}
+            value={unlockDate.format('YYYY-MM-DDTHH:mm')}
             onChange={(e)=> handleChangeDate(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
           />
         </Box>
-        {/* <Box mt={2.5}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker value={value} onChange={(e)=> setValue(e)} />
-          </LocalizationProvider>
-        </Box> */}
+        <Box className='flex flex-wrap items-center flex-wrap' mt={1}>
+          <Box className={`durationWrapper${selectedExtendDate === '3M' ? ' selectedDurationWrapper' : ''}`} onClick={() => addMonths(3)}>
+            <small>3M</small>
+          </Box>
+          <Box className={`durationWrapper${selectedExtendDate === '6M' ? ' selectedDurationWrapper' : ''}`} onClick={() => addMonths(6)} ml={1}>
+            <small>6M</small>
+          </Box>
+          <Box className={`durationWrapper${selectedExtendDate === '9M' ? ' selectedDurationWrapper' : ''}`} onClick={() => addMonths(9)} ml={1}>
+            <small>9M</small>
+          </Box>
+          <Box className={`durationWrapper${selectedExtendDate === '1Y' ? ' selectedDurationWrapper' : ''}`} onClick={() => addYears(1)} ml={1}>
+            <small>1Y</small>
+          </Box>
+          <Box className={`durationWrapper${selectedExtendDate === '2Y' ? ' selectedDurationWrapper' : ''}`} onClick={() => addYears(2)} ml={1}>
+            <small>2Y</small>
+          </Box>
+          <Box className={`durationWrapper${selectedExtendDate === '5Y' ? ' selectedDurationWrapper' : ''}`} onClick={() => addYears(5)} ml={1}>
+            <small>5Y</small>
+          </Box>
+        </Box>
       </Box>
       <Box className='swapButtonWrapper'>
         <Button
@@ -222,10 +269,9 @@ const LockV3Liquidity: React.FC = () => {
       <Box mt={2} className='swapButtonWrapper'>
         <Button
           fullWidth
-          // @Hassaan: disable button if not approved
-           disabled={approval !== ApprovalState.APPROVED} 
+          disabled={approval !== ApprovalState.APPROVED} 
           onClick={() => {
-            setRemoveErrorMessage('');
+            setLockErrorMessage('');
             setShowConfirm(true);
           }}
         >
