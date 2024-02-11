@@ -271,6 +271,7 @@ export function SupplyLiquidityV3() {
     chainId,
     baseCurrency?.wrapped.address,
     currencyB?.wrapped.address,
+    mintInfo.feeAmount,
   );
   const gammaPairs = gammaPairData?.pairs;
   const gammaPair =
@@ -362,14 +363,7 @@ export function SupplyLiquidityV3() {
               />
             </Box>
           )}
-        {(liquidityRangeType ===
-          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
-          liquidityRangeType ===
-            GlobalConst.v3LiquidityRangeType.STEER_RANGE) && (
-          <Box my={2}>
-            <SelectFeeTier mintInfo={mintInfo} />
-          </Box>
-        )}
+        <SelectFeeTier mintInfo={mintInfo} />
         <SelectRange
           currencyA={baseCurrency}
           currencyB={quoteCurrency}

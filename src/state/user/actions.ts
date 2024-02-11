@@ -64,3 +64,6 @@ export const updateUserLiquidityHub = createAction<{
 export const updateUserZapSlippage = createAction<{
   userZapSlippage: number;
 }>('user/updateUserZapSlippage');
+export const updateIsInfiniteApproval = createAction<{
+  isInfiniteApproval: boolean;
+}>('user/updateIsInfiniteApproval');

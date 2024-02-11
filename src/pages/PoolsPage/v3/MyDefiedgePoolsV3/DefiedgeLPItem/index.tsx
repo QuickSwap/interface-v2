@@ -5,10 +5,8 @@ import { DoubleCurrencyLogo } from 'components';
 import './index.scss';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import DefiedgeLPItemDetails from '../DefiedgeLPItemDetails';
-import { useActiveWeb3React } from 'hooks';
 import { ArrowRight } from 'react-feather';
 import { useHistory } from 'react-router-dom';
-import { getGammaPairsForTokens } from 'utils';
 
 const DefiedgeLPItem: React.FC<{ defiedgePosition: any }> = ({
   defiedgePosition,

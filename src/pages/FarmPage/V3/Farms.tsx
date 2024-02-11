@@ -13,6 +13,7 @@ import AllMerklFarms from './AllMerklFarms';
 import { getConfig } from 'config/index';
 import AllV3Farms from './AllV3Farms';
 import { MerklClaimAll } from './MerklClaimAll';
+import { FeeAmount } from 'v3lib/utils';
 
 export interface V3Farm {
   token0?: Token;
@@ -28,6 +29,7 @@ export interface V3Farm {
   farmAPR: number;
   type: string;
   loading?: boolean;
+  fee?: FeeAmount;
 }
 
 export default function Farms() {

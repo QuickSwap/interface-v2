@@ -568,6 +568,7 @@ export function useV3DerivedMintInfo(
           chainId,
           currencyA?.wrapped.address,
           currencyB?.wrapped.address,
+          feeAmount,
         )
       : undefined;
   const gammaPairReverted = gammaPairData?.reversed;

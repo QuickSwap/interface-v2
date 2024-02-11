@@ -103,6 +103,7 @@ export function EnterAmounts({
     chainId,
     currencyA?.wrapped.address,
     currencyB?.wrapped.address,
+    mintInfo.feeAmount,
   );
   const gammaPairs = gammaPairData?.pairs;
   const gammaPair =

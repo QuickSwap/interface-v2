@@ -86,6 +86,7 @@ export function SelectRange({
     chainId,
     currencyAAddress,
     currencyBAddress,
+    mintInfo.feeAmount,
   );
   const gammaPair = gammaPairData?.pairs;
   const gammaPairReversed = gammaPairData?.reversed;
