@@ -17,6 +17,7 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
     chainId,
     gammaPosition?.token0?.address,
     gammaPosition?.token1?.address,
+    gammaPosition?.feeAmount,
   );
   const gammaPair = gammaPairData?.pairs;
   const gammaPairInfo = gammaPair
@@ -47,6 +48,11 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
                 {gammaPosition.token0.symbol}/{gammaPosition.token1.symbol}
               </p>
             </>
+          )}
+          {gammaPairInfo?.fee && (
+            <Box ml={1.5} mr={-0.5} className='gamma-liquidity-range'>
+              <small>{gammaPairInfo.fee / 10000}%</small>
+            </Box>
           )}
           {gammaPairInfo && (
             <Box ml={1.5} className='gamma-liquidity-range'>

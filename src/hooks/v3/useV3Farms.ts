@@ -301,7 +301,7 @@ export const useEternalFarmsFiltered = (
   };
 };
 
-export const useMerklFarms = () => {
+export const useGetMerklFarms = () => {
   const { chainId, account } = useActiveWeb3React();
   const fetchMerklFarms = async () => {
     const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
@@ -320,7 +320,7 @@ export const useMerklFarms = () => {
     return Object.values(farmData) as any[];
   };
   const lastTx = useLastTransactionHash();
-  const { isLoading: loadingMerkl, data: merklFarms, refetch } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: ['fetchMerklFarms', chainId, account],
     queryFn: fetchMerklFarms,
     refetchInterval: 300000,
@@ -329,6 +329,12 @@ export const useMerklFarms = () => {
     refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTx]);
+  return { isLoading, data, refetch };
+};
+
+export const useMerklFarms = () => {
+  const { chainId } = useActiveWeb3React();
+  const { isLoading: loadingMerkl, data: merklFarms } = useGetMerklFarms();
   const { loading: loadingSteer, data: steerVaults } = useSteerVaults(chainId);
   const { isLoading: loadingGamma, data: gammaData } = useGammaData();
   const { loading: loadingICHI, data: ichiVaults } = useICHIVaults();

@@ -61,7 +61,8 @@ import { SwapSide } from '@paraswap/sdk';
 import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
 import {
   GlobalValue,
-  paraswapTax,
+  paraswapTaxSell,
+  paraswapTaxBuy,
   RouterTypes,
   SmartRouter,
 } from 'constants/index';
@@ -73,12 +74,7 @@ import useSwapRedirects from 'hooks/useSwapRedirect';
 import callWallchainAPI from 'utils/wallchainService';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { ONE } from 'v3lib/utils';
-import {
-  NATIVE_CONVERTER,
-  SWAP_ROUTER_ADDRESS,
-  toV3Currency,
-  toV3Token,
-} from 'constants/v3/addresses';
+import { NATIVE_CONVERTER, SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { getConfig } from 'config/index';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
@@ -355,8 +351,8 @@ const SwapBestTrade: React.FC<{
           maxImpact: maxImpactAllowed,
           partner: 'quickswapv3',
           //@ts-ignore
-          srcTokenTransferFee: paraswapTax[srcToken.toLowerCase()],
-          destTokenTransferFee: paraswapTax[destToken.toLowerCase()],
+          srcTokenTransferFee: paraswapTaxSell[srcToken.toLowerCase()],
+          destTokenTransferFee: paraswapTaxBuy[destToken.toLowerCase()],
         },
       });
 

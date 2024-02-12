@@ -167,15 +167,11 @@ export const UNI_SWAP_ROUTER: AddressMap = {
   [ChainId.IMX]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
 };
 
-export const GAMMA_UNIPROXY_ADDRESSES: AddressMap = {
-  [ChainId.MATIC]: '0xe0A61107E250f8B5B24bf272baBFCf638569830C',
-  [ChainId.ZKEVM]: '0x66CD859053c458688044d816117D5Bdf42A56813',
-};
-
 export const GAMMA_MASTERCHEF_ADDRESSES: AddressMap[] = [
   {
     [ChainId.MATIC]: '0x20ec0d06f447d550fc6edee42121bc8c1817b97d',
     [ChainId.ZKEVM]: '0x1e2D8f84605D32a2CBf302E30bFd2387bAdF35dD',
+    [ChainId.MANTA]: '0x3fe1278d7dd785e234b9d2969c8ca7d8e1e7f918',
   },
   {
     [ChainId.MATIC]: '0x68678Cf174695fc2D27bd312DF67A3984364FFDd',
@@ -1092,6 +1088,26 @@ export const STONE: { [chainId: number]: Token } = {
     18,
     'STONE',
     'StakeStone Ether',
+  ),
+};
+
+export const USDV: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x323665443CEf804A3b5206103304BD4872EA4253',
+    6,
+    'USDV',
+    'USDV',
+  ),
+};
+
+export const NFTE: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x492Fa53b88614923937B7197C87E0F7F8EEb7B20',
+    18,
+    'NFTE',
+    'NFTEarthOFT',
   ),
 };
 
