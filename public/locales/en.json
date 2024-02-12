@@ -860,5 +860,7 @@
   "outrangeText": "Out of range - please try again soon",
   "dragonDipatchAd": "Dragon Dispatch: QuickSwap Official Newsletter",
   "myrewards": "My Rewards",
-  "withdrawOnlyVault": "This is a withdraw-only vault"
+  "withdrawOnlyVault": "This is a withdraw-only vault",
+  "claimAll": "Claim All",
+  "infiniteApproval": "Infinite Approval"
 }

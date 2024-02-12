@@ -86,6 +86,7 @@ export function SelectRange({
     chainId,
     currencyAAddress,
     currencyBAddress,
+    mintInfo.feeAmount,
   );
   const gammaPair = gammaPairData?.pairs;
   const gammaPairReversed = gammaPairData?.reversed;
@@ -405,6 +406,8 @@ export function SelectRange({
           item.token1.address.toLowerCase() === currencyAAddress.toLowerCase()))
     );
   });
+
+  console.log('aaa', steerVaultsForPair);
 
   const gammaPairExists = !!gammaPair;
   const unipilotVaultExists = unipilotVaultsForPair.length > 0;
@@ -850,7 +853,9 @@ export function SelectRange({
                   }}
                 >
                   <p>Steer</p>
-                  <small className='text-success'>{steerVault?.apr}%</small>
+                  <small className='text-success'>
+                    {formatNumber(steerVault?.apr)}%
+                  </small>
                   <span>{t('apr')}</span>
                 </Box>
               </Grid>

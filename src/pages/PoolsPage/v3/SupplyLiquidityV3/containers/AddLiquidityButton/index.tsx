@@ -123,6 +123,7 @@ export function AddLiquidityButton({
     chainId,
     baseCurrency?.wrapped.address,
     quoteCurrency?.wrapped.address,
+    mintInfo.feeAmount,
   );
   const gammaPair = gammaPairData?.pairs;
   const gammaPairAddress =

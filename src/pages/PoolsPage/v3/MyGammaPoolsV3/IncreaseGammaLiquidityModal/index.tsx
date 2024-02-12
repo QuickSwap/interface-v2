@@ -132,11 +132,11 @@ export default function IncreaseGammaLiquidityModal({
 
   const [approvalA, approveACallback] = useApproveCallback(
     tryParseAmount(deposit0, position.token0),
-    chainId ? gammaUNIPROXYContract?.address : undefined,
+    chainId ? position.pairAddress : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
     tryParseAmount(deposit1, position.token1),
-    chainId ? gammaUNIPROXYContract?.address : undefined,
+    chainId ? position.pairAddress : undefined,
   );
 
   const showApprovalA = useMemo(() => {
