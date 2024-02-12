@@ -121,3 +121,27 @@ a.button:hover {
 .farmModalWrapper {
   max-width: 400px;
 }
+
+.claimAllBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 368px;
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 24px;
+  & img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: -1;
+    object-fit: cover;
+  }
+  & button {
+    height: 36px;
+    border-radius: 10px;
+  }
+}

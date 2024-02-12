@@ -3,7 +3,6 @@ import { Skeleton } from '@material-ui/lab';
 import { CurrencyLogo, CustomMenu } from 'components';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import { useActiveWeb3React } from 'hooks';
-import { useMerklContract } from 'hooks/useContract';
 import { useICHIPosition } from 'hooks/useICHIData';
 import { useDefiEdgePosition } from 'hooks/v3/useDefiedgeStrategyData';
 import { useGammaPosition } from 'hooks/v3/useGammaData';
@@ -23,20 +22,16 @@ import WithdrawSteerLiquidityModal from 'pages/PoolsPage/v3/MySteerPoolsV3/Withd
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { calculateGasMargin, formatNumber, getTokenFromAddress } from 'utils';
+import { formatNumber, getTokenFromAddress } from 'utils';
 import {
   useUSDCPriceFromAddress,
   useUSDCPricesFromAddresses,
 } from 'utils/useUSDCPrice';
 import { Position } from 'v3lib/entities';
-import { TransactionResponse } from '@ethersproject/providers';
-import {
-  useTransactionAdder,
-  useTransactionFinalizer,
-} from 'state/transactions/hooks';
 import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import APRHover from 'assets/images/aprHover.png';
 import { toV3Token } from 'constants/v3/addresses';
+import { useClaimMerklRewards } from 'hooks/useClaimMerklRewards';
 
 interface Props {
   farm: any;
@@ -44,7 +39,7 @@ interface Props {
 
 export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const { t } = useTranslation();
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
@@ -229,7 +224,6 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const farmTypeReward =
     farmType === 'QuickSwap' ? 'QuickswapAlgebra' : farmType;
 
-  const [claiming, setClaiming] = useState(false);
   const rewardUSD = farm.rewards.reduce(
     (total: number, reward: any) =>
       total +
@@ -240,66 +234,14 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     0,
   );
 
+  const { claiming, claimReward } = useClaimMerklRewards();
+
   const isClaimable =
     farm.rewards.length > 0 &&
     farm.rewards.filter(
       (reward: any) => reward.breakdownOfUnclaimed[farmTypeReward] > 0,
     ).length > 0 &&
     !claiming;
-
-  const merklDistributorContract = useMerklContract();
-  const addTransaction = useTransactionAdder();
-  const finalizedTransaction = useTransactionFinalizer();
-  const claimReward = async () => {
-    if (!merklDistributorContract || !account) return;
-    setClaiming(true);
-    let data: any;
-    try {
-      const res = await fetch(
-        `${process.env.REACT_APP_MERKL_API_URL}?chainIds[]=${chainId}&AMMs[]=quickswapalgebra&user=${account}`,
-      );
-      const merklData = await res.json();
-      data =
-        merklData && merklData[chainId]
-          ? merklData[chainId].transactionData
-          : undefined;
-    } catch {
-      setClaiming(false);
-      throw 'Angle API not responding';
-    }
-    // Distributor address is the same across different chains
-    const tokens = Object.keys(data).filter((k) => data[k].proof !== undefined);
-    const claims = tokens.map((t) => data[t].claim);
-    const proofs = tokens.map((t) => data[t].proof);
-
-    try {
-      const estimatedGas = await merklDistributorContract.estimateGas.claim(
-        tokens.map((t) => account),
-        tokens,
-        claims,
-        proofs as string[][],
-      );
-      const response: TransactionResponse = await merklDistributorContract.claim(
-        tokens.map((t) => account),
-        tokens,
-        claims,
-        proofs as string[][],
-        {
-          gasLimit: calculateGasMargin(estimatedGas),
-        },
-      );
-      addTransaction(response, {
-        summary: t('claimingReward'),
-      });
-      const receipt = await response.wait();
-      finalizedTransaction(receipt, {
-        summary: t('claimedReward'),
-      });
-      setClaiming(false);
-    } catch {
-      setClaiming(false);
-    }
-  };
 
   return (
     <Box padding={2} className='v3PairFarmCardDetailsWrapper'>
