@@ -6,12 +6,12 @@ import { formatCompact } from 'utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { useLHAnalytics } from 'hooks/useLHAnalytics';
+import { Skeleton } from '@material-ui/lab';
 dayjs.extend(utc);
 dayjs.extend(isSameOrBefore);
 
-const LiquidityHubAnalyticsCoinVolume: React.FC<{
-  data: any[] | undefined;
-}> = ({ data }) => {
+const LiquidityHubAnalyticsCoinVolume: React.FC = () => {
   const { t } = useTranslation();
   const currentDate = dayjs.utc();
   const twoDaysAgo = dayjs.utc(
@@ -20,6 +20,11 @@ const LiquidityHubAnalyticsCoinVolume: React.FC<{
       .utc()
       .format('YYYY-MM-DD'),
   );
+  const { isLoading, data: lhData } = useLHAnalytics();
+  const data: any[] = useMemo(() => {
+    if (!lhData) return [];
+    return lhData;
+  }, [lhData]);
 
   const filteredData = useMemo(() => {
     if (!data) return [];
@@ -76,7 +81,9 @@ const LiquidityHubAnalyticsCoinVolume: React.FC<{
 
   return (
     <>
-      {filteredData.length > 0 ? (
+      {isLoading ? (
+        <Skeleton width='100%' height={400} />
+      ) : filteredData.length > 0 ? (
         <Chart
           series={volumeData}
           type='bar'

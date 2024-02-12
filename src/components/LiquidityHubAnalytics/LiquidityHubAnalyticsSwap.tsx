@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import CustomTable from 'components/CustomTable';
 import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { formatUnits } from 'ethers/lib/utils';
+import { useLHAnalytics } from 'hooks/useLHAnalytics';
+import { Skeleton } from '@material-ui/lab';
 
-const LiquidityHubAnalyticsSwap: React.FC<{
-  data: any[] | undefined;
-}> = ({ data }) => {
+const LiquidityHubAnalyticsSwap: React.FC = () => {
   const { t } = useTranslation();
+  const { isLoading, data: lhData } = useLHAnalytics();
+  const data: any[] = useMemo(() => {
+    if (!lhData) return [];
+    return lhData;
+  }, [lhData]);
   const headCells = [
     {
       id: 'txHash',
@@ -161,7 +166,9 @@ const LiquidityHubAnalyticsSwap: React.FC<{
     ];
   };
 
-  return data && data.length > 0 ? (
+  return isLoading ? (
+    <Skeleton width='100%' height={400} />
+  ) : data && data.length > 0 ? (
     <CustomTable
       showPagination={data.length > 10}
       headCells={headCells}
