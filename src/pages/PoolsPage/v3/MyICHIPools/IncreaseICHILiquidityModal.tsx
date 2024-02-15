@@ -47,7 +47,6 @@ export default function IncreaseICHILiquidityModal({
   const [wrappingETH, setWrappingETH] = useState(false);
 
   const currency = position.allowToken0 ? position.token0 : position.token1;
-  console.log('aaa', currency, position);
   const {
     data: { isNativeToken, availableAmount, tokenIdx },
   } = useICHIVaultDepositData(typedValue, currency, position);
