@@ -79,13 +79,10 @@ const GammaFarmCard: React.FC<{
           {(!isMobile || !showDetails) && (
             <Box width={isMobile ? '30%' : '20%'} className='flex items-center'>
               <small className='text-success'>
-                {formatNumber((poolAPR + farmAPR) * 100)}%
+                {formatNumber(poolAPR + farmAPR)}%
               </small>
               <Box ml={0.5} height={16}>
-                <TotalAPRTooltip
-                  farmAPR={farmAPR * 100}
-                  poolAPR={poolAPR * 100}
-                >
+                <TotalAPRTooltip farmAPR={farmAPR} poolAPR={poolAPR}>
                   <img src={CircleInfoIcon} alt={'arrow up'} />
                 </TotalAPRTooltip>
               </Box>

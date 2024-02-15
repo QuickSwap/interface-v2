@@ -407,8 +407,6 @@ export function SelectRange({
     );
   });
 
-  console.log('aaa', steerVaultsForPair);
-
   const gammaPairExists = !!gammaPair;
   const unipilotVaultExists = unipilotVaultsForPair.length > 0;
   const defiedgeStrategyExists = defiedgeStrategiesForPair.length > 0;
