@@ -18,6 +18,7 @@ const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
 const BondsPage = lazy(() => import('./pages/BondsPage'));
 const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
+const TOSPage = lazy(() => import('./pages/TOSPage'));
 const AnalyticsTokenDetails = lazy(() =>
   import('./pages/AnalyticsTokenDetails'),
 );
@@ -196,6 +197,11 @@ const App: React.FC = () => {
                   <Route exact path='/newsletter'>
                     <PageLayout>
                       <NewsletterPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/tos'>
+                    <PageLayout>
+                      <TOSPage />
                     </PageLayout>
                   </Route>
                   <Route exact path='/gamehub'>

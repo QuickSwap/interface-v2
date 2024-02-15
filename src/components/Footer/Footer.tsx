@@ -9,8 +9,7 @@ import {
 import { useTheme } from '@material-ui/core/styles';
 import QUICKLogo from 'assets/images/quickLogo.png';
 import 'components/styles/Footer.scss';
-
-import { useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
@@ -131,14 +130,9 @@ const Footer: React.FC = () => {
         >
           <small className='text-secondary'>© {copyrightYear} QuickSwap</small>
           <small className='text-secondary'>
-            <a
-              className='footer-link'
-              href='https://docs.google.com/document/d/1Gglh43oxUZHdgrS2L9lZfsI4f6HYNF6MbBDsDPJVFkM/edit'
-              target='_blank'
-              rel='noreferrer'
-            >
+            <Link className='footer-link' to='/tos'>
               {t('termsofuse')}
-            </a>
+            </Link>
           </small>
           {!tabletWindowSize && pathname === '/' && (
             <Box className='fake-community-container'>&nbsp;</Box>

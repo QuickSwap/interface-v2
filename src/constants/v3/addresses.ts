@@ -1111,6 +1111,16 @@ export const NFTE: { [chainId: number]: Token } = {
   ),
 };
 
+export const MANTA: { [chainId: number]: Token } = {
+  [ChainId.MANTA]: new Token(
+    ChainId.MANTA,
+    '0x95CeF13441Be50d20cA4558CC0a27B601aC544E5',
+    18,
+    'MANTA',
+    'Manta',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
@@ -1230,6 +1240,7 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(MATIC[ChainId.MANTA]),
     toV3Token(NEW_QUICK[ChainId.MANTA]),
     toV3Token(STONE[ChainId.MANTA]),
+    toV3Token(MANTA[ChainId.MANTA]),
   ],
   [ChainId.ZKATANA]: [
     WMATIC_EXTENDED[ChainId.ZKATANA],
