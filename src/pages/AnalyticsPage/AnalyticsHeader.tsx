@@ -61,89 +61,86 @@ const AnalyticsHeader: React.FC<AnalyticHeaderProps> = ({
 
   return (
     <Box width='100%' mb={3}>
-      <Box mb={4} className='flex items-center'>
+      <Box mb={4} className='flex items-center flex-wrap' gridGap={16}>
         <h1 className='h4'>{t('quickswapAnalytics')}</h1>
-        {v2 && v3 && !isPairDetails && (
-          <Box ml={2}>
-            <VersionToggle />
-          </Box>
-        )}
+        {v2 && v3 && !isPairDetails && <VersionToggle />}
       </Box>
       <Box margin='0 auto 24px'>
         <HypeLabAds />
       </Box>
-      <Box
-        mb={4}
-        position='relative'
-        className='flex justify-between flex-wrap'
-      >
-        <Box marginY={1.5} className='flex items-center'>
-          {type && (
-            <Box className='flex items-center text-hint'>
-              <span
-                className='link'
-                onClick={() => {
-                  history.push(`/analytics/${version}`);
-                }}
-              >
-                {t('analytics')}
-              </span>
-              <ArrowForwardIos style={{ width: 16 }} />
-              <span
-                className='link'
-                onClick={() => {
-                  history.push(`/analytics/${version}/${type}s`);
-                }}
-              >
-                {type === 'token' ? t('tokens') : t('pairs')}
-              </span>
-              <ArrowForwardIos style={{ width: 16 }} />
-              <span>
-                {data && (
-                  <span className='text-gray19'>
-                    {type === 'token'
-                      ? data.symbol
-                      : `${data.token0.symbol}/${data.token1.symbol}`}
-                  </span>
-                )}
-                (
-                {data || address
-                  ? shortenAddress(data ? data.id : address)
-                  : ''}
-                )
-              </span>
-            </Box>
-          )}
-          {!type && !isLiquidityHub && (
-            <>
-              <Box
-                className={`topTab ${pathname.indexOf('pair') === -1 &&
-                  pathname.indexOf('token') === -1 &&
-                  'selectedTab'}`}
-                onClick={() => history.push(`/analytics/${version}`)}
-              >
-                <p>{t('overview')}</p>
+      {!isLiquidityHub && (
+        <Box
+          mb={4}
+          position='relative'
+          className='flex justify-between flex-wrap'
+        >
+          <Box marginY={1.5} className='flex items-center'>
+            {type ? (
+              <Box className='flex items-center text-hint'>
+                <span
+                  className='link'
+                  onClick={() => {
+                    history.push(`/analytics/${version}`);
+                  }}
+                >
+                  {t('analytics')}
+                </span>
+                <ArrowForwardIos style={{ width: 16 }} />
+                <span
+                  className='link'
+                  onClick={() => {
+                    history.push(`/analytics/${version}/${type}s`);
+                  }}
+                >
+                  {type === 'token' ? t('tokens') : t('pairs')}
+                </span>
+                <ArrowForwardIos style={{ width: 16 }} />
+                <span>
+                  {data && (
+                    <span className='text-gray19'>
+                      {type === 'token'
+                        ? data.symbol
+                        : `${data.token0.symbol}/${data.token1.symbol}`}
+                    </span>
+                  )}
+                  (
+                  {data || address
+                    ? shortenAddress(data ? data.id : address)
+                    : ''}
+                  )
+                </span>
               </Box>
-              <Box
-                className={`topTab ${pathname.indexOf('token') > -1 &&
-                  'selectedTab'}`}
-                onClick={() => history.push(`/analytics/${version}/tokens`)}
-              >
-                <p>{t('tokens')}</p>
-              </Box>
-              <Box
-                className={`topTab ${pathname.indexOf('pair') > -1 &&
-                  'selectedTab'}`}
-                onClick={() => history.push(`/analytics/${version}/pairs`)}
-              >
-                <p>{t('pairs')}</p>
-              </Box>
-            </>
-          )}
-        </Box>
+            ) : (
+              <>
+                <Box
+                  className={`topTab ${pathname.indexOf('pair') === -1 &&
+                    pathname.indexOf('token') === -1 &&
+                    'selectedTab'}`}
+                  onClick={() => history.push(`/analytics/${version}`)}
+                >
+                  <p>{t('overview')}</p>
+                </Box>
+                <Box
+                  className={`topTab ${pathname.indexOf('token') > -1 &&
+                    'selectedTab'}`}
+                  onClick={() => history.push(`/analytics/${version}/tokens`)}
+                >
+                  <p>{t('tokens')}</p>
+                </Box>
+                <Box
+                  className={`topTab ${pathname.indexOf('pair') > -1 &&
+                    'selectedTab'}`}
+                  onClick={() => history.push(`/analytics/${version}/pairs`)}
+                >
+                  <p>{t('pairs')}</p>
+                </Box>
+              </>
+            )}
+          </Box>
 
-        {!isLiquidityHub && <AnalyticsSearch />}
-      </Box>
+          <AnalyticsSearch />
+        </Box>
+      )}
     </Box>
   );
 };

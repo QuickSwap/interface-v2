@@ -1,6 +1,6 @@
 import React from 'react';
 import { useMediaQuery, useTheme } from '@material-ui/core';
-import { Banner } from 'hypelab-react';
+import { Banner } from '@hypelab/sdk-react';
 
 const HypeLabAds: React.FC = () => {
   const { breakpoints } = useTheme();
