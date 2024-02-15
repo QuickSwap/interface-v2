@@ -1,9 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Box, Button, TextField } from '@material-ui/core';
+import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
+import { useTokenLockerContract } from 'hooks/useContract';
 import { ExternalLink as LinkIcon } from 'react-feather';
 import { useTranslation } from 'react-i18next';
 import { LockInterface } from 'state/data/liquidityLocker';
+import { updateUserLiquidityLock } from 'state/data/liquidityLocker';
 import { useIsTransactionPending } from 'state/transactions/hooks';
 import {
   ConfirmationModalContent,
@@ -14,12 +17,14 @@ import {
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { BigNumber, utils } from 'ethers';
+import { calculateGasMargin } from 'utils';
 import './index.scss';
 dayjs.extend(utc);
 
 const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) => {
   const { t } = useTranslation();
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
   const liquidityLocked = utils.formatUnits(
     lock.event.lockAmount,
@@ -51,15 +56,28 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
   const [extendDate, setExtendDate] = useState(dayjs.unix(lock.event.unlockTime).add(3, 'month'))
   const [errorExtendDate, setErrorExtendDate] = useState(false)
   const [selectedExtendDate, setSelectedExtendDate] = useState('3M')
+  const lockTokenAddress = lock.event?.lockContractAddress;
+  const lockDepositId = lock.event?.lockDepositId;
+  const tokenLockerContract = useTokenLockerContract(chainIdToUse, lockTokenAddress);
 
   // @Hassaan: claim logic here
-  const claim = useCallback(() => {
-    if (!account) return
-
-    setClaiming(true);
-
+  const claim = useCallback(async () => {
     try {
-      console.log('On click "CLAIM"')
+      if (!account || !lockDepositId || !tokenLockerContract || !amount) return
+      const formattedAmount = utils.parseUnits(amount, lock.liquidityContract.tokenDecimals);
+      const gasEstimate = await tokenLockerContract?.estimateGas.withdrawTokens(
+        lockDepositId,
+        formattedAmount
+      )
+      const response = await tokenLockerContract?.withdrawTokens(
+        lockDepositId,
+        formattedAmount,
+        { gasLimit: calculateGasMargin(gasEstimate) }
+      )
+      setClaiming(true);
+      const receipt = await response.wait(); 
+      console.log(receipt);
+      await updateUserLiquidityLock(lockTokenAddress, lockDepositId);
     } catch (error) {
       setClaimErrorMessage(t('errorInTx'));
       console.error(error);
@@ -69,15 +87,23 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
   }, [account]);
 
   // @Hassaan: extend logic here
-  const extend = useCallback(() => {
-    if (!account) return
-
-    console.log('extendDate', extendDate) // dayjs object
-
-    setExtending(true);
-
+  const extend = useCallback(async () => {
+    if (!account || !lockDepositId || !tokenLockerContract) return
     try {
-      console.log('On click "EXTEND"')
+      const epochExtendDate = Math.floor(extendDate.valueOf()/1000);
+      const gasEstimate = await tokenLockerContract?.estimateGas.extendLockDuration(
+        lockDepositId,
+        epochExtendDate
+      )
+      const response = await tokenLockerContract?.extendLockDuration(
+        lockDepositId,
+        epochExtendDate,
+        { gasLimit: calculateGasMargin(gasEstimate) }
+      )
+      setExtending(true);
+      const receipt = await response.wait(); 
+      console.log(receipt);
+      await updateUserLiquidityLock(lockTokenAddress, lockDepositId);
     } catch (error) {
       setExtendErrorMessage(t('errorInTx'));
       console.error(error);
@@ -360,7 +386,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({ lock }) =>
           </Button>
           <Button
             variant='contained'
-            disabled={isLocked}
+            disabled={isLocked || withdrawn}
             onClick={() => 
               showClaimConfirm(true)
             }

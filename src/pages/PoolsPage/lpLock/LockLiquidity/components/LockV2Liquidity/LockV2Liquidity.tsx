@@ -27,6 +27,7 @@ import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } fro
 import { useTokenBalance } from 'state/wallet/hooks';
 import { usePairContract, useTokenLockerContract } from 'hooks/useContract';
 import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
+import { updateUserLiquidityLock } from 'state/data/liquidityLocker';
 import { tryParseAmount } from 'state/swap/hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import dayjs from 'dayjs';
@@ -180,15 +181,6 @@ const LockV2Liquidity: React.FC = () => {
 
     try {
       setAttemptingTxn(true);
-      console.log(
-        lpTokenAddress,
-        account,
-        parsedAmount.raw.toString(),
-        unlockDate.unix(),
-        false,
-        ethers.constants.AddressZero
-      )
-      
       const gasEstimate = await tokenLockerContract?.estimateGas.lockToken(
         lpTokenAddress,
         account,
@@ -205,7 +197,8 @@ const LockV2Liquidity: React.FC = () => {
         unlockDate.unix(),
         false,
         ethers.constants.AddressZero, {
-          value: feesInEth
+          value: feesInEth,
+          gasLimit: gasEstimateWithMargin
         }
       )
 
@@ -215,6 +208,8 @@ const LockV2Liquidity: React.FC = () => {
 
       const receipt = await response.wait(); 
       console.log(receipt);
+      const depositId = await tokenLockerContract?.depositId();
+      await updateUserLiquidityLock(V2_FACTORY_ADDRESSES[chainId], depositId);
       setTxPending(false);
     } catch (error) {
       setAttemptingTxn(false);

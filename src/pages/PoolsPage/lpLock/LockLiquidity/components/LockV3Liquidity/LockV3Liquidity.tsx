@@ -12,10 +12,11 @@ import { ethers } from 'ethers';
 import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
 import { useActiveWeb3React } from 'hooks';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { ApprovalState, useApproveCallbackTokenId} from 'hooks/useApproveCallback';
 import { useUniV3Positions, useV3Positions } from 'hooks/v3/useV3Positions';
 import { useTokenLockerContract } from 'hooks/useContract';
-import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
+import { updateUserLiquidityLock } from 'state/data/liquidityLocker';
 import { calculateGasMargin } from 'utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -101,17 +102,10 @@ const LockV3Liquidity: React.FC = () => {
 
   // @Hassaan: Implement lock logic here
   const onLock = async () => {
-    console.log('On attempt to lock')
     if (!nftPosManContractAddress || !library || !tokenLockerContract || !tokenId || tokenId == '') {
       setErrorMsg(t('missingdependencies'));
       throw new Error(t('missingdependencies'));
     }
-    console.log('nftPosManContractAddress', nftPosManContractAddress)
-    console.log('account', account)
-    console.log('unlockDate.unix()', unlockDate.unix())
-    console.log('', )
-    console.log('', )
-
     try {
       setAttemptingTxn(true);
       const gasEstimate = await tokenLockerContract?.estimateGas.lockNFT(
@@ -145,6 +139,8 @@ const LockV3Liquidity: React.FC = () => {
 
       const receipt = await response.wait(); 
       console.log(receipt);
+      const depositId = await tokenLockerContract?.depositId();
+      await updateUserLiquidityLock(V2_FACTORY_ADDRESSES[chainId], depositId);
       setTxPending(false);
     } catch (error) {
       setAttemptingTxn(false);
