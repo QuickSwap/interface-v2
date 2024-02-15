@@ -1299,6 +1299,7 @@ export const SUGGESTED_BASES: {
     WBTC[ChainId.MANTA],
     MATIC[ChainId.MANTA],
     NEW_QUICK[ChainId.MANTA],
+    MANTA[ChainId.MANTA],
   ],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],

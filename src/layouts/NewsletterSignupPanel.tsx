@@ -29,10 +29,7 @@ const NewsletterSignupPanel: React.FC = () => {
     <div ref={signupPanel} className='staticNewsletterSignUpPanel'>
       <p>{t('dragonDispatch')}</p>
       <h4>{t('newsletterSignup')}</h4>
-      <small>
-        {t('newsletterSignupDesc')}&nbsp;
-        <b>{t('earn300QUICK')}</b>
-      </small>
+      <small>{t('newsletterSignupDesc')}</small>
       <input
         placeholder={t('enterEmail')}
         onChange={(e) => setEmail(e.target.value)}

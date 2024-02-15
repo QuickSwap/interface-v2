@@ -1,36 +1,16 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@material-ui/lab';
 import Chart from 'react-apexcharts';
 import { formatCompact } from 'utils';
 import dayjs from 'dayjs';
+import { useLHAnalyticsDaily } from 'hooks/useLHAnalytics';
 
 const LiquidityHubAnalyticsTotal: React.FC = () => {
   const { t } = useTranslation();
 
-  const fetchAnalyticsDaily = async () => {
-    try {
-      const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/liquidityHubDaily`,
-      );
-      if (!res.ok) {
-        return [];
-      }
-      const data = await res.json();
-      return data?.data?.data ?? [];
-    } catch {
-      return [];
-    }
-  };
-
-  const { isLoading, data: lhData } = useQuery({
-    queryKey: ['fetchLHAnalyticsDaily'],
-    queryFn: fetchAnalyticsDaily,
-    refetchInterval: 180 * 60 * 1000,
-  });
-
+  const { isLoading, data: lhData } = useLHAnalyticsDaily();
   const data = lhData ?? [];
 
   return (

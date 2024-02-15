@@ -5,16 +5,38 @@ import Chart from 'react-apexcharts';
 import { formatCompact } from 'utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { useLHAnalytics } from 'hooks/useLHAnalytics';
+import { Skeleton } from '@material-ui/lab';
 dayjs.extend(utc);
+dayjs.extend(isSameOrBefore);
 
-const LiquidityHubAnalyticsCoinVolume: React.FC<{
-  data: any[] | undefined;
-}> = ({ data }) => {
+const LiquidityHubAnalyticsCoinVolume: React.FC = () => {
   const { t } = useTranslation();
+  const currentDate = dayjs.utc();
+  const twoDaysAgo = dayjs.utc(
+    dayjs()
+      .subtract(2, 'days')
+      .utc()
+      .format('YYYY-MM-DD'),
+  );
+  const { isLoading, data: lhData } = useLHAnalytics();
+  const data: any[] = useMemo(() => {
+    if (!lhData) return [];
+    return lhData;
+  }, [lhData]);
+
+  const filteredData = useMemo(() => {
+    if (!data) return [];
+    return data.filter(
+      (item) =>
+        dayjs.utc(item.timestamp).isSameOrBefore(currentDate) &&
+        dayjs.utc(item.timestamp).isAfter(twoDaysAgo),
+    );
+  }, [currentDate, data, twoDaysAgo]);
 
   const volumeDates = useMemo(() => {
-    if (!data) return [];
-    return data
+    return filteredData
       .reduce<string[]>((memo, item) => {
         if (item && item.timestamp) {
           const date = dayjs.utc(item.timestamp).format('YYYY-MM-DD');
@@ -27,12 +49,10 @@ const LiquidityHubAnalyticsCoinVolume: React.FC<{
       .sort((date1, date2) => {
         return dayjs(date1).isBefore(dayjs(date2)) ? -1 : 1;
       });
-  }, [data]);
+  }, [filteredData]);
 
   const volumeData = useMemo(() => {
-    if (!data) return [];
-
-    const tokens = data.reduce<string[]>((memo, item) => {
+    const tokens = filteredData.reduce<string[]>((memo, item) => {
       if (item && item.srcTokenSymbol) {
         if (!memo.includes(item.srcTokenSymbol)) {
           memo.push(item.srcTokenSymbol);
@@ -44,7 +64,7 @@ const LiquidityHubAnalyticsCoinVolume: React.FC<{
       return {
         name: token,
         data: volumeDates.map((date) =>
-          data
+          filteredData
             .filter(
               (item) =>
                 item &&
@@ -57,11 +77,13 @@ const LiquidityHubAnalyticsCoinVolume: React.FC<{
         ),
       };
     });
-  }, [data, volumeDates]);
+  }, [filteredData, volumeDates]);
 
   return (
     <>
-      {data && data.length > 0 ? (
+      {isLoading ? (
+        <Skeleton width='100%' height={400} />
+      ) : filteredData.length > 0 ? (
         <Chart
           series={volumeData}
           type='bar'
@@ -100,7 +122,7 @@ const LiquidityHubAnalyticsCoinVolume: React.FC<{
                 style: {
                   fontSize: '11px',
                   fontFamily: "'Inter', sans-serif",
-                  colors: data.map(() => '#696c80'),
+                  colors: filteredData.map(() => '#696c80'),
                 },
               },
               axisTicks: {
