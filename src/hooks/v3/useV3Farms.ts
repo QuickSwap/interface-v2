@@ -321,7 +321,8 @@ export const useGetMerklFarms = () => {
     return Object.values(farmData).filter(
       (item: any) =>
         !blackListMerklFarms.find(
-          (address) => item.pool.toLowerCase() === address.toLowerCase(),
+          (address) =>
+            item?.pool && item.pool.toLowerCase() === address.toLowerCase(),
         ),
     ) as any[];
   };
