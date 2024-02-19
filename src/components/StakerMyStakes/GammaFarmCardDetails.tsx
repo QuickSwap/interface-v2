@@ -125,8 +125,10 @@ const GammaFarmCardDetails: React.FC<{
           if (rewardToken) {
             const existingRewardIndex = rewardArray.findIndex(
               (item) =>
+                item?.token?.address &&
+                reward?.rewardToken &&
                 item.token.address.toLowerCase() ===
-                reward.rewardToken.toLowerCase(),
+                  reward.rewardToken.toLowerCase(),
             );
             const rewardAmountBN =
               !callData.loading && callData.result && callData.result.length > 0
