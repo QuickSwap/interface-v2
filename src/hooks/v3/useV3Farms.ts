@@ -5,6 +5,7 @@ import {
   GlobalConst,
   GlobalData,
   IchiVaults,
+  blackListMerklFarms,
 } from 'constants/index';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import {
@@ -317,7 +318,12 @@ export const useGetMerklFarms = () => {
         ? data[chainId.toString()]?.pools
         : undefined;
     if (!farmData) return [];
-    return Object.values(farmData) as any[];
+    return Object.values(farmData).filter(
+      (item: any) =>
+        !blackListMerklFarms.find(
+          (address) => item.pool.toLowerCase() === address.toLowerCase(),
+        ),
+    ) as any[];
   };
   const lastTx = useLastTransactionHash();
   const { isLoading, data, refetch } = useQuery({
