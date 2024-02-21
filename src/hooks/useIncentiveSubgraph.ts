@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { Contract } from 'ethers';
 import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
@@ -161,10 +161,15 @@ export function useFarmRewards() {
   }
 
   const lastTxHash = useLastTransactionHash();
-  const { isLoading, data } = useQuery({
-    queryKey: ['v3FarmRewards', chainId, lastTxHash, account],
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['v3FarmRewards', chainId, account],
     queryFn: fetchRewards,
   });
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTxHash]);
 
   return { isLoading, data };
 }
@@ -172,7 +177,6 @@ export function useFarmRewards() {
 export function useTransferredPositions() {
   const { chainId, account, provider } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
-  const lastTxHash = useLastTransactionHash();
   async function fetchTransferredPositions() {
     if (!chainId || !account || !provider) {
       return [];
@@ -544,17 +548,21 @@ export function useFarmPositionsForPool(
   }
 
   const lastTxHash = useLastTransactionHash();
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: [
       'v3FarmPositionsForPool',
       chainId,
       account,
       pool.id,
       minRangeLength,
-      lastTxHash,
     ],
     queryFn: fetchPositionsForPool,
   });
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTxHash]);
 
   return { isLoading, data };
 }
@@ -598,10 +606,15 @@ export function usePositionsOnFarmer(account: string | null | undefined) {
   }
 
   const lastTxHash = useLastTransactionHash();
-  const { isLoading, data } = useQuery({
-    queryKey: ['v3PositionsOnFarmer', lastTxHash, chainId, account],
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['v3PositionsOnFarmer', chainId, account],
     queryFn: fetchPositionsOnFarmer,
   });
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTxHash]);
 
   return { isLoading, data };
 }
