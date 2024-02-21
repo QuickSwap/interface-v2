@@ -1830,6 +1830,54 @@ export const GammaPairs: {
         pid: 13,
       },
     ],
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0xec901da9c68e90798bbbb74c11406a32a70652c3-500': [
+      {
+        address: '0x258D485a17E1BA65fF6367D0e8b8ACc70Ab200F2',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x0dc808adce2099a9f62aa87d9670745aba741746',
+        token1Address: '0xec901da9c68e90798bbbb74c11406a32a70652c3',
+        fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 14,
+      },
+    ],
+    '0xbdad407f77f44f7da6684b416b1951eca461fb07-0xec901da9c68e90798bbbb74c11406a32a70652c3-500': [
+      {
+        address: '0xB833e6fc4E634d38b91bf05E4eD672f5396fFEf2',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xbdad407f77f44f7da6684b416b1951eca461fb07',
+        token1Address: '0xec901da9c68e90798bbbb74c11406a32a70652c3',
+        fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 15,
+      },
+    ],
+    '0x0dc808adce2099a9f62aa87d9670745aba741746-0x95cef13441be50d20ca4558cc0a27b601ac544e5-500': [
+      {
+        address: '0x2795606690234b17CDa97304bE6835e753E4C499',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x0dc808adce2099a9f62aa87d9670745aba741746',
+        token1Address: '0x95cef13441be50d20ca4558cc0a27b601ac544e5',
+        fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 16,
+      },
+    ],
+    '0x95cef13441be50d20ca4558cc0a27b601ac544e5-0xec901da9c68e90798bbbb74c11406a32a70652c3-500': [
+      {
+        address: '0xE7549089F0D1ca6e9E3E2b06812B347E0Bbd68E1',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x95cef13441be50d20ca4558cc0a27b601ac544e5',
+        token1Address: '0xec901da9c68e90798bbbb74c11406a32a70652c3',
+        fee: FeeAmount.LOW,
+        ableToFarm: true,
+        pid: 17,
+      },
+    ],
   },
 };
 
