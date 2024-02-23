@@ -1,10 +1,7 @@
 import React from 'react';
 import {
-  Result,
   useMultipleContractMultipleData,
   useMultipleContractSingleData,
-  useSingleCallResult,
-  useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { useMemo } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -15,7 +12,6 @@ import {
   useV3NFTPositionManagerContract,
   useDefiEdgeMiniChefContracts,
 } from 'hooks/useContract';
-import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
 import { PositionPool } from 'models/interfaces';
 import { ChainId, JSBI } from '@uniswap/sdk';
@@ -49,117 +45,97 @@ import { toV3Token } from 'constants/v3/addresses';
 interface UseV3PositionsResults {
   loading: boolean;
   positions: PositionPool[] | undefined;
+  count?: number;
 }
 
 export function useV3PositionsFromTokenIds(
   tokenIds: BigNumber[] | undefined,
   isUni?: boolean,
 ): UseV3PositionsResults {
+  const { chainId } = useActiveWeb3React();
   const positionManager = useV3NFTPositionManagerContract();
   const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
 
-  const inputs = useMemo(
-    () =>
-      tokenIds ? tokenIds.map((tokenId) => [BigNumber.from(tokenId)]) : [],
-    [tokenIds],
-  );
-  const results = useSingleContractMultipleData(
-    isUni ? uniV3PositionManager : positionManager,
-    'positions',
-    inputs,
-  );
-
-  const loading = useMemo(() => results.some(({ loading }) => loading), [
-    results,
-  ]);
-  const error = useMemo(() => results.some(({ error }) => error), [results]);
-
-  const { account } = useActiveWeb3React();
-
-  const prevAccount = usePrevious(account);
-
-  const positions = useMemo(() => {
-    if (!loading && !error && tokenIds) {
-      return results.map((call, i) => {
-        const tokenId = tokenIds[i];
-        const result = call.result as Result;
+  async function fetchPositionsFromId() {
+    if (!tokenIds) return null;
+    if (tokenIds.length === 0) return [];
+    try {
+      const res = await fetch(
+        `${
+          process.env.REACT_APP_LEADERBOARD_APP_URL
+        }/utils/positions-id?chainId=${chainId}&ids=${tokenIds
+          .map((id) => id.toString())
+          .join(',')}${isUni ? `&isUni=true` : ''}`,
+      );
+      if (!res.ok) {
+        return null;
+      }
+      const data = await res.json();
+      const positions = (data?.data?.data ?? []).map((item: any) => {
         return {
-          tokenId,
-          fee: result.fee,
-          feeGrowthInside0LastX128: result.feeGrowthInside0LastX128,
-          feeGrowthInside1LastX128: result.feeGrowthInside1LastX128,
-          liquidity: result.liquidity,
-          nonce: result.nonce,
-          operator: result.operator,
-          tickLower: result.tickLower,
-          tickUpper: result.tickUpper,
-          token0: result.token0,
-          token1: result.token1,
-          tokensOwed0: result.tokensOwed0,
-          tokensOwed1: result.tokensOwed1,
+          tokenId: BigNumber.from(item?.id),
+          fee: isUni ? Number(item?.pool?.feeTier) : undefined,
+          feeGrowthInside0LastX128: BigNumber.from(
+            item?.feeGrowthInside0LastX128,
+          ),
+          feeGrowthInside1LastX128: BigNumber.from(
+            item?.feeGrowthInside1LastX128,
+          ),
+          liquidity: BigNumber.from(item?.liquidity),
+          tickLower: Number(item?.tickLower?.tickIdx),
+          tickUpper: Number(item?.tickUpper?.tickIdx),
+          token0: item?.token0?.id,
+          token1: item?.token1?.id,
           isUni,
         };
       });
+
+      return positions;
+    } catch (err) {
+      return null;
     }
-    return undefined;
-  }, [loading, error, tokenIds, results, isUni]);
+  }
 
-  const prevPositions = usePreviousNonEmptyArray(positions || []);
+  const { data, isLoading } = useQuery({
+    queryKey: [
+      'positions-from-id',
+      (tokenIds ?? [])?.map((id) => id.toString()).join(','),
+      !!positionManager,
+      !!uniV3PositionManager,
+      isUni,
+    ],
+    queryFn: async () => {
+      const contract = isUni ? uniV3PositionManager : positionManager;
+      if (!tokenIds || !contract) return null;
+      const positions = await fetchPositionsFromId();
+      if (positions && positions.length > 0) {
+        return positions;
+      }
+      const positionsFromContract: any[] = [];
+      for (const tokenId of tokenIds) {
+        const positionRes = await contract.positions(tokenId);
+        positionsFromContract.push({
+          tokenId,
+          fee: positionRes?.fee,
+          feeGrowthInside0LastX128: positionRes?.feeGrowthInside0LastX128,
+          feeGrowthInside1LastX128: positionRes?.feeGrowthInside1LastX128,
+          liquidity: positionRes?.liquidity,
+          nonce: positionRes?.nonce,
+          operator: positionRes?.operator,
+          tickLower: positionRes?.tickLower,
+          tickUpper: positionRes?.tickUpper,
+          token0: positionRes?.token0,
+          token1: positionRes?.token1,
+          tokensOwed0: positionRes?.tokensOwed0,
+          tokensOwed1: positionRes?.tokensOwed1,
+          isUni,
+        });
+      }
+      return positionsFromContract;
+    },
+  });
 
-  return useMemo(() => {
-    if (prevAccount !== account)
-      return {
-        loading,
-        positions: positions?.map((position, i) => ({
-          ...position,
-          tokenId: inputs[i][0],
-        })),
-      };
-
-    if (!prevPositions && positions)
-      return {
-        loading,
-        positions: positions?.map((position, i) => ({
-          ...position,
-          tokenId: inputs[i][0],
-        })),
-      };
-
-    if (tokenIds && prevPositions && tokenIds.length !== prevPositions.length)
-      return {
-        loading: false,
-        positions: [],
-      };
-
-    if (
-      (!positions || positions.length === 0) &&
-      prevPositions &&
-      prevPositions.length !== 0
-    )
-      return {
-        loading: false,
-        positions: prevPositions.map((position, i) => ({
-          ...position,
-          tokenId: inputs[i][0],
-        })),
-      };
-
-    return {
-      loading,
-      positions: positions?.map((position, i) => ({
-        ...position,
-        tokenId: inputs[i][0],
-      })),
-    };
-  }, [
-    prevAccount,
-    account,
-    loading,
-    positions,
-    prevPositions,
-    tokenIds,
-    inputs,
-  ]);
+  return { loading: isLoading, positions: data };
 }
 
 interface UseV3PositionResults {
@@ -183,65 +159,130 @@ export function useV3PositionFromTokenId(
 
 export function useV3Positions(
   account: string | null | undefined,
+  hideClosePosition?: boolean,
+  hideFarmingPosition?: boolean,
 ): UseV3PositionsResults {
+  const { chainId } = useActiveWeb3React();
   const positionManager = useV3NFTPositionManagerContract();
+  const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
 
-  const {
-    loading: balanceLoading,
-    result: balanceResult,
-  } = useSingleCallResult(positionManager, 'balanceOf', [account ?? undefined]);
+  async function fetchUserPositions(isUni?: boolean) {
+    if (!account) return null;
+    try {
+      const res = await fetch(
+        `${
+          process.env.REACT_APP_LEADERBOARD_APP_URL
+        }/utils/user-positions?chainId=${chainId}&address=${account}${
+          isUni ? `&isUni=true` : ''
+        }`,
+      );
+      if (!res.ok) {
+        return null;
+      }
+      const data = await res.json();
+      const positions = data?.data?.data ?? null;
+
+      return positions;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  async function fetchUserPositionsContract(isUni?: boolean) {
+    const contract = isUni ? uniV3PositionManager : positionManager;
+    if (!account || !contract) return null;
+    try {
+      const res = await contract.balanceOf(account);
+      const accountBalance = Number(res);
+      const positions = [];
+      for (let i = 0; i < accountBalance; i++) {
+        const tokenId = await contract.tokenOfOwnerByIndex(account, i);
+        const positionRes = await contract.positions(tokenId);
+        positions.push({
+          tokenId,
+          fee: positionRes?.fee,
+          feeGrowthInside0LastX128: positionRes?.feeGrowthInside0LastX128,
+          feeGrowthInside1LastX128: positionRes?.feeGrowthInside1LastX128,
+          liquidity: positionRes?.liquidity,
+          nonce: positionRes?.nonce,
+          operator: positionRes?.operator,
+          tickLower: positionRes?.tickLower,
+          tickUpper: positionRes?.tickUpper,
+          token0: positionRes?.token0,
+          token1: positionRes?.token1,
+          tokensOwed0: positionRes?.tokensOwed0,
+          tokensOwed1: positionRes?.tokensOwed1,
+          isUni,
+        });
+      }
+      return positions;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  const { data: positions, isLoading } = useQuery({
+    queryKey: [
+      'user-v3-positions',
+      account,
+      !!uniV3PositionManager,
+      !!positionManager,
+    ],
+    queryFn: async () => {
+      let algebraPositions, uniV3Positions;
+      if (positionManager) {
+        const positionsFromSubgraph = await fetchUserPositions();
+        if (!positionsFromSubgraph || !positionsFromSubgraph.length) {
+          algebraPositions = await fetchUserPositionsContract();
+        } else {
+          algebraPositions = positionsFromSubgraph.map((item: any) => {
+            return {
+              tokenId: BigNumber.from(item?.id),
+              feeGrowthInside0LastX128: BigNumber.from(
+                item?.feeGrowthInside0LastX128,
+              ),
+              feeGrowthInside1LastX128: BigNumber.from(
+                item?.feeGrowthInside1LastX128,
+              ),
+              liquidity: BigNumber.from(item?.liquidity),
+              tickLower: Number(item?.tickLower?.tickIdx),
+              tickUpper: Number(item?.tickUpper?.tickIdx),
+              token0: item?.token0?.id,
+              token1: item?.token1?.id,
+            };
+          });
+        }
+      }
+      if (uniV3PositionManager) {
+        const uniV3PositionsFromSubgraph = await fetchUserPositions(true);
+        if (!uniV3PositionsFromSubgraph) {
+          uniV3Positions = await fetchUserPositionsContract(true);
+        } else {
+          uniV3Positions = uniV3PositionsFromSubgraph.map((item: any) => {
+            return {
+              tokenId: BigNumber.from(item?.id),
+              fee: Number(item?.pool?.feeTier),
+              feeGrowthInside0LastX128: BigNumber.from(
+                item?.feeGrowthInside0LastX128,
+              ),
+              feeGrowthInside1LastX128: BigNumber.from(
+                item?.feeGrowthInside1LastX128,
+              ),
+              liquidity: BigNumber.from(item?.liquidity),
+              tickLower: Number(item?.tickLower?.tickIdx),
+              tickUpper: Number(item?.tickUpper?.tickIdx),
+              token0: item?.token0?.id,
+              token1: item?.token1?.id,
+              isUni: true,
+            };
+          });
+        }
+      }
+      return (algebraPositions ?? []).concat(uniV3Positions ?? []);
+    },
+  });
 
   const { data: positionsOnFarmer } = usePositionsOnFarmer(account);
-
-  // we don't expect any account balance to ever exceed the bounds of max safe int
-  const accountBalance: number | undefined = balanceResult?.[0]?.toNumber();
-
-  const tokenIdsArgs = useMemo(() => {
-    if (accountBalance && account) {
-      const tokenRequests: any[] = [];
-      for (let i = 0; i < accountBalance; i++) {
-        tokenRequests.push([account, i]);
-      }
-      return tokenRequests;
-    }
-    return [];
-  }, [account, accountBalance]);
-
-  const tokenIdResults = useSingleContractMultipleData(
-    positionManager,
-    'tokenOfOwnerByIndex',
-    tokenIdsArgs,
-  );
-  const someTokenIdsLoading = useMemo(
-    () => tokenIdResults.some(({ loading }) => loading),
-    [tokenIdResults],
-  );
-
-  const tokenIds = useMemo(() => {
-    if (account) {
-      return tokenIdResults
-        .map(({ result }) => result)
-        .filter((result): result is Result => !!result)
-        .map((result) => BigNumber.from(result[0]));
-    }
-    return [];
-  }, [account, tokenIdResults]);
-
-  // const prevTokenIds = usePreviousNonEmptyArray(tokenIds)
-
-  // const _tokenIds = useMemo(() => {
-
-  //     if (!prevTokenIds) return tokenIds
-
-  //     if (tokenIds.length === 0 && prevTokenIds.length !== 0) return prevTokenIds
-
-  //     return tokenIds
-
-  // }, [tokenIds, account])
-
-  const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
-    tokenIds,
-  );
 
   const transferredTokenIds = useMemo(() => {
     if (positionsOnFarmer && positionsOnFarmer.transferredPositionsIds) {
@@ -273,236 +314,31 @@ export function useV3Positions(
     oldTransferredTokenIds.map((id) => BigNumber.from(id)),
   );
 
-  const combinedPositions = useMemo(() => {
-    if (positions && _positionsOnFarmer && _positionsOnOldFarmer) {
-      return [
-        ...positions,
-        ..._positionsOnFarmer.map((position) => ({
-          ...position,
-          onFarming: true,
-        })),
-        ..._positionsOnOldFarmer.map((position) => ({
-          ...position,
-          oldFarming: true,
-        })),
-      ];
-    }
-
-    return undefined;
-  }, [positions, _positionsOnFarmer, _positionsOnOldFarmer]);
-
-  return {
-    loading:
-      someTokenIdsLoading ||
-      balanceLoading ||
-      positionsLoading ||
-      _positionsOnFarmerLoading,
-    positions: combinedPositions,
-  };
-}
-
-export function useUniV3Positions(
-  account: string | null | undefined,
-): UseV3PositionsResults {
-  const positionManager = useUNIV3NFTPositionManagerContract();
-
-  const {
-    loading: balanceLoading,
-    result: balanceResult,
-  } = useSingleCallResult(positionManager, 'balanceOf', [account ?? undefined]);
-
-  // we don't expect any account balance to ever exceed the bounds of max safe int
-  const accountBalance: number | undefined = balanceResult?.[0]?.toNumber();
-
-  const tokenIdsArgs = useMemo(() => {
-    if (accountBalance && account) {
-      const tokenRequests: any[] = [];
-      for (let i = 0; i < accountBalance; i++) {
-        tokenRequests.push([account, i]);
-      }
-      return tokenRequests;
-    }
-    return [];
-  }, [account, accountBalance]);
-
-  const tokenIdResults = useSingleContractMultipleData(
-    positionManager,
-    'tokenOfOwnerByIndex',
-    tokenIdsArgs,
-  );
-  const someTokenIdsLoading = useMemo(
-    () => tokenIdResults.some(({ loading }) => loading),
-    [tokenIdResults],
-  );
-
-  const tokenIds = useMemo(() => {
-    if (account) {
-      return tokenIdResults
-        .map(({ result }) => result)
-        .filter((result): result is Result => !!result)
-        .map((result) => BigNumber.from(result[0]));
-    }
-    return [];
-  }, [account, tokenIdResults]);
-
-  const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
-    tokenIds,
-    true,
-  );
-
-  return {
-    loading: someTokenIdsLoading || balanceLoading || positionsLoading,
-    positions: positions?.map((position) => {
-      return { ...position, isUni: true };
-    }),
-  };
-}
-
-export function useV3PositionsCount(
-  account: string | null | undefined,
-  hideClosePosition: boolean,
-  hideFarmingPosition: boolean,
-) {
-  const algebraPositionManager = useV3NFTPositionManagerContract();
-  const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
-
-  const {
-    loading: balanceLoading,
-    result: balanceResult,
-  } = useSingleCallResult(algebraPositionManager, 'balanceOf', [
-    account ?? undefined,
-  ]);
-
-  const accountBalance = useMemo(() => {
-    if (balanceResult && balanceResult.length > 0) {
-      return balanceResult[0].toNumber();
-    }
-    return 0;
-  }, [balanceResult]);
-
-  const tokenIdsArgs = useMemo(() => {
-    if (accountBalance && account) {
-      const tokenRequests: any[] = [];
-      for (let i = 0; i < accountBalance; i++) {
-        tokenRequests.push([account, i]);
-      }
-      return tokenRequests;
-    }
-    return [];
-  }, [account, accountBalance]);
-
-  const tokenIdResults = useSingleContractMultipleData(
-    algebraPositionManager,
-    'tokenOfOwnerByIndex',
-    tokenIdsArgs,
-  );
-
-  const tokenIds = useMemo(() => {
-    if (account) {
-      return tokenIdResults
-        .map(({ result }) => result)
-        .filter((result): result is Result => !!result)
-        .map((result) => BigNumber.from(result[0]));
-    }
-    return [];
-  }, [account, tokenIdResults]);
-
-  const { positions } = useV3PositionsFromTokenIds(tokenIds);
-
-  const {
-    data: positionsOnFarmer,
-    isLoading: positionsOnFarmerLoading,
-  } = usePositionsOnFarmer(account);
-
-  const farmingPositionsCount = useMemo(() => {
-    if (positionsOnFarmer && positionsOnFarmer.transferredPositionsIds) {
-      return positionsOnFarmer.transferredPositionsIds.length;
-    }
-
-    return 0;
-  }, [positionsOnFarmer]);
-
-  const oldFarmingPositionsCount = useMemo(() => {
-    if (positionsOnFarmer && positionsOnFarmer.oldTransferredPositionsIds) {
-      return positionsOnFarmer.oldTransferredPositionsIds.length;
-    }
-
-    return 0;
-  }, [positionsOnFarmer]);
-
-  const positionCount = useMemo(() => {
-    if (!positions) return 0;
-    return positions.filter((position) =>
+  const combinedPositions = [
+    ...(positions ?? []).filter((position: any) =>
       hideClosePosition ? position.liquidity.gt('0') : true,
-    ).length;
-  }, [hideClosePosition, positions]);
+    ),
+    ...(_positionsOnFarmer ?? []).map((position) => ({
+      ...position,
+      onFarming: true,
+    })),
+    ...(_positionsOnOldFarmer ?? []).map((position) => ({
+      ...position,
+      oldFarming: true,
+    })),
+  ];
 
-  const {
-    loading: uniV3BalanceLoading,
-    result: uniV3BalanceResult,
-  } = useSingleCallResult(uniV3PositionManager, 'balanceOf', [
-    account ?? undefined,
-  ]);
-
-  const uniV3AccountBalance = useMemo(() => {
-    if (uniV3BalanceResult && uniV3BalanceResult.length > 0) {
-      return uniV3BalanceResult[0].toNumber();
-    }
-    return 0;
-  }, [uniV3BalanceResult]);
-
-  const uniV3TokenIdsArgs = useMemo(() => {
-    if (uniV3AccountBalance && account) {
-      const tokenRequests: any[] = [];
-      for (let i = 0; i < uniV3AccountBalance; i++) {
-        tokenRequests.push([account, i]);
-      }
-      return tokenRequests;
-    }
-    return [];
-  }, [account, uniV3AccountBalance]);
-
-  const uniV3tokenIdResults = useSingleContractMultipleData(
-    uniV3PositionManager,
-    'tokenOfOwnerByIndex',
-    uniV3TokenIdsArgs,
-  );
-
-  const uniV3TokenIds = useMemo(() => {
-    if (account) {
-      return uniV3tokenIdResults
-        .map(({ result }) => result)
-        .filter((result): result is Result => !!result)
-        .map((result) => BigNumber.from(result[0]));
-    }
-    return [];
-  }, [account, uniV3tokenIdResults]);
-
-  const { positions: uniV3Positions } = useV3PositionsFromTokenIds(
-    uniV3TokenIds,
-    true,
-  );
-
-  const uniV3PositionCount = useMemo(() => {
-    if (!uniV3Positions) return 0;
-    return uniV3Positions.filter((position) =>
+  const count =
+    (positions ?? []).filter((position: any) =>
       hideClosePosition ? position.liquidity.gt('0') : true,
-    ).length;
-  }, [hideClosePosition, uniV3Positions]);
-
-  const totalCount =
-    positionCount +
-    uniV3PositionCount +
+    ).length +
     (hideFarmingPosition
       ? 0
-      : farmingPositionsCount + oldFarmingPositionsCount);
-
-  const prevCount = usePrevious(totalCount);
-
-  const count = totalCount > 0 ? totalCount : prevCount ?? 0;
+      : transferredTokenIds.length + oldTransferredTokenIds.length);
 
   return {
-    loading: balanceLoading || uniV3BalanceLoading || positionsOnFarmerLoading,
+    loading: isLoading || _positionsOnFarmerLoading,
+    positions: combinedPositions,
     count,
   };
 }

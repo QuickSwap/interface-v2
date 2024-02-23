@@ -13,7 +13,7 @@ export const useLHAnalyticsDaily = () => {
         return [];
       }
       const data = await res.json();
-      return data?.data?.data ?? [];
+      return data?.data?.data;
     } catch {
       return [];
     }
@@ -26,20 +26,26 @@ export const useLHAnalyticsDaily = () => {
   });
 };
 
-export const useLHAnalytics = () => {
+export const useLHAnalytics = (startTime?: number, endTime?: number) => {
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
 
   const fetchAnalyticsData = async () => {
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/liquidityHub`,
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/liquidityHub${
+          startTime || endTime
+            ? `?${startTime ? `startTime=${startTime}&` : ''}${
+                endTime ? `endTime=${endTime}` : ''
+              }`
+            : ''
+        }`,
       );
       if (!res.ok) {
         return [];
       }
       const data = await res.json();
-      return (data?.data?.data ?? []).map((item: any) => {
+      return (data?.data ?? []).map((item: any) => {
         const srcToken = getTokenFromAddress(
           item.srcTokenAddress,
           chainId,
@@ -60,7 +66,7 @@ export const useLHAnalytics = () => {
   };
 
   return useQuery({
-    queryKey: ['fetchLHAnalytics'],
+    queryKey: ['fetchLHAnalytics', startTime, endTime],
     queryFn: fetchAnalyticsData,
     refetchInterval: 180 * 60 * 1000,
   });
