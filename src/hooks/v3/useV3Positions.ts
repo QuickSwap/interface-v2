@@ -108,7 +108,7 @@ export function useV3PositionsFromTokenIds(
       const contract = isUni ? uniV3PositionManager : positionManager;
       if (!tokenIds || !contract) return null;
       const positions = await fetchPositionsFromId();
-      if (positions) {
+      if (positions && positions.length > 0) {
         return positions;
       }
       const positionsFromContract: any[] = [];
@@ -232,7 +232,7 @@ export function useV3Positions(
       let algebraPositions, uniV3Positions;
       if (positionManager) {
         const positionsFromSubgraph = await fetchUserPositions();
-        if (!positionsFromSubgraph) {
+        if (!positionsFromSubgraph || !positionsFromSubgraph.length) {
           algebraPositions = await fetchUserPositionsContract();
         } else {
           algebraPositions = positionsFromSubgraph.map((item: any) => {
@@ -282,10 +282,6 @@ export function useV3Positions(
     },
   });
 
-  const { positions: positionFromIds } = useV3PositionsFromTokenIds(
-    (positions ?? []).map((item: any) => item.tokenId),
-  );
-
   const { data: positionsOnFarmer } = usePositionsOnFarmer(account);
 
   const transferredTokenIds = useMemo(() => {
@@ -318,23 +314,19 @@ export function useV3Positions(
     oldTransferredTokenIds.map((id) => BigNumber.from(id)),
   );
 
-  const combinedPositions = useMemo(() => {
-    if (positions && _positionsOnFarmer && _positionsOnOldFarmer) {
-      return [
-        ...positions,
-        ..._positionsOnFarmer.map((position) => ({
-          ...position,
-          onFarming: true,
-        })),
-        ..._positionsOnOldFarmer.map((position) => ({
-          ...position,
-          oldFarming: true,
-        })),
-      ];
-    }
-
-    return undefined;
-  }, [_positionsOnFarmer, _positionsOnOldFarmer, positions]);
+  const combinedPositions = [
+    ...(positions ?? []).filter((position: any) =>
+      hideClosePosition ? position.liquidity.gt('0') : true,
+    ),
+    ...(_positionsOnFarmer ?? []).map((position) => ({
+      ...position,
+      onFarming: true,
+    })),
+    ...(_positionsOnOldFarmer ?? []).map((position) => ({
+      ...position,
+      oldFarming: true,
+    })),
+  ];
 
   const count =
     (positions ?? []).filter((position: any) =>
