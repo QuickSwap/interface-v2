@@ -8,7 +8,7 @@ import { GlobalConst } from 'constants/index';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import {
   useGammaPositionsCount,
-  useV3PositionsCount,
+  useV3Positions,
   useDefiedgePositions,
   useV3SteerPositionsCount,
   useICHIPositionsCount,
@@ -56,7 +56,7 @@ export default function MyLiquidityPoolsV3() {
     },
   ];
 
-  const { count: quickPoolsCount } = useV3PositionsCount(
+  const { count: quickPoolsCount } = useV3Positions(
     account,
     userHideQuickClosedPositions,
     hideQuickFarmingPositions,

@@ -447,12 +447,13 @@ export function SelectRange({
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE;
 
   const selectVaultEnabled =
-    (gammaPairExists && unipilotVaultExists) ||
-    (gammaPairExists && defiedgeStrategyExists) ||
-    (gammaPairExists && steerVaultExists) ||
-    (unipilotVaultExists && steerVaultExists) ||
-    (unipilotVaultExists && defiedgeStrategyExists) ||
-    (defiedgeStrategyExists && steerVaultExists);
+    isAutomatic &&
+    ((gammaPairExists && unipilotVaultExists) ||
+      (gammaPairExists && defiedgeStrategyExists) ||
+      (gammaPairExists && steerVaultExists) ||
+      (unipilotVaultExists && steerVaultExists) ||
+      (unipilotVaultExists && defiedgeStrategyExists) ||
+      (defiedgeStrategyExists && steerVaultExists));
 
   const { data: gammaData } = useGammaData();
 
