@@ -22,17 +22,21 @@ const LiquidityHubAnalytics: React.FC = () => {
           <Grid item xs={12} sm={6} md={4}>
             <LiquidityHubAnalyticsVolume
               timeLabel={t('last30days')}
-              startTime={dayjs()
-                .subtract(30, 'day')
-                .unix()}
+              startTime={dayjs(
+                dayjs()
+                  .subtract(30, 'day')
+                  .format('YYYY-MM-DD'),
+              ).unix()}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <LiquidityHubAnalyticsVolume
               timeLabel={t('last24hours')}
-              startTime={dayjs()
-                .subtract(1, 'day')
-                .unix()}
+              startTime={dayjs(
+                dayjs()
+                  .subtract(1, 'day')
+                  .format('YYYY-MM-DD'),
+              ).unix()}
             />
           </Grid>
         </Grid>
