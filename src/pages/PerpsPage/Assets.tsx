@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAccount } from '@orderly.network/hooks';
 import {
   useChains,
   useCollateral,
@@ -14,17 +15,15 @@ import {
   Table,
   TextField,
 } from '@radix-ui/themes';
-import { JsonRpcSigner } from '@ethersproject/providers';
 import { FC, useMemo, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 
 export const Assets: FC = () => {
-  const { account, chainId } = useActiveWeb3React();
+  const { account, state } = useAccount();
+  const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
+
   const collateral = useCollateral();
-  const [chains] = useChains('testnet', {
-    filter: (item: API.Chain) =>
-      item.network_infos?.chain_id === Number(chainId),
-  });
+  const [chains, { findByChainId }] = useChains('testnet');
 
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
@@ -37,7 +36,7 @@ export const Assets: FC = () => {
     decimals: token?.decimals,
     srcToken: token?.symbol,
     srcChainId: Number(chainId),
-    depositorAddress: account,
+    depositorAddress: quickSwapAccount,
   });
   const { withdraw } = useWithdraw();
 
@@ -56,7 +55,7 @@ export const Assets: FC = () => {
             <Table.RowHeaderCell>Wallet Balance:</Table.RowHeaderCell>
             <Table.Cell>{deposit.balance}</Table.Cell>
           </Table.Row>
-          <Table.Row style={{ color: 'white' }}>
+          <Table.Row  style={{ color: 'white' }}>
             <Table.RowHeaderCell>Deposit Balance:</Table.RowHeaderCell>
             <Table.Cell>{collateral.availableBalance}</Table.Cell>
           </Table.Row>
@@ -90,7 +89,7 @@ export const Assets: FC = () => {
             if (Number(deposit.allowance) < Number(amount)) {
               await deposit.approve(amount.toString());
             } else {
-              await deposit.deposit();
+              await deposit.deposit(amount);
             }
           }}
         >

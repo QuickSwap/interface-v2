@@ -7,7 +7,7 @@ import { FC } from 'react';
 export const CreateOrder: FC = () => {
   const { onSubmit } = useOrderEntry('PERP_ETH_USDC', OrderSide.BUY, false);
   const {
-    helper: { calculate },
+    helper: { calculate, validator },
   } = useOrderEntry('PERP_ETH_USDC', OrderSide.BUY, false);
 
   const onFormSubmit: React.FormEventHandler<HTMLFormElement> = async (
@@ -15,7 +15,11 @@ export const CreateOrder: FC = () => {
   ) => {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
+    console.log('[Perps Page] formData', formData);
     const formValue = (Object.fromEntries(formData) as unknown) as OrderEntity;
+    console.log('[Perps Page] formValue', formValue);
+    const errors = validator(formValue);
+    console.log('[Perps Page] errors', errors);
     await onSubmit(formValue);
   };
 
