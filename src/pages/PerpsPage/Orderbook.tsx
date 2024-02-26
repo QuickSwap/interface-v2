@@ -56,7 +56,7 @@ export const Orderbook: FC = () => {
                 <Box>{quantity}</Box>
                 <Box
                   style={{
-                    background: `linear-gradient(to left, rgba(114, 109, 4, 0.2) ${gradient}%, transparent ${gradient}%)`,
+                    background: `linear-gradient(to left, rgba(4, 109, 4, 0.2) ${gradient}%, transparent ${gradient}%)`,
                   }}
                 >
                   {aggregated}

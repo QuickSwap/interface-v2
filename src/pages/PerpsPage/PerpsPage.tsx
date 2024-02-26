@@ -36,6 +36,9 @@ export const PerpsPage = () => {
           <Tabs.Trigger value='orderbook' style={{ color: 'white' }}>
             Orderbook
           </Tabs.Trigger>
+          <Tabs.Trigger value='market' style={{ color: 'white' }}>
+            Market
+          </Tabs.Trigger>
           <Tabs.Trigger value='create_order' style={{ color: 'white' }}>
             Create Order
           </Tabs.Trigger>
@@ -44,9 +47,6 @@ export const PerpsPage = () => {
           </Tabs.Trigger>
           <Tabs.Trigger value='positions' style={{ color: 'white' }}>
             Positions
-          </Tabs.Trigger>
-          <Tabs.Trigger value='market' style={{ color: 'white' }}>
-            Market
           </Tabs.Trigger>
           <Tabs.Trigger value='pairs' style={{ color: 'white' }}>
             Pairs
