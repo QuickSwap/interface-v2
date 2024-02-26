@@ -39,7 +39,7 @@ export const Market: FC = () => {
             const gradient = 10;
             return (
               <>
-                <Box>{Date(item.ts).slice(0, 25)}</Box>
+                <Box>{Date(item.ts).slice(4, 25)}</Box>
                 <Box className={item.side === 'BUY' ? 'bid' : 'ask'}>
                   {item.price}
                 </Box>
