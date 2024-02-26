@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { ChainId, Pair } from '@uniswap/sdk';
+import { getSigner } from 'utils';
 import {
   ConnectionType,
   arkaneConnection,
@@ -171,7 +172,7 @@ export const useIsProMode = () => {
   const isProMode = Boolean(
     parsedQs.isProMode && parsedQs.isProMode === 'true',
   );
-  return proModeEnabled && isProMode;
+  return true;
 };
 
 export const useAnalyticsVersion = () => {
@@ -215,3 +216,12 @@ export const useTokenPriceUsd = (
   const value = Number(formatUnits(bigNumberResponse, 18));
   return [value, loading];
 };
+
+export function useGetSigner() {
+  const { account, library } = useActiveWeb3React();
+  if (!library || !account) {
+    return null;
+  }
+  const signer = getSigner(library, account);
+  return signer;
+}
