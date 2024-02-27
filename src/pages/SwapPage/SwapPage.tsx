@@ -88,11 +88,14 @@ const SwapPage: React.FC = () => {
             <LiquidityHubAd />
           </Box>
 
-          <SwapDefaultMode
-            token1={isV2 ? token1 : token1V3}
-            token2={isV2 ? token2 : token2V3}
-          />
+          <Box sx={{ maxWidth: '1536px', margin: 'auto' }}>
+            <SwapDefaultMode
+              token1={isV2 ? token1 : token1V3}
+              token2={isV2 ? token2 : token2V3}
+            />
+          </Box>
         </>
+        // <div></div>
       )}
     </Box>
   );
