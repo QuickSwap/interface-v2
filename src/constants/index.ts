@@ -64,6 +64,15 @@ export const blackListMerklFarms = [
   '0x0Df98245e23e776Fe059F5793d03AC4221A0ef50',
 ];
 
+export const subgraphNotReadyChains = [
+  ChainId.ZKATANA,
+  ChainId.X1,
+  ChainId.ZKTESTNET,
+  ChainId.MUMBAI,
+  ChainId.DOEGCHAIN_TESTNET,
+  ChainId.DOGECHAIN,
+];
+
 export const CHAIN_IDS_TO_NAMES = {
   [ChainId.MATIC]: 'matic',
   [ChainId.MUMBAI]: 'mumbai',
