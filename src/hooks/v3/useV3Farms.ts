@@ -333,7 +333,9 @@ export const useGetMerklFarms = () => {
     refetchInterval: 300000,
   });
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 10000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTx]);
   return { isLoading, data, refetch };

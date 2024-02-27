@@ -280,7 +280,9 @@ export const useICHIVaultTotalSupply = (vault?: ICHIVault) => {
   });
 
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTx]);
 
@@ -320,7 +322,9 @@ export const useICHIVaultUserBalances = (vaults: ICHIVault[]) => {
   });
 
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTx]);
   return { isLoading, data };
@@ -359,7 +363,9 @@ export const useICHIVaultsUserAmounts = (vaults: ICHIVault[]) => {
   });
 
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTx]);
   return { isLoading, data };
@@ -387,7 +393,9 @@ export const useICHIVaultUserAmounts = (vault?: string) => {
   });
 
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTx]);
   return { isLoading, data };
@@ -412,7 +420,9 @@ export const useICHIVaultUserBalance = (vault?: string) => {
   });
 
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTx]);
   return { isLoading, data };
@@ -481,7 +491,9 @@ export const useICHIVaultApproval = (
   });
 
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTx]);
 
