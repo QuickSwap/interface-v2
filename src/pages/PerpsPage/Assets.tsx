@@ -17,20 +17,21 @@ import {
 } from '@radix-ui/themes';
 import { FC, useMemo, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
-
+import AssetModal from '../../components/AssetModal';
 export const Assets: FC = () => {
+  enum ModalType {
+    Deposit = 'deposit',
+    Withdraw = 'withdraw',
+  }
   const { account, state } = useAccount();
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
 
   const collateral = useCollateral();
   const [chains, { findByChainId }] = useChains('testnet');
-
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
   }, [chains]);
-
   const [amount, setAmount] = useState<string | undefined>();
-
   const deposit = useDeposit({
     address: token?.address,
     decimals: token?.decimals,
@@ -39,7 +40,12 @@ export const Assets: FC = () => {
     depositorAddress: quickSwapAccount,
   });
   const { withdraw } = useWithdraw();
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<ModalType>(ModalType.Deposit);
+  const openModal = (type: ModalType) => {
+    setModalType(type);
+    setModalOpen(true);
+  };
   return (
     <Flex
       style={{ margin: '1.5rem' }}
@@ -55,7 +61,7 @@ export const Assets: FC = () => {
             <Table.RowHeaderCell>Wallet Balance:</Table.RowHeaderCell>
             <Table.Cell>{deposit.balance}</Table.Cell>
           </Table.Row>
-          <Table.Row  style={{ color: 'white' }}>
+          <Table.Row style={{ color: 'white' }}>
             <Table.RowHeaderCell>Deposit Balance:</Table.RowHeaderCell>
             <Table.Cell>{collateral.availableBalance}</Table.Cell>
           </Table.Row>
@@ -83,35 +89,43 @@ export const Assets: FC = () => {
 
         <Button
           style={{ gridArea: 'deposit', color: 'white' }}
-          disabled={amount == null}
-          onClick={async () => {
-            if (amount == null) return;
-            if (Number(deposit.allowance) < Number(amount)) {
-              await deposit.approve(amount.toString());
-            } else {
-              await deposit.deposit(amount);
-            }
-          }}
+          // disabled={amount == null}
+          onClick={() => openModal(ModalType.Deposit)}
+          // onClick={async () => {
+          //   if (amount == null) return;
+          //   if (Number(deposit.allowance) < Number(amount)) {
+          //     await deposit.approve(amount.toString());
+          //   } else {
+          //     await deposit.deposit(amount);
+          //   }
+          // }}
         >
-          {Number(deposit.allowance) < Number(amount) ? 'Approve' : 'Deposit'}
+          {/*{Number(deposit.allowance) < Number(amount) ? 'Approve' : 'Deposit'}*/}
+          Deposit
         </Button>
 
         <Button
           style={{ gridArea: 'withdraw', color: 'white' }}
-          disabled={amount == null}
-          onClick={async () => {
-            if (amount == null) return;
-            await withdraw({
-              chainId: Number(chainId),
-              amount: amount,
-              token: 'USDC',
-              allowCrossChainWithdraw: false,
-            });
-          }}
+          // disabled={amount == null}
+          onClick={() => openModal(ModalType.Withdraw)}
+          // onClick={async () => {
+          //   if (amount == null) return;
+          //   await withdraw({
+          //     chainId: Number(chainId),
+          //     amount: amount,
+          //     token: 'USDC',
+          //     allowCrossChainWithdraw: false,
+          //   });
+          // }}
         >
           Withdraw
         </Button>
       </Grid>
+      <AssetModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        modalType={modalType}
+      />
     </Flex>
   );
 };
