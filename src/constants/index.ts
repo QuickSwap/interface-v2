@@ -1887,6 +1887,18 @@ export const GammaPairs: {
         pid: 17,
       },
     ],
+    '0xb73603c5d87fa094b7314c74ace2e64d165016fb-0xbdad407f77f44f7da6684b416b1951eca461fb07-100': [
+      {
+        address: '0xDf0B9b59E92A2554dEdB6F6F4AF6918d79DD54c4',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xb73603c5d87fa094b7314c74ace2e64d165016fb',
+        token1Address: '0xbdad407f77f44f7da6684b416b1951eca461fb07',
+        fee: FeeAmount.LOWEST,
+        ableToFarm: true,
+        pid: 18,
+      },
+    ],
   },
 };
 
