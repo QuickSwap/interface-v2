@@ -1010,7 +1010,7 @@ export const getUnipilotPositions = async (
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        errorText || res.statusText || `Failed to get unipilot positions`,
+        errorText || res.statusText || `Failed to get A51 Finance positions`,
       );
     }
     const data = await res.json();
