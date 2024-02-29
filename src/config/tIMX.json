@@ -6,7 +6,8 @@
   "networkName": "Immutable zkEVM Testnet",
   "aprAPINetwork": "timx",
   "chainId": 13473,
-  "isMainnet": true,
+  "isMainnet": false,
+  "visible": true,
   "nativeCurrencyImage": "/tIMX_zkevm.jpg",
   "nativeCurrency": {
     "name": "test IMX",

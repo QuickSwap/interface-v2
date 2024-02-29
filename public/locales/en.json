@@ -899,5 +899,7 @@
   "since": "Since",
   "last30days": "Last 30 days",
   "last24hours": "Last 24 hours",
-  "liquidityhubvolumesincelaunch": "*Quickswap liquidity hub volume since launch."
+  "liquidityhubvolumesincelaunch": "*Quickswap liquidity hub volume since launch.",
+  "mainnet": "Mainnet",
+  "testnet": "Testnet"
 }

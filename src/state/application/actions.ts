@@ -23,7 +23,6 @@ export type PopupContent =
 
 export enum ApplicationModal {
   WALLET,
-  NETWORK_SELECTION,
   SETTINGS,
   SETTINGSV3,
   SELF_CLAIM,
@@ -99,4 +98,8 @@ export const updateUDDomain = createAction<string | undefined>(
 
 export const updateSoulZap = createAction<SoulZap_UniV2_ApeBond | undefined>(
   'application/updateSoulZap',
+);
+
+export const updateOpenNetworkSelection = createAction<boolean>(
+  'application/updateOpenNetworkSelection',
 );
