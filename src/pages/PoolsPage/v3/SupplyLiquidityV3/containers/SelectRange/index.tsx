@@ -31,7 +31,7 @@ import {
   getGammaPairsForTokens,
 } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
-import A51finance from 'assets/images/a51finance.png';
+import UnipilotLogo from 'assets/images/unipilot.png';
 import DefiedgeLogo from 'assets/images/defiedge.png';
 import AutomaticImage from 'assets/images/automatic.svg';
 import AutomaticImageDark from 'assets/images/automaticDark.svg';
@@ -567,10 +567,7 @@ export function SelectRange({
             <img src={GammaLogo} alt='Gamma Logo' />
           ) : liquidityRangeType ===
             GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ? (
-            <span>
-              <img src={A51finance} alt='A51Finance Logo' />
-              <span className='text-secondary'>&nbsp;A51 Finance</span>
-            </span>
+            <img src={UnipilotLogo} alt='Unipilot Logo' />
           ) : liquidityRangeType ===
             GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ? (
             <img
@@ -808,10 +805,7 @@ export function SelectRange({
                     );
                   }}
                 >
-                  <span>
-                    <img src={A51finance} alt='A51Finance Logo' />
-                    <span className='text-secondary'>&nbsp;A51 Finance</span>
-                  </span>
+                  <img src={UnipilotLogo} alt='Gamma Logo' />
                   <small className='text-success'>
                     {formatNumber(unipilotAPR)}%
                   </small>
