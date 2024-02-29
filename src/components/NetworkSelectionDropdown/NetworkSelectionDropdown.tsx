@@ -1,18 +1,11 @@
-import React, { useCallback, useEffect } from 'react';
-import { CustomModal } from 'components';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Box } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import 'components/styles/NetworkSelectionModal.scss';
+import 'components/styles/NetworkSelectionDropdown.scss';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
-import {
-  useModalOpen,
-  useNetworkSelectionModalToggle,
-} from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
-import { ApplicationModal } from 'state/application/actions';
 import { useIsSupportedNetwork } from 'utils';
 import {
   networkConnection,
@@ -21,17 +14,23 @@ import {
 } from 'connectors';
 import KavaImage from 'assets/images/KAVA.png';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
+import CustomTabSwitch from 'components/v3/CustomTabSwitch';
+import ActiveDotImage from 'assets/images/chainActiveDot.png';
 
-const NetworkSelectionModal: React.FC = () => {
+const NetworkSelectionDropdown: React.FC = () => {
   const { t } = useTranslation();
   const arcxSdk = useArcxAnalytics();
   const { chainId, connector, account } = useActiveWeb3React();
+  const networkTypes = [
+    { id: 'mainnet', text: t('mainnet') },
+    { id: 'testnet', text: t('testnet') },
+  ];
+  const [networkType, setNetworkType] = useState('mainnet');
+
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
     const config = getConfig(chain);
-    return config && config.isMainnet;
+    return config && config.isMainnet === (networkType === 'mainnet');
   });
-  const modalOpen = useModalOpen(ApplicationModal.NETWORK_SELECTION);
-  const toggleModal = useNetworkSelectionModalToggle();
   const isSupportedNetwork = useIsSupportedNetwork();
 
   useEffect(() => {
@@ -77,40 +76,46 @@ const NetworkSelectionModal: React.FC = () => {
   );
 
   return (
-    <CustomModal
-      open={modalOpen}
-      onClose={toggleModal}
-      modalWrapper='modalWrapperV3 networkSelectionModalWrapper'
-    >
-      <Box className='flex items-center justify-between'>
-        <p>{t('selectNetwork')}</p>
-        <CloseIcon className='cursor-pointer' onClick={toggleModal} />
+    <Box className='networkSelectionDropdown'>
+      <p>{t('selectNetwork')}</p>
+      <Box className='networkTypeWrapper'>
+        <CustomTabSwitch
+          items={networkTypes}
+          value={networkType}
+          handleTabChange={setNetworkType}
+          height={40}
+        />
       </Box>
-      <Box mt='20px'>
-        {supportedChains.map((chain) => {
-          const config = getConfig(chain);
-          return (
-            <Box
-              className='networkItemWrapper'
-              key={chain}
-              onClick={() => {
-                switchNetwork(chain);
-                toggleModal();
-              }}
-            >
-              <Box className='flex items-center'>
-                <img src={config['nativeCurrencyImage']} alt='network Image' />
-                <small className='weight-600'>{config['networkName']}</small>
-              </Box>
-              {isSupportedNetwork && chainId && chainId === chain && (
-                <Box className='flex items-center'>
-                  <Box className='networkConnectedDot' />
-                  <span>{t('connected')}</span>
-                </Box>
-              )}
+      {supportedChains.map((chain) => {
+        const config = getConfig(chain);
+        return (
+          <Box
+            className='networkItemWrapper'
+            key={chain}
+            onClick={() => {
+              switchNetwork(chain);
+            }}
+          >
+            <Box className='flex items-center'>
+              <img
+                src={config['nativeCurrencyImage']}
+                alt='network Image'
+                className='networkIcon'
+              />
+              <small className='weight-600'>{config['networkName']}</small>
             </Box>
-          );
-        })}
+            {isSupportedNetwork && chainId && chainId === chain && (
+              <img
+                src={ActiveDotImage}
+                alt='chain active'
+                width={12}
+                height={12}
+              />
+            )}
+          </Box>
+        );
+      })}
+      {networkType === 'mainnet' && (
         <Box
           className='networkItemWrapper'
           onClick={() => {
@@ -118,13 +123,13 @@ const NetworkSelectionModal: React.FC = () => {
           }}
         >
           <Box className='flex items-center'>
-            <img src={KavaImage} alt='network Image' />
+            <img src={KavaImage} alt='network Image' className='networkIcon' />
             <small className='weight-600'>Kava - Kinetix</small>
           </Box>
         </Box>
-      </Box>
-    </CustomModal>
+      )}
+    </Box>
   );
 };
 
-export default NetworkSelectionModal;
+export default NetworkSelectionDropdown;
