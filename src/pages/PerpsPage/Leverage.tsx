@@ -1,14 +1,14 @@
 import React from 'react';
 import { Box, Button, Flex, Text, Container, Switch } from '@radix-ui/themes';
 import Arrow from '../../assets/images/downward.svg';
-
+import { CropSquareOutlined } from '@material-ui/icons';
 export const Leverage: React.FC = () => {
   return (
     <Flex direction='column' align='center' justify='center'>
       <Box
         style={{
           width: 330,
-          height: 550,
+          height: 600,
           border: '1px solid #696C80',
         }}
       >
@@ -260,6 +260,64 @@ export const Leverage: React.FC = () => {
           >
             Max buy 0.000
           </Text>
+        </Flex>
+        <Flex
+          direction={'row'}
+          align={'center'}
+          justify={'between'}
+          style={{
+            margin: '15px 15px',
+            cursor: 'pointer',
+          }}
+        >
+          <CropSquareOutlined
+            fontSize='small'
+            style={{ transform: 'rotate(45deg)' }}
+          />
+          <Container
+            style={{
+              width: 30,
+              height: 0.5,
+              backgroundColor: '#696C80',
+            }}
+          />
+          <CropSquareOutlined
+            fontSize='small'
+            style={{ transform: 'rotate(45deg)' }}
+          />
+          <Container
+            style={{
+              width: 30,
+              height: 0.5,
+              backgroundColor: '#696C80',
+            }}
+          />
+          <CropSquareOutlined
+            fontSize='small'
+            style={{ transform: 'rotate(45deg)' }}
+          />
+          <Container
+            style={{
+              width: 30,
+              height: 0.5,
+              backgroundColor: '#696C80',
+            }}
+          />
+          <CropSquareOutlined
+            fontSize='small'
+            style={{ transform: 'rotate(45deg)' }}
+          />
+          <Container
+            style={{
+              width: 30,
+              height: 0.5,
+              backgroundColor: '#696C80',
+            }}
+          />
+          <CropSquareOutlined
+            fontSize='small'
+            style={{ transform: 'rotate(45deg)' }}
+          />
         </Flex>
         <Flex
           direction='row'
