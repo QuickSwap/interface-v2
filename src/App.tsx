@@ -8,6 +8,8 @@ import {
 import { Provider } from 'react-redux';
 import store from 'state';
 import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
+import { OrderlyConfigProvider } from '@orderly.network/hooks';
+const PerpsPage = lazy(() => import('./pages/PerpsPage'));
 const DragonPage = lazy(() => import('./pages/DragonPage'));
 const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -141,6 +143,16 @@ const App: React.FC = () => {
                   <Route exact strict path='/pool/:tokenId'>
                     <PageLayout>
                       <PositionPage></PositionPage>
+                    </PageLayout>
+                  </Route>
+                  <Route exact strict path='/perpsV2'>
+                    <PageLayout>
+                      <OrderlyConfigProvider
+                        brokerId='quick_perps'
+                        networkId='testnet'
+                      >
+                        <PerpsPage />
+                      </OrderlyConfigProvider>
                     </PageLayout>
                   </Route>
                   <Route

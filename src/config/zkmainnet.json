@@ -63,6 +63,9 @@
   "perps": {
     "available": true
   },
+  "perpsV2": {
+    "available": true
+  },
   "bos": {
     "available": true
   },
