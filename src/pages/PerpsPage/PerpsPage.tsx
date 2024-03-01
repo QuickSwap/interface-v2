@@ -17,6 +17,7 @@ import { Market } from './Market';
 import { Pairs } from './Pairs';
 import {Leverage} from "./Leverage";
 import { AdvancedChart } from 'react-tradingview-embed';
+import {GraphHeader} from "./GraphHeader";
 import { Grid } from '@mui/material';
 
 export const PerpsPage = () => {
@@ -85,6 +86,7 @@ export const PerpsPage = () => {
           <Pairs />
         </Tabs.Content>
         <Tabs.Content value='chart' style={{ color: 'white' }}>
+          <GraphHeader/>
           <AdvancedChart />
         </Tabs.Content>
         <Tabs.Content value='leverage' style={{ color: 'white' }}>

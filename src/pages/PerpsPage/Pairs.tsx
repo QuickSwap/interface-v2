@@ -12,7 +12,7 @@ type MarketOrder = {
 
 export const Pairs: FC = () => {
   const { data } = useMarketsStream();
-
+  console.log(data)
   return (
     <div className='text-sm'>
       <pre>{JSON.stringify(data, null, 2)}</pre>
