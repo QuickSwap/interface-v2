@@ -31,6 +31,7 @@ export const Assets: FC = () => {
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
   }, [chains]);
+  console.log(token);
   const [amount, setAmount] = useState<string | undefined>();
   const deposit = useDeposit({
     address: token?.address,

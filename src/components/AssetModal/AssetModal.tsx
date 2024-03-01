@@ -12,9 +12,18 @@ import {
   Text,
 } from '@radix-ui/themes';
 import { FC, useMemo, useState } from 'react';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useGetConnection } from 'hooks';
 import 'components/styles/AssetModal.scss';
 import ArrowDownward from '../../assets/images/downward-arrow.svg';
+import { useSelectedWallet } from '../../state/user/hooks';
+import { getConnections } from '../../connectors';
+import {
+  useAccount,
+  useChains,
+  useCollateral,
+  useDeposit,
+  useWithdraw,
+} from '@orderly.network/hooks';
 interface AssetModalProps {
   open: boolean;
   onClose: () => void;
@@ -26,7 +35,26 @@ const AssetModal: React.FC<AssetModalProps> = ({
   modalType,
 }) => {
   const [selectedTab, setSelectedTab] = useState(modalType);
-
+  const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
+  const { selectedWallet } = useSelectedWallet();
+  const getConnection = useGetConnection();
+  const [chains, { findByChainId }] = useChains('testnet');
+  const connections = getConnection(selectedWallet);
+  const { account, state } = useAccount();
+  const collateral = useCollateral();
+  const token = useMemo(() => {
+    return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
+  }, [chains]);
+  const [depositAmount, setDepositAmount] = useState<string | undefined>();
+  const [withdrawAmount, setWithdrawAmount] = useState<string | undefined>();
+  const deposit = useDeposit({
+    address: token?.address,
+    decimals: token?.decimals,
+    srcToken: token?.symbol,
+    srcChainId: Number(chainId),
+    depositorAddress: quickSwapAccount,
+  });
+  const { withdraw } = useWithdraw();
   return (
     <CustomModal
       open={open}
@@ -104,14 +132,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
                 >
                   Your web3 wallet
                 </Text>
-                <Text
-                  size='2'
-                  style={{
-                    color: '#ebecef',
-                    fontFamily: 'Inter',
-                    fontWeight: '500',
-                  }}
-                ></Text>
+                {connections && (
+                  <img src={connections.iconName} width='16' height='16' />
+                )}
               </Flex>
               <Flex
                 align={'center'}
@@ -129,7 +152,11 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     padding: '10px 99px 13px 16px',
                   }}
                 >
-                  0e58...324
+                  {quickSwapAccount
+                    ? quickSwapAccount.substring(0, 6) +
+                      '...' +
+                      quickSwapAccount.substring(quickSwapAccount.length - 4)
+                    : 'Connect Wallet'}
                 </Box>
                 <Box
                   style={{
@@ -139,10 +166,13 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     color: '#ccced9',
                     opacity: '0.6',
                     borderRadius: '8px',
-                    padding: '10px 99px 13px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'start',
+                    padding: '10px 16px',
                   }}
                 >
-                  Polygon
+                  {chains[0].network_infos.name}
                 </Box>
               </Flex>
               <Flex
@@ -169,8 +199,18 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   </Text>
                   <input
                     type='number'
+                    value={
+                      selectedTab === 'deposit' ? depositAmount : withdrawAmount
+                    }
+                    step='0.01'
+                    min='0'
+                    onChange={(event) => {
+                      selectedTab === 'deposit'
+                        ? setDepositAmount(event.target.value)
+                        : setWithdrawAmount(event.target.value);
+                    }}
                     style={{
-                      width: '39px',
+                      width: '60px',
                       height: '17px',
                       margin: '8px 200px 2px 0',
                       fontFamily: 'Inter',
@@ -194,7 +234,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     size={'2'}
                     style={{ marginBottom: '10px', fontSize: '12px' }}
                   >
-                    USDC
+                    {token?.symbol}
                   </Text>
                   <Text
                     style={{
@@ -206,7 +246,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   >
                     Available:{' '}
                     <span style={{ fontSize: '14px', marginLeft: '4px' }}>
-                      100.00
+                      {deposit.balance}
                     </span>
                   </Text>
                 </Flex>
@@ -293,8 +333,18 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   </Text>
                   <input
                     type='number'
+                    value={
+                      selectedTab === 'deposit' ? depositAmount : withdrawAmount
+                    }
+                    step='0.01'
+                    min='0'
+                    onChange={(event) => {
+                      selectedTab === 'deposit'
+                        ? setDepositAmount(event.target.value)
+                        : setWithdrawAmount(event.target.value);
+                    }}
                     style={{
-                      width: '39px',
+                      width: '60px',
                       height: '17px',
                       margin: '8px 200px 2px 0',
                       fontFamily: 'Inter',
@@ -330,7 +380,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   >
                     Available:{' '}
                     <span style={{ fontSize: '14px', marginLeft: '4px' }}>
-                      100.00
+                      {collateral.availableBalance}
                     </span>
                   </Text>
                 </Flex>
@@ -388,18 +438,17 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   backgroundColor: '#448aff',
                   color: '#fff',
                 }}
-                // disabled={amount == null}
-                // onClick={async () => {
-                //     if (amount == null) return;
-                //     if (Number(deposit.allowance) < Number(amount)) {
-                //         await deposit.approve(amount.toString());
-                //     } else {
-                //         await deposit.deposit(amount);
-                //     }
-                // }}
+                disabled={depositAmount == null}
+                onClick={async () => {
+                  if (depositAmount == null) return;
+                  if (Number(deposit.allowance) < Number(depositAmount)) {
+                    await deposit.approve(depositAmount.toString());
+                  } else {
+                    await deposit.deposit(depositAmount);
+                  }
+                }}
               >
-                {/*{Number(deposit.allowance) < Number(amount) ? 'Approve' : 'Deposit'}*/}
-                Deposit
+                {Number(deposit.allowance) < Number(depositAmount) ? 'Approve' : 'Deposit'}
               </Button>
             ) : (
               <Button
@@ -412,15 +461,16 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   backgroundColor: '#448aff',
                   color: '#fff',
                 }}
-                // disabled={amount == null}
-                // onClick={async () => {
-                //     if (amount == null) return;
-                //     if (Number(deposit.allowance) < Number(amount)) {
-                //         await deposit.approve(amount.toString());
-                //     } else {
-                //         await deposit.deposit(amount);
-                //     }
-                // }}
+                disabled={withdrawAmount == null}
+                onClick={async () => {
+                  if (withdrawAmount == null) return;
+                  await withdraw({
+                    chainId: Number(chainId),
+                    amount: withdrawAmount,
+                    token: 'USDC',
+                    allowCrossChainWithdraw: false,
+                  });
+                }}
               >
                 {/*{Number(deposit.allowance) < Number(amount) ? 'Approve' : 'Deposit'}*/}
                 Withdraw
