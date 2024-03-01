@@ -1,0 +1,11 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+
+.assetModalWrapper {
+  max-width: 450px;
+  @include media('screen', '<phone') {
+    padding: 16px;
+  }
+}
+
