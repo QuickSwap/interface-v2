@@ -14,10 +14,6 @@ import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
 import {
-  useNetworkSelectionModalToggle,
-  useWalletModalToggle,
-} from 'state/application/hooks';
-import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
   useSwapActionHandlers,
@@ -33,6 +29,7 @@ import { useHistory } from 'react-router-dom';
 import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
 import {
   useActiveWeb3React,
+  useConnectWallet,
   useGetConnection,
   useIsProMode,
   useMasaAnalytics,
@@ -212,14 +209,7 @@ const SwapBestTrade: React.FC<{
   >(false);
   const [mainPrice, setMainPrice] = useState(true);
 
-  //TODO: move to utils
-  const connectWallet = () => {
-    if (!isSupportedNetwork) {
-      toggleNetworkSelectionModal();
-    } else {
-      toggleWalletModal();
-    }
-  };
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
 
   const parsedQs = useParsedQueryString();
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
@@ -515,9 +505,6 @@ const SwapBestTrade: React.FC<{
       : approval === ApprovalState.NOT_APPROVED ||
         approval === ApprovalState.PENDING ||
         (approvalSubmitted && approval === ApprovalState.APPROVED));
-
-  const toggleWalletModal = useWalletModalToggle();
-  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
 
   useEffect(() => {
     if (approval === ApprovalState.PENDING) {

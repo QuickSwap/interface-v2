@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useCurrency } from 'hooks/v3/Tokens';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useConnectWallet } from 'hooks';
 import { useHistory, useParams } from 'react-router-dom';
 import {
   useActivePreset,
@@ -28,10 +28,6 @@ import {
   PriceFormatToggler,
 } from 'components/v3/PriceFomatToggler';
 import { AddLiquidityButton } from './containers/AddLiquidityButton';
-import {
-  useNetworkSelectionModalToggle,
-  useWalletModalToggle,
-} from 'state/application/hooks';
 import { getGammaPairsForTokens, useIsSupportedNetwork } from 'utils';
 import { useIsExpertMode } from 'state/user/hooks';
 import { currencyId } from 'utils/v3/currencyId';
@@ -84,8 +80,7 @@ export function SupplyLiquidityV3() {
   const [currencyIdA, setCurrencyIdA] = useState(currencyIdAParam);
   const [currencyIdB, setCurrencyIdB] = useState(currencyIdBParam);
 
-  const toggleWalletModal = useWalletModalToggle(); // toggle wallet when disconnected
-  const toggletNetworkSelectionModal = useNetworkSelectionModalToggle();
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
 
   const dispatch = useAppDispatch();
 
@@ -330,13 +325,7 @@ export function SupplyLiquidityV3() {
         ) : (
           <Button
             className='v3-supply-liquidity-button'
-            onClick={() => {
-              if (account) {
-                toggletNetworkSelectionModal();
-              } else {
-                toggleWalletModal();
-              }
-            }}
+            onClick={connectWallet}
           >
             {account ? t('switchNetwork') : t('connectWallet')}
           </Button>

@@ -7,7 +7,8 @@
   "aprAPINetwork": "zkevm",
   "chainId": 1101,
   "isMainnet": true,
-  "nativeCurrencyImage": "/zkevm.svg",
+  "visible": true,
+  "nativeCurrencyImage": "/zkevm.png",
   "nativeCurrency": {
     "name": "Ether",
     "symbol": "ETH",

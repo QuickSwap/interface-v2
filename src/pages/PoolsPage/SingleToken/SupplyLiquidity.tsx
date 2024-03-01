@@ -1,11 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useConnectWallet } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import { Currency } from '@uniswap/sdk-core';
-import {
-  useNetworkSelectionModalToggle,
-  useWalletModalToggle,
-} from 'state/application/hooks';
 import { useIsSupportedNetwork } from 'utils';
 import { Box, Button } from '@material-ui/core';
 import { SettingsModal } from 'components';
@@ -32,8 +28,7 @@ export function SingleTokenSupplyLiquidity() {
   const currency = useSingleTokenCurrency();
   const { selectedVault, selectVault } = useSingleTokenVault();
 
-  const toggleWalletModal = useWalletModalToggle(); // toggle wallet when disconnected
-  const toggletNetworkSelectionModal = useNetworkSelectionModalToggle();
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
 
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
 
@@ -92,16 +87,7 @@ export function SingleTokenSupplyLiquidity() {
             </Box>
           </Box>
         ) : (
-          <Button
-            className='singleTokenDepositButton'
-            onClick={() => {
-              if (account) {
-                toggletNetworkSelectionModal();
-              } else {
-                toggleWalletModal();
-              }
-            }}
-          >
+          <Button className='singleTokenDepositButton' onClick={connectWallet}>
             {account ? t('switchNetwork') : t('connectWallet')}
           </Button>
         )}

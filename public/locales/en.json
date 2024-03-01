@@ -159,7 +159,7 @@
   "eternalFarms": "Eternal Farms",
   "quickswapFarms": "QuickSwap Farms",
   "gammaFarms": "Gamma Farms",
-  "unipilotFarms": "Unipilot Farms",
+  "unipilotFarms": "A51 Finance Farms",
   "defiedgeFarms": "Defiedge Farms",
   "steerFarms": "Steer Farms",
   "v3Mining": "V3 Farms",
@@ -639,8 +639,8 @@
   "assets": "Assets",
   "withdrawingGammaLiquidity": "Withdrawing Gamma Liquidity",
   "withdrewGammaLiquidity": "Withdrew Gamma Liquidity",
-  "withdrawingUnipilotLiquidity": "Withdrawing Unipilot Liquidity",
-  "withdrewUnipilotLiquidity": "Withdrew Unipilot Liquidity",
+  "withdrawingUnipilotLiquidity": "Withdrawing A51 Finance Liquidity",
+  "withdrewUnipilotLiquidity": "Withdrew A51 Finance Liquidity",
   "withdrawingDefiedgeLiquidity": "Withdrawing Defiedge Liquidity",
   "withdrewDefiedgeLiquidity": "Withdrew Defiedge Liquidity",
   "fetchingGammaDepositRange": "Fetching Gamma Deposit Range",
@@ -651,7 +651,7 @@
   "withdrewSteerLiquidity": "Withdrew Steer Liquidity",
   "withdrawingICHILiquidity": "Withdrawing ICHI Liquidity",
   "withdrewICHILiquidity": "Withdrew ICHI Liquidity",
-  "noUnipilotFarms": "No Unipilot Farms",
+  "noUnipilotFarms": "No A51 Finance Farms",
   "noSteerFarms": "No Steer Farms",
   "addingLiquidity": "Adding Liquidity",
   "selectStrategy": "Select Strategy",
@@ -899,5 +899,7 @@
   "since": "Since",
   "last30days": "Last 30 days",
   "last24hours": "Last 24 hours",
-  "liquidityhubvolumesincelaunch": "*Quickswap liquidity hub volume since launch."
+  "liquidityhubvolumesincelaunch": "*Quickswap liquidity hub volume since launch.",
+  "mainnet": "Mainnet",
+  "testnet": "Testnet"
 }

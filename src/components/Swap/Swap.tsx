@@ -13,10 +13,6 @@ import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
 import {
-  useNetworkSelectionModalToggle,
-  useWalletModalToggle,
-} from 'state/application/hooks';
-import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
   useSwapActionHandlers,
@@ -39,6 +35,7 @@ import {
   useActiveWeb3React,
   useMasaAnalytics,
   useGetConnection,
+  useConnectWallet,
 } from 'hooks';
 import {
   ApprovalState,
@@ -204,23 +201,13 @@ const Swap: React.FC<{
       (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
     !(priceImpactSeverity > 3 && !isExpertMode);
 
-  const toggleWalletModal = useWalletModalToggle();
-  const toggletNetworkSelectionModal = useNetworkSelectionModalToggle();
-
   useEffect(() => {
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true);
     }
   }, [approval, approvalSubmitted]);
 
-  const connectWallet = () => {
-    if (!isSupportedNetwork) {
-      toggletNetworkSelectionModal();
-    } else {
-      toggleWalletModal();
-    }
-  };
-
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
   const parsedQs = useParsedQueryString();
   const { redirectWithCurrency, redirectWithSwitch } = useSwapRedirects();
   const parsedCurrency0Id = (parsedQs.currency0 ??

@@ -5,7 +5,7 @@
   "blockExplorer": "https://testnet-zkevm.polygonscan.com",
   "networkName": "Polygon zkEVM Testnet",
   "chainId": 1442,
-  "nativeCurrencyImage": "/zkevm.svg",
+  "nativeCurrencyImage": "/zkevm.png",
   "nativeCurrency": {
     "name": "Ether",
     "symbol": "ETH",

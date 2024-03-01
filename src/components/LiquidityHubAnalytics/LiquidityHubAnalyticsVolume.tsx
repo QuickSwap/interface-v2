@@ -2,11 +2,12 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
-import Chart from 'react-apexcharts';
-import { formatCompact, formatNumber } from 'utils';
+import { formatNumber } from 'utils';
 import dayjs from 'dayjs';
 import { useLHAnalyticsDaily } from 'hooks/useLHAnalytics';
 import { AccessTime } from '@material-ui/icons';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 interface Props {
   startTime?: number;
@@ -28,7 +29,7 @@ const LiquidityHubAnalyticsVolume: React.FC<Props> = ({
 
   const totalVolume = items
     .filter((item: any) =>
-      startTime ? dayjs(item.evt_date).unix() >= startTime : true,
+      startTime ? dayjs.utc(item.evt_date).unix() >= startTime : true,
     )
     .reduce(
       (total: number, item: any) => total + item.daily_total_calculated_value,

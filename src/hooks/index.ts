@@ -39,6 +39,10 @@ import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
 import { Currency } from '@uniswap/sdk-core';
 import { BigNumber } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils';
+import {
+  useOpenNetworkSelection,
+  useWalletModalToggle,
+} from 'state/application/hooks';
 
 export function useActiveWeb3React() {
   const context = useWeb3React();
@@ -217,6 +221,7 @@ export const useTokenPriceUsd = (
   return [value, loading];
 };
 
+
 export function useGetSigner() {
   const { account, library } = useActiveWeb3React();
   if (!library || !account) {
@@ -225,3 +230,17 @@ export function useGetSigner() {
   const signer = getSigner(library, account);
   return signer;
 }
+export const useConnectWallet = (isSupportedNetwork: boolean) => {
+  const toggleWalletModal = useWalletModalToggle();
+  const { setOpenNetworkSelection } = useOpenNetworkSelection();
+
+  const connectWallet = () => {
+    if (!isSupportedNetwork) {
+      setOpenNetworkSelection(true);
+    } else {
+      toggleWalletModal();
+    }
+  };
+
+  return { connectWallet };
+};
