@@ -408,7 +408,7 @@ export function useUnipilotFilteredFarms(
         rewardUSD,
         poolAPR,
         farmAPR,
-        type: 'Unipilot',
+        type: 'A51 Finance',
         title,
       };
     })

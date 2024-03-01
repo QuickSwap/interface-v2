@@ -119,7 +119,7 @@ export default function MyLiquidityPoolsV3() {
         id: GlobalConst.utils.poolsFilter.unipilot,
         text: (
           <Box className='flex items-center'>
-            <small>Unipilot</small>
+            <small>A51 Finance</small>
             <Box
               ml='6px'
               className={`myV3PoolCountWrapper ${
