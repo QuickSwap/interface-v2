@@ -2,8 +2,9 @@ import React from 'react';
 import { useAccount } from '@orderly.network/hooks';
 import { AccountStatusEnum } from '@orderly.network/types';
 import { Button, Card, Container, Flex, Heading, Text } from '@radix-ui/themes';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
+import AccountModal from '../../components/AccountModal';
 
 export const Account: FC = () => {
   const { account, state } = useAccount();
@@ -18,6 +19,11 @@ export const Account: FC = () => {
       },
     });
   }, [library, account]);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const openModal = () => {
+    setModalOpen(true);
+  };
   return (
     <Flex
       style={{ margin: '1.5rem' }}
@@ -87,6 +93,11 @@ export const Account: FC = () => {
       >
         Create Orderly Key
       </Button>
+
+      <Button onClick={() => openModal()} style={{ color: 'white' }}>
+        Show Modal
+      </Button>
+      <AccountModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </Flex>
   );
 };

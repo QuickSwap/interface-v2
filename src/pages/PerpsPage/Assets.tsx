@@ -15,9 +15,11 @@ import {
   Table,
   TextField,
 } from '@radix-ui/themes';
-import { FC, useMemo, useState } from 'react';
+import { FC, useMemo, useState, useEffect } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import AssetModal from '../../components/AssetModal';
+import Box from '@mui/material/Box';
+
 export const Assets: FC = () => {
   enum ModalType {
     Deposit = 'deposit',
@@ -25,6 +27,15 @@ export const Assets: FC = () => {
   }
   const { account, state } = useAccount();
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
+  useEffect(() => {
+    if (!library || !quickSwapAccount) return;
+    account.setAddress(quickSwapAccount, {
+      provider: window.ethereum,
+      chain: {
+        id: chainId,
+      },
+    });
+  }, [library, account]);
 
   const collateral = useCollateral();
   const [chains, { findByChainId }] = useChains('testnet');

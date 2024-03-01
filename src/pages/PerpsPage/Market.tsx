@@ -32,14 +32,14 @@ export const Market: FC = () => {
           style={{ gap: '0 1rem', gridTemplateColumns: '12rem 6rem 6rem' }}
           className='table'
         >
-          <Box>Timestamp</Box>
+          <Box>Times</Box>
           <Box>Price (USDC)</Box>
           <Box>Quantity (ETH)</Box>
           {data.map((item) => {
             const gradient = 10;
             return (
               <>
-                <Box>{Date(item.ts).slice(4, 25)}</Box>
+                <Box>{Date(item.ts).slice(16, 25)}</Box>
                 <Box className={item.side === 'BUY' ? 'bid' : 'ask'}>
                   {item.price}
                 </Box>
