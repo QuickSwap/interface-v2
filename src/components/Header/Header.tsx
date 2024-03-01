@@ -1,21 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import { Box, Button, useMediaQuery } from '@material-ui/core';
-import { KeyboardArrowDown, Close } from '@material-ui/icons';
+import { KeyboardArrowDown, Close, KeyboardArrowUp } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
-import {
-  useNetworkSelectionModalToggle,
-  useUDDomain,
-  useWalletModalToggle,
-} from 'state/application/hooks';
+import { useUDDomain, useWalletModalToggle } from 'state/application/hooks';
 import {
   isTransactionRecent,
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress, useIsSupportedNetwork } from 'utils';
+import { shortenAddress } from 'utils';
 import useENSName from 'hooks/useENSName';
-import { WalletModal, NetworkSelectionModal } from 'components';
+import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.png';
@@ -37,6 +33,7 @@ import { MobileMenuDrawer } from './MobileMenuDrawer';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 import { HeaderDesktopItem } from './HeaderDesktopItem';
+import { NetworkSelection } from './NetworkSelection';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -47,9 +44,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { pathname } = useLocation();
   const { account, chainId, connector } = useActiveWeb3React();
-  const isSupportedNetwork = useIsSupportedNetwork();
   const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
@@ -71,7 +66,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
   const toggleWalletModal = useWalletModalToggle();
-  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const deviceWidth = useDeviceWidth();
   const [headerClass, setHeaderClass] = useState('');
 
@@ -351,7 +345,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         </Box>
       )}
       <Box className={`menuBar ${tabletWindowSize ? '' : headerClass}`}>
-        <NetworkSelectionModal />
         <WalletModal
           ENSName={ENSName ?? undefined}
           pendingTransactions={pending}
@@ -388,26 +381,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         )}
         {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
         <Box>
-          {!parsedChain && (
-            <Box
-              className='networkSelection'
-              onClick={toggleNetworkSelectionModal}
-            >
-              {isSupportedNetwork && (
-                <Box className='networkSelectionImage'>
-                  {chainId && <Box className='styledPollingDot' />}
-                  <img
-                    src={config['nativeCurrencyImage']}
-                    alt='network Image'
-                  />
-                </Box>
-              )}
-              <small className='network-name'>
-                {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
-              </small>
-              <KeyboardArrowDown />
-            </Box>
-          )}
+          {!parsedChain && <NetworkSelection />}
 
           {account ? (
             <Box

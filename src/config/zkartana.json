@@ -6,7 +6,8 @@
   "networkName": "zKatana",
   "aprAPINetwork": "zkatana",
   "chainId": 1261120,
-  "isMainnet": true,
+  "isMainnet": false,
+  "visible": true,
   "nativeCurrencyImage": "/zkartana.png",
   "nativeCurrency": {
     "name": "Ether",

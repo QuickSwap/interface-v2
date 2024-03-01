@@ -379,6 +379,13 @@
   top: -2px;
 }
 
+.networkSelectionWrapper {
+  position: relative;
+  @include media('screen', '<tablet') {
+    position: unset;
+  }
+}
+
 .networkSelection {
   background-color: $secondary1;
   display: flex;
@@ -403,6 +410,12 @@
   position: relative;
   display: flex;
   margin-right: 8px;
+  & .networkActiveDot {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 12px;
+  }
 }
 
 @media (max-width: 959px) {

@@ -6,7 +6,7 @@ import { useIsSupportedNetwork } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   useWalletModalToggle,
-  useNetworkSelectionModalToggle,
+  useOpenNetworkSelection,
 } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
@@ -24,7 +24,7 @@ const HeroSection: React.FC = () => {
   const { chainId, account } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const toggleWalletModal = useWalletModalToggle();
-  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
+  const { setOpenNetworkSelection } = useOpenNetworkSelection();
   const { t } = useTranslation();
   const config = getConfig(chainIdToUse);
   const v2 = config['v2'];
@@ -97,7 +97,7 @@ const HeroSection: React.FC = () => {
           }}
           onClick={() => {
             !isSupportedNetwork
-              ? toggleNetworkSelectionModal()
+              ? setOpenNetworkSelection(true)
               : account
               ? history.push('/swap')
               : toggleWalletModal();
