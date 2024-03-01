@@ -6,6 +6,8 @@ import LiquidityHubAnalyticsCoinVolume from './LiquidityHubAnalyticsCoinVolume';
 import LiquidityHubAnalyticsSwap from './LiquidityHubAnalyticsSwap';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 const LiquidityHubAnalytics: React.FC = () => {
   const { t } = useTranslation();
@@ -22,21 +24,27 @@ const LiquidityHubAnalytics: React.FC = () => {
           <Grid item xs={12} sm={6} md={4}>
             <LiquidityHubAnalyticsVolume
               timeLabel={t('last30days')}
-              startTime={dayjs(
-                dayjs()
-                  .subtract(30, 'day')
-                  .format('YYYY-MM-DD'),
-              ).unix()}
+              startTime={dayjs
+                .utc(
+                  dayjs
+                    .utc()
+                    .subtract(30, 'day')
+                    .format('YYYY-MM-DD'),
+                )
+                .unix()}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <LiquidityHubAnalyticsVolume
               timeLabel={t('last24hours')}
-              startTime={dayjs(
-                dayjs()
-                  .subtract(1, 'day')
-                  .format('YYYY-MM-DD'),
-              ).unix()}
+              startTime={dayjs
+                .utc(
+                  dayjs
+                    .utc()
+                    .subtract(1, 'day')
+                    .format('YYYY-MM-DD'),
+                )
+                .unix()}
             />
           </Grid>
         </Grid>
