@@ -798,7 +798,7 @@ export const FarmingMyFarms: React.FC<{
         <Box my={2}>
           <Divider />
           <Box px={2} mt={2}>
-            <h6>Unipilot {t('farms')}</h6>
+            <h6>A51 Finance {t('farms')}</h6>
           </Box>
           {myUnipilotFarmsLoading || unipilotFarmDataLoading ? (
             <Box py={5} className='flex justify-center'>
