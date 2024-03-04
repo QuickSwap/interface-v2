@@ -23,15 +23,16 @@ export const Assets: FC = () => {
     Deposit = 'deposit',
     Withdraw = 'withdraw',
   }
-  const { account, state } = useAccount();
+  // const { account, state } = useAccount();
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
-
+  console.log(quickSwapAccount);
+  const [isHovered, setIsHovered] = useState(false);
   const collateral = useCollateral();
   const [chains, { findByChainId }] = useChains('testnet');
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
   }, [chains]);
-  console.log(token);
+  // console.log(token);
   const [amount, setAmount] = useState<string | undefined>();
   const deposit = useDeposit({
     address: token?.address,
@@ -90,8 +91,10 @@ export const Assets: FC = () => {
 
         <Button
           style={{ gridArea: 'deposit', color: 'white' }}
-          // disabled={amount == null}
+          disabled={!quickSwapAccount}
           onClick={() => openModal(ModalType.Deposit)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           // onClick={async () => {
           //   if (amount == null) return;
           //   if (Number(deposit.allowance) < Number(amount)) {
@@ -103,11 +106,27 @@ export const Assets: FC = () => {
         >
           {/*{Number(deposit.allowance) < Number(amount) ? 'Approve' : 'Deposit'}*/}
           Deposit
+          {isHovered && !quickSwapAccount && (
+            <span
+              style={{
+                position: 'absolute',
+                bottom: '-20px',
+                left: '50%',
+                color: '#fff',
+                transform: 'translateX(-50%)',
+                background: 'rgba(0, 0, 0, 0.8)',
+                padding: '5px 10px',
+                borderRadius: '5px',
+              }}
+            >
+              Connect Wallet
+            </span>
+          )}
         </Button>
 
         <Button
           style={{ gridArea: 'withdraw', color: 'white' }}
-          // disabled={amount == null}
+          disabled={!quickSwapAccount}
           onClick={() => openModal(ModalType.Withdraw)}
           // onClick={async () => {
           //   if (amount == null) return;
