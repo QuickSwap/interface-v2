@@ -1,9 +1,9 @@
-import React from 'react';
 import {
   useMultipleContractMultipleData,
   useMultipleContractSingleData,
+  useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useActiveWeb3React } from 'hooks';
 import {
@@ -31,7 +31,7 @@ import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
 import { useSteerStakedPools, useSteerVaults } from './useSteerData';
 import { Token } from '@uniswap/sdk-core';
-import { UnipilotVaults } from 'constants/index';
+import { UnipilotVaults, subgraphNotReadyChains } from 'constants/index';
 import { useUnipilotFarms } from './useUnipilotFarms';
 import { useTokenBalances } from 'state/wallet/v3/hooks';
 import {
@@ -41,6 +41,7 @@ import {
 } from 'hooks/useICHIData';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { toV3Token } from 'constants/v3/addresses';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -52,90 +53,53 @@ export function useV3PositionsFromTokenIds(
   tokenIds: BigNumber[] | undefined,
   isUni?: boolean,
 ): UseV3PositionsResults {
-  const { chainId } = useActiveWeb3React();
   const positionManager = useV3NFTPositionManagerContract();
   const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
 
-  async function fetchPositionsFromId() {
-    if (!tokenIds) return null;
-    if (tokenIds.length === 0) return [];
-    try {
-      const res = await fetch(
-        `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
-        }/utils/positions-id?chainId=${chainId}&ids=${tokenIds
-          .map((id) => id.toString())
-          .join(',')}${isUni ? `&isUni=true` : ''}`,
-      );
-      if (!res.ok) {
-        return null;
-      }
-      const data = await res.json();
-      const positions = (data?.data?.data ?? []).map((item: any) => {
+  const inputs = useMemo(
+    () =>
+      tokenIds ? tokenIds.map((tokenId) => [BigNumber.from(tokenId)]) : [],
+    [tokenIds],
+  );
+
+  const results = useSingleContractMultipleData(
+    isUni ? uniV3PositionManager : positionManager,
+    'positions',
+    inputs,
+  );
+
+  const loading = useMemo(() => results.some(({ loading }) => loading), [
+    results,
+  ]);
+  const error = useMemo(() => results.some(({ error }) => error), [results]);
+
+  const positions = useMemo(() => {
+    if (!loading && !error && tokenIds) {
+      return results.map((call, i) => {
+        const tokenId = tokenIds[i];
+        const result = call.result;
         return {
-          tokenId: BigNumber.from(item?.id),
-          fee: isUni ? Number(item?.pool?.feeTier) : undefined,
-          feeGrowthInside0LastX128: BigNumber.from(
-            item?.feeGrowthInside0LastX128,
-          ),
-          feeGrowthInside1LastX128: BigNumber.from(
-            item?.feeGrowthInside1LastX128,
-          ),
-          liquidity: BigNumber.from(item?.liquidity),
-          tickLower: Number(item?.tickLower?.tickIdx),
-          tickUpper: Number(item?.tickUpper?.tickIdx),
-          token0: item?.token0?.id,
-          token1: item?.token1?.id,
+          tokenId,
+          fee: result?.fee,
+          feeGrowthInside0LastX128: result?.feeGrowthInside0LastX128,
+          feeGrowthInside1LastX128: result?.feeGrowthInside1LastX128,
+          liquidity: result?.liquidity,
+          nonce: result?.nonce,
+          operator: result?.operator,
+          tickLower: result?.tickLower,
+          tickUpper: result?.tickUpper,
+          token0: result?.token0,
+          token1: result?.token1,
+          tokensOwed0: result?.tokensOwed0,
+          tokensOwed1: result?.tokensOwed1,
           isUni,
         };
       });
-
-      return positions;
-    } catch (err) {
-      return null;
     }
-  }
+    return undefined;
+  }, [loading, error, tokenIds, results, isUni]);
 
-  const { data, isLoading } = useQuery({
-    queryKey: [
-      'positions-from-id',
-      (tokenIds ?? [])?.map((id) => id.toString()).join(','),
-      !!positionManager,
-      !!uniV3PositionManager,
-      isUni,
-    ],
-    queryFn: async () => {
-      const contract = isUni ? uniV3PositionManager : positionManager;
-      if (!tokenIds || !contract) return null;
-      const positions = await fetchPositionsFromId();
-      if (positions && positions.length > 0) {
-        return positions;
-      }
-      const positionsFromContract: any[] = [];
-      for (const tokenId of tokenIds) {
-        const positionRes = await contract.positions(tokenId);
-        positionsFromContract.push({
-          tokenId,
-          fee: positionRes?.fee,
-          feeGrowthInside0LastX128: positionRes?.feeGrowthInside0LastX128,
-          feeGrowthInside1LastX128: positionRes?.feeGrowthInside1LastX128,
-          liquidity: positionRes?.liquidity,
-          nonce: positionRes?.nonce,
-          operator: positionRes?.operator,
-          tickLower: positionRes?.tickLower,
-          tickUpper: positionRes?.tickUpper,
-          token0: positionRes?.token0,
-          token1: positionRes?.token1,
-          tokensOwed0: positionRes?.tokensOwed0,
-          tokensOwed1: positionRes?.tokensOwed1,
-          isUni,
-        });
-      }
-      return positionsFromContract;
-    },
-  });
-
-  return { loading: isLoading, positions: data };
+  return { loading, positions };
 }
 
 interface UseV3PositionResults {
@@ -188,99 +152,124 @@ export function useV3Positions(
     }
   }
 
-  async function fetchUserPositionsContract(isUni?: boolean) {
+  async function fetchUserPositionIDsContract(isUni?: boolean) {
     const contract = isUni ? uniV3PositionManager : positionManager;
     if (!account || !contract) return null;
     try {
       const res = await contract.balanceOf(account);
       const accountBalance = Number(res);
-      const positions = [];
+      const positionIDs = [];
       for (let i = 0; i < accountBalance; i++) {
         const tokenId = await contract.tokenOfOwnerByIndex(account, i);
-        const positionRes = await contract.positions(tokenId);
-        positions.push({
-          tokenId,
-          fee: positionRes?.fee,
-          feeGrowthInside0LastX128: positionRes?.feeGrowthInside0LastX128,
-          feeGrowthInside1LastX128: positionRes?.feeGrowthInside1LastX128,
-          liquidity: positionRes?.liquidity,
-          nonce: positionRes?.nonce,
-          operator: positionRes?.operator,
-          tickLower: positionRes?.tickLower,
-          tickUpper: positionRes?.tickUpper,
-          token0: positionRes?.token0,
-          token1: positionRes?.token1,
-          tokensOwed0: positionRes?.tokensOwed0,
-          tokensOwed1: positionRes?.tokensOwed1,
-          isUni,
-        });
+        positionIDs.push(tokenId);
       }
-      return positions;
+      return positionIDs;
     } catch (err) {
       return null;
     }
   }
 
-  const { data: positions, isLoading } = useQuery({
+  const {
+    data: algebraPositionIDs,
+    isLoading: algebraIDsLoading,
+    refetch: refetchAlgebraIDs,
+  } = useQuery({
     queryKey: [
-      'user-v3-positions',
+      'user-algebra-v3-positions',
       account,
-      !!uniV3PositionManager,
+      chainId,
       !!positionManager,
+      subgraphNotReadyChains.join('_'),
     ],
     queryFn: async () => {
-      let algebraPositions, uniV3Positions;
+      let positionIDs: BigNumber[] = [];
       if (positionManager) {
-        const positionsFromSubgraph = await fetchUserPositions();
-        if (!positionsFromSubgraph || !positionsFromSubgraph.length) {
-          algebraPositions = await fetchUserPositionsContract();
+        if (subgraphNotReadyChains.includes(chainId)) {
+          const ids = await fetchUserPositionIDsContract();
+          if (ids) {
+            positionIDs = ids;
+          }
         } else {
-          algebraPositions = positionsFromSubgraph.map((item: any) => {
-            return {
-              tokenId: BigNumber.from(item?.id),
-              feeGrowthInside0LastX128: BigNumber.from(
-                item?.feeGrowthInside0LastX128,
-              ),
-              feeGrowthInside1LastX128: BigNumber.from(
-                item?.feeGrowthInside1LastX128,
-              ),
-              liquidity: BigNumber.from(item?.liquidity),
-              tickLower: Number(item?.tickLower?.tickIdx),
-              tickUpper: Number(item?.tickUpper?.tickIdx),
-              token0: item?.token0?.id,
-              token1: item?.token1?.id,
-            };
-          });
+          const positionsFromSubgraph = await fetchUserPositions();
+          if (!positionsFromSubgraph || !positionsFromSubgraph.length) {
+            const ids = await fetchUserPositionIDsContract();
+            if (ids) {
+              positionIDs = ids;
+            }
+          } else {
+            positionIDs = positionsFromSubgraph
+              .map((item: any) =>
+                item?.id ? BigNumber.from(item?.id) : undefined,
+              )
+              .filter((id: any) => !!id);
+          }
         }
       }
-      if (uniV3PositionManager) {
-        const uniV3PositionsFromSubgraph = await fetchUserPositions(true);
-        if (!uniV3PositionsFromSubgraph) {
-          uniV3Positions = await fetchUserPositionsContract(true);
-        } else {
-          uniV3Positions = uniV3PositionsFromSubgraph.map((item: any) => {
-            return {
-              tokenId: BigNumber.from(item?.id),
-              fee: Number(item?.pool?.feeTier),
-              feeGrowthInside0LastX128: BigNumber.from(
-                item?.feeGrowthInside0LastX128,
-              ),
-              feeGrowthInside1LastX128: BigNumber.from(
-                item?.feeGrowthInside1LastX128,
-              ),
-              liquidity: BigNumber.from(item?.liquidity),
-              tickLower: Number(item?.tickLower?.tickIdx),
-              tickUpper: Number(item?.tickUpper?.tickIdx),
-              token0: item?.token0?.id,
-              token1: item?.token1?.id,
-              isUni: true,
-            };
-          });
-        }
-      }
-      return (algebraPositions ?? []).concat(uniV3Positions ?? []);
+      return positionIDs ?? [];
     },
+    refetchInterval: 1000 * 60 * 5,
   });
+
+  const {
+    data: univ3PositionIDs,
+    isLoading: univ3IDsLoading,
+    refetch: refetchUniV3IDs,
+  } = useQuery({
+    queryKey: [
+      'user-uni-v3-positions',
+      account,
+      chainId,
+      !!uniV3PositionManager,
+      subgraphNotReadyChains.join('_'),
+    ],
+    queryFn: async () => {
+      let positionIDs: BigNumber[] = [];
+      if (uniV3PositionManager) {
+        if (subgraphNotReadyChains.includes(chainId)) {
+          const ids = await fetchUserPositionIDsContract(true);
+          if (ids) {
+            positionIDs = ids;
+          }
+        } else {
+          const uniV3PositionsFromSubgraph = await fetchUserPositions(true);
+          if (!uniV3PositionsFromSubgraph) {
+            const ids = await fetchUserPositionIDsContract(true);
+            if (ids) {
+              positionIDs = ids;
+            }
+          } else {
+            positionIDs = uniV3PositionsFromSubgraph
+              .map((item: any) =>
+                item?.id ? BigNumber.from(item?.id) : undefined,
+              )
+              .filter((id: any) => !!id);
+          }
+        }
+      }
+      return positionIDs ?? [];
+    },
+    refetchInterval: 1000 * 60 * 5,
+  });
+
+  const lastTx = useLastTransactionHash();
+
+  useEffect(() => {
+    setTimeout(() => {
+      refetchAlgebraIDs();
+      refetchUniV3IDs();
+    }, 30000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTx]);
+
+  const {
+    positions: algebraPositions,
+    loading: algebraPositionsLoading,
+  } = useV3PositionsFromTokenIds(algebraPositionIDs);
+
+  const {
+    positions: uniV3Positions,
+    loading: uniV3PositionsLoading,
+  } = useV3PositionsFromTokenIds(univ3PositionIDs, true);
 
   const { data: positionsOnFarmer } = usePositionsOnFarmer(account);
 
@@ -315,9 +304,11 @@ export function useV3Positions(
   );
 
   const combinedPositions = [
-    ...(positions ?? []).filter((position: any) =>
-      hideClosePosition ? position.liquidity.gt('0') : true,
-    ),
+    ...(algebraPositions ?? [])
+      .concat(uniV3Positions ?? [])
+      .filter((position: any) =>
+        hideClosePosition ? position.liquidity.gt('0') : true,
+      ),
     ...(_positionsOnFarmer ?? []).map((position) => ({
       ...position,
       onFarming: true,
@@ -329,15 +320,22 @@ export function useV3Positions(
   ];
 
   const count =
-    (positions ?? []).filter((position: any) =>
-      hideClosePosition ? position.liquidity.gt('0') : true,
-    ).length +
+    (algebraPositions ?? [])
+      .concat(uniV3Positions ?? [])
+      .filter((position: any) =>
+        hideClosePosition ? position.liquidity.gt('0') : true,
+      ).length +
     (hideFarmingPosition
       ? 0
       : transferredTokenIds.length + oldTransferredTokenIds.length);
 
   return {
-    loading: isLoading || _positionsOnFarmerLoading,
+    loading:
+      algebraPositionsLoading ||
+      uniV3PositionsLoading ||
+      algebraIDsLoading ||
+      univ3IDsLoading ||
+      _positionsOnFarmerLoading,
     positions: combinedPositions,
     count,
   };

@@ -167,7 +167,9 @@ export function useFarmRewards() {
   });
 
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTxHash]);
 
@@ -560,7 +562,9 @@ export function useFarmPositionsForPool(
   });
 
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTxHash]);
 
@@ -612,7 +616,9 @@ export function usePositionsOnFarmer(account: string | null | undefined) {
   });
 
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTxHash]);
 

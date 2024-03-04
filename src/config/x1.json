@@ -6,7 +6,8 @@
   "networkName": "X1 Testnet",
   "aprAPINetwork": "x1",
   "chainId": 195,
-  "isMainnet": true,
+  "isMainnet": false,
+  "visible": true,
   "nativeCurrencyImage": "/OKB.png",
   "nativeCurrency": {
     "name": "OKB",

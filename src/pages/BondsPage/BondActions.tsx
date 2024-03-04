@@ -3,13 +3,9 @@ import { PurchasePath } from 'types/bond';
 import LPPath from './Paths/LPPath';
 import ApeZapPath from './Paths/ApeZapPath';
 import SoulZapPath from './Paths/SoulZapPath';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useConnectWallet } from 'hooks';
 import { Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import {
-  useNetworkSelectionModalToggle,
-  useWalletModalToggle,
-} from 'state/application/hooks';
 import { useIsSupportedNetwork } from 'utils';
 
 export interface BondActionsProps {
@@ -29,17 +25,9 @@ const BondActions: React.FC<BondActionsProps> = ({
 }) => {
   const { account } = useActiveWeb3React();
   const { t } = useTranslation();
-  const toggleWalletModal = useWalletModalToggle();
-  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const isSupportedNetwork = useIsSupportedNetwork();
 
-  const connectWallet = () => {
-    if (!isSupportedNetwork) {
-      toggleNetworkSelectionModal();
-    } else {
-      toggleWalletModal();
-    }
-  };
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
 
   const getBillActionButton = () => {
     switch (true) {

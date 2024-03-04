@@ -88,7 +88,9 @@ export function useUnipilotUserFarms(chainId?: ChainId, account?: string) {
   });
 
   useEffect(() => {
-    refetch();
+    setTimeout(() => {
+      refetch();
+    }, 30000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastTxHash]);
 
@@ -406,7 +408,7 @@ export function useUnipilotFilteredFarms(
         rewardUSD,
         poolAPR,
         farmAPR,
-        type: 'Unipilot',
+        type: 'A51 Finance',
         title,
       };
     })

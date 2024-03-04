@@ -5,6 +5,7 @@ import { Route } from 'v3lib/entities/route';
 import { useMemo } from 'react';
 import { useV3SwapPools } from './useV3SwapPools';
 import { useUserSingleHopOnly } from 'state/user/hooks';
+import { ChainId } from '@uniswap/sdk';
 
 /**
  * Returns true if poolA is equivalent to poolB
@@ -99,7 +100,12 @@ export function useAllV3Routes(
       [],
       [],
       currencyIn,
-      singleHopOnly || singleIfWrapped ? 1 : 3,
+      singleHopOnly || singleIfWrapped
+        ? 1
+        : currencyIn.chainId === ChainId.ZKEVM ||
+          currencyOut.chainId === ChainId.ZKEVM
+        ? 2
+        : 3,
     );
 
     return { loading: false, routes };

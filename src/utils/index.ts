@@ -1010,7 +1010,7 @@ export const getUnipilotPositions = async (
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        errorText || res.statusText || `Failed to get unipilot positions`,
+        errorText || res.statusText || `Failed to get A51 Finance positions`,
       );
     }
     const data = await res.json();
@@ -1031,7 +1031,7 @@ export const getUnipilotFarms = async (chainId?: ChainId) => {
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        errorText || res.statusText || `Failed to get unipilot farms`,
+        errorText || res.statusText || `Failed to get A51 Finance farms`,
       );
     }
     const data = await res.json();
@@ -1057,7 +1057,7 @@ export const getUnipilotFarmData = async (
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        errorText || res.statusText || `Failed to get unipilot farms`,
+        errorText || res.statusText || `Failed to get A51 Finance farms`,
       );
     }
     const data = await res.json();
@@ -1081,7 +1081,7 @@ export const getUnipilotUserFarms = async (
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        errorText || res.statusText || `Failed to get unipilot user farms`,
+        errorText || res.statusText || `Failed to get A51 Finance user farms`,
       );
     }
     const data = await res.json();

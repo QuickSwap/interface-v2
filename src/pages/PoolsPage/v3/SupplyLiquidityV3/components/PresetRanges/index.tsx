@@ -105,13 +105,13 @@ export function PresetRanges({
   const gammaBaseLowerData = useMultipleContractSingleData(
     gammaPairAddresses,
     new Interface(GammaPairABI),
-    'baseLower',
+    'limitLower',
   );
 
   const gammaBaseUpperData = useMultipleContractSingleData(
     gammaPairAddresses,
     new Interface(GammaPairABI),
-    'baseUpper',
+    'limitUpper',
   );
 
   const gammaCurrentTickData = useMultipleContractSingleData(

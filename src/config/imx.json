@@ -7,6 +7,7 @@
   "aprAPINetwork": "imx",
   "chainId": 13371,
   "isMainnet": true,
+  "visible": true,
   "nativeCurrencyImage": "/tIMX_zkevm.jpg",
   "nativeCurrency": {
     "name": "IMX",
