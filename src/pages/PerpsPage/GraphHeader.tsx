@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Flex, Text, DropdownMenu, Button } from '@radix-ui/themes';
 import { useMarketsStream } from '@orderly.network/hooks';
+
 interface MarketData {
   symbol: string;
   index_price: number;
@@ -23,10 +24,13 @@ interface MarketData {
 export const GraphHeader: React.FC = () => {
   const { data } = useMarketsStream();
   const [token, setToken] = useState<MarketData | null>(null);
-  console.log(token);
   const handleTokenSelect = (token: MarketData) => {
     setToken(token);
   };
+
+  useEffect(() => {
+    data && setToken(data[0]);
+  }, []);
 
   return (
     <Flex direction='row' justify='between' align='center'>
@@ -40,32 +44,99 @@ export const GraphHeader: React.FC = () => {
           style={{
             position: 'absolute',
             top: '100%',
+            width: 573,
+            height: 500,
             backgroundColor: '#1b1e29',
             color: '#c7cad9',
             borderRadius: '4px',
+            padding: '20px',
             WebkitBackdropFilter: 'blur(30px)',
             backdropFilter: 'blur(30px)',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            overflowX: 'auto',
+            cursor: 'pointer',
           }}
         >
-          {data ? (
-            data.map((item, index) => (
-              <DropdownMenu.Item
-                key={index}
-                onSelect={() => handleTokenSelect(item)}
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr
+                style={{
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: '#61657a',
+                }}
               >
-                {item.symbol}
-              </DropdownMenu.Item>
-            ))
-          ) : (
-            <DropdownMenu.Item>No data available</DropdownMenu.Item>
-          )}
+                <th style={{ textAlign: 'start' }}>Instrument</th>
+                <th style={{ textAlign: 'end' }}>Last</th>
+                <th style={{ textAlign: 'end' }}>24h%</th>
+                <th style={{ textAlign: 'end' }}>Volume</th>
+              </tr>
+            </thead>
+            <tbody
+              style={{
+                fontFamily: 'Inter',
+                fontSize: 14,
+                fontWeight: 500,
+                color: '#c7cad9',
+              }}
+            >
+              {data ? (
+                data.map((item, index) => (
+                  <tr
+                    key={index}
+                    onClick={() => handleTokenSelect(item)}
+                    style={{
+                      margin: '7px 0',
+                      cursor: 'pointer',
+                      ':hover': { backgroundColor: '#2c303e' }, // Apply hover effect directly using style attribute
+                    }}
+                    className='hover-row'
+                  >
+                    <td
+                      style={{
+                        textAlign: 'start',
+                        verticalAlign: 'middle',
+                        margin: '0 5px',
+                      }}
+                    >
+                      {item.symbol}
+                    </td>
+                    <td style={{ textAlign: 'end', verticalAlign: 'middle' }}>
+                      {item.index_price}
+                    </td>
+                    <td
+                      style={{
+                        textAlign: 'end',
+                        verticalAlign: 'middle',
+                        color: item?.change < 0 ? 'red' : '#51b29f',
+                      }}
+                    >
+                      {item?.change.toFixed(2)}
+                    </td>
+                    <td style={{ textAlign: 'end', verticalAlign: 'middle' }}>
+                      {item['24h_volume']}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan='4'
+                    style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                  >
+                    No data available
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
       <Text
         style={{
           fontFamily: 'Inter',
-          fontSize: 12,
+          fontSize: 16,
           fontWeight: 500,
           color: ' #51b29f',
         }}
@@ -88,7 +159,7 @@ export const GraphHeader: React.FC = () => {
             fontFamily: 'Inter',
             fontSize: 12,
             fontWeight: 500,
-            color: '#51b29f',
+            color: token?.change < 0 ? 'red' : '#51b29f',
           }}
         >
           {token?.change}
