@@ -22,6 +22,16 @@ import { Grid } from '@mui/material';
 
 export const PerpsPage = () => {
   const { chainId, account, provider } = useActiveWeb3React();
+  const widgetProps = {
+    symbol: 'BINANCE:ETHUSD',
+    timezone: 'Etc/UTC',
+    theme: 'dark',
+    hide_side_toolbar: true,
+    hide_top_toolbar: true,
+    withdateranges: true,
+    save_image: false,
+    allow_symbol_change: false,
+  };
   return (
     <Theme style={{ color: 'white', alignSelf: 'center' }}>
       <Tabs.Root
