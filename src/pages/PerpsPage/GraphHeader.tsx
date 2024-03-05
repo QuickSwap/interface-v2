@@ -112,7 +112,7 @@ export const GraphHeader: React.FC = () => {
                         color: item?.change < 0 ? 'red' : '#51b29f',
                       }}
                     >
-                      {item?.change.toFixed(2)}
+                      {item?.change}
                     </td>
                     <td style={{ textAlign: 'end', verticalAlign: 'middle' }}>
                       {item['24h_volume']}

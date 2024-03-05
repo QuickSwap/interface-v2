@@ -19,23 +19,21 @@ export const Market: FC = () => {
 
   return (
     <Flex
-      style={{ margin: '1.5rem' }}
+      style={{ margin: '1rem' }}
       gap='3'
       align='center'
       justify='center'
       direction='column'
     >
-      <Heading>Market</Heading>
-
       {!isLoading && (
         <Grid
-          style={{ gap: '0 1rem', gridTemplateColumns: '12rem 6rem 6rem' }}
+          style={{ gridTemplateColumns: '6rem 6rem 6rem' }}
           className='table'
         >
           <Box>Times</Box>
           <Box>Price (USDC)</Box>
           <Box>Quantity (ETH)</Box>
-          {data.map((item) => {
+          {data.slice(0, 25).map((item) => {
             const gradient = 10;
             return (
               <>

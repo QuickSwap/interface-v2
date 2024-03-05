@@ -15,17 +15,17 @@ export const Orderbook: FC = () => {
 
   return (
     <Flex
-      style={{ margin: '1.5rem' }}
+      style={{ margin: '1rem' }}
       gap='3'
       align='center'
       justify='center'
       direction='column'
     >
-      <Heading>Orderbook</Heading>
+      {/*<Heading>Orderbook</Heading>*/}
 
       {!isLoading && (
         <Grid
-          style={{ gap: '0 1rem', gridTemplateColumns: '6rem 6rem 10rem' }}
+          style={{ gap: '0 1rem', gridTemplateColumns: '6rem 6rem 6rem' }}
           className='table'
         >
           <Box>Price (USDC)</Box>

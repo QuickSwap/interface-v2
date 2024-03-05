@@ -18,6 +18,7 @@ import { Pairs } from './Pairs';
 import {Leverage} from "./Leverage";
 import { AdvancedChart } from 'react-tradingview-embed';
 import {GraphHeader} from "./GraphHeader";
+import {FinalPage} from "./FinalPage";
 import { Grid } from '@mui/material';
 
 export const PerpsPage = () => {
@@ -69,6 +70,9 @@ export const PerpsPage = () => {
           <Tabs.Trigger value='leverage' style={{ color: 'white' }}>
             Leverage
           </Tabs.Trigger>
+          <Tabs.Trigger value='final' style={{ color: 'white' }}>
+            Perps Page Final
+          </Tabs.Trigger>
         </Tabs.List>
 
         <Tabs.Content value='account' style={{ color: 'white' }}>
@@ -101,6 +105,9 @@ export const PerpsPage = () => {
         </Tabs.Content>
         <Tabs.Content value='leverage' style={{ color: 'white' }}>
           <Leverage />
+        </Tabs.Content>
+        <Tabs.Content value='final' style={{ color: 'white' }}>
+          <FinalPage/>
         </Tabs.Content>
       </Tabs.Root>
     </Theme>
