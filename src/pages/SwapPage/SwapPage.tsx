@@ -71,7 +71,7 @@ const SwapPage: React.FC = () => {
       )}
 
       <SwapPageHeader proMode={isProMode} isTablet={isTablet} />
-      <Box margin='24px auto' sx={{ marginTop: '-124px' }}>
+      <Box margin='24px auto'>
         <HypeLabAds />
       </Box>
 
