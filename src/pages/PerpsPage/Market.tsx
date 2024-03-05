@@ -13,8 +13,9 @@ type MarketOrder = {
   side: OrderSide;
 };
 
-export const Market: FC = () => {
-  const { data, isLoading } = useMarketTradeStream('PERP_ETH_USDC');
+export const Market: FC = ({token}) => {
+  const { data, isLoading } = useMarketTradeStream(token);
+  console.log(data);
   if (isLoading) return <div>Loading...</div>;
 
   return (

@@ -5,17 +5,16 @@ import { FC } from 'react';
 
 import './Orderbook.css';
 
-export const Orderbook: FC = () => {
+export const Orderbook: FC<{ token?: string }> = ({ token }) => {
   const [
     data,
     { onDepthChange, isLoading, onItemClick, depth, allDepths },
-  ] = useOrderbookStream('PERP_ETH_USDC', undefined, {
+  ] = useOrderbookStream(token || 'PERP_ETH_USDC', undefined, {
     level: 10,
   });
-
   return (
     <Flex
-      style={{ margin: '1rem' }}
+      style={{ margin: '1.5rem' }}
       gap='3'
       align='center'
       justify='center'

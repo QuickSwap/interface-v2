@@ -11,7 +11,8 @@ export const FinalPage: React.FC = () => {
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);
   };
-
+  const [token, setToken] = useState('PERP_ETH_USDC');
+    console.log(token)
   return (
     <Flex
       direction='row'
@@ -28,7 +29,7 @@ export const FinalPage: React.FC = () => {
           height: '100vh',
         }}
       >
-        <GraphHeader />
+        <GraphHeader setTokenName={setToken} />
         <AdvancedChart />
       </Container>
       <Container
@@ -37,24 +38,38 @@ export const FinalPage: React.FC = () => {
           height: '100vh',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'row' ,textAlign:"center",padding:'0 89px' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            textAlign: 'center',
+            padding: '0 89px',
+          }}
+        >
           <div
-            className={`tab ${currentTab === 'market' && 'active'}`}
             onClick={() => handleTabChange('market')}
-            style={{ marginRight: '10px', cursor: 'pointer' }}
+            style={{
+              marginRight: '10px',
+              cursor: 'pointer',
+              borderBottom:
+                currentTab === 'market' ? '2px solid white' : 'none',
+            }}
           >
             Market
           </div>
           <div
-            className={`tab ${currentTab === 'orderbook' && 'active'}`}
             onClick={() => handleTabChange('orderbook')}
-            style={{ cursor: 'pointer' }}
+            style={{
+              cursor: 'pointer',
+              borderBottom:
+                currentTab === 'orderbook' ? '2px solid white' : 'none',
+            }}
           >
             Orderbook
           </div>
         </div>
-        {currentTab === 'market' && <Market />}
-        {currentTab === 'orderbook' && <Orderbook />}
+        {currentTab === 'market' && <Market token={token} />}
+        {currentTab === 'orderbook' && <Orderbook token={token} />}
       </Container>
       <Container
         style={{

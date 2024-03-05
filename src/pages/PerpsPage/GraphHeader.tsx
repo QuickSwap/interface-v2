@@ -21,11 +21,12 @@ interface MarketData {
   change: number;
 }
 
-export const GraphHeader: React.FC = () => {
+export const GraphHeader: React.FC = ({ setTokenName }) => {
   const { data } = useMarketsStream();
   const [token, setToken] = useState<MarketData | null>(null);
   const handleTokenSelect = (token: MarketData) => {
     setToken(token);
+    setTokenName(token.symbol);
   };
 
   useEffect(() => {
