@@ -1,8 +1,8 @@
 import React from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Currency, CurrencyAmount, Token } from '@uniswap/sdk-core';
-import { useTokenContract } from 'hooks/useContract';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import { useTokenContract } from '~/hooks/useContract';
+import { useSingleCallResult } from '~/state/multicall/v3/hooks';
 
 // returns undefined if input token is undefined, or fails to get token contract,
 // or contract total supply cannot be fetched

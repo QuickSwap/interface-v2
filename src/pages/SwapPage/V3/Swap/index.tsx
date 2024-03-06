@@ -5,75 +5,79 @@ import {
   Token,
   TradeType,
 } from '@uniswap/sdk-core';
-import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
-import CurrencyLogo from 'components/CurrencyLogo';
-import Loader from 'components/Loader';
-import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
-import { AdvancedSwapDetails } from 'components/v3/swap/AdvancedSwapDetails';
-import ConfirmSwapModal from 'components/v3/swap/ConfirmSwapModal';
-import SwapCallbackError from 'components/v3/swap/SwapCallbackError';
-import SwapHeader from 'components/v3/swap/SwapHeader';
-import TradePrice from 'components/v3/swap/TradePrice';
-import TokenWarningModal from 'components/v3/TokenWarningModal';
-import { useActiveWeb3React, useGetConnection, useMasaAnalytics } from 'hooks';
-import useENSAddress from 'hooks/useENSAddress';
+import ExchangeIcon from '~/assets/images/ExchangeIcon.svg?react';
+import CurrencyLogo from '~/components/CurrencyLogo';
+import Loader from '~/components/Loader';
+import CurrencyInputPanel from '~/components/v3/CurrencyInputPanel';
+import { AdvancedSwapDetails } from '~/components/v3/swap/AdvancedSwapDetails';
+import ConfirmSwapModal from '~/components/v3/swap/ConfirmSwapModal';
+import SwapCallbackError from '~/components/v3/swap/SwapCallbackError';
+import SwapHeader from '~/components/v3/swap/SwapHeader';
+import TradePrice from '~/components/v3/swap/TradePrice';
+import TokenWarningModal from '~/components/v3/TokenWarningModal';
+import {
+  useActiveWeb3React,
+  useGetConnection,
+  useMasaAnalytics,
+} from '~/hooks';
+import useENSAddress from '~/hooks/useENSAddress';
 import {
   ApprovalState,
   useApproveCallback,
   useApproveCallbackFromTrade,
-} from 'hooks/useV3ApproveCallback';
-import useWrapCallback, { WrapType } from 'hooks/useV3WrapCallback';
-import { useAllTokens, useCurrency } from 'hooks/v3/Tokens';
-import { V3TradeState } from 'hooks/v3/useBestV3Trade';
+} from '~/hooks/useV3ApproveCallback';
+import useWrapCallback, { WrapType } from '~/hooks/useV3WrapCallback';
+import { useAllTokens, useCurrency } from '~/hooks/v3/Tokens';
+import { V3TradeState } from '~/hooks/v3/useBestV3Trade';
 import {
   useERC20PermitFromTrade,
   UseERC20PermitState,
-} from 'hooks/v3/useERC20Permit';
-import { useSwapCallback } from 'hooks/v3/useSwapCallback';
-import useToggledVersion, { Version } from 'hooks/v3/useToggledVersion';
-import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
+} from '~/hooks/v3/useERC20Permit';
+import { useSwapCallback } from '~/hooks/v3/useSwapCallback';
+import useToggledVersion, { Version } from '~/hooks/v3/useToggledVersion';
+import { useUSDCValue } from '~/hooks/v3/useUSDCPrice';
 import JSBI from 'jsbi';
-import { Trade as V3Trade } from 'lib/src/trade';
-import { WrappedCurrency } from 'models/types';
+import { Trade as V3Trade } from '~/lib/src/trade';
+import { WrappedCurrency } from '~/models/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router-dom';
-import { useWalletModalToggle } from 'state/application/hooks';
-import { Field } from 'state/swap/v3/actions';
+import { useWalletModalToggle } from '~/state/application/hooks';
+import { Field } from '~/state/swap/v3/actions';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
   useSwapActionHandlers,
   useSwapState,
-} from 'state/swap/v3/hooks';
-import { useExpertModeManager, useSelectedWallet } from 'state/user/hooks';
-import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
-import { getTradeVersion } from 'utils/v3/getTradeVersion';
-import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
-import { warningSeverity } from 'utils/v3/prices';
+} from '~/state/swap/v3/hooks';
+import { useExpertModeManager, useSelectedWallet } from '~/state/user/hooks';
+import { computeFiatValuePriceImpact } from '~/utils/v3/computeFiatValuePriceImpact';
+import { getTradeVersion } from '~/utils/v3/getTradeVersion';
+import { halfAmountSpend, maxAmountSpend } from '~/utils/v3/maxAmountSpend';
+import { warningSeverity } from '~/utils/v3/prices';
 
 import { Box, Button } from '@material-ui/core';
 import { ChainId, ETHER, WETH } from '@uniswap/sdk';
-import { AddressInput, CustomTooltip } from 'components';
+import { AddressInput, CustomTooltip } from '~/components';
 import {
   NATIVE_CONVERTER,
   SWAP_ROUTER_ADDRESSES,
   UNI_SWAP_ROUTER,
   WMATIC_EXTENDED,
-} from 'constants/v3/addresses';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import useSwapRedirects from 'hooks/useSwapRedirect';
-import { CHAIN_INFO } from 'constants/v3/chains';
+} from '~/constants/v3/addresses';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import useSwapRedirects from '~/hooks/useSwapRedirect';
+import { CHAIN_INFO } from '~/constants/v3/chains';
 import { useTranslation } from 'react-i18next';
-import { useTransactionFinalizer } from 'state/transactions/hooks';
-import { getConfig } from 'config/index';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-import { useV3TradeTypeAnalyticsCallback } from 'components/Swap/LiquidityHub';
+import { useTransactionFinalizer } from '~/state/transactions/hooks';
+import { getConfig } from '~/config/index';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
+import { useV3TradeTypeAnalyticsCallback } from '~/components/Swap/LiquidityHub';
 import useNativeConvertCallback, {
   ConvertType,
-} from 'hooks/useNativeConvertCallback';
+} from '~/hooks/useNativeConvertCallback';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();

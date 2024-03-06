@@ -1,13 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import { useActiveWeb3React } from 'hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { getTokenFromAddress } from 'utils';
+import { useActiveWeb3React } from '~/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { getTokenFromAddress } from '~/utils';
 
 export const useLHAnalyticsDaily = () => {
   const fetchAnalyticsDaily = async () => {
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/liquidityHubDaily`,
+        `${
+          import.meta.env.VITE_LEADERBOARD_APP_URL
+        }/analytics/liquidityHubDaily`,
       );
       if (!res.ok) {
         return [];
@@ -33,7 +35,7 @@ export const useLHAnalytics = (startTime?: number, endTime?: number) => {
   const fetchAnalyticsData = async () => {
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/liquidityHub${
+        `${import.meta.env.VITE_LEADERBOARD_APP_URL}/analytics/liquidityHub${
           startTime || endTime
             ? `?${startTime ? `startTime=${startTime}&` : ''}${
                 endTime ? `endTime=${endTime}` : ''

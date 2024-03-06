@@ -1,21 +1,21 @@
 import React from 'react';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from '~/lib/src/trade';
 import { useState } from 'react';
 import { AlertTriangle, ArrowDown } from 'react-feather';
 import { FiatValue } from '../CurrencyInputPanel/FiatValue';
 
 import { AdvancedSwapDetails } from './AdvancedSwapDetails';
 import TradePrice from '../swap/TradePrice';
-import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
+import { useUSDCValue } from '~/hooks/v3/useUSDCPrice';
 import { isAddress } from 'ethers/lib/utils';
-import { shortenAddress } from 'utils';
-import CurrencyLogo from 'components/CurrencyLogo';
-import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
-import { WrappedCurrency } from 'models/types';
+import { shortenAddress } from '~/utils';
+import CurrencyLogo from '~/components/CurrencyLogo';
+import { computeFiatValuePriceImpact } from '~/utils/v3/computeFiatValuePriceImpact';
+import { WrappedCurrency } from '~/models/types';
 import { Box, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import 'components/styles/v3/swap.scss';
+import '~/components/styles/v3/swap.scss';
 
 interface SwapModalHeaderProps {
   trade: V3Trade<Currency, Currency, TradeType>;

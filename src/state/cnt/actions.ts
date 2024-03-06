@@ -1,5 +1,5 @@
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
-import { CNTFarmListInfo } from 'types/index';
+import { CNTFarmListInfo } from '~/types/index';
 
 export const fetchCNTFarmList: Readonly<{
   pending: ActionCreatorWithPayload<{ url: string; requestId: string }>;

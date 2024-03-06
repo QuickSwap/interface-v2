@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useV3Positions } from 'hooks/v3/useV3Positions';
-import { useActiveWeb3React } from 'hooks';
-import Loader from 'components/Loader';
-import usePrevious from 'hooks/usePrevious';
+import { useV3Positions } from '~/hooks/v3/useV3Positions';
+import { useActiveWeb3React } from '~/hooks';
+import Loader from '~/components/Loader';
+import usePrevious from '~/hooks/usePrevious';
 import PositionList from './components/PositionList';
-import { PositionPool } from 'models/interfaces';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { PositionPool } from '~/models/interfaces';
+import { useWalletModalToggle } from '~/state/application/hooks';
 import { useTranslation } from 'react-i18next';
 
 const MyQuickswapPoolsV3: React.FC<{

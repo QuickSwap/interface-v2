@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomModal } from 'components';
+import { CustomModal } from '~/components';
 import {
   Button,
   Flex,
@@ -12,7 +12,7 @@ import {
   Text,
 } from '@radix-ui/themes';
 import { FC, useEffect } from 'react';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import '../styles/AccountModal.scss';
 import num1 from '../../assets/images/num1.svg';
 import num2 from '../../assets/images/num2.svg';

@@ -1,9 +1,9 @@
 import { Currency } from '@uniswap/sdk-core';
-import { PoolState, usePools } from 'hooks/v3/usePools';
-import { Pool } from 'v3lib/entities/pool';
+import { PoolState, usePools } from '~/hooks/v3/usePools';
+import { Pool } from '~/v3lib/entities/pool';
 import { useMemo } from 'react';
 import { useAllCurrencyCombinations } from './useAllCurrencyCombinations';
-import { FeeAmount } from 'v3lib/utils';
+import { FeeAmount } from '~/v3lib/utils';
 import { Token } from '@uniswap/sdk-core';
 
 /**

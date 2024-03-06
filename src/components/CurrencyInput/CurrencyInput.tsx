@@ -1,19 +1,19 @@
 import React from 'react';
 import { Currency, ETHER, currencyEquals } from '@uniswap/sdk';
 import { NativeCurrency } from '@uniswap/sdk-core';
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+import { WrappedTokenInfo } from '~/state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
 import { Box } from '@material-ui/core';
-import { useCurrencyBalance } from 'state/wallet/hooks';
-import { NumericalInput } from 'components';
-import { useActiveWeb3React } from 'hooks';
-import useUSDCPrice from 'utils/useUSDCPrice';
-import { formatTokenAmount } from 'utils';
-import 'components/styles/CurrencyInput.scss';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
+import { NumericalInput } from '~/components';
+import { useActiveWeb3React } from '~/hooks';
+import useUSDCPrice from '~/utils/useUSDCPrice';
+import { formatTokenAmount } from '~/utils';
+import '~/components/styles/CurrencyInput.scss';
 import { useTranslation } from 'react-i18next';
-import CurrencySelect from 'components/CurrencySelect';
-import { default as useUSDCPriceV3 } from 'hooks/v3/useUSDCPrice';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import CurrencySelect from '~/components/CurrencySelect';
+import { default as useUSDCPriceV3 } from '~/hooks/v3/useUSDCPrice';
+import { WMATIC_EXTENDED } from '~/constants/v3/addresses';
 
 interface CurrencyInputProps {
   title?: string;

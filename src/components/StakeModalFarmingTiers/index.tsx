@@ -1,12 +1,12 @@
 import React from 'react';
-import CurrencyLogo from 'components/CurrencyLogo';
-import { useActiveWeb3React } from 'hooks';
-import { WrappedCurrency } from 'models/types';
+import CurrencyLogo from '~/components/CurrencyLogo';
+import { useActiveWeb3React } from '~/hooks';
+import { WrappedCurrency } from '~/models/types';
 import { useCallback, useMemo, useState } from 'react';
-import { useCurrencyBalance } from 'state/wallet/hooks';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
 import './index.scss';
 
-import { formatAmountTokens } from 'utils/numbers';
+import { formatAmountTokens } from '~/utils/numbers';
 import { HelpCircle } from 'react-feather';
 import { Link } from 'react-router-dom';
 
@@ -135,7 +135,7 @@ export default function StakeModalFarmingTiers({
         <div className='ml-a f f-ac farming-tier__hint'>
           <HelpCircle color='#347CC9' size={'14px'} />
           <a
-            href={`${process.env.REACT_APP_V3_FARMS_HELP_BASE_URL}/en/farm/multi-level-farming-on-algebra`}
+            href={`${import.meta.env.VITE_V3_FARMS_HELP_BASE_URL}/en/farm/multi-level-farming-on-algebra`}
             target={'_blank'}
             rel={'noreferrer noopener'}
             className='ml-05'

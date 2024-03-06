@@ -1,13 +1,13 @@
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
-import { HypeLabAds, SettingsModal } from 'components';
-import { useActiveWeb3React, useIsProMode } from 'hooks';
-import 'pages/styles/swap.scss';
+import { HypeLabAds, SettingsModal } from '~/components';
+import { useActiveWeb3React, useIsProMode } from '~/hooks';
+import '~/pages/styles/swap.scss';
 import React, { useState } from 'react';
-import { useIsV2 } from 'state/application/hooks';
-import { Field } from 'state/swap/actions';
-import { useDerivedSwapInfo } from 'state/swap/hooks';
-import { useDerivedSwapInfo as useDerivedSwapInfoV3 } from 'state/swap/v3/hooks';
-import { wrappedCurrency, wrappedCurrencyV3 } from 'utils/wrappedCurrency';
+import { useIsV2 } from '~/state/application/hooks';
+import { Field } from '~/state/swap/actions';
+import { useDerivedSwapInfo } from '~/state/swap/hooks';
+import { useDerivedSwapInfo as useDerivedSwapInfoV3 } from '~/state/swap/v3/hooks';
+import { wrappedCurrency, wrappedCurrencyV3 } from '~/utils/wrappedCurrency';
 import SwapDefaultMode from './SwapDefaultMode';
 import SwapPageHeader from './SwapPageHeader';
 import SwapProMain from './SwapProMain';
@@ -33,7 +33,7 @@ const SwapPage: React.FC = () => {
   const getPairId = async () => {
     if (token1 && token2) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/pair-address/${token1.address}/${token2.address}?chainId=${chainId}`,
+        `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/pair-address/${token1.address}/${token2.address}?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;

@@ -1,5 +1,5 @@
 import React from 'react';
-import Toggle from 'components/v3/Toggle';
+import Toggle from '~/components/v3/Toggle';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

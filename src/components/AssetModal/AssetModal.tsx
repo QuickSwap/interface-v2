@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomModal } from 'components';
+import { CustomModal } from '~/components';
 import {
   Button,
   Flex,
@@ -12,8 +12,8 @@ import {
   Text,
 } from '@radix-ui/themes';
 import { FC, useMemo, useState } from 'react';
-import { useActiveWeb3React, useGetConnection } from 'hooks';
-import 'components/styles/AssetModal.scss';
+import { useActiveWeb3React, useGetConnection } from '~/hooks';
+import '~/components/styles/AssetModal.scss';
 import ArrowDownward from '../../assets/images/downward-arrow.svg';
 import { useSelectedWallet } from '../../state/user/hooks';
 import { getConnections } from '../../connectors';
@@ -448,7 +448,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   }
                 }}
               >
-                {Number(deposit.allowance) < Number(depositAmount) ? 'Approve' : 'Deposit'}
+                {Number(deposit.allowance) < Number(depositAmount)
+                  ? 'Approve'
+                  : 'Deposit'}
               </Button>
             ) : (
               <Button

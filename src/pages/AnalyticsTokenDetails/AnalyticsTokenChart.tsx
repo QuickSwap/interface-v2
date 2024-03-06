@@ -10,11 +10,11 @@ import {
   getChartDates,
   getYAXISValuesAnalytics,
   getFormattedPercent,
-} from 'utils';
-import { AreaChart, ChartType } from 'components';
-import { GlobalConst, GlobalData } from 'constants/index';
+} from '~/utils';
+import { AreaChart, ChartType } from '~/components';
+import { GlobalConst, GlobalData } from '~/constants/index';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from '~/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 const CHART_VOLUME = 0;
@@ -39,7 +39,7 @@ const AnalyticsTokenChart: React.FC<{
   const fetchTokenChartData = async () => {
     if (chainId) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-chart-data/${tokenAddress}/${durationIndex}/${version}?chainId=${chainId}`,
+        `${import.meta.env.VITE_LEADERBOARD_APP_URL}/analytics/top-token-chart-data/${tokenAddress}/${durationIndex}/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;

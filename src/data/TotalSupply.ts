@@ -1,12 +1,12 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Token, TokenAmount } from '@uniswap/sdk';
 import { Interface } from '@ethersproject/abi';
-import { useTokenContract } from 'hooks/useContract';
+import { useTokenContract } from '~/hooks/useContract';
 import {
   useSingleCallResult,
   useMultipleContractSingleData,
-} from 'state/multicall/hooks';
-import ERC20_ABI from 'constants/abis/erc20.json';
+} from '~/state/multicall/hooks';
+import ERC20_ABI from '~/constants/abis/erc20.json';
 
 // returns undefined if input token is undefined, or fails to get token contract,
 // or contract total supply cannot be fetched

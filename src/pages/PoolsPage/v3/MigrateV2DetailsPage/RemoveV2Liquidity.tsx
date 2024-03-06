@@ -1,30 +1,33 @@
 import React, { useMemo, useState } from 'react';
 import { Button } from '@material-ui/core';
 import { BigNumber } from '@ethersproject/bignumber';
-import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
-import { useRouterContract } from 'hooks/useContract';
+import { V2_ROUTER_ADDRESS } from '~/constants/v3/addresses';
+import { useRouterContract } from '~/hooks/useContract';
 import { useTranslation } from 'react-i18next';
-import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
-import { Pair } from 'utils/v3/computePairAddress';
-import { useTokenBalance } from 'state/wallet/v3/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { useTotalSupply } from 'hooks/v3/useTotalSupply';
+import {
+  ApprovalState,
+  useApproveCallback,
+} from '~/hooks/useV3ApproveCallback';
+import { Pair } from '~/utils/v3/computePairAddress';
+import { useTokenBalance } from '~/state/wallet/v3/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useTotalSupply } from '~/hooks/v3/useTotalSupply';
 import { ETHER, JSBI } from '@uniswap/sdk';
 import { CurrencyAmount } from '@uniswap/sdk-core';
-import { useToken } from 'hooks/TokensV3';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
+import { useToken } from '~/hooks/TokensV3';
+import useTransactionDeadline from '~/hooks/useTransactionDeadline';
 import {
   calculateGasMargin,
   calculateSlippageAmountV3,
   formatNumber,
-} from 'utils';
-import { useUserSlippageTolerance } from 'state/user/hooks';
-import { Field } from 'state/burn/actions';
+} from '~/utils';
+import { useUserSlippageTolerance } from '~/state/user/hooks';
+import { Field } from '~/state/burn/actions';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 
 const RemoveV2Liquidity: React.FC<{
   pair: Pair | null;

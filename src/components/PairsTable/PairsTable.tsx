@@ -3,17 +3,17 @@ import { Box, Divider } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
-import { DoubleCurrencyLogo, CustomTable } from 'components';
-import { GlobalConst } from 'constants/index';
-import { useBookmarkPairs } from 'state/application/hooks';
-import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
-import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
+import { DoubleCurrencyLogo, CustomTable } from '~/components';
+import { GlobalConst } from '~/constants/index';
+import { useBookmarkPairs } from '~/state/application/hooks';
+import StarChecked from '~/assets/images/StarChecked.svg?react';
+import StarUnchecked from '~/assets/images/StarUnchecked.svg?react';
 import { useTranslation } from 'react-i18next';
-import { formatNumber, getTokenFromAddress } from 'utils';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import 'components/styles/AnalyticsTable.scss';
-import FarmingAPRTooltip from 'components/FarmingAPRTooltip';
+import { formatNumber, getTokenFromAddress } from '~/utils';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from '~/hooks';
+import '~/components/styles/AnalyticsTable.scss';
+import FarmingAPRTooltip from '~/components/FarmingAPRTooltip';
 
 interface PairsTableProps {
   data: any[];

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import 'components/styles/CustomMenu.scss';
+import '~/components/styles/CustomMenu.scss';
 
 interface CustomMenuItem {
   text: string;

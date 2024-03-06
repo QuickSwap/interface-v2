@@ -2,9 +2,9 @@ import { Currency, Token } from '@uniswap/sdk-core';
 import {
   V3_BASES_TO_CHECK_TRADES_AGAINST,
   V3_CUSTOM_BASES,
-} from 'constants/v3/addresses';
-import { ADDITIONAL_BASES } from 'constants/v3/routing';
-import { useActiveWeb3React } from 'hooks';
+} from '~/constants/v3/addresses';
+import { ADDITIONAL_BASES } from '~/constants/v3/routing';
+import { useActiveWeb3React } from '~/hooks';
 import { useMemo } from 'react';
 
 export function useAllCurrencyCombinations(

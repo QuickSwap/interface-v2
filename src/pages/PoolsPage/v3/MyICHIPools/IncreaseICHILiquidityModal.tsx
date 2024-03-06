@@ -5,29 +5,29 @@ import {
   CustomModal,
   TransactionConfirmationModal,
   TransactionErrorContent,
-} from 'components';
+} from '~/components';
 import { Box, Button } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 import { useTranslation } from 'react-i18next';
-import { calculateGasMargin, formatNumber, getFixedValue } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import { calculateGasMargin, formatNumber, getFixedValue } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
+} from '~/state/transactions/hooks';
+import CurrencyInputPanel from '~/components/v3/CurrencyInputPanel';
 import './ICHILPItemDetails/index.scss';
 import { ETHER, JSBI } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useWETHContract } from 'hooks/useContract';
+import { useWETHContract } from '~/hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { WrappedCurrency } from 'models/types';
+import { WrappedCurrency } from '~/models/types';
 import { SupportedDex, deposit } from '@ichidao/ichi-vaults-sdk';
 import {
   ICHIVault,
   useICHIVaultApproval,
   useICHIVaultDepositData,
-} from 'hooks/useICHIData';
+} from '~/hooks/useICHIData';
 import { BigNumber } from 'ethers';
 
 interface IncreaseICHILiquidityModalProps {

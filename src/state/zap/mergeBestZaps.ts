@@ -4,19 +4,19 @@ import {
   TradeType,
   CurrencyAmount,
 } from '@uniswap/sdk-core';
-import { Trade } from 'lib/src/trade';
+import { Trade } from '~/lib/src/trade';
 import { Pair, ChainId, TokenAmount } from '@uniswap/sdk';
-import { PairState } from 'data/Reserves';
+import { PairState } from '~/data/Reserves';
 import { MergedZap } from './actions';
 import JSBI from 'jsbi';
-import { computeZapPriceBreakdown } from 'utils/v3/prices';
+import { computeZapPriceBreakdown } from '~/utils/v3/prices';
 import {
   WMATIC_EXTENDED,
   toV2Token,
   toV3Currency,
   toV3Token,
-} from 'constants/v3/addresses';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
+} from '~/constants/v3/addresses';
+import { wrappedCurrency } from '~/utils/wrappedCurrency';
 
 // Since a best zap can be null when its the same token we have to check for each possibility
 export function mergeBestZaps(

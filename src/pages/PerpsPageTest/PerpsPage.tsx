@@ -2,7 +2,7 @@ import React from 'react';
 import { useAccount, useQuery } from '@orderly.network/hooks';
 import { AccountStatusEnum } from '@orderly.network/types';
 import { Button, Card, Container, Flex, Heading, Text } from '@radix-ui/themes';
-import { useActiveWeb3React, useGetSigner } from 'hooks';
+import { useActiveWeb3React, useGetSigner } from '~/hooks';
 import { useEffect } from 'react';
 
 export const PerpsPage = () => {

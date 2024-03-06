@@ -1,9 +1,9 @@
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ChainId, Pair } from '@uniswap/sdk';
 import { createAction } from '@reduxjs/toolkit';
-import { PairState } from 'data/Reserves';
+import { PairState } from '~/data/Reserves';
 import JSBI from 'jsbi';
-import { ZapType } from 'constants/index';
+import { ZapType } from '~/constants/index';
 
 export enum Field {
   INPUT = 'INPUT',

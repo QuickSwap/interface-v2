@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CustomModal } from 'components';
+import { CustomModal } from '~/components';
 import { Box, Button, Checkbox } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 

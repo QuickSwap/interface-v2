@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { DoubleCurrencyLogo } from 'components';
-import { unipilotVaultTypes } from 'constants/index';
+import { DoubleCurrencyLogo } from '~/components';
+import { unipilotVaultTypes } from '~/constants/index';
 import './index.scss';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import UnipilotLPItemDetails from '../UnipilotLPItemDetails';
 import { ArrowRight } from 'react-feather';
 import { useHistory } from 'react-router-dom';
-import { UnipilotPosition } from 'hooks/v3/useV3Positions';
+import { UnipilotPosition } from '~/hooks/v3/useV3Positions';
 
 const UnipilotLPItem: React.FC<{ position: UnipilotPosition }> = ({
   position,

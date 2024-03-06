@@ -1,28 +1,28 @@
 import { useQuery } from '@tanstack/react-query';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useMemo } from 'react';
-import BondABI from 'constants/abis/bond.json';
+import BondABI from '~/constants/abis/bond.json';
 import {
   useMultipleContractSingleData,
   useSingleContractMultipleData,
-} from 'state/multicall/v3/hooks';
+} from '~/state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import {
   V2_FACTORY_ADDRESSES,
   V2_FACTORY_BOND,
   V3_CORE_FACTORY_ADDRESSES,
   V3_FACTORY_BOND,
-} from 'constants/v3/addresses';
+} from '~/constants/v3/addresses';
 import { usePriceGetterContract } from '../useContract';
-import { LiquidityProtocol, getLiquidityDexIndex } from 'utils';
-import { ZERO_ADDRESS } from 'constants/v3/misc';
-import { Bond, BondConfig } from 'types/bond';
+import { LiquidityProtocol, getLiquidityDexIndex } from '~/utils';
+import { ZERO_ADDRESS } from '~/constants/v3/misc';
+import { Bond, BondConfig } from '~/types/bond';
 
 export const useFetchBonds = () => {
   const { chainId } = useActiveWeb3React();
   const fetchBonds = async () => {
     try {
-      const bondsURL = process.env.REACT_APP_BONDS_URL;
+      const bondsURL = import.meta.env.VITE_BONDS_URL;
       if (!bondsURL) return;
       const bondsRes = await fetch(bondsURL);
       const bonds = await bondsRes.json();

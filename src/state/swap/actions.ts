@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { SmartRouter, RouterTypes } from 'constants/index';
+import { SmartRouter, RouterTypes } from '~/constants/index';
 
 export enum Field {
   INPUT = 'INPUT',

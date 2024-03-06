@@ -2,8 +2,8 @@ import React, { ReactElement } from 'react';
 import { Box, useMediaQuery, TableRow, TableCell } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { ArrowUpward, ArrowDownward } from '@material-ui/icons';
-import { DataTable } from 'components';
-import 'components/styles/CustomTable.scss';
+import { DataTable } from '~/components';
+import '~/components/styles/CustomTable.scss';
 import CustomTableMobile from './CustomTableMobile';
 
 export interface CustomTableProps<T> {

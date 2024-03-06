@@ -1,15 +1,15 @@
 import { Box, Divider } from '@material-ui/core';
-import BillPay from 'assets/images/featured/BillPay.png';
-import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
-import SpritzIcon from 'assets/images/SpritzIcon.png';
-import { BuyFiatButton } from 'components';
+import BillPay from '~/assets/images/featured/BillPay.png';
+import BuyWithFiat from '~/assets/images/featured/BuyWithFiatNoPad.png';
+import SpritzIcon from '~/assets/images/SpritzIcon.png';
+import { BuyFiatButton } from '~/components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import 'pages/styles/swap.scss';
+import '~/pages/styles/swap.scss';
 
 export const SwapBuySellWidget: React.FC = ({}) => {
   const { t } = useTranslation();
-  const SPRITZ_LINK = process.env.REACT_APP_SPRITZ_FINANCE_LINK;
+  const SPRITZ_LINK = import.meta.env.VITE_SPRITZ_FINANCE_LINK;
 
   return (
     <Box className='wrapper buySellWidgetContainer'>

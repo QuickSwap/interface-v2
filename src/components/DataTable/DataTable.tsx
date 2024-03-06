@@ -12,7 +12,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { SortOrder, getComparator, stableSort } from './sort';
-import 'components/styles/DataTable.scss';
+import '~/components/styles/DataTable.scss';
 
 export interface HeadCell<T> {
   id: string;
@@ -97,7 +97,7 @@ const DataTable: React.FC<DataTableProps<any>> = ({
     rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
   return (
-    <Box className='datatableWrapper'>
+    <Box className='~/datatableWrapper'>
       {toolbar}
 
       <TableContainer>

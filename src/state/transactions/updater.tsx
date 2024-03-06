@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useActiveWeb3React } from 'hooks';
-import { useBlockNumber } from 'state/application/hooks';
-import { useAddPopup, useRemovePopup } from 'state/application/hooks';
-import { AppDispatch, AppState } from 'state';
+import { useActiveWeb3React } from '~/hooks';
+import { useBlockNumber } from '~/state/application/hooks';
+import { useAddPopup, useRemovePopup } from '~/state/application/hooks';
+import { AppDispatch, AppState } from '~/state';
 import { checkedTransaction, finalizeTransaction } from './actions';
-import { updateBlockNumber } from 'state/application/actions';
+import { updateBlockNumber } from '~/state/application/actions';
 
 export function shouldCheck(
   lastBlockNumber: number,

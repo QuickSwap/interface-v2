@@ -1,5 +1,5 @@
-@use 'styles/variables' as *;
-@use 'styles/breakpoints' as *;
+@use 'src/styles/variables' as *;
+@use 'src/styles/breakpoints' as *;
 
 .unipilot-liquidity-item-buttons {
   display: flex;

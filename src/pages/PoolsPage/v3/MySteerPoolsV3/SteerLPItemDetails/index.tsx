@@ -2,16 +2,16 @@ import React, { useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
-import { formatNumber } from 'utils';
-import { CurrencyLogo } from 'components';
+import { formatNumber } from '~/utils';
+import { CurrencyLogo } from '~/components';
 import IncreaseSteerLiquidityModal from '../IncreaseSteerLiquidityModal';
 import WithdrawSteerLiquidityModal from '../WithdrawSteerLiquidityModal';
-import { useTokenBalance } from 'state/wallet/v3/hooks';
+import { useTokenBalance } from '~/state/wallet/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
-import { SteerVault, useSteerStakedPools } from 'hooks/v3/useSteerData';
-import { useTotalSupply } from 'hooks/v3/useTotalSupply';
+import { SteerVault, useSteerStakedPools } from '~/hooks/v3/useSteerData';
+import { useTotalSupply } from '~/hooks/v3/useTotalSupply';
 import { Token } from '@uniswap/sdk-core';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { JSBI } from '@uniswap/sdk';
 
 const SteerLPItemDetails: React.FC<{ position: SteerVault }> = ({

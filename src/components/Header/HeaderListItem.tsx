@@ -5,7 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { List } from '@material-ui/core';
 import { useLocation, useHistory } from 'react-router-dom';
 import Collapse from '@mui/material/Collapse';
-import NewTag from 'assets/images/NewTag.png';
+import NewTag from '~/assets/images/NewTag.png';
 
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 

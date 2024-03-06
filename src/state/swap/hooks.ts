@@ -1,4 +1,4 @@
-//import useENS from 'hooks/useENS';
+//import useENS from '~/hooks/useENS';
 import { parseUnits } from '@ethersproject/units';
 import {
   ChainId,
@@ -13,12 +13,12 @@ import {
 import { ParsedQs } from 'qs';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useActiveWeb3React } from 'hooks';
-import { useCurrency } from 'hooks/Tokens';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { isAddress, getFixedValue } from 'utils';
-import { AppDispatch, AppState } from 'state';
-import { useCurrencyBalances } from 'state/wallet/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useCurrency } from '~/hooks/Tokens';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import { isAddress, getFixedValue } from '~/utils';
+import { AppDispatch, AppState } from '~/state';
+import { useCurrencyBalances } from '~/state/wallet/hooks';
 import {
   Field,
   replaceSwapState,
@@ -35,10 +35,10 @@ import { SwapState } from './reducer';
 import {
   useSlippageManuallySet,
   useUserSlippageTolerance,
-} from 'state/user/hooks';
-import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { GlobalData, RouterTypes, SmartRouter } from 'constants/index';
-import useFindBestRoute from 'hooks/useFindBestRoute';
+} from '~/state/user/hooks';
+import { computeSlippageAdjustedAmounts } from '~/utils/prices';
+import { GlobalData, RouterTypes, SmartRouter } from '~/constants/index';
+import useFindBestRoute from '~/hooks/useFindBestRoute';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);

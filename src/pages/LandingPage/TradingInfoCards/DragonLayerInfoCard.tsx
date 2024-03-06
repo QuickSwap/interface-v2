@@ -1,13 +1,13 @@
 import { Box } from '@material-ui/core';
 import React, { useMemo, useState } from 'react';
-import { DLQUICK } from 'constants/v3/addresses';
-import { useNewLairInfo } from 'state/stake/hooks';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-import { formatCompact, useLairDQUICKAPY } from 'utils';
+import { DLQUICK } from '~/constants/v3/addresses';
+import { useNewLairInfo } from '~/state/stake/hooks';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
+import { formatCompact, useLairDQUICKAPY } from '~/utils';
 import { Skeleton } from '@material-ui/lab';
-import { StakeQuickModal } from 'components';
+import { StakeQuickModal } from '~/components';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 
 interface DragonLayerInfoCardProps {
   chainId: any;

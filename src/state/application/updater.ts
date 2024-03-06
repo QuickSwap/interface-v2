@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import useDebounce from 'hooks/useDebounce';
-import useIsWindowVisible from 'hooks/useIsWindowVisible';
+import useDebounce from '~/hooks/useDebounce';
+import useIsWindowVisible from '~/hooks/useIsWindowVisible';
 import { updateBlockNumber, updateSoulZap } from './actions';
 import { useEthPrice, useMaticPrice } from './hooks';
-import { getEthPrice } from 'utils';
-import { getMaticPrice } from 'utils/v3-graph';
-import { useActiveWeb3React } from 'hooks';
+import { getEthPrice } from '~/utils';
+import { getMaticPrice } from '~/utils/v3-graph';
+import { useActiveWeb3React } from '~/hooks';
 import { SoulZap_UniV2_ApeBond } from '@soulsolidity/soulzap-v1';
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { rpcMap } from 'constants/providers';
+import { rpcMap } from '~/constants/providers';
 import { ChainId } from '@uniswap/sdk';
 
 export default function Updater(): null {

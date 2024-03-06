@@ -1,58 +1,61 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useHistory, useParams } from 'react-router-dom';
-import { ReactComponent as ArrowLeft } from 'assets/images/ArrowLeft.svg';
-import { ReactComponent as ArrowDown } from 'assets/images/ArrowDown1.svg';
+import ArrowLeft from '~/assets/images/ArrowLeft.svg?react';
+import ArrowDown from '~/assets/images/ArrowDown1.svg?react';
 import {
   BetaWarningBanner,
   CurrencyLogo,
   DoubleCurrencyLogo,
   QuestionHelper,
-} from 'components';
-import { useActiveWeb3React } from 'hooks';
-import Loader from 'components/Loader';
-import { useCurrency, useToken } from 'hooks/v3/Tokens';
+} from '~/components';
+import { useActiveWeb3React } from '~/hooks';
+import Loader from '~/components/Loader';
+import { useCurrency, useToken } from '~/hooks/v3/Tokens';
 import './index.scss';
-import { useTokenBalance } from 'state/wallet/v3/hooks';
+import { useTokenBalance } from '~/state/wallet/v3/hooks';
 import { CurrencyAmount, Percent, Price } from '@uniswap/sdk-core';
 import {
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
   useV3MintState,
-} from 'state/mint/v3/hooks';
-import usePrevious from 'hooks/usePrevious';
+} from '~/state/mint/v3/hooks';
+import usePrevious from '~/hooks/usePrevious';
 import { InitialPrice } from '../SupplyLiquidityV3/containers/InitialPrice';
 import { SelectRange } from '../SupplyLiquidityV3/containers/SelectRange';
-import { PriceFormats } from 'components/v3/PriceFomatToggler';
-import { Field } from 'state/mint/actions';
-import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
-import { useV2LiquidityTokenPermit } from 'hooks/v3/useERC20Permit';
+import { PriceFormats } from '~/components/v3/PriceFomatToggler';
+import { Field } from '~/state/mint/actions';
+import {
+  ApprovalState,
+  useApproveCallback,
+} from '~/hooks/useV3ApproveCallback';
+import { useV2LiquidityTokenPermit } from '~/hooks/v3/useERC20Permit';
 import {
   useIsTransactionPending,
   useTransactionAdder,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import ReactGA from 'react-ga';
-import { useV2ToV3MigratorContract } from 'hooks/useContract';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
-import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp';
-import { PoolState, usePool } from 'hooks/v3/usePools';
-import { useTotalSupply } from 'hooks/v3/useTotalSupply';
-import { useV2Pair } from 'hooks/v3/useV2Pairs';
+import { useV2ToV3MigratorContract } from '~/hooks/useContract';
+import useTransactionDeadline from '~/hooks/useTransactionDeadline';
+import useCurrentBlockTimestamp from '~/hooks/useCurrentBlockTimestamp';
+import { PoolState, usePool } from '~/hooks/v3/usePools';
+import { useTotalSupply } from '~/hooks/v3/useTotalSupply';
+import { useV2Pair } from '~/hooks/v3/useV2Pairs';
 import { JSBI } from '@uniswap/sdk';
-import { FeeAmount, priceToClosestTick, TickMath, ZERO } from 'v3lib/utils';
-import { Bound } from 'state/mint/v3/actions';
-import { useUserSlippageTolerance } from 'state/user/hooks';
-import { Pool, Position } from 'v3lib/entities';
-import { V2Exchanges } from 'constants/v3/addresses';
-import { useIsNetworkFailed } from 'hooks/v3/useIsNetworkFailed';
-import { unwrappedToken } from 'utils/unwrappedToken';
-import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
+import { FeeAmount, priceToClosestTick, TickMath, ZERO } from '~/v3lib/utils';
+import { Bound } from '~/state/mint/v3/actions';
+import { useUserSlippageTolerance } from '~/state/user/hooks';
+import { Pool, Position } from '~/v3lib/entities';
+import { V2Exchanges } from '~/constants/v3/addresses';
+import { useIsNetworkFailed } from '~/hooks/v3/useIsNetworkFailed';
+import { unwrappedToken } from '~/utils/unwrappedToken';
+import { formatCurrencyAmount } from '~/utils/v3/formatCurrencyAmount';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { Trans, useTranslation } from 'react-i18next';
-import { calculateGasMargin } from 'utils';
-import { getConfig } from 'config/index';
-import { GlobalConst } from 'constants/index';
+import { calculateGasMargin } from '~/utils';
+import { getConfig } from '~/config/index';
+import { GlobalConst } from '~/constants/index';
 import RemoveV2Liquidity from './RemoveV2Liquidity';
 import AddGammaLiquidity from './AddGammaLiquidity';
 

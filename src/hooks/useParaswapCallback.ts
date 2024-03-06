@@ -4,30 +4,30 @@ import {
 } from '@ethersproject/providers';
 import { Currency } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
-import { RouterTypes, SmartRouter } from 'constants/index';
-import { useTransactionAdder } from 'state/transactions/hooks';
+import { SWAP_ROUTER_ADDRESS } from '~/constants/v3/addresses';
+import { RouterTypes, SmartRouter } from '~/constants/index';
+import { useTransactionAdder } from '~/state/transactions/hooks';
 import {
   isAddress,
   shortenAddress,
   getSigner,
   calculateGasMargin,
   calculateGasMarginBonus,
-} from 'utils';
-import { useActiveWeb3React } from 'hooks';
+} from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import useENS from './useENS';
 import { OptimalRate, SwapSide } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
-import { useUserSlippageTolerance } from 'state/user/hooks';
-import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
+import { useUserSlippageTolerance } from '~/state/user/hooks';
+import ParaswapABI from '~/constants/abis/ParaSwap_ABI.json';
 import { useContract } from './useContract';
-import callWallchainAPI from 'utils/wallchainService';
-import { useSwapActionHandlers } from 'state/swap/hooks';
+import callWallchainAPI from '~/utils/wallchainService';
+import { useSwapActionHandlers } from '~/state/swap/hooks';
 import { BigNumber } from 'ethers';
 import {
   liquidityHubAnalytics,
   useLiquidityHubCallback,
-} from 'components/Swap/LiquidityHub';
+} from '~/components/Swap/LiquidityHub';
 
 export enum SwapCallbackState {
   INVALID,

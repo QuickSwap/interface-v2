@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useTransferBond from 'hooks/bond/useTransferBond';
+import useTransferBond from '~/hooks/bond/useTransferBond';
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 
 interface TransferProps {
   billNftAddress: string;

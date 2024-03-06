@@ -1,6 +1,6 @@
 import React from 'react';
-import { escapeRegExp } from 'utils';
-import 'components/styles/NumericalInput.scss';
+import { escapeRegExp } from '~/utils';
+import '~/components/styles/NumericalInput.scss';
 
 const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`); // match escaped "." characters via in a non-capturing group
 

@@ -1,10 +1,10 @@
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useActiveWeb3React } from 'hooks';
-import { useFetchFarmListCallback } from 'hooks/useFetchFarmListCallback';
-import useInterval from 'hooks/useInterval';
-import useIsWindowVisible from 'hooks/useIsWindowVisible';
-import { AppDispatch, AppState } from 'state';
+import { useActiveWeb3React } from '~/hooks';
+import { useFetchFarmListCallback } from '~/hooks/useFetchFarmListCallback';
+import useInterval from '~/hooks/useInterval';
+import useIsWindowVisible from '~/hooks/useIsWindowVisible';
+import { AppDispatch, AppState } from '~/state';
 import { acceptFarmUpdate } from './actions';
 
 export default function Updater(): null {

@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { TransactionResponse } from '@ethersproject/providers';
-import { CustomModal, ColoredSlider, NumericalInput } from 'components';
-import { useDerivedLairInfo } from 'state/stake/hooks';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { useLairContract, useNewLairContract } from 'hooks/useContract';
+import { CustomModal, ColoredSlider, NumericalInput } from '~/components';
+import { useDerivedLairInfo } from '~/state/stake/hooks';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
+import { useCurrencyBalance, useTokenBalance } from '~/state/wallet/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useApproveCallback, ApprovalState } from '~/hooks/useApproveCallback';
+import { useLairContract, useNewLairContract } from '~/hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import { calculateGasMargin, formatTokenAmount } from 'utils';
-import 'components/styles/StakeModal.scss';
+} from '~/state/transactions/hooks';
+import { calculateGasMargin, formatTokenAmount } from '~/utils';
+import '~/components/styles/StakeModal.scss';
 import { useTranslation } from 'react-i18next';
-import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
+import { DLQUICK, OLD_QUICK } from '~/constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 
 interface StakeQuickModalProps {

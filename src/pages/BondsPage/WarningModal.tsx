@@ -1,9 +1,9 @@
 import { Box, Button, Checkbox } from '@material-ui/core';
-import { CustomModal } from 'components';
+import { CustomModal } from '~/components';
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Warning } from '@material-ui/icons';
-import { formatNumber } from 'utils';
+import { formatNumber } from '~/utils';
 
 const WarningModal = ({
   open,

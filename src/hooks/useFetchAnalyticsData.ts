@@ -4,7 +4,9 @@ import { ChainId } from '@uniswap/sdk';
 export const useAnalyticsGlobalData = (version: string, chainId: ChainId) => {
   const fetchGlobalData = async () => {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/global-data/${version}?chainId=${chainId}`,
+      `${
+        import.meta.env.VITE_LEADERBOARD_APP_URL
+      }/analytics/global-data/${version}?chainId=${chainId}`,
     );
     if (!res.ok) {
       return null;
@@ -31,7 +33,7 @@ export const useAnalyticsTopTokens = (
   const fetchTopTokens = async () => {
     const res = await fetch(
       `${
-        process.env.REACT_APP_LEADERBOARD_APP_URL
+        import.meta.env.VITE_LEADERBOARD_APP_URL
       }/analytics/top-tokens/${version}?chainId=${chainId}${
         limit ? `&limit=${limit}` : ''
       }`,
@@ -55,7 +57,9 @@ export const useAnalyticsTopTokens = (
 export const useAnalyticsTopPairs = (version: string, chainId: ChainId) => {
   const fetchTopPairs = async () => {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pairs/${version}?chainId=${chainId}`,
+      `${
+        import.meta.env.VITE_LEADERBOARD_APP_URL
+      }/analytics/top-pairs/${version}?chainId=${chainId}`,
     );
     if (!res.ok) {
       return null;
@@ -81,7 +85,9 @@ export const useAnalyticsTokenDetails = (
   const fetchTokenDetails = async () => {
     if (chainId && version) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/${version}?chainId=${chainId}`,
+        `${
+          import.meta.env.VITE_LEADERBOARD_APP_URL
+        }/analytics/top-token-details/${tokenAddress}/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;

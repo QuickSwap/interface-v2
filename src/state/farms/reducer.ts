@@ -1,10 +1,10 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { getVersionUpgrade, VersionUpgrade } from '@uniswap/token-lists';
-import { GlobalConst } from 'constants/index';
-import { updateVersion } from 'state/global/actions';
-import { FarmListInfo } from 'types/index';
+import { GlobalConst } from '~/constants/index';
+import { updateVersion } from '~/state/global/actions';
+import { FarmListInfo } from '~/types/index';
 import { acceptFarmUpdate, fetchFarmList, updateV3Stake } from './actions';
-import { FarmingType } from 'models/enums';
+import { FarmingType } from '~/models/enums';
 
 export interface FarmsListsState {
   readonly byUrl: {

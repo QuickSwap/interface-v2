@@ -1,4 +1,4 @@
-import { AdsListInfo } from 'types/index';
+import { AdsListInfo } from '~/types/index';
 import contenthashToUri from './contenthashToUri';
 import { parseENSAddress } from './parseENSAddress';
 import uriToHttp from './uriToHttp';

@@ -1,25 +1,25 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Price, Token, Currency } from '@uniswap/sdk-core';
-import Input from 'components/NumericalInput';
-import { GlobalValue } from 'constants/index';
-import { toToken } from 'constants/v3/routing';
-import { useBestV3TradeExactIn } from 'hooks/v3/useBestV3Trade';
-import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
-import { useAppDispatch } from 'state/hooks';
-import { Bound, updateSelectedPreset } from 'state/mint/v3/actions';
+import Input from '~/components/NumericalInput';
+import { GlobalValue } from '~/constants/index';
+import { toToken } from '~/constants/v3/routing';
+import { useBestV3TradeExactIn } from '~/hooks/v3/useBestV3Trade';
+import useUSDCPrice, { useUSDCValue } from '~/hooks/v3/useUSDCPrice';
+import { useAppDispatch } from '~/state/hooks';
+import { Bound, updateSelectedPreset } from '~/state/mint/v3/actions';
 import {
   IDerivedMintInfo,
   useInitialTokenPrice,
   useInitialUSDPrices,
-} from 'state/mint/v3/hooks';
-import { PriceFormats } from 'components/v3/PriceFomatToggler';
-import { tryParseAmount } from 'state/swap/v3/hooks';
+} from '~/state/mint/v3/hooks';
+import { PriceFormats } from '~/components/v3/PriceFomatToggler';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
 import './index.scss';
 import { Box } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
-import { USDC } from 'constants/v3/addresses';
+import { USDC } from '~/constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useTranslation } from 'react-i18next';
 
 interface IRangeSelector {

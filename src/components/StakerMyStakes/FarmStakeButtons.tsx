@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, Button, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { useFarmingHandlers } from 'hooks/useStakerHandlers';
-import { FarmingType } from 'models/enums';
+import { useFarmingHandlers } from '~/hooks/useStakerHandlers';
+import { FarmingType } from '~/models/enums';
 import { useTranslation } from 'react-i18next';
-import { useV3StakeData } from 'state/farms/hooks';
+import { useV3StakeData } from '~/state/farms/hooks';
 
 interface FarmCardDetailProps {
   el: any;

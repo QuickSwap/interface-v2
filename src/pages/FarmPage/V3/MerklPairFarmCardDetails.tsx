@@ -1,37 +1,37 @@
 import { Box, Button, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { CurrencyLogo, CustomMenu } from 'components';
-import RangeBadge from 'components/v3/Badge/RangeBadge';
-import { useActiveWeb3React } from 'hooks';
-import { useICHIPosition } from 'hooks/useICHIData';
-import { useDefiEdgePosition } from 'hooks/v3/useDefiedgeStrategyData';
-import { useGammaPosition } from 'hooks/v3/useGammaData';
-import { usePool } from 'hooks/v3/usePools';
-import { useSteerPosition } from 'hooks/v3/useSteerData';
-import { useV3PositionsFromPool } from 'hooks/v3/useV3Farms';
-import IncreaseDefiedgeLiquidityModal from 'pages/PoolsPage/v3/MyDefiedgePoolsV3/IncreaseDefiedgeLiquidityModal';
-import WithdrawDefiedgeLiquidityModal from 'pages/PoolsPage/v3/MyDefiedgePoolsV3/WithdrawDefiedgeLiquidityModal';
-import IncreaseGammaLiquidityModal from 'pages/PoolsPage/v3/MyGammaPoolsV3/IncreaseGammaLiquidityModal';
-import WithdrawGammaLiquidityModal from 'pages/PoolsPage/v3/MyGammaPoolsV3/WithdrawGammaLiquidityModal';
-import IncreaseICHILiquidityModal from 'pages/PoolsPage/v3/MyICHIPools/IncreaseICHILiquidityModal';
-import WithdrawICHILiquidityModal from 'pages/PoolsPage/v3/MyICHIPools/WithdrawICHILiquidityModal';
-import V3IncreaseLiquidityModal from 'pages/PoolsPage/v3/MyQuickswapPoolsV3/components/V3IncreaseLiquidityModal';
-import V3RemoveLiquidityModal from 'pages/PoolsPage/v3/MyQuickswapPoolsV3/components/V3RemoveLiquidityModal';
-import IncreaseSteerLiquidityModal from 'pages/PoolsPage/v3/MySteerPoolsV3/IncreaseSteerLiquidityModal';
-import WithdrawSteerLiquidityModal from 'pages/PoolsPage/v3/MySteerPoolsV3/WithdrawSteerLiquidityModal';
+import { CurrencyLogo, CustomMenu } from '~/components';
+import RangeBadge from '~/components/v3/Badge/RangeBadge';
+import { useActiveWeb3React } from '~/hooks';
+import { useICHIPosition } from '~/hooks/useICHIData';
+import { useDefiEdgePosition } from '~/hooks/v3/useDefiedgeStrategyData';
+import { useGammaPosition } from '~/hooks/v3/useGammaData';
+import { usePool } from '~/hooks/v3/usePools';
+import { useSteerPosition } from '~/hooks/v3/useSteerData';
+import { useV3PositionsFromPool } from '~/hooks/v3/useV3Farms';
+import IncreaseDefiedgeLiquidityModal from '~/pages/PoolsPage/v3/MyDefiedgePoolsV3/IncreaseDefiedgeLiquidityModal';
+import WithdrawDefiedgeLiquidityModal from '~/pages/PoolsPage/v3/MyDefiedgePoolsV3/WithdrawDefiedgeLiquidityModal';
+import IncreaseGammaLiquidityModal from '~/pages/PoolsPage/v3/MyGammaPoolsV3/IncreaseGammaLiquidityModal';
+import WithdrawGammaLiquidityModal from '~/pages/PoolsPage/v3/MyGammaPoolsV3/WithdrawGammaLiquidityModal';
+import IncreaseICHILiquidityModal from '~/pages/PoolsPage/v3/MyICHIPools/IncreaseICHILiquidityModal';
+import WithdrawICHILiquidityModal from '~/pages/PoolsPage/v3/MyICHIPools/WithdrawICHILiquidityModal';
+import V3IncreaseLiquidityModal from '~/pages/PoolsPage/v3/MyQuickswapPoolsV3/components/V3IncreaseLiquidityModal';
+import V3RemoveLiquidityModal from '~/pages/PoolsPage/v3/MyQuickswapPoolsV3/components/V3RemoveLiquidityModal';
+import IncreaseSteerLiquidityModal from '~/pages/PoolsPage/v3/MySteerPoolsV3/IncreaseSteerLiquidityModal';
+import WithdrawSteerLiquidityModal from '~/pages/PoolsPage/v3/MySteerPoolsV3/WithdrawSteerLiquidityModal';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { formatNumber, getTokenFromAddress } from 'utils';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { formatNumber, getTokenFromAddress } from '~/utils';
 import {
   useUSDCPriceFromAddress,
   useUSDCPricesFromAddresses,
-} from 'utils/useUSDCPrice';
-import { Position } from 'v3lib/entities';
-import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import APRHover from 'assets/images/aprHover.png';
-import { toV3Token } from 'constants/v3/addresses';
-import { useClaimMerklRewards } from 'hooks/useClaimMerklRewards';
+} from '~/utils/useUSDCPrice';
+import { Position } from '~/v3lib/entities';
+import TotalAPRTooltip from '~/components/TotalAPRToolTip';
+import APRHover from '~/assets/images/aprHover.png';
+import { toV3Token } from '~/constants/v3/addresses';
+import { useClaimMerklRewards } from '~/hooks/useClaimMerklRewards';
 
 interface Props {
   farm: any;

@@ -7,22 +7,25 @@ import { useChunkedRows } from '../../utils/chunkForRows';
 import Loader from '../Loader';
 import { FarmingType } from '../../models/enums';
 import './index.scss';
-import FarmModalFarmingTiers from 'components/StakeModalFarmingTiers';
-import { IsActive } from 'components/StakerMyStakes/IsActive';
-import { useCurrencyBalance } from 'state/wallet/hooks';
-import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
+import FarmModalFarmingTiers from '~/components/StakeModalFarmingTiers';
+import { IsActive } from '~/components/StakerMyStakes/IsActive';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
+import {
+  ApprovalState,
+  useApproveCallback,
+} from '~/hooks/useV3ApproveCallback';
 import { CurrencyAmount } from '@uniswap/sdk-core';
-import { FARMING_CENTER } from 'constants/v3/addresses';
-import { useActiveWeb3React } from 'hooks';
-import TransactionSubmitted from 'assets/images/TransactionSubmitted.png';
-import TransactionFailed from 'assets/images/TransactionFailed.png';
+import { FARMING_CENTER } from '~/constants/v3/addresses';
+import { useActiveWeb3React } from '~/hooks';
+import TransactionSubmitted from '~/assets/images/TransactionSubmitted.png';
+import TransactionFailed from '~/assets/images/TransactionFailed.png';
 import { formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { ChainId } from '@uniswap/sdk';
 import { Box, Button } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { Check } from '@material-ui/icons';
-import { useV3StakeData } from 'state/farms/hooks';
+import { useV3StakeData } from '~/state/farms/hooks';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 

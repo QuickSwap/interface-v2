@@ -6,7 +6,7 @@ import {
   Percent,
   TradeType,
 } from '@uniswap/sdk-core';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from '~/lib/src/trade';
 import { useCallback, useMemo } from 'react';
 import {
   SWAP_ROUTER_ADDRESSES,
@@ -18,11 +18,11 @@ import {
   useTransactionAdder,
 } from '../state/transactions/hooks';
 import { useTokenContract } from './useContract';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useTokenAllowance } from './useTokenAllowance';
-import { calculateGasMargin } from 'utils';
-import { MergedZap } from 'state/zap/actions';
-import { useIsInfiniteApproval } from 'state/user/hooks';
+import { calculateGasMargin } from '~/utils';
+import { MergedZap } from '~/state/zap/actions';
+import { useIsInfiniteApproval } from '~/state/user/hooks';
 
 export enum ApprovalState {
   UNKNOWN = 'UNKNOWN',

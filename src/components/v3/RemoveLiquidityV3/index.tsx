@@ -4,43 +4,43 @@ import {
   ToggleSwitch,
   TransactionConfirmationModal,
   TransactionErrorContent,
-} from 'components';
+} from '~/components';
 import { Box, Button } from '@material-ui/core';
-import { PositionPool } from 'models/interfaces';
+import { PositionPool } from '~/models/interfaces';
 import { useTranslation } from 'react-i18next';
 import {
   useBurnV3ActionHandlers,
   useBurnV3State,
   useDerivedV3BurnInfo,
-} from 'state/burn/v3/hooks';
-import CurrencyLogo from 'components/CurrencyLogo';
+} from '~/state/burn/v3/hooks';
+import CurrencyLogo from '~/components/CurrencyLogo';
 
 import {
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
-} from 'hooks/useContract';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
+} from '~/hooks/useContract';
+import useTransactionDeadline from '~/hooks/useTransactionDeadline';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { Percent } from '@uniswap/sdk-core';
 
 import ReactGA from 'react-ga';
-import { useActiveWeb3React } from 'hooks';
-import { calculateGasMarginV3 } from 'utils';
-import usePrevious from 'hooks/usePrevious';
-import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
-import { NonfungiblePositionManager as AlgebraNonfungiblePositionManager } from 'v3lib/nonfungiblePositionManager';
-import { UniV3NonfungiblePositionManager } from 'v3lib/uniV3NonfungiblePositionManager';
-import { WrappedCurrency } from 'models/types';
-import RangeBadge from 'components/v3/Badge/RangeBadge';
-import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
-import ColoredSlider from 'components/ColoredSlider';
+import { useActiveWeb3React } from '~/hooks';
+import { calculateGasMarginV3 } from '~/utils';
+import usePrevious from '~/hooks/usePrevious';
+import useDebouncedChangeHandler from '~/utils/useDebouncedChangeHandler';
+import { WMATIC_EXTENDED } from '~/constants/v3/addresses';
+import { NonfungiblePositionManager as AlgebraNonfungiblePositionManager } from '~/v3lib/nonfungiblePositionManager';
+import { UniV3NonfungiblePositionManager } from '~/v3lib/uniV3NonfungiblePositionManager';
+import { WrappedCurrency } from '~/models/types';
+import RangeBadge from '~/components/v3/Badge/RangeBadge';
+import DoubleCurrencyLogo from '~/components/DoubleCurrencyLogo';
+import ColoredSlider from '~/components/ColoredSlider';
 import { JSBI, WETH } from '@uniswap/sdk';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import { useUserSlippageTolerance } from '~/state/user/hooks';
 import './index.scss';
 
 interface RemoveLiquidityV3Props {

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import React, { useEffect, useState } from 'react';
 import { Skeleton } from '@material-ui/lab';
-import { QuestionHelper } from 'components';
+import { QuestionHelper } from '~/components';
 import { Box } from '@material-ui/core';
 
 const VestedTimer: React.FC<{

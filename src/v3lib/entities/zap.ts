@@ -4,8 +4,8 @@ import {
   validateAndParseAddress,
   WETH9,
 } from '@uniswap/sdk-core';
-import { ZapType } from 'constants/index';
-import { MergedZap } from 'state/zap/actions';
+import { ZapType } from '~/constants/index';
+import { MergedZap } from '~/state/zap/actions';
 import invariant from 'tiny-invariant';
 
 // Options for producing the arguments to send call to zap.

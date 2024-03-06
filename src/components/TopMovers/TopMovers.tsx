@@ -4,15 +4,15 @@ import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
-import { CurrencyLogo } from 'components';
-import { getPriceClass, formatNumber, getTokenFromAddress } from 'utils';
-import 'components/styles/TopMovers.scss';
+import { CurrencyLogo } from '~/components';
+import { getPriceClass, formatNumber, getTokenFromAddress } from '~/utils';
+import '~/components/styles/TopMovers.scss';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useIsV2 } from '~/state/application/hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { getConfig } from '../../config/index';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { useAnalyticsTopTokens } from '~/hooks/useFetchAnalyticsData';
 
 interface TopMoversProps {
   hideArrow?: boolean;

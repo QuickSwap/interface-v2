@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 import { useBondType } from './useBondType';
-import { useBondContract } from 'hooks/useContract';
+import { useBondContract } from '~/hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { useTranslation } from 'react-i18next';
 
 // Claim a Bond

@@ -1,9 +1,9 @@
 import { Box } from '@material-ui/core';
-import BuyWithFiat from 'assets/images/featured/BuywithFiatNoPad.svg';
-import { BuyFiatButton } from 'components';
+import BuyWithFiat from '~/assets/images/featured/BuywithFiatNoPad.svg';
+import { BuyFiatButton } from '~/components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import MeldIcon from 'assets/images/meldIcon.png';
+import MeldIcon from '~/assets/images/meldIcon.png';
 
 export const MeldAdvertisement: React.FC = () => {
   const { t } = useTranslation();

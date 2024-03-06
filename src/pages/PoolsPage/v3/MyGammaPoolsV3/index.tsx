@@ -1,19 +1,19 @@
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
-import Loader from 'components/Loader';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import Loader from '~/components/Loader';
+import { useWalletModalToggle } from '~/state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import GammaLPList from './GammaLPList';
-import { getAllGammaPairs } from 'utils';
-import { useMasterChefContracts } from 'hooks/useContract';
+import { getAllGammaPairs } from '~/utils';
+import { useMasterChefContracts } from '~/hooks/useContract';
 import {
   useMultipleContractMultipleData,
   useMultipleContractSingleData,
-} from 'state/multicall/v3/hooks';
-import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+} from '~/state/multicall/v3/hooks';
+import GammaPairABI from '~/constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
-import { useGammaData } from 'hooks/v3/useGammaData';
+import { useGammaData } from '~/hooks/v3/useGammaData';
 
 export default function MyGammaPoolsV3() {
   const { t } = useTranslation();

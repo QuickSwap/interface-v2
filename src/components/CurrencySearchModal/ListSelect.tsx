@@ -3,17 +3,21 @@ import { ArrowLeft } from 'react-feather';
 import ReactGA from 'react-ga';
 import { Box, Button, Popover, Divider } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { ReactComponent as DropDown } from 'assets/images/dropdown.svg';
-import { useFetchListCallback } from 'hooks/useFetchListCallback';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import DropDown from '~/assets/images/dropdown.svg?react';
+import { useFetchListCallback } from '~/hooks/useFetchListCallback';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 
-import { AppDispatch, AppState } from 'state';
-import { acceptListUpdate, removeList, selectList } from 'state/lists/actions';
-import { useSelectedListUrl } from 'state/lists/hooks';
-import listVersionLabel from 'utils/listVersionLabel';
-import { parseENSAddress } from 'utils/parseENSAddress';
-import uriToHttp from 'utils/uriToHttp';
-import { QuestionHelper, ListLogo } from 'components';
+import { AppDispatch, AppState } from '~/state';
+import {
+  acceptListUpdate,
+  removeList,
+  selectList,
+} from '~/state/lists/actions';
+import { useSelectedListUrl } from '~/state/lists/hooks';
+import listVersionLabel from '~/utils/listVersionLabel';
+import { parseENSAddress } from '~/utils/parseENSAddress';
+import uriToHttp from '~/utils/uriToHttp';
+import { QuestionHelper, ListLogo } from '~/components';
 import { useTranslation } from 'react-i18next';
 
 function ListOrigin({ listUrl }: { listUrl: string }) {

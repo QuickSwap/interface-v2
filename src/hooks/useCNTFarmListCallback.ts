@@ -1,12 +1,12 @@
 import { nanoid } from '@reduxjs/toolkit';
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from 'state';
-import { fetchCNTFarmList } from 'state/cnt/actions';
-import getCNTFarmList from 'utils/getCNTFarmList';
-import resolveENSContentHash from 'utils/resolveENSContentHash';
+import { AppDispatch } from '~/state';
+import { fetchCNTFarmList } from '~/state/cnt/actions';
+import getCNTFarmList from '~/utils/getCNTFarmList';
+import resolveENSContentHash from '~/utils/resolveENSContentHash';
 
 export function useCNTFarmListCallback(): (url: string) => Promise<any> {
   const { library, chainId, account } = useActiveWeb3React();

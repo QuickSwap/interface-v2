@@ -4,50 +4,53 @@ import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
 import {
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
-} from 'hooks/useContract';
+} from '~/hooks/useContract';
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
   TransactionErrorContent,
-} from 'components/TransactionConfirmationModal';
-import { useActiveWeb3React } from 'hooks';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
-import { useWalletModalToggle } from 'state/application/hooks';
-import { Bound, Field } from 'state/mint/v3/actions';
+} from '~/components/TransactionConfirmationModal';
+import { useActiveWeb3React } from '~/hooks';
+import useTransactionDeadline from '~/hooks/useTransactionDeadline';
+import { useWalletModalToggle } from '~/state/application/hooks';
+import { Bound, Field } from '~/state/mint/v3/actions';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
+} from '~/state/transactions/hooks';
+import { useIsExpertMode, useUserSlippageTolerance } from '~/state/user/hooks';
 import {
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
   useV3MintState,
-} from 'state/mint/v3/hooks';
-import { useDerivedPositionInfo } from 'hooks/v3/useDerivedPositionInfo';
-import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
-import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
+} from '~/state/mint/v3/hooks';
+import { useDerivedPositionInfo } from '~/hooks/v3/useDerivedPositionInfo';
+import { NonfungiblePositionManager as NonFunPosMan } from '~/v3lib/nonfungiblePositionManager';
+import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from '~/v3lib/uniV3NonfungiblePositionManager';
 import './index.scss';
 import ReactGA from 'react-ga';
-import { WrappedCurrency } from 'models/types';
-import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
+import { WrappedCurrency } from '~/models/types';
+import {
+  ApprovalState,
+  useApproveCallback,
+} from '~/hooks/useV3ApproveCallback';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
-} from 'constants/v3/addresses';
-import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
-import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
-import { calculateGasMarginV3 } from 'utils';
-import { useToken } from 'hooks/v3/Tokens';
+} from '~/constants/v3/addresses';
+import { useUSDCValue } from '~/hooks/v3/useUSDCPrice';
+import CurrencyInputPanel from '~/components/v3/CurrencyInputPanel';
+import { maxAmountSpend } from '~/utils/v3/maxAmountSpend';
+import { calculateGasMarginV3 } from '~/utils';
+import { useToken } from '~/hooks/v3/Tokens';
 import { JSBI } from '@uniswap/sdk';
-import { PositionPool } from 'models/interfaces';
+import { PositionPool } from '~/models/interfaces';
 import { useTranslation } from 'react-i18next';
-import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
+import { DoubleCurrencyLogo, CurrencyLogo } from '~/components';
 import { Box, Button } from '@material-ui/core';
-import RangeBadge from 'components/v3/Badge/RangeBadge';
-import RateToggle from 'components/v3/RateToggle';
-import { formatTickPrice } from 'utils/v3/formatTickPrice';
-import { unwrappedToken } from 'utils/unwrappedToken';
+import RangeBadge from '~/components/v3/Badge/RangeBadge';
+import RateToggle from '~/components/v3/RateToggle';
+import { formatTickPrice } from '~/utils/v3/formatTickPrice';
+import { unwrappedToken } from '~/utils/unwrappedToken';
 
 interface IncreaseLiquidityV3Props {
   positionDetails: PositionPool;

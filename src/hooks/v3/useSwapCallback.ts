@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from '~/lib/src/trade';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
@@ -7,15 +7,18 @@ import { SignatureData } from './useERC20Permit';
 import { Version } from './useToggledVersion';
 
 // import abi from '../abis/swap-router.json'
-import { calculateGasMargin, isAddress, isZero, shortenAddress } from 'utils';
-import useENS from 'hooks/useENS';
-import { SWAP_ROUTER_ADDRESSES, UNI_SWAP_ROUTER } from 'constants/v3/addresses';
-import { useActiveWeb3React } from 'hooks';
-import { SwapRouter } from 'lib/src/swapRouter';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
-import { getTradeVersion } from 'utils/v3/getTradeVersion';
-import { useTransactionAdder } from 'state/transactions/hooks';
-import { liquidityHubAnalytics } from 'components/Swap/LiquidityHub';
+import { calculateGasMargin, isAddress, isZero, shortenAddress } from '~/utils';
+import useENS from '~/hooks/useENS';
+import {
+  SWAP_ROUTER_ADDRESSES,
+  UNI_SWAP_ROUTER,
+} from '~/constants/v3/addresses';
+import { useActiveWeb3React } from '~/hooks';
+import { SwapRouter } from '~/lib/src/swapRouter';
+import useTransactionDeadline from '~/hooks/useTransactionDeadline';
+import { getTradeVersion } from '~/utils/v3/getTradeVersion';
+import { useTransactionAdder } from '~/state/transactions/hooks';
+import { liquidityHubAnalytics } from '~/components/Swap/LiquidityHub';
 
 enum SwapCallbackState {
   INVALID,

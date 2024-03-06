@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { formatNumber } from 'utils';
-import 'components/styles/FarmingAPRToolTip.scss';
-import { CustomTooltip } from 'components';
+import { formatNumber } from '~/utils';
+import '~/components/styles/FarmingAPRToolTip.scss';
+import { CustomTooltip } from '~/components';
 
 interface FarmingAPRTooltipProps {
   qsAPR: number;

@@ -1,15 +1,15 @@
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { DualStakingInfo, StakingInfo } from 'types/index';
-import { DoubleCurrencyLogo } from 'components';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
+import { DualStakingInfo, StakingInfo } from '~/types/index';
+import { DoubleCurrencyLogo } from '~/components';
+import HelpIcon from '~/assets/images/HelpIcon.svg?react';
 import {
   formatAPY,
   getAPYWithFee,
   getStakedAmountStakingInfo,
   getTVLStaking,
-} from 'utils';
+} from '~/utils';
 import { useTranslation } from 'react-i18next';
 
 interface RewardSliderItemProps {

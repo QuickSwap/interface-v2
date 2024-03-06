@@ -1,7 +1,7 @@
-import { ConnectionType, networkConnection } from 'connectors';
-import { useGetConnection } from 'hooks';
+import { ConnectionType, networkConnection } from '~/connectors';
+import { useGetConnection } from '~/hooks';
 import { useMemo } from 'react';
-import { useAppSelector } from 'state/hooks';
+import { useAppSelector } from '~/state/hooks';
 
 const SELECTABLE_WALLETS = [
   ConnectionType.METAMASK,

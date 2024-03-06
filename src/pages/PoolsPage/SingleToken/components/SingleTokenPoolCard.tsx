@@ -1,11 +1,11 @@
 import { Box } from '@material-ui/core';
-import { DoubleCurrencyLogo } from 'components';
-import { ICHIVault, useICHIVaultAPR } from 'hooks/useICHIData';
+import { DoubleCurrencyLogo } from '~/components';
+import { ICHIVault, useICHIVaultAPR } from '~/hooks/useICHIData';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatNumber } from 'utils';
+import { formatNumber } from '~/utils';
 import { Check } from '@material-ui/icons';
-import Loader from 'components/Loader';
+import Loader from '~/components/Loader';
 
 const SingleTokenPoolCard: React.FC<{
   vault: ICHIVault;

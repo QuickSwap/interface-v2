@@ -1,16 +1,16 @@
 import { ChainId } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'state';
-import { FarmListInfo, StakingRaw, StakingBasic } from 'types/index';
+import { AppState } from '~/state';
+import { FarmListInfo, StakingRaw, StakingBasic } from '~/types/index';
 import { Token } from '@uniswap/sdk';
-import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
-import { getTokenFromAddress } from 'utils';
-import { useTokens } from 'hooks/Tokens';
-import { GlobalValue } from 'constants/index';
+import { TokenAddressMap, useSelectedTokenList } from '~/state/lists/hooks';
+import { getTokenFromAddress } from '~/utils';
+import { useTokens } from '~/hooks/Tokens';
+import { GlobalValue } from '~/constants/index';
 import { updateV3Stake } from './actions';
-import { FarmingType } from 'models/enums';
-import { EMPTY, OLD_DQUICK } from 'constants/v3/addresses';
+import { FarmingType } from '~/models/enums';
+import { EMPTY, OLD_DQUICK } from '~/constants/v3/addresses';
 
 export class WrappedStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -194,7 +194,7 @@ export function useFarmList(url: string | undefined): StakingInfoAddressMap {
 }
 
 export function useDefaultFarmList(): StakingInfoAddressMap {
-  return useFarmList(process.env.REACT_APP_STAKING_LIST_DEFAULT_URL);
+  return useFarmList(import.meta.env.VITE_STAKING_LIST_DEFAULT_URL);
 }
 
 // returns all downloaded current lists

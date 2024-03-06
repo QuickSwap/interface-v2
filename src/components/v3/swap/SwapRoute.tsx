@@ -1,10 +1,10 @@
 import React, { Fragment, memo } from 'react';
 import { Currency, TradeType } from '@uniswap/sdk-core';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from '~/lib/src/trade';
 import { ChevronRight } from 'react-feather';
 import { Box } from '@material-ui/core';
-import { unwrappedToken } from 'utils/unwrappedToken';
-import { FeeAmount } from 'v3lib/utils/v3constants';
+import { unwrappedToken } from '~/utils/unwrappedToken';
+import { FeeAmount } from '~/v3lib/utils/v3constants';
 
 function LabeledArrow({}: { fee: FeeAmount | undefined }) {
   // todo: render the fee in the label

@@ -8,11 +8,11 @@ import {
   useStakingInfo,
   getBulkPairData,
   useDualStakingInfo,
-} from 'state/stake/hooks';
+} from '~/state/stake/hooks';
 import RewardSliderItem from './RewardSliderItem';
-import { useActiveWeb3React } from 'hooks';
-import { getOneYearFee } from 'utils';
-import 'components/styles/RewardSlider.scss';
+import { useActiveWeb3React } from '~/hooks';
+import { getOneYearFee } from '~/utils';
+import '~/components/styles/RewardSlider.scss';
 import { useQuery } from '@tanstack/react-query';
 
 const RewardSlider: React.FC = () => {

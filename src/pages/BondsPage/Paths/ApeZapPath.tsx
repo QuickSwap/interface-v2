@@ -1,30 +1,33 @@
 import React, { useCallback, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { ApprovalState, useApproveCallbackV3 } from 'hooks/useApproveCallback';
-import { useDerivedZapInfo, useZapState } from 'state/zap/hooks';
+import {
+  ApprovalState,
+  useApproveCallbackV3,
+} from '~/hooks/useApproveCallback';
+import { useDerivedZapInfo, useZapState } from '~/state/zap/hooks';
 import { ZapType } from '@ape.swap/sdk';
 import BigNumber from 'bignumber.js';
-import { useZapCallback } from 'hooks/bond/useZapCallback';
-import { useUserZapSlippageTolerance } from 'state/user/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { ZAP_ADDRESS } from 'constants/v3/addresses';
+import { useZapCallback } from '~/hooks/bond/useZapCallback';
+import { useUserZapSlippageTolerance } from '~/state/user/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { ZAP_ADDRESS } from '~/constants/v3/addresses';
 import {
   BillReferenceData,
   usePostBillReference,
-} from 'hooks/bond/usePostBondReference';
-import { useCurrency } from 'hooks/v3/Tokens';
-import { useCurrencyBalance } from 'state/wallet/hooks';
-import { PurchasePath } from 'types/bond';
+} from '~/hooks/bond/usePostBondReference';
+import { useCurrency } from '~/hooks/v3/Tokens';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
+import { PurchasePath } from '~/types/bond';
 import { JSBI } from '@uniswap/sdk';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import { parseUnits } from 'ethers/lib/utils';
-import { V3TradeState } from 'hooks/v3/useBestV3Trade';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import { V3TradeState } from '~/hooks/v3/useBestV3Trade';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 import WarningModal from '../WarningModal';
 import DisplayValues from '../DisplayValues';
 import GetLPButton from '../GetLPButton';
 import { useTranslation } from 'react-i18next';
-import { getFixedValue } from 'utils';
+import { getFixedValue } from '~/utils';
 
 const ApeZapPath = ({
   purchasePath,

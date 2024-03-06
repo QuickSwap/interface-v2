@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Button, CircularProgress } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import newsletterBg from 'assets/images/newsletterBg.svg';
-import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
+import newsletterBg from '~/assets/images/newsletterBg.svg';
+import { useSubscribeNewsletter } from '~/hooks/useNewsletterSignup';
 
 const NewsletterSignupForm: React.FC = () => {
   const { t } = useTranslation();

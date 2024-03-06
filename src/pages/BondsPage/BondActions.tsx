@@ -1,12 +1,12 @@
 import React from 'react';
-import { PurchasePath } from 'types/bond';
+import { PurchasePath } from '~/types/bond';
 import LPPath from './Paths/LPPath';
 import ApeZapPath from './Paths/ApeZapPath';
 import SoulZapPath from './Paths/SoulZapPath';
-import { useActiveWeb3React, useConnectWallet } from 'hooks';
+import { useActiveWeb3React, useConnectWallet } from '~/hooks';
 import { Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { useIsSupportedNetwork } from 'utils';
+import { useIsSupportedNetwork } from '~/utils';
 
 export interface BondActionsProps {
   bond: any;

@@ -1,7 +1,7 @@
 import { ChainId, WETH } from '@uniswap/sdk';
 import { Token } from '@uniswap/sdk';
 import { Token as TokenV3 } from '@uniswap/sdk-core';
-import { V3Currency } from 'v3lib/entities/v3Currency';
+import { V3Currency } from '~/v3lib/entities/v3Currency';
 
 export enum V2Exchanges {
   Quickswap = 'Quickswap',

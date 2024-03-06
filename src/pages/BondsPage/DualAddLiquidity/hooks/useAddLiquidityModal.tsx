@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import DualLiquidityModal from '../DualLiquidityModal';
-import { Field, selectCurrency } from 'state/swap/actions';
-import { selectOutputCurrency } from 'state/zap/actions';
+import { Field, selectCurrency } from '~/state/swap/actions';
+import { selectOutputCurrency } from '~/state/zap/actions';
 import { useDispatch } from 'react-redux';
 import { ZapType } from '@ape.swap/sdk';
-import { CHAIN_INFO } from 'constants/v3/chains';
-import { useActiveWeb3React } from 'hooks';
+import { CHAIN_INFO } from '~/constants/v3/chains';
+import { useActiveWeb3React } from '~/hooks';
 
 const useAddLiquidityModal = (
   zapIntoProductType?: ZapType,

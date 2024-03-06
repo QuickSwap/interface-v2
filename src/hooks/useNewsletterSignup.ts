@@ -4,7 +4,7 @@ export const useSubscribeNewsletter = () => {
   return useMutation(async (email: string) => {
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/sendgrid-contact`,
+        `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/sendgrid-contact`,
         {
           method: 'POST',
           body: JSON.stringify({ email }),

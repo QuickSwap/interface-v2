@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import './index.css';
 import '@radix-ui/themes/styles.css';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { Account } from './Account';
 import { Assets } from './Assets';
 import { CreateOrder } from './CreateOrder';
@@ -15,9 +15,9 @@ import { Orders } from './Orders';
 import { Positions } from './Positions';
 import { Market } from './Market';
 import { Pairs } from './Pairs';
-import {Leverage} from "./Leverage";
+import { Leverage } from './Leverage';
 import { AdvancedChart } from 'react-tradingview-embed';
-import {GraphHeader} from "./GraphHeader";
+import { GraphHeader } from './GraphHeader';
 import { Grid } from '@mui/material';
 
 export const PerpsPage = () => {
@@ -42,7 +42,7 @@ export const PerpsPage = () => {
           <Tabs.Trigger value='account' style={{ color: 'white' }}>
             Account
           </Tabs.Trigger>
-          <Tabs.Trigger value='assets' style={{ color: 'white' }}>
+          <Tabs.Trigger value='~/assets' style={{ color: 'white' }}>
             Assets
           </Tabs.Trigger>
           <Tabs.Trigger value='orderbook' style={{ color: 'white' }}>
@@ -74,7 +74,7 @@ export const PerpsPage = () => {
         <Tabs.Content value='account' style={{ color: 'white' }}>
           <Account />
         </Tabs.Content>
-        <Tabs.Content value='assets' style={{ color: 'white' }}>
+        <Tabs.Content value='~/assets' style={{ color: 'white' }}>
           <Assets />
         </Tabs.Content>
         <Tabs.Content value='orderbook' style={{ color: 'white' }}>
@@ -96,7 +96,7 @@ export const PerpsPage = () => {
           <Pairs />
         </Tabs.Content>
         <Tabs.Content value='chart' style={{ color: 'white' }}>
-          <GraphHeader/>
+          <GraphHeader />
           <AdvancedChart />
         </Tabs.Content>
         <Tabs.Content value='leverage' style={{ color: 'white' }}>

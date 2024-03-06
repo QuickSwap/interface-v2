@@ -1,11 +1,11 @@
 import { ChainId } from '@uniswap/sdk';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
-import { getTokenFromAddress } from 'utils';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import { useActiveWeb3React } from 'hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { getTokenFromAddress } from '~/utils';
+import { useUSDCPricesFromAddresses } from '~/utils/useUSDCPrice';
+import { useActiveWeb3React } from '~/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 export function useV3DistributedRewards(chainId?: ChainId) {
@@ -17,7 +17,9 @@ export function useV3DistributedRewards(chainId?: ChainId) {
   const fetchEternalFarmsForV3Rewards = async () => {
     if (!provider || !farmEnabled) return null;
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
+      `${
+        import.meta.env.VITE_LEADERBOARD_APP_URL
+      }/farming/eternal-farms?chainId=${chainId}`,
     );
     if (!res.ok) {
       return null;

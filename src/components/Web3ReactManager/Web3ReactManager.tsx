@@ -1,9 +1,9 @@
 import React from 'react';
 import { Web3ReactHooks, Web3ReactProvider } from '@web3-react/core';
 import { Connector } from '@web3-react/types';
-import useEagerlyConnect from 'hooks/useEagerlyConnect';
+import useEagerlyConnect from '~/hooks/useEagerlyConnect';
 import { ReactNode, useMemo } from 'react';
-import useOrderedConnections from 'hooks/useOrderedConnections';
+import useOrderedConnections from '~/hooks/useOrderedConnections';
 
 export default function Web3ReactManager({
   children,

@@ -20,7 +20,7 @@ const CalculatorPage: React.FC = () => {
   const fetchChartData = async () => {
     if (chainId && version) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-chart-data/${pairAddress}/1/${version}?chainId=${chainId}`,
+        `${import.meta.env.VITE_LEADERBOARD_APP_URL}/analytics/top-pair-chart-data/${pairAddress}/1/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;
@@ -34,7 +34,7 @@ const CalculatorPage: React.FC = () => {
   const fetchPairData = async () => {
     if (chainId && version) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
+        `${import.meta.env.VITE_LEADERBOARD_APP_URL}/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;

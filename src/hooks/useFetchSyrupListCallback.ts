@@ -1,12 +1,12 @@
 import { nanoid } from '@reduxjs/toolkit';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from 'state';
-import resolveENSContentHash from 'utils/resolveENSContentHash';
-import { useActiveWeb3React } from 'hooks';
-import { fetchSyrupList } from 'state/syrups/actions';
-import getSyrupList from 'utils/getSyrupList';
-import { SyrupListInfo } from 'types/index';
+import { AppDispatch } from '~/state';
+import resolveENSContentHash from '~/utils/resolveENSContentHash';
+import { useActiveWeb3React } from '~/hooks';
+import { fetchSyrupList } from '~/state/syrups/actions';
+import getSyrupList from '~/utils/getSyrupList';
+import { SyrupListInfo } from '~/types/index';
 
 export function useFetchSyrupListCallback(): (
   listUrl: string,

@@ -1,6 +1,6 @@
-import { GlobalConst } from 'constants/index';
+import { GlobalConst } from '~/constants/index';
 import { createReducer } from '@reduxjs/toolkit';
-import { updateVersion } from 'state/global/actions';
+import { updateVersion } from '~/state/global/actions';
 import {
   addSerializedPair,
   addSerializedToken,
@@ -22,7 +22,7 @@ import {
   updateUserZapSlippage,
   updateIsInfiniteApproval,
 } from './actions';
-import { ConnectionType } from 'connectors';
+import { ConnectionType } from '~/connectors';
 
 const currentTimestamp = () => new Date().getTime();
 export const INITIAL_ZAP_SLIPPAGE = 100;

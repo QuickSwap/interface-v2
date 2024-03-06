@@ -14,7 +14,7 @@ import { SqrtPriceMath } from '../utils/sqrtPriceMath';
 import { TickMath } from '../utils/tickMath';
 import { encodeSqrtRatioX96 } from '../utils/encodeSqrtRatioX96';
 import { Pool } from './pool';
-import { ZERO } from 'v3lib/utils';
+import { ZERO } from '~/v3lib/utils';
 
 interface PositionConstructorArgs {
   pool: Pool;

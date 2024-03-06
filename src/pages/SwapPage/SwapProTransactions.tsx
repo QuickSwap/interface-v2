@@ -1,11 +1,11 @@
 import { Box, Divider, useMediaQuery, useTheme } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { CustomTable } from 'components';
-import { GlobalConst } from 'constants/index';
-import { useActiveWeb3React } from 'hooks';
+import { CustomTable } from '~/components';
+import { GlobalConst } from '~/constants/index';
+import { useActiveWeb3React } from '~/hooks';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatNumber, getEtherscanLink } from 'utils';
+import { formatNumber, getEtherscanLink } from '~/utils';
 import dayjs from 'dayjs';
 
 interface SwapProTransactionsProps {

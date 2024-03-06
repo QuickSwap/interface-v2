@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { ReactComponent as ArrowLeft } from 'assets/images/ArrowLeft.svg';
-import { QuestionHelper, PoolFinderModal } from 'components';
-import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
-import Loader from 'components/Loader';
+import ArrowLeft from '~/assets/images/ArrowLeft.svg?react';
+import { QuestionHelper, PoolFinderModal } from '~/components';
+import { useActiveWeb3React, useV2LiquidityPools } from '~/hooks';
+import Loader from '~/components/Loader';
 import V2PositionCard from './components/V2PositionCard';
 import './index.scss';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 
 export default function MigrateV2LiquidityPage() {
   const { t } = useTranslation();

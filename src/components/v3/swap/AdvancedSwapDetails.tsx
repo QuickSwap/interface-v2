@@ -1,8 +1,8 @@
 import React from 'react';
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
-import { Trade } from 'lib/src/trade';
+import { Trade } from '~/lib/src/trade';
 import { useMemo } from 'react';
-import { computeRealizedLPFeePercent } from 'utils/v3/prices';
+import { computeRealizedLPFeePercent } from '~/utils/v3/prices';
 import FormattedPriceImpact from './FormattedPriceImpact';
 import SwapRoute from './SwapRoute';
 import { useTranslation } from 'react-i18next';

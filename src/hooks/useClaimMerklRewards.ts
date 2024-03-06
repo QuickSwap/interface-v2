@@ -1,10 +1,10 @@
-import { calculateGasMargin } from 'utils';
+import { calculateGasMargin } from '~/utils';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import { useMerklContract } from 'hooks/useContract';
-import { useActiveWeb3React } from 'hooks';
+} from '~/state/transactions/hooks';
+import { useMerklContract } from '~/hooks/useContract';
+import { useActiveWeb3React } from '~/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +22,9 @@ export const useClaimMerklRewards = () => {
     let data: any;
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_MERKL_API_URL}?chainIds[]=${chainId}&AMMs[]=quickswapalgebra&user=${account}`,
+        `${
+          import.meta.env.VITE_MERKL_API_URL
+        }?chainIds[]=${chainId}&AMMs[]=quickswapalgebra&user=${account}`,
       );
       const merklData = await res.json();
       data =

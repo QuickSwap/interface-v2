@@ -7,11 +7,11 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import QUICKLogo from 'assets/images/quickLogo.png';
-import 'components/styles/Footer.scss';
+import QUICKLogo from '~/assets/images/quickLogo.png';
+import '~/components/styles/Footer.scss';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
+import { useSubscribeNewsletter } from '~/hooks/useNewsletterSignup';
 
 const Footer: React.FC = () => {
   const history = useHistory();

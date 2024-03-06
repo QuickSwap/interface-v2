@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Box, Divider } from '@material-ui/core';
-import { ButtonSwitch } from 'components';
+import { ButtonSwitch } from '~/components';
 import dayjs, { ManipulateType } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { formatCompact, formatNumber } from 'utils';
+import { formatCompact, formatNumber } from '~/utils';
 import { useTranslation } from 'react-i18next';
 dayjs.extend(utc);
 

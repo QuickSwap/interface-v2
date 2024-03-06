@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { Box } from '@material-ui/core';
-import { PopupContent } from 'state/application/actions';
-import { useRemovePopup } from 'state/application/hooks';
+import { PopupContent } from '~/state/application/actions';
+import { useRemovePopup } from '~/state/application/hooks';
 import TransactionPopup from './TransactionPopup';
 
 interface PopupItemProps {

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { CustomTable } from 'components';
-import { GlobalConst } from 'constants/index';
-import { formatNumber, shortenAddress } from 'utils';
-import 'components/styles/AnalyticsTable.scss';
+import { CustomTable } from '~/components';
+import { GlobalConst } from '~/constants/index';
+import { formatNumber, shortenAddress } from '~/utils';
+import '~/components/styles/AnalyticsTable.scss';
 import { useTranslation } from 'react-i18next';
 import AddressCell from './AddressCell';
 

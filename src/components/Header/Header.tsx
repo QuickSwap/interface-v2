@@ -3,34 +3,34 @@ import { Link, useLocation, useHistory } from 'react-router-dom';
 import { Box, Button, useMediaQuery } from '@material-ui/core';
 import { KeyboardArrowDown, Close, KeyboardArrowUp } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
-import { useUDDomain, useWalletModalToggle } from 'state/application/hooks';
+import { useUDDomain, useWalletModalToggle } from '~/state/application/hooks';
 import {
   isTransactionRecent,
   useAllTransactions,
-} from 'state/transactions/hooks';
-import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress } from 'utils';
-import useENSName from 'hooks/useENSName';
-import { WalletModal } from 'components';
-import { useActiveWeb3React } from 'hooks';
-import QuickIcon from 'assets/images/quickIcon.svg';
-import QuickLogo from 'assets/images/quickLogo.png';
-import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
-// import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
-import WalletIcon from 'assets/images/WalletIcon.png';
-import 'components/styles/Header.scss';
+} from '~/state/transactions/hooks';
+import { TransactionDetails } from '~/state/transactions/reducer';
+import { shortenAddress } from '~/utils';
+import useENSName from '~/hooks/useENSName';
+import { WalletModal } from '~/components';
+import { useActiveWeb3React } from '~/hooks';
+import QuickIcon from '~/assets/images/quickIcon.svg';
+import QuickLogo from '~/assets/images/quickLogo.png';
+import ThreeDotIcon from '~/assets/images/ThreeDot.svg?react';
+// import LightIcon from '~/assets/images/LightIcon.svg?react';
+import WalletIcon from '~/assets/images/WalletIcon.png';
+import '~/components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config/index';
-import useDeviceWidth from 'hooks/useDeviceWidth';
-import { USDC, USDT } from 'constants/v3/addresses';
+import { getConfig } from '~/config/index';
+import useDeviceWidth from '~/hooks/useDeviceWidth';
+import { USDC, USDT } from '~/constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 import {
   networkConnection,
   walletConnectConnection,
   zengoConnectConnection,
-} from 'connectors';
+} from '~/connectors';
 import { MobileMenuDrawer } from './MobileMenuDrawer';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 import { HeaderDesktopItem } from './HeaderDesktopItem';
 import { NetworkSelection } from './NetworkSelection';
@@ -180,8 +180,8 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
               await connector.activate(chainParam);
             }
           }
-          if (process.env.REACT_APP_PERPS_URL) {
-            window.open(process.env.REACT_APP_PERPS_URL, '_self');
+          if (import.meta.env.VITE_PERPS_URL) {
+            window.open(import.meta.env.VITE_PERPS_URL, '_self');
           }
         },
       });
@@ -211,8 +211,8 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
               await connector.activate(chainParam);
             }
           }
-          if (process.env.REACT_APP_PERPS_URL) {
-            window.open(process.env.REACT_APP_PERPS_URL, '_self');
+          if (import.meta.env.VITE_PERPS_URL) {
+            window.open(import.meta.env.VITE_PERPS_URL, '_self');
           }
         },
       });

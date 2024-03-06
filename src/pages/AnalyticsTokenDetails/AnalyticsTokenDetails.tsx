@@ -10,20 +10,20 @@ import {
   formatNumber,
   getTokenFromAddress,
   getFormattedPercent,
-} from 'utils';
-import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
-import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
-import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
-import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
-import { GlobalConst, TxnType } from 'constants/index';
-import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
+} from '~/utils';
+import { useActiveWeb3React, useAnalyticsVersion } from '~/hooks';
+import { CurrencyLogo, PairTable, TransactionsTable } from '~/components';
+import { useBookmarkTokens, useIsV2 } from '~/state/application/hooks';
+import StarChecked from '~/assets/images/StarChecked.svg?react';
+import StarUnchecked from '~/assets/images/StarUnchecked.svg?react';
+import { GlobalConst, TxnType } from '~/constants/index';
+import AnalyticsHeader from '~/pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsTokenChart from './AnalyticsTokenChart';
 import { useTranslation } from 'react-i18next';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
-import { getConfig } from 'config/index';
-import { useAnalyticsTokenDetails } from 'hooks/useFetchAnalyticsData';
+import { getConfig } from '~/config/index';
+import { useAnalyticsTokenDetails } from '~/hooks/useFetchAnalyticsData';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();

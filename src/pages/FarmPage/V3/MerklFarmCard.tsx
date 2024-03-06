@@ -1,14 +1,14 @@
 import React from 'react';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
-import { DoubleCurrencyLogo } from 'components';
-import { formatNumber, getTokenFromAddress } from 'utils';
-import APRHover from 'assets/images/aprHover.png';
+import { DoubleCurrencyLogo } from '~/components';
+import { formatNumber, getTokenFromAddress } from '~/utils';
+import APRHover from '~/assets/images/aprHover.png';
 import { useTranslation } from 'react-i18next';
 import { MerklFarmAPRTooltip } from './MerklFarmAPRTooltip';
 import { useHistory } from 'react-router-dom';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { useActiveWeb3React } from 'hooks';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { useActiveWeb3React } from '~/hooks';
 import dayjs from 'dayjs';
 
 interface Props {

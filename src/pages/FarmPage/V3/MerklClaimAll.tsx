@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react';
 import { Box, Button } from '@material-ui/core';
-import ClaimAllBg from 'assets/images/claimAllBg.png';
+import ClaimAllBg from '~/assets/images/claimAllBg.png';
 import { useTranslation } from 'react-i18next';
-import { useGetMerklFarms } from 'hooks/v3/useV3Farms';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import { formatNumber, getTokenFromAddress } from 'utils';
-import { useClaimMerklRewards } from 'hooks/useClaimMerklRewards';
+import { useGetMerklFarms } from '~/hooks/v3/useV3Farms';
+import { useUSDCPricesFromAddresses } from '~/utils/useUSDCPrice';
+import { formatNumber, getTokenFromAddress } from '~/utils';
+import { useClaimMerklRewards } from '~/hooks/useClaimMerklRewards';
 import { Skeleton } from '@material-ui/lab';
-import { CurrencyLogo, CustomTooltip } from 'components';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { CurrencyLogo, CustomTooltip } from '~/components';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { useActiveWeb3React } from '~/hooks';
 
 export const MerklClaimAll: React.FC = () => {
   const { t } = useTranslation();

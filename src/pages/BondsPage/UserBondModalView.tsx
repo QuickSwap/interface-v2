@@ -4,18 +4,18 @@ import VestedTimer from './VestedTimer';
 import TransferBondModal from './TransferBondModal';
 import ClaimBond from './ClaimBond';
 import { LiquidityDex, dexDisplayAttributes } from '@ape.swap/apeswap-lists';
-import { Bond } from 'types/bond';
-import { useActiveWeb3React } from 'hooks';
+import { Bond } from '~/types/bond';
+import { useActiveWeb3React } from '~/hooks';
 import { Box, Button, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import BondTokenDisplay from './BondTokenDisplay';
-import BillNFTImage from 'assets/images/bonds/quickBond.jpg';
+import BillNFTImage from '~/assets/images/bonds/quickBond.jpg';
 import {
   useUserOwnedBondNftData,
   useUserOwnedBonds,
-} from 'hooks/bond/useUserBond';
+} from '~/hooks/bond/useUserBond';
 import { formatUnits } from 'ethers/lib/utils';
-import { formatNumber } from 'utils';
+import { formatNumber } from '~/utils';
 
 interface BondModalProps {
   onDismiss?: () => void;

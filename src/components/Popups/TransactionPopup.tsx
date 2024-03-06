@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Box, LinearProgress } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
-import { getEtherscanLink } from 'utils/index';
-import { ReactComponent as ArrowTopRight } from 'assets/images/ArrowTopRight.svg';
+import { useActiveWeb3React } from '~/hooks';
+import { getEtherscanLink } from '~/utils/index';
+import ArrowTopRight from '~/assets/images/ArrowTopRight.svg?react';
 
 interface TransactionPopupProps {
   hash: string;

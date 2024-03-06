@@ -5,8 +5,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { List } from '@material-ui/core';
-import { ReactComponent as ThreeDashIcon } from 'assets/images/ThreeDashIcon.svg';
-import { ReactComponent as CloseIcon } from 'assets/images/close_v3.svg';
+import ThreeDashIcon from '~/assets/images/ThreeDashIcon.svg?react';
+import CloseIcon from '~/assets/images/close_v3.svg?react';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 
 export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({

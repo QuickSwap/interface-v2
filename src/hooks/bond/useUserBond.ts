@@ -1,15 +1,15 @@
 import { BillVersion } from '@ape.swap/apeswap-lists';
-import { useActiveWeb3React } from 'hooks';
-import { Bond, BondConfig, UserBond } from 'types/bond';
-import bondABI from 'constants/abis/bond.json';
-import erc20ABI from 'constants/abis/erc20.json';
+import { useActiveWeb3React } from '~/hooks';
+import { Bond, BondConfig, UserBond } from '~/types/bond';
+import bondABI from '~/constants/abis/bond.json';
+import erc20ABI from '~/constants/abis/erc20.json';
 import {
   useMultipleContractsMultipleData,
   useMultipleContractSingleData,
-} from 'state/multicall/v3/hooks';
+} from '~/state/multicall/v3/hooks';
 import { Interface } from 'ethers/lib/utils';
 import { useMemo } from 'react';
-import { useBondContracts } from 'hooks/useContract';
+import { useBondContracts } from '~/hooks/useContract';
 import { getBondNftBatchData } from './getBondNftData';
 import { useQuery } from '@tanstack/react-query';
 import { ChainId } from '@uniswap/sdk';

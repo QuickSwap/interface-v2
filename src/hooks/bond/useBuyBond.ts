@@ -1,15 +1,15 @@
 import { useCallback } from 'react';
-import { useBondContract } from 'hooks/useContract';
+import { useBondContract } from '~/hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { useTranslation } from 'react-i18next';
 import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import { TransactionResponse } from '@ethersproject/providers';
-import { useActiveWeb3React } from 'hooks';
-import { getFixedValue } from 'utils';
+import { useActiveWeb3React } from '~/hooks';
+import { getFixedValue } from '~/utils';
 
 const DEFAULT_SLIPPAGE = 102; // Maximum of 2% slippage when buying Bill
 // Buy a Bill

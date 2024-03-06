@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { CustomModal, ColoredSlider, NumericalInput } from 'components';
-import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { CustomModal, ColoredSlider, NumericalInput } from '~/components';
+import { useOldLairInfo, useNewLairInfo } from '~/state/stake/hooks';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import { useLairContract, useNewLairContract } from 'hooks/useContract';
+} from '~/state/transactions/hooks';
+import { useLairContract, useNewLairContract } from '~/hooks/useContract';
 import Web3 from 'web3';
-import { calculateGasMargin, formatTokenAmount } from 'utils';
+import { calculateGasMargin, formatTokenAmount } from '~/utils';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { ChainId } from '@uniswap/sdk';
-import { DLDQUICK, OLD_DQUICK } from 'constants/v3/addresses';
+import { DLDQUICK, OLD_DQUICK } from '~/constants/v3/addresses';
 
 const web3 = new Web3();
 

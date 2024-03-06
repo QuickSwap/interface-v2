@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import FiatMask from 'assets/images/FiatMask.svg';
-import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
-import { BuyFiatButton } from 'components';
+import FiatMask from '~/assets/images/FiatMask.svg';
+import BuyWithFiat from '~/assets/images/featured/BuyWithFiatNoPad.png';
+import { BuyFiatButton } from '~/components';
 import { useTranslation } from 'react-i18next';
-import MeldIcon from 'assets/images/meldIcon.png';
+import MeldIcon from '~/assets/images/meldIcon.png';
 
 const BuyFiatSection: React.FC = () => {
   const { t } = useTranslation();

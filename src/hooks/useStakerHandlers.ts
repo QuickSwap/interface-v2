@@ -1,5 +1,5 @@
-import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
-import FARMING_CENTER_ABI from 'abis/farming-center.json';
+import NON_FUN_POS_MAN from '~/abis/non-fun-pos-man.json';
+import FARMING_CENTER_ABI from '~/abis/farming-center.json';
 import { Contract } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
 import { useCallback } from 'react';
@@ -11,14 +11,14 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from '../state/transactions/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import JSBI from 'jsbi';
 import { TransactionResponse } from '@ethersproject/providers';
 import { FarmingType } from '../models/enums';
 import { useTranslation } from 'react-i18next';
-import { toHex } from 'lib/src/utils/calldata';
-import { useV3StakeData } from 'state/farms/hooks';
-import { calculateGasMargin } from 'utils';
+import { toHex } from '~/lib/src/utils/calldata';
+import { useV3StakeData } from '~/state/farms/hooks';
+import { calculateGasMargin } from '~/utils';
 
 export function useFarmingHandlers() {
   const { chainId, account, provider } = useActiveWeb3React();

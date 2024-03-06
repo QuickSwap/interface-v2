@@ -1,7 +1,7 @@
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import React from 'react';
-import { useIsV2 } from 'state/application/hooks';
+import { useIsV2 } from '~/state/application/hooks';
 
 const SwapProChart: React.FC<{
   pairName: string;

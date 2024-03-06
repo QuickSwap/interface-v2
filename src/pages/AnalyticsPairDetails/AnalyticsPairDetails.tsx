@@ -8,24 +8,24 @@ import {
   getEtherscanLink,
   formatNumber,
   getTokenFromAddress,
-} from 'utils';
-import { useActiveWeb3React } from 'hooks';
+} from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import {
   CurrencyLogo,
   DoubleCurrencyLogo,
   TransactionsTable,
-} from 'components';
+} from '~/components';
 import { getAddress } from '@ethersproject/address';
-import { GlobalConst, TxnType } from 'constants/index';
-import 'pages/styles/analytics.scss';
-import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
+import { GlobalConst, TxnType } from '~/constants/index';
+import '~/pages/styles/analytics.scss';
+import AnalyticsHeader from '~/pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
 import { useTranslation } from 'react-i18next';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import { CallMade } from '@material-ui/icons';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 import { useQuery } from '@tanstack/react-query';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -58,7 +58,7 @@ const AnalyticsPairDetails: React.FC = () => {
     if (chainId && version) {
       const res = await fetch(
         `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
+          import.meta.env.VITE_LEADERBOARD_APP_URL
         }/analytics/top-pair-details/${pairAddress}/${version}?chainId=${chainId}${
           isUni ? '&isUni=true' : ''
         }`,

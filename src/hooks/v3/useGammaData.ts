@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChainId, Token } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
-import { useContract } from 'hooks/useContract';
-import { useLastTransactionHash } from 'state/transactions/hooks';
-import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useContract } from '~/hooks/useContract';
+import { useLastTransactionHash } from '~/state/transactions/hooks';
+import GammaPairABI from '~/constants/abis/gamma-hypervisor.json';
+import { useSingleCallResult } from '~/state/multicall/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect } from 'react';
 
@@ -23,7 +23,7 @@ const getGammaData = async (chainId?: ChainId) => {
   if (!chainId) return null;
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
+      `${import.meta.env.VITE_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
         chainId,
       )}/hypervisors/allData`,
     );
@@ -33,7 +33,7 @@ const getGammaData = async (chainId?: ChainId) => {
     try {
       const data = await fetch(
         `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
+          import.meta.env.VITE_GAMMA_API_ENDPOINT_BACKUP
         }/quickswap/${gammaChainName(chainId)}/hypervisors/allData`,
       );
       const gammaData = await data.json();
@@ -49,7 +49,7 @@ const getGammaPositions = async (account?: string, chainId?: ChainId) => {
   if (!account || !chainId) return null;
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
+      `${import.meta.env.VITE_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
         chainId,
       )}/user/${account}`,
     );
@@ -59,7 +59,7 @@ const getGammaPositions = async (account?: string, chainId?: ChainId) => {
     try {
       const data = await fetch(
         `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
+          import.meta.env.VITE_GAMMA_API_ENDPOINT_BACKUP
         }/quickswap/${gammaChainName(chainId)}/user/${account}`,
       );
       const positions = await data.json();
@@ -75,7 +75,7 @@ const getGammaRewards = async (chainId?: ChainId) => {
   if (!chainId) return null;
   try {
     const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
+      `${import.meta.env.VITE_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
         chainId,
       )}/allRewards2`,
     );
@@ -85,7 +85,7 @@ const getGammaRewards = async (chainId?: ChainId) => {
     try {
       const data = await fetch(
         `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
+          import.meta.env.VITE_GAMMA_API_ENDPOINT_BACKUP
         }/quickswap/${gammaChainName(chainId)}/allRewards2`,
       );
       const gammaData = await data.json();

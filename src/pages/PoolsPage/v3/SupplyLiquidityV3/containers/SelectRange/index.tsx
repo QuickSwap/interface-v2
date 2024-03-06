@@ -3,7 +3,7 @@ import { IPresetArgs, PresetRanges } from '../../components/PresetRanges';
 import { RangeSelector } from '../../components/RangeSelector';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import './index.scss';
-import { Bound, updateSelectedPreset } from 'state/mint/v3/actions';
+import { Bound, updateSelectedPreset } from '~/state/mint/v3/actions';
 import {
   IDerivedMintInfo,
   useRangeHopCallbacks,
@@ -12,33 +12,33 @@ import {
   useInitialUSDPrices,
   useGetUnipilotVaults,
   useGetDefiedgeStrategies,
-} from 'state/mint/v3/hooks';
-import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
-import { useAppDispatch } from 'state/hooks';
-import { useActivePreset } from 'state/mint/v3/hooks';
-import { tryParseAmount } from 'state/swap/v3/hooks';
-import { Presets } from 'state/mint/v3/reducer';
-import { PriceFormats } from 'components/v3/PriceFomatToggler';
-import LiquidityChartRangeInput from 'components/v3/LiquidityChartRangeInput';
-import { GlobalConst, GlobalData, SteerVaultState } from 'constants/index';
+} from '~/state/mint/v3/hooks';
+import { useUSDCValue } from '~/hooks/v3/useUSDCPrice';
+import { useAppDispatch } from '~/state/hooks';
+import { useActivePreset } from '~/state/mint/v3/hooks';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
+import { Presets } from '~/state/mint/v3/reducer';
+import { PriceFormats } from '~/components/v3/PriceFomatToggler';
+import LiquidityChartRangeInput from '~/components/v3/LiquidityChartRangeInput';
+import { GlobalConst, GlobalData, SteerVaultState } from '~/constants/index';
 import { Box, ButtonGroup, Button, Grid } from '@material-ui/core';
 import { ReportProblemOutlined } from '@material-ui/icons';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import {
   formatNumber,
   getEternalFarmFromTokens,
   getGammaPairsForTokens,
-} from 'utils';
-import GammaLogo from 'assets/images/gammaLogo.png';
-import A51finance from 'assets/images/a51finance.png';
-import DefiedgeLogo from 'assets/images/defiedge.png';
-import AutomaticImage from 'assets/images/automatic.svg';
-import AutomaticImageDark from 'assets/images/automaticDark.svg';
+} from '~/utils';
+import GammaLogo from '~/assets/images/gammaLogo.png';
+import A51finance from '~/assets/images/a51finance.png';
+import DefiedgeLogo from '~/assets/images/defiedge.png';
+import AutomaticImage from '~/assets/images/automatic.svg';
+import AutomaticImageDark from '~/assets/images/automaticDark.svg';
 import { Trans, useTranslation } from 'react-i18next';
-import { useSteerVaults } from 'hooks/v3/useSteerData';
-import { useUnipilotFarmData } from 'hooks/v3/useUnipilotFarms';
-import { useGammaData } from 'hooks/v3/useGammaData';
+import { useSteerVaults } from '~/hooks/v3/useSteerData';
+import { useUnipilotFarmData } from '~/hooks/v3/useUnipilotFarms';
+import { useGammaData } from '~/hooks/v3/useGammaData';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;

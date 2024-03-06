@@ -17,56 +17,56 @@ import {
   useDerivedSwapInfo,
   useSwapActionHandlers,
   useSwapState,
-} from 'state/swap/hooks';
+} from '~/state/swap/hooks';
 import {
   useExpertModeManager,
   useSelectedWallet,
   useUserSlippageTolerance,
-} from 'state/user/hooks';
-import { Field, SwapDelay } from 'state/swap/actions';
+} from '~/state/user/hooks';
+import { Field, SwapDelay } from '~/state/swap/actions';
 import {
   CurrencyInput,
   ConfirmSwapModal,
   AdvancedSwapDetails,
   AddressInput,
-} from 'components';
+} from '~/components';
 import {
   useIsProMode,
   useActiveWeb3React,
   useMasaAnalytics,
   useGetConnection,
   useConnectWallet,
-} from 'hooks';
+} from '~/hooks';
 import {
   ApprovalState,
   useApproveCallbackFromTrade,
-} from 'hooks/useApproveCallback';
-import { useSwapCallback } from 'hooks/useSwapCallback';
-import { useTransactionFinalizer } from 'state/transactions/hooks';
-import useENSAddress from 'hooks/useENSAddress';
-import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
-import useToggledVersion, { Version } from 'hooks/useToggledVersion';
+} from '~/hooks/useApproveCallback';
+import { useSwapCallback } from '~/hooks/useSwapCallback';
+import { useTransactionFinalizer } from '~/state/transactions/hooks';
+import useENSAddress from '~/hooks/useENSAddress';
+import useWrapCallback, { WrapType } from '~/hooks/useWrapCallback';
+import useToggledVersion, { Version } from '~/hooks/useToggledVersion';
 import {
   useIsSupportedNetwork,
   confirmPriceImpactWithoutFee,
   maxAmountSpend,
   halfAmountSpend,
-} from 'utils';
-import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices';
-import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
-import 'components/styles/Swap.scss';
+} from '~/utils';
+import { computeTradePriceBreakdown, warningSeverity } from '~/utils/prices';
+import PriceExchangeIcon from '~/assets/images/PriceExchangeIcon.svg?react';
+import ExchangeIcon from '~/assets/images/ExchangeIcon.svg?react';
+import '~/components/styles/Swap.scss';
 import { useTranslation } from 'react-i18next';
-import TokenWarningModal from 'components/v3/TokenWarningModal';
+import TokenWarningModal from '~/components/v3/TokenWarningModal';
 import { useHistory } from 'react-router-dom';
-import { useAllTokens, useCurrency } from 'hooks/Tokens';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import useSwapRedirects from 'hooks/useSwapRedirect';
-import { GlobalValue } from 'constants/index';
-import { getConfig } from 'config/index';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import { useAllTokens, useCurrency } from '~/hooks/Tokens';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import useSwapRedirects from '~/hooks/useSwapRedirect';
+import { GlobalValue } from '~/constants/index';
+import { getConfig } from '~/config/index';
+import { wrappedCurrency } from '~/utils/wrappedCurrency';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
+import { V2_ROUTER_ADDRESS } from '~/constants/v3/addresses';
 import { useV2TradeTypeAnalyticsCallback } from './LiquidityHub';
 
 const Swap: React.FC<{

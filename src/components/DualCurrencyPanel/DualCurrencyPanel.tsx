@@ -2,13 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import DualCurrencyDropdown from './DualCurrencyDropdown';
 import { Currency } from '@uniswap/sdk-core';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
-import { DualCurrencySelector } from 'types/bond';
-import { useActiveWeb3React, useTokenPriceUsd } from 'hooks';
+import { useCurrencyBalance } from '~/state/wallet/v3/hooks';
+import { DualCurrencySelector } from '~/types/bond';
+import { useActiveWeb3React, useTokenPriceUsd } from '~/hooks';
 import { Box, CircularProgress } from '@material-ui/core';
-import { NumericalInput } from 'components';
-import { toNativeCurrency } from 'utils';
-import 'components/styles/DualCurrencyPanel.scss';
+import { NumericalInput } from '~/components';
+import { toNativeCurrency } from '~/utils';
+import '~/components/styles/DualCurrencyPanel.scss';
 
 /**
  * Dropdown component that supports both single currencies and currency pairs. An array of pairs is passed as lpList,

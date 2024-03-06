@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Checkbox } from '@material-ui/core';
 import { Replay } from '@material-ui/icons';
-import { CustomSwitch } from 'components';
+import { CustomSwitch } from '~/components';
 import { useTranslation } from 'react-i18next';
 
 interface SwapProFilterProps {

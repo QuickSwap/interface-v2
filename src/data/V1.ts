@@ -16,16 +16,16 @@ import {
   WETH,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { useActiveWeb3React } from 'hooks';
-import { useAllTokens } from 'hooks/Tokens';
-import { useV1FactoryContract } from 'hooks/useContract';
-import { Version } from 'hooks/useToggledVersion';
+import { useActiveWeb3React } from '~/hooks';
+import { useAllTokens } from '~/hooks/Tokens';
+import { useV1FactoryContract } from '~/hooks/useContract';
+import { Version } from '~/hooks/useToggledVersion';
 import {
   NEVER_RELOAD,
   useSingleCallResult,
   useSingleContractMultipleData,
-} from 'state/multicall/hooks';
-import { useTokenBalances } from 'state/wallet/hooks';
+} from '~/state/multicall/hooks';
+import { useTokenBalances } from '~/state/wallet/hooks';
 
 export function useV1ExchangeAddress(
   tokenAddress?: string,

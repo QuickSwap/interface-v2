@@ -1,16 +1,16 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { useMemo } from 'react';
-import { useTransactionAdder } from 'state/transactions/hooks';
-import { calculateGasMargin, isAddress, isZero } from 'utils';
+import { useTransactionAdder } from '~/state/transactions/hooks';
+import { calculateGasMargin, isAddress, isZero } from '~/utils';
 import useTransactionDeadline from '../useTransactionDeadline';
 import useENS from '../useENS';
 import { Percent } from '@uniswap/sdk-core';
 import { useZapContract } from '../useContract';
-import { ZapType } from 'constants/index';
-import { MergedZap } from 'state/zap/actions';
-import { useActiveWeb3React } from 'hooks';
-import { Zap } from 'v3lib/entities/zap';
+import { ZapType } from '~/constants/index';
+import { MergedZap } from '~/state/zap/actions';
+import { useActiveWeb3React } from '~/hooks';
+import { Zap } from '~/v3lib/entities/zap';
 
 export const DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 

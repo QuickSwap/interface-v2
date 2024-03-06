@@ -1,14 +1,14 @@
 import React, { ReactNode } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { X } from 'react-feather';
-import SpinnerImage from 'assets/images/spinner.svg';
-import { useActiveWeb3React } from 'hooks';
-import { CustomModal } from 'components';
-import { getEtherscanLink } from 'utils';
+import SpinnerImage from '~/assets/images/spinner.svg';
+import { useActiveWeb3React } from '~/hooks';
+import { CustomModal } from '~/components';
+import { getEtherscanLink } from '~/utils';
 import { useTranslation } from 'react-i18next';
-import TransactionFailed from 'assets/images/TransactionFailed.png';
-import TransactionSubmitted from 'assets/images/TransactionSubmitted.png';
-import 'components/styles/TransactionConfirmationModal.scss';
+import TransactionFailed from '~/assets/images/TransactionFailed.png';
+import TransactionSubmitted from '~/assets/images/TransactionSubmitted.png';
+import '~/components/styles/TransactionConfirmationModal.scss';
 import { CheckCircleOutline } from '@material-ui/icons';
 
 interface ConfirmationPendingContentProps {

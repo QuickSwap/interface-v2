@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from 'state';
+import { AppDispatch } from '~/state';
 import { updateMatchesDarkMode, updateSlippageManuallySet } from './actions';
 
 export default function Updater(): null {

@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 
-import 'components/styles/Header.scss';
+import '~/components/styles/Header.scss';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 import { NewSparkleTag } from './NewSparkleTag';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';

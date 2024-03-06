@@ -8,35 +8,35 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { CurrencyLogo, NumericalInput } from 'components';
+import { CurrencyLogo, NumericalInput } from '~/components';
 import { Token } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import {
   calculateGasMargin,
   formatNumber,
   getFixedValue,
   getTokenFromAddress,
-} from 'utils';
+} from '~/utils';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useGammaHypervisorContract,
   useMasterChefContract,
-} from 'hooks/useContract';
+} from '~/hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
-import { tryParseAmount } from 'state/swap/hooks';
+import { ApprovalState, useApproveCallback } from '~/hooks/useApproveCallback';
+import { tryParseAmount } from '~/state/swap/hooks';
 import {
   useMultipleContractSingleData,
   useSingleCallResult,
-} from 'state/multicall/v3/hooks';
-import GammaRewarder from 'constants/abis/gamma-rewarder.json';
+} from '~/state/multicall/v3/hooks';
+import GammaRewarder from '~/constants/abis/gamma-rewarder.json';
 import { Interface } from '@ethersproject/abi';
-import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
+import QIGammaMasterChef from '~/constants/abis/gamma-masterchef1.json';
 
 const GammaFarmCardDetails: React.FC<{
   data: any;

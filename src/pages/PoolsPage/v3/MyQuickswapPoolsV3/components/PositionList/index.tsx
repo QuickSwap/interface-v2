@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import PositionListItem from '../PositionListItem';
-import { useShowNewestPosition } from 'state/mint/v3/hooks';
-import { PositionPool } from 'models/interfaces';
+import { useShowNewestPosition } from '~/state/mint/v3/hooks';
+import { PositionPool } from '~/models/interfaces';
 import { Box } from '@material-ui/core';
 
 type PositionListProps = React.PropsWithChildren<{

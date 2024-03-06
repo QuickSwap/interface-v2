@@ -6,27 +6,27 @@ import {
   useFilteredSyrupInfo,
   useOldSyrupInfo,
   useOldLairInfo,
-} from 'state/stake/hooks';
-import { SyrupInfo } from 'types/index';
+} from '~/state/stake/hooks';
+import { SyrupInfo } from '~/types/index';
 import {
   SyrupCard,
   ToggleSwitch,
   CustomMenu,
   SearchInput,
   CustomSwitch,
-} from 'components';
+} from '~/components';
 import {
   useLairDQUICKAPY,
   getPageItemsToLoad,
   getTokenAPRSyrup,
   returnFullWidthMobile,
   getExactTokenAmount,
-} from 'utils';
-import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import { useInfiniteLoading } from 'utils/useInfiniteLoading';
+} from '~/utils';
+import useDebouncedChangeHandler from '~/utils/useDebouncedChangeHandler';
+import { useInfiniteLoading } from '~/utils/useInfiniteLoading';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { ChainId } from '@uniswap/sdk';
 
 const LOADSYRUP_COUNT = 10;

@@ -1,20 +1,20 @@
 import { parseBytes32String } from '@ethersproject/strings';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
-import { NEVER_RELOAD, useSingleCallResult } from 'state/multicall/v3/hooks';
-import { useUserAddedTokens } from 'state/user/hooks';
-import { isAddress } from 'utils';
+import { NEVER_RELOAD, useSingleCallResult } from '~/state/multicall/v3/hooks';
+import { useUserAddedTokens } from '~/state/user/hooks';
+import { isAddress } from '~/utils';
 
-import { useActiveWeb3React } from 'hooks';
-import { useBytes32TokenContract, useTokenContract } from 'hooks/useContract';
+import { useActiveWeb3React } from '~/hooks';
+import { useBytes32TokenContract, useTokenContract } from '~/hooks/useContract';
 import {
   ExtendedEther,
   NATIVE_TOKEN_ADDRESS,
   WMATIC_EXTENDED,
-} from 'constants/v3/addresses';
-import { TokenAddressMap, useSelectedTokenList } from 'state/lists/v3/hooks';
+} from '~/constants/v3/addresses';
+import { TokenAddressMap, useSelectedTokenList } from '~/state/lists/v3/hooks';
 import { ChainId } from '@uniswap/sdk';
-import { CHAIN_INFO } from 'constants/v3/chains';
+import { CHAIN_INFO } from '~/constants/v3/chains';
 
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
 function useTokensFromMap(

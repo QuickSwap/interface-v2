@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import 'components/styles/CustomSwitch.scss';
+import '~/components/styles/CustomSwitch.scss';
 
 interface SwitchItems {
   text: string;

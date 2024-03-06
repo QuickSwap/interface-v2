@@ -1,5 +1,5 @@
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useFetchBonds } from './useFetchBonds';
 
 export const useBondType = (billAddress: string) => {

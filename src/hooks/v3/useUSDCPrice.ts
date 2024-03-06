@@ -1,9 +1,9 @@
 import { Currency, CurrencyAmount, Price, Token } from '@uniswap/sdk-core';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useMemo } from 'react';
 import { useBestV3TradeExactOut } from './useBestV3Trade';
 import { ChainId } from '@uniswap/sdk';
-import { toV3Token, USDC } from 'constants/v3/addresses';
+import { toV3Token, USDC } from '~/constants/v3/addresses';
 
 /**
  * Returns the price in USDC of the input currency

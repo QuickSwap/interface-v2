@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Box, Divider, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import { CustomTable } from 'components';
-import { formatNumber, getEtherscanLink, shortenTx } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import { CustomTable } from '~/components';
+import { formatNumber, getEtherscanLink, shortenTx } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { TxnType } from 'constants/index';
-import 'components/styles/TransactionsTable.scss';
+import { TxnType } from '~/constants/index';
+import '~/components/styles/TransactionsTable.scss';
 dayjs.extend(relativeTime);
 
 interface TransactionsTableProps {

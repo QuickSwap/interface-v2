@@ -1,5 +1,5 @@
 import { Token } from '@uniswap/sdk-core';
-import { ZapType } from 'constants/index';
+import { ZapType } from '~/constants/index';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   Field,
@@ -12,7 +12,7 @@ import {
   setZapType,
   typeInput,
 } from './actions';
-import { V3TradeState } from 'hooks/v3/useBestV3Trade';
+import { V3TradeState } from '~/hooks/v3/useBestV3Trade';
 
 export interface ZapState {
   readonly independentField: Field;

@@ -1,5 +1,5 @@
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
-import { SyrupListInfo } from 'types/index';
+import { SyrupListInfo } from '~/types/index';
 
 export const fetchSyrupList: Readonly<{
   pending: ActionCreatorWithPayload<{ url: string; requestId: string }>;

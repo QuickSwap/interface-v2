@@ -5,33 +5,36 @@ import {
   CustomModal,
   TransactionConfirmationModal,
   TransactionErrorContent,
-} from 'components';
+} from '~/components';
 import { Box, Button } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 import { useTranslation } from 'react-i18next';
 import {
   calculateGasMargin,
   formatNumber,
   getFixedValue,
   maxAmountSpend,
-} from 'utils';
-import { useActiveWeb3React } from 'hooks';
+} from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
+} from '~/state/transactions/hooks';
+import CurrencyInputPanel from '~/components/v3/CurrencyInputPanel';
 import '../GammaLPItemDetails/index.scss';
-import { useTokenBalance } from 'state/wallet/v3/hooks';
+import { useTokenBalance } from '~/state/wallet/v3/hooks';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { useGammaUNIProxyContract, useWETHContract } from 'hooks/useContract';
+import { useGammaUNIProxyContract, useWETHContract } from '~/hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
-import { useCurrencyBalance } from 'state/wallet/hooks';
-import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
-import { tryParseAmount } from 'state/swap/v3/hooks';
-import Loader from 'components/Loader';
+import { useSingleCallResult } from '~/state/multicall/v3/hooks';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
+import {
+  ApprovalState,
+  useApproveCallback,
+} from '~/hooks/useV3ApproveCallback';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
+import Loader from '~/components/Loader';
 import { Check } from '@material-ui/icons';
 
 interface IncreaseGammaLiquidityModalProps {

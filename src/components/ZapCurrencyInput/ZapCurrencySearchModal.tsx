@@ -1,14 +1,14 @@
 import { ChainId, ETHER } from '@uniswap/sdk';
 import { Currency } from '@uniswap/sdk-core';
 import React, { useCallback } from 'react';
-import { CustomModal } from 'components';
+import { CustomModal } from '~/components';
 import ZapCurrencySearch from './ZapCurrencySearch';
-import 'components/styles/ZapCurrencySearchModal.scss';
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+import '~/components/styles/ZapCurrencySearchModal.scss';
+import { WrappedTokenInfo } from '~/state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
 import { NativeCurrency, Currency as CurrencyV3 } from '@uniswap/sdk-core';
-import { useIsV2 } from 'state/application/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useIsV2 } from '~/state/application/hooks';
+import { useActiveWeb3React } from '~/hooks';
 
 interface ZapCurrencySearchModalProps {
   isOpen: boolean;

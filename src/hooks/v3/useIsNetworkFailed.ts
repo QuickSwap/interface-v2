@@ -1,8 +1,8 @@
 import React from 'react';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useState } from 'react';
-import useInterval from 'hooks/useInterval';
-import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp';
+import useInterval from '~/hooks/useInterval';
+import useCurrentBlockTimestamp from '~/hooks/useCurrentBlockTimestamp';
 
 const DEFAULT_MS_BEFORE_WARNING = 300_000;
 const NETWORK_HEALTH_CHECK_MS = 10_000;

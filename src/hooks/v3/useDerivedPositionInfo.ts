@@ -1,8 +1,8 @@
 import React from 'react';
-import { usePool } from 'hooks/v3/usePools';
+import { usePool } from '~/hooks/v3/usePools';
 import { useCurrency } from './Tokens';
-import { PositionPool } from 'models/interfaces';
-import { Pool, Position } from 'v3lib/entities';
+import { PositionPool } from '~/models/interfaces';
+import { Pool, Position } from '~/v3lib/entities';
 
 export function useDerivedPositionInfo(
   positionDetails: PositionPool | undefined,

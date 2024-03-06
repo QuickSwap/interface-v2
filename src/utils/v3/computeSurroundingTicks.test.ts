@@ -1,8 +1,8 @@
 import { Token } from '@uniswap/sdk-core';
 import computeSurroundingTicks from './computeSurroundingTicks';
 import JSBI from 'jsbi';
-import { AllV3TicksQuery } from 'state/data/generated';
-import { FeeAmount, TICK_SPACINGS } from 'v3lib/utils/v3constants';
+import { AllV3TicksQuery } from '~/state/data/generated';
+import { FeeAmount, TICK_SPACINGS } from '~/v3lib/utils/v3constants';
 
 const getV3Tick = (tickIdx: number, liquidityNet: number) => ({
   tickIdx,

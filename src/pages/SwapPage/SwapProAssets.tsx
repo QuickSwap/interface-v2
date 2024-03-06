@@ -2,11 +2,11 @@ import { getAddress } from '@ethersproject/address';
 import { Box, Divider } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { ChainId, Token } from '@uniswap/sdk';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { CurrencyLogo, CustomTable } from 'components';
-import { GlobalConst } from 'constants/index';
-import { useActiveWeb3React } from 'hooks';
-import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
+import SearchIcon from '~/assets/images/SearchIcon.svg?react';
+import { CurrencyLogo, CustomTable } from '~/components';
+import { GlobalConst } from '~/constants/index';
+import { useActiveWeb3React } from '~/hooks';
+import { useAnalyticsTopTokens } from '~/hooks/useFetchAnalyticsData';
 import React, {
   RefObject,
   useCallback,
@@ -15,16 +15,16 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useIsV2 } from '~/state/application/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import {
   formatNumber,
   getFormattedPrice,
   getPriceClass,
   getTokenFromAddress,
   isAddress,
-} from 'utils';
-import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
+} from '~/utils';
+import useDebouncedChangeHandler from '~/utils/useDebouncedChangeHandler';
 
 const SwapProAssets: React.FC = () => {
   const { t } = useTranslation();
@@ -246,7 +246,9 @@ const SwapProAssets: React.FC = () => {
 
   return (
     <Box className='flex flex-col'>
-      <p className='weight-600 text-secondary text-uppercase'>{t('assets')}</p>
+      <p className='weight-600 text-secondary text-uppercase'>
+        {t('~/assets')}
+      </p>
       {/* Search Box */}
       <Box className='searchInputWrapper'>
         <SearchIcon />

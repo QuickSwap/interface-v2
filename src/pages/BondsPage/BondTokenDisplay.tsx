@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
-import { getTokenFromAddress } from 'utils';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { getTokenFromAddress } from '~/utils';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import { Token } from '@uniswap/sdk';
-import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
-import { ReactComponent as BondArrow } from 'assets/images/bondArrow.svg';
+import { CurrencyLogo, DoubleCurrencyLogo } from '~/components';
+import BondArrow from '~/assets/images/bondArrow.svg?react';
 import { Box } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 
 interface BondTokenDisplayProps {
   token1Obj?: any;

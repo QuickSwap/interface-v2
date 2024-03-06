@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
-import CustomSelector from 'components/v3/CustomSelector';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import CustomSelector from '~/components/v3/CustomSelector';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { FarmingMyFarms } from 'components/StakerMyStakes';
-import { useActiveWeb3React } from 'hooks';
+import { FarmingMyFarms } from '~/components/StakerMyStakes';
+import { useActiveWeb3React } from '~/hooks';
 import { ChainId, Token } from '@uniswap/sdk';
-import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
-import { SearchInput, CustomSwitch } from 'components';
+import { SelectorItem } from '~/components/v3/CustomSelector/CustomSelector';
+import { SearchInput, CustomSwitch } from '~/components';
 import AllMerklFarms from './AllMerklFarms';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 import AllV3Farms from './AllV3Farms';
 import { MerklClaimAll } from './MerklClaimAll';
-import { FeeAmount } from 'v3lib/utils';
+import { FeeAmount } from '~/v3lib/utils';
 
 export interface V3Farm {
   token0?: Token;

@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { bondAPIV2BaseURL, BOND_QUERY_KEYS } from 'constants/index';
+import { bondAPIV2BaseURL, BOND_QUERY_KEYS } from '~/constants/index';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 
 export interface BillReferenceData {
   chainId: number;

@@ -8,11 +8,11 @@ import {
   getChartDates,
   getLimitedData,
   getFormattedPercent,
-} from 'utils';
-import { BarChart, ChartType } from 'components';
-import { GlobalConst, GlobalData } from 'constants/index';
+} from '~/utils';
+import { BarChart, ChartType } from '~/components';
+import { GlobalConst, GlobalData } from '~/constants/index';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from '~/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 const DAY_VOLUME = 0;
@@ -34,7 +34,7 @@ const AnalyticsVolumeChart: React.FC<{
 
   const fetchChartData = async () => {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
+      `${import.meta.env.VITE_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
     );
     if (!res.ok) {
       return null;

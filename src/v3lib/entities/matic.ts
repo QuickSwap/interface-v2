@@ -1,6 +1,6 @@
 import invariant from 'tiny-invariant';
 import { Currency, NativeCurrency, Token } from '@uniswap/sdk-core';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { WMATIC_EXTENDED } from '~/constants/v3/addresses';
 
 /**
  * Ether is the main usage of a 'native' currency, i.e. for Ethereum mainnet and all testnets

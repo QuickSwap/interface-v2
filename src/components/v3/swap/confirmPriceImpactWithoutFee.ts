@@ -2,7 +2,7 @@ import { Percent } from '@uniswap/sdk-core';
 import {
   ALLOWED_PRICE_IMPACT_HIGH,
   PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN,
-} from 'constants/v3/misc';
+} from '~/constants/v3/misc';
 import { TFunction } from 'react-i18next';
 
 /**

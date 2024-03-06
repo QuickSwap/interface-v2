@@ -1,5 +1,5 @@
 import { ChainId, ETHER } from '@uniswap/sdk';
-import { useActiveWeb3React, useIsProMode } from 'hooks';
+import { useActiveWeb3React, useIsProMode } from '~/hooks';
 import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import useParsedQueryString from './useParsedQueryString';

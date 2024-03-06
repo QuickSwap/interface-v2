@@ -8,29 +8,29 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { CurrencyLogo, NumericalInput } from 'components';
+import { CurrencyLogo, NumericalInput } from '~/components';
 import { Token } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import {
   calculateGasMargin,
   formatNumber,
   getFixedValue,
   getTokenFromAddress,
-} from 'utils';
+} from '~/utils';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
-import { tryParseAmount } from 'state/swap/hooks';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import { ApprovalState, useApproveCallback } from '~/hooks/useApproveCallback';
+import { tryParseAmount } from '~/state/swap/hooks';
+import { useSingleCallResult } from '~/state/multicall/v3/hooks';
 import {
   useUniPilotVaultContract,
   useUnipilotFarmingContract,
-} from 'hooks/useContract';
+} from '~/hooks/useContract';
 
 const UnipilotFarmCardDetails: React.FC<{
   data: any;

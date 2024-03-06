@@ -1,4 +1,4 @@
-import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { SUPPORTED_CHAINIDS } from '~/constants/index';
 import { WalletConnect, WalletConnectConstructorArgs } from './WalletConnect';
 import { QrModalOptions } from '@walletconnect/ethereum-provider/dist/types/EthereumProvider';
 
@@ -17,7 +17,7 @@ export class WalletConnectPopup extends WalletConnect {
       options: {
         showQrModal: qrcode,
         chains: SUPPORTED_CHAINIDS,
-        projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '',
+        projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID ?? '',
         qrModalOptions,
       },
       onError,

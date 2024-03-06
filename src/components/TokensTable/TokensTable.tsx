@@ -3,21 +3,21 @@ import { Link } from 'react-router-dom';
 import { Box, Divider } from '@material-ui/core';
 import { getAddress } from '@ethersproject/address';
 import { ChainId, Token } from '@uniswap/sdk';
-import { CurrencyLogo, CustomTable } from 'components';
-import { GlobalConst } from 'constants/index';
+import { CurrencyLogo, CustomTable } from '~/components';
+import { GlobalConst } from '~/constants/index';
 import {
   formatNumber,
   getFormattedPrice,
   getPriceClass,
   getTokenFromAddress,
-} from 'utils';
-import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
-import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
-import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
-import 'components/styles/AnalyticsTable.scss';
+} from '~/utils';
+import { useBookmarkTokens, useIsV2 } from '~/state/application/hooks';
+import StarChecked from '~/assets/images/StarChecked.svg?react';
+import StarUnchecked from '~/assets/images/StarUnchecked.svg?react';
+import '~/components/styles/AnalyticsTable.scss';
 import { useTranslation } from 'react-i18next';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { useActiveWeb3React } from '~/hooks';
 
 interface TokensTableProps {
   data: any[];

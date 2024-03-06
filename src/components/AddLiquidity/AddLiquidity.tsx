@@ -6,11 +6,11 @@ import {
   TransactionConfirmationModal,
   ConfirmationModalContent,
   DoubleCurrencyLogo,
-} from 'components';
+} from '~/components';
 import {
   useOpenNetworkSelection,
   useWalletModalToggle,
-} from 'state/application/hooks';
+} from '~/state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
@@ -22,23 +22,23 @@ import {
   TokenAmount,
   ChainId,
 } from '@uniswap/sdk';
-import { useActiveWeb3React, useConnectWallet } from 'hooks';
-import { useRouterContract } from 'hooks/useContract';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
-import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
-import { Field } from 'state/mint/actions';
-import { PairState } from 'data/Reserves';
+import { useActiveWeb3React, useConnectWallet } from '~/hooks';
+import { useRouterContract } from '~/hooks/useContract';
+import useTransactionDeadline from '~/hooks/useTransactionDeadline';
+import { ApprovalState, useApproveCallback } from '~/hooks/useApproveCallback';
+import { Field } from '~/state/mint/actions';
+import { PairState } from '~/data/Reserves';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import {
   useDerivedMintInfo,
   useMintActionHandlers,
   useMintState,
-} from 'state/mint/hooks';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
+} from '~/state/mint/hooks';
+import { useTokenBalance } from '~/state/wallet/hooks';
+import { useIsExpertMode, useUserSlippageTolerance } from '~/state/user/hooks';
 import {
   maxAmountSpend,
   calculateSlippageAmount,
@@ -46,14 +46,14 @@ import {
   useIsSupportedNetwork,
   formatTokenAmount,
   halfAmountSpend,
-} from 'utils';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { useCurrency } from 'hooks/Tokens';
+} from '~/utils';
+import { wrappedCurrency } from '~/utils/wrappedCurrency';
+import AddLiquidityIcon from '~/assets/images/AddLiquidityIcon.svg?react';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import { useCurrency } from '~/hooks/Tokens';
 import { useParams } from 'react-router-dom';
-import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
-import usePoolsRedirect from 'hooks/usePoolsRedirect';
+import { V2_ROUTER_ADDRESS } from '~/constants/v3/addresses';
+import usePoolsRedirect from '~/hooks/usePoolsRedirect';
 
 const AddLiquidity: React.FC<{
   currencyBgClass?: string;

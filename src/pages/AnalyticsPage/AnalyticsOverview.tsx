@@ -5,20 +5,20 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { TokensTable, PairTable } from 'components';
+import { TokensTable, PairTable } from '~/components';
 import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from './AnalyticsVolumeChart';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from '~/hooks';
 import AnalyticsExtraInfo from './AnalyticsExtraInfo';
 import { ChainId } from '@uniswap/sdk';
 import {
   useAnalyticsGlobalData,
   useAnalyticsTopPairs,
   useAnalyticsTopTokens,
-} from 'hooks/useFetchAnalyticsData';
-import { LiquidityHubAnalytics } from 'components';
+} from '~/hooks/useFetchAnalyticsData';
+import { LiquidityHubAnalytics } from '~/components';
 
 dayjs.extend(utc);
 

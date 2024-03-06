@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Frown } from 'react-feather';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import Loader from '../Loader';
 import { useLocation } from 'react-router-dom';
 import './index.scss';
@@ -12,41 +12,41 @@ import {
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
-import { useV3StakeData } from 'state/farms/hooks';
+import { useV3StakeData } from '~/state/farms/hooks';
 import {
   useEternalFarmAprs,
   useEternalFarmPoolAPRs,
   useFarmRewards,
   useTransferredPositions,
-} from 'hooks/useIncentiveSubgraph';
+} from '~/hooks/useIncentiveSubgraph';
 import { useTranslation } from 'react-i18next';
-import { GlobalConst } from 'constants/index';
-import SortColumns from 'components/SortColumns';
-import { getAllGammaPairs } from 'utils';
+import { GlobalConst } from '~/constants/index';
+import SortColumns from '~/components/SortColumns';
+import { getAllGammaPairs } from '~/utils';
 import { ChainId, Token } from '@uniswap/sdk';
 import GammaFarmCard from './GammaFarmCard';
 import UnipilotFarmCard from './UnipilotFarmCard';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import { formatReward } from 'utils/formatReward';
-import { useMultipleContractMultipleData } from 'state/multicall/v3/hooks';
-import { useMasterChefContracts } from 'hooks/useContract';
+import { useUSDCPricesFromAddresses } from '~/utils/useUSDCPrice';
+import { formatReward } from '~/utils/formatReward';
+import { useMultipleContractMultipleData } from '~/state/multicall/v3/hooks';
+import { useMasterChefContracts } from '~/hooks/useContract';
 import { formatUnits } from 'ethers/lib/utils';
-import { useFarmingHandlers } from 'hooks/useStakerHandlers';
-import CurrencyLogo from 'components/CurrencyLogo';
+import { useFarmingHandlers } from '~/hooks/useStakerHandlers';
+import CurrencyLogo from '~/components/CurrencyLogo';
 import {
   useUnipilotFarmData,
   useUnipilotFilteredFarms,
   useUnipilotUserFarms,
-} from 'hooks/v3/useUnipilotFarms';
-import { FarmingType } from 'models/enums';
-import { getConfig } from 'config/index';
+} from '~/hooks/v3/useUnipilotFarms';
+import { FarmingType } from '~/models/enums';
+import { getConfig } from '~/config/index';
 import {
   useSteerFilteredFarms,
   useSteerStakedPools,
   useSteerStakingPools,
-} from 'hooks/v3/useSteerData';
+} from '~/hooks/v3/useSteerData';
 import SteerFarmCard from './SteerFarmCard';
-import { useGammaFarmsFiltered } from 'hooks/v3/useV3Farms';
+import { useGammaFarmsFiltered } from '~/hooks/v3/useV3Farms';
 
 export const FarmingMyFarms: React.FC<{
   search: string;

@@ -2,17 +2,17 @@ import { ChainId, CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
 import { Currency as V3Currency } from '@uniswap/sdk-core';
 import React from 'react';
 import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
-import { WrappedTokenInfo } from 'state/lists/hooks';
-import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';
-import { useIsUserAddedToken } from 'hooks/Tokens';
-import { CurrencyLogo } from 'components';
-import { getTokenLogoURL } from 'utils/getTokenLogoURL';
-import { PlusHelper } from 'components/QuestionHelper';
-import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
-import { formatNumber, formatTokenAmount } from 'utils';
+import { useActiveWeb3React } from '~/hooks';
+import { WrappedTokenInfo } from '~/state/lists/hooks';
+import { useAddUserToken, useRemoveUserAddedToken } from '~/state/user/hooks';
+import { useIsUserAddedToken } from '~/hooks/Tokens';
+import { CurrencyLogo } from '~/components';
+import { getTokenLogoURL } from '~/utils/getTokenLogoURL';
+import { PlusHelper } from '~/components/QuestionHelper';
+import TokenSelectedIcon from '~/assets/images/TokenSelected.svg?react';
+import { formatNumber, formatTokenAmount } from '~/utils';
 import { useTranslation } from 'react-i18next';
-import { getIsMetaMaskWallet } from 'connectors/utils';
+import { getIsMetaMaskWallet } from '~/connectors/utils';
 
 //TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {

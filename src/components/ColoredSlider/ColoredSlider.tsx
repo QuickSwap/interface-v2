@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Slider, SliderProps } from '@material-ui/core';
-import 'components/styles/ColoredSlider.scss';
+import '~/components/styles/ColoredSlider.scss';
 
 interface ColoredSliderProps extends SliderProps {
   handleChange: (

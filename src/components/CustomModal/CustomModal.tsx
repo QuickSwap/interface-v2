@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Box, Backdrop, Fade } from '@material-ui/core';
-import 'components/styles/CustomModal.scss';
+import '~/components/styles/CustomModal.scss';
 
 interface CustomModalProps {
   open: boolean;

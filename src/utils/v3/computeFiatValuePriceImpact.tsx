@@ -1,5 +1,5 @@
 import { CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
-import { ONE_HUNDRED_PERCENT } from 'constants/v3/misc';
+import { ONE_HUNDRED_PERCENT } from '~/constants/v3/misc';
 import JSBI from 'jsbi';
 
 export function computeFiatValuePriceImpact(

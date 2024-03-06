@@ -1,42 +1,42 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useCurrency } from 'hooks/Tokens';
-import { Field } from 'state/zap/actions';
+import { useCurrency } from '~/hooks/Tokens';
+import { Field } from '~/state/zap/actions';
 import {
   useDerivedZapInfo,
   useSetZapInputList,
   useZapActionHandlers,
   useZapState,
-} from 'state/zap/hooks';
-import { useUserZapSlippageTolerance } from 'state/user/hooks';
+} from '~/state/zap/hooks';
+import { useUserZapSlippageTolerance } from '~/state/user/hooks';
 // import ZapPanel from 'views/V2/Zap/components/ZapPanel';
 // import DistributionPanel from 'views/V2/Zap/components/DistributionPanel/DistributionPanel';
 // import ZapLiquidityActions from 'views/V2/Zap/components/ZapLiquidityActions';
-// import DexPanel from 'components/DexPanel';
+// import DexPanel from '~/components/DexPanel';
 // import LoadingBestRoute from 'views/Swap/components/LoadingBestRoute';
-// import { TradeState } from 'state/routing/types';
+// import { TradeState } from '~/state/routing/types';
 // import ModalProvider from '../../contexts/ModalContext';
 // import { Pricing } from '../DexPanel/types';
 import { ZapVersion } from '@ape.swap/apeswap-lists';
 
 // Hooks
-import useGetWidoQuote from 'state/zap/providers/wido/useGetWidoQuote';
-import { useSignTransaction } from 'state/transactions/hooks';
+import useGetWidoQuote from '~/state/zap/providers/wido/useGetWidoQuote';
+import { useSignTransaction } from '~/state/transactions/hooks';
 
 // Types
-import { useActiveWeb3React, useTokenPriceUsd } from 'hooks';
+import { useActiveWeb3React, useTokenPriceUsd } from '~/hooks';
 import { useTranslation } from 'react-i18next';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { Box } from '@material-ui/core';
-import { ToggleSwitch } from 'components';
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
-import { getCurrencyInfo } from 'utils';
+import { ToggleSwitch } from '~/components';
+import { WrappedTokenInfo } from '~/state/lists/v3/wrappedTokenInfo';
+import { getCurrencyInfo } from '~/utils';
 import { Pair } from '@uniswap/sdk';
-import { ZapType } from 'constants/index';
-import { useZapCallback } from 'hooks/bond/useZapCallback';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
+import { ZapType } from '~/constants/index';
+import { useZapCallback } from '~/hooks/bond/useZapCallback';
+import { maxAmountSpend } from '~/utils/v3/maxAmountSpend';
 import { useHistory } from 'react-router-dom';
-import { usePair } from 'data/Reserves';
-import { V3TradeState } from 'hooks/v3/useBestV3Trade';
+import { usePair } from '~/data/Reserves';
+import { V3TradeState } from '~/hooks/v3/useBestV3Trade';
 
 interface ZapLiquidityProps {
   handleConfirmedTx: (hash: string, pairOut: Pair) => void;

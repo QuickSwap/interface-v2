@@ -2,46 +2,46 @@ import {
   useMultipleContractMultipleData,
   useMultipleContractSingleData,
   useSingleContractMultipleData,
-} from 'state/multicall/v3/hooks';
+} from '~/state/multicall/v3/hooks';
 import { useEffect, useMemo } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import {
   useUNIV3NFTPositionManagerContract,
   useMasterChefContracts,
   useV3NFTPositionManagerContract,
   useDefiEdgeMiniChefContracts,
-} from 'hooks/useContract';
-import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
-import { PositionPool } from 'models/interfaces';
+} from '~/hooks/useContract';
+import { usePositionsOnFarmer } from '~/hooks/useIncentiveSubgraph';
+import { PositionPool } from '~/models/interfaces';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import {
   getAllDefiedgeStrategies,
   getAllGammaPairs,
   getContract,
   getTokenFromAddress,
-} from 'utils';
+} from '~/utils';
 import { useQuery } from '@tanstack/react-query';
 import { Interface, formatUnits } from 'ethers/lib/utils';
-import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
-import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
-import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
-import { getConfig } from 'config/index';
-import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
-import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
+import UNIPILOT_VAULT_ABI from '~/constants/abis/unipilot-vault.json';
+import UNIPILOT_SINGLE_REWARD_ABI from '~/constants/abis/unipilot-single-reward.json';
+import UNIPILOT_DUAL_REWARD_ABI from '~/constants/abis/unipilot-dual-reward.json';
+import { getConfig } from '~/config/index';
+import GammaPairABI from '~/constants/abis/gamma-hypervisor.json';
+import DEFIEDGE_STRATEGY_ABI from '~/constants/abis/defiedge-strategy.json';
 import { useSteerStakedPools, useSteerVaults } from './useSteerData';
 import { Token } from '@uniswap/sdk-core';
-import { UnipilotVaults, subgraphNotReadyChains } from 'constants/index';
+import { UnipilotVaults, subgraphNotReadyChains } from '~/constants/index';
 import { useUnipilotFarms } from './useUnipilotFarms';
-import { useTokenBalances } from 'state/wallet/v3/hooks';
+import { useTokenBalances } from '~/state/wallet/v3/hooks';
 import {
   useICHIVaultUserBalances,
   useICHIVaults,
   useICHIVaultsUserAmounts,
-} from 'hooks/useICHIData';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { toV3Token } from 'constants/v3/addresses';
-import { useLastTransactionHash } from 'state/transactions/hooks';
+} from '~/hooks/useICHIData';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { toV3Token } from '~/constants/v3/addresses';
+import { useLastTransactionHash } from '~/state/transactions/hooks';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -135,7 +135,7 @@ export function useV3Positions(
     try {
       const res = await fetch(
         `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
+          import.meta.env.VITE_LEADERBOARD_APP_URL
         }/utils/user-positions?chainId=${chainId}&address=${account}${
           isUni ? `&isUni=true` : ''
         }`,

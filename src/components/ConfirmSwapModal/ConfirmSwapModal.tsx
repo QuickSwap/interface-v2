@@ -4,13 +4,13 @@ import {
   TransactionConfirmationModal,
   TransactionErrorContent,
   ConfirmationModalContent,
-} from 'components';
+} from '~/components';
 import SwapModalHeader from './SwapModalHeader';
-import { formatTokenAmount } from 'utils';
-import 'components/styles/ConfirmSwapModal.scss';
+import { formatTokenAmount } from '~/utils';
+import '~/components/styles/ConfirmSwapModal.scss';
 import { useTranslation } from 'react-i18next';
 import { OptimalRate } from '@paraswap/sdk';
-import { useLiquidityHubState } from 'state/swap/liquidity-hub/hooks';
+import { useLiquidityHubState } from '~/state/swap/liquidity-hub/hooks';
 
 /**
  * Returns true if the trade requires a confirmation of details before we can submit it

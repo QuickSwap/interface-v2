@@ -12,15 +12,18 @@ import {
 } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PairState, usePair } from 'data/Reserves';
-import { useTotalSupply } from 'data/TotalSupply';
+import { PairState, usePair } from '~/data/Reserves';
+import { useTotalSupply } from '~/data/TotalSupply';
 
-import { useActiveWeb3React } from 'hooks';
-import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency';
-import { AppDispatch, AppState } from 'state';
-import { tryParseAmount } from 'state/swap/hooks';
-import { useCurrencyBalances } from 'state/wallet/hooks';
-import { useCurrency } from 'hooks/Tokens';
+import { useActiveWeb3React } from '~/hooks';
+import {
+  wrappedCurrency,
+  wrappedCurrencyAmount,
+} from '~/utils/wrappedCurrency';
+import { AppDispatch, AppState } from '~/state';
+import { tryParseAmount } from '~/state/swap/hooks';
+import { useCurrencyBalances } from '~/state/wallet/hooks';
+import { useCurrency } from '~/hooks/Tokens';
 import { Field, typeInput, selectCurrency } from './actions';
 
 const ZERO = JSBI.BigInt(0);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Percent } from '@uniswap/sdk-core';
-import { warningSeverity } from 'utils/v3/prices';
+import { warningSeverity } from '~/utils/v3/prices';
 
 /**
  * Formatted version of price impact text with warning colors

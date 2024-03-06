@@ -1,12 +1,12 @@
 import { Box } from '@material-ui/core';
-import BillPay from 'assets/images/featured/BillPay.svg';
-import SpritzIcon from 'assets/images/SpritzIcon.png';
+import BillPay from '~/assets/images/featured/BillPay.svg';
+import SpritzIcon from '~/assets/images/SpritzIcon.png';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const SpritzAdvertisement: React.FC = () => {
   const { t } = useTranslation();
-  const SPRITZ_LINK = process.env.REACT_APP_SPRITZ_FINANCE_LINK;
+  const SPRITZ_LINK = import.meta.env.VITE_SPRITZ_FINANCE_LINK;
   return (
     <Box className='flex'>
       <Box>

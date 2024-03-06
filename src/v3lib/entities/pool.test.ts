@@ -6,7 +6,7 @@ import { Pool } from './pool';
 import { encodeSqrtRatioX96 } from '../utils/encodeSqrtRatioX96';
 import JSBI from 'jsbi';
 // import { NEGATIVE_ONE } from '../internalConstants'
-import { FeeAmount, NEGATIVE_ONE, TICK_SPACINGS } from 'v3lib/utils';
+import { FeeAmount, NEGATIVE_ONE, TICK_SPACINGS } from '~/v3lib/utils';
 
 const ONE_ETHER = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(18));
 

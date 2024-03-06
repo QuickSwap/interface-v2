@@ -2,8 +2,8 @@ import { ChainId, currencyEquals, ETHER } from '@uniswap/sdk';
 import { useCallback } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import useParsedQueryString from './useParsedQueryString';
-import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
-import { useActiveWeb3React } from 'hooks';
+import { NEW_QUICK_ADDRESS } from '~/constants/v3/addresses';
+import { useActiveWeb3React } from '~/hooks';
 
 export default function usePoolsRedirect() {
   const history = useHistory();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import SwapNewsletterSignup from 'pages/SwapPage/SwapNewsletterSignUp';
-import 'pages/styles/swap.scss';
+import SwapNewsletterSignup from '~/pages/SwapPage/SwapNewsletterSignUp';
+import '~/pages/styles/swap.scss';
 
 const NewsletterPage: React.FC = () => {
   return (

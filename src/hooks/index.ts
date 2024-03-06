@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { ChainId, Pair } from '@uniswap/sdk';
-import { getSigner } from 'utils';
+import { getSigner } from '~/utils';
 import {
   ConnectionType,
   arkaneConnection,
@@ -21,20 +21,20 @@ import {
   walletConnectConnection,
   unstoppableDomainsConnection,
   binanceWalletConnection,
-} from 'connectors';
-import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
+} from '~/connectors';
+import { useSingleCallResult, NEVER_RELOAD } from '~/state/multicall/hooks';
 import {
   useArgentWalletDetectorContract,
   usePriceGetterContract,
 } from './useContract';
-import { toV2LiquidityToken, useTrackedTokenPairs } from 'state/user/hooks';
-import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks';
-import { usePairs } from 'data/Reserves';
+import { toV2LiquidityToken, useTrackedTokenPairs } from '~/state/user/hooks';
+import { useTokenBalancesWithLoadingIndicator } from '~/state/wallet/hooks';
+import { usePairs } from '~/data/Reserves';
 import useParsedQueryString from './useParsedQueryString';
 import { useParams } from 'react-router-dom';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 import { Connector } from '@web3-react/types';
-import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { SUPPORTED_CHAINIDS } from '~/constants/index';
 import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
 import { Currency } from '@uniswap/sdk-core';
 import { BigNumber } from 'ethers';
@@ -42,7 +42,7 @@ import { formatUnits } from 'ethers/lib/utils';
 import {
   useOpenNetworkSelection,
   useWalletModalToggle,
-} from 'state/application/hooks';
+} from '~/state/application/hooks';
 
 export function useActiveWeb3React() {
   const context = useWeb3React();
@@ -193,7 +193,7 @@ export const useAnalyticsVersion = () => {
 
 export const useMasaAnalytics = () => {
   const masaAnalytics = useMasaAnalyticsReact({
-    clientId: process.env.REACT_APP_MASA_CLIENT_ID ?? '',
+    clientId: import.meta.env.VITE_MASA_CLIENT_ID ?? '',
     clientApp: 'Quickswap',
     clientName: 'Quickswap',
   });
@@ -220,7 +220,6 @@ export const useTokenPriceUsd = (
   const value = Number(formatUnits(bigNumberResponse, 18));
   return [value, loading];
 };
-
 
 export function useGetSigner() {
   const { account, library } = useActiveWeb3React();

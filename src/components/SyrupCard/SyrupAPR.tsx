@@ -1,12 +1,12 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { SyrupInfo } from 'types/index';
-import { CurrencyLogo } from 'components';
-import { getTokenAPRSyrup } from 'utils';
+import { SyrupInfo } from '~/types/index';
+import { CurrencyLogo } from '~/components';
+import { getTokenAPRSyrup } from '~/utils';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { ChainId } from '@uniswap/sdk';
-import { OLD_DQUICK, OLD_QUICK } from 'constants/v3/addresses';
+import { OLD_DQUICK, OLD_QUICK } from '~/constants/v3/addresses';
 
 const SyrupAPR: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,

@@ -7,24 +7,24 @@ import {
   DoubleCurrencyLogo,
   TransactionConfirmationModal,
   TransactionErrorContent,
-} from 'components';
+} from '~/components';
 import { Box, Button } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 import { useTranslation } from 'react-i18next';
-import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
+import useDebouncedChangeHandler from '~/utils/useDebouncedChangeHandler';
 import '../GammaLPItemDetails/index.scss';
-import { calculateGasMargin, formatNumber } from 'utils';
+import { calculateGasMargin, formatNumber } from '~/utils';
 import { BigNumber } from 'ethers';
-import GammaHyperVisorABI from 'constants/abis/gamma-hypervisor.json';
-import { useContract } from 'hooks/useContract';
-import { useActiveWeb3React } from 'hooks';
+import GammaHyperVisorABI from '~/constants/abis/gamma-hypervisor.json';
+import { useContract } from '~/hooks/useContract';
+import { useActiveWeb3React } from '~/hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JSBI, Token } from '@uniswap/sdk';
-import { useTokenBalance } from 'state/wallet/hooks';
+import { useTokenBalance } from '~/state/wallet/hooks';
 
 interface WithdrawGammaLiquidityModalProps {
   open: boolean;

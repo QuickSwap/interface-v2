@@ -2,13 +2,13 @@ import React from 'react';
 import { Box, Divider } from '@material-ui/core';
 import { SwapHoriz } from '@material-ui/icons';
 import { ChainId, Currency, Token } from '@uniswap/sdk';
-import { CurrencyLogo } from 'components';
-import { formatNumber } from 'utils';
-import { unwrappedToken } from 'utils/wrappedCurrency';
+import { CurrencyLogo } from '~/components';
+import { formatNumber } from '~/utils';
+import { unwrappedToken } from '~/utils/wrappedCurrency';
 import Skeleton from '@material-ui/lab/Skeleton';
 import SwapInfoTx from './SwapInfoTx';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 const SwapProInfo: React.FC<{
@@ -28,7 +28,7 @@ const SwapProInfo: React.FC<{
   const fetchTokenData = async (tokenAddress?: string) => {
     if (!tokenAddress) return null;
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainIdToUse}`,
+      `${import.meta.env.VITE_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainIdToUse}`,
     );
     let tokenV2;
     if (res.ok) {
@@ -40,7 +40,7 @@ const SwapProInfo: React.FC<{
       return tokenV2;
     }
     const v3Res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainIdToUse}`,
+      `${import.meta.env.VITE_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainIdToUse}`,
     );
     if (!v3Res.ok) {
       return null;

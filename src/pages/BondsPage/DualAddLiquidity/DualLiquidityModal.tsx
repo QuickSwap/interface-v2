@@ -3,10 +3,10 @@ import RegularLiquidity from './RegularLiquidity';
 import ZapLiquidity from './ZapLiquidity';
 import ZapSwitch from './components/ZapSwitch';
 import { useTranslation } from 'react-i18next';
-import { TransactionSubmittedContent } from 'components/TransactionConfirmationModal/TransactionConfirmationModal';
+import { TransactionSubmittedContent } from '~/components/TransactionConfirmationModal/TransactionConfirmationModal';
 import { Box } from '@material-ui/core';
-import { ZapType } from 'constants/index';
-import { CustomModal } from 'components';
+import { ZapType } from '~/constants/index';
+import { CustomModal } from '~/components';
 import { Pair } from '@uniswap/sdk';
 
 interface DualLiquidityModalProps {

@@ -6,7 +6,7 @@ import {
   CssBaseline,
 } from '@material-ui/core';
 import { Provider } from 'react-redux';
-import store from 'state';
+import store from '~/state';
 import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
 import { OrderlyConfigProvider } from '@orderly.network/hooks';
 const PerpsPage = lazy(() => import('./pages/PerpsPage'));
@@ -49,25 +49,25 @@ const MigrateV2DetailsPage = lazy(() =>
 );
 const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
-import { PageLayout } from 'layouts';
-import { Web3ReactManager, Popups, TermsWrapper } from 'components';
-import ApplicationUpdater from 'state/application/updater';
-import TransactionUpdater from 'state/transactions/updater';
-import ListsUpdater from 'state/lists/updater';
-import UserUpdater from 'state/user/updater';
-import MulticallUpdater from 'state/multicall/updater';
-import MultiCallV3Updater from 'state/multicall/v3/updater';
-import FarmUpdater from 'state/farms/updater';
-import DualFarmUpdater from 'state/dualfarms/updater';
-import CNTFarmUpdater from 'state/cnt/updater';
-import SyrupUpdater from 'state/syrups/updater';
+import { PageLayout } from '~/layouts';
+import { Web3ReactManager, Popups, TermsWrapper } from '~/components';
+import ApplicationUpdater from '~/state/application/updater';
+import TransactionUpdater from '~/state/transactions/updater';
+import ListsUpdater from '~/state/lists/updater';
+import UserUpdater from '~/state/user/updater';
+import MulticallUpdater from '~/state/multicall/updater';
+import MultiCallV3Updater from '~/state/multicall/v3/updater';
+import FarmUpdater from '~/state/farms/updater';
+import DualFarmUpdater from '~/state/dualfarms/updater';
+import CNTFarmUpdater from '~/state/cnt/updater';
+import SyrupUpdater from '~/state/syrups/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './i18n';
 import { mainTheme } from './theme';
-import Background from 'layouts/Background';
-import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
-import NotFound404Page from 'pages/NotFound404Page';
+import Background from '~/layouts/Background';
+import { RedirectExternal } from '~/components/RedirectExternal/RedirectExternal';
+import NotFound404Page from '~/pages/NotFound404Page';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 
 const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {
@@ -107,7 +107,7 @@ function Updaters() {
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
-  const arcxAPIKey = process.env.REACT_APP_ARCX_KEY ?? '';
+  const arcxAPIKey = import.meta.env.VITE_ARCX_KEY ?? '';
 
   return (
     <ArcxAnalyticsProvider apiKey={arcxAPIKey}>
@@ -218,7 +218,7 @@ const App: React.FC = () => {
                   </Route>
                   <Route exact path='/gamehub'>
                     <RedirectExternal
-                      to={`${process.env.REACT_APP_GAMEHUB_URL}`}
+                      to={`${import.meta.env.VITE_GAMEHUB_URL}`}
                       target={'_top'}
                     ></RedirectExternal>
                   </Route>

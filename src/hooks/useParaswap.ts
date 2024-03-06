@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { constructSimpleSDK } from '@paraswap/sdk';
 import { ChainId, Currency, ETHER, Token } from '@uniswap/sdk';
 

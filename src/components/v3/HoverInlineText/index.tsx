@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomTooltip } from 'components';
+import { CustomTooltip } from '~/components';
 
 interface HoverInlineTextProps {
   text?: string;

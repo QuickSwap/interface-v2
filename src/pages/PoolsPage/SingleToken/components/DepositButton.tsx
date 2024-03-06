@@ -5,10 +5,10 @@ import {
   useSingleTokenCurrency,
   useSingleTokenTypeInput,
   useSingleTokenVault,
-} from 'state/singleToken/hooks';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon.svg';
+} from '~/state/singleToken/hooks';
+import HelpIcon from '~/assets/images/HelpIcon.svg?react';
 import { ReportProblem } from '@material-ui/icons';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import {
   SupportedDex,
   approveDepositToken,
@@ -17,18 +17,18 @@ import {
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { ETHER } from '@uniswap/sdk';
 import { formatUnits } from 'ethers/lib/utils';
-import { useWETHContract } from 'hooks/useContract';
-import { calculateGasMargin, formatNumber } from 'utils';
+import { useWETHContract } from '~/hooks/useContract';
+import { calculateGasMargin, formatNumber } from '~/utils';
 import {
   useICHIVaultApproval,
   useICHIVaultDepositData,
   useICHIVaultShare,
-} from 'hooks/useICHIData';
-import Loader from 'components/Loader';
+} from '~/hooks/useICHIData';
+import Loader from '~/components/Loader';
 
 const SingleTokenDepositButton: React.FC = () => {
   const { t } = useTranslation();

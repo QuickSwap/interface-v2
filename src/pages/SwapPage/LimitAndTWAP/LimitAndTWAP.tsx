@@ -3,19 +3,19 @@ import {
   TWAP as QuickSwapTWAP,
   Orders as QuickSwapOrders,
 } from '@orbs-network/twap-ui-quickswap';
-import { CurrencySearchModal } from 'components';
-import { liquidityHubAnalytics } from 'components/Swap/LiquidityHub';
-import { useIsProMode, useActiveWeb3React } from 'hooks';
-import { useAllTokens, useCurrency } from 'hooks/Tokens';
-import useSwapRedirects from 'hooks/useSwapRedirect';
+import { CurrencySearchModal } from '~/components';
+import { liquidityHubAnalytics } from '~/components/Swap/LiquidityHub';
+import { useIsProMode, useActiveWeb3React } from '~/hooks';
+import { useAllTokens, useCurrency } from '~/hooks/Tokens';
+import useSwapRedirects from '~/hooks/useSwapRedirect';
 import React, { FC, useCallback } from 'react';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useWalletModalToggle } from '~/state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useSwapActionHandlers,
-} from 'state/swap/hooks';
-import { Field } from 'state/swap/v3/actions';
-import { getTokenLogoURL } from 'utils/getTokenLogoURL';
+} from '~/state/swap/hooks';
+import { Field } from '~/state/swap/v3/actions';
+import { getTokenLogoURL } from '~/utils/getTokenLogoURL';
 
 const getLogo = (value: string) => {
   return getTokenLogoURL(value).find((it) => it !== 'error') as any;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { DropdownProps, sizes } from './types';
-import 'components/styles/Dropdown.scss';
+import '~/components/styles/Dropdown.scss';
 
 const Dropdown: React.FC<DropdownProps> = ({
   component,

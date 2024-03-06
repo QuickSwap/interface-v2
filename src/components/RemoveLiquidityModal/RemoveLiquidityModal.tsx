@@ -15,36 +15,36 @@ import {
   TransactionErrorContent,
   ConfirmationModalContent,
   NumericalInput,
-} from 'components';
+} from '~/components';
 import {
   useDerivedBurnInfo,
   useBurnState,
   useBurnActionHandlers,
-} from 'state/burn/hooks';
-import { Field } from 'state/burn/actions';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+} from '~/state/burn/hooks';
+import { Field } from '~/state/burn/actions';
+import { useUserSlippageTolerance } from '~/state/user/hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { usePairContract } from 'hooks/useContract';
+} from '~/state/transactions/hooks';
+import { useTokenBalance } from '~/state/wallet/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { usePairContract } from '~/hooks/useContract';
 import {
   calculateGasMargin,
   calculateSlippageAmount,
   formatTokenAmount,
-} from 'utils';
-import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
-import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { useRouterContract } from 'hooks/useContract';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { useTotalSupply } from 'data/TotalSupply';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import 'components/styles/RemoveLiquidityModal.scss';
+} from '~/utils';
+import useDebouncedChangeHandler from '~/utils/useDebouncedChangeHandler';
+import useTransactionDeadline from '~/hooks/useTransactionDeadline';
+import { useApproveCallback, ApprovalState } from '~/hooks/useApproveCallback';
+import { useRouterContract } from '~/hooks/useContract';
+import { wrappedCurrency } from '~/utils/wrappedCurrency';
+import { useTotalSupply } from '~/data/TotalSupply';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
+import '~/components/styles/RemoveLiquidityModal.scss';
 import { useTranslation } from 'react-i18next';
-import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import { V2_ROUTER_ADDRESS } from '~/constants/v3/addresses';
 
 interface RemoveLiquidityModalProps {
   currency0: Currency;

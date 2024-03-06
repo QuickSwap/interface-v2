@@ -1,10 +1,10 @@
-import { Field } from 'state/zap/actions';
-import { useUserZapSlippageTolerance } from 'state/user/hooks';
+import { Field } from '~/state/zap/actions';
+import { useUserZapSlippageTolerance } from '~/state/user/hooks';
 import useSoulZap from './useFetchQuote';
 import { DEX } from '@soulsolidity/soulzap-v1';
-import { useZapState } from 'state/zap/hooks';
+import { useZapState } from '~/state/zap/hooks';
 import { ZapDataBond, ZapData } from '@soulsolidity/soulzap-v1/dist/src/types';
-import { useCurrency } from 'hooks/v3/Tokens';
+import { useCurrency } from '~/hooks/v3/Tokens';
 
 export const useSoulZapQuote = (
   contractAddress: string,

@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
-import { useBondNFTContract } from 'hooks/useContract';
+import { useBondNFTContract } from '~/hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 
 const useTransferBond = (
   billNftAddress: string,

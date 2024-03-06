@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import { Box } from '@material-ui/core';
-import { CurrencyLogo } from 'components';
+import { CurrencyLogo } from '~/components';
 import ZapCurrencySearchModal from './ZapCurrencySearchModal';
-import 'components/styles/ZapCurrencyInput.scss';
+import '~/components/styles/ZapCurrencyInput.scss';
 import { useTranslation } from 'react-i18next';
 import { KeyboardArrowDown } from '@material-ui/icons';
 

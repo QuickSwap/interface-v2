@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import JSBI from 'jsbi';
-import { Trade as V3Trade } from 'lib/src/trade';
+import { Trade as V3Trade } from '~/lib/src/trade';
 import { parseUnits } from '@ethersproject/units';
 import {
   Currency,
@@ -19,26 +19,26 @@ import {
   typeInput,
 } from './actions';
 import { SwapState } from './reducer';
-import { useAppDispatch, useAppSelector } from 'state/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useAppDispatch, useAppSelector } from '~/state/hooks';
+import { useActiveWeb3React } from '~/hooks';
 import {
   useBestV3TradeExactIn,
   useBestV3TradeExactOut,
   V3TradeState,
-} from 'hooks/v3/useBestV3Trade';
-import useENS from 'hooks/useENS';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { AppState } from 'state';
-import { isAddress, getFixedValue } from 'utils';
-import { useCurrency } from 'hooks/v3/Tokens';
-import { useCurrencyBalances } from 'state/wallet/v3/hooks';
+} from '~/hooks/v3/useBestV3Trade';
+import useENS from '~/hooks/useENS';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import { AppState } from '~/state';
+import { isAddress, getFixedValue } from '~/utils';
+import { useCurrency } from '~/hooks/v3/Tokens';
+import { useCurrencyBalances } from '~/state/wallet/v3/hooks';
 import {
   useSlippageManuallySet,
   useUserSlippageTolerance,
-} from 'state/user/hooks';
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+} from '~/state/user/hooks';
+import { WrappedTokenInfo } from '~/state/lists/v3/wrappedTokenInfo';
 import { ChainId } from '@uniswap/sdk';
-import { GlobalData } from 'constants/index';
+import { GlobalData } from '~/constants/index';
 
 export function useSwapState(): AppState['swapV3'] {
   return useAppSelector((state) => {

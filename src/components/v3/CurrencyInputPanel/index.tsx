@@ -3,16 +3,16 @@ import { ETHER, Pair } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { LockOutlined } from '@material-ui/icons';
-import { useActiveWeb3React } from 'hooks';
-import CurrencyLogo from 'components/CurrencyLogo';
-import { useCurrencyBalance } from 'state/wallet/hooks';
-import CurrencySearchModal from 'components/CurrencySearchModal';
+import { useActiveWeb3React } from '~/hooks';
+import CurrencyLogo from '~/components/CurrencyLogo';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
+import CurrencySearchModal from '~/components/CurrencySearchModal';
 import { Box } from '@material-ui/core';
-import NumericalInput from 'components/NumericalInput';
+import NumericalInput from '~/components/NumericalInput';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
-import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import DoubleCurrencyLogo from '~/components/DoubleCurrencyLogo';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
 
 interface CurrencyInputPanelProps {
   value: string;

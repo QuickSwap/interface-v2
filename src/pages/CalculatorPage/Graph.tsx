@@ -3,15 +3,15 @@ import { useTranslation } from 'react-i18next';
 
 import { Box } from '@material-ui/core';
 
-import { AreaChart, ChartType, MixedChart, ColumnChart } from 'components';
+import { AreaChart, ChartType, MixedChart, ColumnChart } from '~/components';
 import {
   formatCompact,
   getPriceClass,
   getChartDates,
   getYAXISValuesAnalytics,
   getFormattedPercent,
-} from 'utils';
-import { GlobalConst, GlobalData } from 'constants/index';
+} from '~/utils';
+import { GlobalConst, GlobalData } from '~/constants/index';
 
 export const Graph: React.FC<{
   factor: number;

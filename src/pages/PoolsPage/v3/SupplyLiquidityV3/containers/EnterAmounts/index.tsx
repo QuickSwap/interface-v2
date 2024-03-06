@@ -1,31 +1,34 @@
 import React, { useMemo } from 'react';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import './index.scss';
-import { Field } from 'state/mint/actions';
+import { Field } from '~/state/mint/actions';
 import {
   IDerivedMintInfo,
   useActivePreset,
   useV3MintActionHandlers,
   useV3MintState,
-} from 'state/mint/v3/hooks';
-import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
-import { useActiveWeb3React } from 'hooks';
-import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
+} from '~/state/mint/v3/hooks';
+import {
+  ApprovalState,
+  useApproveCallback,
+} from '~/hooks/useV3ApproveCallback';
+import { useActiveWeb3React } from '~/hooks';
+import { useUSDCValue } from '~/hooks/v3/useUSDCPrice';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
-} from 'constants/v3/addresses';
-import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
-import { tryParseAmount } from 'state/swap/v3/hooks';
+} from '~/constants/v3/addresses';
+import { halfAmountSpend, maxAmountSpend } from '~/utils/v3/maxAmountSpend';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
-import { PriceFormats } from 'components/v3/PriceFomatToggler';
+import { PriceFormats } from '~/components/v3/PriceFomatToggler';
 import { Box, Button } from '@material-ui/core';
-import Loader from 'components/Loader';
+import Loader from '~/components/Loader';
 import { Check } from '@material-ui/icons';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst } from '~/constants/index';
 import { useTranslation } from 'react-i18next';
-import { getGammaPairsForTokens } from 'utils';
-import { useSteerPeripheryContract } from 'hooks/useContract';
+import { getGammaPairsForTokens } from '~/utils';
+import { useSteerPeripheryContract } from '~/hooks/useContract';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;

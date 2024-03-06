@@ -8,7 +8,7 @@ import {
 } from '@web3-react/types';
 import { Connector } from '@web3-react/types';
 import { DeFiWeb3Connector } from '@deficonnect/web3-connector';
-import { rpcMap } from 'constants/providers';
+import { rpcMap } from '~/constants/providers';
 
 export class NoCryptocomError extends Error {
   public constructor() {

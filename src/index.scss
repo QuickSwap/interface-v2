@@ -1,8 +1,8 @@
-@use 'styles/variables' as *;
-@use 'styles/fonts' as *;
-@use 'styles/colors' as *;
-@use 'styles/breakpoints' as *;
-@use 'styles/mui-overrides' as *;
+@use 'src/styles/variables' as *;
+@use 'src/styles/fonts' as *;
+@use 'src/styles/colors' as *;
+@use 'src/styles/breakpoints' as *;
+@use 'src/styles/mui-overrides' as *;
 
 body {
   margin: 0;

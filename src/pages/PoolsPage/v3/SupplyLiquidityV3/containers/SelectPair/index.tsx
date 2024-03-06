@@ -1,11 +1,11 @@
 import React from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import './index.scss';
-import { IDerivedMintInfo } from 'state/mint/v3/hooks';
-import { PriceFormats } from 'components/v3/PriceFomatToggler';
+import { IDerivedMintInfo } from '~/state/mint/v3/hooks';
+import { PriceFormats } from '~/components/v3/PriceFomatToggler';
 import { Box } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
-import V3CurrencySelect from 'components/v3/CurrencySelect';
+import V3CurrencySelect from '~/components/v3/CurrencySelect';
 import { useTranslation } from 'react-i18next';
 
 interface ISelectPair {

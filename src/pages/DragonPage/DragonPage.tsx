@@ -1,21 +1,21 @@
 import React, { useEffect } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { Box, Grid, useMediaQuery, Tab, Tabs } from '@material-ui/core';
-import DragonBg1 from 'assets/images/DragonBg1.svg';
-import DragonBg2 from 'assets/images/DragonBg2.svg';
-import DragonLairMask from 'assets/images/DragonLairMask.svg';
+import DragonBg1 from '~/assets/images/DragonBg1.svg';
+import DragonBg2 from '~/assets/images/DragonBg2.svg';
+import DragonLairMask from '~/assets/images/DragonLairMask.svg';
 import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
-import 'pages/styles/dragon.scss';
+import '~/pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
-import { HypeLabAds } from 'components';
-import { getConfig } from 'config/index';
-import { useActiveWeb3React } from 'hooks';
+import { HypeLabAds } from '~/components';
+import { getConfig } from '~/config/index';
+import { useActiveWeb3React } from '~/hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useHistory } from 'react-router-dom';
-import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
+import { DLDQUICK, DLQUICK } from '~/constants/v3/addresses';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import ConvertQUICK from 'pages/ConvertQUICKPage';
+import ConvertQUICK from '~/pages/ConvertQUICKPage';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();

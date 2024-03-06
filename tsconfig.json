@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "paths": {
+      "~/*": ["./*"]
+    },
+    "types": ["vite-plugin-svgr/client"],
     "baseUrl": "./src",
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],

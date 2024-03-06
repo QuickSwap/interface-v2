@@ -1,13 +1,13 @@
 import { ETHER } from '@uniswap/sdk';
 import { Currency } from '@uniswap/sdk-core';
 import { useMemo, useState } from 'react';
-import { tryParseAmount } from 'state/swap/v3/hooks';
-import { useTransactionAdder } from 'state/transactions/hooks';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
+import { useTransactionAdder } from '~/state/transactions/hooks';
+import { useCurrencyBalance } from '~/state/wallet/v3/hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useNativeConverterContract } from './useContract';
-import { USDC, USDCE } from 'constants/v3/addresses';
-import { calculateGasMargin } from 'utils';
+import { USDC, USDCE } from '~/constants/v3/addresses';
+import { calculateGasMargin } from '~/utils';
 
 export enum ConvertType {
   NOT_APPLICABLE,

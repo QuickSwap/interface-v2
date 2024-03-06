@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useCurrency } from 'hooks/v3/Tokens';
-import { useActiveWeb3React, useConnectWallet } from 'hooks';
+import { useCurrency } from '~/hooks/v3/Tokens';
+import { useActiveWeb3React, useConnectWallet } from '~/hooks';
 import { useHistory, useParams } from 'react-router-dom';
 import {
   useActivePreset,
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
   useV3MintState,
-} from 'state/mint/v3/hooks';
+} from '~/state/mint/v3/hooks';
 import { InitialPrice } from './containers/InitialPrice';
 import { EnterAmounts } from './containers/EnterAmounts';
 import { SelectPair } from './containers/SelectPair';
@@ -16,31 +16,31 @@ import { SelectRange } from './containers/SelectRange';
 import { Currency } from '@uniswap/sdk-core';
 
 import './index.scss';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { WMATIC_EXTENDED } from '~/constants/v3/addresses';
 import {
   setInitialTokenPrice,
   setInitialUSDPrices,
   updateSelectedPreset,
-} from 'state/mint/v3/actions';
-import { Field } from 'state/mint/actions';
+} from '~/state/mint/v3/actions';
+import { Field } from '~/state/mint/actions';
 import {
   PriceFormats,
   PriceFormatToggler,
-} from 'components/v3/PriceFomatToggler';
+} from '~/components/v3/PriceFomatToggler';
 import { AddLiquidityButton } from './containers/AddLiquidityButton';
-import { getGammaPairsForTokens, useIsSupportedNetwork } from 'utils';
-import { useIsExpertMode } from 'state/user/hooks';
-import { currencyId } from 'utils/v3/currencyId';
+import { getGammaPairsForTokens, useIsSupportedNetwork } from '~/utils';
+import { useIsExpertMode } from '~/state/user/hooks';
+import { currencyId } from '~/utils/v3/currencyId';
 import { Box, Button } from '@material-ui/core';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { SettingsModal } from 'components';
-import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import { useAppDispatch } from 'state/hooks';
-import usePoolsRedirect from 'hooks/usePoolsRedirect';
-import { CHAIN_INFO } from 'constants/v3/chains';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import { SettingsModal } from '~/components';
+import SettingsIcon from '~/assets/images/SettingsIcon.svg?react';
+import { useAppDispatch } from '~/state/hooks';
+import usePoolsRedirect from '~/hooks/usePoolsRedirect';
+import { CHAIN_INFO } from '~/constants/v3/chains';
 import { ChainId } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst } from '~/constants/index';
 import SelectFeeTier from './containers/SelectFeeTier';
 
 export function SupplyLiquidityV3() {

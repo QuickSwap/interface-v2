@@ -1,21 +1,21 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Button } from '@material-ui/core';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { getTokenFromAddress } from 'utils';
-import { GlobalConst } from 'constants/index';
-import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
+import SearchIcon from '~/assets/images/SearchIcon.svg?react';
+import { getTokenFromAddress } from '~/utils';
+import { GlobalConst } from '~/constants/index';
+import { CurrencyLogo, DoubleCurrencyLogo } from '~/components';
 import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
-import 'components/styles/SearchWidget.scss';
+import '~/components/styles/SearchWidget.scss';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import useDebouncedChangeHandler from '~/utils/useDebouncedChangeHandler';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from '~/hooks';
 import { getConfig } from '../../config/index';
-import Loader from 'components/Loader';
+import Loader from '~/components/Loader';
 import { useQuery } from '@tanstack/react-query';
 dayjs.extend(utc);
 
@@ -51,7 +51,7 @@ const AnalyticsSearch: React.FC = () => {
       let v3Data: any = null;
       if (v2 && version !== 'v3') {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/search-token-pair/v2?chainId=${chainIdToUse}&search=${searchVal}`,
+          `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/search-token-pair/v2?chainId=${chainIdToUse}&search=${searchVal}`,
         );
         if (!res.ok) {
           return null;
@@ -64,7 +64,7 @@ const AnalyticsSearch: React.FC = () => {
 
       if (v3 && version !== 'v2') {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/search-token-pair/v3?chainId=${chainIdToUse}&search=${searchVal}`,
+          `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/search-token-pair/v3?chainId=${chainIdToUse}&search=${searchVal}`,
         );
         if (!res.ok) {
           return null;

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
-import { formatNumber } from 'utils';
-import { CurrencyLogo } from 'components';
+import { formatNumber } from '~/utils';
+import { CurrencyLogo } from '~/components';
 import IncreaseICHILiquidityModal from '../IncreaseICHILiquidityModal';
 import WithdrawICHILiquidityModal from '../WithdrawICHILiquidityModal';
-import { ICHIVault } from 'hooks/useICHIData';
+import { ICHIVault } from '~/hooks/useICHIData';
 
 const ICHILPItemDetails: React.FC<{ position: ICHIVault }> = ({ position }) => {
   const { t } = useTranslation();

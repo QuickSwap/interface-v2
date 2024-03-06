@@ -1,14 +1,14 @@
 import { Box } from '@material-ui/core';
 import { Percent } from '@uniswap/sdk-core';
-import { CustomModal, NumericalInput } from 'components';
-import { DEFAULT_DEADLINE_FROM_NOW } from 'constants/v3/misc';
+import { CustomModal, NumericalInput } from '~/components';
+import { DEFAULT_DEADLINE_FROM_NOW } from '~/constants/v3/misc';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useUserTransactionTTL,
   useUserZapSlippageTolerance,
-} from 'state/user/hooks';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+} from '~/state/user/hooks';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',

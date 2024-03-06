@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { Box } from '@material-ui/core';
-import { TopMovers, TokensTable } from 'components';
-import { useBookmarkTokens } from 'state/application/hooks';
+import { TopMovers, TokensTable } from '~/components';
+import { useBookmarkTokens } from '~/state/application/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
+import { useActiveWeb3React, useAnalyticsVersion } from '~/hooks';
+import { useAnalyticsTopTokens } from '~/hooks/useFetchAnalyticsData';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { PairTable } from 'components';
+import { PairTable } from '~/components';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { useAnalyticsTopPairs } from 'hooks/useFetchAnalyticsData';
+import { useActiveWeb3React, useAnalyticsVersion } from '~/hooks';
+import { useAnalyticsTopPairs } from '~/hooks/useFetchAnalyticsData';
 
 const AnalyticsPairs: React.FC = () => {
   const { t } = useTranslation();

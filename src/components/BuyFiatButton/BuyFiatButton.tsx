@@ -1,5 +1,5 @@
 import { Box, Button } from '@material-ui/core';
-import { MeldModal } from 'components';
+import { MeldModal } from '~/components';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

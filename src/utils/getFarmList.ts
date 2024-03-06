@@ -1,4 +1,4 @@
-import { FarmListInfo } from 'types/index';
+import { FarmListInfo } from '~/types/index';
 import contenthashToUri from './contenthashToUri';
 import { parseENSAddress } from './parseENSAddress';
 import uriToHttp from './uriToHttp';

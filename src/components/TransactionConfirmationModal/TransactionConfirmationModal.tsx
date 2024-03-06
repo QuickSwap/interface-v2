@@ -1,22 +1,22 @@
 import { ChainId } from '@uniswap/sdk';
 import React, { useMemo } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { CustomModal } from 'components';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import TransactionFailed from 'assets/images/TransactionFailed.png';
-import TransactionSubmitted from 'assets/images/TransactionSubmitted.png';
-import { getEtherscanLink } from 'utils';
-import { useActiveWeb3React } from 'hooks';
-import ModalBg from 'assets/images/ModalBG.svg';
+import { CustomModal } from '~/components';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
+import TransactionFailed from '~/assets/images/TransactionFailed.png';
+import TransactionSubmitted from '~/assets/images/TransactionSubmitted.png';
+import { getEtherscanLink } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
+import ModalBg from '~/assets/images/ModalBG.svg';
 import SpinnerImage from '../../assets/images/spinner.svg';
-import 'components/styles/TransactionConfirmationModal.scss';
+import '~/components/styles/TransactionConfirmationModal.scss';
 import { useTranslation } from 'react-i18next';
 import { CheckCircleOutline } from '@material-ui/icons';
 import {
   LiquidityHubConfirmationModalContent,
   useConfirmationPendingContent,
-} from 'components/Swap/LiquidityHub';
-import { useLiquidityHubState } from 'state/swap/liquidity-hub/hooks';
+} from '~/components/Swap/LiquidityHub';
+import { useLiquidityHubState } from '~/state/swap/liquidity-hub/hooks';
 
 interface ConfirmationPendingContentProps {
   onDismiss: () => void;

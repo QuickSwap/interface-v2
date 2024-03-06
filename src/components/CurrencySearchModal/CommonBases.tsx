@@ -1,10 +1,10 @@
 import React from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Box } from '@material-ui/core';
-import { CurrencyLogo, QuestionHelper } from 'components';
+import { CurrencyLogo, QuestionHelper } from '~/components';
 import { useTranslation } from 'react-i18next';
-import { SUGGESTED_BASES, WMATIC_EXTENDED } from 'constants/v3/addresses';
-import { useIsV2 } from 'state/application/hooks';
+import { SUGGESTED_BASES, WMATIC_EXTENDED } from '~/constants/v3/addresses';
+import { useIsV2 } from '~/state/application/hooks';
 import { NativeCurrency } from '@uniswap/sdk-core';
 
 interface CommonBasesProps {

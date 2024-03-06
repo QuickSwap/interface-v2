@@ -4,9 +4,9 @@ import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
 import { Token } from '@uniswap/sdk';
 import LiquidityPoolRow from './LiquidityPoolRow';
-import { useAllTokens } from 'hooks/Tokens';
+import { useAllTokens } from '~/hooks/Tokens';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@material-ui/lab';
 
@@ -36,7 +36,7 @@ const LiquidityPools: React.FC<{
     let pairData: any[] = [];
     if (v2) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-liquidity-pools/${token1Address}/${token2Address}/v2?chainId=${token1.chainId}`,
+        `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/token-liquidity-pools/${token1Address}/${token2Address}/v2?chainId=${token1.chainId}`,
       );
       if (res.ok) {
         const data = await res.json();
@@ -51,7 +51,7 @@ const LiquidityPools: React.FC<{
       }
     }
     const v3Res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-liquidity-pools/${token1Address}/${token2Address}/v3?chainId=${token1.chainId}`,
+      `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/token-liquidity-pools/${token1Address}/${token2Address}/v3?chainId=${token1.chainId}`,
     );
     let tokenPairsV3: any[] = [];
     if (v3Res.ok) {

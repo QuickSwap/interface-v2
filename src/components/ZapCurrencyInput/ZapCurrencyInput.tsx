@@ -1,13 +1,13 @@
 import React from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import { Box } from '@material-ui/core';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
-import { NumericalInput } from 'components';
-import { useActiveWeb3React } from 'hooks';
-import 'components/styles/ZapCurrencyInput.scss';
+import { useCurrencyBalance } from '~/state/wallet/v3/hooks';
+import { NumericalInput } from '~/components';
+import { useActiveWeb3React } from '~/hooks';
+import '~/components/styles/ZapCurrencyInput.scss';
 import { useTranslation } from 'react-i18next';
 import ZapCurrencySelect from './ZapCurrencySelect';
-import { default as useUSDCPrice } from 'hooks/v3/useUSDCPrice';
+import { default as useUSDCPrice } from '~/hooks/v3/useUSDCPrice';
 
 interface ZapCurrencyInputProps {
   title?: string;

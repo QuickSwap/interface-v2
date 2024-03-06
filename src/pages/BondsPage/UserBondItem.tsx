@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, useTheme, useMediaQuery } from '@material-ui/core';
-import { CustomModal, QuestionHelper } from 'components';
+import { CustomModal, QuestionHelper } from '~/components';
 import BondTokenDisplay from './BondTokenDisplay';
-import { formatNumber } from 'utils';
-import { useActiveWeb3React } from 'hooks';
-import { UserBond } from 'types/bond';
+import { formatNumber } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
+import { UserBond } from '~/types/bond';
 import { Skeleton } from '@material-ui/lab';
 import { formatUnits } from 'ethers/lib/utils';
 import VestedTimer from './VestedTimer';

@@ -1,7 +1,7 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
-import { useIsDarkMode } from 'state/user/hooks';
-import 'components/styles/AreaChart.scss';
+import { useIsDarkMode } from '~/state/user/hooks';
+import '~/components/styles/AreaChart.scss';
 
 export interface MixedChartProps {
   data?: Array<any>;

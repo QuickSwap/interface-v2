@@ -3,22 +3,22 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import { StakingInfo, DualStakingInfo } from 'types/index';
+import { StakingInfo, DualStakingInfo } from '~/types/index';
 import { TokenAmount, Pair } from '@uniswap/sdk';
-import { unwrappedToken } from 'utils/wrappedCurrency';
-import { usePairContract, useStakingContract } from 'hooks/useContract';
-import { useDerivedStakeInfo } from 'state/stake/hooks';
+import { unwrappedToken } from '~/utils/wrappedCurrency';
+import { usePairContract, useStakingContract } from '~/hooks/useContract';
+import { useDerivedStakeInfo } from '~/state/stake/hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { CurrencyLogo, NumericalInput } from 'components';
+} from '~/state/transactions/hooks';
+import { useTokenBalance } from '~/state/wallet/hooks';
+import { CurrencyLogo, NumericalInput } from '~/components';
 import { Link } from 'react-router-dom';
-import { GlobalConst } from 'constants/index';
-import { useActiveWeb3React } from 'hooks';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
-import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
+import { GlobalConst } from '~/constants/index';
+import { useActiveWeb3React } from '~/hooks';
+import useTransactionDeadline from '~/hooks/useTransactionDeadline';
+import { useApproveCallback, ApprovalState } from '~/hooks/useApproveCallback';
 import {
   getAPYWithFee,
   getRewardRate,
@@ -34,8 +34,8 @@ import {
   getExactTokenAmount,
   formatNumber,
   calculateGasMargin,
-} from 'utils';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
+} from '~/utils';
+import CircleInfoIcon from '~/assets/images/circleinfo.svg';
 
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;

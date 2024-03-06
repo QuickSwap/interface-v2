@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Box, Button, CircularProgress } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Close } from '@material-ui/icons';
-import { useOnClickOutside } from 'hooks/v3/useOnClickOutside';
-import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
+import { useOnClickOutside } from '~/hooks/v3/useOnClickOutside';
+import { useSubscribeNewsletter } from '~/hooks/useNewsletterSignup';
 
 const NewsletterSignupPanel: React.FC = () => {
   const [showPanel, setShowPanel] = useState(false);

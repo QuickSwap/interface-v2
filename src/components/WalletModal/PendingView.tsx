@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
 import Option from './Option';
 import { useTranslation } from 'react-i18next';
-import { Connection, getConnections } from 'connectors';
+import { Connection, getConnections } from '~/connectors';
 
 interface PendingViewProps {
   connection?: Connection;

@@ -5,9 +5,9 @@ import {
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useActiveWeb3React } from 'hooks';
-import { useAddPopup } from 'state/application/hooks';
-import { AppDispatch, AppState } from 'state';
+import { useActiveWeb3React } from '~/hooks';
+import { useAddPopup } from '~/state/application/hooks';
+import { AppDispatch, AppState } from '~/state';
 import { addTransaction, finalizeTransaction } from './actions';
 import { TransactionDetails } from './reducer';
 import { useArcxAnalytics } from '@arcxmoney/analytics';

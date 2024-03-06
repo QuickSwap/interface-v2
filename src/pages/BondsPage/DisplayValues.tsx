@@ -1,4 +1,4 @@
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@material-ui/core';

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { formatNumber, shortenAddress } from 'utils';
+import { formatNumber, shortenAddress } from '~/utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import 'components/styles/ContestCard.scss';
-import { ContestLeaderBoard } from 'models/interfaces/contest';
+import '~/components/styles/ContestCard.scss';
+import { ContestLeaderBoard } from '~/models/interfaces/contest';
 
 const ContestCard: React.FC<{
   contestantData: ContestLeaderBoard;

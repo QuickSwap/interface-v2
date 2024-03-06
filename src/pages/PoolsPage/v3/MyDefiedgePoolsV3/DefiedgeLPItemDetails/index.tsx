@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
-import { formatNumber } from 'utils';
-import { CurrencyLogo } from 'components';
+import { formatNumber } from '~/utils';
+import { CurrencyLogo } from '~/components';
 import { Button } from '@material-ui/core';
 import IncreaseDefiedgeLiquidityModal from '../IncreaseDefiedgeLiquidityModal';
 import WithdrawDefiedgeLiquidityModal from '../WithdrawDefiedgeLiquidityModal';
-import { useDefiedgeStrategyData } from 'hooks/v3/useDefiedgeStrategyData';
+import { useDefiedgeStrategyData } from '~/hooks/v3/useDefiedgeStrategyData';
 import { formatUnits } from 'ethers/lib/utils';
 
 const DefiedgeLPItemDetails: React.FC<{ defiedgePosition: any }> = ({

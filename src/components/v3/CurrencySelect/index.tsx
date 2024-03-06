@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import { Box } from '@material-ui/core';
-import { CurrencySearchModal, CurrencyLogo } from 'components';
-import 'components/styles/CurrencyInput.scss';
+import { CurrencySearchModal, CurrencyLogo } from '~/components';
+import '~/components/styles/CurrencyInput.scss';
 import { useTranslation } from 'react-i18next';
 
 interface CurrencySelectProps {

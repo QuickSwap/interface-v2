@@ -1,11 +1,11 @@
 import { ChainId, Currency, currencyEquals, ETHER, WETH } from '@uniswap/sdk';
 import { useMemo, useState } from 'react';
-import { tryParseAmount } from 'state/swap/hooks';
-import { useTransactionAdder } from 'state/transactions/hooks';
-import { useCurrencyBalance } from 'state/wallet/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { tryParseAmount } from '~/state/swap/hooks';
+import { useTransactionAdder } from '~/state/transactions/hooks';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useWETHContract } from './useContract';
-import { formatTokenAmount } from 'utils';
+import { formatTokenAmount } from '~/utils';
 
 export enum WrapType {
   NOT_APPLICABLE,

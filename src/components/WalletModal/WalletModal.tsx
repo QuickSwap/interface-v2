@@ -3,19 +3,19 @@ import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactGA from 'react-ga';
 import { Box } from '@material-ui/core';
-import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
-import { GlobalConst } from 'constants/index';
-import { ApplicationModal } from 'state/application/actions';
+import Close from '~/assets/images/CloseIcon.svg?react';
+import { GlobalConst } from '~/constants/index';
+import { ApplicationModal } from '~/state/application/actions';
 import {
   useModalOpen,
   useUDDomain,
   useWalletModalToggle,
-} from 'state/application/hooks';
-import { AccountDetails, CustomModal } from 'components';
+} from '~/state/application/hooks';
+import { AccountDetails, CustomModal } from '~/components';
 import { useTranslation } from 'react-i18next';
 import WalletOption from './options';
 import PendingView from './PendingView';
-import 'components/styles/WalletModal.scss';
+import '~/components/styles/WalletModal.scss';
 import {
   Connection,
   coinbaseWalletConnection,
@@ -24,15 +24,15 @@ import {
   trustWalletConnection,
   cypherDConnection,
   phantomConnection,
-} from 'connectors';
+} from '~/connectors';
 import {
   getIsBitgetWallet,
   getIsMetaMaskWallet,
   getIsTrustWallet,
-} from 'connectors/utils';
-import { useSelectedWallet } from 'state/user/hooks';
-import { WalletConnect } from 'connectors/WalletConnect';
-import { useGetConnection, useMasaAnalytics } from 'hooks';
+} from '~/connectors/utils';
+import { useSelectedWallet } from '~/state/user/hooks';
+import { WalletConnect } from '~/connectors/WalletConnect';
+import { useGetConnection, useMasaAnalytics } from '~/hooks';
 import { UAuthConnector } from '@uauth/web3-react';
 import UAuth from '@uauth/js';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
@@ -133,12 +133,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
 
       if (
         connection.connector instanceof UAuthConnector &&
-        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
-        process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI
+        import.meta.env.VITE_UNSTOPPABLE_DOMAIN_CLIENT_ID &&
+        import.meta.env.VITE_UNSTOPPABLE_DOMAIN_REDIRECT_URI
       ) {
         const uauth = new UAuth({
-          clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID,
-          redirectUri: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
+          clientID: import.meta.env.VITE_UNSTOPPABLE_DOMAIN_CLIENT_ID,
+          redirectUri: import.meta.env.VITE_UNSTOPPABLE_DOMAIN_REDIRECT_URI,
           scope: 'openid wallet',
         });
 

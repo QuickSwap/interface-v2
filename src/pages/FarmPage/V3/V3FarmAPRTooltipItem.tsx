@@ -1,7 +1,7 @@
 import { Box, Button } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatNumber } from 'utils';
+import { formatNumber } from '~/utils';
 import { V3Farm } from './Farms';
 
 export const V3FarmAPRTooltipItem: React.FC<{

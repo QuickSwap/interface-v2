@@ -9,13 +9,13 @@ import {
 } from '@uniswap/sdk';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { usePair } from 'data/Reserves';
-import { useTotalSupply } from 'data/TotalSupply';
-import { useActiveWeb3React } from 'hooks';
-import { AppDispatch, AppState } from 'state';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { tryParseAmount } from 'state/swap/hooks';
-import { useTokenBalances } from 'state/wallet/hooks';
+import { usePair } from '~/data/Reserves';
+import { useTotalSupply } from '~/data/TotalSupply';
+import { useActiveWeb3React } from '~/hooks';
+import { AppDispatch, AppState } from '~/state';
+import { wrappedCurrency } from '~/utils/wrappedCurrency';
+import { tryParseAmount } from '~/state/swap/hooks';
+import { useTokenBalances } from '~/state/wallet/hooks';
 import { Field, typeInput } from './actions';
 
 export function useBurnState(): AppState['burn'] {
