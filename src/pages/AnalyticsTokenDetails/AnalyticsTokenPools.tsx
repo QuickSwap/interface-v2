@@ -1,26 +1,23 @@
-import React, { useEffect, useState } from 'react';
 import { Box } from '@material-ui/core';
-import { PairTable } from 'components';
-import { Skeleton } from '@material-ui/lab';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PairTable } from 'components';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { useAnalyticsTopPairs } from 'hooks/useFetchAnalyticsData';
-import { getConfig } from 'config/index';
+import { exportToXLSX } from 'utils/exportToXLSX';
 import { formatNumber } from 'utils';
 import { GlobalConst } from 'constants/index';
-import { exportToXLSX } from 'utils/exportToXLSX';
+import { getConfig } from 'config/index';
 import Loader from 'components/Loader';
 
-const AnalyticsPairs: React.FC = () => {
+interface Props {
+  pools: any[];
+  symbol: string;
+}
+
+const AnalyticsTokenPools: React.FC<Props> = ({ pools, symbol }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-
   const version = useAnalyticsVersion();
-
-  const { isLoading: topPairsLoading, data: topPairs } = useAnalyticsTopPairs(
-    version,
-    chainId,
-  );
 
   const config = getConfig(chainId);
   const networkName = config['networkName'];
@@ -29,7 +26,7 @@ const AnalyticsPairs: React.FC = () => {
 
   useEffect(() => {
     if (xlsExported) {
-      const exportData = topPairs
+      const exportData = pools
         .sort((pair1: any, pair2: any) => {
           const liquidity1 = pair1.trackedReserveUSD
             ? pair1.trackedReserveUSD
@@ -88,7 +85,7 @@ const AnalyticsPairs: React.FC = () => {
         });
       exportToXLSX(
         exportData,
-        'Quickswap-Pairs-' + networkName + '-' + version,
+        `Quickswap-${symbol}-Pools-${networkName}-${version}`,
       );
       setTimeout(() => {
         setXLSExported(false);
@@ -98,9 +95,11 @@ const AnalyticsPairs: React.FC = () => {
   }, [xlsExported]);
 
   return (
-    <Box width='100%' mb={3}>
-      <Box className='flex items-center justify-between' gridGap={8}>
-        <p>{t('allPairs')}</p>
+    <>
+      <Box width={1} className='flex items-center justify-between'>
+        <p>
+          {symbol} {t('pools')}
+        </p>
         <Box
           className={`bg-secondary1 flex items-center ${
             xlsExported ? '' : 'cursor-pointer'
@@ -114,17 +113,11 @@ const AnalyticsPairs: React.FC = () => {
           {xlsExported ? <Loader /> : <small>{t('export')}</small>}
         </Box>
       </Box>
-      <Box mt={4} className='panel'>
-        {topPairsLoading ? (
-          <Skeleton variant='rect' width='100%' height={150} />
-        ) : topPairs ? (
-          <PairTable data={topPairs} />
-        ) : (
-          <></>
-        )}
+      <Box width={1} className='panel' mt={4}>
+        <PairTable data={pools} />
       </Box>
-    </Box>
+    </>
   );
 };
 
-export default AnalyticsPairs;
+export default AnalyticsTokenPools;

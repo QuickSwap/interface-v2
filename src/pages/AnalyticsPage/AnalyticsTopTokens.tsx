@@ -10,6 +10,7 @@ import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
 import Loader from 'components/Loader';
 import { exportToXLSX } from 'utils/exportToXLSX';
 import { formatNumber, getFormattedPrice } from 'utils';
+import { getConfig } from 'config/index';
 
 const AnalyticsTopTokens: React.FC = () => {
   const { t } = useTranslation();
@@ -21,6 +22,8 @@ const AnalyticsTopTokens: React.FC = () => {
     data: topTokens,
   } = useAnalyticsTopTokens(version, chainId);
   const [xlsExported, setXLSExported] = useState(false);
+  const config = getConfig(chainId);
+  const networkName = config['networkName'];
 
   useEffect(() => {
     if (xlsExported) {
@@ -37,7 +40,7 @@ const AnalyticsTopTokens: React.FC = () => {
             Liquidity: `$${formatNumber(token.totalLiquidityUSD)}`,
           };
         });
-      exportToXLSX(exportData, 'Quickswap-Tokens');
+      exportToXLSX(exportData, `Quickswap-Tokens-${networkName}-${version}`);
       setTimeout(() => {
         setXLSExported(false);
       }, 500);

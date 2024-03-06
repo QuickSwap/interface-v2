@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { Box, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -24,6 +24,8 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import { getConfig } from 'config/index';
 import { useAnalyticsTokenDetails } from 'hooks/useFetchAnalyticsData';
+import AnalyticsTokenPools from './AnalyticsTokenPools';
+import AnalyticsTokenTransactions from './AnalyticsTokenTransactions';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -187,17 +189,8 @@ const AnalyticsTokenDetails: React.FC = () => {
             </Grid>
           </Grid>
         </Box>
-        <Box width={1} mt={5}>
-          <p>
-            {token.symbol} {t('pools')}
-          </p>
-        </Box>
-        <Box width={1} className='panel' mt={4}>
-          {tokenPairs ? (
-            <PairTable data={tokenPairs} />
-          ) : (
-            <Skeleton variant='rect' width='100%' height={150} />
-          )}
+        <Box mt={5}>
+          <AnalyticsTokenPools pools={tokenPairs ?? []} symbol={token.symbol} />
         </Box>
       </>
     );
@@ -257,28 +250,16 @@ const AnalyticsTokenDetails: React.FC = () => {
         </Grid>
       </Box>
       <Box width={1} mt={5}>
-        <p>
-          {token.symbol} {t('pools')}
-        </p>
-      </Box>
-      <Box width={1} className='panel' mt={4}>
-        {data && data.tokenPairs ? (
-          <PairTable data={data.tokenPairs} />
-        ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
-        )}
+        <AnalyticsTokenPools
+          pools={data?.tokenPairs ?? []}
+          symbol={token.symbol}
+        />
       </Box>
       <Box width={1} mt={5}>
-        <p>
-          {token.symbol} {t('transactions')}
-        </p>
-      </Box>
-      <Box width={1} className='panel' mt={4}>
-        {tokenTransactions ? (
-          <TransactionsTable data={tokenTransactions} />
-        ) : (
-          <Skeleton variant='rect' width='100%' height={150} />
-        )}
+        <AnalyticsTokenTransactions
+          symbol={token.symbol}
+          transactions={tokenTransactions ?? []}
+        />
       </Box>
     </>
   );
