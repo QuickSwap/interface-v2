@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import 'components/styles/BarChart.scss';
+import '~/components/styles/BarChart.scss';
 
 export interface BarChartProps {
   data?: Array<number>;

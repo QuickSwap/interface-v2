@@ -1,6 +1,6 @@
 import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
 import React, { useMemo } from 'react';
-import { warningSeverity } from 'utils/v3/prices';
+import { warningSeverity } from '~/utils/v3/prices';
 import HoverInlineText from '../HoverInlineText';
 
 interface FiatValueProps {

@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { TokenAllowanceResult, getTokenAllowance } from 'wido';
 import { ChainId } from '@uniswap/sdk';
-import { BOND_QUERY_KEYS } from 'constants/index';
-import { useActiveWeb3React } from 'hooks';
+import { BOND_QUERY_KEYS } from '~/constants/index';
+import { useActiveWeb3React } from '~/hooks';
 
 const getWidoAllowance = async ({
   chainId,

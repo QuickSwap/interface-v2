@@ -1,14 +1,14 @@
 import { JSBI } from '@uniswap/sdk';
 import { CurrencyAmount, Token } from '@uniswap/sdk-core';
-import { Pool } from 'v3lib/entities/pool';
-import { TickMath } from 'v3lib/utils/tickMath';
+import { Pool } from '~/v3lib/entities/pool';
+import { TickMath } from '~/v3lib/utils/tickMath';
 import { BigNumber } from 'ethers';
 import React, { useCallback, useMemo, useState } from 'react';
-import { isAddress } from 'utils';
+import { isAddress } from '~/utils';
 import Chart from 'react-apexcharts';
 import { Box } from '@material-ui/core';
 import '../styles/analytics.scss';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -25,7 +25,7 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     try {
       const res = await fetch(
         `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
+          import.meta.env.VITE_LEADERBOARD_APP_URL
         }/analytics/v3-pair-liquidity-chart/${pairAddress}?chainId=${chainId}${
           isUni ? '&isUni=true' : ''
         }`,

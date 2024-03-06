@@ -1,9 +1,9 @@
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
-import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
+import { useActiveWeb3React } from '~/hooks';
+import { useDefiEdgeRangeTitles } from '~/hooks/v3/useDefiedgeStrategyData';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatNumber, getAllGammaPairs } from 'utils';
+import { formatNumber, getAllGammaPairs } from '~/utils';
 
 export const MerklFarmAPRTooltipItem: React.FC<{
   farm: any;

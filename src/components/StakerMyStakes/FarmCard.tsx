@@ -1,18 +1,18 @@
 import React, { useMemo } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
-import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
+import { CurrencyLogo, DoubleCurrencyLogo } from '~/components';
 import { ChainId, Token } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
-import { formatNumber, getTokenFromAddress } from 'utils';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { formatNumber, getTokenFromAddress } from '~/utils';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
-import RangeBadge from 'components/v3/Badge/RangeBadge';
+import RangeBadge from '~/components/v3/Badge/RangeBadge';
 import FarmStakeButtons from './FarmStakeButtons';
-import { formatReward } from 'utils/formatReward';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
-import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import { formatReward } from '~/utils/formatReward';
+import CircleInfoIcon from '~/assets/images/circleinfo.svg';
+import TotalAPRTooltip from '~/components/TotalAPRToolTip';
+import { useUSDCPricesFromAddresses } from '~/utils/useUSDCPrice';
 
 interface FarmCardProps {
   el: any;

@@ -1,18 +1,20 @@
 import { parseBytes32String } from '@ethersproject/strings';
 import { Currency, ETHER, Token, currencyEquals, ChainId } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import {
   NEVER_RELOAD,
   useMultipleContractSingleData,
   useSingleCallResult,
-} from 'state/multicall/hooks';
-import { useUserAddedTokens } from 'state/user/hooks';
-import { isAddress } from 'utils';
+} from '~/state/multicall/hooks';
+import { useUserAddedTokens } from '~/state/user/hooks';
+import { isAddress } from '~/utils';
 
-import { useActiveWeb3React } from 'hooks';
-import { useBytes32TokenContract, useTokenContract } from 'hooks/useContract';
-import ERC20_INTERFACE, { ERC20_BYTES32_INTERFACE } from 'constants/abis/erc20';
+import { useActiveWeb3React } from '~/hooks';
+import { useBytes32TokenContract, useTokenContract } from '~/hooks/useContract';
+import ERC20_INTERFACE, {
+  ERC20_BYTES32_INTERFACE,
+} from '~/constants/abis/erc20';
 
 export function useAllTokens(): { [address: string]: Token } {
   const { chainId } = useActiveWeb3React();

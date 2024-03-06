@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from '@material-ui/core';
-import { ReactComponent as Image404 } from 'assets/images/404.svg';
+import Image404 from '~/assets/images/404.svg?react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';

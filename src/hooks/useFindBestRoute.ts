@@ -1,18 +1,18 @@
-import { SmartRouter, RouterTypes } from 'constants/index';
-import { SwapDelay, Field } from 'state/swap/actions';
+import { SmartRouter, RouterTypes } from '~/constants/index';
+import { SwapDelay, Field } from '~/state/swap/actions';
 import {
   tryParseAmount,
   useSwapActionHandlers,
   useSwapState,
-} from 'state/swap/hooks';
+} from '~/state/swap/hooks';
 import {
   useBonusRouterManager,
   useUserSlippageTolerance,
-} from 'state/user/hooks';
-import callWallchainAPI from 'utils/wallchainService';
+} from '~/state/user/hooks';
+import callWallchainAPI from '~/utils/wallchainService';
 import { useCurrency } from './Tokens';
 import { useTradeExactIn, useTradeExactOut } from './Trades';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useSwapCallArguments } from './useSwapCallback';
 import useParsedQueryString from './useParsedQueryString';
 

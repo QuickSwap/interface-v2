@@ -1,15 +1,15 @@
 import { ChainId, Currency, ETHER } from '@uniswap/sdk';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
-import { CustomModal } from 'components';
-import useLast from 'hooks/useLast';
+import { CustomModal } from '~/components';
+import useLast from '~/hooks/useLast';
 import CurrencySearch from './CurrencySearch';
-import 'components/styles/CurrencySearchModal.scss';
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+import '~/components/styles/CurrencySearchModal.scss';
+import { WrappedTokenInfo } from '~/state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
 import { NativeCurrency, Currency as CurrencyV3 } from '@uniswap/sdk-core';
-import { useIsV2 } from 'state/application/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useIsV2 } from '~/state/application/hooks';
+import { useActiveWeb3React } from '~/hooks';
 
 interface CurrencySearchModalProps {
   isOpen: boolean;

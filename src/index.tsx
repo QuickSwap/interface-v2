@@ -8,8 +8,8 @@ import { HashRouter } from 'react-router-dom';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import './constants/index';
 
-const GOOGLE_ANALYTICS_ID: string | undefined =
-  process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
+const GOOGLE_ANALYTICS_ID: string | undefined = import.meta.env
+  .VITE_GOOGLE_ANALYTICS_ID;
 if (typeof GOOGLE_ANALYTICS_ID === 'string') {
   ReactGA.initialize(GOOGLE_ANALYTICS_ID);
   ReactGA.pageview(window.location.pathname + window.location.search);
@@ -40,6 +40,6 @@ ReactDOM.render(
   document.getElementById('root'),
 );
 
-if (process.env.REACT_APP_SERVICE_WORKER !== 'false') {
+if (import.meta.env.VITE_SERVICE_WORKER !== 'false') {
   serviceWorkerRegistration.register();
 }

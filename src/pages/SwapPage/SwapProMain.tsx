@@ -1,8 +1,8 @@
 import { Box, Grid, styled } from '@material-ui/core';
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import React, { useEffect, useState } from 'react';
-import { useIsV2 } from 'state/application/hooks';
+import { useIsV2 } from '~/state/application/hooks';
 import { SwapBuySellMiniWidget } from './BuySellWidget';
 import SwapMain from './SwapMain';
 import SwapProAssets from './SwapProAssets';
@@ -54,7 +54,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
         if (pairId.v2) {
           const res = await fetch(
             `${
-              process.env.REACT_APP_LEADERBOARD_APP_URL
+              import.meta.env.VITE_LEADERBOARD_APP_URL
             }/utils/swap-transactions/${
               pairId.v2
             }/v2?chainId=${chainIdToUse}&startTime=${Number(
@@ -73,7 +73,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
         if (pairId.v3) {
           const res = await fetch(
             `${
-              process.env.REACT_APP_LEADERBOARD_APP_URL
+              import.meta.env.VITE_LEADERBOARD_APP_URL
             }/utils/swap-transactions/${
               pairId.v3
             }/v3?chainId=${chainIdToUse}&startTime=${Number(
@@ -108,7 +108,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
 
       if (pairId.v2) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v2}/v2?chainId=${chainIdToUse}`,
+          `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v2}/v2?chainId=${chainIdToUse}`,
         );
         if (res.ok) {
           const data = await res.json();
@@ -122,7 +122,7 @@ const SwapProMain: React.FC<SwapProMainProps> = ({
 
       if (pairId.v3) {
         const res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v3}/v3?chainId=${chainIdToUse}`,
+          `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/swap-transactions/${pairId.v3}/v3?chainId=${chainIdToUse}`,
         );
         if (res.ok) {
           const data = await res.json();

@@ -4,9 +4,13 @@ import {
   SmartRouter,
   BONUS_CUTOFF_AMOUNT,
   WALLCHAIN_PARAMS,
-} from 'constants/index';
+} from '~/constants/index';
 import { Contract } from 'ethers';
-import { SwapDelay, RouterTypeParams, DataResponse } from 'state/swap/actions';
+import {
+  SwapDelay,
+  RouterTypeParams,
+  DataResponse,
+} from '~/state/swap/actions';
 
 const wallchainResponseIsValid = (
   dataResponse: DataResponse,

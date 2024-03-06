@@ -338,7 +338,7 @@ export enum Block_OrderBy {
   ParentHash = 'parentHash',
   ReceiptsRoot = 'receiptsRoot',
   Size = 'size',
-  StateRoot = 'stateRoot',
+  StateRoot = '~/stateRoot',
   Timestamp = 'timestamp',
   TotalDifficulty = 'totalDifficulty',
   TransactionsRoot = 'transactionsRoot',

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
-import { DoubleCurrencyLogo } from 'components';
+import { DoubleCurrencyLogo } from '~/components';
 import './index.scss';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import ICHILPItemDetails from '../ICHILPItemDetails';
-import { ICHIVault } from 'hooks/useICHIData';
+import { ICHIVault } from '~/hooks/useICHIData';
 
 const ICHILPItem: React.FC<{ position: ICHIVault }> = ({ position }) => {
   const [expanded, setExpanded] = useState(false);

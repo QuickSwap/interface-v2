@@ -1,14 +1,14 @@
 import React from 'react';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
-import { DoubleCurrencyLogo } from 'components';
-import { formatNumber } from 'utils';
-import APRHover from 'assets/images/aprHover.png';
+import { DoubleCurrencyLogo } from '~/components';
+import { formatNumber } from '~/utils';
+import APRHover from '~/assets/images/aprHover.png';
 import { useTranslation } from 'react-i18next';
 import { V3FarmAPRTooltip } from './V3FarmAPRTooltip';
 import { useHistory } from 'react-router-dom';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 import { V3FarmPair } from './AllV3Farms';
-import Loader from 'components/Loader';
+import Loader from '~/components/Loader';
 
 interface Props {
   farm: V3FarmPair;

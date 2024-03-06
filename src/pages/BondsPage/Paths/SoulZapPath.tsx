@@ -1,26 +1,29 @@
 import React, { useCallback, useState } from 'react';
-import { ApprovalState, useApproveCallbackV3 } from 'hooks/useApproveCallback';
-import { useZapState } from 'state/zap/hooks';
+import {
+  ApprovalState,
+  useApproveCallbackV3,
+} from '~/hooks/useApproveCallback';
+import { useZapState } from '~/state/zap/hooks';
 import BigNumber from 'bignumber.js';
-import { PurchasePath } from 'types/bond';
-import { useCurrency } from 'hooks/v3/Tokens';
+import { PurchasePath } from '~/types/bond';
+import { useCurrency } from '~/hooks/v3/Tokens';
 import { DEX } from '@soulsolidity/soulzap-v1';
-import { useSoulZapQuote } from 'state/zap/soulZap/useSoulZapQuote';
-import { useTransactionAdder } from 'state/transactions/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useSoulZapQuote } from '~/state/zap/soulZap/useSoulZapQuote';
+import { useTransactionAdder } from '~/state/transactions/hooks';
+import { useActiveWeb3React } from '~/hooks';
 import {
   BillReferenceData,
   usePostBillReference,
-} from 'hooks/bond/usePostBondReference';
+} from '~/hooks/bond/usePostBondReference';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import { JSBI } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from '@ethersproject/units';
 import { Box, Button } from '@material-ui/core';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
+import { useCurrencyBalance } from '~/state/wallet/v3/hooks';
 import WarningModal from '../WarningModal';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { useSoulZap } from 'state/application/hooks';
-import { getFixedValue, getLiquidityDEX } from 'utils';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import { useSoulZap } from '~/state/application/hooks';
+import { getFixedValue, getLiquidityDEX } from '~/utils';
 import DisplayValues from '../DisplayValues';
 import GetLPButton from '../GetLPButton';
 import { useTranslation } from 'react-i18next';

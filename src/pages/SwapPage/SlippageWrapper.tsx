@@ -1,7 +1,7 @@
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import { useUserSlippageTolerance } from '~/state/user/hooks';
 
 export const SlippageWrapper: React.FC = () => {
   const { t } = useTranslation();

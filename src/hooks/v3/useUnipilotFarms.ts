@@ -1,25 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChainId } from '@uniswap/sdk';
 import { Interface, formatUnits } from 'ethers/lib/utils';
-import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
+import { useMultipleContractSingleData } from '~/state/multicall/v3/hooks';
 import {
   getTokenFromAddress,
   getUnipilotFarmData,
   getUnipilotFarms,
   getUnipilotUserFarms,
-} from 'utils';
+} from '~/utils';
 import { BigNumber } from 'ethers';
 import { Token } from '@uniswap/sdk';
-import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
-import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
-import { useActiveWeb3React } from 'hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import { GlobalConst, GlobalData, unipilotVaultTypes } from 'constants/index';
-import { useLastTransactionHash } from 'state/transactions/hooks';
-import { V3Farm } from 'pages/FarmPage/V3/Farms';
-import { getConfig } from 'config/index';
-import { useGetUnipilotVaults } from 'state/mint/v3/hooks';
+import UNIPILOT_SINGLE_REWARD_ABI from '~/constants/abis/unipilot-single-reward.json';
+import UNIPILOT_DUAL_REWARD_ABI from '~/constants/abis/unipilot-dual-reward.json';
+import { useActiveWeb3React } from '~/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { useUSDCPricesFromAddresses } from '~/utils/useUSDCPrice';
+import { GlobalConst, GlobalData, unipilotVaultTypes } from '~/constants/index';
+import { useLastTransactionHash } from '~/state/transactions/hooks';
+import { V3Farm } from '~/pages/FarmPage/V3/Farms';
+import { getConfig } from '~/config/index';
+import { useGetUnipilotVaults } from '~/state/mint/v3/hooks';
 import { useEffect } from 'react';
 
 interface RewardRate {

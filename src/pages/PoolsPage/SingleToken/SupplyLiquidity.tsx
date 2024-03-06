@@ -1,22 +1,22 @@
 import React, { useCallback, useState } from 'react';
-import { useActiveWeb3React, useConnectWallet } from 'hooks';
+import { useActiveWeb3React, useConnectWallet } from '~/hooks';
 import { useHistory } from 'react-router-dom';
 import { Currency } from '@uniswap/sdk-core';
-import { useIsSupportedNetwork } from 'utils';
+import { useIsSupportedNetwork } from '~/utils';
 import { Box, Button } from '@material-ui/core';
-import { SettingsModal } from 'components';
-import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
-import usePoolsRedirect from 'hooks/usePoolsRedirect';
+import { SettingsModal } from '~/components';
+import SettingsIcon from '~/assets/images/SettingsIcon.svg?react';
+import usePoolsRedirect from '~/hooks/usePoolsRedirect';
 import { useTranslation } from 'react-i18next';
-import V3CurrencySelect from 'components/v3/CurrencySelect';
+import V3CurrencySelect from '~/components/v3/CurrencySelect';
 import SingleTokenSelectPool from './components/SelectPool';
 import SingleTokenEnterAmount from './components/EnterAmount';
-import ICHILogo from 'assets/images/ichi_logo.png';
+import ICHILogo from '~/assets/images/ichi_logo.png';
 import './index.scss';
 import {
   useSingleTokenCurrency,
   useSingleTokenVault,
-} from 'state/singleToken/hooks';
+} from '~/state/singleToken/hooks';
 import SingleTokenDepositButton from './components/DepositButton';
 
 export function SingleTokenSupplyLiquidity() {

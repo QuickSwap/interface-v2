@@ -1,19 +1,19 @@
 import {
   POOL_DEPLOYER_ADDRESS,
   UNI_V3_FACTORY_ADDRESS,
-} from 'constants/v3/addresses';
+} from '~/constants/v3/addresses';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
-import { useActiveWeb3React } from 'hooks';
-import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useMultipleContractSingleData } from '~/state/multicall/v3/hooks';
 import { Interface } from '@ethersproject/abi';
-import abi from 'constants/abis/v3/pool.json';
-import uniV3ABI from 'constants/abis/v3/univ3Pool.json';
-import { computePoolAddress } from 'v3lib/utils/computePoolAddress';
+import abi from '~/constants/abis/v3/pool.json';
+import uniV3ABI from '~/constants/abis/v3/univ3Pool.json';
+import { computePoolAddress } from '~/v3lib/utils/computePoolAddress';
 import { useToken } from './Tokens';
-import { Pool } from 'v3lib/entities/pool';
-import { usePreviousNonErroredArray } from 'hooks/usePrevious';
-import { FeeAmount } from 'v3lib/utils';
+import { Pool } from '~/v3lib/entities/pool';
+import { usePreviousNonErroredArray } from '~/hooks/usePrevious';
+import { FeeAmount } from '~/v3lib/utils';
 
 const POOL_STATE_INTERFACE = new Interface(abi);
 const UNIV3POOL_STATE_INTERFACE = new Interface(uniV3ABI);

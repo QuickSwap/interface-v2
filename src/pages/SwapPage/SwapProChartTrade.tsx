@@ -5,12 +5,12 @@ import { Box } from '@material-ui/core';
 import { Height } from '@material-ui/icons';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
-import { formatNumber, shortenTx, getEtherscanLink } from 'utils';
+import { formatNumber, shortenTx, getEtherscanLink } from '~/utils';
 import dayjs from 'dayjs';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { TableVirtuoso } from 'react-virtuoso';
 import { useTranslation } from 'react-i18next';
-import { V2_MATIC_USDT_PAIR } from 'constants/v3/addresses';
+import { V2_MATIC_USDT_PAIR } from '~/constants/v3/addresses';
 
 const SwapProChartTrade: React.FC<{
   showChart: boolean;

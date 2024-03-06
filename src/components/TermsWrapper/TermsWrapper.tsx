@@ -1,16 +1,16 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { CustomModal } from 'components';
+import { CustomModal } from '~/components';
 import { Trans, useTranslation } from 'react-i18next';
-import 'components/styles/TermsWrapper.scss';
+import '~/components/styles/TermsWrapper.scss';
 import { Box, Button, Checkbox } from '@material-ui/core';
-import PerpsBanner from 'assets/images/perpsBanner.png';
+import PerpsBanner from '~/assets/images/perpsBanner.png';
 
 export default function TermsWrapper({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [readTerms, setReadTerms] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
-  const currentTOSVersion = process.env.REACT_APP_TOS_VERSION;
+  const currentTOSVersion = import.meta.env.VITE_TOS_VERSION;
 
   useEffect(() => {
     const savedTermsVersion = localStorage.getItem('tosVersion');
@@ -73,7 +73,7 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
                   alink: (
                     <a
                       className='text-primary'
-                      href={process.env.REACT_APP_PERPS_URL}
+                      href={import.meta.env.VITE_PERPS_URL}
                       rel='noreferrer'
                       target='_blank'
                     />

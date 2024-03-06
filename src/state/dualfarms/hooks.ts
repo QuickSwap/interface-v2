@@ -1,18 +1,18 @@
 import { ChainId } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'state';
+import { AppState } from '~/state';
 import {
   DualFarmListInfo,
   DualStakingRaw,
   DualStakingBasic,
-} from 'types/index';
+} from '~/types/index';
 import { Token } from '@uniswap/sdk';
-import { getTokenFromAddress } from 'utils';
-import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
-import { useTokens } from 'hooks/Tokens';
-import { GlobalValue } from 'constants/index';
-import { EMPTY } from 'constants/v3/addresses';
+import { getTokenFromAddress } from '~/utils';
+import { TokenAddressMap, useSelectedTokenList } from '~/state/lists/hooks';
+import { useTokens } from '~/hooks/Tokens';
+import { GlobalValue } from '~/constants/index';
+import { EMPTY } from '~/constants/v3/addresses';
 
 export class WrappedDualFarmInfo implements DualStakingBasic {
   public readonly stakingInfo: DualStakingRaw;
@@ -216,7 +216,7 @@ export function useDualFarmList(
 }
 
 export function useDefaultDualFarmList(): DualFarmInfoAddressMap {
-  return useDualFarmList(process.env.REACT_APP_DUAL_STAKING_LIST_DEFAULT_URL);
+  return useDualFarmList(import.meta.env.VITE_DUAL_STAKING_LIST_DEFAULT_URL);
 }
 
 // returns all downloaded current lists

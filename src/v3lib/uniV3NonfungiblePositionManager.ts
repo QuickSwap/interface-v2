@@ -12,7 +12,7 @@ import invariant from 'tiny-invariant';
 import { Position } from './entities/position';
 import { MethodParameters, toHex } from './utils/calldata';
 import { Interface } from '@ethersproject/abi';
-import nonFunPosMan from 'constants/abis/uni-v3/nft-position-manager.json';
+import nonFunPosMan from '~/constants/abis/uni-v3/nft-position-manager.json';
 import { PermitOptions, SelfPermit } from './selfPermit';
 import { Pool } from './entities';
 import { ONE, ZERO } from './utils/v3internalConstants';

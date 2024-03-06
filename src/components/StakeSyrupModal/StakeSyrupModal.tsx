@@ -2,20 +2,20 @@ import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { ChainId, TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
-import { CustomModal, ColoredSlider, NumericalInput } from 'components';
-import { useDerivedSyrupInfo } from 'state/stake/hooks';
-import { SyrupInfo } from 'types/index';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { useStakingContract } from 'hooks/useContract';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
+import { CustomModal, ColoredSlider, NumericalInput } from '~/components';
+import { useDerivedSyrupInfo } from '~/state/stake/hooks';
+import { SyrupInfo } from '~/types/index';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
+import { useTokenBalance } from '~/state/wallet/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useApproveCallback, ApprovalState } from '~/hooks/useApproveCallback';
+import { useStakingContract } from '~/hooks/useContract';
+import useTransactionDeadline from '~/hooks/useTransactionDeadline';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import { wrappedCurrencyAmount } from 'utils/wrappedCurrency';
+} from '~/state/transactions/hooks';
+import { wrappedCurrencyAmount } from '~/utils/wrappedCurrency';
 import {
   formatTokenAmount,
   maxAmountSpend,
@@ -25,7 +25,7 @@ import {
   getValueTokenDecimals,
   getPartialTokenAmount,
   calculateGasMargin,
-} from 'utils';
+} from '~/utils';
 import { useTranslation } from 'react-i18next';
 
 interface StakeSyrupModalProps {

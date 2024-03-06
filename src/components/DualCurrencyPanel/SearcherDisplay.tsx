@@ -1,13 +1,13 @@
 import React from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
-import { useV2Pair } from 'hooks/v3/useV2Pairs';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
+import { useV2Pair } from '~/hooks/v3/useV2Pairs';
+import { useCurrencyBalance } from '~/state/wallet/v3/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
-import { useActiveWeb3React } from 'hooks';
-import { ReactComponent as ZapIcon } from 'assets/images/bonds/ZapIcon.svg';
-import { DualCurrencySelector } from 'types/bond';
-import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
-import CurrencyLogo from 'components/CurrencyLogo';
+import { useActiveWeb3React } from '~/hooks';
+import ZapIcon from '~/assets/images/bonds/ZapIcon.svg?react';
+import { DualCurrencySelector } from '~/types/bond';
+import DoubleCurrencyLogo from '~/components/DoubleCurrencyLogo';
+import CurrencyLogo from '~/components/CurrencyLogo';
 
 export function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
   return <small className='text-bold'>{balance?.toSignificant(5)}</small>;

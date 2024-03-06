@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress } from '@material-ui/core';
-import DragonDispatchIcon from 'assets/images/featured/DragonDispatchIcon.png';
-import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
+import DragonDispatchIcon from '~/assets/images/featured/DragonDispatchIcon.png';
+import { useSubscribeNewsletter } from '~/hooks/useNewsletterSignup';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

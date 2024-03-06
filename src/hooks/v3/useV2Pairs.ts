@@ -2,20 +2,20 @@ import { useMemo } from 'react';
 //@ts-ignore
 import IUniswapV2PairABI from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { Interface } from '@ethersproject/abi';
-import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
+import { useMultipleContractSingleData } from '~/state/multicall/v3/hooks';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
-import { computePairAddress, Pair } from 'utils/v3/computePairAddress';
+import { computePairAddress, Pair } from '~/utils/v3/computePairAddress';
 import {
   V2Exchanges,
   V2_FACTORY_ADDRESSES,
   V3_BASES_TO_TRACK_LIQUIDITY_FOR,
   V3_PINNED_PAIRS,
-} from 'constants/v3/addresses';
-import { useActiveWeb3React } from 'hooks';
+} from '~/constants/v3/addresses';
+import { useActiveWeb3React } from '~/hooks';
 import flatMap from 'lodash.flatmap';
-import { useAppSelector } from 'state';
+import { useAppSelector } from '~/state';
 import { useAllTokens } from './Tokens';
-import { SerializedToken } from 'state/user/actions';
+import { SerializedToken } from '~/state/user/actions';
 
 const PAIR_INTERFACE = new Interface(IUniswapV2PairABI.abi);
 

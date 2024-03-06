@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { ReactComponent as ZapIcon } from 'assets/images/bonds/ZapIcon.svg';
-import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
-import { formatNumber } from 'utils';
+import { useCurrencyBalance } from '~/state/wallet/v3/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import ZapIcon from '~/assets/images/bonds/ZapIcon.svg?react';
+import { DoubleCurrencyLogo, CurrencyLogo } from '~/components';
+import { formatNumber } from '~/utils';
 
 export function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
   const bal = Number(balance.toExact());

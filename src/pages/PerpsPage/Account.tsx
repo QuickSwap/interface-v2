@@ -3,7 +3,7 @@ import { useAccount } from '@orderly.network/hooks';
 import { AccountStatusEnum } from '@orderly.network/types';
 import { Button, Card, Container, Flex, Heading, Text } from '@radix-ui/themes';
 import { FC, useEffect, useState } from 'react';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import AccountModal from '../../components/AccountModal';
 
 export const Account: FC = () => {

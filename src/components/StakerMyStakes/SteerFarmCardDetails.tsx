@@ -8,29 +8,32 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { CurrencyLogo, NumericalInput } from 'components';
+import { CurrencyLogo, NumericalInput } from '~/components';
 import { Token } from '@uniswap/sdk-core';
 import { Token as TokenV2 } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import {
   calculateGasMargin,
   formatNumber,
   getFixedValue,
   getTokenFromAddress,
-} from 'utils';
+} from '~/utils';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
-import { tryParseAmount } from 'state/swap/v3/hooks';
-import { useSingleCallResult } from 'state/multicall/hooks';
-import { useSteerFarmingContract } from 'hooks/useContract';
-import { useTokenBalance } from 'state/wallet/v3/hooks';
-import Loader from 'components/Loader';
+import {
+  ApprovalState,
+  useApproveCallback,
+} from '~/hooks/useV3ApproveCallback';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
+import { useSingleCallResult } from '~/state/multicall/hooks';
+import { useSteerFarmingContract } from '~/hooks/useContract';
+import { useTokenBalance } from '~/state/wallet/v3/hooks';
+import Loader from '~/components/Loader';
 
 const SteerFarmCardDetails: React.FC<{
   data: any;

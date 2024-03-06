@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { DoubleCurrencyLogo } from 'components';
+import { DoubleCurrencyLogo } from '~/components';
 import './index.scss';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import SteerLPItemDetails from '../SteerLPItemDetails';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { ArrowRight } from 'react-feather';
 import { useHistory } from 'react-router-dom';
-import { calculatePositionWidth, percentageToMultiplier } from 'utils';
-import { SteerVault, useSteerStakedPools } from 'hooks/v3/useSteerData';
+import { calculatePositionWidth, percentageToMultiplier } from '~/utils';
+import { SteerVault, useSteerStakedPools } from '~/hooks/v3/useSteerData';
 
 const SteerLPItem: React.FC<{ position: SteerVault }> = ({ position }) => {
   const { t } = useTranslation();

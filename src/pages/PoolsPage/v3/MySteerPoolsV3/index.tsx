@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useWalletModalToggle } from '~/state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import SteerLPItem from './SteerLPItem';
-import { useV3SteerPositions } from 'hooks/v3/useV3Positions';
+import { useV3SteerPositions } from '~/hooks/v3/useV3Positions';
 
 export default function MySteerPoolsV3() {
   const { t } = useTranslation();

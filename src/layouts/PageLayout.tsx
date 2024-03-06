@@ -1,13 +1,13 @@
 import React, { lazy, useEffect, useMemo, useState, useRef } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
+import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from '~/hooks';
 import { useHistory } from 'react-router-dom';
 import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
 import NewsletterSignupPanel from './NewsletterSignupPanel';
-const Header = lazy(() => import('components/Header'));
-const Footer = lazy(() => import('components/Footer'));
-const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
-const CustomModal = lazy(() => import('components/CustomModal'));
+const Header = lazy(() => import('~/components/Header'));
+const Footer = lazy(() => import('~/components/Footer'));
+const BetaWarningBanner = lazy(() => import('~/components/BetaWarningBanner'));
+const CustomModal = lazy(() => import('~/components/CustomModal'));
 const Background = lazy(() => import('./Background'));
 
 export interface PageLayoutProps {
@@ -40,7 +40,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  const intractKey = process.env.REACT_APP_INTRACT_KEY;
+  const intractKey = import.meta.env.VITE_INTRACT_KEY;
   useEffect(() => {
     if (intractKey) {
       IntractAttribution(intractKey, {

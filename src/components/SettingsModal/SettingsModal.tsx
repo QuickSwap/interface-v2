@@ -7,8 +7,8 @@ import {
   NumericalInput,
   QuestionHelper,
   ToggleSwitch,
-} from 'components';
-import { useSwapActionHandlers } from 'state/swap/hooks';
+} from '~/components';
+import { useSwapActionHandlers } from '~/state/swap/hooks';
 import {
   useExpertModeManager,
   useUserTransactionTTL,
@@ -17,11 +17,11 @@ import {
   useSlippageManuallySet,
   useUserSingleHopOnly,
   useIsInfiniteApproval,
-} from 'state/user/hooks';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
-import 'components/styles/SettingsModal.scss';
+} from '~/state/user/hooks';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
+import '~/components/styles/SettingsModal.scss';
 import { useTranslation } from 'react-i18next';
-import { LiquidityHubTxSettings } from 'components/Swap/LiquidityHub';
+import { LiquidityHubTxSettings } from '~/components/Swap/LiquidityHub';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',

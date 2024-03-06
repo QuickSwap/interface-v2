@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import './index.css';
 import '@radix-ui/themes/styles.css';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { Account } from './Account';
 import { Assets } from './Assets';
 import { CreateOrder } from './CreateOrder';

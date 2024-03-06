@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
-import { QuestionHelper } from 'components';
+import { QuestionHelper } from '~/components';
 import BuyBondModal from './BuyBondModal';
 import BondTokenDisplay from './BondTokenDisplay';
-import { formatCompact, formatNumber } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import { formatCompact, formatNumber } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import { BigNumber } from 'ethers';
-import { Bond } from 'types/bond';
+import { Bond } from '~/types/bond';
 import { Skeleton } from '@material-ui/lab';
 import { formatUnits } from 'ethers/lib/utils';
 

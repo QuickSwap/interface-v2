@@ -2,13 +2,13 @@ import React from 'react';
 import { Box, Grid } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useTheme } from '@material-ui/core/styles';
-import { CurrencyLogo, CopyHelper } from 'components';
-import { formatNumber, shortenAddress } from 'utils';
-import { LineChart } from 'components';
+import { CurrencyLogo, CopyHelper } from '~/components';
+import { formatNumber, shortenAddress } from '~/utils';
+import { LineChart } from '~/components';
 import { Token } from '@uniswap/sdk';
-import { unwrappedToken } from 'utils/wrappedCurrency';
-import { useActiveWeb3React } from 'hooks';
-import { getConfig } from 'config/index';
+import { unwrappedToken } from '~/utils/wrappedCurrency';
+import { useActiveWeb3React } from '~/hooks';
+import { getConfig } from '~/config/index';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -28,7 +28,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
   const fetchTokenInterval = async () => {
     let tokenPriceDataV3;
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v3?chainId=${chainId}`,
+      `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v3?chainId=${chainId}`,
     );
     if (res.ok) {
       const data = await res.json();
@@ -45,7 +45,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       return tokenPriceDataV3;
     } else if (v2) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v2?chainId=${chainId}`,
+        `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/token-interval-data/${tokenAddress}/v2?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;
@@ -63,7 +63,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
   const fetchTokenData = async () => {
     let tokenV3;
     const tokenDetailsRes = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
+      `${import.meta.env.VITE_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v3?chainId=${chainId}`,
     );
     if (tokenDetailsRes.ok) {
       const tokenDetailsData = await tokenDetailsRes.json();
@@ -76,7 +76,7 @@ const SwapTokenDetailsHorizontal: React.FC<{
       return tokenV3;
     } else if (v2 && (!tokenV3 || !tokenV3.priceUSD)) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
+        `${import.meta.env.VITE_LEADERBOARD_APP_URL}/analytics/top-token-details/${tokenAddress}/v2?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;

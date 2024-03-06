@@ -2,15 +2,15 @@ import { ChainId, ETHER, Token } from '@uniswap/sdk';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import React from 'react';
 import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
-import { WrappedTokenInfo } from 'state/lists/hooks';
-import { CurrencyLogo } from 'components';
-import { getTokenLogoURL } from 'utils/getTokenLogoURL';
-import { PlusHelper } from 'components/QuestionHelper';
-import { ReactComponent as TokenSelectedIcon } from 'assets/images/TokenSelected.svg';
-import { formatNumber } from 'utils';
+import { useActiveWeb3React } from '~/hooks';
+import { WrappedTokenInfo } from '~/state/lists/hooks';
+import { CurrencyLogo } from '~/components';
+import { getTokenLogoURL } from '~/utils/getTokenLogoURL';
+import { PlusHelper } from '~/components/QuestionHelper';
+import TokenSelectedIcon from '~/assets/images/TokenSelected.svg?react';
+import { formatNumber } from '~/utils';
 import { useTranslation } from 'react-i18next';
-import { getIsMetaMaskWallet } from 'connectors/utils';
+import { getIsMetaMaskWallet } from '~/connectors/utils';
 
 //TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {

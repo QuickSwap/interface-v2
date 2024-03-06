@@ -1,8 +1,8 @@
 import { ChainId } from '@uniswap/sdk';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 
 const getAPIURL = (chainId: ChainId, url: string) => {
-  const apiBaseURL = process.env.REACT_APP_V3_APR_API_BASE_URL;
+  const apiBaseURL = import.meta.env.VITE_V3_APR_API_BASE_URL;
   const config = getConfig(chainId);
   const aprAPINetwork = config['aprAPINetwork'];
   const networkKey = aprAPINetwork ? `?network=${aprAPINetwork}` : '';

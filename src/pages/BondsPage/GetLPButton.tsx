@@ -6,9 +6,9 @@ import {
   ZapVersion,
 } from '@ape.swap/apeswap-lists';
 import SoulZapAddLiquidity from './SoulZapAddLiquidity';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { Box, Button } from '@material-ui/core';
-import { ReactComponent as ZapIcon } from 'assets/images/bonds/ZapIcon.svg';
+import ZapIcon from '~/assets/images/bonds/ZapIcon.svg?react';
 import { useTranslation } from 'react-i18next';
 import useAddLiquidityModal from './DualAddLiquidity/hooks/useAddLiquidityModal';
 

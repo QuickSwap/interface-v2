@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
-import NoLiquidity from 'assets/images/NoLiquidityPool.png';
-import { PoolFinderModal, PoolPositionCard } from 'components';
-import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
+import NoLiquidity from '~/assets/images/NoLiquidityPool.png';
+import { PoolFinderModal, PoolPositionCard } from '~/components';
+import { useActiveWeb3React, useV2LiquidityPools } from '~/hooks';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 
 const YourLiquidityPools: React.FC = () => {
   const { t } = useTranslation();

@@ -3,15 +3,15 @@ import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from 'state/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { useAppDispatch, useAppSelector } from '~/state/hooks';
+import { useActiveWeb3React } from '~/hooks';
 import {
   addV3MulticallListeners,
   V3ListenerOptions,
   removeV3MulticallListeners,
 } from './actions';
 import { Call, parseCallKey, toCallKey } from './utils';
-import { useBlockNumber } from 'state/application/hooks';
+import { useBlockNumber } from '~/state/application/hooks';
 
 export interface Result extends ReadonlyArray<any> {
   readonly [key: string]: any;

@@ -3,10 +3,10 @@ import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
-import { useIsV2 } from 'state/application/hooks';
-import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
-import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { getConfig } from 'config/index';
+import { useIsV2 } from '~/state/application/hooks';
+import { NEW_QUICK_ADDRESS } from '~/constants/v3/addresses';
+import { useActiveWeb3React, useAnalyticsVersion } from '~/hooks';
+import { getConfig } from '~/config/index';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();

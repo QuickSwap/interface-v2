@@ -5,9 +5,9 @@ import { useMemo } from 'react';
 import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/v3/hooks';
 import { isAddress } from '../utils';
 
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useBytes32TokenContract, useTokenContract } from './useContract';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import { ChainId } from '@uniswap/sdk';
 
 // parse a name or symbol from a token response

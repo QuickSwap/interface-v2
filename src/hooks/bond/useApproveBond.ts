@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 import { ethers } from 'ethers';
-import { useTokenContract } from 'hooks/useContract';
+import { useTokenContract } from '~/hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTranslation } from 'react-i18next';
 

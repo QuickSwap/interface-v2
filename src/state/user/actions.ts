@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { ConnectionType } from 'connectors';
+import { ConnectionType } from '~/connectors';
 
 export interface SerializedToken {
   chainId: number;

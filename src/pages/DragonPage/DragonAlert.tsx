@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
-import { ReactComponent as AlertIcon } from 'assets/images/AlertIcon.svg';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import AlertIcon from '~/assets/images/AlertIcon.svg?react';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 import { useTranslation } from 'react-i18next';
 
 const DragonAlert: React.FC = () => {

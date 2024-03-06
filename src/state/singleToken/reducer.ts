@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { selectVault, typeInput } from './actions';
-import { ICHIVault } from 'hooks/useICHIData';
+import { ICHIVault } from '~/hooks/useICHIData';
 
 export interface SingleTokenState {
   readonly typedValue: string;

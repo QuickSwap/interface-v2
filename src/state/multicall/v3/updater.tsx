@@ -1,18 +1,18 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import {
   errorFetchingV3MulticallResults,
   fetchingV3MulticallResults,
   updateV3MulticallResults,
 } from './actions';
-import { useAppDispatch, useAppSelector } from 'state/hooks';
+import { useAppDispatch, useAppSelector } from '~/state/hooks';
 import { Call, parseCallKey } from './utils';
-import { chunkArray } from 'utils/chunkArray';
-import { AppState } from 'state';
-import useDebounce from 'hooks/useDebounce';
-import { useBlockNumber } from 'state/application/hooks';
-import { retry, RetryableError } from 'utils/retry';
-import { useMulticall2Contract } from 'hooks/useContract';
+import { chunkArray } from '~/utils/chunkArray';
+import { AppState } from '~/state';
+import useDebounce from '~/hooks/useDebounce';
+import { useBlockNumber } from '~/state/application/hooks';
+import { retry, RetryableError } from '~/utils/retry';
+import { useMulticall2Contract } from '~/hooks/useContract';
 
 const DEFAULT_GAS_REQUIRED = 10_000_000;
 
@@ -38,7 +38,7 @@ async function fetchChunk(
       { blockTag: blockNumber },
     );
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       returnData.forEach((r: any, i: number) => {
         if (
           !r.success &&

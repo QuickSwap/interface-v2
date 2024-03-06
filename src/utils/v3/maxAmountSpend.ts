@@ -1,6 +1,6 @@
 import { ChainId } from '@uniswap/sdk';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
-import { MIN_NATIVE_CURRENCY_FOR_GAS } from 'constants/index';
+import { MIN_NATIVE_CURRENCY_FOR_GAS } from '~/constants/index';
 import JSBI from 'jsbi';
 
 /**

@@ -2,20 +2,20 @@ import { Trade, TradeType } from '@uniswap/sdk';
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Field } from 'state/swap/actions';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import { Field } from '~/state/swap/actions';
+import { useUserSlippageTolerance } from '~/state/user/hooks';
 import {
   computeSlippageAdjustedAmounts,
   computeTradePriceBreakdown,
-} from 'utils/prices';
+} from '~/utils/prices';
 import {
   QuestionHelper,
   FormattedPriceImpact,
   CurrencyLogo,
   SettingsModal,
-} from 'components';
-import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
-import { formatTokenAmount } from 'utils';
+} from '~/components';
+import EditIcon from '~/assets/images/EditIcon.svg?react';
+import { formatTokenAmount } from '~/utils';
 
 interface TradeSummaryProps {
   trade: Trade;

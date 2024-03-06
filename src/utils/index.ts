@@ -31,9 +31,9 @@ import {
   MIN_NATIVE_CURRENCY_FOR_GAS,
   SUPPORTED_CHAINIDS,
   DefiedgeStrategies,
-} from 'constants/index';
-import { TokenAddressMap } from 'state/lists/hooks';
-import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
+} from '~/constants/index';
+import { TokenAddressMap } from '~/state/lists/hooks';
+import { TokenAddressMap as TokenAddressMapV3 } from '~/state/lists/v3/hooks';
 import {
   DualStakingInfo,
   LairInfo,
@@ -42,28 +42,28 @@ import {
   SyrupInfo,
   DualStakingBasic,
   StakingBasic,
-} from 'types/index';
+} from '~/types/index';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
-import { CallState } from 'state/multicall/hooks';
-import { Connection, getConnections } from 'connectors';
-import { useActiveWeb3React } from 'hooks';
+import { CallState } from '~/state/multicall/hooks';
+import { Connection, getConnections } from '~/connectors';
+import { useActiveWeb3React } from '~/hooks';
 import {
   DLQUICK,
   EMPTY,
   NATIVE_TOKEN_ADDRESS,
   OLD_QUICK,
-} from 'constants/v3/addresses';
-import { getConfig } from 'config/index';
+} from '~/constants/v3/addresses';
+import { getConfig } from '~/config/index';
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
 import { Connector } from '@web3-react/types';
-import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
-import { SteerVault } from 'hooks/v3/useSteerData';
+import { useAnalyticsGlobalData } from '~/hooks/useFetchAnalyticsData';
+import { SteerVault } from '~/hooks/v3/useSteerData';
 import { LiquidityDex } from '@ape.swap/apeswap-lists';
 import { DEX } from '@soulsolidity/soulzap-v1';
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
-import { FeeAmount } from 'v3lib/utils';
+import { WrappedTokenInfo } from '~/state/lists/v3/wrappedTokenInfo';
+import { FeeAmount } from '~/v3lib/utils';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -109,7 +109,9 @@ export const getEthPrice: (chainId: ChainId) => Promise<number[]> = async (
   let priceChangeETH = 0;
 
   const res = await fetch(
-    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/eth-price?chainId=${chainId}`,
+    `${
+      import.meta.env.VITE_LEADERBOARD_APP_URL
+    }/utils/eth-price?chainId=${chainId}`,
   );
   if (res.ok) {
     const data = await res.json();
@@ -978,7 +980,9 @@ export const getEternalFarmFromTokens = async (
 ) => {
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farm-tokens?chainId=${chainId}&token0=${token0}&token1=${token1}`,
+      `${
+        import.meta.env.VITE_LEADERBOARD_APP_URL
+      }/farming/eternal-farm-tokens?chainId=${chainId}&token0=${token0}&token1=${token1}`,
     );
     if (!res.ok) {
       const errorText = await res.text();
@@ -1005,7 +1009,9 @@ export const getUnipilotPositions = async (
   if (!account || !chainId) return null;
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/unipilot/user-positions/${account}?chainId=${chainId}`,
+      `${
+        import.meta.env.VITE_LEADERBOARD_APP_URL
+      }/unipilot/user-positions/${account}?chainId=${chainId}`,
     );
     if (!res.ok) {
       const errorText = await res.text();
@@ -1026,7 +1032,9 @@ export const getUnipilotFarms = async (chainId?: ChainId) => {
   if (!chainId) return [];
   try {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/unipilot/farming-vaults?chainId=${chainId}`,
+      `${
+        import.meta.env.VITE_LEADERBOARD_APP_URL
+      }/unipilot/farming-vaults?chainId=${chainId}`,
     );
     if (!res.ok) {
       const errorText = await res.text();
@@ -1049,7 +1057,7 @@ export const getUnipilotFarmData = async (
   try {
     const res = await fetch(
       `${
-        process.env.REACT_APP_UNIPILOT_API_URL
+        import.meta.env.VITE_UNIPILOT_API_URL
       }/api/unipilot/aprs?vaultAddresses=${vaultAddresses?.join(
         ',',
       )}&chainId=${chainId}`,
@@ -1075,7 +1083,7 @@ export const getUnipilotUserFarms = async (
   try {
     const res = await fetch(
       `${
-        process.env.REACT_APP_LEADERBOARD_APP_URL
+        import.meta.env.VITE_LEADERBOARD_APP_URL
       }/unipilot/farming-user-vaults/${account.toLowerCase()}?chainId=${chainId}`,
     );
     if (!res.ok) {

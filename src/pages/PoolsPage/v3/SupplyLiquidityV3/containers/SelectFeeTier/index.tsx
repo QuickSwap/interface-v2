@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
+import {
+  IDerivedMintInfo,
+  useV3MintActionHandlers,
+} from '~/state/mint/v3/hooks';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@material-ui/core';
 import { Check } from '@material-ui/icons';
 import './index.scss';
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { Field } from 'state/mint/actions';
-import { useSteerStakingPools, useSteerVaults } from 'hooks/v3/useSteerData';
-import { SteerVaultState } from 'constants/index';
+import { useActiveWeb3React } from '~/hooks';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import { Field } from '~/state/mint/actions';
+import { useSteerStakingPools, useSteerVaults } from '~/hooks/v3/useSteerData';
+import { SteerVaultState } from '~/constants/index';
 
 export interface IFeeTier {
   id: string;

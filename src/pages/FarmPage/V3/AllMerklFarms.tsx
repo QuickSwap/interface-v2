@@ -1,22 +1,22 @@
 import React, { useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { GlobalConst, GlobalData } from 'constants/index';
-import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
-import { useMerklFarms } from 'hooks/v3/useV3Farms';
-import Loader from 'components/Loader';
+import CustomTabSwitch from '~/components/v3/CustomTabSwitch';
+import { GlobalConst, GlobalData } from '~/constants/index';
+import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from '~/components';
+import { useMerklFarms } from '~/hooks/v3/useV3Farms';
+import Loader from '~/components/Loader';
 import MerklFarmCard from './MerklFarmCard';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import CustomSelector from 'components/v3/CustomSelector';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import CustomSelector from '~/components/v3/CustomSelector';
 import MerklPairFarmCard from './MerklPairFarmCard';
-import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import { getAllDefiedgeStrategies, getAllGammaPairs } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import { useHistory } from 'react-router-dom';
-import { useCurrency } from 'hooks/v3/Tokens';
+import { useCurrency } from '~/hooks/v3/Tokens';
 import { Home, KeyboardArrowRight } from '@material-ui/icons';
-import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import { useDefiEdgeRangeTitles } from '~/hooks/v3/useDefiedgeStrategyData';
+import { useUSDCPricesFromAddresses } from '~/utils/useUSDCPrice';
 
 interface Props {
   searchValue: string;

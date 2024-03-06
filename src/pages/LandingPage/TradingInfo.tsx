@@ -1,13 +1,13 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { formatCompact } from 'utils';
+import { formatCompact } from '~/utils';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { getConfig } from '../../config/index';
 import DragonLayerInfoCard from './TradingInfoCards/DragonLayerInfoCard';
-import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
+import { useAnalyticsGlobalData } from '~/hooks/useFetchAnalyticsData';
 import { ZkEvmTvlInfoCard } from './TradingInfoCards/ZkEvmTvlInfoCard';
 
 const TradingInfo: React.FC = () => {

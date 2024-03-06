@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
-import { DoubleCurrencyLogo } from 'components';
-import { formatNumber, getTokenFromAddress } from 'utils';
-import APRHover from 'assets/images/aprHover.png';
+import { DoubleCurrencyLogo } from '~/components';
+import { formatNumber, getTokenFromAddress } from '~/utils';
+import APRHover from '~/assets/images/aprHover.png';
 import { useTranslation } from 'react-i18next';
-import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import { useActiveWeb3React } from 'hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import TotalAPRTooltip from '~/components/TotalAPRToolTip';
+import { useActiveWeb3React } from '~/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import { MerklPairFarmCardDetails } from './MerklPairFarmCardDetails';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 

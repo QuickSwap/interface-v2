@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { GlobalConst } from 'constants/index';
-import { DoubleCurrencyLogo } from 'components';
-import { formatCompact, getDaysCurrentYear } from 'utils';
-import { useCurrency } from 'hooks/Tokens';
+import { GlobalConst } from '~/constants/index';
+import { DoubleCurrencyLogo } from '~/components';
+import { formatCompact, getDaysCurrentYear } from '~/utils';
+import { useCurrency } from '~/hooks/Tokens';
 import { useTranslation } from 'react-i18next';
 
 const LiquidityPoolRow: React.FC<{

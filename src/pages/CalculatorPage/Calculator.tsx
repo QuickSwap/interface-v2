@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box } from '@material-ui/core';
-import { ReactComponent as EthIcon } from 'assets/images/Currency/ethereum-eth.svg';
-import { ReactComponent as UsFlagIcon } from 'assets/images/Currency/us-flag.svg';
-import { ReactComponent as SwapIcon } from 'assets/images/swap-icon.svg';
-import { ReactComponent as UpArrowIcon } from 'assets/images/up-arrow.svg';
+import EthIcon from '~/assets/images/Currency/ethereum-eth.svg?react';
+import UsFlagIcon from '~/assets/images/Currency/us-flag.svg?react';
+import SwapIcon from '~/assets/images/swap-icon.svg?react';
+import UpArrowIcon from '~/assets/images/up-arrow.svg?react';
 
 export const Calculator: React.FC<{ factor: number }> = ({ factor }) => {
   const { t } = useTranslation();

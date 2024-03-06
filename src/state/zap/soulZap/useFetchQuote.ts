@@ -2,8 +2,8 @@ import { useState, useEffect, useContext } from 'react';
 import { DEX } from '@soulsolidity/soulzap-v1';
 import BigNumber from 'bignumber.js';
 import { ZapDataBond, ZapData } from '@soulsolidity/soulzap-v1/dist/src/types';
-import { useActiveWeb3React } from 'hooks';
-import { useSoulZap } from 'state/application/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useSoulZap } from '~/state/application/hooks';
 
 const useFetchQuote = (
   dex?: DEX,

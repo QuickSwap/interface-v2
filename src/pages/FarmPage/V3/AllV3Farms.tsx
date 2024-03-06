@@ -1,35 +1,35 @@
 import React, { useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { GlobalConst } from 'constants/index';
-import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
-import Loader from 'components/Loader';
+import CustomTabSwitch from '~/components/v3/CustomTabSwitch';
+import { GlobalConst } from '~/constants/index';
+import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from '~/components';
+import Loader from '~/components/Loader';
 import V3FarmCard from './V3FarmCard';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import CustomSelector from 'components/v3/CustomSelector';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import CustomSelector from '~/components/v3/CustomSelector';
 import V3PairFarmCard from './V3PairFarmCard';
-import { getAllGammaPairs } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import { getAllGammaPairs } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import { useHistory } from 'react-router-dom';
 import { Home, KeyboardArrowRight } from '@material-ui/icons';
 import {
   useEternalFarmsFiltered,
   useGammaFarmsFiltered,
-} from 'hooks/v3/useV3Farms';
-import { useEternalFarms } from 'hooks/useIncentiveSubgraph';
+} from '~/hooks/v3/useV3Farms';
+import { useEternalFarms } from '~/hooks/useIncentiveSubgraph';
 import {
   useUnipilotFarmData,
   useUnipilotFarms,
   useUnipilotFilteredFarms,
-} from 'hooks/v3/useUnipilotFarms';
+} from '~/hooks/v3/useUnipilotFarms';
 import {
   useSteerFilteredFarms,
   useSteerStakingPools,
-} from 'hooks/v3/useSteerData';
+} from '~/hooks/v3/useSteerData';
 import { Token } from '@uniswap/sdk';
 import { V3Farm } from './Farms';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 
 interface Props {
   searchValue: string;

@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import { Currency } from '@uniswap/sdk-core';
-import { FeeAmount } from 'v3lib/utils/v3constants';
+import { FeeAmount } from '~/v3lib/utils/v3constants';
 
 import { ChartEntry } from './types';
 import JSBI from 'jsbi';
 import { PriceFormats } from '../PriceFomatToggler';
-import { usePoolActiveLiquidity } from 'hooks/v3/usePoolTickData';
-import useUSDCPrice from 'hooks/v3/useUSDCPrice';
+import { usePoolActiveLiquidity } from '~/hooks/v3/usePoolTickData';
+import useUSDCPrice from '~/hooks/v3/useUSDCPrice';
 
 export interface TickProcessed {
   liquidityActive: JSBI;

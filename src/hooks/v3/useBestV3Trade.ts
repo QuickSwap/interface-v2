@@ -3,12 +3,12 @@ import { Currency, CurrencyAmount, TradeType } from '@uniswap/sdk-core';
 import { BigNumber } from 'ethers';
 import { useMemo } from 'react';
 import { useAllV3Routes } from './useAllV3Routes';
-import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { useUniV3Quoter, useV3Quoter } from 'hooks/useContract';
-import { Route } from 'v3lib/entities/route';
-import { Trade } from 'lib/src/trade';
-import { encodeRouteToPath } from 'v3lib/utils/encodeRouteToPath';
+import { useSingleContractMultipleData } from '~/state/multicall/v3/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useUniV3Quoter, useV3Quoter } from '~/hooks/useContract';
+import { Route } from '~/v3lib/entities/route';
+import { Trade } from '~/lib/src/trade';
+import { encodeRouteToPath } from '~/v3lib/utils/encodeRouteToPath';
 import { ChainId } from '@uniswap/sdk';
 
 export enum V3TradeState {

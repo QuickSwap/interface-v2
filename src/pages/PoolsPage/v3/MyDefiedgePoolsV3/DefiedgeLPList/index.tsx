@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
-import { getAllDefiedgeStrategies, getTokenFromAddress } from 'utils';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { getAllDefiedgeStrategies, getTokenFromAddress } from '~/utils';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import DefiedgeLPItem from '../DefiedgeLPItem';
-import { DefiedgeStrategy } from 'constants/index';
+import { DefiedgeStrategy } from '~/constants/index';
 
 const DefiedgeLPList: React.FC<{
   defiedgePositions: DefiedgeStrategy[];

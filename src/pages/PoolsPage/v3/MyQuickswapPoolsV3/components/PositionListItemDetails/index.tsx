@@ -1,43 +1,43 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { usePool } from 'hooks/v3/usePools';
-import { useToken } from 'hooks/v3/Tokens';
-import { unwrappedToken } from 'utils/unwrappedToken';
-import Badge from 'components/v3/Badge';
-import CurrencyLogo from 'components/CurrencyLogo';
-import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
-import { useV3PositionFees } from 'hooks/v3/useV3PositionFees';
+import { usePool } from '~/hooks/v3/usePools';
+import { useToken } from '~/hooks/v3/Tokens';
+import { unwrappedToken } from '~/utils/unwrappedToken';
+import Badge from '~/components/v3/Badge';
+import CurrencyLogo from '~/components/CurrencyLogo';
+import { formatCurrencyAmount } from '~/utils/v3/formatCurrencyAmount';
+import { useV3PositionFees } from '~/hooks/v3/useV3PositionFees';
 import { Currency, CurrencyAmount, Fraction, Token } from '@uniswap/sdk-core';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import {
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
-} from 'hooks/useContract';
+} from '~/hooks/useContract';
 import {
   useIsTransactionPending,
   useTransactionAdder,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { getPriceOrderingFromPositionForUI } from '../PositionListItem';
-import useUSDCPrice from 'hooks/v3/useUSDCPrice';
-import { Bound } from 'state/mint/v3/actions';
-import useIsTickAtLimit from 'hooks/v3/useIsTickAtLimit';
-import { formatTickPrice } from 'utils/v3/formatTickPrice';
-import usePrevious from 'hooks/usePrevious';
+import useUSDCPrice from '~/hooks/v3/useUSDCPrice';
+import { Bound } from '~/state/mint/v3/actions';
+import useIsTickAtLimit from '~/hooks/v3/useIsTickAtLimit';
+import { formatTickPrice } from '~/utils/v3/formatTickPrice';
+import usePrevious from '~/hooks/usePrevious';
 import ReactGA from 'react-ga';
 import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
-} from 'constants/v3/addresses';
-import { NonfungiblePositionManager } from 'v3lib/nonfungiblePositionManager';
-import { Position } from 'v3lib/entities';
-import { calculateGasMarginV3 } from 'utils';
-import { getRatio } from 'utils/v3/getRatio';
-import { useInverter } from 'hooks/v3/useInverter';
-import { PositionPool } from 'models/interfaces';
+} from '~/constants/v3/addresses';
+import { NonfungiblePositionManager } from '~/v3lib/nonfungiblePositionManager';
+import { Position } from '~/v3lib/entities';
+import { calculateGasMarginV3 } from '~/utils';
+import { getRatio } from '~/utils/v3/getRatio';
+import { useInverter } from '~/hooks/v3/useInverter';
+import { PositionPool } from '~/models/interfaces';
 import { Box, Button } from '@material-ui/core';
 import './index.scss';
-import RateToggle from 'components/v3/RateToggle';
+import RateToggle from '~/components/v3/RateToggle';
 import V3IncreaseLiquidityModal from '../V3IncreaseLiquidityModal';
 import V3RemoveLiquidityModal from '../V3RemoveLiquidityModal';
 import {
@@ -46,10 +46,10 @@ import {
   ToggleSwitch,
   TransactionConfirmationModal,
   TransactionErrorContent,
-} from 'components';
+} from '~/components';
 import { useTranslation } from 'react-i18next';
 import { WETH } from '@uniswap/sdk';
-import { UniV3NonfungiblePositionManager } from 'v3lib/uniV3NonfungiblePositionManager';
+import { UniV3NonfungiblePositionManager } from '~/v3lib/uniV3NonfungiblePositionManager';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;

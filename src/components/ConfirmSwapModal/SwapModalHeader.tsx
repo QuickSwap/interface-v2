@@ -2,17 +2,17 @@ import { Currency, Fraction, Trade, TradeType } from '@uniswap/sdk';
 import React, { useMemo } from 'react';
 import { AlertTriangle } from 'react-feather';
 import { Box, Button } from '@material-ui/core';
-import { Field } from 'state/swap/actions';
-import { DoubleCurrencyLogo } from 'components';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg';
-import { basisPointsToPercent, formatTokenAmount } from 'utils';
+import { Field } from '~/state/swap/actions';
+import { DoubleCurrencyLogo } from '~/components';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
+import { computeSlippageAdjustedAmounts } from '~/utils/prices';
+import ArrowDownIcon from '~/assets/images/ArrowDownIcon.svg?react';
+import { basisPointsToPercent, formatTokenAmount } from '~/utils';
 import { useTranslation } from 'react-i18next';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
-import { ONE } from 'v3lib/utils';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { useActiveWeb3React } from 'hooks';
+import { ONE } from '~/v3lib/utils';
+import { wrappedCurrency } from '~/utils/wrappedCurrency';
+import { useActiveWeb3React } from '~/hooks';
 
 interface SwapModalHeaderProps {
   trade?: Trade;

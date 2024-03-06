@@ -2,17 +2,17 @@ import React, { useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
-import { formatNumber } from 'utils';
-import { CurrencyLogo } from 'components';
+import { formatNumber } from '~/utils';
+import { CurrencyLogo } from '~/components';
 import { Button } from '@material-ui/core';
 import IncreaseUnipilotLiquidityModal from '../IncreaseUnipilotLiquidityModal';
 import WithdrawUnipilotLiquidityModal from '../WithdrawUnipilotLiquidityModal';
 import { JSBI } from '@uniswap/sdk';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
-import { useUniPilotVaultContract } from 'hooks/useContract';
-import { useTokenBalance } from 'state/wallet/v3/hooks';
+import { useSingleCallResult } from '~/state/multicall/v3/hooks';
+import { useUniPilotVaultContract } from '~/hooks/useContract';
+import { useTokenBalance } from '~/state/wallet/v3/hooks';
 import { formatUnits } from 'ethers/lib/utils';
-import { UnipilotPosition } from 'hooks/v3/useV3Positions';
+import { UnipilotPosition } from '~/hooks/v3/useV3Positions';
 
 const UnipilotLPItemDetails: React.FC<{ position: UnipilotPosition }> = ({
   position,

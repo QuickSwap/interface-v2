@@ -1,8 +1,8 @@
 import { Currency } from '@uniswap/sdk';
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { CurrencyLogo } from 'components';
-import 'components/styles/DoubleCurrencyLogo.scss';
+import { CurrencyLogo } from '~/components';
+import '~/components/styles/DoubleCurrencyLogo.scss';
 
 interface DoubleCurrencyLogoProps {
   size?: number;

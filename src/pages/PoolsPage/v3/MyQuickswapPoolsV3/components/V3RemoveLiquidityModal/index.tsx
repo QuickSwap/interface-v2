@@ -1,10 +1,10 @@
 import React from 'react';
-import { CustomModal } from 'components';
+import { CustomModal } from '~/components';
 import { Box } from '@material-ui/core';
-import { PositionPool } from 'models/interfaces';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { PositionPool } from '~/models/interfaces';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 import { useTranslation } from 'react-i18next';
-import RemoveLiquidityV3 from 'components/v3/RemoveLiquidityV3';
+import RemoveLiquidityV3 from '~/components/v3/RemoveLiquidityV3';
 
 interface V3RemoveLiquidityModalProps {
   open: boolean;

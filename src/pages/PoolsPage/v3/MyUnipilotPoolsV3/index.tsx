@@ -1,14 +1,14 @@
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
-import Loader from 'components/Loader';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import Loader from '~/components/Loader';
+import { useWalletModalToggle } from '~/state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import UnipilotLPItem from './UnipilotLPItem';
 import {
   UnipilotPosition,
   useUnipilotPositions,
-} from 'hooks/v3/useV3Positions';
+} from '~/hooks/v3/useV3Positions';
 
 export default function MyUnipilotPoolsV3() {
   const { t } = useTranslation();

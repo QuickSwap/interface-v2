@@ -1,28 +1,28 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Grid } from '@material-ui/core';
-import { CustomModal, DualCurrencyPanel } from 'components';
-import BillImage from 'assets/images/bonds/quickBond.jpg';
+import { CustomModal, DualCurrencyPanel } from '~/components';
+import BillImage from '~/assets/images/bonds/quickBond.jpg';
 import BondTokenDisplay from './BondTokenDisplay';
 import { useTranslation } from 'react-i18next';
-import { formatNumber } from 'utils';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { formatNumber } from '~/utils';
+import { maxAmountSpend } from '~/utils/v3/maxAmountSpend';
+import { useCurrencyBalance } from '~/state/wallet/v3/hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { Currency } from '@uniswap/sdk-core';
-import { useZapActionHandlers, useZapState } from 'state/zap/hooks';
-import { Field } from 'state/zap/actions';
-import { useCurrency } from 'hooks/v3/Tokens';
-import { Bond, DualCurrencySelector, PurchasePath } from 'types/bond';
+import { useZapActionHandlers, useZapState } from '~/state/zap/hooks';
+import { Field } from '~/state/zap/actions';
+import { useCurrency } from '~/hooks/v3/Tokens';
+import { Bond, DualCurrencySelector, PurchasePath } from '~/types/bond';
 import {
   LiquidityDex,
   dexToZapMapping,
   ZapVersion,
 } from '@ape.swap/apeswap-lists';
-import { NATIVE_TOKEN_ADDRESS, ZAP_ADDRESS } from 'constants/v3/addresses';
-import { useV2Pair } from 'hooks/v3/useV2Pairs';
+import { NATIVE_TOKEN_ADDRESS, ZAP_ADDRESS } from '~/constants/v3/addresses';
+import { useV2Pair } from '~/hooks/v3/useV2Pairs';
 import BondActions from './BondActions';
 import UserBondModalView from './UserBondModalView';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 
 interface BuyBondModalProps {
   open: boolean;

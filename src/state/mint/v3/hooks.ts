@@ -7,7 +7,7 @@ import {
   Rounding,
   Token,
 } from '@uniswap/sdk-core';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { AppState } from '../../index';
 import {
   Bound,
@@ -22,50 +22,50 @@ import {
   updateFeeTier,
 } from './actions';
 import { tryParseTick } from './utils';
-import { PoolState, usePool } from 'hooks/v3/usePools';
-import { useAppDispatch, useAppSelector } from 'state/hooks';
-import { Pool } from 'v3lib/entities/pool';
-import { Position } from 'v3lib/entities';
+import { PoolState, usePool } from '~/hooks/v3/usePools';
+import { useAppDispatch, useAppSelector } from '~/state/hooks';
+import { Pool } from '~/v3lib/entities/pool';
+import { Position } from '~/v3lib/entities';
 import {
   encodeSqrtRatioX96,
   TickMath,
   nearestUsableTick,
   TICK_SPACINGS,
-} from 'v3lib/utils';
+} from '~/v3lib/utils';
 import {
   priceToClosestTick,
   tickToPrice,
-} from 'v3lib/utils/priceTickConversions';
-import { getTickToPrice } from 'v3lib/utils/getTickToPrice';
-import { BIG_INT_ZERO } from 'constants/v3/misc';
-import { FeeAmount } from 'v3lib/utils';
-import { useCurrencyBalances } from 'state/wallet/v3/hooks';
-import { useCurrencyBalance, useTokenBalance } from 'state/wallet/hooks';
-import { tryParseAmount } from 'state/swap/v3/hooks';
-import { IPresetArgs } from 'pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
-import { GlobalConst, UnipilotVaults } from 'constants/index';
+} from '~/v3lib/utils/priceTickConversions';
+import { getTickToPrice } from '~/v3lib/utils/getTickToPrice';
+import { BIG_INT_ZERO } from '~/constants/v3/misc';
+import { FeeAmount } from '~/v3lib/utils';
+import { useCurrencyBalances } from '~/state/wallet/v3/hooks';
+import { useCurrencyBalance, useTokenBalance } from '~/state/wallet/hooks';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
+import { IPresetArgs } from '~/pages/PoolsPage/v3/SupplyLiquidityV3/components/PresetRanges';
+import { GlobalConst, UnipilotVaults } from '~/constants/index';
 import { Interface, formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useContract,
   useGammaUNIProxyContract,
   useUniPilotVaultContract,
-} from 'hooks/useContract';
-import { useSingleCallResult } from 'state/multicall/hooks';
+} from '~/hooks/useContract';
+import { useSingleCallResult } from '~/state/multicall/hooks';
 import {
   getAllDefiedgeStrategies,
   getGammaPairsForTokens,
   maxAmountSpend,
   getSteerRatio,
   getFixedValue,
-} from 'utils';
+} from '~/utils';
 import { ChainId, ETHER, WETH } from '@uniswap/sdk';
-import GammaClearingABI from 'constants/abis/gamma-clearing.json';
-import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
-import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
-import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
-import { getConfig } from 'config/index';
-import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
-import { useSteerVaults } from 'hooks/v3/useSteerData';
+import GammaClearingABI from '~/constants/abis/gamma-clearing.json';
+import { useMultipleContractSingleData } from '~/state/multicall/v3/hooks';
+import UNIPILOT_VAULT_ABI from '~/constants/abis/unipilot-vault.json';
+import DEFIEDGE_STRATEGY_ABI from '~/constants/abis/defiedge-strategy.json';
+import { getConfig } from '~/config/index';
+import { IFeeTier } from '~/pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
+import { useSteerVaults } from '~/hooks/v3/useSteerData';
 import { useQuery } from '@tanstack/react-query';
 
 export interface IDerivedMintInfo {
@@ -1444,7 +1444,7 @@ export function useGetUnipilotVaults() {
 }
 
 export const useDefiEdgeStrategiesAPR = (strategies: string[]) => {
-  const defiedgeAPIURL = process.env.REACT_APP_DEFIEDGE_API_URL;
+  const defiedgeAPIURL = import.meta.env.VITE_DEFIEDGE_API_URL;
   const fetchDefiedgeStrategiesWithApr = async () => {
     if (!defiedgeAPIURL) return [];
 
@@ -1472,7 +1472,7 @@ export function useGetDefiedgeStrategies() {
   const { chainId } = useActiveWeb3React();
   const strategies = getAllDefiedgeStrategies(chainId);
   const strategyIds = strategies.map((s) => s.id);
-  const defiedgeAPIURL = process.env.REACT_APP_DEFIEDGE_API_URL;
+  const defiedgeAPIURL = import.meta.env.VITE_DEFIEDGE_API_URL;
 
   const strategyTickResult = useMultipleContractSingleData(
     strategyIds,

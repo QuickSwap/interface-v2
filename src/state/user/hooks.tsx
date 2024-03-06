@@ -2,9 +2,9 @@ import { ChainId, JSBI, Pair, Token } from '@uniswap/sdk';
 import flatMap from 'lodash.flatmap';
 import { useCallback, useMemo } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { useActiveWeb3React } from 'hooks';
-import { useAllTokens } from 'hooks/Tokens';
-import { AppDispatch, AppState } from 'state';
+import { useActiveWeb3React } from '~/hooks';
+import { useAllTokens } from '~/hooks/Tokens';
+import { AppDispatch, AppState } from '~/state';
 import {
   addSerializedPair,
   addSerializedToken,
@@ -27,8 +27,8 @@ import {
 import {
   V2_BASES_TO_TRACK_LIQUIDITY_FOR,
   V2_PINNED_PAIRS,
-} from 'constants/v3/addresses';
-import { ConnectionType } from 'connectors';
+} from '~/constants/v3/addresses';
+import { ConnectionType } from '~/connectors';
 import { Percent } from '@uniswap/sdk-core';
 import { INITIAL_ZAP_SLIPPAGE } from './reducer';
 

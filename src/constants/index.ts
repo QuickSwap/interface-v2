@@ -1,5 +1,5 @@
 import { ChainId, JSBI, Percent, WETH } from '@uniswap/sdk';
-import { Presets } from 'state/mint/v3/reducer';
+import { Presets } from '~/state/mint/v3/reducer';
 import {
   DAI,
   MI,
@@ -50,7 +50,7 @@ import {
   USDV,
   NFTE,
 } from './v3/addresses';
-import { FeeAmount } from 'v3lib/utils';
+import { FeeAmount } from '~/v3lib/utils';
 
 export const bondAPIV2BaseURL = 'https://api-v2.apeswap.finance';
 export const CEX_BILL_ADDRESS = '0x6D7637683eaD28F775F56506602191fdE417fF60';
@@ -222,15 +222,15 @@ export const GlobalConst = {
     ),
     // the Uniswap Default token list lives here
     // we add '' to remove the possibility of nulls
-    DEFAULT_ADS_LIST_URL: process.env.REACT_APP_ADS_LIST_DEFAULT_URL + '',
-    DEFAULT_TOKEN_LIST_URL: process.env.REACT_APP_TOKEN_LIST_DEFAULT_URL + '',
+    DEFAULT_ADS_LIST_URL: import.meta.env.VITE_ADS_LIST_DEFAULT_URL + '',
+    DEFAULT_TOKEN_LIST_URL: import.meta.env.VITE_TOKEN_LIST_DEFAULT_URL + '',
     DEFAULT_LP_FARMS_LIST_URL:
-      process.env.REACT_APP_STAKING_LIST_DEFAULT_URL + '',
+      import.meta.env.VITE_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_CNT_FARMS_LIST_URL:
-      process.env.REACT_APP_CNT_STAKING_LIST_DEFAULT_URL + '',
+      import.meta.env.VITE_CNT_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_DUAL_FARMS_LIST_URL:
-      process.env.REACT_APP_DUAL_STAKING_LIST_DEFAULT_URL + '',
-    DEFAULT_SYRUP_LIST_URL: process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL + '',
+      import.meta.env.VITE_DUAL_STAKING_LIST_DEFAULT_URL + '',
+    DEFAULT_SYRUP_LIST_URL: import.meta.env.VITE_SYRUP_LIST_DEFAULT_URL + '',
     ANALYTICS_TOKENS_COUNT: 200,
     ANALYTICS_PAIRS_COUNT: 400,
     v3FarmSortBy: {

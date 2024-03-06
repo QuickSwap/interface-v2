@@ -8,13 +8,13 @@ import {
   useOldStakingInfo,
   useDualStakingInfo,
   useCNTStakingInfo,
-} from 'state/stake/hooks';
+} from '~/state/stake/hooks';
 import {
   StakingInfo,
   DualStakingInfo,
   CommonStakingInfo,
   OtherStackingInfo,
-} from 'types/index';
+} from '~/types/index';
 import {
   FarmCard,
   ToggleSwitch,
@@ -22,21 +22,21 @@ import {
   SearchInput,
   CustomSwitch,
   SortColumns,
-} from 'components';
-import { GlobalConst } from 'constants/index';
+} from '~/components';
+import { GlobalConst } from '~/constants/index';
 import {
   getAPYWithFee,
   getExactTokenAmount,
   getOneYearFee,
   getPageItemsToLoad,
   returnFullWidthMobile,
-} from 'utils';
-import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import { useInfiniteLoading } from 'utils/useInfiniteLoading';
+} from '~/utils';
+import useDebouncedChangeHandler from '~/utils/useDebouncedChangeHandler';
+import { useInfiniteLoading } from '~/utils/useInfiniteLoading';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { ChainId } from '@uniswap/sdk';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
 
 const LOADFARM_COUNT = 10;

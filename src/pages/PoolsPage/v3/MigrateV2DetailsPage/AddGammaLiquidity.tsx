@@ -1,25 +1,28 @@
 import React, { useMemo, useState } from 'react';
 import './index.scss';
 import { useTranslation } from 'react-i18next';
-import { useActivePreset, useV3DerivedMintInfo } from 'state/mint/v3/hooks';
+import { useActivePreset, useV3DerivedMintInfo } from '~/state/mint/v3/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { Box, Button } from '@material-ui/core';
-import { tryParseAmount } from 'state/swap/v3/hooks';
-import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
-import { CurrencyLogo } from 'components';
-import { useGammaUNIProxyContract, useWETHContract } from 'hooks/useContract';
-import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
+import {
+  ApprovalState,
+  useApproveCallback,
+} from '~/hooks/useV3ApproveCallback';
+import { CurrencyLogo } from '~/components';
+import { useGammaUNIProxyContract, useWETHContract } from '~/hooks/useContract';
+import { useSingleContractMultipleData } from '~/state/multicall/v3/hooks';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
-import { useCurrencyBalance } from 'state/wallet/hooks';
+import { formatCurrencyAmount } from '~/utils/v3/formatCurrencyAmount';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import { calculateGasMargin, getGammaPairsForTokens } from 'utils';
+} from '~/state/transactions/hooks';
+import { calculateGasMargin, getGammaPairsForTokens } from '~/utils';
 
 const AddGammaLiquidity: React.FC<{
   token0Value: CurrencyAmount<Currency> | undefined;

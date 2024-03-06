@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import 'components/styles/ChartType.scss';
+import '~/components/styles/ChartType.scss';
 
 interface ChartTypeProps {
   typeTexts: string[];

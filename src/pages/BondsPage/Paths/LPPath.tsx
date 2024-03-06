@@ -1,21 +1,24 @@
 import React, { useCallback, useState } from 'react';
-import { ApprovalState, useApproveCallbackV3 } from 'hooks/useApproveCallback';
-import { useZapState } from 'state/zap/hooks';
-import { PurchasePath } from 'types/bond';
-import { CEX_BILL_ADDRESS } from 'constants/index';
-import { useActiveWeb3React } from 'hooks';
-import useBuyBond from 'hooks/bond/useBuyBond';
+import {
+  ApprovalState,
+  useApproveCallbackV3,
+} from '~/hooks/useApproveCallback';
+import { useZapState } from '~/state/zap/hooks';
+import { PurchasePath } from '~/types/bond';
+import { CEX_BILL_ADDRESS } from '~/constants/index';
+import { useActiveWeb3React } from '~/hooks';
+import useBuyBond from '~/hooks/bond/useBuyBond';
 import { Box, Button } from '@material-ui/core';
-import { getFixedValue, searchForBillId } from 'utils';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import { getFixedValue, searchForBillId } from '~/utils';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 import {
   BillReferenceData,
   usePostBillReference,
-} from 'hooks/bond/usePostBondReference';
+} from '~/hooks/bond/usePostBondReference';
 import WarningModal from '../WarningModal';
 import BondTypeWarningModal from '../BondTypeWarningModal';
 import { CurrencyAmount } from '@uniswap/sdk-core';
-import { useCurrency } from 'hooks/v3/Tokens';
+import { useCurrency } from '~/hooks/v3/Tokens';
 import { JSBI } from '@uniswap/sdk';
 import { parseUnits } from 'ethers/lib/utils';
 import DisplayValues from '../DisplayValues';

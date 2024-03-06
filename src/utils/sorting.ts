@@ -1,6 +1,6 @@
 import { Token, TokenAmount } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { useAllTokenBalances } from 'state/wallet/hooks';
+import { useAllTokenBalances } from '~/state/wallet/hooks';
 
 function balanceComparator(balanceA?: TokenAmount, balanceB?: TokenAmount) {
   if (balanceA && balanceB) {

@@ -1,17 +1,17 @@
 import React, { useCallback, useState } from 'react';
-// import { Field } from 'state/mint/v2/actions';
+// import { Field } from '~/state/mint/v2/actions';
 // import AddLiquiditySign from 'views/V2/AddLiquidityV2/components/AddLiquiditySign';
 // import PoolInfo from 'views/V2/AddLiquidityV2/components/PoolInfo';
 // import AddLiquidityActions from 'views/V2/AddLiquidityV2/components/Actions';
-// import { useSwapState } from 'state/swap/hooks/hooks';
-// import { useCurrency } from 'hooks/Tokens';
-// import DexPanel from 'components/DexPanel';
+// import { useSwapState } from '~/state/swap/hooks/hooks';
+// import { useCurrency } from '~/hooks/Tokens';
+// import DexPanel from '~/components/DexPanel';
 // import ModalProvider from '../../contexts/ModalContext';
 // import { Pricing } from '../DexPanel/types';
 import { Currency, Pair } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
-import { useDerivedMintInfo, useMintState } from 'state/mint/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useDerivedMintInfo, useMintState } from '~/state/mint/hooks';
 
 interface RegularLiquidityProps {
   handleConfirmedTx: (hash: string, pairOut?: Pair) => void;

@@ -1,11 +1,11 @@
-import { getConfig } from 'config/index';
-import { useActiveWeb3React } from 'hooks';
-import { useCNTFarmListCallback } from 'hooks/useCNTFarmListCallback';
-import useInterval from 'hooks/useInterval';
-import useIsWindowVisible from 'hooks/useIsWindowVisible';
+import { getConfig } from '~/config/index';
+import { useActiveWeb3React } from '~/hooks';
+import { useCNTFarmListCallback } from '~/hooks/useCNTFarmListCallback';
+import useInterval from '~/hooks/useInterval';
+import useIsWindowVisible from '~/hooks/useIsWindowVisible';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, AppState } from 'state';
+import { AppDispatch, AppState } from '~/state';
 import { acceptCNTFarmUpdate } from './actions';
 
 export default function Updater(): null {

@@ -1,16 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useFetchBonds } from 'hooks/bond/useFetchBonds';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import Loader from 'components/Loader';
+import { useFetchBonds } from '~/hooks/bond/useFetchBonds';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import Loader from '~/components/Loader';
 import BondItem from './BondItem';
 import { Box } from '@material-ui/core';
-import { useUserOwnedBonds } from 'hooks/bond/useUserBond';
+import { useUserOwnedBonds } from '~/hooks/bond/useUserBond';
 import { useTranslation } from 'react-i18next';
 import UserBondItem from './UserBondItem';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
-import { SortColumns } from 'components';
+import { SortColumns } from '~/components';
 
 interface BondsListProps {
   search: string;

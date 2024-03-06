@@ -7,24 +7,24 @@ import { Connector } from '@web3-react/types';
 import { WalletConnectPopup } from './WalletConnectPopup';
 import { Venly } from './Arkane';
 import { ChainId } from '@uniswap/sdk';
-import MetamaskIcon from 'assets/images/metamask.png';
-import BlockWalletIcon from 'assets/images/blockwalletIcon.svg';
-import BraveWalletIcon from 'assets/images/braveWalletIcon.png';
-import cypherDIcon from 'assets/images/cypherDIcon.png';
-import BitGetIcon from 'assets/images/bitget.svg';
-import OkxWalletIcon from 'assets/images/OKXWallet.svg';
-import CryptocomIcon from 'assets/images/cryptocomWallet.png';
-import CoinbaseWalletIcon from 'assets/images/coinbaseWalletIcon.svg';
-import WalletConnectIcon from 'assets/images/walletConnectIcon.svg';
-import PhantomIcon from 'assets/images/wallets/phantomIconPurple.svg';
-import VenlyIcon from 'assets/images/venly.svg';
-import UnstoppableDomainsIcon from 'assets/images/unstoppableDomains.png';
-import GnosisIcon from 'assets/images/gnosis_safe.png';
-import TrustIcon from 'assets/images/trust.png';
-import ZengoIcon from 'assets/images/zengo.png';
-import BinanceIcon from 'assets/images/binance-wallet.webp';
-import { GlobalConst } from 'constants/index';
-import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
+import MetamaskIcon from '~/assets/images/metamask.png';
+import BlockWalletIcon from '~/assets/images/blockwalletIcon.svg';
+import BraveWalletIcon from '~/assets/images/braveWalletIcon.png';
+import cypherDIcon from '~/assets/images/cypherDIcon.png';
+import BitGetIcon from '~/assets/images/bitget.svg';
+import OkxWalletIcon from '~/assets/images/OKXWallet.svg';
+import CryptocomIcon from '~/assets/images/cryptocomWallet.png';
+import CoinbaseWalletIcon from '~/assets/images/coinbaseWalletIcon.svg';
+import WalletConnectIcon from '~/assets/images/walletConnectIcon.svg';
+import PhantomIcon from '~/assets/images/wallets/phantomIconPurple.svg';
+import VenlyIcon from '~/assets/images/venly.svg';
+import UnstoppableDomainsIcon from '~/assets/images/unstoppableDomains.png';
+import GnosisIcon from '~/assets/images/gnosis_safe.png';
+import TrustIcon from '~/assets/images/trust.png';
+import ZengoIcon from '~/assets/images/zengo.png';
+import BinanceIcon from '~/assets/images/binance-wallet.webp';
+import { GlobalConst } from '~/constants/index';
+import { RPC_PROVIDERS, rpcMap } from '~/constants/providers';
 import { SecretType } from '@venly/web3-provider';
 import { Phantom } from './Phantom';
 import { TrustWallet } from './TrustWallet';
@@ -127,7 +127,7 @@ export const networkInfoMap: NetworkInfoChainMap = {
   },
 };
 
-const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY;
+const FORMATIC_KEY = import.meta.env.VITE_FORTMATIC_KEY;
 
 const [web3Network, web3NetworkHooks] = initializeConnector<Network>(
   (actions) =>
@@ -448,9 +448,8 @@ const [
     new UAuthConnector({
       actions,
       options: {
-        clientID: process.env.REACT_APP_UNSTOPPABLE_DOMAIN_CLIENT_ID ?? '',
-        redirectUri:
-          process.env.REACT_APP_UNSTOPPABLE_DOMAIN_REDIRECT_URI ?? '',
+        clientID: import.meta.env.VITE_UNSTOPPABLE_DOMAIN_CLIENT_ID ?? '',
+        redirectUri: import.meta.env.VITE_UNSTOPPABLE_DOMAIN_REDIRECT_URI ?? '',
         scope: 'openid wallet',
         connectors: {
           injected: web3Metamask,

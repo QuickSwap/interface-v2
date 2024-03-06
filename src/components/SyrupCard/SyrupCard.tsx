@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { SyrupInfo } from 'types/index';
-import { unwrappedToken } from 'utils/wrappedCurrency';
-import { CurrencyLogo } from 'components';
-import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from 'utils';
+import { SyrupInfo } from '~/types/index';
+import { unwrappedToken } from '~/utils/wrappedCurrency';
+import { CurrencyLogo } from '~/components';
+import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from '~/utils';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import SyrupAPR from './SyrupAPR';
 import SyrupCardDetails from './SyrupCardDetails';
-import 'components/styles/SyrupCard.scss';
+import '~/components/styles/SyrupCard.scss';
 import { Trans, useTranslation } from 'react-i18next';
 
 const SyrupCard: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({

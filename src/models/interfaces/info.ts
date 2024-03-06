@@ -5,7 +5,7 @@ import {
 } from './responseSubgraph';
 import JSBI from 'jsbi';
 import { Token } from '@uniswap/sdk-core';
-import { FarmingType } from 'models/enums';
+import { FarmingType } from '~/models/enums';
 
 export interface FormattedPool {
   address: string;

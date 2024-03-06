@@ -13,8 +13,8 @@ import {
   Token as TokenV3,
   NativeCurrency,
 } from '@uniswap/sdk-core';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+import { WMATIC_EXTENDED } from '~/constants/v3/addresses';
+import { WrappedTokenInfo } from '~/state/lists/v3/wrappedTokenInfo';
 
 export function wrappedCurrency(
   currency: Currency | undefined,

@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, useMediaQuery } from '@material-ui/core';
-import { ContestPairs, LeaderBoardAnalytics } from 'constants/index';
-import 'pages/styles/contest.scss';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
-import { ContestLeaderBoard, SwapDataV3 } from 'models/interfaces/contest';
-import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
-import { isAddress, shortenAddress } from 'utils';
+import { ContestPairs, LeaderBoardAnalytics } from '~/constants/index';
+import '~/pages/styles/contest.scss';
+import HelpIcon from '~/assets/images/HelpIcon1.svg?react';
+import { ContestLeaderBoard, SwapDataV3 } from '~/models/interfaces/contest';
+import SearchIcon from '~/assets/images/SearchIcon.svg?react';
+import { isAddress, shortenAddress } from '~/utils';
 import { useTheme } from '@material-ui/core/styles';
-import 'components/styles/SearchWidget.scss';
+import '~/components/styles/SearchWidget.scss';
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { Skeleton } from '@material-ui/lab';
-import ContestTable from 'components/ContestTable/ContestTable';
-import { ChartType } from 'components';
-import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
-import { formatNumber } from 'utils';
-import { getFormattedLeaderBoardData } from 'lib/src/leaderboard';
-import { useActiveWeb3React } from 'hooks';
-import { getConfig } from 'config/index';
+import ContestTable from '~/components/ContestTable/ContestTable';
+import { ChartType } from '~/components';
+import useDebouncedChangeHandler from '~/utils/useDebouncedChangeHandler';
+import { formatNumber } from '~/utils';
+import { getFormattedLeaderBoardData } from '~/lib/src/leaderboard';
+import { useActiveWeb3React } from '~/hooks';
+import { getConfig } from '~/config/index';
 import { useHistory } from 'react-router-dom';
 import { ChainId } from '@uniswap/sdk';
 dayjs.extend(utc);
@@ -28,7 +28,7 @@ dayjs.extend(weekOfYear);
 
 const ContestPage: React.FC = () => {
   const { t } = useTranslation();
-  const helpURL = process.env.REACT_APP_HELP_URL;
+  const helpURL = import.meta.env.VITE_HELP_URL;
   const [durationIndex, setDurationIndex] = useState(1);
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -76,12 +76,14 @@ const ContestPage: React.FC = () => {
       if (showPastWinners) {
         res = await fetch(
           `${
-            process.env.REACT_APP_LEADERBOARD_APP_URL
+            import.meta.env.VITE_LEADERBOARD_APP_URL
           }/${'get-snap-shot/by-date'}?pool=${'all'}&days=30&lastdate=2023-05-13&chainId=${chainId}`,
         );
       } else {
         res = await fetch(
-          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/leaderboard?pool=${contestFilter.address}&days=${durationIndex}&chainId=${chainId}`,
+          `${import.meta.env.VITE_LEADERBOARD_APP_URL}/leaderboard?pool=${
+            contestFilter.address
+          }&days=${durationIndex}&chainId=${chainId}`,
         );
         if (!res.ok) {
           const errorText = await res.text();
@@ -104,7 +106,7 @@ const ContestPage: React.FC = () => {
       )) {
         const lensRes = await fetch(
           `${
-            process.env.REACT_APP_LEADERBOARD_APP_URL
+            import.meta.env.VITE_LEADERBOARD_APP_URL
           }/utils/lens-profiles?addresses=${result
             .slice(ind * 150, (ind + 1) * 150)
             .map((e: any) => e.origin)
@@ -170,7 +172,11 @@ const ContestPage: React.FC = () => {
       console.log('pools_in', pools_in);
 
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/get-snap-shot/by-origin?chainId=${chainId}&days=${durationIndex}&pool=${contestFilter.address}&origin=${searchVal}`,
+        `${
+          import.meta.env.VITE_LEADERBOARD_APP_URL
+        }/get-snap-shot/by-origin?chainId=${chainId}&days=${durationIndex}&pool=${
+          contestFilter.address
+        }&origin=${searchVal}`,
       );
       if (!res.ok) {
         const errorText = await res.text();

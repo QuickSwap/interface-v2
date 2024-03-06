@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { AlertTriangle, XCircle } from 'react-feather';
-import 'components/styles/BetaWarningBanner.scss';
+import '~/components/styles/BetaWarningBanner.scss';
 import { useTranslation } from 'react-i18next';
 
 const BetaWarningBanner: React.FC = () => {

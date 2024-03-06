@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useGetWidoApprove from './useGetWidoApprove';
-import { useSignTransaction } from 'state/transactions/hooks';
-import { BOND_QUERY_KEYS } from 'constants/index';
-import { NATIVE_TOKEN_ADDRESS } from 'constants/v3/addresses';
+import { useSignTransaction } from '~/state/transactions/hooks';
+import { BOND_QUERY_KEYS } from '~/constants/index';
+import { NATIVE_TOKEN_ADDRESS } from '~/constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useTranslation } from 'react-i18next';
 
 const useApproveWidoSpender = ({

@@ -8,7 +8,9 @@ export const getMaticPrice: (chainId: ChainId) => Promise<number[]> = async (
   let priceChangeMatic = 0;
 
   const res = await fetch(
-    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/matic-price?chainId=${chainId}`,
+    `${
+      import.meta.env.VITE_LEADERBOARD_APP_URL
+    }/utils/matic-price?chainId=${chainId}`,
   );
   if (res.ok) {
     const data = await res.json();

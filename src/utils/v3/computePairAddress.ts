@@ -9,7 +9,7 @@ import {
 } from '@uniswap/sdk-core';
 import invariant from 'tiny-invariant';
 import JSBI from 'jsbi';
-import { V2_FACTORY_ADDRESSES } from 'constants/v3/addresses';
+import { V2_FACTORY_ADDRESSES } from '~/constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 
 export const FACTORY_ADDRESS = V2_FACTORY_ADDRESSES[ChainId.MATIC];
@@ -28,7 +28,7 @@ import {
   EXCHANGE_FACTORY_ADDRESS_MAPS,
   EXCHANGE_PAIR_INIT_HASH_MAPS,
   V2Exchanges,
-} from 'constants/v3/addresses';
+} from '~/constants/v3/addresses';
 
 type ExchangeDetails = {
   [exchange in V2Exchanges]: { decimals: number; symbol: string; name: string };

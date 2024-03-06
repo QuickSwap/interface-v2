@@ -1,9 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { DollarSign, StopCircle } from 'react-feather';
 import { Currency, Token, Price } from '@uniswap/sdk-core';
-import Loader from 'components/Loader';
-import { PriceFormats } from 'components/v3/PriceFomatToggler';
-import { useInitialTokenPrice, useInitialUSDPrices } from 'state/mint/v3/hooks';
+import Loader from '~/components/Loader';
+import { PriceFormats } from '~/components/v3/PriceFomatToggler';
+import {
+  useInitialTokenPrice,
+  useInitialUSDPrices,
+} from '~/state/mint/v3/hooks';
 import './index.scss';
 import { useTranslation } from 'react-i18next';
 

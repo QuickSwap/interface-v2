@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
-import { formatNumber } from 'utils';
+import { formatNumber } from '~/utils';
 import { useTranslation } from 'react-i18next';
-import 'components/styles/TotalAPRToolTip.scss';
-import { CustomTooltip } from 'components';
+import '~/components/styles/TotalAPRToolTip.scss';
+import { CustomTooltip } from '~/components';
 
 interface TotalAPRToolTipProps {
   poolAPR: number;

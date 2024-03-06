@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
-import Loader from 'components/Loader';
-import { useWalletModalToggle } from 'state/application/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import Loader from '~/components/Loader';
+import { useWalletModalToggle } from '~/state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import DefiedgeLPList from './DefiedgeLPList';
-import { useDefiedgePositions } from 'hooks/v3/useV3Positions';
+import { useDefiedgePositions } from '~/hooks/v3/useV3Positions';
 
 export default function MyDefiedgePoolsV3() {
   const { t } = useTranslation();

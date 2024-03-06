@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Box } from '@material-ui/core';
 import SearcherDisplay from './SearcherDisplay';
-import { DualCurrencySelector } from 'types/bond';
+import { DualCurrencySelector } from '~/types/bond';
 import { Virtuoso } from 'react-virtuoso';
 
 export default function CurrencyList({

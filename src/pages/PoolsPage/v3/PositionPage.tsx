@@ -2,20 +2,20 @@ import React, { useMemo } from 'react';
 import {
   useV3PositionFromTokenId,
   useV3Positions,
-} from 'hooks/v3/useV3Positions';
+} from '~/hooks/v3/useV3Positions';
 import { NavLink, useParams } from 'react-router-dom';
 import { BigNumber } from '@ethersproject/bignumber';
-import Loader from 'components/Loader';
-import usePrevious from 'hooks/usePrevious';
+import Loader from '~/components/Loader';
+import usePrevious from '~/hooks/usePrevious';
 import { Box } from '@material-ui/core';
 import PositionListItem from './MyQuickswapPoolsV3/components/PositionListItem';
-import { useActiveWeb3React } from 'hooks';
-import { PositionPool } from 'models/interfaces';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
-import { useV3NFTPositionManagerContract } from 'hooks/useContract';
-import { FARMING_CENTER } from 'constants/v3/addresses';
+import { useActiveWeb3React } from '~/hooks';
+import { PositionPool } from '~/models/interfaces';
+import { useSingleCallResult } from '~/state/multicall/v3/hooks';
+import { useV3NFTPositionManagerContract } from '~/hooks/useContract';
+import { FARMING_CENTER } from '~/constants/v3/addresses';
 import { useTranslation } from 'react-i18next';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 
 export default function PositionPage() {
   const { t } = useTranslation();

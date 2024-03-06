@@ -7,15 +7,15 @@ import {
   CurrencyLogo,
   CurrencySearchModal,
   MinimalPositionCard,
-} from 'components';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { usePair, PairState } from 'data/Reserves';
-import { usePairAdder } from 'state/user/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { currencyId } from 'utils';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+} from '~/components';
+import { useTokenBalance } from '~/state/wallet/hooks';
+import { usePair, PairState } from '~/data/Reserves';
+import { usePairAdder } from '~/state/user/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { currencyId } from '~/utils';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 import { Link } from 'react-router-dom';
-import 'components/styles/PoolFinderModal.scss';
+import '~/components/styles/PoolFinderModal.scss';
 import { useTranslation } from 'react-i18next';
 
 enum Fields {

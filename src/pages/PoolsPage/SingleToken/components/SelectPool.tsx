@@ -1,14 +1,14 @@
 import { Box } from '@material-ui/core';
 import { WETH } from '@uniswap/sdk';
 import { Currency } from '@uniswap/sdk-core';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import SingleTokenPoolCard from './SingleTokenPoolCard';
-import { useICHIVaults } from 'hooks/useICHIData';
-import { useSingleTokenVault } from 'state/singleToken/hooks';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import Loader from 'components/Loader';
+import { useICHIVaults } from '~/hooks/useICHIData';
+import { useSingleTokenVault } from '~/state/singleToken/hooks';
+import { useUSDCPricesFromAddresses } from '~/utils/useUSDCPrice';
+import Loader from '~/components/Loader';
 
 const SingleTokenSelectPool: React.FC<{ currency?: Currency }> = ({
   currency,

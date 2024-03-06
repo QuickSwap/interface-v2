@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { save, load } from 'redux-localstorage-simple';
-import application from 'state/application/reducer';
+import application from '~/state/application/reducer';
 import { updateVersion } from './global/actions';
 import user from './user/reducer';
 import transactions from './transactions/reducer';

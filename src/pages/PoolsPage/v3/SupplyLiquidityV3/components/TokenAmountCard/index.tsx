@@ -6,22 +6,22 @@ import {
   NativeCurrency,
 } from '@uniswap/sdk-core';
 
-import CurrencyLogo from 'components/CurrencyLogo';
-import { useCurrencyBalance } from 'state/wallet/hooks';
-import { useCurrencyBalance as useCurrencyBalanceV3 } from 'state/wallet/v3/hooks';
-import { useActiveWeb3React } from 'hooks';
-import Loader from 'components/Loader';
-import { PriceFormats } from 'components/v3/PriceFomatToggler';
+import CurrencyLogo from '~/components/CurrencyLogo';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
+import { useCurrencyBalance as useCurrencyBalanceV3 } from '~/state/wallet/v3/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import Loader from '~/components/Loader';
+import { PriceFormats } from '~/components/v3/PriceFomatToggler';
 import './index.scss';
 import { Box } from '@material-ui/core';
 import { LockOutlined } from '@material-ui/icons';
-import NumericalInput from 'components/NumericalInput';
+import NumericalInput from '~/components/NumericalInput';
 import { ChainId, ETHER, WETH } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
-import { useV3MintState } from 'state/mint/v3/hooks';
-import { GlobalConst } from 'constants/index';
-import { DoubleCurrencyLogo } from 'components';
-import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { useV3MintState } from '~/state/mint/v3/hooks';
+import { GlobalConst } from '~/constants/index';
+import { DoubleCurrencyLogo } from '~/components';
+import { WMATIC_EXTENDED } from '~/constants/v3/addresses';
 
 interface ITokenAmountCard {
   currency: Currency | undefined | null;

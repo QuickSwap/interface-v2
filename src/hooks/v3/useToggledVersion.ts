@@ -1,4 +1,4 @@
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 
 export enum Version {
   v2 = 'V2',

@@ -10,10 +10,10 @@ import {
 } from '@uniswap/sdk-core';
 import invariant from 'tiny-invariant';
 import { MethodParameters, toHex } from './calldata';
-import abi from 'constants/abis/v3/swap-router.json';
-import { encodeRouteToPath } from 'v3lib/utils/encodeRouteToPath';
-import { Trade } from 'lib/src/trade';
-import { ADDRESS_ZERO } from 'v3lib/utils';
+import abi from '~/constants/abis/v3/swap-router.json';
+import { encodeRouteToPath } from '~/v3lib/utils/encodeRouteToPath';
+import { Trade } from '~/lib/src/trade';
+import { ADDRESS_ZERO } from '~/v3lib/utils';
 
 export interface StandardPermitArguments {
   v: 0 | 1 | 27 | 28;

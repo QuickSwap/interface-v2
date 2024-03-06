@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { useActivePopups } from 'state/application/hooks';
-import { useURLWarningVisible } from 'state/user/hooks';
+import { useActivePopups } from '~/state/application/hooks';
+import { useURLWarningVisible } from '~/state/user/hooks';
 import PopupItem from './PopupItem';
-import 'components/styles/Popups.scss';
+import '~/components/styles/Popups.scss';
 
 const Popups: React.FC = () => {
   // get all popups

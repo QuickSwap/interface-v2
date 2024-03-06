@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import { HelpCircle as Question, PlusCircle } from 'react-feather';
-import { CustomTooltip } from 'components';
-import 'components/styles/QuestionHelper.scss';
+import { CustomTooltip } from '~/components';
+import '~/components/styles/QuestionHelper.scss';
 
 const QuestionHelper: React.FC<{
   text: string;

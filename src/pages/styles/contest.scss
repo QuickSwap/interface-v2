@@ -1,5 +1,5 @@
-@use 'styles/variables' as *;
-@use 'styles/breakpoints' as *;
+@use 'src/styles/variables' as *;
+@use 'src/styles/breakpoints' as *;
 
 .rounded-top-10px {
   border-top-left-radius: 10px !important ;

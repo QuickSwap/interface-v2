@@ -7,7 +7,7 @@ import {
   priceToClosestTick,
   TICK_SPACINGS,
   TickMath,
-} from 'v3lib/utils';
+} from '~/v3lib/utils';
 
 export function tryParsePrice(
   baseToken?: Token,

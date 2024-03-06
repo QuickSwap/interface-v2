@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
+import HelpIcon from '~/assets/images/HelpIcon1.svg?react';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
-import 'pages/styles/bonds.scss';
-import { getConfig } from 'config/index';
+import { useActiveWeb3React } from '~/hooks';
+import '~/pages/styles/bonds.scss';
+import { getConfig } from '~/config/index';
 import { useHistory } from 'react-router-dom';
-import { CustomSwitch, HypeLabAds, SearchInput } from 'components';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import BillNFTImage from 'assets/images/bonds/quickBond.jpg';
-import ApeSwapLogo from 'assets/images/bonds/apeBond.png';
-import { ReactComponent as BillSvg1 } from 'assets/images/bonds/billSvg1.svg';
-import { ReactComponent as BillSvg2 } from 'assets/images/bonds/billSvg2.svg';
-import { ReactComponent as BillSvg3 } from 'assets/images/bonds/billSvg3.svg';
+import { CustomSwitch, HypeLabAds, SearchInput } from '~/components';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import BillNFTImage from '~/assets/images/bonds/quickBond.jpg';
+import ApeSwapLogo from '~/assets/images/bonds/apeBond.png';
+import BillSvg1 from '~/assets/images/bonds/billSvg1.svg?react';
+import BillSvg2 from '~/assets/images/bonds/billSvg2.svg?react';
+import BillSvg3 from '~/assets/images/bonds/billSvg3.svg?react';
 import BondsList from './BondsList';
 
 const BondsPage: React.FC = () => {
@@ -25,7 +25,7 @@ const BondsPage: React.FC = () => {
   const config = getConfig(chainId);
   const showBonds = config['bonds']['available'];
   const history = useHistory();
-  const helpURL = process.env.REACT_APP_HELP_URL;
+  const helpURL = import.meta.env.VITE_HELP_URL;
 
   useEffect(() => {
     if (!showBonds) {

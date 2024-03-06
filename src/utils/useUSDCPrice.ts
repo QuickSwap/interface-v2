@@ -8,12 +8,12 @@ import {
   Trade,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { PairState, usePairs, usePair } from 'data/Reserves';
-import { useActiveWeb3React } from 'hooks';
+import { PairState, usePairs, usePair } from '~/data/Reserves';
+import { useActiveWeb3React } from '~/hooks';
 import { unwrappedToken, wrappedCurrency } from './wrappedCurrency';
-import { useDQUICKtoQUICK } from 'state/stake/hooks';
-import { useAllCommonPairs } from 'hooks/Trades';
-import { tryParseAmount } from 'state/swap/hooks';
+import { useDQUICKtoQUICK } from '~/state/stake/hooks';
+import { useAllCommonPairs } from '~/hooks/Trades';
+import { tryParseAmount } from '~/state/swap/hooks';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
@@ -25,8 +25,8 @@ import {
   OLD_QUICK,
   USDC,
   USDT,
-} from 'constants/v3/addresses';
-import { getConfig } from 'config/index';
+} from '~/constants/v3/addresses';
+import { getConfig } from '~/config/index';
 import { useQuery } from '@tanstack/react-query';
 
 dayjs.extend(utc);
@@ -78,7 +78,7 @@ const getUSDPricesFromAddresses = async (
   )) {
     const res = await fetch(
       `${
-        process.env.REACT_APP_LEADERBOARD_APP_URL
+        import.meta.env.VITE_LEADERBOARD_APP_URL
       }/utils/token-prices/v3?chainId=${chainId}&addresses=${addresses
         .slice(ind * 150, (ind + 1) * 150)
         .join('_')}`,
@@ -102,7 +102,7 @@ const getUSDPricesFromAddresses = async (
     )) {
       const v2Res = await fetch(
         `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
+          import.meta.env.VITE_LEADERBOARD_APP_URL
         }/utils/token-prices/v2?chainId=${chainId}&addresses=${addressesNotInV3
           .slice(ind * 150, (ind + 1) * 150)
           .join('_')}`,

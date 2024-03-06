@@ -5,12 +5,12 @@ import {
   useExpertModeManager,
   useLiquidityHubManager,
   useUserSlippageTolerance,
-} from 'state/user/hooks';
-import { useActiveWeb3React, useIsProMode } from 'hooks';
+} from '~/state/user/hooks';
+import { useActiveWeb3React, useIsProMode } from '~/hooks';
 import { useLocation } from 'react-router-dom';
 import { styled } from '@material-ui/styles';
 import { Box, Divider } from '@material-ui/core';
-import OrbsLogo from 'assets/images/orbs-logo.svg';
+import OrbsLogo from '~/assets/images/orbs-logo.svg';
 import {
   setWeb3Instance,
   signEIP712,
@@ -23,20 +23,20 @@ import { useTranslation } from 'react-i18next';
 import {
   useLiquidityHubActionHandlers,
   useLiquidityHubState,
-} from 'state/swap/liquidity-hub/hooks';
-import { useTokenContract, useWETHContract } from 'hooks/useContract';
-import { getConfig } from 'config/index';
-import ToggleSwitch from 'components/ToggleSwitch';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+} from '~/state/swap/liquidity-hub/hooks';
+import { useTokenContract, useWETHContract } from '~/hooks/useContract';
+import { getConfig } from '~/config/index';
+import ToggleSwitch from '~/components/ToggleSwitch';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
 import { ChainId, ETHER, Trade, WETH, Currency } from '@uniswap/sdk';
 import { Contract } from 'ethers';
-import { useSwapActionHandlers } from 'state/swap/hooks';
-import { Field } from 'state/swap/actions';
+import { useSwapActionHandlers } from '~/state/swap/hooks';
+import { Field } from '~/state/swap/actions';
 import { Currency as CoreCurrency, Percent } from '@uniswap/sdk-core';
-import { ZERO_ADDRESS } from 'constants/v3/misc';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { ZERO_ADDRESS } from '~/constants/v3/misc';
+import { wrappedCurrency } from '~/utils/wrappedCurrency';
 import { parseUnits } from 'ethers/lib/utils';
-import { getFixedValue } from 'utils';
+import { getFixedValue } from '~/utils';
 const ANALYTICS_VERSION = 0.2;
 const API_ENDPOINT = 'https://hub.orbs.network';
 const WEBSITE = 'https://www.orbs.com';
@@ -134,7 +134,7 @@ export const useLiquidityHubCallback = (
         throw new Error('outTokenAddress is not defined');
       }
       if (!library) {
-        throw new Error('library is not defined');
+        throw new Error('~/library is not defined');
       }
       if (!account) {
         throw new Error('account is not defined');
@@ -311,7 +311,6 @@ const useSign = () => {
       if (!hasWeb3Instance()) {
         setWeb3Instance(new Web3(library.provider as any));
       }
-      process.env.DEBUG = 'web3-candies';
       const signature = await signEIP712(account, permitData);
       liquidityHubAnalytics.onSignatureSuccess(signature, count());
       return signature;

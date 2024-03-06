@@ -1,4 +1,4 @@
-import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+import { WrappedTokenInfo } from '~/state/lists/v3/wrappedTokenInfo';
 
 export interface PoolSubgraph {
   fee: string;

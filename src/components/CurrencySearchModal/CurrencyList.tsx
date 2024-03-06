@@ -9,9 +9,9 @@ import {
 } from '@uniswap/sdk';
 import React, { useMemo, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
-import { useIsV2 } from 'state/application/hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { isTokensOnList } from 'utils';
+import { useIsV2 } from '~/state/application/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { isTokensOnList } from '~/utils';
 import CurrencyRow from './CurrencyRow';
 
 interface CurrencyListProps {

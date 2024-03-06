@@ -1,13 +1,13 @@
 import { ChainId, Token } from '@uniswap/sdk';
-import { GlobalValue } from 'constants/index';
-import { useTokens } from 'hooks/Tokens';
+import { GlobalValue } from '~/constants/index';
+import { useTokens } from '~/hooks/Tokens';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'state';
-import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
-import { CNTFarmListInfo, StakingBasic, StakingRaw } from 'types/index';
-import { getTokenFromAddress } from 'utils';
-import { EMPTY, OLD_DQUICK } from 'constants/v3/addresses';
+import { AppState } from '~/state';
+import { TokenAddressMap, useSelectedTokenList } from '~/state/lists/hooks';
+import { CNTFarmListInfo, StakingBasic, StakingRaw } from '~/types/index';
+import { getTokenFromAddress } from '~/utils';
+import { EMPTY, OLD_DQUICK } from '~/constants/v3/addresses';
 
 export class WrappedCNTStakingInfo implements StakingBasic {
   public readonly stakingInfo: StakingRaw;
@@ -197,7 +197,7 @@ export function useCNTFarmList(
 
 export function useDefaultCNTFarmList(chainId: ChainId): CNTFarmInfoAddressMap {
   return useCNTFarmList(
-    process.env.REACT_APP_CNT_STAKING_LIST_DEFAULT_URL,
+    import.meta.env.VITE_CNT_STAKING_LIST_DEFAULT_URL,
     chainId,
   );
 }

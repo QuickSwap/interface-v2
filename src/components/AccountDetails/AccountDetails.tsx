@@ -1,21 +1,21 @@
 import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { useActiveWeb3React } from 'hooks';
-import { AppDispatch } from 'state';
+import { useActiveWeb3React } from '~/hooks';
+import { AppDispatch } from '~/state';
 import { Box } from '@material-ui/core';
-import { clearAllTransactions } from 'state/transactions/actions';
-import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
-import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
+import { clearAllTransactions } from '~/state/transactions/actions';
+import { shortenAddress, getEtherscanLink, getWalletKeys } from '~/utils';
+import Close from '~/assets/images/CloseIcon.svg?react';
 import { ExternalLink as LinkIcon } from 'react-feather';
-import 'components/styles/AccountDetails.scss';
+import '~/components/styles/AccountDetails.scss';
 import StatusIcon from './StatusIcon';
 import Copy from './CopyHelper';
 import Transaction from './Transaction';
 import { useTranslation } from 'react-i18next';
-import { useUDDomain } from 'state/application/hooks';
-import { useSelectedWallet } from 'state/user/hooks';
+import { useUDDomain } from '~/state/application/hooks';
+import { useSelectedWallet } from '~/state/user/hooks';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
-import { networkConnection } from 'connectors';
+import { networkConnection } from '~/connectors';
 
 function renderTransactions(transactions: string[]) {
   return (

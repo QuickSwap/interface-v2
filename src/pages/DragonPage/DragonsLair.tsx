@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
-import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
-import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from 'components';
-import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { useOldLairInfo, useNewLairInfo } from '~/state/stake/hooks';
+import { CurrencyLogo, StakeQuickModal, UnstakeQuickModal } from '~/components';
+import PriceExchangeIcon from '~/assets/images/PriceExchangeIcon.svg?react';
+import { formatTokenAmount, useLairDQUICKAPY } from '~/utils';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { ChainId } from '@uniswap/sdk';
 import {
   DLDQUICK,
   DLQUICK,
   OLD_DQUICK,
   OLD_QUICK,
-} from 'constants/v3/addresses';
+} from '~/constants/v3/addresses';
 
 const DragonsLair: React.FC<{ isNew: boolean }> = ({ isNew }) => {
   const { chainId } = useActiveWeb3React();

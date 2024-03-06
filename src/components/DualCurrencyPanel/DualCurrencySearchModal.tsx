@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isAddress } from 'utils';
+import { isAddress } from '~/utils';
 import CurrencyList from './CurrencyList';
 import { Currency } from '@uniswap/sdk-core';
-import { DualCurrencySelector } from 'types/bond';
-import { CustomModal, SearchInput } from 'components';
+import { DualCurrencySelector } from '~/types/bond';
+import { CustomModal, SearchInput } from '~/components';
 import { Box } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 
 interface CurrencySearchModalProps {
   open: boolean;

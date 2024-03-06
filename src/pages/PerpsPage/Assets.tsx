@@ -16,7 +16,7 @@ import {
   TextField,
 } from '@radix-ui/themes';
 import { FC, useMemo, useState, useEffect } from 'react';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import AssetModal from '../../components/AssetModal';
 import Box from '@mui/material/Box';
 

@@ -1,22 +1,22 @@
 import React, { useEffect, useMemo } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
-import { getBulkPairData } from 'state/stake/hooks';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
-import { useActiveWeb3React } from 'hooks';
-import { GlobalConst } from 'constants/index';
+import { getBulkPairData } from '~/state/stake/hooks';
+import HelpIcon from '~/assets/images/HelpIcon1.svg?react';
+import { useActiveWeb3React } from '~/hooks';
+import { GlobalConst } from '~/constants/index';
 import FarmRewards from './FarmRewards';
 import FarmsList from './FarmsList';
-import { CustomSwitch, HypeLabAds } from 'components';
+import { CustomSwitch, HypeLabAds } from '~/components';
 import { useTranslation } from 'react-i18next';
-import 'pages/styles/farm.scss';
-import { useDefaultFarmList } from 'state/farms/hooks';
-import { useDefaultCNTFarmList } from 'state/cnt/hooks';
-import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
-import VersionToggle from 'components/Toggle/VersionToggle';
-import V3Farms from 'pages/FarmPage/V3';
-import { useIsV2 } from 'state/application/hooks';
+import '~/pages/styles/farm.scss';
+import { useDefaultFarmList } from '~/state/farms/hooks';
+import { useDefaultCNTFarmList } from '~/state/cnt/hooks';
+import { useDefaultDualFarmList } from '~/state/dualfarms/hooks';
+import VersionToggle from '~/components/Toggle/VersionToggle';
+import V3Farms from '~/pages/FarmPage/V3';
+import { useIsV2 } from '~/state/application/hooks';
 import { getConfig } from '../../config/index';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 import { useHistory } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
@@ -40,7 +40,7 @@ const FarmPage: React.FC = () => {
   const dualFarms = useDefaultDualFarmList();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-  const OTHER_FARM_LINK = process.env.REACT_APP_OTHER_LP_CREATE_A_FARM_LINK;
+  const OTHER_FARM_LINK = import.meta.env.VITE_OTHER_LP_CREATE_A_FARM_LINK;
 
   const pairLists = useMemo(() => {
     const stakingPairLists = Object.values(lpFarms[chainId]).map(
@@ -122,7 +122,7 @@ const FarmPage: React.FC = () => {
       condition: currentTab === GlobalConst.v2FarmTab.OTHER_LP,
     },
   ];
-  const helpURL = process.env.REACT_APP_HELP_URL;
+  const helpURL = import.meta.env.VITE_HELP_URL;
 
   const poolId =
     parsedQuery && parsedQuery.pool ? parsedQuery.pool.toString() : undefined;

@@ -1,4 +1,4 @@
-import { SwapDataV3, ContestLeaderBoard } from 'models/interfaces/contest';
+import { SwapDataV3, ContestLeaderBoard } from '~/models/interfaces/contest';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';

@@ -1,13 +1,13 @@
 import { JSBI, Pair, Percent } from '@uniswap/sdk';
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
-import { useTotalSupply } from 'data/TotalSupply';
-import { useActiveWeb3React } from 'hooks';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { formatTokenAmount } from 'utils';
-import { unwrappedToken } from 'utils/wrappedCurrency';
-import { DoubleCurrencyLogo } from 'components';
-import 'components/styles/PositionCard.scss';
+import { useTotalSupply } from '~/data/TotalSupply';
+import { useActiveWeb3React } from '~/hooks';
+import { useTokenBalance } from '~/state/wallet/hooks';
+import { formatTokenAmount } from '~/utils';
+import { unwrappedToken } from '~/utils/wrappedCurrency';
+import { DoubleCurrencyLogo } from '~/components';
+import '~/components/styles/PositionCard.scss';
 import { useTranslation } from 'react-i18next';
 
 interface PositionCardProps {

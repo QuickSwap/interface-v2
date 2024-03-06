@@ -2,10 +2,10 @@ import React, { useCallback, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { Token as V2Token } from '@uniswap/sdk';
 import { Token } from '@uniswap/sdk-core';
-import { CustomModal, CurrencyLogo } from 'components';
+import { CustomModal, CurrencyLogo } from '~/components';
 import { ReportProblemOutlined } from '@material-ui/icons';
-import { useActiveWeb3React } from 'hooks';
-import { getEtherscanLink, shortenAddress } from 'utils';
+import { useActiveWeb3React } from '~/hooks';
+import { getEtherscanLink, shortenAddress } from '~/utils';
 import { Trans, useTranslation } from 'react-i18next';
 
 function TokenWarningCard({ token }: { token?: Token | V2Token }) {

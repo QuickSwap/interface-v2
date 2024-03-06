@@ -1,9 +1,9 @@
 import { ChainId, Token } from '@uniswap/sdk';
 import { Tags, TokenInfo, TokenList } from '@uniswap/token-lists';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst } from '~/constants/index';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'state';
+import { AppState } from '~/state';
 const { DEFAULT_TOKEN_LIST_URL } = GlobalConst.utils;
 
 type TagDetails = Tags[keyof Tags];

@@ -3,8 +3,8 @@ import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
   TransactionErrorContent,
-} from 'components/v3/TransactionConfirmationModal';
-import { Trade as V3Trade } from 'lib/src/trade';
+} from '~/components/v3/TransactionConfirmationModal';
+import { Trade as V3Trade } from '~/lib/src/trade';
 import SwapModalFooter from './SwapModalFooter';
 import SwapModalHeader from './SwapModalHeader';
 import { useTranslation } from 'react-i18next';

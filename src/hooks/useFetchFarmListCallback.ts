@@ -1,12 +1,12 @@
 import { nanoid } from '@reduxjs/toolkit';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from 'state';
-import resolveENSContentHash from 'utils/resolveENSContentHash';
-import { useActiveWeb3React } from 'hooks';
-import { fetchFarmList } from 'state/farms/actions';
-import getFarmList from 'utils/getFarmList';
-import { FarmListInfo } from 'types/index';
+import { AppDispatch } from '~/state';
+import resolveENSContentHash from '~/utils/resolveENSContentHash';
+import { useActiveWeb3React } from '~/hooks';
+import { fetchFarmList } from '~/state/farms/actions';
+import getFarmList from '~/utils/getFarmList';
+import { FarmListInfo } from '~/types/index';
 
 export function useFetchFarmListCallback(): (
   listUrl: string,

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useClaimBond from 'hooks/bond/useClaimBond';
+import useClaimBond from '~/hooks/bond/useClaimBond';
 import { Button } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 
 export interface ClaimProps {
   billAddress: string;

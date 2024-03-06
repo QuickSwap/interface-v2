@@ -1,25 +1,25 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import './index.scss';
-import { PriceFormats } from 'components/v3/PriceFomatToggler';
+import { PriceFormats } from '~/components/v3/PriceFomatToggler';
 import {
   IDerivedMintInfo,
   useInitialTokenPrice,
   useInitialUSDPrices,
-} from 'state/mint/v3/hooks';
-import { useAppDispatch } from 'state/hooks';
+} from '~/state/mint/v3/hooks';
+import { useAppDispatch } from '~/state/hooks';
 import {
   Field,
   setInitialTokenPrice,
   setInitialUSDPrices,
   updateSelectedPreset,
-} from 'state/mint/v3/actions';
-import Input from 'components/NumericalInput';
+} from '~/state/mint/v3/actions';
+import Input from '~/components/NumericalInput';
 import { Box, Button } from '@material-ui/core';
-import Badge, { BadgeVariant } from 'components/v3/Badge';
+import Badge, { BadgeVariant } from '~/components/v3/Badge';
 import { Error } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
 
 interface IPrice {
   baseCurrency: Currency | undefined;

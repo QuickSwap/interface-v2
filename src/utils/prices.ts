@@ -1,4 +1,4 @@
-import { GlobalValue } from 'constants/index';
+import { GlobalValue } from '~/constants/index';
 import {
   CurrencyAmount,
   Fraction,
@@ -7,8 +7,8 @@ import {
   TokenAmount,
   Trade,
 } from '@uniswap/sdk';
-import { Field } from 'state/swap/actions';
-import { basisPointsToPercent } from 'utils';
+import { Field } from '~/state/swap/actions';
+import { basisPointsToPercent } from '~/utils';
 import { OptimalRate } from '@paraswap/sdk';
 
 const BASE_FEE = new Percent(JSBI.BigInt(30), JSBI.BigInt(10000));

@@ -26,6 +26,7 @@
     "@uniswap/token-lists": "npm:quickswap-token-lists@^1.0.2",
     "@uniswap/v2-core": "1.0.0",
     "@uniswap/v2-periphery": "^1.1.0-beta.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "@web3-react/coinbase-wallet": "^8.2.0",
     "@web3-react/core": "^8.2.0",
     "@web3-react/gnosis-safe": "^8.2.0",
@@ -57,7 +58,6 @@
     "prettier": "^1.17.0",
     "qs": "^6.9.4",
     "react": "^18.2.0",
-    "react-app-rewired": "^2.1.8",
     "react-device-detect": "^1.6.2",
     "react-dom": "^18.2.0",
     "react-feather": "^2.0.8",
@@ -69,7 +69,11 @@
     "serve": "^11.3.2",
     "source-map-explorer": "^2.5.2",
     "start-server-and-test": "^1.11.0",
-    "typescript": "^4.1.2"
+    "typescript": "^4.1.2",
+    "vite": "^5.1.5",
+    "vite-plugin-node-polyfills": "^0.21.0",
+    "vite-plugin-svgr": "^4.2.0",
+    "vitest": "^1.3.1"
   },
   "resolutions": {
     "yargs-parser": "^13.1.2",
@@ -98,15 +102,16 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-app-rewired start",
-    "start-legacy": "react-app-rewired --openssl-legacy-provider start",
-    "build": "GENERATE_SOURCEMAP=false CI=false react-app-rewired build --max-old-space-size=7168",
-    "test": "react-app-rewired test --env=jsdom",
+    "start": "vite dev",
+    "start-legacy": "vite --openssl-legacy-provider dev",
+    "build": "CI=false npm run vite-with-more-ram build",
+    "preview": "vite preview",
+    "test": "vitest",
     "format": "prettier --write \"**/*.{ts,js,tsx,json,md}\"",
-    "eject": "react-scripts eject",
     "integration-test": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run'",
     "ipfs-deploy": "ipfs-deploy build",
-    "sitemap": "NODE_PATH=./src npx ts-node --project tsconfig.node.json ./src/sitemap-builder.ts"
+    "sitemap": "NODE_PATH=./src npx ts-node --project tsconfig.node.json ./src/sitemap-builder.ts",
+    "vite-with-more-ram": "node --max_old_space_size=16384 ./node_modules/vite/bin/vite.js"
   },
   "eslintConfig": {
     "extends": "react-app",

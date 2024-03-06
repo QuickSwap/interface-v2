@@ -8,15 +8,15 @@ import {
   Token,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import ERC20_INTERFACE from 'constants/abis/erc20';
-import { useAllTokens } from 'hooks/Tokens';
-import { useActiveWeb3React } from 'hooks';
-import { useMulticallContract } from 'hooks/useContract';
-import { isAddress } from 'utils';
+import ERC20_INTERFACE from '~/constants/abis/erc20';
+import { useAllTokens } from '~/hooks/Tokens';
+import { useActiveWeb3React } from '~/hooks';
+import { useMulticallContract } from '~/hooks/useContract';
+import { isAddress } from '~/utils';
 import {
   useSingleContractMultipleData,
   useMultipleContractSingleData,
-} from 'state/multicall/hooks';
+} from '~/state/multicall/hooks';
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst } from '~/constants/index';
 import { useTranslation } from 'react-i18next';
-import { useIsV2 } from 'state/application/hooks';
-import { formatNumber, getFormattedPercent, getPriceClass } from 'utils';
+import { useIsV2 } from '~/state/application/hooks';
+import { formatNumber, getFormattedPercent, getPriceClass } from '~/utils';
 
 interface AnalyticsInfoProps {
   data: any;

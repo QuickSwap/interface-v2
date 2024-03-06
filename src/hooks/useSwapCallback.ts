@@ -10,21 +10,21 @@ import {
   TradeType,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { GlobalConst } from 'constants/index';
-import { useTransactionAdder } from 'state/transactions/hooks';
+import { GlobalConst } from '~/constants/index';
+import { useTransactionAdder } from '~/state/transactions/hooks';
 import {
   calculateGasMargin,
   isZero,
   isAddress,
   shortenAddress,
   formatTokenAmount,
-} from 'utils';
-import { useActiveWeb3React } from 'hooks';
+} from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import { useRouterContract } from './useContract';
 import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
-import { liquidityHubAnalytics } from 'components/Swap/LiquidityHub';
+import { liquidityHubAnalytics } from '~/components/Swap/LiquidityHub';
 
 export enum SwapCallbackState {
   INVALID,

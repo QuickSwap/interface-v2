@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useActiveWeb3React } from 'hooks';
-import { getEtherscanLink, shortenAddress } from 'utils';
+import { useActiveWeb3React } from '~/hooks';
+import { getEtherscanLink, shortenAddress } from '~/utils';
 
 type Props = {
   address: string;

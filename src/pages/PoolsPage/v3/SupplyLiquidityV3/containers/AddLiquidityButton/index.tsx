@@ -7,39 +7,42 @@ import {
   useUniPilotVaultContract,
   useV3NFTPositionManagerContract,
   useWETHContract,
-} from 'hooks/useContract';
-import useTransactionDeadline from 'hooks/useTransactionDeadline';
-import { useActiveWeb3React } from 'hooks';
-import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
-import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
-import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
+} from '~/hooks/useContract';
+import useTransactionDeadline from '~/hooks/useTransactionDeadline';
+import { useActiveWeb3React } from '~/hooks';
+import { useIsExpertMode, useUserSlippageTolerance } from '~/state/user/hooks';
+import { NonfungiblePositionManager as NonFunPosMan } from '~/v3lib/nonfungiblePositionManager';
+import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from '~/v3lib/uniV3NonfungiblePositionManager';
 import { Percent, Currency } from '@uniswap/sdk-core';
-import { useAppDispatch } from 'state/hooks';
+import { useAppDispatch } from '~/state/hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import {
   IDerivedMintInfo,
   useActivePreset,
   useAddLiquidityTxHash,
-} from 'state/mint/v3/hooks';
-import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
-import { Field } from 'state/mint/actions';
-import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
-import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
+} from '~/state/mint/v3/hooks';
+import {
+  ApprovalState,
+  useApproveCallback,
+} from '~/hooks/useV3ApproveCallback';
+import { Field } from '~/state/mint/actions';
+import { Bound, setAddLiquidityTxHash } from '~/state/mint/v3/actions';
+import { useIsNetworkFailedImmediate } from '~/hooks/v3/useIsNetworkFailed';
 import { ETHER, JSBI, WETH } from '@uniswap/sdk';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
-} from 'constants/v3/addresses';
+} from '~/constants/v3/addresses';
 import {
   calculateGasMargin,
   calculateGasMarginV3,
   getGammaPairsForTokens,
-} from 'utils';
+} from '~/utils';
 import { Button, Box } from '@material-ui/core';
 import {
   ConfirmationModalContent,
@@ -47,17 +50,17 @@ import {
   DoubleCurrencyLogo,
   TransactionConfirmationModal,
   TransactionErrorContent,
-} from 'components';
+} from '~/components';
 import './index.scss';
-import RangeBadge from 'components/v3/Badge/RangeBadge';
-import RateToggle from 'components/v3/RateToggle';
-import { useInverter } from 'hooks/v3/useInverter';
-import { GlobalConst } from 'constants/index';
+import RangeBadge from '~/components/v3/Badge/RangeBadge';
+import RateToggle from '~/components/v3/RateToggle';
+import { useInverter } from '~/hooks/v3/useInverter';
+import { GlobalConst } from '~/constants/index';
 import { useTranslation } from 'react-i18next';
-import { useCurrencyBalance } from 'state/wallet/hooks';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
 import { formatUnits } from 'ethers/lib/utils';
-import { ZERO } from 'v3lib/utils';
-import { Presets } from 'state/mint/v3/reducer';
+import { ZERO } from '~/v3lib/utils';
+import { Presets } from '~/state/mint/v3/reducer';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;

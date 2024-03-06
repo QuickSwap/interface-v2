@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Box, useTheme, useMediaQuery } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { DoubleCurrencyLogo } from 'components';
+import { DoubleCurrencyLogo } from '~/components';
 import { Link } from 'react-router-dom';
-import { formatNumber } from 'utils';
+import { formatNumber } from '~/utils';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import UnipilotFarmCardDetails from './UnipilotFarmCardDetails';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
-import TotalAPRTooltip from 'components/TotalAPRToolTip';
+import CircleInfoIcon from '~/assets/images/circleinfo.svg';
+import TotalAPRTooltip from '~/components/TotalAPRToolTip';
 
 const UnipilotFarmCard: React.FC<{
   data: any;

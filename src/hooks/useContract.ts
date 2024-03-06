@@ -6,27 +6,27 @@ import { useMemo } from 'react';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS,
-} from 'constants/abis/argent-wallet-detector';
-import ENS_PUBLIC_RESOLVER_ABI from 'constants/abis/ens-public-resolver.json';
-import ENS_ABI from 'constants/abis/ens-registrar.json';
-import EIP_2612 from 'constants/abis/v3/eip_2612.json';
-import ERC20_ABI, { ERC20_BYTES32_ABI } from 'constants/abis/erc20';
-import V2ToV3MigratorABI from 'constants/abis/v3/migrator.json';
-import { STAKING_DUAL_REWARDS_INTERFACE } from 'constants/abis/staking-rewards';
-import UNISOCKS_ABI from 'constants/abis/unisocks.json';
-import WETH_ABI from 'constants/abis/weth.json';
-import NATIVE_CONVERTER_ABI from 'constants/abis/nativeConverter.json';
-import { MULTICALL_ABI } from 'constants/multicall';
+} from '~/constants/abis/argent-wallet-detector';
+import ENS_PUBLIC_RESOLVER_ABI from '~/constants/abis/ens-public-resolver.json';
+import ENS_ABI from '~/constants/abis/ens-registrar.json';
+import EIP_2612 from '~/constants/abis/v3/eip_2612.json';
+import ERC20_ABI, { ERC20_BYTES32_ABI } from '~/constants/abis/erc20';
+import V2ToV3MigratorABI from '~/constants/abis/v3/migrator.json';
+import { STAKING_DUAL_REWARDS_INTERFACE } from '~/constants/abis/staking-rewards';
+import UNISOCKS_ABI from '~/constants/abis/unisocks.json';
+import WETH_ABI from '~/constants/abis/weth.json';
+import NATIVE_CONVERTER_ABI from '~/constants/abis/nativeConverter.json';
+import { MULTICALL_ABI } from '~/constants/multicall';
 import {
   V1_EXCHANGE_ABI,
   V1_FACTORY_ABI,
   V1_FACTORY_ADDRESSES,
-} from 'constants/v1';
-import { getContract } from 'utils';
-import { useActiveWeb3React } from 'hooks';
-import { abi as LairABI } from 'abis/DragonLair.json';
+} from '~/constants/v1';
+import { getContract } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
+import { abi as LairABI } from '~/abis/DragonLair.json';
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
-import QUICKConversionABI from 'constants/abis/quick-conversion.json';
+import QUICKConversionABI from '~/constants/abis/quick-conversion.json';
 import {
   GAMMA_MASTERCHEF_ADDRESSES,
   MULTICALL_ADDRESS,
@@ -48,31 +48,31 @@ import {
   PRICE_GETTER_ADDRESS,
   MERKL_DISTRIBUTOR,
   NATIVE_CONVERTER,
-} from 'constants/v3/addresses';
-import NewQuoterABI from 'constants/abis/v3/quoter.json';
-import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
-import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
-import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
-import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
-import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
-import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
-import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
-import UNINFTPosMan from 'constants/abis/uni-v3/nft-position-manager.json';
-import { useSingleCallResult } from 'state/multicall/v3/hooks';
-import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
-import UNIPILOT_SINGLE_REWARD_ABI from 'constants/abis/unipilot-single-reward.json';
-import UNIPILOT_DUAL_REWARD_ABI from 'constants/abis/unipilot-dual-reward.json';
-import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
-import DEFIEDGE_MINICHEF_ABI from 'constants/abis/defiedge-minichef.json';
-import PRICE_GETTER_ABI from 'constants/abis/price-getter.json';
-import BOND_ABI from 'constants/abis/bond.json';
-import BOND_NFT_ABI from 'constants/abis/bondNFT.json';
-import ZAP_ABI from 'constants/abis/zap.json';
-import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
-import STEER_DUAL_STAKING_ABI from 'constants/abis/steer-staking-dual.json';
-import SteerPeripheryABI from 'constants/abis/steer-periphery.json';
-import SteerVaultABI from 'constants/abis/steer-vault.json';
-import SteerVaultRegistryABI from 'constants/abis/steer-vault-registry.json';
+} from '~/constants/v3/addresses';
+import NewQuoterABI from '~/constants/abis/v3/quoter.json';
+import UniV3QuoterABI from '~/constants/abis/uni-v3/quoter.json';
+import MULTICALL2_ABI from '~/constants/abis/v3/multicall.json';
+import NFTPosMan from '~/constants/abis/v3/nft-pos-man.json';
+import GammaUniProxy from '~/constants/abis/gamma-uniproxy.json';
+import GammaUniProxy1 from '~/constants/abis/gamma-uniproxy1.json';
+import GammaMasterChef from '~/constants/abis/gamma-masterchef.json';
+import GammaPairABI from '~/constants/abis/gamma-hypervisor.json';
+import UNINFTPosMan from '~/constants/abis/uni-v3/nft-position-manager.json';
+import { useSingleCallResult } from '~/state/multicall/v3/hooks';
+import UNIPILOT_VAULT_ABI from '~/constants/abis/unipilot-vault.json';
+import UNIPILOT_SINGLE_REWARD_ABI from '~/constants/abis/unipilot-single-reward.json';
+import UNIPILOT_DUAL_REWARD_ABI from '~/constants/abis/unipilot-dual-reward.json';
+import DEFIEDGE_STRATEGY_ABI from '~/constants/abis/defiedge-strategy.json';
+import DEFIEDGE_MINICHEF_ABI from '~/constants/abis/defiedge-minichef.json';
+import PRICE_GETTER_ABI from '~/constants/abis/price-getter.json';
+import BOND_ABI from '~/constants/abis/bond.json';
+import BOND_NFT_ABI from '~/constants/abis/bondNFT.json';
+import ZAP_ABI from '~/constants/abis/zap.json';
+import STEER_STAKING_ABI from '~/constants/abis/steer-staking.json';
+import STEER_DUAL_STAKING_ABI from '~/constants/abis/steer-staking-dual.json';
+import SteerPeripheryABI from '~/constants/abis/steer-periphery.json';
+import SteerVaultABI from '~/constants/abis/steer-vault.json';
+import SteerVaultRegistryABI from '~/constants/abis/steer-vault-registry.json';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,

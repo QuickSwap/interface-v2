@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useTranslation } from 'react-i18next';
-import { getWalletKeys } from 'utils';
+import { getWalletKeys } from '~/utils';
 
 const StatusIcon: React.FC = () => {
   const { t } = useTranslation();

@@ -1,37 +1,40 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
+import SettingsIcon from '~/assets/images/SettingsIcon.svg?react';
 // Components
-import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
+import DoubleCurrencyLogo from '~/components/DoubleCurrencyLogo';
 
-import { useCurrency } from 'hooks/v3/Tokens';
-import { useSoulZapQuote } from 'state/zap/soulZap/useSoulZapQuote';
+import { useCurrency } from '~/hooks/v3/Tokens';
+import { useSoulZapQuote } from '~/state/zap/soulZap/useSoulZapQuote';
 import {
   ApprovalState,
   useApproveCallbackV3,
 } from '../../hooks/useApproveCallback';
-import { useZapActionHandlers, useZapState } from 'state/zap/hooks';
+import { useZapActionHandlers, useZapState } from '~/state/zap/hooks';
 
-import { Field } from 'state/zap/actions';
+import { Field } from '~/state/zap/actions';
 import { ZapDataBond } from '@soulsolidity/soulzap-v1/dist/src/types';
 import { DEX } from '@soulsolidity/soulzap-v1';
 import { LiquidityDex } from '@ape.swap/apeswap-lists';
-import { useTransactionAdder } from 'state/transactions/hooks';
-import { useSoulZap } from 'state/application/hooks';
-import { useCurrencyBalance, useCurrencyBalances } from 'state/wallet/v3/hooks';
+import { useTransactionAdder } from '~/state/transactions/hooks';
+import { useSoulZap } from '~/state/application/hooks';
+import {
+  useCurrencyBalance,
+  useCurrencyBalances,
+} from '~/state/wallet/v3/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
+import { maxAmountSpend } from '~/utils/v3/maxAmountSpend';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { JSBI } from '@uniswap/sdk';
-import { CustomModal, NumericalInput } from 'components';
+import { CustomModal, NumericalInput } from '~/components';
 import { Box, Button } from '@material-ui/core';
-import Loader from 'components/Loader';
-import { getFixedValue, getLiquidityDEX } from 'utils';
+import Loader from '~/components/Loader';
+import { getFixedValue, getLiquidityDEX } from '~/utils';
 import ZapSlippage from './DualAddLiquidity/ZapSlippage';
-import { ReactComponent as BondArrow } from 'assets/images/bondArrow.svg';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import BondArrow from '~/assets/images/bondArrow.svg?react';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 import { useTranslation } from 'react-i18next';
-import ZapCurrencyInput from 'components/ZapCurrencyInput';
-import { useActiveWeb3React } from 'hooks';
+import ZapCurrencyInput from '~/components/ZapCurrencyInput';
+import { useActiveWeb3React } from '~/hooks';
 
 interface SoulZapAddLiquidityProps {
   open: boolean;

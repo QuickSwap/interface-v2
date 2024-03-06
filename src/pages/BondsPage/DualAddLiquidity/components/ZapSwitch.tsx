@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import ZapSlippage from '../ZapSlippage';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@material-ui/core';
-import { QuestionHelper, ToggleSwitch } from 'components';
-import { ReactComponent as ZapIcon } from 'assets/images/bonds/ZapIcon.svg';
-import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
+import { QuestionHelper, ToggleSwitch } from '~/components';
+import ZapIcon from '~/assets/images/bonds/ZapIcon.svg?react';
+import SettingsIcon from '~/assets/images/SettingsIcon.svg?react';
 
 interface ZapSwitchProps {
   handleZapSwitch: () => void;

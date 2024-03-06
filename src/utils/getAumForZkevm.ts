@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
-import { RPC_PROVIDERS } from 'constants/providers';
-import { getQlpManager } from 'config/index';
-import { formatCompact } from 'utils';
+import { RPC_PROVIDERS } from '~/constants/providers';
+import { getQlpManager } from '~/config/index';
+import { formatCompact } from '~/utils';
 
 const POLYGON_ZKEVM = 1101;
 const USD_DECIMALS = 30;

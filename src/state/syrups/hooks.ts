@@ -1,14 +1,14 @@
 import { ChainId } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'state';
-import { SyrupListInfo, SyrupRaw, SyrupBasic } from 'types/index';
+import { AppState } from '~/state';
+import { SyrupListInfo, SyrupRaw, SyrupBasic } from '~/types/index';
 import { Token } from '@uniswap/sdk';
-import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
-import { getTokenFromAddress } from 'utils';
-import { useTokens } from 'hooks/Tokens';
-import { GlobalValue } from 'constants/index';
-import { EMPTY } from 'constants/v3/addresses';
+import { TokenAddressMap, useSelectedTokenList } from '~/state/lists/hooks';
+import { getTokenFromAddress } from '~/utils';
+import { useTokens } from '~/hooks/Tokens';
+import { GlobalValue } from '~/constants/index';
+import { EMPTY } from '~/constants/v3/addresses';
 
 export class WrappedSyrupInfo implements SyrupBasic {
   public readonly stakingInfo: SyrupRaw;
@@ -177,7 +177,7 @@ export function useSyrupList(url: string | undefined): SyrupInfoAddressMap {
 }
 
 export function useDefaultSyrupList(): SyrupInfoAddressMap {
-  return useSyrupList(process.env.REACT_APP_SYRUP_LIST_DEFAULT_URL);
+  return useSyrupList(import.meta.env.VITE_SYRUP_LIST_DEFAULT_URL);
 }
 
 // returns all downloaded current lists

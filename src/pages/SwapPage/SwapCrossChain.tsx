@@ -2,7 +2,7 @@ import { SquidWidget } from '@0xsquid/widget';
 import { ConfigTheme } from '@0xsquid/widget/widget/core/types/config';
 import { Box, Grid } from '@material-ui/core';
 import React, { useEffect } from 'react';
-import { useIsDarkMode } from 'state/user/hooks';
+import { useIsDarkMode } from '~/state/user/hooks';
 
 const QUICKSWAP = 'Quickswap';
 const QUICKSWAP_V3 = 'Quickswap_v3';

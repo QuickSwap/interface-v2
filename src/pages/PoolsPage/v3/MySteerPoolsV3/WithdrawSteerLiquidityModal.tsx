@@ -7,23 +7,23 @@ import {
   DoubleCurrencyLogo,
   TransactionConfirmationModal,
   TransactionErrorContent,
-} from 'components';
+} from '~/components';
 import { Box, Button } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 import { useTranslation } from 'react-i18next';
-import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
+import useDebouncedChangeHandler from '~/utils/useDebouncedChangeHandler';
 import './SteerLPItemDetails/index.scss';
-import { calculateGasMargin, formatNumber } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import { calculateGasMargin, formatNumber } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JSBI } from '@uniswap/sdk';
-import { useSteerVaultContract } from 'hooks/useContract';
-import { SteerVault } from 'hooks/v3/useSteerData';
-import { useTokenBalance } from 'state/wallet/v3/hooks';
+import { useSteerVaultContract } from '~/hooks/useContract';
+import { SteerVault } from '~/hooks/v3/useSteerData';
+import { useTokenBalance } from '~/state/wallet/v3/hooks';
 import { Token } from '@uniswap/sdk-core';
 
 interface WithdrawSteerLiquidityModalProps {

@@ -1,10 +1,10 @@
 import React from 'react';
-import { useToken } from 'hooks/TokensV3';
-import { unwrappedToken } from 'utils/unwrappedToken';
+import { useToken } from '~/hooks/TokensV3';
+import { unwrappedToken } from '~/utils/unwrappedToken';
 import './index.scss';
-import { usePool } from 'hooks/v3/usePools';
+import { usePool } from '~/hooks/v3/usePools';
 import { Box } from '@material-ui/core';
-import { useV3PositionFromTokenId } from 'hooks/v3/useV3Positions';
+import { useV3PositionFromTokenId } from '~/hooks/v3/useV3Positions';
 import { useTranslation } from 'react-i18next';
 
 export function IsActive({ el }: { el: any }) {

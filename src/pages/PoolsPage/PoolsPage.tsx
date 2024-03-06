@@ -1,16 +1,16 @@
 import React, { lazy, useEffect } from 'react';
 import { Box, Grid } from '@material-ui/core';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
+import HelpIcon from '~/assets/images/HelpIcon1.svg?react';
 import SupplyLiquidity from './SupplyLiquidity';
 import { useTranslation } from 'react-i18next';
-import 'pages/styles/pools.scss';
-import VersionToggle from 'components/Toggle/VersionToggle';
-import { useIsV2 } from 'state/application/hooks';
+import '~/pages/styles/pools.scss';
+import VersionToggle from '~/components/Toggle/VersionToggle';
+import { useIsV2 } from '~/state/application/hooks';
 import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 import { getConfig } from '../../config/index';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { ChainId } from '@uniswap/sdk';
-import { HypeLabAds } from 'components';
+import { HypeLabAds } from '~/components';
 import { useParams } from 'react-router-dom';
 import { SingleTokenSupplyLiquidity } from './SingleToken/SupplyLiquidity';
 
@@ -30,7 +30,7 @@ const PoolsPage: React.FC = () => {
   const params: any = useParams();
   const version = params?.version ?? 'v3';
 
-  const helpURL = process.env.REACT_APP_HELP_URL;
+  const helpURL = import.meta.env.VITE_HELP_URL;
 
   useEffect(() => {
     if (!v2) {

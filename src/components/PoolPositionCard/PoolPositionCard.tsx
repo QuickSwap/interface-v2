@@ -2,18 +2,18 @@ import React, { useMemo, useState } from 'react';
 import { Box } from '@material-ui/core';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Pair } from '@uniswap/sdk';
-import { unwrappedToken } from 'utils/wrappedCurrency';
+import { unwrappedToken } from '~/utils/wrappedCurrency';
 import {
   useStakingInfo,
   getBulkPairData,
   useDualStakingInfo,
-} from 'state/stake/hooks';
-import { DoubleCurrencyLogo } from 'components';
-import { formatAPY, getAPYWithFee, getOneYearFee } from 'utils';
+} from '~/state/stake/hooks';
+import { DoubleCurrencyLogo } from '~/components';
+import { formatAPY, getAPYWithFee, getOneYearFee } from '~/utils';
 import PoolPositionCardDetails from './PoolPositionCardDetails';
-import 'components/styles/PoolPositionCard.scss';
+import '~/components/styles/PoolPositionCard.scss';
 import { Trans, useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 const PoolPositionCard: React.FC<{ pair: Pair }> = ({ pair }) => {

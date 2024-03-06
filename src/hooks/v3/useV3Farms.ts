@@ -6,43 +6,43 @@ import {
   GlobalData,
   IchiVaults,
   blackListMerklFarms,
-} from 'constants/index';
-import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
+} from '~/constants/index';
+import { GAMMA_MASTERCHEF_ADDRESSES } from '~/constants/v3/addresses';
 import {
   useGammaHypervisorContract,
   useMasterChefContract,
   useV3NFTPositionManagerContract,
-} from 'hooks/useContract';
+} from '~/hooks/useContract';
 import { useEffect, useMemo } from 'react';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import {
   calculatePositionWidth,
   getAllDefiedgeStrategies,
   getAllGammaPairs,
   getTokenFromAddress,
   percentageToMultiplier,
-} from 'utils';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
+} from '~/utils';
+import { useUSDCPricesFromAddresses } from '~/utils/useUSDCPrice';
+import QIGammaMasterChef from '~/constants/abis/gamma-masterchef1.json';
 import {
   useSingleCallResult,
   useSingleContractMultipleData,
-} from 'state/multicall/v3/hooks';
+} from '~/state/multicall/v3/hooks';
 import { Result, formatUnits } from 'ethers/lib/utils';
-import { V3Farm } from 'pages/FarmPage/V3/Farms';
+import { V3Farm } from '~/pages/FarmPage/V3/Farms';
 import { useGammaData, useGammaRewards } from './useGammaData';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useSteerVaults } from './useSteerData';
-import { useICHIVaultAPRs, useICHIVaults } from 'hooks/useICHIData';
-import { useDefiEdgeStrategiesAPR } from 'state/mint/v3/hooks';
+import { useICHIVaultAPRs, useICHIVaults } from '~/hooks/useICHIData';
+import { useDefiEdgeStrategiesAPR } from '~/state/mint/v3/hooks';
 import {
   useEternalFarmAprs,
   useEternalFarmPoolAPRs,
   useEternalFarmTvls,
-} from 'hooks/useIncentiveSubgraph';
+} from '~/hooks/useIncentiveSubgraph';
 import { useV3PositionsFromTokenIds } from './useV3Positions';
 import { BigNumber } from 'ethers';
-import { useLastTransactionHash } from 'state/transactions/hooks';
+import { useLastTransactionHash } from '~/state/transactions/hooks';
 
 export const useEternalFarmsFiltered = (
   farms: any[],
@@ -305,7 +305,7 @@ export const useEternalFarmsFiltered = (
 export const useGetMerklFarms = () => {
   const { chainId, account } = useActiveWeb3React();
   const fetchMerklFarms = async () => {
-    const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
+    const merklAPIURL = import.meta.env.VITE_MERKL_API_URL;
     if (!merklAPIURL || !chainId) return [];
     const res = await fetch(
       `${merklAPIURL}?chainIds[]=${chainId}&AMMs[]=quickswapalgebra${

@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Token } from '@uniswap/sdk';
-import { DoubleCurrencyLogo } from 'components';
+import { DoubleCurrencyLogo } from '~/components';
 import { Link } from 'react-router-dom';
-import { formatNumber } from 'utils';
+import { formatNumber } from '~/utils';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import GammaFarmCardDetails from './GammaFarmCardDetails';
-import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
-import { V3Farm } from 'pages/FarmPage/V3/Farms';
+import TotalAPRTooltip from '~/components/TotalAPRToolTip';
+import CircleInfoIcon from '~/assets/images/circleinfo.svg';
+import { V3Farm } from '~/pages/FarmPage/V3/Farms';
 
 const GammaFarmCard: React.FC<{
   data: V3Farm;

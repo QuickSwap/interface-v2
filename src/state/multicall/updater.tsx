@@ -1,13 +1,13 @@
 import { Contract } from '@ethersproject/contracts';
 import { useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useActiveWeb3React } from 'hooks';
-import { useMulticallContract } from 'hooks/useContract';
-import useDebounce from 'hooks/useDebounce';
-import { chunkArray } from 'utils/chunkArray';
-import { retry } from 'utils/retry';
-import { useBlockNumber } from 'state/application/hooks';
-import { AppDispatch, AppState } from 'state';
+import { useActiveWeb3React } from '~/hooks';
+import { useMulticallContract } from '~/hooks/useContract';
+import useDebounce from '~/hooks/useDebounce';
+import { chunkArray } from '~/utils/chunkArray';
+import { retry } from '~/utils/retry';
+import { useBlockNumber } from '~/state/application/hooks';
+import { AppDispatch, AppState } from '~/state';
 import {
   Call,
   errorFetchingMulticallResults,
@@ -43,7 +43,7 @@ async function fetchChunk(
       { blockTag: blockNumber },
     );
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       returnData.forEach(({ gasUsed, returnData, success }: any, i: number) => {
         if (
           !success &&

@@ -7,11 +7,11 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { Swap, AddLiquidity } from 'components';
+import { Swap, AddLiquidity } from '~/components';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config/index';
-import { useActiveWeb3React } from 'hooks';
-import SwapV3Page from 'pages/SwapPage/V3/Swap';
+import { getConfig } from '~/config/index';
+import { useActiveWeb3React } from '~/hooks';
+import SwapV3Page from '~/pages/SwapPage/V3/Swap';
 
 const SWAP_TAB = 0;
 const LIQUIDITY_TAB = 1;

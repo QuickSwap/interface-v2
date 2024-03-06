@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, CircularProgress } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
+import { useSubscribeNewsletter } from '~/hooks/useNewsletterSignup';
 
 const SwapNewsletterSignup: React.FC = () => {
   const { t } = useTranslation();

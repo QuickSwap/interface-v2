@@ -1,5 +1,5 @@
 import { Box } from '@material-ui/core';
-import { ReactComponent as HelpIcon } from 'assets/images/HelpIcon1.svg';
+import HelpIcon from '~/assets/images/HelpIcon1.svg?react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,7 @@ const SwapPageHeader: React.FC<{ proMode: boolean; isTablet: boolean }> = ({
   proMode,
   isTablet,
 }) => {
-  const helpURL = process.env.REACT_APP_HELP_URL;
+  const helpURL = import.meta.env.VITE_HELP_URL;
   const { t } = useTranslation();
 
   return proMode || isTablet ? (

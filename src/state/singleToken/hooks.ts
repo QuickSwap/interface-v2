@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'state';
+import { AppState } from '~/state';
 import { useCallback } from 'react';
 import { selectVault, typeInput } from './actions';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { CHAIN_INFO } from 'constants/v3/chains';
-import { useActiveWeb3React } from 'hooks';
-import { useCurrency } from 'hooks/v3/Tokens';
-import { ICHIVault } from 'hooks/useICHIData';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import { CHAIN_INFO } from '~/constants/v3/chains';
+import { useActiveWeb3React } from '~/hooks';
+import { useCurrency } from '~/hooks/v3/Tokens';
+import { ICHIVault } from '~/hooks/useICHIData';
 
 export function useSingleTokenState(): AppState['singleToken'] {
   return useSelector<AppState, AppState['singleToken']>(

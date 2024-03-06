@@ -1,16 +1,16 @@
 import { Interface, formatUnits } from 'ethers/lib/utils';
-import { useContract, useDefiedgeStrategyContract } from 'hooks/useContract';
+import { useContract, useDefiedgeStrategyContract } from '~/hooks/useContract';
 import { useEffect, useState } from 'react';
 import {
   useMultipleContractSingleData,
   useSingleCallResult,
-} from 'state/multicall/v3/hooks';
-import PoolABI from 'constants/abis/v3/pool.json';
-import { TickMath, tickToPrice } from 'v3lib/utils';
+} from '~/state/multicall/v3/hooks';
+import PoolABI from '~/constants/abis/v3/pool.json';
+import { TickMath, tickToPrice } from '~/v3lib/utils';
 import { BigNumber } from 'ethers';
-import DEFIEDGE_STRATEGY_ABI from 'constants/abis/defiedge-strategy.json';
-import { useActiveWeb3React } from 'hooks';
-import { getAllDefiedgeStrategies } from 'utils';
+import DEFIEDGE_STRATEGY_ABI from '~/constants/abis/defiedge-strategy.json';
+import { useActiveWeb3React } from '~/hooks';
+import { getAllDefiedgeStrategies } from '~/utils';
 import { Token } from '@uniswap/sdk';
 import { useQuery } from '@tanstack/react-query';
 

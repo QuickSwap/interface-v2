@@ -3,7 +3,7 @@ import { BigintIsh, CurrencyAmount, Price, Token } from '@uniswap/sdk-core';
 import {
   POOL_DEPLOYER_ADDRESS,
   UNI_V3_FACTORY_ADDRESS,
-} from 'constants/v3/addresses';
+} from '~/constants/v3/addresses';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
 import {
@@ -13,7 +13,7 @@ import {
   Q192,
   TICK_SPACINGS,
   ZERO,
-} from 'v3lib/utils';
+} from '~/v3lib/utils';
 import { computePoolAddress } from '../utils/computePoolAddress';
 import { LiquidityMath } from '../utils/liquidityMath';
 import { SwapMath } from '../utils/swapMath';

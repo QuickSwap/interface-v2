@@ -1,8 +1,8 @@
 import { Token } from '@uniswap/sdk-core';
-import { TickProcessed } from 'hooks/v3/usePoolTickData';
+import { TickProcessed } from '~/hooks/v3/usePoolTickData';
 import JSBI from 'jsbi';
-import { AllV3TicksQuery } from 'state/data/generated';
-import { tickToPrice } from 'v3lib/utils';
+import { AllV3TicksQuery } from '~/state/data/generated';
+import { tickToPrice } from '~/v3lib/utils';
 
 const PRICE_FIXED_DIGITS = 8;
 

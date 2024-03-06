@@ -1,7 +1,7 @@
 import { namehash } from 'ethers/lib/utils';
 import { useMemo } from 'react';
-import { useSingleCallResult } from 'state/multicall/hooks';
-import { isZero } from 'utils';
+import { useSingleCallResult } from '~/state/multicall/hooks';
+import { isZero } from '~/utils';
 import { useENSRegistrarContract, useENSResolverContract } from './useContract';
 
 /**

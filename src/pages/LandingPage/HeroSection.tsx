@@ -2,21 +2,21 @@ import React, { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { useIsSupportedNetwork } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import { useIsSupportedNetwork } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import {
   useWalletModalToggle,
   useOpenNetworkSelection,
-} from 'state/application/hooks';
+} from '~/state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 
 // To compute dragon's lair
-import { useNewLairInfo } from 'state/stake/hooks';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-import { DLQUICK } from 'constants/v3/addresses';
-import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
+import { useNewLairInfo } from '~/state/stake/hooks';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
+import { DLQUICK } from '~/constants/v3/addresses';
+import { useAnalyticsGlobalData } from '~/hooks/useFetchAnalyticsData';
 
 const HeroSection: React.FC = () => {
   const history = useHistory();

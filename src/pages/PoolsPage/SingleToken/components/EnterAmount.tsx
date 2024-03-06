@@ -1,18 +1,18 @@
 import { Box } from '@material-ui/core';
 import { ETHER, WETH } from '@uniswap/sdk';
-import { CurrencyLogo, DoubleCurrencyLogo, NumericalInput } from 'components';
+import { CurrencyLogo, DoubleCurrencyLogo, NumericalInput } from '~/components';
 import { formatUnits } from 'ethers/lib/utils';
-import { useActiveWeb3React } from 'hooks';
-import { useICHIVaultDepositData } from 'hooks/useICHIData';
+import { useActiveWeb3React } from '~/hooks';
+import { useICHIVaultDepositData } from '~/hooks/useICHIData';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useSingleTokenCurrency,
   useSingleTokenTypeInput,
   useSingleTokenVault,
-} from 'state/singleToken/hooks';
-import { formatNumber } from 'utils';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+} from '~/state/singleToken/hooks';
+import { formatNumber } from '~/utils';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
 
 const SingleTokenEnterAmount: React.FC = () => {
   const { t } = useTranslation();

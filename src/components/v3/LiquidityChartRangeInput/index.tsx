@@ -1,14 +1,17 @@
 import React, { useCallback, useMemo } from 'react';
 import { Currency, Price, Token } from '@uniswap/sdk-core';
-import { Bound } from 'state/mint/v3/actions';
-import { FeeAmount } from 'v3lib/utils';
+import { Bound } from '~/state/mint/v3/actions';
+import { FeeAmount } from '~/v3lib/utils';
 import { PriceFormats } from '../PriceFomatToggler';
 import { useDensityChartData } from './hooks';
-import { useInitialTokenPrice, useInitialUSDPrices } from 'state/mint/v3/hooks';
-import useUSDCPrice, { useUSDCValue } from 'hooks/v3/useUSDCPrice';
+import {
+  useInitialTokenPrice,
+  useInitialUSDPrices,
+} from '~/state/mint/v3/hooks';
+import useUSDCPrice, { useUSDCValue } from '~/hooks/v3/useUSDCPrice';
 import { ZoomLevels } from './types';
 import { Box } from '@material-ui/core';
-import { tryParseAmount } from 'state/swap/v3/hooks';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
 import { format } from 'd3';
 import { Chart } from './Chart';
 import { useTranslation } from 'react-i18next';

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { bondAPIV2BaseURL } from 'constants/index';
+import { bondAPIV2BaseURL } from '~/constants/index';
 
 const getBondNftData = async (
   billNftId: string,

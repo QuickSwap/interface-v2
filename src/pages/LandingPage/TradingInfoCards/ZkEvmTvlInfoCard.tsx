@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
-import { getAumForZkevm } from 'utils/getAumForZkevm';
+import { getAumForZkevm } from '~/utils/getAumForZkevm';
 
 export const ZkEvmTvlInfoCard: React.FC = ({}) => {
   const { t } = useTranslation();

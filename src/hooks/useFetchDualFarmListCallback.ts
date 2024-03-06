@@ -1,12 +1,12 @@
 import { nanoid } from '@reduxjs/toolkit';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from 'state';
-import resolveENSContentHash from 'utils/resolveENSContentHash';
-import { useActiveWeb3React } from 'hooks';
-import { fetchDualFarmList } from 'state/dualfarms/actions';
-import getDualFarmList from 'utils/getDualFarmList';
-import { DualFarmListInfo } from 'types/index';
+import { AppDispatch } from '~/state';
+import resolveENSContentHash from '~/utils/resolveENSContentHash';
+import { useActiveWeb3React } from '~/hooks';
+import { fetchDualFarmList } from '~/state/dualfarms/actions';
+import getDualFarmList from '~/utils/getDualFarmList';
+import { DualFarmListInfo } from '~/types/index';
 
 export function useFetchDualFarmListCallback(): (
   listUrl: string,

@@ -2,9 +2,9 @@ import React from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
 import { CheckCircle, Triangle } from 'react-feather';
 
-import { useActiveWeb3React } from 'hooks';
-import { getEtherscanLink } from 'utils';
-import { useAllTransactions } from 'state/transactions/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { getEtherscanLink } from '~/utils';
+import { useAllTransactions } from '~/state/transactions/hooks';
 
 interface TransactionProps {
   hash: string;

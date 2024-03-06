@@ -1,5 +1,5 @@
 import React from 'react';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 export function useInfoLiquidity() {
@@ -9,7 +9,9 @@ export function useInfoLiquidity() {
     if (!chainId) return null;
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/popular-pools?chainId=${chainId}`,
+        `${
+          import.meta.env.VITE_LEADERBOARD_APP_URL
+        }/utils/popular-pools?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;

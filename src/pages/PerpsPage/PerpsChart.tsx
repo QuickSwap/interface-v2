@@ -1,10 +1,10 @@
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import React from 'react';
-import { useIsV2 } from 'state/application/hooks';
-import { Field } from 'state/swap/actions';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { useDerivedSwapInfo } from 'state/swap/hooks';
+import { useIsV2 } from '~/state/application/hooks';
+import { Field } from '~/state/swap/actions';
+import { wrappedCurrency } from '~/utils/wrappedCurrency';
+import { useDerivedSwapInfo } from '~/state/swap/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 const SwapProChart: React.FC<{
@@ -18,7 +18,7 @@ const SwapProChart: React.FC<{
   const getPairId = async () => {
     if (token1 && token2) {
       const res = await fetch(
-        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/pair-address/${token1.address}/${token2.address}?chainId=${chainId}`,
+        `${import.meta.env.VITE_LEADERBOARD_APP_URL}/utils/pair-address/${token1.address}/${token2.address}?chainId=${chainId}`,
       );
       if (!res.ok) {
         return null;

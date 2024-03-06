@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { ZapType } from 'constants/index';
+import { ZapType } from '~/constants/index';
 import { useSelector } from 'react-redux';
-import { useAllTokens, useCurrency } from 'hooks/v3/Tokens';
-import { isAddress } from 'utils';
+import { useAllTokens, useCurrency } from '~/hooks/v3/Tokens';
+import { isAddress } from '~/utils';
 import { AppState } from '../index';
 import {
   Field,
@@ -19,20 +19,20 @@ import {
   useTrackedTokenPairs,
   useUserZapSlippageTolerance,
 } from '../user/hooks';
-import { useAppDispatch } from 'state/hooks';
+import { useAppDispatch } from '~/state/hooks';
 import { Currency, Token } from '@uniswap/sdk-core';
-import { V3TradeState, useBestV3TradeExactIn } from 'hooks/v3/useBestV3Trade';
-import { usePair } from 'data/Reserves';
-import { useCurrencyBalances } from 'state/wallet/v3/hooks';
-import { useTotalSupply } from 'data/TotalSupply';
-import useENS from 'hooks/useENS';
+import { V3TradeState, useBestV3TradeExactIn } from '~/hooks/v3/useBestV3Trade';
+import { usePair } from '~/data/Reserves';
+import { useCurrencyBalances } from '~/state/wallet/v3/hooks';
+import { useTotalSupply } from '~/data/TotalSupply';
+import useENS from '~/hooks/useENS';
 import JSBI from 'jsbi';
-import { BANANA_ADDRESSES, toV3Token } from 'constants/v3/addresses';
+import { BANANA_ADDRESSES, toV3Token } from '~/constants/v3/addresses';
 import { mergeBestZaps } from './mergeBestZaps';
 import BigNumber from 'bignumber.js';
 import { ChainId } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
-import { tryParseAmount } from 'state/swap/v3/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
 import { zapInputTokens } from '@ape.swap/apeswap-lists';
 
 export function useZapState(): AppState['zap'] {

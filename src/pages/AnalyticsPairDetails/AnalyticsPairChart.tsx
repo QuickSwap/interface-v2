@@ -9,13 +9,13 @@ import {
   getChartDates,
   getYAXISValuesAnalytics,
   getFormattedPercent,
-} from 'utils';
-import { AreaChart, ChartType, MixedChart, ColumnChart } from 'components';
-import { GlobalConst, GlobalData } from 'constants/index';
+} from '~/utils';
+import { AreaChart, ChartType, MixedChart, ColumnChart } from '~/components';
+import { GlobalConst, GlobalData } from '~/constants/index';
 import { useTranslation } from 'react-i18next';
 import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 const CHART_VOLUME = 0;
@@ -49,14 +49,14 @@ const AnalyticsPairChart: React.FC<{
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const [priceChartTokenIdx, setPriceChartTokenIdx] = useState(0);
-  const apyVisionURL = process.env.REACT_APP_APY_VISION_BASE_URL;
-  const apyVisionAccessToken = process.env.REACT_APP_APY_VISION_ACCESS_TOKEN;
+  const apyVisionURL = import.meta.env.VITE_APY_VISION_BASE_URL;
+  const apyVisionAccessToken = import.meta.env.VITE_APY_VISION_ACCESS_TOKEN;
 
   const fetchChartData = async () => {
     try {
       const res = await fetch(
         `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
+          import.meta.env.VITE_LEADERBOARD_APP_URL
         }/analytics/top-pair-chart-data/${pairAddress}/${durationIndex}/${version}?chainId=${chainId}${
           isUni ? '&isUni=true' : ''
         }`,

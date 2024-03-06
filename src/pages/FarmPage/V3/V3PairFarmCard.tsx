@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
-import { CustomModal, DoubleCurrencyLogo } from 'components';
-import { formatNumber } from 'utils';
-import APRHover from 'assets/images/aprHover.png';
+import { CustomModal, DoubleCurrencyLogo } from '~/components';
+import { formatNumber } from '~/utils';
+import APRHover from '~/assets/images/aprHover.png';
 import { useTranslation } from 'react-i18next';
-import TotalAPRTooltip from 'components/TotalAPRToolTip';
+import TotalAPRTooltip from '~/components/TotalAPRToolTip';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { V3Farm } from './Farms';
 import V3GammaFarmCardDetails from './V3GammaFarmCardDetails';
 import V3SteerFarmCardDetails from './V3SteerFarmCardDetails';
-import { FarmModal } from 'components/StakeModal';
-import { FarmingType } from 'models/enums';
-import Loader from 'components/Loader';
+import { FarmModal } from '~/components/StakeModal';
+import { FarmingType } from '~/models/enums';
+import Loader from '~/components/Loader';
 
 interface Props {
   farm: V3Farm;

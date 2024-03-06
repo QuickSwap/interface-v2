@@ -9,11 +9,11 @@ import {
   getChartDates,
   getLimitedData,
   getFormattedPercent,
-} from 'utils';
-import { GlobalConst, GlobalData } from 'constants/index';
-import { AreaChart, ChartType } from 'components';
+} from '~/utils';
+import { GlobalConst, GlobalData } from '~/constants/index';
+import { AreaChart, ChartType } from '~/components';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from '~/hooks';
 import { useQuery } from '@tanstack/react-query';
 dayjs.extend(utc);
 
@@ -29,7 +29,7 @@ const AnalyticsLiquidityChart: React.FC<{
 
   const fetchChartData = async () => {
     const res = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
+      `${import.meta.env.VITE_LEADERBOARD_APP_URL}/analytics/chart-data/${durationIndex}/${version}?chainId=${chainId}`,
     );
     if (!res.ok) {
       return null;

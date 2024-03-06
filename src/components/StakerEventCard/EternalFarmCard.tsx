@@ -1,20 +1,20 @@
 import React from 'react';
-import { DoubleCurrencyLogo } from 'components';
+import { DoubleCurrencyLogo } from '~/components';
 import Loader from '../Loader';
 import { ChainId, Token } from '@uniswap/sdk';
 import { Link } from 'react-router-dom';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { formatUnits } from 'ethers/lib/utils';
-import { formatReward } from 'utils/formatReward';
-import { formatCompact, formatNumber, getTokenFromAddress } from 'utils';
-import { Aprs } from 'models/interfaces';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { formatReward } from '~/utils/formatReward';
+import { formatCompact, formatNumber, getTokenFromAddress } from '~/utils';
+import { Aprs } from '~/models/interfaces';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
-import TotalAPRTooltip from 'components/TotalAPRToolTip';
-import { useMaticPrice } from 'state/application/hooks';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import CircleInfoIcon from '~/assets/images/circleinfo.svg';
+import TotalAPRTooltip from '~/components/TotalAPRToolTip';
+import { useMaticPrice } from '~/state/application/hooks';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 
 interface EternalFarmCardProps {
   active?: boolean;

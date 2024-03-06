@@ -1,5 +1,5 @@
 import React from 'react';
-import Badge, { BadgeVariant } from 'components/v3/Badge';
+import Badge, { BadgeVariant } from '~/components/v3/Badge';
 import { Error } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 

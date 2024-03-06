@@ -3,11 +3,11 @@ import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
 import Chart from 'react-apexcharts';
-import { formatCompact } from 'utils';
+import { formatCompact } from '~/utils';
 import dayjs from 'dayjs';
-import { useLHAnalyticsDaily } from 'hooks/useLHAnalytics';
-import ChartType from 'components/ChartType';
-import { GlobalData, GlobalConst } from 'constants/index';
+import { useLHAnalyticsDaily } from '~/hooks/useLHAnalytics';
+import ChartType from '~/components/ChartType';
+import { GlobalData, GlobalConst } from '~/constants/index';
 
 const LiquidityHubAnalyticsTotal: React.FC = () => {
   const { t } = useTranslation();

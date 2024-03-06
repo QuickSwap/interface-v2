@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
-import { formatNumber } from 'utils';
-import { CurrencyLogo } from 'components';
-import Badge from 'components/v3/Badge';
+import { formatNumber } from '~/utils';
+import { CurrencyLogo } from '~/components';
+import Badge from '~/components/v3/Badge';
 import { Button } from '@material-ui/core';
 import IncreaseGammaLiquidityModal from '../IncreaseGammaLiquidityModal';
 import WithdrawGammaLiquidityModal from '../WithdrawGammaLiquidityModal';
 import { JSBI, Token } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { useActiveWeb3React } from '~/hooks';
+import { useTokenBalance } from '~/state/wallet/hooks';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
 
 const GammaLPItemDetails: React.FC<{ gammaPosition: any }> = ({
   gammaPosition,

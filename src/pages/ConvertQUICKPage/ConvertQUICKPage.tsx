@@ -2,30 +2,30 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Button, CircularProgress } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
-import QUICKIcon from 'assets/images/quickIcon.svg';
-import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
+import QUICKIcon from '~/assets/images/quickIcon.svg';
+import QUICKV2Icon from '~/assets/images/QUICKV2.svg?react';
 import { ArrowForward, ArrowDownward } from '@material-ui/icons';
 import {
   NumericalInput,
   TransactionErrorContent,
   TransactionConfirmationModal,
   ConfirmationModalContent,
-} from 'components';
-import { formatTokenAmount } from 'utils';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
-import { GlobalConst } from 'constants/index';
-import { useQUICKConversionContract } from 'hooks/useContract';
+} from '~/components';
+import { formatTokenAmount } from '~/utils';
+import { useTokenBalance } from '~/state/wallet/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { useApproveCallback, ApprovalState } from '~/hooks/useApproveCallback';
+import { GlobalConst } from '~/constants/index';
+import { useQUICKConversionContract } from '~/hooks/useContract';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
-import { tryParseAmount } from 'state/swap/hooks';
-import 'pages/styles/convertQUICK.scss';
+} from '~/state/transactions/hooks';
+import { tryParseAmount } from '~/state/swap/hooks';
+import '~/pages/styles/convertQUICK.scss';
 import { ChainId } from '@uniswap/sdk';
-import { OLD_QUICK } from 'constants/v3/addresses';
-import { getConfig } from 'config/index';
+import { OLD_QUICK } from '~/constants/v3/addresses';
+import { getConfig } from '~/config/index';
 import { useHistory } from 'react-router-dom';
 
 interface ConvertQUICKPageProps {

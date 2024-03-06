@@ -1,28 +1,31 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { Currency } from '@uniswap/sdk-core';
 import { PoolStats } from '../PoolStats';
-import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
-import { Presets } from 'state/mint/v3/reducer';
+import {
+  IDerivedMintInfo,
+  useV3MintActionHandlers,
+} from '~/state/mint/v3/hooks';
+import { Presets } from '~/state/mint/v3/reducer';
 import { Box } from '@material-ui/core';
-import { PoolState } from 'hooks/v3/usePools';
-import Loader from 'components/Loader';
-import { fetchPoolsAPR } from 'utils/api';
-import { computePoolAddress } from 'v3lib/utils/computePoolAddress';
+import { PoolState } from '~/hooks/v3/usePools';
+import Loader from '~/components/Loader';
+import { fetchPoolsAPR } from '~/utils/api';
+import { computePoolAddress } from '~/v3lib/utils/computePoolAddress';
 import {
   POOL_DEPLOYER_ADDRESS,
   UNI_V3_FACTORY_ADDRESS,
-} from 'constants/v3/addresses';
-import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
-import PoolABI from 'constants/abis/v3/pool.json';
+} from '~/constants/v3/addresses';
+import GammaPairABI from '~/constants/abis/gamma-hypervisor.json';
+import PoolABI from '~/constants/abis/v3/pool.json';
 import './index.scss';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { Interface } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
-import { useMultipleContractSingleData } from 'state/multicall/hooks';
-import { GlobalConst, unipilotVaultTypes } from 'constants/index';
-import { TickMath } from 'v3lib/utils';
-import { SteerVault } from 'hooks/v3/useSteerData';
-import { calculatePositionWidth, percentageToMultiplier } from 'utils';
+import { useMultipleContractSingleData } from '~/state/multicall/hooks';
+import { GlobalConst, unipilotVaultTypes } from '~/constants/index';
+import { TickMath } from '~/v3lib/utils';
+import { SteerVault } from '~/hooks/v3/useSteerData';
+import { calculatePositionWidth, percentageToMultiplier } from '~/utils';
 
 export interface IPresetArgs {
   type: Presets;

@@ -1,10 +1,10 @@
 import { Currency } from '@uniswap/sdk-core';
-import { useActiveWeb3React } from 'hooks';
-import { Pool } from 'v3lib/entities/pool';
-import { Route } from 'v3lib/entities/route';
+import { useActiveWeb3React } from '~/hooks';
+import { Pool } from '~/v3lib/entities/pool';
+import { Route } from '~/v3lib/entities/route';
 import { useMemo } from 'react';
 import { useV3SwapPools } from './useV3SwapPools';
-import { useUserSingleHopOnly } from 'state/user/hooks';
+import { useUserSingleHopOnly } from '~/state/user/hooks';
 import { ChainId } from '@uniswap/sdk';
 
 /**

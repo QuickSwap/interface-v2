@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.scss';
 import { Box } from '@material-ui/core';
-import { CustomTooltip } from 'components';
+import { CustomTooltip } from '~/components';
 
 export enum BadgeVariant {
   DEFAULT = 'DEFAULT',

@@ -1,10 +1,10 @@
 import { WETH, ETHER } from '@uniswap/sdk';
 import { Currency } from '@uniswap/sdk-core';
 import { useMemo, useState } from 'react';
-import { tryParseAmount } from 'state/swap/v3/hooks';
-import { useTransactionAdder } from 'state/transactions/hooks';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
-import { useActiveWeb3React } from 'hooks';
+import { tryParseAmount } from '~/state/swap/v3/hooks';
+import { useTransactionAdder } from '~/state/transactions/hooks';
+import { useCurrencyBalance } from '~/state/wallet/v3/hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { useWETHContract } from './useContract';
 
 export enum WrapType {

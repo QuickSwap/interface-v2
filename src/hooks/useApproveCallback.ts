@@ -14,24 +14,24 @@ import {
   Currency,
 } from '@uniswap/sdk-core';
 import { useCallback, useMemo } from 'react';
-import { useTokenAllowance, useTokenAllowanceV3 } from 'data/Allowances';
-import { Field } from 'state/swap/actions';
+import { useTokenAllowance, useTokenAllowanceV3 } from '~/data/Allowances';
+import { Field } from '~/state/swap/actions';
 import {
   useTransactionAdder,
   useHasPendingApproval,
-} from 'state/transactions/hooks';
-import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { calculateGasMargin, calculateGasMarginBonus } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+} from '~/state/transactions/hooks';
+import { computeSlippageAdjustedAmounts } from '~/utils/prices';
+import { calculateGasMargin, calculateGasMarginBonus } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import { useTokenContract } from './useContract';
 import {
   PARASWAP_PROXY_ROUTER_ADDRESS,
   V2_ROUTER_ADDRESS,
   SWAP_ROUTER_ADDRESS,
-} from 'constants/v3/addresses';
+} from '~/constants/v3/addresses';
 import { OptimalRate } from '@paraswap/sdk';
-import { ONE } from 'v3lib/utils';
-import { useIsInfiniteApproval } from 'state/user/hooks';
+import { ONE } from '~/v3lib/utils';
+import { useIsInfiniteApproval } from '~/state/user/hooks';
 
 export enum ApprovalState {
   UNKNOWN,

@@ -1,10 +1,10 @@
 import { Box, Grid } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 
-import { formatCompact } from 'utils';
-import { useNewLairInfo } from 'state/stake/hooks';
-import { DLQUICK } from 'constants/v3/addresses';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { formatCompact } from '~/utils';
+import { useNewLairInfo } from '~/state/stake/hooks';
+import { DLQUICK } from '~/constants/v3/addresses';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
 
 import { useTranslation } from 'react-i18next';
 import React, { useMemo } from 'react';

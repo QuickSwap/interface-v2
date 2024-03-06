@@ -1,11 +1,11 @@
 import React from 'react';
 
-import NewTag from 'assets/images/NewTag.png';
-import SparkleLeft from 'assets/images/SparkleLeft.svg';
-import SparkleRight from 'assets/images/SparkleRight.svg';
-import SparkleTop from 'assets/images/SparkleTop.svg';
-import SparkleBottom from 'assets/images/SparkleBottom.svg';
-import 'components/styles/Header.scss';
+import NewTag from '~/assets/images/NewTag.png';
+import SparkleLeft from '~/assets/images/SparkleLeft.svg';
+import SparkleRight from '~/assets/images/SparkleRight.svg';
+import SparkleTop from '~/assets/images/SparkleTop.svg';
+import SparkleBottom from '~/assets/images/SparkleBottom.svg';
+import '~/components/styles/Header.scss';
 
 export const NewSparkleTag: React.FC = () => {
   return (

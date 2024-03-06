@@ -1,10 +1,10 @@
 import { ChainId, ETHER, JSBI, WETH } from '@uniswap/sdk';
-import { IchiVaults } from 'constants/index';
-import { useActiveWeb3React } from 'hooks';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
-import { getFixedValue, getTokenFromAddress } from 'utils';
-import ICHIVaultABI from 'constants/abis/ichi-vault.json';
+import { IchiVaults } from '~/constants/index';
+import { useActiveWeb3React } from '~/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
+import { useMultipleContractSingleData } from '~/state/multicall/v3/hooks';
+import { getFixedValue, getTokenFromAddress } from '~/utils';
+import ICHIVaultABI from '~/constants/abis/ichi-vault.json';
 import { Interface, formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useEffect, useMemo } from 'react';
 import {
@@ -20,9 +20,9 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { Web3Provider } from '@ethersproject/providers';
 import { Currency, Token } from '@uniswap/sdk-core';
-import { useCurrencyBalance } from 'state/wallet/hooks';
-import { useLastTransactionHash } from 'state/transactions/hooks';
-import { toV3Token } from 'constants/v3/addresses';
+import { useCurrencyBalance } from '~/state/wallet/hooks';
+import { useLastTransactionHash } from '~/state/transactions/hooks';
+import { toV3Token } from '~/constants/v3/addresses';
 import { BigNumber } from 'ethers';
 
 export interface ICHIVault {
@@ -49,7 +49,9 @@ const fetchVaultAPR = async (
 ) => {
   try {
     const vaultFeesRes = await fetch(
-      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/ichi-vault-fees?address=${vault.address}&chainId=${chainId}`,
+      `${
+        import.meta.env.VITE_LEADERBOARD_APP_URL
+      }/utils/ichi-vault-fees?address=${vault.address}&chainId=${chainId}`,
     );
     if (vaultFeesRes.ok) {
       const vaultFeesData = await vaultFeesRes.json();

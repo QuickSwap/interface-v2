@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Tab, Tabs } from '@material-ui/core';
-import 'components/styles/ButtonSwitch.scss';
+import '~/components/styles/ButtonSwitch.scss';
 
 interface Item {
   label: React.ReactNode;

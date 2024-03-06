@@ -1,7 +1,7 @@
 import React from 'react';
-import useHttpLocations from 'hooks/useHttpLocations';
+import useHttpLocations from '~/hooks/useHttpLocations';
 
-import { Logo } from 'components';
+import { Logo } from '~/components';
 
 interface ListLogoProps {
   logoURI: string;

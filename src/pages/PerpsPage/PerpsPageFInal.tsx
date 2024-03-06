@@ -7,7 +7,7 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import './index.css';
 import '@radix-ui/themes/styles.css';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React } from '~/hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import { Account } from './Account';
 import { Assets } from './Assets';
@@ -19,7 +19,7 @@ import { Trades } from './Trades';
 import { JsonRpcSigner } from '@ethersproject/providers';
 import { Web3ReactProvider } from '@web3-react/core';
 import PerpsChart from './PerpsChart';
-import { V2_MATIC_USDT_PAIR } from 'constants/v3/addresses';
+import { V2_MATIC_USDT_PAIR } from '~/constants/v3/addresses';
 import { AdvancedChart } from 'react-tradingview-embed';
 
 const Item = styled(Box)(({ theme }) => ({

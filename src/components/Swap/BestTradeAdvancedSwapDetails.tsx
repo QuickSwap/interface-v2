@@ -2,18 +2,18 @@ import { Currency, Fraction, Percent } from '@uniswap/sdk';
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { useUserSlippageTolerance } from 'state/user/hooks';
-import { computePriceImpact } from 'utils/prices';
+import { useUserSlippageTolerance } from '~/state/user/hooks';
+import { computePriceImpact } from '~/utils/prices';
 import {
   QuestionHelper,
   FormattedPriceImpact,
   CurrencyLogo,
   SettingsModal,
-} from 'components';
-import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
-import { basisPointsToPercent } from 'utils';
+} from '~/components';
+import EditIcon from '~/assets/images/EditIcon.svg?react';
+import { basisPointsToPercent } from '~/utils';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
-import { ONE } from 'v3lib/utils';
+import { ONE } from '~/v3lib/utils';
 
 interface TradeSummaryProps {
   optimalRate: OptimalRate;

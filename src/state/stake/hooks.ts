@@ -8,34 +8,34 @@ import {
 } from '@uniswap/sdk';
 import dayjs from 'dayjs';
 import { useMemo, useEffect, useState } from 'react';
-import { usePairs } from 'data/Reserves';
-import { GlobalConst, GlobalValue } from 'constants/index';
+import { usePairs } from '~/data/Reserves';
+import { GlobalConst, GlobalValue } from '~/constants/index';
 import {
   STAKING_REWARDS_INTERFACE,
   STAKING_DUAL_REWARDS_INTERFACE,
-} from 'constants/abis/staking-rewards';
-import { useActiveWeb3React } from 'hooks';
+} from '~/constants/abis/staking-rewards';
+import { useActiveWeb3React } from '~/hooks';
 import {
   CallState,
   NEVER_RELOAD,
   useMultipleContractSingleData,
   useSingleCallResult,
-} from 'state/multicall/hooks';
-import { tryParseAmount } from 'state/swap/hooks';
+} from '~/state/multicall/hooks';
+import { tryParseAmount } from '~/state/swap/hooks';
 import Web3 from 'web3';
 import {
   useLairContract,
   useNewLairContract,
   useNewQUICKContract,
   useQUICKContract,
-} from 'hooks/useContract';
+} from '~/hooks/useContract';
 import {
   useUSDCPrices,
   useUSDCPricesFromAddresses,
   useUSDCPricesToken,
-} from 'utils/useUSDCPrice';
-import { unwrappedToken } from 'utils/wrappedCurrency';
-import { useTotalSupplys } from 'data/TotalSupply';
+} from '~/utils/useUSDCPrice';
+import { unwrappedToken } from '~/utils/wrappedCurrency';
+import { useTotalSupplys } from '~/data/TotalSupply';
 import {
   getDaysCurrentYear,
   getFarmLPToken,
@@ -43,7 +43,7 @@ import {
   getSyrupLPToken,
   initTokenAmountFromCallResult,
   getCallStateResult,
-} from 'utils';
+} from '~/utils';
 
 import {
   SyrupInfo,
@@ -52,10 +52,10 @@ import {
   DualStakingInfo,
   StakingBasic,
   DualStakingBasic,
-} from 'types/index';
-import { useDefaultFarmList } from 'state/farms/hooks';
-import { useDefaultDualFarmList } from 'state/dualfarms/hooks';
-import { useDefaultSyrupList } from 'state/syrups/hooks';
+} from '~/types/index';
+import { useDefaultFarmList } from '~/state/farms/hooks';
+import { useDefaultDualFarmList } from '~/state/dualfarms/hooks';
+import { useDefaultSyrupList } from '~/state/syrups/hooks';
 import { Contract } from '@ethersproject/contracts';
 import {
   DLDQUICK,
@@ -66,9 +66,9 @@ import {
   NEW_QUICK,
   OLD_DQUICK,
   OLD_QUICK,
-} from 'constants/v3/addresses';
+} from '~/constants/v3/addresses';
 import { getConfig } from '../../config/index';
-import { useDefaultCNTFarmList } from 'state/cnt/hooks';
+import { useDefaultCNTFarmList } from '~/state/cnt/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 const web3 = new Web3('https://polygon-rpc.com/');
@@ -628,7 +628,9 @@ export const getBulkPairData = async (
   pairListStr: string,
 ) => {
   const res = await fetch(
-    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/bulk-pair-data?chainId=${chainId}&addresses=${pairListStr}`,
+    `${
+      import.meta.env.VITE_LEADERBOARD_APP_URL
+    }/utils/bulk-pair-data?chainId=${chainId}&addresses=${pairListStr}`,
   );
   if (!res.ok) {
     return;
@@ -648,7 +650,9 @@ export const getBulkPairData = async (
 
 const getOneDayVolume = async (version: string, chainId: ChainId) => {
   const res = await fetch(
-    `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/oneDayVolume?chainId=${chainId}`,
+    `${
+      import.meta.env.VITE_LEADERBOARD_APP_URL
+    }/utils/oneDayVolume?chainId=${chainId}`,
   );
   if (!res.ok) {
     return;

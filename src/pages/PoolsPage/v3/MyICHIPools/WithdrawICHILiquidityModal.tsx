@@ -7,22 +7,22 @@ import {
   DoubleCurrencyLogo,
   TransactionConfirmationModal,
   TransactionErrorContent,
-} from 'components';
+} from '~/components';
 import { Box, Button } from '@material-ui/core';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 import { useTranslation } from 'react-i18next';
-import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
+import useDebouncedChangeHandler from '~/utils/useDebouncedChangeHandler';
 import './ICHILPItemDetails/index.scss';
-import 'components/v3/RemoveLiquidityV3/index.scss';
-import { formatNumber } from 'utils';
-import { useActiveWeb3React } from 'hooks';
+import '~/components/v3/RemoveLiquidityV3/index.scss';
+import { formatNumber } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
-} from 'state/transactions/hooks';
+} from '~/state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JSBI } from '@uniswap/sdk';
-import { ICHIVault } from 'hooks/useICHIData';
+import { ICHIVault } from '~/hooks/useICHIData';
 import { SupportedDex, withdraw } from '@ichidao/ichi-vaults-sdk';
 import { BigNumber } from 'ethers';
 

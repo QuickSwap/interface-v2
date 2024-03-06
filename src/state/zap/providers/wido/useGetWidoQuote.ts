@@ -3,10 +3,10 @@ import { quote, QuoteResult } from 'wido';
 import { useSelector } from 'react-redux';
 import { ChainId } from '@uniswap/sdk';
 import { ZapVersion } from '@ape.swap/apeswap-lists';
-import { convertToTokenValue } from 'utils';
-import { AppState } from 'state';
-import { BOND_QUERY_KEYS } from 'constants/index';
-import { useActiveWeb3React } from 'hooks';
+import { convertToTokenValue } from '~/utils';
+import { AppState } from '~/state';
+import { BOND_QUERY_KEYS } from '~/constants/index';
+import { useActiveWeb3React } from '~/hooks';
 
 export const getWidoQuote = async ({
   inputTokenAddress,

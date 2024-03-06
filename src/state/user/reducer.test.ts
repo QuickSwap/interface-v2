@@ -1,6 +1,6 @@
 import { createStore, Store } from 'redux';
-import { GlobalConst } from 'constants/index';
-import { updateVersion } from 'state/global/actions';
+import { GlobalConst } from '~/constants/index';
+import { updateVersion } from '~/state/global/actions';
 import reducer, { initialState, UserState } from './reducer';
 
 describe('swap reducer', () => {

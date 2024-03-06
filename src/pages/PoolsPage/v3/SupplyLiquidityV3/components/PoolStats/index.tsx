@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import Loader from 'components/Loader';
+import Loader from '~/components/Loader';
 import { Box } from '@material-ui/core';
 import './index.scss';
 import { useTranslation } from 'react-i18next';

@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
-import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
+import { useActiveWeb3React, useV2LiquidityPools } from '~/hooks';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config/index';
-import { GlobalConst } from 'constants/index';
-import CustomTabSwitch from 'components/v3/CustomTabSwitch';
+import { getConfig } from '~/config/index';
+import { GlobalConst } from '~/constants/index';
+import CustomTabSwitch from '~/components/v3/CustomTabSwitch';
 import {
   useGammaPositionsCount,
   useV3Positions,
@@ -13,8 +13,8 @@ import {
   useV3SteerPositionsCount,
   useICHIPositionsCount,
   useUnipilotPositionsCount,
-} from 'hooks/v3/useV3Positions';
-import Loader from 'components/Loader';
+} from '~/hooks/v3/useV3Positions';
+import Loader from '~/components/Loader';
 import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
 import MyGammaPoolsV3 from '../MyGammaPoolsV3';
 import FilterPanelItem from '../FilterPanelItem';

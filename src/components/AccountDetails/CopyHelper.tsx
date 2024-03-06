@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import useCopyClipboard from 'hooks/useCopyClipboard';
+import useCopyClipboard from '~/hooks/useCopyClipboard';
 import { CheckCircle } from 'react-feather';
 import { useTranslation } from 'react-i18next';
-import { ReactComponent as CopyIcon } from 'assets/images/CopyIcon.svg';
+import CopyIcon from '~/assets/images/CopyIcon.svg?react';
 
 interface CopyHelperProps {
   toCopy: string;

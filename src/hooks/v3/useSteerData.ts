@@ -1,37 +1,37 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChainId, Token as TokenV2 } from '@uniswap/sdk';
-import { getConfig } from 'config/index';
+import { getConfig } from '~/config/index';
 import {
   useSteerPeripheryContract,
   useSteerVaultContract,
   useSteerVaultRegistryContract,
-} from 'hooks/useContract';
+} from '~/hooks/useContract';
 import { useMemo } from 'react';
 import {
   useMultipleContractSingleData,
   useSingleCallResult,
   useSingleContractMultipleData,
-} from 'state/multicall/v3/hooks';
+} from '~/state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
-import { useSelectedTokenList } from 'state/lists/hooks';
+import { useSelectedTokenList } from '~/state/lists/hooks';
 import {
   calculatePositionWidth,
   getSteerDexName,
   getTokenFromAddress,
   percentageToMultiplier,
-} from 'utils';
-import { toV3Token } from 'constants/v3/addresses';
+} from '~/utils';
+import { toV3Token } from '~/constants/v3/addresses';
 import { Token } from '@uniswap/sdk-core';
-import { GlobalConst, GlobalData } from 'constants/index';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
-import PoolABI from 'constants/abis/v3/pool.json';
-import UniV3PoolABI from 'constants/abis/v3/univ3Pool.json';
-import { ERC20_ABI } from 'constants/abis/erc20';
-import SteerVaultABI from 'constants/abis/steer-vault.json';
-import { Presets } from 'state/mint/v3/reducer';
-import { useActiveWeb3React } from 'hooks';
+import { GlobalConst, GlobalData } from '~/constants/index';
+import { useUSDCPricesFromAddresses } from '~/utils/useUSDCPrice';
+import STEER_STAKING_ABI from '~/constants/abis/steer-staking.json';
+import PoolABI from '~/constants/abis/v3/pool.json';
+import UniV3PoolABI from '~/constants/abis/v3/univ3Pool.json';
+import { ERC20_ABI } from '~/constants/abis/erc20';
+import SteerVaultABI from '~/constants/abis/steer-vault.json';
+import { Presets } from '~/state/mint/v3/reducer';
+import { useActiveWeb3React } from '~/hooks';
 
 export interface SteerVault {
   address: string;
@@ -64,7 +64,7 @@ export const useSteerVaults = (chainId: ChainId) => {
   const steerAvailable = config['steer']['available'];
   const tokenMap = useSelectedTokenList();
   const fetchSteerPools = async () => {
-    const steerAPIURL = process.env.REACT_APP_STEER_API_URL;
+    const steerAPIURL = import.meta.env.VITE_STEER_API_URL;
     if (!steerAvailable || !chainId || !steerAPIURL) return [];
     const res = await fetch(
       `${steerAPIURL}/getSmartPools?chainId=${chainId}&dexName=${getSteerDexName(
@@ -345,7 +345,7 @@ export const useSteerStakingPools = (chainId: ChainId, farmStatus?: string) => {
   const config = getConfig(chainId);
   const steerAvailable = config['steer']['available'];
   const fetchSteerStakingPools = async () => {
-    const apiURL = process.env.REACT_APP_STEER_STAKING_POOLS_URL;
+    const apiURL = import.meta.env.VITE_STEER_STAKING_POOLS_URL;
     if (!steerAvailable || !chainId || !apiURL) return [];
     const res = await fetch(apiURL);
     const data = await res.json();

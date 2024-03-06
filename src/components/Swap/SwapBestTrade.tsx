@@ -18,42 +18,42 @@ import {
   useDerivedSwapInfo,
   useSwapActionHandlers,
   useSwapState,
-} from 'state/swap/hooks';
+} from '~/state/swap/hooks';
 import {
   useExpertModeManager,
   useSelectedWallet,
   useUserSlippageTolerance,
-} from 'state/user/hooks';
-import { Field } from 'state/swap/actions';
+} from '~/state/user/hooks';
+import { Field } from '~/state/swap/actions';
 import { useHistory } from 'react-router-dom';
-import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
+import { CurrencyInput, ConfirmSwapModal, AddressInput } from '~/components';
 import {
   useActiveWeb3React,
   useConnectWallet,
   useGetConnection,
   useIsProMode,
   useMasaAnalytics,
-} from 'hooks';
+} from '~/hooks';
 import {
   ApprovalState,
   useApproveCallbackFromBestTrade,
-} from 'hooks/useApproveCallback';
-import { useTransactionFinalizer } from 'state/transactions/hooks';
-import useENSAddress from 'hooks/useENSAddress';
-import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
+} from '~/hooks/useApproveCallback';
+import { useTransactionFinalizer } from '~/state/transactions/hooks';
+import useENSAddress from '~/hooks/useENSAddress';
+import useWrapCallback, { WrapType } from '~/hooks/useWrapCallback';
 import {
   useIsSupportedNetwork,
   maxAmountSpend,
   basisPointsToPercent,
   getContract,
   halfAmountSpend,
-} from 'utils';
-import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
-import 'components/styles/Swap.scss';
+} from '~/utils';
+import PriceExchangeIcon from '~/assets/images/PriceExchangeIcon.svg?react';
+import ExchangeIcon from '~/assets/images/ExchangeIcon.svg?react';
+import '~/components/styles/Swap.scss';
 import { useTranslation } from 'react-i18next';
-import { useParaswapCallback } from 'hooks/useParaswapCallback';
-import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
+import { useParaswapCallback } from '~/hooks/useParaswapCallback';
+import { getBestTradeCurrencyAddress, useParaswap } from '~/hooks/useParaswap';
 import { SwapSide } from '@paraswap/sdk';
 import { BestTradeAdvancedSwapDetails } from './BestTradeAdvancedSwapDetails';
 import {
@@ -62,23 +62,26 @@ import {
   paraswapTaxBuy,
   RouterTypes,
   SmartRouter,
-} from 'constants/index';
+} from '~/constants/index';
 import { useQuery } from '@tanstack/react-query';
-import { useAllTokens, useCurrency } from 'hooks/Tokens';
-import TokenWarningModal from 'components/v3/TokenWarningModal';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import useSwapRedirects from 'hooks/useSwapRedirect';
-import callWallchainAPI from 'utils/wallchainService';
-import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
-import { ONE } from 'v3lib/utils';
-import { NATIVE_CONVERTER, SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
-import { getConfig } from 'config/index';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { useAllTokens, useCurrency } from '~/hooks/Tokens';
+import TokenWarningModal from '~/components/v3/TokenWarningModal';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
+import useSwapRedirects from '~/hooks/useSwapRedirect';
+import callWallchainAPI from '~/utils/wallchainService';
+import ParaswapABI from '~/constants/abis/ParaSwap_ABI.json';
+import { ONE } from '~/v3lib/utils';
+import {
+  NATIVE_CONVERTER,
+  SWAP_ROUTER_ADDRESS,
+} from '~/constants/v3/addresses';
+import { getConfig } from '~/config/index';
+import { useUSDCPriceFromAddress } from '~/utils/useUSDCPrice';
+import { wrappedCurrency } from '~/utils/wrappedCurrency';
 import useNativeConvertCallback, {
   ConvertType,
-} from 'hooks/useNativeConvertCallback';
-import { useApproveCallback } from 'hooks/useApproveCallback';
+} from '~/hooks/useNativeConvertCallback';
+import { useApproveCallback } from '~/hooks/useApproveCallback';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;

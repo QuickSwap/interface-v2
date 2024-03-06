@@ -1,15 +1,15 @@
 import React, { useRef } from 'react';
 import { Box } from '@material-ui/core';
-import 'components/styles/Header.scss';
+import '~/components/styles/Header.scss';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import { useOpenNetworkSelection } from 'state/application/hooks';
-import ActiveDotImage from 'assets/images/chainActiveDot.png';
-import { useIsSupportedNetwork } from 'utils';
-import { useActiveWeb3React } from 'hooks';
-import { getConfig } from 'config/index';
-import NetworkSelectionDropdown from 'components/NetworkSelectionDropdown';
+import { useOpenNetworkSelection } from '~/state/application/hooks';
+import ActiveDotImage from '~/assets/images/chainActiveDot.png';
+import { useIsSupportedNetwork } from '~/utils';
+import { useActiveWeb3React } from '~/hooks';
+import { getConfig } from '~/config/index';
+import NetworkSelectionDropdown from '~/components/NetworkSelectionDropdown';
 import { useTranslation } from 'react-i18next';
-import { useOnClickOutside } from 'hooks/v3/useOnClickOutside';
+import { useOnClickOutside } from '~/hooks/v3/useOnClickOutside';
 
 export const NetworkSelection: React.FC = () => {
   const {

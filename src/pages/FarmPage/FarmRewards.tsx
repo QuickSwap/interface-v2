@@ -2,13 +2,13 @@ import React, { useMemo } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { useUSDRewardsandFees } from 'state/stake/hooks';
-import { useActiveWeb3React } from 'hooks';
-import { GlobalConst } from 'constants/index';
+import { useUSDRewardsandFees } from '~/state/stake/hooks';
+import { useActiveWeb3React } from '~/hooks';
+import { GlobalConst } from '~/constants/index';
 import { useTranslation } from 'react-i18next';
-import { useDefaultFarmList } from 'state/farms/hooks';
+import { useDefaultFarmList } from '~/state/farms/hooks';
 import { ChainId } from '@uniswap/sdk';
-import useParsedQueryString from 'hooks/useParsedQueryString';
+import useParsedQueryString from '~/hooks/useParsedQueryString';
 
 const FarmRewards: React.FC<{ bulkPairs: any }> = ({ bulkPairs }) => {
   const parsedQuery = useParsedQueryString();

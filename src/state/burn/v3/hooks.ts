@@ -1,15 +1,15 @@
 import React, { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
-import { usePool } from 'hooks/v3/usePools';
-import { useActiveWeb3React } from 'hooks';
-import { useToken } from 'hooks/v3/Tokens';
+import { usePool } from '~/hooks/v3/usePools';
+import { useActiveWeb3React } from '~/hooks';
+import { useToken } from '~/hooks/v3/Tokens';
 import { useCallback, useMemo } from 'react';
 import { AppState } from '../../index';
 import { selectPercent } from './actions';
-import { unwrappedToken } from 'utils/unwrappedToken';
-import { useAppDispatch, useAppSelector } from 'state/hooks';
+import { unwrappedToken } from '~/utils/unwrappedToken';
+import { useAppDispatch, useAppSelector } from '~/state/hooks';
 import { PositionPool } from '../../../models/interfaces';
-import { Position } from 'v3lib/entities';
-import { useV3PositionFees } from 'hooks/v3/useV3PositionFees';
+import { Position } from '~/v3lib/entities';
+import { useV3PositionFees } from '~/hooks/v3/useV3PositionFees';
 
 export function useBurnV3State(): AppState['burnV3'] {
   return useAppSelector((state) => state.burnV3);

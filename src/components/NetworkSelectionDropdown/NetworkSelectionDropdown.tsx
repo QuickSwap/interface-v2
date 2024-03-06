@@ -1,21 +1,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Box } from '@material-ui/core';
-import 'components/styles/NetworkSelectionDropdown.scss';
-import { SUPPORTED_CHAINIDS } from 'constants/index';
-import { getConfig } from 'config/index';
-import { useActiveWeb3React } from 'hooks';
+import '~/components/styles/NetworkSelectionDropdown.scss';
+import { SUPPORTED_CHAINIDS } from '~/constants/index';
+import { getConfig } from '~/config/index';
+import { useActiveWeb3React } from '~/hooks';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
-import { useIsSupportedNetwork } from 'utils';
+import { useIsSupportedNetwork } from '~/utils';
 import {
   networkConnection,
   walletConnectConnection,
   zengoConnectConnection,
-} from 'connectors';
-import KavaImage from 'assets/images/KAVA.png';
+} from '~/connectors';
+import KavaImage from '~/assets/images/KAVA.png';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
-import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import ActiveDotImage from 'assets/images/chainActiveDot.png';
+import CustomTabSwitch from '~/components/v3/CustomTabSwitch';
+import ActiveDotImage from '~/assets/images/chainActiveDot.png';
 
 const NetworkSelectionDropdown: React.FC = () => {
   const { t } = useTranslation();

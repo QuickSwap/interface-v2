@@ -1,8 +1,11 @@
 import React from 'react';
 import { Currency } from '@uniswap/sdk-core';
-import { PriceFormats } from 'components/v3/PriceFomatToggler';
+import { PriceFormats } from '~/components/v3/PriceFomatToggler';
 import StartingPrice from '../../components/StartingPrice';
-import { IDerivedMintInfo, useV3MintActionHandlers } from 'state/mint/v3/hooks';
+import {
+  IDerivedMintInfo,
+  useV3MintActionHandlers,
+} from '~/state/mint/v3/hooks';
 import { Box } from '@material-ui/core';
 
 import './index.scss';

@@ -1,9 +1,9 @@
 import React from 'react';
-import { CustomModal } from 'components';
+import { CustomModal } from '~/components';
 import { useTranslation } from 'react-i18next';
-import { useActiveWeb3React } from 'hooks';
-import 'components/styles/MeldModal.scss';
-import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { useActiveWeb3React } from '~/hooks';
+import '~/components/styles/MeldModal.scss';
+import CloseIcon from '~/assets/images/CloseIcon.svg?react';
 
 interface MeldModalProps {
   open: boolean;
@@ -23,8 +23,8 @@ const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
           title='meld widget'
           allow='accelerometer; autoplay; camera; gyroscope; payment'
           height='692px'
-          src={`${process.env.REACT_APP_MELD_URL}/?publicKey=${
-            process.env.REACT_APP_MELD_KEY
+          src={`${import.meta.env.VITE_MELD_URL}/?publicKey=${
+            import.meta.env.VITE_MELD_KEY
           }&destinationCurrencyCode=MATIC${
             account ? `&walletAddress=${account}` : ''
           }`}

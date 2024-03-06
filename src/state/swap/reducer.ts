@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { RouterTypes, SmartRouter } from 'constants/index';
+import { RouterTypes, SmartRouter } from '~/constants/index';
 import {
   Field,
   replaceSwapState,

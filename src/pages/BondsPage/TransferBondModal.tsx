@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import VestedTimer from './VestedTimer';
 import TransferBond from './TransferBond';
-import { UserBond } from 'types/bond';
+import { UserBond } from '~/types/bond';
 import { ChainId } from '@uniswap/sdk';
-import { CustomModal } from 'components';
+import { CustomModal } from '~/components';
 import BondTokenDisplay from './BondTokenDisplay';
 import { Box, Grid } from '@material-ui/core';
 import { Close, ReportProblemOutlined, Check } from '@material-ui/icons';
 import { formatUnits } from 'ethers/lib/utils';
-import { formatNumber } from 'utils';
+import { formatNumber } from '~/utils';
 
 interface TransferBillModalProps {
   open: boolean;

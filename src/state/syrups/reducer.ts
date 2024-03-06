@@ -1,8 +1,8 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { getVersionUpgrade, VersionUpgrade } from '@uniswap/token-lists';
-import { GlobalConst } from 'constants/index';
-import { updateVersion } from 'state/global/actions';
-import { SyrupListInfo } from 'types/index';
+import { GlobalConst } from '~/constants/index';
+import { updateVersion } from '~/state/global/actions';
+import { SyrupListInfo } from '~/types/index';
 import { acceptSyrupUpdate, fetchSyrupList } from './actions';
 
 export interface SyrupsListsState {
