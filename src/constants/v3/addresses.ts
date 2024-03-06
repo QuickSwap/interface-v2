@@ -1121,6 +1121,16 @@ export const MANTA: { [chainId: number]: Token } = {
   ),
 };
 
+export const CRS: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x731C79f054DF3A567584Ee21A95399d343103143',
+    18,
+    'CRS',
+    'Corgi Studio',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
