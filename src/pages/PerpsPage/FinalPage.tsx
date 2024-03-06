@@ -49,6 +49,7 @@ export const FinalPage: React.FC = () => {
               display: 'flex',
               flexDirection: 'row',
               textAlign: 'center',
+              width: '22.5vw',
               padding: '0 89px',
             }}
           >
@@ -57,6 +58,8 @@ export const FinalPage: React.FC = () => {
               style={{
                 marginRight: '10px',
                 cursor: 'pointer',
+                width: '11.25vw',
+                padding: '5px 0',
                 borderBottom:
                   currentTab === 'market' ? '2px solid white' : 'none',
               }}
@@ -67,6 +70,8 @@ export const FinalPage: React.FC = () => {
               onClick={() => handleTabChange('orderbook')}
               style={{
                 cursor: 'pointer',
+                padding: '5px 0',
+                width: '11.25vw',
                 borderBottom:
                   currentTab === 'orderbook' ? '2px solid white' : 'none',
               }}
@@ -251,7 +256,11 @@ export const FinalPage: React.FC = () => {
           direction='column'
           justify='center'
           align='center'
-          style={{ width: '77.5vw', height: '150px',border: '1px solid #1b1e29' }}
+          style={{
+            width: '77.5vw',
+            height: '150px',
+            border: '1px solid #1b1e29',
+          }}
         >
           <Text>No Result Found</Text>
         </Flex>

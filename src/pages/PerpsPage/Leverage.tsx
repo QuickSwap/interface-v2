@@ -7,9 +7,10 @@ export const Leverage: React.FC = () => {
     <Flex direction='column' align='center' justify='center'>
       <Box
         style={{
-          width: 330,
+          width: 347,
           height: 600,
-          border: '1px solid #696C80',
+          backgroundColor: '#12131a',
+          border: '1px solid  #1b1e29',
         }}
       >
         <Flex direction='row' justify='between'>

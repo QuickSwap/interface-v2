@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Flex, Text, DropdownMenu, Button } from '@radix-ui/themes';
 import { useMarketsStream } from '@orderly.network/hooks';
-
+import {SearchOutlined } from '@material-ui/icons';
 interface MarketData {
   symbol: string;
   index_price: number;
@@ -34,11 +34,11 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
   }, []);
 
   return (
-    <Flex direction='row' justify='between' align='center'>
+    <Flex direction='row' justify='between' align='center' >
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <Button style={{ backgroundColor: 'transparent' }}>
-            {token ? token.symbol : 'Options'}
+            {token ? token.symbol : 'Tokens'}
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content
@@ -58,6 +58,33 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             cursor: 'pointer',
           }}
         >
+          <div style={{ position: 'relative' }}>
+            <input
+              type='text'
+              placeholder='Search'
+              style={{
+                width: '100%',
+                marginBottom: '20px',
+                padding: '10px 35px 10px 10px',
+                borderRadius: '4px',
+                border: '1px solid #61657a',
+                backgroundColor: '#2c303e',
+                color: '#c7cad9',
+                fontFamily: 'Inter',
+                fontSize: '14px',
+                fontWeight: 500,
+              }}
+            />
+            <SearchOutlined
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '35%',
+                transform: 'translateY(-50%)',
+                color: '#61657a',
+              }}
+            />
+          </div>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr
@@ -90,7 +117,7 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
                     style={{
                       margin: '7px 0',
                       cursor: 'pointer',
-                      ':hover': { backgroundColor: '#2c303e' }, // Apply hover effect directly using style attribute
+                      ':hover': { backgroundColor: '#2c303e' },
                     }}
                     className='hover-row'
                   >

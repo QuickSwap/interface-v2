@@ -14,7 +14,7 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
   });
   return (
     <Flex
-      style={{ margin: '1.5rem' }}
+      style={{ margin: '1.5rem', backgroundColor: '#12131a' }}
       gap='3'
       align='center'
       justify='center'
@@ -27,9 +27,36 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
           style={{ gap: '0 1rem', gridTemplateColumns: '6rem 6rem 6rem' }}
           className='table'
         >
-          <Box>Price (USDC)</Box>
-          <Box>Quantity (ETH)</Box>
-          <Box>Total (ETH)</Box>
+          <Box
+            style={{
+              fontSize: '11px',
+              fontWeight: 500,
+              fontFamily: 'Inter',
+              color: '#61657a',
+            }}
+          >
+            Price (USDC)
+          </Box>
+          <Box
+            style={{
+              fontSize: '11px',
+              fontWeight: 500,
+              fontFamily: 'Inter',
+              color: '#61657a',
+            }}
+          >
+            Quantity (ETH)
+          </Box>
+          <Box
+            style={{
+              fontSize: '11px',
+              fontWeight: 500,
+              fontFamily: 'Inter',
+              color: '#61657a',
+            }}
+          >
+            Total (ETH)
+          </Box>
           {data.asks?.map(([price, quantity, aggregated]) => {
             const gradient = (100 * aggregated) / data.asks[0][2];
             return (
@@ -51,10 +78,33 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
               (100 * aggregated) / data.bids[data.bids.length - 1][2];
             return (
               <>
-                <Box className='bid'>{price}</Box>
-                <Box>{quantity}</Box>
+                <Box
+                  className='bid'
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    fontFamily: 'Inter',
+                    color: '#61657a',
+                  }}
+                >
+                  {price}
+                </Box>
                 <Box
                   style={{
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    fontFamily: 'Inter',
+                    color: '#61657a',
+                  }}
+                >
+                  {quantity}
+                </Box>
+                <Box
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    fontFamily: 'Inter',
+                    color: '#61657a',
                     background: `linear-gradient(to left, rgba(4, 109, 4, 0.2) ${gradient}%, transparent ${gradient}%)`,
                   }}
                 >
