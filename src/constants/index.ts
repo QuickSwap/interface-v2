@@ -2057,6 +2057,12 @@ export const DefiedgeStrategies: {
       token1: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
       pool: '0x5b41EEDCfC8e0AE47493d4945Aa1AE4fe05430ff',
     },
+    {
+      id: '0x29f177eff806b8a71ff8c7259ec359312cace22d',
+      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      token1: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+      pool: '0xAE81FAc689A1b4b1e06e7ef4a2ab4CD8aC0A087D',
+    },
   ],
 };
 
