@@ -25,13 +25,12 @@ export const FinalPage: React.FC = () => {
         align='start'
         style={{
           width: '100vw',
-          height: '86vh',
+          height: '100vh',
         }}
       >
         <Container
           style={{
-            width: '55vw',
-            height: 'fit-content',
+            width: '61vw',
           }}
         >
           <GraphHeader setTokenName={setToken} />
@@ -39,7 +38,7 @@ export const FinalPage: React.FC = () => {
         </Container>
         <Container
           style={{
-            width: '22.5vw',
+            width: '15.5vw',
             height: '86vh',
             border: '1px solid  #1b1e29',
           }}
@@ -49,19 +48,21 @@ export const FinalPage: React.FC = () => {
               display: 'flex',
               flexDirection: 'row',
               textAlign: 'center',
-              width: '22.5vw',
-              padding: '0 89px',
+              width: '100%',
+              marginBottom: '5px',
             }}
           >
             <div
               onClick={() => handleTabChange('market')}
               style={{
-                marginRight: '10px',
+                flex: 1,
                 cursor: 'pointer',
-                width: '11.25vw',
                 padding: '5px 0',
+                fontFamily: 'Inter',
+                fontWeight: 500,
                 borderBottom:
                   currentTab === 'market' ? '2px solid white' : 'none',
+                color: currentTab === 'market' ? 'white' : '#61657a',
               }}
             >
               Market
@@ -69,11 +70,14 @@ export const FinalPage: React.FC = () => {
             <div
               onClick={() => handleTabChange('orderbook')}
               style={{
+                flex: 1,
                 cursor: 'pointer',
                 padding: '5px 0',
-                width: '11.25vw',
+                fontFamily: 'Inter',
+                fontWeight: 500,
                 borderBottom:
                   currentTab === 'orderbook' ? '2px solid white' : 'none',
+                color: currentTab === 'orderbook' ? 'white' : '#61657a',
               }}
             >
               Orderbook
@@ -82,9 +86,10 @@ export const FinalPage: React.FC = () => {
           {currentTab === 'market' && <Market token={token} />}
           {currentTab === 'orderbook' && <Orderbook token={token} />}
         </Container>
+
         <Container
           style={{
-            width: '22.5vw',
+            width: '21vw',
             height: '100vh',
           }}
         >

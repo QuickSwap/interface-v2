@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Flex, Text, DropdownMenu, Button } from '@radix-ui/themes';
 import { useMarketsStream } from '@orderly.network/hooks';
-import {SearchOutlined } from '@material-ui/icons';
+import { SearchOutlined } from '@material-ui/icons';
 interface MarketData {
   symbol: string;
   index_price: number;
@@ -34,7 +34,12 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
   }, []);
 
   return (
-    <Flex direction='row' justify='between' align='center' >
+    <Flex
+      direction='row'
+      justify='between'
+      align='center'
+      style={{ paddingRight: '15px', backgroundColor: '#12131a' ,border: '1px solid  #1b1e29' }}
+    >
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <Button style={{ backgroundColor: 'transparent' }}>
@@ -51,11 +56,11 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             color: '#c7cad9',
             borderRadius: '4px',
             padding: '20px',
-            WebkitBackdropFilter: 'blur(30px)',
-            backdropFilter: 'blur(30px)',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
             overflowX: 'auto',
             cursor: 'pointer',
+            backdropFilter: 'blur(30px)', // Use standard backdropFilter for most browsers
+            WebkitBackdropFilter: 'blur(30px)', // Add vendor prefix for WebKit browsers
           }}
         >
           <div style={{ position: 'relative' }}>

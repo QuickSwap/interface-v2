@@ -15,20 +15,19 @@ type MarketOrder = {
 
 export const Market: FC = ({ token }) => {
   const { data, isLoading } = useMarketTradeStream(token);
-  console.log(data);
   if (isLoading) return <div>Loading...</div>;
 
   return (
     <Flex
-      style={{ margin: '1rem', backgroundColor: '#12131a' }}
-      gap='3'
+      style={{ backgroundColor: '#12131a' }}
+      gap='2'
       align='center'
       justify='center'
       direction='column'
     >
       {!isLoading && (
         <Grid
-          style={{ gridTemplateColumns: '6rem 6rem 6rem' }}
+          style={{ gridTemplateColumns: '5rem 5rem 5rem' }}
           className='table'
         >
           <Box
@@ -37,6 +36,8 @@ export const Market: FC = ({ token }) => {
               fontWeight: 500,
               fontFamily: 'Inter',
               color: '#61657a',
+              margin: '8px 0',
+              textAlign: 'center',
             }}
           >
             Time
@@ -47,6 +48,8 @@ export const Market: FC = ({ token }) => {
               fontWeight: 500,
               fontFamily: 'Inter',
               color: '#61657a',
+              textAlign: 'center',
+              margin: '8px 0',
             }}
           >
             Price{' '}
@@ -57,9 +60,11 @@ export const Market: FC = ({ token }) => {
               fontWeight: 500,
               fontFamily: 'Inter',
               color: '#61657a',
+              textAlign: 'center',
+              margin: '8px 0',
             }}
           >
-            Quantity (ETH)
+            Qty(ETH)
           </Box>
           {data.slice(0, 25).map((item) => {
             const gradient = 10;
@@ -70,6 +75,7 @@ export const Market: FC = ({ token }) => {
                     fontSize: '11px',
                     fontWeight: 500,
                     fontFamily: 'Inter',
+                    textAlign: 'center',
                   }}
                 >
                   {Date(item.ts).slice(16, 25)}
@@ -80,6 +86,7 @@ export const Market: FC = ({ token }) => {
                     fontSize: '11px',
                     fontWeight: 500,
                     fontFamily: 'Inter',
+                    textAlign: 'center',
                   }}
                 >
                   {item.price}
@@ -90,6 +97,7 @@ export const Market: FC = ({ token }) => {
                     fontSize: '11px',
                     fontWeight: 500,
                     fontFamily: 'Inter',
+                    textAlign: 'center',
                   }}
                 >
                   {item.size}

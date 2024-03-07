@@ -7,7 +7,7 @@ export const Leverage: React.FC = () => {
     <Flex direction='column' align='center' justify='center'>
       <Box
         style={{
-          width: 347,
+          width: 330,
           height: 600,
           backgroundColor: '#12131a',
           border: '1px solid  #1b1e29',

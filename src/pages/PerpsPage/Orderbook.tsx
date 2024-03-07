@@ -14,8 +14,8 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
   });
   return (
     <Flex
-      style={{ margin: '1.5rem', backgroundColor: '#12131a' }}
-      gap='3'
+      style={{ backgroundColor: '#12131a' }}
+      gap='2'
       align='center'
       justify='center'
       direction='column'
@@ -24,7 +24,7 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
 
       {!isLoading && (
         <Grid
-          style={{ gap: '0 1rem', gridTemplateColumns: '6rem 6rem 6rem' }}
+          style={{ gridTemplateColumns: '5rem 5rem 5rem', textAlign: 'center' }}
           className='table'
         >
           <Box
@@ -33,6 +33,7 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
               fontWeight: 500,
               fontFamily: 'Inter',
               color: '#61657a',
+              margin: '8px 0',
             }}
           >
             Price (USDC)
@@ -43,9 +44,10 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
               fontWeight: 500,
               fontFamily: 'Inter',
               color: '#61657a',
+              margin: '8px 0',
             }}
           >
-            Quantity (ETH)
+            Qty(ETH)
           </Box>
           <Box
             style={{
@@ -53,6 +55,7 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
               fontWeight: 500,
               fontFamily: 'Inter',
               color: '#61657a',
+              margin: '8px 0',
             }}
           >
             Total (ETH)
@@ -61,10 +64,33 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
             const gradient = (100 * aggregated) / data.asks[0][2];
             return (
               <>
-                <Box className='ask'>{price}</Box>
-                <Box>{quantity}</Box>
+                <Box
+                  className='ask'
+                  style={{
+                    textAlign: 'center',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    fontFamily: 'Inter',
+                  }}
+                >
+                  {price}
+                </Box>
                 <Box
                   style={{
+                    textAlign: 'center',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    fontFamily: 'Inter',
+                  }}
+                >
+                  {quantity}
+                </Box>
+                <Box
+                  style={{
+                    textAlign: 'center',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    fontFamily: 'Inter',
                     background: `linear-gradient(to left, rgba(161, 6, 6, 0.2) ${gradient}%, transparent ${gradient}%)`,
                   }}
                 >
@@ -81,30 +107,30 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
                 <Box
                   className='bid'
                   style={{
+                    textAlign: 'center',
                     fontSize: '11px',
                     fontWeight: 500,
                     fontFamily: 'Inter',
-                    color: '#61657a',
                   }}
                 >
                   {price}
                 </Box>
                 <Box
                   style={{
+                    textAlign: 'center',
                     fontSize: '11px',
                     fontWeight: 500,
                     fontFamily: 'Inter',
-                    color: '#61657a',
                   }}
                 >
                   {quantity}
                 </Box>
                 <Box
                   style={{
+                    textAlign: 'center',
                     fontSize: '11px',
                     fontWeight: 500,
                     fontFamily: 'Inter',
-                    color: '#61657a',
                     background: `linear-gradient(to left, rgba(4, 109, 4, 0.2) ${gradient}%, transparent ${gradient}%)`,
                   }}
                 >
