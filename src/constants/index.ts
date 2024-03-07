@@ -87,6 +87,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.TIMX]: 'tIMX',
   [ChainId.X1]: 'x1',
   [ChainId.IMX]: 'IMX',
+  [ChainId.ASTARZKEVM]: 'astar_zkevm',
 };
 
 export enum ZapType {
@@ -182,6 +183,7 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.ZKATANA]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.TIMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.IMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.ASTARZKEVM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
 };
 
 export const GlobalConst = {
@@ -303,6 +305,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.MANTA,
   ChainId.IMX,
   ChainId.DOGECHAIN,
+  ChainId.ASTARZKEVM,
   ChainId.ZKATANA,
   ChainId.X1,
   ChainId.TIMX,
@@ -2161,6 +2164,7 @@ export const GlobalValue = {
       [ChainId.X1]: [],
       [ChainId.TIMX]: [],
       [ChainId.IMX]: [],
+      [ChainId.ASTARZKEVM]: [],
     },
   },
   marketSDK: {
@@ -2238,6 +2242,11 @@ export const GlobalData = {
     [ChainId.BTTC]: [],
     [ChainId.X1]: [USDC[ChainId.X1]],
     [ChainId.IMX]: [USDC[ChainId.IMX], USDT[ChainId.IMX]],
+    [ChainId.ASTARZKEVM]: [
+      USDC[ChainId.ASTARZKEVM],
+      USDT[ChainId.ASTARZKEVM],
+      DAI[ChainId.ASTARZKEVM],
+    ],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -2286,6 +2295,14 @@ export const GlobalData = {
       WBTC[ChainId.IMX],
       USDT[ChainId.IMX],
     ],
+    [ChainId.ASTARZKEVM]: [
+      WETH[ChainId.ASTARZKEVM],
+      WBTC[ChainId.ASTARZKEVM],
+      USDC[ChainId.ASTARZKEVM],
+      USDT[ChainId.ASTARZKEVM],
+      DAI[ChainId.ASTARZKEVM],
+      MATIC[ChainId.ASTARZKEVM],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -2317,6 +2334,9 @@ export const GlobalData = {
     [ChainId.BTTC]: [],
     [ChainId.X1]: [],
     [ChainId.IMX]: [],
+    [ChainId.ASTARZKEVM]: [
+      [WETH[ChainId.ASTARZKEVM], WSTETH[ChainId.ASTARZKEVM]],
+    ],
   },
 };
 
