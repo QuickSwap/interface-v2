@@ -58,6 +58,11 @@ export const CEX_BILL_ADDRESS = '0x6D7637683eaD28F775F56506602191fdE417fF60';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
 
+export const merklAMMs: { [chainId in ChainId]?: string[] } = {
+  [ChainId.MATIC]: ['quickswapalgebra'],
+  [ChainId.ZKEVM]: ['quickswapalgebra', 'quickswapuni'],
+};
+
 export const blackListMerklFarms = [
   '0x392DfB56cA9aA807571eC2a666c3bbf87c7FE63E',
   '0xAb86C5DD50F4e0B54ECb07c4fB07219c60150eBF',
