@@ -98,6 +98,7 @@ const EMPTY_LIST: StakingInfoAddressMap = {
   [ChainId.X1]: {},
   [ChainId.TIMX]: {},
   [ChainId.IMX]: {},
+  [ChainId.ASTARZKEVM]: {},
 };
 
 const farmCache: WeakMap<FarmListInfo, StakingInfoAddressMap> | null =

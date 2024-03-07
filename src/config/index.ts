@@ -8,6 +8,7 @@ import tIMX from './tIMX.json';
 import qlpmanager from './qlpmanager.json';
 import x1 from './x1.json';
 import IMX from './imx.json';
+import astarZkevm from './astarzkevm.json';
 import { ChainId } from '@uniswap/sdk';
 
 const configs: any = {
@@ -20,6 +21,7 @@ const configs: any = {
   [ChainId.TIMX]: tIMX,
   [ChainId.X1]: x1,
   [ChainId.IMX]: IMX,
+  [ChainId.ASTARZKEVM]: astarZkevm,
 };
 
 export const getConfig = (network: ChainId | undefined) => {

@@ -110,4 +110,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'IMX',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.ASTARZKEVM]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://astar-zkevm.explorer.startale.com',
+    infoLink: 'https://algebra.finance',
+    label: 'astarZKEVM',
+    nativeCurrencySymbol: 'ETH',
+    nativeCurrencyName: 'Ether',
+    nativeCurrencyDecimals: 18,
+  },
 };

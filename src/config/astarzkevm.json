@@ -1,14 +1,14 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://zkevm-rpc.com",
-  "blockExplorer": "https://zkevm.polygonscan.com",
-  "networkName": "Polygon zkEVM",
-  "aprAPINetwork": "zkevm",
-  "chainId": 1101,
+  "rpc": "https://rpc.startale.com/astar-zkevm",
+  "blockExplorer": "https://astar-zkevm.explorer.startale.com",
+  "networkName": "Astar zkEVM",
+  "aprAPINetwork": "astarzkevm",
+  "chainId": 3776,
   "isMainnet": true,
   "visible": true,
-  "nativeCurrencyImage": "/zkevm.png",
+  "nativeCurrencyImage": "/astarzkevm.png",
   "nativeCurrency": {
     "name": "Ether",
     "symbol": "ETH",
@@ -16,7 +16,7 @@
   },
   "swap": {
     "available": true,
-    "bestTrade": true,
+    "bestTrade": false,
     "proMode": false,
     "limitOrder": false,
     "liquidityHub": false,
@@ -26,9 +26,9 @@
     "available": true
   },
   "farm": {
-    "quickswap": true,
+    "quickswap": false,
     "merkl": false,
-    "available": true
+    "available": false
   },
   "lair": {
     "available": false,
@@ -56,19 +56,19 @@
     "available": false
   },
   "leaderboard": {
-    "available": true
+    "available": false
   },
   "safe": {
-    "available": true
+    "available": false
   },
   "perps": {
-    "available": true
+    "available": false
   },
   "bos": {
-    "available": true
+    "available": false
   },
   "gamma": {
-    "available": true
+    "available": false
   },
   "unipilot": {
     "available": false
