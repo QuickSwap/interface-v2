@@ -38,7 +38,11 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
       direction='row'
       justify='between'
       align='center'
-      style={{ paddingRight: '15px', backgroundColor: '#12131a' ,border: '1px solid  #1b1e29' }}
+      style={{
+        paddingRight: '15px',
+        backgroundColor: '#12131a',
+        border: '1px solid  #1b1e29',
+      }}
     >
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>

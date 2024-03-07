@@ -448,7 +448,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   }
                 }}
               >
-                {Number(deposit.allowance) < Number(depositAmount) ? 'Approve' : 'Deposit'}
+                {Number(deposit.allowance) < Number(depositAmount)
+                  ? 'Approve'
+                  : 'Deposit'}
               </Button>
             ) : (
               <Button

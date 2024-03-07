@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Flex, Container, Text } from '@radix-ui/themes';
-import { AdvancedChart } from 'react-tradingview-embed';
+import { AdvancedChartWrapper } from './AdvancedChartWrapper';
 import { Market } from './Market';
 import { Leverage } from './Leverage';
 import { GraphHeader } from './GraphHeader';
@@ -11,7 +11,7 @@ export const FinalPage: React.FC = () => {
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);
   };
-  const [token, setToken] = useState('PERP_ETH_USDC');
+  const [token, setToken] = useState('PERP_WOO_USDC');
   const [selectedOption, setSelectedOption] = useState('Portfolio');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const handleOptionClick = (option) => {
@@ -45,12 +45,7 @@ export const FinalPage: React.FC = () => {
           }}
         >
           <GraphHeader setTokenName={setToken} />
-          <AdvancedChart
-            widgetProps={{
-              theme: 'dark',
-              style: '9',
-            }}
-          />
+          <AdvancedChartWrapper token={token} />
         </Container>
 
         {windowWidth <= 1024 ? (

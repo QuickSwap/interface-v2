@@ -15,16 +15,16 @@ import { Orders } from './Orders';
 import { Positions } from './Positions';
 import { Market } from './Market';
 import { Pairs } from './Pairs';
-import {Leverage} from "./Leverage";
+import { Leverage } from './Leverage';
 import { AdvancedChart } from 'react-tradingview-embed';
-import {GraphHeader} from "./GraphHeader";
-import {FinalPage} from "./FinalPage";
+import { GraphHeader } from './GraphHeader';
+import { FinalPage } from './FinalPage';
 import { Grid } from '@mui/material';
 
 export const PerpsPage = () => {
   const { chainId, account, provider } = useActiveWeb3React();
   const widgetProps = {
-    symbol: 'BINANCE:ETHUSD',
+    symbol: 'ETH_USD',
     timezone: 'Etc/UTC',
     theme: 'dark',
     hide_side_toolbar: true,
@@ -100,14 +100,14 @@ export const PerpsPage = () => {
           <Pairs />
         </Tabs.Content>
         <Tabs.Content value='chart' style={{ color: 'white' }}>
-          <GraphHeader/>
+          <GraphHeader />
           <AdvancedChart />
         </Tabs.Content>
         <Tabs.Content value='leverage' style={{ color: 'white' }}>
           <Leverage />
         </Tabs.Content>
         <Tabs.Content value='final' style={{ color: 'white' }}>
-          <FinalPage/>
+          <FinalPage />
         </Tabs.Content>
       </Tabs.Root>
     </Theme>
