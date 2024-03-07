@@ -49,7 +49,6 @@ import {
   RNDR,
   USDV,
   NFTE,
-  CRS,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
 
@@ -1980,7 +1979,6 @@ export const IchiVaults: {
     '0xaE2979B6328Fb75eBf311B30e1b985Ecb1A813D2',
     '0xD79D60CEAD6406e2Fc228a6778B6bB5caE47BB8c',
     '0x29a117f122A5317A2b547b1A204624cb7E83FA6F',
-    '0xdc58504630972421445CBa4f856ABbA3Ce1BCB8a',
   ],
 };
 
@@ -2059,12 +2057,6 @@ export const DefiedgeStrategies: {
       token1: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
       pool: '0x5b41EEDCfC8e0AE47493d4945Aa1AE4fe05430ff',
     },
-    {
-      id: '0x29f177eff806b8a71ff8c7259ec359312cace22d',
-      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
-      token1: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-      pool: '0xAE81FAc689A1b4b1e06e7ef4a2ab4CD8aC0A087D',
-    },
   ],
 };
 
@@ -2134,7 +2126,6 @@ export const GlobalValue = {
         NINJAZ[ChainId.MATIC],
         RNDR[ChainId.MATIC],
         NFTE[ChainId.MATIC],
-        CRS[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],
