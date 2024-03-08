@@ -28,6 +28,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
     .filter(
       (item: any) =>
         item.isLive &&
+        !item.isMock &&
         (item?.endTimestamp ?? 0) >= currentTime &&
         (item?.startTimestamp ?? 0) <= currentTime,
     )

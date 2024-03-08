@@ -704,7 +704,7 @@ export const ETHER: { [chainId: number]: Token } = {
   ),
   [ChainId.IMX]: new Token(
     ChainId.IMX,
-    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    '0x52A6c53869Ce09a731CD772f245b97A4401d3348',
     18,
     'ETH',
     'Ether',
@@ -1178,6 +1178,16 @@ export const MANTA: { [chainId: number]: Token } = {
     18,
     'MANTA',
     'Manta',
+  ),
+};
+
+export const CRS: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x731C79f054DF3A567584Ee21A95399d343103143',
+    18,
+    'CRS',
+    'Corgi Studio',
   ),
 };
 
