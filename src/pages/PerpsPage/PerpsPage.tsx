@@ -67,9 +67,6 @@ export const PerpsPage = () => {
           <Tabs.Trigger value='chart' style={{ color: 'white' }}>
             Chart
           </Tabs.Trigger>
-          <Tabs.Trigger value='leverage' style={{ color: 'white' }}>
-            Leverage
-          </Tabs.Trigger>
           <Tabs.Trigger value='final' style={{ color: 'white' }}>
             Perps Page Final
           </Tabs.Trigger>
@@ -102,9 +99,6 @@ export const PerpsPage = () => {
         <Tabs.Content value='chart' style={{ color: 'white' }}>
           <GraphHeader/>
           <AdvancedChart />
-        </Tabs.Content>
-        <Tabs.Content value='leverage' style={{ color: 'white' }}>
-          <Leverage />
         </Tabs.Content>
         <Tabs.Content value='final' style={{ color: 'white' }}>
           <FinalPage/>

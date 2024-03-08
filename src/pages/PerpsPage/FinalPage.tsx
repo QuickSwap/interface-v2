@@ -12,6 +12,7 @@ export const FinalPage: React.FC = () => {
     setCurrentTab(tab);
   };
   const [token, setToken] = useState('PERP_ETH_USDC');
+    console.log(token)
   const [selectedOption, setSelectedOption] = useState('Portfolio');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const handleOptionClick = (option) => {
@@ -123,7 +124,7 @@ export const FinalPage: React.FC = () => {
               }}
             >
               <div style={{ marginTop: '-92px' }}>
-                <Leverage />
+                <Leverage perpToken={token} />
               </div>
             </Container>
           </div>
@@ -188,7 +189,7 @@ export const FinalPage: React.FC = () => {
                 height: '100vh',
               }}
             >
-              <Leverage />
+              <Leverage perpToken={token} />
             </Container>
           </>
         )}

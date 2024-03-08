@@ -1,8 +1,34 @@
-import React from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Box, Button, Flex, Text, Container, Switch } from '@radix-ui/themes';
 import Arrow from '../../assets/images/downward.svg';
 import { CropSquareOutlined } from '@material-ui/icons';
-export const Leverage: React.FC = () => {
+import { useActiveWeb3React, useGetConnection } from '../../hooks';
+import { useSelectedWallet } from '../../state/user/hooks';
+import {
+  useAccount,
+  useChains,
+  useCollateral,
+  useDeposit,
+} from '@orderly.network/hooks';
+export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
+  const [tokenSymbol, setTokenSymbol] = useState<string | undefined>();
+  const [orderType, setOrderType] = useState<string | undefined>('limit');
+  const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
+  const [chains, { findByChainId }] = useChains('testnet');
+  const { account, state } = useAccount();
+  const token = useMemo(() => {
+    return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
+  }, [chains]);
+  const deposit = useDeposit({
+    address: token?.address,
+    decimals: token?.decimals,
+    srcToken: token?.symbol,
+    srcChainId: Number(chainId),
+    depositorAddress: quickSwapAccount,
+  });
+  useEffect(() => {
+    setTokenSymbol(perpToken.split('_')[1]);
+  }, [perpToken]);
   return (
     <Flex direction='column' align='center' justify='center'>
       <Box
@@ -38,7 +64,7 @@ export const Leverage: React.FC = () => {
                 color: '#61657a',
               }}
             >
-              50 USDC
+              {deposit?.balance} {token?.symbol}
             </Text>
           </Flex>
           <Flex direction='row' align='center' style={{ marginRight: '15px' }}>
@@ -210,8 +236,63 @@ export const Leverage: React.FC = () => {
             fontSize: '12px',
           }}
         >
-          <Text style={{ color: ' #61657a' }}>Limit</Text>
-          <Text>Market</Text>
+          <Text
+            onClick={() => setOrderType('limit')}
+            style={{
+              cursor: 'pointer',
+              color: orderType === 'limit' ? '#fff' : '#61657a',
+            }}
+          >
+            Limit
+          </Text>
+          <Text
+            onClick={() => setOrderType('market')}
+            style={{
+              color: orderType === 'market' ? '#fff' : '#61657a',
+              cursor: 'pointer',
+            }}
+          >
+            Market
+          </Text>
+        </Flex>
+        <Flex
+          direction='row'
+          justify='between'
+          align='center'
+          style={{
+            width: 300,
+            height: 36,
+            backgroundColor: '#1b1e29',
+            margin: '16px 15px',
+            fontWeight: 500,
+            fontFamily: 'Inter',
+            cursor: 'pointer',
+            fontSize: '12px',
+            borderRadius: '8px',
+            color: '#61657a',
+            padding: '10px 12px 11px',
+          }}
+        >
+          <Text>Price</Text>
+          <div>
+            {orderType === 'limit' ? (
+              <input
+                min={0}
+                style={{
+                  width: 20,
+                  marginRight: '2px',
+                  color: '#696c80',
+                  border: 'none',
+                  outline: 'none',
+                  appearance: 'none',
+                  backgroundColor: 'transparent',
+                }}
+              />
+            ) : (
+              <Text>Market</Text>
+            )}
+            <Text> USDC</Text>
+          </div>
         </Flex>
         <Flex
           direction='row'
@@ -232,7 +313,21 @@ export const Leverage: React.FC = () => {
           }}
         >
           <Text>Quantity</Text>
-          <Text>ETH</Text>
+          <div>
+            <input
+              min={0}
+              style={{
+                width: 20,
+                marginRight: '2px',
+                color: '#696c80',
+                border: 'none',
+                outline: 'none',
+                appearance: 'none',
+                backgroundColor: 'transparent',
+              }}
+            />
+            <Text>{tokenSymbol}</Text>
+          </div>
         </Flex>
         <Flex
           direction={'row'}
