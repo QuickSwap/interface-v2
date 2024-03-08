@@ -1,0 +1,11 @@
+@media only screen and (max-width: 1024px) {
+    /* CSS for screen size 1024px and below */
+}
+
+@media only screen and (max-width: 768px) {
+    /* CSS for screen size 768px and below */
+}
+
+@media only screen and (max-width: 576px) {
+    /* CSS for screen size 576px and below */
+}
