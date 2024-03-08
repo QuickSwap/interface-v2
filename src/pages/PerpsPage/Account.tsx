@@ -13,7 +13,7 @@ export const Account: FC = () => {
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
     account.setAddress(quickSwapAccount, {
-      provider: window.ethereum,
+      provider: library,
       chain: {
         id: chainId,
       },

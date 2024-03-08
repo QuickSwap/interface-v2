@@ -149,7 +149,7 @@ const App: React.FC = () => {
                     <PageLayout>
                       <OrderlyConfigProvider
                         brokerId='quick_perps'
-                        networkId='testnet'
+                        networkId='mainnet'
                       >
                         <PerpsPage />
                       </OrderlyConfigProvider>

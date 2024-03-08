@@ -30,7 +30,7 @@ export const Assets: FC = () => {
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
     account.setAddress(quickSwapAccount, {
-      provider: window.ethereum,
+      provider: library,
       chain: {
         id: chainId,
       },
@@ -38,7 +38,7 @@ export const Assets: FC = () => {
   }, [library, account]);
 
   const collateral = useCollateral();
-  const [chains, { findByChainId }] = useChains('testnet');
+  const [chains, { findByChainId }] = useChains('mainnet');
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
   }, [chains]);
@@ -101,15 +101,15 @@ export const Assets: FC = () => {
         <Button
           style={{ gridArea: 'deposit', color: 'white' }}
           // disabled={amount == null}
-          onClick={() => openModal(ModalType.Deposit)}
-          // onClick={async () => {
-          //   if (amount == null) return;
-          //   if (Number(deposit.allowance) < Number(amount)) {
-          //     await deposit.approve(amount.toString());
-          //   } else {
-          //     await deposit.deposit(amount);
-          //   }
-          // }}
+          // onClick={() => openModal(ModalType.Deposit)}
+          onClick={async () => {
+            if (amount == null) return;
+            if (Number(deposit.allowance) < Number(amount)) {
+              await deposit.approve(amount.toString());
+            } else {
+              await deposit.deposit();
+            }
+          }}
         >
           {/*{Number(deposit.allowance) < Number(amount) ? 'Approve' : 'Deposit'}*/}
           Deposit
