@@ -1409,6 +1409,24 @@ export const GammaPairs: {
         pid: 107,
       },
     ],
+    '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x39f223B2E0405FA62CeC7DC476FC5A307B435069',
+        token0Address: '0x3c499c542cef5e3811e1192ce70d8cC03d5c3359',
+        token1Address: '0x8f3Cf7ad23cd3caDbd9735aff958023239c6a063',
+      },
+    ],
+    '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x953e523eA34E85AC55D40Be1Ff71D52aa62497b7',
+        token0Address: '0x3c499c542cEF5E3811e1192ce70d8cc03d5c3359',
+        token1Address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+      },
+    ],
   },
   [ChainId.ZKEVM]: {
     '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
