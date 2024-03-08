@@ -105,7 +105,7 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const { loading, farms } = useMerklFarms();
   const rewardAddresses = farms.reduce((memo: string[], item: any) => {
     const distributionData: any[] = (item?.distributionData ?? []).filter(
-      (reward: any) => reward.isLive,
+      (reward: any) => reward.isLive && !reward.isMock,
     );
     for (const rewardItem of distributionData) {
       if (
@@ -130,7 +130,7 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       );
       const title = (item.symbolToken0 ?? '') + (item.symbolToken1 ?? '');
       const rewardItems: any[] = (item?.distributionData ?? []).filter(
-        (reward: any) => reward.isLive,
+        (reward: any) => reward.isLive && !reward.isMock,
       );
       const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
         const usdPrice =
