@@ -30,7 +30,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
     <Flex direction='column' align='center' justify='center'>
       <Box
         style={{
-          width: 330,
+          width: 'fit-content',
           height: 600,
           backgroundColor: '#12131a',
           border: '1px solid  #1b1e29',
@@ -67,7 +67,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           <Flex direction='row' align='center' style={{ marginRight: '15px' }}>
             <Button
               variant='outline'
-              style={{ color: '#448aff', borderColor: '#448aff' }}
+              style={{ color: '#B64FFF', borderColor: '#B64FFF' }}
             >
               Manage
             </Button>
@@ -219,7 +219,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           }}
         >
           <Text style={{ color: ' #61657a' }}>Available 0.00 USDC</Text>
-          <Text style={{ color: '#448aff' }}>Deposit</Text>
+          <Text style={{ color: '#B64FFF' }}>Deposit</Text>
         </Flex>
         <Flex
           direction='row'
@@ -468,7 +468,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
             margin: '16px 15px',
             padding: '11px 100px 12px',
             borderRadius: '8px',
-            backgroundColor: '#448aff',
+            backgroundColor: '#B64FFF',
             cursor: 'pointer',
           }}
         >

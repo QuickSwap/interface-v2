@@ -4,50 +4,65 @@
     width: 100vw;
     height: 100vh;
 }
-
+.graph_orderbook{
+    display: flex;
+    flex-direction: row;
+}
 .graph {
     flex: 60%;
     height: fit-content;
     border: 1px solid #61675a;
 }
-
-.orderbook-other-wrapper {
-    flex: 40%;
-    display: flex;
-
-}
-
 .orderbook {
-    flex: 1;
+    flex: 15%;
+    height: fit-content;
     border: 1px solid #61675a;
 }
-
-.other {
-    flex: 1;
-    background-color: black;
-    color:white
+.graph_footer{
+    flex:80%;
+    display: flex;
+    flex-direction: column;
+}
+.other{
+    flex: 20%;
+    height: fit-content;
+    border: 1px solid #61675a;
+    height:100vh;
+}
+.perp_footer{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    color: white;
+    border-top: 1px solid #61675a; /* Add top border */
+    border-bottom: 1px solid #61675a; /* Add bottom border */
+}
+.kingFooter{
+    display: flex;
+    flex-direction: column;
+    margin:'15px 5px'
+}
+.portfolio_status{
+    display:flex;
+    flex-direction: row;
+    justify-content: start;
+    border-bottom: 1px solid #61675a;
+}
+.footer-left {
+    display: flex;
 }
 
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        height: auto;
-    }
-   .graph{
-       width: 100%;
-   }
-    .orderbook-other-wrapper{
-        display: flex;
-    }
-    .other {
-       flex: 0.6;
-    }
+.footer-left div {
+    margin-right: 10px;
+}
 
-    .orderbook {
-        flex: 0.4;
-    }
+.footer-right {
+    margin-left: auto;
+}
+.footer_data{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
 
-    .orderbook-other-wrapper {
-        order: 2;
-    }
 }
