@@ -26,9 +26,6 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
     srcChainId: Number(chainId),
     depositorAddress: quickSwapAccount,
   });
-  useEffect(() => {
-    setTokenSymbol(perpToken.split('_')[1]);
-  }, [perpToken]);
   return (
     <Flex direction='column' align='center' justify='center'>
       <Box

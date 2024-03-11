@@ -22,7 +22,7 @@ import { FinalPage } from './FinalPage';
 import { Grid } from '@mui/material';
 import { OrderbookV2 } from './OrderbookV2';
 import { Layout } from './Layout';
-import {MyOrderEntry} from "./OrderEntry";
+import {MyOrderBook} from "./OrderBookEntry";
 
 export const PerpsPage = () => {
   const { chainId, account, provider } = useActiveWeb3React();
@@ -97,7 +97,7 @@ export const PerpsPage = () => {
           <Positions />
         </Tabs.Content>
         <Tabs.Content value='market' style={{ color: 'white' }}>
-          <Market />
+          <MyOrderBook/>
         </Tabs.Content>
         <Tabs.Content value='pairs' style={{ color: 'white' }}>
           <Pairs />

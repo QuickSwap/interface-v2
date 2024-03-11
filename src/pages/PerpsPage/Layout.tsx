@@ -8,10 +8,10 @@ export const Layout = () => {
   return (
     <div className='container'>
       <div className='graph'>
-        <AdvancedChart widgetProps={{ height: '481' }} />
+        <AdvancedChart widgetProps={{ height: '430' }} />
       </div>
       <div className='orderbook-other-wrapper'>
-        <div className='orderbook'>
+        <div className='orderbook' style={{ height: '430px' }}>
           <OrderbookV2 />
         </div>
         <div className='other'>OrderEntry</div>
