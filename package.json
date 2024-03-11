@@ -139,6 +139,7 @@
     "@orbs-network/twap-ui": "^0.9.2",
     "@orbs-network/twap-ui-quickswap": "^0.9.2",
     "@orderly.network/hooks": "^1.0.20",
+    "@orderly.network/react": "^0.2.5-rc.0",
     "@orderly.network/types": "^0.1.19",
     "@paraswap/sdk": "^5.6.0-alpha.6",
     "@radix-ui/themes": "^2.0.3",

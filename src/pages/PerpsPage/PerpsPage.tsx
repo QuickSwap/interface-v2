@@ -20,6 +20,7 @@ import { AdvancedChart } from 'react-tradingview-embed';
 import {GraphHeader} from "./GraphHeader";
 import {FinalPage} from "./FinalPage";
 import { Grid } from '@mui/material';
+import {OrderbookV2} from "./OrderbookV2";
 
 export const PerpsPage = () => {
   const { chainId, account, provider } = useActiveWeb3React();
@@ -79,7 +80,7 @@ export const PerpsPage = () => {
           <Assets />
         </Tabs.Content>
         <Tabs.Content value='orderbook' style={{ color: 'white' }}>
-          <Orderbook />
+        <OrderbookV2 />
         </Tabs.Content>
         <Tabs.Content value='create_order' style={{ color: 'white' }}>
           <CreateOrder />
