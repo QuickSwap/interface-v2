@@ -6,6 +6,7 @@ import { Leverage } from './Leverage';
 import { GraphHeader } from './GraphHeader';
 import { Orderbook } from './Orderbook';
 import './FinalPage.css';
+import {OrderbookV2} from "./OrderbookV2";
 export const FinalPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState('market');
   const handleTabChange = (tab: string) => {
@@ -113,7 +114,7 @@ export const FinalPage: React.FC = () => {
                 </div>
               </div>
               {currentTab === 'market' && <Market token={token} />}
-              {currentTab === 'orderbook' && <Orderbook token={token} />}
+              {currentTab === 'orderbook' && <OrderbookV2/>}
             </Container>
             <Container
               id='leverage'
@@ -188,7 +189,7 @@ export const FinalPage: React.FC = () => {
                 height: '100vh',
               }}
             >
-              <Leverage perpToken={token} />
+          <Leverage/>
             </Container>
           </>
         )}

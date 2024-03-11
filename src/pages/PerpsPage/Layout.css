@@ -1,0 +1,54 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+}
+
+.graph {
+    flex: 60%;
+    height: fit-content;
+    border: 1px solid #61675a;
+}
+
+.orderbook-other-wrapper {
+    flex: 40%;
+    display: flex;
+
+}
+
+.orderbook {
+    flex: 1;
+    border: 1px solid #61675a;
+    height:61.7vh;
+}
+
+.other {
+    flex: 1;
+    background-color: black;
+    color:white
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+    }
+   .graph{
+       width: 100%;
+   }
+    .orderbook-other-wrapper{
+        display: flex;
+    }
+    .other {
+       flex: 0.6;
+    }
+
+    .orderbook {
+        flex: 0.4;
+    }
+
+    .orderbook-other-wrapper {
+        order: 2;
+    }
+}

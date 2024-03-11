@@ -15,12 +15,14 @@ import { Orders } from './Orders';
 import { Positions } from './Positions';
 import { Market } from './Market';
 import { Pairs } from './Pairs';
-import {Leverage} from "./Leverage";
+import { Leverage } from './Leverage';
 import { AdvancedChart } from 'react-tradingview-embed';
-import {GraphHeader} from "./GraphHeader";
-import {FinalPage} from "./FinalPage";
+import { GraphHeader } from './GraphHeader';
+import { FinalPage } from './FinalPage';
 import { Grid } from '@mui/material';
-import {OrderbookV2} from "./OrderbookV2";
+import { OrderbookV2 } from './OrderbookV2';
+import { Layout } from './Layout';
+import {MyOrderEntry} from "./OrderEntry";
 
 export const PerpsPage = () => {
   const { chainId, account, provider } = useActiveWeb3React();
@@ -71,6 +73,9 @@ export const PerpsPage = () => {
           <Tabs.Trigger value='final' style={{ color: 'white' }}>
             Perps Page Final
           </Tabs.Trigger>
+          <Tabs.Trigger value='layout' style={{ color: 'white' }}>
+            Layout
+          </Tabs.Trigger>
         </Tabs.List>
 
         <Tabs.Content value='account' style={{ color: 'white' }}>
@@ -80,7 +85,7 @@ export const PerpsPage = () => {
           <Assets />
         </Tabs.Content>
         <Tabs.Content value='orderbook' style={{ color: 'white' }}>
-        <OrderbookV2 />
+        <OrderbookV2/>
         </Tabs.Content>
         <Tabs.Content value='create_order' style={{ color: 'white' }}>
           <CreateOrder />
@@ -98,11 +103,14 @@ export const PerpsPage = () => {
           <Pairs />
         </Tabs.Content>
         <Tabs.Content value='chart' style={{ color: 'white' }}>
-          <GraphHeader/>
+          <GraphHeader />
           <AdvancedChart />
         </Tabs.Content>
         <Tabs.Content value='final' style={{ color: 'white' }}>
-          <FinalPage/>
+          <FinalPage />
+        </Tabs.Content>
+        <Tabs.Content value='layout' style={{ color: 'white' }}>
+          <Layout />
         </Tabs.Content>
       </Tabs.Root>
     </Theme>
