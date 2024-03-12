@@ -4,106 +4,209 @@
     width: 100vw;
     height: 100vh;
 }
-.graph_orderbook{
+
+
+.graph_orderbook {
     display: flex;
     flex-direction: row;
 }
+
+
 .graph {
     flex: 60%;
     height: fit-content;
     border: 1px solid #61675a;
 }
+
+
 .orderbook {
     flex: 15%;
     height: fit-content;
     border: 1px solid #61675a;
 }
-.graph_footer{
-    flex:80%;
+
+
+.graph_footer {
+    flex: 80%;
     display: flex;
     flex-direction: column;
 }
-.other{
+
+
+.other {
     flex: 10%;
     height: fit-content;
     border: 1px solid #61675a;
-    height:100vh;
+    height: 100vh;
 }
-.perp_footer{
+
+
+.perp_footer {
     display: flex;
     justify-content: space-between;
     padding: 10px;
     color: white;
-    border-top: 1px solid #61675a; /* Add top border */
-    border-bottom: 1px solid #61675a; /* Add bottom border */
+    border-bottom: 1px solid #61675a;
 }
-.kingFooter{
+
+
+.kingFooter {
     display: flex;
     flex-direction: column;
-    margin:15px 5px
+    margin: 0px 5px
 }
+
+
 .dropdown,
-.portfolio_status{
-    display:flex;
+.portfolio_status {
+    display: flex;
     flex-direction: row;
+    font-size: 14px;
+    font-family: Inter;
+    font-weight: 500;
+    color: #61675a;
     justify-content: start;
     border-bottom: 1px solid #61675a;
     margin: 10px 5px;
 }
-.portfolio_status div{
+
+
+.portfolio_status div {
     margin: 5px 10px;
 }
+
+
 .footer-left {
     display: flex;
-    color:#61675a;
+    color: #61675a;
     font-family: Inter;
     font-weight: 500;
     font-size: 14px;
 }
 
+
 .footer-left div {
     margin-right: 10px;
 }
 
+
 .footer-right {
     margin-left: auto;
-    color:#ccced9;
+    color: #ccced9;
     font-family: Inter;
     font-weight: 500;
     font-size: 12px;
 }
-.footer_data{
+
+
+.dropdown {
+    border-bottom: 1px solid #61675a;
+    padding-bottom: 5px;
+}
+
+
+.dropdown select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: transparent;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+
+.dropdown select::-ms-expand {
+    display: none;
+}
+
+
+.dropdown select option {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+}
+
+
+.dropdown select:focus {
+    outline: none;
+}
+.footer_data {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 20vh;
+    color: #ccced9;
+    font-family: Inter;
+    font-weight: 500;
+    font-size: 12px;
 }
-.selected{
+
+
+.selected {
     border-bottom: 1px solid #FFF;
     color: white;
 }
 
- @media (max-width: 768px) {
-     @media (max-width: 768px) {
-         .container {
-             flex-direction: column;
-             height: max-content;
-         }
-         .graph_orderbook {
-             flex-direction: column;
-         }
-         .graph {
-             flex: 100%;
-             border: 1px solid #61675a;
-         }
-         .orderbook,
-         .other {
-             flex: 50%;
-             border: 1px solid #61675a;
-         }
-         .kingFooter {
-             display: none; /* Hide the footer */
-         }
-     }
 
- }
+.mobile_footer {
+    display: none;
+}
+
+
+.orderbook-leverage-container {
+    display: none;
+}
+
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        height: max-content;
+    }
+
+
+    .graph_orderbook {
+        flex-direction: column;
+    }
+
+
+    .graph {
+        flex: 100%;
+        border: 1px solid #61675a;
+    }
+
+
+    .kingFooter {
+        display: none;
+    }
+
+
+    .mobile_footer {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        color: white;
+        border-top: 1px solid #61675a;
+        border-bottom: 1px solid #61675a;
+    }
+
+
+    .orderbook-leverage-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .other,
+    .desktop_orderbook{
+        display: none;
+    }
+
+
+    .orderbook{
+        width: 45%;
+    }
+    .leverage {
+        width: 55%;
+    }
+}
