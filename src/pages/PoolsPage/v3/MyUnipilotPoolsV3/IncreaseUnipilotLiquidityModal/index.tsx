@@ -9,7 +9,12 @@ import {
 import { Box, Button } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
-import { calculateGasMargin, formatNumber } from 'utils';
+import {
+  calculateGasMargin,
+  formatNumber,
+  getFixedValue,
+  maxAmountSpend,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   useTransactionAdder,
@@ -24,11 +29,16 @@ import { useUniPilotVaultContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
+import { UnipilotPosition } from 'hooks/v3/useV3Positions';
+import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
+import { tryParseAmount } from 'state/swap/v3/hooks';
+import Loader from 'components/Loader';
+import { Check } from '@material-ui/icons';
 
 interface IncreaseUnipilotLiquidityModalProps {
   open: boolean;
   onClose: () => void;
-  position: any;
+  position: UnipilotPosition;
 }
 
 export default function IncreaseUnipilotLiquidityModal({
@@ -39,16 +49,16 @@ export default function IncreaseUnipilotLiquidityModal({
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const [isBaseInput, setIsBaseInput] = useState(true);
-  const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
+  const uniPilotVaultContract = useUniPilotVaultContract(position.id);
   const [deposit0, setDeposit0] = useState('');
   const [deposit1, setDeposit1] = useState('');
 
   const unipilotToken0VaultBalance = useTokenBalance(
-    position.vault.id,
+    position.id,
     position.token0,
   );
   const unipilotToken1VaultBalance = useTokenBalance(
-    position.vault.id,
+    position.id,
     position.token1,
   );
   const uniPilotVaultPositionResult = useSingleCallResult(
@@ -83,13 +93,13 @@ export default function IncreaseUnipilotLiquidityModal({
   const independentDeposit = isBaseInput
     ? JSBI.BigInt(
         parseUnits(
-          Number(deposit0).toFixed(position.token0?.decimals),
+          getFixedValue(deposit0, position.token0?.decimals),
           position.token0?.decimals,
         ),
       )
     : JSBI.BigInt(
         parseUnits(
-          Number(deposit1).toFixed(position.token1?.decimals),
+          getFixedValue(deposit1, position.token1?.decimals),
           position.token1?.decimals,
         ),
       );
@@ -118,8 +128,9 @@ export default function IncreaseUnipilotLiquidityModal({
     position.token1 &&
     position.token1.address.toLowerCase() ===
       WETH[chainId].address.toLowerCase();
+  const maxSpendETH = chainId ? maxAmountSpend(chainId, ethBalance) : undefined;
   const token0BalanceJSBI = JSBI.add(
-    token0isWETH && ethBalance ? ethBalance.numerator : JSBI.BigInt('0'),
+    token0isWETH && maxSpendETH ? maxSpendETH.numerator : JSBI.BigInt('0'),
     token0Balance ? token0Balance.numerator : JSBI.BigInt('0'),
   );
   const token1BalanceJSBI = JSBI.add(
@@ -128,17 +139,48 @@ export default function IncreaseUnipilotLiquidityModal({
       position.token1 &&
       position.token1.address.toLowerCase() ===
         WETH[chainId].address.toLowerCase() &&
-      ethBalance
-      ? ethBalance.numerator
+      maxSpendETH
+      ? maxSpendETH.numerator
       : JSBI.BigInt('0'),
     token1Balance ? token1Balance.numerator : JSBI.BigInt('0'),
   );
   const deposit0JSBI = JSBI.BigInt(
-    parseUnits(!deposit0 ? '0' : deposit0, position.token0?.decimals),
+    parseUnits(
+      !deposit0 ? '0' : getFixedValue(deposit0, position.token0?.decimals),
+      position.token0?.decimals,
+    ),
   );
   const deposit1JSBI = JSBI.BigInt(
-    parseUnits(!deposit1 ? '0' : deposit1, position.token1?.decimals),
+    parseUnits(
+      !deposit1 ? '0' : getFixedValue(deposit1, position.token1?.decimals),
+      position.token1?.decimals,
+    ),
   );
+
+  const [approvalA, approveACallback] = useApproveCallback(
+    tryParseAmount(deposit0, position.token0),
+    chainId ? uniPilotVaultContract?.address : undefined,
+  );
+  const [approvalB, approveBCallback] = useApproveCallback(
+    tryParseAmount(deposit1, position.token1),
+    chainId ? uniPilotVaultContract?.address : undefined,
+  );
+
+  const showApprovalA = useMemo(() => {
+    if (approvalA === ApprovalState.UNKNOWN) return undefined;
+
+    if (approvalA === ApprovalState.NOT_APPROVED) return true;
+
+    return approvalA !== ApprovalState.APPROVED;
+  }, [approvalA]);
+
+  const showApprovalB = useMemo(() => {
+    if (approvalB === ApprovalState.UNKNOWN) return undefined;
+
+    if (approvalB === ApprovalState.NOT_APPROVED) return true;
+
+    return approvalB !== ApprovalState.APPROVED;
+  }, [approvalB]);
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
@@ -153,7 +195,9 @@ export default function IncreaseUnipilotLiquidityModal({
     !Number(deposit1) ||
     !account ||
     JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI) ||
-    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI);
+    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI) ||
+    approvalA !== ApprovalState.APPROVED ||
+    approvalB !== ApprovalState.APPROVED;
 
   const buttonText = useMemo(() => {
     if (!account) return t('connectWallet');
@@ -471,6 +515,68 @@ export default function IncreaseUnipilotLiquidityModal({
                 WETH[chainId].address.toLowerCase()
             }
           />
+        </Box>
+        <Box mt={2} className='flex justify-between'>
+          {showApprovalA !== undefined && (
+            <Box width={showApprovalB === undefined ? '100%' : '49%'}>
+              {showApprovalA ? (
+                approvalA === ApprovalState.PENDING ? (
+                  <Box className='token-approve-button-loading'>
+                    <Loader stroke='white' />
+                    <p>
+                      {t('approving')} {position.token0?.symbol}
+                    </p>
+                  </Box>
+                ) : (
+                  <Button
+                    className='token-approve-button'
+                    onClick={approveACallback}
+                  >
+                    <p>
+                      {t('approve')} {position.token0?.symbol}
+                    </p>
+                  </Button>
+                )
+              ) : (
+                <Box className='token-approve-button-loading'>
+                  <Check />
+                  <p>
+                    {t('approved')} {position.token0?.symbol}
+                  </p>
+                </Box>
+              )}
+            </Box>
+          )}
+          {showApprovalB !== undefined && (
+            <Box width={showApprovalA === undefined ? '100%' : '49%'}>
+              {showApprovalB ? (
+                approvalB === ApprovalState.PENDING ? (
+                  <Box className='token-approve-button-loading'>
+                    <Loader stroke='white' />
+                    <p>
+                      {t('approving')} {position.token1?.symbol}
+                    </p>
+                  </Box>
+                ) : (
+                  <Button
+                    className='token-approve-button'
+                    onClick={approveBCallback}
+                  >
+                    <p>
+                      {t('approve')} {position.token1?.symbol}
+                    </p>
+                  </Button>
+                )
+              ) : (
+                <Box className='token-approve-button-loading'>
+                  <Check />
+                  <p>
+                    {t('approved')} {position.token1?.symbol}
+                  </p>
+                </Box>
+              )}
+            </Box>
+          )}
         </Box>
         <Box mt={2}>
           <Button

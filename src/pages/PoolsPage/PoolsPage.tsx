@@ -12,6 +12,8 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { HypeLabAds } from 'components';
 import LockLiquidity from './lpLock/LockLiquidity';
+import { useParams } from 'react-router-dom';
+import { SingleTokenSupplyLiquidity } from './SingleToken/SupplyLiquidity';
 
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
@@ -26,6 +28,10 @@ const PoolsPage: React.FC = () => {
   const config = getConfig(chainIdToUse);
   const v3 = config['v3'];
   const v2 = config['v2'];
+  const ichiEnabled = config['ichi']['available'];
+  const showVersion = (v2 && v3) || (v2 && ichiEnabled) || (v3 && ichiEnabled);
+  const params: any = useParams();
+  const version = params?.version ?? 'v3';
 
   const helpURL = process.env.REACT_APP_HELP_URL;
 
@@ -40,7 +46,7 @@ const PoolsPage: React.FC = () => {
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
           <h1 className='h4'>{t('pool')}</h1>
-          {v2 && v3 && (
+          {showVersion && (
             <Box ml={2}>
               <VersionToggle />
             </Box>
@@ -63,7 +69,14 @@ const PoolsPage: React.FC = () => {
       <Grid container spacing={4}>
         <Grid item xs={12} sm={12} md={5}>
           <Box className='wrapper'>
-            {isLpLock ? <LockLiquidity /> : !isV2 ? <SupplyLiquidityV3 /> : <SupplyLiquidity />}
+            {version === 'singleToken' ? (
+              <SingleTokenSupplyLiquidity />
+            ) : isLpLock ? <LockLiquidity /> 
+            ) : !isV2 ? (
+              <SupplyLiquidityV3 />
+            ) : (
+              <SupplyLiquidity />
+            )}
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={7}>

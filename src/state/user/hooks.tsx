@@ -1,4 +1,4 @@
-import { ChainId, Pair, Token } from '@uniswap/sdk';
+import { ChainId, JSBI, Pair, Token } from '@uniswap/sdk';
 import flatMap from 'lodash.flatmap';
 import { useCallback, useMemo } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
@@ -21,12 +21,16 @@ import {
   updateSlippageManuallySet,
   updateSelectedWallet,
   updateUserLiquidityHub,
+  updateUserZapSlippage,
+  updateIsInfiniteApproval,
 } from './actions';
 import {
   V2_BASES_TO_TRACK_LIQUIDITY_FOR,
   V2_PINNED_PAIRS,
 } from 'constants/v3/addresses';
 import { ConnectionType } from 'connectors';
+import { Percent } from '@uniswap/sdk-core';
+import { INITIAL_ZAP_SLIPPAGE } from './reducer';
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -398,6 +402,71 @@ export function useLiquidityHubManager(): [boolean, () => void] {
   }, [userLiquidityHubDisabled, dispatch]);
 
   return [userLiquidityHubDisabled, toggleSetLiquidityHub];
+}
+
+export function useUserZapSlippageTolerance(): [
+  Percent,
+  (slippageTolerance: Percent) => void,
+] {
+  const userSlippageToleranceRaw = useSelector<
+    AppState,
+    AppState['user']['userZapSlippage']
+  >((state) => {
+    return state.user.userZapSlippage;
+  });
+  const userSlippageTolerance = useMemo(
+    () =>
+      !userSlippageToleranceRaw
+        ? new Percent(50, 10_000)
+        : new Percent(userSlippageToleranceRaw, 10_000),
+    [userSlippageToleranceRaw],
+  );
+
+  const dispatch = useDispatch();
+  const setUserSlippageTolerance = useCallback(
+    (userSlippageTolerance: Percent) => {
+      let value: number;
+      try {
+        value = JSBI.toNumber(userSlippageTolerance.multiply(10_000).quotient);
+      } catch (error) {
+        value = INITIAL_ZAP_SLIPPAGE;
+      }
+      dispatch(
+        updateUserZapSlippage({
+          userZapSlippage: value,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  return useMemo(() => [userSlippageTolerance, setUserSlippageTolerance], [
+    setUserSlippageTolerance,
+    userSlippageTolerance,
+  ]);
+}
+
+export function useIsInfiniteApproval(): [
+  boolean,
+  (isInfiniteApproval: boolean) => void,
+] {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const isInfiniteApproval = useSelector<
+    AppState,
+    AppState['user']['isInfiniteApproval']
+  >((state) => {
+    return state.user.isInfiniteApproval;
+  });
+
+  const setIsInfiniteApproval = useCallback(
+    (isInfiniteApproval: boolean) => {
+      dispatch(updateIsInfiniteApproval({ isInfiniteApproval }));
+    },
+    [dispatch],
+  );
+
+  return [isInfiniteApproval, setIsInfiniteApproval];
 }
 
 // export function useUserTransactionTTL(): [number, (slippage: number) => void] {

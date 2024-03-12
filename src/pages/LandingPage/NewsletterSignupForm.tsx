@@ -7,11 +7,9 @@ import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 const NewsletterSignupForm: React.FC = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
-  const { mutate, isLoading, data } = useSubscribeNewsletter(
-    process.env.REACT_APP_CONVERTKIT_FORM_ID,
-  );
+  const { mutate, isLoading, data } = useSubscribeNewsletter();
   const handleSignup = async () => {
-    await mutate({ email });
+    await mutate(email);
   };
 
   return (
@@ -19,10 +17,7 @@ const NewsletterSignupForm: React.FC = () => {
       <Box>
         <p>{t('dragonDispatch')}</p>
         <h4>{t('newsletterSignup')}</h4>
-        <small className='text-primaryText'>
-          {t('newsletterSignupDesc')}&nbsp;
-          <b>{t('earn300QUICK')}</b>
-        </small>
+        <small className='text-primaryText'>{t('newsletterSignupDesc')}</small>
       </Box>
       <Box className='newsletterSignupFormWrapper'>
         <Box className='newsletterSignupForm'>
@@ -43,7 +38,7 @@ const NewsletterSignupForm: React.FC = () => {
         </Box>
         {data && (
           <Box mt={1} textAlign='center'>
-            {data.subscription && (
+            {data.data && (
               <small className='text-success'>{t('subscribeSuccess')}</small>
             )}
             {data.error && (

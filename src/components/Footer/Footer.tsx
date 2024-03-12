@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
-import { Box, Button, CircularProgress, Grid } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  useMediaQuery,
+} from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import QUICKLogo from 'assets/images/quickLogo.png';
 import 'components/styles/Footer.scss';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
 const Footer: React.FC = () => {
   const history = useHistory();
+  const { pathname } = useLocation();
   const copyrightYear = new Date().getFullYear();
   const { t } = useTranslation();
+  const theme = useTheme();
+  const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
 
   const socialMenuItems = [
     {
@@ -40,11 +50,9 @@ const Footer: React.FC = () => {
   ];
 
   const [email, setEmail] = useState('');
-  const { mutate, isLoading, data } = useSubscribeNewsletter(
-    process.env.REACT_APP_CONVERTKIT_FORM_ID,
-  );
+  const { mutate, isLoading, data } = useSubscribeNewsletter();
   const handleSignup = async () => {
-    await mutate({ email });
+    await mutate(email);
   };
 
   return (
@@ -75,7 +83,7 @@ const Footer: React.FC = () => {
               </Box>
               {data && (
                 <Box mt={1} textAlign='center'>
-                  {data.subscription && (
+                  {data.data && (
                     <span className='text-success'>
                       {t('subscribeSuccess')}
                     </span>
@@ -115,9 +123,20 @@ const Footer: React.FC = () => {
             ))}
           </Grid>
         </Grid>
-        <Box className='copyrightWrapper'>
-          <small className='text-secondary'>© {copyrightYear} QuickSwap.</small>
-          <small className='text-secondary'>{t('termsofuse')}</small>
+        <Box
+          className={`copyrightWrapper ${
+            tabletWindowSize ? 'copyright-mobile' : ''
+          }`}
+        >
+          <small className='text-secondary'>© {copyrightYear} QuickSwap</small>
+          <small className='text-secondary'>
+            <Link className='footer-link' to='/tos'>
+              {t('termsofuse')}
+            </Link>
+          </small>
+          {!tabletWindowSize && pathname === '/' && (
+            <Box className='fake-community-container'>&nbsp;</Box>
+          )}
         </Box>
       </Box>
     </Box>

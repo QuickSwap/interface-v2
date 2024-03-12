@@ -7,6 +7,7 @@
   "aprAPINetwork": "manta",
   "chainId": 169,
   "isMainnet": true,
+  "visible": true,
   "nativeCurrencyImage": "/manta.svg",
   "nativeCurrency": {
     "name": "Ether",
@@ -25,10 +26,9 @@
     "available": true
   },
   "farm": {
+    "quickswap": false,
+    "merkl": false,
     "available": true
-  },
-  "qsFarm": {
-    "available": false
   },
   "lair": {
     "available": false,
@@ -43,6 +43,7 @@
     "available": false
   },
   "analytics": {
+    "liquidityHub": false,
     "available": true
   },
   "lending": {
@@ -67,9 +68,15 @@
     "available": false
   },
   "gamma": {
-    "available": false
+    "available": true
   },
   "unipilot": {
+    "available": false
+  },
+  "defiedge": {
+    "available": false
+  },
+  "bonds": {
     "available": false
   },
   "steer": {
@@ -77,5 +84,8 @@
   },
   "dappos": {
     "available": true
+  },
+  "ichi": {
+    "available": false
   }
 }

@@ -108,12 +108,12 @@ const SteerFarmCard: React.FC<{
               ) : (
                 <>
                   <small className='text-success'>
-                    {formatNumber(data.farmAPR + data.feeAPR)}%
+                    {formatNumber(data.farmAPR + data.poolAPR)}%
                   </small>
                   <Box ml={0.5} height={16}>
                     <TotalAPRTooltip
                       farmAPR={data.farmAPR}
-                      poolAPR={data.feeAPR}
+                      poolAPR={data.poolAPR}
                       poolAPRText={t('vaultAPR')}
                     >
                       <img src={CircleInfoIcon} alt={'arrow up'} />

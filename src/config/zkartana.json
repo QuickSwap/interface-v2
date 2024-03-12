@@ -6,7 +6,8 @@
   "networkName": "zKatana",
   "aprAPINetwork": "zkatana",
   "chainId": 1261120,
-  "isMainnet": true,
+  "isMainnet": false,
+  "visible": true,
   "nativeCurrencyImage": "/zkartana.png",
   "nativeCurrency": {
     "name": "Ether",
@@ -25,9 +26,8 @@
     "available": true
   },
   "farm": {
-    "available": false
-  },
-  "qsFarm": {
+    "quickswap": false,
+    "merkl": false,
     "available": false
   },
   "lair": {
@@ -43,6 +43,7 @@
     "available": false
   },
   "analytics": {
+    "liquidityHub": false,
     "available": false
   },
   "lending": {
@@ -72,10 +73,19 @@
   "unipilot": {
     "available": false
   },
+  "bonds": {
+    "available": false
+  },
   "steer": {
     "available": false
   },
   "dappos": {
+    "available": false
+  },
+  "ichi": {
+    "available": false
+  },
+  "defiedge": {
     "available": false
   }
 }

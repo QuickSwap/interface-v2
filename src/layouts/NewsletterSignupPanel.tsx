@@ -20,21 +20,16 @@ const NewsletterSignupPanel: React.FC = () => {
     }, 3000);
   }, []);
 
-  const { mutate, isLoading, data } = useSubscribeNewsletter(
-    process.env.REACT_APP_CONVERTKIT_FORM_ID,
-  );
+  const { mutate, isLoading, data } = useSubscribeNewsletter();
   const handleSignup = async () => {
-    await mutate({ email });
+    await mutate(email);
   };
 
   return showPanel ? (
     <div ref={signupPanel} className='staticNewsletterSignUpPanel'>
       <p>{t('dragonDispatch')}</p>
       <h4>{t('newsletterSignup')}</h4>
-      <small>
-        {t('newsletterSignupDesc')}&nbsp;
-        <b>{t('earn300QUICK')}</b>
-      </small>
+      <small>{t('newsletterSignupDesc')}</small>
       <input
         placeholder={t('enterEmail')}
         onChange={(e) => setEmail(e.target.value)}
@@ -50,7 +45,7 @@ const NewsletterSignupPanel: React.FC = () => {
       </Button>
       {data && (
         <Box mt={1} textAlign='center'>
-          {data.subscription && (
+          {data.data && (
             <span className='text-success'>{t('subscribeSuccess')}</span>
           )}
           {data.error && (

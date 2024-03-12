@@ -8,7 +8,7 @@ import {
   DoubleCurrencyLogo,
 } from 'components';
 import {
-  useNetworkSelectionModalToggle,
+  useOpenNetworkSelection,
   useWalletModalToggle,
 } from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
@@ -22,7 +22,7 @@ import {
   TokenAmount,
   ChainId,
 } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useConnectWallet } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
@@ -45,6 +45,7 @@ import {
   calculateGasMargin,
   useIsSupportedNetwork,
   formatTokenAmount,
+  halfAmountSpend,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
@@ -141,6 +142,16 @@ const AddLiquidity: React.FC<{
     };
   }, {});
 
+  const halfAmounts: { [field in Field]?: TokenAmount } = [
+    Field.CURRENCY_A,
+    Field.CURRENCY_B,
+  ].reduce((accumulator, field) => {
+    return {
+      ...accumulator,
+      [field]: halfAmountSpend(chainIdToUse, currencyBalances[field]),
+    };
+  }, {});
+
   const formattedAmounts = {
     [independentField]: typedValue,
     [dependentField]: noLiquidity
@@ -148,9 +159,8 @@ const AddLiquidity: React.FC<{
       : parsedAmounts[dependentField]?.toExact() ?? '',
   };
 
-  const { ethereum } = window as any;
   const toggleWalletModal = useWalletModalToggle();
-  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
+  const { setOpenNetworkSelection } = useOpenNetworkSelection();
   const [approvingA, setApprovingA] = useState(false);
   const [approvingB, setApprovingB] = useState(false);
   const [approvalA, approveACallback] = useApproveCallback(
@@ -364,13 +374,7 @@ const AddLiquidity: React.FC<{
       });
   };
 
-  const connectWallet = () => {
-    if (!isSupportedNetwork) {
-      toggleNetworkSelectionModal();
-    } else {
-      toggleWalletModal();
-    }
-  };
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false);
@@ -463,11 +467,9 @@ const AddLiquidity: React.FC<{
           onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
         }
         onHalf={() => {
-          const maxAmount = maxAmounts[Field.CURRENCY_A];
-          if (maxAmount) {
-            onFieldAInput(
-              maxAmount.divide('2').toFixed(maxAmount.currency.decimals),
-            );
+          const halfAmount = halfAmounts[Field.CURRENCY_A];
+          if (halfAmount) {
+            onFieldAInput(halfAmount.toExact());
           }
         }}
         handleCurrencySelect={handleCurrencyASelect}

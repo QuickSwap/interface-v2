@@ -11,6 +11,7 @@ import { useCallback, useMemo } from 'react';
 import {
   SWAP_ROUTER_ADDRESSES,
   UNI_SWAP_ROUTER,
+  ZAP_ADDRESS,
 } from '../constants/v3/addresses';
 import {
   useHasPendingApproval,
@@ -20,6 +21,8 @@ import { useTokenContract } from './useContract';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenAllowance } from './useTokenAllowance';
 import { calculateGasMargin } from 'utils';
+import { MergedZap } from 'state/zap/actions';
+import { useIsInfiniteApproval } from 'state/user/hooks';
 
 export enum ApprovalState {
   UNKNOWN = 'UNKNOWN',
@@ -61,6 +64,7 @@ export function useApproveCallback(
 
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();
+  const [isInfiniteApproval] = useIsInfiniteApproval();
 
   const approve = useCallback(async (): Promise<void> => {
     if (approvalState !== ApprovalState.NOT_APPROVED) {
@@ -94,7 +98,10 @@ export function useApproveCallback(
 
     let useExact = false;
     const estimatedGas = await tokenContract.estimateGas
-      .approve(spender, MaxUint256)
+      .approve(
+        spender,
+        isInfiniteApproval ? MaxUint256 : amountToApprove.quotient.toString(),
+      )
       .catch(() => {
         // general fallback for tokens who restrict approval amounts
         useExact = true;
@@ -107,7 +114,9 @@ export function useApproveCallback(
     return tokenContract
       .approve(
         spender,
-        useExact ? amountToApprove.quotient.toString() : MaxUint256,
+        useExact || !isInfiniteApproval
+          ? amountToApprove.quotient.toString()
+          : MaxUint256,
         {
           gasLimit: calculateGasMargin(estimatedGas),
         },
@@ -125,12 +134,13 @@ export function useApproveCallback(
       });
   }, [
     approvalState,
+    chainId,
     token,
     tokenContract,
     amountToApprove,
     spender,
+    isInfiniteApproval,
     addTransaction,
-    chainId,
   ]);
 
   return [approvalState, approve];
@@ -163,4 +173,21 @@ export function useApproveCallbackFromTrade(
         : undefined
       : undefined,
   );
+}
+
+export function useApproveCallbackFromZap(
+  zap?: MergedZap,
+): [ApprovalState, () => Promise<void>] {
+  const { chainId } = useActiveWeb3React();
+
+  const inAmount = zap?.currencyIn?.currency
+    ? CurrencyAmount.fromRawAmount(
+        zap?.currencyIn?.currency,
+        zap.currencyIn?.inputAmount,
+      )
+    : undefined;
+
+  const spender = chainId ? ZAP_ADDRESS[chainId] : undefined;
+
+  return useApproveCallback(inAmount, spender);
 }

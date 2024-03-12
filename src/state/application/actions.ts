@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
-import { ChainId } from '@uniswap/sdk';
 import { TokenList } from '@uniswap/token-lists';
 import { TokenDetail } from './reducer';
+import { SoulZap_UniV2_ApeBond } from '@soulsolidity/soulzap-v1';
 
 export type PopupContent =
   | {
@@ -23,7 +23,6 @@ export type PopupContent =
 
 export enum ApplicationModal {
   WALLET,
-  NETWORK_SELECTION,
   SETTINGS,
   SETTINGSV3,
   SELF_CLAIM,
@@ -97,4 +96,12 @@ export const updateIsLpLock = createAction<boolean>('application/updateIsLpLock'
 
 export const updateUDDomain = createAction<string | undefined>(
   'application/updateUDDomain',
+);
+
+export const updateSoulZap = createAction<SoulZap_UniV2_ApeBond | undefined>(
+  'application/updateSoulZap',
+);
+
+export const updateOpenNetworkSelection = createAction<boolean>(
+  'application/updateOpenNetworkSelection',
 );

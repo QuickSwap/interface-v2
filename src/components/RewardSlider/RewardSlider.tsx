@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Slider from 'react-slick';
 import { useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
@@ -13,7 +13,6 @@ import RewardSliderItem from './RewardSliderItem';
 import { useActiveWeb3React } from 'hooks';
 import { getOneYearFee } from 'utils';
 import 'components/styles/RewardSlider.scss';
-import { ChainId } from '@uniswap/sdk';
 import { useQuery } from '@tanstack/react-query';
 
 const RewardSlider: React.FC = () => {
@@ -43,22 +42,8 @@ const RewardSlider: React.FC = () => {
   const { data: bulkPairs, refetch } = useQuery({
     queryKey: ['fetchBulkPairData', chainId, stakingPairListStr],
     queryFn: fetchBulkPairData,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const stakingAPYs = useMemo(() => {
     if (bulkPairs && stakingPairLists.length > 0) {

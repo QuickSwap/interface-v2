@@ -15,7 +15,7 @@ import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
 } from 'constants/v3/addresses';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
+import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import { TokenAmountCard } from '../../components/TokenAmountCard';
 import { PriceFormats } from 'components/v3/PriceFomatToggler';
@@ -79,6 +79,16 @@ export function EnterAmounts({
     };
   }, {});
 
+  const halfAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [
+    Field.CURRENCY_A,
+    Field.CURRENCY_B,
+  ].reduce((accumulator, field) => {
+    return {
+      ...accumulator,
+      [field]: halfAmountSpend(mintInfo.currencyBalances[field]),
+    };
+  }, {});
+
   const atMaxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [
     Field.CURRENCY_A,
     Field.CURRENCY_B,
@@ -93,14 +103,16 @@ export function EnterAmounts({
     chainId,
     currencyA?.wrapped.address,
     currencyB?.wrapped.address,
+    mintInfo.feeAmount,
   );
-  const gammaPair = gammaPairData?.pairs;
-  const gammaPairAddress =
-    gammaPair && gammaPair.length > 0
-      ? gammaPair.find((pair) => pair.type === preset)?.address
+  const gammaPairs = gammaPairData?.pairs;
+  const gammaPair =
+    gammaPairs && gammaPairs.length > 0
+      ? gammaPairs.find((pair) => pair.type === preset)
       : undefined;
 
   const uniPilotVaultAddress = mintInfo.presetRange?.address;
+  const defiedgeStrategyAddress = mintInfo.presetRange?.address;
   const isWithNative =
     mintInfo.liquidityRangeType ===
       GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
@@ -123,6 +135,7 @@ export function EnterAmounts({
     }
     return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
   }, [chainId, mintInfo.feeTier]);
+
   const steerPeripheryContract = useSteerPeripheryContract();
   const [approvalA, approveACallback] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A] ||
@@ -130,10 +143,13 @@ export function EnterAmounts({
     chainId
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-        ? gammaPairAddress
+        ? gammaPair?.address
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+        ? defiedgeStrategyAddress
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.STEER_RANGE
         ? steerPeripheryContract?.address
@@ -146,10 +162,13 @@ export function EnterAmounts({
     chainId
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-        ? gammaPairAddress
+        ? gammaPair?.address
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+        ? defiedgeStrategyAddress
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.STEER_RANGE
         ? steerPeripheryContract?.address
@@ -174,53 +193,47 @@ export function EnterAmounts({
   }, [approvalB]);
 
   return (
-    <Box>
-      <small className='weight-600'>{t('depositAmounts')}</small>
-      <Box my={2}>
+    <>
+      <TokenAmountCard
+        currency={currencyA}
+        otherCurrency={currencyB}
+        value={formattedAmounts[Field.CURRENCY_A]}
+        fiatValue={usdcValues[Field.CURRENCY_A]}
+        handleInput={onFieldAInput}
+        handleHalf={() =>
+          onFieldAInput(halfAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+        }
+        handleMax={() =>
+          onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+        }
+        locked={mintInfo.depositADisabled}
+        isMax={!!atMaxAmounts[Field.CURRENCY_A]}
+        error={mintInfo.token0ErrorMessage}
+        priceFormat={priceFormat}
+        isBase={false}
+        isDual={isWithNative}
+      />
+      <Box mt={2}>
         <TokenAmountCard
-          currency={currencyA}
-          otherCurrency={currencyB}
-          value={formattedAmounts[Field.CURRENCY_A]}
-          fiatValue={usdcValues[Field.CURRENCY_A]}
-          handleInput={onFieldAInput}
+          currency={currencyB}
+          otherCurrency={currencyA}
+          value={formattedAmounts[Field.CURRENCY_B]}
+          fiatValue={usdcValues[Field.CURRENCY_B]}
+          handleInput={onFieldBInput}
           handleHalf={() =>
-            onFieldAInput(
-              maxAmounts[Field.CURRENCY_A]?.divide('2')?.toExact() ?? '',
-            )
+            onFieldBInput(halfAmounts[Field.CURRENCY_B]?.toExact() ?? '')
           }
           handleMax={() =>
-            onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+            onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
           }
-          locked={mintInfo.depositADisabled}
-          isMax={!!atMaxAmounts[Field.CURRENCY_A]}
-          error={mintInfo.token0ErrorMessage}
+          locked={mintInfo.depositBDisabled}
+          isMax={!!atMaxAmounts[Field.CURRENCY_B]}
+          error={mintInfo.token1ErrorMessage}
           priceFormat={priceFormat}
-          isBase={false}
+          isBase={true}
           isDual={isWithNative}
         />
       </Box>
-      <TokenAmountCard
-        currency={currencyB}
-        otherCurrency={currencyA}
-        value={formattedAmounts[Field.CURRENCY_B]}
-        fiatValue={usdcValues[Field.CURRENCY_B]}
-        handleInput={onFieldBInput}
-        handleHalf={() =>
-          onFieldBInput(
-            maxAmounts[Field.CURRENCY_B]?.divide('2')?.toExact() ?? '',
-          )
-        }
-        handleMax={() =>
-          onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
-        }
-        locked={mintInfo.depositBDisabled}
-        isMax={!!atMaxAmounts[Field.CURRENCY_B]}
-        error={mintInfo.token1ErrorMessage}
-        priceFormat={priceFormat}
-        isBase={true}
-        isDual={isWithNative}
-      />
-
       <Box mt={2} className='flex justify-between'>
         {showApprovalA !== undefined && (
           <Box width={showApprovalB === undefined ? '100%' : '49%'}>
@@ -283,6 +296,6 @@ export function EnterAmounts({
           </Box>
         )}
       </Box>
-    </Box>
+    </>
   );
 }

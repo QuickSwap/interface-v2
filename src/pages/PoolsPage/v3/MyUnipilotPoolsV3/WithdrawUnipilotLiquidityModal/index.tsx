@@ -23,11 +23,12 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JSBI } from '@uniswap/sdk';
 import { formatUnits } from 'ethers/lib/utils';
 import { useUniPilotVaultContract } from 'hooks/useContract';
+import { UnipilotPosition } from 'hooks/v3/useV3Positions';
 
 interface WithdrawUnipilotLiquidityModalProps {
   open: boolean;
   onClose: () => void;
-  position: any;
+  position: UnipilotPosition;
 }
 
 export default function WithdrawUnipilotLiquidityModal({
@@ -69,7 +70,7 @@ export default function WithdrawUnipilotLiquidityModal({
     setRemoveErrorMessage('');
   }, [onPercentSelectForSlider, txnHash]);
 
-  const uniPilotVaultContract = useUniPilotVaultContract(position.vault.id);
+  const uniPilotVaultContract = useUniPilotVaultContract(position.id);
   const lpBalance = JSBI.BigInt(position?.lpBalance ?? '0');
   const totalBalance = JSBI.BigInt(position?.balance ?? '0');
 

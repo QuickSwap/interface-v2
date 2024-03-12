@@ -5,6 +5,7 @@
   "blockExplorer": "https://polygonscan.com",
   "chainId": 137,
   "isMainnet": true,
+  "visible": true,
   "networkName": "Polygon",
   "nativeCurrencyImage": "/polygon-pos.svg",
   "nativeCurrency": {
@@ -25,9 +26,8 @@
     "available": true
   },
   "farm": {
-    "available": true
-  },
-  "qsFarm": {
+    "quickswap": true,
+    "merkl": true,
     "available": true
   },
   "lair": {
@@ -43,6 +43,7 @@
     "available": true
   },
   "analytics": {
+    "liquidityHub": true,
     "available": true
   },
   "lending": {
@@ -72,10 +73,19 @@
   "unipilot": {
     "available": false
   },
+  "defiedge": {
+    "available": true
+  },
+  "bonds": {
+    "available": true
+  },
   "steer": {
     "available": true
   },
   "dappos": {
+    "available": true
+  },
+  "ichi": {
     "available": true
   }
 }

@@ -4,7 +4,7 @@ import { ChainId, TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedSyrupInfo } from 'state/stake/hooks';
-import { SyrupInfo } from 'types';
+import { SyrupInfo } from 'types/index';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';

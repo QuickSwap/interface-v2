@@ -25,29 +25,22 @@ const TotalAPRTooltip: React.FC<TotalAPRToolTipProps> = ({
     <CustomTooltip
       padding='0'
       placement='top'
-      color='#12131a'
+      color='#1b1e29'
       title={
         <Box className='totalAPRTooltipWrapper'>
-          <Box
-            className='flex justify-between items-center bg-grey29'
-            height='40px'
-          >
-            <small>{t('totalAPR')}</small>
-            <small className='text-sucess'>
-              {formatNumber(poolAPR + farmAPR)}%
-            </small>
-          </Box>
-          <Box className='flex justify-between' mt='16px'>
-            <small className='text-secondary'>
-              {poolAPRText ?? t('poolAPR')}
-            </small>
+          <Box>
+            <small>{poolAPRText ?? t('poolAPR')}</small>
             <small>{formatNumber(poolAPR)}%</small>
           </Box>
-          <Box className='flex justify-between' my='10px'>
-            <small className='text-secondary'>
-              {farmAPRText ?? t('farmAPR')}
-            </small>
+          <Box my='10px'>
+            <small>{farmAPRText ?? t('farmAPR')}</small>
             <small>{formatNumber(farmAPR)}%</small>
+          </Box>
+          <Box pt='10px'>
+            <small>{t('totalAPR')}</small>
+            <small className='text-success'>
+              {formatNumber(poolAPR + farmAPR)}%
+            </small>
           </Box>
         </Box>
       }

@@ -25,10 +25,14 @@ import { tryParseAmount } from 'state/swap/hooks';
 import 'pages/styles/convertQUICK.scss';
 import { ChainId } from '@uniswap/sdk';
 import { OLD_QUICK } from 'constants/v3/addresses';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useHistory } from 'react-router-dom';
 
-const ConvertQUICKPage: React.FC = () => {
+interface ConvertQUICKPageProps {
+  isWidget?: boolean;
+}
+
+const ConvertQUICKPage: React.FC<ConvertQUICKPageProps> = ({ isWidget }) => {
   const { t } = useTranslation();
   const { account, library, chainId } = useActiveWeb3React();
   const [quickAmount, setQUICKAmount] = useState('');
@@ -138,16 +142,27 @@ const ConvertQUICKPage: React.FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (!showConvert) {
+    if (!showConvert && !isWidget) {
       history.push('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showConvert]);
+  }, [showConvert, isWidget]);
 
   return (
-    <Box width='100%' maxWidth={488} mb='30px' id='convertQUICKPage'>
-      <h1 className='h4'>{t('convert')} QUICK</h1>
-      <Box className='convertQUICKWrapper'>
+    <Box
+      width='100%'
+      maxWidth={isWidget ? '100%' : 488}
+      mb='30px'
+      id='convertQUICKPage'
+    >
+      <h1 className={`${isWidget ? 'widget-header' : 'h4'}`}>
+        {t('convert')} QUICK
+      </h1>
+      <Box
+        className={`convertQUICKWrapper ${
+          isWidget === true ? '' : 'convert-page'
+        }`}
+      >
         <Box className='flex items-center' mb={3}>
           <Box className='iconWrapper'>
             <img src={QUICKIcon} alt='QUICK' />

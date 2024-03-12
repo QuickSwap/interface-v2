@@ -9,7 +9,13 @@ import {
 import { Box, Button } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
-import { calculateGasMargin, formatNumber, getSteerRatio } from 'utils';
+import {
+  calculateGasMargin,
+  formatNumber,
+  getSteerRatio,
+  maxAmountSpend,
+  getFixedValue,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   useTransactionAdder,
@@ -25,6 +31,10 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { SteerVault } from 'hooks/v3/useSteerData';
 import { WrappedCurrency } from 'models/types';
 import { useCurrencyBalance } from 'state/wallet/hooks';
+import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
+import { tryParseAmount } from 'state/swap/v3/hooks';
+import Loader from 'components/Loader';
+import { Check } from '@material-ui/icons';
 
 interface IncreaseSteerLiquidityModalProps {
   open: boolean;
@@ -67,24 +77,25 @@ export default function IncreaseSteerLiquidityModal({
     account ?? undefined,
     chainId ? ETHER[chainId] : undefined,
   );
+  const maxSpendETH = chainId ? maxAmountSpend(chainId, ethBalance) : undefined;
   const token0BalanceJSBI = JSBI.add(
-    token0isWETH && ethBalance ? ethBalance.numerator : JSBI.BigInt('0'),
+    token0isWETH && maxSpendETH ? maxSpendETH.numerator : JSBI.BigInt('0'),
     token0Balance ? token0Balance.numerator : JSBI.BigInt('0'),
   );
   const token1BalanceJSBI = JSBI.add(
-    token1isWETH && ethBalance ? ethBalance.numerator : JSBI.BigInt('0'),
+    token1isWETH && maxSpendETH ? maxSpendETH.numerator : JSBI.BigInt('0'),
     token1Balance ? token1Balance.numerator : JSBI.BigInt('0'),
   );
 
   const deposit0JSBI = JSBI.BigInt(
     parseUnits(
-      !deposit0 ? '0' : Number(deposit0).toFixed(position.token0?.decimals),
+      !deposit0 ? '0' : getFixedValue(deposit0, position.token0?.decimals),
       position.token0?.decimals,
     ),
   );
   const deposit1JSBI = JSBI.BigInt(
     parseUnits(
-      !deposit1 ? '0' : Number(deposit1).toFixed(position.token1?.decimals),
+      !deposit1 ? '0' : getFixedValue(deposit1, position.token1?.decimals),
       position.token1?.decimals,
     ),
   );
@@ -96,14 +107,6 @@ export default function IncreaseSteerLiquidityModal({
   const [txPending, setTxPending] = useState(false);
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
-
-  const buttonDisabled =
-    !Number(deposit0) ||
-    !Number(deposit1) ||
-    !account ||
-    JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI) ||
-    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI) ||
-    wrappingETH;
 
   const wrapAmount = useMemo(() => {
     if (token0isWETH) {
@@ -161,6 +164,41 @@ export default function IncreaseSteerLiquidityModal({
     deposit1,
     wrapAmount,
   ]);
+
+  const [approvalA, approveACallback] = useApproveCallback(
+    tryParseAmount(deposit0, position.token0),
+    chainId ? steerPeripheryContract?.address : undefined,
+  );
+  const [approvalB, approveBCallback] = useApproveCallback(
+    tryParseAmount(deposit1, position.token1),
+    chainId ? steerPeripheryContract?.address : undefined,
+  );
+
+  const showApprovalA = useMemo(() => {
+    if (approvalA === ApprovalState.UNKNOWN) return undefined;
+
+    if (approvalA === ApprovalState.NOT_APPROVED) return true;
+
+    return approvalA !== ApprovalState.APPROVED;
+  }, [approvalA]);
+
+  const showApprovalB = useMemo(() => {
+    if (approvalB === ApprovalState.UNKNOWN) return undefined;
+
+    if (approvalB === ApprovalState.NOT_APPROVED) return true;
+
+    return approvalB !== ApprovalState.APPROVED;
+  }, [approvalB]);
+
+  const buttonDisabled =
+    !Number(deposit0) ||
+    !Number(deposit1) ||
+    !account ||
+    JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI) ||
+    JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI) ||
+    wrappingETH ||
+    approvalA !== ApprovalState.APPROVED ||
+    approvalB !== ApprovalState.APPROVED;
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false);
@@ -438,6 +476,68 @@ export default function IncreaseSteerLiquidityModal({
                 WETH[chainId].address.toLowerCase()
             }
           />
+        </Box>
+        <Box mt={2} className='flex justify-between'>
+          {showApprovalA !== undefined && (
+            <Box width={showApprovalB === undefined ? '100%' : '49%'}>
+              {showApprovalA ? (
+                approvalA === ApprovalState.PENDING ? (
+                  <Box className='token-approve-button-loading'>
+                    <Loader stroke='white' />
+                    <p>
+                      {t('approving')} {position.token0?.symbol}
+                    </p>
+                  </Box>
+                ) : (
+                  <Button
+                    className='token-approve-button'
+                    onClick={approveACallback}
+                  >
+                    <p>
+                      {t('approve')} {position.token0?.symbol}
+                    </p>
+                  </Button>
+                )
+              ) : (
+                <Box className='token-approve-button-loading'>
+                  <Check />
+                  <p>
+                    {t('approved')} {position.token0?.symbol}
+                  </p>
+                </Box>
+              )}
+            </Box>
+          )}
+          {showApprovalB !== undefined && (
+            <Box width={showApprovalA === undefined ? '100%' : '49%'}>
+              {showApprovalB ? (
+                approvalB === ApprovalState.PENDING ? (
+                  <Box className='token-approve-button-loading'>
+                    <Loader stroke='white' />
+                    <p>
+                      {t('approving')} {position.token1?.symbol}
+                    </p>
+                  </Box>
+                ) : (
+                  <Button
+                    className='token-approve-button'
+                    onClick={approveBCallback}
+                  >
+                    <p>
+                      {t('approve')} {position.token1?.symbol}
+                    </p>
+                  </Button>
+                )
+              ) : (
+                <Box className='token-approve-button-loading'>
+                  <Check />
+                  <p>
+                    {t('approved')} {position.token1?.symbol}
+                  </p>
+                </Box>
+              )}
+            </Box>
+          )}
         </Box>
         <Box mt={2}>
           <Button

@@ -11,6 +11,7 @@ import {
   useV3MintState,
   useInitialUSDPrices,
   useGetUnipilotVaults,
+  useGetDefiedgeStrategies,
 } from 'state/mint/v3/hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { useAppDispatch } from 'state/hooks';
@@ -27,18 +28,17 @@ import { ChainId, JSBI } from '@uniswap/sdk';
 import {
   formatNumber,
   getEternalFarmFromTokens,
-  getGammaData,
   getGammaPairsForTokens,
 } from 'utils';
 import GammaLogo from 'assets/images/gammaLogo.png';
-import UnipilotLogo from 'assets/images/unipilot.png';
+import A51finance from 'assets/images/a51finance.png';
+import DefiedgeLogo from 'assets/images/defiedge.png';
 import AutomaticImage from 'assets/images/automatic.svg';
 import AutomaticImageDark from 'assets/images/automaticDark.svg';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
-import { useQuery } from '@tanstack/react-query';
-import { useLastTransactionHash } from 'state/transactions/hooks';
 import { useUnipilotFarmData } from 'hooks/v3/useUnipilotFarms';
+import { useGammaData } from 'hooks/v3/useGammaData';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -86,6 +86,7 @@ export function SelectRange({
     chainId,
     currencyAAddress,
     currencyBAddress,
+    mintInfo.feeAmount,
   );
   const gammaPair = gammaPairData?.pairs;
   const gammaPairReversed = gammaPairData?.reversed;
@@ -373,18 +374,27 @@ export function SelectRange({
     );
   });
 
+  const { defiedgeStrategies } = useGetDefiedgeStrategies();
+  const defiedgeStrategiesForPair = defiedgeStrategies.filter((item) => {
+    return (
+      (item.token0 &&
+        item.token1 &&
+        item.token0.toLowerCase() === currencyAAddress.toLowerCase() &&
+        item.token1.toLowerCase() === currencyBAddress.toLowerCase()) ||
+      (item.token0 &&
+        item.token1 &&
+        item.token0.toLowerCase() === currencyBAddress.toLowerCase() &&
+        item.token1.toLowerCase() === currencyAAddress.toLowerCase())
+    );
+  });
+
   const { data: steerVaults } = useSteerVaults(chainId);
   const steerVaultsForPair = steerVaults.filter((item) => {
-    const lowerTick = Number(item.lowerTick ?? 0);
-    const upperTick = Number(item.upperTick ?? 0);
-    const currentTick = Number(item.tick ?? 0);
     return (
       item.state !== SteerVaultState.Paused &&
       item.state !== SteerVaultState.Retired &&
-      item.feeTier &&
-      Number(item.feeTier) === mintInfo.feeAmount &&
-      lowerTick < currentTick &&
-      currentTick < upperTick &&
+      ((item.feeTier && Number(item.feeTier) === mintInfo.feeAmount) ||
+        (!item.feeTier && !mintInfo.feeAmount)) &&
       ((item.token0 &&
         item.token1 &&
         item.token0.address.toLowerCase() === currencyAAddress.toLowerCase() &&
@@ -399,13 +409,19 @@ export function SelectRange({
 
   const gammaPairExists = !!gammaPair;
   const unipilotVaultExists = unipilotVaultsForPair.length > 0;
+  const defiedgeStrategyExists = defiedgeStrategiesForPair.length > 0;
   const steerVaultExists = steerVaultsForPair.length > 0;
+
   useEffect(() => {
     if (gammaPairExists) {
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.GAMMA_RANGE);
     } else if (unipilotVaultExists) {
       onChangeLiquidityRangeType(
         GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+      );
+    } else if (defiedgeStrategyExists) {
+      onChangeLiquidityRangeType(
+        GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
       );
     } else if (steerVaultExists) {
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.STEER_RANGE);
@@ -421,44 +437,25 @@ export function SelectRange({
     unipilotVaultExists,
     steerVaultExists,
     gammaPairExists,
+    defiedgeStrategyExists,
   ]);
 
   const isAutomatic =
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ||
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ||
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE;
 
   const selectVaultEnabled =
-    (gammaPairExists && unipilotVaultExists) ||
-    (gammaPairExists && steerVaultExists) ||
-    (unipilotVaultExists && steerVaultExists);
+    isAutomatic &&
+    ((gammaPairExists && unipilotVaultExists) ||
+      (gammaPairExists && defiedgeStrategyExists) ||
+      (gammaPairExists && steerVaultExists) ||
+      (unipilotVaultExists && steerVaultExists) ||
+      (unipilotVaultExists && defiedgeStrategyExists) ||
+      (defiedgeStrategyExists && steerVaultExists));
 
-  const fetchGammaData = async () => {
-    const gammaData = await getGammaData(chainId);
-    return gammaData;
-  };
-
-  const lastTxHash = useLastTransactionHash();
-
-  const { data: gammaData, refetch: refetchGammaData } = useQuery({
-    queryKey: ['fetchGammaDataPools', chainId],
-    queryFn: fetchGammaData,
-  });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetchGammaData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, lastTxHash]);
+  const { data: gammaData } = useGammaData();
 
   const gammaAddress: any =
     liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
@@ -481,7 +478,9 @@ export function SelectRange({
   const steerVault =
     steerVaultsForPair.find(
       (item) =>
-        item.address.toLowerCase() === presetRange?.address?.toLowerCase(),
+        presetRange &&
+        presetRange.address &&
+        item.address.toLowerCase() === presetRange.address.toLowerCase(),
     ) ?? steerVaultsForPair
       ? steerVaultsForPair[0]
       : undefined;
@@ -508,7 +507,10 @@ export function SelectRange({
   return (
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
-      {(gammaPairExists || unipilotVaultExists || steerVaultExists) && (
+      {(gammaPairExists ||
+        unipilotVaultExists ||
+        defiedgeStrategyExists ||
+        steerVaultExists) && (
         <Box className='buttonGroup poolRangeButtonGroup'>
           <ButtonGroup>
             <Button
@@ -521,6 +523,10 @@ export function SelectRange({
                 } else if (unipilotVaultExists) {
                   onChangeLiquidityRangeType(
                     GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+                  );
+                } else if (defiedgeStrategyExists) {
+                  onChangeLiquidityRangeType(
+                    GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
                   );
                 } else {
                   onChangeLiquidityRangeType(
@@ -552,6 +558,32 @@ export function SelectRange({
           </ButtonGroup>
         </Box>
       )}
+
+      {isAutomatic && (
+        <Box my={1.5} className='poolRangePowerGamma'>
+          <span className='text-secondary'>{t('poweredBy')}</span>
+          {liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
+            <img src={GammaLogo} alt='Gamma Logo' />
+          ) : liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ? (
+            <span>
+              <img src={A51finance} alt='A51 Finance Logo' />
+              <span className='text-secondary'>&nbsp;A51 Finance</span>
+            </span>
+          ) : liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ? (
+            <img
+              src={DefiedgeLogo}
+              alt='Defiedge Logo'
+              style={{ height: '28px' }}
+            />
+          ) : (
+            <small className='text-bold'>&nbsp;Steer</small>
+          )}
+        </Box>
+      )}
+
       <Box my={1}>
         <PresetRanges
           mintInfo={mintInfo}
@@ -570,8 +602,13 @@ export function SelectRange({
             liquidityRangeType ===
             GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
           }
+          isDefiedge={
+            liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+          }
           gammaPair={gammaPair}
           unipilotPairs={unipilotVaultsForPair}
+          defiedgeStrategies={defiedgeStrategiesForPair}
           isSteer={
             liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE
           }
@@ -771,9 +808,35 @@ export function SelectRange({
                     );
                   }}
                 >
-                  <img src={UnipilotLogo} alt='Gamma Logo' />
+                  <span>
+                    <img src={A51finance} alt='A51 Finance Logo' />
+                    <span className='text-secondary'>&nbsp;A51 Finance</span>
+                  </span>
                   <small className='text-success'>
                     {formatNumber(unipilotAPR)}%
+                  </small>
+                  <span>{t('apr')}</span>
+                </Box>
+              </Grid>
+            )}
+            {defiedgeStrategyExists && (
+              <Grid item xs={4}>
+                <Box
+                  className={`pool-select-vault-panel${
+                    liquidityRangeType ===
+                    GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+                      ? ' pool-select-vault-selected'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    onChangeLiquidityRangeType(
+                      GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
+                    );
+                  }}
+                >
+                  <p>Defiedge</p>
+                  <small className='text-success'>
+                    {formatNumber(defiedgeStrategiesForPair[0]?.apr)}%
                   </small>
                   <span>{t('apr')}</span>
                 </Box>
@@ -795,7 +858,9 @@ export function SelectRange({
                   }}
                 >
                   <p>Steer</p>
-                  <small className='text-success'>{steerVault?.apr}%</small>
+                  <small className='text-success'>
+                    {formatNumber(steerVault?.apr)}%
+                  </small>
                   <span>{t('apr')}</span>
                 </Box>
               </Grid>

@@ -19,6 +19,8 @@ import {
   updateIsV2,
   updateIsLpLock,
   updateUDDomain,
+  updateSoulZap,
+  updateOpenNetworkSelection,
 } from './actions';
 import { ETHPrice, MaticPrice, TokenDetail } from './reducer';
 
@@ -59,10 +61,6 @@ export function useCloseModals(): () => void {
 
 export function useWalletModalToggle(): () => void {
   return useToggleModal(ApplicationModal.WALLET);
-}
-
-export function useNetworkSelectionModalToggle(): () => void {
-  return useToggleModal(ApplicationModal.NETWORK_SELECTION);
 }
 
 export function useToggleSettingsMenu(): () => void {
@@ -300,4 +298,29 @@ export function useUDDomain(): {
     [dispatch],
   );
   return { udDomain, updateUDDomain: _updateUDDomain };
+}
+
+export function useSoulZap() {
+  const soulZap = useSelector((state: AppState) => state.application.soulZap);
+  return soulZap;
+}
+
+export function useOpenNetworkSelection(): {
+  openNetworkSelection: boolean;
+  setOpenNetworkSelection: (isOpen: boolean) => void;
+} {
+  const openNetworkSelection = useSelector(
+    (state: AppState) => state.application.openNetworkSelection,
+  );
+  const dispatch = useDispatch();
+  const _setOpenNetworkSelection = useCallback(
+    (isOpen: boolean) => {
+      dispatch(updateOpenNetworkSelection(isOpen));
+    },
+    [dispatch],
+  );
+  return {
+    openNetworkSelection,
+    setOpenNetworkSelection: _setOpenNetworkSelection,
+  };
 }

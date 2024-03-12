@@ -3,21 +3,25 @@ import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { GlobalConst } from 'constants/index';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import {
   useGammaPositionsCount,
-  useV3PositionsCount,
-  useUnipilotPositions,
+  useV3Positions,
+  useDefiedgePositions,
   useV3SteerPositionsCount,
+  useICHIPositionsCount,
+  useUnipilotPositionsCount,
 } from 'hooks/v3/useV3Positions';
 import Loader from 'components/Loader';
 import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
 import MyGammaPoolsV3 from '../MyGammaPoolsV3';
 import FilterPanelItem from '../FilterPanelItem';
 import MyUnipilotPoolsV3 from '../MyUnipilotPoolsV3';
+import MyDefiedgePoolsV3 from '../MyDefiedgePoolsV3';
 import MySteerPoolsV3 from '../MySteerPoolsV3';
+import MyICHIPools from '../MyICHIPools';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
@@ -52,10 +56,7 @@ export default function MyLiquidityPoolsV3() {
     },
   ];
 
-  const {
-    loading: quickPoolsLoading,
-    count: quickPoolsCount,
-  } = useV3PositionsCount(
+  const { count: quickPoolsCount } = useV3Positions(
     account,
     userHideQuickClosedPositions,
     hideQuickFarmingPositions,
@@ -67,19 +68,27 @@ export default function MyLiquidityPoolsV3() {
 
   const {
     loading: uniPilotPositionsLoading,
-    unipilotPositions,
-  } = useUnipilotPositions(account, chainId);
+    count: unipilotPositionsCount,
+  } = useUnipilotPositionsCount(account, chainId);
+
+  const {
+    loading: defiedgeStrategiesLoading,
+    count: defiedgeStrategiesCount,
+  } = useDefiedgePositions(account, chainId);
 
   const {
     loading: steerPoolsLoading,
     count: steerPoolsCount,
   } = useV3SteerPositionsCount();
 
+  const { loading: ichiLoading, count: ichiCount } = useICHIPositionsCount();
+
   const loading =
-    quickPoolsLoading ||
     gammaPoolsLoading ||
     uniPilotPositionsLoading ||
-    steerPoolsLoading;
+    steerPoolsLoading ||
+    ichiLoading ||
+    defiedgeStrategiesLoading;
 
   const [poolFilter, setPoolFilter] = useState(
     GlobalConst.utils.poolsFilter.quickswap,
@@ -105,12 +114,12 @@ export default function MyLiquidityPoolsV3() {
         </Box>
       ),
     });
-    if (unipilotPositions && unipilotPositions.length > 0) {
+    if (unipilotPositionsCount > 0) {
       filters.push({
         id: GlobalConst.utils.poolsFilter.unipilot,
         text: (
           <Box className='flex items-center'>
-            <small>Unipilot</small>
+            <small>A51 Finance</small>
             <Box
               ml='6px'
               className={`myV3PoolCountWrapper ${
@@ -119,7 +128,7 @@ export default function MyLiquidityPoolsV3() {
                   : ''
               }`}
             >
-              {unipilotPositions.length}
+              {unipilotPositionsCount}
             </Box>
           </Box>
         ),
@@ -145,6 +154,26 @@ export default function MyLiquidityPoolsV3() {
         ),
       });
     }
+    if (defiedgeStrategiesCount > 0) {
+      filters.push({
+        id: GlobalConst.utils.poolsFilter.defiedge,
+        text: (
+          <Box className='flex items-center'>
+            <small>Defiedge</small>
+            <Box
+              ml='6px'
+              className={`myV3PoolCountWrapper ${
+                poolFilter === GlobalConst.utils.poolsFilter.defiedge
+                  ? 'activeMyV3PoolCountWrapper'
+                  : ''
+              }`}
+            >
+              {defiedgeStrategiesCount}
+            </Box>
+          </Box>
+        ),
+      });
+    }
     if (steerPoolsCount > 0) {
       filters.push({
         id: GlobalConst.utils.poolsFilter.steer,
@@ -165,13 +194,35 @@ export default function MyLiquidityPoolsV3() {
         ),
       });
     }
+    if (ichiCount > 0) {
+      filters.push({
+        id: GlobalConst.utils.poolsFilter.ichi,
+        text: (
+          <Box className='flex items-center'>
+            <small>ICHI</small>
+            <Box
+              ml='6px'
+              className={`myV3PoolCountWrapper ${
+                poolFilter === GlobalConst.utils.poolsFilter.ichi
+                  ? 'activeMyV3PoolCountWrapper'
+                  : ''
+              }`}
+            >
+              {ichiCount}
+            </Box>
+          </Box>
+        ),
+      });
+    }
     return filters;
   }, [
     poolFilter,
     quickPoolsCount,
-    unipilotPositions,
+    unipilotPositionsCount,
     gammaPoolsCount,
+    defiedgeStrategiesCount,
     steerPoolsCount,
+    ichiCount,
   ]);
 
   return (
@@ -227,8 +278,14 @@ export default function MyLiquidityPoolsV3() {
             {poolFilter === GlobalConst.utils.poolsFilter.gamma && (
               <MyGammaPoolsV3 />
             )}
+            {poolFilter === GlobalConst.utils.poolsFilter.defiedge && (
+              <MyDefiedgePoolsV3 />
+            )}
             {poolFilter === GlobalConst.utils.poolsFilter.steer && (
               <MySteerPoolsV3 />
+            )}
+            {poolFilter === GlobalConst.utils.poolsFilter.ichi && (
+              <MyICHIPools />
             )}
           </Box>
         </>

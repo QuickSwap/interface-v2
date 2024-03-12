@@ -61,3 +61,9 @@ export const updateSelectedWallet = createAction<{
 export const updateUserLiquidityHub = createAction<{
   userLiquidityHubDisabled: boolean;
 }>('user/updateUserLiquidityHub');
+export const updateUserZapSlippage = createAction<{
+  userZapSlippage: number;
+}>('user/updateUserZapSlippage');
+export const updateIsInfiniteApproval = createAction<{
+  isInfiniteApproval: boolean;
+}>('user/updateIsInfiniteApproval');

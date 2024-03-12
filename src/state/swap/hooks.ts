@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency } from 'hooks/Tokens';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { isAddress } from 'utils';
+import { isAddress, getFixedValue } from 'utils';
 import { AppDispatch, AppState } from 'state';
 import { useCurrencyBalances } from 'state/wallet/hooks';
 import {
@@ -136,7 +136,10 @@ export function tryParseAmount(
     return undefined;
   }
   try {
-    const typedValueParsed = parseUnits(value, currency.decimals).toString();
+    const typedValueParsed = parseUnits(
+      getFixedValue(value, currency.decimals),
+      currency.decimals,
+    ).toString();
     if (typedValueParsed !== '0') {
       return currency instanceof Token
         ? new TokenAmount(currency, JSBI.BigInt(typedValueParsed))

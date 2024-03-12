@@ -15,6 +15,25 @@ export default function usePoolsRedirect() {
   const currencyIdAParam = params ? params.currencyIdA : undefined;
   const currencyIdBParam = params ? params.currencyIdB : undefined;
 
+  const redirectWithCurrencySingleToken = useCallback(
+    (currency: any) => {
+      let redirectPath = '';
+      const currencyId = currency.isNative ? 'ETH' : currency.address;
+      if (parsedQuery.currency) {
+        redirectPath = currentPath.replace(
+          `currency=${parsedQuery.currency}`,
+          `currency=${currencyId}`,
+        );
+      } else {
+        redirectPath = `${currentPath}${
+          history.location.search === '' ? '?' : '&'
+        }currency=${currencyId}`;
+      }
+      history.push(redirectPath);
+    },
+    [history, currentPath, parsedQuery],
+  );
+
   const redirectWithCurrency = useCallback(
     (currency: any, isInput: boolean, isV2 = true) => {
       let redirectPath = '';
@@ -127,5 +146,9 @@ export default function usePoolsRedirect() {
     ],
   );
 
-  return { redirectWithCurrency, redirectWithSwitch };
+  return {
+    redirectWithCurrency,
+    redirectWithSwitch,
+    redirectWithCurrencySingleToken,
+  };
 }

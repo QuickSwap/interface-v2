@@ -1,5 +1,5 @@
 import React, { lazy, useEffect, useMemo, useState, useRef } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
@@ -61,7 +61,8 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       window.location.host !== 'beta.quickswap.exchange' &&
       window.location.host !== 'dogechain.quickswap.exchange' &&
       window.location.host !== 'localhost:3000' &&
-      window.location.host !== 'testing-wcv2.interface-v2-01.pages.dev'
+      window.location.host !==
+        'feature-immutable-mainnet-1.interface-v2-01.pages.dev'
     ) {
       setOpenPassModal(true);
     }
@@ -93,20 +94,29 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     );
   };
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const showBetaBanner = false;
+  const displayNewsletter = false;
 
   return (
     <Box className='page'>
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
-      <NewsletterSignupPanel />
+      {displayNewsletter && <NewsletterSignupPanel />}
       <Header
         onUpdateNewsletter={(val) => {
           setHeaderClass(val ? '' : 'pageWrapper-no-max-no-news');
         }}
       />
       {!isProMode && <Background fallback={false} />}
-      <Box className={`${pageWrapperClassName} ${headerClass}`}>{children}</Box>
+      <Box
+        className={`${pageWrapperClassName} ${headerClass}`}
+        sx={{ marginTop: isMobile ? '-124px' : '0px' }}
+      >
+        {children}
+      </Box>
       <Footer />
     </Box>
   );

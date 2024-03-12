@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
 import { TokenAddressMap, useSelectedTokenList } from 'state/lists/hooks';
-import { CNTFarmListInfo, StakingBasic, StakingRaw } from 'types';
+import { CNTFarmListInfo, StakingBasic, StakingRaw } from 'types/index';
 import { getTokenFromAddress } from 'utils';
 import { EMPTY, OLD_DQUICK } from 'constants/v3/addresses';
 
@@ -92,6 +92,11 @@ const EMPTY_LIST: CNTFarmInfoAddressMap = {
   [ChainId.KAVA]: {},
   [ChainId.MANTA]: {},
   [ChainId.ZKATANA]: {},
+  [ChainId.BTTC]: {},
+  [ChainId.X1]: {},
+  [ChainId.TIMX]: {},
+  [ChainId.IMX]: {},
+  [ChainId.ASTARZKEVM]: {},
 };
 
 const farmCache: WeakMap<CNTFarmListInfo, CNTFarmInfoAddressMap> | null =

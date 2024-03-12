@@ -9,7 +9,7 @@ import {
 import { useTheme } from '@material-ui/core/styles';
 import { Swap, AddLiquidity } from 'components';
 import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import SwapV3Page from 'pages/SwapPage/V3/Swap';
 

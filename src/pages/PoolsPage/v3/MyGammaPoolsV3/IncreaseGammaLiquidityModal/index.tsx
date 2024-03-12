@@ -9,7 +9,12 @@ import {
 import { Box, Button } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
-import { calculateGasMargin, formatNumber } from 'utils';
+import {
+  calculateGasMargin,
+  formatNumber,
+  getFixedValue,
+  maxAmountSpend,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import {
   useTransactionAdder,
@@ -24,6 +29,10 @@ import { useGammaUNIProxyContract, useWETHContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { useCurrencyBalance } from 'state/wallet/hooks';
+import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
+import { tryParseAmount } from 'state/swap/v3/hooks';
+import Loader from 'components/Loader';
+import { Check } from '@material-ui/icons';
 
 interface IncreaseGammaLiquidityModalProps {
   open: boolean;
@@ -45,16 +54,17 @@ export default function IncreaseGammaLiquidityModal({
 
   const independentToken = isBaseInput ? position.token0 : position.token1;
   const dependentToken = isBaseInput ? position.token1 : position.token0;
-  const independentDeposit = isBaseInput
-    ? Number(deposit0).toFixed(position.token0.decimals)
-    : Number(deposit1).toFixed(position.token1.decimals);
+  const independentDeposit = isBaseInput ? deposit0 : deposit1;
   const depositAmountsData = useSingleCallResult(
     gammaUNIPROXYContract,
     'getDepositAmount',
     [
       position.pairAddress,
       independentToken.address,
-      parseUnits(independentDeposit, independentToken.decimals),
+      parseUnits(
+        getFixedValue(independentDeposit, independentToken.decimals),
+        independentToken.decimals,
+      ),
     ],
   );
 
@@ -93,25 +103,57 @@ export default function IncreaseGammaLiquidityModal({
     chainId &&
     position.token1.address.toLowerCase() ===
       WETH[chainId].address.toLowerCase();
+  const maxSpendETH = chainId ? maxAmountSpend(chainId, ethBalance) : undefined;
   const token0BalanceJSBI = JSBI.add(
-    token0isWETH && ethBalance ? ethBalance.numerator : JSBI.BigInt('0'),
+    token0isWETH && maxSpendETH ? maxSpendETH.numerator : JSBI.BigInt('0'),
     token0Balance ? token0Balance.numerator : JSBI.BigInt('0'),
   );
   const token1BalanceJSBI = JSBI.add(
     chainId &&
       position.token1.address.toLowerCase() ===
         WETH[chainId].address.toLowerCase() &&
-      ethBalance
-      ? ethBalance.numerator
+      maxSpendETH
+      ? maxSpendETH.numerator
       : JSBI.BigInt('0'),
     token1Balance ? token1Balance.numerator : JSBI.BigInt('0'),
   );
   const deposit0JSBI = JSBI.BigInt(
-    parseUnits(!deposit0 ? '0' : deposit0, position.token0.decimals),
+    parseUnits(
+      !deposit0 ? '0' : getFixedValue(deposit0, position.token0.decimals),
+      position.token0.decimals,
+    ),
   );
   const deposit1JSBI = JSBI.BigInt(
-    parseUnits(!deposit1 ? '0' : deposit1, position.token1.decimals),
+    parseUnits(
+      !deposit1 ? '0' : getFixedValue(deposit1, position.token1.decimals),
+      position.token1.decimals,
+    ),
   );
+
+  const [approvalA, approveACallback] = useApproveCallback(
+    tryParseAmount(deposit0, position.token0),
+    chainId ? position.pairAddress : undefined,
+  );
+  const [approvalB, approveBCallback] = useApproveCallback(
+    tryParseAmount(deposit1, position.token1),
+    chainId ? position.pairAddress : undefined,
+  );
+
+  const showApprovalA = useMemo(() => {
+    if (approvalA === ApprovalState.UNKNOWN) return undefined;
+
+    if (approvalA === ApprovalState.NOT_APPROVED) return true;
+
+    return approvalA !== ApprovalState.APPROVED;
+  }, [approvalA]);
+
+  const showApprovalB = useMemo(() => {
+    if (approvalB === ApprovalState.UNKNOWN) return undefined;
+
+    if (approvalB === ApprovalState.NOT_APPROVED) return true;
+
+    return approvalB !== ApprovalState.APPROVED;
+  }, [approvalB]);
 
   const [wrappingETH, setWrappingETH] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -129,7 +171,9 @@ export default function IncreaseGammaLiquidityModal({
     !depositRange ||
     JSBI.greaterThan(deposit0JSBI, token0BalanceJSBI) ||
     JSBI.greaterThan(deposit1JSBI, token1BalanceJSBI) ||
-    wrappingETH;
+    wrappingETH ||
+    approvalA !== ApprovalState.APPROVED ||
+    approvalB !== ApprovalState.APPROVED;
 
   const wrapAmount = useMemo(() => {
     if (token0isWETH) {
@@ -472,6 +516,68 @@ export default function IncreaseGammaLiquidityModal({
                 WETH[chainId].address.toLowerCase()
             }
           />
+        </Box>
+        <Box mt={2} className='flex justify-between'>
+          {showApprovalA !== undefined && (
+            <Box width={showApprovalB === undefined ? '100%' : '49%'}>
+              {showApprovalA ? (
+                approvalA === ApprovalState.PENDING ? (
+                  <Box className='token-approve-button-loading'>
+                    <Loader stroke='white' />
+                    <p>
+                      {t('approving')} {position.token0?.symbol}
+                    </p>
+                  </Box>
+                ) : (
+                  <Button
+                    className='token-approve-button'
+                    onClick={approveACallback}
+                  >
+                    <p>
+                      {t('approve')} {position.token0?.symbol}
+                    </p>
+                  </Button>
+                )
+              ) : (
+                <Box className='token-approve-button-loading'>
+                  <Check />
+                  <p>
+                    {t('approved')} {position.token0?.symbol}
+                  </p>
+                </Box>
+              )}
+            </Box>
+          )}
+          {showApprovalB !== undefined && (
+            <Box width={showApprovalA === undefined ? '100%' : '49%'}>
+              {showApprovalB ? (
+                approvalB === ApprovalState.PENDING ? (
+                  <Box className='token-approve-button-loading'>
+                    <Loader stroke='white' />
+                    <p>
+                      {t('approving')} {position.token1?.symbol}
+                    </p>
+                  </Box>
+                ) : (
+                  <Button
+                    className='token-approve-button'
+                    onClick={approveBCallback}
+                  >
+                    <p>
+                      {t('approve')} {position.token1?.symbol}
+                    </p>
+                  </Button>
+                )
+              ) : (
+                <Box className='token-approve-button-loading'>
+                  <Check />
+                  <p>
+                    {t('approved')} {position.token1?.symbol}
+                  </p>
+                </Box>
+              )}
+            </Box>
+          )}
         </Box>
         <Box mt={2}>
           <Button

@@ -18,7 +18,10 @@ import {
   updateIsV2,
   updateIsLpLock,
   updateUDDomain,
+  updateSoulZap,
+  updateOpenNetworkSelection,
 } from './actions';
+import { SoulZap_UniV2_ApeBond } from '@soulsolidity/soulzap-v1';
 
 type PopupList = Array<{
   key: string;
@@ -60,6 +63,8 @@ export interface ApplicationState {
   readonly isV2: boolean | undefined;
   readonly isLpLock: boolean | undefined;
   readonly udDomain: string | undefined;
+  readonly soulZap: SoulZap_UniV2_ApeBond | null | undefined;
+  readonly openNetworkSelection: boolean;
 }
 
 const initialState: ApplicationState = {
@@ -77,6 +82,8 @@ const initialState: ApplicationState = {
   isV2: undefined,
   isLpLock: undefined,
   udDomain: undefined,
+  soulZap: undefined,
+  openNetworkSelection: false,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -198,5 +205,11 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUDDomain, (state, { payload }) => {
       state.udDomain = payload;
+    })
+    .addCase(updateSoulZap, (state, { payload }) => {
+      state.soulZap = payload;
+    })
+    .addCase(updateOpenNetworkSelection, (state, { payload }) => {
+      state.openNetworkSelection = payload;
     }),
 );

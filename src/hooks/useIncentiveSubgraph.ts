@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import { Contract } from 'ethers';
 import NON_FUN_POS_MAN from 'abis/non-fun-pos-man.json';
@@ -27,6 +27,7 @@ import { ChainId } from '@uniswap/sdk';
 import { formatTokenSymbol } from 'utils/v3-graph';
 import { useQuery } from '@tanstack/react-query';
 import { useLastTransactionHash } from 'state/transactions/hooks';
+import { getConfig } from 'config/index';
 
 async function fetchToken(tokenId: string, farming = false, chainId: ChainId) {
   try {
@@ -160,10 +161,17 @@ export function useFarmRewards() {
   }
 
   const lastTxHash = useLastTransactionHash();
-  const { isLoading, data } = useQuery({
-    queryKey: ['v3FarmRewards', chainId, lastTxHash, account],
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['v3FarmRewards', chainId, account],
     queryFn: fetchRewards,
   });
+
+  useEffect(() => {
+    setTimeout(() => {
+      refetch();
+    }, 30000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTxHash]);
 
   return { isLoading, data };
 }
@@ -171,7 +179,6 @@ export function useFarmRewards() {
 export function useTransferredPositions() {
   const { chainId, account, provider } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
-  const lastTxHash = useLastTransactionHash();
   async function fetchTransferredPositions() {
     if (!chainId || !account || !provider) {
       return [];
@@ -496,25 +503,11 @@ export function useTransferredPositions() {
     }
   }
 
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['v3FarmTransferredPositions', chainId, account, !!provider],
     queryFn: fetchTransferredPositions,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, lastTxHash]);
 
   return { isLoading, data };
 }
@@ -557,17 +550,23 @@ export function useFarmPositionsForPool(
   }
 
   const lastTxHash = useLastTransactionHash();
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: [
       'v3FarmPositionsForPool',
       chainId,
       account,
       pool.id,
       minRangeLength,
-      lastTxHash,
     ],
     queryFn: fetchPositionsForPool,
   });
+
+  useEffect(() => {
+    setTimeout(() => {
+      refetch();
+    }, 30000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTxHash]);
 
   return { isLoading, data };
 }
@@ -611,10 +610,17 @@ export function usePositionsOnFarmer(account: string | null | undefined) {
   }
 
   const lastTxHash = useLastTransactionHash();
-  const { isLoading, data } = useQuery({
-    queryKey: ['v3PositionsOnFarmer', lastTxHash, chainId, account],
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['v3PositionsOnFarmer', chainId, account],
     queryFn: fetchPositionsOnFarmer,
   });
+
+  useEffect(() => {
+    setTimeout(() => {
+      refetch();
+    }, 30000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTxHash]);
 
   return { isLoading, data };
 }
@@ -633,25 +639,11 @@ export function useEternalFarmPoolAPRs() {
     }
   }
 
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['v3EternalFarmPoolAprs', chainId],
     queryFn: fetchEternalFarmPoolAprs,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return { isLoading, data };
 }
@@ -669,25 +661,11 @@ export function useEternalFarmAprs() {
       return null;
     }
   }
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['v3EternalFarmAprs', chainId],
     queryFn: fetchEternalFarmAprs,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return { isLoading, data };
 }
@@ -705,25 +683,11 @@ export function useEternalFarmTvls() {
       return null;
     }
   }
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['v3EternalFarmTvls', chainId],
     queryFn: fetchEternalFarmTvls,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return { isLoading, data };
 }
@@ -731,9 +695,11 @@ export function useEternalFarmTvls() {
 export function useEternalFarms() {
   const { chainId, provider } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
+  const config = getConfig(chainId);
+  const qsFarmAvailable = config['farm']['quickswap'];
 
   async function fetchEternalFarms() {
-    if (!provider) return null;
+    if (!provider || !qsFarmAvailable) return null;
     try {
       const res = await fetch(
         `${process.env.REACT_APP_LEADERBOARD_APP_URL}/farming/eternal-farms?chainId=${chainId}`,
@@ -808,25 +774,11 @@ export function useEternalFarms() {
     }
   }
 
-  const { isLoading, data, refetch } = useQuery({
-    queryKey: ['v3EternalFarms', !!provider, chainId],
+  const { isLoading, data } = useQuery({
+    queryKey: ['v3EternalFarms', !!provider, chainId, qsFarmAvailable],
     queryFn: fetchEternalFarms,
+    refetchInterval: 300000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   return { isLoading, data };
 }

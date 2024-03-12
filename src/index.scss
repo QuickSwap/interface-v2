@@ -366,6 +366,16 @@ wcm-modal {
   margin-right: auto;
 }
 
+.mx-1 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.mx-2 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .text-center {
   text-align: center;
 }
@@ -425,12 +435,33 @@ wcm-modal {
   margin-left: 1rem;
 }
 
+.ml-2 {
+  margin-left: 1.5rem;
+}
+
+.ml-3 {
+  margin-left: 2rem;
+}
+
+.bl-1 {
+  border-left: 1px solid #242938;
+}
+
+.pl-1 {
+  padding-left: 1rem;
+}
+
 .p-1 {
   padding: 1rem;
 }
 
 .ml-auto {
   margin-left: auto;
+}
+
+.my-auto {
+  margin-bottom: auto;
+  margin-top: auto;
 }
 
 .w-100 {
@@ -506,5 +537,12 @@ wcm-modal {
   }
   @include media('screen', '<tablet') {
     top: 180px;
+  }
+}
+
+#tosPage ol {
+  padding-left: 16px;
+  li {
+    margin-bottom: 16px;
   }
 }
