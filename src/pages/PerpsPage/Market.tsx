@@ -13,37 +13,93 @@ type MarketOrder = {
   side: OrderSide;
 };
 
-export const Market: FC = () => {
-  const { data, isLoading } = useMarketTradeStream('PERP_ETH_USDC');
+export const Market: FC = ({ token }) => {
+  const { data, isLoading } = useMarketTradeStream(token || 'PERP_ETH_USDC');
   if (isLoading) return <div>Loading...</div>;
 
   return (
     <Flex
-      style={{ margin: '1.5rem' }}
-      gap='3'
+      style={{ backgroundColor: '#12131a' }}
+      gap='2'
       align='center'
       justify='center'
       direction='column'
     >
-      <Heading>Market</Heading>
-
       {!isLoading && (
         <Grid
-          style={{ gap: '0 1rem', gridTemplateColumns: '12rem 6rem 6rem' }}
+          style={{ gridTemplateColumns: '5rem 5rem 5rem' }}
           className='table'
         >
-          <Box>Times</Box>
-          <Box>Price (USDC)</Box>
-          <Box>Quantity (ETH)</Box>
-          {data.map((item) => {
+          <Box
+            style={{
+              fontSize: '11px',
+              fontWeight: 500,
+              fontFamily: 'Inter',
+              color: '#61657a',
+              margin: '8px 0',
+              textAlign: 'center',
+            }}
+          >
+            Time
+          </Box>
+          <Box
+            style={{
+              fontSize: '11px',
+              fontWeight: 500,
+              fontFamily: 'Inter',
+              color: '#61657a',
+              textAlign: 'center',
+              margin: '8px 0',
+            }}
+          >
+            Price{' '}
+          </Box>
+          <Box
+            style={{
+              fontSize: '11px',
+              fontWeight: 500,
+              fontFamily: 'Inter',
+              color: '#61657a',
+              textAlign: 'center',
+              margin: '8px 0',
+            }}
+          >
+            Qty(ETH)
+          </Box>
+          {data.slice(0, 25).map((item) => {
             const gradient = 10;
             return (
               <>
-                <Box>{Date(item.ts).slice(16, 25)}</Box>
-                <Box className={item.side === 'BUY' ? 'bid' : 'ask'}>
+                <Box
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    fontFamily: 'Inter',
+                    textAlign: 'center',
+                  }}
+                >
+                  {Date(item.ts).slice(16, 25)}
+                </Box>
+                <Box
+                  className={item.side === 'BUY' ? 'bid' : 'ask'}
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    fontFamily: 'Inter',
+                    textAlign: 'center',
+                  }}
+                >
                   {item.price}
                 </Box>
-                <Box className={item.side === 'BUY' ? 'bid' : 'ask'}>
+                <Box
+                  className={item.side === 'BUY' ? 'bid' : 'ask'}
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    fontFamily: 'Inter',
+                    textAlign: 'center',
+                  }}
+                >
                   {item.size}
                 </Box>
               </>

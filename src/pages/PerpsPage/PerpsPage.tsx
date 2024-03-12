@@ -15,10 +15,14 @@ import { Orders } from './Orders';
 import { Positions } from './Positions';
 import { Market } from './Market';
 import { Pairs } from './Pairs';
-import {Leverage} from "./Leverage";
+import { Leverage } from './Leverage';
 import { AdvancedChart } from 'react-tradingview-embed';
-import {GraphHeader} from "./GraphHeader";
+import { GraphHeader } from './GraphHeader';
+import { FinalPage } from './FinalPage';
 import { Grid } from '@mui/material';
+import { OrderbookV2 } from './OrderbookV2';
+import { Layout } from './Layout';
+import {MyOrderBook} from "./OrderBookEntry";
 
 export const PerpsPage = () => {
   const { chainId, account, provider } = useActiveWeb3React();
@@ -66,8 +70,11 @@ export const PerpsPage = () => {
           <Tabs.Trigger value='chart' style={{ color: 'white' }}>
             Chart
           </Tabs.Trigger>
-          <Tabs.Trigger value='leverage' style={{ color: 'white' }}>
-            Leverage
+          <Tabs.Trigger value='final' style={{ color: 'white' }}>
+            Perps Page Final
+          </Tabs.Trigger>
+          <Tabs.Trigger value='layout' style={{ color: 'white' }}>
+            Layout
           </Tabs.Trigger>
         </Tabs.List>
 
@@ -78,7 +85,7 @@ export const PerpsPage = () => {
           <Assets />
         </Tabs.Content>
         <Tabs.Content value='orderbook' style={{ color: 'white' }}>
-          <Orderbook />
+        <OrderbookV2/>
         </Tabs.Content>
         <Tabs.Content value='create_order' style={{ color: 'white' }}>
           <CreateOrder />
@@ -90,17 +97,20 @@ export const PerpsPage = () => {
           <Positions />
         </Tabs.Content>
         <Tabs.Content value='market' style={{ color: 'white' }}>
-          <Market />
+          <MyOrderBook/>
         </Tabs.Content>
         <Tabs.Content value='pairs' style={{ color: 'white' }}>
           <Pairs />
         </Tabs.Content>
         <Tabs.Content value='chart' style={{ color: 'white' }}>
-          <GraphHeader/>
+          <GraphHeader />
           <AdvancedChart />
         </Tabs.Content>
-        <Tabs.Content value='leverage' style={{ color: 'white' }}>
-          <Leverage />
+        <Tabs.Content value='final' style={{ color: 'white' }}>
+          <FinalPage />
+        </Tabs.Content>
+        <Tabs.Content value='layout' style={{ color: 'white' }}>
+          <Layout />
         </Tabs.Content>
       </Tabs.Root>
     </Theme>

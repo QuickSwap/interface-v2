@@ -400,11 +400,13 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           confirmedTransactions={confirmed}
         />
         <Link to='/'>
+          {/* 
           <img
             src={mobileWindowSize ? QuickIcon : QuickLogo}
             alt='QuickLogo'
             height={mobileWindowSize ? 40 : 60}
           />
+          */}
         </Link>
         {!tabletWindowSize && (
           <Box className='mainMenu'>

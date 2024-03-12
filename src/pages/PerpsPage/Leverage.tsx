@@ -1,15 +1,39 @@
-import React from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Box, Button, Flex, Text, Container, Switch } from '@radix-ui/themes';
 import Arrow from '../../assets/images/downward.svg';
 import { CropSquareOutlined } from '@material-ui/icons';
-export const Leverage: React.FC = () => {
+import { useActiveWeb3React, useGetConnection } from '../../hooks';
+import { useSelectedWallet } from '../../state/user/hooks';
+import {
+  useAccount,
+  useChains,
+  useCollateral,
+  useDeposit,
+} from '@orderly.network/hooks';
+export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
+  const [tokenSymbol, setTokenSymbol] = useState<string | undefined>();
+  const [orderType, setOrderType] = useState<string | undefined>('limit');
+  const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
+  const [chains, { findByChainId }] = useChains('testnet');
+  const { account, state } = useAccount();
+  const token = useMemo(() => {
+    return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
+  }, [chains]);
+  const deposit = useDeposit({
+    address: token?.address,
+    decimals: token?.decimals,
+    srcToken: token?.symbol,
+    srcChainId: Number(chainId),
+    depositorAddress: quickSwapAccount,
+  });
   return (
     <Flex direction='column' align='center' justify='center'>
       <Box
         style={{
-          width: 330,
+          width: 'fit-content',
           height: 600,
-          border: '1px solid #696C80',
+          backgroundColor: '#12131a',
+          border: '1px solid  #1b1e29',
         }}
       >
         <Flex direction='row' justify='between'>
@@ -37,13 +61,13 @@ export const Leverage: React.FC = () => {
                 color: '#61657a',
               }}
             >
-              50 USDC
+              {deposit?.balance} {token?.symbol}
             </Text>
           </Flex>
           <Flex direction='row' align='center' style={{ marginRight: '15px' }}>
             <Button
               variant='outline'
-              style={{ color: '#448aff', borderColor: '#448aff' }}
+              style={{ color: '#B64FFF', borderColor: '#B64FFF' }}
             >
               Manage
             </Button>
@@ -57,7 +81,7 @@ export const Leverage: React.FC = () => {
         </Flex>
         <Container
           style={{
-            width: 300,
+            width: 220,
             height: 0.5,
             backgroundColor: '#696C80',
             margin: '10px 15px',
@@ -65,7 +89,7 @@ export const Leverage: React.FC = () => {
         />
         <Container
           style={{
-            width: 300,
+            width: 220,
             height: 8,
             borderRadius: '8px',
             backgroundImage:
@@ -131,7 +155,7 @@ export const Leverage: React.FC = () => {
         </Flex>
         <Container
           style={{
-            width: 300,
+            width: 220,
             height: 0.5,
             backgroundColor: '#696C80',
             margin: '10px 15px',
@@ -146,7 +170,7 @@ export const Leverage: React.FC = () => {
         >
           <Box
             style={{
-              width: 149,
+              width: 100,
               height: 36,
               padding: '0 43px',
               borderRadius: '8px',
@@ -165,7 +189,7 @@ export const Leverage: React.FC = () => {
           </Box>
           <Box
             style={{
-              width: 149,
+              width: 100,
               height: 36,
               padding: '0 43px',
               borderRadius: '8px',
@@ -195,7 +219,7 @@ export const Leverage: React.FC = () => {
           }}
         >
           <Text style={{ color: ' #61657a' }}>Available 0.00 USDC</Text>
-          <Text style={{ color: '#448aff' }}>Deposit</Text>
+          <Text style={{ color: '#B64FFF' }}>Deposit</Text>
         </Flex>
         <Flex
           direction='row'
@@ -209,15 +233,70 @@ export const Leverage: React.FC = () => {
             fontSize: '12px',
           }}
         >
-          <Text style={{ color: ' #61657a' }}>Limit</Text>
-          <Text>Market</Text>
+          <Text
+            onClick={() => setOrderType('limit')}
+            style={{
+              cursor: 'pointer',
+              color: orderType === 'limit' ? '#fff' : '#61657a',
+            }}
+          >
+            Limit
+          </Text>
+          <Text
+            onClick={() => setOrderType('market')}
+            style={{
+              color: orderType === 'market' ? '#fff' : '#61657a',
+              cursor: 'pointer',
+            }}
+          >
+            Market
+          </Text>
         </Flex>
         <Flex
           direction='row'
           justify='between'
           align='center'
           style={{
-            width: 300,
+            width: 220,
+            height: 36,
+            backgroundColor: '#1b1e29',
+            margin: '16px 15px',
+            fontWeight: 500,
+            fontFamily: 'Inter',
+            cursor: 'pointer',
+            fontSize: '12px',
+            borderRadius: '8px',
+            color: '#61657a',
+            padding: '10px 12px 11px',
+          }}
+        >
+          <Text>Price</Text>
+          <div>
+            {orderType === 'limit' ? (
+              <input
+                min={0}
+                style={{
+                  width: 20,
+                  marginRight: '2px',
+                  color: '#696c80',
+                  border: 'none',
+                  outline: 'none',
+                  appearance: 'none',
+                  backgroundColor: 'transparent',
+                }}
+              />
+            ) : (
+              <Text>Market</Text>
+            )}
+            <Text> USDC</Text>
+          </div>
+        </Flex>
+        <Flex
+          direction='row'
+          justify='between'
+          align='center'
+          style={{
+            width:220,
             height: 36,
             backgroundColor: '#1b1e29',
             margin: '16px 15px',
@@ -231,7 +310,21 @@ export const Leverage: React.FC = () => {
           }}
         >
           <Text>Quantity</Text>
-          <Text>ETH</Text>
+          <div>
+            <input
+              min={0}
+              style={{
+                width: 20,
+                marginRight: '2px',
+                color: '#696c80',
+                border: 'none',
+                outline: 'none',
+                appearance: 'none',
+                backgroundColor: 'transparent',
+              }}
+            />
+            <Text>{tokenSymbol}</Text>
+          </div>
         </Flex>
         <Flex
           direction={'row'}
@@ -324,7 +417,7 @@ export const Leverage: React.FC = () => {
           justify='between'
           align='center'
           style={{
-            width: 300,
+            width: 220,
             height: 36,
             backgroundColor: '#1b1e29',
             margin: '16px 15px',
@@ -342,7 +435,7 @@ export const Leverage: React.FC = () => {
         </Flex>
         <Container
           style={{
-            width: 300,
+            width: 220,
             height: 0.5,
             backgroundColor: '#696C80',
             margin: '10px 15px',
@@ -370,15 +463,17 @@ export const Leverage: React.FC = () => {
         </Flex>
         <Button
           style={{
-            width: 300,
+            width: 220,
             height: 40,
             margin: '16px 15px',
             padding: '11px 100px 12px',
             borderRadius: '8px',
-            backgroundColor: '#448aff',
+            backgroundColor: '#B64FFF',
             cursor: 'pointer',
           }}
         >
+
+
           Connect Wallet
         </Button>
       </Box>
