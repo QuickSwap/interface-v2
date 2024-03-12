@@ -24,7 +24,7 @@
     flex-direction: column;
 }
 .other{
-    flex: 20%;
+    flex: 10%;
     height: fit-content;
     border: 1px solid #61675a;
     height:100vh;
@@ -40,16 +40,25 @@
 .kingFooter{
     display: flex;
     flex-direction: column;
-    margin:'15px 5px'
+    margin:15px 5px
 }
+.dropdown,
 .portfolio_status{
     display:flex;
     flex-direction: row;
     justify-content: start;
     border-bottom: 1px solid #61675a;
+    margin: 10px 5px;
+}
+.portfolio_status div{
+    margin: 5px 10px;
 }
 .footer-left {
     display: flex;
+    color:#61675a;
+    font-family: Inter;
+    font-weight: 500;
+    font-size: 14px;
 }
 
 .footer-left div {
@@ -58,11 +67,43 @@
 
 .footer-right {
     margin-left: auto;
+    color:#ccced9;
+    font-family: Inter;
+    font-weight: 500;
+    font-size: 12px;
 }
 .footer_data{
     display: flex;
     justify-content: center;
     align-items: center;
     height: 20vh;
-
 }
+.selected{
+    border-bottom: 1px solid #FFF;
+    color: white;
+}
+
+ @media (max-width: 768px) {
+     @media (max-width: 768px) {
+         .container {
+             flex-direction: column;
+             height: max-content;
+         }
+         .graph_orderbook {
+             flex-direction: column;
+         }
+         .graph {
+             flex: 100%;
+             border: 1px solid #61675a;
+         }
+         .orderbook,
+         .other {
+             flex: 50%;
+             border: 1px solid #61675a;
+         }
+         .kingFooter {
+             display: none; /* Hide the footer */
+         }
+     }
+
+ }

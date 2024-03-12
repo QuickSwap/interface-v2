@@ -81,7 +81,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         </Flex>
         <Container
           style={{
-            width: 300,
+            width: 220,
             height: 0.5,
             backgroundColor: '#696C80',
             margin: '10px 15px',
@@ -89,7 +89,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         />
         <Container
           style={{
-            width: 300,
+            width: 220,
             height: 8,
             borderRadius: '8px',
             backgroundImage:
@@ -155,7 +155,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         </Flex>
         <Container
           style={{
-            width: 300,
+            width: 220,
             height: 0.5,
             backgroundColor: '#696C80',
             margin: '10px 15px',
@@ -170,7 +170,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         >
           <Box
             style={{
-              width: 149,
+              width: 100,
               height: 36,
               padding: '0 43px',
               borderRadius: '8px',
@@ -189,7 +189,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           </Box>
           <Box
             style={{
-              width: 149,
+              width: 100,
               height: 36,
               padding: '0 43px',
               borderRadius: '8px',
@@ -257,7 +257,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           justify='between'
           align='center'
           style={{
-            width: 300,
+            width: 220,
             height: 36,
             backgroundColor: '#1b1e29',
             margin: '16px 15px',
@@ -296,7 +296,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           justify='between'
           align='center'
           style={{
-            width: 300,
+            width:220,
             height: 36,
             backgroundColor: '#1b1e29',
             margin: '16px 15px',
@@ -417,7 +417,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           justify='between'
           align='center'
           style={{
-            width: 300,
+            width: 220,
             height: 36,
             backgroundColor: '#1b1e29',
             margin: '16px 15px',
@@ -435,7 +435,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         </Flex>
         <Container
           style={{
-            width: 300,
+            width: 220,
             height: 0.5,
             backgroundColor: '#696C80',
             margin: '10px 15px',
@@ -463,7 +463,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         </Flex>
         <Button
           style={{
-            width: 300,
+            width: 220,
             height: 40,
             margin: '16px 15px',
             padding: '11px 100px 12px',
@@ -472,6 +472,8 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
             cursor: 'pointer',
           }}
         >
+
+
           Connect Wallet
         </Button>
       </Box>
