@@ -1191,6 +1191,16 @@ export const CRS: { [chainId: number]: Token } = {
   ),
 };
 
+export const EURO3: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xA0e4c84693266a9d3BBef2f394B33712c76599Ab',
+    18,
+    'EURO3',
+    'EURO3',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,

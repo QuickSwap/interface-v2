@@ -50,6 +50,7 @@ import {
   USDV,
   NFTE,
   CRS,
+  EURO3,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
 
@@ -2256,6 +2257,7 @@ export const GlobalData = {
       USDD[ChainId.MATIC],
       DAVOS[ChainId.MATIC],
       USDV[ChainId.MATIC],
+      EURO3[ChainId.MATIC],
     ],
     [ChainId.MUMBAI]: [],
     [ChainId.DOGECHAIN]: [
