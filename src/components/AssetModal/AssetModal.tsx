@@ -38,7 +38,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const { selectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
-  const [chains, { findByChainId }] = useChains('testnet');
+  const [chains, { findByChainId }] = useChains('mainnet');
   const connections = getConnection(selectedWallet);
   const { account, state } = useAccount();
   const collateral = useCollateral();
@@ -52,7 +52,6 @@ const AssetModal: React.FC<AssetModalProps> = ({
     decimals: token?.decimals,
     srcToken: token?.symbol,
     srcChainId: Number(chainId),
-    depositorAddress: quickSwapAccount,
   });
   const { withdraw } = useWithdraw();
   return (
@@ -444,7 +443,8 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   if (Number(deposit.allowance) < Number(depositAmount)) {
                     await deposit.approve(depositAmount.toString());
                   } else {
-                    await deposit.deposit(depositAmount);
+                    deposit.setQuantity(depositAmount.toString());
+                    const tx = await deposit.deposit();
                   }
                 }}
               >

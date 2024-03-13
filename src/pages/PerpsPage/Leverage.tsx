@@ -24,7 +24,6 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
     decimals: token?.decimals,
     srcToken: token?.symbol,
     srcChainId: Number(chainId),
-    depositorAddress: quickSwapAccount,
   });
   return (
     <Flex direction='column' align='center' justify='center'>
