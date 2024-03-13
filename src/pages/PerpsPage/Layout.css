@@ -32,6 +32,9 @@
     flex-direction: column;
 }
 
+.mobile-graph-navbar {
+    display: none;
+}
 
 .other {
     flex: 10%;
@@ -164,8 +167,17 @@
         flex-direction: column;
         height: max-content;
     }
+    .mobile-graph-navbar{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        width: 100%;
+        padding: 10px 5px;
+    }
 
-
+    .desktop-graph-navbar{
+        display: none;
+    }
     .graph_orderbook {
         flex-direction: column;
     }
@@ -208,5 +220,14 @@
     }
     .leverage {
         width: 55%;
+    }
+    .nav-data {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2 columns */
+        grid-gap: 5px; /* Adjust the gap between grid items */
+    }
+
+    .item { /* Add borders for visual separation */
+        padding: 10px;
     }
 }

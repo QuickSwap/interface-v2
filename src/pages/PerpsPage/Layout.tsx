@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { AdvancedChart } from 'react-tradingview-embed';
 import { OrderbookV2 } from './OrderbookV2';
-import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
+import { Market } from './Market';
 import './Layout.css';
+import { GraphHeader } from './GraphHeader';
 
 export const Layout = () => {
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState(null);
+  const [selectedNavItem, setSelectedNavItem] = useState('Chart');
+
+  const handleNavItemClick = (item) => {
+    setSelectedNavItem(item);
+  };
 
   const handleItemClick = (item) => {
     setSelectedItem(item);
@@ -22,8 +28,38 @@ export const Layout = () => {
       <div className='graph_footer'>
         <div className='graph_orderbook'>
           <div className='graph'>
-            <GraphHeader />
-            <AdvancedChart widgetProps={{ height: '430' }} />
+            <div className='desktop-graph-navbar'>
+              <GraphHeader />
+            </div>
+            <nav className='mobile-graph-navbar'>
+              <div onClick={() => handleNavItemClick('Chart')}>Chart</div>
+              <div onClick={() => handleNavItemClick('Trade')}>Trade</div>
+              <div onClick={() => handleNavItemClick('Data')}>Data</div>
+            </nav>
+            {selectedNavItem === 'Chart' && (
+              <AdvancedChart widgetProps={{ height: '430' }} />
+            )}
+            {selectedNavItem === 'Trade' && (
+              <div className='nav-trade'>
+                <Market />
+              </div>
+            )}
+            {selectedNavItem === 'Data' && (
+              <div className='nav-data'>
+                <div className='item'>Mark Price</div>
+                <div className='item'>Index Price</div>
+                <div className='item'>24h Volume</div>
+                <div className='item'>24h High</div>
+                <div className='item'>24h Low</div>
+                <div className='item'>Open Interest</div>
+                <div className='item'>1</div>
+                <div className='item'>1</div>
+                <div className='item'>1</div>
+                <div className='item'>1</div>
+                <div className='item'>1</div>
+                <div className='item'>1</div>
+              </div>
+            )}
           </div>
           <div className='orderbook desktop_orderbook'>
             <div

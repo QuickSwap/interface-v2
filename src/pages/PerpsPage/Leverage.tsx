@@ -50,6 +50,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         {windowWidth > 768 && (
           <Flex direction='row' justify='between'>
             <Flex
+
               direction={'column'}
               align={'start'}
               gap='3'
