@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import {
@@ -8,12 +8,16 @@ import {
   getChartDates,
   getLimitedData,
   getFormattedPercent,
+  formatNumber,
 } from 'utils';
 import { BarChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useQuery } from '@tanstack/react-query';
+import Loader from 'components/Loader';
+import { getConfig } from 'config/index';
+import { exportToXLSX } from 'utils/exportToXLSX';
 
 const DAY_VOLUME = 0;
 const WEEK_VOLUME = 1;
@@ -31,6 +35,7 @@ const AnalyticsVolumeChart: React.FC<{
   const [selectedVolumeIndex, setSelectedVolumeIndex] = useState(-1);
   const { chainId } = useActiveWeb3React();
   const version = useAnalyticsVersion();
+  const [xlsExported, setXLSExported] = useState(false);
 
   const fetchChartData = async () => {
     const res = await fetch(
@@ -183,19 +188,69 @@ const AnalyticsVolumeChart: React.FC<{
     Number(getVolumePercent(volumeIndex)),
   );
 
+  const config = getConfig(chainId);
+  const networkName = config['networkName'];
+
+  useEffect(() => {
+    if (xlsExported) {
+      const data =
+        (volumeIndex === WEEK_VOLUME
+          ? globalChartData?.week
+          : globalChartData?.day) ?? [];
+      const exportData = data
+        .sort((item1: any, item2: any) => {
+          return item1.date > item2.date ? 1 : -1;
+        })
+        .map((item: any, ind: number) => {
+          return {
+            Date: `${formatDateFromTimeStamp(
+              ind > 0 ? data[ind - 1].date : item.date,
+              'MMM DD, YYYY',
+              volumeIndex === WEEK_VOLUME && ind === 0 ? -7 : 0,
+            )}${volumeIndex === WEEK_VOLUME ? ' - ' : ''}${
+              volumeIndex === WEEK_VOLUME
+                ? formatDateFromTimeStamp(item.date, 'MMM DD, YYYY')
+                : ''
+            }`,
+            Volume: `$${formatNumber(
+              volumeIndex === WEEK_VOLUME
+                ? item.weeklyVolumeUSD
+                : item.dailyVolumeUSD,
+            )}`,
+          };
+        });
+      exportToXLSX(
+        exportData,
+        `Quickswap-Volume-${networkName}-${version}-${
+          volumeIndex === WEEK_VOLUME ? 'Week' : 'Day'
+        }-${GlobalData.analytics.CHART_DURATION_TEXTS[durationIndex - 1]}`,
+      );
+      setTimeout(() => {
+        setXLSExported(false);
+      }, 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xlsExported]);
+
   return (
     <>
-      <Box>
+      <Box className='flex flex-col' gridGap={4} height='100%'>
         <Box className='flex justify-between'>
           <span className='text-disabled text-bold'>
             {t('volume')} {selectedVolumeIndex === -1 ? `(${t('24hr')})` : ''}
           </span>
-          <ChartType
-            chartTypes={volumeTypes}
-            typeTexts={volumeTypeTexts}
-            chartType={volumeIndex}
-            setChartType={setVolumeIndex}
-          />
+          <Box
+            className={`bg-secondary1 flex items-center ${
+              xlsExported ? '' : 'cursor-pointer'
+            }`}
+            padding='4px 8px'
+            borderRadius={6}
+            onClick={() => {
+              if (!xlsExported) setXLSExported(true);
+            }}
+          >
+            {xlsExported ? <Loader /> : <small>{t('export')}</small>}
+          </Box>
         </Box>
         <Box mt={0.5} className='flex items-start'>
           {globalChartData && globalData ? (
@@ -236,12 +291,20 @@ const AnalyticsVolumeChart: React.FC<{
               <Skeleton variant='rect' width='100%' height={24} />
             </Box>
           )}
-          <ChartType
-            chartTypes={GlobalData.analytics.CHART_DURATIONS}
-            typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
-            chartType={durationIndex}
-            setChartType={setDurationIndex}
-          />
+          <Box className='flex flex-col items-end' gridGap={6}>
+            <ChartType
+              chartTypes={volumeTypes}
+              typeTexts={volumeTypeTexts}
+              chartType={volumeIndex}
+              setChartType={setVolumeIndex}
+            />
+            <ChartType
+              chartTypes={GlobalData.analytics.CHART_DURATIONS}
+              typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
+              chartType={durationIndex}
+              setChartType={setDurationIndex}
+            />
+          </Box>
         </Box>
       </Box>
       <Box mt={2}>

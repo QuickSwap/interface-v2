@@ -12,7 +12,7 @@ import {
   getFormattedPercent,
 } from 'utils';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
-import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
+import { CurrencyLogo } from 'components';
 import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';

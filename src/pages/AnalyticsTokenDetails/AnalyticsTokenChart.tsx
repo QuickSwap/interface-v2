@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -10,12 +10,16 @@ import {
   getChartDates,
   getYAXISValuesAnalytics,
   getFormattedPercent,
+  formatDateFromTimeStamp,
 } from 'utils';
 import { AreaChart, ChartType } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useQuery } from '@tanstack/react-query';
+import Loader from 'components/Loader';
+import { exportToXLSX } from 'utils/exportToXLSX';
+import { getConfig } from 'config/index';
 
 const CHART_VOLUME = 0;
 const CHART_LIQUIDITY = 1;
@@ -108,10 +112,57 @@ const AnalyticsTokenChart: React.FC<{
 
   const currentPercentClass = getPriceClass(Number(currentPercent));
 
+  const config = getConfig(chainId);
+  const networkName = config['networkName'];
+  const [xlsExported, setXLSExported] = useState(false);
+
+  useEffect(() => {
+    if (xlsExported) {
+      const exportData = (tokenChartData ?? [])
+        .sort((item1: any, item2: any) => {
+          return item1.date > item2.date ? 1 : -1;
+        })
+        .map((item: any) => {
+          if (chartIndex === CHART_VOLUME) {
+            return {
+              Date: formatDateFromTimeStamp(item.date, 'MMM DD, YYYY'),
+              Volume: `$${formatNumber(item.dailyVolumeUSD)}`,
+            };
+          }
+          if (chartIndex === CHART_LIQUIDITY) {
+            return {
+              Date: formatDateFromTimeStamp(item.date, 'MMM DD, YYYY'),
+              Liquidity: `$${formatNumber(item.totalLiquidityUSD)}`,
+            };
+          }
+          return {
+            Date: formatDateFromTimeStamp(item.date, 'MMM DD, YYYY'),
+            Price: `$${formatNumber(item.priceUSD)}`,
+          };
+        });
+      exportToXLSX(
+        exportData,
+        `Quickswap-${token.symbol}-${
+          chartIndex === CHART_VOLUME
+            ? 'Volume'
+            : chartIndex === CHART_LIQUIDITY
+            ? 'Liquidity'
+            : 'Price'
+        }-${
+          GlobalData.analytics.CHART_DURATION_TEXTS[durationIndex - 1]
+        }-${networkName}-${version}`,
+      );
+      setTimeout(() => {
+        setXLSExported(false);
+      }, 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xlsExported]);
+
   return (
     <>
       <Box className='flex flex-wrap justify-between'>
-        <Box mt={1.5}>
+        <Box>
           <span>{chartIndexTexts[chartIndex]}</span>
           <Box mt={1}>
             {(currentData || currentData === 0) &&
@@ -140,23 +191,31 @@ const AnalyticsTokenChart: React.FC<{
             )}
           </Box>
         </Box>
-        <Box className='flex flex-col items-end'>
-          <Box mt={1.5}>
-            <ChartType
-              chartTypes={chartIndexes}
-              typeTexts={chartIndexTexts}
-              chartType={chartIndex}
-              setChartType={setChartIndex}
-            />
+        <Box className='flex flex-col items-end' gridGap={8}>
+          <Box
+            className={`bg-secondary1 flex items-center ${
+              xlsExported ? '' : 'cursor-pointer'
+            }`}
+            padding='4px 8px'
+            borderRadius={6}
+            onClick={() => {
+              if (!xlsExported) setXLSExported(true);
+            }}
+          >
+            {xlsExported ? <Loader /> : <small>{t('export')}</small>}
           </Box>
-          <Box mt={1.5}>
-            <ChartType
-              chartTypes={GlobalData.analytics.CHART_DURATIONS}
-              typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
-              chartType={durationIndex}
-              setChartType={setDurationIndex}
-            />
-          </Box>
+          <ChartType
+            chartTypes={chartIndexes}
+            typeTexts={chartIndexTexts}
+            chartType={chartIndex}
+            setChartType={setChartIndex}
+          />
+          <ChartType
+            chartTypes={GlobalData.analytics.CHART_DURATIONS}
+            typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
+            chartType={durationIndex}
+            setChartType={setDurationIndex}
+          />
         </Box>
       </Box>
       <Box mt={2} width={1}>

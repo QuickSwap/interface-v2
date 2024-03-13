@@ -10,13 +10,9 @@ import {
   getTokenFromAddress,
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import {
-  CurrencyLogo,
-  DoubleCurrencyLogo,
-  TransactionsTable,
-} from 'components';
+import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 import { getAddress } from '@ethersproject/address';
-import { GlobalConst, TxnType } from 'constants/index';
+import { GlobalConst } from 'constants/index';
 import 'pages/styles/analytics.scss';
 import AnalyticsHeader from 'pages/AnalyticsPage/AnalyticsHeader';
 import AnalyticsPairChart from './AnalyticsPairChart';
@@ -26,6 +22,7 @@ import { CallMade } from '@material-ui/icons';
 import { getConfig } from 'config/index';
 import { useQuery } from '@tanstack/react-query';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import AnalyticsPairTransactions from './AnalyticsPairTransactions';
 
 const AnalyticsPairDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -81,34 +78,6 @@ const AnalyticsPairDetails: React.FC = () => {
   const pairData = data ? data.pairData : undefined;
   const pairTransactions = data ? data.pairTransactions : undefined;
 
-  const pairTransactionsList = useMemo(() => {
-    if (pairTransactions) {
-      const mints = pairTransactions.mints.map((item: any) => {
-        return { ...item, type: TxnType.ADD };
-      });
-      const swaps = pairTransactions.swaps.map((item: any) => {
-        const amount0 =
-          item.amount0 > 0 ? item.amount0 : Math.abs(item.amount1);
-        const amount1 =
-          item.amount0 > 0 ? Math.abs(item.amount1) : Math.abs(item.amount0);
-        const token0 = item.amount0 > 0 ? item.pair.token0 : item.pair.token1;
-        const token1 = item.amount0 > 0 ? item.pair.token1 : item.pair.token0;
-        return {
-          ...item,
-          amount0,
-          amount1,
-          pair: { token0, token1 },
-          type: TxnType.SWAP,
-        };
-      });
-      const burns = pairTransactions.burns.map((item: any) => {
-        return { ...item, type: TxnType.REMOVE };
-      });
-      return mints.concat(swaps).concat(burns);
-    } else {
-      return null;
-    }
-  }, [pairTransactions]);
   const currency0 =
     pairData && chainId
       ? getTokenFromAddress(pairData.token0.id, chainId, tokenMap, [
@@ -387,18 +356,10 @@ const AnalyticsPairDetails: React.FC = () => {
           </Box>
           <PairInfo />
           {!isV2 && (
-            <>
-              <Box width={1}>
-                <p>{t('transactions')}</p>
-              </Box>
-              <Box width={1} className='panel' my={4}>
-                {pairTransactionsList ? (
-                  <TransactionsTable data={pairTransactionsList} />
-                ) : (
-                  <Skeleton variant='rect' width='100%' height={150} />
-                )}
-              </Box>
-            </>
+            <AnalyticsPairTransactions
+              transactions={pairTransactions}
+              name={pairData.token0.symbol + '/' + pairData.token1.symbol}
+            />
           )}
         </>
       ) : (
