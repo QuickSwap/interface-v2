@@ -75,6 +75,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const { loading: loadingQS, positions: qsPositions } = useV3PositionsFromPool(
     farm?.token0?.address,
     farm?.token1?.address,
+    farm?.poolFee ? Number(farm.poolFee) * 10000 : undefined,
   );
 
   const [selectedQSNFTId, setSelectedQSNFTId] = useState('');

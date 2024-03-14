@@ -496,6 +496,16 @@ export const USDCE: { [chainId: number]: Token } = {
   ),
 };
 
+export const DAIE: { [chainId: number]: Token } = {
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x744C5860ba161b5316F7E80D9Ec415e2727e5bD5',
+    6,
+    'DAI.E',
+    'Dai Stablecoin',
+  ),
+};
+
 export const USDT: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
@@ -1191,6 +1201,16 @@ export const CRS: { [chainId: number]: Token } = {
   ),
 };
 
+export const EURO3: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xA0e4c84693266a9d3BBef2f394B33712c76599Ab',
+    18,
+    'EURO3',
+    'EURO3',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
@@ -1364,9 +1384,9 @@ export const SUGGESTED_BASES: {
   [ChainId.ZKEVM]: [
     WETH[ChainId.ZKEVM],
     USDT[ChainId.ZKEVM],
-    USDC[ChainId.ZKEVM],
+    USDCE[ChainId.ZKEVM],
     MATIC[ChainId.ZKEVM],
-    DAI[ChainId.ZKEVM],
+    DAIE[ChainId.ZKEVM],
     WBTC[ChainId.ZKEVM],
     NEW_QUICK[ChainId.ZKEVM],
   ],

@@ -12,6 +12,7 @@ import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import {
   useGammaHypervisorContract,
   useMasterChefContract,
+  useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
 } from 'hooks/useContract';
 import { useEffect, useMemo } from 'react';
@@ -44,6 +45,8 @@ import {
 import { useV3PositionsFromTokenIds } from './useV3Positions';
 import { BigNumber } from 'ethers';
 import { useLastTransactionHash } from 'state/transactions/hooks';
+import { FeeAmount } from 'v3lib/utils';
+import { getConfig } from 'config/index';
 
 export const useEternalFarmsFiltered = (
   farms: any[],
@@ -305,9 +308,11 @@ export const useEternalFarmsFiltered = (
 
 export const useGetMerklFarms = () => {
   const { chainId, account } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const merklAvailable = config['farm']['merkl'];
   const fetchMerklFarms = async () => {
     const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
-    if (!merklAPIURL || !chainId) return [];
+    if (!merklAPIURL || !chainId || !merklAvailable) return [];
     const amms = merklAMMs[chainId] ?? ['quickswapuni'];
     const ammStr = amms.map((amm) => `&AMMs[]=${amm}`).join('');
     const res = await fetch(
@@ -891,9 +896,15 @@ export const useGammaFarmsFiltered = (
   };
 };
 
-export function useV3PositionsFromPool(token0?: string, token1?: string) {
+export function useV3PositionsFromPool(
+  token0?: string,
+  token1?: string,
+  fee?: FeeAmount,
+) {
   const { account } = useActiveWeb3React();
-  const positionManager = useV3NFTPositionManagerContract();
+  const algebraPositionManager = useV3NFTPositionManagerContract();
+  const uniPositionManager = useUNIV3NFTPositionManagerContract();
+  const positionManager = fee ? uniPositionManager : algebraPositionManager;
 
   const {
     loading: balanceLoading,
@@ -936,6 +947,7 @@ export function useV3PositionsFromPool(token0?: string, token1?: string) {
 
   const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
     tokenIds,
+    !!fee,
   );
 
   const filteredPositions = useMemo(() => {
@@ -945,9 +957,10 @@ export function useV3PositionsFromPool(token0?: string, token1?: string) {
       (item) =>
         item.token0.toLowerCase() === token0.toLowerCase() &&
         item.token1.toLowerCase() === token1.toLowerCase() &&
+        (fee ? Number(item.fee) === fee : true) &&
         item.liquidity.gt('0'),
     );
-  }, [positions, token0, token1]);
+  }, [fee, positions, token0, token1]);
 
   return {
     loading: someTokenIdsLoading || balanceLoading || positionsLoading,

@@ -285,6 +285,10 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
         token1: selectedPool?.token1,
         title,
         rewards,
+        poolFee:
+          (selectedPool?.ammName ?? '').toLowerCase() === 'quickswapuni'
+            ? selectedPool?.poolFee
+            : undefined,
       };
     });
   }, [chainId, defiEdgeTitles, selectedPool]);
