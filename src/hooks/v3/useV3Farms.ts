@@ -314,9 +314,8 @@ export const useGetMerklFarms = () => {
     const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
     if (!merklAPIURL || !chainId || !merklAvailable) return [];
     const amms = merklAMMs[chainId] ?? ['quickswapuni'];
-    const ammStr = amms.map((amm) => `&AMMs[]=${amm}`).join('');
     const res = await fetch(
-      `${merklAPIURL}?chainIds[]=${chainId}${ammStr}${
+      `${merklAPIURL}?chainIds[]=${chainId}${
         account ? `&user=${account}` : ''
       }`,
     );
@@ -451,7 +450,7 @@ export const useMerklFarms = () => {
                 0,
               ),
             almAPR: item?.meanAPR ?? 0,
-            label: 'QuickSwap',
+            label: item?.ammName,
           },
         ])
         .map((alm: any) => {
@@ -502,7 +501,10 @@ export const useMerklFarms = () => {
                   e.strategy.address.toLowerCase() ===
                   alm.almAddress.toLowerCase(),
               )?.strategy?.fees_apr ?? 0;
-          } else if (alm.label.includes('QuickSwap') && eternalFarmPoolAprs) {
+          } else if (
+            alm.label.toLowerCase().includes('quickswap') &&
+            eternalFarmPoolAprs
+          ) {
             poolAPR = eternalFarmPoolAprs[alm.almAddress.toLowerCase()] ?? 0;
           }
           return {
