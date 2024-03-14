@@ -2,7 +2,10 @@ import { Token, TokenAmount } from '@uniswap/sdk';
 import { Token as TokenV3, CurrencyAmount } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
 
-import { useTokenContract, useV3NFTPositionManagerContract } from 'hooks/useContract';
+import {
+  useTokenContract,
+  useV3NFTPositionManagerContract,
+} from 'hooks/useContract';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 
 export function useTokenAllowance(
@@ -48,12 +51,10 @@ export function useNftPosManTokenIdApprovedAddress(
 ): string | undefined {
   const contract = useV3NFTPositionManagerContract(false);
   const inputs = useMemo(() => [tokenId], [tokenId]);
-  const approvalAddress = useSingleCallResult(contract, 'getApproved', inputs).result;
+  const approvalAddress = useSingleCallResult(contract, 'getApproved', inputs)
+    .result;
   return useMemo(
-    () =>
-    tokenId && approvalAddress
-        ? approvalAddress[0]
-        : undefined,
+    () => (tokenId && approvalAddress ? approvalAddress[0] : undefined),
     [approvalAddress, tokenId],
   );
 }

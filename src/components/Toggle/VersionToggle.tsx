@@ -17,7 +17,6 @@ const VersionToggle: React.FC = () => {
   const config = getConfig(chainId);
   const lHAnalyticsAvailable = config['analytics']['liquidityHub'];
   const singleTokenEnabled = config['ichi']['available'];
-  const { updateIsV2 } = useIsV2();
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
@@ -28,8 +27,8 @@ const VersionToggle: React.FC = () => {
       ? params.version
       : isAnalyticsPage
       ? analyticsVersion
-      : isPoolsPage 
-      ? 'lpLocker' 
+      : isPoolPage
+      ? 'lpLocker'
       : 'v3';
 
   useEffect(() => {
@@ -69,8 +68,11 @@ const VersionToggle: React.FC = () => {
   return (
     <Box className='version-toggle-container'>
       <Box
-        className={isV2 && version !== 'total' && !isLpLock ? 'version-toggle-active' : ''}
-
+        className={
+          isV2 && version !== 'total' && !isLpLock
+            ? 'version-toggle-active'
+            : ''
+        }
         onClick={() => {
           redirectWithVersion('v2');
         }}
@@ -79,8 +81,11 @@ const VersionToggle: React.FC = () => {
       </Box>
 
       <Box
-        className={!isV2 && (version !== 'total' && !isLpLock) ? 'version-toggle-active' : ''}
-
+        className={
+          !isV2 && version !== 'total' && !isLpLock
+            ? 'version-toggle-active'
+            : ''
+        }
         onClick={() => {
           redirectWithVersion('v3');
         }}
@@ -98,7 +103,7 @@ const VersionToggle: React.FC = () => {
           <small>{t('singleToken')}</small>
         </Box>
       )}
-      {isPoolsPage &&
+      {isPoolPage && (
         <Box
           className={isLpLock ? 'version-toggle-active' : ''}
           onClick={() => {
@@ -108,7 +113,7 @@ const VersionToggle: React.FC = () => {
           <small>{t('liquidityLocker')}</small>
           <img src={NewTag} alt='new feature' width={46} />
         </Box>
-      }
+      )}
 
       {isAnalyticsPage && (
         <>

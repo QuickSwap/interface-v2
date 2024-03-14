@@ -4,7 +4,10 @@ import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { useWalletModalToggle } from 'state/application/hooks';
 import ToggleVersion from '../ToggleVersion';
-import { useUserV2LiquidityLocks, useUserV3LiquidityLocks } from 'state/data/liquidityLocker';
+import {
+  useUserV2LiquidityLocks,
+  useUserV3LiquidityLocks,
+} from 'state/data/liquidityLocker';
 import { Skeleton } from '@material-ui/lab';
 import LockPositionCard from './components';
 
@@ -16,12 +19,19 @@ export default function MyLiquidityLocks() {
     loading: v2IsLoading,
     pairs: allV2PairsWithLiquidity,
   } = useV2LiquidityPools(account ?? undefined);
-  const pairs = useMemo(() => allV2PairsWithLiquidity, [allV2PairsWithLiquidity.length]);
-  const { data: v2Locks, loading: v2LockIsLoading } = useUserV2LiquidityLocks(pairs, account)
-  const { data: v3Locks, loading: v3LockIsLoading } = useUserV3LiquidityLocks(account)
+  const pairs = useMemo(() => allV2PairsWithLiquidity, [
+    allV2PairsWithLiquidity,
+  ]);
+  const { data: v2Locks, loading: v2LockIsLoading } = useUserV2LiquidityLocks(
+    pairs,
+    account,
+  );
+  const { data: v3Locks, loading: v3LockIsLoading } = useUserV3LiquidityLocks(
+    account,
+  );
 
   const showConnectAWallet = Boolean(!account);
-  const toggleWalletModal = useWalletModalToggle();  
+  const toggleWalletModal = useWalletModalToggle();
 
   return (
     <Box>
@@ -40,7 +50,7 @@ export default function MyLiquidityLocks() {
           </Box>
         ) : isV3 ? (
           <Box mt={3}>
-            {(v3LockIsLoading) ? (
+            {v3LockIsLoading ? (
               <Box width={1}>
                 <Skeleton width='100%' height={50} />
               </Box>
@@ -63,7 +73,7 @@ export default function MyLiquidityLocks() {
           </Box>
         ) : (
           <Box mt={3}>
-            {(v2LockIsLoading || v2IsLoading) ? (
+            {v2LockIsLoading || v2IsLoading ? (
               <Box width={1}>
                 <Skeleton width='100%' height={50} />
               </Box>

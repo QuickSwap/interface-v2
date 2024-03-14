@@ -6,16 +6,13 @@ import {
   NumericalInput,
 } from 'components';
 import { Contract } from '@ethersproject/contracts';
-import {
-  useNetworkSelectionModalToggle,
-  useWalletModalToggle,
-} from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
+import { Token, ChainId } from '@uniswap/sdk';
 import {
-  Token,
-  ChainId,
-} from '@uniswap/sdk';
-import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
+  useActiveWeb3React,
+  useConnectWallet,
+  useV2LiquidityPools,
+} from 'hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import {
   calculateGasMargin,
@@ -23,7 +20,15 @@ import {
   formatTokenAmount,
   getExactTokenAmount,
 } from 'utils';
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from '@material-ui/core';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { usePairContract, useTokenLockerContract } from 'hooks/useContract';
 import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
@@ -43,18 +48,15 @@ const LockV2Liquidity: React.FC = () => {
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
   // inputs
-  const [unlockDate, setUnlockDate] = useState(dayjs().add(90, 'days'))
-  const [selectedExtendDate, setSelectedExtendDate] = useState('3M')
+  const [unlockDate, setUnlockDate] = useState(dayjs().add(90, 'days'));
+  const [selectedExtendDate, setSelectedExtendDate] = useState('3M');
   const [lpTokenAddress, setLpTokenAddress] = useState('');
-  const [amount, setAmount] = useState('')
-  const [selectedAmountPercentage, setSelectedAmountPercentage] = useState('')
-  const [errorAmount, setErrorAmount] = useState(false)
+  const [amount, setAmount] = useState('');
+  const [selectedAmountPercentage, setSelectedAmountPercentage] = useState('');
+  const [errorAmount, setErrorAmount] = useState(false);
   const [lockErrorMessage, setLockErrorMessage] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [feesInEth, setFeesInEth] = useState(ethers.BigNumber.from(0));
-  
-  const toggleWalletModal = useWalletModalToggle();
-  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
 
   const {
     loading: v2IsLoading,
@@ -62,14 +64,20 @@ const LockV2Liquidity: React.FC = () => {
   } = useV2LiquidityPools(account ?? undefined);
 
   const lpToken = useMemo(() => {
-    return allV2PairsWithLiquidity.find((item) => item.liquidityToken.address === lpTokenAddress)
-  }, [allV2PairsWithLiquidity]);
+    return allV2PairsWithLiquidity.find(
+      (item) => item.liquidityToken.address === lpTokenAddress,
+    );
+  }, [allV2PairsWithLiquidity, lpTokenAddress]);
 
   const userPoolBalance = useTokenBalance(
     account ?? undefined,
     lpToken?.liquidityToken,
   );
-  const parsedAmount = tryParseAmount(chainIdToUse, amount, lpToken?.liquidityToken);
+  const parsedAmount = tryParseAmount(
+    chainIdToUse,
+    amount,
+    lpToken?.liquidityToken,
+  );
   const tokenLockerContract = useTokenLockerContract(chainId);
 
   const [showConfirm, setShowConfirm] = useState(false);
@@ -89,63 +97,71 @@ const LockV2Liquidity: React.FC = () => {
 
   const handleChange = (e: any) => {
     setLpTokenAddress(e.target.value);
-    setAmount('')
+    setAmount('');
   };
 
   const onSetAmount = (inputAmount: string) => {
-    setErrorAmount(Number(inputAmount) > getExactTokenAmount(userPoolBalance))
-    setAmount(inputAmount)
+    setErrorAmount(Number(inputAmount) > getExactTokenAmount(userPoolBalance));
+    setAmount(inputAmount);
     if (!userPoolBalance || !inputAmount || !lpToken) {
-      setSelectedAmountPercentage('')
-      return
-    } 
+      setSelectedAmountPercentage('');
+      return;
+    }
 
-    const formattedUserPoolBalance = BigNumber.from(userPoolBalance.raw.toString())
-    const formatedAmount = utils.parseUnits(inputAmount, lpToken?.liquidityToken?.decimals)
-    const percentage = formatedAmount.mul(100).div(formattedUserPoolBalance).toString()
-    setSelectedAmountPercentage(percentage)
-  }
+    const formattedUserPoolBalance = BigNumber.from(
+      userPoolBalance.raw.toString(),
+    );
+    const formatedAmount = utils.parseUnits(
+      inputAmount,
+      lpToken?.liquidityToken?.decimals,
+    );
+    const percentage = formatedAmount
+      .mul(100)
+      .div(formattedUserPoolBalance)
+      .toString();
+    setSelectedAmountPercentage(percentage);
+  };
 
   const onPercentageClick = (percentage: string) => {
-    if (!userPoolBalance) return
+    if (!userPoolBalance) return;
 
-    const formattedUserPoolBalance = BigNumber.from(userPoolBalance.raw.toString())
-    setAmount(utils.formatUnits(formattedUserPoolBalance.mul(BigNumber.from(percentage)).div(100), lpToken?.liquidityToken?.decimals))
-    setSelectedAmountPercentage(percentage.toString())
-  }
+    const formattedUserPoolBalance = BigNumber.from(
+      userPoolBalance.raw.toString(),
+    );
+    setAmount(
+      utils.formatUnits(
+        formattedUserPoolBalance.mul(BigNumber.from(percentage)).div(100),
+        lpToken?.liquidityToken?.decimals,
+      ),
+    );
+    setSelectedAmountPercentage(percentage.toString());
+  };
 
   const handleChangeDate = (e: string) => {
     setUnlockDate(dayjs(e));
   };
 
   const addMonths = (months: number) => {
-    const newDate = dayjs().add(months, 'month')
+    const newDate = dayjs().add(months, 'month');
     setUnlockDate(newDate);
-    setSelectedExtendDate(`${months}M`)
-  }
+    setSelectedExtendDate(`${months}M`);
+  };
 
   const addYears = (years: number) => {
-    const newDate = dayjs().add(years, 'year')
+    const newDate = dayjs().add(years, 'year');
     setUnlockDate(newDate);
-    setSelectedExtendDate(`${years}Y`)
-  }
+    setSelectedExtendDate(`${years}Y`);
+  };
 
-  useEffect(()=> {
-    async function getFeesInEth (address: string) {
-      setFeesInEth(await tokenLockerContract?.getFeesInETH(address))
+  useEffect(() => {
+    async function getFeesInEth(address: string) {
+      setFeesInEth(await tokenLockerContract?.getFeesInETH(address));
     }
     if (lpTokenAddress) {
-      getFeesInEth(lpTokenAddress)
+      getFeesInEth(lpTokenAddress);
     }
-  }, [lpTokenAddress])
-
-  const connectWallet = () => {
-    if (!isSupportedNetwork) {
-      toggleNetworkSelectionModal();
-    } else {
-      toggleWalletModal();
-    }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lpTokenAddress]);
 
   // @Hassaan: Approval already works
   const onAttemptToApprove = async () => {
@@ -168,12 +184,19 @@ const LockV2Liquidity: React.FC = () => {
   };
 
   const onLock = async () => {
-    if (!pairContract || !lpToken || !library || !deadline || v2IsLoading || !tokenLockerContract) {
+    if (
+      !pairContract ||
+      !lpToken ||
+      !library ||
+      !deadline ||
+      v2IsLoading ||
+      !tokenLockerContract
+    ) {
       setErrorMsg(t('missingdependencies'));
       throw new Error(t('missingdependencies'));
     }
     const liquidityAmount = parsedAmount;
-    
+
     if (!liquidityAmount) {
       setErrorMsg(t('missingliquidity'));
       throw new Error(t('missingliquidity'));
@@ -187,8 +210,8 @@ const LockV2Liquidity: React.FC = () => {
         parsedAmount.raw.toString(),
         unlockDate.unix(),
         false,
-        ethers.constants.AddressZero
-      )
+        ethers.constants.AddressZero,
+      );
       const gasEstimateWithMargin = calculateGasMargin(gasEstimate);
       const response = await tokenLockerContract?.lockToken(
         lpTokenAddress,
@@ -196,17 +219,18 @@ const LockV2Liquidity: React.FC = () => {
         parsedAmount.raw.toString(),
         unlockDate.unix(),
         false,
-        ethers.constants.AddressZero, {
+        ethers.constants.AddressZero,
+        {
           value: feesInEth,
-          gasLimit: gasEstimateWithMargin
-        }
-      )
+          gasLimit: gasEstimateWithMargin,
+        },
+      );
 
-      setTxHash(response.hash)
+      setTxHash(response.hash);
       setAttemptingTxn(false);
       setTxPending(true);
 
-      const receipt = await response.wait(); 
+      const receipt = await response.wait();
       console.log(receipt);
       const depositId = await tokenLockerContract?.depositId();
       await updateUserLiquidityLock(V2_FACTORY_ADDRESSES[chainId], depositId);
@@ -262,39 +286,38 @@ const LockV2Liquidity: React.FC = () => {
             )
           }
           pendingText=''
-          modalContent={
-            txPending
-              ? 'Submitting'
-              : 'Success'
-          }
+          modalContent={txPending ? 'Submitting' : 'Success'}
         />
       )}
       <Box p={2} className='bg-secondary2 rounded-md'>
         <Box mb={2}>
-          <FormControl fullWidth variant="outlined">
+          <FormControl fullWidth variant='outlined'>
             <InputLabel>LP Token</InputLabel>
             <Select
               className='selectWrapper'
               disabled={v2IsLoading}
               value={lpTokenAddress}
               onChange={handleChange}
-              label="LP Token"
-              renderValue={() => `${lpToken?.token0?.symbol}/${lpToken?.token1?.symbol}`}
+              label='LP Token'
+              renderValue={() =>
+                `${lpToken?.token0?.symbol}/${lpToken?.token1?.symbol}`
+              }
             >
               <MenuItem value=''>
                 <em>None</em>
               </MenuItem>
               {allV2PairsWithLiquidity.map((pair) => (
-                <MenuItem key={pair.liquidityToken.address} value={pair.liquidityToken.address}>{pair.liquidityToken.address}</MenuItem>
+                <MenuItem
+                  key={pair.liquidityToken.address}
+                  value={pair.liquidityToken.address}
+                >
+                  {pair.liquidityToken.address}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
         </Box>
-        <Box
-          className={`inputWrapper${
-            errorAmount ? ' errorInput' : ''
-          }`}
-        >
+        <Box className={`inputWrapper${errorAmount ? ' errorInput' : ''}`}>
           <NumericalInput
             value={amount}
             align='left'
@@ -306,10 +329,12 @@ const LockV2Liquidity: React.FC = () => {
         </Box>
         {errorAmount && (
           <small className='text-error'>
-            {t('insufficientBalance', { symbol: `${lpToken?.token0?.symbol}/${lpToken?.token1?.symbol}` })}
+            {t('insufficientBalance', {
+              symbol: `${lpToken?.token0?.symbol}/${lpToken?.token1?.symbol}`,
+            })}
           </small>
         )}
-        {userPoolBalance &&
+        {userPoolBalance && (
           <Box className='flex justify-between items-center flex-wrap' mt={1}>
             <Box display='flex'>
               <small>{`${t('available')}:`}</small>
@@ -318,50 +343,116 @@ const LockV2Liquidity: React.FC = () => {
               </Box>
             </Box>
             <Box className='flex flex-wrap'>
-              <Box className={`durationWrapper${selectedAmountPercentage === '25' ? ' selectedDurationWrapper' : ''}`} onClick={() => onPercentageClick('25')}>
+              <Box
+                className={`durationWrapper${
+                  selectedAmountPercentage === '25'
+                    ? ' selectedDurationWrapper'
+                    : ''
+                }`}
+                onClick={() => onPercentageClick('25')}
+              >
                 <small>25%</small>
               </Box>
-              <Box className={`durationWrapper${selectedAmountPercentage === '50' ? ' selectedDurationWrapper' : ''}`} ml={1} onClick={() => onPercentageClick('50')}>
+              <Box
+                className={`durationWrapper${
+                  selectedAmountPercentage === '50'
+                    ? ' selectedDurationWrapper'
+                    : ''
+                }`}
+                ml={1}
+                onClick={() => onPercentageClick('50')}
+              >
                 <small>50%</small>
               </Box>
-              <Box className={`durationWrapper${selectedAmountPercentage === '75' ? ' selectedDurationWrapper' : ''}`} ml={1} onClick={() => onPercentageClick('75')}>
+              <Box
+                className={`durationWrapper${
+                  selectedAmountPercentage === '75'
+                    ? ' selectedDurationWrapper'
+                    : ''
+                }`}
+                ml={1}
+                onClick={() => onPercentageClick('75')}
+              >
                 <small>75%</small>
               </Box>
-              <Box className={`durationWrapper${selectedAmountPercentage === '100' ? ' selectedDurationWrapper' : ''}`} ml={1} onClick={() => onPercentageClick('100')}>
+              <Box
+                className={`durationWrapper${
+                  selectedAmountPercentage === '100'
+                    ? ' selectedDurationWrapper'
+                    : ''
+                }`}
+                ml={1}
+                onClick={() => onPercentageClick('100')}
+              >
                 <small>{t('max')}</small>
               </Box>
             </Box>
           </Box>
-        }
+        )}
         <Box mt={2.5}>
           <TextField
             fullWidth
-            label="Lock until"
-            type="datetime-local"
+            label='Lock until'
+            type='datetime-local'
             value={unlockDate.format('YYYY-MM-DDTHH:mm')}
-            onChange={(e)=> handleChangeDate(e.target.value)}
+            onChange={(e) => handleChangeDate(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
           />
         </Box>
         <Box className='flex flex-wrap items-center flex-wrap' mt={1}>
-          <Box className={`durationWrapper${selectedExtendDate === '3M' ? ' selectedDurationWrapper' : ''}`} onClick={() => addMonths(3)}>
+          <Box
+            className={`durationWrapper${
+              selectedExtendDate === '3M' ? ' selectedDurationWrapper' : ''
+            }`}
+            onClick={() => addMonths(3)}
+          >
             <small>3M</small>
           </Box>
-          <Box className={`durationWrapper${selectedExtendDate === '6M' ? ' selectedDurationWrapper' : ''}`} onClick={() => addMonths(6)} ml={1}>
+          <Box
+            className={`durationWrapper${
+              selectedExtendDate === '6M' ? ' selectedDurationWrapper' : ''
+            }`}
+            onClick={() => addMonths(6)}
+            ml={1}
+          >
             <small>6M</small>
           </Box>
-          <Box className={`durationWrapper${selectedExtendDate === '9M' ? ' selectedDurationWrapper' : ''}`} onClick={() => addMonths(9)} ml={1}>
+          <Box
+            className={`durationWrapper${
+              selectedExtendDate === '9M' ? ' selectedDurationWrapper' : ''
+            }`}
+            onClick={() => addMonths(9)}
+            ml={1}
+          >
             <small>9M</small>
           </Box>
-          <Box className={`durationWrapper${selectedExtendDate === '1Y' ? ' selectedDurationWrapper' : ''}`} onClick={() => addYears(1)} ml={1}>
+          <Box
+            className={`durationWrapper${
+              selectedExtendDate === '1Y' ? ' selectedDurationWrapper' : ''
+            }`}
+            onClick={() => addYears(1)}
+            ml={1}
+          >
             <small>1Y</small>
           </Box>
-          <Box className={`durationWrapper${selectedExtendDate === '2Y' ? ' selectedDurationWrapper' : ''}`} onClick={() => addYears(2)} ml={1}>
+          <Box
+            className={`durationWrapper${
+              selectedExtendDate === '2Y' ? ' selectedDurationWrapper' : ''
+            }`}
+            onClick={() => addYears(2)}
+            ml={1}
+          >
             <small>2Y</small>
           </Box>
-          <Box className={`durationWrapper${selectedExtendDate === '5Y' ? ' selectedDurationWrapper' : ''}`} onClick={() => addYears(5)} ml={1}>
+          <Box
+            className={`durationWrapper${
+              selectedExtendDate === '5Y' ? ' selectedDurationWrapper' : ''
+            }`}
+            onClick={() => addYears(5)}
+            ml={1}
+          >
             <small>5Y</small>
           </Box>
         </Box>
