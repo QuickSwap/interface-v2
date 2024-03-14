@@ -57,6 +57,7 @@ import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
 import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
+import TokenLockerABI from 'constants/abis/token-locker-abi.json';
 import UNINFTPosMan from 'constants/abis/uni-v3/nft-position-manager.json';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import UNIPILOT_VAULT_ABI from 'constants/abis/unipilot-vault.json';
@@ -73,6 +74,7 @@ import STEER_DUAL_STAKING_ABI from 'constants/abis/steer-staking-dual.json';
 import SteerPeripheryABI from 'constants/abis/steer-periphery.json';
 import SteerVaultABI from 'constants/abis/steer-vault.json';
 import SteerVaultRegistryABI from 'constants/abis/steer-vault-registry.json';
+import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
@@ -143,6 +145,10 @@ export function useContracts<T extends Contract = Contract>(
     withSignerIfPossible,
     account,
   ]) as (T | null)[];
+}
+
+export function useTokenLockerContract(chainId: ChainId, lockContractAddress?: string): Contract | null {
+  return useContract(lockContractAddress ?? V2_FACTORY_ADDRESSES[chainId], TokenLockerABI, true);
 }
 
 export function useLairContract(chainId?: ChainId): Contract | null {
