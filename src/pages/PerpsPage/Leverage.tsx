@@ -10,6 +10,7 @@ import {
   useCollateral,
   useDeposit,
 } from '@orderly.network/hooks';
+import AssetModal from '../../components/AssetModal';
 export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
   const [tokenSymbol, setTokenSymbol] = useState<string | undefined>();
   const [orderType, setOrderType] = useState<string | undefined>('limit');
@@ -35,7 +36,8 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const collateral = useCollateral();
   return (
     <Flex direction='column' align='center' justify='center'>
       <Box
@@ -49,7 +51,6 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         {windowWidth > 768 && (
           <Flex direction='row' justify='between'>
             <Flex
-
               direction={'column'}
               align={'start'}
               gap='3'
@@ -83,7 +84,14 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
             >
               <Button
                 variant='outline'
-                style={{ color: '#B64FFF', borderColor: '#B64FFF' }}
+                style={{
+                  color: '#B64FFF',
+                  borderColor: '#B64FFF',
+                  cursor: 'pointer',
+                }}
+                onClick={() => {
+                  setModalOpen(true);
+                }}
               >
                 Manage
               </Button>
@@ -240,8 +248,15 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
             fontSize: '12px',
           }}
         >
-          <Text style={{ color: ' #61657a' }}>Available 0.00 USDC</Text>
-          <Text style={{ color: '#B64FFF' }}>Deposit</Text>
+          <Text style={{ color: ' #61657a' }}>
+            Available {collateral.availableBalance} USDC
+          </Text>
+          <Text
+            style={{ color: '#B64FFF', cursor: 'pointer' }}
+            onClick={() => setModalOpen(true)}
+          >
+            Deposit
+          </Text>
         </Flex>
         <Flex
           direction='row'
@@ -497,6 +512,11 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           Connect Wallet
         </Button>
       </Box>
+      <AssetModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        modalType={'deposit'}
+      />
     </Flex>
   );
 };

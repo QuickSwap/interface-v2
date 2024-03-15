@@ -135,7 +135,7 @@ export const Layout = () => {
             }}
           >
             {/* Replace this with your Orderbook component */}
-            <OrderbookV2 />
+            {/*<OrderbookV2 />*/}
           </div>
         </div>
         <div className='leverage'>
