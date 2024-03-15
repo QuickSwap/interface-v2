@@ -447,8 +447,13 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     const tx = await deposit.deposit();
                   }
                 }}
+                // onClick={() => {
+                //   console.log('Deposit Working');
+                // }}
               >
-                {Number(deposit.allowance) < Number(depositAmount) ? 'Approve' : 'Deposit'}
+                {Number(deposit.allowance) < Number(depositAmount)
+                  ? 'Approve'
+                  : 'Deposit'}
               </Button>
             ) : (
               <Button
