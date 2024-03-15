@@ -25,141 +25,164 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
     srcToken: token?.symbol,
     srcChainId: Number(chainId),
   });
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <Flex direction='column' align='center' justify='center'>
       <Box
         style={{
           width: 'fit-content',
-          height: 600,
+          height: 'max-content',
           backgroundColor: '#12131a',
           border: '1px solid  #1b1e29',
         }}
       >
-        <Flex direction='row' justify='between'>
-          <Flex
-            direction={'column'}
-            align={'start'}
-            gap='3'
-            style={{ margin: '10px 15px' }}
-          >
-            <Text
-              style={{
-                fontSize: '12px',
-                fontFamily: 'Inter',
-                fontWeight: '500',
-                color: '#61657a',
-              }}
+        {windowWidth > 768 && (
+          <Flex direction='row' justify='between'>
+            <Flex
+
+              direction={'column'}
+              align={'start'}
+              gap='3'
+              style={{ margin: '10px 15px' }}
             >
-              Balance
-            </Text>
-            <Text
-              style={{
-                fontSize: '12px',
-                fontFamily: 'Inter',
-                fontWeight: '500',
-                color: '#61657a',
-              }}
+              <Text
+                style={{
+                  fontSize: '12px',
+                  fontFamily: 'Inter',
+                  fontWeight: '500',
+                  color: '#61657a',
+                }}
+              >
+                Balance
+              </Text>
+              <Text
+                style={{
+                  fontSize: '12px',
+                  fontFamily: 'Inter',
+                  fontWeight: '500',
+                  color: '#61657a',
+                }}
+              >
+                {deposit?.balance} {token?.symbol}
+              </Text>
+            </Flex>
+            <Flex
+              direction='row'
+              align='center'
+              style={{ marginRight: '15px' }}
             >
-              {deposit?.balance} {token?.symbol}
-            </Text>
+              <Button
+                variant='outline'
+                style={{ color: '#B64FFF', borderColor: '#B64FFF' }}
+              >
+                Manage
+              </Button>
+              <img
+                src={Arrow}
+                width='16'
+                height='16'
+                style={{ margin: '5px 0 5px 16px' }}
+              />
+            </Flex>
           </Flex>
-          <Flex direction='row' align='center' style={{ marginRight: '15px' }}>
-            <Button
-              variant='outline'
-              style={{ color: '#B64FFF', borderColor: '#B64FFF' }}
-            >
-              Manage
-            </Button>
-            <img
-              src={Arrow}
-              width='16'
-              height='16'
-              style={{ margin: '5px 0 5px 16px' }}
+        )}
+        {windowWidth > 768 && (
+          <div>
+            <Container
+              style={{
+                width: 220,
+                height: 0.5,
+                backgroundColor: '#696C80',
+                margin: '10px 15px',
+              }}
             />
-          </Flex>
-        </Flex>
-        <Container
-          style={{
-            width: 300,
-            height: 0.5,
-            backgroundColor: '#696C80',
-            margin: '10px 15px',
-          }}
-        />
-        <Container
-          style={{
-            width: 300,
-            height: 8,
-            borderRadius: '8px',
-            backgroundImage:
-              'linear-gradient(to right, #24403a, #3f3c2f 48%, #402230)',
-            margin: '0px 15px',
-          }}
-        />
-        <Flex direction='row' justify='between'>
-          <Flex
-            direction={'column'}
-            align={'start'}
-            gap='3'
-            style={{ margin: '10px 15px' }}
-          >
-            <Text
+
+            <Container
               style={{
-                fontSize: '12px',
-                fontFamily: 'Inter',
-                fontWeight: '500',
-                color: '#61657a',
+                width: 220,
+                height: 8,
+                borderRadius: '8px',
+                backgroundImage:
+                  'linear-gradient(to right, #24403a, #3f3c2f 48%, #402230)',
+                margin: '0px 15px',
               }}
-            >
-              Account Leverage
-            </Text>
-            <Text
+            />
+            <Flex direction='row' justify='between'>
+              <Flex
+                direction={'column'}
+                align={'start'}
+                gap='3'
+                style={{ margin: '10px 15px' }}
+              >
+                <Text
+                  style={{
+                    fontSize: '12px',
+                    fontFamily: 'Inter',
+                    fontWeight: '500',
+                    color: '#61657a',
+                  }}
+                >
+                  Account Leverage
+                </Text>
+                <Text
+                  style={{
+                    fontSize: '12px',
+                    fontFamily: 'Inter',
+                    fontWeight: '500',
+                    color: '#61657a',
+                  }}
+                >
+                  0.00x/-x
+                </Text>
+              </Flex>
+              <Flex
+                direction={'column'}
+                align={'end'}
+                gap='3'
+                style={{ margin: '10px 15px' }}
+              >
+                <Text
+                  style={{
+                    fontSize: '12px',
+                    fontFamily: 'Inter',
+                    fontWeight: '500',
+                    color: '#61657a',
+                  }}
+                >
+                  Margin Ratio
+                </Text>
+                <Text
+                  style={{
+                    fontSize: '12px',
+                    fontFamily: 'Inter',
+                    fontWeight: '500',
+                    color: '#61657a',
+                  }}
+                >
+                  100%
+                </Text>
+              </Flex>
+            </Flex>
+            <Container
               style={{
-                fontSize: '12px',
-                fontFamily: 'Inter',
-                fontWeight: '500',
-                color: '#61657a',
+                width: 220,
+                height: 0.5,
+                backgroundColor: '#696C80',
+                margin: '10px 15px',
               }}
-            >
-              0.00x/-x
-            </Text>
-          </Flex>
-          <Flex
-            direction={'column'}
-            align={'end'}
-            gap='3'
-            style={{ margin: '10px 15px' }}
-          >
-            <Text
-              style={{
-                fontSize: '12px',
-                fontFamily: 'Inter',
-                fontWeight: '500',
-                color: '#61657a',
-              }}
-            >
-              Margin Ratio
-            </Text>
-            <Text
-              style={{
-                fontSize: '12px',
-                fontFamily: 'Inter',
-                fontWeight: '500',
-                color: '#61657a',
-              }}
-            >
-              100%
-            </Text>
-          </Flex>
-        </Flex>
-        <Container
-          style={{
-            width: 300,
-            height: 0.5,
-            backgroundColor: '#696C80',
-            margin: '10px 15px',
-          }}
-        />
+            />
+          </div>
+        )}
         <Flex
           direction='row'
           justify='center'
@@ -169,7 +192,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         >
           <Box
             style={{
-              width: 149,
+              width: 100,
               height: 36,
               padding: '0 43px',
               borderRadius: '8px',
@@ -188,7 +211,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           </Box>
           <Box
             style={{
-              width: 149,
+              width: 100,
               height: 36,
               padding: '0 43px',
               borderRadius: '8px',
@@ -256,7 +279,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           justify='between'
           align='center'
           style={{
-            width: 300,
+            width: 220,
             height: 36,
             backgroundColor: '#1b1e29',
             margin: '16px 15px',
@@ -295,7 +318,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           justify='between'
           align='center'
           style={{
-            width: 300,
+            width: 220,
             height: 36,
             backgroundColor: '#1b1e29',
             margin: '16px 15px',
@@ -416,7 +439,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           justify='between'
           align='center'
           style={{
-            width: 300,
+            width: 220,
             height: 36,
             backgroundColor: '#1b1e29',
             margin: '16px 15px',
@@ -434,7 +457,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         </Flex>
         <Container
           style={{
-            width: 300,
+            width: 220,
             height: 0.5,
             backgroundColor: '#696C80',
             margin: '10px 15px',
@@ -462,7 +485,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         </Flex>
         <Button
           style={{
-            width: 300,
+            width: 220,
             height: 40,
             margin: '16px 15px',
             padding: '11px 100px 12px',
