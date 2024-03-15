@@ -17,7 +17,7 @@ export const Layout = () => {
   const handleNavItemClick = (item) => {
     setSelectedNavItem(item);
   };
-  
+
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
@@ -31,7 +31,6 @@ export const Layout = () => {
       <div className='graph_footer'>
         <div className='graph_orderbook'>
           <div className='graph'>
-
             <div className='desktop-graph-navbar'>
               <GraphHeader setTokenName={setToken} />
             </div>
@@ -41,7 +40,10 @@ export const Layout = () => {
               <div onClick={() => handleNavItemClick('Data')}>Data</div>
             </nav>
             {selectedNavItem === 'Chart' && (
-              <AdvancedChartWrapper token={token} widgetProps={{ height: '430' }} />
+              <AdvancedChartWrapper
+                token={token}
+                widgetProps={{ height: '430' }}
+              />
             )}
             {selectedNavItem === 'Trade' && (
               <div className='nav-trade'>
