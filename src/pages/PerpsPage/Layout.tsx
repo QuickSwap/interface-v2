@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import './Layout.css';
 import { AdvancedChartWrapper } from './AdvancedChartWrapper';
 import { OrderbookV2 } from './OrderbookV2';
-import { Leverage } from './Leverage';
 import { Market } from './Market';
 import './Layout.css';
 import { GraphHeader } from './GraphHeader';
