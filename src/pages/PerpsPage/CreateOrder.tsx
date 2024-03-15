@@ -5,10 +5,10 @@ import { Button, Flex, Heading, Select, TextField } from '@radix-ui/themes';
 import { FC } from 'react';
 
 export const CreateOrder: FC = () => {
-  const { onSubmit } = useOrderEntry('PERP_ETH_USDC', OrderSide.BUY, false);
+  const { onSubmit } = useOrderEntry('PERP_DOGE_USDC', OrderSide.BUY, false);
   const {
     helper: { calculate, validator },
-  } = useOrderEntry('PERP_ETH_USDC', OrderSide.BUY, false);
+  } = useOrderEntry('PERP_DOGE_USDC', OrderSide.BUY, false);
 
   const onFormSubmit: React.FormEventHandler<HTMLFormElement> = async (
     event,
@@ -41,18 +41,18 @@ export const CreateOrder: FC = () => {
               <TextField.Input
                 type='number'
                 step='0.1'
-                min='2000'
+                min='0'
                 name='order_price'
               />
             </TextField.Root>
           </label>
 
           <label>
-            Amount (ETH):
+            Amount (DOGE):
             <TextField.Root style={{ gridArea: 'input' }}>
               <TextField.Input
                 type='number'
-                step='0.01'
+                step='0.00001'
                 min='0'
                 name='order_quantity'
               />
@@ -90,7 +90,7 @@ export const CreateOrder: FC = () => {
           <input
             type='text'
             name='symbol'
-            defaultValue='PERP_ETH_USDC'
+            defaultValue='PERP_DOGE_USDC'
             style={{ display: 'none' }}
           />
 

@@ -31,12 +31,19 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
     account.setAddress(quickSwapAccount, {
-      provider: window.ethereum,
+      provider: library.provider,
       chain: {
         id: chainId,
       },
     });
-  }, [library, account]);
+    console.log('Account is', account);
+    console.log('library is', library);
+    console.log('chainId is', chainId);
+    console.log('state.status is', state.status);
+    console.log('[Account] AccountStatusEnum.NotSignedIn', AccountStatusEnum.NotSignedIn);
+    console.log('[Account] AccountStatusEnum.DisabledTrading', AccountStatusEnum.DisabledTrading);
+    console.log('[Account] AccountStatusEnum.NotConnected', AccountStatusEnum.NotConnected);
+  }, [library, account, quickSwapAccount, chainId]);
 
   return (
     <CustomModal

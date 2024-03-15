@@ -24,7 +24,6 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
     decimals: token?.decimals,
     srcToken: token?.symbol,
     srcChainId: Number(chainId),
-    depositorAddress: quickSwapAccount,
   });
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   useEffect(() => {

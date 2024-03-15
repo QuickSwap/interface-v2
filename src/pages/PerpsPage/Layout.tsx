@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { AdvancedChart } from 'react-tradingview-embed';
+import './Layout.css';
+import { AdvancedChartWrapper } from './AdvancedChartWrapper';
 import { OrderbookV2 } from './OrderbookV2';
-import { Leverage } from './Leverage';
 import { Market } from './Market';
 import './Layout.css';
 import { GraphHeader } from './GraphHeader';
+import { Leverage } from './Leverage';
+import './Layout.css';
 
 export const Layout = () => {
+  const [token, setToken] = useState('PERP_ETH_USDC');
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState(null);
   const [selectedNavItem, setSelectedNavItem] = useState('Chart');
@@ -14,7 +17,7 @@ export const Layout = () => {
   const handleNavItemClick = (item) => {
     setSelectedNavItem(item);
   };
-
+  
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
@@ -28,8 +31,9 @@ export const Layout = () => {
       <div className='graph_footer'>
         <div className='graph_orderbook'>
           <div className='graph'>
+
             <div className='desktop-graph-navbar'>
-              <GraphHeader />
+              <GraphHeader setTokenName={setToken} />
             </div>
             <nav className='mobile-graph-navbar'>
               <div onClick={() => handleNavItemClick('Chart')}>Chart</div>
@@ -37,7 +41,7 @@ export const Layout = () => {
               <div onClick={() => handleNavItemClick('Data')}>Data</div>
             </nav>
             {selectedNavItem === 'Chart' && (
-              <AdvancedChart widgetProps={{ height: '430' }} />
+              <AdvancedChartWrapper token={token} widgetProps={{ height: '430' }} />
             )}
             {selectedNavItem === 'Trade' && (
               <div className='nav-trade'>
