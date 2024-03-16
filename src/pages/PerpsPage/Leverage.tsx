@@ -8,14 +8,17 @@ import {
   useAccount,
   useChains,
   useCollateral,
+  useOrderEntry,
   useDeposit,
 } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
+import { OrderSide } from '@orderly.network/types';
 export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
   const [tokenSymbol, setTokenSymbol] = useState<string | undefined>();
   const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
-  const [chains, { findByChainId }] = useChains('testnet');
+  const [chains, { findByChainId }] = useChains('mainnet');
+
   const { account, state } = useAccount();
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
@@ -36,8 +39,16 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+  const { onSubmit } = useOrderEntry('PERP_DOGE_USDC', OrderSide.BUY, false);
   const [modalOpen, setModalOpen] = useState(false);
   const collateral = useCollateral();
+  const [order, setOrder] = useState<any>({
+    order_price: '',
+    order_quantity: '',
+    order_type: 'LIMIT',
+    side: 'BUY',
+    order_symbol: 'PERP_ETH_USDC',
+  });
   return (
     <Flex direction='column' align='center' justify='center'>
       <Box
@@ -207,13 +218,14 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
               fontSize: '12px',
               color: '#61657a',
               fontFamily: 'Inter',
-              backgroundColor: '#1b1e29',
+              backgroundColor: order.side === 'BUY' ? '#B64FFF' : '#1b1e29',
               fontWeight: 500,
               textAlign: 'center',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
             }}
+            onClick={() => setOrder({ ...order, side: 'BUY' })}
           >
             Buy/Long
           </Box>
@@ -223,7 +235,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
               height: 36,
               padding: '0 43px',
               borderRadius: '8px',
-              backgroundColor: '#1b1e29',
+              backgroundColor: order.side === 'SELL' ? '#B64FFF' : '#1b1e29',
               fontSize: '12px',
               fontWeight: 500,
               color: '#61657a',
@@ -233,6 +245,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
               justifyContent: 'center',
               alignItems: 'center',
             }}
+            onClick={() => setOrder({ ...order, side: 'SELL' })}
           >
             Sell/Short
           </Box>
@@ -271,18 +284,18 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           }}
         >
           <Text
-            onClick={() => setOrderType('limit')}
+            onClick={() => setOrder({ ...order, order_type: 'LIMIT' })}
             style={{
               cursor: 'pointer',
-              color: orderType === 'limit' ? '#fff' : '#61657a',
+              color: order.order_type === 'LIMIT' ? '#fff' : '#61657a',
             }}
           >
             Limit
           </Text>
           <Text
-            onClick={() => setOrderType('market')}
+            onClick={() => setOrder({ ...order, order_type: 'MARKET' })}
             style={{
-              color: orderType === 'market' ? '#fff' : '#61657a',
+              color: order.order_type === 'MARKET' ? '#fff' : '#61657a',
               cursor: 'pointer',
             }}
           >
@@ -309,9 +322,13 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
         >
           <Text>Price</Text>
           <div>
-            {orderType === 'limit' ? (
+            {order.order_type === 'LIMIT' ? (
               <input
                 min={0}
+                value={order.order_price}
+                onChange={(e) =>
+                  setOrder({ ...order, order_price: e.target.value })
+                }
                 style={{
                   width: 20,
                   marginRight: '2px',
@@ -350,6 +367,10 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
           <div>
             <input
               min={0}
+              value={order.order_quantity}
+              onChange={(e) =>
+                setOrder({ ...order, order_quantity: e.target.value })
+              }
               style={{
                 width: 20,
                 marginRight: '2px',
@@ -508,8 +529,12 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
             backgroundColor: '#B64FFF',
             cursor: 'pointer',
           }}
+          onClick={async () => {
+            console.log(order);
+            await onSubmit(order);
+          }}
         >
-          Connect Wallet
+          Create Order
         </Button>
       </Box>
       <AssetModal
