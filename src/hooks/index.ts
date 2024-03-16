@@ -20,6 +20,7 @@ import {
   walletConnectConnection,
   unstoppableDomainsConnection,
   binanceWalletConnection,
+  enkryptConnection,
 } from 'connectors';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
 import {
@@ -101,6 +102,8 @@ export function useGetConnection() {
           return phantomConnection;
         case ConnectionType.TRUSTWALLET:
           return trustWalletConnection;
+        case ConnectionType.ENKRYPT:
+          return enkryptConnection;
         case ConnectionType.BITGET:
           return bitgetConnection;
         case ConnectionType.BLOCKWALLET:

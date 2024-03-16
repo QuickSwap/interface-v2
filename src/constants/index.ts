@@ -287,6 +287,7 @@ export const GlobalConst = {
   walletName: {
     METAMASK: 'Metamask',
     TRUST_WALLET: 'TrustWallet',
+    ENKRYPT: 'Enkrypt',
     PHANTOM_WALLET: 'Phantom',
     CYPHERD: 'CypherD',
     BLOCKWALLET: 'BlockWallet',
