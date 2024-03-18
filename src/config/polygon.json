@@ -87,5 +87,6 @@
   },
   "ichi": {
     "available": true
-  }
+  },
+  "maxHops": 3
 }
