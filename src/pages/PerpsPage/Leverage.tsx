@@ -13,7 +13,8 @@ import {
   useDeposit,
 } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
-import { OrderSide } from '@orderly.network/types';
+import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
+
 
 export const Leverage = ({ perpToken, orderQuantity }) => {
   const [orderType, setOrderType] = useState<string | undefined>('limit');
