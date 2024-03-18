@@ -15,8 +15,7 @@ import {
 import AssetModal from '../../components/AssetModal';
 import { OrderSide } from '@orderly.network/types';
 
-export const Leverage = ({ perpToken }) => {
-  const [tokenSymbol, setTokenSymbol] = useState<string | undefined>();
+export const Leverage = ({ perpToken, orderQuantity }) => {
   const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');
@@ -332,7 +331,7 @@ export const Leverage = ({ perpToken }) => {
                   setOrder({ ...order, order_price: e.target.value })
                 }
                 style={{
-                  width: 20,
+                  width: 30,
                   marginRight: '2px',
                   color: '#696c80',
                   border: 'none',
@@ -374,7 +373,7 @@ export const Leverage = ({ perpToken }) => {
                 setOrder({ ...order, order_quantity: e.target.value })
               }
               style={{
-                width: 20,
+                width: 30,
                 marginRight: '2px',
                 color: '#696c80',
                 border: 'none',

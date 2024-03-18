@@ -14,7 +14,7 @@ interface MarketData {
   '24h_open': number;
   '24h_close': number;
   '24h_high': number;
-  '24h_low': number;    
+  '24h_low': number;
   '24h_volume': number;
   '24h_amount': number;
   '24h_volumn': number;
@@ -23,15 +23,22 @@ interface MarketData {
 
 export const GraphHeader: React.FC = ({ setTokenName }) => {
   const { data } = useMarketsStream();
-  const [token, setToken] = useState<MarketData | null>(null);
+  const [token, setToken] = useState<MarketData | null>();
   const handleTokenSelect = (token: MarketData) => {
     setToken(token);
     setTokenName(token.symbol);
   };
-
   useEffect(() => {
-    data && setToken(data[0]);
+    if (data && data.length > 0) {
+      const perpEthUsdcToken = data.find(
+        (token) => token.symbol === 'PERP_ETH_USDC',
+      );
+      if (perpEthUsdcToken) {
+        setToken(perpEthUsdcToken);
+      }
+    }
   }, []);
+
 
   return (
     <div style={{ overflowX: 'auto' }}>

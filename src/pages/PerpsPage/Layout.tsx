@@ -14,6 +14,8 @@ export const Layout = () => {
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState(null);
   const [selectedNavItem, setSelectedNavItem] = useState('Chart');
+  const [orderQuantity, setOrderQuantity] = useState(['']);
+  console.log('orderQuantity', orderQuantity);
   const handleNavItemClick = (item) => {
     setSelectedNavItem(item);
   };
@@ -76,7 +78,7 @@ export const Layout = () => {
             >
               Orderbook
             </div>
-            <OrderbookV2 token={token} />
+            <OrderbookV2 token={token} setOrderQuantity={setOrderQuantity} />
           </div>
         </div>
         <div className='kingFooter'>
@@ -141,12 +143,12 @@ export const Layout = () => {
         <div className='leverage'>
           {/* Leverage component */}
           <div style={{ border: '1px solid #61675a', padding: '10px' }}>
-            <Leverage perpToken={token} />
+            <Leverage perpToken={token} orderQuantity={orderQuantity[0]} />
           </div>
         </div>
       </div>
       <div className='other'>
-        <Leverage perpToken={token}></Leverage>
+        <Leverage perpToken={token} orderQuantity={orderQuantity[0]}></Leverage>
       </div>
       <div className='mobile_footer'>
         <div className='perp_footer'>

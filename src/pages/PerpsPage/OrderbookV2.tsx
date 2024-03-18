@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { OrderBook } from '@orderly.network/react';
 import { useOrderbookStream, useSymbolsInfo } from '@orderly.network/hooks';
 import '@orderly.network/react/dist/styles.css';
-export const OrderbookV2 = ({ token }) => {
+
+export const OrderbookV2 = ({ token, setOrderQuantity }) => {
   const [symbol, setSymbol] = useState('PERP_ETH_USDC');
   const config = useSymbolsInfo();
   const symbolInfo = config ? config[token] : {};
@@ -13,6 +14,10 @@ export const OrderbookV2 = ({ token }) => {
   ] = useOrderbookStream(token || 'PERP_ETH_USDC', undefined, {
     level: 7,
   });
+
+  const handleItemClick = (item) => {
+    setOrderQuantity(item);
+  };
 
   return (
     <div>
@@ -27,7 +32,7 @@ export const OrderbookV2 = ({ token }) => {
         base={symbolInfo('base')}
         quote={symbolInfo('quote')}
         isLoading={isLoading}
-        onItemClick={onItemClick}
+        onItemClick={handleItemClick}
         onDepthChange={onDepthChange}
         cellHeight={22}
       />
