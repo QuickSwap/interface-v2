@@ -6,14 +6,27 @@ import { Market } from './Market';
 import './Layout.css';
 import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
+import { useOrderStream } from '@orderly.network/hooks';
 import './Layout.css';
+import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 
+type Order = {
+  price: number;
+  quantity: number;
+  created_time: number;
+  order_id: number;
+  side: OrderSide;
+  type: OrderType;
+  status: OrderStatus;
+  executed: number;
+};
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState(null);
   const [selectedNavItem, setSelectedNavItem] = useState('Chart');
-
+  const [orderQuantity, setOrderQuantity] = useState(['']);
+  console.log('orderQuantity', orderQuantity);
   const handleNavItemClick = (item) => {
     setSelectedNavItem(item);
   };
@@ -21,11 +34,11 @@ export const Layout = () => {
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
-
   const handleSideChange = (e) => {
     setSelectedSide(e.target.value);
   };
-
+  const [o] = useOrderStream({ symbol: 'PERP_ETH_USDC' });
+  const orders = o as Order[] | null;
   return (
     <div className='container'>
       <div className='graph_footer'>
@@ -78,7 +91,7 @@ export const Layout = () => {
             >
               Orderbook
             </div>
-            <OrderbookV2 />
+            <OrderbookV2 token={token} setOrderQuantity={setOrderQuantity} />
           </div>
         </div>
         <div className='kingFooter'>
@@ -123,7 +136,30 @@ export const Layout = () => {
             )}
           </div>
           <div className='footer_data'>
-            <div>NotFound</div>
+            <div>Price</div>
+            <div>Quantity</div>
+            <div>CreatedAt</div>
+            <div>Side</div>
+            <div>Type</div>
+            <div>Status</div>
+            <div>Price</div>
+          </div>
+          <div className='orders'>
+            {orders && orders.length > 0 ? (
+              orders.map((order) => (
+                <div key={order?.order_id} className='order'>
+                  <div>{order?.price}</div>
+                  <div>{order?.quantity}</div>
+                  <div>{order?.created_time}</div>
+                  <div>{order?.side}</div>
+                  <div>{order?.type}</div>
+                  <div>{order?.status}</div>
+                  <div>{order?.executed}</div>
+                </div>
+              ))
+            ) : (
+              <div>No orders available</div>
+            )}
           </div>
         </div>
       </div>
@@ -143,12 +179,12 @@ export const Layout = () => {
         <div className='leverage'>
           {/* Leverage component */}
           <div style={{ border: '1px solid #61675a', padding: '10px' }}>
-            <Leverage />
+            <Leverage perpToken={token} orderQuantity={orderQuantity[0]} />
           </div>
         </div>
       </div>
       <div className='other'>
-        <Leverage></Leverage>
+        <Leverage perpToken={token} orderQuantity={orderQuantity[0]}></Leverage>
       </div>
       <div className='mobile_footer'>
         <div className='perp_footer'>

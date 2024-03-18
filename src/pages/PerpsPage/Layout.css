@@ -136,8 +136,8 @@
 }
 .footer_data {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
     height: 20vh;
     color: #ccced9;
     font-family: Inter;
@@ -160,7 +160,15 @@
 .orderbook-leverage-container {
     display: none;
 }
-
+footer_data_ul{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0px 10px;
+    list-style: none;
+    flex-direction:row;
+    align-items: center;
+}
 
 @media (max-width: 768px) {
     .container {
