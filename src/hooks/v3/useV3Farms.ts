@@ -451,7 +451,7 @@ export const useMerklFarms = () => {
                 0,
               ),
             almAPR: item?.meanAPR ?? 0,
-            label: 'QuickSwap',
+            label: item?.ammName,
           },
         ])
         .map((alm: any) => {
@@ -502,7 +502,10 @@ export const useMerklFarms = () => {
                   e.strategy.address.toLowerCase() ===
                   alm.almAddress.toLowerCase(),
               )?.strategy?.fees_apr ?? 0;
-          } else if (alm.label.includes('QuickSwap') && eternalFarmPoolAprs) {
+          } else if (
+            alm.label.toLowerCase().includes('quickswap') &&
+            eternalFarmPoolAprs
+          ) {
             poolAPR = eternalFarmPoolAprs[alm.almAddress.toLowerCase()] ?? 0;
           }
           return {

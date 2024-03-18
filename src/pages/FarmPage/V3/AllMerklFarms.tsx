@@ -263,8 +263,6 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           )?.title ?? '';
       }
       const farmType = alm.label.split(' ')[0];
-      const farmTypeReward =
-        farmType === 'QuickSwap' ? 'QuickswapAlgebra' : farmType;
       const poolRewards = selectedPool?.rewardsPerToken;
       const rewardTokenAddresses = poolRewards ? Object.keys(poolRewards) : [];
       const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
@@ -276,7 +274,9 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           const accumulatedRewards = item.breakdownOfAccumulated;
           return (
             accumulatedRewards &&
-            Object.keys(accumulatedRewards).includes(farmTypeReward)
+            Object.keys(accumulatedRewards).find((item) =>
+              item.includes(farmType),
+            )
           );
         });
       return {

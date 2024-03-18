@@ -47,7 +47,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const isICHI = !!farm.label.includes('Ichi');
   const isGamma = !!farm.label.includes('Gamma');
   const isDefiEdge = !!farm.label.includes('DefiEdge');
-  const isQuickswap = farm.label === 'QuickSwap';
+  const isQuickswap = farm.label.toLowerCase().includes('quickswap');
   const isSteer = !!farm.label.includes('Steer');
 
   const { loading: loadingICHI, vault: ichiPosition } = useICHIPosition(
@@ -222,8 +222,18 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     farm.rewards.map((reward: any) => reward.address),
   );
 
-  const farmTypeReward =
-    farmType === 'QuickSwap' ? 'QuickswapAlgebra' : farmType;
+  const rewardKey = useMemo(() => {
+    if (isQuickswap) {
+      if (selectedQSNFTId) {
+        return farmType + '_' + selectedQSNFTId;
+      }
+      return farmType;
+    }
+    if (farm?.almAddress) {
+      return farmType + '_' + farm.almAddress.toLowerCase();
+    }
+    return farmType;
+  }, [farm.almAddress, farmType, isQuickswap, selectedQSNFTId]);
 
   const rewardUSD = farm.rewards.reduce(
     (total: number, reward: any) =>
@@ -231,7 +241,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
       (rewardTokenPrices?.find(
         (item) => item.address.toLowerCase() === reward.address.toLowerCase(),
       )?.price ?? 0) *
-        reward.breakdownOfUnclaimed[farmTypeReward],
+        reward.breakdownOfUnclaimed[rewardKey],
     0,
   );
 
@@ -240,7 +250,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const isClaimable =
     farm.rewards.length > 0 &&
     farm.rewards.filter(
-      (reward: any) => reward.breakdownOfUnclaimed[farmTypeReward] > 0,
+      (reward: any) => reward.breakdownOfUnclaimed[rewardKey] > 0,
     ).length > 0 &&
     !claiming;
 
@@ -496,9 +506,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                     >
                       <CurrencyLogo currency={token} />
                       <small>
-                        {formatNumber(
-                          reward.breakdownOfUnclaimed[farmTypeReward],
-                        )}{' '}
+                        {formatNumber(reward.breakdownOfUnclaimed[rewardKey])}{' '}
                         {token?.symbol}
                       </small>
                     </Box>
