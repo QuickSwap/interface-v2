@@ -3,15 +3,18 @@ import { CurrencyAmount, Token } from '@uniswap/sdk-core';
 import { Pool } from 'v3lib/entities/pool';
 import { TickMath } from 'v3lib/utils/tickMath';
 import { BigNumber } from 'ethers';
-import React, { useCallback, useMemo, useState } from 'react';
-import { isAddress } from 'utils';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { formatNumber, isAddress } from 'utils';
 import Chart from 'react-apexcharts';
 import { Box } from '@material-ui/core';
 import '../styles/analytics.scss';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
+import Loader from 'components/Loader';
+import { getConfig } from 'config/index';
+import { exportToXLSX } from 'utils/exportToXLSX';
 
 const AnalyticsPairLiquidityChartV3: React.FC<{
   pairData: any;
@@ -193,12 +196,65 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
     }
   }, [zoom]);
 
+  const config = getConfig(chainId);
+  const networkName = config['networkName'];
+  const [xlsExported, setXLSExported] = useState(false);
+  const version = useAnalyticsVersion();
+
+  useEffect(() => {
+    if (xlsExported) {
+      const exportData = (formattedData ?? [])
+        .sort((item1: any, item2: any) => {
+          return item1.index > item2.index ? 1 : -1;
+        })
+        .map((item: any, ind: number) => {
+          const data: any = {
+            Index: item.index,
+          };
+          data[item.token0.symbol + ' Price'] =
+            formatNumber(item.price0) + ' ' + item.token1.symbol;
+          data[item.token1.symbol + ' Price'] =
+            formatNumber(item.price1) + ' ' + item.token0.symbol;
+          data[item.token0.symbol + ' Locked'] =
+            formatNumber(item.tvlToken0) + ' ' + item.token0.symbol;
+          data[item.token1.symbol + ' Locked'] =
+            formatNumber(item.tvlToken1) + ' ' + item.token1.symbol;
+          return data;
+        });
+
+      exportToXLSX(
+        exportData,
+        `Quickswap-${pairData?.token0?.symbol}_${pairData?.token1?.symbol}-Liquidity-${networkName}-${version}`,
+      );
+
+      setTimeout(() => {
+        setXLSExported(false);
+      }, 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xlsExported]);
+
   return (
     <Box position={'relative'} height='100%'>
       {loadingChartData ? (
         <Skeleton variant='rect' width='100%' height='100%' />
       ) : formattedData ? (
         <>
+          <Box
+            className={`bg-secondary1 flex items-center ${
+              xlsExported ? '' : 'cursor-pointer'
+            }`}
+            padding='4px 8px'
+            position='absolute'
+            top={-90}
+            right={0}
+            borderRadius={6}
+            onClick={() => {
+              if (!xlsExported) setXLSExported(true);
+            }}
+          >
+            {xlsExported ? <Loader /> : <small>{t('export')}</small>}
+          </Box>
           <Chart
             type={'bar'}
             height={275}

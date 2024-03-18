@@ -9,6 +9,8 @@ import {
   getChartDates,
   getYAXISValuesAnalytics,
   getFormattedPercent,
+  formatDateFromTimeStamp,
+  formatNumber,
 } from 'utils';
 import { AreaChart, ChartType, MixedChart, ColumnChart } from 'components';
 import { GlobalConst, GlobalData } from 'constants/index';
@@ -17,6 +19,9 @@ import AnalyticsPairLiquidityChartV3 from './AnalyticsPairLiquidityChartV3';
 import '../styles/analytics.scss';
 import { useActiveWeb3React } from 'hooks';
 import { useQuery } from '@tanstack/react-query';
+import Loader from 'components/Loader';
+import { getConfig } from 'config/index';
+import { exportToXLSX } from 'utils/exportToXLSX';
 
 const CHART_VOLUME = 0;
 const CHART_TVL = 1;
@@ -490,6 +495,113 @@ const AnalyticsPairChart: React.FC<{
     'Yesterday',
   ];
 
+  const config = getConfig(chainId);
+  const networkName = config['networkName'];
+  const [xlsExported, setXLSExported] = useState(false);
+
+  useEffect(() => {
+    if (xlsExported) {
+      let exportData;
+      if (chartIndexesAPYVision.includes(chartIndex)) {
+        exportData = apyChartCategories.map((item: any, ind: number) => {
+          const data: any = { Duration: item };
+          const apyChartItems = apyChartData ?? [];
+          apyChartItems.forEach((item: any) => {
+            data[item.name] = item?.data
+              ? (item.name !== 'V/R Ratio' && item.name !== 'Avg # Txns'
+                  ? '$'
+                  : '') +
+                item?.data[ind] +
+                (chartIndex === CHART_ASSET
+                  ? ' USD'
+                  : chartIndex === CHART_APY_IL
+                  ? ' %'
+                  : '')
+              : undefined;
+          });
+          return data;
+        });
+      } else {
+        exportData = (_chartData ?? [])
+          .sort((item1: any, item2: any) => {
+            return item1.date > item2.date ? 1 : -1;
+          })
+          .map((item: any) => {
+            if (chartIndex === CHART_VOLUME) {
+              return {
+                Date: formatDateFromTimeStamp(item.date, 'MMM DD, YYYY'),
+                Volume: `$${formatNumber(item.dailyVolumeUSD)}`,
+              };
+            }
+            if (chartIndex === CHART_TVL) {
+              return {
+                Date: formatDateFromTimeStamp(item.date, 'MMM DD, YYYY'),
+                TVL: `$${formatNumber(item.reserveUSD)}`,
+              };
+            }
+            if (chartIndex === CHART_FEES) {
+              return {
+                Date: formatDateFromTimeStamp(item.date, 'MMM DD, YYYY'),
+                Fees: `$${
+                  isV2
+                    ? formatNumber(
+                        Number(item.dailyVolumeUSD) *
+                          GlobalConst.utils.FEEPERCENT,
+                      )
+                    : formatNumber(item.feesUSD ?? '0')
+                }`,
+              };
+            }
+            if (chartIndex === CHART_POOL_FEE) {
+              return {
+                Date: formatDateFromTimeStamp(item.date, 'MMM DD, YYYY'),
+                Fee: `${Number(item.fee) / 10000}%`,
+              };
+            }
+            if (chartIndex === CHART_PRICE) {
+              return {
+                Date: formatDateFromTimeStamp(item.date, 'MMM DD, YYYY'),
+                Price: priceChartTokenIdx
+                  ? formatNumber(item.token1Price)
+                  : formatNumber(item.token0Price),
+              };
+            }
+            return {
+              Date: formatDateFromTimeStamp(item.date, 'MMM DD, YYYY'),
+            };
+          });
+      }
+
+      exportToXLSX(
+        exportData,
+        `Quickswap-${
+          chartIndex === CHART_PRICE && priceChartTokenIdx
+            ? pairData?.token1?.symbol
+            : pairData?.token0?.symbol
+        }_${
+          chartIndex === CHART_PRICE && priceChartTokenIdx
+            ? pairData?.token0?.symbol
+            : pairData?.token1?.symbol
+        }-${
+          _chartIndexesTexts[
+            chartIndexesAPYVision.includes(chartIndex)
+              ? chartIndex - 3
+              : chartIndex
+          ]
+        }${
+          chartIndexesAPYVision.includes(chartIndex)
+            ? ''
+            : `-${GlobalData.analytics.CHART_DURATION_TEXTS[durationIndex - 1]}`
+        }-${networkName}-${version}`,
+      );
+
+      setTimeout(() => {
+        setXLSExported(false);
+      }, 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xlsExported]);
+
   return (
     <>
       <ChartType
@@ -574,7 +686,19 @@ const AnalyticsPairChart: React.FC<{
           </Box>
           <Box className='flex flex-col items-end'>
             {chartIndex !== CHART_LIQUIDITY && (
-              <Box mt={1.5}>
+              <Box mt={1.5} className='flex flex-col items-end' gridGap={8}>
+                <Box
+                  className={`bg-secondary1 flex items-center ${
+                    xlsExported ? '' : 'cursor-pointer'
+                  }`}
+                  padding='4px 8px'
+                  borderRadius={6}
+                  onClick={() => {
+                    if (!xlsExported) setXLSExported(true);
+                  }}
+                >
+                  {xlsExported ? <Loader /> : <small>{t('export')}</small>}
+                </Box>
                 <ChartType
                   chartTypes={GlobalData.analytics.CHART_DURATIONS}
                   typeTexts={GlobalData.analytics.CHART_DURATION_TEXTS}
@@ -592,6 +716,20 @@ const AnalyticsPairChart: React.FC<{
         ) : (
           apyChartData && (
             <>
+              <Box margin='8px 12px 0 0' className='flex justify-end'>
+                <Box
+                  className={`bg-secondary1 flex items-center ${
+                    xlsExported ? '' : 'cursor-pointer'
+                  }`}
+                  padding='4px 8px'
+                  borderRadius={6}
+                  onClick={() => {
+                    if (!xlsExported) setXLSExported(true);
+                  }}
+                >
+                  {xlsExported ? <Loader /> : <small>{t('export')}</small>}
+                </Box>
+              </Box>
               {(chartIndex === CHART_APY_IL || chartIndex === CHART_ASSET) && (
                 <ColumnChart
                   categories={apyChartCategories}

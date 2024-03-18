@@ -31,7 +31,6 @@
 .tokensFilter {
   cursor: pointer;
   display: flex;
-  margin: 8px 16px 8px 0;
 }
 
 .panel {
@@ -59,7 +58,7 @@
   }
   & svg {
     height: 16px;
-    margin-left: 2;
+    margin-left: 2px;
     color: $blue;
   }
 }
