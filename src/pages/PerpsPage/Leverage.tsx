@@ -9,11 +9,13 @@ import {
   useChains,
   useCollateral,
   useOrderEntry,
+  useOrderStream,
   useDeposit,
 } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
 import { OrderSide } from '@orderly.network/types';
-export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
+
+export const Leverage = ({ perpToken }) => {
   const [tokenSymbol, setTokenSymbol] = useState<string | undefined>();
   const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
@@ -39,7 +41,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  const { onSubmit } = useOrderEntry('PERP_DOGE_USDC', OrderSide.BUY, false);
+  const { onSubmit } = useOrderEntry(perpToken, OrderSide.BUY, false);
   const [modalOpen, setModalOpen] = useState(false);
   const collateral = useCollateral();
   const [order, setOrder] = useState<any>({
@@ -47,7 +49,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
     order_quantity: '',
     order_type: 'LIMIT',
     side: 'BUY',
-    order_symbol: 'PERP_ETH_USDC',
+    order_symbol: perpToken,
   });
   return (
     <Flex direction='column' align='center' justify='center'>
@@ -381,7 +383,7 @@ export const Leverage: React.FC<{ perpToken?: string }> = ({ perpToken }) => {
                 backgroundColor: 'transparent',
               }}
             />
-            <Text>{tokenSymbol}</Text>
+            <Text>{perpToken.split('_')[1] || 'ETH'}</Text>
           </div>
         </Flex>
         <Flex

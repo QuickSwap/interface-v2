@@ -6,6 +6,7 @@ import { Market } from './Market';
 import './Layout.css';
 import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
+import { useOrderStream } from '@orderly.network/hooks';
 import './Layout.css';
 
 export const Layout = () => {
@@ -13,7 +14,6 @@ export const Layout = () => {
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState(null);
   const [selectedNavItem, setSelectedNavItem] = useState('Chart');
-
   const handleNavItemClick = (item) => {
     setSelectedNavItem(item);
   };
@@ -21,11 +21,9 @@ export const Layout = () => {
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
-
   const handleSideChange = (e) => {
     setSelectedSide(e.target.value);
   };
-
   return (
     <div className='container'>
       <div className='graph_footer'>
@@ -78,7 +76,7 @@ export const Layout = () => {
             >
               Orderbook
             </div>
-            <OrderbookV2 />
+            <OrderbookV2 token={token} />
           </div>
         </div>
         <div className='kingFooter'>
@@ -143,12 +141,12 @@ export const Layout = () => {
         <div className='leverage'>
           {/* Leverage component */}
           <div style={{ border: '1px solid #61675a', padding: '10px' }}>
-            <Leverage />
+            <Leverage perpToken={token} />
           </div>
         </div>
       </div>
       <div className='other'>
-        <Leverage></Leverage>
+        <Leverage perpToken={token}></Leverage>
       </div>
       <div className='mobile_footer'>
         <div className='perp_footer'>
