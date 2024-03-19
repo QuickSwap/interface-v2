@@ -39,76 +39,9 @@ export const PerpsPage = () => {
   return (
     <Theme style={{ color: 'white', alignSelf: 'center' }}>
       <Tabs.Root
-        defaultValue='orderbook'
+        defaultValue='layout'
         style={{ marginTop: '1rem', color: 'white', alignSelf: 'center' }}
       >
-        <Tabs.List style={{ color: 'white', alignSelf: 'center' }}>
-          <Tabs.Trigger value='account' style={{ color: 'white' }}>
-            Account
-          </Tabs.Trigger>
-          <Tabs.Trigger value='assets' style={{ color: 'white' }}>
-            Assets
-          </Tabs.Trigger>
-          <Tabs.Trigger value='orderbook' style={{ color: 'white' }}>
-            Orderbook
-          </Tabs.Trigger>
-          <Tabs.Trigger value='market' style={{ color: 'white' }}>
-            Market
-          </Tabs.Trigger>
-          <Tabs.Trigger value='create_order' style={{ color: 'white' }}>
-            Create Order
-          </Tabs.Trigger>
-          <Tabs.Trigger value='orders' style={{ color: 'white' }}>
-            Orders
-          </Tabs.Trigger>
-          <Tabs.Trigger value='positions' style={{ color: 'white' }}>
-            Positions
-          </Tabs.Trigger>
-          <Tabs.Trigger value='pairs' style={{ color: 'white' }}>
-            Pairs
-          </Tabs.Trigger>
-          <Tabs.Trigger value='chart' style={{ color: 'white' }}>
-            Chart
-          </Tabs.Trigger>
-          <Tabs.Trigger value='final' style={{ color: 'white' }}>
-            Perps Page Final
-          </Tabs.Trigger>
-          <Tabs.Trigger value='layout' style={{ color: 'white' }}>
-            Layout
-          </Tabs.Trigger>
-        </Tabs.List>
-
-        <Tabs.Content value='account' style={{ color: 'white' }}>
-          <Account />
-        </Tabs.Content>
-        <Tabs.Content value='assets' style={{ color: 'white' }}>
-          <Assets />
-        </Tabs.Content>
-        <Tabs.Content value='orderbook' style={{ color: 'white' }}>
-        <OrderbookV2/>
-        </Tabs.Content>
-        <Tabs.Content value='create_order' style={{ color: 'white' }}>
-          <CreateOrder />
-        </Tabs.Content>
-        <Tabs.Content value='orders' style={{ color: 'white' }}>
-          <Orders />
-        </Tabs.Content>
-        <Tabs.Content value='positions' style={{ color: 'white' }}>
-          <Positions />
-        </Tabs.Content>
-        <Tabs.Content value='market' style={{ color: 'white' }}>
-          <MyOrderBook/>
-        </Tabs.Content>
-        <Tabs.Content value='pairs' style={{ color: 'white' }}>
-          <Pairs />
-        </Tabs.Content>
-        <Tabs.Content value='chart' style={{ color: 'white' }}>
-          <GraphHeader />
-          <AdvancedChart />
-        </Tabs.Content>
-        <Tabs.Content value='final' style={{ color: 'white' }}>
-          <FinalPage />
-        </Tabs.Content>
         <Tabs.Content value='layout' style={{ color: 'white' }}>
           <Layout />
         </Tabs.Content>

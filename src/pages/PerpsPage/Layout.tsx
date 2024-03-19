@@ -37,8 +37,9 @@ export const Layout = () => {
   const handleSideChange = (e) => {
     setSelectedSide(e.target.value);
   };
-  const [o] = useOrderStream({ symbol: 'PERP_ETH_USDC' });
-  const orders = o as Order[] | null;
+  // const [o] = useOrderStream({ symbol: 'PERP_ETH_USDC' });
+  // const orders = o as Order[] | null;
+  const orders = null;
   return (
     <div className='container'>
       <div className='graph_footer'>
