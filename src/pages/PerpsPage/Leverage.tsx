@@ -1,20 +1,20 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Box, Button, Flex, Text, Container, Switch } from '@radix-ui/themes';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Box, Button, Container, Flex, Switch, Text } from '@radix-ui/themes';
 import Arrow from '../../assets/images/downward.svg';
 import { CropSquareOutlined } from '@material-ui/icons';
-import { useActiveWeb3React, useGetConnection } from '../../hooks';
-import { useSelectedWallet } from '../../state/user/hooks';
+import { useActiveWeb3React } from '../../hooks';
 import {
   useAccount,
   useChains,
   useCollateral,
-  useOrderEntry,
-  useOrderStream,
   useDeposit,
+  useOrderEntry,
 } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
-import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
-
+import { AccountStatusEnum, OrderSide } from '@orderly.network/types';
+import AccountModal from '../../components/AccountModal';
+import { Simulate } from 'react-dom/test-utils';
+import submit = Simulate.submit;
 
 export const Leverage = ({ perpToken, orderQuantity }) => {
   const [orderType, setOrderType] = useState<string | undefined>('limit');
@@ -43,6 +43,7 @@ export const Leverage = ({ perpToken, orderQuantity }) => {
   }, []);
   const { onSubmit } = useOrderEntry(perpToken, OrderSide.BUY, false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [accountModalOpen, setAccountModalOpen] = useState(false);
   const collateral = useCollateral();
   const [order, setOrder] = useState<any>({
     order_price: '',
@@ -51,6 +52,22 @@ export const Leverage = ({ perpToken, orderQuantity }) => {
     side: 'BUY',
     order_symbol: perpToken,
   });
+  console.log(state.status);
+  useEffect(() => {
+    if (!library || !quickSwapAccount) return;
+    account.setAddress(quickSwapAccount, {
+      provider: window.ethereum,
+      chain: {
+        id: chainId,
+      },
+    });
+  }, [library, account]);
+
+  useEffect(() => {
+    if (state.status === AccountStatusEnum.EnableTrading) {
+      setAccountModalOpen(false);
+    }
+  }, [state.status]);
   return (
     <Flex direction='column' align='center' justify='center'>
       <Box
@@ -327,6 +344,7 @@ export const Leverage = ({ perpToken, orderQuantity }) => {
             {order.order_type === 'LIMIT' ? (
               <input
                 min={0}
+                disabled={state.status !== AccountStatusEnum.EnableTrading}
                 value={order.order_price}
                 onChange={(e) =>
                   setOrder({ ...order, order_price: e.target.value })
@@ -373,6 +391,7 @@ export const Leverage = ({ perpToken, orderQuantity }) => {
               onChange={(e) =>
                 setOrder({ ...order, order_quantity: e.target.value })
               }
+              disabled={state.status !== AccountStatusEnum.EnableTrading}
               style={{
                 width: 30,
                 marginRight: '2px',
@@ -521,28 +540,51 @@ export const Leverage = ({ perpToken, orderQuantity }) => {
           </Text>
           <img src={Arrow} width='16' height='16' />
         </Flex>
-        <Button
-          style={{
-            width: 220,
-            height: 40,
-            margin: '16px 15px',
-            padding: '11px 100px 12px',
-            borderRadius: '8px',
-            backgroundColor: '#B64FFF',
-            cursor: 'pointer',
-          }}
-          onClick={async () => {
-            console.log(order);
-            await onSubmit(order);
-          }}
-        >
-          Create Order
-        </Button>
+        {state.status !== AccountStatusEnum.EnableTrading ? (
+          <Button
+            style={{
+              width: 220,
+              height: 40,
+              margin: '16px 15px',
+              padding: '11px 50px 12px',
+              borderRadius: '8px',
+              backgroundColor: '#B64FFF',
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              setAccountModalOpen(true);
+            }}
+          >
+            Sign In
+          </Button>
+        ) : (
+          <Button
+            style={{
+              width: 220,
+              height: 40,
+              margin: '16px 15px',
+              padding: '11px 50px 12px',
+              borderRadius: '8px',
+              backgroundColor: '#B64FFF',
+              cursor: 'pointer',
+            }}
+            onClick={async () => {
+              console.log(order);
+              await submit(order);
+            }}
+          >
+            Create Order
+          </Button>
+        )}
       </Box>
       <AssetModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         modalType={'deposit'}
+      />
+      <AccountModal
+        open={accountModalOpen}
+        onClose={() => setModalOpen(false)}
       />
     </Flex>
   );
