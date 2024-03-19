@@ -40,9 +40,18 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
     console.log('library is', library);
     console.log('chainId is', chainId);
     console.log('state.status is', state.status);
-    console.log('[Account] AccountStatusEnum.NotSignedIn', AccountStatusEnum.NotSignedIn);
-    console.log('[Account] AccountStatusEnum.DisabledTrading', AccountStatusEnum.DisabledTrading);
-    console.log('[Account] AccountStatusEnum.NotConnected', AccountStatusEnum.NotConnected);
+    console.log(
+      '[Account] AccountStatusEnum.NotSignedIn',
+      AccountStatusEnum.NotSignedIn,
+    );
+    console.log(
+      '[Account] AccountStatusEnum.DisabledTrading',
+      AccountStatusEnum.DisabledTrading,
+    );
+    console.log(
+      '[Account] AccountStatusEnum.NotConnected',
+      AccountStatusEnum.NotConnected,
+    );
   }, [library, account, quickSwapAccount, chainId]);
 
   return (
