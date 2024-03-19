@@ -1,31 +1,30 @@
 export const getIsInjected = () => Boolean(window.ethereum);
 
 type NonMetaMaskFlag =
-  | 'isBraveWallet'
+  // | 'isBraveWallet'
   | 'isTrustWallet'
   | 'isLedgerConnect'
   | 'isBlockWallet'
   | 'isCypherD'
   | 'isBitKeep'
-  | 'isPhantom'
+  // | 'isPhantom'
   | 'isTrust';
 const allNonMetamaskFlags: NonMetaMaskFlag[] = [
-  'isBraveWallet',
+  // 'isBraveWallet',
   'isTrustWallet',
   'isLedgerConnect',
   'isBlockWallet',
   'isCypherD',
   'isBitKeep',
-  'isPhantom',
+  // 'isPhantom',
   'isTrust',
 ];
 export const getIsMetaMaskWallet = () => {
-  const { ethereum, web3 } = window as any;
+  const { ethereum } = window as any;
 
   return Boolean(
     ethereum &&
       ethereum.isMetaMask &&
-      web3 &&
       (ethereum.detected && ethereum.detected.length > 0
         ? ethereum.detected.find(
             (provider: any) =>

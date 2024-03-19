@@ -1,17 +1,17 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://rpc.immutable.com",
-  "blockExplorer": "https://explorer.immutable.com",
-  "networkName": "Immutable zkEVM Mainnet",
-  "aprAPINetwork": "imx",
-  "chainId": 13371,
+  "rpc": "https://rpc.startale.com/astar-zkevm",
+  "blockExplorer": "https://astar-zkevm.explorer.startale.com",
+  "networkName": "Astar zkEVM",
+  "aprAPINetwork": "astarzkevm",
+  "chainId": 3776,
   "isMainnet": true,
   "visible": true,
-  "nativeCurrencyImage": "/tIMX_zkevm.jpg",
+  "nativeCurrencyImage": "/astarzkevm.png",
   "nativeCurrency": {
-    "name": "IMX",
-    "symbol": "IMX",
+    "name": "Ether",
+    "symbol": "ETH",
     "decimals": 18
   },
   "swap": {
@@ -27,8 +27,8 @@
   },
   "farm": {
     "quickswap": false,
-    "merkl": true,
-    "available": true
+    "merkl": false,
+    "available": false
   },
   "lair": {
     "available": false,
@@ -43,6 +43,7 @@
     "available": false
   },
   "analytics": {
+    "liquidityHub": false,
     "available": true
   },
   "lending": {
@@ -63,9 +64,6 @@
   "perps": {
     "available": false
   },
-  "perpsV2": {
-    "available": false
-  },
   "bos": {
     "available": false
   },
@@ -84,10 +82,10 @@
   "dappos": {
     "available": false
   },
-  "defiedge": {
+  "ichi": {
     "available": false
   },
-  "ichi": {
+  "defiedge": {
     "available": false
   }
 }

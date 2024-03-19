@@ -10,6 +10,9 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { Field } from 'state/mint/actions';
 import { useSteerStakingPools, useSteerVaults } from 'hooks/v3/useSteerData';
 import { SteerVaultState } from 'constants/index';
+import { getAllGammaPairs } from 'utils';
+import { useGetMerklFarms } from 'hooks/v3/useV3Farms';
+import { getConfig } from 'config/index';
 
 export interface IFeeTier {
   id: string;
@@ -163,6 +166,28 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
         description: t('bestForExoticPair'),
       },
     ],
+    [ChainId.ASTARZKEVM]: [
+      {
+        id: 'uni-0.01',
+        text: '0.01%',
+        description: t('availableForStablePair'),
+      },
+      {
+        id: 'uni-0.05',
+        text: '0.05%',
+        description: t('highlyLiquidPair'),
+      },
+      {
+        id: 'uni-0.3',
+        text: '0.3%',
+        description: t('bestForMostPair'),
+      },
+      {
+        id: 'uni-1',
+        text: '1%',
+        description: t('bestForExoticPair'),
+      },
+    ],
   };
 
   const feeTierQuery = parsedQuery?.feeTier;
@@ -177,9 +202,51 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
   const currencyBAddress =
     mintInfo.currencies[Field.CURRENCY_B]?.wrapped.address;
   const { data: steerVaults } = useSteerVaults(chainId);
-  const feeForSteer = Number(
-    steerVaults.find((vault) => {
+  const { data: steerFarms } = useSteerStakingPools(chainId);
+  const { data: merklFarms } = useGetMerklFarms();
+  const gammaPairs = getAllGammaPairs(chainId);
+
+  const config = getConfig(chainId);
+  const merklAvailable = config['farm']['merkl'];
+
+  const feesOnFarms = fees?.filter((fee) => {
+    const feeAmount =
+      fee.text === 'Dynamic' ? undefined : Number(fee.id.split('-')[1]) * 10000;
+    const isFeeOnGammaFarm = !!gammaPairs.find(
+      (pair) =>
+        currencyAAddress &&
+        currencyBAddress &&
+        ((pair.token0Address.toLowerCase() === currencyAAddress.toLowerCase() &&
+          pair.token1Address.toLowerCase() ===
+            currencyBAddress.toLowerCase()) ||
+          (pair.token0Address.toLowerCase() ===
+            currencyBAddress.toLowerCase() &&
+            pair.token1Address.toLowerCase() ===
+              currencyAAddress.toLowerCase())) &&
+        pair.ableToFarm &&
+        pair.fee === feeAmount,
+    );
+    const isFeeOnMerklFarm = !!merklFarms?.find(
+      (farm) =>
+        currencyAAddress &&
+        currencyBAddress &&
+        ((farm.token0.toLowerCase() === currencyAAddress.toLowerCase() &&
+          farm.token1.toLowerCase() === currencyBAddress.toLowerCase()) ||
+          (farm.token0.toLowerCase() === currencyBAddress.toLowerCase() &&
+            farm.token1.toLowerCase() === currencyAAddress.toLowerCase())) &&
+        (farm?.ammName && farm.ammName.toLowerCase() === 'quickswapuni'
+          ? Number(farm.poolFee) * 10000 === feeAmount
+          : fee.text === 'Dynamic'),
+    );
+    const isFeeOnSteerFarm = !!steerVaults.find((vault) => {
+      const isVaultOnFarm = !!steerFarms?.find(
+        (farm: any) =>
+          farm.stakingToken.toLowerCase() === vault.address.toLowerCase(),
+      );
+      const vaultFeeAmount = vault.feeTier ? Number(vault.feeTier) : undefined;
       return (
+        isVaultOnFarm &&
+        vaultFeeAmount === feeAmount &&
         vault.state !== SteerVaultState.Paused &&
         vault.state !== SteerVaultState.Retired &&
         vault.token0 &&
@@ -195,22 +262,18 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
             vault.token1.address.toLowerCase() ===
               currencyAAddress.toLowerCase()))
       );
-    })?.feeTier ?? '0',
-  );
-
-  const { data: steerFarms } = useSteerStakingPools(chainId);
+    });
+    return merklAvailable
+      ? isFeeOnMerklFarm
+      : isFeeOnGammaFarm || isFeeOnSteerFarm;
+  });
 
   useEffect(() => {
     const feeTierFromQuery = fees?.find((item) => item.id === feeTierIdQuery);
     if (feeTierFromQuery) {
       onChangeFeeTier(feeTierFromQuery);
-    } else if (feeForSteer) {
-      const feeTier = fees?.find(
-        (item) => Number(item.id.split('-')[1]) * 10000 === feeForSteer,
-      );
-      if (feeTier) {
-        onChangeFeeTier(feeTier);
-      }
+    } else if (feesOnFarms && feesOnFarms[0]) {
+      onChangeFeeTier(feesOnFarms[0]);
     } else {
       if (!mintInfo.feeTier) {
         if (fees && fees.length > 0) {
@@ -225,7 +288,13 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!mintInfo.feeTier, feeTierIdQuery, feeForSteer, chainId]);
+  }, [
+    feeTierIdQuery,
+    feesOnFarms?.length,
+    currencyAAddress,
+    currencyBAddress,
+    chainId,
+  ]);
 
   return (
     <>
@@ -242,32 +311,9 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
             </Box>
             <Box className='feeSelectionWrapper'>
               {fees.map((tier) => {
-                const isFeeonFarm = steerVaults.find((vault) => {
-                  const isVaultOnFarm = !!steerFarms?.find(
-                    (farm: any) =>
-                      farm.stakingToken.toLowerCase() ===
-                      vault.address.toLowerCase(),
-                  );
-                  return (
-                    isVaultOnFarm &&
-                    vault.state !== SteerVaultState.Paused &&
-                    vault.state !== SteerVaultState.Retired &&
-                    vault.token0 &&
-                    vault.token1 &&
-                    currencyAAddress &&
-                    currencyBAddress &&
-                    ((vault.token0.address.toLowerCase() ===
-                      currencyAAddress.toLowerCase() &&
-                      vault.token1.address.toLowerCase() ===
-                        currencyBAddress.toLowerCase()) ||
-                      (vault.token0.address.toLowerCase() ===
-                        currencyBAddress.toLowerCase() &&
-                        vault.token1.address.toLowerCase() ===
-                          currencyAAddress.toLowerCase())) &&
-                    Number(vault.feeTier ?? '0') ===
-                      Number(tier.id.split('-')[1]) * 10000
-                  );
-                });
+                const isFeeonFarm = feesOnFarms?.find(
+                  (fee) => tier.id === fee.id,
+                );
                 return (
                   <Box
                     key={tier.id}

@@ -1,5 +1,5 @@
 import React, { lazy, useEffect, useMemo, useState, useRef } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
@@ -94,6 +94,9 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
     );
   };
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const showBetaBanner = false;
   const displayNewsletter = false;
 
@@ -108,7 +111,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
         }}
       />
       {!isProMode && <Background fallback={false} />}
-      <Box className={`${pageWrapperClassName} ${headerClass}`}>{children}</Box>
+      <Box
+        className={`${pageWrapperClassName} ${headerClass}`}
+        sx={{ marginTop: isMobile ? '-124px' : '0px' }}
+      >
+        {children}
+      </Box>
       <Footer />
     </Box>
   );

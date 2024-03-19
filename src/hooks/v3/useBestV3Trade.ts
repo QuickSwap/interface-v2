@@ -21,6 +21,7 @@ export enum V3TradeState {
 
 const QUOTE_GAS_OVERRIDES: { [chainId: number]: number } = {
   [ChainId.ZKEVM]: 100_000_000,
+  [ChainId.ASTARZKEVM]: 100_000_000,
 };
 
 const DEFAULT_GAS_QUOTE = 2_000_000;

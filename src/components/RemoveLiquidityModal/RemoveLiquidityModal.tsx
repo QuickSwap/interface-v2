@@ -246,37 +246,37 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
     // we have approval, use normal remove liquidity
     if (approval === ApprovalState.APPROVED) {
       // removeLiquidityETH
-      if (oneCurrencyIsETH) {
-        methodNames = [
-          'removeLiquidityETH',
-          'removeLiquidityETHSupportingFeeOnTransferTokens',
-        ];
-        args = [
-          currencyBIsETH ? tokenA.address : tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[
-            currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B
-          ].toString(),
-          amountsMin[
-            currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A
-          ].toString(),
-          account,
-          deadline.toHexString(),
-        ];
-      }
+      // if (oneCurrencyIsETH) {
+      //   methodNames = [
+      //     'removeLiquidityETH',
+      //     'removeLiquidityETHSupportingFeeOnTransferTokens',
+      //   ];
+      //   args = [
+      //     currencyBIsETH ? tokenA.address : tokenB.address,
+      //     liquidityAmount.raw.toString(),
+      //     amountsMin[
+      //       currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B
+      //     ].toString(),
+      //     amountsMin[
+      //       currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A
+      //     ].toString(),
+      //     account,
+      //     deadline.toHexString(),
+      //   ];
+      // }
       // removeLiquidity
-      else {
-        methodNames = ['removeLiquidity'];
-        args = [
-          tokenA.address,
-          tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          account,
-          deadline.toHexString(),
-        ];
-      }
+      // else {
+      methodNames = ['removeLiquidity'];
+      args = [
+        tokenA.address,
+        tokenB.address,
+        liquidityAmount.raw.toString(),
+        amountsMin[Field.CURRENCY_A].toString(),
+        amountsMin[Field.CURRENCY_B].toString(),
+        account,
+        deadline.toHexString(),
+      ];
+      // }
     } else {
       setRemoveErrorMessage(t('confirmWithoutApproval'));
       throw new Error(t('confirmWithoutApproval'));

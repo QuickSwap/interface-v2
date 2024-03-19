@@ -105,7 +105,7 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   const { loading, farms } = useMerklFarms();
   const rewardAddresses = farms.reduce((memo: string[], item: any) => {
     const distributionData: any[] = (item?.distributionData ?? []).filter(
-      (reward: any) => reward.isLive,
+      (reward: any) => reward.isLive && !reward.isMock,
     );
     for (const rewardItem of distributionData) {
       if (
@@ -130,7 +130,7 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       );
       const title = (item.symbolToken0 ?? '') + (item.symbolToken1 ?? '');
       const rewardItems: any[] = (item?.distributionData ?? []).filter(
-        (reward: any) => reward.isLive,
+        (reward: any) => reward.isLive && !reward.isMock,
       );
       const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
         const usdPrice =
@@ -263,8 +263,6 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           )?.title ?? '';
       }
       const farmType = alm.label.split(' ')[0];
-      const farmTypeReward =
-        farmType === 'QuickSwap' ? 'QuickswapAlgebra' : farmType;
       const poolRewards = selectedPool?.rewardsPerToken;
       const rewardTokenAddresses = poolRewards ? Object.keys(poolRewards) : [];
       const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
@@ -276,7 +274,9 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
           const accumulatedRewards = item.breakdownOfAccumulated;
           return (
             accumulatedRewards &&
-            Object.keys(accumulatedRewards).includes(farmTypeReward)
+            Object.keys(accumulatedRewards).find((item) =>
+              item.includes(farmType),
+            )
           );
         });
       return {
@@ -285,6 +285,10 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
         token1: selectedPool?.token1,
         title,
         rewards,
+        poolFee:
+          (selectedPool?.ammName ?? '').toLowerCase() === 'quickswapuni'
+            ? selectedPool?.poolFee
+            : undefined,
       };
     });
   }, [chainId, defiEdgeTitles, selectedPool]);

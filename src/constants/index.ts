@@ -49,6 +49,8 @@ import {
   RNDR,
   USDV,
   NFTE,
+  CRS,
+  EURO3,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
 
@@ -56,6 +58,11 @@ export const bondAPIV2BaseURL = 'https://api-v2.apeswap.finance';
 export const CEX_BILL_ADDRESS = '0x6D7637683eaD28F775F56506602191fdE417fF60';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
+
+export const merklAMMs: { [chainId in ChainId]?: string[] } = {
+  [ChainId.MATIC]: ['quickswapalgebra'],
+  [ChainId.ZKEVM]: ['quickswapalgebra', 'quickswapuni'],
+};
 
 export const blackListMerklFarms = [
   '0x392DfB56cA9aA807571eC2a666c3bbf87c7FE63E',
@@ -87,6 +94,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.TIMX]: 'tIMX',
   [ChainId.X1]: 'x1',
   [ChainId.IMX]: 'IMX',
+  [ChainId.ASTARZKEVM]: 'astar_zkevm',
 };
 
 export enum ZapType {
@@ -182,6 +190,7 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.ZKATANA]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.TIMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.IMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.ASTARZKEVM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
 };
 
 export const GlobalConst = {
@@ -303,6 +312,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.MANTA,
   ChainId.IMX,
   ChainId.DOGECHAIN,
+  ChainId.ASTARZKEVM,
   ChainId.ZKATANA,
   ChainId.X1,
   ChainId.TIMX,
@@ -1400,6 +1410,33 @@ export const GammaPairs: {
         pid: 107,
       },
     ],
+    '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359-0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x39f223B2E0405FA62CeC7DC476FC5A307B435069',
+        token0Address: '0x3c499c542cef5e3811e1192ce70d8cC03d5c3359',
+        token1Address: '0x8f3Cf7ad23cd3caDbd9735aff958023239c6a063',
+      },
+    ],
+    '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359-0xc2132d05d31c914a87c6611c10748aeb04b58e8f': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0x953e523eA34E85AC55D40Be1Ff71D52aa62497b7',
+        token0Address: '0x3c499c542cEF5E3811e1192ce70d8cc03d5c3359',
+        token1Address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x3c499c542cef5e3811e1192ce70d8cc03d5c3359': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x1cf4293125913cb3dea4ad7f2bb4795b9e896ce9',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
+      },
+    ],
   },
   [ChainId.ZKEVM]: {
     '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
@@ -1979,6 +2016,7 @@ export const IchiVaults: {
     '0xaE2979B6328Fb75eBf311B30e1b985Ecb1A813D2',
     '0xD79D60CEAD6406e2Fc228a6778B6bB5caE47BB8c',
     '0x29a117f122A5317A2b547b1A204624cb7E83FA6F',
+    '0xdc58504630972421445CBa4f856ABbA3Ce1BCB8a',
   ],
 };
 
@@ -2057,6 +2095,12 @@ export const DefiedgeStrategies: {
       token1: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
       pool: '0x5b41EEDCfC8e0AE47493d4945Aa1AE4fe05430ff',
     },
+    {
+      id: '0x29f177eff806b8a71ff8c7259ec359312cace22d',
+      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      token1: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+      pool: '0xAE81FAc689A1b4b1e06e7ef4a2ab4CD8aC0A087D',
+    },
   ],
 };
 
@@ -2126,6 +2170,7 @@ export const GlobalValue = {
         NINJAZ[ChainId.MATIC],
         RNDR[ChainId.MATIC],
         NFTE[ChainId.MATIC],
+        CRS[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],
@@ -2161,6 +2206,7 @@ export const GlobalValue = {
       [ChainId.X1]: [],
       [ChainId.TIMX]: [],
       [ChainId.IMX]: [],
+      [ChainId.ASTARZKEVM]: [],
     },
   },
   marketSDK: {
@@ -2211,6 +2257,7 @@ export const GlobalData = {
       USDD[ChainId.MATIC],
       DAVOS[ChainId.MATIC],
       USDV[ChainId.MATIC],
+      EURO3[ChainId.MATIC],
     ],
     [ChainId.MUMBAI]: [],
     [ChainId.DOGECHAIN]: [
@@ -2238,6 +2285,11 @@ export const GlobalData = {
     [ChainId.BTTC]: [],
     [ChainId.X1]: [USDC[ChainId.X1]],
     [ChainId.IMX]: [USDC[ChainId.IMX], USDT[ChainId.IMX]],
+    [ChainId.ASTARZKEVM]: [
+      USDC[ChainId.ASTARZKEVM],
+      USDT[ChainId.ASTARZKEVM],
+      DAI[ChainId.ASTARZKEVM],
+    ],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -2286,6 +2338,14 @@ export const GlobalData = {
       WBTC[ChainId.IMX],
       USDT[ChainId.IMX],
     ],
+    [ChainId.ASTARZKEVM]: [
+      WETH[ChainId.ASTARZKEVM],
+      WBTC[ChainId.ASTARZKEVM],
+      USDC[ChainId.ASTARZKEVM],
+      USDT[ChainId.ASTARZKEVM],
+      DAI[ChainId.ASTARZKEVM],
+      MATIC[ChainId.ASTARZKEVM],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -2317,6 +2377,9 @@ export const GlobalData = {
     [ChainId.BTTC]: [],
     [ChainId.X1]: [],
     [ChainId.IMX]: [],
+    [ChainId.ASTARZKEVM]: [
+      [WETH[ChainId.ASTARZKEVM], WSTETH[ChainId.ASTARZKEVM]],
+    ],
   },
 };
 
