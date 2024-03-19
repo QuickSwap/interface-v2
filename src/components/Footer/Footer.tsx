@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
       <Box className='footerContainer'>
         <Grid container spacing={4} className='socialMenuWrapper'>
           <Grid item xs={12} sm={12} md={4}>
-            <img src={QUICKLogo} alt='QUICK' height={40} />
+            <img src={QUICKLogo} alt='QUICK' />
             <Box mt={2} maxWidth='240px'>
               <small className='text-secondary'>{t('socialDescription')}</small>
             </Box>

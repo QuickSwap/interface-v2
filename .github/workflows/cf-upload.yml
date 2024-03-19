@@ -22,8 +22,8 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Start the application
-        run: npm start --legacy-peer-deps
+      - name: Build the bundle
+        run: yarn build
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1

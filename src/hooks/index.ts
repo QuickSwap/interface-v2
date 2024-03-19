@@ -221,7 +221,6 @@ export const useTokenPriceUsd = (
   return [value, loading];
 };
 
-
 export function useGetSigner() {
   const { account, library } = useActiveWeb3React();
   if (!library || !account) {
