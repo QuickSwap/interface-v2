@@ -11,13 +11,20 @@ import {
   useOrderEntry,
 } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
-import { AccountStatusEnum, OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
+import {
+  AccountStatusEnum,
+  OrderSide,
+  OrderStatus,
+  OrderType,
+} from '@orderly.network/types';
 import AccountModal from '../../components/AccountModal';
 import { Simulate } from 'react-dom/test-utils';
 import submit = Simulate.submit;
 
-export const Leverage = ({ perpToken, orderQuantity }) => {
-
+export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
+  perpToken,
+  orderQuantity,
+}) => {
   const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');

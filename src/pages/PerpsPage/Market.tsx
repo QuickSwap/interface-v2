@@ -66,7 +66,7 @@ export const Market: FC = ({ token }) => {
           >
             Qty(ETH)
           </Box>
-          {data.slice(0, 15).map((item) => {
+          {data.slice(0, 23).map((item) => {
             const gradient = 10;
             return (
               <>

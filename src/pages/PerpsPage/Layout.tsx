@@ -27,16 +27,20 @@ export const Layout = () => {
   const [selectedSide, setSelectedSide] = useState(null);
   const [selectedNavItem, setSelectedNavItem] = useState('Chart');
   const [orderQuantity, setOrderQuantity] = useState(['']);
-  console.log('orderQuantity', orderQuantity);
+  const [selectedTab, setSelectedTab] = useState<'Orderbook' | 'Market'>(
+    'Orderbook',
+  );
   const handleNavItemClick = (item) => {
     setSelectedNavItem(item);
   };
-
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
   const handleSideChange = (e) => {
     setSelectedSide(e.target.value);
+  };
+  const handleTabClick = (tab: 'Orderbook' | 'Market') => {
+    setSelectedTab(tab);
   };
   // const [o] = useOrderStream({ symbol: 'PERP_ETH_USDC' });
   // const orders = o as Order[] | null;
@@ -82,17 +86,24 @@ export const Layout = () => {
             )}
           </div>
           <div className='orderbook desktop_orderbook'>
-            <div
-              style={{
-                color: 'white',
-                height: 36,
-                textAlign: 'center',
-                padding: 4,
-              }}
-            >
-              Orderbook
+            <div className='tab-header'>
+              <div
+                className={selectedTab === 'Orderbook' ? 'active-tab' : ''}
+                onClick={() => handleTabClick('Orderbook')}
+              >
+                Orderbook
+              </div>
+              <div
+                className={selectedTab === 'Market' ? 'active-tab' : ''}
+                onClick={() => handleTabClick('Market')}
+              >
+                Market
+              </div>
             </div>
-            <OrderbookV2 token={token} setOrderQuantity={setOrderQuantity} />
+            {selectedTab === 'Orderbook' && (
+              <OrderbookV2 token={token} setOrderQuantity={setOrderQuantity} />
+            )}
+            {selectedTab === 'Market' && <Market />}
           </div>
         </div>
         <div className='kingFooter'>
@@ -145,7 +156,7 @@ export const Layout = () => {
             <div>Status</div>
             <div>Price</div>
           </div>
-          <Footer token={token} />
+          <Footer token={token} selectedTab={selectedItem} />
         </div>
       </div>
       {/* Orderbook and Leverage in same div */}

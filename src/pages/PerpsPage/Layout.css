@@ -151,7 +151,17 @@
     color: white;
 }
 
-
+.tab-header{
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 68px;
+    color: #ccced9;
+    font-family: Inter;
+    font-weight: 500;
+    font-size: 12px;
+    border-bottom: 1px solid #61675a;
+    cursor: pointer;
+}
 .mobile_footer {
     display: none;
 }
