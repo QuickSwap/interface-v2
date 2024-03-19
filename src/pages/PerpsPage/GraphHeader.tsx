@@ -39,7 +39,6 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
     }
   }, []);
 
-
   return (
     <div style={{ overflowX: 'auto' }}>
       {' '}

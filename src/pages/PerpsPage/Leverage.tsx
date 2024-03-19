@@ -15,8 +15,10 @@ import {
 import AssetModal from '../../components/AssetModal';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 
-
-export const Leverage = ({ perpToken, orderQuantity }) => {
+export const Leverage: React.FC<{ perpToken: any; orderQuantity: any }> = ({
+  perpToken,
+  orderQuantity,
+}) => {
   const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');

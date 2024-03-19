@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { OrderBook } from '@orderly.network/react';
 import { useOrderbookStream, useSymbolsInfo } from '@orderly.network/hooks';
 import '@orderly.network/react/dist/styles.css';
 
-export const OrderbookV2 = ({ token, setOrderQuantity }) => {
+export const OrderbookV2: React.FC<{ token: any; setOrderQuantity: any }> = ({
+  token,
+  setOrderQuantity,
+}) => {
   const [symbol, setSymbol] = useState('PERP_ETH_USDC');
   const config = useSymbolsInfo();
   const symbolInfo = config ? config[token] : {};

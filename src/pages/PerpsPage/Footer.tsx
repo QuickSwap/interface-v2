@@ -13,7 +13,7 @@ type Order = {
   executed: number;
 };
 export const Footer: React.FC = ({ token }) => {
-  console.log(token)
+  console.log(token);
   const [o] = useOrderStream({ symbol: token });
   const orders = o as Order[] | null;
   return (
