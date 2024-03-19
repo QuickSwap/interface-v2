@@ -9,6 +9,7 @@ import { Leverage } from './Leverage';
 import { useOrderStream } from '@orderly.network/hooks';
 import './Layout.css';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
+import { Footer } from './Footer';
 
 type Order = {
   price: number;
@@ -37,8 +38,8 @@ export const Layout = () => {
   const handleSideChange = (e) => {
     setSelectedSide(e.target.value);
   };
-  const [o] = useOrderStream({ symbol: 'PERP_ETH_USDC' });
-  const orders = o as Order[] | null;
+  // const [o] = useOrderStream({ symbol: 'PERP_ETH_USDC' });
+  // const orders = o as Order[] | null;
   return (
     <div className='container'>
       <div className='graph_footer'>
@@ -144,23 +145,7 @@ export const Layout = () => {
             <div>Status</div>
             <div>Price</div>
           </div>
-          <div className='orders'>
-            {orders && orders.length > 0 ? (
-              orders.map((order) => (
-                <div key={order?.order_id} className='order'>
-                  <div>{order?.price}</div>
-                  <div>{order?.quantity}</div>
-                  <div>{order?.created_time}</div>
-                  <div>{order?.side}</div>
-                  <div>{order?.type}</div>
-                  <div>{order?.status}</div>
-                  <div>{order?.executed}</div>
-                </div>
-              ))
-            ) : (
-              <div>No orders available</div>
-            )}
-          </div>
+          <Footer token={token} />
         </div>
       </div>
       {/* Orderbook and Leverage in same div */}
