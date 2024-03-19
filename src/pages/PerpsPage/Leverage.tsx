@@ -56,7 +56,7 @@ export const Leverage = ({ perpToken, orderQuantity }) => {
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
     account.setAddress(quickSwapAccount, {
-      provider: window.ethereum,
+      provider: library.provider,
       chain: {
         id: chainId,
       },
