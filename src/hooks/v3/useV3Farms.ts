@@ -314,9 +314,9 @@ export const useGetMerklFarms = () => {
     const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
     if (!merklAPIURL || !chainId || !merklAvailable) return [];
     const amms = merklAMMs[chainId] ?? ['quickswapuni'];
-    const ammStr = amms.map((amm) => `&AMMs[]=${amm}`).join('');
+    const ammStr = amms.map((amm) => `amms[]=${amm}&`).join('');
     const res = await fetch(
-      `${merklAPIURL}?chainIds[]=${chainId}${ammStr}${
+      `${merklAPIURL}?${ammStr}chainIds[]=${chainId}${
         account ? `&user=${account}` : ''
       }`,
     );
@@ -328,7 +328,7 @@ export const useGetMerklFarms = () => {
     if (!farmData) return [];
     return Object.values(farmData).filter(
       (item: any) =>
-        !blackListMerklFarms.find(
+        !(blackListMerklFarms[chainId] ?? []).find(
           (address) =>
             item?.pool && item.pool.toLowerCase() === address.toLowerCase(),
         ) && amms.includes(item.ammName.toLowerCase()),
